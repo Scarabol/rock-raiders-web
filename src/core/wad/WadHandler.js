@@ -627,7 +627,7 @@ function loadAssetsParallel() {
  */
 function loadWadFile(url) {
     return new Promise(resolve => {
-        console.log('Loading wad file from ' + url);
+        console.log('Loading WAD file from ' + url);
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
         xhr.responseType = 'arraybuffer'; // jQuery cant handle response type arraybuffer
@@ -706,7 +706,7 @@ WadHandler.prototype.getEntry = function (entryName) {
             return URL.createObjectURL(new Blob([this.buffer.slice(this.fStart[i], this.fStart[i] + this.fLength[i])], { 'type': 'image/bmp' }));
         }
     }
-    throw 'Entry \'' + entryName + '\' not found in wad file';
+    throw 'Entry \'' + entryName + '\' not found in WAD file';
 };
 
 WadHandler.prototype.getEntryData = function (entryName) {
@@ -716,7 +716,7 @@ WadHandler.prototype.getEntryData = function (entryName) {
             return new Uint8Array(this.buffer.slice(this.fStart[i], this.fStart[i] + this.fLength[i]));
         }
     }
-    throw 'Entry \'' + entryName + '\' not found in wad file';
+    throw 'Entry \'' + entryName + '\' not found in WAD file';
 };
 
 WadHandler.prototype.filterEntryNames = function (regexStr) {
