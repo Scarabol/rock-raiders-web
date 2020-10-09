@@ -4,7 +4,7 @@ function CfgFileParser() {
 
 CfgFileParser.prototype = {
 
-    parse(buffer) {
+    parse(buffer, onload) {
         const result = {};
         const ancestry = [];
         let activeObject = result;
@@ -74,7 +74,7 @@ CfgFileParser.prototype = {
             }
         });
 
-        return result;
+        if (onload) onload(result);
     },
 
     encodeChar(charCode) { // encoding of the original files still remains a mystery
