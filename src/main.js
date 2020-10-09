@@ -2,9 +2,9 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { AnimEntityLoader } from "./game/entity/AnimEntityLoader";
 
-import { Debug } from "./core/Debug.js";
+import { DebugHelper } from "./core/DebugHelper.js";
 
-new Debug();
+const debugHelper = new DebugHelper();
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -38,8 +38,12 @@ controls.target.set(0, camera.position.y / 2, 0); // TODO dynamically look at to
 controls.update();
 
 const render = function () {
-    requestAnimationFrame(render);
+    debugHelper.renderStart();
+
     renderer.render(scene, camera);
+
+    debugHelper.renderDone();
+    requestAnimationFrame(render);
 };
 
 new AnimEntityLoader().load('LegoRR0/mini-figures/pilot/pilot.ae', function (animFile) {
