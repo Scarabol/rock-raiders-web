@@ -74,7 +74,7 @@ CfgFileParser.prototype = {
             }
         });
 
-        console.log(result['Lego*']);
+        return result;
     },
 
     encodeChar(charCode) { // encoding of the original files still remains a mystery
