@@ -1,0 +1,27 @@
+{
+  "name": "rock-raiders-web",
+  "version": "0.1.0",
+  "description": "Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999) using browser based technologies.",
+  "main": "./app.bundle.js",
+  "scripts": {
+    "dev": "./node_modules/.bin/webpack-dev-server",
+    "build": "./node_modules/.bin/webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scarabol/rock-raiders-web.git"
+  },
+  "author": "Scarabol <scarabol@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/scarabol/rock-raiders-web/issues"
+  },
+  "homepage": "https://github.com/scarabol/rock-raiders-web#readme",
+  "devDependencies": {
+    "webpack": "^4.44.2",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "three": "^0.121.1"
+  }
+}

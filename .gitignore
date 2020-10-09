@@ -1,0 +1,9 @@
+node_modules/
+*.log
+
+LegoRR0
+LegoRR1
+
+/.idea
+/dist
+
