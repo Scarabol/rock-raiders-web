@@ -19,7 +19,7 @@ CfgFileParser.prototype = {
                 charCode = 142;
             }
             let charStr = String.fromCharCode(this.encodeChar(charCode));
-            if (charStr === ';') {
+            if (charStr === ';' || charStr === '/') { // someone used // as a marker for a comment
                 isComment = true;
             } else if (charCode === 10 || charCode === 13) {
                 isComment = false;
@@ -98,7 +98,7 @@ CfgFileParser.prototype = {
         const num = Number(val);
 
         function splitShrink(sep) {
-            val = val.split(sep).map(val => this.parseValue(val));
+            val = val.split(sep).filter(val => val !== '').map(val => this.parseValue(val));
             if (val.length === 0) {
                 val = '';
             } else if (val.length === 1) {
@@ -112,12 +112,12 @@ CfgFileParser.prototype = {
             if (lVal === 'true') return true;
             if (lVal === 'false') return false;
             if (lVal === 'null') return '';
-            if (val.includes(':')) {
+            if (val.includes(',')) {
+                splitShrink.call(this, ',');
+            } else if (val.includes(':')) {
                 splitShrink.call(this, ':');
             } else if (val.includes('|')) {
                 splitShrink.call(this, '|');
-            } else if (val.includes(',')) {
-                splitShrink.call(this, ',');
             }
             return val;
         } else {

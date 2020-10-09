@@ -9,5 +9,7 @@ cfgLoader.load('./LegoRR1/lego.cfg', (content) => {
     const cfgParser = new CfgFileParser();
     const result = cfgParser.parse(new Uint8Array(content));
     const legoCfg = result['Lego*'];
-    console.log(legoCfg);
+    console.log(legoCfg['Levels']);
+    // const startLevelCfg = legoCfg['Main']['StartLevel'];
+    // console.log(startLevelCfg);
 });
