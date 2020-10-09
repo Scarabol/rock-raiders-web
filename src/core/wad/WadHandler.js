@@ -5,8 +5,28 @@ import { CfgFileParser } from './CfgFileParser';
 
 let wad0File = null;
 let wad1File = null;
+
 let assets = [
-    ['wad0nerp', 'Levels', 'nerpnrn.h'],
+    ['wad0nerp', 'Levels', 'nerpnrn.h'], // included by other nrn scripts
+
+    // ~images~
+    // menu resources
+    ['wad0bmp', 'Interface/FrontEnd/MenuBGpic.bmp'], // main menu background
+    ['wad0font', 'Interface/FrontEnd/Menu_Font_LO.bmp'], // main menu font
+    ['wad0font', 'Interface/FrontEnd/Menu_Font_HI.bmp'], // (highlighted) main menu font
+    ['wad0font', 'Interface/Fonts/Font5_Hi.bmp'],
+    ['wad0bmp', 'Interface/Frontend/LP_Normal.bmp'], // back button in level select view
+    ['wad0bmp', 'Interface/Frontend/LP_Glow.bmp'], // back button in level select view (hovered)
+    ['wad0bmp', 'Interface/Frontend/LP_Dull.bmp'], // back button in level select view (pressed)
+    ['wad0alpha', 'Interface/Frontend/LowerPanel.bmp'], // lower panel in level select view
+    ['wad0bmp', 'Interface/Frontend/SaveLoad.bmp'],
+
+    // level images
+    ['wad0bmp', 'Interface/LEVELPICKER/Levelpick.bmp'], // level select menu background
+    ['wad0bmp', 'Interface/LEVELPICKER/LevelpickT.bmp'], // tutorial level select menu background
+
+    // pointers/cursors
+    ['wad0alpha', 'Interface/Pointers/Aclosed.bmp'],
 ];
 
 let GameManager = { // FIXME refactor this
@@ -65,6 +85,7 @@ function loadImageAsset(path, name, callback) {
         const context = createContext(img.naturalWidth, img.naturalHeight, false);
         context.drawImage(img, 0, 0);
         GameManager.images[name.toLowerCase()] = context;
+        URL.revokeObjectURL(img.src);
         if (callback != null) {
             callback();
         }
@@ -96,6 +117,7 @@ function loadAlphaImageAsset(name, callback) {
         }
         context.putImageData(imgData, 0, 0);
         GameManager.images[name.toLowerCase()] = context;
+        URL.revokeObjectURL(img.src);
         if (callback != null) {
             callback();
         }
@@ -123,6 +145,7 @@ function loadFontImageAsset(name, callback) {
         }
         context.putImageData(imgData, 0, 0);
         GameManager.fonts[name.toLowerCase()] = new BitmapFont(context);
+        URL.revokeObjectURL(img.src);
         if (callback != null) {
             callback();
         }
@@ -372,7 +395,7 @@ function onAssetLoaded(callback) {
 function startLoadingProcess() {
     startLoadingProcess.startTime = new Date();
     startLoadingProcess.assetsFromCfgByName = {};
-    setLoadingMessage('Loading configuration');
+    setLoadingMessage('Loading configuration...');
     new Promise((resolve) => {
         new CfgFileParser().parse(wad1File.getEntryData('Lego.cfg'), (result) => {
             GameManager.configuration = result;
@@ -590,10 +613,10 @@ function loadAssetsParallel() {
     Promise.all(promises).then(() => {
         // main game file (put last as this contains the main game loop)
         // loadScriptAsset('rockRaiders.js', () => {
-            // indicate that loading has finished, and display the total loading time
-            console.log('RyConsole: Loading of about ' + updateLoadingScreen.totalResources + ' assets complete! Total load time: ' + ((new Date().getTime() - startLoadingProcess.startTime.getTime()) / 1000).toFixed(2).toString() + ' seconds.');
-            // remove globals used during loading phase so as not to clutter the memory, if even only by a small amount
-            // delete object;
+        // indicate that loading has finished, and display the total loading time
+        console.log('RyConsole: Loading of about ' + updateLoadingScreen.totalResources + ' assets complete! Total load time: ' + ((new Date().getTime() - startLoadingProcess.startTime.getTime()) / 1000).toFixed(2).toString() + ' seconds.');
+        // remove globals used during loading phase so as not to clutter the memory, if even only by a small amount
+        // delete object;
         // });
     });
 }
@@ -779,22 +802,26 @@ function storeFilesInCache() {
 }
 
 function startWithCachedFiles(onerror) {
-    setLoadingMessage('loading WAD files from cache');
+    const _onerror = () => {
+        setLoadingMessage('WAD files not found in cache');
+        onerror();
+    };
+    setLoadingMessage('Loading WAD files from cache...');
     openLocalCache((objectStore) => {
         const request1 = objectStore.get('wad0');
-        request1.onerror = onerror;
+        request1.onerror = _onerror;
         request1.onsuccess = function () {
             if (request1.result === undefined) {
-                onerror();
+                _onerror();
                 return;
             }
             wad0File = new WadHandler(); // class info are runtime info and not stored in cache => use copy constructor
             for (let prop in request1.result) wad0File[prop] = request1.result[prop];
             const request2 = objectStore.get('wad1');
-            request2.onerror = onerror;
+            request2.onerror = _onerror;
             request2.onsuccess = function () {
                 if (request2.result === undefined) {
-                    onerror();
+                    _onerror();
                     return;
                 }
                 wad1File = new WadHandler(); // class info are runtime info and not stored in cache => use copy constructor
@@ -815,19 +842,5 @@ function setLoadingMessage(text) {
 
 const loadingCanvas = document.getElementById('loadingCanvas');
 const loadingContext = loadingCanvas.getContext('2d');
-
-// clear the screen to black
-loadingContext.fillStyle = 'black';
-loadingContext.fillRect(0, 0, loadingCanvas.width, loadingCanvas.height);
-
-// draw the loading title
-loadingContext.font = '48px Arial';
-loadingContext.fillStyle = 'white';
-loadingContext.fillText('Loading Rock Raiders', 5, loadingCanvas.height - 80);
-
-// hard-code the first loading message as assets will always be stored in assets.js
-loadingContext.font = '30px Arial';
-loadingContext.fillStyle = 'white';
-loadingContext.fillText('loading', 20, loadingCanvas.height - 30);
 
 export { startWithCachedFiles, loadWadFiles };

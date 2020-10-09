@@ -86,7 +86,7 @@ BitmapFont.prototype.createTextImage = function (text) {
         if (letterImg) {
             surface.drawImage(letterImg, x, 0, letterImg.width, letterImg.height);
             x += letterImg.width;
-        } // issue alread reported above
+        } // issue already reported above
     }
     return surface;
 };

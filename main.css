@@ -27,6 +27,7 @@ canvas {
 
 #loadingCanvas {
     z-index: 50;
+    background: #000;
 }
 
 .github-box {
