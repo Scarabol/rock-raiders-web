@@ -571,7 +571,7 @@ function onSequentialAssetLoaded() {
 
 function loadSequentialAssets() {
     if (loadSequentialAssets.assetIndex >= registerAllAssets.sequentialAssets.length) {
-        loadAssetsParallel();
+        loadAssetsParallel(); // continue with parallel loading all other assets
         return;
     }
     const curAsset = registerAllAssets.sequentialAssets[loadSequentialAssets.assetIndex];
@@ -614,7 +614,7 @@ function loadAssetsParallel() {
         // main game file (put last as this contains the main game loop)
         // loadScriptAsset('rockRaiders.js', () => {
         // indicate that loading has finished, and display the total loading time
-        console.log('RyConsole: Loading of about ' + updateLoadingScreen.totalResources + ' assets complete! Total load time: ' + ((new Date().getTime() - startLoadingProcess.startTime.getTime()) / 1000).toFixed(2).toString() + ' seconds.');
+        console.log('Loading of about ' + updateLoadingScreen.totalResources + ' assets complete! Total load time: ' + ((new Date().getTime() - startLoadingProcess.startTime.getTime()) / 1000).toFixed(2).toString() + ' seconds.');
         // remove globals used during loading phase so as not to clutter the memory, if even only by a small amount
         // delete object;
         // });
@@ -741,24 +741,6 @@ function WadHandler(buffer) {
     this.entries = [];
     this.fLength = [];
     this.fStart = [];
-}
-
-/**
- * Start the game by using locally provided WAD files
- */
-function startGameFileLocal() {
-    const wad0Url = URL.createObjectURL(document.getElementById('wad0-file').files[0]);
-    const wad1Url = URL.createObjectURL(document.getElementById('wad1-file').files[0]);
-    loadWadFiles(wad0Url, wad1Url);
-}
-
-/**
- * Start the game by downloading and using remotely available WAD files
- */
-function startGameUrl() {
-    setLoadingMessage('Downloading WAD files... please wait', 20, loadingCanvas.height - 30);
-    const antiCorsPrefix = 'https://cors-anywhere.herokuapp.com/'; // BAD IDEA! This enables MITM attacks! But it's just a game... and nobody cares...
-    loadWadFiles(antiCorsPrefix + document.getElementById('wad0-url').value, antiCorsPrefix + document.getElementById('wad1-url').value);
 }
 
 /**
