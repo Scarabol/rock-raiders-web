@@ -2,54 +2,24 @@ import { NerpParser } from '../nerp/Nerp';
 import { BitmapFont } from '../BitmapFont';
 import { createContext, createDummyImage } from '../ImageHelper';
 import { CfgFileParser } from './CfgFileParser';
+import { encodeChar } from '../EncodingHelper';
+import { ResourceManager } from '../ResourceManager';
 
 let wad0File = null;
 let wad1File = null;
 
-let assets = [
-    ['wad0nerp', 'Levels', 'nerpnrn.h'], // included by other nrn scripts
-
-    // ~images~
-    // menu resources
-    ['wad0bmp', 'Interface/FrontEnd/MenuBGpic.bmp'], // main menu background
-    ['wad0font', 'Interface/FrontEnd/Menu_Font_LO.bmp'], // main menu font
-    ['wad0font', 'Interface/FrontEnd/Menu_Font_HI.bmp'], // (highlighted) main menu font
-    ['wad0font', 'Interface/Fonts/Font5_Hi.bmp'],
-    ['wad0bmp', 'Interface/Frontend/LP_Normal.bmp'], // back button in level select view
-    ['wad0bmp', 'Interface/Frontend/LP_Glow.bmp'], // back button in level select view (hovered)
-    ['wad0bmp', 'Interface/Frontend/LP_Dull.bmp'], // back button in level select view (pressed)
-    ['wad0alpha', 'Interface/Frontend/LowerPanel.bmp'], // lower panel in level select view
-    ['wad0bmp', 'Interface/Frontend/SaveLoad.bmp'],
-
-    // level images
-    ['wad0bmp', 'Interface/LEVELPICKER/Levelpick.bmp'], // level select menu background
-    ['wad0bmp', 'Interface/LEVELPICKER/LevelpickT.bmp'], // tutorial level select menu background
-
-    // pointers/cursors
-    ['wad0alpha', 'Interface/Pointers/Aclosed.bmp'],
-];
-
-let GameManager = { // FIXME refactor this
-    images: {},
-    configuration: {},
-    maps: {},
-    sounds: {},
-    objectLists: {},
-    nerps: [],
-    nerpMessages: [],
-    fonts: [],
-};
+const resourceMgr = new ResourceManager();
 
 function getImage(imageName) {
     if (!imageName || imageName.length === 0) {
         throw 'imageName must not be undefined, null or empty - was ' + imageName;
     } else {
         const lImageName = imageName.toLowerCase();
-        if (!(lImageName in GameManager.images) || GameManager.images[lImageName] === undefined || GameManager.images[lImageName] === null) {
+        if (!(lImageName in resourceMgr.images) || resourceMgr.images[lImageName] === undefined || resourceMgr.images[lImageName] === null) {
             console.error('Image \'' + imageName + '\' unknown! Using placeholder image instead');
-            GameManager.images[lImageName] = createDummyImage(64, 64);
+            resourceMgr.images[lImageName] = createDummyImage(64, 64);
         }
-        return GameManager.images[lImageName];
+        return resourceMgr.images[lImageName];
     }
 }
 
@@ -84,7 +54,7 @@ function loadImageAsset(path, name, callback) {
     img.onload = function () {
         const context = createContext(img.naturalWidth, img.naturalHeight, false);
         context.drawImage(img, 0, 0);
-        GameManager.images[name.toLowerCase()] = context;
+        resourceMgr.images[name.toLowerCase()] = context;
         URL.revokeObjectURL(img.src);
         if (callback != null) {
             callback();
@@ -116,7 +86,7 @@ function loadAlphaImageAsset(name, callback) {
             }
         }
         context.putImageData(imgData, 0, 0);
-        GameManager.images[name.toLowerCase()] = context;
+        resourceMgr.images[name.toLowerCase()] = context;
         URL.revokeObjectURL(img.src);
         if (callback != null) {
             callback();
@@ -144,7 +114,7 @@ function loadFontImageAsset(name, callback) {
             }
         }
         context.putImageData(imgData, 0, 0);
-        GameManager.fonts[name.toLowerCase()] = new BitmapFont(context);
+        resourceMgr.fonts[name.toLowerCase()] = new BitmapFont(context);
         URL.revokeObjectURL(img.src);
         if (callback != null) {
             callback();
@@ -154,28 +124,11 @@ function loadFontImageAsset(name, callback) {
     img.src = wad0File.getEntry(name);
 }
 
-function encodeChar(charCode) { // encoding of the original files still remains a mystery
-    if (charCode === 130) {
-        return 'ä'.charCodeAt(0);
-    } else if (charCode === 142) {
-        return 'Ä'.charCodeAt(0);
-    } else if (charCode === 162) {
-        return 'ö'.charCodeAt(0);
-    } else if (charCode === 167) {
-        return 'Ü'.charCodeAt(0);
-    } else if (charCode === 171) {
-        return 'ü'.charCodeAt(0);
-    } else if (charCode === 195) {
-        return 'ß'.charCodeAt(0);
-    }
-    return charCode;
-}
-
 function loadNerpAsset(name, callback) {
     name = name.replace(/.npl$/, '.nrn');
     const buffer = wad0File.getEntryData(name);
     const script = String.fromCharCode.apply(String, buffer);
-    GameManager.nerps[name] = NerpParser(script, GameManager.nerps);
+    resourceMgr.nerps[name] = NerpParser(script, resourceMgr.nerps);
     if (callback != null) {
         callback();
     }
@@ -250,7 +203,7 @@ function loadNerpMsg(name, callback) {
             result[c].snd = m1.snd;
         }
     }
-    GameManager.nerpMessages[name] = result;
+    resourceMgr.nerpMessages[name] = result;
     if (callback) {
         callback();
     }
@@ -271,7 +224,7 @@ function loadMapAsset(name, callback) {
             row = [];
         }
     }
-    GameManager.maps[name] = map;
+    resourceMgr.maps[name] = map;
     if (callback) {
         callback();
     }
@@ -280,7 +233,7 @@ function loadMapAsset(name, callback) {
 function loadObjectListAsset(name, callback) {
     const buffer = wad0File.getEntryData(name);
     const lines = String.fromCharCode.apply(String, buffer).split('\n');
-    GameManager.objectLists[name] = [];
+    resourceMgr.objectLists[name] = [];
     let currentObject = null;
     for (let c = 0; c < lines.length; c++) {
         const line = lines[c].trim();
@@ -290,7 +243,7 @@ function loadObjectListAsset(name, callback) {
             // ignore empty lines, comments and the root object
         } else if (objectStartMatch) {
             currentObject = {};
-            GameManager.objectLists[name][objectStartMatch[1]] = currentObject;
+            resourceMgr.objectLists[name][objectStartMatch[1]] = currentObject;
         } else if (line === '}') {
             currentObject = null;
         } else if (drivingMatch) {
@@ -332,7 +285,7 @@ function loadSoundAsset(path, name, callback) {
     if (callback != null) {
         snd.oncanplay = function () {
             snd.oncanplay = null; // otherwise the callback is triggered multiple times
-            GameManager.sounds[name] = snd;
+            resourceMgr.sounds[name] = snd;
             callback();
         };
     }
@@ -354,8 +307,8 @@ function loadWavAsset(path, callback, key) {
             snd.oncanplay = null; // otherwise the callback is triggered multiple times
             const keyPath = key || path;
             // use array, because sounds have multiple variants sometimes
-            GameManager.sounds[keyPath] = GameManager.sounds[keyPath] || [];
-            GameManager.sounds[keyPath].push(snd);
+            resourceMgr.sounds[keyPath] = resourceMgr.sounds[keyPath] || [];
+            resourceMgr.sounds[keyPath].push(snd);
             callback();
         };
     }
@@ -371,14 +324,14 @@ function updateLoadingScreen() {
     updateLoadingScreen.totalResources = updateLoadingScreen.totalResources || 1;
     updateLoadingScreen.curResource = updateLoadingScreen.curResource || 0;
     const ctx = loadingCanvas.getContext('2d');
-    const loadingImg = getImage(GameManager.configuration['Lego*']['Main']['LoadScreen']).canvas;
+    const loadingImg = getImage(resourceMgr.configuration['Lego*']['Main']['LoadScreen']).canvas;
     const screenZoom = ctx.canvas.width / loadingImg.width;
     const loadingBarX = 142 * screenZoom;
     const loadingBarY = 450 * screenZoom;
     const loadingBarWidth = 353 * updateLoadingScreen.curResource / updateLoadingScreen.totalResources * screenZoom;
     const loadingBarHeight = 9 * screenZoom;
     ctx.drawImage(loadingImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.drawImage(getImage(GameManager.configuration['Lego*']['Main']['ProgressBar']).canvas, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
+    ctx.drawImage(getImage(resourceMgr.configuration['Lego*']['Main']['ProgressBar']).canvas, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
 }
 
 function onAssetLoaded(callback) {
@@ -398,7 +351,7 @@ function startLoadingProcess() {
     setLoadingMessage('Loading configuration...');
     new Promise((resolve) => {
         new CfgFileParser().parse(wad1File.getEntryData('Lego.cfg'), (result) => {
-            GameManager.configuration = result;
+            resourceMgr.configuration = result;
             resolve();
         });
     }).then(loadLoadingScreen);
@@ -410,14 +363,14 @@ function startLoadingProcess() {
 function loadLoadingScreen() { // loading screen resources
     Promise.all([
         new Promise((resolve) => {
-            const name = GameManager.configuration['Lego*']['Main']['LoadScreen']; // loading screen image
+            const name = resourceMgr.configuration['Lego*']['Main']['LoadScreen']; // loading screen image
             loadWadImageAsset(name, () => {
                 updateLoadingScreen();
                 resolve();
             });
         }),
         new Promise((resolve) => {
-            const name = GameManager.configuration['Lego*']['Main']['ProgressBar']; // loading bar container image
+            const name = resourceMgr.configuration['Lego*']['Main']['ProgressBar']; // loading bar container image
             loadWadImageAsset(name, resolve);
         }),
     ]).then(registerAllAssets);
@@ -438,7 +391,7 @@ function addAsset(method, assetPath, optional = false, assetKey = null) {
 function registerAllAssets() {
     // register static assets from asset.js
     const sequentialAssetsByName = {};
-    assets.forEach((curAsset) => {
+    resourceMgr.assets.forEach((curAsset) => {
         const assetName = curAsset[curAsset.length - 1].toLowerCase();
         if (sequentialAssetsByName.hasOwnProperty(assetName)) {
             console.log('Duplicate entry for ' + assetName + ' in assets');
@@ -448,7 +401,7 @@ function registerAllAssets() {
     });
     registerAllAssets.sequentialAssets = Object.values(sequentialAssetsByName);
     // dynamically register assets from config
-    const mainConf = GameManager.configuration['Lego*'];
+    const mainConf = resourceMgr.configuration['Lego*'];
     // back button
     addAsset(loadWadImageAsset, mainConf['InterfaceBackButton'].slice(2, 4).forEach(imgPath => {
         addAsset(loadWadImageAsset, imgPath);
@@ -547,10 +500,11 @@ function registerAllAssets() {
         if (sndKey.startsWith('!')) { // TODO no clue what this means... loop? duplicate?!
             sndKey = sndKey.slice(1);
         }
-        if (sndPath.startsWith('*')) { // TODO no clue what this means... not loop, see telportup
+        if (sndPath.startsWith('*')) { // TODO no clue what this means... don't loop, see telportup
             sndPath = sndPath.slice(1);
-        } else if (sndPath.startsWith('@')) { // sound must be loaded from programm files folder, can't handle this case yet
-            sndPath = sndPath.slice(1);
+        } else if (sndPath.startsWith('@')) {
+            // sndPath = sndPath.slice(1);
+            // console.warn('Sound ' + sndPath + ' must be loaded from programm files folder. Not yet implemented!');
             return;
         }
         sndPath.split(',').forEach(sndPath => {
@@ -749,7 +703,6 @@ function WadHandler(buffer) {
  * @param wad1Url Url to parse the LegoRR1.wad file from
  */
 function loadWadFiles(wad0Url, wad1Url) {
-    // $('#wadfiles_select_modal').modal('hide'); // TODO emit some kind of event
     Promise.all([loadWadFile(wad0Url), loadWadFile(wad1Url)]).then(wadFiles => {
         wad0File = wadFiles[0];
         wad1File = wadFiles[1];
@@ -762,6 +715,7 @@ function openLocalCache(onopen) {
     const request = indexedDB.open('RockRaidersRemake');
     let db = null;
     request.onupgradeneeded = function (event) {
+        // noinspection JSUnresolvedVariable
         db = event.target.result;
         if (db.objectStoreNames.contains('wadfiles')) {
             db.deleteObjectStore('wadfiles');
@@ -769,6 +723,7 @@ function openLocalCache(onopen) {
         db.createObjectStore('wadfiles');
     };
     request.onsuccess = function (event) {
+        // noinspection JSUnresolvedVariable
         db = db ? db : event.target.result;
         const transaction = db.transaction(['wadfiles'], 'readwrite');
         const objectStore = transaction.objectStore('wadfiles');

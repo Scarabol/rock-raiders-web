@@ -1,3 +1,5 @@
+import { encodeChar } from '../EncodingHelper';
+
 function CfgFileParser() {
 
 }
@@ -18,7 +20,7 @@ CfgFileParser.prototype = {
             if (charCode === 123 && key === 'FullName') { // dirty workaround but in the original file { (123) was used instead of Ä (142)
                 charCode = 142;
             }
-            let charStr = String.fromCharCode(this.encodeChar(charCode));
+            let charStr = String.fromCharCode(encodeChar(charCode));
             if (charStr === ';' || charStr === '/') { // someone used // as a marker for a comment
                 isComment = true;
             } else if (charCode === 10 || charCode === 13) {
@@ -75,23 +77,6 @@ CfgFileParser.prototype = {
         });
 
         if (onload) onload(result);
-    },
-
-    encodeChar(charCode) { // encoding of the original files still remains a mystery
-        if (charCode === 130) {
-            return 'ä'.charCodeAt(0);
-        } else if (charCode === 142) {
-            return 'Ä'.charCodeAt(0);
-        } else if (charCode === 162) {
-            return 'ö'.charCodeAt(0);
-        } else if (charCode === 167) {
-            return 'Ü'.charCodeAt(0);
-        } else if (charCode === 171) {
-            return 'ü'.charCodeAt(0);
-        } else if (charCode === 195) {
-            return 'ß'.charCodeAt(0);
-        }
-        return charCode;
     },
 
     parseValue(val) {
