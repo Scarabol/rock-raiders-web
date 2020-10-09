@@ -21,6 +21,6 @@ DebugHelper.prototype = {
         this.stats.end();
     },
 
-}
+};
 
-export { DebugHelper }
+export { DebugHelper };
