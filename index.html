@@ -2,13 +2,21 @@
 <html>
 <head>
     <title>Rock Raiders Web</title>
-    <style>
-        html, body { margin: 0; padding: 0; overflow: hidden; }
-
-        canvas { width: 100%; height: 100% }
-    </style>
+    <link rel="stylesheet" href="main.css">
+    <link rel="icon" type="image/png" href="assets/favicon-32x32.png" sizes="32x32"/>
+    <link rel="icon" type="image/png" href="assets/favicon-16x16.png" sizes="16x16"/>
 </head>
 <body>
+<div class="game-container">
+    <div id="canvas-container">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+</div>
+
+<div class="github-box">
+    <a href="https://github.com/scarabol/rock-raiders-web"><img src="assets/github.png" class="github-logo" alt="Fork on GitHub"/>Fork on GitHub</a>
+</div>
+
 <script type="text/javascript" src="app.bundle.js"></script>
 </body>
 </html>

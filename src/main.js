@@ -2,33 +2,39 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { AnimEntityLoader } from "./game/entity/AnimEntityLoader";
 
+import { Debug } from "./core/Debug.js";
+
+new Debug();
+
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas') });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.sortObjects = true;
 renderer.setClearColor(0xa0a0a0, 1);
 
-document.body.appendChild(renderer.domElement);
-
-const amb = new THREE.AmbientLight(0x808080); // soft white light
+const amb = new THREE.AmbientLight(0x808080); // TODO use "cave" light
 scene.add(amb);
 
 const light = new THREE.PointLight(0xffffff, 1, 1000);
 light.position.set(20, 20, 20);
 scene.add(light);
 
-const axisHelper = new THREE.AxesHelper(20);
-scene.add(axisHelper);
+// const axisHelper = new THREE.AxesHelper(20);
+// scene.add(axisHelper);
 
-camera.position.x = 12;
-camera.position.y = 15;
-camera.position.z = 15;
-camera.lookAt(new THREE.Vector3(0, 0, 0));
+camera.position.x = 15; // TODO dynamically position camera
+camera.position.y = 18;
+camera.position.z = 18;
+// camera.lookAt(new THREE.Vector3(0, 0, 0));
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, camera.position.y / 2, 0);
+controls.screenSpacePanning = false;
+controls.mouseButtons = { LEFT: null, MIDDLE: THREE.MOUSE.ROTATE, RIGHT: THREE.MOUSE.PAN };
+controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
+
+controls.target.set(0, camera.position.y / 2, 0); // TODO dynamically look at toolstation
 controls.update();
 
 const render = function () {

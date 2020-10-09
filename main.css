@@ -1,0 +1,54 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#canvas-container {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+canvas {
+    position: absolute;
+}
+
+#gameCanvas {
+    z-index: 20;
+}
+
+.github-box {
+    z-index: 50;
+    padding: 16px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+}
+
+.github-box a {
+    color: #fff;
+    text-decoration: none;
+    padding: 8px;
+}
+
+.github-box a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.github-logo {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
