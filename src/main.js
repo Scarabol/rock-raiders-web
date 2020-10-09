@@ -4,15 +4,20 @@ import { AnimEntityLoader } from "./game/entity/AnimEntityLoader";
 
 import { DebugHelper } from "./core/DebugHelper.js";
 
+
+const MAX_FPS = 25;
+
 const debugHelper = new DebugHelper();
 
-const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('gameCanvas') });
+const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById('gameCanvas') });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.sortObjects = true;
-renderer.setClearColor(0xa0a0a0, 1);
+renderer.setClearColor(0xa0a0a0);
+
+const scene = new THREE.Scene();
+// scene.fog = new THREE.FogExp2(0x6e6e9b, 0.05);
 
 const amb = new THREE.AmbientLight(0x808080); // TODO use "cave" light
 scene.add(amb);
@@ -36,15 +41,6 @@ controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain he
 
 controls.target.set(0, camera.position.y / 2, 0); // TODO dynamically look at toolstation
 controls.update();
-
-const render = function () {
-    debugHelper.renderStart();
-
-    renderer.render(scene, camera);
-
-    debugHelper.renderDone();
-    requestAnimationFrame(render);
-};
 
 new AnimEntityLoader().load('LegoRR0/mini-figures/pilot/pilot.ae', function (animFile) {
 
@@ -93,4 +89,12 @@ new AnimEntityLoader().load('LegoRR0/creatures/rmonster/rmonster.ae', function (
 
 });
 
-render();
+setInterval(() => { // TODO cancel interval when not in game mode
+    requestAnimationFrame(() => {
+        debugHelper.renderStart();
+
+        renderer.render(scene, camera);
+
+        debugHelper.renderDone();
+    });
+}, 1000 / MAX_FPS);
