@@ -578,7 +578,7 @@ function loadWadFiles(wad0Url, wad1Url) {
     Promise.all([loadWadFile(wad0Url), loadWadFile(wad1Url)]).then(wadFiles => {
         wad0File = wadFiles[0];
         wad1File = wadFiles[1];
-        openLocalCache('wadfiles', (objectStore) => {
+        openLocalCache((objectStore) => {
             objectStore.put(wad0File, 'wad0');
             objectStore.put(wad1File, 'wad1');
         });
