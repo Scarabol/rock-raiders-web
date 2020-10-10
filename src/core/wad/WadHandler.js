@@ -1,6 +1,6 @@
 import { NerpParser } from '../nerp/Nerp';
 import { BitmapFont } from '../BitmapFont';
-import { createContext, createDummyImage } from '../ImageHelper';
+import { createContext } from '../ImageHelper';
 import { CfgFileParser } from './CfgFileParser';
 import { encodeChar } from '../EncodingHelper';
 import { ResourceManager } from '../ResourceManager';
@@ -9,19 +9,6 @@ let wad0File = null;
 let wad1File = null;
 
 const resourceMgr = new ResourceManager();
-
-function getImage(imageName) {
-    if (!imageName || imageName.length === 0) {
-        throw 'imageName must not be undefined, null or empty - was ' + imageName;
-    } else {
-        const lImageName = imageName.toLowerCase();
-        if (!(lImageName in resourceMgr.images) || resourceMgr.images[lImageName] === undefined || resourceMgr.images[lImageName] === null) {
-            console.error('Image \'' + imageName + '\' unknown! Using placeholder image instead');
-            resourceMgr.images[lImageName] = createDummyImage(64, 64);
-        }
-        return resourceMgr.images[lImageName];
-    }
-}
 
 /**
  * load a script asset from the input path, setting the callback function to the input callback
@@ -324,14 +311,14 @@ function updateLoadingScreen() {
     updateLoadingScreen.totalResources = updateLoadingScreen.totalResources || 1;
     updateLoadingScreen.curResource = updateLoadingScreen.curResource || 0;
     const ctx = loadingCanvas.getContext('2d');
-    const loadingImg = getImage(resourceMgr.configuration['Lego*']['Main']['LoadScreen']).canvas;
+    const loadingImg = resourceMgr.getImage(resourceMgr.configuration['Lego*']['Main']['LoadScreen']).canvas;
     const screenZoom = ctx.canvas.width / loadingImg.width;
     const loadingBarX = 142 * screenZoom;
     const loadingBarY = 450 * screenZoom;
     const loadingBarWidth = 353 * updateLoadingScreen.curResource / updateLoadingScreen.totalResources * screenZoom;
     const loadingBarHeight = 9 * screenZoom;
     ctx.drawImage(loadingImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.drawImage(getImage(resourceMgr.configuration['Lego*']['Main']['ProgressBar']).canvas, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
+    ctx.drawImage(resourceMgr.getImage(resourceMgr.configuration['Lego*']['Main']['ProgressBar']).canvas, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
 }
 
 function onAssetLoaded(callback) {
@@ -389,12 +376,12 @@ function addAsset(method, assetPath, optional = false, assetKey = null) {
 }
 
 function registerAllAssets() {
-    // register static assets from asset.js
+    // register static assets
     const sequentialAssetsByName = {};
     resourceMgr.assets.forEach((curAsset) => {
         const assetName = curAsset[curAsset.length - 1].toLowerCase();
         if (sequentialAssetsByName.hasOwnProperty(assetName)) {
-            console.log('Duplicate entry for ' + assetName + ' in assets');
+            console.log('Duplicate entry for ' + assetName + ' in static assets. Pls fix!');
             return;
         }
         sequentialAssetsByName[assetName] = curAsset;
@@ -600,7 +587,7 @@ function loadWadFile(url) {
  * @returns {WadHandler} Returns a handler for this WAD file on success
  */
 function parseWadFile(data) {
-    const debug = true; // TODO refactor this
+    const debug = false; // TODO refactor this
     const dataView = new DataView(data);
     const buffer = new Int8Array(data);
     let pos = 0;
@@ -712,7 +699,7 @@ function loadWadFiles(wad0Url, wad1Url) {
 }
 
 function openLocalCache(onopen) {
-    const request = indexedDB.open('RockRaidersRemake');
+    const request = indexedDB.open('RockRaidersWeb');
     let db = null;
     request.onupgradeneeded = function (event) {
         // noinspection JSUnresolvedVariable
@@ -739,6 +726,7 @@ function storeFilesInCache() {
 }
 
 function startWithCachedFiles(onerror) {
+    startWithCachedFiles.startTime = new Date();
     const _onerror = () => {
         setLoadingMessage('WAD files not found in cache');
         onerror();
@@ -752,8 +740,13 @@ function startWithCachedFiles(onerror) {
                 _onerror();
                 return;
             }
-            wad0File = new WadHandler(); // class info are runtime info and not stored in cache => use copy constructor
-            for (let prop in request1.result) wad0File[prop] = request1.result[prop];
+            console.log('First WAD file loaded from cache after ' + ((new Date().getTime() - startWithCachedFiles.startTime.getTime()) / 1000));
+            wad0File = new WadHandler();
+            for (let prop in request1.result) { // class info are runtime info and not stored in cache => use copy constructor
+                if (request1.result.hasOwnProperty(prop)) {
+                    wad0File[prop] = request1.result[prop];
+                }
+            }
             const request2 = objectStore.get('wad1');
             request2.onerror = _onerror;
             request2.onsuccess = function () {
@@ -761,8 +754,13 @@ function startWithCachedFiles(onerror) {
                     _onerror();
                     return;
                 }
-                wad1File = new WadHandler(); // class info are runtime info and not stored in cache => use copy constructor
-                for (let prop in request2.result) wad1File[prop] = request2.result[prop];
+                wad1File = new WadHandler();
+                for (let prop in request2.result) { // class info are runtime info and not stored in cache => use copy constructor
+                    if (request2.result.hasOwnProperty(prop)) {
+                        wad1File[prop] = request2.result[prop];
+                    }
+                }
+                console.log('WAD files loaded from cache after ' + ((new Date().getTime() - startWithCachedFiles.startTime.getTime()) / 1000));
                 startLoadingProcess();
             };
         };

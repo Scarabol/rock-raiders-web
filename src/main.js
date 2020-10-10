@@ -19,7 +19,6 @@ loadingContext.font = '30px Arial';
 loadingContext.fillStyle = 'white';
 loadingContext.fillText('loading', 20, loadingCanvas.height - 30);
 
-
 startWithCachedFiles(() => {
     // as fallback load wad files from local URL
     loadWadFiles('./LegoRR0.wad', './LegoRR1.wad');

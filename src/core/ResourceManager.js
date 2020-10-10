@@ -1,3 +1,5 @@
+import { createDummyImage } from './ImageHelper';
+
 function ResourceManager() {
     this.images = {};
     this.configuration = {};
@@ -34,8 +36,17 @@ function ResourceManager() {
 
 ResourceManager.prototype = {
 
-    loadResources(onProgress) {
-        // FIXME load all resources from WAD/other file
+    getImage(imageName) {
+        if (!imageName || imageName.length === 0) {
+            throw 'imageName must not be undefined, null or empty - was ' + imageName;
+        } else {
+            const lImageName = imageName.toLowerCase();
+            if (!(lImageName in this.images) || this.images[lImageName] === undefined || this.images[lImageName] === null) {
+                console.error('Image \'' + imageName + '\' unknown! Using placeholder image instead');
+                this.images[lImageName] = createDummyImage(64, 64);
+            }
+            return this.images[lImageName];
+        }
     },
 
 };
