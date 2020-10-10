@@ -578,7 +578,10 @@ function loadWadFiles(wad0Url, wad1Url) {
     Promise.all([loadWadFile(wad0Url), loadWadFile(wad1Url)]).then(wadFiles => {
         wad0File = wadFiles[0];
         wad1File = wadFiles[1];
-        storeFilesInCache();
+        openLocalCache('wadfiles', (objectStore) => {
+            objectStore.put(wad0File, 'wad0');
+            objectStore.put(wad1File, 'wad1');
+        });
         startLoadingProcess();
     });
 }
@@ -601,13 +604,6 @@ function openLocalCache(onopen) {
         const objectStore = transaction.objectStore('wadfiles');
         onopen(objectStore);
     };
-}
-
-function storeFilesInCache() {
-    openLocalCache((objectStore) => {
-        objectStore.put(wad0File, 'wad0');
-        objectStore.put(wad1File, 'wad1');
-    });
 }
 
 function startWithCachedFiles(onerror) {
