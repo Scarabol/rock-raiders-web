@@ -588,10 +588,9 @@ function loadWadFiles(wad0Url, wad1Url) {
 
 function openLocalCache(onopen) {
     const request = indexedDB.open('RockRaidersWeb');
-    let db = null;
     request.onupgradeneeded = function (event) {
         // noinspection JSUnresolvedVariable
-        db = event.target.result;
+        const db = event.target.result;
         if (db.objectStoreNames.contains('wadfiles')) {
             db.deleteObjectStore('wadfiles');
         }
@@ -599,7 +598,7 @@ function openLocalCache(onopen) {
     };
     request.onsuccess = function (event) {
         // noinspection JSUnresolvedVariable
-        db = db ? db : event.target.result;
+        const db = event.target.result;
         const transaction = db.transaction(['wadfiles'], 'readwrite');
         const objectStore = transaction.objectStore('wadfiles');
         onopen(objectStore);
