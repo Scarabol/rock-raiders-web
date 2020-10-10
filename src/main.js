@@ -1,4 +1,4 @@
-import { loadWadFiles, startWithCachedFiles } from './core/wad/WadHandler';
+import { loadWadFiles, startWithCachedFiles } from './core/wad/WadLoader';
 
 const loadingCanvas = document.getElementById('loadingCanvas');
 loadingCanvas.width = 800;

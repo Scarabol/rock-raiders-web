@@ -4,6 +4,7 @@ import { createContext } from '../ImageHelper';
 import { CfgFileParser } from './CfgFileParser';
 import { encodeChar } from '../EncodingHelper';
 import { ResourceManager } from '../ResourceManager';
+import { WadFile } from './WadFile';
 
 let wad0File = null;
 let wad1File = null;
@@ -574,114 +575,12 @@ function loadWadFile(url) {
         xhr.responseType = 'arraybuffer'; // jQuery cant handle response type arraybuffer
         xhr.onload = function () {
             if (this.status === 200) {
-                resolve(parseWadFile(this.response));
+                let wadFile = new WadFile();
+                resolve(wadFile.parseWadFile(this.response));
             }
         };
         xhr.send();
     });
-}
-
-/**
- * Validate and parse the given data object as binary blob of a WAD file
- * @param data binary blob
- * @returns {WadHandler} Returns a handler for this WAD file on success
- */
-function parseWadFile(data) {
-    const debug = false; // TODO refactor this
-    const dataView = new DataView(data);
-    const buffer = new Int8Array(data);
-    let pos = 0;
-    if (String.fromCharCode.apply(null, buffer.slice(pos, 4)) !== 'WWAD') {
-        throw 'Invalid WAD0 file provided';
-    }
-    if (debug)
-        console.log('WAD0 file seems legit');
-    pos = 4;
-    const numberOfEntries = dataView.getInt32(pos, true);
-    if (debug)
-        console.log(numberOfEntries);
-    pos = 8;
-
-    const wad = new WadHandler(buffer);
-
-    let bufferStart = pos;
-    for (let i = 0; i < numberOfEntries; pos++) {
-        if (buffer[pos] === 0) {
-            wad.entries[i] = String.fromCharCode.apply(null, buffer.slice(bufferStart, pos)).replace(/\\/g, '/').toLowerCase();
-            bufferStart = pos + 1;
-            i++;
-        }
-    }
-    if (debug)
-        console.log(wad.entries);
-    for (let i = 0; i < numberOfEntries; pos++) {
-        if (buffer[pos] === 0) {
-            bufferStart = pos + 1;
-            i++;
-        }
-    }
-    if (debug)
-        console.log('Offset after absolute original names is ' + pos);
-
-    for (let i = 0; i < numberOfEntries; i++) {
-        wad.fLength[i] = dataView.getInt32(pos + 8, true);
-        wad.fStart[i] = dataView.getInt32(pos + 12, true);
-        pos += 16;
-    }
-    if (debug) {
-        console.log(wad.fLength);
-        console.log(wad.fStart);
-    }
-    return wad;
-}
-
-/**
- * Returns the entries content by name extracted from the managed WAD file
- * @param entryName Entry name to be extracted
- * @returns {string} Returns the local object url to the extracted data
- */
-WadHandler.prototype.getEntry = function (entryName) {
-    const lEntryName = entryName.toLowerCase();
-    for (let i = 0; i < this.entries.length; i++) {
-        if (this.entries[i] === lEntryName) {
-            return URL.createObjectURL(new Blob([this.buffer.slice(this.fStart[i], this.fStart[i] + this.fLength[i])], { 'type': 'image/bmp' }));
-        }
-    }
-    throw 'Entry \'' + entryName + '\' not found in WAD file';
-};
-
-WadHandler.prototype.getEntryData = function (entryName) {
-    const lEntryName = entryName.toLowerCase();
-    for (let i = 0; i < this.entries.length; i++) {
-        if (this.entries[i] === lEntryName) {
-            return new Uint8Array(this.buffer.slice(this.fStart[i], this.fStart[i] + this.fLength[i]));
-        }
-    }
-    throw 'Entry \'' + entryName + '\' not found in WAD file';
-};
-
-WadHandler.prototype.filterEntryNames = function (regexStr) {
-    const regex = new RegExp(regexStr.toLowerCase());
-    const result = [];
-    for (let c = 0; c < this.entries.length; c++) {
-        const entry = this.entries[c];
-        if (entry.toLowerCase().match(regex)) {
-            result.push(entry);
-        }
-    }
-    return result;
-};
-
-/**
- * Handles the extraction of single files from a bigger WAD data blob
- * @param buffer A data blob which contains the raw data in one piece
- * @constructor
- */
-function WadHandler(buffer) {
-    this.buffer = buffer;
-    this.entries = [];
-    this.fLength = [];
-    this.fStart = [];
 }
 
 /**
@@ -741,7 +640,7 @@ function startWithCachedFiles(onerror) {
                 return;
             }
             console.log('First WAD file loaded from cache after ' + ((new Date().getTime() - startWithCachedFiles.startTime.getTime()) / 1000));
-            wad0File = new WadHandler();
+            wad0File = new WadFile();
             for (let prop in request1.result) { // class info are runtime info and not stored in cache => use copy constructor
                 if (request1.result.hasOwnProperty(prop)) {
                     wad0File[prop] = request1.result[prop];
@@ -754,7 +653,7 @@ function startWithCachedFiles(onerror) {
                     _onerror();
                     return;
                 }
-                wad1File = new WadHandler();
+                wad1File = new WadFile();
                 for (let prop in request2.result) { // class info are runtime info and not stored in cache => use copy constructor
                     if (request2.result.hasOwnProperty(prop)) {
                         wad1File[prop] = request2.result[prop];

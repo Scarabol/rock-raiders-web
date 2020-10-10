@@ -1,0 +1,115 @@
+/**
+ * Handles the extraction of single files from a bigger WAD data blob
+ * @param buffer A data blob which contains the raw data in one piece
+ * @param debug enable/disable debug output while parsing
+ * @constructor
+ */
+function WadFile(debug = false) {
+    this.debug = debug;
+    this.buffer = null;
+    this.entries = [];
+    this.fLength = [];
+    this.fStart = [];
+}
+
+WadFile.prototype = {
+
+    /**
+     * Validate and parse the given data object as binary blob of a WAD file
+     * @param data binary blob
+     */
+    parseWadFile(data) {
+        const dataView = new DataView(data);
+        this.buffer = new Int8Array(data);
+        let pos = 0;
+        if (String.fromCharCode.apply(null, this.buffer.slice(pos, 4)) !== 'WWAD') {
+            throw 'Invalid WAD0 file provided';
+        }
+        if (this.debug)
+            console.log('WAD0 file seems legit');
+        pos = 4;
+        const numberOfEntries = dataView.getInt32(pos, true);
+        if (this.debug)
+            console.log(numberOfEntries);
+        pos = 8;
+
+        // const wad = new WadHandler(buffer);
+
+        let bufferStart = pos;
+        for (let i = 0; i < numberOfEntries; pos++) {
+            if (this.buffer[pos] === 0) {
+                this.entries[i] = String.fromCharCode.apply(null, this.buffer.slice(bufferStart, pos)).replace(/\\/g, '/').toLowerCase();
+                bufferStart = pos + 1;
+                i++;
+            }
+        }
+
+        if (this.debug) {
+            console.log(this.entries);
+        }
+
+        for (let i = 0; i < numberOfEntries; pos++) {
+            if (this.buffer[pos] === 0) {
+                bufferStart = pos + 1;
+                i++;
+            }
+        }
+
+        if (this.debug) {
+            console.log('Offset after absolute original names is ' + pos);
+        }
+
+        for (let i = 0; i < numberOfEntries; i++) {
+            this.fLength[i] = dataView.getInt32(pos + 8, true);
+            this.fStart[i] = dataView.getInt32(pos + 12, true);
+            pos += 16;
+        }
+
+        if (this.debug) {
+            console.log(this.fLength);
+            console.log(this.fStart);
+        }
+
+        return this;
+    },
+
+    /**
+     * Returns the entries content by name extracted from the managed WAD file
+     * @param entryName Entry name to be extracted
+     * @returns {string} Returns the local object url to the extracted data
+     */
+    getEntry(entryName) {
+        const lEntryName = entryName.toLowerCase();
+        for (let i = 0; i < this.entries.length; i++) {
+            if (this.entries[i] === lEntryName) {
+                return URL.createObjectURL(new Blob([this.buffer.slice(this.fStart[i], this.fStart[i] + this.fLength[i])], { 'type': 'image/bmp' }));
+            }
+        }
+        throw 'Entry \'' + entryName + '\' not found in WAD file';
+    },
+
+    getEntryData(entryName) {
+        const lEntryName = entryName.toLowerCase();
+        for (let i = 0; i < this.entries.length; i++) {
+            if (this.entries[i] === lEntryName) {
+                return new Uint8Array(this.buffer.slice(this.fStart[i], this.fStart[i] + this.fLength[i]));
+            }
+        }
+        throw 'Entry \'' + entryName + '\' not found in WAD file';
+    },
+
+    filterEntryNames(regexStr) {
+        const regex = new RegExp(regexStr.toLowerCase());
+        const result = [];
+        for (let c = 0; c < this.entries.length; c++) {
+            const entry = this.entries[c];
+            if (entry.toLowerCase().match(regex)) {
+                result.push(entry);
+            }
+        }
+        return result;
+    },
+
+};
+
+export { WadFile };
