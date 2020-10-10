@@ -561,7 +561,9 @@ function loadWadFile(url) {
         console.log('Loading WAD file from ' + url);
         fetch(url).then((response) => {
             if (response.ok) {
-                resolve(new WadFile().parseWadFile(response.arrayBuffer()));
+                response.arrayBuffer().then((buffer) => {
+                    resolve(new WadFile().parseWadFile(buffer));
+                });
             }
         });
     });
