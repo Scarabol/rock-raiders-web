@@ -40,7 +40,7 @@ function loadImageAsset(path, name, callback) {
     const img = new Image();
 
     img.onload = function () {
-        const context = createContext(img.naturalWidth, img.naturalHeight, false);
+        const context = createContext(img.naturalWidth, img.naturalHeight);
         context.drawImage(img, 0, 0);
         resourceMgr.images[name.toLowerCase()] = context;
         URL.revokeObjectURL(img.src);
@@ -65,7 +65,7 @@ function loadAlphaImageAsset(name, callback) {
     const img = new Image();
 
     img.onload = function () {
-        const context = createContext(img.naturalWidth, img.naturalHeight, false);
+        const context = createContext(img.naturalWidth, img.naturalHeight);
         context.drawImage(img, 0, 0);
         const imgData = context.getImageData(0, 0, context.width, context.height);
         for (let n = 0; n < imgData.data.length; n += 4) {
@@ -93,7 +93,7 @@ function loadFontImageAsset(name, callback) {
     const img = new Image();
 
     img.onload = function () {
-        const context = createContext(img.naturalWidth, img.naturalHeight, false);
+        const context = createContext(img.naturalWidth, img.naturalHeight);
         context.drawImage(img, 0, 0);
         const imgData = context.getImageData(0, 0, context.width, context.height);
         for (let n = 0; n < imgData.data.length; n += 4) {

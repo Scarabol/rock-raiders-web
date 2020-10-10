@@ -48,7 +48,7 @@ function BitmapFont(fontImage, cols = 10, rows = 19) { // font images always con
         let actualWidth = getActualCharacterWidth(imgData);
         let context;
         if (actualWidth > 0) {
-            context = createContext(actualWidth, this.charHeight, false);
+            context = createContext(actualWidth, this.charHeight);
             context.putImageData(imgData, 0, 0);
         } else {
             context = createDummyImage(maxCharWidth, this.charHeight);
@@ -60,7 +60,7 @@ function BitmapFont(fontImage, cols = 10, rows = 19) { // font images always con
 BitmapFont.prototype.createTextImage = function (text) {
     if (text === undefined || text === null || text.length < 1) {
         // empty text requested, context with width 0 is not allowed, but 1 with alpha is close enough
-        const placeholder = createContext(1, 1, false);
+        const placeholder = createContext(1, 1);
         const imgData = placeholder.createImageData(1, this.charHeight);
         for (let y = 0; y < this.charHeight; y++) {
             imgData.data[y * 4 + 3] = 0;
@@ -79,7 +79,7 @@ BitmapFont.prototype.createTextImage = function (text) {
             console.error('Letter \'' + letter + '\' not found in charset! Ignoring it');
         }
     }
-    const surface = createContext(width, this.charHeight, false);
+    const surface = createContext(width, this.charHeight);
     let x = 0;
     for (let c = 0; c < text.length; c++) {
         const letterImg = this.letters[text.charAt(c)];

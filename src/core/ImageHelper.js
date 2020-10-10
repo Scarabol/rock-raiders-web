@@ -2,10 +2,9 @@
  * creates a new context with the specified dimensions.
  * @param width: the desired width of the new context
  * @param height: the desired height of the new context
- * @param is3d: whether the canvas is 3d (true) or 2d (false)
  * @returns RenderingContext the newly created canvas
  */
-function createContext(width, height, is3d) {
+function createContext(width, height) {
     if (width < 1 || height < 1) {
         console.error('Can\'t create context with size ' + width + ' x ' + height);
         return createDummyImage(64, 64);
@@ -13,7 +12,7 @@ function createContext(width, height, is3d) {
     const canvas = document.createElement('canvas');
     canvas.setAttribute('width', width);
     canvas.setAttribute('height', height);
-    const context = canvas.getContext(is3d ? '3d' : '2d');
+    const context = canvas.getContext('2d');
     context.width = width;
     context.height = height;
     return context;
@@ -25,7 +24,7 @@ function createContext(width, height, is3d) {
  * @param height: expected height of the original image
  */
 function createDummyImage(width, height) {
-    const result = createContext(width, height, false);
+    const result = createContext(width, height);
     for (let y = 0; y < height; y += 16) {
         for (let x = 0; x < width; x += 16) {
             if (x / 16 % 2 === y / 16 % 2) {
