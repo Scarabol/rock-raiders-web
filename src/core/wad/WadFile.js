@@ -78,20 +78,28 @@ WadFile.prototype = {
      * @returns {string} Returns the local object url to the extracted data
      */
     getEntry(entryName) {
-        const lEntryName = entryName.toLowerCase();
-        for (let i = 0; i < this.entries.length; i++) {
-            if (this.entries[i] === lEntryName) {
-                return URL.createObjectURL(new Blob([this.buffer.slice(this.fStart[i], this.fStart[i] + this.fLength[i])], { 'type': 'image/bmp' }));
-            }
-        }
-        throw 'Entry \'' + entryName + '\' not found in WAD file';
+        return URL.createObjectURL(new Blob([this.getEntryBuffer(entryName)], { 'type': 'image/bmp' }));
     },
 
+    /**
+     * Returns the entries content by name extracted from the managed WAD file
+     * @param entryName Entry name to be extracted
+     * @returns {Uint8Array} Returns the content as Uint8Array
+     */
     getEntryData(entryName) {
+        return new Uint8Array(this.getEntryBuffer(entryName));
+    },
+
+    /**
+     * Returns the entries content by name extracted from the managed WAD file
+     * @param entryName Entry name to be extracted
+     * @returns Returns the content as buffer slice
+     */
+    getEntryBuffer(entryName) {
         const lEntryName = entryName.toLowerCase();
         for (let i = 0; i < this.entries.length; i++) {
             if (this.entries[i] === lEntryName) {
-                return new Uint8Array(this.buffer.slice(this.fStart[i], this.fStart[i] + this.fLength[i]));
+                return this.buffer.slice(this.fStart[i], this.fStart[i] + this.fLength[i]);
             }
         }
         throw 'Entry \'' + entryName + '\' not found in WAD file';
