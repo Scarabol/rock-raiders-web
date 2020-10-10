@@ -570,16 +570,11 @@ function loadAssetsParallel() {
 function loadWadFile(url) {
     return new Promise(resolve => {
         console.log('Loading WAD file from ' + url);
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.responseType = 'arraybuffer'; // jQuery cant handle response type arraybuffer
-        xhr.onload = function () {
-            if (this.status === 200) {
-                let wadFile = new WadFile();
-                resolve(wadFile.parseWadFile(this.response));
+        fetch(url).then((response) => {
+            if (response.ok) {
+                resolve(new WadFile().parseWadFile(response.arrayBuffer()));
             }
-        };
-        xhr.send();
+        });
     });
 }
 
