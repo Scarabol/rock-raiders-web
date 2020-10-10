@@ -492,7 +492,7 @@ function registerAllAssets() {
             sndPath = sndPath.slice(1);
         } else if (sndPath.startsWith('@')) {
             // sndPath = sndPath.slice(1);
-            // console.warn('Sound ' + sndPath + ' must be loaded from programm files folder. Not yet implemented!');
+            // console.warn('Sound ' + sndPath + ' must be loaded from program files folder. Not yet implemented!');
             return;
         }
         sndPath.split(',').forEach(sndPath => {

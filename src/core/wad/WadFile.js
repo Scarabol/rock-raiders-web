@@ -1,6 +1,5 @@
 /**
  * Handles the extraction of single files from a bigger WAD data blob
- * @param buffer A data blob which contains the raw data in one piece
  * @param debug enable/disable debug output while parsing
  * @constructor
  */
