@@ -1,10 +1,8 @@
 /**
  * Handles the extraction of single files from a bigger WAD data blob
- * @param debug enable/disable debug output while parsing
  * @constructor
  */
-function WadFile(debug = false) {
-    this.debug = debug;
+function WadFile() {
     this.buffer = null;
     this.entries = [];
     this.fLength = [];
@@ -16,19 +14,20 @@ WadFile.prototype = {
     /**
      * Validate and parse the given data object as binary blob of a WAD file
      * @param data binary blob
+     * @param debug enable/disable debug output while parsing
      */
-    parseWadFile(data) {
+    parseWadFile(data, debug = false) {
         const dataView = new DataView(data);
         this.buffer = new Int8Array(data);
         let pos = 0;
         if (String.fromCharCode.apply(null, this.buffer.slice(pos, 4)) !== 'WWAD') {
             throw 'Invalid WAD0 file provided';
         }
-        if (this.debug)
+        if (debug)
             console.log('WAD0 file seems legit');
         pos = 4;
         const numberOfEntries = dataView.getInt32(pos, true);
-        if (this.debug)
+        if (debug)
             console.log(numberOfEntries);
         pos = 8;
 
@@ -43,7 +42,7 @@ WadFile.prototype = {
             }
         }
 
-        if (this.debug) {
+        if (debug) {
             console.log(this.entries);
         }
 
@@ -54,7 +53,7 @@ WadFile.prototype = {
             }
         }
 
-        if (this.debug) {
+        if (debug) {
             console.log('Offset after absolute original names is ' + pos);
         }
 
@@ -64,7 +63,7 @@ WadFile.prototype = {
             pos += 16;
         }
 
-        if (this.debug) {
+        if (debug) {
             console.log(this.fLength);
             console.log(this.fStart);
         }
