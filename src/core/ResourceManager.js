@@ -10,7 +10,7 @@ function ResourceManager() {
     this.nerpMessages = [];
     this.fonts = [];
 
-    this.assets = [ // TODO currently statically loaded resources, maybe loadable via config, too?
+    this.initialAssets = [ // TODO currently statically loaded resources, maybe loadable via config, too?
         ['wad0nerp', 'Levels', 'nerpnrn.h'], // included by other nrn scripts
 
         // main menu resources

@@ -377,17 +377,6 @@ function addAsset(method, assetPath, optional = false, assetKey = null) {
 }
 
 function registerAllAssets() {
-    // register static assets
-    const sequentialAssetsByName = {};
-    resourceMgr.assets.forEach((curAsset) => {
-        const assetName = curAsset[curAsset.length - 1].toLowerCase();
-        if (sequentialAssetsByName.hasOwnProperty(assetName)) {
-            console.log('Duplicate entry for ' + assetName + ' in static assets. Pls fix!');
-            return;
-        }
-        sequentialAssetsByName[assetName] = curAsset;
-    });
-    registerAllAssets.sequentialAssets = Object.values(sequentialAssetsByName);
     // dynamically register assets from config
     const mainConf = resourceMgr.configuration['Lego*'];
     // back button
@@ -501,7 +490,7 @@ function registerAllAssets() {
     });
     // start loading assets
     loadSequentialAssets.assetsFromCfg = Object.values(startLoadingProcess.assetsFromCfgByName);
-    updateLoadingScreen.totalResources = registerAllAssets.sequentialAssets.length + loadSequentialAssets.assetsFromCfg.length;
+    updateLoadingScreen.totalResources = resourceMgr.initialAssets.length + loadSequentialAssets.assetsFromCfg.length;
     loadSequentialAssets.assetIndex = 0;
     loadSequentialAssets();
 }
@@ -512,12 +501,12 @@ function onSequentialAssetLoaded() {
 }
 
 function loadSequentialAssets() {
-    if (loadSequentialAssets.assetIndex >= registerAllAssets.sequentialAssets.length) {
+    if (loadSequentialAssets.assetIndex >= resourceMgr.initialAssets.length) {
         loadAssetsParallel(); // continue with parallel loading all other assets
         return;
     }
-    const curAsset = registerAllAssets.sequentialAssets[loadSequentialAssets.assetIndex];
-    const assetName = curAsset[curAsset.length - 1];
+    const curAsset = resourceMgr.initialAssets[loadSequentialAssets.assetIndex];
+    const assetName = curAsset[curAsset.length - 1].toLowerCase();
     const filename = curAsset[1] !== '' ? curAsset[1] + '/' + curAsset[2] : curAsset[2];
     if (curAsset[0] === 'js') {
         loadScriptAsset(filename, onSequentialAssetLoaded);
