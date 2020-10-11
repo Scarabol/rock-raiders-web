@@ -1,4 +1,4 @@
-import { startWithCachedFiles } from '../core/wad/WadLoader';
+import { WadLoader } from '../core/wad/WadLoader';
 import { BaseScreen } from '../core/BaseScreen';
 import { ResourceManager } from '../core/ResourceManager';
 
@@ -19,7 +19,7 @@ class LoadingScreen extends BaseScreen {
 
     startLoading() {
         // this.show(); // TODO maybe needed because screens are create invis by default?
-        startWithCachedFiles((message) => {
+        new WadLoader(this.resourceManager).startWithCachedFiles((message) => {
             this.setLoadingMessage(message);
         }, (currentResourceIndex, totalResources) => {
             this.setProgress(currentResourceIndex, totalResources);
@@ -38,7 +38,7 @@ class LoadingScreen extends BaseScreen {
     }
 
     setProgress(currentResourceIndex, totalResources) {
-        // TODO only images once!
+        // TODO only load images once!
         this.imgBackground = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['LoadScreen']).canvas;
         this.imgProgress = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['ProgressBar']).canvas;
         const screenZoom = this.width / this.imgBackground.width;
