@@ -2,6 +2,8 @@ class BaseScreen {
 
     gameCanvasContainer: HTMLElement;
     canvases: HTMLCanvasElement[];
+    width: number;
+    height: number;
 
     constructor() {
         this.gameCanvasContainer = document.getElementById('game-canvas-container');
@@ -11,12 +13,23 @@ class BaseScreen {
 
     createCanvas(zIndex: number = 0) {
         const canvas = document.createElement('canvas');
-        canvas.width = 800; // TODO derive initial size from container? or use default size?
-        canvas.height = 600;
+        canvas.width = this.width; // TODO derive initial size from container? or use default size?
+        canvas.height = this.height;
         canvas.style.zIndex = String(zIndex);
         this.canvases.push(canvas);
         this.gameCanvasContainer.appendChild(canvas);
         return canvas;
+    }
+
+    redraw() {
+        console.log('BaseScreen redraw called');
+    };
+
+    show() {
+        this.redraw();
+        this.canvases.forEach((canvas) => {
+            canvas.style.visibility = 'visible';
+        });
     }
 
     hide() {
@@ -25,14 +38,14 @@ class BaseScreen {
         });
     }
 
-    show() {
-        this.canvases.forEach((canvas) => {
-            canvas.style.visibility = 'visible';
-        });
-    }
-
     onResize(width: number, height: number) {
-        // TODO resize all canvas
+        this.width = width;
+        this.height = height;
+        this.canvases.forEach((canvas) => {
+            canvas.width = width;
+            canvas.height = height;
+            // FIXME trigger redraw?!
+        });
     }
 
 }

@@ -311,16 +311,17 @@ function loadWavAsset(path, callback, key) {
 function updateLoadingScreen() {
     updateLoadingScreen.totalResources = updateLoadingScreen.totalResources || 1;
     updateLoadingScreen.curResource = updateLoadingScreen.curResource || 0;
-    const loadingCanvas = document.getElementById('loading-canvas');
-    const ctx = loadingCanvas.getContext('2d');
-    const loadingImg = resourceMgr.getImage(resourceMgr.configuration['Lego*']['Main']['LoadScreen']).canvas;
-    const screenZoom = ctx.canvas.width / loadingImg.width;
-    const loadingBarX = 142 * screenZoom;
-    const loadingBarY = 450 * screenZoom;
-    const loadingBarWidth = 353 * updateLoadingScreen.curResource / updateLoadingScreen.totalResources * screenZoom;
-    const loadingBarHeight = 9 * screenZoom;
-    ctx.drawImage(loadingImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
-    ctx.drawImage(resourceMgr.getImage(resourceMgr.configuration['Lego*']['Main']['ProgressBar']).canvas, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
+    // const loadingCanvas = document.getElementById('loading-canvas');
+    // const ctx = loadingCanvas.getContext('2d');
+    // const loadingImg = resourceMgr.getImage(resourceMgr.configuration['Lego*']['Main']['LoadScreen']).canvas;
+    // const screenZoom = ctx.canvas.width / loadingImg.width;
+    // const loadingBarX = 142 * screenZoom;
+    // const loadingBarY = 450 * screenZoom;
+    // const loadingBarWidth = 353 * updateLoadingScreen.curResource / updateLoadingScreen.totalResources * screenZoom;
+    // const loadingBarHeight = 9 * screenZoom;
+    // ctx.drawImage(loadingImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
+    // ctx.drawImage(resourceMgr.getImage(resourceMgr.configuration['Lego*']['Main']['ProgressBar']).canvas, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
+    updateLoadingScreen.onProgress(updateLoadingScreen.curResource, updateLoadingScreen.totalResources);
 }
 
 function onAssetLoaded(callback) {
@@ -337,7 +338,7 @@ function onAssetLoaded(callback) {
 function startLoadingProcess() {
     startLoadingProcess.startTime = new Date();
     startLoadingProcess.assetsFromCfgByName = {};
-    setLoadingMessage('Loading configuration...');
+    // setLoadingMessage('Loading configuration...'); // TODO call method from LoadingScreen
     new Promise((resolve) => {
         new CfgFileParser().parse(wad1File.getEntryData('Lego.cfg'), (result) => {
             resourceMgr.configuration = result;
@@ -575,7 +576,7 @@ function loadAssetsParallel() {
         // remove globals used during loading phase so as not to clutter the memory, if even only by a small amount
         // delete object;
         // });
-        startWithCachedFiles.onload();
+        startWithCachedFiles.onLoad();
     });
 }
 
@@ -632,16 +633,17 @@ function openLocalCache(onopen) {
     };
 }
 
-function startWithCachedFiles(onload) {
-    startWithCachedFiles.onload = onload; // TODO refactor loading process?! Use promises?!
+function startWithCachedFiles(onMessage, onProgress, onLoad) {
+    startWithCachedFiles.onLoad = onLoad; // TODO refactor loading process?! Use promises?!
+    updateLoadingScreen.onProgress = onProgress; // TODO refactor loading process?! Use promises?!
     startWithCachedFiles.startTime = new Date();
     const _onerror = () => {
-        setLoadingMessage('WAD files not found in cache');
+        onMessage('WAD files not found in cache');
         // as fallback load wad files from local URL
         // TODO load WAD files from HTML input element or external URL (CORS?!)
         loadWadFiles('./LegoRR0.wad', './LegoRR1.wad');
     };
-    setLoadingMessage('Loading WAD files from cache...');
+    onMessage('Loading WAD files from cache...');
     openLocalCache((objectStore) => {
         const request1 = objectStore.get('wad0');
         request1.onerror = _onerror;
@@ -675,16 +677,6 @@ function startWithCachedFiles(onload) {
             };
         };
     });
-}
-
-function setLoadingMessage(text) {
-    // clear the lower portion of the canvas and update the loading status
-    const loadingCanvas = document.getElementById('loading-canvas');
-    const loadingContext = loadingCanvas.getContext('2d');
-    loadingContext.fillStyle = 'black';
-    loadingContext.fillRect(0, loadingCanvas.height - 70, loadingCanvas.width, 50);
-    loadingContext.fillStyle = 'white';
-    loadingContext.fillText(text, 20, loadingCanvas.height - 30);
 }
 
 export { startWithCachedFiles, loadWadFiles };

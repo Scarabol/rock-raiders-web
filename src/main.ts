@@ -7,7 +7,7 @@ import { RewardScreen } from './gui/RewardScreen';
 // setup basic game structure
 
 const resMgr = new ResourceManager();
-const loadingScreen = new LoadingScreen();
+const loadingScreen = new LoadingScreen(resMgr);
 const mainMenuScreen = new MainMenuScreen();
 const gameScreen = new GameScreen();
 const rewardScreen = new RewardScreen();

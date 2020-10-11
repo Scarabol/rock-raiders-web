@@ -1,42 +1,71 @@
 import { startWithCachedFiles } from '../core/wad/WadLoader';
 import { BaseScreen } from '../core/BaseScreen';
+import { ResourceManager } from '../core/ResourceManager';
 
 class LoadingScreen extends BaseScreen {
 
-    onResourcesLoaded: any = null;
-    loadingCanvas: HTMLCanvasElement;
+    resourceManager: ResourceManager;
+    loadingContext: CanvasRenderingContext2D;
+    imgBackground: HTMLCanvasElement;
+    imgProgress: HTMLCanvasElement;
+    onResourcesLoaded: () => void = null;
 
-    constructor() {
+    constructor(resourceManager: ResourceManager) {
         super();
-        this.loadingCanvas = this.createCanvas();
-        this.loadingCanvas.id = 'loading-canvas'; // TODO refactor WadLoader to use LoadingScreen class instead of direct drawing
-        const loadingContext = this.loadingCanvas.getContext('2d');
-
-        // clear the screen to black
-        loadingContext.fillStyle = 'black';
-        loadingContext.fillRect(0, 0, this.loadingCanvas.width, this.loadingCanvas.height);
-
-        // draw the loading title
-        loadingContext.font = '48px Arial';
-        loadingContext.fillStyle = 'white';
-        loadingContext.fillText('Loading Rock Raiders', 5, this.loadingCanvas.height - 80);
-
-        // hard-code the first loading message
-        loadingContext.font = '30px Arial';
-        loadingContext.fillStyle = 'white';
-        loadingContext.fillText('Loading...', 20, this.loadingCanvas.height - 30);
+        this.resourceManager = resourceManager;
+        const loadingCanvas = this.createCanvas();
+        this.loadingContext = loadingCanvas.getContext('2d');
     }
 
     startLoading() {
         // this.show(); // TODO maybe needed because screens are create invis by default?
-        startWithCachedFiles(() => {
+        startWithCachedFiles((message) => {
+            this.setLoadingMessage(message);
+        }, (currentResourceIndex, totalResources) => {
+            this.setProgress(currentResourceIndex, totalResources);
+        }, () => {
             this.hide();
             this.onResourcesLoaded();
         });
     }
 
-    onResize() {
-        // FIXME resize loading screen canvas
+    setLoadingMessage(text) {
+        // clear the lower portion of the canvas and update the loading status
+        this.loadingContext.fillStyle = 'black';
+        this.loadingContext.fillRect(0, this.height - 70, this.width, 50);
+        this.loadingContext.fillStyle = 'white';
+        this.loadingContext.fillText(text, 20, this.height - 30);
+    }
+
+    setProgress(currentResourceIndex, totalResources) {
+        // TODO only images once!
+        this.imgBackground = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['LoadScreen']).canvas;
+        this.imgProgress = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['ProgressBar']).canvas;
+        const screenZoom = this.width / this.imgBackground.width;
+        const loadingBarX = 142 * screenZoom;
+        const loadingBarY = 450 * screenZoom;
+        const loadingBarWidth = 353 * currentResourceIndex / totalResources * screenZoom;
+        const loadingBarHeight = 9 * screenZoom;
+        this.loadingContext.drawImage(this.imgBackground, 0, 0, this.width, this.height);
+        this.loadingContext.drawImage(this.imgProgress, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
+    }
+
+    redraw() {
+        super.redraw();
+        console.log('LoadingScreen redraw called');
+        // clear the screen to black
+        this.loadingContext.fillStyle = 'black';
+        this.loadingContext.fillRect(0, 0, this.width, this.height);
+
+        // draw the loading title
+        this.loadingContext.font = '48px Arial';
+        this.loadingContext.fillStyle = 'white';
+        this.loadingContext.fillText('Loading Rock Raiders', 5, this.height - 80);
+
+        // hard-code the first loading message
+        this.loadingContext.font = '30px Arial';
+        this.loadingContext.fillStyle = 'white';
+        this.loadingContext.fillText('Loading...', 20, this.height - 30);
     }
 
 }
