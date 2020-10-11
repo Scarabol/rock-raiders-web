@@ -1,10 +1,6 @@
 import { encodeChar } from '../EncodingHelper';
 
-function CfgFileParser() {
-
-}
-
-CfgFileParser.prototype = {
+class CfgFileParser {
 
     parse(buffer, onload) {
         const result = {};
@@ -77,13 +73,15 @@ CfgFileParser.prototype = {
         });
 
         if (onload) onload(result);
-    },
+    }
 
     parseValue(val) {
         const num = Number(val);
 
+        const that = this;
+
         function splitShrink(sep) {
-            val = val.split(sep).filter(val => val !== '').map(val => this.parseValue(val));
+            val = val.split(sep).filter(val => val !== '').map(val => that.parseValue(val));
             if (val.length === 0) {
                 val = '';
             } else if (val.length === 1) {
@@ -108,8 +106,8 @@ CfgFileParser.prototype = {
         } else {
             return num;
         }
-    },
+    }
 
-};
+}
 
 export { CfgFileParser };

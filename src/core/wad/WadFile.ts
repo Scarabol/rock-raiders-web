@@ -1,15 +1,12 @@
 /**
  * Handles the extraction of single files from a bigger WAD data blob
- * @constructor
  */
-function WadFile() {
-    this.buffer = null;
-    this.entries = [];
-    this.fLength = [];
-    this.fStart = [];
-}
+class WadFile {
 
-WadFile.prototype = {
+    buffer: Int8Array = null;
+    entries = [];
+    fLength = [];
+    fStart = [];
 
     /**
      * Validate and parse the given data object as binary blob of a WAD file
@@ -23,12 +20,14 @@ WadFile.prototype = {
         if (String.fromCharCode.apply(null, this.buffer.slice(pos, 4)) !== 'WWAD') {
             throw 'Invalid WAD0 file provided';
         }
-        if (debug)
+        if (debug) {
             console.log('WAD0 file seems legit');
+        }
         pos = 4;
         const numberOfEntries = dataView.getInt32(pos, true);
-        if (debug)
+        if (debug) {
             console.log(numberOfEntries);
+        }
         pos = 8;
 
         // const wad = new WadHandler(buffer);
@@ -69,7 +68,7 @@ WadFile.prototype = {
         }
 
         return this;
-    },
+    }
 
     /**
      * Returns the entries content by name extracted from the managed WAD file
@@ -77,8 +76,8 @@ WadFile.prototype = {
      * @returns {string} Returns the local object url to the extracted data
      */
     getEntry(entryName) {
-        return URL.createObjectURL(new Blob([this.getEntryBuffer(entryName)], { 'type': 'image/bmp' }));
-    },
+        return URL.createObjectURL(new Blob([this.getEntryBuffer(entryName)], {'type': 'image/bmp'}));
+    }
 
     /**
      * Returns the entries content by name extracted from the managed WAD file
@@ -87,7 +86,7 @@ WadFile.prototype = {
      */
     getEntryData(entryName) {
         return new Uint8Array(this.getEntryBuffer(entryName));
-    },
+    }
 
     /**
      * Returns the entries content by name extracted from the managed WAD file
@@ -102,7 +101,7 @@ WadFile.prototype = {
             }
         }
         throw 'Entry \'' + entryName + '\' not found in WAD file';
-    },
+    }
 
     filterEntryNames(regexStr) {
         const regex = new RegExp(regexStr.toLowerCase());
@@ -114,8 +113,8 @@ WadFile.prototype = {
             }
         }
         return result;
-    },
+    }
 
-};
+}
 
 export { WadFile };
