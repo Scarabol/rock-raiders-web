@@ -1,4 +1,5 @@
-import { loadWadFiles, startWithCachedFiles } from './core/wad/WadLoader';
+import { startWithCachedFiles } from './core/wad/WadLoader';
+import { SceneManager } from './game/engine/SceneManager';
 
 const loadingCanvas = document.getElementById('loadingCanvas');
 loadingCanvas.width = 800;
@@ -20,6 +21,8 @@ loadingContext.fillStyle = 'white';
 loadingContext.fillText('loading', 20, loadingCanvas.height - 30);
 
 startWithCachedFiles(() => {
-    // as fallback load wad files from local URL
-    loadWadFiles('./LegoRR0.wad', './LegoRR1.wad');
+    loadingCanvas.style.visibility = 'hidden';
+    // FIXME load/create level
+    const sceneMgr = new SceneManager();
+    sceneMgr.startRendering();
 });

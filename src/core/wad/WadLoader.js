@@ -575,6 +575,7 @@ function loadAssetsParallel() {
         // remove globals used during loading phase so as not to clutter the memory, if even only by a small amount
         // delete object;
         // });
+        startWithCachedFiles.onload();
     });
 }
 
@@ -631,11 +632,14 @@ function openLocalCache(onopen) {
     };
 }
 
-function startWithCachedFiles(onerror) {
+function startWithCachedFiles(onload) {
+    startWithCachedFiles.onload = onload; // TODO refactor loading process?! Use promises?!
     startWithCachedFiles.startTime = new Date();
     const _onerror = () => {
         setLoadingMessage('WAD files not found in cache');
-        onerror();
+        // as fallback load wad files from local URL
+        // TODO load WAD files from HTML input element or external URL (CORS?!)
+        loadWadFiles('./LegoRR0.wad', './LegoRR1.wad');
     };
     setLoadingMessage('Loading WAD files from cache...');
     openLocalCache((objectStore) => {
