@@ -1,4 +1,4 @@
-function RewardScreen() {
+function RewardScreen(resourceManager) {
     this.onContinue = null;
 }
 

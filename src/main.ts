@@ -13,7 +13,9 @@ const rewardScreen = new RewardScreen(resMgr);
 // FIXME register screens for onresize
 
 
-loadingScreen.onResourcesLoaded = mainMenuScreen.showMainMenu;
+loadingScreen.onResourcesLoaded = () => {
+    mainMenuScreen.showMainMenu();
+};
 mainMenuScreen.onLevelSelected = (levelName) => {
     gameScreen.startLevel(levelName);
 };

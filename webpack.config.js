@@ -1,6 +1,18 @@
 const config = {
     mode: 'development',
-    entry: './src/main.js',
+    entry: './src/main.ts',
+    module: {
+        rules: [
+            {
+                test: /\.tsx?$/,
+                use: 'ts-loader',
+                exclude: /node_modules/,
+            },
+        ],
+    },
+    resolve: {
+        extensions: ['.ts', '.js'],
+    },
     output: {
         filename: './app.bundle.js',
         sourceMapFilename: './app.bundle.js.map',
@@ -8,7 +20,7 @@ const config = {
     devServer: {
         watchContentBase: true,
     },
-    devtool: "source-map",
+    devtool: 'source-map',
 };
 
 module.exports = config;
