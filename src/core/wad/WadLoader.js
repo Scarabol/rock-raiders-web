@@ -390,7 +390,6 @@ function registerDebugAssets(mainConf) { // register only assets used for debugg
             return;
         }
         const levelConf = mainConf['Levels'][levelKey];
-        console.log(levelConf);
         addAsset(loadMapAsset, levelConf['SurfaceMap']);
         addAsset(loadMapAsset, levelConf['PreDugMap']);
         addAsset(loadMapAsset, levelConf['TerrainMap']);

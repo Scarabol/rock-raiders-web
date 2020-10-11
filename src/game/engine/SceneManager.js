@@ -9,8 +9,9 @@ function SceneManager() {
 
     this.debugHelper = new DebugHelper();
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById('gameCanvas') });
-    this.renderer.setSize(window.innerWidth, window.innerHeight); // TODO adjust render size on window resize
+    this.gameCanvas = document.getElementById('gameCanvas');
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas: this.gameCanvas });
+    // this.renderer.setSize(window.innerWidth, this.gameCanvas.innerHeight); // TODO adjust render size on window resize
     this.renderer.sortObjects = true;
     this.renderer.setClearColor(0xa0a0a0); // TODO adjust clear color to black
 

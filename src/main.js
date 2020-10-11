@@ -20,6 +20,10 @@ loadingContext.font = '30px Arial';
 loadingContext.fillStyle = 'white';
 loadingContext.fillText('loading', 20, loadingCanvas.height - 30);
 
+const gameCanvas = document.getElementById('gameCanvas');
+gameCanvas.width = 800;
+gameCanvas.height = 600;
+
 startWithCachedFiles(() => {
     loadingCanvas.style.visibility = 'hidden';
     // FIXME load/create level
