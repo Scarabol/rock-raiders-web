@@ -2,7 +2,7 @@ import { encodeChar } from '../EncodingHelper';
 
 class CfgFileParser {
 
-    parse(buffer, onload) {
+    parse(buffer) {
         const result = {};
         const ancestry = [];
         let activeObject = result;
@@ -72,7 +72,7 @@ class CfgFileParser {
             }
         });
 
-        if (onload) onload(result);
+        return result;
     }
 
     parseValue(val) {

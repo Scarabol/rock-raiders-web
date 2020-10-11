@@ -335,25 +335,13 @@ class WadLoader {
     }
 
     /**
-     * load in essential files, to begin the chain of asset loading
+     * Load essential files, to begin the chain of asset loading
      */
     startLoadingProcess() {
         this.startTime = new Date();
         this.assetsFromCfgByName = {};
         this.loadingScreen.setLoadingMessage('Loading configuration...');
-        const resMgr = this.resMgr;
-        new Promise((resolve) => {
-            new CfgFileParser().parse(this.wad1File.getEntryData('Lego.cfg'), (result) => {
-                resMgr.configuration = result;
-                resolve();
-            });
-        }).then(this.loadLoadingScreen);
-    }
-
-    /**
-     * Load loading screen files, which are read from configuration
-     */
-    loadLoadingScreen() { // loading screen resources
+        this.resMgr.configuration = new CfgFileParser().parse(this.wad1File.getEntryData('Lego.cfg'));
         const resMgr = this.resMgr;
         Promise.all([
             new Promise((resolve) => {
