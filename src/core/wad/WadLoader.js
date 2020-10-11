@@ -352,16 +352,16 @@ function loadLoadingScreen() { // loading screen resources
     Promise.all([
         new Promise((resolve) => {
             const name = resourceMgr.configuration['Lego*']['Main']['LoadScreen']; // loading screen image
-            loadWadImageAsset(name, () => {
-                updateLoadingScreen();
-                resolve();
-            });
+            loadWadImageAsset(name, resolve);
         }),
         new Promise((resolve) => {
             const name = resourceMgr.configuration['Lego*']['Main']['ProgressBar']; // loading bar container image
             loadWadImageAsset(name, resolve);
         }),
-    ]).then(registerAllAssets);
+    ]).then(() => {
+        updateLoadingScreen();
+        registerAllAssets();
+    });
 }
 
 function addAsset(method, assetPath, optional = false, assetKey = null) {
