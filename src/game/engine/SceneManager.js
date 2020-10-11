@@ -9,7 +9,7 @@ function SceneManager() {
 
     this.debugHelper = new DebugHelper();
 
-    this.gameCanvas = document.getElementById('gameCanvas');
+    this.gameCanvas = document.getElementById('game-canvas');
     this.renderer = new THREE.WebGLRenderer({ antialias: true, canvas: this.gameCanvas });
     // this.renderer.setSize(window.innerWidth, this.gameCanvas.innerHeight); // TODO adjust render size on window resize
     this.renderer.sortObjects = true;

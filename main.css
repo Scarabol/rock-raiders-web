@@ -21,11 +21,11 @@ canvas {
     position: absolute;
 }
 
-#gameCanvas {
+#game-canvas {
     z-index: 20;
 }
 
-#loadingCanvas {
+#loading-canvas {
     z-index: 50;
     background: #000;
 }

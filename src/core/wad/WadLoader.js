@@ -684,7 +684,7 @@ function setLoadingMessage(text) {
     loadingContext.fillText(text, 20, loadingCanvas.height - 30);
 }
 
-const loadingCanvas = document.getElementById('loadingCanvas');
+const loadingCanvas = document.getElementById('loading-canvas');
 const loadingContext = loadingCanvas.getContext('2d');
 
 export { startWithCachedFiles, loadWadFiles };

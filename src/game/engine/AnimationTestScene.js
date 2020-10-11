@@ -7,7 +7,7 @@ const MAX_FPS = 25;
 
 const debugHelper = new DebugHelper();
 
-const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById('gameCanvas') });
+const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById('game-canvas') });
 renderer.setSize(window.innerWidth, window.innerHeight); // TODO adjust render size on window resize
 renderer.sortObjects = true;
 renderer.setClearColor(0xa0a0a0); // TODO adjust clear color to black

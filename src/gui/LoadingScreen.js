@@ -1,5 +1,9 @@
+import { startWithCachedFiles } from '../core/wad/WadLoader';
+
 function LoadingScreen() {
-    this.loadingCanvas = document.getElementById('loadingCanvas');
+    this.onResourcesLoaded = null;
+
+    this.loadingCanvas = document.getElementById('loading-canvas');
     this.loadingCanvas.width = 800;
     this.loadingCanvas.height = 600;
     const loadingContext = this.loadingCanvas.getContext('2d');
@@ -20,6 +24,13 @@ function LoadingScreen() {
 }
 
 LoadingScreen.prototype = {
+
+    startLoading() {
+        startWithCachedFiles(() => {
+            this.loadingCanvas.style.visibility = 'hidden';
+            this.onResourcesLoaded();
+        });
+    },
 
     onResize() {
         // FIXME resize loading screen canvas

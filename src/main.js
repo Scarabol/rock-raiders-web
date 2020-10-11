@@ -1,5 +1,8 @@
-import { LoadingScreen } from './gui/menu/LoadingScreen';
+import { LoadingScreen } from './gui/LoadingScreen';
 import { ResourceManager } from './core/ResourceManager';
+import { MainMenuScreen } from './gui/MainMenuScreen';
+import { GameScreen } from './game/GameScreen';
+import { RewardScreen } from './gui/RewardScreen';
 
 
 const resMgr = new ResourceManager();
@@ -11,8 +14,8 @@ const rewardScreen = new RewardScreen(resMgr);
 
 
 loadingScreen.onResourcesLoaded = mainMenuScreen.showMainMenu;
-mainMenuScreen.onLevelSelected = (levelConf) => {
-    gameScreen.startLevel(levelConf);
+mainMenuScreen.onLevelSelected = (levelName) => {
+    gameScreen.startLevel(levelName);
 };
 gameScreen.onLevelEnd = (gameResult) => {
     rewardScreen.showReward(gameResult);
@@ -21,10 +24,3 @@ rewardScreen.onContinue = mainMenuScreen.showLevelSelection;
 
 
 loadingScreen.startLoading();
-
-// startWithCachedFiles(() => {
-//     loadingCanvas.style.visibility = 'hidden';
-//     // FIXME load/create level
-//     const sceneMgr = new SceneManager();
-//     sceneMgr.startRendering();
-// });
