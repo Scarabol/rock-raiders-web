@@ -1,6 +1,8 @@
-class RewardScreen {
+import { BaseScreen } from '../core/BaseScreen';
 
-    onContinue;
+class RewardScreen extends BaseScreen {
+
+    onContinue: () => void;
 
     showReward(gameResult) {
 

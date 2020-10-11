@@ -4,14 +4,13 @@ import { MainMenuScreen } from './gui/MainMenuScreen';
 import { GameScreen } from './game/GameScreen';
 import { RewardScreen } from './gui/RewardScreen';
 
-// setup basic game structure
+// setup basic game engine structure
 
 const resMgr = new ResourceManager();
 const loadingScreen = new LoadingScreen(resMgr);
 const mainMenuScreen = new MainMenuScreen();
 const gameScreen = new GameScreen();
 const rewardScreen = new RewardScreen();
-// FIXME register screens for onresize
 
 // link all components with callbacks
 
@@ -27,6 +26,6 @@ gameScreen.onLevelEnd = (gameResult) => {
 };
 rewardScreen.onContinue = mainMenuScreen.showLevelSelection;
 
-// start the engine by loading resources
+// start the game engine with loading resources
 
 loadingScreen.startLoading();

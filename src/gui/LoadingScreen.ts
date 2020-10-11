@@ -21,7 +21,7 @@ class LoadingScreen extends BaseScreen {
     }
 
     startLoading() {
-        // this.show(); // TODO maybe needed because screens are create invis by default?
+        // this.show(); // TODO maybe needed because screens are created invis by default?
         new WadLoader(this).startWithCachedFiles(() => {
             this.hide();
             this.onResourcesLoaded();

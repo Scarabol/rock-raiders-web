@@ -2,13 +2,16 @@ class BaseScreen {
 
     gameCanvasContainer: HTMLElement;
     canvases: HTMLCanvasElement[];
-    width: number;
-    height: number;
+    width: number = 800;
+    height: number = 600;
+    ratio: number = 800 / 600;
 
     constructor() {
         this.gameCanvasContainer = document.getElementById('game-canvas-container');
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!';
         this.canvases = [];
+        window.addEventListener('resize', this.onWindowResize);
+        this.onWindowResize();
     }
 
     createCanvas(zIndex: number = 0) {
@@ -22,8 +25,7 @@ class BaseScreen {
     }
 
     redraw() {
-        console.log('BaseScreen redraw called');
-    };
+    }
 
     show() {
         this.redraw();
@@ -38,14 +40,24 @@ class BaseScreen {
         });
     }
 
-    onResize(width: number, height: number) {
+    onWindowResize() {
+        const maxWidth = this.gameCanvasContainer.offsetWidth, maxHeight = this.gameCanvasContainer.offsetHeight;
+        const idealHeight = Math.round(maxWidth / this.ratio);
+        if (idealHeight > maxHeight) {
+            this.resize(Math.round(maxHeight * this.ratio), maxHeight);
+        } else {
+            this.resize(maxWidth, idealHeight);
+        }
+    }
+
+    resize(width: number, height: number) {
         this.width = width;
         this.height = height;
         this.canvases.forEach((canvas) => {
             canvas.width = width;
             canvas.height = height;
-            // FIXME trigger redraw?!
         });
+        this.redraw();
     }
 
 }
