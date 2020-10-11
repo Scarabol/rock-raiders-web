@@ -360,7 +360,14 @@ function loadLoadingScreen() { // loading screen resources
         }),
     ]).then(() => {
         updateLoadingScreen();
-        registerAllAssets();
+        const mainConf = resourceMgr.configuration['Lego*'];
+        // registerAllAssets(mainConf);
+        registerDebugAssets(mainConf);
+        // start loading assets
+        loadSequentialAssets.assetsFromCfg = Object.values(startLoadingProcess.assetsFromCfgByName);
+        updateLoadingScreen.totalResources = resourceMgr.initialAssets.length + loadSequentialAssets.assetsFromCfg.length;
+        loadSequentialAssets.assetIndex = 0;
+        loadSequentialAssets();
     });
 }
 
@@ -376,9 +383,33 @@ function addAsset(method, assetPath, optional = false, assetKey = null) {
     };
 }
 
-function registerAllAssets() {
-    // dynamically register assets from config
-    const mainConf = resourceMgr.configuration['Lego*'];
+function registerDebugAssets(mainConf) { // register only assets used for debugging
+    // level files
+    Object.keys(mainConf['Levels']).forEach(levelKey => {
+        if (!(levelKey === 'Level05')) {
+            return;
+        }
+        const levelConf = mainConf['Levels'][levelKey];
+        console.log(levelConf);
+        addAsset(loadMapAsset, levelConf['SurfaceMap']);
+        addAsset(loadMapAsset, levelConf['PreDugMap']);
+        addAsset(loadMapAsset, levelConf['TerrainMap']);
+        addAsset(loadMapAsset, levelConf['BlockPointersMap'], true);
+        addAsset(loadMapAsset, levelConf['CryOreMap']);
+        addAsset(loadMapAsset, levelConf['PathMap'], true);
+        addAsset(loadObjectListAsset, levelConf['OListFile']);
+        addAsset(loadNerpAsset, levelConf['NERPFile']);
+        addAsset(loadNerpMsg, levelConf['NERPMessageFile']);
+        const menuConf = levelConf['MenuBMP'];
+        if (menuConf) {
+            menuConf.forEach((imgKey) => {
+                addAsset(loadAlphaImageAsset, imgKey);
+            });
+        }
+    });
+}
+
+function registerAllAssets(mainConf) { // dynamically register all assets from config
     // back button
     addAsset(loadWadImageAsset, mainConf['InterfaceBackButton'].slice(2, 4).forEach(imgPath => {
         addAsset(loadWadImageAsset, imgPath);
@@ -488,11 +519,6 @@ function registerAllAssets() {
             addAsset(loadWavAsset, sndPath, false, sndKey, true);
         });
     });
-    // start loading assets
-    loadSequentialAssets.assetsFromCfg = Object.values(startLoadingProcess.assetsFromCfgByName);
-    updateLoadingScreen.totalResources = resourceMgr.initialAssets.length + loadSequentialAssets.assetsFromCfg.length;
-    loadSequentialAssets.assetIndex = 0;
-    loadSequentialAssets();
 }
 
 function onSequentialAssetLoaded() {
