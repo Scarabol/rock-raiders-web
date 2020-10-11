@@ -5,16 +5,24 @@ import { CfgFileParser } from './CfgFileParser';
 import { encodeChar } from '../EncodingHelper';
 import { ResourceManager } from '../ResourceManager';
 import { WadFile } from './WadFile';
+import { LoadingScreen } from '../../gui/LoadingScreen';
 
 class WadLoader {
 
+    loadingScreen: LoadingScreen;
+    resMgr: ResourceManager;
     wad0File: WadFile = null;
     wad1File: WadFile = null;
-    resMgr: ResourceManager;
     startTime: Date;
+    assetIndex: number = 0;
+    totalResources: number = 0;
+    assetsFromCfg: any;
+    assetsFromCfgByName: any;
+    onLoad: () => void = null;
 
-    constructor(resourceManager: ResourceManager) {
-        this.resMgr = resourceManager;
+    constructor(loadingScreen: LoadingScreen) {
+        this.loadingScreen = loadingScreen;
+        this.resMgr = loadingScreen.resourceManager;
     }
 
     /**
@@ -318,26 +326,10 @@ class WadLoader {
         }
     }
 
-    updateLoadingScreen() {
-        updateLoadingScreen.totalResources = updateLoadingScreen.totalResources || 1;
-        updateLoadingScreen.curResource = updateLoadingScreen.curResource || 0;
-        // const loadingCanvas = document.getElementById('loading-canvas');
-        // const ctx = loadingCanvas.getContext('2d');
-        // const loadingImg = resMgr.getImage(resMgr.configuration['Lego*']['Main']['LoadScreen']).canvas;
-        // const screenZoom = ctx.canvas.width / loadingImg.width;
-        // const loadingBarX = 142 * screenZoom;
-        // const loadingBarY = 450 * screenZoom;
-        // const loadingBarWidth = 353 * updateLoadingScreen.curResource / updateLoadingScreen.totalResources * screenZoom;
-        // const loadingBarHeight = 9 * screenZoom;
-        // ctx.drawImage(loadingImg, 0, 0, ctx.canvas.width, ctx.canvas.height);
-        // ctx.drawImage(resMgr.getImage(resMgr.configuration['Lego*']['Main']['ProgressBar']).canvas, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
-        updateLoadingScreen.onProgress(updateLoadingScreen.curResource, updateLoadingScreen.totalResources);
-    }
-
     onAssetLoaded(callback) {
         return () => {
-            updateLoadingScreen.curResource++;
-            updateLoadingScreen();
+            this.loadingScreen.currentResourceIndex++;
+            this.loadingScreen.redraw();
             callback();
         };
     }
@@ -347,8 +339,8 @@ class WadLoader {
      */
     startLoadingProcess() {
         this.startTime = new Date();
-        startLoadingProcess.assetsFromCfgByName = {};
-        // setLoadingMessage('Loading configuration...'); // TODO call method from LoadingScreen
+        this.assetsFromCfgByName = {};
+        this.loadingScreen.setLoadingMessage('Loading configuration...');
         const resMgr = this.resMgr;
         new Promise((resolve) => {
             new CfgFileParser().parse(this.wad1File.getEntryData('Lego.cfg'), (result) => {
@@ -373,23 +365,23 @@ class WadLoader {
                 this.loadWadImageAsset(name, resolve);
             }),
         ]).then(() => {
-            this.updateLoadingScreen();
+            this.loadingScreen.enableGraphicMode();
             const mainConf = resMgr.configuration['Lego*'];
             // registerAllAssets(mainConf);
             this.registerDebugAssets(mainConf);
             // start loading assets
-            loadSequentialAssets.assetsFromCfg = Object.values(startLoadingProcess.assetsFromCfgByName);
-            updateLoadingScreen.totalResources = resMgr.initialAssets.length + loadSequentialAssets.assetsFromCfg.length;
-            loadSequentialAssets.assetIndex = 0;
+            this.assetsFromCfg = Object.values(this.assetsFromCfgByName);
+            this.totalResources = resMgr.initialAssets.length + this.assetsFromCfg.length;
+            this.assetIndex = 0;
             this.loadSequentialAssets();
         });
     }
 
     addAsset(method, assetPath, optional = false, assetKey = null) {
-        if (!assetPath || startLoadingProcess.assetsFromCfgByName.hasOwnProperty(assetPath.toLowerCase()) || assetPath === 'NULL') {
+        if (!assetPath || this.assetsFromCfgByName.hasOwnProperty(assetPath.toLowerCase()) || assetPath === 'NULL') {
             return; // do not load assets twice
         }
-        startLoadingProcess.assetsFromCfgByName[assetKey || assetPath] = {
+        this.assetsFromCfgByName[assetKey || assetPath] = {
             method: method,
             assetKey: assetKey,
             assetPath: assetPath,
@@ -477,12 +469,12 @@ class WadLoader {
         });
         // icon panel buttons
         Object.values(mainConf['InterfaceImages']).forEach(entry => {
-            entry.slice(0, 3).forEach(imgPath => {
+            (entry as []).slice(0, 3).forEach(imgPath => {
                 this.addAsset(this.loadWadImageAsset, imgPath);
             });
         });
         Object.values(mainConf['InterfaceBuildImages']).forEach(entry => {
-            entry.slice(0, -1).forEach(imgPath => {
+            (entry as []).slice(0, -1).forEach(imgPath => {
                 this.addAsset(this.loadWadImageAsset, imgPath);
             });
         });
@@ -529,22 +521,22 @@ class WadLoader {
                 return;
             }
             sndPath.split(',').forEach(sndPath => {
-                this.addAsset(this.loadWavAsset, sndPath, false, sndKey, true);
+                this.addAsset(this.loadWavAsset, sndPath, false, sndKey);
             });
         });
     }
 
     onSequentialAssetLoaded() {
-        loadSequentialAssets.assetIndex++;
+        this.assetIndex++;
         this.onAssetLoaded(this.loadSequentialAssets)();
     }
 
     loadSequentialAssets() {
-        if (loadSequentialAssets.assetIndex >= this.resMgr.initialAssets.length) {
+        if (this.assetIndex >= this.resMgr.initialAssets.length) {
             this.loadAssetsParallel(); // continue with parallel loading all other assets
             return;
         }
-        const curAsset = this.resMgr.initialAssets[loadSequentialAssets.assetIndex];
+        const curAsset = this.resMgr.initialAssets[this.assetIndex];
         const assetName = curAsset[curAsset.length - 1].toLowerCase();
         const filename = curAsset[1] !== '' ? curAsset[1] + '/' + curAsset[2] : curAsset[2];
         if (curAsset[0] === 'js') {
@@ -568,15 +560,16 @@ class WadLoader {
 
     loadAssetsParallel() {
         const promises = [];
-        loadSequentialAssets.assetsFromCfg.forEach((asset) => {
+        const that = this;
+        this.assetsFromCfg.forEach((asset) => {
             promises.push(new Promise((resolve) => {
                 try {
-                    asset.method(asset.assetPath, this.onAssetLoaded(resolve), asset.assetKey);
+                    asset.method(asset.assetPath, that.onAssetLoaded(resolve), asset.assetKey);
                 } catch (e) {
                     if (!asset.optional) {
                         throw e;
                     }
-                    this.onAssetLoaded(resolve)();
+                    that.onAssetLoaded(resolve)();
                 }
             }));
         });
@@ -584,11 +577,11 @@ class WadLoader {
             // main game file (put last as this contains the main game loop)
             // loadScriptAsset('rockRaiders.js', () => {
             // indicate that loading has finished, and display the total loading time
-            console.log('Loading of about ' + updateLoadingScreen.totalResources + ' assets complete! Total load time: ' + ((new Date().getTime() - startLoadingProcess.startTime.getTime()) / 1000).toFixed(2).toString() + ' seconds.');
+            console.log('Loading of about ' + this.totalResources + ' assets complete! Total load time: ' + ((new Date().getTime() - this.startTime.getTime()) / 1000).toFixed(2).toString() + ' seconds.');
             // remove globals used during loading phase so as not to clutter the memory, if even only by a small amount
             // delete object;
             // });
-            startWithCachedFiles.onLoad();
+            this.onLoad();
         });
     }
 
@@ -619,8 +612,8 @@ class WadLoader {
     loadWadFiles(wad0Url, wad1Url) {
         const that = this;
         Promise.all([this.loadWadFile(wad0Url), this.loadWadFile(wad1Url)]).then(wadFiles => {
-            that.wad0File = wadFiles[0];
-            that.wad1File = wadFiles[1];
+            that.wad0File = wadFiles[0] as WadFile;
+            that.wad1File = wadFiles[1] as WadFile;
             this.openLocalCache((objectStore) => {
                 objectStore.put(that.wad0File, 'wad0');
                 objectStore.put(that.wad1File, 'wad1');
@@ -630,33 +623,32 @@ class WadLoader {
     }
 
     openLocalCache(onopen) {
-        const request = indexedDB.open('RockRaidersWeb');
-        request.onupgradeneeded = function (event: IDBVersionChangeEvent) {
-            const db = event.target.result;
+        const request: IDBOpenDBRequest = indexedDB.open('RockRaidersWeb');
+        request.onupgradeneeded = function () {
+            const db = request.result;
             if (db.objectStoreNames.contains('wadfiles')) {
                 db.deleteObjectStore('wadfiles');
             }
             db.createObjectStore('wadfiles');
         };
-        request.onsuccess = function (event) {
-            const db = event.target.result;
+        request.onsuccess = function () {
+            const db = request.result;
             const transaction = db.transaction(['wadfiles'], 'readwrite');
             const objectStore = transaction.objectStore('wadfiles');
             onopen(objectStore);
         };
     }
 
-    startWithCachedFiles(onMessage, onProgress, onLoad) {
-        startWithCachedFiles.onLoad = onLoad; // TODO refactor loading process?! Use promises?!
-        updateLoadingScreen.onProgress = onProgress; // TODO refactor loading process?! Use promises?!
+    startWithCachedFiles(onLoad) {
+        this.onLoad = onLoad;
         this.startTime = new Date();
         const _onerror = () => {
-            onMessage('WAD files not found in cache');
+            this.loadingScreen.setLoadingMessage('WAD files not found in cache');
             // as fallback load wad files from local URL
             // TODO load WAD files from HTML input element or external URL (CORS?!)
             this.loadWadFiles('./LegoRR0.wad', './LegoRR1.wad');
         };
-        onMessage('Loading WAD files from cache...');
+        this.loadingScreen.setLoadingMessage('Loading WAD files from cache...');
         const that = this;
         this.openLocalCache((objectStore) => {
             const request1 = objectStore.get('wad0');
