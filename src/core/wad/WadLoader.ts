@@ -370,7 +370,7 @@ class WadLoader {
             return; // do not load assets twice
         }
         this.assetsFromCfgByName[assetKey || assetPath] = {
-            method: method,
+            method: method.bind(this),
             assetKey: assetKey,
             assetPath: assetPath,
             optional: optional,
@@ -530,33 +530,19 @@ class WadLoader {
         const assetName = curAsset[curAsset.length - 1].toLowerCase();
         const filename = curAsset[1] !== '' ? curAsset[1] + '/' + curAsset[2] : curAsset[2];
         if (curAsset[0] === 'js') {
-            this.loadScriptAsset(filename, () => {
-                this.onSequentialAssetLoaded();
-            });
+            this.loadScriptAsset(filename, this.onSequentialAssetLoaded.bind(this));
         } else if (curAsset[0] === 'img') {
-            this.loadImageAsset(filename, assetName, () => {
-                this.onSequentialAssetLoaded();
-            });
+            this.loadImageAsset(filename, assetName, this.onSequentialAssetLoaded.bind(this));
         } else if (curAsset[0] === 'snd') {
-            this.loadSoundAsset(filename, assetName, () => {
-                this.onSequentialAssetLoaded();
-            });
+            this.loadSoundAsset(filename, assetName, this.onSequentialAssetLoaded.bind(this));
         } else if (curAsset[0] === 'wad0bmp') {
-            this.loadWadImageAsset(assetName, () => {
-                this.onSequentialAssetLoaded();
-            });
+            this.loadWadImageAsset(assetName, this.onSequentialAssetLoaded.bind(this));
         } else if (curAsset[0] === 'wad0alpha') {
-            this.loadAlphaImageAsset(assetName, () => {
-                this.onSequentialAssetLoaded();
-            });
+            this.loadAlphaImageAsset(assetName, this.onSequentialAssetLoaded.bind(this));
         } else if (curAsset[0] === 'wad0font') {
-            this.loadFontImageAsset(assetName, () => {
-                this.onSequentialAssetLoaded();
-            });
+            this.loadFontImageAsset(assetName, this.onSequentialAssetLoaded.bind(this));
         } else if (curAsset[0] === 'wad0nerp') {
-            this.loadNerpAsset(filename, () => {
-                this.onSequentialAssetLoaded();
-            });
+            this.loadNerpAsset(filename, this.onSequentialAssetLoaded.bind(this));
         } else {
             throw 'Unknown key ' + curAsset[0] + ', can\'t load: ' + curAsset.join(', ');
         }
