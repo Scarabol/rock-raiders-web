@@ -1,9 +1,9 @@
 import { startWithCachedFiles } from '../core/wad/WadLoader';
 
-function LoadingScreen(resourceManager) {
+function LoadingScreen(resourceManager, canvasId) {
     this.onResourcesLoaded = null;
 
-    this.loadingCanvas = document.getElementById('loading-canvas');
+    this.loadingCanvas = document.getElementById(canvasId);
     this.loadingCanvas.width = 800;
     this.loadingCanvas.height = 600;
     const loadingContext = this.loadingCanvas.getContext('2d');

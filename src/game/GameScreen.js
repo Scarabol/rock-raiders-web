@@ -5,8 +5,8 @@ function GameScreen(resourceManager) {
 
 GameScreen.prototype = {
 
-    startLevel(levelConf) {
-
+    startLevel(levelName) {
+        console.log('Starting level ' + levelName);
     },
 
 };

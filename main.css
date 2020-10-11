@@ -19,6 +19,7 @@ html, body {
 
 canvas {
     position: absolute;
+    background: #f0f;
 }
 
 #game-canvas {
