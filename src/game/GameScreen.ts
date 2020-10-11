@@ -1,14 +1,13 @@
-function GameScreen(resourceManager, gameCanvasContainerId) {
-    this.resMgr = resourceManager;
-    this.onLevelEnd = null;
-}
+import { BaseScreen } from '../core/BaseScreen';
 
-GameScreen.prototype = {
+class GameScreen extends BaseScreen {
+
+    onLevelEnd;
 
     startLevel(levelName) {
         console.log('Starting level ' + levelName);
-    },
+    }
 
-};
+}
 
 export { GameScreen };

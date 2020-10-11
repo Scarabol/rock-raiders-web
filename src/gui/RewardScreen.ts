@@ -1,13 +1,11 @@
-function RewardScreen(resourceManager, gameCanvasContainerId) {
-    this.onContinue = null;
-}
+class RewardScreen {
 
-RewardScreen.prototype = {
+    onContinue;
 
     showReward(gameResult) {
 
-    },
+    }
 
-};
+}
 
 export { RewardScreen };

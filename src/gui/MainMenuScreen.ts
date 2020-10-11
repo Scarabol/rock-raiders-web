@@ -1,14 +1,12 @@
-import { ResourceManager } from "../core/ResourceManager";
+import { BaseScreen } from '../core/BaseScreen';
 
-class MainMenuScreen {
-    resMgr: ResourceManager;
-    onLevelSelected;
-    canvas: HTMLCanvasElement;
+class MainMenuScreen extends BaseScreen {
 
-    constructor(resourceManager: ResourceManager, gameCanvasContainerId: string) {
-        this.resMgr = resourceManager;
+    onLevelSelected: any;
+
+    constructor() {
+        super();
         this.onLevelSelected = null;
-        this.canvas = <HTMLCanvasElement>document.createElement('canvas');
         // FIXME set size and append to container
     }
 
@@ -17,13 +15,14 @@ class MainMenuScreen {
     }
 
     selectLevel(levelName) {
-        this.canvas.style.visibility = 'hidden';
+        this.hide();
         this.onLevelSelected(levelName);
     }
 
     showLevelSelection() {
 
     }
+
 }
 
 export { MainMenuScreen };

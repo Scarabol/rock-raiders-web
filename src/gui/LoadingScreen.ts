@@ -1,17 +1,15 @@
 import { startWithCachedFiles } from '../core/wad/WadLoader';
-import { ResourceManager } from "../core/ResourceManager";
+import { BaseScreen } from '../core/BaseScreen';
 
-class LoadingScreen {
+class LoadingScreen extends BaseScreen {
+
     onResourcesLoaded: any = null;
     loadingCanvas: HTMLCanvasElement;
 
-    constructor(resourceManager: ResourceManager, gameCanvasContainerId: string) {
-        const canvasContainer = document.getElementById(gameCanvasContainerId);
-        this.loadingCanvas = document.createElement('canvas');
-        canvasContainer.appendChild(this.loadingCanvas);
+    constructor() {
+        super();
+        this.loadingCanvas = this.createCanvas();
         this.loadingCanvas.id = 'loading-canvas'; // TODO refactor WadLoader to use LoadingScreen class instead of direct drawing
-        this.loadingCanvas.width = 800;
-        this.loadingCanvas.height = 600;
         const loadingContext = this.loadingCanvas.getContext('2d');
 
         // clear the screen to black
@@ -30,18 +28,15 @@ class LoadingScreen {
     }
 
     startLoading() {
+        // this.show(); // TODO maybe needed because screens are create invis by default?
         startWithCachedFiles(() => {
-            this.loadingCanvas.style.visibility = 'hidden';
+            this.hide();
             this.onResourcesLoaded();
         });
     }
 
     onResize() {
         // FIXME resize loading screen canvas
-    }
-
-    hide() {
-        this.loadingCanvas.style.visibility = 'hidden';
     }
 
 }

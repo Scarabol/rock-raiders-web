@@ -7,10 +7,10 @@ import { RewardScreen } from './gui/RewardScreen';
 // setup basic game structure
 
 const resMgr = new ResourceManager();
-const loadingScreen = new LoadingScreen(resMgr, 'game-canvas-container');
-const mainMenuScreen = new MainMenuScreen(resMgr, 'game-canvas-container');
-const gameScreen = new GameScreen(resMgr, 'game-canvas-container');
-const rewardScreen = new RewardScreen(resMgr, 'game-canvas-container');
+const loadingScreen = new LoadingScreen();
+const mainMenuScreen = new MainMenuScreen();
+const gameScreen = new GameScreen();
+const rewardScreen = new RewardScreen();
 // FIXME register screens for onresize
 
 // link all components with callbacks
@@ -24,7 +24,7 @@ mainMenuScreen.onLevelSelected = (levelName) => {
 };
 gameScreen.onLevelEnd = (gameResult) => {
     rewardScreen.showReward(gameResult);
-}
+};
 rewardScreen.onContinue = mainMenuScreen.showLevelSelection;
 
 // start the engine by loading resources
