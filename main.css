@@ -10,7 +10,7 @@ html, body {
     height: 100vh;
 }
 
-#canvas-container {
+#game-canvas-container {
     display: flex;
     flex: 1;
     align-items: center;

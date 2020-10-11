@@ -4,14 +4,16 @@ import { MainMenuScreen } from './gui/MainMenuScreen';
 import { GameScreen } from './game/GameScreen';
 import { RewardScreen } from './gui/RewardScreen';
 
+// setup basic game structure
 
 const resMgr = new ResourceManager();
-const loadingScreen = new LoadingScreen(resMgr, 'loading-canvas');
-const mainMenuScreen = new MainMenuScreen(resMgr, 'menu-canvas');
-const gameScreen = new GameScreen(resMgr);
-const rewardScreen = new RewardScreen(resMgr);
+const loadingScreen = new LoadingScreen(resMgr, 'game-canvas-container');
+const mainMenuScreen = new MainMenuScreen(resMgr, 'game-canvas-container');
+const gameScreen = new GameScreen(resMgr, 'game-canvas-container');
+const rewardScreen = new RewardScreen(resMgr, 'game-canvas-container');
 // FIXME register screens for onresize
 
+// link all components with callbacks
 
 loadingScreen.onResourcesLoaded = () => {
     // mainMenuScreen.showMainMenu(); // FIXME directly start level for debugging
@@ -25,5 +27,6 @@ gameScreen.onLevelEnd = (gameResult) => {
 }
 rewardScreen.onContinue = mainMenuScreen.showLevelSelection;
 
+// start the engine by loading resources
 
 loadingScreen.startLoading();

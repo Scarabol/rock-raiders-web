@@ -311,6 +311,7 @@ function loadWavAsset(path, callback, key) {
 function updateLoadingScreen() {
     updateLoadingScreen.totalResources = updateLoadingScreen.totalResources || 1;
     updateLoadingScreen.curResource = updateLoadingScreen.curResource || 0;
+    const loadingCanvas = document.getElementById('loading-canvas');
     const ctx = loadingCanvas.getContext('2d');
     const loadingImg = resourceMgr.getImage(resourceMgr.configuration['Lego*']['Main']['LoadScreen']).canvas;
     const screenZoom = ctx.canvas.width / loadingImg.width;
@@ -678,13 +679,12 @@ function startWithCachedFiles(onload) {
 
 function setLoadingMessage(text) {
     // clear the lower portion of the canvas and update the loading status
+    const loadingCanvas = document.getElementById('loading-canvas');
+    const loadingContext = loadingCanvas.getContext('2d');
     loadingContext.fillStyle = 'black';
     loadingContext.fillRect(0, loadingCanvas.height - 70, loadingCanvas.width, 50);
     loadingContext.fillStyle = 'white';
     loadingContext.fillText(text, 20, loadingCanvas.height - 30);
 }
-
-const loadingCanvas = document.getElementById('loading-canvas');
-const loadingContext = loadingCanvas.getContext('2d');
 
 export { startWithCachedFiles, loadWadFiles };

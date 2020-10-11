@@ -5,10 +5,11 @@ class MainMenuScreen {
     onLevelSelected;
     canvas: HTMLCanvasElement;
 
-    constructor(resourceManager: ResourceManager, canvasId: string) {
+    constructor(resourceManager: ResourceManager, gameCanvasContainerId: string) {
         this.resMgr = resourceManager;
         this.onLevelSelected = null;
-        this.canvas = <HTMLCanvasElement>document.getElementById(canvasId);
+        this.canvas = <HTMLCanvasElement>document.createElement('canvas');
+        // FIXME set size and append to container
     }
 
     showMainMenu() {

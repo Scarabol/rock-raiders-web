@@ -1,4 +1,4 @@
-function GameScreen(resourceManager) {
+function GameScreen(resourceManager, gameCanvasContainerId) {
     this.resMgr = resourceManager;
     this.onLevelEnd = null;
 }

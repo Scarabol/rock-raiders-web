@@ -1,4 +1,4 @@
-function RewardScreen(resourceManager) {
+function RewardScreen(resourceManager, gameCanvasContainerId) {
     this.onContinue = null;
 }
 
