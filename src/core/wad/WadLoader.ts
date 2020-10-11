@@ -602,7 +602,9 @@ class WadLoader {
             fetch(url).then((response) => {
                 if (response.ok) {
                     response.arrayBuffer().then((buffer) => {
-                        resolve(new WadFile().parseWadFile(buffer));
+                        const wadFile = new WadFile();
+                        wadFile.parseWadFile(buffer);
+                        resolve(wadFile);
                     });
                 }
             });
@@ -615,12 +617,13 @@ class WadLoader {
      * @param wad1Url Url to parse the LegoRR1.wad file from
      */
     loadWadFiles(wad0Url, wad1Url) {
+        const that = this;
         Promise.all([this.loadWadFile(wad0Url), this.loadWadFile(wad1Url)]).then(wadFiles => {
-            this.wad0File = wadFiles[0];
-            this.wad1File = wadFiles[1];
+            that.wad0File = wadFiles[0];
+            that.wad1File = wadFiles[1];
             this.openLocalCache((objectStore) => {
-                objectStore.put(this.wad0File, 'wad0');
-                objectStore.put(this.wad1File, 'wad1');
+                objectStore.put(that.wad0File, 'wad0');
+                objectStore.put(that.wad1File, 'wad1');
             });
             this.startLoadingProcess();
         });
@@ -628,8 +631,7 @@ class WadLoader {
 
     openLocalCache(onopen) {
         const request = indexedDB.open('RockRaidersWeb');
-        request.onupgradeneeded = function (event) {
-            // noinspection JSUnresolvedVariable
+        request.onupgradeneeded = function (event: IDBVersionChangeEvent) {
             const db = event.target.result;
             if (db.objectStoreNames.contains('wadfiles')) {
                 db.deleteObjectStore('wadfiles');
@@ -637,7 +639,6 @@ class WadLoader {
             db.createObjectStore('wadfiles');
         };
         request.onsuccess = function (event) {
-            // noinspection JSUnresolvedVariable
             const db = event.target.result;
             const transaction = db.transaction(['wadfiles'], 'readwrite');
             const objectStore = transaction.objectStore('wadfiles');

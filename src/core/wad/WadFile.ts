@@ -66,8 +66,6 @@ class WadFile {
             console.log(this.fLength);
             console.log(this.fStart);
         }
-
-        return this;
     }
 
     /**
