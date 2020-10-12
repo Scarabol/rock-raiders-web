@@ -8,14 +8,14 @@ import { RewardScreen } from './gui/RewardScreen';
 
 const resMgr = new ResourceManager();
 const loadingScreen = new LoadingScreen(resMgr);
-const mainMenuScreen = new MainMenuScreen();
+const mainMenuScreen = new MainMenuScreen(resMgr);
 const gameScreen = new GameScreen();
 const rewardScreen = new RewardScreen();
 
 // link all components with callbacks
 
 loadingScreen.onResourcesLoaded = () => {
-    // mainMenuScreen.showMainMenu();
+    mainMenuScreen.showMainMenu();
     // mainMenuScreen.selectLevel('Level05'); // FIXME directly start level for debugging
 };
 mainMenuScreen.onLevelSelected = (levelName) => {
