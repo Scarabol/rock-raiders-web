@@ -2,7 +2,7 @@ class ScreenLayer {
 
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
-    active: boolean;
+    onRedraw: (context: CanvasRenderingContext2D) => void;
 
     constructor(width: number, height: number, zIndex: number = 0) {
         this.canvas = document.createElement('canvas');
@@ -14,29 +14,26 @@ class ScreenLayer {
     }
 
     resize(width, height) {
-        console.log('resize layer to ' + width + ' x ' + height);
         this.canvas.width = width;
         this.canvas.height = height;
-        this.redraw();
+        if (this.isActive()) this.redraw();
     }
 
     redraw() {
-        console.log('Redrawing layer');
-        this.onRedraw(this.context);
-    }
-
-    onRedraw(context: CanvasRenderingContext2D) {
+        if (this.onRedraw) this.onRedraw(this.context);
     }
 
     show() {
         this.canvas.style.visibility = 'visible';
-        this.active = true;
-        // TODO resize to screen size
+        this.redraw();
     }
 
     hide() {
         this.canvas.style.visibility = 'hidden';
-        this.active = false;
+    }
+
+    isActive() {
+        return this.canvas.style.visibility === 'visible';
     }
 
 }

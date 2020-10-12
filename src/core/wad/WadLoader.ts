@@ -15,7 +15,6 @@ class WadLoader {
     wad1File: WadFile = null;
     startTime: Date;
     assetIndex: number = 0;
-    totalResources: number = 0;
     assetsFromCfg: any;
     assetsFromCfgByName: any;
     onLoad: () => void = null;
@@ -359,7 +358,7 @@ class WadLoader {
             this.registerDebugAssets(mainConf);
             // start loading assets
             this.assetsFromCfg = Object.values(this.assetsFromCfgByName);
-            this.totalResources = resMgr.initialAssets.length + this.assetsFromCfg.length;
+            this.loadingScreen.totalResources = resMgr.initialAssets.length + this.assetsFromCfg.length;
             this.assetIndex = 0;
             this.loadSequentialAssets();
         });
@@ -567,7 +566,7 @@ class WadLoader {
             // main game file (put last as this contains the main game loop)
             // loadScriptAsset('rockRaiders.js', () => {
             // indicate that loading has finished, and display the total loading time
-            console.log('Loading of about ' + this.totalResources + ' assets complete! Total load time: ' + ((new Date().getTime() - this.startTime.getTime()) / 1000).toFixed(2).toString() + ' seconds.');
+            console.log('Loading of about ' + this.loadingScreen.totalResources + ' assets complete! Total load time: ' + ((new Date().getTime() - this.startTime.getTime()) / 1000).toFixed(2).toString() + ' seconds.');
             // remove globals used during loading phase so as not to clutter the memory, if even only by a small amount
             // delete object;
             // });

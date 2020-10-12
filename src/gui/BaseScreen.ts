@@ -23,22 +23,16 @@ class BaseScreen {
     }
 
     redraw() {
-        this.layers.filter(layer => layer.active).forEach((layer) => {
-            layer.redraw();
-        });
+        this.layers.filter(layer => layer.isActive()).forEach((layer) => layer.redraw());
     }
 
     show() {
-        this.layers.filter(layer => layer.active).forEach((layer) => {
-            layer.show();
-        });
+        this.layers.filter(layer => layer.isActive()).forEach((layer) => layer.show());
         this.redraw();
     }
 
     hide() {
-        this.layers.forEach((canvas) => {
-            canvas.hide();
-        });
+        this.layers.forEach((layer) => layer.hide());
     }
 
     onWindowResize() {
@@ -52,12 +46,9 @@ class BaseScreen {
     }
 
     resize(width: number, height: number) {
-        console.log('resize to ' + width + ' x ' + height);
         this.width = width;
         this.height = height;
-        this.layers.filter(layer => layer.active).forEach((layer) => {
-            layer.resize(width, height);
-        });
+        this.layers.forEach((layer) => layer.resize(width, height));
         this.redraw();
     }
 

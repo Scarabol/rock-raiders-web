@@ -34,7 +34,7 @@ class LoadingScreen extends BaseScreen {
     startLoading() {
         this.show();
         new WadLoader(this).startWithCachedFiles(() => {
-            // this.hide(); // FIXME uncomment this
+            this.hide();
             this.onResourcesLoaded();
         });
     }
@@ -57,12 +57,9 @@ class LoadingScreen extends BaseScreen {
         const imgProgress = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['ProgressBar']).canvas;
         this.layer.onRedraw = (context => {
             const screenZoom = this.width / imgBackground.width;
-            const loadingBarX = 142 * screenZoom;
-            const loadingBarY = 450 * screenZoom;
             const loadingBarWidth = 353 * this.currentResourceIndex / this.totalResources * screenZoom;
-            const loadingBarHeight = 9 * screenZoom;
             context.drawImage(imgBackground, 0, 0, this.width, this.height);
-            context.drawImage(imgProgress, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
+            context.drawImage(imgProgress, 142 * screenZoom, 450 * screenZoom, loadingBarWidth, 9 * screenZoom);
         });
         this.redraw();
     }
