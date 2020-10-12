@@ -14,12 +14,12 @@ class BaseScreen {
         this.resMgr = resourceManager;
         this.gameCanvasContainer = document.getElementById('game-canvas-container');
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!';
-        window.addEventListener('resize', () => this.onWindowResize);
+        window.addEventListener('resize', () => this.onWindowResize());
         this.onWindowResize();
     }
 
-    createLayer(zIndex: number = 0) {
-        const layer = new ScreenLayer(this.width, this.height, zIndex);
+    createLayer(zIndex: number = 0, withContext: boolean = true) {
+        const layer = new ScreenLayer(this.width, this.height, zIndex, withContext);
         this.layers.push(layer);
         this.gameCanvasContainer.appendChild(layer.canvas);
         return layer;
@@ -30,7 +30,7 @@ class BaseScreen {
     }
 
     show() {
-        this.layers.filter(layer => layer.isActive()).forEach((layer) => layer.show());
+        this.layers.forEach((layer) => layer.show());
         this.redraw();
     }
 

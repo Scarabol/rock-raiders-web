@@ -26,7 +26,6 @@ class LoadingScreen extends BaseScreen {
             context.fillStyle = 'white';
             context.fillText('Loading...', 20, this.height - 30);
         };
-        this.layer.show();
     }
 
     startLoading() {

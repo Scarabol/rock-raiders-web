@@ -4,12 +4,12 @@ class ScreenLayer {
     context: CanvasRenderingContext2D;
     onRedraw: (context: CanvasRenderingContext2D) => void;
 
-    constructor(width: number, height: number, zIndex: number = 0) {
+    constructor(width: number, height: number, zIndex: number = 0, withContext: boolean = true) {
         this.canvas = document.createElement('canvas');
         this.canvas.width = width;
         this.canvas.height = height;
         this.canvas.style.zIndex = String(zIndex);
-        this.context = this.canvas.getContext('2d');
+        if (withContext) this.context = this.canvas.getContext('2d');
         this.hide();
     }
 

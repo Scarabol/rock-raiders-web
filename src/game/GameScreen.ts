@@ -1,18 +1,21 @@
 import { BaseScreen } from '../gui/BaseScreen';
 import { ResourceManager } from '../core/ResourceManager';
 import { ScreenLayer } from '../gui/ScreenLayer';
+import { SceneManager } from './engine/SceneManager';
 
 class GameScreen extends BaseScreen {
 
     onLevelEnd: (gameResult: string) => void; // TODO game result is actually an objects with much more data
     gameLayer: ScreenLayer;
+    sceneManager: SceneManager;
     guiLayer: ScreenLayer;
     levelConf: object;
 
     constructor(resourceManager: ResourceManager) {
         super(resourceManager);
-        this.gameLayer = this.createLayer();
-        this.guiLayer = this.createLayer(5);
+        this.gameLayer = this.createLayer(0, false);
+        this.sceneManager = new SceneManager(this.gameLayer.canvas);
+        // this.guiLayer = this.createLayer(5);
     }
 
     startLevel(levelName) {
@@ -22,16 +25,16 @@ class GameScreen extends BaseScreen {
         console.log(this.levelConf);
         const levelConf = this.levelConf; // TODO inline this
 
-        const themeName = levelConf["TextureSet"][1];
+        const themeName = levelConf['TextureSet'][1];
         // console.log(themeName);
 
-        const terrainMapName = levelConf["TerrainMap"];
-        const cryoreMapName = levelConf["CryOreMap"];
-        const olFileName = levelConf["OListFile"];
-        const predugMapName = levelConf["PreDugMap"];
-        const surfaceMapName = levelConf["SurfaceMap"];
-        const pathMapName = levelConf["PathMap"];
-        const fallinMapName = levelConf["FallinMap"];
+        const terrainMapName = levelConf['TerrainMap'];
+        const cryoreMapName = levelConf['CryOreMap'];
+        const olFileName = levelConf['OListFile'];
+        const predugMapName = levelConf['PreDugMap'];
+        const surfaceMapName = levelConf['SurfaceMap'];
+        const pathMapName = levelConf['PathMap'];
+        const fallinMapName = levelConf['FallinMap'];
 
         // load in Space types from terrain, surface, and path maps
         // for (let i = 0; i < GameManager.maps[terrainMapName].level.length; i++) {
@@ -163,7 +166,24 @@ class GameScreen extends BaseScreen {
         //     }
         // }
 
-        this.show(); // finally show all the layers
+        // finally show all the layers
+        this.gameLayer.show();
+        this.show();
+    }
+
+    show() {
+        super.show();
+        this.sceneManager.startRendering();
+    }
+
+    hide() {
+        this.sceneManager.stopRendering();
+        super.hide();
+    }
+
+    resize(width: number, height: number) {
+        super.resize(width, height);
+        if (this.sceneManager) this.sceneManager.renderer.setSize(width, height);
     }
 
 }
