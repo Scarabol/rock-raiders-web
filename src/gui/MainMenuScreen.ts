@@ -5,7 +5,6 @@ import { ResourceManager } from '../core/ResourceManager';
 class MainMenuScreen extends BaseScreen {
 
     onLevelSelected: (levelName: string) => void = null;
-    resourceManager: ResourceManager;
     startCanvas: ScreenLayer;
     loadGameCanvas: ScreenLayer;
     levelSelectCanvas: ScreenLayer;
@@ -14,8 +13,7 @@ class MainMenuScreen extends BaseScreen {
     optionsCanvas: ScreenLayer;
 
     constructor(resourceManager: ResourceManager) {
-        super();
-        this.resourceManager = resourceManager;
+        super(resourceManager);
         this.startCanvas = this.createLayer();
         this.loadGameCanvas = this.createLayer();
         this.levelSelectCanvas = this.createLayer();
@@ -27,7 +25,7 @@ class MainMenuScreen extends BaseScreen {
 
     showMainMenu() {
         this.hide();
-        const menuBg = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Menu']['MainMenuFull']['Menu1']['MenuImage']).canvas;
+        const menuBg = this.resMgr.getImage(this.resMgr.configuration['Lego*']['Menu']['MainMenuFull']['Menu1']['MenuImage']).canvas;
         this.startCanvas.onRedraw = (context => {
             context.drawImage(menuBg, 0, 0, this.width, this.height);
         });

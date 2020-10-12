@@ -1,14 +1,17 @@
 import { ScreenLayer } from './ScreenLayer';
+import { ResourceManager } from '../core/ResourceManager';
 
 class BaseScreen {
 
+    resMgr: ResourceManager;
     gameCanvasContainer: HTMLElement;
     layers: ScreenLayer[] = [];
     width: number = 800;
     height: number = 600;
     ratio: number = 800 / 600;
 
-    constructor() {
+    constructor(resourceManager: ResourceManager) {
+        this.resMgr = resourceManager;
         this.gameCanvasContainer = document.getElementById('game-canvas-container');
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!';
         window.addEventListener('resize', () => this.onWindowResize);

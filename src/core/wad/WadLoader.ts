@@ -21,7 +21,7 @@ class WadLoader {
 
     constructor(loadingScreen: LoadingScreen) {
         this.loadingScreen = loadingScreen;
-        this.resMgr = loadingScreen.resourceManager;
+        this.resMgr = loadingScreen.resMgr;
     }
 
     /**

@@ -5,15 +5,13 @@ import { ScreenLayer } from './ScreenLayer';
 
 class LoadingScreen extends BaseScreen {
 
-    resourceManager: ResourceManager;
     layer: ScreenLayer;
     onResourcesLoaded: () => void = null;
     currentResourceIndex: number = 0;
     totalResources: number = 0;
 
     constructor(resourceManager: ResourceManager) {
-        super();
-        this.resourceManager = resourceManager;
+        super(resourceManager);
         this.layer = this.createLayer();
         this.layer.onRedraw = (context) => {
             // clear the screen to black
@@ -53,8 +51,8 @@ class LoadingScreen extends BaseScreen {
     }
 
     enableGraphicMode() {
-        const imgBackground = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['LoadScreen']).canvas;
-        const imgProgress = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['ProgressBar']).canvas;
+        const imgBackground = this.resMgr.getImage(this.resMgr.configuration['Lego*']['Main']['LoadScreen']).canvas;
+        const imgProgress = this.resMgr.getImage(this.resMgr.configuration['Lego*']['Main']['ProgressBar']).canvas;
         this.layer.onRedraw = (context => {
             const screenZoom = this.width / imgBackground.width;
             const loadingBarWidth = 353 * this.currentResourceIndex / this.totalResources * screenZoom;
