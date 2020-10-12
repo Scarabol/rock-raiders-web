@@ -1,73 +1,70 @@
 import { WadLoader } from '../core/wad/WadLoader';
-import { BaseScreen } from '../core/BaseScreen';
+import { BaseScreen } from './BaseScreen';
 import { ResourceManager } from '../core/ResourceManager';
+import { ScreenLayer } from './ScreenLayer';
 
 class LoadingScreen extends BaseScreen {
 
     resourceManager: ResourceManager;
-    loadingContext: CanvasRenderingContext2D;
-    imgBackground: HTMLCanvasElement;
-    imgProgress: HTMLCanvasElement;
+    layer: ScreenLayer;
     onResourcesLoaded: () => void = null;
-    graphicMode: boolean = false;
     currentResourceIndex: number = 0;
     totalResources: number = 0;
 
     constructor(resourceManager: ResourceManager) {
         super();
         this.resourceManager = resourceManager;
-        const loadingCanvas = this.createCanvas();
-        this.loadingContext = loadingCanvas.getContext('2d');
+        this.layer = this.createLayer();
+        this.layer.onRedraw = (context) => {
+            // clear the screen to black
+            context.fillStyle = 'black';
+            context.fillRect(0, 0, this.width, this.height);
+            // draw the loading title
+            context.font = '48px Arial';
+            context.fillStyle = 'white';
+            context.fillText('Loading Rock Raiders', 5, this.height - 80);
+            // hard-code the first loading message
+            context.font = '30px Arial';
+            context.fillStyle = 'white';
+            context.fillText('Loading...', 20, this.height - 30);
+        };
+        this.layer.show();
     }
 
     startLoading() {
-        // this.show(); // TODO maybe needed because screens are created invis by default?
+        this.show();
         new WadLoader(this).startWithCachedFiles(() => {
-            this.hide();
+            // this.hide(); // FIXME uncomment this
             this.onResourcesLoaded();
         });
     }
 
     setLoadingMessage(text) {
-        if (this.graphicMode) return;
-        this.loadingContext.fillStyle = 'black';
-        this.loadingContext.fillRect(0, 0, this.width, this.height);
-        this.loadingContext.fillStyle = 'white';
-        this.loadingContext.fillText(text, 20, this.height - 30);
-    }
-
-    enableGraphicMode() {
-        this.imgBackground = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['LoadScreen']).canvas;
-        this.imgProgress = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['ProgressBar']).canvas;
-        this.graphicMode = true;
+        this.layer.onRedraw = (context) => {
+            // wipe old message text
+            context.fillStyle = 'black';
+            context.fillRect(0, this.height - 60, this.width, 60);
+            // write new message text
+            context.font = '30px Arial';
+            context.fillStyle = 'white';
+            context.fillText(text, 20, this.height - 30);
+        };
         this.redraw();
     }
 
-    redraw() {
-        super.redraw();
-        if (this.graphicMode) {
-            const screenZoom = this.width / this.imgBackground.width;
+    enableGraphicMode() {
+        const imgBackground = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['LoadScreen']).canvas;
+        const imgProgress = this.resourceManager.getImage(this.resourceManager.configuration['Lego*']['Main']['ProgressBar']).canvas;
+        this.layer.onRedraw = (context => {
+            const screenZoom = this.width / imgBackground.width;
             const loadingBarX = 142 * screenZoom;
             const loadingBarY = 450 * screenZoom;
             const loadingBarWidth = 353 * this.currentResourceIndex / this.totalResources * screenZoom;
             const loadingBarHeight = 9 * screenZoom;
-            this.loadingContext.drawImage(this.imgBackground, 0, 0, this.width, this.height);
-            this.loadingContext.drawImage(this.imgProgress, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
-        } else {
-            // clear the screen to black
-            this.loadingContext.fillStyle = 'black';
-            this.loadingContext.fillRect(0, 0, this.width, this.height);
-
-            // draw the loading title
-            this.loadingContext.font = '48px Arial';
-            this.loadingContext.fillStyle = 'white';
-            this.loadingContext.fillText('Loading Rock Raiders', 5, this.height - 80);
-
-            // hard-code the first loading message
-            this.loadingContext.font = '30px Arial';
-            this.loadingContext.fillStyle = 'white';
-            this.loadingContext.fillText('Loading...', 20, this.height - 30);
-        }
+            context.drawImage(imgBackground, 0, 0, this.width, this.height);
+            context.drawImage(imgProgress, loadingBarX, loadingBarY, loadingBarWidth, loadingBarHeight);
+        });
+        this.redraw();
     }
 
 }

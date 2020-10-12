@@ -1,4 +1,4 @@
-import { BaseScreen } from '../core/BaseScreen';
+import { BaseScreen } from './BaseScreen';
 
 class RewardScreen extends BaseScreen {
 

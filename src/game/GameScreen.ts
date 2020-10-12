@@ -1,4 +1,4 @@
-import { BaseScreen } from '../core/BaseScreen';
+import { BaseScreen } from '../gui/BaseScreen';
 
 class GameScreen extends BaseScreen {
 

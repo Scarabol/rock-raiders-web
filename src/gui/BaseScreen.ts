@@ -1,7 +1,9 @@
+import { ScreenLayer } from './ScreenLayer';
+
 class BaseScreen {
 
     gameCanvasContainer: HTMLElement;
-    canvases: HTMLCanvasElement[];
+    layers: ScreenLayer[] = [];
     width: number = 800;
     height: number = 600;
     ratio: number = 800 / 600;
@@ -9,34 +11,33 @@ class BaseScreen {
     constructor() {
         this.gameCanvasContainer = document.getElementById('game-canvas-container');
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!';
-        this.canvases = [];
-        window.addEventListener('resize', this.onWindowResize);
+        window.addEventListener('resize', () => this.onWindowResize);
         this.onWindowResize();
     }
 
-    createCanvas(zIndex: number = 0) {
-        const canvas = document.createElement('canvas');
-        canvas.width = this.width; // TODO derive initial size from container? or use default size?
-        canvas.height = this.height;
-        canvas.style.zIndex = String(zIndex);
-        this.canvases.push(canvas);
-        this.gameCanvasContainer.appendChild(canvas);
-        return canvas;
+    createLayer(zIndex: number = 0) {
+        const layer = new ScreenLayer(this.width, this.height, zIndex);
+        this.layers.push(layer);
+        this.gameCanvasContainer.appendChild(layer.canvas);
+        return layer;
     }
 
     redraw() {
-    }
-
-    show() {
-        this.redraw();
-        this.canvases.forEach((canvas) => {
-            canvas.style.visibility = 'visible';
+        this.layers.filter(layer => layer.active).forEach((layer) => {
+            layer.redraw();
         });
     }
 
+    show() {
+        this.layers.filter(layer => layer.active).forEach((layer) => {
+            layer.show();
+        });
+        this.redraw();
+    }
+
     hide() {
-        this.canvases.forEach((canvas) => {
-            canvas.style.visibility = 'hidden';
+        this.layers.forEach((canvas) => {
+            canvas.hide();
         });
     }
 
@@ -51,11 +52,11 @@ class BaseScreen {
     }
 
     resize(width: number, height: number) {
+        console.log('resize to ' + width + ' x ' + height);
         this.width = width;
         this.height = height;
-        this.canvases.forEach((canvas) => {
-            canvas.width = width;
-            canvas.height = height;
+        this.layers.filter(layer => layer.active).forEach((layer) => {
+            layer.resize(width, height);
         });
         this.redraw();
     }

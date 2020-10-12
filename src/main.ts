@@ -15,8 +15,8 @@ const rewardScreen = new RewardScreen();
 // link all components with callbacks
 
 loadingScreen.onResourcesLoaded = () => {
-    // mainMenuScreen.showMainMenu(); // FIXME directly start level for debugging
-    mainMenuScreen.selectLevel('Level05');
+    // mainMenuScreen.showMainMenu();
+    // mainMenuScreen.selectLevel('Level05'); // FIXME directly start level for debugging
 };
 mainMenuScreen.onLevelSelected = (levelName) => {
     gameScreen.startLevel(levelName);
