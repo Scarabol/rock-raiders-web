@@ -117,11 +117,11 @@ export class Tile {
             }
         }
 
-        if (isSurrounded) {
-            this.undiscovered = true;
-        } else {
-            this.explore();
-        }
+        // if (isSurrounded) {
+        //     this.undiscovered = true;
+        // } else {
+        //     this.explore();
+        // }
 
         const topLeftVertex = new THREE.Vector3(this.x, 0, this.y);
         const topRightVertex = new THREE.Vector3(this.x + 1, 0, this.y);
@@ -198,7 +198,6 @@ export class Tile {
         if (this.undiscovered) { // FIXME determine texture name
             textureName += '70';
         } else {
-            console.log('discovered!');
             textureName += '00';
         }
         //     if (wallType === 1) {

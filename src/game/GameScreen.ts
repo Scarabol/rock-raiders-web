@@ -84,26 +84,14 @@ class GameScreen extends BaseScreen {
         }
         // console.log(terrain);
 
-        // FIXME create mesh and add it to the scene
-
-        const map = new Map(this.resMgr, terrain.length, terrain[0].length, textureSet.texturebasename); // TODO maybe width/height must be swapped here
+        // create mesh and add it to the scene
+        const map = new Map(this.resMgr, terrain.length, terrain[0].length, textureSet.texturebasename); // TODO maybe width/height must be swapped here (all maps square?)
         map.spaces = terrain;
         map.spaces.forEach(col => col.forEach(s => s.map = map));
+        map.spaces.forEach(col => col.forEach(s => {
+            s.undiscovered = predugMap[s.x][s.y] !== 1 && predugMap[s.x][s.y] !== 3;
+        }));
         map.spaces.forEach(col => col.forEach(s => s.update()));
-
-        // FIXME fill map.tiles from terrain array
-
-        // for (let x = 0; x < terrain.length; x++) {
-        //     const col: Tile[] = [];
-        //     for (let y = 0; y < terrain[x].length; y++) {
-        //         const t = terrain[x][y];
-        //         console.log(t);
-        //         col.push(new Tile(map, x, y));
-        //     }
-        //     map.spaces.push(col);
-        // }
-        // map.spaces.forEach(col => col.forEach(s => s.update()));
-
         this.sceneManager.scene.add(map.floorGroup);
 
         // ensure that any walls which do not meet the 'supported' requirement crumble at the start

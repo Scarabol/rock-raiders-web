@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { DebugHelper } from '../../core/DebugHelper';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { Vector3 } from 'three';
 
 class SceneManager {
 
@@ -34,18 +35,16 @@ class SceneManager {
         this.scene.add(this.axisHelper);
 
         this.camera = new THREE.PerspectiveCamera(60, canvas.width / canvas.height, 0.1, 1000);
-        this.camera.position.x = -15; // TODO dynamically position camera on each level start
-        this.camera.position.y = 18;
-        this.camera.position.z = -18;
-        // this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+        this.camera.position.x = 0; // TODO dynamically position camera on each level start
+        this.camera.position.y = 10;
+        this.camera.position.z = 0;
+        this.camera.lookAt(new THREE.Vector3(10, 0, 10)); // TODO this will be overwritten by controls setup
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.screenSpacePanning = false;
         this.controls.mouseButtons = {LEFT: null, MIDDLE: THREE.MOUSE.ROTATE, RIGHT: THREE.MOUSE.PAN};
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
-
-        this.controls.target.set(0, this.camera.position.y / 2, 0); // TODO dynamically look at toolstation
-        this.controls.update();
+        // TODO dynamically look at toolstation
     }
 
     startRendering() {
