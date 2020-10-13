@@ -18,7 +18,6 @@ class SceneManager {
 
     constructor(canvas: HTMLCanvasElement) {
         this.renderer = new THREE.WebGLRenderer({antialias: true, canvas: canvas});
-        // this.renderer.setSize(800, 600); // TODO adjust render size on window resize
         this.renderer.setClearColor(0xa0a0a0); // TODO adjust clear color to black (or level???)
 
         this.scene = new THREE.Scene();
@@ -34,7 +33,7 @@ class SceneManager {
         this.axisHelper = new THREE.AxesHelper(20);
         this.scene.add(this.axisHelper);
 
-        this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera = new THREE.PerspectiveCamera(60, canvas.width / canvas.height, 0.1, 1000);
         this.camera.position.x = 15; // TODO dynamically position camera on each level start
         this.camera.position.y = 18;
         this.camera.position.z = 18;

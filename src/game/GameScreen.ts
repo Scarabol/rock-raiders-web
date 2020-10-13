@@ -2,13 +2,14 @@ import { BaseScreen } from '../gui/BaseScreen';
 import { ResourceManager } from '../core/ResourceManager';
 import { ScreenLayer } from '../gui/ScreenLayer';
 import { SceneManager } from './engine/SceneManager';
+import { Space } from './model/Space';
 
 class GameScreen extends BaseScreen {
 
     onLevelEnd: (gameResult: string) => void; // TODO game result is actually an objects with much more data
     gameLayer: ScreenLayer;
     sceneManager: SceneManager;
-    guiLayer: ScreenLayer;
+    // guiLayer: ScreenLayer;
     levelConf: object;
 
     constructor(resourceManager: ResourceManager) {
@@ -22,65 +23,67 @@ class GameScreen extends BaseScreen {
         console.log('Starting level ' + levelName);
         this.levelConf = this.resMgr.configuration['Lego*']['Levels'][levelName];
         if (!this.levelConf) throw 'Could not find level configuration for "' + levelName + '"'; // TODO error handling
-        console.log(this.levelConf);
-        const levelConf = this.levelConf; // TODO inline this
+        // console.log(this.levelConf);
 
-        const themeName = levelConf['TextureSet'][1];
+        const themeName = this.levelConf['TextureSet'][1];
         // console.log(themeName);
+        const textureSet = this.resMgr.configuration['Lego*']['Textures'][themeName];
+        console.log(textureSet);
 
-        const terrainMapName = levelConf['TerrainMap'];
-        const cryoreMapName = levelConf['CryOreMap'];
-        const olFileName = levelConf['OListFile'];
-        const predugMapName = levelConf['PreDugMap'];
-        const surfaceMapName = levelConf['SurfaceMap'];
-        const pathMapName = levelConf['PathMap'];
-        const fallinMapName = levelConf['FallinMap'];
+        const terrainMap = this.resMgr.maps[(this.levelConf)['TerrainMap']].level;
+        const pathMap = this.resMgr.maps[(this.levelConf)['PathMap']];
+        const surfaceMap = this.resMgr.maps[(this.levelConf)['SurfaceMap']].level;
+        const predugMap = this.resMgr.maps[(this.levelConf)['PreDugMap']].level;
+        const cryOreMap = this.resMgr.maps[(this.levelConf)['CryOreMap']].level;
+        // const olFileName = levelConf['OListFile'];
+        // const fallinMapName = levelConf['FallinMap'];
 
         // load in Space types from terrain, surface, and path maps
-        // for (let i = 0; i < GameManager.maps[terrainMapName].level.length; i++) {
-        //     terrain.push([]);
-        //     for (let r = 0; r < GameManager.maps[terrainMapName].level[i].length; r++) {
-        //
-        //         // give the path map the highest priority, if it exists
-        //         if (GameManager.maps[pathMapName] && GameManager.maps[pathMapName].level[i][r] === 1) {
-        //             // rubble 1 Space id = 100
-        //             terrain[i].push(new Space(100, i, r, GameManager.maps[surfaceMapName].level[i][r]));
-        //         } else if (GameManager.maps[pathMapName] && GameManager.maps[pathMapName].level[i][r] === 2) {
-        //             // building power path Space id = -1
-        //             terrain[i].push(new Space(-1, i, r, GameManager.maps[surfaceMapName].level[i][r]));
-        //         } else {
-        //             if (GameManager.maps[predugMapName].level[i][r] === 0) {
-        //                 // soil(5) was removed pre-release, so replace it with dirt(4)
-        //                 if (GameManager.maps[terrainMapName].level[i][r] === 5) {
-        //                     terrain[i].push(new Space(4, i, r, GameManager.maps[surfaceMapName].level[i][r]));
-        //                 } else {
-        //                     terrain[i].push(new Space(GameManager.maps[terrainMapName].level[i][r], i, r, GameManager.maps[surfaceMapName].level[i][r]));
-        //                 }
-        //             } else if (GameManager.maps[predugMapName].level[i][r] === 3 || GameManager.maps[predugMapName].level[i][r] === 4) { // slug holes
-        //                 terrain[i].push(new Space(GameManager.maps[predugMapName].level[i][r] * 10, i, r, GameManager.maps[surfaceMapName].level[i][r]));
-        //             } else if (GameManager.maps[predugMapName].level[i][r] === 1 || GameManager.maps[predugMapName].level[i][r] === 2) {
-        //                 if (GameManager.maps[terrainMapName].level[i][r] === 6) {
-        //                     terrain[i].push(new Space(6, i, r, GameManager.maps[surfaceMapName].level[i][r]));
-        //                 } else if (GameManager.maps[terrainMapName].level[i][r] === 9) {
-        //                     terrain[i].push(new Space(9, i, r, GameManager.maps[surfaceMapName].level[i][r]));
-        //                 } else {
-        //                     terrain[i].push(new Space(0, i, r, GameManager.maps[surfaceMapName].level[i][r]));
-        //                 }
-        //             }
-        //
-        //             const currentCryOre = GameManager.maps[cryoreMapName].level[i][r];
-        //             if (currentCryOre % 2 === 1) {
-        //                 terrain[i][r].containedCrystals = (currentCryOre + 1) / 2;
-        //             } else {
-        //                 terrain[i][r].containedOre = currentCryOre / 2;
-        //             }
-        //         }
-        //     }
-        // }
+        const terrain = [];
+        for (let i = 0; i < terrainMap.length; i++) {
+            terrain.push([]);
+            for (let r = 0; r < terrainMap[i].length; r++) {
+                // give the path map the highest priority, if it exists
+                if (pathMap && pathMap.level[i][r] === 1) {
+                    // rubble 1 Space id = 100
+                    terrain[i].push(new Space(100, i, r, surfaceMap[i][r]));
+                } else if (pathMap && pathMap.level[i][r] === 2) {
+                    // building power path Space id = -1
+                    terrain[i].push(new Space(-1, i, r, surfaceMap[i][r]));
+                } else {
+                    if (predugMap[i][r] === 0) {
+                        // soil(5) was removed pre-release, so replace it with dirt(4)
+                        if (terrainMap[i][r] === 5) {
+                            terrain[i].push(new Space(4, i, r, surfaceMap[i][r]));
+                        } else {
+                            terrain[i].push(new Space(terrainMap[i][r], i, r, surfaceMap[i][r]));
+                        }
+                    } else if (predugMap[i][r] === 3 || predugMap[i][r] === 4) { // slug holes
+                        terrain[i].push(new Space(predugMap[i][r] * 10, i, r, surfaceMap[i][r]));
+                    } else if (predugMap[i][r] === 1 || predugMap[i][r] === 2) {
+                        if (terrainMap[i][r] === 6) {
+                            terrain[i].push(new Space(6, i, r, surfaceMap[i][r]));
+                        } else if (terrainMap[i][r] === 9) {
+                            terrain[i].push(new Space(9, i, r, surfaceMap[i][r]));
+                        } else {
+                            terrain[i].push(new Space(0, i, r, surfaceMap[i][r]));
+                        }
+                    }
+
+                    const currentCryOre = cryOreMap[i][r];
+                    if (currentCryOre % 2 === 1) {
+                        terrain[i][r].containedCrystals = (currentCryOre + 1) / 2;
+                    } else {
+                        terrain[i][r].containedOre = currentCryOre / 2;
+                    }
+                }
+            }
+        }
+        console.log(terrain);
 
         // ensure that any walls which do not meet the 'supported' requirement crumble at the start
-        // for (let i = 0; i < GameManager.maps[predugMapName].level.length; i++) {
-        //     for (let r = 0; r < GameManager.maps[predugMapName].level[i].length; r++) {
+        // for (let i = 0; i < this.resMgr.maps[predugMapName].level.length; i++) {
+        //     for (let r = 0; r < this.resMgr.maps[predugMapName].level[i].length; r++) {
         //         if (terrain[i][r].isWall) {
         //             terrain[i][r].checkWallSupported(null, true);
         //         }
@@ -88,9 +91,9 @@ class GameScreen extends BaseScreen {
         // }
 
         // 'touch' all exposed spaces in the predug map so that they appear as visible from the start
-        // for (let i = 0; i < GameManager.maps[predugMapName].level.length; i++) {
-        //     for (let r = 0; r < GameManager.maps[predugMapName].level[i].length; r++) {
-        //         const currentPredug = GameManager.maps[predugMapName].level[i][r];
+        // for (let i = 0; i < this.resMgr.maps[predugMapName].level.length; i++) {
+        //     for (let r = 0; r < this.resMgr.maps[predugMapName].level[i].length; r++) {
+        //         const currentPredug = this.resMgr.maps[predugMapName].level[i][r];
         //         if (currentPredug === 1 || currentPredug === 3) {
         //             touchAllAdjacentSpaces(terrain[i][r]);
         //         }
@@ -98,10 +101,10 @@ class GameScreen extends BaseScreen {
         // }
 
         // add land-slide frequency to Spaces
-        // if (GameManager.maps[fallinMapName]) {
-        //     for (let i = 0; i < GameManager.maps[fallinMapName].level.length; i++) {
-        //         for (let r = 0; r < GameManager.maps[fallinMapName].level[i].length; r++) {
-        //             terrain[i][r].setLandSlideFrequency(GameManager.maps[fallinMapName].level[i][r]);
+        // if (this.resMgr.maps[fallinMapName]) {
+        //     for (let i = 0; i < this.resMgr.maps[fallinMapName].level.length; i++) {
+        //         for (let r = 0; r < this.resMgr.maps[fallinMapName].level[i].length; r++) {
+        //             terrain[i][r].setLandSlideFrequency(this.resMgr.maps[fallinMapName].level[i][r]);
         //         }
         //     }
         // }
