@@ -2,8 +2,6 @@ import { BaseScreen } from '../gui/BaseScreen';
 import { ResourceManager } from '../core/ResourceManager';
 import { ScreenLayer } from '../gui/ScreenLayer';
 import { SceneManager } from './engine/SceneManager';
-import { Space } from './model/Space';
-import * as THREE from 'three';
 import { Map } from './model/Map';
 import { Tile } from './model/Tile';
 
@@ -42,7 +40,7 @@ class GameScreen extends BaseScreen {
         // const fallinMapName = levelConf['FallinMap'];
 
         // load in Space types from terrain, surface, and path maps
-        const terrain = [];
+        const terrain: Tile[][] = [];
         for (let x = 0; x < terrainMap.length; x++) {
             terrain.push([]);
             for (let y = 0; y < terrainMap[x].length; y++) {
@@ -89,7 +87,10 @@ class GameScreen extends BaseScreen {
         map.spaces = terrain;
         map.spaces.forEach(col => col.forEach(s => s.map = map));
         map.spaces.forEach(col => col.forEach(s => {
-            s.undiscovered = predugMap[s.x][s.y] !== 1 && predugMap[s.x][s.y] !== 3;
+            s.undiscovered = predugMap[s.y][s.x] !== 1 && predugMap[s.y][s.x] !== 2 && predugMap[s.y][s.x] !== 3 && predugMap[s.y][s.x] !== 4;
+            // if (!s.undiscovered) {
+            //     console.log(s);
+            // }
         }));
         map.spaces.forEach(col => col.forEach(s => s.update()));
         this.sceneManager.scene.add(map.floorGroup);

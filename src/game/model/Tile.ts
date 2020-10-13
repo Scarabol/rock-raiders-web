@@ -2,14 +2,13 @@ import * as THREE from 'three';
 import { Map } from './Map';
 import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils';
 import { Texture } from 'three/src/textures/Texture';
-import { ImageLoader } from 'three/src/loaders/ImageLoader';
-import { RGBAFormat, RGBFormat } from 'three/src/constants';
+import { RGBFormat } from 'three/src/constants';
 
 // CONSTANTS
 const HEIGHT_MULTIPLER = 0.05;
 
 // SURF TYPES
-const SURF = {
+const SURF = { // TODO complete list form rock-raiders-remake project
     GROUND: 0,
     SOLID_ROCK: 1,
     HARD_ROCK: 2,
@@ -25,11 +24,11 @@ const SURF = {
 
 export class Tile {
 
-    type: any;
     x: number;
     y: number;
-    surface: any;
     map: Map;
+    containedOre: number = 0;
+    containedCrystals: number = 0;
 
     geometry: THREE.Geometry = null;
     texture: any = null;
@@ -41,11 +40,11 @@ export class Tile {
 
     health: any = -1;
 
-    constructor(type, x, y, surface) {
-        this.type = type;
+    constructor(type, x, y, high) {
+        this.surf = type !== null ? type : 1;
         this.x = x;
         this.y = y;
-        this.surface = surface;
+        // this.high = high; // TODO apply high with scaling
     }
 
     isSolid() {
@@ -117,11 +116,11 @@ export class Tile {
             }
         }
 
-        // if (isSurrounded) {
-        //     this.undiscovered = true;
-        // } else {
-        //     this.explore();
-        // }
+        if (isSurrounded) {
+            // this.undiscovered = true;
+        } else {
+            this.explore();
+        }
 
         const topLeftVertex = new THREE.Vector3(this.x, 0, this.y);
         const topRightVertex = new THREE.Vector3(this.x + 1, 0, this.y);
@@ -129,19 +128,19 @@ export class Tile {
         const bottomRightVertex = new THREE.Vector3(this.x + 1, 0, this.y + 1);
 
         if (this.isSolid()) {
-            if (n.topLeft && n.topLeft.isSolid() && (n.top.isSolid() && n.left.isSolid())) {
+            if (n.topLeft.isSolid() && (n.top.isSolid() && n.left.isSolid())) {
                 topLeftVertex.y = 1;
             }
 
-            if (n.topRight && n.topRight.isSolid() && (n.top.isSolid() && n.right.isSolid())) {
+            if (n.topRight.isSolid() && (n.top.isSolid() && n.right.isSolid())) {
                 topRightVertex.y = 1;
             }
 
-            if (n.bottomRight && n.bottomRight.isSolid() && (n.bottom.isSolid() && n.right.isSolid())) {
+            if (n.bottomRight.isSolid() && (n.bottom.isSolid() && n.right.isSolid())) {
                 bottomRightVertex.y = 1;
             }
 
-            if (n.bottomLeft && n.bottomLeft.isSolid() && (n.bottom.isSolid() && n.left.isSolid())) {
+            if (n.bottomLeft.isSolid() && (n.bottom.isSolid() && n.left.isSolid())) {
                 bottomLeftVertex.y = 1;
             }
         }
@@ -193,22 +192,40 @@ export class Tile {
         }
 
         let textureName = this.map.textureBasename;
-        let textureIndex = -1;
 
-        if (this.undiscovered) { // FIXME determine texture name
-            textureName += '70';
-        } else {
-            textureName += '00';
+        let shapeIndex = 0;
+        if (this.undiscovered) {
+            shapeIndex = 7;
+        } else { // FIXME complete list
+            // console.log(wallType);
         }
-        //     if (wallType === 1) {
-        //         textureIndex = 2;
-        //     } else if (wallType === 3) {
-        //         textureIndex = 1;
-        //     } else if (wallType === 2 && (topLeftVertex.y === bottomRightVertex.y)) {
-        //         textureName += '77';
-        //     } else {
-        //         textureIndex = 0;
-        //     }
+        // if (wallType === 1) {
+        //     shapeIndex = 2;
+        // } else if (wallType === 3) {
+        //     shapeIndex = 1;
+        // } else if (wallType === 2 && (topLeftVertex.y === bottomRightVertex.y)) {
+        //     textureName += '77';
+        // } else {
+        //     shapeIndex = 0;
+        // }
+        textureName += shapeIndex.toString();
+
+        let materialIndex = 0;
+        if (this.undiscovered) { // FIXME determine texture name
+            materialIndex = 0;
+        } else if (this.surf === SURF.GROUND) {
+            materialIndex = 0;
+        } else if (this.surf === SURF.SOLID_ROCK) {
+            materialIndex = 5;
+        } else if (this.surf === SURF.HARD_ROCK) {
+            materialIndex = 4;
+        } else if (this.surf === SURF.DIRT) {
+            materialIndex = 1;
+        } else {
+            console.log(this.surf);
+        }
+        textureName += materialIndex.toString();
+
         textureName += '.bmp';
 
         // if (textureIndex !== -1) textureName += this.map.tileTypes[this.surf].textures[textureIndex];

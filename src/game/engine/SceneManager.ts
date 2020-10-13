@@ -38,13 +38,13 @@ class SceneManager {
         this.camera.position.x = 0; // TODO dynamically position camera on each level start
         this.camera.position.y = 10;
         this.camera.position.z = 0;
-        this.camera.lookAt(new THREE.Vector3(10, 0, 10)); // TODO this will be overwritten by controls setup
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.screenSpacePanning = false;
         this.controls.mouseButtons = {LEFT: null, MIDDLE: THREE.MOUSE.ROTATE, RIGHT: THREE.MOUSE.PAN};
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
-        // TODO dynamically look at toolstation
+        this.controls.target = new Vector3(10, 0, 10); // TODO dynamically look at toolstation
+        this.controls.update();
     }
 
     startRendering() {
