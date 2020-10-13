@@ -3,6 +3,9 @@ import { ResourceManager } from '../core/ResourceManager';
 import { ScreenLayer } from '../gui/ScreenLayer';
 import { SceneManager } from './engine/SceneManager';
 import { Space } from './model/Space';
+import * as THREE from 'three';
+import { Map } from './model/Map';
+import { Tile } from './model/Tile';
 
 class GameScreen extends BaseScreen {
 
@@ -28,7 +31,7 @@ class GameScreen extends BaseScreen {
         const themeName = this.levelConf['TextureSet'][1];
         // console.log(themeName);
         const textureSet = this.resMgr.configuration['Lego*']['Textures'][themeName];
-        console.log(textureSet);
+        // console.log(textureSet);
 
         const terrainMap = this.resMgr.maps[(this.levelConf)['TerrainMap']].level;
         const pathMap = this.resMgr.maps[(this.levelConf)['PathMap']];
@@ -40,46 +43,68 @@ class GameScreen extends BaseScreen {
 
         // load in Space types from terrain, surface, and path maps
         const terrain = [];
-        for (let i = 0; i < terrainMap.length; i++) {
+        for (let x = 0; x < terrainMap.length; x++) {
             terrain.push([]);
-            for (let r = 0; r < terrainMap[i].length; r++) {
+            for (let y = 0; y < terrainMap[x].length; y++) {
                 // give the path map the highest priority, if it exists
-                if (pathMap && pathMap.level[i][r] === 1) {
+                if (pathMap && pathMap.level[x][y] === 1) {
                     // rubble 1 Space id = 100
-                    terrain[i].push(new Space(100, i, r, surfaceMap[i][r]));
-                } else if (pathMap && pathMap.level[i][r] === 2) {
+                    terrain[x].push(new Tile(100, x, y, surfaceMap[x][y]));
+                } else if (pathMap && pathMap.level[x][y] === 2) {
                     // building power path Space id = -1
-                    terrain[i].push(new Space(-1, i, r, surfaceMap[i][r]));
+                    terrain[x].push(new Tile(-1, x, y, surfaceMap[x][y]));
                 } else {
-                    if (predugMap[i][r] === 0) {
+                    if (predugMap[x][y] === 0) {
                         // soil(5) was removed pre-release, so replace it with dirt(4)
-                        if (terrainMap[i][r] === 5) {
-                            terrain[i].push(new Space(4, i, r, surfaceMap[i][r]));
+                        if (terrainMap[x][y] === 5) {
+                            terrain[x].push(new Tile(4, x, y, surfaceMap[x][y]));
                         } else {
-                            terrain[i].push(new Space(terrainMap[i][r], i, r, surfaceMap[i][r]));
+                            terrain[x].push(new Tile(terrainMap[x][y], x, y, surfaceMap[x][y]));
                         }
-                    } else if (predugMap[i][r] === 3 || predugMap[i][r] === 4) { // slug holes
-                        terrain[i].push(new Space(predugMap[i][r] * 10, i, r, surfaceMap[i][r]));
-                    } else if (predugMap[i][r] === 1 || predugMap[i][r] === 2) {
-                        if (terrainMap[i][r] === 6) {
-                            terrain[i].push(new Space(6, i, r, surfaceMap[i][r]));
-                        } else if (terrainMap[i][r] === 9) {
-                            terrain[i].push(new Space(9, i, r, surfaceMap[i][r]));
+                    } else if (predugMap[x][y] === 3 || predugMap[x][y] === 4) { // slug holes
+                        terrain[x].push(new Tile(predugMap[x][y] * 10, x, y, surfaceMap[x][y]));
+                    } else if (predugMap[x][y] === 1 || predugMap[x][y] === 2) {
+                        if (terrainMap[x][y] === 6) {
+                            terrain[x].push(new Tile(6, x, y, surfaceMap[x][y]));
+                        } else if (terrainMap[x][y] === 9) {
+                            terrain[x].push(new Tile(9, x, y, surfaceMap[x][y]));
                         } else {
-                            terrain[i].push(new Space(0, i, r, surfaceMap[i][r]));
+                            terrain[x].push(new Tile(0, x, y, surfaceMap[x][y]));
                         }
                     }
 
-                    const currentCryOre = cryOreMap[i][r];
+                    const currentCryOre = cryOreMap[x][y];
                     if (currentCryOre % 2 === 1) {
-                        terrain[i][r].containedCrystals = (currentCryOre + 1) / 2;
+                        terrain[x][y].containedCrystals = (currentCryOre + 1) / 2;
                     } else {
-                        terrain[i][r].containedOre = currentCryOre / 2;
+                        terrain[x][y].containedOre = currentCryOre / 2;
                     }
                 }
             }
         }
-        console.log(terrain);
+        // console.log(terrain);
+
+        // FIXME create mesh and add it to the scene
+
+        const map = new Map(this.resMgr, terrain.length, terrain[0].length, textureSet.texturebasename); // TODO maybe width/height must be swapped here
+        map.spaces = terrain;
+        map.spaces.forEach(col => col.forEach(s => s.map = map));
+        map.spaces.forEach(col => col.forEach(s => s.update()));
+
+        // FIXME fill map.tiles from terrain array
+
+        // for (let x = 0; x < terrain.length; x++) {
+        //     const col: Tile[] = [];
+        //     for (let y = 0; y < terrain[x].length; y++) {
+        //         const t = terrain[x][y];
+        //         console.log(t);
+        //         col.push(new Tile(map, x, y));
+        //     }
+        //     map.spaces.push(col);
+        // }
+        // map.spaces.forEach(col => col.forEach(s => s.update()));
+
+        this.sceneManager.scene.add(map.floorGroup);
 
         // ensure that any walls which do not meet the 'supported' requirement crumble at the start
         // for (let i = 0; i < this.resMgr.maps[predugMapName].level.length; i++) {

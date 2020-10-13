@@ -4,6 +4,8 @@ export class Space {
     x: number;
     y: number;
     height: any;
+    containedOre: number = 0;
+    containedCrystals: number = 0;
 
     constructor(type, x, y, height) {
         this.type = type;

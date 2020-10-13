@@ -355,7 +355,7 @@ class WadLoader {
             this.loadingScreen.enableGraphicMode();
             const mainConf = resMgr.configuration['Lego*'];
             // registerAllAssets(mainConf);
-            this.registerDebugAssets(mainConf);
+            this.registerAllAssets(mainConf);
             // start loading assets
             this.assetsFromCfg = Object.values(this.assetsFromCfgByName);
             this.loadingScreen.totalResources = resMgr.initialAssets.length + this.assetsFromCfg.length;
@@ -376,43 +376,18 @@ class WadLoader {
         };
     }
 
-    registerDebugAssets(mainConf) { // register only assets used for debugging
-        // level files
-        Object.keys(mainConf['Levels']).forEach(levelKey => {
-            if (!(levelKey === 'Level05')) {
-                return;
-            }
-            const levelConf = mainConf['Levels'][levelKey];
-            this.addAsset(this.loadMapAsset, levelConf['SurfaceMap']);
-            this.addAsset(this.loadMapAsset, levelConf['PreDugMap']);
-            this.addAsset(this.loadMapAsset, levelConf['TerrainMap']);
-            this.addAsset(this.loadMapAsset, levelConf['BlockPointersMap'], true);
-            this.addAsset(this.loadMapAsset, levelConf['CryOreMap']);
-            this.addAsset(this.loadMapAsset, levelConf['PathMap'], true);
-            this.addAsset(this.loadObjectListAsset, levelConf['OListFile']);
-            this.addAsset(this.loadNerpAsset, levelConf['NERPFile']);
-            this.addAsset(this.loadNerpMsg, levelConf['NERPMessageFile']);
-            const menuConf = levelConf['MenuBMP'];
-            if (menuConf) {
-                menuConf.forEach((imgKey) => {
-                    this.addAsset(this.loadAlphaImageAsset, imgKey);
-                });
-            }
-        });
-    }
-
     registerAllAssets(mainConf) { // dynamically register all assets from config
-        // back button
-        this.addAsset(this.loadWadImageAsset, mainConf['InterfaceBackButton'].slice(2, 4).forEach(imgPath => {
-            this.addAsset(this.loadWadImageAsset, imgPath);
-        }));
-        this.addAsset(this.loadFontImageAsset, 'Interface/Fonts/ToolTipFont.bmp');
-        // crystal side bar
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/CrystalSideBar.bmp'); // right side overlay showing crystal and ore count
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/CrystalSideBar_Ore.bmp'); // image representing a single piece of ore on the overlay
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/NoSmallCrystal.bmp'); // image representing no energy crystal on the overlay
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/SmallCrystal.bmp'); // image representing a single energy crystal on the overlay
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/UsedCrystal.bmp'); // image representing a single in use energy crystal on the overlay
+        // // back button
+        // this.addAsset(this.loadWadImageAsset, mainConf['InterfaceBackButton'].slice(2, 4).forEach(imgPath => {
+        //     this.addAsset(this.loadWadImageAsset, imgPath);
+        // }));
+        // this.addAsset(this.loadFontImageAsset, 'Interface/Fonts/ToolTipFont.bmp');
+        // // crystal side bar
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/CrystalSideBar.bmp'); // right side overlay showing crystal and ore count
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/CrystalSideBar_Ore.bmp'); // image representing a single piece of ore on the overlay
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/NoSmallCrystal.bmp'); // image representing no energy crystal on the overlay
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/SmallCrystal.bmp'); // image representing a single energy crystal on the overlay
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/UsedCrystal.bmp'); // image representing a single in use energy crystal on the overlay
         // level files
         Object.keys(mainConf['Levels']).forEach(levelKey => {
             if (!(levelKey.startsWith('Tutorial') || levelKey.startsWith('Level'))) {
@@ -435,82 +410,82 @@ class WadLoader {
                 });
             }
         });
-        // reward screen
-        const rewardConf = mainConf['Reward'];
-        this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);
-        this.addAsset(this.loadFontImageAsset, rewardConf['BackFont']);
-        Object.values(rewardConf['Fonts']).forEach(imgPath => {
-            this.addAsset(this.loadFontImageAsset, imgPath);
-        });
-        Object.values(rewardConf['Images']).forEach(img => {
-            this.addAsset(this.loadAlphaImageAsset, img[0]);
-        });
-        Object.values(rewardConf['BoxImages']).forEach(img => {
-            this.addAsset(this.loadWadImageAsset, img[0]);
-        });
-        rewardConf['SaveButton'].slice(0, 4).forEach(imgPath => {
-            this.addAsset(this.loadWadImageAsset, imgPath);
-        });
-        rewardConf['AdvanceButton'].slice(0, 4).forEach(imgPath => {
-            this.addAsset(this.loadWadImageAsset, imgPath);
-        });
-        // icon panel buttons
-        Object.values(mainConf['InterfaceImages']).forEach(entry => {
-            (entry as []).slice(0, 3).forEach(imgPath => {
-                this.addAsset(this.loadWadImageAsset, imgPath);
-            });
-        });
-        Object.values(mainConf['InterfaceBuildImages']).forEach(entry => {
-            (entry as []).slice(0, -1).forEach(imgPath => {
-                this.addAsset(this.loadWadImageAsset, imgPath);
-            });
-        });
-        Object.values(mainConf['InterfaceSurroundImages']).forEach(entry => {
-            this.addAsset(this.loadAlphaImageAsset, entry[0]);
-            this.addAsset(this.loadAlphaImageAsset, entry[5]);
-        });
+        // // reward screen
+        // const rewardConf = mainConf['Reward'];
+        // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);
+        // this.addAsset(this.loadFontImageAsset, rewardConf['BackFont']);
+        // Object.values(rewardConf['Fonts']).forEach(imgPath => {
+        //     this.addAsset(this.loadFontImageAsset, imgPath);
+        // });
+        // Object.values(rewardConf['Images']).forEach(img => {
+        //     this.addAsset(this.loadAlphaImageAsset, img[0]);
+        // });
+        // Object.values(rewardConf['BoxImages']).forEach(img => {
+        //     this.addAsset(this.loadWadImageAsset, img[0]);
+        // });
+        // rewardConf['SaveButton'].slice(0, 4).forEach(imgPath => {
+        //     this.addAsset(this.loadWadImageAsset, imgPath);
+        // });
+        // rewardConf['AdvanceButton'].slice(0, 4).forEach(imgPath => {
+        //     this.addAsset(this.loadWadImageAsset, imgPath);
+        // });
+        // // icon panel buttons
+        // Object.values(mainConf['InterfaceImages']).forEach(entry => {
+        //     (entry as []).slice(0, 3).forEach(imgPath => {
+        //         this.addAsset(this.loadWadImageAsset, imgPath);
+        //     });
+        // });
+        // Object.values(mainConf['InterfaceBuildImages']).forEach(entry => {
+        //     (entry as []).slice(0, -1).forEach(imgPath => {
+        //         this.addAsset(this.loadWadImageAsset, imgPath);
+        //     });
+        // });
+        // Object.values(mainConf['InterfaceSurroundImages']).forEach(entry => {
+        //     this.addAsset(this.loadAlphaImageAsset, entry[0]);
+        //     this.addAsset(this.loadAlphaImageAsset, entry[5]);
+        // });
         // spaces
-        this.wad0File.filterEntryNames('World/WorldTextures/IceSplit/Ice..\\.bmp').forEach(imgPath => {
-            this.addAsset(this.loadWadImageAsset, imgPath);
-        });
-        this.wad0File.filterEntryNames('World/WorldTextures/LavaSplit/Lava..\\.bmp').forEach(imgPath => {
-            this.addAsset(this.loadWadImageAsset, imgPath);
-        });
+        // this.wad0File.filterEntryNames('World/WorldTextures/IceSplit/Ice..\\.bmp').forEach(imgPath => {
+        //     this.addAsset(this.loadWadImageAsset, imgPath);
+        // });
+        // this.wad0File.filterEntryNames('World/WorldTextures/LavaSplit/Lava..\\.bmp').forEach(imgPath => {
+        //     this.addAsset(this.loadWadImageAsset, imgPath);
+        // });
         this.wad0File.filterEntryNames('World/WorldTextures/RockSplit/Rock..\\.bmp').forEach(imgPath => {
             this.addAsset(this.loadWadImageAsset, imgPath);
         });
-        // pause screen
-        const pauseConf = mainConf['Menu']['PausedMenu'];
-        this.addAsset(this.loadAlphaImageAsset, pauseConf['Menu1']['MenuImage'][0]);
-        this.addAsset(this.loadFontImageAsset, pauseConf['Menu1']['MenuFont']);
-        this.addAsset(this.loadFontImageAsset, pauseConf['Menu1']['HiFont']);
-        this.addAsset(this.loadFontImageAsset, pauseConf['Menu1']['LoFont']);
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_OffBar.bmp');
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_OnBar.bmp');
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_Leftcap.bmp');
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_Rightcap.bmp');
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_Plus.bmp');
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_Minus.bmp');
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_PlusHi.bmp');
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_MinusHi.bmp');
-        // sounds
-        const samplesConf = mainConf['Samples'];
-        Object.keys(samplesConf).forEach(sndKey => {
-            let sndPath = samplesConf[sndKey] + '.wav';
-            if (sndKey.startsWith('!')) { // TODO no clue what this means... loop? duplicate?!
-                sndKey = sndKey.slice(1);
-            }
-            if (sndPath.startsWith('*')) { // TODO no clue what this means... don't loop, see telportup
-                sndPath = sndPath.slice(1);
-            } else if (sndPath.startsWith('@')) {
-                // sndPath = sndPath.slice(1);
-                // console.warn('Sound ' + sndPath + ' must be loaded from program files folder. Not yet implemented!');
-                return;
-            }
-            sndPath.split(',').forEach(sndPath => {
-                this.addAsset(this.loadWavAsset, sndPath, false, sndKey);
-            });
-        });
+        // // pause screen
+        // const pauseConf = mainConf['Menu']['PausedMenu'];
+        // this.addAsset(this.loadAlphaImageAsset, pauseConf['Menu1']['MenuImage'][0]);
+        // this.addAsset(this.loadFontImageAsset, pauseConf['Menu1']['MenuFont']);
+        // this.addAsset(this.loadFontImageAsset, pauseConf['Menu1']['HiFont']);
+        // this.addAsset(this.loadFontImageAsset, pauseConf['Menu1']['LoFont']);
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_OffBar.bmp');
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_OnBar.bmp');
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_Leftcap.bmp');
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_Rightcap.bmp');
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_Plus.bmp');
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_Minus.bmp');
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_PlusHi.bmp');
+        // this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_MinusHi.bmp');
+        // // sounds
+        // const samplesConf = mainConf['Samples'];
+        // Object.keys(samplesConf).forEach(sndKey => {
+        //     let sndPath = samplesConf[sndKey] + '.wav';
+        //     if (sndKey.startsWith('!')) { // TODO no clue what this means... loop? duplicate?!
+        //         sndKey = sndKey.slice(1);
+        //     }
+        //     if (sndPath.startsWith('*')) { // TODO no clue what this means... don't loop, see telportup
+        //         sndPath = sndPath.slice(1);
+        //     } else if (sndPath.startsWith('@')) {
+        //         // sndPath = sndPath.slice(1);
+        //         // console.warn('Sound ' + sndPath + ' must be loaded from program files folder. Not yet implemented!');
+        //         return;
+        //     }
+        //     sndPath.split(',').forEach(sndPath => {
+        //         this.addAsset(this.loadWavAsset, sndPath, false, sndKey);
+        //     });
+        // });
     }
 
     onSequentialAssetLoaded() {
