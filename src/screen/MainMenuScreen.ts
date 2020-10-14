@@ -22,8 +22,10 @@ class MainMenuScreen extends BaseScreen {
         this.showTeamCanvas = this.createLayer();
         this.optionsCanvas = this.createLayer();
 
-        this.eventMgr.addMoveEventListener(this.startCanvas, this.drawCursor);
-        this.eventMgr.addClickEventListener(this.startCanvas, () => this.selectLevel('Level05'));
+        this.eventMgr.addClickEventListener(this.startCanvas, () => { // TODO bind listener to ui elements instead of layers
+            this.selectLevel('Level05');
+            return true;
+        });
     }
 
     showMainMenu() {
@@ -43,12 +45,6 @@ class MainMenuScreen extends BaseScreen {
     selectLevel(levelName) {
         this.hide();
         this.onLevelSelected(levelName);
-        return false;
-    }
-
-    drawCursor(event) {
-        // console.log(event);
-        // FIXME draw debug
     }
 
 }
