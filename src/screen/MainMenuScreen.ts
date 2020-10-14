@@ -1,7 +1,7 @@
 import { BaseScreen } from './BaseScreen';
 import { ScreenLayer } from './ScreenLayer';
 import { ResourceManager } from '../game/engine/ResourceManager';
-import { EventManager, EventType } from '../game/engine/EventManager';
+import { EventManager } from '../game/engine/EventManager';
 
 class MainMenuScreen extends BaseScreen {
 
@@ -22,8 +22,8 @@ class MainMenuScreen extends BaseScreen {
         this.showTeamCanvas = this.createLayer();
         this.optionsCanvas = this.createLayer();
 
-        this.eventMgr.addEventListener(EventType.CURSOR_MOVE, this.startCanvas, this.drawCursor);
-        this.eventMgr.addEventListener(EventType.CLICK, this.startCanvas, () => this.selectLevel('Level05'));
+        this.eventMgr.addMoveEventListener(this.startCanvas, this.drawCursor);
+        this.eventMgr.addClickEventListener(this.startCanvas, () => this.selectLevel('Level05'));
     }
 
     showMainMenu() {
@@ -48,7 +48,7 @@ class MainMenuScreen extends BaseScreen {
 
     drawCursor(event) {
         // console.log(event);
-        return false;
+        // FIXME draw debug
     }
 
 }

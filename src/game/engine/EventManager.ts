@@ -2,46 +2,29 @@ import { ScreenLayer } from '../../screen/ScreenLayer';
 
 export class EventManager {
 
-    cursorX: number = 0; // TODO better center in screen? mobile?
-    cursorY: number = 0;
-    listeners = {};
+    clickListener: { layer: ScreenLayer, callback: (cursorX: number, cursorY: number) => boolean }[] = [];
+    moveListener: { layer: ScreenLayer, callback: (cursorX: number, cursorY: number) => any }[] = [];
 
     constructor() {
         const eventMgr = this;
-        document.addEventListener('mousemove', (event: MouseEvent) => eventMgr.onCursorMove(event));
-        document.addEventListener('click', (event: MouseEvent) => eventMgr.onClick(event));
+        document.addEventListener('mousemove', (event: MouseEvent) => {
+            eventMgr.moveListener.filter(l => l.layer.isActive())
+                .sort((a, b) => a.layer.zIndex === b.layer.zIndex ? 0 : a.layer.zIndex > b.layer.zIndex ? -1 : 1)
+                .map(l => l.callback).forEach(c => c(event.clientX, event.clientY));
+        });
+        document.addEventListener('click', (event: MouseEvent) => {
+            eventMgr.clickListener.filter(l => l.layer.isActive())
+                .sort((a, b) => a.layer.zIndex === b.layer.zIndex ? 0 : a.layer.zIndex > b.layer.zIndex ? -1 : 1)
+                .map(l => l.callback).some(c => c(event.clientX, event.clientY)); // '.some()' breaks when a callback returns true
+        });
     }
 
-    getListener(eventType: EventType) {
-        this.listeners[eventType] = this.listeners[eventType] || [];
-        return this.listeners[eventType];
+    addClickEventListener(layer: ScreenLayer, callback: (cursorX: number, cursorY: number) => boolean) {
+        this.clickListener.push({layer: layer, callback: callback});
     }
 
-    addEventListener(eventType: EventType, layer: ScreenLayer, callback: (event: MouseEvent) => boolean) {
-        this.getListener(eventType).push({layer: layer, callback: callback});
+    addMoveEventListener(layer: ScreenLayer, callback: (cursorX: number, cursorY: number) => any) {
+        this.moveListener.push({layer: layer, callback: callback});
     }
-
-    publishEvent(eventType: EventType, event: MouseEvent) {
-        this.getListener(eventType).filter(l => l.layer.isActive())
-            .sort((a, b) => a.layer.zIndex === b.layer.zIndex ? 0 : a.layer.zIndex > b.layer.zIndex ? -1 : 1)
-            .map(l => l.callback).some(c => c(event)); // '.some()' breaks when a callback returns true
-    }
-
-    onCursorMove(event: MouseEvent) {
-        this.cursorX = event.clientX;
-        this.cursorY = event.clientY;
-        this.publishEvent(EventType.CURSOR_MOVE, event);
-    }
-
-    onClick(event: MouseEvent) {
-        this.publishEvent(EventType.CLICK, event);
-    }
-
-}
-
-export enum EventType {
-
-    CURSOR_MOVE,
-    CLICK
 
 }
