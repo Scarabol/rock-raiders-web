@@ -645,7 +645,7 @@ class WadLoader {
                     _onerror();
                     return;
                 }
-                console.log('First WAD file loaded from cache after ' + ((new Date().getTime() - that.startTime.getTime()) / 1000));
+                // console.log('First WAD file loaded from cache after ' + ((new Date().getTime() - that.startTime.getTime()) / 1000));
                 that.wad0File = new WadFile();
                 for (let prop in request1.result) { // class info are runtime info and not stored in cache => use copy constructor
                     if (request1.result.hasOwnProperty(prop)) {

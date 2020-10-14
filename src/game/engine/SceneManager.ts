@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { DebugHelper } from '../../core/DebugHelper';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { Vector3 } from 'three';
+import { PointLight, Vector3 } from 'three';
 
 class SceneManager {
 
@@ -16,6 +16,7 @@ class SceneManager {
     light;
     axisHelper;
     controls: OrbitControls;
+    cursorTorchlight: PointLight;
 
     constructor(canvas: HTMLCanvasElement) {
         this.renderer = new THREE.WebGLRenderer({antialias: true, canvas: canvas});
@@ -27,9 +28,12 @@ class SceneManager {
         this.amb = new THREE.AmbientLight(0x808080); // TODO use "cave" light setup
         this.scene.add(this.amb);
 
-        this.light = new THREE.PointLight(0xffffff, 1, 1000);
-        this.light.position.set(20, 20, 20); // TODO follow mouse cursor 3d position
-        this.scene.add(this.light);
+        // this.light = new THREE.PointLight(0xffffff, 1, 1000);
+        // this.light.position.set(20, 20, 20); // TODO follow mouse cursor 3d position
+        // this.scene.add(this.light);
+
+        this.cursorTorchlight = new THREE.PointLight(0xffffff, 1, 7);
+        this.scene.add(this.cursorTorchlight);
 
         this.axisHelper = new THREE.AxesHelper(20);
         this.scene.add(this.axisHelper);
@@ -48,6 +52,7 @@ class SceneManager {
     }
 
     startRendering() {
+        this.cursorTorchlight.position.set(12.5, 3, 12.5); // TODO set initial position
         this.debugHelper.show();
         this.renderInterval = setInterval(() => { // TODO cancel interval when not in game mode
             this.animRequest = requestAnimationFrame(() => {
