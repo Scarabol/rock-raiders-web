@@ -1,149 +1,155 @@
 import * as THREE from 'three';
-import { Map } from './Map';
+import { Terrain } from './Terrain';
 import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils';
 import { Texture } from 'three/src/textures/Texture';
 import { RGBFormat } from 'three/src/constants';
+import { DIRT, GROUND, HARD_ROCK, SOLID_ROCK, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
 
-// CONSTANTS
-const HEIGHT_MULTIPLER = 0.05;
+// // CONSTANTS
+// const HEIGHT_MULTIPLER = 0.05;
 
-// SURF TYPES
-const SURF = { // TODO complete list form rock-raiders-remake project
-    GROUND: 0,
-    SOLID_ROCK: 1,
-    HARD_ROCK: 2,
-    LOOSE_ROCK: 3,
-    DIRT: 4,
-    SOIL: 5,
-    LAVA: 6,
-    ORE_SEAM: 8,
-    WATER: 9,
-    CRYSTAL_SEAM: 10,
-    RECHARGE_SEAM: 11,
-};
+// // SURF TYPES
+// const SURF = {
+//     GROUND: 0,
+//     SOLID_ROCK: 1,
+//     HARD_ROCK: 2,
+//     LOOSE_ROCK: 3,
+//     DIRT: 4,
+//     SOIL: 5,
+//     LAVA: 6,
+//     ORE_SEAM: 8,
+//     WATER: 9,
+//     CRYSTAL_SEAM: 10,
+//     RECHARGE_SEAM: 11,
+// };
 
-export class Tile {
+export class Surface {
 
+    terrain: Terrain;
+    surfaceType: SurfaceType;
     x: number;
     y: number;
-    map: Map;
     containedOre: number = 0;
     containedCrystals: number = 0;
+    heightOffset: number = 0;
 
     geometry: THREE.Geometry = null;
     texture: any = null;
     mesh: THREE.Object3D = null;
 
-    surf: any = 1;
-    high: any = 0;
-    undiscovered: any = false;
+    // surface: any = 1;
+    // high: any = 0;
+    // undiscovered: any = false;
 
-    health: any = -1;
+    discovered: boolean = false;
 
-    constructor(type, x, y, high) {
-        this.surf = type !== null ? type : 1;
+    constructor(terrain, surface, x, y, high) {
+        this.terrain = terrain;
+        this.surfaceType = SURF_TO_TYPE[surface];
         this.x = x;
         this.y = y;
         // this.high = high; // TODO apply high with scaling
     }
 
-    isSolid() {
-        return ((this.surf !== SURF.GROUND) &&
-            (this.surf !== SURF.WATER) &&
-            (this.surf !== SURF.LAVA)) ||
-            (this.undiscovered);
-    }
+    // isFloor() {
+    //     return ((this.surface !== SURF.GROUND) &&
+    //         (this.surface !== SURF.WATER) &&
+    //         (this.surface !== SURF.LAVA)) ||
+    //         (this.undiscovered);
+    // }
 
-    explore() {
-        if (this.undiscovered) {
-            this.undiscovered = false;
-            const n = this.getAllNeighbors();
-            for (let property in n) {
-                if (n.hasOwnProperty(property)) {
-                    n[property].update();
-                }
-            }
-        }
-    }
+    // explore() {
+    //     if (this.undiscovered) {
+    //         this.undiscovered = false;
+    //         const n = this.getAllNeighbors();
+    //         for (let property in n) {
+    //             if (n.hasOwnProperty(property)) {
+    //                 n[property].update();
+    //             }
+    //         }
+    //     }
+    // }
 
-    collapse() {
-        if (this.isSolid()) {
-            this.surf = SURF.GROUND;
-            this.update();
-            this.iterateProperties(this.getAllNeighbors(), function (neighbor) {
-                neighbor.update();
-            });
-        }
-    }
+    // collapse() {
+    //     if (this.isFloor()) {
+    //         this.surface = SURF.GROUND;
+    //         this.update();
+    //         this.iterateProperties(this.getAllNeighbors(), function (neighbor) {
+    //             neighbor.update();
+    //         });
+    //     }
+    // }
 
-    iterateProperties(object, func) {
-        for (let property in object) {
-            if (object.hasOwnProperty(property)) {
-                func(object[property]);
-            }
-        }
-    }
+    // iterateProperties(object, func) {
+    //     for (let property in object) {
+    //         if (object.hasOwnProperty(property)) {
+    //             func(object[property]);
+    //         }
+    //     }
+    // }
 
-    getY(x, z) {
-        const raycaster = new THREE.Raycaster();
-        raycaster.set(new THREE.Vector3(x, 3, z), new THREE.Vector3(0, -1, 0)); // TODO scale with tile size
-        const intersect = raycaster.intersectObjects(this.mesh.children, true);
+    // getY(x, z) {
+    //     const raycaster = new THREE.Raycaster();
+    //     raycaster.set(new THREE.Vector3(x, 3, z), new THREE.Vector3(0, -1, 0)); // TODO scale with tile size
+    //     const intersect = raycaster.intersectObjects(this.mesh.children, true);
+    //
+    //     return intersect[0].point.y;
+    // }
 
-        return intersect[0].point.y;
-    }
+    // getAllNeighbors() {
+    //     return {
+    //         'top': this.map.getSurface(this.x, this.y - 1),
+    //         'right': this.map.getSurface(this.x + 1, this.y),
+    //         'bottom': this.map.getSurface(this.x, this.y + 1),
+    //         'left': this.map.getSurface(this.x - 1, this.y),
+    //         'topLeft': this.map.getSurface(this.x - 1, this.y - 1),
+    //         'topRight': this.map.getSurface(this.x + 1, this.y - 1),
+    //         'bottomRight': this.map.getSurface(this.x + 1, this.y + 1),
+    //         'bottomLeft': this.map.getSurface(this.x - 1, this.y + 1),
+    //     };
+    // }
 
-    getAllNeighbors() {
-        return {
-            'top': this.map.getTile(this.x, this.y - 1),
-            'right': this.map.getTile(this.x + 1, this.y),
-            'bottom': this.map.getTile(this.x, this.y + 1),
-            'left': this.map.getTile(this.x - 1, this.y),
-            'topLeft': this.map.getTile(this.x - 1, this.y - 1),
-            'topRight': this.map.getTile(this.x + 1, this.y - 1),
-            'bottomRight': this.map.getTile(this.x + 1, this.y + 1),
-            'bottomLeft': this.map.getTile(this.x - 1, this.y + 1),
-        };
-    }
+    updateMesh() {
+        if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
 
-    update() {
-        const n = this.getAllNeighbors();
-        // console.log(n);
-
-        let isSurrounded = true;
-        for (let property in n) {
-            if (n.hasOwnProperty(property)) {
-                isSurrounded = isSurrounded && n[property].isSolid();
-            }
-        }
-
-        if (isSurrounded) {
-            // this.undiscovered = true;
-        } else {
-            this.explore();
-        }
+    //     const n = this.getAllNeighbors();
+    //     // console.log(n);
+    //
+    //     let isSurrounded = true;
+    //     for (let property in n) {
+    //         if (n.hasOwnProperty(property)) {
+    //             isSurrounded = isSurrounded && n[property].isSolid();
+    //         }
+    //     }
+    //
+    //     if (isSurrounded) {
+    //         // this.undiscovered = true;
+    //     } else {
+    //         this.explore();
+    //     }
 
         const topLeftVertex = new THREE.Vector3(this.x, 0, this.y);
         const topRightVertex = new THREE.Vector3(this.x + 1, 0, this.y);
         const bottomLeftVertex = new THREE.Vector3(this.x, 0, this.y + 1);
         const bottomRightVertex = new THREE.Vector3(this.x + 1, 0, this.y + 1);
 
-        if (this.isSolid()) {
-            if (n.topLeft.isSolid() && (n.top.isSolid() && n.left.isSolid())) {
-                topLeftVertex.y = 1;
-            }
-
-            if (n.topRight.isSolid() && (n.top.isSolid() && n.right.isSolid())) {
-                topRightVertex.y = 1;
-            }
-
-            if (n.bottomRight.isSolid() && (n.bottom.isSolid() && n.right.isSolid())) {
-                bottomRightVertex.y = 1;
-            }
-
-            if (n.bottomLeft.isSolid() && (n.bottom.isSolid() && n.left.isSolid())) {
-                bottomLeftVertex.y = 1;
-            }
-        }
+    //     if (this.isFloor()) {
+    //         if (n.topLeft.isFloor() && (n.top.isFloor() && n.left.isFloor())) {
+    //             topLeftVertex.y = 1;
+    //         }
+    //
+    //         if (n.topRight.isFloor() && (n.top.isFloor() && n.right.isFloor())) {
+    //             topRightVertex.y = 1;
+    //         }
+    //
+    //         if (n.bottomRight.isFloor() && (n.bottom.isFloor() && n.right.isFloor())) {
+    //             bottomRightVertex.y = 1;
+    //         }
+    //
+    //         if (n.bottomLeft.isFloor() && (n.bottom.isFloor() && n.left.isFloor())) {
+    //             bottomLeftVertex.y = 1;
+    //         }
+    //     }
 
         // WALL-TYPES
         // 1: CORNER
@@ -151,7 +157,7 @@ export class Tile {
         // 3: INVERTED-CORNER
 
         const wallType = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y;
-        if (wallType === 0) this.surf = SURF.GROUND;
+        // if (wallType === 0) this.surfaceType = .GROUND;
         let uvOffset = 0;
 
         // not-rotated
@@ -191,10 +197,11 @@ export class Tile {
             }
         }
 
-        let textureName = this.map.textureBasename;
+        let textureName = this.terrain.textureSet.texturebasename;
+        console.log(textureName);
 
         let shapeIndex = 0;
-        if (this.undiscovered) {
+        if (!this.discovered) {
             shapeIndex = 7;
         } else { // FIXME complete list
             // console.log(wallType);
@@ -211,26 +218,26 @@ export class Tile {
         textureName += shapeIndex.toString();
 
         let materialIndex = 0;
-        if (this.undiscovered) { // FIXME determine texture name
+        if (!this.discovered) { // FIXME determine texture name
             materialIndex = 0;
-        } else if (this.surf === SURF.GROUND) {
+        } else if (this.surfaceType === GROUND) {
             materialIndex = 0;
-        } else if (this.surf === SURF.SOLID_ROCK) {
+        } else if (this.surfaceType === SOLID_ROCK) {
             materialIndex = 5;
-        } else if (this.surf === SURF.HARD_ROCK) {
+        } else if (this.surfaceType === HARD_ROCK) {
             materialIndex = 4;
-        } else if (this.surf === SURF.DIRT) {
+        } else if (this.surfaceType === DIRT) {
             materialIndex = 1;
         } else {
-            console.log(this.surf);
+            console.log(this.surfaceType);
         }
         textureName += materialIndex.toString();
 
         textureName += '.bmp';
 
-        // if (textureIndex !== -1) textureName += this.map.tileTypes[this.surf].textures[textureIndex];
+        // if (textureIndex !== -1) textureName += this.map.tileTypes[this.surface].textures[textureIndex];
         // console.log(textureName);
-        const textureImage = this.map.resMgr.getImage(textureName).canvas;
+        const textureImage = this.terrain.resMgr.getImage(textureName).canvas;
         // console.log(textureImage);
         const texture = new Texture();
         texture.image = textureImage;
@@ -259,7 +266,7 @@ export class Tile {
         //		Quad 0-1-3-2
         */
 
-        if (this.mesh) this.map.floorGroup.remove(this.mesh);
+        if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
         if (this.geometry) this.geometry.dispose();
         this.geometry = new THREE.Geometry();
 
@@ -314,10 +321,10 @@ export class Tile {
             );
         }
 
-        topLeftVertex.y = (topLeftVertex.y * 1.0) + (this.high * HEIGHT_MULTIPLER);
-        topRightVertex.y = (topRightVertex.y * 1.0) + (n.right.high * HEIGHT_MULTIPLER);
-        bottomRightVertex.y = (bottomRightVertex.y * 1.0) + (n.bottomRight.high * HEIGHT_MULTIPLER);
-        bottomLeftVertex.y = (bottomLeftVertex.y * 1.0) + (n.bottom.high * HEIGHT_MULTIPLER);
+    //     topLeftVertex.y = (topLeftVertex.y * 1.0) + (this.high * HEIGHT_MULTIPLER);
+    //     topRightVertex.y = (topRightVertex.y * 1.0) + (n.right.high * HEIGHT_MULTIPLER);
+    //     bottomRightVertex.y = (bottomRightVertex.y * 1.0) + (n.bottomRight.high * HEIGHT_MULTIPLER);
+    //     bottomLeftVertex.y = (bottomLeftVertex.y * 1.0) + (n.bottom.high * HEIGHT_MULTIPLER);
 
         this.geometry.computeFaceNormals();
         this.geometry.computeVertexNormals();
@@ -327,7 +334,7 @@ export class Tile {
             //new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: true} )
         ]);
 
-        this.mesh.userData = {parent: this};
-        this.map.floorGroup.add(this.mesh);
+        // this.mesh.userData = {parent: this};
+        this.terrain.floorGroup.add(this.mesh);
     }
 }
