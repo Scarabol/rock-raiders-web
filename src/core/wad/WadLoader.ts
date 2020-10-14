@@ -3,7 +3,7 @@ import { BitmapFont } from '../BitmapFont';
 import { createContext } from '../ImageHelper';
 import { CfgFileParser } from './CfgFileParser';
 import { encodeChar } from '../EncodingHelper';
-import { ResourceManager } from '../ResourceManager';
+import { ResourceManager } from '../../game/engine/ResourceManager';
 import { WadFile } from './WadFile';
 import { LoadingScreen } from '../../gui/LoadingScreen';
 import { Texture } from 'three/src/textures/Texture';

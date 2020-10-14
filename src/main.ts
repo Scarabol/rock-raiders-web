@@ -1,5 +1,5 @@
 import { LoadingScreen } from './gui/LoadingScreen';
-import { ResourceManager } from './core/ResourceManager';
+import { ResourceManager } from './game/engine/ResourceManager';
 import { MainMenuScreen } from './gui/MainMenuScreen';
 import { GameScreen } from './game/GameScreen';
 import { RewardScreen } from './gui/RewardScreen';

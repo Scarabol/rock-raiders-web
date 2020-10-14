@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Surface } from './Surface';
-import { ResourceManager } from '../../core/ResourceManager';
+import { ResourceManager } from '../engine/ResourceManager';
 
 export class Terrain {
 

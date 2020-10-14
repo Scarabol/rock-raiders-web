@@ -1,6 +1,6 @@
 import { WadLoader } from '../core/wad/WadLoader';
 import { BaseScreen } from './BaseScreen';
-import { ResourceManager } from '../core/ResourceManager';
+import { ResourceManager } from '../game/engine/ResourceManager';
 import { ScreenLayer } from './ScreenLayer';
 
 class LoadingScreen extends BaseScreen {

@@ -1,20 +1,21 @@
-import { createDummyImage } from './ImageHelper';
+import { createDummyImage } from '../../core/ImageHelper';
 
-function ResourceManager() {
-    this.images = {};
-    this.textures = {};
-    this.configuration = {};
-    this.maps = {};
-    this.sounds = {};
-    this.objectLists = {};
-    this.nerps = [];
-    this.nerpMessages = [];
-    this.fonts = [];
+export class ResourceManager {
 
-    this.initialAssets = [ // TODO currently statically loaded resources, maybe loadable via config, too?
+    images = {};
+    textures = {};
+    configuration = {};
+    maps = {};
+    sounds = {};
+    objectLists = {};
+    nerps = [];
+    nerpMessages = [];
+    fonts = [];
+
+    initialAssets = [
         ['wad0nerp', 'Levels', 'nerpnrn.h'], // included by other nrn scripts
 
-        // main menu resources
+        // main menu resources // TODO load from config
         ['wad0bmp', 'Interface/FrontEnd/MenuBGpic.bmp'], // main menu background
         ['wad0font', 'Interface/FrontEnd/Menu_Font_LO.bmp'], // main menu font
         ['wad0font', 'Interface/FrontEnd/Menu_Font_HI.bmp'], // (highlighted) main menu font
@@ -25,17 +26,13 @@ function ResourceManager() {
         ['wad0alpha', 'Interface/Frontend/LowerPanel.bmp'], // lower panel in level select view
         ['wad0bmp', 'Interface/Frontend/SaveLoad.bmp'],
 
-        // level images
+        // level images // TODO load from config
         ['wad0bmp', 'Interface/LEVELPICKER/Levelpick.bmp'], // level select menu background
         ['wad0bmp', 'Interface/LEVELPICKER/LevelpickT.bmp'], // tutorial level select menu background
 
-        // pointers/cursors
+        // pointers/cursors // TODO load main menu cursor with loading screen and change cursor there
         ['wad0alpha', 'Interface/Pointers/Aclosed.bmp'],
     ];
-
-}
-
-ResourceManager.prototype = {
 
     getImage(imageName) {
         if (!imageName || imageName.length === 0) {
@@ -48,7 +45,7 @@ ResourceManager.prototype = {
             }
             return this.images[lImageName];
         }
-    },
+    }
 
     getTexture(textureName) {
         if (!textureName || textureName.length === 0) {
@@ -61,8 +58,6 @@ ResourceManager.prototype = {
             }
             return this.textures[lImageName];
         }
-    },
+    }
 
-};
-
-export { ResourceManager };
+}

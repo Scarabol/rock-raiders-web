@@ -1,5 +1,5 @@
 import { BaseScreen } from '../gui/BaseScreen';
-import { ResourceManager } from '../core/ResourceManager';
+import { ResourceManager } from './engine/ResourceManager';
 import { ScreenLayer } from '../gui/ScreenLayer';
 import { SceneManager } from './engine/SceneManager';
 import { TerrainLoader } from './engine/TerrainLoader';

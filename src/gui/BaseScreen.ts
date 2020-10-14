@@ -1,5 +1,5 @@
 import { ScreenLayer } from './ScreenLayer';
-import { ResourceManager } from '../core/ResourceManager';
+import { ResourceManager } from '../game/engine/ResourceManager';
 
 class BaseScreen {
 
