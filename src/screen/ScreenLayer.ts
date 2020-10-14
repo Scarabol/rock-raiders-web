@@ -1,20 +1,22 @@
 export class ScreenLayerOptions {
 
-    zIndex: number = 0;
-    withContext: boolean = true;
-    alpha: boolean = false;
+    zIndex: number;
+    withContext: boolean;
+    alpha: boolean;
 
 }
 
 export class ScreenLayer {
 
+    zIndex: number;
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     onRedraw: (context: CanvasRenderingContext2D) => void;
 
     constructor(width: number, height: number, options: Partial<ScreenLayerOptions>) {
         const opts: ScreenLayerOptions = {zIndex: 0, withContext: true, alpha: false};
-        Object.assign(opts, options);
+        Object.keys(options).filter(k => options[k] !== undefined).forEach(k => opts[k] = options[k]);
+        this.zIndex = opts.zIndex;
         this.canvas = document.createElement('canvas');
         this.canvas.width = width;
         this.canvas.height = height;

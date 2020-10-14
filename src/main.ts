@@ -1,8 +1,8 @@
-import { LoadingScreen } from './gui/LoadingScreen';
+import { LoadingScreen } from './screen/LoadingScreen';
 import { ResourceManager } from './game/engine/ResourceManager';
-import { MainMenuScreen } from './gui/MainMenuScreen';
+import { MainMenuScreen } from './screen/MainMenuScreen';
 import { GameScreen } from './game/GameScreen';
-import { RewardScreen } from './gui/RewardScreen';
+import { RewardScreen } from './screen/RewardScreen';
 import { EventManager } from './game/engine/EventManager';
 
 // setup basic game engine structure

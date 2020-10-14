@@ -1,7 +1,7 @@
 import { BaseScreen } from './BaseScreen';
 import { ScreenLayer } from './ScreenLayer';
 import { ResourceManager } from '../game/engine/ResourceManager';
-import { EventManager } from '../game/engine/EventManager';
+import { EventManager, EventType } from '../game/engine/EventManager';
 
 class MainMenuScreen extends BaseScreen {
 
@@ -21,7 +21,9 @@ class MainMenuScreen extends BaseScreen {
         this.trainingSelectCanvas = this.createLayer();
         this.showTeamCanvas = this.createLayer();
         this.optionsCanvas = this.createLayer();
-        this.onWindowResize(); // resize and redraw all canvas
+
+        this.eventMgr.addEventListener(EventType.CURSOR_MOVE, this.startCanvas, this.drawCursor);
+        this.eventMgr.addEventListener(EventType.CLICK, this.startCanvas, () => this.selectLevel('Level05'));
     }
 
     showMainMenu() {
@@ -41,6 +43,12 @@ class MainMenuScreen extends BaseScreen {
     selectLevel(levelName) {
         this.hide();
         this.onLevelSelected(levelName);
+        return false;
+    }
+
+    drawCursor(event) {
+        // console.log(event);
+        return false;
     }
 
 }

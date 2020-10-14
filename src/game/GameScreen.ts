@@ -1,23 +1,24 @@
-import { BaseScreen } from '../gui/BaseScreen';
+import { BaseScreen } from '../screen/BaseScreen';
 import { ResourceManager } from './engine/ResourceManager';
-import { ScreenLayer } from '../gui/ScreenLayer';
+import { ScreenLayer } from '../screen/ScreenLayer';
 import { SceneManager } from './engine/SceneManager';
 import { TerrainLoader } from './engine/TerrainLoader';
 import { EventManager } from './engine/EventManager';
+import { IngameUI } from './gui/IngameUI';
 
-class GameScreen extends BaseScreen {
+export class GameScreen extends BaseScreen {
 
     onLevelEnd: (gameResult: string) => void; // TODO game result is actually an objects with much more data
     gameLayer: ScreenLayer;
-    guiLayer: ScreenLayer;
     sceneManager: SceneManager;
+    ingameUI: IngameUI;
     levelConf: object;
 
     constructor(resourceManager: ResourceManager, eventManager: EventManager) {
         super(resourceManager, eventManager);
         this.gameLayer = this.createLayer({zIndex: 0, withContext: false});
-        this.guiLayer = this.createLayer({zIndex: 10, alpha: true});
         this.sceneManager = new SceneManager(this.gameLayer.canvas);
+        this.ingameUI = new IngameUI(this);
     }
 
     startLevel(levelName) {
@@ -111,5 +112,3 @@ class GameScreen extends BaseScreen {
     }
 
 }
-
-export { GameScreen };
