@@ -5,20 +5,24 @@ import { SceneManager } from './engine/SceneManager';
 import { TerrainLoader } from './engine/TerrainLoader';
 import { EventManager } from './engine/EventManager';
 import { IngameUI } from './gui/IngameUI';
+import { Raycaster } from 'three';
+import { Terrain } from './model/Terrain';
 
 export class GameScreen extends BaseScreen {
 
     onLevelEnd: (gameResult: string) => void; // TODO game result is actually an objects with much more data
     gameLayer: ScreenLayer;
     sceneManager: SceneManager;
+    terrain: Terrain;
     ingameUI: IngameUI;
     levelConf: object;
 
     constructor(resourceManager: ResourceManager, eventManager: EventManager) {
         super(resourceManager, eventManager);
         this.gameLayer = this.createLayer({zIndex: 0, withContext: false});
+        this.eventMgr.addMoveEventListener(this.gameLayer, (cx, cy) => this.moveMouseTorch(cx, cy));
         this.sceneManager = new SceneManager(this.gameLayer.canvas);
-        this.ingameUI = new IngameUI(this);
+        // this.ingameUI = new IngameUI(this);
     }
 
     startLevel(levelName) {
@@ -28,8 +32,8 @@ export class GameScreen extends BaseScreen {
         // console.log(this.levelConf);
 
         // create terrain mesh and add it to the scene
-        const terrain = new TerrainLoader().loadTerrain(this.resMgr, this.levelConf);
-        this.sceneManager.scene.add(terrain.floorGroup);
+        this.terrain = new TerrainLoader().loadTerrain(this.resMgr, this.levelConf);
+        this.sceneManager.scene.add(this.terrain.floorGroup);
 
         // FIXME load in non-space objects next
         // const objectList = GameManager.objectLists[olFileName];
@@ -109,6 +113,19 @@ export class GameScreen extends BaseScreen {
     resize(width: number, height: number) {
         super.resize(width, height);
         if (this.sceneManager) this.sceneManager.renderer.setSize(width, height);
+    }
+
+    moveMouseTorch(cx, cy) { // TODO better move this to scene manager?
+        const rx = (cx / this.gameLayer.canvas.width) * 2 - 1;
+        const ry = -(cy / this.gameLayer.canvas.height) * 2 + 1;
+        const raycaster = new Raycaster();
+        raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
+        const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children, true);
+        if (intersects.length > 0) {
+            const hit = intersects[0].point;
+            hit.y += 3; // TODO adapt to terrain scale?
+            this.sceneManager.cursorTorchlight.position.copy(hit);
+        }
     }
 
 }

@@ -28,10 +28,6 @@ class SceneManager {
         this.amb = new THREE.AmbientLight(0x808080); // TODO use "cave" light setup
         this.scene.add(this.amb);
 
-        // this.light = new THREE.PointLight(0xffffff, 1, 1000);
-        // this.light.position.set(20, 20, 20); // TODO follow mouse cursor 3d position
-        // this.scene.add(this.light);
-
         this.cursorTorchlight = new THREE.PointLight(0xffffff, 1, 7);
         this.scene.add(this.cursorTorchlight);
 
