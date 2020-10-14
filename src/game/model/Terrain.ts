@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { Surface } from './Surface';
 import { ResourceManager } from '../../core/ResourceManager';
-import { SOLID_ROCK } from './SurfaceType';
 
 export class Terrain {
 
@@ -22,7 +21,7 @@ export class Terrain {
         if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
             return this.surfaces[x][y];
         } else {
-            return new Surface(this, SOLID_ROCK, x, y, 0);
+            return new Surface(this, 1, x, y, 0); // 1 = solid rock
         }
     }
 

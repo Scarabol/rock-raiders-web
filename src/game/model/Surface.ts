@@ -5,8 +5,7 @@ import { Texture } from 'three/src/textures/Texture';
 import { RGBFormat } from 'three/src/constants';
 import { GROUND, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
 
-// // CONSTANTS
-// const HEIGHT_MULTIPLER = 0.05;
+const HEIGHT_MULTIPLER = 0.05;
 
 export class Surface {
 
@@ -16,28 +15,23 @@ export class Surface {
     y: number;
     containedOre: number = 0;
     containedCrystals: number = 0;
-    heightOffset: number = 0;
+    heightOffset: number = null;
+    discovered: boolean = false;
 
     geometry: THREE.Geometry = null;
     texture: any = null;
     mesh: THREE.Object3D = null;
 
-    // surface: any = 1;
-    // high: any = 0;
-    // undiscovered: any = false;
-
-    discovered: boolean = false;
-
     constructor(terrain, surface, x, y, high) {
         this.terrain = terrain;
         this.surfaceType = SURF_TO_TYPE[surface];
-        if (!this.surfaceType) {
+        if (this.surfaceType === null) {
             console.warn('surface ' + surface + ' unknown, using ground as fallback');
             this.surfaceType = GROUND;
         }
         this.x = x;
         this.y = y;
-        // this.high = high; // TODO apply high with scaling
+        this.heightOffset = high;
     }
 
     explore() {
@@ -45,32 +39,11 @@ export class Surface {
         for (let x = this.x - 1; x <= this.x + 1; x++) {
             for (let y = this.y - 1; y <= this.y + 1; y++) {
                 if (x !== this.x || y !== this.y) {
-                    const neighbor = this.terrain.getSurface(x, y);
-                    neighbor.discovered = true;
+                    this.terrain.getSurface(x, y).discovered = true;
                 }
             }
         }
-        // FIXME discover all neighbors
     }
-
-    // isFloor() {
-    //     return ((this.surface !== SURF.GROUND) &&
-    //         (this.surface !== SURF.WATER) &&
-    //         (this.surface !== SURF.LAVA)) ||
-    //         (this.undiscovered);
-    // }
-
-    // explore() {
-    //     if (this.undiscovered) {
-    //         this.undiscovered = false;
-    //         const n = this.getAllNeighbors();
-    //         for (let property in n) {
-    //             if (n.hasOwnProperty(property)) {
-    //                 n[property].update();
-    //             }
-    //         }
-    //     }
-    // }
 
     // collapse() {
     //     if (this.isFloor()) {
@@ -82,14 +55,6 @@ export class Surface {
     //     }
     // }
 
-    // iterateProperties(object, func) {
-    //     for (let property in object) {
-    //         if (object.hasOwnProperty(property)) {
-    //             func(object[property]);
-    //         }
-    //     }
-    // }
-
     // getY(x, z) {
     //     const raycaster = new THREE.Raycaster();
     //     raycaster.set(new THREE.Vector3(x, 3, z), new THREE.Vector3(0, -1, 0)); // TODO scale with tile size
@@ -98,68 +63,46 @@ export class Surface {
     //     return intersect[0].point.y;
     // }
 
-    // getAllNeighbors() {
-    //     return {
-    //         'top': this.map.getSurface(this.x, this.y - 1),
-    //         'right': this.map.getSurface(this.x + 1, this.y),
-    //         'bottom': this.map.getSurface(this.x, this.y + 1),
-    //         'left': this.map.getSurface(this.x - 1, this.y),
-    //         'topLeft': this.map.getSurface(this.x - 1, this.y - 1),
-    //         'topRight': this.map.getSurface(this.x + 1, this.y - 1),
-    //         'bottomRight': this.map.getSurface(this.x + 1, this.y + 1),
-    //         'bottomLeft': this.map.getSurface(this.x - 1, this.y + 1),
-    //     };
-    // }
-
     updateMesh() {
         if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
-
-        //     const n = this.getAllNeighbors();
-        //     // console.log(n);
-        //
-        //     let isSurrounded = true;
-        //     for (let property in n) {
-        //         if (n.hasOwnProperty(property)) {
-        //             isSurrounded = isSurrounded && n[property].isSolid();
-        //         }
-        //     }
-        //
-        //     if (isSurrounded) {
-        //         // this.undiscovered = true;
-        //     } else {
-        //         this.explore();
-        //     }
 
         const topLeftVertex = new THREE.Vector3(this.x, 0, this.y);
         const topRightVertex = new THREE.Vector3(this.x + 1, 0, this.y);
         const bottomLeftVertex = new THREE.Vector3(this.x, 0, this.y + 1);
         const bottomRightVertex = new THREE.Vector3(this.x + 1, 0, this.y + 1);
 
-        //     if (this.isFloor()) {
-        //         if (n.topLeft.isFloor() && (n.top.isFloor() && n.left.isFloor())) {
-        //             topLeftVertex.y = 1;
-        //         }
-        //
-        //         if (n.topRight.isFloor() && (n.top.isFloor() && n.right.isFloor())) {
-        //             topRightVertex.y = 1;
-        //         }
-        //
-        //         if (n.bottomRight.isFloor() && (n.bottom.isFloor() && n.right.isFloor())) {
-        //             bottomRightVertex.y = 1;
-        //         }
-        //
-        //         if (n.bottomLeft.isFloor() && (n.bottom.isFloor() && n.left.isFloor())) {
-        //             bottomLeftVertex.y = 1;
-        //         }
-        //     }
+        const surfLeft = this.terrain.getSurface(this.x - 1, this.y);
+        const surfTopLeft = this.terrain.getSurface(this.x - 1, this.y - 1);
+        const surfTop = this.terrain.getSurface(this.x, this.y - 1);
+        const surfTopRight = this.terrain.getSurface(this.x + 1, this.y - 1);
+        const surfRight = this.terrain.getSurface(this.x + 1, this.y);
+        const surfBottomRight = this.terrain.getSurface(this.x + 1, this.y + 1);
+        const surfBottom = this.terrain.getSurface(this.x, this.y + 1);
+        const surfBottomLeft = this.terrain.getSurface(this.x - 1, this.y + 1);
+
+        function isHighGround(surf1: Surface, surf2: Surface, surf3: Surface) {
+            return !surf1.discovered || !surf2.discovered || !surf3.discovered ||
+                (!surf1.surfaceType.floor && !surf2.surfaceType.floor && !surf3.surfaceType.floor);
+        }
+
+        if (!this.discovered) {
+            topLeftVertex.y = 1;
+            topRightVertex.y = 1;
+            bottomRightVertex.y = 1;
+            bottomLeftVertex.y = 1;
+        } else if (!this.surfaceType.floor) {
+            if (isHighGround(surfLeft, surfTopLeft, surfTop)) topLeftVertex.y = 1;
+            if (isHighGround(surfTop, surfTopRight, surfRight)) topRightVertex.y = 1;
+            if (isHighGround(surfRight, surfBottomRight, surfBottom)) bottomRightVertex.y = 1;
+            if (isHighGround(surfBottom, surfBottomLeft, surfLeft)) bottomLeftVertex.y = 1;
+        }
 
         // WALL-TYPES
         // 1: CORNER
         // 2: WEIRD-CREVICE or FLAT-WALL
         // 3: INVERTED-CORNER
-
         const wallType = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y;
-        // if (wallType === 0) this.surfaceType = .GROUND;
+
         let uvOffset = 0;
 
         // not-rotated
@@ -204,35 +147,26 @@ export class Surface {
             textureName += '70';
         } else if (!this.surfaceType.shaping) {
             textureName += this.surfaceType.matIndex.toString();
+        } else if (wallType === 2 && (topLeftVertex.y === bottomRightVertex.y)) {
+            textureName += '77';
         } else {
-            let shapeIndex = '0'; // TODO determine shape index of texture
-            // if (wallType === 1) {
-            //     shapeIndex = 2;
-            // } else if (wallType === 3) {
-            //     shapeIndex = 1;
-            // } else if (wallType === 2 && (topLeftVertex.y === bottomRightVertex.y)) {
-            //     textureName += '77';
-            // } else {
-            //     shapeIndex = 0;
-            // }
-            let materialIndex = this.surfaceType.matIndex;
-            textureName += shapeIndex.toString() + materialIndex.toString();
+            if (wallType === 1) {
+                textureName += '5';
+            } else if (wallType === 3) {
+                textureName += '3';
+            } else {
+                textureName += '0';
+            }
+            textureName += this.surfaceType.matIndex;
         }
         textureName += '.bmp';
 
-        // if (textureIndex !== -1) textureName += this.map.tileTypes[this.surface].textures[textureIndex];
-        // console.log(textureName);
-        const textureImage = this.terrain.resMgr.getImage(textureName).canvas;
-        // console.log(textureImage);
-        const texture = new Texture();
-        texture.image = textureImage;
-        // texture.format = isJPEG ? RGBFormat : RGBAFormat;
-        texture.format = RGBFormat;
-        texture.needsUpdate = true;
-        // console.log(this.map.textureBasename);
-        // this.texture = this.tm.load(textureName);
-        this.texture = texture;
-        this.texture.flipY = false; // TODO is this needed?
+        // TODO load/create texture directly in WadLoader
+        this.texture = new Texture();
+        this.texture.image = this.terrain.resMgr.getImage(textureName).canvas;
+        this.texture.format = RGBFormat;
+        this.texture.needsUpdate = true;
+        this.texture.flipY = false;
 
         /*
         //		0---1                1         0---1
@@ -306,10 +240,20 @@ export class Surface {
             );
         }
 
-        //     topLeftVertex.y = (topLeftVertex.y * 1.0) + (this.high * HEIGHT_MULTIPLER);
-        //     topRightVertex.y = (topRightVertex.y * 1.0) + (n.right.high * HEIGHT_MULTIPLER);
-        //     bottomRightVertex.y = (bottomRightVertex.y * 1.0) + (n.bottomRight.high * HEIGHT_MULTIPLER);
-        //     bottomLeftVertex.y = (bottomLeftVertex.y * 1.0) + (n.bottom.high * HEIGHT_MULTIPLER);
+        function avgHeight(...args: Surface[]) {
+            let sum = 0, cnt = 0;
+            args.map(s => s.heightOffset).filter(Boolean).forEach(h => {
+                sum += h;
+                cnt++;
+            });
+            return sum / cnt;
+        }
+
+        // apply height modification
+        topLeftVertex.y += avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER;
+        topRightVertex.y += avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER;
+        bottomRightVertex.y += avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER;
+        bottomLeftVertex.y += avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER;
 
         this.geometry.computeFaceNormals();
         this.geometry.computeVertexNormals();
@@ -319,7 +263,6 @@ export class Surface {
             //new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: true} )
         ]);
 
-        // this.mesh.userData = {parent: this};
         this.terrain.floorGroup.add(this.mesh);
     }
 }
