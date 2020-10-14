@@ -2,6 +2,7 @@ import { WadLoader } from '../core/wad/WadLoader';
 import { BaseScreen } from './BaseScreen';
 import { ResourceManager } from '../game/engine/ResourceManager';
 import { ScreenLayer } from './ScreenLayer';
+import { EventManager } from '../game/engine/EventManager';
 
 class LoadingScreen extends BaseScreen {
 
@@ -10,8 +11,8 @@ class LoadingScreen extends BaseScreen {
     currentResourceIndex: number = 0;
     totalResources: number = 0;
 
-    constructor(resourceManager: ResourceManager) {
-        super(resourceManager);
+    constructor(resourceManager: ResourceManager, eventManager: EventManager) {
+        super(resourceManager, eventManager);
         this.layer = this.createLayer();
         this.layer.onRedraw = (context) => {
             // clear the screen to black

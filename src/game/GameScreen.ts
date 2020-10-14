@@ -3,17 +3,20 @@ import { ResourceManager } from './engine/ResourceManager';
 import { ScreenLayer } from '../gui/ScreenLayer';
 import { SceneManager } from './engine/SceneManager';
 import { TerrainLoader } from './engine/TerrainLoader';
+import { EventManager } from './engine/EventManager';
 
 class GameScreen extends BaseScreen {
 
     onLevelEnd: (gameResult: string) => void; // TODO game result is actually an objects with much more data
     gameLayer: ScreenLayer;
+    guiLayer: ScreenLayer;
     sceneManager: SceneManager;
     levelConf: object;
 
-    constructor(resourceManager: ResourceManager) {
-        super(resourceManager);
-        this.gameLayer = this.createLayer(0, false);
+    constructor(resourceManager: ResourceManager, eventManager: EventManager) {
+        super(resourceManager, eventManager);
+        this.gameLayer = this.createLayer({zIndex: 0, withContext: false});
+        this.guiLayer = this.createLayer({zIndex: 10, alpha: true});
         this.sceneManager = new SceneManager(this.gameLayer.canvas);
     }
 

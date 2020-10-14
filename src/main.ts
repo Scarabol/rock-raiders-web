@@ -3,14 +3,16 @@ import { ResourceManager } from './game/engine/ResourceManager';
 import { MainMenuScreen } from './gui/MainMenuScreen';
 import { GameScreen } from './game/GameScreen';
 import { RewardScreen } from './gui/RewardScreen';
+import { EventManager } from './game/engine/EventManager';
 
 // setup basic game engine structure
 
 const resMgr = new ResourceManager();
-const loadingScreen = new LoadingScreen(resMgr);
-const mainMenuScreen = new MainMenuScreen(resMgr);
-const gameScreen = new GameScreen(resMgr);
-const rewardScreen = new RewardScreen(resMgr);
+const eventMgr = new EventManager();
+const loadingScreen = new LoadingScreen(resMgr, eventMgr);
+const mainMenuScreen = new MainMenuScreen(resMgr, eventMgr);
+const gameScreen = new GameScreen(resMgr, eventMgr);
+const rewardScreen = new RewardScreen(resMgr, eventMgr);
 
 // link all components with callbacks
 
