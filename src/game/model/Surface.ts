@@ -161,12 +161,7 @@ export class Surface {
         }
         textureName += '.bmp';
 
-        // TODO load/create texture directly in WadLoader
-        this.texture = new Texture();
-        this.texture.image = this.terrain.resMgr.getImage(textureName).canvas;
-        this.texture.format = RGBFormat;
-        this.texture.needsUpdate = true;
-        this.texture.flipY = false;
+        this.texture = this.terrain.resMgr.getTexture(textureName);
 
         /*
         //		0---1                1         0---1

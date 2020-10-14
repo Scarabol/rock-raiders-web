@@ -2,6 +2,7 @@ import { createDummyImage } from './ImageHelper';
 
 function ResourceManager() {
     this.images = {};
+    this.textures = {};
     this.configuration = {};
     this.maps = {};
     this.sounds = {};
@@ -46,6 +47,19 @@ ResourceManager.prototype = {
                 this.images[lImageName] = createDummyImage(64, 64);
             }
             return this.images[lImageName];
+        }
+    },
+
+    getTexture(textureName) {
+        if (!textureName || textureName.length === 0) {
+            throw 'textureName must not be undefined, null or empty - was ' + textureName;
+        } else {
+            const lImageName = textureName.toLowerCase();
+            if (!(lImageName in this.textures) || this.textures[lImageName] === undefined || this.textures[lImageName] === null) {
+                console.error('Texture \'' + textureName + '\' unknown! Using placeholder texture instead');
+                this.textures[lImageName] = createDummyImage(64, 64);
+            }
+            return this.textures[lImageName];
         }
     },
 

@@ -6,6 +6,8 @@ import { encodeChar } from '../EncodingHelper';
 import { ResourceManager } from '../ResourceManager';
 import { WadFile } from './WadFile';
 import { LoadingScreen } from '../../gui/LoadingScreen';
+import { Texture } from 'three/src/textures/Texture';
+import { RGBFormat } from 'three/src/constants';
 
 class WadLoader {
 
@@ -68,6 +70,28 @@ class WadLoader {
 
     loadWadImageAsset(name, callback) {
         this.loadImageAsset(this.wad0File.getEntry(name), name, callback);
+    }
+
+    loadWadTexture(name, callback) {
+        const img = new Image();
+
+        const resMgr = this.resMgr;
+        img.onload = function () {
+            const texture = new Texture();
+            texture.image = img;
+            texture.format = RGBFormat;
+            texture.needsUpdate = true;
+            texture.flipY = false;
+
+            resMgr.textures[name.toLowerCase()] = texture;
+
+            URL.revokeObjectURL(img.src);
+            if (callback != null) {
+                callback();
+            }
+        };
+
+        img.src = this.wad0File.getEntry(name);
     }
 
     /**
@@ -354,7 +378,6 @@ class WadLoader {
         ]).then(() => {
             this.loadingScreen.enableGraphicMode();
             const mainConf = resMgr.configuration['Lego*'];
-            // registerAllAssets(mainConf);
             this.registerAllAssets(mainConf);
             // start loading assets
             this.assetsFromCfg = Object.values(this.assetsFromCfgByName);
@@ -452,7 +475,7 @@ class WadLoader {
         //     this.addAsset(this.loadWadImageAsset, imgPath);
         // });
         this.wad0File.filterEntryNames('World/WorldTextures/RockSplit/Rock..\\.bmp').forEach(imgPath => {
-            this.addAsset(this.loadWadImageAsset, imgPath);
+            this.addAsset(this.loadWadTexture, imgPath);
         });
         // // pause screen
         // const pauseConf = mainConf['Menu']['PausedMenu'];
