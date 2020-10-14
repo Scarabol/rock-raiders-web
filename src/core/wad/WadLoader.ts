@@ -224,7 +224,7 @@ class WadLoader {
         for (let seek = 16; seek < buffer.length; seek += 2) {
             row.push(buffer[seek]);
             if (row.length >= map.width) {
-                map.level.push(row);
+                map.level.unshift(row); // push => flipped x-axis in threejs (right-hand-system)
                 row = [];
             }
         }

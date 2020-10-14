@@ -17,7 +17,7 @@ export class TerrainLoader {
         const surfaceMap = resMgr.maps[(levelConf)['SurfaceMap']].level;
         const predugMap = resMgr.maps[(levelConf)['PreDugMap']].level;
         const cryOreMap = resMgr.maps[(levelConf)['CryOreMap']].level;
-        // const fallinMapName = levelConf['FallinMap'];
+        // const fallinMapName = levelConf['FallinMap']; // TODO landslides
 
         for (let x = 0; x < terrainMap.level.length; x++) {
             terrain.surfaces.push([]);
@@ -62,10 +62,10 @@ export class TerrainLoader {
 
         // TODO crumble unsupported walls (this may change discover result in next step)
 
-        // FIXME discover surfaces
+        // exlpore predug surfaces
         terrain.surfaces.forEach(c => c.forEach(s => {
-            s.discovered = predugMap[s.x][s.y] === 1 || predugMap[s.x][s.y] === 3;
-        }))
+            if (predugMap[s.x][s.y] === 1 || predugMap[s.x][s.y] === 3) s.explore();
+        }));
 
         terrain.surfaces.forEach(c => c.forEach(s => s.updateMesh()));
 

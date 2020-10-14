@@ -3,25 +3,10 @@ import { Terrain } from './Terrain';
 import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils';
 import { Texture } from 'three/src/textures/Texture';
 import { RGBFormat } from 'three/src/constants';
-import { DIRT, GROUND, HARD_ROCK, SOLID_ROCK, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
+import { GROUND, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
 
 // // CONSTANTS
 // const HEIGHT_MULTIPLER = 0.05;
-
-// // SURF TYPES
-// const SURF = {
-//     GROUND: 0,
-//     SOLID_ROCK: 1,
-//     HARD_ROCK: 2,
-//     LOOSE_ROCK: 3,
-//     DIRT: 4,
-//     SOIL: 5,
-//     LAVA: 6,
-//     ORE_SEAM: 8,
-//     WATER: 9,
-//     CRYSTAL_SEAM: 10,
-//     RECHARGE_SEAM: 11,
-// };
 
 export class Surface {
 
@@ -46,9 +31,26 @@ export class Surface {
     constructor(terrain, surface, x, y, high) {
         this.terrain = terrain;
         this.surfaceType = SURF_TO_TYPE[surface];
+        if (!this.surfaceType) {
+            console.warn('surface ' + surface + ' unknown, using ground as fallback');
+            this.surfaceType = GROUND;
+        }
         this.x = x;
         this.y = y;
         // this.high = high; // TODO apply high with scaling
+    }
+
+    explore() {
+        this.discovered = true;
+        for (let x = this.x - 1; x <= this.x + 1; x++) {
+            for (let y = this.y - 1; y <= this.y + 1; y++) {
+                if (x !== this.x || y !== this.y) {
+                    const neighbor = this.terrain.getSurface(x, y);
+                    neighbor.discovered = true;
+                }
+            }
+        }
+        // FIXME discover all neighbors
     }
 
     // isFloor() {
@@ -112,44 +114,44 @@ export class Surface {
     updateMesh() {
         if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
 
-    //     const n = this.getAllNeighbors();
-    //     // console.log(n);
-    //
-    //     let isSurrounded = true;
-    //     for (let property in n) {
-    //         if (n.hasOwnProperty(property)) {
-    //             isSurrounded = isSurrounded && n[property].isSolid();
-    //         }
-    //     }
-    //
-    //     if (isSurrounded) {
-    //         // this.undiscovered = true;
-    //     } else {
-    //         this.explore();
-    //     }
+        //     const n = this.getAllNeighbors();
+        //     // console.log(n);
+        //
+        //     let isSurrounded = true;
+        //     for (let property in n) {
+        //         if (n.hasOwnProperty(property)) {
+        //             isSurrounded = isSurrounded && n[property].isSolid();
+        //         }
+        //     }
+        //
+        //     if (isSurrounded) {
+        //         // this.undiscovered = true;
+        //     } else {
+        //         this.explore();
+        //     }
 
         const topLeftVertex = new THREE.Vector3(this.x, 0, this.y);
         const topRightVertex = new THREE.Vector3(this.x + 1, 0, this.y);
         const bottomLeftVertex = new THREE.Vector3(this.x, 0, this.y + 1);
         const bottomRightVertex = new THREE.Vector3(this.x + 1, 0, this.y + 1);
 
-    //     if (this.isFloor()) {
-    //         if (n.topLeft.isFloor() && (n.top.isFloor() && n.left.isFloor())) {
-    //             topLeftVertex.y = 1;
-    //         }
-    //
-    //         if (n.topRight.isFloor() && (n.top.isFloor() && n.right.isFloor())) {
-    //             topRightVertex.y = 1;
-    //         }
-    //
-    //         if (n.bottomRight.isFloor() && (n.bottom.isFloor() && n.right.isFloor())) {
-    //             bottomRightVertex.y = 1;
-    //         }
-    //
-    //         if (n.bottomLeft.isFloor() && (n.bottom.isFloor() && n.left.isFloor())) {
-    //             bottomLeftVertex.y = 1;
-    //         }
-    //     }
+        //     if (this.isFloor()) {
+        //         if (n.topLeft.isFloor() && (n.top.isFloor() && n.left.isFloor())) {
+        //             topLeftVertex.y = 1;
+        //         }
+        //
+        //         if (n.topRight.isFloor() && (n.top.isFloor() && n.right.isFloor())) {
+        //             topRightVertex.y = 1;
+        //         }
+        //
+        //         if (n.bottomRight.isFloor() && (n.bottom.isFloor() && n.right.isFloor())) {
+        //             bottomRightVertex.y = 1;
+        //         }
+        //
+        //         if (n.bottomLeft.isFloor() && (n.bottom.isFloor() && n.left.isFloor())) {
+        //             bottomLeftVertex.y = 1;
+        //         }
+        //     }
 
         // WALL-TYPES
         // 1: CORNER
@@ -198,41 +200,24 @@ export class Surface {
         }
 
         let textureName = this.terrain.textureSet.texturebasename;
-        console.log(textureName);
-
-        let shapeIndex = 0;
         if (!this.discovered) {
-            shapeIndex = 7;
-        } else { // FIXME complete list
-            // console.log(wallType);
-        }
-        // if (wallType === 1) {
-        //     shapeIndex = 2;
-        // } else if (wallType === 3) {
-        //     shapeIndex = 1;
-        // } else if (wallType === 2 && (topLeftVertex.y === bottomRightVertex.y)) {
-        //     textureName += '77';
-        // } else {
-        //     shapeIndex = 0;
-        // }
-        textureName += shapeIndex.toString();
-
-        let materialIndex = 0;
-        if (!this.discovered) { // FIXME determine texture name
-            materialIndex = 0;
-        } else if (this.surfaceType === GROUND) {
-            materialIndex = 0;
-        } else if (this.surfaceType === SOLID_ROCK) {
-            materialIndex = 5;
-        } else if (this.surfaceType === HARD_ROCK) {
-            materialIndex = 4;
-        } else if (this.surfaceType === DIRT) {
-            materialIndex = 1;
+            textureName += '70';
+        } else if (!this.surfaceType.shaping) {
+            textureName += this.surfaceType.matIndex.toString();
         } else {
-            console.log(this.surfaceType);
+            let shapeIndex = '0'; // TODO determine shape index of texture
+            // if (wallType === 1) {
+            //     shapeIndex = 2;
+            // } else if (wallType === 3) {
+            //     shapeIndex = 1;
+            // } else if (wallType === 2 && (topLeftVertex.y === bottomRightVertex.y)) {
+            //     textureName += '77';
+            // } else {
+            //     shapeIndex = 0;
+            // }
+            let materialIndex = this.surfaceType.matIndex;
+            textureName += shapeIndex.toString() + materialIndex.toString();
         }
-        textureName += materialIndex.toString();
-
         textureName += '.bmp';
 
         // if (textureIndex !== -1) textureName += this.map.tileTypes[this.surface].textures[textureIndex];
@@ -321,10 +306,10 @@ export class Surface {
             );
         }
 
-    //     topLeftVertex.y = (topLeftVertex.y * 1.0) + (this.high * HEIGHT_MULTIPLER);
-    //     topRightVertex.y = (topRightVertex.y * 1.0) + (n.right.high * HEIGHT_MULTIPLER);
-    //     bottomRightVertex.y = (bottomRightVertex.y * 1.0) + (n.bottomRight.high * HEIGHT_MULTIPLER);
-    //     bottomLeftVertex.y = (bottomLeftVertex.y * 1.0) + (n.bottom.high * HEIGHT_MULTIPLER);
+        //     topLeftVertex.y = (topLeftVertex.y * 1.0) + (this.high * HEIGHT_MULTIPLER);
+        //     topRightVertex.y = (topRightVertex.y * 1.0) + (n.right.high * HEIGHT_MULTIPLER);
+        //     bottomRightVertex.y = (bottomRightVertex.y * 1.0) + (n.bottomRight.high * HEIGHT_MULTIPLER);
+        //     bottomLeftVertex.y = (bottomLeftVertex.y * 1.0) + (n.bottom.high * HEIGHT_MULTIPLER);
 
         this.geometry.computeFaceNormals();
         this.geometry.computeVertexNormals();
