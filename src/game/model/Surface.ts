@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import { Terrain } from './Terrain';
 import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils';
-import { Texture } from 'three/src/textures/Texture';
-import { RGBFormat } from 'three/src/constants';
 import { GROUND, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
 
 const HEIGHT_MULTIPLER = 0.05;
@@ -162,7 +160,6 @@ export class Surface {
         textureName += '.bmp';
 
         this.texture = this.terrain.resMgr.getTexture(textureName);
-
         /*
         //		0---1                1         0---1
         //		|   |  becomes      /|   and   |  /

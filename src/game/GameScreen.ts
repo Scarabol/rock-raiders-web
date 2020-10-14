@@ -2,8 +2,6 @@ import { BaseScreen } from '../gui/BaseScreen';
 import { ResourceManager } from '../core/ResourceManager';
 import { ScreenLayer } from '../gui/ScreenLayer';
 import { SceneManager } from './engine/SceneManager';
-import { Terrain } from './model/Terrain';
-import { Surface } from './model/Surface';
 import { TerrainLoader } from './engine/TerrainLoader';
 
 class GameScreen extends BaseScreen {
@@ -25,105 +23,11 @@ class GameScreen extends BaseScreen {
         if (!this.levelConf) throw 'Could not find level configuration for "' + levelName + '"'; // TODO error handling
         // console.log(this.levelConf);
 
-        // const themeName = this.levelConf['TextureSet'][1];
-        // // console.log(themeName);
-        // const textureSet = this.resMgr.configuration['Lego*']['Textures'][themeName];
-        // // console.log(textureSet);
-        //
-        // const terrainMap = this.resMgr.maps[(this.levelConf)['TerrainMap']].level;
-        // const pathMap = this.resMgr.maps[(this.levelConf)['PathMap']];
-        // const surfaceMap = this.resMgr.maps[(this.levelConf)['SurfaceMap']].level;
-        // const predugMap = this.resMgr.maps[(this.levelConf)['PreDugMap']].level;
-        // const cryOreMap = this.resMgr.maps[(this.levelConf)['CryOreMap']].level;
-        // // const olFileName = levelConf['OListFile'];
-        // // const fallinMapName = levelConf['FallinMap'];
-        //
-        // // load in Space types from terrain, surface, and path maps
-        // const terrain: Surface[][] = [];
-        // for (let x = 0; x < terrainMap.length; x++) {
-        //     terrain.push([]);
-        //     for (let y = 0; y < terrainMap[x].length; y++) {
-        //         // give the path map the highest priority, if it exists
-        //         if (pathMap && pathMap.level[x][y] === 1) {
-        //             // rubble 1 Space id = 100
-        //             terrain[x].push(new Surface(100, x, y, surfaceMap[x][y]));
-        //         } else if (pathMap && pathMap.level[x][y] === 2) {
-        //             // building power path Space id = -1
-        //             terrain[x].push(new Surface(-1, x, y, surfaceMap[x][y]));
-        //         } else {
-        //             if (predugMap[x][y] === 0) {
-        //                 // soil(5) was removed pre-release, so replace it with dirt(4)
-        //                 if (terrainMap[x][y] === 5) {
-        //                     terrain[x].push(new Surface(4, x, y, surfaceMap[x][y]));
-        //                 } else {
-        //                     terrain[x].push(new Surface(terrainMap[x][y], x, y, surfaceMap[x][y]));
-        //                 }
-        //             } else if (predugMap[x][y] === 3 || predugMap[x][y] === 4) { // slug holes
-        //                 terrain[x].push(new Surface(predugMap[x][y] * 10, x, y, surfaceMap[x][y]));
-        //             } else if (predugMap[x][y] === 1 || predugMap[x][y] === 2) {
-        //                 if (terrainMap[x][y] === 6) {
-        //                     terrain[x].push(new Surface(6, x, y, surfaceMap[x][y]));
-        //                 } else if (terrainMap[x][y] === 9) {
-        //                     terrain[x].push(new Surface(9, x, y, surfaceMap[x][y]));
-        //                 } else {
-        //                     terrain[x].push(new Surface(0, x, y, surfaceMap[x][y]));
-        //                 }
-        //             }
-        //
-        //             const currentCryOre = cryOreMap[x][y];
-        //             if (currentCryOre % 2 === 1) {
-        //                 terrain[x][y].containedCrystals = (currentCryOre + 1) / 2;
-        //             } else {
-        //                 terrain[x][y].containedOre = currentCryOre / 2;
-        //             }
-        //         }
-        //     }
-        // }
-        // // console.log(terrain);
-
-        // FIXME create mesh and add it to the scene
+        // create terrain mesh and add it to the scene
         const terrain = new TerrainLoader().loadTerrain(this.resMgr, this.levelConf);
-        // const map = new Terrain(this.resMgr, terrain.length, terrain[0].length, textureSet.texturebasename); // TODO maybe width/height must be swapped here (all maps square?)
-        // map.surfaces = terrain;
-        // map.surfaces.forEach(col => col.forEach(s => s.map = map));
-        // map.surfaces.forEach(col => col.forEach(s => {
-        //     s.undiscovered = predugMap[s.y][s.x] !== 1 && predugMap[s.y][s.x] !== 2 && predugMap[s.y][s.x] !== 3 && predugMap[s.y][s.x] !== 4;
-        //     // if (!s.undiscovered) {
-        //     //     console.log(s);
-        //     // }
-        // }));
-        // map.surfaces.forEach(col => col.forEach(s => s.update()));
         this.sceneManager.scene.add(terrain.floorGroup);
 
-        // ensure that any walls which do not meet the 'supported' requirement crumble at the start
-        // for (let i = 0; i < this.resMgr.maps[predugMapName].level.length; i++) {
-        //     for (let r = 0; r < this.resMgr.maps[predugMapName].level[i].length; r++) {
-        //         if (terrain[i][r].isWall) {
-        //             terrain[i][r].checkWallSupported(null, true);
-        //         }
-        //     }
-        // }
-
-        // 'touch' all exposed spaces in the predug map so that they appear as visible from the start
-        // for (let i = 0; i < this.resMgr.maps[predugMapName].level.length; i++) {
-        //     for (let r = 0; r < this.resMgr.maps[predugMapName].level[i].length; r++) {
-        //         const currentPredug = this.resMgr.maps[predugMapName].level[i][r];
-        //         if (currentPredug === 1 || currentPredug === 3) {
-        //             touchAllAdjacentSpaces(terrain[i][r]);
-        //         }
-        //     }
-        // }
-
-        // add land-slide frequency to Spaces
-        // if (this.resMgr.maps[fallinMapName]) {
-        //     for (let i = 0; i < this.resMgr.maps[fallinMapName].level.length; i++) {
-        //         for (let r = 0; r < this.resMgr.maps[fallinMapName].level[i].length; r++) {
-        //             terrain[i][r].setLandSlideFrequency(this.resMgr.maps[fallinMapName].level[i][r]);
-        //         }
-        //     }
-        // }
-
-        // load in non-space objects next
+        // FIXME load in non-space objects next
         // const objectList = GameManager.objectLists[olFileName];
         // Object.values(objectList).forEach(function (olObject) {
         //     const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type;

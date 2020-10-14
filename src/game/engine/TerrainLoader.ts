@@ -8,7 +8,7 @@ export class TerrainLoader {
 
         const themeName = levelConf['TextureSet'][1];
         terrain.textureSet = resMgr.configuration['Lego*']['Textures'][themeName];
-        console.log(terrain.textureSet);
+        // console.log(terrain.textureSet);
 
         const terrainMap = resMgr.maps[(levelConf)['TerrainMap']];
         terrain.width = terrainMap.width;
@@ -58,7 +58,7 @@ export class TerrainLoader {
                 }
             }
         }
-        // console.log(surfaces);
+        // console.log(terrain.surfaces);
 
         // TODO crumble unsupported walls (this may change discover result in next step)
 
@@ -69,17 +69,7 @@ export class TerrainLoader {
 
         terrain.surfaces.forEach(c => c.forEach(s => s.updateMesh()));
 
-        // // create mesh and add it to the scene
-        // const map = new Terrain(resMgr, surfaces.length, surfaces[0].length); // TODO maybe width/height must be swapped here (all maps square?)
-        // map.surfaces = surfaces;
-        // map.surfaces.forEach(col => col.forEach(s => s.map = map));
-        // map.surfaces.forEach(col => col.forEach(s => {
-        //     s.undiscovered = predugMap[s.y][s.x] !== 1 && predugMap[s.y][s.x] !== 2 && predugMap[s.y][s.x] !== 3 && predugMap[s.y][s.x] !== 4;
-        //     // if (!s.undiscovered) {
-        //     //     console.log(s);
-        //     // }
-        // }));
-        // map.surfaces.forEach(col => col.forEach(s => s.update()));
+        // TODO add landslides
 
         return terrain;
 
