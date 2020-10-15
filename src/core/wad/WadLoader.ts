@@ -158,8 +158,7 @@ class WadLoader {
 
     loadNerpAsset(name, callback) {
         name = name.replace(/.npl$/, '.nrn');
-        const buffer = this.wad0File.getEntryData(name);
-        const script = String.fromCharCode.apply(String, buffer);
+        const script = this.wad0File.getEntryText(name);
         this.resMgr.nerps[name] = NerpParser(script, this.resMgr.nerps);
         if (callback != null) {
             callback();
@@ -193,7 +192,7 @@ class WadLoader {
 
     parseNerpMsgFile(wadFile, name) {
         const result = [];
-        const lines = String.fromCharCode.apply(String, wadFile.getEntryData(name).map(c => encodeChar(c))).split('\n');
+        const lines = wadFile.getEntryText(name).split('\n');
         for (let c = 0; c < lines.length; c++) {
             const line = lines[c].trim();
             if (line.length < 1 || line === '-') {
@@ -263,8 +262,7 @@ class WadLoader {
     }
 
     loadObjectListAsset(name, callback) {
-        const buffer = this.wad0File.getEntryData(name);
-        const lines = String.fromCharCode.apply(String, buffer).split('\n');
+        const lines = this.wad0File.getEntryText(name).split('\n');
         this.resMgr.objectLists[name] = [];
         let currentObject = null;
         for (let c = 0; c < lines.length; c++) {

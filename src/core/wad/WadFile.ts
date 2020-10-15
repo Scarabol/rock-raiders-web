@@ -1,3 +1,5 @@
+import { encodeChar } from '../EncodingHelper';
+
 /**
  * Handles the extraction of single files from a bigger WAD data blob
  */
@@ -78,12 +80,21 @@ class WadFile {
     }
 
     /**
-     * Returns the entries content by name extracted from the managed WAD file
+     * Returns the entries content extracted by name from the managed WAD file
      * @param entryName Entry name to be extracted
      * @returns {Uint8Array} Returns the content as Uint8Array
      */
     getEntryData(entryName) {
         return new Uint8Array(this.getEntryBuffer(entryName));
+    }
+
+    /**
+     * Returns the entries content as text extracted by name from the managed WAD file
+     * @param entryName Entry name to be extracted
+     * @returns {string} Returns the content as String
+     */
+    getEntryText(entryName) {
+        return String.fromCharCode.apply(String, this.getEntryBuffer(entryName).map(c => encodeChar(c)));
     }
 
     /**
