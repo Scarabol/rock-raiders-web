@@ -1,50 +1,44 @@
-import * as THREE from 'three';
+import { AmbientLight, AxesHelper, MOUSE, PerspectiveCamera, PointLight, Scene, Vector3, WebGLRenderer } from 'three';
 import { DebugHelper } from '../../core/DebugHelper';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { PointLight, Vector3 } from 'three';
 
 class SceneManager {
 
     maxFps: number = 30; // most animations use 25 fps so this should be enough
-    renderer: THREE.WebGLRenderer;
+    renderer: WebGLRenderer;
     debugHelper: DebugHelper = new DebugHelper();
     renderInterval;
     animRequest;
-    scene;
-    camera;
-    amb;
-    light;
+    scene: Scene;
+    camera: PerspectiveCamera;
+    amb: AmbientLight;
+    light: PointLight;
     axisHelper;
     controls: OrbitControls;
     cursorTorchlight: PointLight;
 
     constructor(canvas: HTMLCanvasElement) {
-        this.renderer = new THREE.WebGLRenderer({antialias: true, canvas: canvas});
-        this.renderer.setClearColor(0xa0a0a0); // TODO adjust clear color to black (or level???)
+        this.renderer = new WebGLRenderer({antialias: true, canvas: canvas});
+        this.renderer.setClearColor(0x000000);
 
-        this.scene = new THREE.Scene();
-        // this.scene.fog = new THREE.FogExp2(0x6e6e9b, 0.05); // TODO derive from level config
+        this.scene = new Scene();
+        // this.scene.fog = new FogExp2(0x6e6e9b, 0.05); // TODO derive from level config
 
-        this.amb = new THREE.AmbientLight(0x808080); // TODO use "cave" light setup
+        this.amb = new AmbientLight(0x808080); // TODO use "cave" light setup
         this.scene.add(this.amb);
 
-        this.cursorTorchlight = new THREE.PointLight(0xffffff, 1, 7);
+        this.cursorTorchlight = new PointLight(0xffffff, 1, 7);
         this.scene.add(this.cursorTorchlight);
 
-        this.axisHelper = new THREE.AxesHelper(20);
+        this.axisHelper = new AxesHelper(20);
         this.scene.add(this.axisHelper);
 
-        this.camera = new THREE.PerspectiveCamera(60, canvas.width / canvas.height, 0.1, 1000);
-        this.camera.position.x = 0; // TODO dynamically position camera on each level start
-        this.camera.position.y = 10;
-        this.camera.position.z = 0;
+        this.camera = new PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.screenSpacePanning = false;
-        this.controls.mouseButtons = {LEFT: null, MIDDLE: THREE.MOUSE.ROTATE, RIGHT: THREE.MOUSE.PAN};
+        this.controls.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN};
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
-        this.controls.target = new Vector3(10, 0, 10); // TODO dynamically look at toolstation
-        this.controls.update();
     }
 
     startRendering() {
