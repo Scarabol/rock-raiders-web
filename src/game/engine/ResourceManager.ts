@@ -1,7 +1,9 @@
 import { createDummyImage } from '../../core/ImageHelper';
+import { WadLoader } from '../../core/wad/WadLoader';
 
 export class ResourceManager {
 
+    wadLoader: WadLoader;
     images = {};
     textures = {};
     configuration = {};
@@ -33,6 +35,10 @@ export class ResourceManager {
         // pointers/cursors // TODO load main menu cursor with loading screen and change cursor there
         ['wad0alpha', 'Interface/Pointers/Aclosed.bmp'],
     ];
+
+    constructor() {
+        this.wadLoader = new WadLoader(this);
+    }
 
     getImage(imageName) {
         if (!imageName || imageName.length === 0) {

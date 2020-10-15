@@ -4,6 +4,7 @@ import { MainMenuScreen } from './screen/MainMenuScreen';
 import { GameScreen } from './game/GameScreen';
 import { RewardScreen } from './screen/RewardScreen';
 import { EventManager } from './game/engine/EventManager';
+import { WadLoader } from './core/wad/WadLoader';
 
 // setup basic game engine structure
 
@@ -16,7 +17,11 @@ const rewardScreen = new RewardScreen(resMgr, eventMgr);
 
 // link all components with callbacks
 
-loadingScreen.onResourcesLoaded = () => {
+resMgr.wadLoader.onMessage = () => loadingScreen.setLoadingMessage;
+resMgr.wadLoader.onInitialLoad = () => loadingScreen.enableGraphicMode;
+resMgr.wadLoader.onAssetLoaded = () => loadingScreen.onAssetLoaded;
+resMgr.wadLoader.onLoad = () => {
+    loadingScreen.hide();
     // mainMenuScreen.showMainMenu();
     mainMenuScreen.selectLevel('Level05'); // FIXME directly start level for debugging
 };
@@ -30,4 +35,5 @@ rewardScreen.onContinue = mainMenuScreen.showLevelSelection;
 
 // start the game engine with loading resources
 
-loadingScreen.startLoading();
+loadingScreen.show();
+resMgr.wadLoader.startWithCachedFiles();

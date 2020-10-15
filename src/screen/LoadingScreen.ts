@@ -1,13 +1,11 @@
-import { WadLoader } from '../core/wad/WadLoader';
 import { BaseScreen } from './BaseScreen';
 import { ResourceManager } from '../game/engine/ResourceManager';
 import { ScreenLayer } from './ScreenLayer';
 import { EventManager } from '../game/engine/EventManager';
 
-class LoadingScreen extends BaseScreen {
+export class LoadingScreen extends BaseScreen {
 
     layer: ScreenLayer;
-    onResourcesLoaded: () => void = null;
     currentResourceIndex: number = 0;
     totalResources: number = 0;
 
@@ -27,14 +25,6 @@ class LoadingScreen extends BaseScreen {
             context.fillStyle = 'white';
             context.fillText('Loading...', 20, this.height - 30);
         };
-    }
-
-    startLoading() {
-        this.show();
-        new WadLoader(this).startWithCachedFiles(() => {
-            this.hide();
-            this.onResourcesLoaded();
-        });
     }
 
     setLoadingMessage(text) {
@@ -62,6 +52,9 @@ class LoadingScreen extends BaseScreen {
         this.redraw();
     }
 
-}
+    onAssetLoaded() {
+        this.currentResourceIndex++;
+        this.redraw();
+    }
 
-export { LoadingScreen };
+}
