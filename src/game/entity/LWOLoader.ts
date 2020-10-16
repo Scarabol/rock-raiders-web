@@ -12,7 +12,7 @@ import * as THREE from 'three';
 import { BitmapLoader } from './BitmapLoader';
 import { ResourceManager } from '../engine/ResourceManager';
 import { BufferGeometry, Material } from 'three';
-import { decodePath, decodeString } from '../../core/Util';
+import { decodePath, decodeString, getFilename } from '../../core/Util';
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42; // "LWOB"
@@ -186,14 +186,6 @@ function getVector3AtOffset(view, offset) {
     vector.y = view.getFloat32(offset + F4_SIZE);
     vector.z = view.getFloat32(offset + (F4_SIZE * 2));
     return vector;
-}
-
-function getFilename(path) {
-    return path.substring(path.lastIndexOf('\\') + 1).toLowerCase();
-}
-
-function getFilepath(path) {
-    return path.substring(0, path.lastIndexOf('\\') + 1);
 }
 
 function planarMapUVS(geometry, vertices, uvs, indices, materialIndex, size, center, flags) {
@@ -424,10 +416,8 @@ export class LWOLoader {
                     case SURF_TIMG:
                         const texturePath = decodePath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
                         if (texturePath === '(none)') break; // TODO create fake texture?
-                        console.log(texturePath);
                         const textureName = getFilename(texturePath);
-                        console.log(textureName);
-                        console.log(this.path);
+                        // console.log('texture: ' + this.path + textureName); // FIXME load texture
 
                         // const texture = this.resMgr.getTexture(filePath);
                         // console.log(texture);

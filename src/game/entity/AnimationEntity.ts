@@ -24,6 +24,7 @@ export class AnimationEntity {
         const activity = iGet(this.activities, keyname);
         if (!activity) {
             console.error('Activity \'' + keyname + '\' unknown');
+            console.log(this.activities);
             return;
         }
         if (activity.animation) {

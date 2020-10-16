@@ -356,7 +356,6 @@ class WadLoader {
     loadAnimatedEntity(aeFile, callback) {
         const content = this.wad0File.getEntryText(aeFile);
         const cfgRoot = iGet(new RonFile().parse(content), 'Lego*');
-        console.log(cfgRoot);
         const loader = new AnimEntityLoader(this.resMgr);
         this.resMgr.entity[aeFile] = loader.loadModels(aeFile, cfgRoot, this.resMgr);
         callback();

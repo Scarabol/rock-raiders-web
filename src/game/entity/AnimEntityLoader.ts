@@ -1,7 +1,7 @@
 import { ResourceManager } from '../engine/ResourceManager';
 import { LWSCLoader } from './LWSCLoader';
 import { AnimationEntity } from './AnimationEntity';
-import { iGet } from '../../core/Util';
+import { getPath, iGet } from '../../core/Util';
 
 export class AnimEntityLoader {
 
@@ -11,21 +11,8 @@ export class AnimEntityLoader {
         this.resMgr = resourceManager;
     }
 
-    getPath(url) {
-        let saneUrl = url.replace(/\\/g, '/').toLowerCase(); // convert backslashes to forward slashes and all lowercase
-        if (!saneUrl.startsWith('/')) saneUrl = '/' + saneUrl;
-        return saneUrl.substring(0, saneUrl.lastIndexOf('/') + 1);
-    }
-
-    getFilename(url) {
-        let saneUrl = url.replace(/\\/g, '/').toLowerCase(); // convert backslashes to forward slashes and all lowercase
-        if (!saneUrl.startsWith('/')) saneUrl = '/' + saneUrl;
-        return saneUrl.substring(saneUrl.lastIndexOf('/') + 1);
-    }
-
     loadModels(url, root, resMgr: ResourceManager) {
-        let path = this.getPath(url);
-        if (path.startsWith('/')) path = path.substring(1);
+        const path = getPath(url);
 
         // TODO load other poly quality models (if available)
         // let mediumPoly = (root)['mediumpoly'];
@@ -87,7 +74,6 @@ export class AnimEntityLoader {
             Object.keys(activities).forEach((activity) => {
                 try {
                     let keyname = iGet(activities, activity);
-                    if (keyname === 'teleport') keyname = 'Teleport'; // FIXME handle typos in cfg file, create case insensitive key matching object
                     const act = iGet(root, keyname);
                     const file = iGet(act, 'FILE');
                     const isLws = iGet(act, 'LWSFILE') === true;
