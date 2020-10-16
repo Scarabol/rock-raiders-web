@@ -57,17 +57,17 @@ export class LWSCLoader {
                         const filename = getFilename(value);
                         subObj.name = filename.slice(0, filename.length - '.lwo'.length);
                         subObj.filename = path + filename;
-                        const sharedPath = 'world/shared/' + filename;
                         // TODO do not parse twice, read from cache first
                         let lwoContent = null;
                         try {
                             lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(subObj.filename);
+                            subObj.model = new LWOLoader(this.resMgr, path).parse(lwoContent.buffer);
                         } catch (e) {
-                            console.log('load failed for ' + subObj.filename + ' trying shared path at ' + sharedPath + '; error: ' + e); // TODO debug logging
-                            lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(sharedPath);
-                            path = 'world/shared/';
+                            const sharedPath = 'world/shared/';
+                            // console.log('load failed for ' + subObj.filename + ' trying shared path at ' + sharedPath + filename + '; error: ' + e); // TODO debug logging
+                            lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(sharedPath + filename);
+                            subObj.model = new LWOLoader(this.resMgr, sharedPath).parse(lwoContent.buffer);
                         }
-                        subObj.model = new LWOLoader(this.resMgr, path).parse(lwoContent.buffer);
                         line = lines[++c];
                     } else if (key === 'AddNullObject') {
                         subObj.name = value;
