@@ -22,52 +22,6 @@ export class AnimEntityLoader {
         return saneUrl.substring(saneUrl.lastIndexOf('/') + 1);
     }
 
-    parse(url, content) {
-        let lines = content.split('\n');
-        lines.forEach((line, num) => {
-            line = line.slice(-1) === '\r' ? line.slice(0, line.length - 1).trim() : line.trim();
-            const comStart = line.indexOf(';');
-            if (comStart > -1) line = line.slice(0, comStart).trim();
-            line = line.replace('\t', ' ');
-            line = line.split(' ').map(s => s.trim()).filter(s => s !== '');
-            lines[num] = line;
-        });
-        lines = lines.filter(l => l.length > 0);
-
-        function parseObj(obj: {}, lines, start): number {
-            for (let c = start; c < lines.length; c++) {
-                const [key, val] = lines[c];
-                if (val === '{') {
-                    obj[key] = {};
-                    c = parseObj(obj[key], lines, c + 1);
-                } else if (key === '}') {
-                    return c;
-                } else {
-                    let value = val.split(':').map(v => v.split(',').map(v => {
-                        const num = Number(v);
-                        const lv = v.toLowerCase();
-                        if (!isNaN(num)) {
-                            return num;
-                        } else if (lv === 'false') {
-                            return false;
-                        } else if (lv === 'true') {
-                            return true;
-                        } else {
-                            return v;
-                        }
-                    }));
-                    while (value.length === 1) value = value[0];
-                    obj[key] = value;
-                }
-            }
-            return lines.length;
-        }
-
-        const cfgRoot = {};
-        parseObj(cfgRoot, lines, 0);
-        return cfgRoot['Lego*'];
-    }
-
     loadModels(url, root, resMgr: ResourceManager) {
         let path = this.getPath(url);
         if (path.startsWith('/')) path = path.substring(1);
