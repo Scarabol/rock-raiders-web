@@ -10,6 +10,7 @@
 
 import * as THREE from 'three';
 import { BitmapLoader } from './BitmapLoader';
+import { ResourceManager } from '../engine/ResourceManager';
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42; // "LWOB"
@@ -233,6 +234,7 @@ function planarMapUVS(geometry, vertices, uvs, indices, materialIndex, size, cen
 
 export class LWOLoader {
 
+    resMgr: ResourceManager;
     path = '';
     materials = [];
     geometry = new THREE.BufferGeometry();
@@ -241,6 +243,10 @@ export class LWOLoader {
     uvs = null;
 
     COUNTER_CLOCKWISE: false;
+
+    constructor(resourceManager: ResourceManager) {
+        this.resMgr = resourceManager;
+    }
 
     parsePoints(view, chunkOffset, chunkSize) {
         if (chunkSize % VEC12_SIZE !== 0) {
@@ -419,11 +425,14 @@ export class LWOLoader {
                         let textureName = getFilename(texturePath);
                         const currentPath = getFilepath(this.path);
                         const filePath = currentPath + textureName;
+                        // console.log(filePath);
 
-                        // instantiate a loader
-                        let loader = new BitmapLoader();
+                        // const texture = this.resMgr.getTexture(filePath);
+                        // console.log(texture);
 
-                        // FIXME load texture from resource manager
+                        // // instantiate a loader
+                        // let loader = new BitmapLoader();
+                        //
                         // function onTextureLoad(texture) {
                         //     if (texture.image) {
                         //         // const alphaCanvas = document.createElement('canvas');
@@ -454,13 +463,14 @@ export class LWOLoader {
                         //         //     debugger;
                         //     }
                         //
-                        //     material.color = new THREE.Color(0xffffff); // TODO actually color is defined above
-                        //     material.map = texture;
-                        //     material.map.wrapS = THREE.RepeatWrapping;
-                        //     material.map.wrapT = THREE.RepeatWrapping;
-                        //     material.map.minFilter = THREE.NearestFilter;
-                        //     material.map.magFilter = THREE.NearestFilter;
-                        //     material.needsUpdate = true;
+                        // FIXME adding material throws errors (missing uv?)
+                        // material.color = new THREE.Color(0xffffff); // TODO actually color is defined above
+                        // material.map = texture;
+                        // material.map.wrapS = THREE.RepeatWrapping;
+                        // material.map.wrapT = THREE.RepeatWrapping;
+                        // material.map.minFilter = THREE.NearestFilter;
+                        // material.map.magFilter = THREE.NearestFilter;
+                        // material.needsUpdate = true; // TODO needed?
                         // }
                         //
                         //     loader.load(filePath, onTextureLoad, undefined, function onError() {

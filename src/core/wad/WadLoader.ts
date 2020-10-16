@@ -440,17 +440,17 @@ class WadLoader {
             }
         });
         // FIXME buildings
-        const buildingTypes = mainConf['BuildingTypes'];
-        // console.log(buildingTypes);
-        Object.values(buildingTypes).forEach((bType: string) => {
-            // console.log(bType);
-            const bName = bType.split('/')[1];
-            // console.log(bName);
-            const aeFile = bType + '/' + bName + '.ae';
-            // console.log(aeFile);
-            this.addAsset(this.loadAnimatedEntity, aeFile);
-        });
-        // this.addAsset(this.loadAnimatedEntity, 'buildings/orerefinery/orerefinery.ae');
+        // const buildingTypes = mainConf['BuildingTypes'];
+        // // console.log(buildingTypes);
+        // Object.values(buildingTypes).forEach((bType: string) => {
+        //     // console.log(bType);
+        //     const bName = bType.split('/')[1];
+        //     // console.log(bName);
+        //     const aeFile = bType + '/' + bName + '.ae';
+        //     // console.log(aeFile);
+        //     this.addAsset(this.loadAnimatedEntity, aeFile);
+        // });
+        // this.addAsset(this.loadAnimatedEntity, 'buildings/toolstation/toolstation.ae');
         // // reward screen
         // const rewardConf = mainConf['Reward'];
         // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);

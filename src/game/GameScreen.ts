@@ -35,6 +35,7 @@ export class GameScreen extends BaseScreen {
 
         // create terrain mesh and add it to the scene
         this.terrain = new TerrainLoader().loadTerrain(this.resMgr, this.levelConf);
+        // this.terrain.floorGroup.scale.set(2, 2, 2); // FIXME read terrain scale from level file
         this.sceneManager.scene.add(this.terrain.floorGroup);
 
         // load in non-space objects next
@@ -65,14 +66,14 @@ export class GameScreen extends BaseScreen {
                 //     raiders.push(newRaider);
             } else if (buildingType) {
                 // FIXME add all parts for this building type not only main space
-                console.log('placing building type: ' + buildingType);
-                const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
-                console.log(bfilename);
-                const entity = this.resMgr.entity[bfilename];
-                console.log(this.resMgr.entity);
-                console.log(entity);
-                entity.setActivity('Stand');
-                this.sceneManager.scene.add(entity.group);
+                // console.log('placing building type: ' + buildingType);
+                // const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
+                // console.log(bfilename);
+                // const entity = this.resMgr.entity[bfilename];
+                // console.log(this.resMgr.entity);
+                // console.log(entity);
+                // entity.setActivity('Stand'); // FIXME add toolstation
+                // this.sceneManager.scene.add(entity.group);
                 // console.log(olObject.type);
                 // console.log(olObject);
                 // console.log(buildingType);

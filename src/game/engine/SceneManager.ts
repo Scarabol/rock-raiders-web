@@ -33,7 +33,7 @@ class SceneManager {
         this.axisHelper = new AxesHelper(20);
         this.scene.add(this.axisHelper);
 
-        this.camera = new PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+        this.camera = new PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 5000); // TODO adapt view distance to performance
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.screenSpacePanning = false;

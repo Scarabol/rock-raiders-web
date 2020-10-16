@@ -75,7 +75,7 @@ export class LWSCLoader {
                     }
                     // console.log(lwoContent);
                     // TODO do not parse twice, read from cache
-                    subObj.model = new LWOLoader().parse(lwoContent.buffer);
+                    subObj.model = new LWOLoader(this.resMgr).parse(lwoContent.buffer);
                     line = lines[++c];
                 } else if (line.startsWith('AddNullObject ')) {
                     subObj.name = line.split(' ')[1];
