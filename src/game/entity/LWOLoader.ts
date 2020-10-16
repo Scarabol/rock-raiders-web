@@ -11,6 +11,7 @@
 import * as THREE from 'three';
 import { BitmapLoader } from './BitmapLoader';
 import { ResourceManager } from '../engine/ResourceManager';
+import { BufferGeometry, Material } from 'three';
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42; // "LWOB"
@@ -234,15 +235,15 @@ function planarMapUVS(geometry, vertices, uvs, indices, materialIndex, size, cen
 
 export class LWOLoader {
 
-    resMgr: ResourceManager;
-    path = '';
-    materials = [];
-    geometry = new THREE.BufferGeometry();
-    vertices = null;
-    indices = null;
-    uvs = null;
-
     COUNTER_CLOCKWISE: false;
+
+    resMgr: ResourceManager;
+    path: string = '';
+    materials: Material[] = [];
+    geometry: BufferGeometry = new BufferGeometry();
+    vertices: Float32Array = null;
+    indices: Uint16Array = null;
+    uvs: Float32Array = null;
 
     constructor(resourceManager: ResourceManager) {
         this.resMgr = resourceManager;
@@ -422,10 +423,10 @@ export class LWOLoader {
                         let texturePath = new TextDecoder().decode(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
                         while (texturePath.slice(-1) === '\0') texturePath = texturePath.slice(0, texturePath.length - 1);
                         if (texturePath === '(none)') break; // TODO create fake texture?
-                        let textureName = getFilename(texturePath);
+                        const textureName = getFilename(texturePath);
+                        console.log(textureName);
                         const currentPath = getFilepath(this.path);
-                        const filePath = currentPath + textureName;
-                        // console.log(filePath);
+                        console.log(currentPath);
 
                         // const texture = this.resMgr.getTexture(filePath);
                         // console.log(texture);

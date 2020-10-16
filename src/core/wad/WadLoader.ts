@@ -7,7 +7,7 @@ import { WadFile } from './WadFile';
 import { Texture } from 'three/src/textures/Texture';
 import { RGBFormat } from 'three/src/constants';
 import { AnimEntityLoader } from '../../game/entity/AnimEntityLoader';
-import { RonFile } from '../RonFile';
+import { iGet, RonFile } from '../RonFile';
 
 class WadLoader {
 
@@ -73,11 +73,11 @@ class WadLoader {
         img.src = path;
     }
 
-    loadWadImageAsset(name, callback) {
+    loadWadImageAsset(name, callback) { // TODO use BitmapLoader and avoid creating local urls
         this.loadImageAsset(this.wad0File.getEntry(name), name, callback);
     }
 
-    loadWadTexture(name, callback) {
+    loadWadTexture(name, callback) { // TODO use BitmapLoader and avoid creating local urls
         const img = new Image();
 
         const resMgr = this.resMgr;
@@ -354,7 +354,7 @@ class WadLoader {
 
     loadAnimatedEntity(aeFile, callback) {
         const content = this.wad0File.getEntryText(aeFile);
-        const cfgRoot = new RonFile().parse(content).get('Lego*');
+        const cfgRoot = iGet(new RonFile().parse(content), 'Lego*');
         console.log(cfgRoot);
         const loader = new AnimEntityLoader(this.resMgr);
         this.resMgr.entity[aeFile] = loader.loadModels(aeFile, cfgRoot, this.resMgr);

@@ -1,6 +1,7 @@
 import { ResourceManager } from '../engine/ResourceManager';
 import { LWSCLoader } from './LWSCLoader';
 import { AnimationEntity } from './AnimationEntity';
+import { iGet } from '../../core/RonFile';
 
 export class AnimEntityLoader {
 
@@ -25,6 +26,8 @@ export class AnimEntityLoader {
     loadModels(url, root, resMgr: ResourceManager) {
         let path = this.getPath(url);
         if (path.startsWith('/')) path = path.substring(1);
+
+        // TODO load other poly quality models (if available)
         // let mediumPoly = (root)['mediumpoly'];
         // if (mediumPoly) {
         //     Object.keys(mediumPoly).forEach((key) => {
@@ -79,30 +82,20 @@ export class AnimEntityLoader {
         // }
 
         const parsed = {};
-        // console.log(root);
-        const activities = (root)['Activities'];
-        // console.log(activities);
+        const activities = iGet(root, 'Activities');
         if (activities) {
             Object.keys(activities).forEach((activity) => {
                 try {
-                    let keyname = activities[activity];
-                    // console.log('animation: ' + keyname);
+                    let keyname = iGet(activities, activity);
                     if (keyname === 'teleport') keyname = 'Teleport'; // FIXME handle typos in cfg file, create case insensitive key matching object
-                    const act: any = (root)[keyname];
-                    // console.log(act);
+                    const act = iGet(root, keyname);
                     const file = act['FILE'];
                     const isLws = act.hasOwnProperty('LWSFILE') && act['LWSFILE'] === true;
-                    if (!isLws) {
-                        throw 'NOT AN LWS FILE'; // FIXME
-                    }
+                    if (!isLws) throw 'NOT AN LWS FILE'; // FIXME
                     const filepath = path + file + '.lws';
-                    // console.log(filepath);
-                    const content = resMgr.wadLoader.wad0File.getEntryText(filepath);
-                    // console.log(content);
                     // TODO cache entities, do not parse twice
-                    const animation = new LWSCLoader(this.resMgr).parse(path, content);
-                    // console.log(animation);
-                    act.animation = animation;
+                    const content = resMgr.wadLoader.wad0File.getEntryText(filepath);
+                    act.animation = new LWSCLoader(this.resMgr).parse(path, content);
                     parsed[keyname] = act;
                 } catch (e) {
                     console.error(e);

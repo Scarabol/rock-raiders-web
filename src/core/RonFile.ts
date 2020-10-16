@@ -1,16 +1,13 @@
 // The RockRaidersObjectNotation (RON) format is related to JSON
 
+export function iGet(obj, keyname): any {
+    const values = Object.keys(obj)
+        .filter((key) => key.toLowerCase() === keyname.toLowerCase())
+        .map((key) => obj[key]);
+    return values ? values[0] : values;
+}
+
 export class RonFile {
-
-    root: any = {};
-
-    constructor(root = {}) {
-        this.root = root;
-    }
-
-    get(keyname) {
-        return new RonFile(this.root[keyname.toLowerCase()]);
-    }
 
     parse(content: string) { // TODO read from ArrayBuffer and fix encoding?
         const lines: string[][] = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
@@ -29,8 +26,9 @@ export class RonFile {
             })
             .filter(l => l !== '') // filter empty lines
             .map((v) => v.split(' ').filter(v => v !== ''));
-        this.parseObj(this.root, lines, 0);
-        return this;
+        const root = {};
+        this.parseObj(root, lines, 0);
+        return root;
     }
 
     parseObj(obj: {}, lines: string[][], start): number {

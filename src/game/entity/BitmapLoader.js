@@ -1,10 +1,6 @@
 /**
  * @author Marcus-Bizal https://github.com/marcbizal
  *
- * This loader loads LWO2 files exported from LW6.
- *
- * Support
- *  -
  */
 
 import * as THREE from 'three';
