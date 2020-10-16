@@ -20,16 +20,13 @@ export class LWSCLoader {
     }
 
     parse(path, content): AnimationClip {
-        const entity = new AnimationClip();
-
-        const lines = content.split('\n');
-        lines.forEach((line, num) => {
-            lines[num] = line.slice(-1) === '\r' ? line.slice(0, line.length - 1).trim() : line.trim();
-        });
+        const lines: string[] = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
+            .replace(/\t/g, ' ') // tabs to spaces
+            .split('\n')
+            .map((l) => l.trim());
 
         if (lines[0] !== 'LWSC') {
-            console.error('Invalid start of file! Expected \'LWSC\' in first line');
-            return;
+            throw 'Invalid start of file! Expected \'LWSC\' in first line';
         }
 
         const numOfModels = parseInt(lines[1], 10); // TODO is this correct? May be something else
@@ -37,6 +34,7 @@ export class LWSCLoader {
             console.warn('Number of models has unexpected value: ' + numOfModels);
         }
 
+        const entity = new AnimationClip();
         for (let c = 2; c < lines.length; c++) {
             let line = lines[c];
             if (!line) {
@@ -77,12 +75,12 @@ export class LWSCLoader {
                         console.warn('Unexpected line: ' + line);
                     }
                     while (line) {
-                        if (line.startsWith('ObjectMotion')) {
+                        if (line.startsWith('ObjectMotion ')) {
                             line = lines[++c];
                             const lenInfos = parseInt(line);
                             const lenFrames = parseInt(lines[++c]);
                             line = lines[++c];
-                            for (let x = 0; x < lenFrames && !line.startsWith('EndBehavior'); x++) {
+                            for (let x = 0; x < lenFrames && !line.startsWith('EndBehavior '); x++) {
                                 line = lines[c + x * 2];
                                 const infos = line.split(' ').map(Number);
                                 if (infos.length !== lenInfos) console.warn('Number of infos (' + infos.length + ') does not match if specified count (' + lenInfos + ')');
@@ -90,8 +88,8 @@ export class LWSCLoader {
                                 const animationFrameIndex = parseInt(line.split(' ')[0]); // other entries in line should be zeros
                                 subObj.setFrameAndFollowing(animationFrameIndex, entity.lastFrame, infos);
                             }
-                        } else if (line.startsWith('ParentObject')) {
-                            subObj.parentObjInd = value;
+                        } else if (line.startsWith('ParentObject ')) {
+                            subObj.parentObjInd = Number(line.split(' ')[1]);
                         } else {
                             // console.log("Unhandled line: "+line); // TODO debug logging, analyze remaining entries
                         }
