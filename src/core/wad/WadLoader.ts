@@ -353,11 +353,11 @@ class WadLoader {
         }
     }
 
-    loadAnimatedEntity(aeFile, callback) {
+    loadAnimatedEntity(aeFile: string, callback) {
         const content = this.wad0File.getEntryText(aeFile);
         const cfgRoot = iGet(new RonFile().parse(content), 'Lego*');
         const loader = new AnimEntityLoader(this.resMgr);
-        this.resMgr.entity[aeFile] = loader.loadModels(aeFile, cfgRoot, this.resMgr);
+        this.resMgr.entity[aeFile.toLowerCase()] = loader.loadModels(aeFile, cfgRoot, this.resMgr);
         callback();
     }
 
@@ -437,18 +437,13 @@ class WadLoader {
                 });
             }
         });
-        // FIXME load all buildings
-        // const buildingTypes = mainConf['BuildingTypes'];
-        // // console.log(buildingTypes);
-        // Object.values(buildingTypes).forEach((bType: string) => {
-        //     // console.log(bType);
-        //     const bName = bType.split('/')[1];
-        //     // console.log(bName);
-        //     const aeFile = bType + '/' + bName + '.ae';
-        //     // console.log(aeFile);
-        //     this.addAsset(this.loadAnimatedEntity, aeFile);
-        // });
-        this.addAsset(this.loadAnimatedEntity, 'buildings/toolstation/toolstation.ae');
+        // load all building types
+        const buildingTypes = mainConf['BuildingTypes'];
+        Object.values(buildingTypes).forEach((bType: string) => {
+            const bName = bType.split('/')[1];
+            const aeFile = bType + '/' + bName + '.ae';
+            this.addAsset(this.loadAnimatedEntity, aeFile);
+        });
         // // reward screen
         // const rewardConf = mainConf['Reward'];
         // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);
