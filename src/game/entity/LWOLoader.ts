@@ -415,36 +415,15 @@ export class LWOLoader {
                     case SURF_TIMG:
                         const textureFilepath = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
                         if (textureFilepath === '(none)') break; // TODO create fake texture?
+                        // TODO load (sequence) textures
                         const textureFilename = getFilename(textureFilepath);
-                        // lazy load texture later
-                        material.userData = {textureFilename: textureFilename};
+                        material.userData = {textureFilename: textureFilename}; // lazy load texture later
 
                         // // instantiate a loader
                         // let loader = new BitmapLoader();
                         //
                         // function onTextureLoad(texture) {
-                        //     if (texture.image) {
-                        //         // const alphaCanvas = document.createElement('canvas');
-                        //         // alphaCanvas.width = texture.image.width;
-                        //         // alphaCanvas.height = texture.image.height;
-                        //         // const ctx = alphaCanvas.getContext('2d');
-                        //         // ctx.fillStyle = '#fff';
-                        //         // ctx.drawImage(texture.image, 0, 0);
-                        //         // const textureData = ctx.getImageData(0, 0, alphaCanvas.width, alphaCanvas.height);
-                        //         // for (let c = 0; c < textureData.length; c += 4) {
-                        //         //     console.log(textureData[c]);
-                        //         //     if (textureData[c] !== 0 || textureData[c + 1] !== 0 || textureData[c + 2] !== 0) {
-                        //         //         textureData[c] = 0;
-                        //         //         textureData[c + 1] = 0;
-                        //         //         textureData[c + 2] = 0;
-                        //         //     }
-                        //         // }
-                        //         // ctx.putImageData(textureData, 0, 0);
-                        //         // material.alphaMap = new THREE.CanvasTexture(alphaCanvas);
-                        //         // // TODO set transparent, alphaTest
-                        //         // material.transparent = true;
-                        //         // material.alphaTest = 0.5;
-                        //     } else if (textureName[0] === 'A') {
+                        //     if (textureName[0] === 'A') {
                         material.transparent = true;
                         material.alphaTest = 0.5;
                         //         // } else {
@@ -465,7 +444,6 @@ export class LWOLoader {
                         //         console.log('Failed loading file ' + filePath + ' trying world shared folder');
                         //         loader.load("LegoRR0/world/shared/" + textureName, onTextureLoad);
                         //     });
-
                         break;
                     default:
                     // console.warn('Found unrecognised SURF subchunk type ' + new TextDecoder().decode(new Uint8Array(buffer, subchunkOffset, ID4_SIZE)) + ' at ' + subchunkOffset + '; length ' + subchunkSize);

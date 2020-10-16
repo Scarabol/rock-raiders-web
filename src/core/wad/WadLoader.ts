@@ -83,8 +83,7 @@ class WadLoader {
 
         const resMgr = this.resMgr;
         img.onload = function () {
-            const texture = new Texture();
-            texture.image = img;
+            const texture = new Texture(img);
             texture.format = RGBFormat;
             texture.needsUpdate = true;
             texture.flipY = false;

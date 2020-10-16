@@ -97,9 +97,6 @@ export class GameScreen extends BaseScreen {
                                 }
                             });
                     });
-                // entity.group.children.forEach((child) => {
-                //     child.
-                // })
                 entity.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90)); // TODO y offset?
                 this.sceneManager.scene.add(entity.group);
