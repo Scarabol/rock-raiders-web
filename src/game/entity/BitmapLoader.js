@@ -110,7 +110,7 @@ BitmapLoader.prototype = {
 
             if (this.getFilename(this.path)[0] !== 'A') {
                 // console.warn("THREE.BitMapLoader.parse: BitMap has no alpha; Falling back..."); // TODO is this worth a warning?
-                // FIXME black is alpha?!
+                // TODO black is alpha?!
                 let fallback = new THREE.TextureLoader();
 
                 return fallback.load(this.path);

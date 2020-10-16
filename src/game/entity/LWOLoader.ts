@@ -463,7 +463,7 @@ export class LWOLoader {
                         //         //     debugger;
                         //     }
                         //
-                        // FIXME adding material throws errors (missing uv?)
+                        // FIXME add material/texture to model
                         // material.color = new THREE.Color(0xffffff); // TODO actually color is defined above
                         // material.map = texture;
                         // material.map.wrapS = THREE.RepeatWrapping;

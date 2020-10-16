@@ -244,12 +244,12 @@ NerpRunner.prototype.disallowAll = function () {
 
 //noinspection JSUnusedGlobalSymbols
 NerpRunner.prototype.getPoweredPowerStationsBuilt = function () {
-    return buildings.filter(b => b.touched && b.type === BuildingTypeEnum.powerStation).length; // FIXME check if station is actually powered
+    return buildings.filter(b => b.touched && b.type === BuildingTypeEnum.powerStation).length; // TODO check if station is actually powered
 };
 
 //noinspection JSUnusedGlobalSymbols
 NerpRunner.prototype.getPoweredBarracksBuilt = function () {
-    return buildings.filter(b => b.touched && b.type === BuildingTypeEnum.supportStation).length; // FIXME check if station is actually powered
+    return buildings.filter(b => b.touched && b.type === BuildingTypeEnum.supportStation).length; // TODO check if station is actually powered
 };
 
 //noinspection JSUnusedGlobalSymbols

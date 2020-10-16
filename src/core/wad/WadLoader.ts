@@ -439,7 +439,7 @@ class WadLoader {
                 });
             }
         });
-        // FIXME buildings
+        // FIXME load all buildings
         // const buildingTypes = mainConf['BuildingTypes'];
         // // console.log(buildingTypes);
         // Object.values(buildingTypes).forEach((bType: string) => {
