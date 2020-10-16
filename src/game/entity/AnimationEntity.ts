@@ -19,7 +19,7 @@ export class AnimationEntity {
     fPPoly = null;
     activities = null;
 
-    setActivity(keyname) {
+    setActivity(keyname, onAnimationDone = null) {
         if (this.animation) this.animation.cancelAnimation();
         const activity = iGet(this.activities, keyname);
         if (!activity) {
@@ -42,7 +42,7 @@ export class AnimationEntity {
                     this.group.add(subObj.model);
                 }
             });
-            this.animation.animate(0);
+            this.animation.animate(0, onAnimationDone);
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
         }

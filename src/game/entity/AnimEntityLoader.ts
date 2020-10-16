@@ -77,11 +77,13 @@ export class AnimEntityLoader {
                     const act = iGet(root, keyname);
                     const file = iGet(act, 'FILE');
                     const isLws = iGet(act, 'LWSFILE') === true;
+                    const looping = iGet(act, 'LOOPING') === true;
                     if (!isLws) throw 'NOT AN LWS FILE'; // TODO error handling
                     const filepath = path + file + '.lws';
                     // TODO cache entities, do not parse twice
                     const content = resMgr.wadLoader.wad0File.getEntryText(filepath);
                     act.animation = new LWSCLoader(this.resMgr).parse(path, content);
+                    act.animation.looping = looping;
                     parsed[keyname] = act;
                 } catch (e) {
                     console.error(e);

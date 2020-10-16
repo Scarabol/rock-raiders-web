@@ -416,11 +416,8 @@ export class LWOLoader {
                         const textureFilepath = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
                         if (textureFilepath === '(none)') break; // TODO create fake texture?
                         const textureFilename = getFilename(textureFilepath);
-                        // console.log('texture: ' + this.path + textureFilename); // FIXME load texture
-
-                        // FIXME lazy load texture later
-                        // const texture = this.resMgr.getTexture(this.path + textureFilename);
-                        // console.log(texture);
+                        // lazy load texture later
+                        material.userData = {textureFilename: textureFilename};
 
                         // // instantiate a loader
                         // let loader = new BitmapLoader();
@@ -448,15 +445,14 @@ export class LWOLoader {
                         //         // material.transparent = true;
                         //         // material.alphaTest = 0.5;
                         //     } else if (textureName[0] === 'A') {
-                        //         material.transparent = true;
-                        //         material.alphaTest = 0.5;
+                        material.transparent = true;
+                        material.alphaTest = 0.5;
                         //         // } else {
                         //         //     console.log('Texture has no alpha');
                         //         //     debugger;
                         //     }
                         //
-                        // FIXME add material/texture to model
-                        // material.color = new THREE.Color(0xffffff); // TODO actually color is defined above
+                        // TODO add material/texture to model
                         // material.map = texture;
                         // material.map.wrapS = THREE.RepeatWrapping;
                         // material.map.wrapT = THREE.RepeatWrapping;
