@@ -70,7 +70,7 @@ export class GameScreen extends BaseScreen {
                 const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
                 const entity = iGet(this.resMgr.entity, bfilename);
                 entity.setActivity('Stand');
-                entity.group.position.set((olObject.xPos - 1.5) * 40, 15, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
+                entity.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90)); // TODO y offset?
                 this.sceneManager.scene.add(entity.group);
                 // TODO add some kind of power paths

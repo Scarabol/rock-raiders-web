@@ -418,7 +418,8 @@ export class LWOLoader {
                         const textureFilename = getFilename(textureFilepath);
                         // console.log('texture: ' + this.path + textureFilename); // FIXME load texture
 
-                        const texture = this.resMgr.getTexture(this.path + textureFilename);
+                        // FIXME lazy load texture later
+                        // const texture = this.resMgr.getTexture(this.path + textureFilename);
                         // console.log(texture);
 
                         // // instantiate a loader

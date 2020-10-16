@@ -437,6 +437,10 @@ class WadLoader {
                 });
             }
         });
+        // load all shared textures
+        this.wad0File.filterEntryNames('World/Shared/.+\\.bmp').forEach((texturePath) => {
+            this.addAsset(this.loadWadTexture, texturePath);
+        });
         // load all building types
         const buildingTypes = mainConf['BuildingTypes'];
         Object.values(buildingTypes).forEach((bType: string) => {
