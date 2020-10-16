@@ -15,7 +15,7 @@ export class LWSCLoader {
         return saneUrl.substring(saneUrl.lastIndexOf('/') + 1);
     }
 
-    parse(url, content) {
+    parse(url, content) { // FIXME cache entities, do not parse twice
         const entity = new AnimationClip();
 
         const lines = content.split('\n');

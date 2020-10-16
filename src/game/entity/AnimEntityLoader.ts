@@ -1,5 +1,5 @@
-import { LWSCLoader } from './LWSCLoader';
 import { ResourceManager } from '../engine/ResourceManager';
+import { LWSCLoader } from './LWSCLoader';
 
 export class AnimEntityLoader {
 
@@ -35,8 +35,22 @@ export class AnimEntityLoader {
                     c = parseObj(obj[key], lines, c + 1);
                 } else if (key === '}') {
                     return c;
-                } else if (key) {
-                    obj[key] = val;
+                } else {
+                    let value = val.split(':').map(v => v.split(',').map(v => {
+                        const num = Number(v);
+                        const lv = v.toLowerCase();
+                        if (!isNaN(num)) {
+                            return num;
+                        } else if (lv === 'false') {
+                            return false;
+                        } else if (lv === 'true') {
+                            return true;
+                        } else {
+                            return v;
+                        }
+                    }));
+                    while (value.length === 1) value = value[0];
+                    obj[key] = value;
                 }
             }
             return lines.length;
@@ -44,7 +58,7 @@ export class AnimEntityLoader {
 
         const cfgRoot = {};
         parseObj(cfgRoot, lines, 0);
-        return cfgRoot;
+        return cfgRoot['Lego*'];
     }
 
     loadModels(url, root, resMgr: ResourceManager) {
@@ -103,26 +117,27 @@ export class AnimEntityLoader {
         //     });
         // }
 
-        const activities = (root)['activities'];
+        console.log(root);
+        const activities = (root)['Activities'];
+        console.log(activities);
         if (activities) {
             Object.keys(activities).forEach((activity) => {
                 const keyname = activities[activity];
+                console.log('animation: ' + keyname);
                 const act: any = (root)[keyname];
-                const isLws = act.hasOwnProperty('lwsfile') && act['lwsfile'] === 'true';
-                activities[keyname] = {
-                    activity: activity,
-                    lwsfile: isLws ? path + act.file + '.lws' : null,
-                    file: act.file,
-                    transcoef: act.transcoef ? parseFloat(act.transcoef) : null,
-                    looping: act.looping !== 'false',
-                };
-                const activityObj = activities[keyname];
-                if (activityObj.lwsfile) {
-                    // console.log('load lws file: ' + activityObj.lwsfile);
-                    const content = resMgr.wadLoader.wad0File.getEntryText(activityObj.lwsfile);
-                    // console.log(content);
-                    activityObj.animation = new LWSCLoader().parse(activityObj.lwsfile, content);
+                console.log(act);
+                const file = act['FILE'];
+                const isLws = act.hasOwnProperty('LWSFILE') && act['LWSFILE'] === true;
+                if (!isLws) {
+                    throw 'NOT AN LWS FILE';
                 }
+                const filepath = path + file + '.lws';
+                console.log(filepath);
+                const content = resMgr.wadLoader.wad0File.getEntryText(filepath);
+                console.log(content);
+                const animation = new LWSCLoader().parse(filepath, content);
+                console.log(animation);
+                throw 'test';
             });
         }
 

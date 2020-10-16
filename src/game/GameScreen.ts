@@ -66,9 +66,9 @@ export class GameScreen extends BaseScreen {
             } else if (buildingType) {
                 // FIXME add all parts for this building type not only main space
                 console.log('placing building type: ' + buildingType);
-                console.log(olObject.type);
-                console.log(olObject);
-                console.log(buildingType);
+                // console.log(olObject.type);
+                // console.log(olObject);
+                // console.log(buildingType);
                 // const aeName = buildingType + '/' + olObject.type + '.ae';
                 // console.log(aeName);
                 // const buffer = this.resMgr.wadLoader.wad0File.getEntryData(aeName);
