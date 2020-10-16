@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Group } from 'three';
 import { AnimationClip } from './AnimationClip';
-import { iGet } from '../../core/RonFile';
+import { iGet } from '../../core/Util';
 
 export class AnimationEntity {
 

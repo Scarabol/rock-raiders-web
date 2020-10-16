@@ -94,7 +94,7 @@ class WadFile {
      * @returns {string} Returns the content as String
      */
     getEntryText(entryName): string {
-        return new TextDecoder('utf-8').decode(this.getEntryBuffer(entryName).map(c => encodeChar(c)));
+        return new TextDecoder().decode(this.getEntryBuffer(entryName).map(c => encodeChar(c)));
     }
 
     /**

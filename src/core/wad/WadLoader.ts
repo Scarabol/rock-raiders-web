@@ -7,7 +7,8 @@ import { WadFile } from './WadFile';
 import { Texture } from 'three/src/textures/Texture';
 import { RGBFormat } from 'three/src/constants';
 import { AnimEntityLoader } from '../../game/entity/AnimEntityLoader';
-import { iGet, RonFile } from '../RonFile';
+import { RonFile } from '../RonFile';
+import { iGet } from '../Util';
 
 class WadLoader {
 

@@ -12,6 +12,7 @@ import * as THREE from 'three';
 import { BitmapLoader } from './BitmapLoader';
 import { ResourceManager } from '../engine/ResourceManager';
 import { BufferGeometry, Material } from 'three';
+import { decodePath, decodeString } from '../../core/Util';
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42; // "LWOB"
@@ -245,8 +246,9 @@ export class LWOLoader {
     indices: Uint16Array = null;
     uvs: Float32Array = null;
 
-    constructor(resourceManager: ResourceManager) {
+    constructor(resourceManager: ResourceManager, path: string) {
         this.resMgr = resourceManager;
+        this.path = path;
     }
 
     parsePoints(view, chunkOffset, chunkSize) {
@@ -329,7 +331,7 @@ export class LWOLoader {
         let offset = 0;
         while (view.getUint8(chunkOffset + offset) !== 0) offset++;
 
-        let materialName = new TextDecoder().decode(new Uint8Array(buffer, chunkOffset, offset));
+        let materialName = decodeString(new Uint8Array(buffer, chunkOffset, offset));
         let materialIndex = -1;
         let material = null;
 
@@ -420,13 +422,12 @@ export class LWOLoader {
                         textureCenter = getVector3AtOffset(view, subchunkOffset + SUBCHUNK_HEADER_SIZE);
                         break;
                     case SURF_TIMG:
-                        let texturePath = new TextDecoder().decode(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
-                        while (texturePath.slice(-1) === '\0') texturePath = texturePath.slice(0, texturePath.length - 1);
+                        const texturePath = decodePath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
                         if (texturePath === '(none)') break; // TODO create fake texture?
+                        console.log(texturePath);
                         const textureName = getFilename(texturePath);
                         console.log(textureName);
-                        const currentPath = getFilepath(this.path);
-                        console.log(currentPath);
+                        console.log(this.path);
 
                         // const texture = this.resMgr.getTexture(filePath);
                         // console.log(texture);
@@ -506,7 +507,7 @@ export class LWOLoader {
 
         let magicOffset = ID4_SIZE + I4_SIZE;
         if (view.getUint32(magicOffset) !== LWO_MAGIC) {
-            const magic = new TextDecoder().decode(new Uint8Array(buffer, magicOffset, ID4_SIZE));
+            const magic = decodeString(new Uint8Array(buffer, magicOffset, ID4_SIZE));
             console.error('THREE.LWO2Loader.parse: Invalid magic ID (' + magic + ') in LWO header.');
             return;
         }
@@ -536,7 +537,7 @@ export class LWOLoader {
                         this.parseSurface(view, buffer, cursor, chunkSize);
                         break;
                     default:
-                        console.warn('Found unrecognised chunk type ' + new TextDecoder().decode(new Uint8Array(buffer, cursor - CHUNK_HEADER_SIZE, ID4_SIZE)) + ' at ' + cursor);
+                        console.warn('Found unrecognised chunk type ' + decodeString(new Uint8Array(buffer, cursor - CHUNK_HEADER_SIZE, ID4_SIZE)) + ' at ' + cursor);
                 }
 
                 cursor += chunkSize;

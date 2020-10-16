@@ -68,8 +68,9 @@ export class LWSCLoader {
                     } catch (e) {
                         // console.log('load failed for ' + subObj.filename + ' trying shared path at ' + sharedPath + '; error: '+e); // TODO debug logging
                         lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(sharedPath);
+                        path = 'world/shared/';
                     }
-                    subObj.model = new LWOLoader(this.resMgr).parse(lwoContent.buffer);
+                    subObj.model = new LWOLoader(this.resMgr, path).parse(lwoContent.buffer);
                     line = lines[++c];
                 } else if (line.startsWith('AddNullObject ')) {
                     subObj.name = line.split(' ')[1];

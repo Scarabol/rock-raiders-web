@@ -1,7 +1,7 @@
 import { ResourceManager } from '../engine/ResourceManager';
 import { LWSCLoader } from './LWSCLoader';
 import { AnimationEntity } from './AnimationEntity';
-import { iGet } from '../../core/RonFile';
+import { iGet } from '../../core/Util';
 
 export class AnimEntityLoader {
 
@@ -89,9 +89,9 @@ export class AnimEntityLoader {
                     let keyname = iGet(activities, activity);
                     if (keyname === 'teleport') keyname = 'Teleport'; // FIXME handle typos in cfg file, create case insensitive key matching object
                     const act = iGet(root, keyname);
-                    const file = act['FILE'];
-                    const isLws = act.hasOwnProperty('LWSFILE') && act['LWSFILE'] === true;
-                    if (!isLws) throw 'NOT AN LWS FILE'; // FIXME
+                    const file = iGet(act, 'FILE');
+                    const isLws = iGet(act, 'LWSFILE') === true;
+                    if (!isLws) throw 'NOT AN LWS FILE'; // TODO error handling
                     const filepath = path + file + '.lws';
                     // TODO cache entities, do not parse twice
                     const content = resMgr.wadLoader.wad0File.getEntryText(filepath);
