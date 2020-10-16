@@ -75,7 +75,7 @@ class WadFile {
      * @param entryName Entry name to be extracted
      * @returns {string} Returns the local object url to the extracted data
      */
-    getEntry(entryName) {
+    getEntry(entryName): string { // TODO rename to getEntryUrl
         return URL.createObjectURL(new Blob([this.getEntryBuffer(entryName)], {'type': 'image/bmp'}));
     }
 
@@ -84,7 +84,7 @@ class WadFile {
      * @param entryName Entry name to be extracted
      * @returns {Uint8Array} Returns the content as Uint8Array
      */
-    getEntryData(entryName) {
+    getEntryData(entryName): Uint8Array {
         return new Uint8Array(this.getEntryBuffer(entryName));
     }
 
@@ -93,16 +93,16 @@ class WadFile {
      * @param entryName Entry name to be extracted
      * @returns {string} Returns the content as String
      */
-    getEntryText(entryName) {
+    getEntryText(entryName): string {
         return new TextDecoder('utf-8').decode(this.getEntryBuffer(entryName).map(c => encodeChar(c)));
     }
 
     /**
      * Returns the entries content by name extracted from the managed WAD file
      * @param entryName Entry name to be extracted
-     * @returns Returns the content as buffer slice
+     * @returns {Int8Array} Returns the content as buffer slice
      */
-    getEntryBuffer(entryName) {
+    getEntryBuffer(entryName): Int8Array {
         const lEntryName = entryName.toLowerCase();
         for (let i = 0; i < this.entries.length; i++) {
             if (this.entries[i] === lEntryName) {

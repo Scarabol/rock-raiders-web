@@ -1,7 +1,14 @@
 import { ResourceManager } from '../engine/ResourceManager';
 import { LWSCLoader } from './LWSCLoader';
+import { AnimationEntity } from './AnimationEntity';
 
 export class AnimEntityLoader {
+
+    resMgr: ResourceManager;
+
+    constructor(resourceManager: ResourceManager) {
+        this.resMgr = resourceManager;
+    }
 
     getPath(url) {
         let saneUrl = url.replace(/\\/g, '/').toLowerCase(); // convert backslashes to forward slashes and all lowercase
@@ -117,35 +124,42 @@ export class AnimEntityLoader {
         //     });
         // }
 
-        console.log(root);
+        const parsed = {};
+        // console.log(root);
         const activities = (root)['Activities'];
-        console.log(activities);
+        // console.log(activities);
         if (activities) {
             Object.keys(activities).forEach((activity) => {
-                const keyname = activities[activity];
-                console.log('animation: ' + keyname);
-                const act: any = (root)[keyname];
-                console.log(act);
-                const file = act['FILE'];
-                const isLws = act.hasOwnProperty('LWSFILE') && act['LWSFILE'] === true;
-                if (!isLws) {
-                    throw 'NOT AN LWS FILE';
+                try {
+                    let keyname = activities[activity];
+                    // console.log('animation: ' + keyname);
+                    if (keyname === 'teleport') keyname = 'Teleport'; // FIXME handle typos in cfg file, create case insensitive key matching object
+                    const act: any = (root)[keyname];
+                    // console.log(act);
+                    const file = act['FILE'];
+                    const isLws = act.hasOwnProperty('LWSFILE') && act['LWSFILE'] === true;
+                    if (!isLws) {
+                        throw 'NOT AN LWS FILE'; // FIXME
+                    }
+                    const filepath = path + file + '.lws';
+                    // console.log(filepath);
+                    const content = resMgr.wadLoader.wad0File.getEntryText(filepath);
+                    // console.log(content);
+                    // TODO cache entities, do not parse twice
+                    const animation = new LWSCLoader(this.resMgr).parse(path, content);
+                    // console.log(animation);
+                    act.animation = animation;
+                    parsed[keyname] = act;
+                } catch (e) {
+                    console.error(e);
+                    console.log(root);
+                    console.log(activities);
+                    console.log(activity);
                 }
-                const filepath = path + file + '.lws';
-                console.log(filepath);
-                const content = resMgr.wadLoader.wad0File.getEntryText(filepath);
-                console.log(content);
-                const animation = new LWSCLoader().parse(filepath, content);
-                console.log(animation);
-                throw 'test';
             });
         }
 
-        return this; // FIXME return models
-    }
-
-    createAnimationEntity() {
-        // const entity = new AnimationEntity();
+        const entity = new AnimationEntity();
         // entity.scale = this.root['scale']; // TODO apply scale
         // entity.cameraNullName = this.root['cameranullname'];
         // entity.cameraNullFrames = this.root['cameranullframes'];
@@ -155,8 +169,10 @@ export class AnimEntityLoader {
         // entity.mediumPoly = this.root['mediumpoly']; // TODO deep copy
         // entity.highPoly = this.root['highpoly']; // TODO deep copy
         // entity.fPPoly = this.root['fppoly']; // TODO deep copy
-        // entity.activities = this.root['activities'];
-        // entity.poly = entity.highPoly;
-        // return entity;
+        entity.activities = parsed;
+        entity.poly = entity.highPoly;
+        console.log(entity);
+        return entity;
     }
+
 }

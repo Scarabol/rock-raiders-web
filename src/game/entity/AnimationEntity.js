@@ -30,10 +30,10 @@ AnimationEntity.prototype = {
         if (activity.animation) {
             this.animation = activity.animation;
             // console.log(this.animation);
-            this.animation.bodies.forEach((subObj) => {
-                const poly = this.poly[subObj.name];
-                subObj.model = poly && poly.model ? poly.model : new THREE.Group();
-            });
+            // this.animation.bodies.forEach((subObj) => {
+            //     const poly = this.poly[subObj.name];
+            //     subObj.model = poly && poly.model ? poly.model : new THREE.Group();
+            // });
             this.animation.bodies.forEach((subObj) => {
                 if (subObj.parentObjInd) {
                     // console.log('Adding object to parent id ' + subObj.parentObjInd);

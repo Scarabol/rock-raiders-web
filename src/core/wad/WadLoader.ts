@@ -354,11 +354,12 @@ class WadLoader {
     loadAnimatedEntity(aeFile, callback) {
         // console.log('loading animated entity: ' + aeFile);
         const content = this.wad0File.getEntryText(aeFile);
-        const loader = new AnimEntityLoader();
+        const loader = new AnimEntityLoader(this.resMgr);
         const root = loader.parse(aeFile, content);
         const models = loader.loadModels(aeFile, root, this.resMgr);
         // console.log('result');
         // console.log(entity);
+        this.resMgr.entity[aeFile] = models;
         callback();
     }
 
@@ -439,17 +440,17 @@ class WadLoader {
             }
         });
         // FIXME buildings
-        // const buildingTypes = mainConf['BuildingTypes'];
+        const buildingTypes = mainConf['BuildingTypes'];
         // console.log(buildingTypes);
-        // Object.values(buildingTypes).forEach((bType: string) => {
-        //     // console.log(bType);
-        //     const bName = bType.split('/')[1];
-        //     // console.log(bName);
-        //     const aeFile = bType + '/' + bName + '.ae';
-        //     // console.log(aeFile);
-        //     this.addAsset(this.loadAnimatedEntity, aeFile);
-        // });
-        this.addAsset(this.loadAnimatedEntity, 'buildings/orerefinery/orerefinery.ae');
+        Object.values(buildingTypes).forEach((bType: string) => {
+            // console.log(bType);
+            const bName = bType.split('/')[1];
+            // console.log(bName);
+            const aeFile = bType + '/' + bName + '.ae';
+            // console.log(aeFile);
+            this.addAsset(this.loadAnimatedEntity, aeFile);
+        });
+        // this.addAsset(this.loadAnimatedEntity, 'buildings/orerefinery/orerefinery.ae');
         // // reward screen
         // const rewardConf = mainConf['Reward'];
         // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);

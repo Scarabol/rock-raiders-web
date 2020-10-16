@@ -66,6 +66,13 @@ export class GameScreen extends BaseScreen {
             } else if (buildingType) {
                 // FIXME add all parts for this building type not only main space
                 console.log('placing building type: ' + buildingType);
+                const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
+                console.log(bfilename);
+                const entity = this.resMgr.entity[bfilename];
+                console.log(this.resMgr.entity);
+                console.log(entity);
+                entity.setActivity('Stand');
+                this.sceneManager.scene.add(entity.group);
                 // console.log(olObject.type);
                 // console.log(olObject);
                 // console.log(buildingType);

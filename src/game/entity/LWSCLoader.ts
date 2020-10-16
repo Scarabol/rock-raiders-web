@@ -6,8 +6,17 @@
 
 import { AnimationClip } from './AnimationClip';
 import { AnimSubObj } from './AnimSubObj';
+import { LWOLoader } from './LWOLoader';
+import { Group } from 'three';
+import { ResourceManager } from '../engine/ResourceManager';
 
 export class LWSCLoader {
+
+    resMgr: ResourceManager;
+
+    constructor(resourceManager: ResourceManager) {
+        this.resMgr = resourceManager;
+    }
 
     getFilename(url) {
         let saneUrl = url.replace(/\\/g, '/').toLowerCase(); // convert backslashes to forward slashes and all lowercase
@@ -15,7 +24,8 @@ export class LWSCLoader {
         return saneUrl.substring(saneUrl.lastIndexOf('/') + 1);
     }
 
-    parse(url, content) { // FIXME cache entities, do not parse twice
+    parse(path, content) {
+        // console.log(content);
         const entity = new AnimationClip();
 
         const lines = content.split('\n');
@@ -51,9 +61,26 @@ export class LWSCLoader {
                 if (line.startsWith('LoadObject ')) {
                     const filename = this.getFilename(line.split(' ')[1]);
                     subObj.name = filename.slice(0, filename.length - '.lwo'.length);
+                    subObj.filename = path + filename;
+                    const sharedPath = 'world/shared/' + filename;
+                    // console.log(sharedPath);
+                    // console.log(subObj.filename);
+                    let lwoContent = null;
+                    try {
+                        lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(subObj.filename);
+                    } catch (e) {
+                        // console.log(e);
+                        // console.log('load failed for ' + subObj.filename + ' trying shared path at ' + sharedPath + '; error: '+e); // TODO logging
+                        lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(sharedPath);
+                    }
+                    // console.log(lwoContent);
+                    // TODO do not parse twice, read from cache
+                    subObj.model = new LWOLoader().parse(lwoContent.buffer);
                     line = lines[++c];
                 } else if (line.startsWith('AddNullObject ')) {
                     subObj.name = line.split(' ')[1];
+                    subObj.model = new Group();
+                    // TODO iterate line here too???
                 } else {
                     console.warn('Unexpected line: ' + line);
                 }
@@ -87,6 +114,7 @@ export class LWSCLoader {
                     }
                     line = lines[++c];
                 }
+                // console.log(subObj);
                 entity.bodies.push(subObj);
                 // console.log("Object End");
             } else {

@@ -13,6 +13,7 @@ export class ResourceManager {
     nerps = [];
     nerpMessages = [];
     fonts = [];
+    entity = [];
 
     initialAssets = [
         ['wad0nerp', 'Levels', 'nerpnrn.h'], // included by other nrn scripts

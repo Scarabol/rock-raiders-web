@@ -1,5 +1,6 @@
 /**
  * @author Marcus-Bizal https://github.com/marcbizal
+ * patched by Scarabol
  *
  * This loader loads LWOB files exported from LW6.
  *
@@ -8,7 +9,7 @@
  */
 
 import * as THREE from 'three';
-import { BitmapLoader } from "./BitmapLoader";
+import { BitmapLoader } from './BitmapLoader';
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42; // "LWOB"
@@ -230,35 +231,18 @@ function planarMapUVS(geometry, vertices, uvs, indices, materialIndex, size, cen
     }
 }
 
-function LWOLoader(manager) {
+export class LWOLoader {
 
-    this.manager = manager !== undefined ? manager : THREE.DefaultLoadingManager;
-    this.path = "";
-    this.materials = [];
-    this.geometry = new THREE.BufferGeometry();
-    this.vertices = null;
-    this.indices = null;
-    this.uvs = null;
+    path = '';
+    materials = [];
+    geometry = new THREE.BufferGeometry();
+    vertices = null;
+    indices = null;
+    uvs = null;
 
-}
+    COUNTER_CLOCKWISE: false;
 
-LWOLoader.prototype = {
-
-    COUNTER_CLOCKWISE: false,
-
-    constructor: LWOLoader,
-
-    load: function (url, onLoad, onProgress, onError) {
-        this.path = url.replace(/\//g, "\\"); // convert forward slashes to backslashes.
-        const scope = this;
-        const loader = new THREE.FileLoader(scope.manager);
-        loader.setResponseType('arraybuffer');
-        loader.load(url, function (buffer) {
-            onLoad(scope.parse(buffer));
-        }, onProgress, onError);
-    },
-
-    parsePoints: function (view, chunkOffset, chunkSize) {
+    parsePoints(view, chunkOffset, chunkSize) {
         if (chunkSize % VEC12_SIZE !== 0) {
             console.error('THREE.LWO2Loader.parse: F12 does not evenly divide into chunk size (' + chunkSize + '). Possible corruption.');
             return;
@@ -275,9 +259,9 @@ LWOLoader.prototype = {
             this.vertices[vertexIndex + 1] = view.getFloat32(chunkOffset + vertexOffset + F4_SIZE); 	// y
             this.vertices[vertexIndex + 2] = view.getFloat32(chunkOffset + vertexOffset + (F4_SIZE * 2)); 	// z
         }
-    },
+    }
 
-    parseSurfaceNames: function (buffer, chunkOffset, chunkSize) {
+    parseSurfaceNames(buffer, chunkOffset, chunkSize) {
         let textChunk = new TextDecoder().decode(new Uint8Array(buffer, chunkOffset, chunkSize));
         let surfaceNames = textChunk.split('\0').filter(function (s) {
             return s !== '';
@@ -289,10 +273,9 @@ LWOLoader.prototype = {
 
             this.materials.push(new_material);
         }
+    }
 
-    },
-
-    parsePolygons: function (view, chunkOffset, chunkSize) {
+    parsePolygons(view, chunkOffset, chunkSize) {
         // Gather some initial data so that we can get the proper size
         let totalNumIndices = 0;
         let offset = 0;
@@ -333,7 +316,7 @@ LWOLoader.prototype = {
 
             offset += 2 + (numIndices * 2);
         }
-    },
+    }
 
     parseSurface(view, buffer, chunkOffset, chunkSize) {
         let offset = 0;
@@ -381,13 +364,13 @@ LWOLoader.prototype = {
                         const flags = view.getUint16(subchunkOffset + SUBCHUNK_HEADER_SIZE);
                         break;
                     case SURF_LUMI:
-                        var luminosity = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
+                        let luminosity = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
                         break;
                     case SURF_DIFF:
-                        var diffuse = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
+                        let diffuse = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
                         break;
                     case SURF_SPEC:
-                        var specular = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
+                        let specular = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
                         material.specular = material.color.multiplyScalar(specular);
                         break;
                     case SURF_REFL:
@@ -411,13 +394,13 @@ LWOLoader.prototype = {
                         if (transparency > 0) material.transparent = true;
                         break;
                     case SURF_VLUM:
-                        var luminosity = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
+                        let luminosity2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
                         break;
                     case SURF_VDIF:
-                        var diffuse = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
+                        let diffuse2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
                         break;
                     case SURF_VSPC:
-                        var specular = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
+                        let specular2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
                         // material.specular = material.color.multiplyScalar(specular);
                         break;
                     case SURF_TFLG:
@@ -440,49 +423,50 @@ LWOLoader.prototype = {
                         // instantiate a loader
                         let loader = new BitmapLoader();
 
-                    function onTextureLoad(texture) {
-                        if (texture.image) {
-                            // const alphaCanvas = document.createElement('canvas');
-                            // alphaCanvas.width = texture.image.width;
-                            // alphaCanvas.height = texture.image.height;
-                            // const ctx = alphaCanvas.getContext('2d');
-                            // ctx.fillStyle = '#fff';
-                            // ctx.drawImage(texture.image, 0, 0);
-                            // const textureData = ctx.getImageData(0, 0, alphaCanvas.width, alphaCanvas.height);
-                            // for (let c = 0; c < textureData.length; c += 4) {
-                            //     console.log(textureData[c]);
-                            //     if (textureData[c] !== 0 || textureData[c + 1] !== 0 || textureData[c + 2] !== 0) {
-                            //         textureData[c] = 0;
-                            //         textureData[c + 1] = 0;
-                            //         textureData[c + 2] = 0;
-                            //     }
-                            // }
-                            // ctx.putImageData(textureData, 0, 0);
-                            // material.alphaMap = new THREE.CanvasTexture(alphaCanvas);
-                            // // TODO set transparent, alphaTest
-                            // material.transparent = true;
-                            // material.alphaTest = 0.5;
-                        } else if (textureName[0] === 'A') {
-                            material.transparent = true;
-                            material.alphaTest = 0.5;
-                            // } else {
-                            //     console.log('Texture has no alpha');
-                            //     debugger;
-                        }
-
-                        material.color = new THREE.Color(0xffffff); // TODO actually color is defined above
-                        material.map = texture;
-                        material.map.wrapS = THREE.RepeatWrapping;
-                        material.map.wrapT = THREE.RepeatWrapping;
-                        material.map.minFilter = THREE.NearestFilter;
-                        material.map.magFilter = THREE.NearestFilter;
-                        material.needsUpdate = true;
-                    }
-
-                        loader.load(filePath, onTextureLoad, undefined, function onError() {
-                            console.log('Failed loading file ' + filePath + ' trying world shared folder');
-                            loader.load("LegoRR0/world/shared/" + textureName, onTextureLoad);
-                        });
+                        // FIXME load texture from resource manager
+                        // function onTextureLoad(texture) {
+                        //     if (texture.image) {
+                        //         // const alphaCanvas = document.createElement('canvas');
+                        //         // alphaCanvas.width = texture.image.width;
+                        //         // alphaCanvas.height = texture.image.height;
+                        //         // const ctx = alphaCanvas.getContext('2d');
+                        //         // ctx.fillStyle = '#fff';
+                        //         // ctx.drawImage(texture.image, 0, 0);
+                        //         // const textureData = ctx.getImageData(0, 0, alphaCanvas.width, alphaCanvas.height);
+                        //         // for (let c = 0; c < textureData.length; c += 4) {
+                        //         //     console.log(textureData[c]);
+                        //         //     if (textureData[c] !== 0 || textureData[c + 1] !== 0 || textureData[c + 2] !== 0) {
+                        //         //         textureData[c] = 0;
+                        //         //         textureData[c + 1] = 0;
+                        //         //         textureData[c + 2] = 0;
+                        //         //     }
+                        //         // }
+                        //         // ctx.putImageData(textureData, 0, 0);
+                        //         // material.alphaMap = new THREE.CanvasTexture(alphaCanvas);
+                        //         // // TODO set transparent, alphaTest
+                        //         // material.transparent = true;
+                        //         // material.alphaTest = 0.5;
+                        //     } else if (textureName[0] === 'A') {
+                        //         material.transparent = true;
+                        //         material.alphaTest = 0.5;
+                        //         // } else {
+                        //         //     console.log('Texture has no alpha');
+                        //         //     debugger;
+                        //     }
+                        //
+                        //     material.color = new THREE.Color(0xffffff); // TODO actually color is defined above
+                        //     material.map = texture;
+                        //     material.map.wrapS = THREE.RepeatWrapping;
+                        //     material.map.wrapT = THREE.RepeatWrapping;
+                        //     material.map.minFilter = THREE.NearestFilter;
+                        //     material.map.magFilter = THREE.NearestFilter;
+                        //     material.needsUpdate = true;
+                        // }
+                        //
+                        //     loader.load(filePath, onTextureLoad, undefined, function onError() {
+                        //         console.log('Failed loading file ' + filePath + ' trying world shared folder');
+                        //         loader.load("LegoRR0/world/shared/" + textureName, onTextureLoad);
+                        //     });
 
                         break;
                     default:
@@ -494,9 +478,9 @@ LWOLoader.prototype = {
         }
 
         planarMapUVS(this.geometry, this.vertices, this.uvs, this.indices, materialIndex, textureSize, textureCenter, textureFlags);
-    },
+    }
 
-    parse: function (buffer) {
+    parse(buffer: ArrayBuffer) {
         const view = new DataView(buffer);
 
         if (view.getUint32(0) !== LWO_FORM) {
@@ -506,7 +490,7 @@ LWOLoader.prototype = {
 
         const fileSize = view.getUint32(ID4_SIZE);
         if (fileSize + CHUNK_HEADER_SIZE !== view.byteLength) {
-            console.warn('THREE.LWO2Loader.parse: Discrepancy between size in header (' + (fileSize + CHUNK_HEADER_SIZE) + ' bytes) and actual size (' + view.byteLength + ' bytes).')
+            console.warn('THREE.LWO2Loader.parse: Discrepancy between size in header (' + (fileSize + CHUNK_HEADER_SIZE) + ' bytes) and actual size (' + view.byteLength + ' bytes).');
         }
 
         let magicOffset = ID4_SIZE + I4_SIZE;
@@ -556,6 +540,4 @@ LWOLoader.prototype = {
 
         return new THREE.Mesh(this.geometry, this.materials);
     }
-};
-
-export { LWOLoader };
+}
