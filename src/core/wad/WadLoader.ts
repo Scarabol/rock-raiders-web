@@ -450,7 +450,7 @@ class WadLoader {
         //     // console.log(aeFile);
         //     this.addAsset(this.loadAnimatedEntity, aeFile);
         // });
-        // this.addAsset(this.loadAnimatedEntity, 'buildings/toolstation/toolstation.ae');
+        this.addAsset(this.loadAnimatedEntity, 'buildings/toolstation/toolstation.ae');
         // // reward screen
         // const rewardConf = mainConf['Reward'];
         // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);

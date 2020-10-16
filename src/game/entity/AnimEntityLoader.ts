@@ -171,7 +171,7 @@ export class AnimEntityLoader {
         // entity.fPPoly = this.root['fppoly']; // TODO deep copy
         entity.activities = parsed;
         entity.poly = entity.highPoly;
-        console.log(entity);
+        // console.log(entity);
         return entity;
     }
 

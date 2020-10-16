@@ -35,7 +35,8 @@ export class GameScreen extends BaseScreen {
 
         // create terrain mesh and add it to the scene
         this.terrain = new TerrainLoader().loadTerrain(this.resMgr, this.levelConf);
-        // this.terrain.floorGroup.scale.set(2, 2, 2); // FIXME read terrain scale from level file
+        const worldScale = 40; // BlockSize in lego.cfg
+        this.terrain.floorGroup.scale.set(worldScale, worldScale, worldScale); // FIXME read terrain scale from level file
         this.sceneManager.scene.add(this.terrain.floorGroup);
 
         // load in non-space objects next
@@ -45,15 +46,16 @@ export class GameScreen extends BaseScreen {
             // all object positions are off by half a tile
             olObject.xPos += 0.5;
             olObject.yPos += 0.5;
+            // console.log(olObject);
             // FIXME pick building (.ae) file from resMgr
             const buildingType = this.resMgr.configuration['Lego*']['BuildingTypes'][olObject.type];
             if (lTypeName === 'TVCamera'.toLowerCase()) {
                 // coords need to be rescaled since 1 unit in LRR is 1, but 1 unit in the remake is tileSize (128)
-                const tileSize = 1; // TODO scale with surface scale
-                this.sceneManager.camera.position.set(olObject.xPos * tileSize, 1.25, olObject.yPos * tileSize);  // TODO scale with terrain/buildings use half of max terrain height
-                let targetOffset = new Vector3(-1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), olObject.heading / 180 * Math.PI);
+                const tileSize = 40; // TODO scale with surface scale (BlockSize)
+                this.sceneManager.camera.position.set(olObject.xPos * tileSize, 1.25 * tileSize, olObject.yPos * tileSize);  // TODO scale with terrain/buildings use half of max terrain height
+                let targetOffset = new Vector3(-40, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), olObject.heading / 180 * Math.PI); // scale with BlockSize
                 let target = new Vector3().copy(this.sceneManager.camera.position).add(targetOffset);
-                target.y = 0.5; // TODO scale with terrain/buildings use half of max terrain height
+                target.y = 0.5; // TODO scale with terrain/buildings use half of max terrain height BlockSize gety from terrain
                 this.sceneManager.controls.target.copy(target);
                 this.sceneManager.controls.update();
                 // } else if (lTypeName === "Pilot".toLowerCase()) {
@@ -67,13 +69,15 @@ export class GameScreen extends BaseScreen {
             } else if (buildingType) {
                 // FIXME add all parts for this building type not only main space
                 // console.log('placing building type: ' + buildingType);
-                // const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
+                const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
                 // console.log(bfilename);
-                // const entity = this.resMgr.entity[bfilename];
+                const entity = this.resMgr.entity[bfilename.toLowerCase()];
                 // console.log(this.resMgr.entity);
                 // console.log(entity);
-                // entity.setActivity('Stand'); // FIXME add toolstation
-                // this.sceneManager.scene.add(entity.group);
+                entity.setActivity('Stand');
+                entity.group.position.set((olObject.xPos - 1.5) * 40, 15, (olObject.yPos + 1.5) * 40); // FIXME get y from terrain // TODO why offset needed?
+                entity.group.rotateOnAxis(new Vector3(0, 1, 0), (olObject['heading'] - 90) / 180 * Math.PI); // FIXME util rad2deg deg2rad // TODO y offset?
+                this.sceneManager.scene.add(entity.group);
                 // console.log(olObject.type);
                 // console.log(olObject);
                 // console.log(buildingType);
@@ -147,7 +151,7 @@ export class GameScreen extends BaseScreen {
         const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children, true);
         if (intersects.length > 0) {
             const hit = intersects[0].point;
-            hit.y += 3; // TODO adapt to terrain scale?
+            hit.y += 3 * 40; // TODO adapt to terrain scale?
             this.sceneManager.cursorTorchlight.position.copy(hit);
         }
     }

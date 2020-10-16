@@ -27,7 +27,7 @@ class SceneManager {
         this.amb = new AmbientLight(0x808080); // TODO use "cave" light setup
         this.scene.add(this.amb);
 
-        this.cursorTorchlight = new PointLight(0xffffff, 1, 7);
+        this.cursorTorchlight = new PointLight(0xffffff, 1, 7 * 40, 2); // TODO scale with BlockSize
         this.scene.add(this.cursorTorchlight);
 
         this.axisHelper = new AxesHelper(20);
@@ -42,7 +42,7 @@ class SceneManager {
     }
 
     startRendering() {
-        this.cursorTorchlight.position.set(12.5, 3, 12.5); // TODO set initial position
+        this.cursorTorchlight.position.set(12.5 * 40, 3 * 40, 12.5 * 40); // TODO set initial position
         this.debugHelper.show();
         this.renderInterval = setInterval(() => { // TODO cancel interval when not in game mode
             this.animRequest = requestAnimationFrame(() => {
