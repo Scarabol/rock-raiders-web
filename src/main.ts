@@ -22,7 +22,7 @@ resMgr.wadLoader.onAssetLoaded = () => loadingScreen.onAssetLoaded;
 resMgr.wadLoader.onLoad = () => {
     loadingScreen.hide();
     // mainMenuScreen.showMainMenu();
-    mainMenuScreen.selectLevel('Level05'); // FIXME directly start level for debugging
+    mainMenuScreen.selectLevel('Level05');
 };
 mainMenuScreen.onLevelSelected = (levelName) => {
     gameScreen.startLevel(levelName);
