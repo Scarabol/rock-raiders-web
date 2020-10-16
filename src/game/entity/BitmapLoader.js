@@ -7,7 +7,7 @@ import * as THREE from 'three';
 
 function BitmapLoader(manager) {
     this.manager = (manager !== undefined) ? manager : THREE.DefaultLoadingManager;
-    this.path = "";
+    this.path = '';
 }
 
 BitmapLoader.prototype = {
@@ -29,7 +29,7 @@ BitmapLoader.prototype = {
     },
 
     fixPath: function (path) { // TODO move to utils
-        return path.replace(/\//g, "\\"); // convert forward slashes to backslashes.
+        return path.replace(/\//g, '\\'); // convert forward slashes to backslashes.
     },
 
     getFilename: function (path) { // TODO move to utils
@@ -41,7 +41,7 @@ BitmapLoader.prototype = {
             bfType: undefined,
             biClrUsed: undefined,
             biHeight: 0,
-            biWidth: 0
+            biWidth: 0,
         };
         for (let i = 0; i < definition.length; i++) {
             let field = definition[i];
@@ -53,7 +53,7 @@ BitmapLoader.prototype = {
                     header[field.name] = view.getUint32(cursor, this.LITTLE_ENDIAN);
                     break;
                 default:
-                    console.error("THREE.BitmapLoader.parseHeader: Field size of " + field.size + " is not supported at this time.");
+                    console.error('THREE.BitmapLoader.parseHeader: Field size of ' + field.size + ' is not supported at this time.');
                     return null;
             }
             cursor += field.size;
@@ -72,33 +72,33 @@ BitmapLoader.prototype = {
 
             const BMP_FILEHEADER_SIZE = 14;
             const BMP_FILEHEADER = [
-                { name: "bfType", size: 2 },
-                { name: "bfSize", size: 4 },
-                { name: "bfReserved1", size: 2 },
-                { name: "bfReserved2", size: 2 },
-                { name: "bfOffBits", size: 4 }
+                { name: 'bfType', size: 2 },
+                { name: 'bfSize', size: 4 },
+                { name: 'bfReserved1', size: 2 },
+                { name: 'bfReserved2', size: 2 },
+                { name: 'bfOffBits', size: 4 },
             ];
 
             const BMP_IMAGEHEADER_SIZE = 40;
             const BMP_IMAGEHEADER = [
-                { name: "biSize", size: 4 },
-                { name: "biWidth", size: 4 },
-                { name: "biHeight", size: 4 },
-                { name: "biPlanes", size: 2 },
-                { name: "biBitCount", size: 2 },
-                { name: "biCompression", size: 4 },
-                { name: "biSizeImage", size: 4 },
-                { name: "biXPelsPerMeter", size: 4 },
-                { name: "biYPelsPerMeter", size: 4 },
-                { name: "biClrUsed", size: 4 },
-                { name: "biClrImportant", size: 4 },
+                { name: 'biSize', size: 4 },
+                { name: 'biWidth', size: 4 },
+                { name: 'biHeight', size: 4 },
+                { name: 'biPlanes', size: 2 },
+                { name: 'biBitCount', size: 2 },
+                { name: 'biCompression', size: 4 },
+                { name: 'biSizeImage', size: 4 },
+                { name: 'biXPelsPerMeter', size: 4 },
+                { name: 'biYPelsPerMeter', size: 4 },
+                { name: 'biClrUsed', size: 4 },
+                { name: 'biClrImportant', size: 4 },
             ];
 
             const fileHeader = this.parseHeader(view, cursor, BMP_FILEHEADER);
             cursor += BMP_FILEHEADER_SIZE;
 
             if (fileHeader.bfType !== BM_MAGIC) {
-                console.warn("THREE.BitMapLoader.parse: File is not supported; Falling back...");
+                console.warn('THREE.BitMapLoader.parse: File is not supported; Falling back...');
                 let fallback = new THREE.TextureLoader();
 
                 return fallback.load(this.path);
@@ -163,7 +163,7 @@ BitmapLoader.prototype = {
         } finally {
             // console.timeEnd('BMP Parse');
         }
-    }
+    },
 };
 
 export { BitmapLoader };

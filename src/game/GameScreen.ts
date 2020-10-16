@@ -7,8 +7,6 @@ import { EventManager } from './engine/EventManager';
 import { IngameUI } from './gui/IngameUI';
 import { Raycaster, Vector3 } from 'three';
 import { Terrain } from './model/Terrain';
-import { LWOLoader } from 'three/examples/jsm/loaders/LWOLoader';
-import { AnimEntityLoader } from './entity/AnimEntityLoader';
 
 export class GameScreen extends BaseScreen {
 

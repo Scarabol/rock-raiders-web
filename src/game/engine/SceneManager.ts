@@ -1,4 +1,4 @@
-import { AmbientLight, AxesHelper, MOUSE, PerspectiveCamera, PointLight, Scene, Vector3, WebGLRenderer } from 'three';
+import { AmbientLight, AxesHelper, MOUSE, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 import { DebugHelper } from '../../core/DebugHelper';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 

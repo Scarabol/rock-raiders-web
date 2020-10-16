@@ -9,9 +9,8 @@
  */
 
 import * as THREE from 'three';
-import { BitmapLoader } from './BitmapLoader';
-import { ResourceManager } from '../engine/ResourceManager';
 import { BufferGeometry, Material } from 'three';
+import { ResourceManager } from '../engine/ResourceManager';
 import { decodePath, decodeString, getFilename } from '../../core/Util';
 
 // HEADER SPEC //

@@ -4,7 +4,6 @@ import { MainMenuScreen } from './screen/MainMenuScreen';
 import { GameScreen } from './game/GameScreen';
 import { RewardScreen } from './screen/RewardScreen';
 import { EventManager } from './game/engine/EventManager';
-import { WadLoader } from './core/wad/WadLoader';
 
 // setup basic game engine structure
 

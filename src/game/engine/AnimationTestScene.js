@@ -1,7 +1,7 @@
-import { DebugHelper } from "../../core/DebugHelper";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-import { AnimEntityLoader } from "../entity/AnimEntityLoader";
+import { DebugHelper } from '../../core/DebugHelper';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { AnimEntityLoader } from '../entity/AnimEntityLoader';
 
 const MAX_FPS = 25;
 
