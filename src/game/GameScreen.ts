@@ -44,6 +44,7 @@ export class GameScreen extends BaseScreen {
             // all object positions are off by half a tile
             olObject.xPos += 0.5;
             olObject.yPos += 0.5;
+            // FIXME pick building (.ae) file from resMgr
             const buildingType = this.resMgr.configuration['Lego*']['BuildingTypes'][olObject.type];
             if (lTypeName === 'TVCamera'.toLowerCase()) {
                 // coords need to be rescaled since 1 unit in LRR is 1, but 1 unit in the remake is tileSize (128)
@@ -64,13 +65,17 @@ export class GameScreen extends BaseScreen {
                 //     raiders.push(newRaider);
             } else if (buildingType) {
                 // FIXME add all parts for this building type not only main space
-                console.log(buildingType);
+                console.log('placing building type: ' + buildingType);
+                console.log(olObject.type);
                 console.log(olObject);
-                const aeUrl = buildingType + '/' + olObject.type + '.ae';
-                new AnimEntityLoader().load(aeUrl, (entity) => {
-                    console.log('loaded');
-                    console.log(entity);
-                });
+                console.log(buildingType);
+                // const aeName = buildingType + '/' + olObject.type + '.ae';
+                // console.log(aeName);
+                // const buffer = this.resMgr.wadLoader.wad0File.getEntryData(aeName);
+                // const content = String.fromCharCode.apply(String, buffer);
+                // console.log(content);
+                // const loader = new AnimEntityLoader().parse(content); // FIXME move loading to resource manager and wad loader
+
                 // const currentSpace = terrain[Math.floor(parseFloat(olObject.yPos))][Math.floor(parseFloat(olObject.xPos))];
                 // currentSpace.setTypeProperties(buildingType);
                 // currentSpace.headingAngle = (olObject.heading - 90) / 180 * Math.PI;

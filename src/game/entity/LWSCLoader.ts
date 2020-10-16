@@ -4,41 +4,18 @@
  * This loader loads LWSC files exported from LW
  */
 
-import * as THREE from 'three';
-import { AnimationClip } from "./AnimationClip";
-import { AnimSubObj } from "./AnimSubObj";
+import { AnimationClip } from './AnimationClip';
+import { AnimSubObj } from './AnimSubObj';
 
-function LWSCLoader() {
-}
+export class LWSCLoader {
 
-LWSCLoader.prototype = {
-
-    constructor: LWSCLoader,
-
-    load: function (url, onLoad, onProgress, onError) {
-        this.path = this.getPath(url);
-        this.filename = this.getFilename(url);
-        const scope = this;
-        const loader = new THREE.FileLoader(scope.manager);
-        loader.setResponseType('text');
-        loader.load(this.path + this.filename, function (content) {
-            onLoad(scope.parse(content));
-        }, onProgress, onError);
-    },
-
-    getPath: function (url) {
-        let saneUrl = url.replace(/\\/g, '/'); // convert backslashes to forward slashes and all lowercase
-        if (!saneUrl.startsWith('/')) saneUrl = '/' + saneUrl;
-        return saneUrl.substring(0, saneUrl.lastIndexOf('/') + 1);
-    },
-
-    getFilename: function (url) {
+    getFilename(url) {
         let saneUrl = url.replace(/\\/g, '/').toLowerCase(); // convert backslashes to forward slashes and all lowercase
         if (!saneUrl.startsWith('/')) saneUrl = '/' + saneUrl;
         return saneUrl.substring(saneUrl.lastIndexOf('/') + 1);
-    },
+    }
 
-    parse: function (content) {
+    parse(url, content) {
         const entity = new AnimationClip();
 
         const lines = content.split('\n');
@@ -47,13 +24,13 @@ LWSCLoader.prototype = {
         });
 
         if (lines[0] !== 'LWSC') {
-            console.error("Invalid start of file! Expected 'LWSC' in first line");
+            console.error('Invalid start of file! Expected \'LWSC\' in first line');
             return;
         }
 
         const numOfModels = parseInt(lines[1], 10); // TODO is this correct? May be something else
         if (numOfModels !== 1) {
-            console.warn("Number of models has unexpected value: " + numOfModels);
+            console.warn('Number of models has unexpected value: ' + numOfModels);
         }
 
         for (let c = 2; c < lines.length; c++) {
@@ -94,7 +71,7 @@ LWSCLoader.prototype = {
                             line = lines[c + x * 2];
                             // console.log("motion 1: " + line);
                             const infos = line.split(' ').map(Number);
-                            if (infos.length !== lenInfos) console.warn("Number of infos (" + infos.length + ") does not match if specified count (" + lenInfos + ")");
+                            if (infos.length !== lenInfos) console.warn('Number of infos (' + infos.length + ') does not match if specified count (' + lenInfos + ')');
                             // console.log(infos);
                             line = lines[c + x * 2 + 1];
                             // console.log("motion 2: " + line);
@@ -119,6 +96,4 @@ LWSCLoader.prototype = {
 
         return entity;
     }
-};
-
-export { LWSCLoader };
+}

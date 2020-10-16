@@ -2,11 +2,11 @@ import { NerpParser } from '../nerp/Nerp';
 import { BitmapFont } from '../BitmapFont';
 import { createContext } from '../ImageHelper';
 import { CfgFileParser } from './CfgFileParser';
-import { encodeChar } from '../EncodingHelper';
 import { ResourceManager } from '../../game/engine/ResourceManager';
 import { WadFile } from './WadFile';
 import { Texture } from 'three/src/textures/Texture';
 import { RGBFormat } from 'three/src/constants';
+import { AnimEntityLoader } from '../../game/entity/AnimEntityLoader';
 
 class WadLoader {
 
@@ -284,7 +284,7 @@ class WadLoader {
                     throw 'Unexpected key value entry: ' + line;
                 }
                 const key = split[0];
-                let val = split[1];
+                let val: any = split[1];
                 if (key === 'xPos' || key === 'yPos' || key === 'heading') {
                     val = parseFloat(val);
                 } else if (key !== 'type') {
@@ -349,6 +349,17 @@ class WadLoader {
         } catch (e) {
             snd.src = this.wad0File.getEntry(path);
         }
+    }
+
+    loadAnimatedEntity(aeFile, callback) {
+        // console.log('loading animated entity: ' + aeFile);
+        const content = this.wad0File.getEntryText(aeFile);
+        const loader = new AnimEntityLoader();
+        const root = loader.parse(aeFile, content);
+        const models = loader.loadModels(aeFile, root, this.resMgr);
+        // console.log('result');
+        // console.log(entity);
+        callback();
     }
 
     /**
@@ -427,6 +438,18 @@ class WadLoader {
                 });
             }
         });
+        // FIXME buildings
+        // const buildingTypes = mainConf['BuildingTypes'];
+        // console.log(buildingTypes);
+        // Object.values(buildingTypes).forEach((bType: string) => {
+        //     // console.log(bType);
+        //     const bName = bType.split('/')[1];
+        //     // console.log(bName);
+        //     const aeFile = bType + '/' + bName + '.ae';
+        //     // console.log(aeFile);
+        //     this.addAsset(this.loadAnimatedEntity, aeFile);
+        // });
+        this.addAsset(this.loadAnimatedEntity, 'buildings/orerefinery/orerefinery.ae');
         // // reward screen
         // const rewardConf = mainConf['Reward'];
         // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);
