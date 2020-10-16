@@ -160,6 +160,7 @@ export class Surface {
         textureName += '.bmp';
 
         this.texture = this.terrain.resMgr.getTexture(textureName);
+
         /*
         //		0---1                1         0---1
         //		|   |  becomes      /|   and   |  /

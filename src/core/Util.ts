@@ -27,6 +27,6 @@ export function decodeString(data) {
     return new TextDecoder().decode(data).replace(/\0/g, '');
 }
 
-export function decodePath(data) {
+export function decodeFilepath(data) {
     return decodeString(data).replace(/\\/g, '/');
 }

@@ -1,5 +1,6 @@
 import { createDummyImage } from '../../core/ImageHelper';
 import { WadLoader } from '../../core/wad/WadLoader';
+import { getFilename } from '../../core/Util';
 
 export class ResourceManager {
 
@@ -58,12 +59,16 @@ export class ResourceManager {
         if (!textureName || textureName.length === 0) {
             throw 'textureName must not be undefined, null or empty - was ' + textureName;
         } else {
-            const lImageName = textureName.toLowerCase();
-            if (!(lImageName in this.textures) || this.textures[lImageName] === undefined || this.textures[lImageName] === null) {
-                console.error('Texture \'' + textureName + '\' unknown! Using placeholder texture instead');
-                this.textures[lImageName] = createDummyImage(64, 64);
+            const lTextureName = textureName.toLowerCase();
+            if (!(lTextureName in this.textures) || this.textures[lTextureName] === undefined || this.textures[lTextureName] === null) {
+                const lSharedTextureName = 'world/shared/' + getFilename(lTextureName);
+                if (!(lSharedTextureName in this.textures) || this.textures[lSharedTextureName] === undefined || this.textures[lSharedTextureName] === null) {
+                    console.error('Texture \'' + textureName + '\' unknown! Using placeholder texture instead');
+                    this.textures[lTextureName] = createDummyImage(64, 64);
+                }
+                return this.textures[lSharedTextureName];
             }
-            return this.textures[lImageName];
+            return this.textures[lTextureName];
         }
     }
 

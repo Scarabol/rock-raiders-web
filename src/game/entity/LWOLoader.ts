@@ -11,7 +11,7 @@
 import * as THREE from 'three';
 import { BufferGeometry, Material } from 'three';
 import { ResourceManager } from '../engine/ResourceManager';
-import { decodePath, decodeString, getFilename } from '../../core/Util';
+import { decodeFilepath, decodeString, getFilename } from '../../core/Util';
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42; // "LWOB"
@@ -413,12 +413,12 @@ export class LWOLoader {
                         textureCenter = getVector3AtOffset(view, subchunkOffset + SUBCHUNK_HEADER_SIZE);
                         break;
                     case SURF_TIMG:
-                        const texturePath = decodePath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
-                        if (texturePath === '(none)') break; // TODO create fake texture?
-                        const textureName = getFilename(texturePath);
-                        // console.log('texture: ' + this.path + textureName); // FIXME load texture
+                        const textureFilepath = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
+                        if (textureFilepath === '(none)') break; // TODO create fake texture?
+                        const textureFilename = getFilename(textureFilepath);
+                        // console.log('texture: ' + this.path + textureFilename); // FIXME load texture
 
-                        // const texture = this.resMgr.getTexture(filePath);
+                        const texture = this.resMgr.getTexture(this.path + textureFilename);
                         // console.log(texture);
 
                         // // instantiate a loader
