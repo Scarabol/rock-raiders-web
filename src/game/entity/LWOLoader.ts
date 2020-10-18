@@ -401,7 +401,7 @@ export class LWOLoader {
                         break;
                     case SURF_VSPC:
                         let specular2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
-                        // material.specular = material.color.multiplyScalar(specular);
+                        // material.specular = material.color.multiplyScalar(specular2);
                         break;
                     case SURF_TFLG:
                         textureFlags = view.getUint16(subchunkOffset + SUBCHUNK_HEADER_SIZE);
@@ -413,40 +413,25 @@ export class LWOLoader {
                         textureCenter = getVector3AtOffset(view, subchunkOffset + SUBCHUNK_HEADER_SIZE);
                         break;
                     case SURF_TIMG:
-                        const textureFilepath = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
+                        let textureFilepath = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
                         if (textureFilepath === '(none)') break; // TODO create fake texture?
-                        // TODO load (sequence) textures
-                        const textureFilename = getFilename(textureFilepath);
-                        // material.userData = {textureFilename: textureFilename}; // FIXME lazy load texture later or load textures in post processing
+                        if (textureFilepath.endsWith(' (sequence)')) { // TODO handle texture sequence
+                            textureFilepath = textureFilepath.substring(0, textureFilepath.length - ' (sequence)'.length);
+                        }
+                        const textureFilename = this.path + getFilename(textureFilepath);
+                        material.userData = {textureFilename: textureFilename};
 
-                        const texture = this.resMgr.getTexture(textureFilename);
-                        // if (!texture) throw 'Texture loading error';
-
-                        // // instantiate a loader
-                        // let loader = new BitmapLoader();
-                        //
-                        // function onTextureLoad(texture) {
-                        //     if (textureName[0] === 'A') {
-                        material.transparent = true;
-                        material.alphaTest = 0.5;
-                        //         // } else {
-                        //         //     console.log('Texture has no alpha');
-                        //         //     debugger;
-                        //     }
-                        //
-                        // TODO add material/texture to model
-                        material.map = texture;
-                        material.map.wrapS = THREE.RepeatWrapping;
-                        material.map.wrapT = THREE.RepeatWrapping;
-                        material.map.minFilter = THREE.NearestFilter;
-                        material.map.magFilter = THREE.NearestFilter;
-                        material.needsUpdate = true; // TODO needed?
+                        // if (textureName[0] === 'A') {
+                        // material.transparent = true;
+                        // material.alphaTest = 0.5;
                         // }
                         //
-                        //     loader.load(filePath, onTextureLoad, undefined, function onError() {
-                        //         console.log('Failed loading file ' + filePath + ' trying world shared folder');
-                        //         loader.load("LegoRR0/world/shared/" + textureName, onTextureLoad);
-                        //     });
+                        // material.map = texture;
+                        // material.map.wrapS = THREE.RepeatWrapping;
+                        // material.map.wrapT = THREE.RepeatWrapping;
+                        // material.map.minFilter = THREE.NearestFilter;
+                        // material.map.magFilter = THREE.NearestFilter;
+                        // material.needsUpdate = true;
                         break;
                     default:
                     // console.warn('Found unrecognised SURF subchunk type ' + new TextDecoder().decode(new Uint8Array(buffer, subchunkOffset, ID4_SIZE)) + ' at ' + subchunkOffset + '; length ' + subchunkSize);

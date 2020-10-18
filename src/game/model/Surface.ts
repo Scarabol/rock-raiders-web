@@ -160,6 +160,8 @@ export class Surface {
         textureName += '.bmp';
 
         this.texture = this.terrain.resMgr.getTexture(textureName);
+        this.texture.flipY = false; // TODO is this necessary? Maybe turn around UV or vertices?
+        this.texture.needsUpdate = true;
 
         /*
         //		0---1                1         0---1

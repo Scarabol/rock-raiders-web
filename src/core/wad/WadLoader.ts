@@ -9,6 +9,7 @@ import { RGBFormat } from 'three/src/constants';
 import { AnimEntityLoader } from '../../game/entity/AnimEntityLoader';
 import { RonFile } from './RonFile';
 import { iGet } from '../Util';
+import * as THREE from 'three';
 
 class WadLoader {
 
@@ -85,8 +86,11 @@ class WadLoader {
         img.onload = function () {
             const texture = new Texture(img);
             texture.format = RGBFormat;
+            texture.wrapS = THREE.RepeatWrapping;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.minFilter = THREE.NearestFilter;
+            texture.magFilter = THREE.NearestFilter;
             texture.needsUpdate = true;
-            texture.flipY = false;
 
             resMgr.textures[name.toLowerCase()] = texture;
 
@@ -446,6 +450,10 @@ class WadLoader {
             const bName = bType.split('/')[1];
             const aeFile = bType + '/' + bName + '.ae';
             this.addAsset(this.loadAnimatedEntity, aeFile);
+            // load all textures for this type
+            this.wad0File.filterEntryNames(bType+'/.+\\.bmp').forEach((bTexture) => {
+                this.addAsset(this.loadWadTexture, bTexture);
+            })
         });
         this.addAsset(this.loadAnimatedEntity, 'mini-figures/pilot/pilot.ae');
         // // reward screen

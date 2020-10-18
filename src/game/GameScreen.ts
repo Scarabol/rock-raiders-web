@@ -8,7 +8,7 @@ import { IngameUI } from './gui/IngameUI';
 import * as THREE from 'three';
 import { MathUtils, Raycaster, Vector3 } from 'three';
 import { Terrain } from './model/Terrain';
-import { iGet } from '../core/Util';
+import { getFilename, iGet } from '../core/Util';
 import degToRad = MathUtils.degToRad;
 
 export class GameScreen extends BaseScreen {
@@ -74,37 +74,44 @@ export class GameScreen extends BaseScreen {
                 //     console.log('switching animation to stand');
                 entity.setActivity('Stand');
                 // });
+
+                this.handleGroup(this, [entity.group]);
+
                 // console.log(entity.group.children);
-                const resMgr = this.resMgr;
-                entity.group.children.filter((child) => child.type === 'Mesh')
-                    .map((c) => c.material)
-                    .forEach((material) => {
-                        material.filter((m) => m.userData)
-                            .map((m) => m.userData)
-                            .filter((d) => d.hasOwnProperty('textureFilename'))
-                            .map((userData) => {
-                                const textureFilename = userData.textureFilename;
-                                // console.log(textureFilename);
-                                const texture = resMgr.getTexture(textureFilename);
-                                // console.log(texture);
-                                if (texture) {
-                                    material.map = texture;
-                                    // texture.needsUpdate = true;
-                                    material.map.wrapS = THREE.RepeatWrapping;
-                                    material.map.wrapT = THREE.RepeatWrapping;
-                                    material.map.minFilter = THREE.NearestFilter;
-                                    material.map.magFilter = THREE.NearestFilter;
-                                    material.needsUpdate = true; // TODO needed?
-                                }
-                            });
-                    });
+                // const resMgr = this.resMgr;
+                // entity.group.children.filter((child) => child.type === 'Mesh')
+                //     .map((c) => c.material)
+                //     .forEach((material) => {
+                //         material.filter((m) => m.userData)
+                //             .map((m) => m.userData)
+                //             .filter((d) => d.hasOwnProperty('textureFilename'))
+                //             .map((userData) => {
+                //                 const textureFilename = userData.textureFilename;
+                //                 // console.log(textureFilename);
+                //                 const texture = resMgr.getTexture(textureFilename);
+                //                 // console.log(texture);
+                //                 if (texture) {
+                //                     material.map = texture;
+                //                     // texture.needsUpdate = true;
+                //                     material.map.wrapS = THREE.RepeatWrapping;
+                //                     material.map.wrapT = THREE.RepeatWrapping;
+                //                     material.map.minFilter = THREE.NearestFilter;
+                //                     material.map.magFilter = THREE.NearestFilter;
+                //                     material.needsUpdate = true; // TODO needed?
+                //                 }
+                //             });
+                //     });
                 entity.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90)); // TODO y offset?
                 this.sceneManager.scene.add(entity.group);
 
                 const pilot = iGet(this.resMgr.entity, 'mini-figures/pilot/pilot.ae');
+
                 // pilot.setPoly();
                 pilot.setActivity('Stand');
+
+                this.handleGroup(this, [pilot.group]);
+
                 // console.log(pilot.group);
                 // pilot.group.children.filter((child) => child.type === 'Mesh')
                 //     .map((c) => c.material)
@@ -160,6 +167,40 @@ export class GameScreen extends BaseScreen {
         // finally show all the layers
         this.gameLayer.show();
         this.show();
+    }
+
+    handleGroup(that, grp) {
+        if (grp) {
+            grp.forEach((obj) => {
+                that.loadTextures(that.resMgr, obj);
+                that.handleGroup(that, obj.children);
+            });
+        } else {
+            console.log('not a group');
+        }
+    }
+
+    loadTextures(resMgr, obj) {
+        if (obj && obj.material) {
+            obj.material.forEach((mat) => {
+                if (mat.userData && mat.userData['textureFilename']) {
+                    let textureFilename = mat.userData['textureFilename'];
+                    console.log('lazy loading texture from ' + textureFilename);
+                    mat.map = resMgr.getTexture(textureFilename);
+                    if (getFilename(textureFilename)[0] === 'A') { // TODO there must be a better approach to identify alpha textures
+                        console.log('marking material as alpha material');
+                        mat.transparent = true;
+                        mat.alphaTest = 0.5;
+                    }
+                    // mat.map.needsUpdate = true;
+                    // mat.needsUpdate = true;
+                } else {
+                    // console.log('no userdata set for material');
+                }
+            });
+        } else {
+            // console.log('not an object or no material');
+        }
     }
 
     show() {
