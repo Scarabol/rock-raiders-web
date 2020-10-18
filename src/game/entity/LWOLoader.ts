@@ -417,7 +417,10 @@ export class LWOLoader {
                         if (textureFilepath === '(none)') break; // TODO create fake texture?
                         // TODO load (sequence) textures
                         const textureFilename = getFilename(textureFilepath);
-                        material.userData = {textureFilename: textureFilename}; // lazy load texture later
+                        // material.userData = {textureFilename: textureFilename}; // FIXME lazy load texture later or load textures in post processing
+
+                        const texture = this.resMgr.getTexture(textureFilename);
+                        // if (!texture) throw 'Texture loading error';
 
                         // // instantiate a loader
                         // let loader = new BitmapLoader();
@@ -432,12 +435,12 @@ export class LWOLoader {
                         //     }
                         //
                         // TODO add material/texture to model
-                        // material.map = texture;
-                        // material.map.wrapS = THREE.RepeatWrapping;
-                        // material.map.wrapT = THREE.RepeatWrapping;
-                        // material.map.minFilter = THREE.NearestFilter;
-                        // material.map.magFilter = THREE.NearestFilter;
-                        // material.needsUpdate = true; // TODO needed?
+                        material.map = texture;
+                        material.map.wrapS = THREE.RepeatWrapping;
+                        material.map.wrapT = THREE.RepeatWrapping;
+                        material.map.minFilter = THREE.NearestFilter;
+                        material.map.magFilter = THREE.NearestFilter;
+                        material.needsUpdate = true; // TODO needed?
                         // }
                         //
                         //     loader.load(filePath, onTextureLoad, undefined, function onError() {
@@ -453,6 +456,7 @@ export class LWOLoader {
             }
         }
 
+        // TODO is this needed?
         planarMapUVS(this.geometry, this.vertices, this.uvs, this.indices, materialIndex, textureSize, textureCenter, textureFlags);
     }
 

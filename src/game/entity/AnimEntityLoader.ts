@@ -2,6 +2,7 @@ import { ResourceManager } from '../engine/ResourceManager';
 import { LWSCLoader } from './LWSCLoader';
 import { AnimationEntity } from './AnimationEntity';
 import { getPath, iGet } from '../../core/Util';
+import { LWOLoader } from './LWOLoader';
 
 export class AnimEntityLoader {
 
@@ -14,8 +15,10 @@ export class AnimEntityLoader {
     loadModels(url, root, resMgr: ResourceManager) {
         const path = getPath(url);
 
+        const entity = new AnimationEntity();
+
         // TODO load other poly quality models (if available)
-        // let mediumPoly = (root)['mediumpoly'];
+        // let mediumPoly = iGet(root, 'MediumPoly');
         // if (mediumPoly) {
         //     Object.keys(mediumPoly).forEach((key) => {
         //         const polyname = mediumPoly[key];
@@ -32,20 +35,32 @@ export class AnimEntityLoader {
         //     Object.keys(mediumPoly).filter((polykey) => polykey.startsWith('!')).forEach((polykey) => delete mediumPoly[polykey]);
         // }
 
-        // let highPoly = (root)['highpoly'];
-        // if (highPoly) {
-        //     Object.keys(highPoly).forEach((key) => {
-        //         const polyname = highPoly[key];
-        //         const polykey = key.startsWith('!') ? key.slice(1) : key;
-        //         const polyfile = path + polyname + '.lwo';
-        //         new LWOLoader().load(polyfile, (model) => {
-        //             highPoly[polykey] = {polyname: polyname, polyfile: polyfile, model: model};
-        //         }, undefined, () => {
-        //             console.error('Could not load poly ' + polyname + ' from ' + polyfile);
-        //         });
-        //     });
-        //     Object.keys(highPoly).filter((polykey) => polykey.startsWith('!')).forEach((polykey) => delete highPoly[polykey]);
-        // }
+        const highPoly = iGet(root, 'highpoly');
+        if (highPoly) {
+            entity.highPoly = {};
+            Object.keys(highPoly).forEach((key) => {
+                const polyname = highPoly[key] + '.lwo';
+                const polykey = key.startsWith('!') ? key.slice(1) : key;
+                // console.log(path + polyname);
+                try {
+                    const lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(path + polyname);
+                    entity.highPoly[polykey] = new LWOLoader(this.resMgr, path).parse(lwoContent.buffer);
+                } catch (e) {
+                    const sharedPath = 'world/shared/';
+                    // console.log('load failed for ' + subObj.filename + ' trying shared path at ' + sharedPath + filename + '; error: ' + e); // TODO debug logging
+                    const lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(sharedPath + polyname);
+                    entity.highPoly[polykey] = new LWOLoader(this.resMgr, sharedPath).parse(lwoContent.buffer);
+                }
+                // new LWOLoader().load(polyfile, (model) => {
+                //     highPoly[polykey] = {polyname: polyname, polyfile: polyfile, model: model};
+                // }, undefined, () => {
+                //     console.error('Could not load poly ' + polyname + ' from ' + polyfile);
+                // });
+            });
+            entity.poly = entity.highPoly;
+            // TODO this seems obsolete
+            Object.keys(highPoly).filter((polykey) => polykey.startsWith('!')).forEach((polykey) => delete highPoly[polykey]);
+        }
 
         // let fPoly = (root)['fppoly'];
         // if (fPoly) {
@@ -68,7 +83,6 @@ export class AnimEntityLoader {
         //     });
         // }
 
-        const parsed = {};
         const activities = iGet(root, 'Activities');
         if (activities) {
             Object.keys(activities).forEach((activity) => {
@@ -84,7 +98,7 @@ export class AnimEntityLoader {
                     const content = resMgr.wadLoader.wad0File.getEntryText(filepath);
                     act.animation = new LWSCLoader(this.resMgr).parse(path, content);
                     act.animation.looping = looping;
-                    parsed[keyname] = act;
+                    (entity.activities)[keyname] = act;
                 } catch (e) {
                     console.error(e);
                     console.log(root);
@@ -94,7 +108,6 @@ export class AnimEntityLoader {
             });
         }
 
-        const entity = new AnimationEntity();
         // entity.scale = this.root['scale']; // TODO apply scale
         // entity.cameraNullName = this.root['cameranullname'];
         // entity.cameraNullFrames = this.root['cameranullframes'];
@@ -104,8 +117,7 @@ export class AnimEntityLoader {
         // entity.mediumPoly = this.root['mediumpoly']; // TODO deep copy
         // entity.highPoly = this.root['highpoly']; // TODO deep copy
         // entity.fPPoly = this.root['fppoly']; // TODO deep copy
-        entity.activities = parsed;
-        entity.poly = entity.highPoly;
+        // entity.setPoly();
         // console.log(entity);
         return entity;
     }

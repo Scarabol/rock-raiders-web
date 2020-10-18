@@ -447,6 +447,7 @@ class WadLoader {
             const aeFile = bType + '/' + bName + '.ae';
             this.addAsset(this.loadAnimatedEntity, aeFile);
         });
+        this.addAsset(this.loadAnimatedEntity, 'mini-figures/pilot/pilot.ae');
         // // reward screen
         // const rewardConf = mainConf['Reward'];
         // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);

@@ -1,4 +1,3 @@
-import * as THREE from 'three';
 import { Group } from 'three';
 import { AnimationClip } from './AnimationClip';
 import { iGet } from '../../core/Util';
@@ -17,7 +16,11 @@ export class AnimationEntity {
     mediumPoly = null;
     highPoly = null;
     fPPoly = null;
-    activities = null;
+    activities = {};
+
+    setPoly() {
+        this.poly = this.highPoly || this.mediumPoly || this.group || this.poly;
+    }
 
     setActivity(keyname, onAnimationDone = null) {
         if (this.animation) this.animation.cancelAnimation();
@@ -30,10 +33,8 @@ export class AnimationEntity {
         if (activity.animation) {
             this.animation = activity.animation;
             if (this.poly) {
-                this.animation.bodies.forEach((subObj) => {
-                    const poly = this.poly[subObj.name];
-                    subObj.model = poly && poly.model ? poly.model : new THREE.Group();
-                });
+                this.animation.bodies.filter((body) => body.name.toLowerCase() !== 'null')
+                    .forEach((body) => body.model = iGet(this.poly, body.name) || new Group());
             }
             this.animation.bodies.forEach((subObj) => {
                 if (subObj.parentObjInd) {

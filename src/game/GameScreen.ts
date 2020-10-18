@@ -70,10 +70,10 @@ export class GameScreen extends BaseScreen {
             } else if (buildingType) {
                 const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
                 const entity = iGet(this.resMgr.entity, bfilename);
-                entity.setActivity('Teleport', () => {
-                    console.log('switching animation to stand');
-                    entity.setActivity('Stand');
-                });
+                // entity.setActivity('Teleport', () => {
+                //     console.log('switching animation to stand');
+                entity.setActivity('Stand');
+                // });
                 // console.log(entity.group.children);
                 const resMgr = this.resMgr;
                 entity.group.children.filter((child) => child.type === 'Mesh')
@@ -89,6 +89,7 @@ export class GameScreen extends BaseScreen {
                                 // console.log(texture);
                                 if (texture) {
                                     material.map = texture;
+                                    // texture.needsUpdate = true;
                                     material.map.wrapS = THREE.RepeatWrapping;
                                     material.map.wrapT = THREE.RepeatWrapping;
                                     material.map.minFilter = THREE.NearestFilter;
@@ -100,6 +101,38 @@ export class GameScreen extends BaseScreen {
                 entity.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90)); // TODO y offset?
                 this.sceneManager.scene.add(entity.group);
+
+                const pilot = iGet(this.resMgr.entity, 'mini-figures/pilot/pilot.ae');
+                // pilot.setPoly();
+                pilot.setActivity('Stand');
+                // console.log(pilot.group);
+                // pilot.group.children.filter((child) => child.type === 'Mesh')
+                //     .map((c) => c.material)
+                //     .forEach((material) => {
+                //         material.filter((m) => m.userData)
+                //             .map((m) => m.userData)
+                //             .filter((d) => d.hasOwnProperty('textureFilename'))
+                //             .map((userData) => {
+                //                 const textureFilename = userData.textureFilename;
+                //                 // console.log(textureFilename);
+                //                 const texture = resMgr.getTexture(textureFilename);
+                //                 // console.log(texture);
+                //                 if (texture) {
+                //                     console.log('applying texture ' + textureFilename + ' to pilot');
+                //                     material.map = texture;
+                //                     // texture.needsUpdate = true;
+                //                     material.map.wrapS = THREE.RepeatWrapping;
+                //                     material.map.wrapT = THREE.RepeatWrapping;
+                //                     material.map.minFilter = THREE.NearestFilter;
+                //                     material.map.magFilter = THREE.NearestFilter;
+                //                     material.needsUpdate = true; // TODO needed?
+                //                 }
+                //             });
+                //     });
+                pilot.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5 - 1) * 40); // TODO get y from terrain // TODO why offset needed?
+                pilot.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90)); // TODO y offset?
+                this.sceneManager.scene.add(pilot.group);
+
                 // TODO add some kind of power paths
                 // TODO need to explore map here?
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {

@@ -1,6 +1,8 @@
 import { createDummyImage } from '../../core/ImageHelper';
 import { WadLoader } from '../../core/wad/WadLoader';
 import { getFilename } from '../../core/Util';
+import { Texture } from 'three/src/textures/Texture';
+import { RGBFormat } from 'three/src/constants';
 
 export class ResourceManager {
 
@@ -64,7 +66,11 @@ export class ResourceManager {
                 const lSharedTextureName = 'world/shared/' + getFilename(lTextureName);
                 if (!(lSharedTextureName in this.textures) || this.textures[lSharedTextureName] === undefined || this.textures[lSharedTextureName] === null) {
                     console.error('Texture \'' + textureName + '\' unknown! Using placeholder texture instead');
-                    this.textures[lTextureName] = createDummyImage(64, 64);
+                    this.textures[lTextureName] = new Texture(createDummyImage(64, 64).canvas);
+                    this.textures[lTextureName].format = RGBFormat;
+                    this.textures[lTextureName].needsUpdate = true;
+                    this.textures[lTextureName].flipY = false;
+                    return this.textures[lTextureName];
                 }
                 return this.textures[lSharedTextureName];
             }
