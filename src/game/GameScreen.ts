@@ -8,7 +8,7 @@ import { IngameUI } from './gui/IngameUI';
 import { Color, MathUtils, MeshPhongMaterial, Raycaster, RGBAFormat, Vector3 } from 'three';
 import { Terrain } from './model/Terrain';
 import { iGet } from '../core/Util';
-import { Surface } from './model/Surface';
+import { Surface, WALL_TYPE } from './model/Surface';
 import degToRad = MathUtils.degToRad;
 
 export class GameScreen extends BaseScreen {
@@ -188,7 +188,7 @@ export class GameScreen extends BaseScreen {
         if (intersects.length > 0) {
             const hitpoint = intersects[0].point;
             const surface = this.terrain.getWorldSurface(hitpoint.x, hitpoint.z);
-            if (surface.discovered && surface.surfaceType.selectable && surface.wallType !== 3) { // TODO externalize wall types to enum
+            if (surface.discovered && surface.surfaceType.selectable && surface.wallType !== WALL_TYPE.INVERTED_CORNER) {
                 surface.mesh.material['color'].setHex(0xa0a0a0);
                 this.selectedSurface = surface;
             }
