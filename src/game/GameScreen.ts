@@ -5,10 +5,9 @@ import { SceneManager } from './engine/SceneManager';
 import { TerrainLoader } from './engine/TerrainLoader';
 import { EventManager } from './engine/EventManager';
 import { IngameUI } from './gui/IngameUI';
-import * as THREE from 'three';
 import { MathUtils, Raycaster, Vector3 } from 'three';
 import { Terrain } from './model/Terrain';
-import { getFilename, iGet } from '../core/Util';
+import { iGet } from '../core/Util';
 import degToRad = MathUtils.degToRad;
 
 export class GameScreen extends BaseScreen {
@@ -187,11 +186,6 @@ export class GameScreen extends BaseScreen {
                     let textureFilename = mat.userData['textureFilename'];
                     console.log('lazy loading texture from ' + textureFilename);
                     mat.map = resMgr.getTexture(textureFilename);
-                    if (getFilename(textureFilename)[0] === 'A') { // TODO there must be a better approach to identify alpha textures
-                        console.log('marking material as alpha material');
-                        mat.transparent = true;
-                        mat.alphaTest = 0.5;
-                    }
                     // mat.map.needsUpdate = true;
                     // mat.needsUpdate = true;
                 } else {

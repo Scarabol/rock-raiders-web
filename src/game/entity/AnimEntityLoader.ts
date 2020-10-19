@@ -51,11 +51,6 @@ export class AnimEntityLoader {
                     const lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(sharedPath + polyname);
                     entity.highPoly[polykey] = new LWOLoader(this.resMgr, sharedPath).parse(lwoContent.buffer);
                 }
-                // new LWOLoader().load(polyfile, (model) => {
-                //     highPoly[polykey] = {polyname: polyname, polyfile: polyfile, model: model};
-                // }, undefined, () => {
-                //     console.error('Could not load poly ' + polyname + ' from ' + polyfile);
-                // });
             });
             entity.poly = entity.highPoly;
             // TODO this seems obsolete

@@ -8,8 +8,7 @@
  *  -
  */
 
-import * as THREE from 'three';
-import { BufferGeometry, Material } from 'three';
+import { BufferAttribute, BufferGeometry, Color, Mesh, MeshPhongMaterial, Vector3 } from 'three';
 import { ResourceManager } from '../engine/ResourceManager';
 import { decodeFilepath, decodeString, getFilename } from '../../core/Util';
 
@@ -180,7 +179,7 @@ const ANTIALIASING_BIT = 64;
 /*************************/
 
 function getVector3AtOffset(view, offset) {
-    let vector = new THREE.Vector3();
+    let vector = new Vector3();
     vector.x = view.getFloat32(offset);
     vector.y = view.getFloat32(offset + F4_SIZE);
     vector.z = view.getFloat32(offset + (F4_SIZE * 2));
@@ -221,7 +220,7 @@ function planarMapUVS(geometry, vertices, uvs, indices, materialIndex, size, cen
             }
         }
     } else {
-        // console.warn("THREE.LWO2Loader.planarMapUVS: No axis bit is set!"); // TODO what is this about
+        // console.warn("LWOLoader.planarMapUVS: No axis bit is set!"); // TODO what is this about
     }
 }
 
@@ -231,7 +230,7 @@ export class LWOLoader {
 
     resMgr: ResourceManager;
     path: string = '';
-    materials: Material[] = [];
+    materials: MeshPhongMaterial[] = [];
     geometry: BufferGeometry = new BufferGeometry();
     vertices: Float32Array = null;
     indices: Uint16Array = null;
@@ -244,7 +243,7 @@ export class LWOLoader {
 
     parsePoints(view, chunkOffset, chunkSize) {
         if (chunkSize % VEC12_SIZE !== 0) {
-            console.error('THREE.LWO2Loader.parse: F12 does not evenly divide into chunk size (' + chunkSize + '). Possible corruption.');
+            console.error('LWOLoader.parse: F12 does not evenly divide into chunk size (' + chunkSize + '). Possible corruption.');
             return;
         }
 
@@ -268,7 +267,7 @@ export class LWOLoader {
         });
 
         for (let i = 0; i < surfaceNames.length; i++) {
-            let new_material = new THREE.MeshPhongMaterial();
+            let new_material = new MeshPhongMaterial();
             new_material.name = surfaceNames[i];
 
             this.materials.push(new_material);
@@ -324,13 +323,13 @@ export class LWOLoader {
 
         let materialName = decodeString(new Uint8Array(buffer, chunkOffset, offset));
         let materialIndex = -1;
-        let material = null;
+        let material: MeshPhongMaterial = null;
 
         let textureFlags = 0;
-        let textureSize = new THREE.Vector3(0, 0, 0);
-        let textureCenter = new THREE.Vector3(0, 0, 0);
-        // let textureFalloff = new THREE.Vector3(0, 0, 0);
-        // let textureVelocity = new THREE.Vector3(0, 0, 0);
+        let textureSize = new Vector3(0, 0, 0);
+        let textureCenter = new Vector3(0, 0, 0);
+        // let textureFalloff = new Vector3(0, 0, 0);
+        // let textureVelocity = new Vector3(0, 0, 0);
 
         for (let i = 0; i < this.materials.length; i++) {
             if (this.materials[i].name === materialName) {
@@ -340,7 +339,7 @@ export class LWOLoader {
         }
 
         if (!material) {
-            console.error('THREE.LWO2Loader.parse: Surface in SURF chunk does not exist in SRFS');
+            console.error('LWOLoader.parse: Surface in SURF chunk does not exist in SRFS');
             return;
         }
 
@@ -358,7 +357,7 @@ export class LWOLoader {
                         for (let i = 0; i < 4; i++) {
                             colorArray.push(view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + i) / 255);
                         }
-                        material.color = new THREE.Color().fromArray(colorArray);
+                        material.color = new Color().fromArray(colorArray);
                         break;
                     case SURF_FLAG:
                         const flags = view.getUint16(subchunkOffset + SUBCHUNK_HEADER_SIZE);
@@ -380,7 +379,7 @@ export class LWOLoader {
                         } else {
                             reflection = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
                         }
-                        // material.reflectivity = reflection;
+                        material.reflectivity = reflection;
                         break;
                     case SURF_TRAN:
                     case SURF_VTRN:
@@ -415,23 +414,12 @@ export class LWOLoader {
                     case SURF_TIMG:
                         let textureFilepath = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
                         if (textureFilepath === '(none)') break; // TODO create fake texture?
-                        if (textureFilepath.endsWith(' (sequence)')) { // TODO handle texture sequence
+                        if (textureFilepath.endsWith(' (sequence)')) { // TODO handle sequence texture
                             textureFilepath = textureFilepath.substring(0, textureFilepath.length - ' (sequence)'.length);
                         }
-                        const textureFilename = this.path + getFilename(textureFilepath);
+                        let filename = getFilename(textureFilepath);
+                        const textureFilename = this.path + filename;
                         material.userData = {textureFilename: textureFilename};
-
-                        // if (textureName[0] === 'A') {
-                        // material.transparent = true;
-                        // material.alphaTest = 0.5;
-                        // }
-                        //
-                        // material.map = texture;
-                        // material.map.wrapS = THREE.RepeatWrapping;
-                        // material.map.wrapT = THREE.RepeatWrapping;
-                        // material.map.minFilter = THREE.NearestFilter;
-                        // material.map.magFilter = THREE.NearestFilter;
-                        // material.needsUpdate = true;
                         break;
                     default:
                     // console.warn('Found unrecognised SURF subchunk type ' + new TextDecoder().decode(new Uint8Array(buffer, subchunkOffset, ID4_SIZE)) + ' at ' + subchunkOffset + '; length ' + subchunkSize);
@@ -441,7 +429,6 @@ export class LWOLoader {
             }
         }
 
-        // TODO is this needed?
         planarMapUVS(this.geometry, this.vertices, this.uvs, this.indices, materialIndex, textureSize, textureCenter, textureFlags);
     }
 
@@ -449,19 +436,19 @@ export class LWOLoader {
         const view = new DataView(buffer);
 
         if (view.getUint32(0) !== LWO_FORM) {
-            console.error('THREE.LWO2Loader.parse: Cannot find header.');
+            console.error('LWOLoader.parse: Cannot find header.');
             return;
         }
 
         const fileSize = view.getUint32(ID4_SIZE);
         if (fileSize + CHUNK_HEADER_SIZE !== view.byteLength) {
-            console.warn('THREE.LWO2Loader.parse: Discrepancy between size in header (' + (fileSize + CHUNK_HEADER_SIZE) + ' bytes) and actual size (' + view.byteLength + ' bytes).');
+            console.warn('LWOLoader.parse: Discrepancy between size in header (' + (fileSize + CHUNK_HEADER_SIZE) + ' bytes) and actual size (' + view.byteLength + ' bytes).');
         }
 
         let magicOffset = ID4_SIZE + I4_SIZE;
         if (view.getUint32(magicOffset) !== LWO_MAGIC) {
             const magic = decodeString(new Uint8Array(buffer, magicOffset, ID4_SIZE));
-            console.error('THREE.LWO2Loader.parse: Invalid magic ID (' + magic + ') in LWO header.');
+            console.error('LWOLoader.parse: Invalid magic ID (' + magic + ') in LWO header.');
             return;
         }
 
@@ -498,11 +485,11 @@ export class LWOLoader {
 
         }
 
-        this.geometry.setAttribute('position', new THREE.BufferAttribute(this.vertices, 3));
-        this.geometry.setAttribute('uv', new THREE.BufferAttribute(this.uvs, 2));
-        this.geometry.setIndex(new THREE.BufferAttribute(this.indices, 1));
+        this.geometry.setAttribute('position', new BufferAttribute(this.vertices, 3));
+        this.geometry.setAttribute('uv', new BufferAttribute(this.uvs, 2));
+        this.geometry.setIndex(new BufferAttribute(this.indices, 1));
         this.geometry.computeVertexNormals();
 
-        return new THREE.Mesh(this.geometry, this.materials);
+        return new Mesh(this.geometry, this.materials);
     }
 }
