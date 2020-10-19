@@ -164,7 +164,7 @@ export class GameScreen extends BaseScreen {
         const ry = -(cy / this.gameLayer.canvas.height) * 2 + 1;
         const raycaster = new Raycaster();
         raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
-        const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children, true);
+        const intersects = raycaster.intersectObject(this.terrain.floorGroup, true);
         if (intersects.length > 0) {
             const hit = intersects[0].point;
             hit.y += 3 * 40; // TODO adapt to terrain scale?

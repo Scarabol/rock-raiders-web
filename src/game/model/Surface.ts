@@ -1,6 +1,5 @@
-import * as THREE from 'three';
+import { Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
 import { Terrain } from './Terrain';
-import { SceneUtils } from 'three/examples/jsm/utils/SceneUtils';
 import { GROUND, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
 
 const HEIGHT_MULTIPLER = 0.05;
@@ -16,9 +15,8 @@ export class Surface {
     heightOffset: number = null;
     discovered: boolean = false;
 
-    geometry: THREE.Geometry = null;
-    texture: any = null;
-    mesh: THREE.Object3D = null;
+    geometry: Geometry = null;
+    mesh: Mesh = null;
 
     constructor(terrain, surface, x, y, high) {
         this.terrain = terrain;
@@ -55,7 +53,7 @@ export class Surface {
 
     // getY(x, z) {
     //     const raycaster = new THREE.Raycaster();
-    //     raycaster.set(new THREE.Vector3(x, 3, z), new THREE.Vector3(0, -1, 0)); // TODO scale with tile size
+    //     raycaster.set(new Vector3(x, 3, z), new Vector3(0, -1, 0)); // TODO scale with tile size
     //     const intersect = raycaster.intersectObjects(this.mesh.children, true);
     //
     //     return intersect[0].point.y;
@@ -64,10 +62,10 @@ export class Surface {
     updateMesh() {
         if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
 
-        const topLeftVertex = new THREE.Vector3(this.x, 0, this.y);
-        const topRightVertex = new THREE.Vector3(this.x + 1, 0, this.y);
-        const bottomLeftVertex = new THREE.Vector3(this.x, 0, this.y + 1);
-        const bottomRightVertex = new THREE.Vector3(this.x + 1, 0, this.y + 1);
+        const topLeftVertex = new Vector3(this.x, 0, this.y);
+        const topRightVertex = new Vector3(this.x + 1, 0, this.y);
+        const bottomLeftVertex = new Vector3(this.x, 0, this.y + 1);
+        const bottomRightVertex = new Vector3(this.x + 1, 0, this.y + 1);
 
         const surfLeft = this.terrain.getSurface(this.x - 1, this.y);
         const surfTopLeft = this.terrain.getSurface(this.x - 1, this.y - 1);
@@ -159,9 +157,9 @@ export class Surface {
         }
         textureName += '.bmp';
 
-        this.texture = this.terrain.resMgr.getTexture(textureName);
-        this.texture.flipY = false; // TODO is this necessary? Maybe turn around UV or vertices?
-        this.texture.needsUpdate = true;
+        const texture = this.terrain.resMgr.getTexture(textureName);
+        texture.flipY = false; // TODO is this necessary? Maybe turn around UV or vertices?
+        texture.needsUpdate = true;
 
         /*
         //		0---1                1         0---1
@@ -182,7 +180,7 @@ export class Surface {
 
         if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
         if (this.geometry) this.geometry.dispose();
-        this.geometry = new THREE.Geometry();
+        this.geometry = new Geometry();
 
         this.geometry.vertices.push(
             topLeftVertex,
@@ -192,10 +190,10 @@ export class Surface {
         );
 
         const uv = [
-            new THREE.Vector2(0, 0),
-            new THREE.Vector2(1, 0),
-            new THREE.Vector2(1, 1),
-            new THREE.Vector2(0, 1),
+            new Vector2(0, 0),
+            new Vector2(1, 0),
+            new Vector2(1, 1),
+            new Vector2(0, 1),
         ];
 
         if (topRightVertex.y !== bottomLeftVertex.y ||
@@ -213,8 +211,8 @@ export class Surface {
             ]);
 
             this.geometry.faces.push(
-                new THREE.Face3(1, 3, 2),
-                new THREE.Face3(1, 0, 3),
+                new Face3(1, 3, 2),
+                new Face3(1, 0, 3),
             );
         } else {
             this.geometry.faceVertexUvs[0].push([
@@ -230,8 +228,8 @@ export class Surface {
             ]);
 
             this.geometry.faces.push(
-                new THREE.Face3(0, 3, 2),
-                new THREE.Face3(0, 2, 1),
+                new Face3(0, 3, 2),
+                new Face3(0, 2, 1),
             );
         }
 
@@ -253,10 +251,7 @@ export class Surface {
         this.geometry.computeFaceNormals();
         this.geometry.computeVertexNormals();
 
-        this.mesh = SceneUtils.createMultiMaterialObject(this.geometry, [
-            new THREE.MeshPhongMaterial({map: this.texture, shininess: 0}),
-            //new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: true} )
-        ]);
+        this.mesh = new Mesh(this.geometry, new MeshPhongMaterial({map: texture, shininess: 0}));
 
         this.terrain.floorGroup.add(this.mesh);
     }
