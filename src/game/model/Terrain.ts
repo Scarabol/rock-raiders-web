@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import { Group } from 'three';
 import { Surface } from './Surface';
 import { ResourceManager } from '../engine/ResourceManager';
 
@@ -9,12 +9,18 @@ export class Terrain {
     width: number = 0;
     height: number = 0;
     surfaces: Surface[][] = [];
-    floorGroup: THREE.Group = new THREE.Group();
-    roofGroup: THREE.Group = new THREE.Group();
+    floorGroup: Group = new Group();
+    roofGroup: Group = new Group();
 
     constructor(resourceManager: ResourceManager) {
         this.resMgr = resourceManager;
         this.roofGroup.visible = false; // keep roof hidden unless switched to other camera
+    }
+
+    getWorldSurface(worldX, worldY): Surface {
+        const x = Math.floor(worldX / 40);
+        const y = Math.floor(worldY / 40);
+        return this.getSurface(x, y);
     }
 
     getSurface(x, y): Surface {

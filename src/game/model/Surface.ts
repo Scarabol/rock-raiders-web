@@ -15,6 +15,7 @@ export class Surface {
     heightOffset: number = null;
     discovered: boolean = false;
 
+    wallType: number = null;
     geometry: Geometry = null;
     mesh: Mesh = null;
 
@@ -97,39 +98,38 @@ export class Surface {
         // 1: CORNER
         // 2: WEIRD-CREVICE or FLAT-WALL
         // 3: INVERTED-CORNER
-        const wallType = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y;
-
+        this.wallType = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y;
         let uvOffset = 0;
 
         // not-rotated
         // 1 ?
         // ? 0
-        if (topLeftVertex.y && !bottomRightVertex.y && (wallType === 3 || ((wallType === 2) === Boolean(topRightVertex.y)))) {
+        if (topLeftVertex.y && !bottomRightVertex.y && (this.wallType === 3 || ((this.wallType === 2) === Boolean(topRightVertex.y)))) {
             uvOffset = 0;
         }
 
         // 90 clock-wise
         // ? 1
         // 0 ?
-        if (topRightVertex.y && !bottomLeftVertex.y && (wallType === 3 || ((wallType === 2) === Boolean(bottomRightVertex.y)))) {
+        if (topRightVertex.y && !bottomLeftVertex.y && (this.wallType === 3 || ((this.wallType === 2) === Boolean(bottomRightVertex.y)))) {
             uvOffset = 3;
         }
 
         // 180 clock-wise
         // 0 ?
         // ? 1
-        if (bottomRightVertex.y && !topLeftVertex.y && (wallType === 3 || ((wallType === 2) === Boolean(bottomLeftVertex.y)))) {
+        if (bottomRightVertex.y && !topLeftVertex.y && (this.wallType === 3 || ((this.wallType === 2) === Boolean(bottomLeftVertex.y)))) {
             uvOffset = 2;
         }
 
         // 270 clock-wise
         // ? 0
         // 1 ?
-        if (bottomLeftVertex.y && !topRightVertex.y && (wallType === 3 || ((wallType === 2) === Boolean(topLeftVertex.y)))) {
+        if (bottomLeftVertex.y && !topRightVertex.y && (this.wallType === 3 || ((this.wallType === 2) === Boolean(topLeftVertex.y)))) {
             uvOffset = 1;
         }
 
-        if (wallType === 2) {
+        if (this.wallType === 2) {
             if (topLeftVertex.y && bottomRightVertex.y) {
                 uvOffset = 0;
             }
@@ -143,12 +143,12 @@ export class Surface {
             textureName += '70';
         } else if (!this.surfaceType.shaping) {
             textureName += this.surfaceType.matIndex.toString();
-        } else if (wallType === 2 && (topLeftVertex.y === bottomRightVertex.y)) {
+        } else if (this.wallType === 2 && (topLeftVertex.y === bottomRightVertex.y)) {
             textureName += '77';
         } else {
-            if (wallType === 1) {
+            if (this.wallType === 1) {
                 textureName += '5';
-            } else if (wallType === 3) {
+            } else if (this.wallType === 3) {
                 textureName += '3';
             } else {
                 textureName += '0';
@@ -197,7 +197,7 @@ export class Surface {
         ];
 
         if (topRightVertex.y !== bottomLeftVertex.y ||
-            (wallType === 2 && !(topRightVertex.y && bottomLeftVertex.y))) {
+            (this.wallType === 2 && !(topRightVertex.y && bottomLeftVertex.y))) {
             this.geometry.faceVertexUvs[0].push([
                 uv[(1 + uvOffset) % 4],
                 uv[(3 + uvOffset) % 4],
@@ -253,6 +253,7 @@ export class Surface {
 
         this.mesh = new Mesh(this.geometry, new MeshPhongMaterial({map: texture, shininess: 0}));
 
+        this.terrain.surfaces[this.x][this.y] = this;
         this.terrain.floorGroup.add(this.mesh);
     }
 }

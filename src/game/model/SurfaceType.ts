@@ -16,16 +16,16 @@ export class SurfaceType {
 
 }
 
-export const GROUND = new SurfaceType({name: 'ground', floor: true});
+export const GROUND = new SurfaceType({name: 'ground', floor: true, selectable: true});
 export const SOLID_ROCK = new SurfaceType({name: 'solid rock', shaping: true, matIndex: '5'});
-export const HARD_ROCK = new SurfaceType({name: 'hard rock', shaping: true, matIndex: '4'});
-export const LOOSE_ROCK = new SurfaceType({name: 'loose rock', shaping: true, matIndex: '3'});
-export const DIRT = new SurfaceType({name: 'dirt', shaping: true, matIndex: '1'});
+export const HARD_ROCK = new SurfaceType({name: 'hard rock', shaping: true, matIndex: '4', selectable: true});
+export const LOOSE_ROCK = new SurfaceType({name: 'loose rock', shaping: true, matIndex: '3', selectable: true});
+export const DIRT = new SurfaceType({name: 'dirt', shaping: true, matIndex: '1', selectable: true});
 export const SLUG_HOLE = new SurfaceType({name: 'slug hole', floor: true});
 export const LAVA = new SurfaceType({name: 'lava', floor: true});
-export const ORE_SEAM = new SurfaceType({name: 'ore seam', matIndex: '40'});
+export const ORE_SEAM = new SurfaceType({name: 'ore seam', matIndex: '40', selectable: true});
 export const WATER = new SurfaceType({name: 'water', floor: true});
-export const ENERGY_CRYSTAL_SEAM = new SurfaceType({name: 'energy crystal seam', matIndex: '20'});
+export const ENERGY_CRYSTAL_SEAM = new SurfaceType({name: 'energy crystal seam', matIndex: '20', selectable: true});
 export const RECHARGE_SEAM = new SurfaceType({name: 'recharge seam'});
 
 export const SURF_TO_TYPE = [];
