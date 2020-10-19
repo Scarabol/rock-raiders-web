@@ -5,7 +5,7 @@ import { SceneManager } from './engine/SceneManager';
 import { TerrainLoader } from './engine/TerrainLoader';
 import { EventManager } from './engine/EventManager';
 import { IngameUI } from './gui/IngameUI';
-import { MathUtils, MeshPhongMaterial, Raycaster, RGBAFormat, Vector3 } from 'three';
+import { Color, MathUtils, MeshPhongMaterial, Object3D, Raycaster, RGBAFormat, Vector3 } from 'three';
 import { Terrain } from './model/Terrain';
 import { iGet } from '../core/Util';
 import degToRad = MathUtils.degToRad;
@@ -18,11 +18,13 @@ export class GameScreen extends BaseScreen {
     terrain: Terrain;
     ingameUI: IngameUI;
     levelConf: object;
+    selectedSurface: Object3D; // TODO change type to Surface, determine Surface from selection position
 
     constructor(resourceManager: ResourceManager, eventManager: EventManager) {
         super(resourceManager, eventManager);
         this.gameLayer = this.createLayer({zIndex: 0, withContext: false});
         this.eventMgr.addMoveEventListener(this.gameLayer, (cx, cy) => this.moveMouseTorch(cx, cy));
+        this.eventMgr.addClickEventListener(this.gameLayer, (cx, cy) => this.mouseClick(cx, cy));
         this.sceneManager = new SceneManager(this.gameLayer.canvas);
         // this.ingameUI = new IngameUI(this);
     }
@@ -170,6 +172,30 @@ export class GameScreen extends BaseScreen {
             hit.y += 3 * 40; // TODO adapt to terrain scale?
             this.sceneManager.cursorTorchlight.position.copy(hit);
         }
+    }
+
+    mouseClick(cx, cy): boolean {
+        if (this.selectedSurface) {
+            this.selectedSurface['material'].color = new Color(0xffffff);
+            this.selectedSurface = null;
+        }
+        const rx = (cx / this.gameLayer.canvas.width) * 2 - 1;
+        const ry = -(cy / this.gameLayer.canvas.height) * 2 + 1;
+        const raycaster = new Raycaster();
+        raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
+        const intersects = raycaster.intersectObject(this.terrain.floorGroup, true);
+        if (intersects.length > 0) {
+            const hitpoint = intersects[0].point;
+            const surface = this.terrain.getSurface(hitpoint.x, hitpoint.z);
+            console.log(surface);
+            // const obj = intersects[0].object;
+            // if (obj.hasOwnProperty('material')) {
+            //     const material = obj['material'];
+            //     material.color.setHex(0xa0a0a0); // TODO externalize selection color constant
+            //     this.selectedSurface = obj;
+            // }
+        }
+        return false;
     }
 
 }
