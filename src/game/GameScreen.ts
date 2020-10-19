@@ -10,6 +10,7 @@ import { Terrain } from './model/Terrain';
 import { iGet } from '../core/Util';
 import { Surface, WALL_TYPE } from './model/Surface';
 import degToRad = MathUtils.degToRad;
+import { ENERGY_PATH_BUILDING } from './model/SurfaceType';
 
 export class GameScreen extends BaseScreen {
 
@@ -60,14 +61,12 @@ export class GameScreen extends BaseScreen {
                 this.sceneManager.controls.target.copy(target);
                 this.sceneManager.controls.update();
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
-                console.log('Loose raiders on start not yet implemented'); // TODO implement raiders on start
-                // note inverted x/y coords for terrain list
-                // const newRaider = new Raider(terrain[parseInt(olObject.yPos, 10)][parseInt(olObject.xPos, 10)]);
-                // newRaider.setCenterX(olObject.xPos * tileSize);
-                // newRaider.setCenterY(olObject.yPos * tileSize);
-                // // convert to radians (note that heading angle is rotated 90 degrees clockwise relative to the remake angles)
-                // newRaider.drawAngle = (olObject.heading - 90) / 180 * Math.PI;
-                // raiders.push(newRaider);
+                const pilot = iGet(this.resMgr.entity, 'mini-figures/pilot/pilot.ae');
+                pilot.setActivity('Stand');
+                this.handleGroup(this, [pilot.group]);
+                pilot.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
+                pilot.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
+                this.sceneManager.scene.add(pilot.group);
                 // TODO need to explore map here?
             } else if (buildingType) {
                 const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
@@ -79,17 +78,17 @@ export class GameScreen extends BaseScreen {
                 // });
                 this.handleGroup(this, [entity.group]);
                 entity.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
-                entity.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90)); // TODO y offset?
+                entity.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
                 this.sceneManager.scene.add(entity.group);
-
-                const pilot = iGet(this.resMgr.entity, 'mini-figures/pilot/pilot.ae');
-                pilot.setActivity('Stand');
-                this.handleGroup(this, [pilot.group]);
-                pilot.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5 - 1) * 40); // TODO get y from terrain // TODO why offset needed?
-                pilot.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90)); // TODO y offset?
-                this.sceneManager.scene.add(pilot.group);
-
-                // TODO add some kind of power paths
+                const path1Surface = this.terrain.getWorldSurface(entity.group.position.x, entity.group.position.z);
+                path1Surface.surfaceType = ENERGY_PATH_BUILDING;
+                path1Surface.updateMesh();
+                const pathOffset = new Vector3(0, 0, 40) // TODO scale with terrain
+                    .applyAxisAngle(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
+                pathOffset.add(entity.group.position);
+                const path2Surface = this.terrain.getWorldSurface(pathOffset.x, pathOffset.z);
+                path2Surface.surfaceType = ENERGY_PATH_BUILDING;
+                path2Surface.updateMesh();
                 // TODO need to explore map here?
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 console.warn('Loose power crystals on start not yet implemented'); // TODO implement power crystals on start
@@ -101,6 +100,7 @@ export class GameScreen extends BaseScreen {
             }
         });
 
+        // TODO gather level start details for game result score calculation
         // levelConf.numOfCrystals = 0;
         // levelConf.numOfOres = 0;
         // levelConf.numOfDigables = 0;

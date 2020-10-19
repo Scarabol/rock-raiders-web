@@ -27,6 +27,7 @@ export const ORE_SEAM = new SurfaceType({name: 'ore seam', matIndex: '40', selec
 export const WATER = new SurfaceType({name: 'water', floor: true});
 export const ENERGY_CRYSTAL_SEAM = new SurfaceType({name: 'energy crystal seam', matIndex: '20', selectable: true});
 export const RECHARGE_SEAM = new SurfaceType({name: 'recharge seam'});
+export const ENERGY_PATH_BUILDING = new SurfaceType({name: 'energy path', floor: true, matIndex: '76'});
 
 export const SURF_TO_TYPE = [];
 SURF_TO_TYPE[0] = GROUND;
