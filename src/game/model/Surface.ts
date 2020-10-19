@@ -31,26 +31,44 @@ export class Surface {
         this.heightOffset = high;
     }
 
-    explore() {
-        this.discovered = true;
+    collapse() {
+        if (this.surfaceType.floor) {
+            console.log('cannot collapse floor type');
+            return;
+        }
+        this.surfaceType = GROUND; // FIXME this is actually rubble
+        // discover surface and all neighbors
         for (let x = this.x - 1; x <= this.x + 1; x++) {
             for (let y = this.y - 1; y <= this.y + 1; y++) {
-                if (x !== this.x || y !== this.y) {
-                    this.terrain.getSurface(x, y).discovered = true;
+                const surf = this.terrain.getSurfaceOrNull(x, y);
+                if (surf) {
+                    surf.discovered = true;
                 }
             }
         }
+        // FIXME check for unsupported neighbors
+        // for (let x = this.x - 1; x <= this.x + 1; x++) {
+        //     for (let y = this.y - 1; y <= this.y + 1; y++) {
+        //         if (x !== this.x || y !== this.y) {
+        //             const surf = this.terrain.getSurface(x, y);
+        //             if (!surf.surfaceType.floor && !surf.isSupported()) {
+        //                 surf.collapse();
+        //             }
+        //         }
+        //     }
+        // }
+        // update meshes // TODO only update changed meshes
+        this.terrain.surfaces.forEach((c) => c.forEach((surf) => surf.updateMesh()));
     }
 
-    // collapse() {
-    //     if (this.isFloor()) {
-    //         this.surface = SURF.GROUND;
-    //         this.update();
-    //         this.iterateProperties(this.getAllNeighbors(), function (neighbor) {
-    //             neighbor.update();
-    //         });
-    //     }
-    // }
+    isSupported(): boolean {
+        const floorLeft = Number(this.terrain.getSurface(this.x - 1, this.y).surfaceType.floor);
+        const floorTop = Number(this.terrain.getSurface(this.x, this.y - 1).surfaceType.floor);
+        const floorRight = Number(this.terrain.getSurface(this.x + 1, this.y).surfaceType.floor);
+        const floorBottom = Number(this.terrain.getSurface(this.x, this.y + 1).surfaceType.floor);
+        let floorSum = floorLeft + floorTop + floorRight + floorBottom;
+        return floorSum <= 2;
+    }
 
     // getY(x, z) {
     //     const raycaster = new THREE.Raycaster();
