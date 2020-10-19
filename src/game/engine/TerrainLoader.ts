@@ -64,9 +64,14 @@ export class TerrainLoader {
 
         // exlpore predug surfaces
         terrain.surfaces.forEach(c => c.forEach(s => {
-            if (predugMap[s.x][s.y] === 1 || predugMap[s.x][s.y] === 3) s.explore();
+            if (predugMap[s.x][s.y] === 1 || predugMap[s.x][s.y] === 3) {
+                for (let x = s.x - 1; x <= s.x + 1; x++) {
+                    for (let y = s.y - 1; y <= s.y + 1; y++) {
+                        s.terrain.getSurface(x, y).discovered = true;
+                    }
+                }
+            }
         }));
-
         terrain.surfaces.forEach(c => c.forEach(s => s.updateMesh()));
 
         // TODO add landslides

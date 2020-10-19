@@ -24,10 +24,14 @@ export class Terrain {
     }
 
     getSurface(x, y): Surface {
+        return this.getSurfaceOrNull(x, y) || new Surface(this, 1, x, y, 0); // 1 = solid rock
+    }
+
+    getSurfaceOrNull(x, y): Surface {
         if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
             return this.surfaces[x][y];
         } else {
-            return new Surface(this, 1, x, y, 0); // 1 = solid rock
+            return null;
         }
     }
 

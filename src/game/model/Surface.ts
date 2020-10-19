@@ -260,6 +260,7 @@ export class Surface {
 
 export enum WALL_TYPE {
 
+    GROUND = 0,
     CORNER = 1,
     WALL = 2, // or WEIRD_CREVICE
     INVERTED_CORNER = 3,

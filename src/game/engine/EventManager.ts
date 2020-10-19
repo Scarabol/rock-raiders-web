@@ -4,6 +4,7 @@ export class EventManager {
 
     moveListener: MoveListener[] = [];
     clickListener: ClickListener[] = [];
+    keyListener: KeyListener[] = [];
 
     constructor() {
         const eventMgr = this;
@@ -19,9 +20,14 @@ export class EventManager {
                 return l.callback(event.clientX - clientRect.left, event.clientY - clientRect.top);
             });
         });
+        window.addEventListener('keydown', (event: KeyboardEvent) => {
+            eventMgr.activeAndSorted(eventMgr.keyListener).some(l => { // '.some()' breaks when a callback returns true
+                return l.callback(event.key);
+            });
+        });
     }
 
-    activeAndSorted(listeners: { layer: ScreenLayer, callback: (cursorX: number, cursorY: number) => any }[]) {
+    activeAndSorted(listeners: { layer: ScreenLayer, callback }[]) {
         return listeners.filter(l => l.layer.isActive())
             .sort((a, b) => a.layer.zIndex === b.layer.zIndex ? 0 : a.layer.zIndex > b.layer.zIndex ? -1 : 1);
     }
@@ -32,6 +38,10 @@ export class EventManager {
 
     addClickEventListener(layer: ScreenLayer, callback: (cursorX: number, cursorY: number) => boolean) {
         this.clickListener.push({layer: layer, callback: callback});
+    }
+
+    addKeyEventListener(layer: ScreenLayer, callback: (key: string) => boolean) {
+        this.keyListener.push({layer: layer, callback: callback});
     }
 
 }
@@ -47,5 +57,12 @@ class ClickListener {
 
     layer: ScreenLayer;
     callback: (cursorX: number, cursorY: number) => boolean;
+
+}
+
+class KeyListener {
+
+    layer: ScreenLayer;
+    callback: (key: string) => boolean;
 
 }

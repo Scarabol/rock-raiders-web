@@ -9,8 +9,8 @@ import { Color, MathUtils, MeshPhongMaterial, Raycaster, RGBAFormat, Vector3 } f
 import { Terrain } from './model/Terrain';
 import { iGet } from '../core/Util';
 import { Surface, WALL_TYPE } from './model/Surface';
-import degToRad = MathUtils.degToRad;
 import { ENERGY_PATH_BUILDING } from './model/SurfaceType';
+import degToRad = MathUtils.degToRad;
 
 export class GameScreen extends BaseScreen {
 
@@ -27,6 +27,7 @@ export class GameScreen extends BaseScreen {
         this.gameLayer = this.createLayer({zIndex: 0, withContext: false});
         this.eventMgr.addMoveEventListener(this.gameLayer, (cx, cy) => this.moveMouseTorch(cx, cy));
         this.eventMgr.addClickEventListener(this.gameLayer, (cx, cy) => this.selectSurface(cx, cy));
+        this.eventMgr.addKeyEventListener(this.gameLayer, (key) => this.keyPressed(key));
         this.sceneManager = new SceneManager(this.gameLayer.canvas);
         // this.ingameUI = new IngameUI(this);
     }
@@ -192,6 +193,19 @@ export class GameScreen extends BaseScreen {
                 surface.mesh.material['color'].setHex(0xa0a0a0);
                 this.selectedSurface = surface;
             }
+        }
+        return false;
+    }
+
+    keyPressed(key: string): boolean {
+        console.log('key pressed: '+key);
+        if (key === 'c') {
+            if (this.selectedSurface) {
+                this.selectedSurface.collapse();
+            } else {
+                console.log('key pressed but no surface selected');
+            }
+            return true;
         }
         return false;
     }
