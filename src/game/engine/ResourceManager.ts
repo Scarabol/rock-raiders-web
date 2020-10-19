@@ -62,6 +62,7 @@ export class ResourceManager {
         if (!textureName || textureName.length === 0) {
             throw 'textureName must not be undefined, null or empty - was ' + textureName;
         } else {
+            let texture: Texture;
             const lTextureName = textureName.toLowerCase();
             if (!(lTextureName in this.textures) || this.textures[lTextureName] === undefined || this.textures[lTextureName] === null) {
                 const lSharedTextureName = 'world/shared/' + getFilename(lTextureName);
@@ -74,11 +75,14 @@ export class ResourceManager {
                     this.textures[lTextureName].minFilter = THREE.NearestFilter;
                     this.textures[lTextureName].magFilter = THREE.NearestFilter;
                     this.textures[lTextureName].needsUpdate = true;
-                    return this.textures[lTextureName];
+                    texture = this.textures[lTextureName];
+                } else {
+                    texture = this.textures[lSharedTextureName];
                 }
-                return this.textures[lSharedTextureName];
+            } else {
+                texture = this.textures[lTextureName];
             }
-            return this.textures[lTextureName];
+            return texture;
         }
     }
 

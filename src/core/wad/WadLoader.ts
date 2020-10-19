@@ -5,10 +5,10 @@ import { CfgFileParser } from './CfgFileParser';
 import { ResourceManager } from '../../game/engine/ResourceManager';
 import { WadFile } from './WadFile';
 import { Texture } from 'three/src/textures/Texture';
-import { RGBFormat } from 'three/src/constants';
+import { RGBAFormat, RGBFormat } from 'three/src/constants';
 import { AnimEntityLoader } from '../../game/entity/AnimEntityLoader';
 import { RonFile } from './RonFile';
-import { iGet } from '../Util';
+import { getFilename, iGet } from '../Util';
 import * as THREE from 'three';
 
 class WadLoader {
@@ -84,13 +84,30 @@ class WadLoader {
 
         const resMgr = this.resMgr;
         img.onload = function () {
-            const texture = new Texture(img);
-            texture.format = RGBFormat;
+            const isAlpha = getFilename(name).toLowerCase().startsWith('a'); // TODO make sequence images transparent too
+
+            const texture = new Texture();
+            texture.format = isAlpha ? RGBAFormat : RGBFormat;
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             texture.minFilter = THREE.NearestFilter;
             texture.magFilter = THREE.NearestFilter;
             texture.needsUpdate = true;
+
+            if (texture.format === RGBAFormat) {
+                const context = createContext(img.naturalWidth, img.naturalHeight); // TODO move this to ImageUtils, same as in all other getImageData
+                context.drawImage(img, 0, 0);
+                const imgData = context.getImageData(0, 0, context.width, context.height);
+                const alpha = {r: imgData.data[imgData.data.length - 4], g: imgData.data[imgData.data.length - 3], b: imgData.data[imgData.data.length - 2]}; // TODO how to determine alpha color?
+                for (let n = 0; n < imgData.data.length; n += 4) {
+                    if (imgData.data[n] === alpha.r && imgData.data[n + 1] === alpha.g && imgData.data[n + 2] === alpha.b) {
+                        imgData.data[n + 3] = 0;
+                    }
+                }
+                texture.image = imgData;
+            } else {
+                texture.image = img;
+            }
 
             resMgr.textures[name.toLowerCase()] = texture;
 

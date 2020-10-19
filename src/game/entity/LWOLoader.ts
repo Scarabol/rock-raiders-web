@@ -8,7 +8,7 @@
  *  -
  */
 
-import { BufferAttribute, BufferGeometry, Color, Mesh, MeshPhongMaterial, Vector3 } from 'three';
+import { BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, MeshPhongMaterial, Vector3 } from 'three';
 import { ResourceManager } from '../engine/ResourceManager';
 import { decodeFilepath, decodeString, getFilename } from '../../core/Util';
 
@@ -267,7 +267,7 @@ export class LWOLoader {
         });
 
         for (let i = 0; i < surfaceNames.length; i++) {
-            let new_material = new MeshPhongMaterial();
+            const new_material = new MeshPhongMaterial();
             new_material.name = surfaceNames[i];
 
             this.materials.push(new_material);
