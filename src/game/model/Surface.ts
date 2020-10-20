@@ -18,6 +18,7 @@ export class Surface {
     wallType: WALL_TYPE = null;
     geometry: Geometry = null;
     mesh: Mesh = null;
+    needsMeshUpdate: boolean = false;
 
     constructor(terrain, surface, x, y, high) {
         this.terrain = terrain;
@@ -31,34 +32,51 @@ export class Surface {
         this.heightOffset = high;
     }
 
-    collapse() {
+    /**
+     * @return {boolean} Returns true, if a new cave was discovered
+     */
+    discoverNeighbors(): boolean {
+        this.discovered = true;
+        this.needsMeshUpdate = true;
+        let foundCave = false;
         if (this.surfaceType.floor) {
-            console.log('cannot collapse floor type');
-            return;
-        }
-        this.surfaceType = GROUND; // FIXME this is actually rubble
-        // discover surface and all neighbors
-        for (let x = this.x - 1; x <= this.x + 1; x++) {
-            for (let y = this.y - 1; y <= this.y + 1; y++) {
-                const surf = this.terrain.getSurfaceOrNull(x, y);
-                if (surf) {
-                    surf.discovered = true;
+            for (let x = this.x - 1; x <= this.x + 1; x++) {
+                for (let y = this.y - 1; y <= this.y + 1; y++) {
+                    if (x !== this.x || y !== this.y) {
+                        const surf = this.terrain.getSurfaceOrNull(x, y);
+                        if (surf && !surf.discovered) {
+                            foundCave = surf.discoverNeighbors() || surf.surfaceType.floor;
+                            surf.needsMeshUpdate = true;
+                        }
+                    }
                 }
             }
         }
-        // FIXME check for unsupported neighbors
-        // for (let x = this.x - 1; x <= this.x + 1; x++) {
-        //     for (let y = this.y - 1; y <= this.y + 1; y++) {
-        //         if (x !== this.x || y !== this.y) {
-        //             const surf = this.terrain.getSurface(x, y);
-        //             if (!surf.surfaceType.floor && !surf.isSupported()) {
-        //                 surf.collapse();
-        //             }
-        //         }
-        //     }
-        // }
-        // update meshes // TODO only update changed meshes
-        this.terrain.surfaces.forEach((c) => c.forEach((surf) => surf.updateMesh()));
+        return foundCave;
+    }
+
+    collapse() {
+        this.surfaceType = GROUND; // FIXME this is actually rubble
+        this.needsMeshUpdate = true;
+        // discover surface and all neighbors
+        const foundCave = this.discoverNeighbors();
+        if (foundCave) {
+            console.log('A new cave was discovered'); // TODO emit new-cave event instead
+        }
+        // check for unsupported neighbors
+        for (let x = this.x - 1; x <= this.x + 1; x++) {
+            for (let y = this.y - 1; y <= this.y + 1; y++) {
+                if (x !== this.x || y !== this.y) {
+                    const surf = this.terrain.getSurface(x, y);
+                    surf.needsMeshUpdate = true;
+                    if (!surf.surfaceType.floor && !surf.isSupported()) {
+                        surf.collapse();
+                    }
+                }
+            }
+        }
+        // update meshes
+        this.terrain.surfaces.forEach((c) => c.forEach((surf) => surf.updateMesh(false)));
     }
 
     isSupported(): boolean {
@@ -78,7 +96,8 @@ export class Surface {
     //     return intersect[0].point.y;
     // }
 
-    updateMesh() {
+    updateMesh(force: boolean = true) {
+        if (!force && !this.needsMeshUpdate) return;
         if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
 
         const topLeftVertex = new Vector3(this.x, 0, this.y);

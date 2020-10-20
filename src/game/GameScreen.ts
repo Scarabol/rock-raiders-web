@@ -201,8 +201,12 @@ export class GameScreen extends BaseScreen {
         console.log('key pressed: ' + key);
         if (key === 'c') {
             if (this.selectedSurface) {
-                this.selectedSurface.collapse();
-                this.selectedSurface = null;
+                if (this.selectedSurface.surfaceType.floor) {
+                    console.log('cannot collapse floor type');
+                } else {
+                    this.selectedSurface.collapse();
+                    this.selectedSurface = null;
+                }
             } else {
                 console.log('key pressed but no surface selected');
             }
