@@ -126,7 +126,17 @@ export class WorldManager {
 
     setTorchPosition(position: Vector3) {
         this.sceneManager.cursorTorchlight.position.copy(position);
-        this.sceneManager.cursorTorchlight.position.y = 2 * this.tileSize; // + terrain height at this point
+        this.sceneManager.cursorTorchlight.position.y = this.getTerrainHeight(position.x, position.z) + 2 * this.tileSize;
+    }
+
+    getTerrainHeight(worldX: number, worldZ: number): number {
+        const raycaster = new Raycaster();
+        raycaster.set(new Vector3(worldX, 2 * this.tileSize, worldZ), new Vector3(0, -1, 0));
+        const intersect = raycaster.intersectObjects(this.terrain.floorGroup.children);
+        if (intersect.length > 0) {
+            return intersect[0].point.y;
+        }
+        return 0;
     }
 
     selectEntity(rx: number, ry: number) {

@@ -90,14 +90,6 @@ export class Surface implements Selectable {
         return floorSum <= 2;
     }
 
-    // getY(x, z) {
-    //     const raycaster = new THREE.Raycaster();
-    //     raycaster.set(new Vector3(x, 3, z), new Vector3(0, -1, 0)); // TODO scale with tile size
-    //     const intersect = raycaster.intersectObjects(this.mesh.children, true);
-    //
-    //     return intersect[0].point.y;
-    // }
-
     updateMesh(force: boolean = true) {
         if (!force && !this.needsMeshUpdate) return;
         if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
