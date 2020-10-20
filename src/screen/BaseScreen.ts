@@ -1,10 +1,8 @@
 import { ScreenLayer, ScreenLayerOptions } from './ScreenLayer';
-import { ResourceManager } from '../game/engine/ResourceManager';
 import { EventManager } from '../game/engine/EventManager';
 
 class BaseScreen {
 
-    resMgr: ResourceManager;
     eventMgr: EventManager;
     gameCanvasContainer: HTMLElement;
     layers: ScreenLayer[] = [];
@@ -12,8 +10,7 @@ class BaseScreen {
     height: number = 600;
     ratio: number = 800 / 600;
 
-    constructor(resourceManager: ResourceManager, eventManager: EventManager) {
-        this.resMgr = resourceManager;
+    constructor(eventManager: EventManager) {
         this.eventMgr = eventManager;
         this.gameCanvasContainer = document.getElementById('game-canvas-container');
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!';

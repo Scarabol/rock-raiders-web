@@ -1,22 +1,23 @@
 import { Surface } from '../model/Surface';
 import { Terrain } from '../model/Terrain';
+import { ResourceManager } from './ResourceManager';
 
 export class TerrainLoader {
 
-    loadTerrain(resMgr, levelConf): Terrain {
-        const terrain = new Terrain(resMgr);
+    loadTerrain(levelConf): Terrain {
+        const terrain = new Terrain();
 
         const themeName = levelConf['TextureSet'][1];
-        terrain.textureSet = resMgr.configuration['Lego*']['Textures'][themeName];
+        terrain.textureSet = ResourceManager.configuration['Lego*']['Textures'][themeName];
         // console.log(terrain.textureSet);
 
-        const terrainMap = resMgr.maps[(levelConf)['TerrainMap']];
+        const terrainMap = ResourceManager.maps[(levelConf)['TerrainMap']];
         terrain.width = terrainMap.width;
         terrain.height = terrainMap.height;
-        const pathMap = resMgr.maps[(levelConf)['PathMap']];
-        const surfaceMap = resMgr.maps[(levelConf)['SurfaceMap']].level;
-        const predugMap = resMgr.maps[(levelConf)['PreDugMap']].level;
-        const cryOreMap = resMgr.maps[(levelConf)['CryOreMap']].level;
+        const pathMap = ResourceManager.maps[(levelConf)['PathMap']];
+        const surfaceMap = ResourceManager.maps[(levelConf)['SurfaceMap']].level;
+        const predugMap = ResourceManager.maps[(levelConf)['PreDugMap']].level;
+        const cryOreMap = ResourceManager.maps[(levelConf)['CryOreMap']].level;
         // const fallinMapName = levelConf['FallinMap']; // TODO landslides
 
         for (let x = 0; x < terrainMap.level.length; x++) {

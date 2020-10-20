@@ -22,8 +22,8 @@ export class GameScreen extends BaseScreen {
     levelConf: object;
     selectedSurface: Surface;
 
-    constructor(resourceManager: ResourceManager, eventManager: EventManager) {
-        super(resourceManager, eventManager);
+    constructor(eventManager: EventManager) {
+        super(eventManager);
         this.gameLayer = this.createLayer({zIndex: 0, withContext: false});
         this.eventMgr.addMoveEventListener(this.gameLayer, (cx, cy) => this.moveMouseTorch(cx, cy));
         this.eventMgr.addClickEventListener(this.gameLayer, (cx, cy) => this.selectSurface(cx, cy));
@@ -34,24 +34,24 @@ export class GameScreen extends BaseScreen {
 
     startLevel(levelName) {
         console.log('Starting level ' + levelName);
-        this.levelConf = this.resMgr.configuration['Lego*']['Levels'][levelName];
+        this.levelConf = ResourceManager.configuration['Lego*']['Levels'][levelName];
         if (!this.levelConf) throw 'Could not find level configuration for "' + levelName + '"'; // TODO error handling
         // console.log(this.levelConf);
 
         // create terrain mesh and add it to the scene
-        this.terrain = new TerrainLoader().loadTerrain(this.resMgr, this.levelConf);
+        this.terrain = new TerrainLoader().loadTerrain(this.levelConf);
         const worldScale = 40; // BlockSize in lego.cfg
         this.terrain.floorGroup.scale.set(worldScale, worldScale, worldScale); // TODO read terrain scale from level file
         this.sceneManager.scene.add(this.terrain.floorGroup);
 
         // load in non-space objects next
-        const objectList = this.resMgr.objectLists[this.levelConf['OListFile']];
+        const objectList = ResourceManager.objectLists[this.levelConf['OListFile']];
         Object.values(objectList).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type;
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
             olObject.xPos += 0.5;
             olObject.yPos += 0.5;
-            const buildingType = this.resMgr.configuration['Lego*']['BuildingTypes'][olObject.type];
+            const buildingType = ResourceManager.configuration['Lego*']['BuildingTypes'][olObject.type];
             if (lTypeName === 'TVCamera'.toLowerCase()) {
                 // coords need to be rescaled since 1 unit in LRR is 1, but 1 unit in the remake is tileSize (128)
                 const tileSize = 40; // TODO scale with surface scale (BlockSize)
@@ -62,7 +62,7 @@ export class GameScreen extends BaseScreen {
                 this.sceneManager.controls.target.copy(target);
                 this.sceneManager.controls.update();
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
-                const pilot = iGet(this.resMgr.entity, 'mini-figures/pilot/pilot.ae');
+                const pilot = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
                 pilot.setActivity('Stand');
                 this.handleGroup(this, [pilot.group]);
                 pilot.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
@@ -71,7 +71,7 @@ export class GameScreen extends BaseScreen {
                 // TODO need to explore map here?
             } else if (buildingType) {
                 const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
-                const entity = iGet(this.resMgr.entity, bfilename);
+                const entity = iGet(ResourceManager.entity, bfilename);
                 // entity.setActivity('Teleport', () => {
                 //     console.log('switching animation to stand');
                 entity.setActivity('Stand');
@@ -122,7 +122,7 @@ export class GameScreen extends BaseScreen {
     handleGroup(that, grp) {
         if (grp) {
             grp.forEach((obj) => {
-                that.loadTextures(that.resMgr, obj);
+                that.loadTextures(obj);
                 that.handleGroup(that, obj.children);
             });
         } else {
@@ -130,13 +130,13 @@ export class GameScreen extends BaseScreen {
         }
     }
 
-    loadTextures(resMgr, obj) { // TODO this step should be done at the end of the loading process (postLoading)
+    loadTextures(obj) { // TODO this step should be done at the end of the loading process (postLoading)
         if (obj && obj.material) {
             obj.material.forEach((mat: MeshPhongMaterial) => {
                 if (mat.userData && mat.userData['textureFilename']) {
                     let textureFilename = mat.userData['textureFilename'];
                     // console.log('lazy loading texture from ' + textureFilename);
-                    mat.map = resMgr.getTexture(textureFilename);
+                    mat.map = ResourceManager.getTexture(textureFilename);
                     mat.transparent = mat.map.format === RGBAFormat;
                     if (mat.color) mat.color = null; // no need for color, when color map (texture) in use
                 } else {

@@ -7,19 +7,18 @@ import { EventManager } from './game/engine/EventManager';
 
 // setup basic game engine structure
 
-const resMgr = new ResourceManager();
 const eventMgr = new EventManager();
-const loadingScreen = new LoadingScreen(resMgr, eventMgr);
-const mainMenuScreen = new MainMenuScreen(resMgr, eventMgr);
-const gameScreen = new GameScreen(resMgr, eventMgr);
-const rewardScreen = new RewardScreen(resMgr, eventMgr);
+const loadingScreen = new LoadingScreen(eventMgr);
+const mainMenuScreen = new MainMenuScreen(eventMgr);
+const gameScreen = new GameScreen(eventMgr);
+const rewardScreen = new RewardScreen(eventMgr);
 
 // link all components with callbacks
 
-resMgr.wadLoader.onMessage = () => loadingScreen.setLoadingMessage;
-resMgr.wadLoader.onInitialLoad = () => loadingScreen.enableGraphicMode;
-resMgr.wadLoader.onAssetLoaded = () => loadingScreen.onAssetLoaded;
-resMgr.wadLoader.onLoad = () => {
+ResourceManager.wadLoader.onMessage = () => loadingScreen.setLoadingMessage;
+ResourceManager.wadLoader.onInitialLoad = () => loadingScreen.enableGraphicMode;
+ResourceManager.wadLoader.onAssetLoaded = () => loadingScreen.onAssetLoaded;
+ResourceManager.wadLoader.onLoad = () => {
     loadingScreen.hide();
     // mainMenuScreen.showMainMenu();
     mainMenuScreen.selectLevel('Level05');
@@ -35,4 +34,4 @@ rewardScreen.onContinue = mainMenuScreen.showLevelSelection;
 // start the game engine with loading resources
 
 loadingScreen.show();
-resMgr.wadLoader.startWithCachedFiles();
+ResourceManager.wadLoader.startWithCachedFiles();

@@ -6,13 +6,7 @@ import { LWOLoader } from './LWOLoader';
 
 export class AnimEntityLoader {
 
-    resMgr: ResourceManager;
-
-    constructor(resourceManager: ResourceManager) {
-        this.resMgr = resourceManager;
-    }
-
-    loadModels(url, root, resMgr: ResourceManager) {
+    loadModels(url, root) {
         const path = getPath(url);
 
         const entity = new AnimationEntity();
@@ -43,13 +37,13 @@ export class AnimEntityLoader {
                 const polykey = key.startsWith('!') ? key.slice(1) : key;
                 // console.log(path + polyname);
                 try {
-                    const lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(path + polyname);
-                    entity.highPoly[polykey] = new LWOLoader(this.resMgr, path).parse(lwoContent.buffer);
+                    const lwoContent = ResourceManager.wadLoader.wad0File.getEntryBuffer(path + polyname);
+                    entity.highPoly[polykey] = new LWOLoader(path).parse(lwoContent.buffer);
                 } catch (e) {
                     const sharedPath = 'world/shared/';
                     // console.log('load failed for ' + subObj.filename + ' trying shared path at ' + sharedPath + filename + '; error: ' + e); // TODO debug logging
-                    const lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(sharedPath + polyname);
-                    entity.highPoly[polykey] = new LWOLoader(this.resMgr, sharedPath).parse(lwoContent.buffer);
+                    const lwoContent = ResourceManager.wadLoader.wad0File.getEntryBuffer(sharedPath + polyname);
+                    entity.highPoly[polykey] = new LWOLoader(sharedPath).parse(lwoContent.buffer);
                 }
             });
             entity.poly = entity.highPoly;
@@ -90,8 +84,8 @@ export class AnimEntityLoader {
                     if (!isLws) throw 'NOT AN LWS FILE'; // TODO error handling
                     const filepath = path + file + '.lws';
                     // TODO cache entities, do not parse twice
-                    const content = resMgr.wadLoader.wad0File.getEntryText(filepath);
-                    act.animation = new LWSCLoader(this.resMgr).parse(path, content);
+                    const content = ResourceManager.wadLoader.wad0File.getEntryText(filepath);
+                    act.animation = new LWSCLoader().parse(path, content);
                     act.animation.looping = looping;
                     (entity.activities)[keyname] = act;
                 } catch (e) {

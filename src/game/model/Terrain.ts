@@ -1,10 +1,8 @@
 import { Group } from 'three';
 import { Surface } from './Surface';
-import { ResourceManager } from '../engine/ResourceManager';
 
 export class Terrain {
 
-    resMgr: ResourceManager;
     textureSet: any = {};
     width: number = 0;
     height: number = 0;
@@ -12,8 +10,7 @@ export class Terrain {
     floorGroup: Group = new Group();
     roofGroup: Group = new Group();
 
-    constructor(resourceManager: ResourceManager) {
-        this.resMgr = resourceManager;
+    constructor() {
         this.roofGroup.visible = false; // keep roof hidden unless switched to other camera
     }
 

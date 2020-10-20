@@ -7,19 +7,19 @@ import * as THREE from 'three';
 
 export class ResourceManager {
 
-    wadLoader: WadLoader;
-    images = {};
-    textures = {};
-    configuration = {};
-    maps = {};
-    sounds = {};
-    objectLists = {};
-    nerps = [];
-    nerpMessages = [];
-    fonts = [];
-    entity = [];
+    static wadLoader: WadLoader = new WadLoader();
+    static images = {};
+    static textures = {};
+    static configuration = {};
+    static maps = {};
+    static sounds = {};
+    static objectLists = {};
+    static nerps = [];
+    static nerpMessages = [];
+    static fonts = [];
+    static entity = [];
 
-    initialAssets = [
+    static initialAssets = [
         ['wad0nerp', 'Levels', 'nerpnrn.h'], // included by other nrn scripts
 
         // main menu resources // TODO load from config
@@ -41,46 +41,42 @@ export class ResourceManager {
         ['wad0alpha', 'Interface/Pointers/Aclosed.bmp'],
     ];
 
-    constructor() {
-        this.wadLoader = new WadLoader(this);
-    }
-
-    getImage(imageName) {
+    static getImage(imageName) {
         if (!imageName || imageName.length === 0) {
             throw 'imageName must not be undefined, null or empty - was ' + imageName;
         } else {
             const lImageName = imageName.toLowerCase();
-            if (!(lImageName in this.images) || this.images[lImageName] === undefined || this.images[lImageName] === null) {
+            if (!(lImageName in ResourceManager.images) || ResourceManager.images[lImageName] === undefined || ResourceManager.images[lImageName] === null) {
                 console.error('Image \'' + imageName + '\' unknown! Using placeholder image instead');
-                this.images[lImageName] = createDummyImage(64, 64);
+                ResourceManager.images[lImageName] = createDummyImage(64, 64);
             }
-            return this.images[lImageName];
+            return ResourceManager.images[lImageName];
         }
     }
 
-    getTexture(textureName) {
+    static getTexture(textureName) {
         if (!textureName || textureName.length === 0) {
             throw 'textureName must not be undefined, null or empty - was ' + textureName;
         } else {
             let texture: Texture;
             const lTextureName = textureName.toLowerCase();
-            if (!(lTextureName in this.textures) || this.textures[lTextureName] === undefined || this.textures[lTextureName] === null) {
+            if (!(lTextureName in ResourceManager.textures) || ResourceManager.textures[lTextureName] === undefined || ResourceManager.textures[lTextureName] === null) {
                 const lSharedTextureName = 'world/shared/' + getFilename(lTextureName);
-                if (!(lSharedTextureName in this.textures) || this.textures[lSharedTextureName] === undefined || this.textures[lSharedTextureName] === null) {
+                if (!(lSharedTextureName in ResourceManager.textures) || ResourceManager.textures[lSharedTextureName] === undefined || ResourceManager.textures[lSharedTextureName] === null) {
                     console.error('Texture \'' + textureName + '\' (' + lTextureName + ', ' + lSharedTextureName + ') unknown! Using placeholder texture instead');
-                    this.textures[lTextureName] = new Texture(createDummyImage(64, 64).canvas);
-                    this.textures[lTextureName].format = RGBFormat;
-                    this.textures[lTextureName].wrapS = THREE.RepeatWrapping;
-                    this.textures[lTextureName].wrapT = THREE.RepeatWrapping;
-                    this.textures[lTextureName].minFilter = THREE.NearestFilter;
-                    this.textures[lTextureName].magFilter = THREE.NearestFilter;
-                    this.textures[lTextureName].needsUpdate = true;
-                    texture = this.textures[lTextureName];
+                    ResourceManager.textures[lTextureName] = new Texture(createDummyImage(64, 64).canvas);
+                    ResourceManager.textures[lTextureName].format = RGBFormat;
+                    ResourceManager.textures[lTextureName].wrapS = THREE.RepeatWrapping;
+                    ResourceManager.textures[lTextureName].wrapT = THREE.RepeatWrapping;
+                    ResourceManager.textures[lTextureName].minFilter = THREE.NearestFilter;
+                    ResourceManager.textures[lTextureName].magFilter = THREE.NearestFilter;
+                    ResourceManager.textures[lTextureName].needsUpdate = true;
+                    texture = ResourceManager.textures[lTextureName];
                 } else {
-                    texture = this.textures[lSharedTextureName];
+                    texture = ResourceManager.textures[lSharedTextureName];
                 }
             } else {
-                texture = this.textures[lTextureName];
+                texture = ResourceManager.textures[lTextureName];
             }
             return texture;
         }

@@ -13,7 +13,6 @@ import * as THREE from 'three';
 
 class WadLoader {
 
-    resMgr: ResourceManager;
     wad0File: WadFile = null;
     wad1File: WadFile = null;
     startTime: Date;
@@ -28,10 +27,6 @@ class WadLoader {
     onMessage: (msg: string) => any = (msg: string) => console.log(msg);
     onAssetLoaded: () => any = () => {
     };
-
-    constructor(resourceManager: ResourceManager) {
-        this.resMgr = resourceManager;
-    }
 
     /**
      * load a script asset from the input path, setting the callback function to the input callback
@@ -61,11 +56,10 @@ class WadLoader {
     loadImageAsset(path, name, callback) {
         const img = new Image();
 
-        const resMgr = this.resMgr;
         img.onload = function () {
             const context = createContext(img.naturalWidth, img.naturalHeight);
             context.drawImage(img, 0, 0);
-            resMgr.images[name.toLowerCase()] = context;
+            ResourceManager.images[name.toLowerCase()] = context;
             URL.revokeObjectURL(img.src);
             if (callback != null) {
                 callback();
@@ -82,7 +76,6 @@ class WadLoader {
     loadWadTexture(name, callback) { // TODO use BitmapLoader and avoid creating local urls
         const img = new Image();
 
-        const resMgr = this.resMgr;
         img.onload = function () {
             const isAlpha = getFilename(name).toLowerCase().startsWith('a'); // TODO make sequence images transparent too
 
@@ -109,7 +102,7 @@ class WadLoader {
                 texture.image = img;
             }
 
-            resMgr.textures[name.toLowerCase()] = texture;
+            ResourceManager.textures[name.toLowerCase()] = texture;
 
             URL.revokeObjectURL(img.src);
             if (callback != null) {
@@ -128,7 +121,6 @@ class WadLoader {
     loadAlphaImageAsset(name, callback) {
         const img = new Image();
 
-        const resMgr = this.resMgr;
         img.onload = function () {
             const context = createContext(img.naturalWidth, img.naturalHeight);
             context.drawImage(img, 0, 0);
@@ -139,7 +131,7 @@ class WadLoader {
                 }
             }
             context.putImageData(imgData, 0, 0);
-            resMgr.images[name.toLowerCase()] = context;
+            ResourceManager.images[name.toLowerCase()] = context;
             URL.revokeObjectURL(img.src);
             if (callback != null) {
                 callback();
@@ -157,7 +149,6 @@ class WadLoader {
     loadFontImageAsset(name, callback) {
         const img = new Image();
 
-        const resMgr = this.resMgr;
         img.onload = function () {
             const context = createContext(img.naturalWidth, img.naturalHeight);
             context.drawImage(img, 0, 0);
@@ -168,7 +159,7 @@ class WadLoader {
                 }
             }
             context.putImageData(imgData, 0, 0);
-            resMgr.fonts[name.toLowerCase()] = new BitmapFont(context);
+            ResourceManager.fonts[name.toLowerCase()] = new BitmapFont(context);
             URL.revokeObjectURL(img.src);
             if (callback != null) {
                 callback();
@@ -181,7 +172,7 @@ class WadLoader {
     loadNerpAsset(name, callback) {
         name = name.replace(/.npl$/, '.nrn');
         const script = this.wad0File.getEntryText(name);
-        this.resMgr.nerps[name] = NerpParser(script, this.resMgr.nerps);
+        ResourceManager.nerps[name] = NerpParser(script, ResourceManager.nerps);
         if (callback != null) {
             callback();
         }
@@ -256,7 +247,7 @@ class WadLoader {
                 result[c].snd = m1.snd;
             }
         }
-        this.resMgr.nerpMessages[name] = result;
+        ResourceManager.nerpMessages[name] = result;
         if (callback) {
             callback();
         }
@@ -277,7 +268,7 @@ class WadLoader {
                 row = [];
             }
         }
-        this.resMgr.maps[name] = map;
+        ResourceManager.maps[name] = map;
         if (callback) {
             callback();
         }
@@ -285,7 +276,7 @@ class WadLoader {
 
     loadObjectListAsset(name, callback) {
         const lines = this.wad0File.getEntryText(name).split('\n');
-        this.resMgr.objectLists[name] = [];
+        ResourceManager.objectLists[name] = [];
         let currentObject = null;
         for (let c = 0; c < lines.length; c++) {
             const line = lines[c].trim();
@@ -295,7 +286,7 @@ class WadLoader {
                 // ignore empty lines, comments and the root object
             } else if (objectStartMatch) {
                 currentObject = {};
-                this.resMgr.objectLists[name][objectStartMatch[1]] = currentObject;
+                ResourceManager.objectLists[name][objectStartMatch[1]] = currentObject;
             } else if (line === '}') {
                 currentObject = null;
             } else if (drivingMatch) {
@@ -335,10 +326,9 @@ class WadLoader {
         }
 
         if (callback != null) {
-            const resMgr = this.resMgr;
             snd.oncanplay = function () {
                 snd.oncanplay = null; // otherwise the callback is triggered multiple times
-                resMgr.sounds[name] = snd;
+                ResourceManager.sounds[name] = snd;
                 callback();
             };
         }
@@ -355,13 +345,12 @@ class WadLoader {
     loadWavAsset(path, callback, key) {
         const snd = document.createElement('audio');
         if (callback != null) {
-            const resMgr = this.resMgr;
             snd.oncanplay = function () {
                 snd.oncanplay = null; // otherwise the callback is triggered multiple times
                 const keyPath = key || path;
                 // use array, because sounds have multiple variants sometimes
-                resMgr.sounds[keyPath] = resMgr.sounds[keyPath] || [];
-                resMgr.sounds[keyPath].push(snd);
+                ResourceManager.sounds[keyPath] = ResourceManager.sounds[keyPath] || [];
+                ResourceManager.sounds[keyPath].push(snd);
                 callback();
             };
         }
@@ -376,8 +365,8 @@ class WadLoader {
     loadAnimatedEntity(aeFile: string, callback) {
         const content = this.wad0File.getEntryText(aeFile);
         const cfgRoot = iGet(new RonFile().parse(content), 'Lego*');
-        const loader = new AnimEntityLoader(this.resMgr);
-        this.resMgr.entity[aeFile.toLowerCase()] = loader.loadModels(aeFile, cfgRoot, this.resMgr);
+        const loader = new AnimEntityLoader();
+        ResourceManager.entity[aeFile.toLowerCase()] = loader.loadModels(aeFile, cfgRoot);
         callback();
     }
 
@@ -388,24 +377,23 @@ class WadLoader {
         this.startTime = new Date();
         this.assetsFromCfgByName = {};
         this.onMessage('Loading configuration...');
-        this.resMgr.configuration = new CfgFileParser().parse(this.wad1File.getEntryData('Lego.cfg'));
-        const resMgr = this.resMgr;
+        ResourceManager.configuration = new CfgFileParser().parse(this.wad1File.getEntryData('Lego.cfg'));
         Promise.all([
             new Promise((resolve) => {
-                const name = resMgr.configuration['Lego*']['Main']['LoadScreen']; // loading screen image
+                const name = ResourceManager.configuration['Lego*']['Main']['LoadScreen']; // loading screen image
                 this.loadWadImageAsset(name, resolve);
             }),
             new Promise((resolve) => {
-                const name = resMgr.configuration['Lego*']['Main']['ProgressBar']; // loading bar container image
+                const name = ResourceManager.configuration['Lego*']['Main']['ProgressBar']; // loading bar container image
                 this.loadWadImageAsset(name, resolve);
             }),
         ]).then(() => {
             this.onInitialLoad();
-            const mainConf = resMgr.configuration['Lego*'];
+            const mainConf = ResourceManager.configuration['Lego*'];
             this.registerAllAssets(mainConf);
             // start loading assets
             this.assetsFromCfg = Object.values(this.assetsFromCfgByName);
-            this.totalResources = resMgr.initialAssets.length + this.assetsFromCfg.length;
+            this.totalResources = ResourceManager.initialAssets.length + this.assetsFromCfg.length;
             this.assetIndex = 0;
             this.loadSequentialAssets();
         });
@@ -558,11 +546,11 @@ class WadLoader {
     }
 
     loadSequentialAssets() {
-        if (this.assetIndex >= this.resMgr.initialAssets.length) {
+        if (this.assetIndex >= ResourceManager.initialAssets.length) {
             this.loadAssetsParallel(); // continue with parallel loading all other assets
             return;
         }
-        const curAsset = this.resMgr.initialAssets[this.assetIndex];
+        const curAsset = ResourceManager.initialAssets[this.assetIndex];
         const assetName = curAsset[curAsset.length - 1].toLowerCase();
         const filename = curAsset[1] !== '' ? curAsset[1] + '/' + curAsset[2] : curAsset[2];
         if (curAsset[0] === 'js') {

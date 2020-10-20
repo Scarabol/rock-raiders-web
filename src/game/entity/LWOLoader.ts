@@ -8,8 +8,7 @@
  *  -
  */
 
-import { BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, MeshPhongMaterial, Vector3 } from 'three';
-import { ResourceManager } from '../engine/ResourceManager';
+import { BufferAttribute, BufferGeometry, Color, Mesh, MeshPhongMaterial, Vector3 } from 'three';
 import { decodeFilepath, decodeString, getFilename } from '../../core/Util';
 
 // HEADER SPEC //
@@ -228,7 +227,6 @@ export class LWOLoader {
 
     COUNTER_CLOCKWISE: false;
 
-    resMgr: ResourceManager;
     path: string = '';
     materials: MeshPhongMaterial[] = [];
     geometry: BufferGeometry = new BufferGeometry();
@@ -236,8 +234,7 @@ export class LWOLoader {
     indices: Uint16Array = null;
     uvs: Float32Array = null;
 
-    constructor(resourceManager: ResourceManager, path: string) {
-        this.resMgr = resourceManager;
+    constructor(path: string) {
         this.path = path;
     }
 

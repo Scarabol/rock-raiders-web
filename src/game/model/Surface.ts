@@ -1,6 +1,7 @@
 import { Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
 import { Terrain } from './Terrain';
 import { GROUND, RUBBLE4, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
+import { ResourceManager } from '../engine/ResourceManager';
 
 const HEIGHT_MULTIPLER = 0.05;
 
@@ -194,7 +195,7 @@ export class Surface {
         }
         textureName += '.bmp';
 
-        const texture = this.terrain.resMgr.getTexture(textureName);
+        const texture = ResourceManager.getTexture(textureName);
         texture.flipY = false; // TODO is this necessary? Maybe turn around UV or vertices?
         texture.needsUpdate = true;
 

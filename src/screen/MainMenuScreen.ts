@@ -1,7 +1,7 @@
 import { BaseScreen } from './BaseScreen';
 import { ScreenLayer } from './ScreenLayer';
-import { ResourceManager } from '../game/engine/ResourceManager';
 import { EventManager } from '../game/engine/EventManager';
+import { ResourceManager } from '../game/engine/ResourceManager';
 
 class MainMenuScreen extends BaseScreen {
 
@@ -13,8 +13,8 @@ class MainMenuScreen extends BaseScreen {
     showTeamCanvas: ScreenLayer;
     optionsCanvas: ScreenLayer;
 
-    constructor(resourceManager: ResourceManager, eventManager: EventManager) {
-        super(resourceManager, eventManager);
+    constructor(eventManager: EventManager) {
+        super(eventManager);
         this.startCanvas = this.createLayer();
         this.loadGameCanvas = this.createLayer();
         this.levelSelectCanvas = this.createLayer();
@@ -30,7 +30,7 @@ class MainMenuScreen extends BaseScreen {
 
     showMainMenu() {
         this.hide();
-        const menuBg = this.resMgr.getImage(this.resMgr.configuration['Lego*']['Menu']['MainMenuFull']['Menu1']['MenuImage']).canvas;
+        const menuBg = ResourceManager.getImage(ResourceManager.configuration['Lego*']['Menu']['MainMenuFull']['Menu1']['MenuImage']).canvas;
         this.startCanvas.onRedraw = (context => {
             context.drawImage(menuBg, 0, 0, this.width, this.height);
         });

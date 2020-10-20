@@ -13,12 +13,6 @@ import { getFilename } from '../../core/Util';
 
 export class LWSCLoader {
 
-    resMgr: ResourceManager;
-
-    constructor(resourceManager: ResourceManager) {
-        this.resMgr = resourceManager;
-    }
-
     parse(path, content): AnimationClip {
         const lines: string[] = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
@@ -57,13 +51,13 @@ export class LWSCLoader {
                         subObj.filename = path + filename;
                         // TODO do not parse twice, read from cache first
                         try { // TODO refactor extract method (also used in AnimEntityLoader)
-                            const lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(subObj.filename);
-                            subObj.model = new LWOLoader(this.resMgr, path).parse(lwoContent.buffer);
+                            const lwoContent = ResourceManager.wadLoader.wad0File.getEntryBuffer(subObj.filename);
+                            subObj.model = new LWOLoader(path).parse(lwoContent.buffer);
                         } catch (e) {
                             const sharedPath = 'world/shared/';
                             // console.log('load failed for ' + subObj.filename + ' trying shared path at ' + sharedPath + filename + '; error: ' + e); // TODO debug logging
-                            const lwoContent = this.resMgr.wadLoader.wad0File.getEntryBuffer(sharedPath + filename);
-                            subObj.model = new LWOLoader(this.resMgr, sharedPath).parse(lwoContent.buffer);
+                            const lwoContent = ResourceManager.wadLoader.wad0File.getEntryBuffer(sharedPath + filename);
+                            subObj.model = new LWOLoader(sharedPath).parse(lwoContent.buffer);
                         }
                         line = lines[++c];
                     } else if (key === 'AddNullObject') {

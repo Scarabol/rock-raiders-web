@@ -9,8 +9,8 @@ export class LoadingScreen extends BaseScreen {
     currentResourceIndex: number = 0;
     totalResources: number = 0;
 
-    constructor(resourceManager: ResourceManager, eventManager: EventManager) {
-        super(resourceManager, eventManager);
+    constructor(eventManager: EventManager) {
+        super(eventManager);
         this.layer = this.createLayer();
         this.layer.onRedraw = (context) => {
             // clear the screen to black
@@ -41,8 +41,8 @@ export class LoadingScreen extends BaseScreen {
     }
 
     enableGraphicMode() {
-        const imgBackground = this.resMgr.getImage(this.resMgr.configuration['Lego*']['Main']['LoadScreen']).canvas;
-        const imgProgress = this.resMgr.getImage(this.resMgr.configuration['Lego*']['Main']['ProgressBar']).canvas;
+        const imgBackground = ResourceManager.getImage(ResourceManager.configuration['Lego*']['Main']['LoadScreen']).canvas;
+        const imgProgress = ResourceManager.getImage(ResourceManager.configuration['Lego*']['Main']['ProgressBar']).canvas;
         this.layer.onRedraw = (context => {
             const screenZoom = this.width / imgBackground.width;
             const loadingBarWidth = 353 * this.currentResourceIndex / this.totalResources * screenZoom;
