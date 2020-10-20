@@ -241,6 +241,7 @@ export class Surface {
                 uv[(2 + uvOffset) % 4],
             ]);
 
+            // noinspection PointlessArithmeticExpressionJS
             this.geometry.faceVertexUvs[0].push([
                 uv[(1 + uvOffset) % 4],
                 uv[(0 + uvOffset) % 4],
@@ -252,12 +253,14 @@ export class Surface {
                 new Face3(1, 0, 3),
             );
         } else {
+            // noinspection PointlessArithmeticExpressionJS
             this.geometry.faceVertexUvs[0].push([
                 uv[(0 + uvOffset) % 4],
                 uv[(3 + uvOffset) % 4],
                 uv[(2 + uvOffset) % 4],
             ]);
 
+            // noinspection PointlessArithmeticExpressionJS
             this.geometry.faceVertexUvs[0].push([
                 uv[(0 + uvOffset) % 4],
                 uv[(2 + uvOffset) % 4],
