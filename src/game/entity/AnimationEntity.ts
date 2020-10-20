@@ -1,9 +1,10 @@
-import { Group, MeshPhongMaterial, Object3D, RGBAFormat } from 'three';
+import { CanvasTexture, ClampToEdgeWrapping, Group, LinearFilter, MeshPhongMaterial, Object3D, RGBAFormat, Sprite, SpriteMaterial } from 'three';
 import { AnimationClip } from './AnimationClip';
 import { iGet } from '../../core/Util';
 import { ResourceManager } from '../engine/ResourceManager';
+import { Selectable } from '../model/Selectable';
 
-export class AnimationEntity {
+export class AnimationEntity implements Selectable {
 
     poly = null;
     group: Group = new Group();
@@ -18,6 +19,39 @@ export class AnimationEntity {
     highPoly = null;
     fPPoly = null;
     activities = {};
+    selectionFrame: Sprite = null;
+
+    constructor() {
+        this.group.userData = {'selectable': this};
+
+        const ctx = document.createElement('canvas').getContext('2d');
+        const size = 128;
+        ctx.canvas.width = size; // TODO read from cfg?
+        ctx.canvas.height = size;
+        ctx.fillStyle = '#0f0';
+        const strength = size / 20;
+        const length = size / 3;
+        ctx.fillRect(0, 0, length, strength);
+        ctx.fillRect(0, 0, strength, length);
+        ctx.fillRect(size - length, 0, length, strength);
+        ctx.fillRect(size - strength, 0, strength, length);
+        ctx.fillRect(size - strength, size - length, strength, length);
+        ctx.fillRect(size - length, size - strength, length, strength);
+        ctx.fillRect(0, size - strength, length, strength);
+        ctx.fillRect(0, size - length, strength, length);
+        const texture = new CanvasTexture(ctx.canvas);
+        // because our canvas is likely not a power of 2
+        // in both dimensions set the filtering appropriately.
+        texture.minFilter = LinearFilter;
+        texture.wrapS = ClampToEdgeWrapping;
+        texture.wrapT = ClampToEdgeWrapping;
+        const selectionMaterial = new SpriteMaterial({map: texture, transparent: true});
+        this.selectionFrame = new Sprite(selectionMaterial);
+        this.selectionFrame.position.y = 40 / 4; // TODO scale with tile size and bounding box
+        this.selectionFrame.scale.set(40, 40, 40).multiplyScalar(0.5); // TODO scale with tile size
+        this.selectionFrame.visible = false;
+        this.group.add(this.selectionFrame);
+    }
 
     setActivity(keyname, onAnimationDone = null) {
         if (this.animation) this.animation.cancelAnimation();
@@ -74,6 +108,15 @@ export class AnimationEntity {
         } else {
             // console.log('not an object or no material');
         }
+    }
+
+    select(): Selectable {
+        this.selectionFrame.visible = true;
+        return this;
+    }
+
+    deselect() {
+        this.selectionFrame.visible = false;
     }
 
 }

@@ -1,11 +1,12 @@
-import { Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
+import { Color, Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
 import { Terrain } from './Terrain';
 import { GROUND, RUBBLE4, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
 import { ResourceManager } from '../engine/ResourceManager';
+import { Selectable } from './Selectable';
 
 const HEIGHT_MULTIPLER = 0.05;
 
-export class Surface {
+export class Surface implements Selectable {
 
     terrain: Terrain;
     surfaceType: SurfaceType;
@@ -294,9 +295,24 @@ export class Surface {
 
         this.mesh = new Mesh(this.geometry, new MeshPhongMaterial({map: texture, shininess: 0}));
 
+        this.mesh.userData = {selectable: this};
+
         this.terrain.surfaces[this.x][this.y] = this;
         this.terrain.floorGroup.add(this.mesh);
     }
+
+    select(): Selectable {
+        if (this.surfaceType.selectable) {
+            this.mesh.material['color'].setHex(0xa0a0a0);
+            return this;
+        }
+        return null;
+    }
+
+    deselect(): any {
+        this.mesh.material['color'] = new Color(0xffffff);
+    }
+
 }
 
 export enum WALL_TYPE {

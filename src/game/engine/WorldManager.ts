@@ -6,6 +6,7 @@ import { iGet } from '../../core/Util';
 import { ENERGY_PATH_BUILDING } from '../model/SurfaceType';
 import { GameScreen } from '../GameScreen';
 import { Terrain } from '../model/Terrain';
+import { Selectable } from '../model/Selectable';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
@@ -14,6 +15,7 @@ export class WorldManager {
 
     terrain: Terrain;
     sceneManager: SceneManager;
+    selectedEntity: Selectable;
 
     constructor(screen: GameScreen) {
         this.sceneManager = new SceneManager(screen.gameLayer.canvas);
@@ -127,13 +129,23 @@ export class WorldManager {
     }
 
     selectEntity(rx: number, ry: number) {
+        if (this.selectedEntity) {
+            this.selectedEntity.deselect();
+            this.selectedEntity = null;
+        }
         const raycaster = new Raycaster();
         raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
         const intersects = raycaster.intersectObjects(this.sceneManager.scene.children, true);
         if (intersects.length > 0) {
-            console.log(intersects[0].object);
-        } else {
-            // TODO remove selection
+            let obj = intersects[0].object;
+            while (obj) {
+                const userData = obj.userData;
+                if (userData && userData.hasOwnProperty('selectable')) {
+                    this.selectedEntity = userData['selectable'].select();
+                    break;
+                }
+                obj = obj.parent;
+            }
         }
     }
 
