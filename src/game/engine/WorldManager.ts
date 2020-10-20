@@ -43,7 +43,7 @@ export class WorldManager {
             let radHeading = degToRad(olObject.heading - 90);
             if (lTypeName === 'TVCamera'.toLowerCase()) {
                 const camZ = worldZ - 2 * this.tileSize; // TODO why undo offset here???
-                const camY = this.getTerrainHeight(worldX, camZ) + this.tileSize;
+                const camY = this.getTerrainHeight(worldX, camZ) + 1.5 * this.tileSize;
                 this.sceneManager.camera.position.set(worldX, camY, camZ);
                 let targetOffset = new Vector3(this.tileSize, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
                 let target = new Vector3().copy(this.sceneManager.camera.position).add(targetOffset);

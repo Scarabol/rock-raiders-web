@@ -6,7 +6,7 @@ import { LWOLoader } from './LWOLoader';
 
 export class AnimEntityLoader {
 
-    loadModels(url, root) {
+    loadModels(url, root): AnimationEntity {
         const path = getPath(url);
 
         const entity = new AnimationEntity();
