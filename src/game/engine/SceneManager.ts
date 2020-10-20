@@ -1,4 +1,4 @@
-import { AmbientLight, AxesHelper, MOUSE, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
+import { AmbientLight, MOUSE, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 import { DebugHelper } from '../../core/DebugHelper';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
@@ -29,9 +29,6 @@ class SceneManager {
 
         this.cursorTorchlight = new PointLight(0xffffff, 1, 7 * 40, 2); // TODO scale with BlockSize
         this.scene.add(this.cursorTorchlight);
-
-        this.axisHelper = new AxesHelper(20);
-        this.scene.add(this.axisHelper);
 
         this.camera = new PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 5000); // TODO adapt view distance to performance
 
