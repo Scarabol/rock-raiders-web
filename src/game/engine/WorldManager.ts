@@ -36,12 +36,16 @@ export class WorldManager {
         Object.values(objectList).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type;
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
-            olObject.xPos += 0.5;
-            olObject.yPos += 0.5;
+            const worldX = (olObject.xPos - 1) * this.tileSize; // TODO why the offset?
+            const worldZ = (olObject.yPos + 2) * this.tileSize; // TODO why the offset?
+            const worldY = this.getTerrainHeight(worldX, worldZ) + this.tileSize / 100 * 44;
             const buildingType = ResourceManager.configuration['Lego*']['BuildingTypes'][olObject.type];
+            let radHeading = degToRad(olObject.heading - 90);
             if (lTypeName === 'TVCamera'.toLowerCase()) {
-                this.sceneManager.camera.position.set(olObject.xPos * this.tileSize, 1.25 * this.tileSize, olObject.yPos * this.tileSize);
-                let targetOffset = new Vector3(-this.tileSize, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), degToRad(olObject.heading));
+                const camZ = worldZ - 2 * this.tileSize; // TODO why undo offset here???
+                const camY = this.getTerrainHeight(worldX, camZ) + this.tileSize;
+                this.sceneManager.camera.position.set(worldX, camY, camZ);
+                let targetOffset = new Vector3(this.tileSize, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
                 let target = new Vector3().copy(this.sceneManager.camera.position).add(targetOffset);
                 target.y = 0.5 * this.tileSize;
                 this.sceneManager.controls.target.copy(target);
@@ -51,8 +55,8 @@ export class WorldManager {
                 const pilot = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
                 pilot.setActivity('Stand');
                 pilot.loadTextures();
-                pilot.group.position.set((olObject.xPos - 1.5) * this.tileSize, 18, (olObject.yPos + 1.5) * this.tileSize); // TODO get y from terrain // TODO why offset needed?
-                pilot.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
+                pilot.group.position.set(worldX, worldY, worldZ);
+                pilot.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
                 this.sceneManager.scene.add(pilot.group);
                 // TODO need to explore map here?
             } else if (buildingType) {
@@ -64,8 +68,8 @@ export class WorldManager {
                 //     this.handleGroup(this, [entity.group]);
                 // });
                 entity.loadTextures();
-                entity.group.position.set((olObject.xPos - 1.5) * this.tileSize, 18, (olObject.yPos + 1.5) * this.tileSize); // TODO get y from terrain // TODO why offset needed?
-                entity.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
+                entity.group.position.set(worldX, worldY, worldZ);
+                entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
                 this.sceneManager.scene.add(entity.group);
                 const path1Surface = this.terrain.getSurface(entity.group.position.x / this.tileSize, entity.group.position.z / this.tileSize);
                 path1Surface.surfaceType = ENERGY_PATH_BUILDING;
