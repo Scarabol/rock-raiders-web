@@ -106,7 +106,6 @@ export class AnimEntityLoader {
         // entity.mediumPoly = this.root['mediumpoly']; // TODO deep copy
         // entity.highPoly = this.root['highpoly']; // TODO deep copy
         // entity.fPPoly = this.root['fppoly']; // TODO deep copy
-        // entity.setPoly();
         // console.log(entity);
         return entity;
     }

@@ -19,10 +19,6 @@ export class AnimationEntity {
     fPPoly = null;
     activities = {};
 
-    setPoly() {
-        this.poly = this.highPoly || this.mediumPoly || this.group || this.poly;
-    }
-
     setActivity(keyname, onAnimationDone = null) {
         if (this.animation) this.animation.cancelAnimation();
         const activity = iGet(this.activities, keyname);
