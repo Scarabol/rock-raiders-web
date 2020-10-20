@@ -72,6 +72,7 @@ export class TerrainLoader {
                 }
             }
         }));
+
         terrain.surfaces.forEach(c => c.forEach(s => s.updateMesh()));
 
         // TODO add landslides
