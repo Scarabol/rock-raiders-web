@@ -46,7 +46,7 @@ export class AnimationEntity {
         }
     }
 
-    loadTextures(grp: Object3D[] = [this.group]) {
+    loadTextures(grp: Object3D[] = [this.group]) { // TODO this step should be done at the end of the loading process (postLoading)
         const that = this;
         if (grp) {
             grp.forEach((obj) => {
@@ -58,8 +58,8 @@ export class AnimationEntity {
         }
     }
 
-    handleObject(obj) { // TODO this step should be done at the end of the loading process (postLoading)
-        if (obj && obj.material) {
+    handleObject(obj) {
+        if (obj && obj.material && Array.isArray(obj.material)) {
             obj.material.forEach((mat: MeshPhongMaterial) => {
                 if (mat.userData && mat.userData['textureFilename']) {
                     let textureFilename = mat.userData['textureFilename'];
