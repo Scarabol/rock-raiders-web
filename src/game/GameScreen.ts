@@ -5,7 +5,7 @@ import { SceneManager } from './engine/SceneManager';
 import { TerrainLoader } from './engine/TerrainLoader';
 import { EventManager } from './engine/EventManager';
 import { IngameUI } from './gui/IngameUI';
-import { Color, MathUtils, MeshPhongMaterial, Raycaster, RGBAFormat, Vector3 } from 'three';
+import { Color, MathUtils, Raycaster, Vector3 } from 'three';
 import { Terrain } from './model/Terrain';
 import { iGet } from '../core/Util';
 import { Surface, WALL_TYPE } from './model/Surface';
@@ -64,7 +64,7 @@ export class GameScreen extends BaseScreen {
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
                 const pilot = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
                 pilot.setActivity('Stand');
-                this.handleGroup(this, [pilot.group]);
+                pilot.loadTextures();
                 pilot.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
                 pilot.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
                 this.sceneManager.scene.add(pilot.group);
@@ -77,7 +77,7 @@ export class GameScreen extends BaseScreen {
                 entity.setActivity('Stand');
                 //     this.handleGroup(this, [entity.group]);
                 // });
-                this.handleGroup(this, [entity.group]);
+                entity.loadTextures();
                 entity.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
                 this.sceneManager.scene.add(entity.group);
@@ -117,35 +117,6 @@ export class GameScreen extends BaseScreen {
         // finally show all the layers
         this.gameLayer.show();
         this.show();
-    }
-
-    handleGroup(that, grp) {
-        if (grp) {
-            grp.forEach((obj) => {
-                that.loadTextures(obj);
-                that.handleGroup(that, obj.children);
-            });
-        } else {
-            console.log('not a group');
-        }
-    }
-
-    loadTextures(obj) { // TODO this step should be done at the end of the loading process (postLoading)
-        if (obj && obj.material) {
-            obj.material.forEach((mat: MeshPhongMaterial) => {
-                if (mat.userData && mat.userData['textureFilename']) {
-                    let textureFilename = mat.userData['textureFilename'];
-                    // console.log('lazy loading texture from ' + textureFilename);
-                    mat.map = ResourceManager.getTexture(textureFilename);
-                    mat.transparent = mat.map.format === RGBAFormat;
-                    if (mat.color) mat.color = null; // no need for color, when color map (texture) in use
-                } else {
-                    // console.log('no userdata set for material');
-                }
-            });
-        } else {
-            // console.log('not an object or no material');
-        }
     }
 
     show() {

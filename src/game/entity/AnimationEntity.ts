@@ -1,6 +1,7 @@
-import { Group } from 'three';
+import { Group, MeshPhongMaterial, Object3D, RGBAFormat } from 'three';
 import { AnimationClip } from './AnimationClip';
 import { iGet } from '../../core/Util';
+import { ResourceManager } from '../engine/ResourceManager';
 
 export class AnimationEntity {
 
@@ -46,6 +47,36 @@ export class AnimationEntity {
             this.animation.animate(0, onAnimationDone);
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
+        }
+    }
+
+    loadTextures(grp: Object3D[] = [this.group]) {
+        const that = this;
+        if (grp) {
+            grp.forEach((obj) => {
+                that.handleObject(obj);
+                that.loadTextures(obj.children);
+            });
+        } else {
+            console.log('not a group');
+        }
+    }
+
+    handleObject(obj) { // TODO this step should be done at the end of the loading process (postLoading)
+        if (obj && obj.material) {
+            obj.material.forEach((mat: MeshPhongMaterial) => {
+                if (mat.userData && mat.userData['textureFilename']) {
+                    let textureFilename = mat.userData['textureFilename'];
+                    // console.log('lazy loading texture from ' + textureFilename);
+                    mat.map = ResourceManager.getTexture(textureFilename);
+                    mat.transparent = mat.map.format === RGBAFormat;
+                    if (mat.color) mat.color = null; // no need for color, when color map (texture) in use
+                } else {
+                    // console.log('no userdata set for material');
+                }
+            });
+        } else {
+            // console.log('not an object or no material');
         }
     }
 
