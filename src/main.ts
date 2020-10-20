@@ -21,7 +21,7 @@ ResourceManager.wadLoader.onAssetLoaded = () => loadingScreen.onAssetLoaded;
 ResourceManager.wadLoader.onLoad = () => {
     loadingScreen.hide();
     // mainMenuScreen.showMainMenu();
-    mainMenuScreen.selectLevel('Level05');
+    mainMenuScreen.selectLevel('Level02');
 };
 mainMenuScreen.onLevelSelected = (levelName) => {
     gameScreen.startLevel(levelName);
