@@ -4,7 +4,7 @@ import { ResourceManager } from './ResourceManager';
 
 export class TerrainLoader {
 
-    loadTerrain(levelConf): Terrain {
+    static loadTerrain(levelConf): Terrain {
         const terrain = new Terrain();
 
         const themeName = levelConf['TextureSet'][1];

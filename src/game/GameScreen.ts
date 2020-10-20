@@ -39,7 +39,7 @@ export class GameScreen extends BaseScreen {
         // console.log(this.levelConf);
 
         // create terrain mesh and add it to the scene
-        this.terrain = new TerrainLoader().loadTerrain(this.levelConf);
+        this.terrain = TerrainLoader.loadTerrain(this.levelConf);
         const worldScale = 40; // BlockSize in lego.cfg
         this.terrain.floorGroup.scale.set(worldScale, worldScale, worldScale); // TODO read terrain scale from level file
         this.sceneManager.scene.add(this.terrain.floorGroup);
