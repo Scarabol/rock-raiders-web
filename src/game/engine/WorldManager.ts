@@ -46,6 +46,7 @@ export class WorldManager {
                 target.y = 0.5 * this.tileSize;
                 this.sceneManager.controls.target.copy(target);
                 this.sceneManager.controls.update();
+                this.setTorchPosition(target);
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
                 const pilot = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
                 pilot.setActivity('Stand');
@@ -119,10 +120,13 @@ export class WorldManager {
         raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
         const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children);
         if (intersects.length > 0) {
-            const hit = intersects[0].point;
-            hit.y += 3 * this.tileSize;
-            this.sceneManager.cursorTorchlight.position.copy(hit);
+            this.setTorchPosition(intersects[0].point);
         }
+    }
+
+    setTorchPosition(position: Vector3) {
+        this.sceneManager.cursorTorchlight.position.copy(position);
+        this.sceneManager.cursorTorchlight.position.y = 2 * this.tileSize; // + terrain height at this point
     }
 
     selectEntity(rx: number, ry: number) {
