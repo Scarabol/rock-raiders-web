@@ -20,55 +20,55 @@ export class TerrainLoader {
         const cryOreMap = ResourceManager.maps[(levelConf)['CryOreMap']].level;
         // const fallinMapName = levelConf['FallinMap']; // TODO landslides
 
-        for (let x = 0; x < terrainMap.level.length; x++) {
-            terrain.surfaces.push([]);
-            for (let y = 0; y < (terrainMap.level)[x].length; y++) {
+        // maps parsed from WAD are row-wise saved, which means y (row) comes first and x (column) second
+        for (let r = 0; r < terrainMap.level.length; r++) {
+            for (let c = 0; c < (terrainMap.level)[r].length; c++) {
+                (terrain.surfaces)[c] = (terrain.surfaces)[c] || [];
                 // give the path map the highest priority, if it exists
-                if (pathMap && pathMap.level[x][y] === 1) {
+                if (pathMap && pathMap.level[r][c] === 1) {
                     // rubble 1 space id = 100
-                    (terrain.surfaces)[x].push(new Surface(terrain, 100, x, y, surfaceMap[x][y]));
-                } else if (pathMap && pathMap.level[x][y] === 2) {
+                    (terrain.surfaces)[c].push(new Surface(terrain, 100, c, r, surfaceMap[r][c]));
+                } else if (pathMap && pathMap.level[r][c] === 2) {
                     // building power path space id = -1
-                    (terrain.surfaces)[x].push(new Surface(terrain, -1, x, y, surfaceMap[x][y]));
+                    (terrain.surfaces)[c].push(new Surface(terrain, -1, c, r, surfaceMap[r][c]));
                 } else {
-                    if (predugMap[x][y] === 0) {
+                    if (predugMap[r][c] === 0) {
                         // soil(5) was removed pre-release, so replace it with dirt(4)
-                        if ((terrainMap.level)[x][y] === 5) {
-                            (terrain.surfaces)[x].push(new Surface(terrain, 4, x, y, surfaceMap[x][y]));
+                        if ((terrainMap.level)[r][c] === 5) {
+                            (terrain.surfaces)[c].push(new Surface(terrain, 4, c, r, surfaceMap[r][c]));
                         } else {
-                            (terrain.surfaces)[x].push(new Surface(terrain, (terrainMap.level)[x][y], x, y, surfaceMap[x][y]));
+                            (terrain.surfaces)[c].push(new Surface(terrain, (terrainMap.level)[r][c], c, r, surfaceMap[r][c]));
                         }
-                    } else if (predugMap[x][y] === 3 || predugMap[x][y] === 4) { // slug holes
-                        (terrain.surfaces)[x].push(new Surface(terrain, predugMap[x][y] * 10, x, y, surfaceMap[x][y]));
-                    } else if (predugMap[x][y] === 1 || predugMap[x][y] === 2) {
-                        if ((terrainMap.level)[x][y] === 6) {
-                            (terrain.surfaces)[x].push(new Surface(terrain, 6, x, y, surfaceMap[x][y]));
-                        } else if ((terrainMap.level)[x][y] === 9) {
-                            (terrain.surfaces)[x].push(new Surface(terrain, 9, x, y, surfaceMap[x][y]));
+                    } else if (predugMap[r][c] === 3 || predugMap[r][c] === 4) { // slug holes
+                        (terrain.surfaces)[c].push(new Surface(terrain, predugMap[r][c] * 10, c, r, surfaceMap[r][c]));
+                    } else if (predugMap[r][c] === 1 || predugMap[r][c] === 2) {
+                        if ((terrainMap.level)[r][c] === 6) {
+                            (terrain.surfaces)[c].push(new Surface(terrain, 6, c, r, surfaceMap[r][c]));
+                        } else if ((terrainMap.level)[r][c] === 9) {
+                            (terrain.surfaces)[c].push(new Surface(terrain, 9, c, r, surfaceMap[r][c]));
                         } else {
-                            (terrain.surfaces)[x].push(new Surface(terrain, 0, x, y, surfaceMap[x][y]));
+                            (terrain.surfaces)[c].push(new Surface(terrain, 0, c, r, surfaceMap[r][c]));
                         }
                     }
 
-                    const currentCryOre = cryOreMap[x][y];
+                    const currentCryOre = cryOreMap[r][c];
                     if (currentCryOre % 2 === 1) {
-                        (terrain.surfaces)[x][y].containedCrystals = (currentCryOre + 1) / 2;
+                        (terrain.surfaces)[c][r].containedCrystals = (currentCryOre + 1) / 2;
                     } else {
-                        (terrain.surfaces)[x][y].containedOre = currentCryOre / 2;
+                        (terrain.surfaces)[c][r].containedOre = currentCryOre / 2;
                     }
                 }
             }
         }
-        // console.log(terrain.surfaces);
 
         // TODO crumble unsupported walls (this may change discover result in next step)
 
         // exlpore predug surfaces
         terrain.surfaces.forEach(c => c.forEach(s => {
-            if (predugMap[s.x][s.y] === 1 || predugMap[s.x][s.y] === 3) {
+            if (predugMap[s.y][s.x] === 1 || predugMap[s.y][s.x] === 3) { // predug map is rows (y) first, columns (x) second
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
-                        s.terrain.getSurface(x, y).discovered = true;
+                        terrain.getSurfaceOrNull(x, y).discovered = true;
                     }
                 }
             }
