@@ -1,6 +1,6 @@
 import { Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
 import { Terrain } from './Terrain';
-import { GROUND, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
+import { GROUND, RUBBLE4, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
 
 const HEIGHT_MULTIPLER = 0.05;
 
@@ -56,7 +56,7 @@ export class Surface {
     }
 
     collapse() {
-        this.surfaceType = GROUND; // FIXME this is actually rubble
+        this.surfaceType = RUBBLE4; // TODO drop contained ore/crystals
         this.needsMeshUpdate = true;
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors();

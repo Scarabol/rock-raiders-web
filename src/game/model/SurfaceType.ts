@@ -28,6 +28,10 @@ export const WATER = new SurfaceType({name: 'water', floor: true});
 export const ENERGY_CRYSTAL_SEAM = new SurfaceType({name: 'energy crystal seam', matIndex: '20', selectable: true});
 export const RECHARGE_SEAM = new SurfaceType({name: 'recharge seam'});
 export const ENERGY_PATH_BUILDING = new SurfaceType({name: 'energy path', floor: true, matIndex: '76'});
+export const RUBBLE1 = new SurfaceType({name: 'rubble 1', floor: true, matIndex: '13'});
+export const RUBBLE2 = new SurfaceType({name: 'rubble 2', floor: true, matIndex: '12'});
+export const RUBBLE3 = new SurfaceType({name: 'rubble 3', floor: true, matIndex: '11'});
+export const RUBBLE4 = new SurfaceType({name: 'rubble 4', floor: true, matIndex: '10'});
 
 export const SURF_TO_TYPE = [];
 SURF_TO_TYPE[0] = GROUND;
