@@ -19,33 +19,32 @@ export class GameScreen extends BaseScreen {
     sceneManager: SceneManager;
     terrain: Terrain;
     ingameUI: IngameUI;
-    levelConf: object;
     selectedSurface: Surface;
 
     constructor(eventManager: EventManager) {
         super(eventManager);
         this.gameLayer = this.createLayer({zIndex: 0, withContext: false});
+        this.sceneManager = new SceneManager(this.gameLayer.canvas);
         this.eventMgr.addMoveEventListener(this.gameLayer, (cx, cy) => this.moveMouseTorch(cx, cy));
         this.eventMgr.addClickEventListener(this.gameLayer, (cx, cy) => this.selectSurface(cx, cy));
         this.eventMgr.addKeyEventListener(this.gameLayer, (key) => this.keyPressed(key));
-        this.sceneManager = new SceneManager(this.gameLayer.canvas);
         // this.ingameUI = new IngameUI(this);
     }
 
     startLevel(levelName) {
         console.log('Starting level ' + levelName);
-        this.levelConf = ResourceManager.configuration['Lego*']['Levels'][levelName];
-        if (!this.levelConf) throw 'Could not find level configuration for "' + levelName + '"'; // TODO error handling
-        // console.log(this.levelConf);
+        const levelConf = ResourceManager.configuration['Lego*']['Levels'][levelName];
+        if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'; // TODO error handling
+        // console.log(levelConf);
 
         // create terrain mesh and add it to the scene
-        this.terrain = TerrainLoader.loadTerrain(this.levelConf);
+        this.terrain = TerrainLoader.loadTerrain(levelConf);
         const worldScale = 40; // BlockSize in lego.cfg
         this.terrain.floorGroup.scale.set(worldScale, worldScale, worldScale); // TODO read terrain scale from level file
         this.sceneManager.scene.add(this.terrain.floorGroup);
 
         // load in non-space objects next
-        const objectList = ResourceManager.objectLists[this.levelConf['OListFile']];
+        const objectList = ResourceManager.objectLists[levelConf['OListFile']];
         Object.values(objectList).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type;
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
