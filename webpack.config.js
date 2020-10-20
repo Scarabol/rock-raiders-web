@@ -17,9 +17,6 @@ const config = {
         filename: './app.bundle.js',
         sourceMapFilename: './app.bundle.js.map',
     },
-    devServer: {
-        watchContentBase: true,
-    },
     devtool: 'source-map',
 };
 
