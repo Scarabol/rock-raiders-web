@@ -47,8 +47,6 @@ export class AnimEntityLoader {
                 }
             });
             entity.poly = entity.highPoly;
-            // TODO this seems obsolete
-            Object.keys(highPoly).filter((polykey) => polykey.startsWith('!')).forEach((polykey) => delete highPoly[polykey]);
         }
 
         // let fPoly = (root)['fppoly'];
@@ -81,13 +79,16 @@ export class AnimEntityLoader {
                     const file = iGet(act, 'FILE');
                     const isLws = iGet(act, 'LWSFILE') === true;
                     const looping = iGet(act, 'LOOPING') === true;
-                    if (!isLws) throw 'NOT AN LWS FILE'; // TODO error handling
-                    const filepath = path + file + '.lws';
-                    // TODO cache entities, do not parse twice
-                    const content = ResourceManager.wadLoader.wad0File.getEntryText(filepath);
-                    act.animation = new LWSCLoader().parse(path, content);
-                    act.animation.looping = looping;
-                    (entity.activities)[keyname] = act;
+                    if (isLws) {
+                        const filepath = path + file + '.lws';
+                        // TODO cache entities, do not parse twice
+                        const content = ResourceManager.wadLoader.wad0File.getEntryText(filepath);
+                        act.animation = new LWSCLoader().parse(path, content);
+                        act.animation.looping = looping;
+                        (entity.activities)[keyname] = act;
+                    } else {
+                        console.error('Found activity which is not an LWS file');
+                    }
                 } catch (e) {
                     console.error(e);
                     console.log(root);
@@ -97,16 +98,6 @@ export class AnimEntityLoader {
             });
         }
 
-        // entity.scale = this.root['scale']; // TODO apply scale
-        // entity.cameraNullName = this.root['cameranullname'];
-        // entity.cameraNullFrames = this.root['cameranullframes'];
-        // entity.cameraFlipDir = this.root['cameraflipdir'];
-        // entity.drillNullName = this.root['drillnullname'];
-        // entity.carryNullName = this.root['carrynullname'];
-        // entity.mediumPoly = this.root['mediumpoly']; // TODO deep copy
-        // entity.highPoly = this.root['highpoly']; // TODO deep copy
-        // entity.fPPoly = this.root['fppoly']; // TODO deep copy
-        // console.log(entity);
         return entity;
     }
 

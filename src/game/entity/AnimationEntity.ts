@@ -9,12 +9,6 @@ export class AnimationEntity implements Selectable {
     poly = null;
     group: Group = new Group();
     animation: AnimationClip = null;
-    scale: number = null;
-    cameraNullName = null;
-    cameraNullFrames = null;
-    cameraFlipDir = null;
-    drillNullName = null;
-    carryNullName = null;
     mediumPoly = null;
     highPoly = null;
     fPPoly = null;
