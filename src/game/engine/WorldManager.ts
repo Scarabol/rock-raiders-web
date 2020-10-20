@@ -11,7 +11,7 @@ import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
 
-    // readonly tileSize: number = 40; // FIXME externalize tile size
+    // readonly tileSize: number = 40; // TODO externalize tile size
 
     terrain: Terrain;
     sceneManager: SceneManager;
