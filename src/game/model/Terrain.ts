@@ -14,13 +14,9 @@ export class Terrain {
         this.roofGroup.visible = false; // keep roof hidden unless switched to other camera
     }
 
-    getWorldSurface(worldX, worldY): Surface {
-        const x = Math.floor(worldX / 40);
-        const y = Math.floor(worldY / 40);
-        return this.getSurface(x, y);
-    }
-
     getSurface(x, y): Surface {
+        x = Math.floor(x);
+        y = Math.floor(y);
         return this.getSurfaceOrNull(x, y) || new Surface(this, 1, x, y, 0); // 1 = solid rock
     }
 

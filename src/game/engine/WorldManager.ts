@@ -11,7 +11,7 @@ import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
 
-    // readonly tileSize: number = 40; // TODO externalize tile size
+    readonly tileSize: number = 40; // TODO read from cfg
 
     terrain: Terrain;
     sceneManager: SceneManager;
@@ -19,6 +19,7 @@ export class WorldManager {
 
     constructor(screen: GameScreen) {
         this.sceneManager = new SceneManager(screen.gameLayer.canvas);
+        this.sceneManager.cursorTorchlight.distance *= this.tileSize;
     }
 
     setup(levelName: string) {
@@ -27,8 +28,7 @@ export class WorldManager {
 
         // create terrain mesh and add it to the scene
         this.terrain = TerrainLoader.loadTerrain(levelConf);
-        const worldScale = 40; // BlockSize in lego.cfg
-        this.terrain.floorGroup.scale.set(worldScale, worldScale, worldScale); // TODO read terrain scale from level file
+        this.terrain.floorGroup.scale.set(this.tileSize, this.tileSize, this.tileSize); // TODO read terrain scale from level file
         this.sceneManager.scene.add(this.terrain.floorGroup);
 
         // load in non-space objects next
@@ -40,19 +40,17 @@ export class WorldManager {
             olObject.yPos += 0.5;
             const buildingType = ResourceManager.configuration['Lego*']['BuildingTypes'][olObject.type];
             if (lTypeName === 'TVCamera'.toLowerCase()) {
-                // coords need to be rescaled since 1 unit in LRR is 1, but 1 unit in the remake is tileSize (128)
-                const tileSize = 40; // TODO scale with surface scale (BlockSize)
-                this.sceneManager.camera.position.set(olObject.xPos * tileSize, 1.25 * tileSize, olObject.yPos * tileSize);  // TODO scale with terrain/buildings use half of max terrain height
-                let targetOffset = new Vector3(-40, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), degToRad(olObject.heading)); // scale with BlockSize
+                this.sceneManager.camera.position.set(olObject.xPos * this.tileSize, 1.25 * this.tileSize, olObject.yPos * this.tileSize);
+                let targetOffset = new Vector3(-this.tileSize, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), degToRad(olObject.heading));
                 let target = new Vector3().copy(this.sceneManager.camera.position).add(targetOffset);
-                target.y = 0.5; // TODO scale with terrain/buildings use half of max terrain height BlockSize gety from terrain
+                target.y = 0.5 * this.tileSize;
                 this.sceneManager.controls.target.copy(target);
                 this.sceneManager.controls.update();
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
                 const pilot = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
                 pilot.setActivity('Stand');
                 pilot.loadTextures();
-                pilot.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
+                pilot.group.position.set((olObject.xPos - 1.5) * this.tileSize, 18, (olObject.yPos + 1.5) * this.tileSize); // TODO get y from terrain // TODO why offset needed?
                 pilot.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
                 this.sceneManager.scene.add(pilot.group);
                 // TODO need to explore map here?
@@ -65,16 +63,16 @@ export class WorldManager {
                 //     this.handleGroup(this, [entity.group]);
                 // });
                 entity.loadTextures();
-                entity.group.position.set((olObject.xPos - 1.5) * 40, 18, (olObject.yPos + 1.5) * 40); // TODO get y from terrain // TODO why offset needed?
+                entity.group.position.set((olObject.xPos - 1.5) * this.tileSize, 18, (olObject.yPos + 1.5) * this.tileSize); // TODO get y from terrain // TODO why offset needed?
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
                 this.sceneManager.scene.add(entity.group);
-                const path1Surface = this.terrain.getWorldSurface(entity.group.position.x, entity.group.position.z);
+                const path1Surface = this.terrain.getSurface(entity.group.position.x / this.tileSize, entity.group.position.z / this.tileSize);
                 path1Surface.surfaceType = ENERGY_PATH_BUILDING;
                 path1Surface.updateMesh();
-                const pathOffset = new Vector3(0, 0, 40) // TODO scale with terrain
+                const pathOffset = new Vector3(0, 0, this.tileSize)
                     .applyAxisAngle(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
                 pathOffset.add(entity.group.position);
-                const path2Surface = this.terrain.getWorldSurface(pathOffset.x, pathOffset.z);
+                const path2Surface = this.terrain.getSurface(pathOffset.x / this.tileSize, pathOffset.z / this.tileSize);
                 path2Surface.surfaceType = ENERGY_PATH_BUILDING;
                 path2Surface.updateMesh();
                 // TODO need to explore map here?
@@ -122,7 +120,7 @@ export class WorldManager {
         const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children);
         if (intersects.length > 0) {
             const hit = intersects[0].point;
-            hit.y += 3 * 40; // TODO adapt to terrain scale
+            hit.y += 3 * this.tileSize;
             this.sceneManager.cursorTorchlight.position.copy(hit);
         }
     }

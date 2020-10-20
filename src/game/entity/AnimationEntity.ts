@@ -41,8 +41,8 @@ export class AnimationEntity implements Selectable {
         texture.wrapT = ClampToEdgeWrapping;
         const selectionMaterial = new SpriteMaterial({map: texture, transparent: true});
         this.selectionFrame = new Sprite(selectionMaterial);
-        this.selectionFrame.position.y = 40 / 4; // TODO scale with tile size and bounding box
-        this.selectionFrame.scale.set(40, 40, 40).multiplyScalar(0.5); // TODO scale with tile size
+        this.selectionFrame.position.y = 40 / 4; // TODO position with bounding box
+        this.selectionFrame.scale.set(40, 40, 40).multiplyScalar(0.5); // TODO scale with bounding box
         this.selectionFrame.visible = false;
         this.group.add(this.selectionFrame);
     }
