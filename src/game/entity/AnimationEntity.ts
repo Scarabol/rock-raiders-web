@@ -1,23 +1,21 @@
-import { AxesHelper, CanvasTexture, ClampToEdgeWrapping, Group, LinearFilter, MeshPhongMaterial, Object3D, RGBAFormat, Sprite, SpriteMaterial } from 'three';
+import { CanvasTexture, ClampToEdgeWrapping, Group, LinearFilter, MeshPhongMaterial, Object3D, RGBAFormat, Sprite, SpriteMaterial } from 'three';
 import { AnimationClip } from './AnimationClip';
 import { iGet } from '../../core/Util';
 import { ResourceManager } from '../engine/ResourceManager';
 import { Selectable } from '../model/Selectable';
+import { AnimationEntityType } from './AnimationEntityType';
 
 export class AnimationEntity implements Selectable {
 
+    entityType: AnimationEntityType = null;
     poly: Object3D[] = [];
     group: Group = new Group();
     animation: AnimationClip = null;
-    mediumPoly: {} = null; // TODO move to ResourceManager#getPoly
-    highPoly: {} = null; // TODO move to ResourceManager#getPoly
-    fPPoly: {} = null; // TODO move to ResourceManager#getPoly
-    activities = {};
     selectionFrame: Sprite = null;
 
-    constructor() {
+    constructor(entityType: AnimationEntityType) {
+        this.entityType = entityType;
         this.group.userData = {'selectable': this};
-        this.group.add(new AxesHelper(40));
 
         const ctx = document.createElement('canvas').getContext('2d');
         const size = 128;
@@ -50,10 +48,10 @@ export class AnimationEntity implements Selectable {
 
     setActivity(keyname, onAnimationDone = null) {
         if (this.animation) this.animation.cancelAnimation();
-        const activity = iGet(this.activities, keyname);
+        const activity = iGet(this.entityType.activities, keyname);
         if (!activity) {
             console.error('Activity \'' + keyname + '\' unknown');
-            console.log(this.activities);
+            console.log(this.entityType.activities);
             return;
         }
         if (activity.animation) {

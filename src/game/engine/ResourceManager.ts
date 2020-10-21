@@ -4,7 +4,7 @@ import { getFilename } from '../../core/Util';
 import { Texture } from 'three/src/textures/Texture';
 import { RGBFormat } from 'three/src/constants';
 import * as THREE from 'three';
-import { AnimationEntity } from '../entity/AnimationEntity';
+import { AnimationEntityType } from '../entity/AnimationEntityType';
 
 export class ResourceManager {
 
@@ -18,7 +18,7 @@ export class ResourceManager {
     static nerps = [];
     static nerpMessages = [];
     static fonts = [];
-    static entity: AnimationEntity[] = [];
+    static entity: AnimationEntityType[] = [];
 
     static initialAssets = [
         ['wad0nerp', 'Levels', 'nerpnrn.h'], // included by other nrn scripts

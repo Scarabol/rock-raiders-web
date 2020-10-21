@@ -1,15 +1,15 @@
 import { ResourceManager } from '../engine/ResourceManager';
 import { LWSCLoader } from './LWSCLoader';
-import { AnimationEntity } from './AnimationEntity';
 import { getPath, iGet } from '../../core/Util';
 import { LWOLoader } from './LWOLoader';
+import { AnimationEntityType } from './AnimationEntityType';
 
 export class AnimEntityLoader {
 
-    loadModels(url, root): AnimationEntity {
+    loadModels(url, root): AnimationEntityType {
         const path = getPath(url);
 
-        const entity = new AnimationEntity();
+        const entityType = new AnimationEntityType();
 
         // TODO load other poly quality models (if available)
         // let mediumPoly = iGet(root, 'MediumPoly');
@@ -31,19 +31,19 @@ export class AnimEntityLoader {
 
         const highPoly = iGet(root, 'highpoly');
         if (highPoly) {
-            entity.highPoly = {};
+            entityType.highPoly = {};
             Object.keys(highPoly).forEach((key) => {
                 const polyname = highPoly[key] + '.lwo';
                 const polykey = key.startsWith('!') ? key.slice(1) : key;
                 // console.log(path + polyname);
                 try {
                     const lwoContent = ResourceManager.wadLoader.wad0File.getEntryBuffer(path + polyname);
-                    entity.highPoly[polykey] = new LWOLoader(path).parse(lwoContent.buffer);
+                    entityType.highPoly[polykey] = new LWOLoader(path).parse(lwoContent.buffer);
                 } catch (e) {
                     const sharedPath = 'world/shared/';
                     // console.log('load failed for ' + subObj.filename + ' trying shared path at ' + sharedPath + filename + '; error: ' + e); // TODO debug logging
                     const lwoContent = ResourceManager.wadLoader.wad0File.getEntryBuffer(sharedPath + polyname);
-                    entity.highPoly[polykey] = new LWOLoader(sharedPath).parse(lwoContent.buffer);
+                    entityType.highPoly[polykey] = new LWOLoader(sharedPath).parse(lwoContent.buffer);
                 }
             });
         }
@@ -84,7 +84,7 @@ export class AnimEntityLoader {
                         const content = ResourceManager.wadLoader.wad0File.getEntryText(filepath);
                         act.animation = new LWSCLoader().parse(path, content);
                         act.animation.looping = looping;
-                        (entity.activities)[keyname] = act;
+                        (entityType.activities)[keyname] = act;
                     } else {
                         console.error('Found activity which is not an LWS file');
                     }
@@ -97,7 +97,7 @@ export class AnimEntityLoader {
             });
         }
 
-        return entity;
+        return entityType;
     }
 
 }

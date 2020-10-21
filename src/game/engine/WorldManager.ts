@@ -7,8 +7,8 @@ import { ENERGY_PATH_BUILDING } from '../model/SurfaceType';
 import { GameScreen } from '../GameScreen';
 import { Terrain } from '../model/Terrain';
 import { Selectable } from '../model/Selectable';
-import { AnimationEntity } from '../entity/AnimationEntity';
 import degToRad = MathUtils.degToRad;
+import { AnimationEntity } from '../entity/AnimationEntity';
 
 export class WorldManager {
 
@@ -55,7 +55,8 @@ export class WorldManager {
                 this.sceneManager.controls.update();
                 this.setTorchPosition(target);
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
-                const pilot = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
+                const entityType = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
+                const pilot = new AnimationEntity(entityType);
                 pilot.setActivity('Stand');
                 pilot.loadTextures();
                 pilot.group.position.set(worldX, worldY, worldZ);
@@ -63,7 +64,8 @@ export class WorldManager {
                 this.sceneManager.scene.add(pilot.group);
             } else if (buildingType) {
                 const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
-                const entity = iGet(ResourceManager.entity, bfilename);
+                const entityType = iGet(ResourceManager.entity, bfilename);
+                const entity = new AnimationEntity(entityType);
                 entity.setActivity('Stand');
                 entity.loadTextures();
                 entity.group.position.set(worldX, worldY, worldZ);
