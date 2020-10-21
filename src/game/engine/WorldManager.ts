@@ -16,6 +16,7 @@ export class WorldManager {
     terrain: Terrain;
     sceneManager: SceneManager;
     selectedEntity: Selectable;
+    buildings = {};
 
     constructor(screen: GameScreen) {
         this.sceneManager = new SceneManager(screen.gameLayer.canvas);
@@ -78,6 +79,9 @@ export class WorldManager {
                 const path2Surface = this.terrain.getSurface(pathOffset.x / this.tileSize, pathOffset.z / this.tileSize);
                 path2Surface.surfaceType = ENERGY_PATH_BUILDING;
                 path2Surface.updateMesh();
+                const buildingName = buildingType.slice(buildingType.lastIndexOf('/') + 1);
+                this.buildings[buildingName] = this.buildings[buildingName] || [];
+                this.buildings[buildingName].push(entity); // TODO push more complex building type???
                 // TODO need to explore map here?
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 console.warn('Loose power crystals on start not yet implemented'); // TODO implement power crystals on start
