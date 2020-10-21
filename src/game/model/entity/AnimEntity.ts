@@ -122,7 +122,7 @@ export class AnimEntity implements Selectable {
                     // console.log('lazy loading texture from ' + textureFilename);
                     mat.map = ResourceManager.getTexture(textureFilename);
                     mat.transparent = mat.map.format === RGBAFormat;
-                    if (mat.color) mat.color = null; // no need for color, when color map (texture) in use
+                    mat.color = null; // no need for color, when color map (texture) in use
                 } else {
                     // console.log('no userdata set for material');
                 }

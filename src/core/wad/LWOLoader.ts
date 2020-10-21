@@ -367,7 +367,7 @@ export class LWOLoader {
                         break;
                     case SURF_SPEC:
                         let specular = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
-                        material.specular = material.color.multiplyScalar(specular);
+                        // material.specular = material.color.multiplyScalar(specular);
                         break;
                     case SURF_REFL:
                         let reflection = 0;
