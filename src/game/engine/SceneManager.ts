@@ -30,7 +30,7 @@ class SceneManager {
         this.cursorTorchlight = new PointLight(0xffffff, 1, 7, 2);
         this.scene.add(this.cursorTorchlight);
 
-        this.camera = new PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 5000); // TODO adapt view distance to performance
+        this.camera = new PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 5000); // TODO make these params configurable
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.screenSpacePanning = false;
