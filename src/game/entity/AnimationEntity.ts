@@ -78,9 +78,10 @@ export class AnimationEntity implements Selectable {
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
         }
+        this.loadTextures(); // TODO this step should be done at the end of the loading process (postLoading)
     }
 
-    loadTextures(grp: Object3D[] = [this.group]) { // TODO this step should be done at the end of the loading process (postLoading)
+    loadTextures(grp: Object3D[] = [this.group]) {
         const that = this;
         if (grp) {
             grp.forEach((obj) => {

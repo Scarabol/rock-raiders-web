@@ -71,7 +71,6 @@ export class GameScreen extends BaseScreen {
             const entityType = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
             const pilot = new AnimationEntity(entityType);
             pilot.setActivity('TeleportIn', () => pilot.setActivity('Stand'));
-            pilot.loadTextures();
             pilot.group.position.copy(station.group.position).add(new Vector3(0, 0, 20).applyEuler(station.group.rotation));
             pilot.group.rotation.copy(station.group.rotation);
             this.worldManager.sceneManager.scene.add(pilot.group);

@@ -58,7 +58,6 @@ export class WorldManager {
                 const entityType = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
                 const pilot = new AnimationEntity(entityType);
                 pilot.setActivity('Stand');
-                pilot.loadTextures();
                 pilot.group.position.set(worldX, worldY, worldZ);
                 pilot.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
                 this.sceneManager.scene.add(pilot.group);
@@ -66,8 +65,7 @@ export class WorldManager {
                 const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
                 const entityType = iGet(ResourceManager.entity, bfilename);
                 const entity = new AnimationEntity(entityType);
-                entity.setActivity('Stand');
-                entity.loadTextures();
+                entity.setActivity('Teleport', () => entity.setActivity('Stand'));
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
                 // TODO rotate building with normal vector of surface
