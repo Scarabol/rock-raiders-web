@@ -1,4 +1,4 @@
-import { CanvasTexture, ClampToEdgeWrapping, Group, LinearFilter, MeshPhongMaterial, Object3D, RGBAFormat, Sprite, SpriteMaterial } from 'three';
+import { AxesHelper, CanvasTexture, ClampToEdgeWrapping, Group, LinearFilter, MeshPhongMaterial, Object3D, RGBAFormat, Sprite, SpriteMaterial } from 'three';
 import { AnimationClip } from './AnimationClip';
 import { iGet } from '../../core/Util';
 import { ResourceManager } from '../engine/ResourceManager';
@@ -6,7 +6,7 @@ import { Selectable } from '../model/Selectable';
 
 export class AnimationEntity implements Selectable {
 
-    poly: {} = null;
+    poly: Object3D[] = [];
     group: Group = new Group();
     animation: AnimationClip = null;
     mediumPoly: {} = null; // TODO move to ResourceManager#getPoly
@@ -17,6 +17,7 @@ export class AnimationEntity implements Selectable {
 
     constructor() {
         this.group.userData = {'selectable': this};
+        this.group.add(new AxesHelper(40));
 
         const ctx = document.createElement('canvas').getContext('2d');
         const size = 128;
@@ -57,18 +58,23 @@ export class AnimationEntity implements Selectable {
         }
         if (activity.animation) {
             this.animation = activity.animation;
-            if (this.poly) {
-                this.animation.bodies.filter((body) => body.name.toLowerCase() !== 'null')
-                    .forEach((body) => body.model = iGet(this.poly, body.name) || new Group());
-            }
-            this.animation.bodies.forEach((subObj) => {
-                if (subObj.parentObjInd) {
-                    this.animation.bodies[subObj.parentObjInd - 1].model.add(subObj.model);
+            this.poly = []; // TODO need dispose old ones?
+            // bodies are primarily defined in animation and second in high/medium/low poly groups
+            this.animation.bodies.forEach((body) => {
+                let model;
+                model = body.model.clone(true); // FIXME pick meshes from high/medium poly
+                this.poly.push(model);
+            });
+            this.animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
+                const polyPart = this.poly[index];
+                const parentInd = body.parentObjInd;
+                if (parentInd !== undefined && parentInd !== null) { // can be 0
+                    this.poly[parentInd].add(polyPart);
                 } else {
-                    this.group.add(subObj.model);
+                    this.group.add(polyPart);
                 }
             });
-            this.animation.animate(0, onAnimationDone);
+            this.animation.animate(this.poly,0, onAnimationDone);
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
         }

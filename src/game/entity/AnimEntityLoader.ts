@@ -46,7 +46,6 @@ export class AnimEntityLoader {
                     entity.highPoly[polykey] = new LWOLoader(sharedPath).parse(lwoContent.buffer);
                 }
             });
-            entity.poly = entity.highPoly;
         }
 
         // let fPoly = (root)['fppoly'];

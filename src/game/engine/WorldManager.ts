@@ -7,6 +7,7 @@ import { ENERGY_PATH_BUILDING } from '../model/SurfaceType';
 import { GameScreen } from '../GameScreen';
 import { Terrain } from '../model/Terrain';
 import { Selectable } from '../model/Selectable';
+import { AnimationEntity } from '../entity/AnimationEntity';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
@@ -31,16 +32,18 @@ export class WorldManager {
         // create terrain mesh and add it to the scene
         this.terrain = TerrainLoader.loadTerrain(levelConf);
         this.terrain.floorGroup.scale.set(this.tileSize, this.tileSize, this.tileSize); // TODO read terrain scale from level file
+        this.terrain.floorGroup.updateWorldMatrix(true, true); // otherwise ray intersection is not working before rendering
         this.sceneManager.scene.add(this.terrain.floorGroup);
 
         // load in non-space objects next
         const objectList = ResourceManager.objectLists[levelConf['OListFile']];
+        console.log(objectList);
         Object.values(objectList).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type;
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
             const worldX = (olObject.xPos - 1) * this.tileSize;
             const worldZ = (olObject.yPos - 1) * this.tileSize;
-            const worldY = this.getTerrainHeight(worldX, worldZ) + this.tileSize / 3 * 2; // FIXME use bounding box
+            const worldY = this.getTerrainHeight(worldX, worldZ);
             const buildingType = ResourceManager.configuration['Lego*']['BuildingTypes'][olObject.type];
             let radHeading = degToRad(olObject.heading);
             if (lTypeName === 'TVCamera'.toLowerCase()) {
@@ -65,6 +68,7 @@ export class WorldManager {
                 entity.loadTextures();
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
+                // TODO rotate building with normal vector of surface
                 this.sceneManager.scene.add(entity.group);
                 const path1Surface = this.terrain.getSurface(entity.group.position.x / this.tileSize, entity.group.position.z / this.tileSize);
                 path1Surface.surfaceType = ENERGY_PATH_BUILDING;
@@ -131,13 +135,14 @@ export class WorldManager {
     }
 
     getTerrainHeight(worldX: number, worldZ: number): number {
-        const raycaster = new Raycaster();
-        raycaster.set(new Vector3(worldX, 2 * this.tileSize, worldZ), new Vector3(0, -1, 0));
-        const intersect = raycaster.intersectObjects(this.terrain.floorGroup.children);
+        const raycaster = new Raycaster(new Vector3(Number(worldX), 3 * this.tileSize, Number(worldZ)), new Vector3(0, -1, 0));
+        const intersect = raycaster.intersectObject(this.terrain.floorGroup, true);
         if (intersect.length > 0) {
             return intersect[0].point.y;
+        } else {
+            console.warn('could not determine terrain height for ' + worldX + '/' + worldZ);
+            return 0;
         }
-        return 0;
     }
 
     selectEntity(rx: number, ry: number) {

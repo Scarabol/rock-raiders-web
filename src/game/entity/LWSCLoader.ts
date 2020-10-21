@@ -28,7 +28,7 @@ export class LWSCLoader {
             console.warn('Number of models has unexpected value: ' + numOfModels);
         }
 
-        const entity = new AnimationClip();
+        const animationClip = new AnimationClip();
         for (let c = 2; c < lines.length; c++) {
             let line = lines[c];
             if (!line) {
@@ -36,14 +36,14 @@ export class LWSCLoader {
             } else {
                 const [key, value] = line.split(' ').filter((l: string) => l !== '');
                 if (key === 'FirstFrame') {
-                    entity.firstFrame = parseInt(value);
+                    animationClip.firstFrame = parseInt(value);
                 } else if (key === 'LastFrame') {
-                    entity.lastFrame = parseInt(value);
+                    animationClip.lastFrame = parseInt(value);
                 } else if (key === 'FrameStep') {
                     const frameStep = parseInt(value);
                     if (frameStep !== 1) console.error('Animation frameStep has unexpected value: ' + frameStep);
                 } else if (key === 'FramesPerSecond') {
-                    entity.framesPerSecond = parseInt(value);
+                    animationClip.framesPerSecond = parseInt(value);
                 } else if (key === 'AddNullObject' || key === 'LoadObject') {
                     const subObj = new AnimSubObj();
                     if (line.startsWith('LoadObject')) {
@@ -80,7 +80,7 @@ export class LWSCLoader {
                                 if (infos.length !== lenInfos) console.warn('Number of infos (' + infos.length + ') does not match if specified count (' + lenInfos + ')');
                                 line = lines[c + x * 2 + 1];
                                 const animationFrameIndex = parseInt(line.split(' ')[0]); // other entries in line should be zeros
-                                subObj.setFrameAndFollowing(animationFrameIndex, entity.lastFrame, infos);
+                                subObj.setFrameAndFollowing(animationFrameIndex, animationClip.lastFrame, infos);
                             }
                         } else if (line.startsWith('ParentObject ')) {
                             subObj.parentObjInd = Number(line.split(' ')[1]) - 1; // index is 1 based
@@ -89,13 +89,13 @@ export class LWSCLoader {
                         }
                         line = lines[++c];
                     }
-                    entity.bodies.push(subObj);
+                    animationClip.bodies.push(subObj);
                 } else {
                     // console.warn("Unexpected line: " + line); // TODO debug logging, analyze remaining entries
                 }
             }
         }
 
-        return entity;
+        return animationClip;
     }
 }
