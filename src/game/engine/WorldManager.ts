@@ -25,6 +25,7 @@ export class WorldManager {
     setup(levelName: string) {
         const levelConf = ResourceManager.configuration['Lego*']['Levels'][levelName];
         if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'; // TODO error handling
+        console.log(iGet(levelConf, 'FullName'));
 
         // create terrain mesh and add it to the scene
         this.terrain = TerrainLoader.loadTerrain(levelConf);
