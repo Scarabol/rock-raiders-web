@@ -152,7 +152,7 @@ export class WorldManager {
         }
         const raycaster = new Raycaster();
         raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
-        const intersects = raycaster.intersectObjects(this.sceneManager.scene.children, true);
+        const intersects = raycaster.intersectObject(this.sceneManager.scene, true);
         if (intersects.length > 0) {
             let obj = intersects[0].object;
             while (obj) {

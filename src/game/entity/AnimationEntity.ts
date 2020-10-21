@@ -56,7 +56,7 @@ export class AnimationEntity implements Selectable {
         }
         if (activity.animation) {
             this.animation = activity.animation;
-            this.group.remove(...this.group.children);
+            this.group.remove(...this.poly);
             this.poly = [];
             // bodies are defined in animation and second in high/medium/low poly groups
             this.animation.bodies.forEach((body) => {
