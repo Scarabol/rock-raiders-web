@@ -2,6 +2,8 @@ import { BaseScreen } from '../screen/BaseScreen';
 import { ScreenLayer } from '../screen/ScreenLayer';
 import { EventManager } from './engine/EventManager';
 import { WorldManager } from './engine/WorldManager';
+import { iGet } from '../core/Util';
+import { ResourceManager } from './engine/ResourceManager';
 
 export class GameScreen extends BaseScreen {
 
@@ -56,6 +58,25 @@ export class GameScreen extends BaseScreen {
 
     keyPressed(key: string): boolean {
         console.log('key pressed: ' + key);
+        if (key === 't') {
+            // TODO check max amount
+            // look for unused toolstation/teleport
+            const toolstations = this.worldManager.buildings['Toolstation'];
+            // console.log(toolstations);
+            // TODO check for powered/idling building
+            const station = toolstations[0];
+            console.log(station);
+            // add raider with teleport animation
+            const pilot = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
+            console.log(pilot);
+            pilot.setActivity('TeleportIn');
+            pilot.loadTextures();
+            // pilot.group.position.set();
+            // pilot.group.rotateOnAxis();
+            this.worldManager.sceneManager.scene.add(pilot.group);
+            // after add to available pilots
+            // default action: walk to building power path
+        }
         return false;
     }
 
