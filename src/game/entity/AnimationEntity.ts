@@ -99,7 +99,17 @@ export class AnimationEntity implements Selectable {
                 if (mat.userData && mat.userData['textureFilename']) {
                     const textureFilename = mat.userData['textureFilename'];
                     if (mat.userData && mat.userData['sequenceTexture']) {
-                        console.warn('sequence texture not yet implemented '+textureFilename);
+                        const match = textureFilename.match(/(\D+)0+(\d+)\..+/);
+                        const basename = match[1];
+                        const seqStart = Number(match[2]);
+                        const sequenceNames = ResourceManager.wadLoader.wad0File.filterEntryNames(basename);
+                        const lastNum = sequenceNames.length - 1;
+                        let seqNum = seqStart;
+                        setInterval(() => {
+                            mat.map = ResourceManager.getTexture(sequenceNames[seqNum - seqStart]);
+                            seqNum++;
+                            if (seqNum > lastNum) seqNum = seqStart;
+                        }, 1000 / 5); // TODO 5? FPS for texture animations?
                     }
                     // console.log('lazy loading texture from ' + textureFilename);
                     mat.map = ResourceManager.getTexture(textureFilename);

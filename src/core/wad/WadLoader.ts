@@ -82,14 +82,10 @@ class WadLoader {
                 || !!filename.match(/^telepulse/i) || !!filename.match(/^t_/i);
         }
 
-        function isAlphaTexture(name): boolean { // TODO check for better approach
-            const filename = getFilename(name);
-            return !!filename.match(/^a.+/i) || isTransTexture(name);
-        }
-
         img.onload = function () {
             const texture = new Texture();
-            texture.format = isAlphaTexture(name) ? RGBAFormat : RGBFormat;
+            const isTrans = isTransTexture(name)
+            texture.format = (isTrans || !!getFilename(name).match(/^a.+/i)) ? RGBAFormat : RGBFormat;
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             texture.minFilter = THREE.NearestFilter;
@@ -97,12 +93,12 @@ class WadLoader {
             texture.needsUpdate = true;
 
             if (texture.format === RGBAFormat) {
-                const context = createContext(img.naturalWidth, img.naturalHeight); // TODO move this to ImageUtils, same as in all other getImageData
+                const context = createContext(img.naturalWidth, img.naturalHeight);
                 context.drawImage(img, 0, 0);
                 const imgData = context.getImageData(0, 0, context.width, context.height);
                 const alpha = {r: imgData.data[imgData.data.length - 4], g: imgData.data[imgData.data.length - 3], b: imgData.data[imgData.data.length - 2]}; // TODO how to determine alpha color?
                 for (let n = 0; n < imgData.data.length; n += 4) {
-                    if (isTransTexture(name)) {
+                    if (isTrans) {
                         imgData.data[n + 3] = Math.min(imgData.data[n], imgData.data[n + 1], imgData.data[n + 2]);
                     } else if (imgData.data[n] === alpha.r && imgData.data[n + 1] === alpha.g && imgData.data[n + 2] === alpha.b) {
                         imgData.data[n + 3] = 0;
