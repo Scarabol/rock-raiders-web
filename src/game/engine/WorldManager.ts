@@ -58,15 +58,10 @@ export class WorldManager {
                 pilot.group.position.set(worldX, worldY, worldZ);
                 pilot.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
                 this.sceneManager.scene.add(pilot.group);
-                // TODO need to explore map here?
             } else if (buildingType) {
                 const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
                 const entity = iGet(ResourceManager.entity, bfilename);
-                // entity.setActivity('Teleport', () => {
-                //     console.log('switching animation to stand');
                 entity.setActivity('Stand');
-                //     this.handleGroup(this, [entity.group]);
-                // });
                 entity.loadTextures();
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
