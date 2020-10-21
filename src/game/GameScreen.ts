@@ -4,6 +4,8 @@ import { EventManager } from './engine/EventManager';
 import { WorldManager } from './engine/WorldManager';
 import { iGet } from '../core/Util';
 import { ResourceManager } from './engine/ResourceManager';
+import { AnimationEntity } from './entity/AnimationEntity';
+import { Vector3 } from 'three';
 
 export class GameScreen extends BaseScreen {
 
@@ -65,14 +67,13 @@ export class GameScreen extends BaseScreen {
             // console.log(toolstations);
             // TODO check for powered/idling building
             const station = toolstations[0];
-            console.log(station);
             // add raider with teleport animation
-            const pilot = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
-            console.log(pilot);
-            pilot.setActivity('TeleportIn');
+            const entityType = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
+            const pilot = new AnimationEntity(entityType);
+            pilot.setActivity('TeleportIn', () => pilot.setActivity('Stand'));
             pilot.loadTextures();
-            // pilot.group.position.set();
-            // pilot.group.rotateOnAxis();
+            pilot.group.position.copy(station.group.position).add(new Vector3(0, 0, 20).applyEuler(station.group.rotation));
+            pilot.group.rotation.copy(station.group.rotation);
             this.worldManager.sceneManager.scene.add(pilot.group);
             // after add to available pilots
             // default action: walk to building power path

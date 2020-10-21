@@ -56,12 +56,14 @@ export class AnimationEntity implements Selectable {
         }
         if (activity.animation) {
             this.animation = activity.animation;
-            this.poly = []; // TODO need dispose old ones?
-            // bodies are primarily defined in animation and second in high/medium/low poly groups
+            this.group.remove(...this.group.children);
+            this.poly = [];
+            // bodies are defined in animation and second in high/medium/low poly groups
             this.animation.bodies.forEach((body) => {
-                let model;
-                model = body.model.clone(true); // FIXME pick meshes from high/medium poly
-                this.poly.push(model);
+                let model = iGet(this.entityType.highPoly, body.name);
+                if (!model) model = iGet(this.entityType.mediumPoly, body.name);
+                if (!model) model = body.model;
+                this.poly.push(model.clone(true));
             });
             this.animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
                 const polyPart = this.poly[index];
@@ -72,7 +74,7 @@ export class AnimationEntity implements Selectable {
                     this.group.add(polyPart);
                 }
             });
-            this.animation.animate(this.poly,0, onAnimationDone);
+            this.animation.animate(this.poly, 0, onAnimationDone);
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
         }
@@ -94,7 +96,10 @@ export class AnimationEntity implements Selectable {
         if (obj && obj.material && Array.isArray(obj.material)) {
             obj.material.forEach((mat: MeshPhongMaterial) => {
                 if (mat.userData && mat.userData['textureFilename']) {
-                    let textureFilename = mat.userData['textureFilename'];
+                    const textureFilename = mat.userData['textureFilename'];
+                    if (mat.userData && mat.userData['sequenceTexture']) {
+                        console.warn('sequence texture not yet implemented '+textureFilename);
+                    }
                     // console.log('lazy loading texture from ' + textureFilename);
                     mat.map = ResourceManager.getTexture(textureFilename);
                     mat.transparent = mat.map.format === RGBAFormat;

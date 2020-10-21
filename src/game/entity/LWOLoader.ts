@@ -411,12 +411,14 @@ export class LWOLoader {
                     case SURF_TIMG:
                         let textureFilepath = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
                         if (textureFilepath === '(none)') break; // TODO create fake texture?
-                        if (textureFilepath.endsWith(' (sequence)')) { // TODO handle sequence texture
+                        let sequenceTexture = false;
+                        if (textureFilepath.endsWith(' (sequence)')) {
+                            sequenceTexture = true;
                             textureFilepath = textureFilepath.substring(0, textureFilepath.length - ' (sequence)'.length);
                         }
                         let filename = getFilename(textureFilepath);
                         const textureFilename = this.path + filename;
-                        material.userData = {textureFilename: textureFilename};
+                        material.userData = {textureFilename: textureFilename, sequenceTexture: sequenceTexture};
                         break;
                     default:
                     // console.warn('Found unrecognised SURF subchunk type ' + new TextDecoder().decode(new Uint8Array(buffer, subchunkOffset, ID4_SIZE)) + ' at ' + subchunkOffset + '; length ' + subchunkSize);

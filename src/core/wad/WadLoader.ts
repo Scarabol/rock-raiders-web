@@ -76,11 +76,20 @@ class WadLoader {
     loadWadTexture(name, callback) { // TODO use BitmapLoader and avoid creating local urls
         const img = new Image();
 
-        img.onload = function () {
-            const isAlpha = getFilename(name).toLowerCase().startsWith('a'); // TODO make sequence images transparent too
+        function isTransTexture(name): boolean { // TODO check for better approach
+            const filename = getFilename(name);
+            return !!filename.match(/\d\d\d\..+$/i) || !!filename.match(/^trans/i)
+                || !!filename.match(/^telepulse/i) || !!filename.match(/^t_/i);
+        }
 
+        function isAlphaTexture(name): boolean { // TODO check for better approach
+            const filename = getFilename(name);
+            return !!filename.match(/^a.+/i) || isTransTexture(name);
+        }
+
+        img.onload = function () {
             const texture = new Texture();
-            texture.format = isAlpha ? RGBAFormat : RGBFormat;
+            texture.format = isAlphaTexture(name) ? RGBAFormat : RGBFormat;
             texture.wrapS = THREE.RepeatWrapping;
             texture.wrapT = THREE.RepeatWrapping;
             texture.minFilter = THREE.NearestFilter;
@@ -93,7 +102,9 @@ class WadLoader {
                 const imgData = context.getImageData(0, 0, context.width, context.height);
                 const alpha = {r: imgData.data[imgData.data.length - 4], g: imgData.data[imgData.data.length - 3], b: imgData.data[imgData.data.length - 2]}; // TODO how to determine alpha color?
                 for (let n = 0; n < imgData.data.length; n += 4) {
-                    if (imgData.data[n] === alpha.r && imgData.data[n + 1] === alpha.g && imgData.data[n + 2] === alpha.b) {
+                    if (isTransTexture(name)) {
+                        imgData.data[n + 3] = Math.min(imgData.data[n], imgData.data[n + 1], imgData.data[n + 2]);
+                    } else if (imgData.data[n] === alpha.r && imgData.data[n + 1] === alpha.g && imgData.data[n + 2] === alpha.b) {
                         imgData.data[n + 3] = 0;
                     }
                 }
@@ -456,9 +467,9 @@ class WadLoader {
             const aeFile = bType + '/' + bName + '.ae';
             this.addAsset(this.loadAnimatedEntity, aeFile);
             // load all textures for this type
-            this.wad0File.filterEntryNames(bType+'/.+\\.bmp').forEach((bTexture) => {
+            this.wad0File.filterEntryNames(bType + '/.+\\.bmp').forEach((bTexture) => {
                 this.addAsset(this.loadWadTexture, bTexture);
-            })
+            });
         });
         this.addAsset(this.loadAnimatedEntity, 'mini-figures/pilot/pilot.ae');
         // // reward screen
