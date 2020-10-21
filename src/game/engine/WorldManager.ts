@@ -37,18 +37,16 @@ export class WorldManager {
         Object.values(objectList).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type;
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
-            const worldX = (olObject.xPos - 1) * this.tileSize; // TODO why the offset?
-            const worldZ = (olObject.yPos + 2) * this.tileSize; // TODO why the offset?
-            const worldY = this.getTerrainHeight(worldX, worldZ) + this.tileSize / 100 * 44;
+            const worldX = (olObject.xPos - 1) * this.tileSize;
+            const worldZ = (olObject.yPos - 1) * this.tileSize;
+            const worldY = this.getTerrainHeight(worldX, worldZ) + this.tileSize / 3 * 2; // FIXME use bounding box
             const buildingType = ResourceManager.configuration['Lego*']['BuildingTypes'][olObject.type];
-            let radHeading = degToRad(olObject.heading - 90);
+            let radHeading = degToRad(olObject.heading);
             if (lTypeName === 'TVCamera'.toLowerCase()) {
-                const camZ = worldZ - 2 * this.tileSize; // TODO why undo offset here???
-                const camY = this.getTerrainHeight(worldX, camZ) + 1.5 * this.tileSize;
-                this.sceneManager.camera.position.set(worldX, camY, camZ);
-                let targetOffset = new Vector3(this.tileSize, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
-                let target = new Vector3().copy(this.sceneManager.camera.position).add(targetOffset);
-                target.y = 0.5 * this.tileSize;
+                const target = new Vector3(worldX, worldY, worldZ - this.tileSize / 2);
+                const offset = new Vector3(5 * this.tileSize, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(target);
+                this.sceneManager.camera.position.copy(offset);
+                this.sceneManager.camera.position.y = 4.5 * this.tileSize;
                 this.sceneManager.controls.target.copy(target);
                 this.sceneManager.controls.update();
                 this.setTorchPosition(target);
@@ -75,8 +73,7 @@ export class WorldManager {
                 const path1Surface = this.terrain.getSurface(entity.group.position.x / this.tileSize, entity.group.position.z / this.tileSize);
                 path1Surface.surfaceType = ENERGY_PATH_BUILDING;
                 path1Surface.updateMesh();
-                const pathOffset = new Vector3(0, 0, this.tileSize)
-                    .applyAxisAngle(new Vector3(0, 1, 0), degToRad(olObject['heading'] - 90));
+                const pathOffset = new Vector3(0, 0, this.tileSize).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
                 pathOffset.add(entity.group.position);
                 const path2Surface = this.terrain.getSurface(pathOffset.x / this.tileSize, pathOffset.z / this.tileSize);
                 path2Surface.surfaceType = ENERGY_PATH_BUILDING;
