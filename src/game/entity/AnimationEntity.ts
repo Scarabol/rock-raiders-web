@@ -6,12 +6,12 @@ import { Selectable } from '../model/Selectable';
 
 export class AnimationEntity implements Selectable {
 
-    poly = null;
+    poly: {} = null;
     group: Group = new Group();
     animation: AnimationClip = null;
-    mediumPoly = null;
-    highPoly = null;
-    fPPoly = null;
+    mediumPoly: {} = null; // TODO move to ResourceManager#getPoly
+    highPoly: {} = null; // TODO move to ResourceManager#getPoly
+    fPPoly: {} = null; // TODO move to ResourceManager#getPoly
     activities = {};
     selectionFrame: Sprite = null;
 

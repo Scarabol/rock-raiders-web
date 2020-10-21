@@ -429,7 +429,7 @@ export class LWOLoader {
         planarMapUVS(this.geometry, this.vertices, this.uvs, this.indices, materialIndex, textureSize, textureCenter, textureFlags);
     }
 
-    parse(buffer: ArrayBuffer) {
+    parse(buffer: ArrayBuffer): Mesh {
         const view = new DataView(buffer);
 
         if (view.getUint32(0) !== LWO_FORM) {

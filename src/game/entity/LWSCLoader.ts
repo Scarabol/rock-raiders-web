@@ -40,7 +40,8 @@ export class LWSCLoader {
                 } else if (key === 'LastFrame') {
                     entity.lastFrame = parseInt(value);
                 } else if (key === 'FrameStep') {
-                    entity.frameStep = parseInt(value);
+                    const frameStep = parseInt(value);
+                    if (frameStep !== 1) console.error('Animation frameStep has unexpected value: ' + frameStep);
                 } else if (key === 'FramesPerSecond') {
                     entity.framesPerSecond = parseInt(value);
                 } else if (key === 'AddNullObject' || key === 'LoadObject') {
@@ -63,7 +64,7 @@ export class LWSCLoader {
                     } else if (key === 'AddNullObject') {
                         subObj.name = value;
                         subObj.model = new Group();
-                        // TODO iterate line here too???
+                        // FIXME iterate line here too???
                     } else {
                         console.warn('Unexpected line: ' + line);
                     }
@@ -82,7 +83,7 @@ export class LWSCLoader {
                                 subObj.setFrameAndFollowing(animationFrameIndex, entity.lastFrame, infos);
                             }
                         } else if (line.startsWith('ParentObject ')) {
-                            subObj.parentObjInd = Number(line.split(' ')[1]);
+                            subObj.parentObjInd = Number(line.split(' ')[1]) - 1; // index is 1 based
                         } else {
                             // console.log("Unhandled line: "+line); // TODO debug logging, analyze remaining entries
                         }

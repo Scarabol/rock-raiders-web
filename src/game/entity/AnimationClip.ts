@@ -5,7 +5,6 @@ class AnimationClip {
     looping: boolean = false;
     firstFrame: number = null;
     lastFrame: number = null;
-    frameStep: number = null;
     framesPerSecond: number = null;
     bodies: AnimSubObj[] = [];
     animationTimeout: NodeJS.Timeout = null;
