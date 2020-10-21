@@ -4,7 +4,7 @@ import { EventManager } from './engine/EventManager';
 import { WorldManager } from './engine/WorldManager';
 import { iGet } from '../core/Util';
 import { ResourceManager } from './engine/ResourceManager';
-import { AnimationEntity } from './entity/AnimationEntity';
+import { AnimEntity } from './model/entity/AnimEntity';
 import { Vector3 } from 'three';
 
 export class GameScreen extends BaseScreen {
@@ -69,7 +69,7 @@ export class GameScreen extends BaseScreen {
             const station = toolstations[0];
             // add raider with teleport animation
             const entityType = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
-            const pilot = new AnimationEntity(entityType);
+            const pilot = new AnimEntity(entityType);
             pilot.setActivity('TeleportIn', () => pilot.setActivity('Stand'));
             pilot.group.position.copy(station.group.position).add(new Vector3(0, 0, 20).applyEuler(station.group.rotation));
             pilot.group.rotation.copy(station.group.rotation);

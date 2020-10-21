@@ -1,16 +1,24 @@
 import { CanvasTexture, ClampToEdgeWrapping, Group, LinearFilter, MeshPhongMaterial, Object3D, RGBAFormat, Sprite, SpriteMaterial } from 'three';
-import { AnimationClip } from './AnimationClip';
-import { iGet } from '../../core/Util';
-import { ResourceManager } from '../engine/ResourceManager';
-import { Selectable } from '../model/Selectable';
-import { AnimationEntityType } from './AnimationEntityType';
+import { AnimClip } from './AnimClip';
+import { iGet } from '../../../core/Util';
+import { ResourceManager } from '../../engine/ResourceManager';
+import { Selectable } from '../Selectable';
 
-export class AnimationEntity implements Selectable {
+export class AnimationEntityType {
+
+    mediumPoly: {} = {};
+    highPoly: {} = {};
+    fPPoly: {} = {};
+    activities = {};
+
+}
+
+export class AnimEntity implements Selectable {
 
     entityType: AnimationEntityType = null;
     poly: Object3D[] = [];
     group: Group = new Group();
-    animation: AnimationClip = null;
+    animation: AnimClip = null;
     selectionFrame: Sprite = null;
 
     constructor(entityType: AnimationEntityType) {

@@ -4,7 +4,7 @@ import { getFilename } from '../../core/Util';
 import { Texture } from 'three/src/textures/Texture';
 import { RGBFormat } from 'three/src/constants';
 import * as THREE from 'three';
-import { AnimationEntityType } from '../entity/AnimationEntityType';
+import { AnimationEntityType } from '../model/entity/AnimEntity';
 
 export class ResourceManager {
 

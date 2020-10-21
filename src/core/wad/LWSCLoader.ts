@@ -4,16 +4,16 @@
  * This loader loads LWSC files exported from LW
  */
 
-import { AnimationClip } from './AnimationClip';
-import { AnimSubObj } from './AnimSubObj';
+import { AnimClip } from '../../game/model/entity/AnimClip';
+import { AnimSubObj } from '../../game/model/entity/AnimSubObj';
 import { LWOLoader } from './LWOLoader';
 import { Group } from 'three';
-import { ResourceManager } from '../engine/ResourceManager';
-import { getFilename } from '../../core/Util';
+import { ResourceManager } from '../../game/engine/ResourceManager';
+import { getFilename } from '../Util';
 
 export class LWSCLoader {
 
-    parse(path, content): AnimationClip {
+    parse(path, content): AnimClip {
         const lines: string[] = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
             .split('\n')
@@ -28,7 +28,7 @@ export class LWSCLoader {
             console.warn('Number of models has unexpected value: ' + numOfModels);
         }
 
-        const animationClip = new AnimationClip();
+        const animationClip = new AnimClip();
         for (let c = 2; c < lines.length; c++) {
             let line = lines[c];
             if (!line) {

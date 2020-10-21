@@ -9,7 +9,7 @@
  */
 
 import { BufferAttribute, BufferGeometry, Color, Mesh, MeshPhongMaterial, Vector3 } from 'three';
-import { decodeFilepath, decodeString, getFilename } from '../../core/Util';
+import { decodeFilepath, decodeString, getFilename } from '../Util';
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42; // "LWOB"

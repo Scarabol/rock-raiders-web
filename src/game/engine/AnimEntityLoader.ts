@@ -1,12 +1,12 @@
-import { ResourceManager } from '../engine/ResourceManager';
-import { LWSCLoader } from './LWSCLoader';
+import { ResourceManager } from './ResourceManager';
+import { LWSCLoader } from '../../core/wad/LWSCLoader';
 import { getPath, iGet } from '../../core/Util';
-import { LWOLoader } from './LWOLoader';
-import { AnimationEntityType } from './AnimationEntityType';
+import { LWOLoader } from '../../core/wad/LWOLoader';
+import { AnimationEntityType } from '../model/entity/AnimEntity';
 
 export class AnimEntityLoader {
 
-    loadModels(url, root): AnimationEntityType {
+    static loadModels(url, root): AnimationEntityType {
         const path = getPath(url);
 
         const entityType = new AnimationEntityType();

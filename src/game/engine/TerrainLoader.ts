@@ -1,5 +1,5 @@
-import { Surface } from '../model/Surface';
-import { Terrain } from '../model/Terrain';
+import { Surface } from '../model/map/Surface';
+import { Terrain } from '../model/map/Terrain';
 import { ResourceManager } from './ResourceManager';
 
 export class TerrainLoader {

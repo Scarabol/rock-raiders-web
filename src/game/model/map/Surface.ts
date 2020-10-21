@@ -1,8 +1,8 @@
 import { Color, Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
 import { Terrain } from './Terrain';
 import { GROUND, RUBBLE4, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
-import { ResourceManager } from '../engine/ResourceManager';
-import { Selectable } from './Selectable';
+import { ResourceManager } from '../../engine/ResourceManager';
+import { Selectable } from '../Selectable';
 
 const HEIGHT_MULTIPLER = 0.05;
 

@@ -3,12 +3,12 @@ import { TerrainLoader } from './TerrainLoader';
 import { ResourceManager } from './ResourceManager';
 import { MathUtils, Raycaster, Vector3 } from 'three';
 import { iGet } from '../../core/Util';
-import { ENERGY_PATH_BUILDING } from '../model/SurfaceType';
+import { ENERGY_PATH_BUILDING } from '../model/map/SurfaceType';
 import { GameScreen } from '../GameScreen';
-import { Terrain } from '../model/Terrain';
+import { Terrain } from '../model/map/Terrain';
 import { Selectable } from '../model/Selectable';
+import { AnimEntity } from '../model/entity/AnimEntity';
 import degToRad = MathUtils.degToRad;
-import { AnimationEntity } from '../entity/AnimationEntity';
 
 export class WorldManager {
 
@@ -56,7 +56,7 @@ export class WorldManager {
                 this.setTorchPosition(target);
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
                 const entityType = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
-                const pilot = new AnimationEntity(entityType);
+                const pilot = new AnimEntity(entityType);
                 pilot.setActivity('Stand');
                 pilot.group.position.set(worldX, worldY, worldZ);
                 pilot.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
@@ -64,7 +64,7 @@ export class WorldManager {
             } else if (buildingType) {
                 const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
                 const entityType = iGet(ResourceManager.entity, bfilename);
-                const entity = new AnimationEntity(entityType);
+                const entity = new AnimEntity(entityType);
                 entity.setActivity('Teleport', () => entity.setActivity('Stand'));
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);

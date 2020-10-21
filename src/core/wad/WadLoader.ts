@@ -6,7 +6,7 @@ import { ResourceManager } from '../../game/engine/ResourceManager';
 import { WadFile } from './WadFile';
 import { Texture } from 'three/src/textures/Texture';
 import { RGBAFormat, RGBFormat } from 'three/src/constants';
-import { AnimEntityLoader } from '../../game/entity/AnimEntityLoader';
+import { AnimEntityLoader } from '../../game/engine/AnimEntityLoader';
 import { RonFile } from './RonFile';
 import { getFilename, iGet } from '../Util';
 import * as THREE from 'three';
@@ -370,8 +370,7 @@ class WadLoader {
     loadAnimatedEntity(aeFile: string, callback) {
         const content = this.wad0File.getEntryText(aeFile);
         const cfgRoot = iGet(new RonFile().parse(content), 'Lego*');
-        const loader = new AnimEntityLoader();
-        ResourceManager.entity[aeFile.toLowerCase()] = loader.loadModels(aeFile, cfgRoot);
+        ResourceManager.entity[aeFile.toLowerCase()] = AnimEntityLoader.loadModels(aeFile, cfgRoot);
         callback();
     }
 
