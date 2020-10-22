@@ -2,6 +2,8 @@
  * @author Scarabol https://github.com/scarabol
  *
  * This loader loads LWSC files exported from LW
+ *
+ * File format description: http://www.martinreddy.net/gfx/3d/LWSC.txt
  */
 
 import { AnimClip } from '../../game/model/entity/AnimClip';

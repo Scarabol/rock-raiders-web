@@ -1,0 +1,4113 @@
+Source: http://www.martinreddy.net/gfx/3d/LWSC.txt
+
+			LightWave Scene File Format
+
+			LightWave v.4.0  June 1995
+
+
+
+THIS DOCUMENT IS PRELIMINARY.  THIS INFORMATION MAY NOT BE CORRECT,  
+MAY BE INCOMPLETE, OR MAY CHANGE AT ANYTIME.
+
+
+
+Copyright ©1990 - 1995 NewTek, Inc.
+
+Confidential and Proprietary. All rights reserved. 
+
+
+
+WARNING!
+
+The information contained herein is subject to change without
+notice.  NewTek, Inc. specifically does not make any endorsement 
+or representation with respect to use, results, or performance of
+the information (including without limitation its capabilities,
+appropriateness, reliability, or availability).
+
+
+
+DISCLAIMER
+
+This information is provided "as is" without warranty of any 
+kind, either expressed or implied.  The entire risk as to the
+use of this information is assumed by the user.  In no event
+will NewTek, Inc. be liable for any damages, direct, indirect, 
+incidental, special or consequential, resulting from any defect
+in the information. 
+
+
+TABLE OF CONTENTS
+
+
+Chapter 1  	SCENE FILE OVERVIEW
+
+    	  1.1	Basic Scene File Information
+
+	  1.2	Scene File Sections
+	  1.2.1	  Order of Scene File Sections
+	  1.2.2	  Example Scene File Section
+
+	  1.3	Keyframes
+	  1.3.1	  Basic Keyframe Information
+	  1.3.2	  Basic Object Segment
+	  1.3.3	  Expanded Basic Object Segment
+	  1.3.4	  Single Keyframe Description
+	  1.3.5	  Spline Control Values
+
+	  1.4	Envelopes
+	  1.4.1	  Basic Envelope Information
+	  1.4.2	  List of Functions That Use Envelopes
+	  1.4.3	  Example Envelope
+	  1.4.4	  Expanded Envelope Structure
+
+		  
+
+Chapter 2	SCENE SECTION
+
+	  2.1	Scene Section Information
+	  2.1.1	  Scene Section Description
+	  2.1.2	  Example Scene Section
+
+	  2.2	Scene Functions
+	  2.2.1	  Order of Scene Functions
+	  2.2.2	  Scene Function Descriptions
+
+
+
+Chapter 3	OBJECT SECTION
+
+	  3.1	Object Section Information
+	  3.1.1	  Object Section Description
+	  3.1.2	  Individual Object Segment
+	  3.1.3	  Example Object Section
+
+	  3.2	Object Functions
+	  3.2.1	  Function Order
+	  3.2.2	  Function Descriptions
+
+	  3.3	Object Skeleton
+	  3.3.1	  Object Skeleton Information
+	  3.3.2	  Example Object Segment with Bones
+	  3.3.3	  Object Skeleton Function Order
+	  3.3.4	  Object Skeleton Function Descriptions
+
+	  3.4	Displacement Map / Clip Map
+	  3.4.1	  DisplacementMap/ClipMap Information
+	  3.4.2	  Example Object Segment with Displacement Map
+	  3.4.3	  Mapping Function Order
+	  3.4.4	  Mapping Function Descriptions
+
+
+
+Chapter 4	LIGHT SECTION
+
+	 4.1	Light Section Information
+	 4.1.1	  Light Section Description
+	 4.1.2	  Individual Light Segment
+
+	 4.2	Light Functions
+	 4.2.1	  Function Order
+	 4.2.2	  Function Descriptions
+
+
+
+Chapter 5	CAMERA SECTION
+
+	 5.1	Camera Section Information
+	 5.1.1	  Camera Section Description
+	 5.1.2	  Example Camera Segment
+
+	 5.2	Camera Functions
+	 5.2.1	  Function Order
+	 5.2.2	  Function Descriptions
+
+
+
+Chapter 6	EFFECTS SECTION
+
+	 6.1	Effects Section Information
+	 6.1.1	  Effects Section Description
+	 6.1.2	  Basic Effects Section
+
+	 6.2	Effects Functions
+	 6.2.1	  Function Order
+	 6.2.2	  Function Description
+
+		   
+
+Chapter 7	RECORD SECTION
+
+	 7.1	Record Section Information
+	 7.1.1	  Record Section Description
+	 7.1.2	  Basic Record Section
+
+	 7.2	Record Functions
+	 7.2.1	  Function Order
+	 7.2.2	  Function Descriptions
+
+
+
+Chapter 8	OPTIONS SECTION
+
+	 8.1	Options Section Information
+	 8.1.1	  Options Section Description
+	 8.1.2	  Example Options Section
+
+	 8.2	Options Functions
+	 8.2.1	  Function Order
+	 8.2.2	  Function Description
+
+	
+
+	
+
+	
+Chapter 1:			SCENE FILE OVERVIEW
+
+
+1.1  BASIC SCENE FILE INFORMATION
+
+  The LightWave scene file is a standard ASCII text file that contains the 
+  information necessary to reconstruct a LightWave Scene.
+
+  In addition to the objects, lights and camera, the scene file contains 
+  standard Layout settings that are set on a per scene basis.  Layout 
+  information that is more "permanent" is saved in the LightWave config 
+  file. (For LightWave Config File information see Chapter 10.)
+
+  The object geometry is not included in the scene file.  For each object 
+  instance the objects path and filename are listed along with other scene 
+  specific attributes.  The objects are stored as seperate binary files 
+  that contain the object geometry along with the objects surface attributes.
+
+  Objects are not saved when the Save Scene function is selected from the 
+  Scene Menu.  The user is required to save these by going to the Objects Menu 
+  and selecting either the Save Object or Save All Objects function.  This 
+  saves each object as an individual file and sets the path and filename that 
+  will be saved for that object instance in the scene file.
+
+  Values are listed to 6 decimal places.
+
+  Position values are given in meters.
+
+  Rotation values are given in degrees.
+
+  Scaling values are given as a multiplier.
+
+  Frame numbers are given as a value greater than or equal to 0.
+
+  Color values are given as an Red, Green, and Blue triple, each with a range 
+  of 0 to 255.
+
+
+
+1.2  SCENE FILE SECTIONS
+
+
+1.2.1  Order Of Scene File Sections
+
+The scene files basic structure is divided into separate logical sections.  
+Each section relates to a group of LightWave's functions.  These sections 
+are arranged in an order similar to the menu structure in LightWave's Layout.  
+
+	Scene
+
+	Objects
+
+	Lights
+
+	Camera
+
+	Effects
+
+	Render
+
+	Layout Options
+
+
+1.2.2 Example Scene File Sections
+
+LWSC
+1
+
+FirstFrame 1
+LastFrame 30
+FrameStep 1
+FramesPerSecond 30.000000
+
+AddNullObject NullObject
+ShowObject 4 7
+ObjectMotion (unnamed)
+ 9
+ 1
+ 0 0 0 0 0 0 1 1 1 
+ 0 0 0 0 0
+EndBehavior 1
+ShadowOptions 7
+
+AmbientColor 255 255 255
+AmbIntensity 0.250000
+
+AddLight
+LightName Light
+ShowLight 0 7
+LightMotion (unnamed)
+ 9
+ 1
+ 0 0 0 60 30 0 1 1 1
+ 0 0 0 0 0
+EndBehavior 1
+LightColor 255 255 255
+LgtIntensity 1.000000
+LightType 0
+ShadowCasting 1
+
+ShowCamera 1 7
+CameraMotion (unnamed)
+ 9
+ 1
+ 0 0 -1 0 0 0 1 1 1
+ 0 0 0 0 0
+EndBehavior 1
+ZoomFactor 3.200000
+RenderMode 2
+RayTraceEffects 0
+Resolution 1
+PixelAspectRatio 0
+SegmentMemory 8800000
+Antialiasing 0
+AdaptiveSampling 1
+AdaptiveThreshold 8
+FilmSize 2
+FieldRendering 0
+MotionBlur 0
+DepthofField 0
+
+SolidBackdrop 1
+BackdropColor 0 0 0
+ZenithColor 0 40 80
+SkyColor 120 180 240
+GroundColor 50 40 30
+NadirColor 100 80 60
+FogType 0
+DitherIntensity 1
+AnimatedDither 0
+
+DataOverlayLabel
+
+ViewMode 3
+ViewAimpoint 0.000000 0.000000 0.000000
+ViewDirection 0.621337 -0.254818 0.000000
+ViewZoomFactor 3.200000
+LayoutGrid 8
+GridSize 1.000000
+ShowMotionPath 1
+ShowSafeAreas 0
+ShowBGImage 0
+ShowFogRadius 0
+ShowRedraw 0
+
+
+
+1.3  KEYFRAMES
+
+
+1.3.1  Basic Keyframe Information
+
+A major part of the scene file consists of the motion paths of the Objects, 
+Lights and the Camera.  The keyframe information provides the motion values 
+needed to reproduce a motion path.
+
+  Keyframes provide the following information:
+
+	Position 		(X, Y, Z)
+	Rotation 		(Heading, Pitch, Bank)
+	Scaling 		(XScale, YScale, ZScale)
+	Frame Number
+	Linear Value 		(Curved, Linear)
+	Spline Adjustments 	(Tension, Continuity, Bias)
+
+  Values are listed to 6 decimal places.
+
+  Position values are given in meters.
+
+  Rotation values are given in degrees.
+
+  Scaling values are given as a multiplier
+
+  Frame numbers are given as a value greater than or equal to 0.
+
+  Each instance of an object, light, or camera is required to have at least 
+  one keyframe at frame 0.  This keyframe cannot be deleted from the scene file.
+
+  Motions can be saved as separate motion files using the Save Motion 
+  function from the Motion Graph.    This allows the copying of motions 
+  from scene file to scene file and object to object. (For the Motion File 
+  Format see Chapter 9.)
+
+
+1.3.2  Basic Object Segment
+
+The keyframes of an example object section are shown below:
+
+
+LoadObject Objects/Tutorial/LightBeam.obj
+ShowObject 4
+ObjectMotion (unnamed) 
+ 9
+ 2
+-1.855599  1.543649  2.164339  -90.000000  360.000000  720.000000  1.0    
+1.0  1.0  0  0  1.0   0.0   0.0 
+-1.321534  2.235439  2.164330  -60.000000  360.000000  180.000000  1.0    
+1.0  1.0  15  0  1.0   0.0   0.0 
+EndBehavior 1
+ShadowOptions 7
+
+
+
+1.3.3  Expanded Basic Object Segment: (line-by-line description) 
+
+Below is an expanded line-by-line description of the above object segment:
+
+LoadObject Objects/Tutorial/LightBeam.obj	
+			Load Object function followed by object path name.
+
+ObjectMotion (unnamed)  Object motion identifier.
+
+
+ 9			Number of Information channels per keyframe.
+
+ 2			Number of Keyframes to be listed.
+
+-1.855599  1.543649  2.164339  -90.000000  360.000000  720.000000   
+1.0   1.0   1.0  0  0  1.0   0.0   0.0  	     
+			Keyframe Information.
+
+-1.321534  2.235439  2.164330  -60.000000  360.000000  180.000000   
+1.0   1.0   1.0  15 0  1.0   0.0   0.0 		     
+			Additional Keyframe.
+
+EndBehavior 1		End Behavior of the object's motion.
+
+Shadow Options 7	Shadow options for the object.
+
+
+
+1.3.4 Single Keyframe Description
+
+-1.321534   2.235439  2.164330  -60.000000  360.000000  180.000000   
+1.0   1.0   1.0  15  0  1.0   0.0   0.0 
+
+The values are listed as follows:
+
+1st Line:
+XPosition, YPosition, ZPosition, Heading, Pitch, Bank
+
+2nd Line:
+XScale, YScale, ZScale, FrameNumber, Linear Value, Tension, Continuity, Bias
+
+
+1.3.5  Spline Control Values
+
+Linear Value:	0 - Curved Spline
+		1 - Linear Path
+
+Tension:	-1.0 <= T <= 1.0
+
+Continuity:	-1.0 <= C <= 1.0
+
+Bias:		-1.0 <= B <= 1.0
+
+
+
+1.4  ENVELOPES
+
+
+1.4.1  Basic Envelope Information
+
+  Envelopes are used to change function values over time.
+
+  When an envelope is used, the function's  numeric value is replaced by an 
+  envelope segment identifier.  This is denoted by:  (envelope)
+
+  Envelopes set a single numeric value for a function (percentage, angle, etc.)
+
+  Percentages are listed between 0 and 1 with 0% = 0.000000 100%= 1.000000,  
+  some function values are capable of going  above 100%. 
+
+  Values are listed to six decimal places.
+
+  Angles are given in degrees.
+
+  Distances are given in meters.
+
+  All Envelopes end with a local EndBehavior option.
+
+
+1.4.2  List of Functions That Use Envelopes
+
+	Name - Type				Function Listing 
+
+
+	Displacement Map - %			DisplacementMap
+
+	Metamorph Level - %:  			Metamorph
+
+	Object Dissolve - %:  			ObjDissolve 
+
+	Polygon Size - %:  			PolygonSize
+
+	Global Flare Intensity - %: 		GlobalFlareIntensity
+
+	Ambient Intensity - %:  		AmbIntensity
+
+	Light Intensity - %:  			LgtIntensity
+
+	Flare Intensity - %:  			FlareIntensity
+
+	Flare Dissolve - %:			FlareDissolve
+
+	Flare Rotation Angle - Angle:		FlareRotationAngle
+
+	IntensityFalloff - %:			Falloff
+
+	Spotlight Cone Angle - Angle:		ConeAngle
+
+	Spot Soft Edge Angle - Angle:		EdgeAngle
+
+	Shadow Map Angle - Angle:		ShadowMapAngle
+
+	Zoom Factor - Focal Length:		ZoomFactor
+
+	Blur Length - %:			BlurLength
+
+	Focal Distance - Distance:		FocalDistance
+	
+	Lens F-stop - Aperture Size:		LensFStop
+
+	Foreground Dissolve - %:		FGDissolve
+
+	Minimum Fog Distance - Distance:	FogMinDist
+
+	Maximum Fog Distance - Distance:	FogMaxDist
+
+	Minimum Fog Amount - %:			FogMinAmount
+
+	Maximum Fog Amount -%:			FogMaxAmount
+
+	Color Saturation -%:			Saturation
+
+	Glow Intensity - %:			GlowIntensity
+
+	Glow Radius - Pixels:			GlowRadius
+
+
+1.4.3  Example Envelope:
+
+LgtIntensity  (envelope)
+   1
+   4
+   0.235000
+   0 0 0.0 0.0 0.0
+   0.800000
+   11 0 0.0 0.0 0.0
+   0.260000
+   22 0 0.0 0.0 0.0
+   0.650000
+   41 0 0.0 0.0 0.0
+EndBehavior 1
+
+
+1.4.4  Expanded Envelope Structure: (line-by-line description)
+
+LgtIntensity (envelope)	Envelope Function name followed by envelope 
+section identifier.
+
+  1		Number of Information Channels:  envelopes contain percentage 
+					 	 values only.
+
+  4		Number of Keyframes in the envelope.
+
+  0.235000	Envelope Value. (23.5%)
+
+  0 0 0.0 0.0 0.0		
+		Frame Number, Linear Status, Tension, Continuity, Bias
+
+  0.800000	Envelope Value. (80%)
+
+  11 0 0.0 0.0 0.0  
+		Frame Number, Linear Status, Tension, Continuity, Bias
+
+  0.260000
+
+  22 0 0.0 0.0 0.0		
+		Additional Keyframes.
+
+  0.650000
+
+  41 0 0.0 0.0 0.0
+
+EndBehavior 1	End Behavior for this envelope.
+
+
+
+
+Chapter 2:			SCENE SECTION
+
+
+2.1 SCENE SECTION INFORMATION
+
+
+2.1.1 Scene Section Description
+
+  The Scene Section consists of the LightWave scene file header and frame 
+  information.  The functions in this section always produce a listing 
+  and have no optional functions.
+
+
+2.2.2  Example Scene Section
+
+Below is an example Scene Section:
+
+
+LWSC
+1
+
+FirstFrame 1
+LastFrame 30
+FrameStep 1
+FramesPerSecond 30.000000
+
+
+
+2.2 SCENE FUNCTIONS
+
+
+2.2.1  Order of Scene Functions
+
+The following scene functions are listed in the order in which they appear 
+in the scene file.
+
+  Italicized entries denote function labels and are not true function names.
+
+		LWSC
+		Scene File Version
+
+		FirstFrame
+		LastFrame
+		FrameStep
+		FramesPerSecond
+
+
+2.2.2  Scene Function Descriptions
+
+
+LWSC
+
+The LightWave scene file begins with the LWSC header.
+
+
+Scene File Version <1>
+
+The second listing is the version of the scene file.
+
+
+FirstFrame <frame number>
+
+example:  FirstFrame 1
+
+The FirstFrame function provides the starting frame for the rendering process. 
+This is a global function for all LightWave functions that use frame 
+information
+
+
+LastFrame <frame number>
+
+example:  LastFrame 30
+
+The LastFrame function provides the last frame to be rendered.  This also 
+supplies the defaults for the MakePreview function and the current frame 
+slider from Layout with the last frame information.  This is a global 
+function for all LightWave functions that use frame information.
+
+
+FrameStep <int>
+
+example:  FrameStep 1
+
+The FrameStep function provides the number of frames to increment between 
+rendered frames during the rendering process.  
+
+
+FramesPerSecond <float>
+
+example:  FramesPerSecond 30.000000
+
+The FramesPerSecond function provides the number of frames per second.
+
+
+
+
+
+Chapter 3:			OBJECT SECTION
+
+
+3.1  OBJECT SECTION INFORMATION
+
+
+3.1.1 Object Section Description
+
+  The Object section contains the information for all objects and object 
+  related functions in a LightWave Scene.
+
+  The LightWave scene file does not contain the object geometry or the 
+  surface information for its objects.  This information is located in 
+  object files that are saved separately from the scene.
+
+  Multiple Objects in an Object Section are listed sequentially in the order 
+  in which they were loaded/created.
+
+  Duplicate objects are given a numbered suffix to the name during the 
+  loading process.  This number is enclosed in parenthesis and follows the 
+  object name.  An example:  LightBeam.lwo (2) is the second instance of 
+  the LightBeam.lwo object.  The number is not saved in the scene file, 
+  and is used only as a user reference.
+
+  The Target, Parent, and Goal functions use a value that is equal to the 
+  order in which the referenced object was loaded.   i.e. The value in the 
+  function "ParentObject 3"  means that the current object is parented to 
+  the third object instance in the scene file.
+
+
+3.1.2 Individual Object Segment
+
+  An Object Segment is required for each object instance in a scene file.
+
+  Object Segments are listed in the order in which the object was 
+  loaded/created in the LightWave Scene.  
+
+  The following functions are listed for each object instance.
+
+	 (See Sections 3.2 and 3.3 for full descriptions)
+
+	  LoadObject <filename> ¦ AddNullObject NullObject
+
+	  ShowObject <value> <value>
+
+	  ObjectMotion (unnamed)  (Identifier Only)
+
+	  Number of Information Channels
+
+	  Number of Keyframes
+
+	  Keyframe Information
+
+	  EndBehavior <value>
+
+	  ShadowOptions <value>
+
+  Additional functions are listed in the scene file as they are activated by 
+  the user.
+
+	(See Sections 3.2 and 3.3 for full descriptions)
+
+
+3.1.3 Example Object Section
+
+The following Object Section contains two objects.
+
+	Preceding Scene Section........
+
+LoadObject Objects/Tutorial/LightBeam.lwo
+ShowObject 4 7
+ObjectMotion (unnamed) 
+ 9
+ 2 
+-1.855599  1.543649  2.164339  -90.000000  360.000000  720.000000   
+1.0   1.0    1.0  0  0  1.0   0.0   0.0 
+-1.321534   2.235439  2.164330  -60.000000  360.000000 180.000000   
+1.0   1.0    1.0  15  0  1.0   0.0   0.0 
+EndBehavior 1
+ShadowOptions 7
+
+AddNullObject Null
+ShowObject 4 7
+ObjectMotion (unnamed)
+ 9
+ 1
+ 0 0 0 0 0 0 1 1 1 
+ 0 0 0 0 0 
+EndBehavior 1
+ShadowOptions 7
+
+	Additional Scene Listings............
+
+
+
+3.2 OBJECT FUNCTIONS
+
+
+3.2.1 Function Order
+
+The following object functions are listed in the order in which they appear 
+in the scene file.
+
+  Functions denoted with an asterisk (*) are required for all object instances.
+
+  Italicized entries denote function labels and are not true function names .
+
+  Indented entries denote an optional function of the preceding function.
+
+		LoadObject [AddNullObject]  *
+
+		ShowObject *
+
+		ObjectMotion (identifier)  *
+
+		Number of Information Channels *
+
+		Number of Keyframes * 
+
+		Keyframe information *
+
+		EndBehavior *
+
+		LockedChannels
+
+		HLimits
+
+		PLimits
+
+		BLimits
+
+		PivotPoint
+
+		ParentObject
+
+		GoalObject
+
+		IKAnchor
+
+		Object Skeleton   (see Section 3.3)
+
+		Metamorph
+
+			MorphTarget
+
+			MorphSurfaces
+
+		DisplacementMap (see Section 3.4)
+
+		ClipMap  (see Section 3.4)
+
+		ObjDissolve
+
+		DistanceDissolve
+
+			MaxDissolveDistance
+
+		PolygonSize
+
+		Particle/Line Size
+
+		UnaffectedByFog
+
+		ObjPolygonEdges
+
+			ObjEdgeColor
+
+		UnseenByRays
+
+		ShadowOptions *
+
+
+3.2.2 Function Descriptions
+
+The following object functions are listed in the order in which they appear 
+in the scene file.
+
+
+LoadObject  <object path + filename>  (Alternative: AddNullObject)
+
+example:      LoadObject Objects/Tutorial/LightBeam.lwo
+
+The LoadObject function is the first listing in all Object Segments.  It 
+provides LightWave with the path and filename for the object to be loaded.  
+The object's path is generated by adding the current content directory to 
+the beginning of the given path and filename.  
+
+In this example if the current content directory were <c:/NewTek>, LightWave 
+would attempt to load the file <c:/NewTek/Objects/Tutorial/LightBeam.lwo>.
+
+It is possible to have duplicate objects in a scene file.  When the LoadObject 
+function is called, and the object name already exists, a numbered suffix is 
+added to the duplicate object's name.  This number is enclosed in parenthesis 
+and follows the object name.  
+
+For example:  LightBeam.lwo (2) is the second instance of the LightBeam.lwo 
+object in the current scene file.
+
+The added suffix is not saved in the scene file, and is used only as a user 
+reference.
+
+	Alternative:  AddNullObject NullObject
+
+	Alternative example:      AddNullObject NullObject
+
+	The AddNullObject function will create a null object named "NullObject" 
+	in the current scene.  NullObjects are treated as a normal object in 
+	the scene file.
+ 
+User Interface:  The LoadObject/AddNullObject listing is produced from the 
+following functions on the Objects Panel; LoadObject, Load from Scene, and 
+Add Null Object.
+
+The LoadObject/AddNullObject function is listed with all objects.
+
+
+ShowObject <refresh value> <color value>
+
+example:     ShowObject 4 7
+
+The ShowObject function determines how the object is going to be displayed in 
+Layout.
+
+  Refresh value
+
+This argument sets the type of wireframe refresh for the object when displayed 
+in Layout.  
+
+<refresh value>:	0 - No Refresh
+			1 - Bounding Box
+			2 - Points Only
+			3 - Every 4th Polygon
+			4 - Full Polygon (Default)
+
+User Interface:  The refresh value is selected in the second column of the 
+Scene Overview from the Scene Menu.  	
+
+
+ Color value
+
+This argument sets the color of the object's wireframe when not selected in 
+Layout.  When selected, all items highlight to yellow.
+
+<color value>:		1 - Blue
+			2 - Green
+			3 - Light Blue
+			4 - Red
+			5 - Purple
+			6 - Orange
+			7 - Gray
+
+User Interface: The color value is selected in the first column of the 
+Scene Overview from the Scene Menu.
+
+The ShowObject function is listed with all objects.
+
+
+ObjectMotion (unnamed)
+
+example:     ObjectMotion (unnamed)
+
+
+The ObjectMotion identifier denotes the beginning of the keyframe information 
+for the current object segment.  It does not require any arguments to be 
+passed to it.
+
+In previous versions of LightWave an external motion file could be called 
+with this function.  The (unnamed ) value was replaced with the motion 
+filename, and the keyframe information was left in the external file.  
+This lead to problems when the external motion file was deleted, moved 
+or changed.  The result was lost keyframe information.  For this reason, 
+when an external motion file is now loaded into LightWave, the keyframe 
+information is stored within the local scene file.
+
+User Interface: None
+
+The ObjectMotion identifier is listed with all objects.
+
+
+Number of Information Channels:  <9>
+
+The Number of Information Channels is a numeric value with no header that 
+follows the ObjectMotion identifier.  The value for the number of information 
+channels is equal to the number of variables to be provided per keyframe.  
+For LightWave object keyframes, the variables are listed as follows:  
+X position, Y position, Z position, Heading, Pitch, Bank, X Scale, Y Scale, 
+and Z Scale.   For object motions, the number of information channels value 
+is automatically set to 9 by LightWave.  The user has no access to this value.  
+
+User Interface: None
+
+The number of information channels is listed with all objects.
+
+
+Number of Keyframes:  <int>
+
+The Number of Keyframes is an integer value with no header that follows the 
+Number of Information Channels.  This value provides the number of keyframes 
+for the current object.  It is immediately followed by the keyframe 
+information.  Every object will have at least one keyframe at frame 0.  
+
+User Interface:  The number of keyframes is taken from the motion path the user 
+creates for an object.
+
+The Number of Keyframes is listed with all objects.
+
+
+Keyframe Information:
+
+-1.321534   2.235439  2.164330  -60.000000  360.000000  180.000000   
+1.0   1.0   1.0  15  0  1.0   0.0   0.0 
+
+The values are listed as follows:
+
+1st Line:
+
+XPosition, YPosition, ZPosition, Heading, Pitch, Bank
+
+2nd Line:
+
+XScale, YScale, ZScale, Frame Number, Linear Value, Tension, Continuity, Bias
+
+At least one keyframe (frame 0) is listed for each object.
+
+(See Section 1.3 Keyframes)
+
+
+EndBehavior <value>
+
+example:     EndBehavior 2
+
+The EndBehavior function determines how the object will react when the 
+last keyframe has been reached. The available choices are: reset, stop 
+and repeat. 
+
+<value>:	0 - Reset
+		1 - Stop (Default)
+		2 - Repeat
+
+User Interface: The EndBehavior value is set from the object's motion graph panel.
+
+The EndBehavior option is listed with all objects.
+
+
+LockedChannels <bit-field value>
+
+example:     LockedChannels 4093
+
+The LockedChannels function determines the extent of the mouse control 
+from LightWave's Layout.  Separate independent channels of motion, 
+rotation, etc. can be locked off to restrict the mouse's  control on 
+the current object.  The mouse functions that it can effect are:  
+Move (X,Y,Z), Rotate(H,P,B), Scale/Stretch(X,Y,Z), and MovePivotPoint(X,Y,Z).
+
+The bit-field value is produced by calculating the decimal value of a 
+12 position bit-field whose bits represent logical on/off switches that 
+are number left to right from 0 - 11.  The least-significant bit for 
+this field is the rightmost bit.  Each channel has a corresponding bit 
+in the bit-field.  When a channel is locked, its bit (or switch) is 
+turned on.
+
+<bit positions>:	0 - Move X
+			1 - Move Y
+			2 - Move Z
+			3 - Rotate Heading
+			4 - Rotate Pitch
+			5 - Rotate Bank
+			6 - Scale X / Size X  (channels are connected)
+			7 - Scale Y / Size Y (channels are connected)
+			8 - Scale Z / Size Z (channels are connected)
+			9 - MovePivotPoint X
+			10 - Move Pivot Point Y
+			11 - Move Pivot Point Z
+
+User Interface:  The LockedChannels function is set from the Layout mouse 
+		 control area.
+
+
+HLimits <min. angle> <max. angle>
+
+example:    HLimits -37.5 180
+
+The HLimits function provides the minimum and maximum angles of heading 
+rotation for the Inverse Kinematics function.  
+
+<min. angle>,<max. angle>:  Range = -360 to 360
+
+User Interface:  The HLimits angles are set from the IK Options controls 
+		 from Layout.
+
+
+PLimits <min. angle> <max. angle>
+
+example:    PLimits -37.5 180
+
+The PLimits function provides the minimum and maximum angles of the pitch 
+rotation for the Inverse Kinematics function.  
+
+<min. angle>,<max. angle>:  Range = -360 to 360
+
+User Interface:  The PLimits angles are set from the IK Options controls 
+		 from Layout.
+
+BLimits <min. angle> <max. angle>
+
+example:    BLimits -37.5 180
+
+The BLimits function provides the minimum and maximum angles of the banking 
+rotation for the Inverse Kinematics function.  
+
+<min. angle>,<max. angle>:  Range = -360 to 360
+
+User Interface:  The BLimits angles are set from the IK Options controls 
+	     	 from Layout.
+
+
+PivotPoint <x position> <y position> <z position>
+
+example:  PivotPoint 0 16.9 -11.6
+
+The PivotPoint function provides the x, y, and z positions for the pivot 
+point of the object.  This determines the center of rotation for the 
+current object.  The position values are given as a distance (meters) 
+of offset from the original object center.
+
+User Interface:  The PivotPoint values are set from the Move Pivot Point 
+		 mouse function in Layout.
+
+
+ParentObject <object instance>
+
+example:     ParentObject 4
+
+The ParentObject function provides LightWave with the current object's 
+parent object in the hierarchical chain.  The value is equal to the 
+parent objects position in the loading sequence.  The example function
+would parent the current object to the fourth object instance in the 
+scene file.  When the ParentObject function is active, all keyframe 
+information for the object becomes an offset from the parents information.
+
+User Interface:  Objects hierarchies are created by selecting the parent 
+		 function from layout.  The parent object is then selected 
+		 from the pop-up listing provided.
+
+
+GoalObject <object instance>
+
+example:  GoalObject 5
+
+The GoalObject function provides LightWave with the current object's goal 
+object for an inverse kinematics chain.  The value is equal to the goal 
+object position in the loading sequence.  The example function would goal 
+the current object to the fifth object instance in the scene file.
+
+User Interface:  The GoalObject is chosen from the IK options from Layout.
+
+
+IKAnchor <flag>
+
+example:  IKAnchor 1
+
+The IKAnchor function sets the current object as an anchor object in an 
+inverse kinematics chain.  The predecessors of this object would not be 
+affected by the goal of its children.
+
+<flag>:	0 - Off (No function listing)
+	1 - On  (Function listing)
+
+User Interface:  The IKAnchor flag is set from the IK options from Layout.
+
+
+Object Skeleton:  (See Object Skeleton Section 3.3)
+
+The Object Skeleton listing is a label for the Bones area of the 
+LightWave scene file.  This is the location where the object deformation 
+bones are listed.  This function is described in detail in the Object 
+Skeleton Section 3.3.  
+
+
+Metamorph <percentage> ¦ (envelope)
+
+example:     Metamorph 0.500000
+
+The Metamorph function provides LightWave with the information needed to 
+morph the current object into a target object that is provided in the 
+MorphTarget function.
+
+The value is the percentage of change between the current object and 
+its target.  The function's value can be changed over time with an 
+envelope.  If an envelope is chosen, the functions value is replaced 
+with an envelope identifier.  For more information on envelopes, see 
+the Envelopes Section 1.4.
+
+When the Metamorph function is selected, two additional function listings 
+are necessary.  These are listed below:
+
+	Additional:     MorphTarget  <object instance>
+
+	example:     MorphTarget 2
+
+	The MorphTarget function provides the morph target's object position 
+	in the object listing.
+
+	
+	Additional:     MorphSurfaces  <flag>
+
+	example:     MorphSurfaces 1
+
+	The MorphSurfaces flag activates the morphing of the surface attributes. 
+
+ 	 <flag>:	0 - Off
+			1 - On
+
+	User Interface:  The Metamorph functions are set from the Objects Panel.
+
+
+DisplacementMap:  (See Displacement Map Section 3.4)
+
+The DisplacementMap function deforms the geometry of an object using either 
+image maps or procedural textures.
+
+This function is described in detail in the DisplacementMap/ClipMap 
+Section 3.4.
+
+User Interface:  The DisplacementMap controls are located on the Objects Panel.
+
+
+ClipMap:  (See Clip Map Section 3.4)
+
+The ClipMap function "clips" or removes parts of an object's geometry using 
+either image maps or procedural textures.
+
+This function is described in detail in the ClipMap Section 3.4.
+
+User Interface:  The ClipMap controls are located on the Objects Panel.
+
+
+ObjDissolve  <percentage> ¦ (envelope)
+
+example:     ObjDissolve 0.500000
+
+The ObjDissolve function determines the object's dissolve level during the 
+rendering process.  The example would produce an object that is 50% dissolved 
+throughout the animation.  The  value is listed as a percentage out to six 
+decimal places.  If the value is left at the default of 0% dissolved, the 
+function does not provide a listing in the scene file.  The value of this 
+function can be changed over time with an envelope.  If an envelope is 
+selected, the functions value is replaced with an envelope identifier.  
+For more information on envelopes, see the Envelopes Section 1.4.
+
+User Interface:  The ObjDissolve function is set from the Objects Panel.
+
+
+DistanceDissolve <flag>
+
+example:     DistanceDissolve 1
+
+The DistanceDissolve flag turns the distance dissolve function on and off.  
+This function produces a DistanceDissolve listing  with a value of 1 and 
+adds the MaxDissolveDistance listing (see below) when turned on.  When 
+turned off, this function does not provide a listing in the scene file.
+
+<flag>:	0 - Off (No Listing)
+	1 - On  (Function listing plus additional MaxDissolveDistance listing)
+
+
+	Additional:     MaxDissolveDistance <distance>
+
+	example:     MaxDissolveDistance 25.000000
+
+	The MaxDissolveDistance function provides the distance from the 
+	camera that the object will be %100 dissolved.  In the example shown, 
+	the object will be completely dissolved at 25 meters.
+
+	User Interface:  The DistanceDissolve functions are set from the 
+			 Objects Panel.
+
+
+PolygonSize <percentage> ¦ (envelope)
+
+example:     PolygonSize 0.350000
+
+The PolygonSize function provides a value that adjusts the polygon size 
+of all polygons in the current object.  The example would produce an 
+object with all polygons 35% of their original size.  If the value is 
+left at the default 100%, this function does not provide a listing in 
+the scene file.  The value of this function can be changed over time 
+with an envelope.  If an envelope is selected, the functions value is 
+replaced with an envelope identifier.  For more information on envelopes, 
+see the Envelopes Section 1.4. 
+
+User Interface:  The PolygonSize function is set from the Objects Panel.
+
+
+Particle/LineSize <value>
+
+example:  Particle/LineSize 1
+
+The Particle/LineSize function determines the size of a one and two point 
+polygons when rendered.
+
+If the value is left at the default of Automatic, no function listing is 
+produced in the scene file.
+
+<value>:	0 - Automatic (No function listing)
+		1-  Small
+		2 - Medium
+		3 - Large
+
+User Interface:  The Particle/LineSize function is set from the 
+		 Particle/Line Size pop-up panel on the Objects Panel.
+
+
+UnaffectedByFog <flag>
+
+example:  UnaffectedByFog 1
+
+The UnaffectedByFog flag activates the Unaffected by Fog function that 
+will allow the current object to render normally when fog is turned on.  
+This function produces a UnaffectedByFog listing  with a value of 1 when 
+turned on.  When turned off, this function does not produce a listing in 
+the scene file.
+
+<flag>:	0 - Off (No function listing)
+	1 - On
+
+User Interface:  The UnaffectedByFog function is set from the Objects Panel.
+
+
+ObjPolygonEdges <flag>
+
+example:     ObjPolygonEdges 1
+
+The ObjPolygonEdges flag activates the Polygon Edges function that renders 
+all polygons with a visible outline.  This function produces a 
+ObjPolygonEdges listing  with a value of 1 and adds an ObjEdgeColor 
+listing (see below) when turned on.  When turned off, this function does 
+not produce a listing in the scene file.
+
+<flag>:	0 - Off (No function listing)
+	1 - On  (Function listing plus additional listing)
+
+
+	Additional:     ObjEdgeColor <red value> <green value> <blue value>
+
+	example:     ObjEdgeColor 0 0 255
+
+	The ObjEgdeColor function provides the RGB color values for the 
+	object's polygon edges.
+
+	<color value range>:	red value -	0 - 255
+				green value -	0 - 255
+				blue value -	0 - 255
+
+	User Interface:  The ObjPolygonEdges functions are set from the 
+			 Objects Panel.
+
+
+ShadowOptions <bit-field value>
+
+example:     ShadowOptions 7
+
+The ShadowOptions function provides the shadowing characteristics for 
+the current object.
+
+The bit-field value is produced by calculating the decimal value of a 
+3 position bit-field whose bits represent logical on/off switches that 
+are number left to right from 0 to 2.  The least-significant bit for this 
+field is the rightmost bit.   Each shadow option has a corresponding bit 
+in the bit-field.  When a shadow option is turned on, its bit (or switch) 
+is turned on.
+
+<bit position>:	0 - Self Shadow
+		1 - Cast Shadow
+		2 - Receive Shadow 
+
+The ShadowOptions function produces a listing for all objects.
+
+User Interface:  The shadow options function is set from 
+		 the bottom of the Objects Panel.
+
+
+
+3.3  OBJECT SKELETON
+
+
+3.3.1  Object Skeleton Information
+
+  The Object Skeleton Section is a series of one or more bone descriptions 
+  that are listed within an object segment.
+
+  An object skeleton does not appear in all object segments.  It is listed 
+  when at least one bone has been added to an object.
+
+  Multiple bones in an object segment are listed sequentially in the 
+  order in which they were created.
+
+
+3.3.2 Example Object Segment with Bones
+
+Below is an example of an object segment that contains one bone:
+
+LoadObject Objects/Tutorial/Arm.lwo
+ShowObject 4 7
+ObjectMotion (unnamed) 
+ 9
+ 2 
+-1.855599  1.543649  2.164339  -90.000000  360.000000  720.000000   
+1.0   1.0    1.0  0  0  1.0   0.0   0.0 
+-1.321534   2.235439  2.164330  -60.000000  360.000000 180.000000   
+1.0   1.0    1.0  15  0  1.0   0.0   0.0 
+EndBehavior 1
+
+AddBone
+BoneName Bone
+ShowBone 1 7
+BoneActive 1
+BoneRestPosition 0.000000 5.000000 11.000000
+BoneRestDirection 179.000000 -0.620000 0.000000
+BoneRestLength 7.500000
+ScaleBoneStrength 1
+BoneStrength 1.000000
+BoneMotion (unnamed)
+ 9
+ 2
+-4.40173 19.4 24.5796 373.551 -4.4 0 1 1 1
+0 0 0 0 0
+-4.00753 19.1294 20.6751 366.985 -0.379068 0 1 1 1
+10 0 0 0 0
+EndBehavior 1
+ShadowOptions 7
+
+
+3.3.3  Object Skeleton Function Order
+
+The following object skeleton functions are listed in the order in which they 
+appear in the scene file.
+
+  Functions denoted with an asterisk (*) are required for all object instances.
+
+  Italicized entries denote function labels and are not true function names .
+
+  Indented entries denote an optional function of the preceding function.
+
+		AddBone *
+
+		BoneName *
+
+		ShowBone *
+
+		BoneActive *
+
+		BoneRestPosition *
+
+		BoneRestDirection *
+
+		BoneRestLength *
+
+		ScaleBoneStrength *
+
+		BoneStrength *
+
+		BoneLimitedRange
+
+			BoneMinRange
+
+			BoneMaxRange
+
+		BoneMotion (identifier) *
+
+		Number of Information Channels *
+
+		Number of Keyframes *
+
+		Keyframe Information *
+
+		EndBehavior *
+
+		LockedChannels
+
+		HLimits
+
+		PLimits
+
+		BLimits
+
+		ParentObject
+
+		GoalObject
+
+		IKAnchor
+
+
+3.3.4  Object Skeleton Function Descriptions
+
+The following object skeleton functions are listed in the order in which 
+they appear in the scene file.  Functions that do not have a local User 
+Interface: description are located on the Object Skeleton control panel 
+accessed from the Objects Panel.
+
+
+
+AddBone
+
+example:  AddBone
+
+The AddBone function is the first function called in an object skeleton.  
+It is called for each instance of a bone loading.  This function will add 
+a bone to the current object and produce a series of function listings for 
+this bone.
+
+
+BoneName  Bone ¦ <string>
+
+example:  BoneName FootBone
+
+The BoneName function provides a name for the bone created with the AddBone 
+function.  If the user renames the bone using the Rename Bone function from 
+the Object Skeleton control panel the string is listed following the function 
+name.  If the user does not rename the bone, it is given the default name 
+of Bone.  If multiple bones instances have the same name, duplicate bones 
+are given a numbered suffix to the name during the loading/creation process.  
+This number is enclosed in parenthesis and follows the bone name.  
+
+An example:  FootBone (2) is the second instance of a bone with the name 
+FootBone.  The suffix is not saved in the scene file, and is used only as 
+a user reference.
+
+
+ShowBone  <refresh value> <color value> 
+
+example:     ShowBone 1 2
+
+The ShowBone function determines how the bone is going to be displayed in 
+Layout.  The above example would display this (as opposed to hiding it) as
+a green bone.
+
+ Refresh value
+
+This argument sets the bones display type in Layout.
+
+<Refresh value>:	0 - No Refresh (Hide)
+			1 - Refresh (Show)
+
+User Interface:  The refresh value is selected in the second column of the 
+		 Scene Overview from the Scene Menu.  	
+
+ Color value
+
+This argument sets the color of the bone when not selected in Layout.  
+When selected, all items highlight to yellow.
+
+<Color value>:	1 - Blue
+		2 - Green
+		3 - Light Blue
+		4 - Red
+		5 - Purple
+		6 - Orange
+		7 - Gray
+
+User Interface: The color value is selected in the first column of the 
+		Scene Overview from the Scene Menu.
+
+
+BoneActive <flag>
+
+example:  BoneActive 1
+
+The BoneActive flag activates the bone in layout and will allow it to begin 
+deforming the object's geometry.  This function produces a BoneActive 
+listing  with a value of 1 when turned on.  When turned off, this function 
+does not produce a listing in the scene file.
+
+<flag>:	0 - Off (No function listing)
+	1 - On
+
+User Interface:  This function is set from the Object Skeleton control 
+		panel or by the keyboard shortcut of <r> for rest.
+
+The BoneActive function is listed for all bones.
+
+
+BoneRestPosition <x position> <y position> <z position>
+
+example:  BoneRestPosition 0.500000 0.200000 1.35000
+
+The BoneRestPosition function provides the initial rest x, y, z position 
+of the bone.  In this position, the bone does not influence (distort) the 
+object geometry.  
+
+User Interface:  The BoneRestPosition function is set from the 
+		 Object Skeleton control panel or by the keyboard 
+		 shortcut of <r> for rest.
+
+The BoneRestPosition function is listed for all bones.
+
+
+BoneRestDirection <Heading angle> <Pitch angle> <Bank angle>
+
+example:  BoneRestDirection 39.000000 7.900000 0.000000
+
+The BoneRestDirection function provides the initial rest H,P,B rotations 
+of the bone.  In this position, the bone does not influence (distort) the 
+object geometry.
+
+User Interface:  The BoneRestDirection function is set from the Object 
+		 Skeleton control panel or by the keyboard shortcut of <r> 
+		 for rest.
+
+The BoneRestDirection function is listed for all bones.
+
+
+BoneRestLength <float>
+
+example:  BoneRestLength 1.078000
+
+The BoneRestLength function provides the initial rest length of the bone.  
+This is the "size" of the bone in Layout.
+
+User Interface:  The BoneRestLength function is set from the Rest Length 
+		 field on the Object Skeleton control panel or by the 
+		 Rest Length mouse control in Layout.
+
+The BoneRestLength function is listed for all bones.
+
+
+ScaleBoneStrength <flag>
+
+example:  ScaleBoneStrength 1
+
+
+
+The ScaleBoneStrength flag  turns the ScaleBoneStrength function on.  The 
+listing is produced by the Scale Strength by Rest Length check box on the 
+Object Skeleton control panel.  This function allows the user to either 
+lock the bone strength to the rest length of the bone, or to adjust them 
+separately.  This function produces a ScaleBoneStrength listing  with a 
+value of 1 when turned on.  
+
+<flag>:	0 - Off (Default)
+	1 - On (Scale Strength by Rest Length)
+
+User Interface:  The ScaleBoneStrength function is set from the Scale 
+		 Strength by Rest Length check box on the Object Skeleton 
+		 control panel.
+
+The ScaleBoneStrength flag is listed for all bones.
+
+
+BoneStrength <float>
+
+example:  BoneStrength 2.500000
+
+The BoneStrength function provides the strength of a bone that is separate 
+from it's rest length.  This functions value is used when the ScaleBoneStrength 
+flag is turned off (0).  When the ScaleBoneStrength function is turned on, 
+the bone strength is equal to the BoneRestLength.
+
+User Interface:  The BoneStrength functions value is set from the Strength 
+		 field on the Object Skeleton control panel.
+
+The BoneStrength function is listed for all bones.
+
+
+BoneMotion (unnamed) 
+
+example:     BoneMotion (unnamed)
+
+The BoneMotion identifier denotes the beginning of the keyframe information 
+for the current bone segment.  It does not require any arguments to be passed 
+to it.
+
+The BoneMotion identifier is listed with all bones.
+
+
+Number of Information Channels:  <9>
+
+The Number of Information Channels is a numeric value with no header that 
+follows the BoneMotion identifier.  The value for the number of information 
+channels is equal to the number of variables to be provided per keyframe.  
+For LightWave bone keyframes, the variables are listed as follows:  
+X position, Y position, Z position, Heading, Pitch, Bank, X Scale, Y Scale, 
+and Z Scale.   For bone motions, the number of information channels value 
+is automatically set to 9 by LightWave.  The user has no access to this value.  
+
+User Interface: None
+
+The number of information channels is listed with all bones.
+
+
+Number of Keyframes:  <int>
+
+The Number of Keyframes is an integer value with no header that follows the 
+Number of Information Channels.  This value provides the number of keyframes 
+for the current bone.  It is immediately followed by the keyframe information.  
+Every bone will have at least one keyframe at frame 0.  
+
+User Interface:  The number of keyframes is taken from the motion path the 
+user creates for a bone.  
+
+The Number of Keyframes is listed with all bones.
+
+
+Keyframe Information:
+
+-1.321534   2.235439  2.164330  -60.000000  360.000000  180.000000   
+1.0   1.0   1.0  15  0  1.0   0.0   0.0 
+
+The values are listed as follows:
+
+1st Line:
+
+XPosition, YPosition, ZPosition, Heading, Pitch, Bank
+
+2nd Line:
+
+XScale, YScale, ZScale, Frame Number, Linear Value, Tension, Continuity, Bias
+
+At least one keyframe (frame 0) is listed for each bone.
+
+(See Section 1.3 Keyframes)
+
+
+EndBehavior <value>
+
+example:     EndBehavior 2
+
+The EndBehavior function determines how the bone will react when the last 
+keyframe has been reached. The available choices are: reset, stop and repeat.  
+
+<value>:	0 - Reset
+		1 - Stop (Default)
+		2 - Repeat
+
+User Interface: The EndBehavior value is set from the bone's motion graph panel.
+
+The EndBehavior option is listed with all bones.
+
+
+LockedChannels <bit-field value>
+
+example:     LockedChannels 4093
+
+The LockedChannels function determines the extent of the mouse control from 
+LightWave's Layout.  Separate independent channels of motion, rotation, etc. 
+can be locked off to restrict the mouse's  control on the current bone.  The 
+mouse functions that it can effect are:  Move (X,Y,Z), Rotate(H,P,B), 
+Scale/Stretch(X,Y,Z), and RestLength(X,Y,Z).
+
+The value is produced by calculating the decimal value of a 12 position 
+bit-field whose bits represent logical on/off switches that are number left 
+to right from 0 - 11.  The least-significant bit for this field is the 
+rightmost bit.  Each channel has a corresponding bit in the bit-field.  
+When a channel is locked, its bit (or switch) is turned on.
+
+<bit positions>:	 0 - Move X
+			 1 - Move Y
+			 2 - Move Z
+			 3 - Rotate Heading
+			 4 - Rotate Pitch
+			 5 - Rotate Bank
+			 6 - Scale X / Size X  (channels are connected)
+			 7 - Scale Y / Size Y (channels are connected)
+			 8 - Scale Z / Size Z (channels are connected)
+			 9 - RestLength X
+			10 - RestLength Y
+			11 - RestLength Z
+
+User Interface:  The LockedChannels function is set from the Layout mouse 
+		 control area.
+
+
+HLimits <min. angle> <max. angle>
+
+example:    HLimits -37.5 180
+
+The HLimits function provides the minimum and maximum angles of heading 
+rotation for the Inverse Kinematics function.  
+
+<min. angle>,<max. angle>:  Range = -360 to 360
+
+User Interface:  The HLimits angles are set from the IK Options controls 
+		 from Layout.
+
+
+PLimits <min. angle> <max. angle>
+
+example:    PLimits -37.5 180
+
+The PLimits function provides the minimum and maximum angles of the pitch 
+rotation for the Inverse Kinematics function.  
+
+<min. angle>,<max. angle>:  Range = -360 to 360
+
+User Interface:  The PLimits angles are set from the IK Options controls 
+		 from Layout.
+
+
+BLimits <min. angle> <max. angle>
+
+example:    BLimits -37.5 180
+
+The BLimits function provides the minimum and maximum angles of the banking 
+rotation for the Inverse Kinematics function.  
+
+<min. angle>,<max. angle>:  Range = -360 to 360
+
+User Interface:  These angles are set from the IK Options controls from Layout.
+
+
+ParentObject <bone instance>
+
+example:     ParentObject 4
+
+The ParentObject function provides LightWave with the current bone's parent 
+bone in the hierarchical chain.  The value is equal to the parent bone 
+position in the loading/creation sequence.  The example function would parent 
+the current bone to the fourth bone instance in the scene file.  When the 
+ParentObject function is active, all keyframe information for the bone 
+becomes an offset from the parents information.
+
+User Interface:  Bone hierarchies are created by one of two methods.  
+		 The First is created by selecting the parent function from 
+		 layout.  The parent bone is then selected from the pop-up 
+		 listing provided.  The second method is to use the add child 
+		 bone 	function from the Object Skeleton control panel.
+
+
+GoalObject <object instance>
+
+example:  GoalObject 5
+
+The GoalObject function provides LightWave with the current bone's goal 
+object for an inverse kinematics chain.  The value is equal to the goal 
+object position in the loading sequence.  The example function would goal 
+the current bone to the fifth object instance in the scene file.
+
+User Interface:  The GoalObject function is set from the IK options from Layout.
+
+
+IKAnchor <flag>
+
+example:  IKAnchor 1
+
+The IKAnchor function sets the current bone as an anchor bone in an inverse 
+kinematics chain.  The predecessors of this bone would not be affected by 
+the goal of its children.
+
+<flag>:	0 - Off (No function listing)
+	1 - On  (Function listing)
+
+User Interface:  The IKAnchor function is set from the IK options from Layout.
+
+
+
+
+3.4  DISPLACEMENT MAP / CLIP MAP
+
+
+3.4.1 Displacement Map/Clip Map Information
+
+  The DisplacementMap function deforms the geometry of an object using either 
+  image maps or procedural textures.
+
+  The ClipMap function "clips" or removes parts of an object's geometry using 
+  either image maps or procedural textures.
+
+  Two types of mapping available to these functions.  An image map or a 
+  built-in procedural texture can be used with these functions.
+
+
+3.4.2 Example Object Segment with Displacement Map
+
+Below is an example of an object segment that contains a ripple displacement map:
+
+
+LoadObject Objects/Tutorial/LightBeam.lwo
+ShowObject 4
+ObjectMotion (unnamed) 
+ 9
+ 2 
+-1.855599  1.543649  2.164339  -90.000000  360.000000  720.000000   
+1.0   1.0    1.0  0  0  1.0   0.0   0.0 
+-1.321534   2.235439  2.164330  -60.000000  360.000000 180.000000   
+1.0   1.0    1.0  15  0  1.0   0.0   0.0 
+EndBehavior 1
+DisplacementMap Ripples
+TextureFlags 13
+TextureSize 1 1 1
+TextureCenter 5 5 0
+TextureAmplitude 0.250000
+TextureInt0 3
+TextureFloat0 0.500000
+TextureFloat1 0.025000
+ShadowOptions 7
+
+
+
+3.4.3  Mapping Function Order
+
+
+The following mapping functions are listed in the order in which they appear 
+in the scene file.
+
+Functions denoted with an asterisk (*) are required for all mapping instances.
+
+		DisplacementMap ¦ ClipMap *
+
+		TextureImage *  (Image Mapping only)
+
+		TextureFlags *
+
+		TextureAxis *  (Image Mapping only)
+
+		TextureSize *
+
+		TextureCenter
+
+		TextureFalloff
+
+		TextureVelocity
+
+		TextureAmplitude ¦  TextureValue
+
+		TextureInt(index)   (Multiple instances possible) 
+
+		TextureFloat(index)   (Multiple instances possible)
+
+
+
+3.4.4 Mapping Function Descriptions
+
+
+The following functions are listed in the order in which they appear in the 
+scene file.
+
+
+DisplacementMap <mapping type> ¦ Clip Map <mapping type> 
+
+
+ DisplacementMap <projection type> ¦ <procedural texture>
+
+The DisplacementMap function is the first line of a Displacement Map segment.  
+It provides the mapping type and selection.
+
+	- Image Mapping
+
+	example:  DisplacementMap cylindrical image map
+
+	If image mapping is used,  the argument of the projection type is 
+	provided.  This  mapping type produces additional listings for the 
+	TextureImage and the TextureAxis functions .
+
+	<projection type>:	Planar Image Map
+				Cylindrical Image Map
+				Spherical Image Map
+
+	- Procedural Texture Mapping
+
+	example:  DisplacementMap Ripples
+
+	If procedural texture mapping is used, the argument of a texture name 
+	is provided.  This mapping type produces the additional listings given 
+	with each procedural below:
+
+	<procedural type>:	
+
+			Ripples:
+				TextureInt0 <int>	- Wave Sources
+
+				TextureFloat0 <float>	- Wavelength
+
+				TextureFloat1 <float>	- Wave Speed
+
+			Fractal Bumps: 
+				TextureInt0 <int>	- Frequencies
+
+
+
+	
+
+- ClipMap <projection type> ¦ <procedural texture>
+
+The ClipMap function is the first line of a Clip Map segment.  It provides 
+the mapping type and selection.
+
+	- Image Mapping
+
+	If image mapping is used, the argument of the projection type 
+	is provided.  This mapping type produces an additional listing for 
+	the TextureImage and TextureAxis functions.
+
+	example:  ClipMap Planar Image Map
+
+	<projection type>:	Planar Image Map
+				Cylindrical Image Map
+				Spherical Image Map
+				Cubic Image Map
+				Front Projection Map
+
+
+	- Procedural Texture Mapping
+
+	example:  ClipMap Underwater
+
+	If procedural texture mapping is used, the argument of a texture name 
+	is provided.  This mapping type produces the additional listings 
+	given with each procedural below:			
+
+	<procedural texture>:	
+		Checkerboard:	no additional listings.
+
+		Grid:		TextureFloat0 <float>	 - Line Thickness
+
+		Dots:		TextureFloat0 <float>	- Dot Diameter
+				TextureFloat1 <float>	- Fuzzy Edge Width
+
+
+		Marble:		TextureInt0 <int>	- Frequencies
+				TextureFloat0 <float>	- Turbulence
+				TextureFloat1 <float>	- Vein Spacing
+				TextureFloat2 <float>	- Vein Sharpness
+
+
+		Wood:		TextureInt0 <int>	- Frequencies
+				TextureFloat0 <float>	- Turbulence
+				TextureFloat1 <float>	- Ring Spacing
+				TextureFloat2 <float>	- Ring Sharpness
+
+
+		Underwater:	TextureInt0 <int>	- Wave Sources
+				TextureFloat0 <float>	- Wavelength
+				TextureFloat1 <float>	- Wave Speed
+				TextureFloat2 <float>	- Band Sharpness
+
+
+		Fractal Noise:	TextureInt0 <int>	- Frequencies
+				TextureFloat0 <float>	- Contrast
+
+
+		Bump Array:	TextureFloat0 <float>	- Radius
+				TextureFloat1 <float>	- Spacing
+				TextureFloat2 <float>	- Bump Strength
+
+
+		Crust:		TextureFloat0 <float>	- Coverage
+				TextureFloat1 <float>	- Ledge Level
+				TextureFloat2 <float>	- Ledge Width
+ 				TextureFloat3 <float>	- Bump Strength
+
+
+		Veins:		TextureFloat0 <float>	- Coverage
+				TextureFloat1 <float>	- Ledge Level
+				TextureFloat2 <float>	- Ledge Width
+				TextureFloat3 <float>	- Bump Strength
+
+			
+TextureImage <path + filename> [ (sequence) ]
+
+example:  TextureImage Images\LWLogo.tga
+
+The TextureImage function provides the path and filename for the image to 
+be loaded.  The path is generated by checking the current content directory 
+for the listed filename.  
+
+In this example if the current content directory is <c:\NewTek>, LightWave 
+would attempt to load the file <c:\NewTek\Images\LWLogo.tga>.
+
+It is possible to use image sequences as texture images.  If an image 
+sequence is chosen, a sequence identifier is appended to the image path 
+and filename.  An image sequence also produces an additional ImageSequenceInfo 
+listing. (See Image Sequences Section 1.5)
+
+
+TextureFlags <bit-field value>
+
+example:  TextureFlags 12
+
+The TextureFlags function provides additional texture settings.  
+
+The bit-field value is produced by calculating the decimal value of a 
+4 position bit-field whose bits represent logical on/off switches that 
+are number left to right from 0 - 3.  The least-significant bit for 
+this field is the rightmost bit.  Each channel has a corresponding bit 
+in the bit-field.  When a texture setting  is chosen, its bit (or switch) 
+is turned on.
+
+<bit positions>:	0 - World Coordinates
+			1 - Negative Image
+			2 - Pixel Blending
+			3 - Antialiasing
+
+
+TextureSize <X size> <Y size> <Z size>
+
+example:  TextureSize 1.5 2 5.25
+
+The TextureSize function provides the x, y and z dimensions of the image 
+map or the procedural texture.
+
+The arguments are given in meters.
+
+
+TextureCenter <X position> <Y position> <Z position>
+
+example:  TextureCenter 5 5 10
+
+The TextureCenter function provides the X, Y, and Z positions of the center 
+of the image map or the procedural texture.
+
+The argument are given in meters from the origin (0,0,0)
+
+
+TextureFalloff <X percentage> <Y percentage> <Z percentage>
+
+example:  TextureFalloff 25 10.5 25
+
+This function provides the percentage of falloff per meter in the X, Y and Z 
+directions.
+
+The arguments are given in percentage per unit measure (meter).
+
+
+TextureVelocity <X  velocity> <Y velocity> <Z velocity>
+
+example:  TextureVelocity 2.5 0 0
+
+The TextureVelocity function provides the velocity of image map or procedural 
+texture.  The value given is the value in units per frame.  The example would 
+move the center of the texture 2.5 meters per frame in the positive x direction.
+
+
+Texture Amplitude <float>  / Texture Value <percentage>
+
+	-  TextureAmplitude (Displacement map only)
+
+	example:  TextureAmplitude .25
+
+	The TextureAmplitude function provides the amplitude (offset amount) 
+	for the displacement map.
+
+	-  TextureValue (Clip map only)
+
+	example:  TextureValue 0.500000
+
+	The TextureValue function provides a percentage value for the texture.
+
+
+TextureInt(index) <int>   (Multiple Instances Possible)
+
+example:  TextureInt0 3
+
+The TextureInt function provides an integer value for a parameter of the 
+texture selected in the DisplacementMap or ClipMap functions.  This function
+may be called multiple times, each time the index is incremented and added to 
+the function name.  For instance, the third parameter that required an integer 
+value would be TextureInt2.
+
+
+TextureFloat(index) <float>  (Multiple Instances Possible)
+
+example:  TextureFloat2 0.250000
+
+The TextureFloat function provides a floating point value for a parameter of a 
+texture selected in the DisplacementMap or ClipMap functions.  This function 
+may be called multiple times, each time the index is incremented and added to 
+the function name.  For instance, the third parameter that required a floating 
+point value would be TextureFloat2.
+
+
+
+
+
+Chapter 4:			LIGHT SECTION
+
+
+4.1  LIGHT SECTION INFORMATION
+
+
+4.1.1 Light Section Description
+
+
+  The Light Section contains all of the information that pertains to the 
+  lights in a LightWave scene.
+
+  LightWave loads and lists all lights in the order in which they appear 
+  in the scene file.
+
+  Duplicate light names are given a numbered suffix during the loading 
+  process.  This number is enclosed in parenthesis and follows the light 
+  name.  An example:  HeadLight (3) is the third instance of the light 	
+  name HeadLight.  The number is not saved in the scene file, and is 
+  used only as a user reference.
+
+  The Target and Parent functions use a value that is equal to the order 
+  in which the referenced object was loaded in the scene.  i.e. The value 
+  in the function ParentObject 3 means that the current light is parented 
+  to the third object instance in the scene file.
+
+
+
+4.1.2 Individual Light Segment
+
+
+	Preceding Scene and Object sections......
+
+AmbientColor 255 255 255
+AmbIntensity 0.250000
+AddLight
+LightName Light
+ShowLight 0 7
+LightMotion (unnamed)
+ 9
+ 1
+ 0 0 0 60 30 0 1 1 1 
+ 0 0 0 0 0 
+EndBehavior 1
+LightColor 255 255 255
+LgtIntensity 1.000000
+LightType 2
+FallOff 0.000000
+ConeAngle 30.000000
+EdgeAngle 5.000000
+ShadowCasting 1
+
+	Additional Scene Listings.......
+
+
+
+4.2  LIGHT FUNCTIONS
+
+
+4.2.1 Function Order
+
+The following is a list of light functions that are listed in the order 
+in which they appear in the scene file.
+
+
+  Functions denoted with an asterisk (*) are required for all light 
+  loading instances.
+
+  Italicized entries denote function labels and not true function names.
+
+  Indented entries denote an optional function of the preceding function.
+
+  Optional functions will produce a listing only when activated by the 
+  user.
+
+		AmbientColor  *
+
+		AmbIntensity  *
+
+		GlobalFlareIntensity (envelope)
+
+		EnableLensFlare
+
+		EnableShadowMaps
+
+		AddLight  *
+
+		LightName *
+
+		ShowLight *
+
+		LightMotion (identifier) *
+
+		Number of Information Channels *
+
+		Number of Keyframes *
+
+		Keyframe Information *
+
+		EndBehavior *
+
+		LockedChannels
+
+		ParentObject
+
+		TargetObject
+
+		LightColor *
+
+		LgtIntensity *
+
+		LightType *
+
+		Falloff  (Point & Spot only)
+
+		ConeAngle  (Spot only)
+
+		EdgeAngle  (Spot only)
+
+		LensFlare
+
+			FlareIntensity
+
+			FlareDissolve
+
+			LensFlareFade
+
+			LensFlareOptions
+
+			FlareRandStreakInt
+
+			FlareRandStreakDens
+
+			FlareRandStreakSharp
+
+		ShadowCasting *
+
+		ShadowMapSize  (Spot only w/ Shadow Map)
+
+		UseConeAngle  (Spot only w/ Shadow Map)
+
+			ShadowMapAngle 
+
+		ShadowFuzzines  (Spot only w/ Shadow Map)
+
+
+
+4.2.2 Function Descriptions
+
+The following functions are listed in the order in which they appear in 
+the scene file.
+
+AmbientColor and AmbientIntensity are functions that are called once to 
+set up the ambient lighting in a scene.  GlobalFlareIntensity, 
+EnableLensFlare, and EnableShadowMaps are all global functions that 
+effect all lights in a LightWave scene.  They are also called just once.
+
+Beginning with AddLight, all functions following can be called for each 
+light instance in a scene file. 
+
+
+AmbientColor <Red value> <Green value> <Blue value>
+
+example:  AmbientColor 200 200 200
+
+The AmbientColor function provides the RGB color values for the ambient 
+lighting in the scene.
+
+<value range>:	Red value - 	0 - 255
+		Green value - 	0 - 255
+		Blue value - 	0 - 255
+
+
+AmbIntensity <percentage> ¦ (envelope)
+
+example:  AmbIntensity 0.250000
+
+The AmbientIntensity function provides the intensity of the ambient light 
+in the scene.  The functions percentage value can be changed over time 
+with an envelope.  If an envelope is chosen, the functions value is 
+replaced with an envelope identifier.
+
+
+GlobalFlareIntensity (envelope)
+
+The GlobalFlareIntensity function provides an envelope to fluctuate the 
+intensity of all lens flares in the scene at the same time.  This function 
+does not have the option for a single percentage, it is adjusted only 
+through an envelope.
+
+
+EnableLensFlare <flag>
+
+example:  EnableLensFlare 0
+
+This function sets a global flag that enables/disables all lens flares 
+in the scene.  This function produces a listing only when disabled (0).   
+
+<flag>:		0 - Off
+		1 - On (Default : No function listing)
+
+
+EnableShadowMaps <flag>
+
+example:  EnableShadowMaps 0
+
+This function sets a global flag the enables/disables the calculation of 
+shadow maps for all lights.  This function produces a listing only when 
+disabled (0).
+
+<flag>:		0 - Off
+		1 - On (Default: No function listing)
+
+
+AddLight
+
+example:  AddLight
+
+The AddLight function  is the first function in a light segment.    
+It is called for each instance in a light in the scene file.
+
+
+LightName Light ¦ <string>
+
+example:  LightName HeadLight
+
+This function provides a name for the light created with the AddLight 
+function.  If the user renames the light using the Rename Light function 
+from the Light menu, the string is listed following the function name.  
+If the user does not rename the light, it is given the default name of 
+Light.  If multiple light instances have the same name, duplicate light 
+names are given a numbered suffix to the name during the loading/creation 
+process.  This number is enclosed in parenthesis and follows the light name.  
+
+An example:  HeadLight (2) is the second instance of a HeadLight.  The 
+number is not saved in the scene file, and is used only as a user reference.
+
+
+ShowLight <Refresh value> <Color value>
+
+example:     ShowLight 0 5
+
+The ShowLight function determines how the light is going to be displayed 
+in Layout.  The above example would hide this bone until selected.  If it 
+were set to visible refresh, it would be purple.
+
+ 	Refresh value
+
+This argument sets the lights display type in Layout.  
+
+<Refresh value>:	0 - No Refresh (Hide)
+			1 - Refresh (Show)
+		
+User:  This value is selected in the second column of the Scene Overview 
+from the Scene Menu.  	
+
+
+ 	Color value
+
+This argument sets the color of the light in Layout
+
+<Color value>:	1 - Blue
+		2 - Green
+		3 - Light Blue
+		4 - Red
+		5 - Purple
+		6 - Orange
+		7 - Gray
+
+User: This value is selected in the first column of the Scene Overview 
+from the Scene Menu.
+
+
+LightMotion (unnamed)
+
+example:     LightMotion (unnamed)
+
+This is a light motion label for the keyframe information of the current 
+light segment.  It does not require any arguments to be passed to it.
+
+The LightMotion identifier is listed with all light instances.
+
+
+Number of Information Channels:  <9>
+
+This is a numeric value with no header that follows the LightMotion 
+identifier.  The value for the number of information channels is equal 
+to the number of variables to be provided per keyframe.  For LightWave 
+keyframes, the variables are listed as follows:  X position, Y position, 
+Z position, Heading, Pitch, Bank, X Scale, Y Scale, and Z Scale.  For 
+light motions, the number of information channels value is automatically 
+set to 9 by LightWave.  The user has no access to this value.  
+
+The number of information channels is listed with all light instances.
+
+
+Number of Keyframes:  <int>
+
+This is a numeric value with no header that follows the Number of 
+Information Channels.  This value provides the number of keyframes for 
+the current light.  It is immediately followed by the keyframe information.  
+Every light instance  will have at least one keyframe at frame 0.  
+
+
+The Number of Keyframes is listed with all light instances.
+
+
+Keyframe Information:
+
+-1.321534   2.235439  2.164330  -60.000000  360.000000  180.000000   
+1.0   1.0   1.0	  15  0  1.0   0.0   0.0 
+
+The values are listed as follows:
+
+1st Line:
+
+XPosition, YPosition, ZPosition, Heading, Pitch, Bank
+
+2nd Line:
+
+XScale, YScale, ZScale, Frame Number, Linear Value, Tension, Continuity, Bias
+
+At least one keyframe (frame 0) is listed for each light.
+
+(See Section 1.3 Keyframes)
+
+
+EndBehavior <value>
+
+example:     EndBehavior 2
+
+The EndBehavior function determines how the light will react when the 
+last keyframe has been reached. The available choices are:  reset, stop 
+and repeat.  The default setting is stop.  
+
+<value>:	0 - Reset
+		1 - Stop (Default)
+		2 - Repeat
+
+User: This value is set from the light's motion graph panel.
+
+The EndBehavior option is listed with all lights.
+
+
+LockedChannels <bit-field value>
+
+example:     LockedChannels 4093
+
+This function determines the extent of the mouse control from LightWave's 
+Layout.  Separate independent channels of motion, rotation, etc. can be 
+locked off to restrict the mouse's  control on each channel.  The mouse 
+functions that it can effect are:  Move (X,Y,Z), Rotate(H,P,B), 
+Scale/Stretch(X,Y,Z), and RestLength(X,Y,Z).
+
+The value is produced by calculating the decimal value of a 6 position 
+bit-field whose bits represent logical on/off switches that are numbered 
+left to right from 0 to 5.  The least significant bit for this field is 
+the rightmost bit.  Each channel has a corresponding bit in the bit-field.  
+When a channel is locked, it 's  bit (or switch) is turned on.
+
+<bit positions>:	0 - Move X
+			1 - Move Y
+			2 - Move Z
+			3 - Rotate Heading
+			4 - Rotate Pitch
+			5 - Rotate Bank
+
+User:  This function is set from the Layout mouse control area.
+
+
+ParentObject <object instance>
+
+example:     ParentObject 4
+
+This function provides LightWave with the current lights parent object 
+in the hierarchical chain.  The value is equal to the parent objects 
+position in the loading/creation sequence.  The example function would 
+parent the current light to the fourth object instance in the scene file.  
+When the ParentObject function is active, all keyframe information for 
+the light becomes an offset from the parents information. 
+
+
+TargetObject <object instance>
+
+example:  TargetObject 3
+
+This function provides LightWave with the current lights target object 
+in the scene.  The value is equal to the target object's position in the 
+loading/creation sequence.  The example function would target the current 
+light to the fourth object instance in the scene file. 
+
+
+LightColor <Red value> <Green value> <Blue value>
+
+example:  LightColor 200 200 150
+
+The LightColor function provides the RGB color values for the light that 
+is cast from the current light source.
+
+<value range>:	Red value - 	0 - 255
+		Green value - 	0 - 255
+		Blue value - 	0 - 255
+
+
+LgtIntensity <percentage> ¦ (envelope)
+
+example:  LgtIntensity 0.750000
+
+This function provides the intensity of the current light source as a 
+percentage value.  This is equivalent to the "brightness of the light 
+source".  The intensity value can go above 100%.  The function's value 
+can be changed over time with an envelope.  If an envelope is chosen, 
+the functions value is replaced with an envelope identifier.  
+
+User:  This function is set from the Light Intensity field on the Lights 
+Panel.
+
+
+LightType <value>
+
+example:  LightType 0
+
+The LightType function provides type of light source for the current 
+light instance.  
+
+<value>:	0 - Distant
+		1 - Point
+		2 - Spot
+
+User:  This function's value is chosen from the Light Type selections 
+on the Lights Panel.
+
+
+Falloff <percentage> ¦ (envelope)
+
+example:  Falloff 0.350000
+
+The Falloff function provides the percentage of light intensity falloff 
+per meter.  This function is only used by Point (LightType 1) and 
+Spot (LightType 2) lights.  This function's percentage can be fluctuated 
+over time with an envelope.  If an envelope is chosen, the functions value 
+is replaced with an envelope identifier.
+
+User:  This function is set from the Intensity Falloff field on the 
+Lights Panel.
+
+
+ConeAngle <angle> ¦ (envelope)
+
+example:  ConeAngle 30.000000
+
+The ConeAngle function provides the degree angle of the light cone 
+projected from the current light source.  This function only applies 
+to Spot Lights (LightType 2).  This function's angle can be fluctuated 
+over time with an envelope.  If an envelope is chosen, the functions 
+value is replaced with an envelope identifier.
+
+User:  This function is set from the SpotLight Cone Angle field on the 
+Lights Panel.
+
+
+EdgeAngle <angle> ¦ (envelope)
+
+example:  EdgeAngle 5.000000
+
+The EdgeAngle function provides the degree angle for the soft edge of 
+the light cone projected from the current light source.  This function 
+only applies to SpotLights (LightType 2).  This function's angle can be 
+fluctuated over time with an envelope.  If an envelope is chosen, the 
+function's value is replaced with an envelope identifier.
+
+User:  This functions value is set from the Spot Soft Edge Angle field 
+on the Lights Panel.
+
+
+LensFlare <flag>
+
+example:  LensFlare 1
+
+This flag turns the LensFlare function on.  This function produces a 
+LensFlare listing with a value of 1 and additional function listings 
+when turned on.  When turned off, this function does not produce a 
+listing in the scene file.
+
+User:  This function is activated from the Lens Flare check box on the 
+Lights Panel.
+
+	Additional:  FlareIntensity <percentage> ¦ (envelope)
+
+	example:  FlareIntensity 0.750000
+
+	This function provides the intensity/size of the lens flare.  
+	The intensity can be fluctuated with an envelope.
+
+	User:  This function's value is set in the Flare Intensity field 
+	from the Lens Flare Options Panel.
+
+
+	Additional:  FlareDissolve <percentage> ¦ (envelope)
+
+	example:  FlareDissolve 0.350000
+
+	This function provides the percentage of dissolve of the current 
+	light's lens flare.  The dissolve can be fluctuated with an envelope.
+
+	User:  This function's value is set on the Flare Dissolve field 
+	from the Lens Flare Options Panel.
+
+
+	Additional:  LensFlareFade <bit-field value>
+
+	example:  LensFlareFade 4
+
+	This function determines the fade options for the current light's 
+	lens flare.
+
+	The value is produced by calculating the decimal value of a 5 position 
+	bit-field whose bits represent logical on/off switches that are 
+	numbered left to right from 0 - 4.  The field's least-significant bit 
+	is the rightmost bit.  Each lens flare fade option has a corresponding 
+	bit in this bit-field.  When an option is selected, it's bit (or 
+	switch) is turned on.
+
+	<bit position>:	0 - RESERVED
+			1 - Fade With Distance
+			2 - Fade Off Screen
+			3 - Fade Behind Objects
+			4 - Fade In Fog
+
+
+	Additional:  LensFlareOptions <bit-field value>
+
+	example:  LensFlareOptions 85
+
+	This function provides the flare settings for the current light's 
+	lens flare.
+
+	The value is produced by calculating the decimal value of a 10 position 
+	bit-field whose bits represent logical on/off switches that are 
+	numbered left to right from 0 - 9.  The field's least-significant 
+	bit is the rightmost bit.  Each lens flare option has a corresponding 
+	bit in this bit-field.  When an option is selected, it's bit (or 
+	switch) is turned on. 
+
+	<bit positions>:	0 - Central Glow + Red Outer Glow
+				1 - Central Ring
+				2 - Star Filter
+				3 - Random Streaks
+				4 - Lens Reflections
+				5 - Suppress Red Outer Glow
+				6 - Anamorphic Distort
+				7 - Anamorphic Streaks
+				8 - Off Screen Streaks
+				9 - Glow Behind Objs
+
+
+	Additional:  FlareRandStreakInt <percentage>
+
+	example:  FlareRandStreakInt 0.030000
+
+	The FlareRandStreakInt function provides the percentage of intensity 
+	for the current light's random streaks.
+
+
+	Additional:  FlareRandStreakDens <float>
+
+	example:  FlareRandStreakDens 0.500000
+
+	The FlareRandStreakDens function provides a floating point value for 
+	the density of the current light's lens flare random streaks.
+
+
+	Additional:  FlareRandStreakSharp <float>
+
+	example:  FlareRandStreakSharp 0.060000
+
+	The FlareRandStreakSharp function provides a floating point value 
+	for the density of the current light's lens flare random streaks.
+
+
+ShadowCasting <value>
+
+example:     ShadowCasting 7
+
+The ShadowCasting function determines what type of shadows the current 
+light is going to produce during the rendering process.  This function 
+chooses the type of shadow rendering, but it does not initiate the 
+process.  Additional functions must be activated to turn the shadowing 
+process on.  For Raytrace Shadows, the Camera function, RayTraceEffects 
+must include the TraceShadows option.  For ShadowMap Shadows the Light 
+function: EnableShadowMaps must be set to 1.
+
+<value>:	0 - No Shadows
+		1 - Raytrace Shadows
+		2 - ShadowMap Shadows
+
+
+ShadowMapSize <int>
+
+example:  ShadowMapSize 512
+
+The ShadowMapSize function sets the amount of memory, in bytes, that the 
+current light is going to allocate for it's shadow map calculations.  
+A higher memory size will result in a smoother shadow map.
+
+
+UseConeAngle <flag>
+
+example:  UseConeAngle 1
+
+This flag determines whether the shadow map will use the light's cone 
+angle or a separate angle for the shadowmap calculations.  If the flag 
+is turned off, an additional function listing for ShadowMapAngle is produced.
+
+<flag>	0 - Use angle from ShadowMapAngle
+	1 - Use Cone Angle
+
+
+	additional:  ShadowMapAngle <angle>
+
+	example:  ShadowMapAngle 0.450000
+
+	This function provides the angle for the shadow map calculations 
+	if the UseConeAngle function is turned off.
+
+
+ShadowFuzziness <float>
+
+example:  ShadowFuzziness 1.000000
+
+The ShadowFuzziness function provides a floating point value for the edge 
+softness of the current light's shadow map calculations.
+
+
+
+
+
+Chapter 5:			CAMERA SECTION
+
+
+5.1  CAMERA SECTION INFORMATION
+
+
+5.1.1  Camera Section Description
+
+
+The Camera Section contains all of the information that relates to the 
+camera in a LightWave Scene.
+
+  There is only one (1) camera instance per scene file.
+
+  The Target and Parent functions use a value that is equal to the order 
+  in which the referenced object was loaded/created in the scene.  i.e. The 
+  value given in the example: ParentObject 3  references the third object 
+  instance in the scene file.
+
+
+5.1.2 Example Camera Segment
+
+	Preceding Scene, Object, and Light sections........
+
+ShowCamera 1 7
+CameraMotion (unnamed)
+ 9
+ 1
+ 0 0 -1 0 0 0 1 1 1 
+ 0 0 0 0 0 
+EndBehavior 1
+ZoomFactor 3.200000
+RenderMode 2
+RayTraceEffects 0
+Resolution 1
+PixelAspectRatio 0
+SegmentMemory 88000000
+Antialiasing 0
+AdaptiveSampling 1
+AdaptiveThreshold 8
+FilmSize 2
+FieldRendering 0
+MotionBlur 0
+DepthofField 0
+
+	Additional Scene Listings.......
+
+
+
+5.2 CAMERA FUNCTIONS
+
+
+5.2.1 Function Order
+
+
+The following is a list of light functions that are listed in the order in 
+which they appear in the scene file.
+
+
+  Functions denoted with an asterisk (*) are required for all light loading 
+  instances.
+
+  Italicized entries denote function labels and not true function names.
+
+  Indented entries denote an optional function of the preceding function.
+
+  Optional functions will produce a listing only when activated by the user.
+
+		ShowCamera *
+
+		CameraMotion (identifier) *
+
+		Number of Information Channels *
+
+		Number of Keyframes *
+
+		Keyframe Information *
+
+		EndBehavior *
+
+		LockedChannels
+
+		ParentObject
+
+		TargetObject
+
+		ZoomFactor *
+
+		RenderMode *
+
+		RayTraceEffects *
+
+		Resolution *
+
+		CustomSize
+
+		NTSCWidescreen
+
+		PixelAspectRatio
+
+			CustomPixelRatio
+
+		LimitedRegion
+
+			RegionLimits
+
+		SegmentMemory *
+
+		Antialiasing *
+
+		FilterType
+
+		AdaptiveSampling *
+
+			AdaptiveThreshold
+
+		FilmSize *
+
+		FieldRendering *
+
+			ReverseFields
+
+		MotionBlur *
+
+			BlurLength
+
+		DepthofField *
+
+			FocalDistance
+
+			LensFStop
+
+
+
+5.2.2 Function Descriptions
+
+The following functions are listed in the order in which they appear in 
+the scene file.
+
+
+ShowCamera <Refresh value> <Color value>
+
+example:     ShowCamera 0 5
+
+The ShowCamera function determines how the camera is going to be displayed 
+in Layout.  The above example would hide the camera until selected.  If it 
+were set to visible refresh, it would be purple when not selected.
+
+
+ Refresh value
+
+This argument sets the camera display type in Layout.  
+
+<Refresh value>:	0 - No Refresh (Hide)
+			1 - Refresh (Show)
+
+User:  This value is selected in the second column of the Scene Overview from 
+the Scene Menu.  	
+
+
+ Color value
+
+This argument sets the color of the camera wireframe in Layout.  When the 
+camera is selected, the wireframe highlights to yellow. 
+
+<Color value>:	1 - Blue
+		2 - Green
+		3 - Light Blue
+		4 - Red
+		5 - Purple
+		6 - Orange
+		7 - Gray
+
+User: This value is selected in the first column of the Scene Overview from 
+the Scene Menu.
+
+
+CameraMotion (unnamed)
+
+example:     CameraMotion (unnamed)
+
+This is a camera motion label for the keyframe information of the camera.  
+It does not require any arguments to be passed to it.
+
+The CameraMotion identifier listing is required for the camera.
+
+
+Number of Information Channels:  <9>
+
+This is a numeric value with no header that follows the CameraMotion 
+identifier.  The value for the number of information channels is equal 
+to the number of variables to be provided per keyframe.  For LightWave 
+keyframes, the variables are listed as follows:  X position, Y position, 
+Z position, Heading, Pitch, Bank, X Scale, Y Scale, and Z Scale.   
+For camera motions, the number of information channels value is 
+automatically set to 9 by LightWave.  The user has no access to 
+this value.  
+
+The number of information channels listing is required for the camera.
+
+
+Number of Keyframes:  <int>
+
+This is a numeric value with no header that follows the Number of 
+Information Channels.  This value provides the number of keyframes 
+for the camera.  It is immediately followed by the keyframe information.  
+The camera will have at least one keyframe at frame 0.  
+
+The Number of Keyframes listing is required for the camera.
+
+
+Keyframe Information:
+
+-1.321534   2.235439  2.164330  -60.000000  360.000000  180.000000   
+
+1.0   1.0   1.0  15  0  1.0   0.0   0.0 
+
+The values are listed as follows:
+
+1st Line:
+
+XPosition, YPosition, ZPosition, Heading, Pitch, Bank
+
+2nd Line:
+
+XScale, YScale, ZScale, Frame Number, Linear Value, Tension, Continuity, Bias
+
+At least one keyframe (frame 0) is listed for the camera.
+
+(See Section 1.3 Keyframes)
+
+
+
+EndBehavior <value>
+
+example:     EndBehavior 2
+
+The EndBehavior function determines how the camera will react when the 
+last keyframe has been reached. The available choices are:  reset, stop 
+and repeat.  The default setting is stop.  
+
+<value>:	0 - Reset
+		1 - Stop (Default)
+		2 - Repeat
+
+User: This value is set from the camera's motion graph panel.
+
+The EndBehavior listing is required for the camera.
+
+
+LockedChannels <bit-field value>
+
+example:     LockedChannels 4093
+
+This function determines the extent of the mouse control from LightWave's
+Layout.  Separate independent channels of motion, rotation, etc. can be 
+locked off to restrict the mouse's  control on each channel.  The mouse 
+functions that it can effect are:  Move (X,Y,Z), Rotate(H,P,B), 
+Scale/Stretch(X,Y,Z), and RestLength(X,Y,Z).
+
+The value is produced by calculating the decimal value of a 6 position 
+bit-field who bits represent logical on/off switches that are numbered 
+left to right from 0 to 5.  The least significant bit for this field is 
+the rightmost bit.  Each channel has a corresponding bit in the bit-field.  
+When a channel is locked, it 's  bit (or switch) is turned on.
+
+<bit positions>:	0 - Move X
+			1 - Move Y
+			2 - Move Z
+			3 - Rotate Heading
+			4 - Rotate Pitch
+			5 - Rotate Bank
+
+User:  This function is set from the Layout mouse control area.
+
+
+ParentObject <object instance>
+
+example:     ParentObject 4
+
+This function provides LightWave with the camera's parent object in the 
+hierarchical chain.  The value is equal to the parent objects position 
+in the loading/creation sequence.  The example function would parent the 
+camera to the fourth object instance in the scene file.  When the 
+ParentObject function is active, all keyframe information for the camera 
+becomes an offset from the parents information. 
+
+
+TargetObject <object instance>
+
+example:  TargetObject 3
+
+This function provides LightWave with the camera's target object in the 
+scene.  The value is equal to the target object's position in the 
+loading/creation sequence.  The example function would target the 
+camera at the third object instance in the scene file. 
+
+
+ZoomFactor <float> ¦ (envelope)
+
+example:  ZoomFactor 3.200000
+
+The ZoomFactor function provides a floating point number that represents 
+the zoom amount of the camera's lens.  This function can be fluctuated over 
+time with an envelope.  If an envelope is chosen, the floating point value 
+is replaced with an envelope identifier.
+
+
+RenderMode <value>
+
+example:  RenderMode 2
+
+The RenderMode function determines the type of rendering for the scene.
+
+<value>:	0 - WireFrame
+		1 - Quickshade
+		2 - Realistic (Default)
+
+
+RayTraceEffects <bit-field value>
+
+example:  RayTraceEffects 7
+
+The RayTraceEffects function determines the ray trace options for the scene.
+
+The value is produced by calculating the decimal value of a 3 position 
+bit-field whose bits represent logical on/off switches that are numbered 
+left to right from 0 - 2.  The field's least-significant bit is the 
+rightmost bit.  Each ray trace option has a corresponding bit in this 
+bit-field.  When an option is selected, it's bit (or switch) is turned on.
+
+<bit position>:	0 - Trace Shadows
+		1 - Trace Reflection
+		2 - Trace Refraction
+
+
+Resolution <value>
+
+example:  Resolution 1
+
+The Resolution function determines the resolution of the rendering in 
+the current scene.
+
+<value>:	-1 - Super Low Resolution
+		 0 - Low Resolution
+		 1 - Medium Resolution
+		 2 - High Resolution
+		 3 - Print Resolution
+
+
+CustomSize <Horizontal resolution> <Vertical resolution>
+
+example:  Custom Size 1024 768
+
+The CustomSize function provides the horizontal and vertical pixel 
+resolutions for rendering.
+
+
+NTSCWidescreen <flag>
+
+example:  NTSCWidescreen 1
+
+The NTSCWidescreen flag activates a function that will compress the 
+rendered image horizontally.  When this image is displayed in the 
+NTSC Widescreen format it will display in the proper aspect.
+
+
+PixelAspectRatio <value>
+
+example:  PixelAspectRatio 0
+
+The PixelAspectRatio function provides the aspect (shape) of the pixel 
+in a rendered image.
+
+<value>:	-1 - Custom (Produces Additional CustomPixelRatio Listing)
+		 0 - D2 NTSC
+		 1 - D1 NTSC
+		 2 - Square Pixels
+		 3 - D2 PAL
+		 4 - D1 PAL
+
+	Additional:  CustomPixelRatio <float>
+
+	example:  CustomPixelRatio 1.000000
+
+	The CustomPixelRatio function provides a custom pixel aspect for 
+	rendering.  The floating point value is the height to width ratio 
+	of the needed pixels. 
+
+
+LimitedRegion <flag>
+
+example:  LimitedRegion 1
+
+The LimitedRegion flag activates the limited region function to render a 
+portion of the full camera view.  This function, when activated, produces 
+an additional RegionLimits listing.
+
+<flag>:	0 - Off (No Listing)
+	1 - On (Listing plus additional RegionLimits listing)
+
+
+	Additional:  RegionLimits <Left %><Right %><Top %><Bottom %>
+
+	example: RegionLimits 0.50000 1.000000 0.500000 1.000000
+
+	The RegionLimits function provides the dimensions of the area to be
+ 	rendered for the LimitedRegion function.  The values given are a 
+	percentage of screen size.
+
+	<% limits>:	Left 	- 	0.000000 to 0.990000
+			Right 	- 	0.010000 to 1.000000
+			Top 	- 	0.000000 to 0.990000
+			Bottom 	- 	0.010000 to 1.000000
+
+
+SegmentMemory <bytes>
+
+example: SegmentMemory 88000000
+
+The SegmentMemory determines the amount of memory to be allocated for the 
+rendering process.  If the amount of memory is too low, LightWave will 
+divide the rendering process into separate segments.
+
+
+Antialiasing <value>
+
+example:  Antialiasing  2
+
+The Antialiasing function determines the number of antialiasing (smoothing) 
+passes that will be used for rendering.
+
+<value>:	0 - Off
+		1 - Low Antialiasing (5 passes)
+		2 - Medium Antialiasing (9 passes)
+		3 - High Antialiasing (17 passes)
+
+
+FilterType<flag>
+
+example:  FilterType 1
+
+The FilterType flag activates the Soft Filter effect for the rendering process.
+
+<flag>:	0 - Off (No listing)
+	1 - On (Listing)
+
+
+AdaptiveSampling <flag>
+
+example:  AdaptiveSampling 1
+
+The AdaptiveSampling flat activates adaptive sampling for the rendering 
+process.  This function, when activated, produces an additional 
+AdaptiveThreshold listing.
+
+<flag>:	0 - Off (Listing)
+	1 - On (Listing plus additional AdaptiveThreshold listing)
+
+
+	Additional:  AdaptiveThreshold <int>
+
+	example:  AdaptiveThreshold 8
+
+	The AdaptiveThreshold function provides a value for the level of 
+	adaptive sampling during the rendering process.  This value is a 
+	threshold, or cutoff level, for the antialiasing process. 
+
+
+FilmSize <value>
+
+example:  FilmSize 1
+
+The FilmSize function determines what type of film LightWave is going to 
+simulate during the rendering process.  This adjusts the optical qualities 
+in the cameras adjustment of zoom factor and depth of field.
+
+<value>:	 0 - Super 8 motion picture
+		 1 - 16mm motion picture
+		 2 - 35mm motion picture (Default)
+		 3 - 65mm Super Panavision motion picture
+		 4 - 65mm Imax motion picture
+		 5 - Size 110 (pocket camera)
+		 6 - Size 135 (35mm SLR)
+		 7 - Size 120 (60 x 45 mm rollfilm camera)
+		 8 - Size 120 (90 x 60 mm rollfilm camera)
+		 9 - 1/3 " CCD video camera
+		10 - 1/2" CCD video camera
+
+
+FieldRendering <flag>
+
+example:  FieldRendering 1
+
+The FieldRendering flag activates the field rendering function during the 
+rendering process.  This function, when activated, produces an additional 
+ReverseFields listing.
+
+<flag>:	0 - Off (Listing)
+	1 - On (Listing plus additional ReverseFields listing)
+
+ 
+	Additional:  ReverseFields <flag>
+
+	example:  ReverseFields 1
+
+	The ReverseFields flag activates the reverse fields function.  
+	This function shifts the order in which the fields are rendered.
+
+
+MotionBlur <bit-field value>
+
+example:  MotionBlur 7
+
+The MotionBlur function determines the active motion blur functions for the 
+rendering process.  When particle blur or motion blur are selected, they 
+produce an additional BlurLength listing.
+
+The value is produced by calculating the decimal value of a 3 position 
+bit-field whose bits represent logical on/off switches that are numbered 
+left to right from 0 - 2.  The field's least-significant bit is the 
+rightmost bit.  Each motion blur option has a corresponding bit in this 
+bit-field.  When an option is selected, it's bit (or switch) is turned on.
+
+<bit position>:	0 - Particle Blur (Additional Listing)
+		1 - Motion Blur (Additional Listing)
+		2 - Dithered Motion Blur
+
+
+	Additional:  BlurLength <percentage> ¦ (envelope)
+
+	example:  BlurLength 0.500000
+
+	The BlurLength function provides the amount of blur to be applied 
+	during the rendering process.
+
+
+DepthofField <flag>
+
+example:  DepthofField 1
+
+The DepthofField flag activates the depth of field function for the 
+rendering process.  This function, when activated, produces additional 
+FocalDistance and LensFStop listings.
+
+<flag>:	0 - Off (Listing)
+	1 - On (Listing plus additional Listings)
+
+
+	Additional:  FocalDistance <Distance> ¦ (envelope)
+
+	example:  FocalDistance 25.0000
+
+	The FocalDistance function provides the distance from the camera of 
+	it's focal point.  This distance is given in meters.
+
+
+	Additional:  LensFStop <float> ¦ (envelope)
+
+	example:  LensFStop 4.000000
+
+	The LensFStop function determines the range of in-focus items from 
+	the focal point.  The larger the F-stop, the larger the focal range.
+
+
+
+
+
+Chapter 6:			EFFECTS SECTION
+
+
+6.1 EFFECTS SECTION INFORMATION
+
+
+6.1.1  Effects Section Description
+
+The Effects section contains the information that relates to the different 
+effects that are available in a LightWave scene.
+
+
+6.1.2  Basic Effects Section
+
+	Preceding Scene, Object, Light, and Camera Sections.............
+
+SolidBackdrop 1
+BackdropColor 0 0 0
+ZenithColor 0 40 80
+SkyColor 120 180 240
+GroundColor 50 40 30
+NadirColor 100 80 60
+FogType 0
+DitherIntensity 1
+AnimatedDither 0
+
+DataOverlayLabel
+
+	Additional Scene Listings...........
+
+
+
+6.2  EFFECTS FUNCTIONS
+
+
+6.2.1  Function Order
+
+The following is a list of Effects functions that are listed in the order in 
+which they appear in the scene file.
+
+  Functions denoted with an asterisk (*) are required listings.
+
+  Italicized entries denote function labels and not true function names.
+
+  Indented entries denote an optional function of the preceding function.
+
+  Optional functions will produce a listing only when activated by the user.
+
+
+		BGImage
+
+		FGImage
+
+		FGAlphaImage
+
+		FGDissolve
+
+		FGFaderAlphaMode
+
+		ForegroundKey
+
+			LowClipColor
+
+			HighClipColor
+
+		SolidBackdrop *
+
+		BackdropColor *
+
+		ZenithColor *
+
+		SkyColor *
+
+		GroundColor *
+
+		NadirColor *
+
+		FogType *
+
+			FogMinDist
+
+			FogMaxDist
+
+			FogMinAmount
+
+			FogMaxAmount
+
+			FogColor
+
+			BackdropFog
+
+		DitherIntensity *
+
+		AnimatedDither *
+
+		Saturation
+
+		GlowEffect
+
+			GlowIntensity
+
+			GlowRadius
+
+
+
+		DataOverlay
+
+		DataOverlayLabel *
+
+
+6.2.2  Function Descriptions
+
+The following functions are listed in the order in which they appear in the
+scene file.
+
+BGImage < image path + filename> [(sequence)]
+
+FGImage <image path + filename> [(sequence)]
+
+FGAlphaImage < image path + filename> [(sequence)]
+
+example:  BGImage Images/Sky.tga
+
+example:  BGImage Images/BldColor.tga
+
+example:  FGAlphaImage Images/BldAlpha.tga
+
+The BGImage, FGImage and FGAlphaImage functions provides the path and 
+filename for the background, foreground and foreground alpha channel 
+images respectively.  The paths are generated by checking the current 
+content directory for the listed filenames.  
+
+In these examples if the current content directory is <c:\NewTek>, 
+LightWave would attempt to load the files <c:\NewTek\Images\Sky.tga>, 
+<c:\NewTek\Images\BldColor.tga> and <c:\NewTek\Images\BldAlpha.tga>.
+
+It is possible to use image sequences for these functions.  If an 
+image sequence is chosen, a sequence identifier is appended to the 
+image path and filename.  An additional ImageSequenceInfo listing is 
+also produced. (See Image Sequences Section 1.5)
+
+
+	Additional:  ImageSequenceInfo <frame offset> <loop flag> <loop length>
+
+	The ImageSequenceInfo listing is produced only when an image sequence
+	is chosen.  It 	provides optional information for the image sequence.  
+	(See Image Sequences Section 	1.5)
+
+
+FGDissolve <percentage> ¦ (envelope)
+
+example:  FGDissolve 0.750000
+
+The FGDissolve function provides the dissolve percentage of the foreground 
+image.  This function is most widely used with an envelope to produce a 
+smooth fade from a foreground image to the current scene.
+
+
+FGFaderAlphaMode <flag>
+
+example:  FGFaderAlphaMode 1
+
+The FGFaderAlphaMode flag activates the foreground fader alpha mode.  
+This modes provides an additional type of Alpha channel image compositing.
+
+<flag>:	0 - Off (No Listing)
+
+		1 - On (Listing)
+
+
+ForegroundKey <flag>
+
+example:  ForegroundKey 1
+
+The ForegroundKey flag activates the foreground keying function in the 
+image composting process of LightWave.  This function allows the user to 
+set a HighClipColor and a LowClipColor for the clipping of the foreground 
+image.
+
+<flag>:	0 - Off (No Listing)
+	1 - On (Listing plus additional listings)
+
+
+	Additional:  LowClipColor <Red value> <Green value> <Blue value>
+
+	Additional:  HighClipColor <Red value> <Green value> <Blue value>
+
+	example:  LowClipColor 0 0 0
+
+	example:  HighClipColor 125 125 125
+
+
+	The LowClipColor and HighClipColor functions provides the "darkest" 
+	and the "brightest" RGB color respectively for the ForegroundKey 
+	function.
+
+	<color value range>:	Red value -	0 - 255
+				Green value -	0 - 255
+				Blue value -	0 - 255
+
+
+SolidBackdrop <flag>
+
+example:  SolidBackdrop 1
+
+The SolidBackdrop flag activates a single color backdrop.  If the flag is
+turned off, a gradient backdrop is produced using the RGB color values 
+provided in the Backdrop Color, Zenith Color, Sky Color, and Nadir Color 
+listings.
+
+<flag>:	0 - Off (Gradient Backdrop)
+	1 - On (SolidBackdrop)
+
+
+BackdropColor <Red value> <Green value> <Blue value>
+
+example:  HighClipColor 125 125 125
+
+The BackdropColor function provides the RGB values for the backdrop color.  
+These values are used only when the SolidBackdrop flag is turned on.
+
+<color value range>:	Red value -	0 - 255
+			Green value -	0 - 255
+			Blue value -	0 - 255
+
+
+ZenithColor <Red value> <Green value> <Blue value>
+
+SkyColor <Red value> <Green value> <Blue value>
+
+GroundColor <Red value> <Green value> <Blue value>
+
+NadirColor <Red value> <Green value> <Blue value>
+
+example:  ZenithColor 0 40 80
+
+example:  SkyColor 120 180 240
+
+example:  GroundColor 50 40 30
+
+example:  NadirColor 100 80 60
+
+
+The ZenithColor, SkyColor, GroundColor, and Nadir Color functions provide the 
+RBG values for the gradient backdrop.  These values are used only when the 
+SolidBackdrop flag is turned off.
+
+<color value range>:	Red value -	0 - 255
+			Green value -	0 - 255
+			Blue value -	0 - 255
+
+
+FogType <value>
+
+example:  FogType 1
+
+The FogType function determines which type of fog will be generated during 
+the rendering process.  If the Fog effect is turned on in LightWave, 
+additional listings are produced.
+
+<value>:	0 - Off
+		1 - Linear
+		2 - NonLinear 1
+		3 - NonLinear 2
+
+
+	Additional:  FogMinDist <Distance> ¦ (envelope)
+
+	example:  FogMinDist 25.000000
+
+	The FogMinDist function provides the distance from the camera that 
+	the fog will begin.  This functions value can be fluctuated over 
+	time with an envelope.  If an envelope is chosen, the distance value 
+	is replace with an envelope identifier.
+
+
+	Additional:  FogMaxDist <Distance> ¦ (envelope)
+
+	example:  FogMaxDist 350.00000
+
+	The Fog MaxDist function provides the distance from camera that 
+	objects in the fog will remain visible.  This functions value can be 
+	fluctuated over time with an envelope.  If an envelope is chosen, the 
+	distance value is replace with an envelope identifier.
+
+
+	Additional:  FogMinAmount <percentage> ¦ (envelope)
+
+	example:  FogMinAmount 0.250000
+
+	The FogMinAmount function provides the lower bounding value for the 
+	density (amount) of fog in the scene.
+
+
+	Additional:  FogMaxAmount <percentage> ¦ (envelope)
+
+	example:  FogMaxAmount 0.750000
+
+	The FogMaxAmount function provides the upper bounding value for the 
+	density (amount) of fog in the scene.
+
+
+	Additional:  FogColor <Red value> <Green value> <Blue value>
+
+	example:  FogColor 200 200 215
+
+	The FogColor function provides the RGB values for the color of the fog.
+  	These values are used only when the BackdropFog flag is turned off.
+
+	<color value range>:	Red value -	0 - 255
+				Green value -	0 - 255
+				Blue value -	0 - 255
+
+
+	Additional:  BackdropFog <flag>
+
+	example:  BackdropFog 1
+
+	The BackdropFog flag determines how the fog will be colored.  If the 
+	flag is on, the fog will use the backdrop color.  If the flag is off, 
+	it will use the values provided in the 	FogColor function.
+
+	<flag>:	0 - Use FogColor
+		1 - Use Backdrop Colors
+
+
+DitherIntensity <value>
+
+example:  DitherIntensity 2
+
+The DitherIntensity function provides the type of dithering to be used during 
+the rendering process.
+
+<value>:	0 - Off
+		1 - Normal
+		2 - 2 x Normal
+		3 - 4 x Normal
+
+
+AnimatedDither <flag>
+
+example:  AnimatedDither 1
+
+The AnimatedDither flag activates the animated dither function.  This will use 
+an alternate dithering patter frame by frame.
+
+<flag>:	0 - Off
+	1 - On 
+
+
+Saturation <percentage> ¦ (envelope)
+
+example:  Saturation 0.350000
+
+The Saturation function provides the percentage of color saturation to be 
+used during the rendering process.  The function produces a listing only 
+when set below 100%.
+
+
+GlowEffect <flag>
+
+example:  GlowEffect 1
+
+The GlowEffect flag activates the glow effect for the rendering process.  
+When this function is turned on, it allows any surface that has it's glow 
+effect flag turned on to be affected by the glow post-process.  This function, 
+when turned on, produces a listing plus additional option listings.
+
+<flag>:	0 - Off (No Listing)
+	1 - On (Listing plus additional listings)
+
+
+	Additional:  GlowIntensity <percentage> ¦ (envelope)
+
+	example:  GlowIntensity 1.000000
+
+	The GlowIntensity provides the percentage of glow intensity 
+	(brightness) that the glow post-process will produce.
+
+
+	Additional:  GlowRadius <pixels> ¦ (envelope)
+
+	example:  GlowRadius 8.000000
+
+	The GlowRadius provides the glow distance, in pixels, that the 
+	glow post-process will 	produce.
+
+ 
+DataOverlay <flag>
+
+example:  DataOverlay 1
+
+The DataOverlay flag activates the data overlay function that overlays a 
+string provide by the DataOverlayLabel function on the rendered frames.
+
+<flag>:	0 - Off (No Listing)
+	1 - On
+
+
+DataOverlayLabel <string>
+
+example:  DataOverlayLabel Scene1_4/16/95
+
+The DataOverlayLabel function provides the string to be used by the 
+DataOverlay function.
+
+
+
+
+Chapter 7:			RECORD SECTION
+
+
+7.1 RECORD SECTION INFORMATION
+
+
+7.1.1  Record Section Description
+
+The effects section contains the information on the saving of animations, 
+RGB images and Alpha images.
+
+Record functions produce a listing only when activated by the user.
+
+The file saving process is not active when the scene is loaded into
+LightWave.  The file name is available to the record functions.  The user 
+must activate the save function manually to begin the saving process.
+
+
+7.1.2  Basic Record Section
+
+	Preceding Scene, Objects, Lights, Camera, and Effects Sections...........
+
+SaveRGBImagesPrefix Logo
+RGBImageFormat 2
+SaveAlphaImagesPrefix LogoAlpha
+AlphaImageFormat 0
+AlphaMode 1
+
+	Additional Scene Listings.............
+
+
+
+7.2  RECORD FUNCTIONS
+
+
+7.2.1  Function Order
+
+The following is a list of record functions that are listed in the order 
+in which they appear in the scene file.
+
+Indented entries denote an optional function of the preceding function.
+
+	SaveANIMFileName
+		LockANIMPaletteFrame
+		BeginANIMLoopFrame
+
+	SaveRGBImagesPrefix
+		RGBImageFormat
+
+	SaveAlphaImagesPrefix
+		AlphaImageFormat
+		AlphaMode
+
+	SaveFramestoresComment
+
+
+
+7.2.2 Function Descriptions
+
+The following functions are listed in the order in which they appear in 
+the scene file.
+
+
+SaveANIMFileName <image path + filename>
+
+example:  SaveANIMFileName Anims\LogoAnim
+
+The SaveANIMFileName function provides the path and filename for the 
+animation to be saved during rendering.
+
+In this example, if the current content directory is <c:\NewTek>, 
+LightWave would attempt to save the anim file as <c:\NewTek\Anims\LogoAnim>.
+
+Some animation formats produce additional function listings.
+
+
+	Additional:  LockANIMPaletteFrame <frame number>
+
+	example:  LockANIMPaletteFrame 12
+
+	The LockANIMPaletteFrame function provides the frame number to be 
+	rendered for the palette information.  The palette of all frames 
+	rendered in the animation will then use the given frames palette.
+
+
+	Additional:  BeginANIMLoopFrame <frame number>
+
+	example:  BeginANIMLoopFrame 15
+
+	The BeginANIMLoopFrame function provides the frame number to loop the 
+	animation from.  After the animation is completed, it would continue 
+	looping from the given frame to the end of the animation.
+
+
+SaveRGBImagesPrefix<image path + filename>
+
+example:  SaveRGBImagesPrefix Images\LogoFrames
+
+The SaveRGBImagesPrefix function provides the path and filename prefix 
+for the images to be saved during rendering.  A frame number and optional 
+file extension will be added to this filename.  This additional information 
+is provided by the Output Filename Format config file listing and the 
+RGBImageFormat function.  
+
+In this example, if the current content directory is <c:\NewTek>, the 
+Output Filename Format is set to Name001.xxx, and the Image Format is 
+24-bit Targa,  LightWave would attempt to save the first image file as 
+<c:\NewTek\Images\LogoFrames001.tga>.
+
+
+	Additional:  RGBImageFormat <value>
+
+	example:  RGBImageFormat 2
+
+	The RGBImageFormat function determines which file format will be 
+	used in the image saving process.
+
+
+
+	<value>:	0 - 24-bit IFF (.IFF)
+			1 - 24-bit RAW (.RAW)
+			2 - 24-bit Targa (.TGA)
+
+
+SaveAlphaImagesPrefix<image path + filename>
+
+example:  SaveAlphaImagesPrefix Images\LogoAlpha
+
+The SaveAlphaImagesPrefix function provides the path and filename prefix 
+for the alpha images to be saved during rendering.  A frame number and 
+optional file extension will be added to this filename.  This additional 
+information is provided by the Output  Filename Format config file listing 
+and the AlphaImageFormat function.  
+
+In this example, if the current content directory is <c:\NewTek>, the 
+Output Filename Format is set to Name001.xxx, and the Alpha Image Format 
+is 24-bit IFF,  LightWave would attempt to save the first image file as 
+<c:\NewTek\Images\LogoAlpha001.tga>.
+
+
+	Additional:  AlphaImageFormat <value>
+
+	example:  AlphaImageFormat 1
+
+	The AlphaImageFormat function determines which file format will 
+	be used in the image saving process.
+
+	<value>:	0 - 8-bit IFF (.IFF)
+			1 - 24-bit IFF (.IFF)
+
+
+	AlphaMode <value>
+
+	example:  AlphaMode 1
+
+	The AlphaMode functions determines which type of alpha image is 
+	going to be produced during the rendering process.
+
+	<value>:	0 - Normal Alpha
+			1 - Fader Alpha Mode
+
+
+SaveFramestoresComment <image path + filename>
+
+example:  SaveFramestoreComment  Images\Frame
+
+The SaveFramestoreComment function provides the path and filename prefix 
+for the framestores to be saved during rendering.  A frame number and 
+optional file extension will be added to this filename.  
+
+In this example, if the current content directory is <c:\NewTek>, 
+LightWave would attempt to save the first image file as 
+<c:\NewTek\Images\001.FS.Frame>.
+
+
+
+
+Chapter 8:			OPTIONS SECTION
+
+
+8.1  OPTIONS SECTION INFORMATION
+
+
+8.1.1 Options Section Description
+
+  The Options Section contains the information that relates to environment 
+  settings for LightWave's Layout.
+
+
+8.1.2  Example Options Section
+
+	Preceding Scene, Objects, Lights, Camera, Effects and Record sections.......
+
+ViewMode 3
+ViewAimpoint 0.000000 0.000000 0.000000
+ViewDirection 0.000000 -0.174533 0.000000
+ViewZoomFactor 3.200000
+LayoutGrid 8
+GridSize 1.000000
+ShowMotionPath 1
+ShowSafeAreas 1
+ShowBGImage 0
+ShowFogRadius 0
+ShowRedraw 0
+
+
+
+8.2  OPTION FUNCTIONS
+
+
+8.2.1  Function Order
+
+The following is a list of Options functions in the order in which they 
+appear in the scene file.
+
+
+		ViewMode
+
+		ViewAimpoint
+
+		ViewDirection
+
+		ViewZoomFactor
+
+		LayoutGrid
+
+		GridSize
+
+		ShowMotionPath
+
+		ShowSafeAreas
+
+		ShowBGImage
+
+		ShowFogRadius
+
+		ShowRedraw
+
+		ShowFieldChart
+
+
+8.2.2  Function Descriptions
+
+The following functions are listed in the order in which they appear in 
+the scene file.
+
+
+ViewMode <value>
+
+example:  ViewMode 5
+
+The ViewMode function determines the default viewing mode from Layout when 
+the scene file is loaded.
+
+<value>:	0 - Front
+		1 - Top
+		2 - Side
+		3 - Perspective
+		4 - Light
+		5 - Camera
+
+
+ViewAimpoint <x position> <y position> <z position>
+
+example:  ViewAimpoint 0.000000 0.000000 0.000000
+
+The ViewAimpoint function provides the position information for the 
+default viewing mode from Layout when the scene file is loaded.
+
+
+ViewDirection <heading angle> <pitch angle> <bank angle>
+
+example:  ViewDirection 0.000000 -0.175433 0.000000
+
+The ViewDirection provides the rotation information for the default 
+viewing mode from Layout when the scene file is loaded.
+
+
+ViewZoomFactor <float>
+
+example:  ViewZoomFactor 3.200000
+
+The ViewZoomFactor function provides the zoom factor for the default 
+viewing mode from Layout when the scene file is loaded.
+
+
+LayoutGrid <value>
+
+example:  LayoutGrid 8
+
+The LayoutGrid function determines the number of grid squares in Layout.
+
+<value>:	0 - Off
+		1 - 2 x 2
+		2 - 4 x 4
+		3 - 6 x 6
+		4 - 8 x 8
+		5 - 10 x 10
+		6 - 12 x 12
+		7 - 14 x 14
+		8 - 16 x 16
+
+
+GridSize <float>
+
+example:  GridSize 1.000000
+
+The GridSize function  provides the value, in meters, for the grid square 
+size in Layout.
+
+
+ShowMotionPath <flag>
+
+example:  ShowMotionPath 1
+
+The ShowMotionPath flag controls the display of the motion paths in Layout.
+
+<flag>:	0 - Off
+	1 - On
+
+
+ShowSafeAreas <flag>
+
+example:  ShowSafeAreas 1
+
+The ShowSafeAreas flag controls the display of the safe areas overlay in Layout.
+
+<flag>:	0 - Off
+	1 - On (Display Safe Area Chart)
+
+
+ShowBGImage <value>
+
+example:  ShowBGImage 2
+
+The ShowBGImage function activates the display of a background image or 
+preview anim.
+
+<value>:	0 - Blank
+		1 - BG Image
+		2 - Preview
+
+
+ShowFogRadius <flag>
+
+example:  ShowFogRadius 1
+
+The ShowFogRadius flag activates the display of the fog radius in Layout.
+
+<flag>:	0 - Off
+	1 - On (Display Fog Radius)
+
+
+ShowRedraw <flag>
+
+example:  ShowRedraw 0
+
+The ShowRedraw flag activates the display of the object polygon redraw 
+in Layout.
+
+<flag>:	0 - Off
+	1 - On (Display Object Polygon Redraw)
+
+
+ShowFieldChart <flag>
+
+example:  ShowFieldChart 1
+
+The ShowFieldChart flag activates the display of the Camera Field Chart 
+in Layout.
+
+<flag>:	0 - Off
+	1 - On (Display Field Chart)
+
