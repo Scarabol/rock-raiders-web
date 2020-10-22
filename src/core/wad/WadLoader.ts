@@ -381,19 +381,18 @@ class WadLoader {
         this.startTime = new Date();
         this.assetsFromCfgByName = {};
         this.onMessage('Loading configuration...');
-        ResourceManager.configuration = new CfgFileParser().parse(this.wad1File.getEntryData('Lego.cfg'));
+        ResourceManager.configuration = CfgFileParser.parse(this.wad1File.getEntryData('Lego.cfg'));
         Promise.all([
             new Promise((resolve) => {
-                const name = ResourceManager.configuration['Lego*']['Main']['LoadScreen']; // loading screen image
+                const name = ResourceManager.configuration['Main']['LoadScreen']; // loading screen image
                 this.loadWadImageAsset(name, resolve);
             }),
             new Promise((resolve) => {
-                const name = ResourceManager.configuration['Lego*']['Main']['ProgressBar']; // loading bar container image
+                const name = ResourceManager.configuration['Main']['ProgressBar']; // loading bar container image
                 this.loadWadImageAsset(name, resolve);
             }),
         ]).then(() => {
-            const mainConf = ResourceManager.configuration['Lego*'];
-            this.registerAllAssets(mainConf);
+            this.registerAllAssets();
             // start loading assets
             this.assetsFromCfg = Object.values(this.assetsFromCfgByName);
             this.totalResources = ResourceManager.initialAssets.length + this.assetsFromCfg.length;
@@ -415,7 +414,8 @@ class WadLoader {
         };
     }
 
-    registerAllAssets(mainConf) { // dynamically register all assets from config
+    registerAllAssets() { // dynamically register all assets from config
+        const mainConf = ResourceManager.configuration;
         // // back button
         // this.addAsset(this.loadWadImageAsset, mainConf['InterfaceBackButton'].slice(2, 4).forEach(imgPath => {
         //     this.addAsset(this.loadWadImageAsset, imgPath);

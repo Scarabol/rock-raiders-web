@@ -1,8 +1,8 @@
 import { encodeChar } from '../EncodingHelper';
 
-class CfgFileParser {
+export class CfgFileParser {
 
-    parse(buffer) {
+    static parse(buffer) {
         const result = {};
         const ancestry = [];
         let activeObject = result;
@@ -51,7 +51,7 @@ class CfgFileParser {
                         keyVal++;
                     } else if (keyVal === 3) {
                         keyVal = 0;
-                        activeObject[key] = this.parseValue(value);
+                        activeObject[key] = CfgFileParser.parseValue(value);
                     }
                 }
             }
@@ -72,16 +72,14 @@ class CfgFileParser {
             }
         });
 
-        return result;
+        return result['Lego*'];
     }
 
-    parseValue(val) {
+    static parseValue(val) {
         const num = Number(val);
 
-        const that = this;
-
         function splitShrink(sep) {
-            val = val.split(sep).filter(val => val !== '').map(val => that.parseValue(val));
+            val = val.split(sep).filter(val => val !== '').map(val => CfgFileParser.parseValue(val));
             if (val.length === 0) {
                 val = '';
             } else if (val.length === 1) {
@@ -109,5 +107,3 @@ class CfgFileParser {
     }
 
 }
-
-export { CfgFileParser };

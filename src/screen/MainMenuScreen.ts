@@ -30,7 +30,7 @@ class MainMenuScreen extends BaseScreen {
 
     showMainMenu() {
         this.hide();
-        const menuBg = ResourceManager.getImage(ResourceManager.configuration['Lego*']['Menu']['MainMenuFull']['Menu1']['MenuImage']).canvas;
+        const menuBg = ResourceManager.getImage(ResourceManager.configuration['Menu']['MainMenuFull']['Menu1']['MenuImage']).canvas;
         this.startCanvas.onRedraw = (context => {
             context.drawImage(menuBg, 0, 0, this.width, this.height);
         });
