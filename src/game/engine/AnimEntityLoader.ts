@@ -82,7 +82,7 @@ export class AnimEntityLoader {
                         const filepath = path + file + '.lws';
                         // TODO cache entities, do not parse twice
                         const content = ResourceManager.wadLoader.wad0File.getEntryText(filepath);
-                        act.animation = new LWSCLoader().parse(path, content);
+                        act.animation = LWSCLoader.parse(path, content);
                         act.animation.looping = looping;
                         (entityType.activities)[keyname] = act;
                     } else {

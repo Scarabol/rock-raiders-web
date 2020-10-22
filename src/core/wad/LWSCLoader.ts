@@ -15,7 +15,7 @@ import { getFilename } from '../Util';
 
 export class LWSCLoader {
 
-    parse(path, content): AnimClip {
+    static parse(path, content): AnimClip {
         const lines: string[] = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
             .split('\n')
@@ -48,7 +48,7 @@ export class LWSCLoader {
                     animationClip.framesPerSecond = parseInt(value);
                 } else if (key === 'AddNullObject' || key === 'LoadObject') {
                     const subObj = new AnimSubObj();
-                    if (line.startsWith('LoadObject')) {
+                    if (key === 'LoadObject') {
                         const filename = getFilename(value);
                         subObj.name = filename.slice(0, filename.length - '.lwo'.length);
                         subObj.filename = path + filename;
@@ -86,12 +86,23 @@ export class LWSCLoader {
                             }
                         } else if (line.startsWith('ParentObject ')) {
                             subObj.parentObjInd = Number(line.split(' ')[1]) - 1; // index is 1 based
+                        } else if (line.startsWith('ShowObject ') || line.startsWith('LockedChannels ')) {
+                            // only used in editor
+                        } else if (line.startsWith('ShadowOptions ')) { // TODO implement shadow options (bitwise)
+                            // 0 - Self Shadow
+                            // 1 - Cast Shadow
+                            // 2 - Receive Shadow
                         } else {
                             // console.log("Unhandled line: "+line); // TODO debug logging, analyze remaining entries
                         }
                         line = lines[++c];
                     }
                     animationClip.bodies.push(subObj);
+                } else if (line.startsWith('ObjDissolve ')) {
+                    debugger;
+                    while (!line.startsWith('EndBehavior')) {
+                        line = line[++c];
+                    }
                 } else {
                     // console.warn("Unexpected line: " + line); // TODO debug logging, analyze remaining entries
                 }
