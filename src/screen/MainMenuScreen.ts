@@ -1,6 +1,6 @@
 import { BaseScreen } from './BaseScreen';
 import { ScreenLayer } from './ScreenLayer';
-import { EventManager } from '../game/engine/EventManager';
+import { EventManager, MOUSE_BUTTON } from '../game/engine/EventManager';
 import { ResourceManager } from '../game/engine/ResourceManager';
 
 class MainMenuScreen extends BaseScreen {
@@ -22,7 +22,7 @@ class MainMenuScreen extends BaseScreen {
         this.showTeamCanvas = this.createLayer();
         this.optionsCanvas = this.createLayer();
 
-        this.eventMgr.addClickEventListener(this.startCanvas, () => { // TODO bind listener to ui elements instead of layers
+        this.eventMgr.addMouseDownListener(this.startCanvas, MOUSE_BUTTON.MAIN, () => { // TODO bind listener to ui elements instead of layers
             this.selectLevel('Level05');
             return true;
         });
