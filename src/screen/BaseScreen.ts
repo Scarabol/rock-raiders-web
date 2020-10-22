@@ -1,4 +1,4 @@
-import { ScreenLayer, ScreenLayerOptions } from './ScreenLayer';
+import { ScreenLayer } from './ScreenLayer';
 import { EventManager } from '../game/engine/EventManager';
 
 class BaseScreen {
@@ -18,8 +18,9 @@ class BaseScreen {
         this.onWindowResize();
     }
 
-    createLayer(options: Partial<ScreenLayerOptions> = {}) {
-        const layer = new ScreenLayer(this.width, this.height, options);
+    addLayer<T extends ScreenLayer>(layer: T, zIndex: number = 0): T {
+        layer.resize(this.width, this.height);
+        layer.setZIndex(zIndex);
         this.layers.push(layer);
         this.gameCanvasContainer.appendChild(layer.canvas);
         return layer;

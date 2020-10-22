@@ -57,8 +57,7 @@ export class EventManager {
     }
 
     activeAndSorted<T extends BaseListener>(listeners: T[]) {
-        return listeners.filter(l => l.layer.isActive())
-            .sort((a, b) => a.layer.zIndex === b.layer.zIndex ? 0 : a.layer.zIndex > b.layer.zIndex ? -1 : 1);
+        return listeners.filter(l => l.layer.isActive()).sort((a, b) => ScreenLayer.compareZ(a.layer, b.layer));
     }
 
     addCursorMoveListener(layer: ScreenLayer, callback: (cursorX: number, cursorY: number) => any) {

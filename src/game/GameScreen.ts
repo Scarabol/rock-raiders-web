@@ -12,13 +12,15 @@ export class GameScreen extends BaseScreen {
     onLevelEnd: (gameResult: string) => void; // TODO game result is actually an object with much more data
     gameLayer: ScreenLayer;
     selectionLayer: ScreenLayer; // TODO refactoring? move selection layer to separate class?
+    guiLayer: ScreenLayer; // TODO refactoring? move gui (layers) to separate class?
     selectStart: { x: number, y: number } = null;
     worldManager: WorldManager;
 
     constructor(eventManager: EventManager) {
         super(eventManager);
-        this.gameLayer = this.createLayer({zIndex: 0, withContext: false});
-        this.selectionLayer = this.createLayer({zIndex: 0, alpha: true});
+        this.gameLayer = this.addLayer(new ScreenLayer(false, false), 0);
+        this.selectionLayer = this.addLayer(new ScreenLayer(true), 10);
+        this.guiLayer = this.addLayer(new ScreenLayer(true), 20);
         this.worldManager = new WorldManager(this);
         this.eventMgr.addCursorMoveListener(this.gameLayer, (cx, cy) => this.moveMouseTorch(cx, cy));
         this.eventMgr.addMouseDownListener(this.selectionLayer, MOUSE_BUTTON.MAIN, (cx, cy) => this.startSelection(cx, cy));

@@ -15,14 +15,14 @@ class MainMenuScreen extends BaseScreen {
 
     constructor(eventManager: EventManager) {
         super(eventManager);
-        this.startCanvas = this.createLayer();
-        this.loadGameCanvas = this.createLayer();
-        this.levelSelectCanvas = this.createLayer();
-        this.trainingSelectCanvas = this.createLayer();
-        this.showTeamCanvas = this.createLayer();
-        this.optionsCanvas = this.createLayer();
+        this.startCanvas = this.addLayer(new ScreenLayer());
+        this.loadGameCanvas = this.addLayer(new ScreenLayer());
+        this.levelSelectCanvas = this.addLayer(new ScreenLayer());
+        this.trainingSelectCanvas = this.addLayer(new ScreenLayer());
+        this.showTeamCanvas = this.addLayer(new ScreenLayer());
+        this.optionsCanvas = this.addLayer(new ScreenLayer());
 
-        this.eventMgr.addMouseDownListener(this.startCanvas, MOUSE_BUTTON.MAIN, () => { // TODO bind listener to ui elements instead of layers
+        this.eventMgr.addMouseDownListener(this.startCanvas, MOUSE_BUTTON.MAIN, () => { // TODO bind listener to ui elements instead of layers?
             this.selectLevel('Level05');
             return true;
         });

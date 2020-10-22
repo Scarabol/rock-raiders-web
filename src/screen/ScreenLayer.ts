@@ -1,29 +1,24 @@
-export class ScreenLayerOptions {
-
-    zIndex: number;
-    withContext: boolean;
-    alpha: boolean;
-
-}
-
 export class ScreenLayer {
 
-    zIndex: number;
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
     onRedraw: (context: CanvasRenderingContext2D) => void;
 
-    constructor(width: number, height: number, options: Partial<ScreenLayerOptions>) {
-        const opts: ScreenLayerOptions = {zIndex: 0, withContext: true, alpha: false};
-        Object.keys(options).filter(k => options[k] !== undefined).forEach(k => opts[k] = options[k]);
-        this.zIndex = opts.zIndex;
+    constructor(alpha: boolean = false, withContext: boolean = true) {
         this.canvas = document.createElement('canvas');
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.canvas.style.zIndex = String(opts.zIndex);
-        if (!opts.alpha) this.canvas.style.background = '#f0f';
-        if (opts.withContext) this.context = this.canvas.getContext('2d', {alpha: opts.alpha});
+        if (!alpha) this.canvas.style.background = '#f0f';
+        if (withContext) this.context = this.canvas.getContext('2d', {alpha: alpha});
         this.hide();
+    }
+
+    setZIndex(zIndex: number) {
+        this.canvas.style.zIndex = String(zIndex);
+    }
+
+    static compareZ(layerA: ScreenLayer, layerB: ScreenLayer) {
+        let aIndex = layerA?.canvas?.style?.zIndex || 0;
+        const bIndex = layerB?.canvas?.style?.zIndex || 0;
+        return aIndex === bIndex ? 0 : aIndex > bIndex ? -1 : 1;
     }
 
     resize(width, height) {

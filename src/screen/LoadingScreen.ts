@@ -11,7 +11,7 @@ export class LoadingScreen extends BaseScreen {
 
     constructor(eventManager: EventManager) {
         super(eventManager);
-        this.layer = this.createLayer();
+        this.layer = this.addLayer(new ScreenLayer());
         this.layer.onRedraw = (context) => {
             // clear the screen to black
             context.fillStyle = 'black';
