@@ -47,7 +47,7 @@ export class EventManager {
             });
         });
         window.addEventListener('keydown', (event: KeyboardEvent) => {
-            event.preventDefault();
+            // event.preventDefault(); // otherwise page reload with F5 stops working (may be intended in future)
             eventMgr.activeAndSorted(eventMgr.keyListener).some(l => { // '.some()' breaks when a callback returns true
                 const captured = l.callback(event.key);
                 if (captured) event.stopPropagation();
