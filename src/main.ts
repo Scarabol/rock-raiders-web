@@ -15,9 +15,15 @@ const rewardScreen = new RewardScreen(eventMgr);
 
 // link all components with callbacks
 
-ResourceManager.wadLoader.onMessage = () => loadingScreen.setLoadingMessage;
-ResourceManager.wadLoader.onInitialLoad = () => loadingScreen.enableGraphicMode;
-ResourceManager.wadLoader.onAssetLoaded = () => loadingScreen.onAssetLoaded;
+ResourceManager.wadLoader.onMessage = (msg: string) => {
+    loadingScreen.setLoadingMessage(msg);
+};
+ResourceManager.wadLoader.onInitialLoad = (totalResources: number) => {
+    loadingScreen.enableGraphicMode(totalResources);
+};
+ResourceManager.wadLoader.onAssetLoaded = (assetIndex: number) => {
+    loadingScreen.onAssetLoaded(assetIndex);
+};
 ResourceManager.wadLoader.onLoad = () => {
     loadingScreen.hide();
     // mainMenuScreen.showMainMenu();

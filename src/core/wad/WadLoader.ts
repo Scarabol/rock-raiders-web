@@ -20,12 +20,12 @@ class WadLoader {
     totalResources: number = 0;
     assetsFromCfg: any;
     assetsFromCfgByName: any;
-    onInitialLoad: () => any = () => {
+    onInitialLoad: (totalResources: number) => any = () => {
     };
     onLoad: () => any = () => {
     };
     onMessage: (msg: string) => any = (msg: string) => console.log(msg);
-    onAssetLoaded: () => any = () => {
+    onAssetLoaded: (assetIndex: number) => any = () => {
     };
 
     /**
@@ -392,12 +392,12 @@ class WadLoader {
                 this.loadWadImageAsset(name, resolve);
             }),
         ]).then(() => {
-            this.onInitialLoad();
             const mainConf = ResourceManager.configuration['Lego*'];
             this.registerAllAssets(mainConf);
             // start loading assets
             this.assetsFromCfg = Object.values(this.assetsFromCfgByName);
             this.totalResources = ResourceManager.initialAssets.length + this.assetsFromCfg.length;
+            this.onInitialLoad(this.totalResources);
             this.assetIndex = 0;
             this.loadSequentialAssets();
         });
@@ -545,7 +545,7 @@ class WadLoader {
 
     onSequentialAssetLoaded() {
         this.assetIndex++;
-        this.onAssetLoaded();
+        this.onAssetLoaded(this.assetIndex);
         this.loadSequentialAssets();
     }
 
@@ -583,14 +583,16 @@ class WadLoader {
             promises.push(new Promise((resolve) => {
                 try {
                     asset.method(asset.assetPath, () => {
-                        that.onAssetLoaded();
+                        this.assetIndex++;
+                        that.onAssetLoaded(this.assetIndex);
                         resolve();
                     }, asset.assetKey);
                 } catch (e) {
                     if (!asset.optional) {
                         throw e;
                     }
-                    that.onAssetLoaded();
+                    this.assetIndex++;
+                    that.onAssetLoaded(this.assetIndex);
                     resolve();
                 }
             }));

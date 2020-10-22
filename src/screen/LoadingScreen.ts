@@ -6,7 +6,7 @@ import { EventManager } from '../game/engine/EventManager';
 export class LoadingScreen extends BaseScreen {
 
     layer: ScreenLayer;
-    currentResourceIndex: number = 0;
+    assetIndex: number = 0;
     totalResources: number = 0;
 
     constructor(eventManager: EventManager) {
@@ -40,20 +40,21 @@ export class LoadingScreen extends BaseScreen {
         this.redraw();
     }
 
-    enableGraphicMode() {
+    enableGraphicMode(totalResources: number) {
+        this.totalResources = totalResources;
         const imgBackground = ResourceManager.getImage(ResourceManager.configuration['Lego*']['Main']['LoadScreen']).canvas;
         const imgProgress = ResourceManager.getImage(ResourceManager.configuration['Lego*']['Main']['ProgressBar']).canvas;
         this.layer.onRedraw = (context => {
             const screenZoom = this.width / imgBackground.width;
-            const loadingBarWidth = 353 * this.currentResourceIndex / this.totalResources * screenZoom;
+            const loadingBarWidth = 353 * this.assetIndex / this.totalResources * screenZoom;
             context.drawImage(imgBackground, 0, 0, this.width, this.height);
             context.drawImage(imgProgress, 142 * screenZoom, 450 * screenZoom, loadingBarWidth, 9 * screenZoom);
         });
         this.redraw();
     }
 
-    onAssetLoaded() {
-        this.currentResourceIndex++;
+    onAssetLoaded(assetIndex) {
+        this.assetIndex = assetIndex;
         this.redraw();
     }
 
