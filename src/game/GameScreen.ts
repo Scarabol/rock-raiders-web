@@ -9,7 +9,7 @@ import { Vector3 } from 'three';
 
 export class GameScreen extends BaseScreen {
 
-    onLevelEnd: (gameResult: string) => void; // TODO game result is actually an objects with much more data
+    onLevelEnd: (gameResult: string) => void; // TODO game result is actually an object with much more data
     gameLayer: ScreenLayer;
     selectionLayer: ScreenLayer; // TODO refactoring? move selection layer to separate class?
     selectStart: { x: number, y: number } = null;
