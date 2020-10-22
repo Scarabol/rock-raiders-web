@@ -30,7 +30,6 @@ export class GameScreen extends BaseScreen {
     }
 
     startLevel(levelName) {
-        console.log('Starting level ' + levelName);
         this.worldManager.setup(levelName);
         // finally show all the layers
         this.gameLayer.show();
