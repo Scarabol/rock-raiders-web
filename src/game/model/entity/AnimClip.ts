@@ -15,6 +15,9 @@ class AnimClip {
             poly[index].position.copy(body.relPos[frameIndex]);
             poly[index].rotation.copy(body.relRot[frameIndex]);
             poly[index].scale.copy(body.relScale[frameIndex]);
+            const material = poly[index].material;
+            const opacity = body.opacity[frameIndex];
+            if (material && opacity !== undefined) material.opacity = opacity;
         });
         if (!(frameIndex + 1 > this.lastFrame) || this.looping) {
             const nextFrame = frameIndex + 1 > this.lastFrame ? this.firstFrame : frameIndex + 1;
