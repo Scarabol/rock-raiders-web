@@ -1,5 +1,5 @@
 import { BaseScreen } from '../screen/BaseScreen';
-import { ScreenLayer } from '../screen/ScreenLayer';
+import { ScaledLayer, ScreenLayer } from '../screen/ScreenLayer';
 import { EventManager, MOUSE_BUTTON } from './engine/EventManager';
 import { WorldManager } from './engine/WorldManager';
 import { iGet } from '../core/Util';
@@ -20,7 +20,20 @@ export class GameScreen extends BaseScreen {
         super(eventManager);
         this.gameLayer = this.addLayer(new ScreenLayer(false, false), 0);
         this.selectionLayer = this.addLayer(new ScreenLayer(true), 10);
-        this.guiLayer = this.addLayer(new ScreenLayer(true), 20);
+        this.guiLayer = this.addLayer(new ScaledLayer(640, 480), 20);
+        this.guiLayer.onRedraw = (context: CanvasRenderingContext2D) => {
+            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            const panelsCfg = ResourceManager.cfg('Panels640x480');
+            Object.keys(panelsCfg).forEach((panelName) => {
+                if (panelName === 'Panel_RadarOverlay' || panelName === 'Panel_Information') return;
+                const [imgName, xOut, yOut, xIn, yIn] = iGet(panelsCfg, panelName); // TODO refactor to panel class with in/out state
+                if (panelName === 'Panel_Messages') { // TODO no position given for this panel???
+                    context.drawImage(ResourceManager.getImage(imgName), 42, 409);
+                } else {
+                    context.drawImage(ResourceManager.getImage(imgName), xIn, yIn);
+                }
+            });
+        }
         this.worldManager = new WorldManager(this);
         this.eventMgr.addCursorMoveListener(this.gameLayer, (cx, cy) => this.moveMouseTorch(cx, cy));
         this.eventMgr.addMouseDownListener(this.selectionLayer, MOUSE_BUTTON.MAIN, (cx, cy) => this.startSelection(cx, cy));

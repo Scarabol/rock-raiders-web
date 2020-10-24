@@ -400,6 +400,12 @@ class WadLoader {
         });
     }
 
+    addAssetFolder(folderPath) {
+        this.wad0File.filterEntryNames(folderPath + '.+\\.bmp').forEach((assetPath) => {
+            this.addAsset(this.loadAlphaImageAsset, assetPath);
+        });
+    }
+
     addAsset(method, assetPath, optional = false, assetKey = null) {
         if (!assetPath || this.assetsFromCfgByName.hasOwnProperty(assetPath.toLowerCase()) || assetPath === 'NULL') {
             return; // do not load assets twice
@@ -419,12 +425,14 @@ class WadLoader {
         //     this.addAsset(this.loadWadImageAsset, imgPath);
         // }));
         // this.addAsset(this.loadFontImageAsset, 'Interface/Fonts/ToolTipFont.bmp');
-        // // crystal side bar
-        // this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/CrystalSideBar.bmp'); // right side overlay showing crystal and ore count
-        // this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/CrystalSideBar_Ore.bmp'); // image representing a single piece of ore on the overlay
-        // this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/NoSmallCrystal.bmp'); // image representing no energy crystal on the overlay
-        // this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/SmallCrystal.bmp'); // image representing a single energy crystal on the overlay
-        // this.addAsset(this.loadAlphaImageAsset, 'Interface/RightPanel/UsedCrystal.bmp'); // image representing a single in use energy crystal on the overlay
+        this.addAssetFolder('Interface/TopPanel/'); // top panel
+        this.addAssetFolder('Interface/RightPanel/'); // crystal side bar
+        this.addAssetFolder('Interface/RadarPanel/');
+        this.addAssetFolder('Interface/MessagePanel/');
+        this.addAssetFolder('Interface/InfoPanel/');
+        this.addAssetFolder('Interface/PriorityPanel/');
+        this.addAssetFolder('Interface/CameraControl/');
+        this.addAssetFolder('Interface/MessageTabs/');
         // level files
         Object.keys(mainConf['Levels']).forEach(levelKey => {
             if (!(levelKey.startsWith('Tutorial') || levelKey.startsWith('Level'))) {
