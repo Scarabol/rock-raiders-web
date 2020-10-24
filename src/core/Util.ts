@@ -16,11 +16,14 @@ export function getFilename(url: string) {
     return strUrl.substring(lastInd + 1);
 }
 
-export function iGet(obj, keyname): any {
-    const values = Object.keys(obj)
-        .filter((key) => key.toLowerCase() === keyname.toLowerCase())
-        .map((key) => obj[key]);
-    return values ? values[0] : values;
+export function iGet(obj, ...keys: string[]): any {
+    keys.forEach((keyname) => {
+        obj = Object.keys(obj)
+            .filter((key) => key.toLowerCase() === keyname.toLowerCase())
+            .map((key) => obj[key]);
+        obj = obj ? obj[0] : obj;
+    });
+    return obj;
 }
 
 export function decodeString(data) {
