@@ -382,11 +382,11 @@ class WadLoader {
         ResourceManager.configuration = CfgFileParser.parse(this.wad1File.getEntryData('Lego.cfg'));
         Promise.all([
             new Promise((resolve) => {
-                const name = ResourceManager.configuration['Main']['LoadScreen']; // loading screen image
+                const name = ResourceManager.cfg('Main', 'LoadScreen'); // loading screen image
                 this.loadWadImageAsset(name, resolve);
             }),
             new Promise((resolve) => {
-                const name = ResourceManager.configuration['Main']['ProgressBar']; // loading bar container image
+                const name = ResourceManager.cfg('Main', 'ProgressBar'); // loading bar container image
                 this.loadWadImageAsset(name, resolve);
             }),
         ]).then(() => {

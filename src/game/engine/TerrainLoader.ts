@@ -8,7 +8,7 @@ export class TerrainLoader {
         const terrain = new Terrain();
 
         const themeName = levelConf['TextureSet'][1];
-        terrain.textureSet = ResourceManager.configuration['Textures'][themeName];
+        terrain.textureSet = ResourceManager.cfg('Textures', themeName);
         // console.log(terrain.textureSet);
 
         const terrainMap = ResourceManager.maps[(levelConf)['TerrainMap']];

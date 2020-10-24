@@ -25,7 +25,7 @@ export class WorldManager {
     }
 
     setup(levelName: string) {
-        const levelConf = ResourceManager.configuration['Levels'][levelName];
+        const levelConf = ResourceManager.cfg('Levels', levelName);
         if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'; // TODO error handling
         console.log('Starting level ' + levelName + ' - ' + iGet(levelConf, 'FullName'));
 
@@ -44,7 +44,7 @@ export class WorldManager {
             const worldX = (olObject.xPos - 1) * this.tileSize;
             const worldZ = (olObject.yPos - 1) * this.tileSize;
             const worldY = this.getTerrainHeight(worldX, worldZ);
-            const buildingType = ResourceManager.configuration['BuildingTypes'][olObject.type];
+            const buildingType = ResourceManager.cfg('BuildingTypes', olObject.type);
             let radHeading = degToRad(olObject.heading);
             if (lTypeName === 'TVCamera'.toLowerCase()) {
                 const target = new Vector3(worldX, worldY, worldZ - this.tileSize / 2);

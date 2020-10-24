@@ -30,7 +30,7 @@ class MainMenuScreen extends BaseScreen {
 
     showMainMenu() {
         this.hide();
-        const menuBg = ResourceManager.getImage(ResourceManager.configuration['Menu']['MainMenuFull']['Menu1']['MenuImage']);
+        const menuBg = ResourceManager.getImage(ResourceManager.cfg('Menu', 'MainMenuFull', 'Menu1', 'MenuImage'));
         this.startCanvas.onRedraw = (context => {
             context.drawImage(menuBg, 0, 0, this.width, this.height);
         });

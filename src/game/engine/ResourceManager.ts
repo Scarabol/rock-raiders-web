@@ -1,6 +1,6 @@
 import { createDummyImage } from '../../core/ImageHelper';
 import { WadLoader } from '../../core/wad/WadLoader';
-import { getFilename } from '../../core/Util';
+import { getFilename, iGet } from '../../core/Util';
 import { Texture } from 'three/src/textures/Texture';
 import { RGBFormat } from 'three/src/constants';
 import * as THREE from 'three';
@@ -41,6 +41,10 @@ export class ResourceManager {
         // pointers/cursors // TODO load main menu cursor with loading screen and change cursor there
         ['wad0alpha', 'Interface/Pointers/Aclosed.bmp'],
     ];
+
+    static cfg(...keys: string[]) {
+        return iGet(ResourceManager.configuration, ...keys);
+    }
 
     static getImage(imageName) {
         if (!imageName || imageName.length === 0) {
