@@ -24,11 +24,11 @@ export class ScreenLayer {
     resize(width, height) {
         this.canvas.width = width;
         this.canvas.height = height;
-        if (this.isActive()) this.redraw();
+        this.redraw();
     }
 
     redraw() {
-        if (this.onRedraw) this.onRedraw(this.context);
+        if (this.isActive() && this.onRedraw) this.onRedraw(this.context);
     }
 
     show() {
@@ -42,6 +42,24 @@ export class ScreenLayer {
 
     isActive() {
         return this.canvas.style.visibility === 'visible';
+    }
+
+}
+
+export class ScaledLayer extends ScreenLayer {
+
+    fixedWidth: number;
+    fixedHeight: number;
+
+    constructor(fixedWidth: number, fixedHeight: number) {
+        super(true);
+        this.fixedWidth = fixedWidth;
+        this.fixedHeight = fixedHeight;
+    }
+
+    resize(width, height) {
+        super.resize(width, height);
+        this.context.scale(this.canvas.width / this.fixedWidth, this.canvas.height / this.fixedHeight);
     }
 
 }
