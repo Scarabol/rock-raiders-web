@@ -57,9 +57,7 @@ class WadLoader {
         const img = new Image();
 
         img.onload = function () {
-            const context = createContext(img.naturalWidth, img.naturalHeight);
-            context.drawImage(img, 0, 0);
-            ResourceManager.images[name.toLowerCase()] = context;
+            ResourceManager.images[name.toLowerCase()] = img;
             URL.revokeObjectURL(img.src);
             if (callback != null) {
                 callback();
@@ -136,7 +134,7 @@ class WadLoader {
                 }
             }
             context.putImageData(imgData, 0, 0);
-            ResourceManager.images[name.toLowerCase()] = context;
+            ResourceManager.images[name.toLowerCase()] = context.canvas;
             URL.revokeObjectURL(img.src);
             if (callback != null) {
                 callback();

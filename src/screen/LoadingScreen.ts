@@ -42,8 +42,8 @@ export class LoadingScreen extends BaseScreen {
 
     enableGraphicMode(totalResources: number) {
         this.totalResources = totalResources;
-        const imgBackground = ResourceManager.getImage(ResourceManager.configuration['Main']['LoadScreen']).canvas;
-        const imgProgress = ResourceManager.getImage(ResourceManager.configuration['Main']['ProgressBar']).canvas;
+        const imgBackground = ResourceManager.getImage(ResourceManager.configuration['Main']['LoadScreen']);
+        const imgProgress = ResourceManager.getImage(ResourceManager.configuration['Main']['ProgressBar']);
         this.layer.onRedraw = (context => {
             const screenZoom = this.width / imgBackground.width;
             const loadingBarWidth = 353 * this.assetIndex / this.totalResources * screenZoom;

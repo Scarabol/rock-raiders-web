@@ -35,7 +35,7 @@ function createDummyImage(width, height) {
             result.fillRect(x, y, 16, 16);
         }
     }
-    return result;
+    return result.canvas;
 }
 
 export { createContext, createDummyImage };
