@@ -1,5 +1,6 @@
 import { ScreenLayer } from '../../screen/ScreenLayer';
 
+// noinspection JSUnusedGlobalSymbols
 export enum MOUSE_BUTTON {
 
     MAIN = 0,

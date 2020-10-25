@@ -1,7 +1,7 @@
 import { ScreenLayer } from './ScreenLayer';
 import { EventManager } from '../game/engine/EventManager';
 
-class BaseScreen {
+export class BaseScreen {
 
     eventMgr: EventManager;
     gameCanvasContainer: HTMLElement;
@@ -57,5 +57,3 @@ class BaseScreen {
     }
 
 }
-
-export { BaseScreen };

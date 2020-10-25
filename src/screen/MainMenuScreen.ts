@@ -21,11 +21,6 @@ class MainMenuScreen extends BaseScreen {
         this.trainingSelectCanvas = this.addLayer(new ScreenLayer());
         this.showTeamCanvas = this.addLayer(new ScreenLayer());
         this.optionsCanvas = this.addLayer(new ScreenLayer());
-
-        this.eventMgr.addMouseDownListener(this.startCanvas, MOUSE_BUTTON.MAIN, () => { // TODO bind listener to ui elements instead of layers?
-            this.selectLevel('Level05');
-            return true;
-        });
     }
 
     showMainMenu() {
