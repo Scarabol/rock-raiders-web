@@ -1,6 +1,6 @@
 import { AmbientLight, MOUSE, PerspectiveCamera, PointLight, Scene, WebGLRenderer } from 'three';
 import { DebugHelper } from '../../core/DebugHelper';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { MapControls } from 'three/examples/jsm/controls/OrbitControls';
 
 class SceneManager {
 
@@ -14,7 +14,7 @@ class SceneManager {
     amb: AmbientLight;
     light: PointLight;
     axisHelper;
-    controls: OrbitControls;
+    controls: MapControls;
     cursorTorchlight: PointLight;
 
     constructor(canvas: HTMLCanvasElement) {
@@ -32,8 +32,7 @@ class SceneManager {
 
         this.camera = new PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 5000); // TODO make these params configurable
 
-        this.controls = new OrbitControls(this.camera, this.renderer.domElement.parentElement);
-        this.controls.screenSpacePanning = false;
+        this.controls = new MapControls(this.camera, this.renderer.domElement.parentElement);
         this.controls.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN};
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
     }
