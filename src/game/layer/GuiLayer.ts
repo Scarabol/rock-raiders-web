@@ -1,23 +1,22 @@
 import { ScaledLayer } from '../../screen/ScreenLayer';
 import { ResourceManager } from '../engine/ResourceManager';
 import { iGet } from '../../core/Util';
+import { Panel } from '../../gui/Panel';
 
 export class GuiLayer extends ScaledLayer {
 
+    panels: Panel[] = [];
+
     constructor() {
         super(640, 480);
+        const panelsCfg = ResourceManager.cfg('Panels640x480');
+        Object.keys(panelsCfg).forEach((panelName) => {
+            const panelCfg = iGet(panelsCfg, panelName);
+            this.panels.push(new Panel(panelName, panelCfg));
+        });
         this.onRedraw = (context: CanvasRenderingContext2D) => {
             context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-            const panelsCfg = ResourceManager.cfg('Panels640x480');
-            Object.keys(panelsCfg).forEach((panelName) => {
-                if (panelName === 'Panel_RadarOverlay' || panelName === 'Panel_Information') return;
-                const [imgName, xOut, yOut, xIn, yIn] = iGet(panelsCfg, panelName); // TODO refactor to panel class with in/out state
-                if (panelName === 'Panel_Messages') { // TODO no position given for this panel???
-                    context.drawImage(ResourceManager.getImage(imgName), 42, 409);
-                } else {
-                    context.drawImage(ResourceManager.getImage(imgName), xIn, yIn);
-                }
-            });
+            this.panels.forEach((panel) => panel.redraw(context));
         };
     }
 
