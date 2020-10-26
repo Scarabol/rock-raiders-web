@@ -51,10 +51,32 @@ export class CfgFileParser {
                         keyVal++;
                     } else if (keyVal === 3) {
                         keyVal = 0;
-                        activeObject[key] = CfgFileParser.parseValue(value);
+                        const parsed = CfgFileParser.parseValue(value);
+                        if (activeObject.hasOwnProperty(key)) {
+                            activeObject[key].push(parsed);
+                        } else {
+                            activeObject[key] = [parsed];
+                        }
                     }
                 }
             }
+        }
+
+        const stack = [result];
+        while (stack.length > 0) {
+            const obj = stack.pop();
+            Object.keys(obj).forEach((key) => {
+                const val = obj[key];
+                if (Array.isArray(val)) {
+                    if (val.length === 1) {
+                        obj[key] = val[0];
+                    } else {
+                        val.forEach((sub) => stack.push(sub));
+                    }
+                } else if (Object.keys(val).length > 1) {
+                    stack.push(val);
+                }
+            });
         }
 
         // apply some patches here
