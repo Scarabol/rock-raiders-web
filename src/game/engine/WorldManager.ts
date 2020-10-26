@@ -59,7 +59,7 @@ export class WorldManager {
                 const pilot = new AnimEntity(entityType);
                 pilot.setActivity('Stand');
                 pilot.group.position.set(worldX, worldY, worldZ);
-                pilot.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
+                pilot.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
                 this.sceneManager.scene.add(pilot.group);
             } else if (buildingType) {
                 const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
