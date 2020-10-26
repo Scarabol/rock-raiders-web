@@ -33,15 +33,15 @@ export class SelectionLayer extends ScreenLayer {
     }
 
     changeSelection(screenX: number, screenY: number) {
-        if (this.selectStart) {
-            this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            this.context.strokeStyle = '#0f0';
-            this.context.strokeRect(this.selectStart.x, this.selectStart.y, screenX - this.selectStart.x, screenY - this.selectStart.y);
-            return true;
-        }
+        if (!this.selectStart) return false; // selection was not started on this layer
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.context.strokeStyle = '#0f0';
+        this.context.strokeRect(this.selectStart.x, this.selectStart.y, screenX - this.selectStart.x, screenY - this.selectStart.y);
+        return true;
     }
 
     selectEntities(screenX: number, screenY: number) {
+        if (!this.selectStart) return false; // selection was not started on this layer
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         const rx = (screenX / this.canvas.width) * 2 - 1;
         const ry = -(screenY / this.canvas.height) * 2 + 1;
