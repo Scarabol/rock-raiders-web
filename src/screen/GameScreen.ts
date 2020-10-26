@@ -1,8 +1,8 @@
-import { BaseScreen } from '../screen/BaseScreen';
-import { WorldManager } from './engine/WorldManager';
-import { SelectionLayer } from './layer/SelectionLayer';
-import { GameLayer } from './layer/GameLayer';
-import { GuiLayer } from './layer/GuiLayer';
+import { BaseScreen } from './BaseScreen';
+import { WorldManager } from '../game/engine/WorldManager';
+import { SelectionLayer } from '../game/layer/SelectionLayer';
+import { GameLayer } from '../game/layer/GameLayer';
+import { GuiLayer } from '../game/layer/GuiLayer';
 
 export class GameScreen extends BaseScreen {
 

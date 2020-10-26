@@ -1,7 +1,7 @@
 import { LoadingScreen } from './screen/LoadingScreen';
 import { ResourceManager } from './game/engine/ResourceManager';
 import { MainMenuScreen } from './screen/MainMenuScreen';
-import { GameScreen } from './game/GameScreen';
+import { GameScreen } from './screen/GameScreen';
 import { RewardScreen } from './screen/RewardScreen';
 
 // setup basic game engine structure
