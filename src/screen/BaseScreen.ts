@@ -3,16 +3,16 @@ import { EventManager } from '../game/engine/EventManager';
 
 export class BaseScreen {
 
-    eventMgr: EventManager;
     gameCanvasContainer: HTMLElement;
+    eventMgr: EventManager;
     layers: ScreenLayer[] = [];
     width: number = 800;
     height: number = 600;
     ratio: number = 800 / 600;
 
     constructor() {
-        this.eventMgr = new EventManager(this);
         this.gameCanvasContainer = document.getElementById('game-canvas-container');
+        this.eventMgr = new EventManager(this);
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!';
         window.addEventListener('resize', () => this.onWindowResize());
         this.onWindowResize();
