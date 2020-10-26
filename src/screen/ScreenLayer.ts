@@ -74,9 +74,22 @@ export class ScaledLayer extends ScreenLayer {
         this.fixedHeight = fixedHeight;
     }
 
+    toScaledCoords(windowX: number, windowY: number) {
+        const [cx, cy] = this.toCanvasCoords(windowX, windowY);
+        return [cx / this.scaleX(), cy / this.scaleY()];
+    }
+
     resize(width, height) {
         super.resize(width, height);
-        this.context.scale(this.canvas.width / this.fixedWidth, this.canvas.height / this.fixedHeight);
+        this.context.scale(this.scaleX(), this.scaleY());
+    }
+
+    scaleX() {
+        return this.canvas.width / this.fixedWidth;
+    }
+
+    scaleY() {
+        return this.canvas.height / this.fixedHeight;
     }
 
 }
