@@ -36,7 +36,7 @@ export class WorldManager {
 
         // load in non-space objects next
         const objectList = ResourceManager.objectLists[levelConf['OListFile']];
-        console.log(objectList);
+        // console.log(objectList);
         Object.values(objectList).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type;
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
