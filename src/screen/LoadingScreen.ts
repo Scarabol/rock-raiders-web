@@ -1,7 +1,6 @@
 import { BaseScreen } from './BaseScreen';
 import { ResourceManager } from '../game/engine/ResourceManager';
 import { ScreenLayer } from './ScreenLayer';
-import { EventManager } from '../game/engine/EventManager';
 
 export class LoadingScreen extends BaseScreen {
 
@@ -9,8 +8,8 @@ export class LoadingScreen extends BaseScreen {
     assetIndex: number = 0;
     totalResources: number = 0;
 
-    constructor(eventManager: EventManager) {
-        super(eventManager);
+    constructor() {
+        super();
         this.layer = this.addLayer(new ScreenLayer());
         this.layer.onRedraw = (context) => {
             // clear the screen to black

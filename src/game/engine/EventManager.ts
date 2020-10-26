@@ -1,4 +1,5 @@
 import { ScreenLayer } from '../../screen/ScreenLayer';
+import { BaseScreen } from '../../screen/BaseScreen';
 
 // noinspection JSUnusedGlobalSymbols
 export enum MOUSE_BUTTON {
@@ -11,99 +12,56 @@ export enum MOUSE_BUTTON {
 
 export class EventManager {
 
-    cursorMoveListener: CursorMoveListener[] = [];
-    mouseDownListener: MouseButtonListener[] = [];
-    mouseUpListener: MouseButtonListener[] = [];
-    keyListener: KeyListener[] = [];
-
-    constructor() {
-        const eventMgr = this;
-        document.addEventListener('pointermove', (event: MouseEvent) => {
-            event.preventDefault();
-            eventMgr.activeAndSorted(eventMgr.cursorMoveListener).forEach(l => {
-                const clientRect = l.layer.canvas.getBoundingClientRect();
-                l.callback(event.clientX - clientRect.left, event.clientY - clientRect.top);
-            });
+    constructor(screen: BaseScreen) {
+        document.addEventListener('contextmenu', (event: MouseEvent) => {
+            event.preventDefault(); // TODO only prevent default, when over canvas
         });
-        document.addEventListener('pointerdown', (event: MouseEvent) => {
-            event.preventDefault();
-            eventMgr.activeAndSorted(eventMgr.mouseDownListener).some(l => {
-                if (l.button === event.button) {
-                    const clientRect = l.layer.canvas.getBoundingClientRect();
-                    const captured = l.callback(event.clientX - clientRect.left, event.clientY - clientRect.top);
-                    if (captured) event.stopPropagation();
-                    return captured;
-                }
+        ['pointermove', 'pointerdown', 'pointerup']
+            .forEach((eventType) => {
+                document.addEventListener(eventType, (event: PointerEvent) => {
+                    // all event attibutes used by controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
+                    const nonBubblingClone = new PointerEvent(event.type, {
+                        bubbles: false, // disable bubbling otherwise we'll trigger this same event handler again
+                        clientX: event.clientX,
+                        clientY: event.clientY,
+                        pointerType: event.pointerType,
+                        button: event.button,
+                        ctrlKey: event.ctrlKey,
+                        metaKey: event.metaKey,
+                        shiftKey: event.shiftKey,
+                    });
+                    screen.layers.filter(l => l.isActive())
+                        .sort((a, b) => ScreenLayer.compareZ(a, b))
+                        .some(l => l.handlePointerEvent(eventType, nonBubblingClone));
+                });
             });
-        });
-        document.addEventListener('pointerup', (event: MouseEvent) => {
-            event.preventDefault();
-            eventMgr.activeAndSorted(eventMgr.mouseUpListener).some(l => {
-                if (l.button === event.button) {
-                    const clientRect = l.layer.canvas.getBoundingClientRect();
-                    const captured = l.callback(event.clientX - clientRect.left, event.clientY - clientRect.top);
-                    if (captured) event.stopPropagation();
-                    return captured;
-                }
+        ['keydown', 'keyup']
+            .forEach((eventType) => {
+                document.addEventListener(eventType, (event: KeyboardEvent) => {
+                    // event.preventDefault(); // otherwise page reload with F5 stops working (may be intended in future)
+                    screen.layers.filter(l => l.isActive())
+                        .sort((a, b) => ScreenLayer.compareZ(a, b))
+                        .some(l => l.handleKeyEvent(eventType, event));
+                });
             });
-        });
-        window.addEventListener('keydown', (event: KeyboardEvent) => {
-            // event.preventDefault(); // otherwise page reload with F5 stops working (may be intended in future)
-            eventMgr.activeAndSorted(eventMgr.keyListener).some(l => { // '.some()' breaks when a callback returns true
-                const captured = l.callback(event.key);
-                if (captured) event.stopPropagation();
-                return captured;
+        document.addEventListener('wheel', (event: WheelEvent) => {
+            // all event attibutes used by controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
+            const nonBubblingClone = new WheelEvent(event.type, {
+                bubbles: false, // disable bubbling otherwise we'll trigger this same event handler again
+                clientX: event.clientX,
+                clientY: event.clientY,
+                deltaX: event.deltaX,
+                deltaY: event.deltaY,
+                deltaZ: event.deltaZ,
+                button: event.button,
+                ctrlKey: event.ctrlKey,
+                metaKey: event.metaKey,
+                shiftKey: event.shiftKey,
             });
+            screen.layers.filter(l => l.isActive())
+                .sort((a, b) => ScreenLayer.compareZ(a, b))
+                .some(l => l.handleWheelEvent('wheel', nonBubblingClone));
         });
     }
-
-    activeAndSorted<T extends BaseListener>(listeners: T[]) {
-        return listeners.filter(l => l.layer.isActive()).sort((a, b) => ScreenLayer.compareZ(a.layer, b.layer));
-    }
-
-    addCursorMoveListener(layer: ScreenLayer, callback: (cursorX: number, cursorY: number) => any) {
-        this.cursorMoveListener.push({layer: layer, callback: callback});
-    }
-
-    addMouseDownListener(layer: ScreenLayer, button: MOUSE_BUTTON, callback: (cursorX: number, cursorY: number) => boolean) {
-        this.mouseDownListener.push({layer: layer, button: button, callback: callback});
-    }
-
-    addMouseUpListener(layer: ScreenLayer, button: MOUSE_BUTTON, callback: (cursorX: number, cursorY: number) => boolean) {
-        this.mouseUpListener.push({layer: layer, button: button, callback: callback});
-    }
-
-    addKeyEventListener(layer: ScreenLayer, callback: (key: string) => boolean) {
-        this.keyListener.push({layer: layer, callback: callback});
-    }
-
-}
-
-interface BaseListener {
-
-    layer: ScreenLayer;
-    callback: (...any) => any;
-
-}
-
-class CursorMoveListener implements BaseListener {
-
-    layer: ScreenLayer;
-    callback: (cursorX: number, cursorY: number) => any;
-
-}
-
-class MouseButtonListener implements BaseListener {
-
-    layer: ScreenLayer;
-    button: MOUSE_BUTTON;
-    callback: (cursorX: number, cursorY: number) => boolean;
-
-}
-
-class KeyListener implements BaseListener {
-
-    layer: ScreenLayer;
-    callback: (key: string) => boolean;
 
 }

@@ -4,7 +4,6 @@ import { ResourceManager } from './ResourceManager';
 import { MathUtils, Raycaster, Vector3 } from 'three';
 import { iGet } from '../../core/Util';
 import { ENERGY_PATH_BUILDING } from '../model/map/SurfaceType';
-import { GameScreen } from '../GameScreen';
 import { Terrain } from '../model/map/Terrain';
 import { Selectable } from '../model/Selectable';
 import { AnimEntity } from '../model/entity/AnimEntity';
@@ -19,8 +18,8 @@ export class WorldManager {
     selectedEntity: Selectable;
     buildings = {};
 
-    constructor(screen: GameScreen) {
-        this.sceneManager = new SceneManager(screen.gameLayer.canvas);
+    constructor(canvas: HTMLCanvasElement) {
+        this.sceneManager = new SceneManager(canvas);
         this.sceneManager.cursorTorchlight.distance *= this.tileSize;
     }
 

@@ -44,6 +44,23 @@ export class ScreenLayer {
         return this.canvas.style.visibility === 'visible';
     }
 
+    toCanvasCoords(windowX: number, windowY: number) {
+        const clientRect = this.canvas.getBoundingClientRect();
+        return [windowX - clientRect.left, windowY - clientRect.top];
+    }
+
+    handlePointerEvent(eventType: string, event: PointerEvent) {
+        return false;
+    }
+
+    handleKeyEvent(eventType: string, event: KeyboardEvent) {
+        return false;
+    }
+
+    handleWheelEvent(eventType: string, event: WheelEvent) {
+        return false;
+    }
+
 }
 
 export class ScaledLayer extends ScreenLayer {

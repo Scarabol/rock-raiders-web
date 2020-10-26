@@ -1,6 +1,5 @@
 import { BaseScreen } from './BaseScreen';
 import { ScreenLayer } from './ScreenLayer';
-import { EventManager, MOUSE_BUTTON } from '../game/engine/EventManager';
 import { ResourceManager } from '../game/engine/ResourceManager';
 
 class MainMenuScreen extends BaseScreen {
@@ -13,8 +12,8 @@ class MainMenuScreen extends BaseScreen {
     showTeamCanvas: ScreenLayer;
     optionsCanvas: ScreenLayer;
 
-    constructor(eventManager: EventManager) {
-        super(eventManager);
+    constructor() {
+        super();
         this.startCanvas = this.addLayer(new ScreenLayer());
         this.loadGameCanvas = this.addLayer(new ScreenLayer());
         this.levelSelectCanvas = this.addLayer(new ScreenLayer());

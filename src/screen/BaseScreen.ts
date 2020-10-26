@@ -10,8 +10,8 @@ export class BaseScreen {
     height: number = 600;
     ratio: number = 800 / 600;
 
-    constructor(eventManager: EventManager) {
-        this.eventMgr = eventManager;
+    constructor() {
+        this.eventMgr = new EventManager(this);
         this.gameCanvasContainer = document.getElementById('game-canvas-container');
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!';
         window.addEventListener('resize', () => this.onWindowResize());

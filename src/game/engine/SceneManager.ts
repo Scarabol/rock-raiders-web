@@ -32,7 +32,7 @@ class SceneManager {
 
         this.camera = new PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 5000); // TODO make these params configurable
 
-        this.controls = new MapControls(this.camera, this.renderer.domElement.parentElement);
+        this.controls = new MapControls(this.camera, this.renderer.domElement);
         this.controls.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN};
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
     }
