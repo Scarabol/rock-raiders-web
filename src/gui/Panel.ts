@@ -1,36 +1,39 @@
 import { ResourceManager } from '../game/engine/ResourceManager';
-import { Button } from './Button';
+import { Button, InterfaceBackButton } from './Button';
 import { BaseElement } from './BaseElement';
 import { iGet } from '../core/Util';
 import { GameState } from '../game/model/GameState';
-import { GuiLayer } from '../game/layer/GuiLayer';
+import { MenuItem } from './MenuItem';
 
 export class Panel extends BaseElement {
 
-    layer: GuiLayer;
     name: string;
     img;
-    xIn: number;
-    yIn: number;
-    xOut: number;
-    yOut: number;
+    xIn: number = 0;
+    yIn: number = 0;
+    xOut: number = 0;
+    yOut: number = 0;
     buttons = {};
     animated: boolean = false;
 
-    constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
+    constructor(panelName: string = null, panelsCfg: {} = {}, buttonsCfg: {} = {}) {
         super();
         this.name = panelName;
-        let imgName;
-        [imgName, this.xOut, this.yOut, this.xIn, this.yIn] = iGet(panelsCfg, panelName);
-        this.img = ResourceManager.getImage(imgName);
-        this.relX = this.xIn;
-        this.relY = this.yIn;
-        let panelButtonsCfg = iGet(buttonsCfg, panelName);
-        if (panelButtonsCfg) {
-            if (panelName === 'Panel_Encyclopedia') { // TODO refactor cfg handling
-                this.addButton(new Button(this, panelButtonsCfg));
-            } else {
-                panelButtonsCfg.forEach((btnCfg) => this.addButton(new Button(this, btnCfg)));
+        if (panelsCfg && panelName) {
+            let imgName;
+            [imgName, this.xOut, this.yOut, this.xIn, this.yIn] = iGet(panelsCfg, panelName);
+            this.img = ResourceManager.getImage(imgName);
+            this.relX = this.xIn;
+            this.relY = this.yIn;
+        }
+        if (buttonsCfg && panelName) {
+            let panelButtonsCfg = iGet(buttonsCfg, panelName);
+            if (panelButtonsCfg) {
+                if (panelName === 'Panel_Encyclopedia') { // TODO refactor cfg handling
+                    this.addButton(new Button(this, panelButtonsCfg));
+                } else {
+                    panelButtonsCfg.forEach((btnCfg) => this.addButton(new Button(this, btnCfg)));
+                }
             }
         }
     }
@@ -45,36 +48,37 @@ export class Panel extends BaseElement {
         return this.animated || super.isInactive();
     }
 
-    updateAnimation(targetX: number, targetY: number, speed: number) {
+    updateAnimation(targetX: number, targetY: number, speed: number, onDone: () => any) {
         const diffX = targetX - this.relX;
         const diffY = targetY - this.relY;
-        if (Math.abs(diffX) < speed + 1 && Math.abs(diffY) < speed + 1) {
+        if (Math.abs(diffX) <= speed && Math.abs(diffY) <= speed) {
             this.relX = targetX;
             this.relY = targetY;
             this.animated = false;
+            if (onDone) onDone();
         } else {
             this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * speed);
             this.relY += Math.round(Math.sign(diffY) * Math.sqrt(Math.abs(diffY)) * speed);
             const panel = this;
-            setTimeout(() => panel.updateAnimation(targetX, targetY, speed), 1000 / 30); // synced with 30 FPS // TODO externalize constant
+            setTimeout(() => panel.updateAnimation(targetX, targetY, speed, onDone), 1000 / 30); // synced with 30 FPS // TODO externalize constant
         }
         this.updatePosition();
-        if (this.layer) this.layer.redraw(); // TODO performance: only redraw panel screen area (if possible??? animation???)
+        this.notifyRedraw();
     }
 
-    toggle() {
+    toggle(onDone: () => any = null) {
         if (this.animated) return; // animation already in progress
         this.animated = true;
         if (this.relX === this.xIn && this.relY === this.yIn) {
-            this.updateAnimation(this.xOut, this.yOut, 2); // TODO externalize constant
+            this.updateAnimation(this.xOut, this.yOut, 3, onDone); // TODO externalize constant
         } else {
-            this.updateAnimation(this.xIn, this.yIn, 2); // TODO externalize constant
+            this.updateAnimation(this.xIn, this.yIn, 3, onDone); // TODO externalize constant
         }
     }
 
     onRedraw(context: CanvasRenderingContext2D) {
         if (this.hidden) return;
-        context.drawImage(this.img, this.x, this.y);
+        if (this.img) context.drawImage(this.img, this.x, this.y);
         super.onRedraw(context);
     }
 
@@ -205,6 +209,81 @@ export class PanelCrystalSideBar extends Panel {
             curY -= this.imgOre.height;
             context.drawImage(this.imgOre, curX - this.imgOre.width / 2, curY);
         }
+    }
+
+}
+
+export class IconPanel extends Panel {
+
+    mainPanel: IconSubPanel;
+
+    constructor() {
+        super();
+        this.mainPanel = this.addChild(new IconSubPanel(4));
+        const buildingPanel = this.addChild(new IconSubPanel(10, this.mainPanel));
+        const smallVehiclePanel = this.addChild(new IconSubPanel(6, this.mainPanel));
+        const largeVehiclePanel = this.addChild(new IconSubPanel(5, this.mainPanel));
+        const teleportItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan');
+        const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding');
+        buildingItem.disabled = false;
+        buildingItem.onClick = () => this.mainPanel.toggle(() => buildingPanel.toggle());
+        buildingPanel.addMenuItem('InterfaceBuildImages', 'Toolstation');
+        buildingPanel.addMenuItem('InterfaceBuildImages', 'TeleportPad');
+        buildingPanel.addMenuItem('InterfaceBuildImages', 'Docks');
+        buildingPanel.addMenuItem('InterfaceBuildImages', 'Powerstation');
+        buildingPanel.addMenuItem('InterfaceBuildImages', 'Barracks');
+        buildingPanel.addMenuItem('InterfaceBuildImages', 'Upgrade');
+        buildingPanel.addMenuItem('InterfaceBuildImages', 'Geo-dome');
+        buildingPanel.addMenuItem('InterfaceBuildImages', 'OreRefinery');
+        buildingPanel.addMenuItem('InterfaceBuildImages', 'Gunstation');
+        buildingPanel.addMenuItem('InterfaceBuildImages', 'TeleportBIG');
+        const smallVehicleItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildSmallVehicle');
+        smallVehicleItem.disabled = false;
+        smallVehicleItem.onClick = () => this.mainPanel.toggle(() => smallVehiclePanel.toggle());
+        smallVehiclePanel.addMenuItem('InterfaceBuildImages', 'Hoverboard');
+        smallVehiclePanel.addMenuItem('InterfaceBuildImages', 'SmallDigger');
+        smallVehiclePanel.addMenuItem('InterfaceBuildImages', 'SmallTruck');
+        smallVehiclePanel.addMenuItem('InterfaceBuildImages', 'SmallCat');
+        smallVehiclePanel.addMenuItem('InterfaceBuildImages', 'SmallMLP');
+        smallVehiclePanel.addMenuItem('InterfaceBuildImages', 'SmallHeli');
+        const largeVehicleItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildLargeVehicle');
+        largeVehicleItem.disabled = false;
+        largeVehicleItem.onClick = () => this.mainPanel.toggle(() => largeVehiclePanel.toggle());
+        largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'BullDozer');
+        largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'WalkerDigger');
+        largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'LargeMLP');
+        largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'LargeDigger');
+        largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'LargeCat');
+        this.mainPanel.toggle(); // TODO this should be triggered by existance of a working/discovered toolstation?
+    }
+
+}
+
+export class IconSubPanel extends Panel {
+
+    countMenuItems: number = 0;
+
+    constructor(numOfItems, parentPanel: Panel = null) {
+        super();
+        if (parentPanel) {
+            const panel = this;
+            const backBtn = this.addButton(new InterfaceBackButton(this));
+            backBtn.onClick = () => panel.toggle(() => parentPanel.toggle());
+        }
+        const frameImgCfg = ResourceManager.cfg('InterfaceSurroundImages', numOfItems.toString());
+        const [imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2] = frameImgCfg;
+        this.img = parentPanel ? ResourceManager.getImage(imgName) : ResourceManager.getImage(imgNameWoBackName);
+        this.xIn = 640 - 16 - this.img.width;
+        this.relX = this.xOut = 640;
+        this.relY = this.yIn = this.yOut = 9;
+    }
+
+    addMenuItem(menuItemGroup, itemKey) {
+        // TODO assert that number of items is below planned size
+        const menuItem = this.addChild(new MenuItem(this, menuItemGroup, itemKey));
+        menuItem.relY += menuItem.height * this.countMenuItems;
+        this.countMenuItems++;
+        return menuItem;
     }
 
 }

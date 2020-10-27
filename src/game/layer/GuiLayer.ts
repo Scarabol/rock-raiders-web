@@ -1,6 +1,6 @@
 import { ScaledLayer } from '../../screen/ScreenLayer';
 import { ResourceManager } from '../engine/ResourceManager';
-import { InfoDockPanel, MessagePanel, Panel, PanelCrystalSideBar, RadarPanel, TopPanel } from '../../gui/Panel';
+import { IconPanel, InfoDockPanel, MessagePanel, Panel, PanelCrystalSideBar, RadarPanel, TopPanel } from '../../gui/Panel';
 import { BaseElement } from '../../gui/BaseElement';
 
 export class GuiLayer extends ScaledLayer {
@@ -16,18 +16,22 @@ export class GuiLayer extends ScaledLayer {
     panelCameraControl: Panel;
     panelInfoDock: InfoDockPanel;
     panelEncyclopedia: Panel;
+    panelIcons: IconPanel;
 
     constructor() {
         super(640, 480);
         const panelsCfg = ResourceManager.cfg('Panels640x480');
         const buttonsCfg = ResourceManager.cfg('Buttons640x480');
-        // created in reverse order compared to cfg, earlier in cfg means higher z-value
+        const layer = this;
+        this.rootElement.notifyRedraw = () => layer.redraw(); // TODO performance only redraw updated parts
+        // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
         this.panelEncyclopedia = this.addPanel(new Panel('Panel_Encyclopedia', panelsCfg, buttonsCfg));
         this.panelInfoDock = this.addPanel(new InfoDockPanel('Panel_InfoDock', panelsCfg, buttonsCfg));
         this.panelCameraControl = this.addPanel(new Panel('Panel_CameraControl', panelsCfg, buttonsCfg));
         this.panelPriorityList = this.addPanel(new Panel('Panel_PriorityList', panelsCfg, buttonsCfg));
         this.panelInformation = this.addPanel(new Panel('Panel_Information', panelsCfg, buttonsCfg));
         this.panelTopPanel = this.addPanel(new TopPanel('Panel_TopPanel', panelsCfg, buttonsCfg, this.panelPriorityList));
+        this.panelIcons = this.addPanel(new IconPanel());
         this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar('Panel_CrystalSideBar', panelsCfg, buttonsCfg));
         this.panelMessagesSide = this.addPanel(new Panel('Panel_MessagesSide', panelsCfg, buttonsCfg));
         this.panelMessages = this.addPanel(new MessagePanel('Panel_Messages', panelsCfg, buttonsCfg));
@@ -39,7 +43,6 @@ export class GuiLayer extends ScaledLayer {
     }
 
     addPanel<T extends Panel>(panel: T): T {
-        panel.layer = this;
         this.rootElement.addChild(panel);
         return panel;
     }

@@ -94,4 +94,8 @@ export class BaseElement {
         return updated;
     }
 
+    notifyRedraw() {
+        if (this.parent) this.parent.notifyRedraw();
+    }
+
 }

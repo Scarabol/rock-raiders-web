@@ -434,6 +434,9 @@ class WadLoader {
         this.addAssetFolder('Interface/PriorityPanel/');
         this.addAssetFolder('Interface/CameraControl/');
         this.addAssetFolder('Interface/MessageTabs/');
+        this.addAssetFolder('Interface/IconPanel/');
+        this.addAssetFolder('Interface/Icons/');
+        this.addAssetFolder('Interface/Menus/');
         // level files
         Object.keys(mainConf['Levels']).forEach(levelKey => {
             if (!(levelKey.startsWith('Tutorial') || levelKey.startsWith('Level'))) {

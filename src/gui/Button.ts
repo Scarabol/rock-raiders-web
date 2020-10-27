@@ -10,10 +10,12 @@ export class Button extends BaseElement {
     label: string;
     tooltip: string;
 
-    constructor(parent: BaseElement, btnCfg) {
+    constructor(parent: BaseElement, btnCfg: any = null) {
         super(parent);
         let normalFile, highlightFile, pressedFile;
-        [this.buttonType, normalFile, highlightFile, pressedFile, this.relX, this.relY, this.width, this.height, this.tooltip] = btnCfg;
+        if (btnCfg) {
+            [this.buttonType, normalFile, highlightFile, pressedFile, this.relX, this.relY, this.width, this.height, this.tooltip] = btnCfg;
+        }
         if (normalFile) this.imgNormal = ResourceManager.getImage(normalFile);
         if (highlightFile) this.imgHover = ResourceManager.getImage(highlightFile);
         if (pressedFile) this.imgPressed = ResourceManager.getImage(pressedFile);
@@ -41,6 +43,21 @@ export class Button extends BaseElement {
             context.fillText(this.label, this.x + this.width / 2, this.y + this.height - 2);
         }
         super.onRedraw(context);
+    }
+
+}
+
+export class InterfaceBackButton extends Button {
+
+    constructor(parent: BaseElement) {
+        super(parent, null);
+        this.buttonType = 'InterfaceBackButton';
+        let imgHoverName, imgPressedName;
+        [this.width, this.height, imgHoverName, imgPressedName, this.tooltip] = ResourceManager.cfg(this.buttonType);
+        this.imgHover = ResourceManager.getImage(imgHoverName);
+        this.imgPressed = ResourceManager.getImage(imgPressedName);
+        this.relX = 4;
+        this.relY = 14;
     }
 
 }
