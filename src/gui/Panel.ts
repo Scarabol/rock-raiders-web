@@ -2,6 +2,7 @@ import { ResourceManager } from '../game/engine/ResourceManager';
 import { Button } from './Button';
 import { BaseElement } from './BaseElement';
 import { iGet } from '../core/Util';
+import { GameState } from '../game/model/GameState';
 
 export class Panel extends BaseElement {
 
@@ -85,10 +86,21 @@ export class RadarPanel extends Panel {
 
 export class MessagePanel extends Panel {
 
+    imgAir;
+
     constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
         super(panelName, panelsCfg, buttonsCfg);
         this.relX = this.xOut = this.xIn = 42;
         this.relY = this.yOut = this.yIn = 409;
+        this.imgAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_air_juice.bmp');
+    }
+
+    onRedraw(context: CanvasRenderingContext2D) {
+        super.onRedraw(context);
+        if (GameState.airlevel > 0) {
+            const width = Math.round(236 * GameState.airlevel);
+            context.drawImage(this.imgAir, this.x + 85, this.y + 6, width, 8);
+        }
     }
 
 }
@@ -124,10 +136,6 @@ export class InfoDockPanel extends Panel {
 
 export class PanelCrystalSideBar extends Panel {
 
-    numOre: number = 0;
-    numCrystal: number = 0;
-    usedCrystals: number = 0;
-    neededCrystals: number = 0;
     btnOre: Button;
     btnCrystal: Button;
     imgNoCrystal;
@@ -138,9 +146,9 @@ export class PanelCrystalSideBar extends Panel {
     constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
         super(panelName, panelsCfg, buttonsCfg);
         this.btnOre = iGet(this.buttons, 'PanelButton_CrystalSideBar_Ore');
-        this.btnOre.label = this.numOre.toString();
+        this.btnOre.label = GameState.numOre.toString();
         this.btnCrystal = iGet(this.buttons, 'PanelButton_CrystalSideBar_Crystals');
-        this.btnCrystal.label = this.numCrystal.toString();
+        this.btnCrystal.label = GameState.numCrystal.toString();
         this.imgNoCrystal = ResourceManager.getImage('Interface/RightPanel/NoSmallCrystal.bmp');
         this.imgSmallCrystal = ResourceManager.getImage('Interface/RightPanel/SmallCrystal.bmp');
         this.imgUsedCrystal = ResourceManager.getImage('Interface/RightPanel/UsedCrystal.bmp');
@@ -152,11 +160,11 @@ export class PanelCrystalSideBar extends Panel {
         // draw crystals
         let curX = this.x + this.img.width - 8;
         let curY = this.y + this.img.height - 34;
-        for (let c = 0; (this.neededCrystals < 1 || c < Math.max(this.neededCrystals, this.numCrystal)) && curY >= Math.max(this.imgNoCrystal.height, this.imgSmallCrystal.height, this.imgUsedCrystal.height); c++) {
+        for (let c = 0; (GameState.neededCrystals < 1 || c < Math.max(GameState.neededCrystals, GameState.numCrystal)) && curY >= Math.max(this.imgNoCrystal.height, this.imgSmallCrystal.height, this.imgUsedCrystal.height); c++) {
             let imgCrystal = this.imgNoCrystal;
-            if (this.usedCrystals > c) {
+            if (GameState.usedCrystals > c) {
                 imgCrystal = this.imgUsedCrystal;
-            } else if (this.numCrystal > c) {
+            } else if (GameState.numCrystal > c) {
                 imgCrystal = this.imgSmallCrystal;
             }
             curY -= imgCrystal.height;
@@ -165,7 +173,7 @@ export class PanelCrystalSideBar extends Panel {
         // draw ores
         curX = this.x + this.img.width - 21;
         curY = this.y + this.img.height - 42;
-        for (let i = 0; i < this.numOre && curY >= this.imgOre.height; ++i) {
+        for (let i = 0; i < GameState.numOre && curY >= this.imgOre.height; ++i) {
             curY -= this.imgOre.height;
             context.drawImage(this.imgOre, curX - this.imgOre.width / 2, curY);
         }

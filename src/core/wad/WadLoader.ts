@@ -429,6 +429,7 @@ class WadLoader {
         this.addAssetFolder('Interface/RightPanel/'); // crystal side bar
         this.addAssetFolder('Interface/RadarPanel/');
         this.addAssetFolder('Interface/MessagePanel/');
+        this.addAsset(this.loadWadImageAsset, 'Interface/Airmeter/msgpanel_air_juice.bmp');
         this.addAssetFolder('Interface/InfoPanel/');
         this.addAssetFolder('Interface/PriorityPanel/');
         this.addAssetFolder('Interface/CameraControl/');
