@@ -1,6 +1,6 @@
 import { ScaledLayer } from '../../screen/ScreenLayer';
 import { ResourceManager } from '../engine/ResourceManager';
-import { InfoDockPanel, MessagePanel, Panel, RadarPanel, TopPanel } from '../../gui/Panel';
+import { InfoDockPanel, MessagePanel, Panel, PanelCrystalSideBar, RadarPanel, TopPanel } from '../../gui/Panel';
 import { BaseElement } from '../../gui/BaseElement';
 
 export class GuiLayer extends ScaledLayer {
@@ -9,7 +9,7 @@ export class GuiLayer extends ScaledLayer {
     panelRadar: RadarPanel;
     panelMessages: MessagePanel;
     panelMessagesSide: Panel;
-    panelCrystalSideBar: Panel;
+    panelCrystalSideBar: PanelCrystalSideBar;
     panelTopPanel: TopPanel;
     panelInformation: Panel;
     panelPriorityList: Panel;
@@ -28,7 +28,7 @@ export class GuiLayer extends ScaledLayer {
         this.panelPriorityList = this.rootElement.addChild(new Panel('Panel_PriorityList', panelsCfg, buttonsCfg));
         this.panelInformation = this.rootElement.addChild(new Panel('Panel_Information', panelsCfg, buttonsCfg));
         this.panelTopPanel = this.rootElement.addChild(new TopPanel('Panel_TopPanel', panelsCfg, buttonsCfg, this.panelPriorityList));
-        this.panelCrystalSideBar = this.rootElement.addChild(new Panel('Panel_CrystalSideBar', panelsCfg, buttonsCfg));
+        this.panelCrystalSideBar = this.rootElement.addChild(new PanelCrystalSideBar('Panel_CrystalSideBar', panelsCfg, buttonsCfg));
         this.panelMessagesSide = this.rootElement.addChild(new Panel('Panel_MessagesSide', panelsCfg, buttonsCfg));
         this.panelMessages = this.rootElement.addChild(new MessagePanel('Panel_Messages', panelsCfg, buttonsCfg));
         this.panelRadar = this.rootElement.addChild(new RadarPanel('Panel_Radar', panelsCfg, buttonsCfg));
