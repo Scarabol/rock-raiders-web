@@ -33,6 +33,7 @@ export class BaseElement {
     }
 
     isInactive(): boolean {
+        for (let parent = this.parent; !!parent; parent = parent.parent) if (parent.isInactive()) return true;
         return this.hidden || this.disabled;
     }
 
