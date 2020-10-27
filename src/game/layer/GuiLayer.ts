@@ -1,7 +1,11 @@
 import { ScaledLayer } from '../../screen/ScreenLayer';
 import { ResourceManager } from '../engine/ResourceManager';
-import { IconPanel, InfoDockPanel, MessagePanel, Panel, PanelCrystalSideBar, RadarPanel, TopPanel } from '../../gui/Panel';
+import { InfoDockPanel, Panel, TopPanel } from '../../gui/panel/Panel';
 import { BaseElement } from '../../gui/BaseElement';
+import { IconPanel } from '../../gui/panel/IconPanel';
+import { RadarPanel } from '../../gui/panel/RadarPanel';
+import { MessagePanel } from '../../gui/panel/MessagePanel';
+import { PanelCrystalSideBar } from '../../gui/panel/PanelCrystalSideBar';
 
 export class GuiLayer extends ScaledLayer {
 

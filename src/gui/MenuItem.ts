@@ -1,6 +1,6 @@
 import { ResourceManager } from '../game/engine/ResourceManager';
 import { BaseElement } from './BaseElement';
-import { Panel } from './Panel';
+import { Panel } from './panel/Panel';
 
 export class MenuItem extends BaseElement {
 
