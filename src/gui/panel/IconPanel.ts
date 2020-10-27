@@ -9,6 +9,9 @@ export class IconPanel extends Panel {
 
     constructor() {
         super();
+        this.xOut = 640 + 95;
+        this.relX = this.xIn = 640 - 16;
+        this.relY = this.yIn = this.yOut = 9;
         this.mainPanel = this.addChild(new IconSubPanel(4));
         const buildingPanel = this.addChild(new IconSubPanel(10, this.mainPanel));
         const smallVehiclePanel = this.addChild(new IconSubPanel(6, this.mainPanel));
@@ -44,7 +47,7 @@ export class IconPanel extends Panel {
         largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'LargeMLP');
         largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'LargeDigger');
         largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'LargeCat');
-        this.mainPanel.toggle(); // TODO this should be triggered by existance of a working/discovered toolstation?
+        this.mainPanel.toggle();
     }
 
 }
@@ -63,9 +66,7 @@ export class IconSubPanel extends Panel {
         const frameImgCfg = ResourceManager.cfg('InterfaceSurroundImages', numOfItems.toString());
         const [imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2] = frameImgCfg;
         this.img = parentPanel ? ResourceManager.getImage(imgName) : ResourceManager.getImage(imgNameWoBackName);
-        this.xIn = 640 - 16 - this.img.width;
-        this.relX = this.xOut = 640;
-        this.relY = this.yIn = this.yOut = 9;
+        this.xIn = -this.img.width;
     }
 
     addMenuItem(menuItemGroup, itemKey) {

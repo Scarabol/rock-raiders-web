@@ -34,12 +34,14 @@ export class GuiLayer extends ScaledLayer {
         this.panelCameraControl = this.addPanel(new Panel('Panel_CameraControl', panelsCfg, buttonsCfg));
         this.panelPriorityList = this.addPanel(new Panel('Panel_PriorityList', panelsCfg, buttonsCfg));
         this.panelInformation = this.addPanel(new Panel('Panel_Information', panelsCfg, buttonsCfg));
-        this.panelTopPanel = this.addPanel(new TopPanel('Panel_TopPanel', panelsCfg, buttonsCfg, this.panelPriorityList));
+        this.panelTopPanel = this.addPanel(new TopPanel('Panel_TopPanel', panelsCfg, buttonsCfg));
         this.panelIcons = this.addPanel(new IconPanel());
         this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar('Panel_CrystalSideBar', panelsCfg, buttonsCfg));
         this.panelMessagesSide = this.addPanel(new Panel('Panel_MessagesSide', panelsCfg, buttonsCfg));
         this.panelMessages = this.addPanel(new MessagePanel('Panel_Messages', panelsCfg, buttonsCfg));
         this.panelRadar = this.addPanel(new RadarPanel('Panel_Radar', panelsCfg, buttonsCfg));
+        // link panels
+        this.panelTopPanel.btnPriorities.onClick = () => this.panelIcons.toggle(() => this.panelPriorityList.toggle());
         this.onRedraw = (context: CanvasRenderingContext2D) => {
             context.clearRect(0, 0, context.canvas.width, context.canvas.height);
             this.rootElement.onRedraw(context);

@@ -84,14 +84,11 @@ export class Panel extends BaseElement {
 
 export class TopPanel extends Panel {
 
-    panelPriorities: Panel;
     btnPriorities: Button;
 
-    constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}, panelPriorities: Panel) {
+    constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
         super(panelName, panelsCfg, buttonsCfg);
-        this.panelPriorities = panelPriorities;
         this.btnPriorities = iGet(this.buttons, 'PanelButton_TopPanel_Priorities');
-        this.btnPriorities.onClick = () => this.panelPriorities.toggle();
     }
 
 }
