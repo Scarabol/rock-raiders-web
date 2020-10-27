@@ -1,6 +1,6 @@
 import { ScaledLayer } from '../../screen/ScreenLayer';
 import { ResourceManager } from '../engine/ResourceManager';
-import { InfoDockPanel, MessagePanel, Panel, RadarPanel } from '../../gui/Panel';
+import { InfoDockPanel, MessagePanel, Panel, RadarPanel, TopPanel } from '../../gui/Panel';
 import { BaseElement } from '../../gui/BaseElement';
 
 export class GuiLayer extends ScaledLayer {
@@ -10,7 +10,7 @@ export class GuiLayer extends ScaledLayer {
     panelMessages: MessagePanel;
     panelMessagesSide: Panel;
     panelCrystalSideBar: Panel;
-    panelTopPanel: Panel;
+    panelTopPanel: TopPanel;
     panelInformation: Panel;
     panelPriorityList: Panel;
     panelCameraControl: Panel;
@@ -21,17 +21,17 @@ export class GuiLayer extends ScaledLayer {
         super(640, 480);
         const panelsCfg = ResourceManager.cfg('Panels640x480');
         const buttonsCfg = ResourceManager.cfg('Buttons640x480');
-        this.panelRadar = this.rootElement.addChild(new RadarPanel('Panel_Radar', panelsCfg, buttonsCfg));
-        this.panelMessages = this.rootElement.addChild(new MessagePanel('Panel_Messages', panelsCfg, buttonsCfg));
-        this.panelMessagesSide = this.rootElement.addChild(new Panel('Panel_MessagesSide', panelsCfg, buttonsCfg));
-        this.panelCrystalSideBar = this.rootElement.addChild(new Panel('Panel_CrystalSideBar', panelsCfg, buttonsCfg));
-        this.panelTopPanel = this.rootElement.addChild(new Panel('Panel_TopPanel', panelsCfg, buttonsCfg));
-        this.panelInformation = this.rootElement.addChild(new Panel('Panel_Information', panelsCfg, buttonsCfg));
-        this.panelPriorityList = this.rootElement.addChild(new Panel('Panel_PriorityList', panelsCfg, buttonsCfg));
-        this.panelCameraControl = this.rootElement.addChild(new Panel('Panel_CameraControl', panelsCfg, buttonsCfg));
-        this.panelInfoDock = this.rootElement.addChild(new InfoDockPanel('Panel_InfoDock', panelsCfg, buttonsCfg));
+        // created in reverse order compared to cfg, earlier in cfg means higher z-value
         this.panelEncyclopedia = this.rootElement.addChild(new Panel('Panel_Encyclopedia', panelsCfg, buttonsCfg));
-        this.rootElement.children = this.rootElement.children.reverse(); // reverse: earlier in cfg means higher z-value
+        this.panelInfoDock = this.rootElement.addChild(new InfoDockPanel('Panel_InfoDock', panelsCfg, buttonsCfg));
+        this.panelCameraControl = this.rootElement.addChild(new Panel('Panel_CameraControl', panelsCfg, buttonsCfg));
+        this.panelPriorityList = this.rootElement.addChild(new Panel('Panel_PriorityList', panelsCfg, buttonsCfg));
+        this.panelInformation = this.rootElement.addChild(new Panel('Panel_Information', panelsCfg, buttonsCfg));
+        this.panelTopPanel = this.rootElement.addChild(new TopPanel('Panel_TopPanel', panelsCfg, buttonsCfg, this.panelPriorityList));
+        this.panelCrystalSideBar = this.rootElement.addChild(new Panel('Panel_CrystalSideBar', panelsCfg, buttonsCfg));
+        this.panelMessagesSide = this.rootElement.addChild(new Panel('Panel_MessagesSide', panelsCfg, buttonsCfg));
+        this.panelMessages = this.rootElement.addChild(new MessagePanel('Panel_Messages', panelsCfg, buttonsCfg));
+        this.panelRadar = this.rootElement.addChild(new RadarPanel('Panel_Radar', panelsCfg, buttonsCfg));
         this.onRedraw = (context: CanvasRenderingContext2D) => {
             context.clearRect(0, 0, context.canvas.width, context.canvas.height);
             this.rootElement.onRedraw(context);
