@@ -120,6 +120,7 @@ export class WorldManager {
     }
 
     moveMouseTorch(rx: number, ry: number) {
+        if (!this.terrain) return;
         const raycaster = new Raycaster();
         raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
         const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children);
