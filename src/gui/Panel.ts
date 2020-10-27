@@ -3,9 +3,11 @@ import { Button } from './Button';
 import { BaseElement } from './BaseElement';
 import { iGet } from '../core/Util';
 import { GameState } from '../game/model/GameState';
+import { GuiLayer } from '../game/layer/GuiLayer';
 
 export class Panel extends BaseElement {
 
+    layer: GuiLayer;
     name: string;
     img;
     xIn: number;
@@ -13,6 +15,7 @@ export class Panel extends BaseElement {
     xOut: number;
     yOut: number;
     buttons = {};
+    animated: boolean = false;
 
     constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
         super();
@@ -32,15 +35,41 @@ export class Panel extends BaseElement {
         }
     }
 
-    addButton(button: Button) {
+    addButton<T extends Button>(button: T): T {
         this.buttons[button.buttonType] = button;
         this.addChild(button);
+        return button;
     }
 
-    toggle() { // TODO animate this, disable children during animation
-        this.relX = this.relX === this.xIn ? this.xOut : this.xIn;
-        this.relY = this.relY === this.yIn ? this.yOut : this.yIn;
+    isInactive(): boolean {
+        return this.animated || super.isInactive();
+    }
+
+    updateAnimation(targetX: number, targetY: number, speed: number) {
+        const diffX = targetX - this.relX;
+        const diffY = targetY - this.relY;
+        if (Math.abs(diffX) < speed + 1 && Math.abs(diffY) < speed + 1) {
+            this.relX = targetX;
+            this.relY = targetY;
+            this.animated = false;
+        } else {
+            this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * speed);
+            this.relY += Math.round(Math.sign(diffY) * Math.sqrt(Math.abs(diffY)) * speed);
+            const panel = this;
+            setTimeout(() => panel.updateAnimation(targetX, targetY, speed), 1000 / 30); // synced with 30 FPS // TODO externalize constant
+        }
         this.updatePosition();
+        if (this.layer) this.layer.redraw(); // TODO performance: only redraw panel screen area (if possible??? animation???)
+    }
+
+    toggle() {
+        if (this.animated) return; // animation already in progress
+        this.animated = true;
+        if (this.relX === this.xIn && this.relY === this.yIn) {
+            this.updateAnimation(this.xOut, this.yOut, 2); // TODO externalize constant
+        } else {
+            this.updateAnimation(this.xIn, this.yIn, 2); // TODO externalize constant
+        }
     }
 
     onRedraw(context: CanvasRenderingContext2D) {
@@ -62,14 +91,13 @@ export class RadarPanel extends Panel {
     constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
         super(panelName, panelsCfg, buttonsCfg);
         this.fill = this.addChild(new Panel('Panel_RadarFill', panelsCfg, buttonsCfg));
+        // fill cords given in abs, turn to rel (otherwise animation wont work)
+        this.fill.relX = this.relX - this.fill.relX;
+        this.fill.relY = this.relY - this.fill.relY;
         this.overlay = this.addChild(new Panel('Panel_RadarOverlay', panelsCfg, buttonsCfg));
-        this.overlay.hide();
+        // this.overlay.hide();
         this.btnToggle = iGet(this.buttons, 'PanelButton_Radar_Toggle');
-        this.btnToggle.onClick = () => {
-            this.toggle();
-            this.fill.toggle();
-            this.overlay.toggle();
-        };
+        this.btnToggle.onClick = () => this.toggle();
         this.btnMap = iGet(this.buttons, 'PanelButton_Radar_MapView');
         this.btnMap.onClick = () => {
             // this.fill.hide();

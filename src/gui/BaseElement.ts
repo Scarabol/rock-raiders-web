@@ -25,7 +25,7 @@ export class BaseElement {
     }
 
     onRedraw(context: CanvasRenderingContext2D) {
-        if (this.isInactive()) return;
+        if (this.hidden) return;
         this.children.forEach((child) => child.onRedraw(context));
     };
 
