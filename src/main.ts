@@ -42,4 +42,8 @@ ResourceManager.wadLoader.onAssetLoaded = (assetIndex: number) => {
 // start the game engine with loading resources
 
 loadingScreen.show();
-ResourceManager.wadLoader.startWithCachedFiles();
+ResourceManager.wadLoader.startWithCachedFiles(() => {
+    // as fallback load wad files from local URL
+    // TODO load WAD files from HTML input element or external URL (CORS?!)
+    ResourceManager.wadLoader.loadWadFiles('./LegoRR0.wad', './LegoRR1.wad');
+});

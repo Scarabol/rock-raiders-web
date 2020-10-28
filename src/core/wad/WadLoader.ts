@@ -575,13 +575,11 @@ class WadLoader {
         };
     }
 
-    startWithCachedFiles() {
+    startWithCachedFiles(onCacheMiss: () => any) {
         this.startTime = new Date();
         const _onerror = () => {
             this.onMessage('WAD files not found in cache');
-            // as fallback load wad files from local URL
-            // TODO load WAD files from HTML input element or external URL (CORS?!)
-            this.loadWadFiles('./LegoRR0.wad', './LegoRR1.wad');
+            onCacheMiss();
         };
         this.onMessage('Loading WAD files from cache...');
         const that = this;
