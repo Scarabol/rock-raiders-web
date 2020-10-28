@@ -15,7 +15,6 @@ const config = {
     },
     output: {
         filename: './app.bundle.js',
-        sourceMapFilename: './app.bundle.js.map',
     },
     devtool: 'source-map',
 };
