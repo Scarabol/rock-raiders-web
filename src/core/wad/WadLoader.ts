@@ -29,25 +29,6 @@ class WadLoader {
     };
 
     /**
-     * load a script asset from the input path, setting the callback function to the input callback
-     * @param path: the path from which to load the script asset
-     * @param callback: the callback function to be called once the script has finished loading
-     */
-    loadScriptAsset(path, callback) {
-        const script = document.createElement('script');
-        script.type = 'text/javascript';
-
-        if (callback != null) {
-            script.onload = callback;
-        }
-
-        script.src = path;
-
-        // begin loading the script by appending it to the document head
-        document.getElementsByTagName('head')[0].appendChild(script);
-    }
-
-    /**
      * load an image asset from the input path, setting the callback function to the input callback
      * @param path: the path from which to load the image asset
      * @param name: the name that should be used when referencing the image in the GameManager images dict
@@ -59,9 +40,7 @@ class WadLoader {
         img.onload = function () {
             ResourceManager.images[name.toLowerCase()] = img;
             URL.revokeObjectURL(img.src);
-            if (callback != null) {
-                callback();
-            }
+            if (callback != null) callback();
         };
 
         img.src = path;
@@ -108,19 +87,12 @@ class WadLoader {
             ResourceManager.textures[name.toLowerCase()] = texture;
 
             URL.revokeObjectURL(img.src);
-            if (callback != null) {
-                callback();
-            }
+            if (callback != null) callback();
         };
 
         img.src = this.wad0File.getEntry(name);
     }
 
-    /**
-     * Adds an alpha channel to the bitmap by setting alpha to 0 for all black pixels
-     * @param name
-     * @param callback
-     */
     loadAlphaImageAsset(name, callback) {
         const img = new Image();
 
@@ -136,19 +108,12 @@ class WadLoader {
             context.putImageData(imgData, 0, 0);
             ResourceManager.images[name.toLowerCase()] = context.canvas;
             URL.revokeObjectURL(img.src);
-            if (callback != null) {
-                callback();
-            }
+            if (callback != null) callback();
         };
 
         img.src = this.wad0File.getEntry(name.toLowerCase());
     }
 
-    /**
-     * Adds an alpha channel to the image by setting alpha to 0 for all pixels, which have the same color as the pixel at position 0,0
-     * @param name
-     * @param callback
-     */
     loadFontImageAsset(name, callback) {
         const img = new Image();
 
@@ -164,9 +129,7 @@ class WadLoader {
             context.putImageData(imgData, 0, 0);
             ResourceManager.fonts[name.toLowerCase()] = new BitmapFont(context);
             URL.revokeObjectURL(img.src);
-            if (callback != null) {
-                callback();
-            }
+            if (callback != null) callback();
         };
 
         img.src = this.wad0File.getEntry(name);
@@ -315,31 +278,6 @@ class WadLoader {
     }
 
     /**
-     * load a sound asset from the input path, setting the callback function to the input callback
-     * @param path: the path from which to load the sound asset
-     * @param name: the name that should be used when referencing the sound in the GameManager sounds dict
-     * @param callback:  the callback function to be called once the sound has finished loading
-     */
-    loadSoundAsset(path, name, callback) {
-        const snd = document.createElement('audio');
-        let srcType = '.ogg';
-        // use ogg if supported, otherwise fall back to mp4 (cover all modern browsers)
-        if (!(snd.canPlayType && snd.canPlayType('audio/ogg'))) {
-            srcType = '.m4a';
-        }
-
-        if (callback != null) {
-            snd.oncanplay = function () {
-                snd.oncanplay = null; // otherwise the callback is triggered multiple times
-                ResourceManager.sounds[name] = snd;
-                callback();
-            };
-        }
-
-        snd.src = path + srcType;
-    }
-
-    /**
      * Load a WAV file format sound asset from the WAD file.
      * @param path Path inside the WAD file
      * @param callback A callback that is triggered after the file has been loaded
@@ -420,10 +358,6 @@ class WadLoader {
 
     registerAllAssets() { // dynamically register all assets from config
         const mainConf = ResourceManager.configuration;
-        // // back button
-        // this.addAsset(this.loadWadImageAsset, mainConf['InterfaceBackButton'].slice(2, 4).forEach(imgPath => {
-        //     this.addAsset(this.loadWadImageAsset, imgPath);
-        // }));
         // this.addAsset(this.loadFontImageAsset, 'Interface/Fonts/ToolTipFont.bmp');
         this.addAssetFolder('Interface/TopPanel/'); // top panel
         this.addAssetFolder('Interface/RightPanel/'); // crystal side bar
@@ -439,9 +373,7 @@ class WadLoader {
         this.addAssetFolder('Interface/Menus/');
         // level files
         Object.keys(mainConf['Levels']).forEach(levelKey => {
-            if (!(levelKey.startsWith('Tutorial') || levelKey.startsWith('Level'))) {
-                return; // ignore incomplete test levels and duplicates
-            }
+            if (!(levelKey.startsWith('Tutorial') || levelKey.startsWith('Level'))) return; // ignore incomplete test levels and duplicates
             const levelConf = mainConf['Levels'][levelKey];
             this.addAsset(this.loadMapAsset, levelConf['SurfaceMap']);
             this.addAsset(this.loadMapAsset, levelConf['PreDugMap']);
@@ -453,11 +385,7 @@ class WadLoader {
             this.addAsset(this.loadNerpAsset, levelConf['NERPFile']);
             this.addAsset(this.loadNerpMsg, levelConf['NERPMessageFile']);
             const menuConf = levelConf['MenuBMP'];
-            if (menuConf) {
-                menuConf.forEach((imgKey) => {
-                    this.addAsset(this.loadAlphaImageAsset, imgKey);
-                });
-            }
+            if (menuConf) menuConf.forEach((imgKey) => this.addAsset(this.loadAlphaImageAsset, imgKey));
         });
         // load all shared textures
         this.wad0File.filterEntryNames('World/Shared/.+\\.bmp').forEach((texturePath) => {
@@ -493,21 +421,6 @@ class WadLoader {
         // });
         // rewardConf['AdvanceButton'].slice(0, 4).forEach(imgPath => {
         //     this.addAsset(this.loadWadImageAsset, imgPath);
-        // });
-        // // icon panel buttons
-        // Object.values(mainConf['InterfaceImages']).forEach(entry => {
-        //     (entry as []).slice(0, 3).forEach(imgPath => {
-        //         this.addAsset(this.loadWadImageAsset, imgPath);
-        //     });
-        // });
-        // Object.values(mainConf['InterfaceBuildImages']).forEach(entry => {
-        //     (entry as []).slice(0, -1).forEach(imgPath => {
-        //         this.addAsset(this.loadWadImageAsset, imgPath);
-        //     });
-        // });
-        // Object.values(mainConf['InterfaceSurroundImages']).forEach(entry => {
-        //     this.addAsset(this.loadAlphaImageAsset, entry[0]);
-        //     this.addAsset(this.loadAlphaImageAsset, entry[5]);
         // });
         // spaces
         // this.wad0File.filterEntryNames('World/WorldTextures/IceSplit/Ice..\\.bmp').forEach(imgPath => {
@@ -567,13 +480,7 @@ class WadLoader {
         const curAsset = ResourceManager.initialAssets[this.assetIndex];
         const assetName = curAsset[curAsset.length - 1].toLowerCase();
         const filename = curAsset[1] !== '' ? curAsset[1] + '/' + curAsset[2] : curAsset[2];
-        if (curAsset[0] === 'js') {
-            this.loadScriptAsset(filename, this.onSequentialAssetLoaded.bind(this));
-        } else if (curAsset[0] === 'img') {
-            this.loadImageAsset(filename, assetName, this.onSequentialAssetLoaded.bind(this));
-        } else if (curAsset[0] === 'snd') {
-            this.loadSoundAsset(filename, assetName, this.onSequentialAssetLoaded.bind(this));
-        } else if (curAsset[0] === 'wad0bmp') {
+        if (curAsset[0] === 'wad0bmp') {
             this.loadWadImageAsset(assetName, this.onSequentialAssetLoaded.bind(this));
         } else if (curAsset[0] === 'wad0alpha') {
             this.loadAlphaImageAsset(assetName, this.onSequentialAssetLoaded.bind(this));
