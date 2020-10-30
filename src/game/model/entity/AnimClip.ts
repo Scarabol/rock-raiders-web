@@ -31,6 +31,7 @@ class AnimClip {
     cancelAnimation() {
         if (this.animationTimeout) {
             clearTimeout(this.animationTimeout);
+            this.animationTimeout = null;
         }
     }
 
