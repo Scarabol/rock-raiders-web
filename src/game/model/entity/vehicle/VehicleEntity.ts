@@ -1,6 +1,7 @@
 import { Selectable, SelectionType } from '../../Selectable';
+import { MovableEntity } from '../MovableEntity';
 
-export class VehicleEntity implements Selectable {
+export class VehicleEntity extends MovableEntity implements Selectable {
 
     selected: boolean;
 

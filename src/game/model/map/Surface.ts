@@ -5,6 +5,7 @@ import { ResourceManager } from '../../engine/ResourceManager';
 import { Selectable, SelectionType } from '../Selectable';
 import { EventBus } from '../../event/EventBus';
 import { SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../event/LocalEvents';
+import { SurfaceJob } from '../job/Job';
 
 const HEIGHT_MULTIPLER = 0.05;
 
@@ -19,6 +20,7 @@ export class Surface implements Selectable {
     heightOffset: number = null;
     discovered: boolean = false;
     selected: boolean = false;
+    job: SurfaceJob = null;
 
     wallType: WALL_TYPE = null;
     geometry: Geometry = null;
@@ -317,7 +319,9 @@ export class Surface implements Selectable {
     deselect(): any {
         if (this.selected) {
             this.selected = false;
-            this.mesh.material['color'] = new Color(0xffffff);
+            let color = new Color(0xffffff);
+            if (this.job) color = new Color(this.job.color);
+            this.mesh.material['color'] = color;
             EventBus.publishEvent(new SurfaceDeselectEvent());
         }
     }

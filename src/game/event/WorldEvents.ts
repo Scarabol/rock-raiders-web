@@ -1,5 +1,5 @@
 import { GameEvent } from './EventBus';
-import { Job } from '../model/Job';
+import { Job } from '../model/job/Job';
 import { Raider } from '../model/entity/Raider';
 import { LocalEvent } from './LocalEvents';
 import { VehicleEntity } from '../model/entity/vehicle/VehicleEntity';

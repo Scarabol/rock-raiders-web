@@ -7,7 +7,7 @@ import { ENERGY_PATH_BUILDING } from '../model/map/SurfaceType';
 import { Terrain } from '../model/map/Terrain';
 import { EventBus } from '../event/EventBus';
 import { SurfaceDeselectEvent } from '../event/LocalEvents';
-import { SpawnEvent } from '../event/WorldEvents';
+import { SpawnEvent, SpawnType } from '../event/WorldEvents';
 import { Raider } from '../model/entity/Raider';
 import { BuildingEntity } from '../model/entity/building/BuildingEntity';
 import { GameState } from '../model/GameState';
@@ -28,21 +28,27 @@ export class WorldManager {
         EventBus.registerEventListener(SurfaceDeselectEvent.eventKey, () => {
             if (GameState.selectionType === SelectionType.SURFACE) GameState.selectedEntities.forEach((entity) => entity.deselect());
         });
-        EventBus.registerEventListener(SpawnEvent.eventKey, () => {
+        EventBus.registerEventListener(SpawnEvent.eventKey, (event: SpawnEvent) => {
             // TODO check max amount
             // look for unused toolstation/teleport
             const toolstations = GameState.getBuildingsByType(TOOLSTATION);
+            if (!toolstations || toolstations.length < 1) return;
             // console.log(toolstations);
             // TODO check for powered/idling building
             const station = toolstations[0];
-            // add raider with teleport animation
-            const raider = new Raider();
-            raider.setActivity('TeleportIn', () => raider.setActivity('Stand'));
-            raider.group.position.copy(station.group.position).add(new Vector3(0, 0, this.tileSize / 2).applyEuler(station.group.rotation));
-            raider.group.rotation.copy(station.group.rotation);
-            this.sceneManager.scene.add(raider.group);
-            // TODO after add to available pilots
-            // TODO default action: walk to building power path
+            if (!station) return;
+            if (event.type === SpawnType.RAIDER) {
+                // add raider with teleport animation
+                const raider = new Raider();
+                raider.setActivity('TeleportIn', () => raider.setActivity('Stand'));
+                raider.group.position.copy(station.group.position).add(new Vector3(0, 0, this.tileSize / 2).applyEuler(station.group.rotation));
+                raider.group.rotation.copy(station.group.rotation);
+                this.sceneManager.scene.add(raider.group);
+                // TODO after add to available pilots
+                // TODO default action: walk to building power path
+            } else {
+                console.warn('Spawn not yet implemented: ' + event.type);
+            }
         });
     }
 
@@ -82,6 +88,7 @@ export class WorldManager {
                 raider.group.position.set(worldX, worldY, worldZ);
                 raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
                 this.sceneManager.scene.add(raider.group);
+                GameState.raiders.push(raider);
             } else if (buildingType) {
                 const building = Building.getByName(buildingType);
                 const entity = new BuildingEntity(building);

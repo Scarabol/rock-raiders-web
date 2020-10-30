@@ -1,6 +1,8 @@
 import { BuildingEntity } from './entity/building/BuildingEntity';
 import { Building } from './entity/building/Building';
 import { Selectable, SelectionType } from './Selectable';
+import { Raider } from './entity/Raider';
+import { VehicleEntity } from './entity/vehicle/VehicleEntity';
 
 export class GameState {
 
@@ -12,6 +14,8 @@ export class GameState {
     static selectedEntities: Selectable[] = [];
     static selectionType: SelectionType = null;
     static buildings: BuildingEntity[] = [];
+    static raiders: Raider[] = [];
+    static vehicles: VehicleEntity[] = [];
 
     static reset() {
         this.numOre = 0;
@@ -22,6 +26,8 @@ export class GameState {
         this.selectedEntities = [];
         this.selectionType = null;
         this.buildings = [];
+        this.raiders = [];
+        this.vehicles = [];
     }
 
     static getBuildingsByType(buildingType: Building): BuildingEntity[] {

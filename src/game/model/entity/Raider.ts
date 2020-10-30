@@ -1,16 +1,16 @@
-import { AnimEntity } from './AnimEntity';
 import { iGet } from '../../../core/Util';
 import { ResourceManager } from '../../engine/ResourceManager';
 import { Selectable, SelectionType } from '../Selectable';
 import { EventBus } from '../../event/EventBus';
 import { RaiderDeselected, RaiderSelected } from '../../event/WorldEvents';
+import { MovableEntity } from './MovableEntity';
 
-export class Raider extends AnimEntity implements Selectable {
+export class Raider extends MovableEntity implements Selectable {
 
     selected: boolean;
 
     constructor() {
-        super(iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae'));
+        super(iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae'), 1); // FIXME read speed (and other stats) from cfg
         this.group.userData = {'selectable': this};
     }
 
