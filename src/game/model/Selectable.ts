@@ -2,7 +2,7 @@ export interface Selectable {
 
     getSelectionType(): SelectionType;
 
-    select(): Selectable;
+    select();
 
     deselect(): any;
 
@@ -14,5 +14,7 @@ export enum SelectionType {
     SURFACE,
     PILOT,
     BUILDING,
+    VEHICLE,
+    GROUP,
 
 }

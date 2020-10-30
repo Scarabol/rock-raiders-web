@@ -13,6 +13,38 @@ export class SurfaceType {
         Object.assign(this, options);
     }
 
+    static getTypeByNum(typenum: number) {
+        switch (typenum) {
+            case 0:
+                return GROUND;
+            case 1:
+                return SOLID_ROCK;
+            case 2:
+                return HARD_ROCK;
+            case 3:
+                return LOOSE_ROCK;
+            case 4:
+                return DIRT;
+            case 5:
+                return GROUND;
+            case 6:
+                return LAVA;
+            case 8:
+                return ORE_SEAM;
+            case 9:
+                return WATER;
+            case 10:
+                return ENERGY_CRYSTAL_SEAM;
+            case 11:
+                return RECHARGE_SEAM;
+            case 30:
+            case 40:
+                return SLUG_HOLE;
+            default:
+                throw 'unknown surface type';
+        }
+    }
+
 }
 
 export const GROUND = new SurfaceType({name: 'ground', floor: true, selectable: true});
@@ -31,18 +63,3 @@ export const RUBBLE1 = new SurfaceType({name: 'rubble 1', floor: true, matIndex:
 export const RUBBLE2 = new SurfaceType({name: 'rubble 2', floor: true, matIndex: '12'});
 export const RUBBLE3 = new SurfaceType({name: 'rubble 3', floor: true, matIndex: '11'});
 export const RUBBLE4 = new SurfaceType({name: 'rubble 4', floor: true, matIndex: '10'});
-
-export const SURF_TO_TYPE = [];
-SURF_TO_TYPE[0] = GROUND;
-SURF_TO_TYPE[1] = SOLID_ROCK;
-SURF_TO_TYPE[2] = HARD_ROCK;
-SURF_TO_TYPE[3] = LOOSE_ROCK;
-SURF_TO_TYPE[4] = DIRT;
-SURF_TO_TYPE[5] = GROUND;
-SURF_TO_TYPE[6] = LAVA;
-SURF_TO_TYPE[8] = ORE_SEAM;
-SURF_TO_TYPE[9] = WATER;
-SURF_TO_TYPE[10] = ENERGY_CRYSTAL_SEAM;
-SURF_TO_TYPE[11] = RECHARGE_SEAM;
-SURF_TO_TYPE[30] = SLUG_HOLE;
-SURF_TO_TYPE[40] = SLUG_HOLE;

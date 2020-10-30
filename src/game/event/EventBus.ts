@@ -5,12 +5,11 @@ export class EventBus {
 
     static publishEvent(event: GameEvent) {
         if (this.blockedEvents.includes(event.eventKey)) return; // event is currently blocked from publishing
+        console.log('Event published: ' + event.eventKey);
         this.blockedEvents.push(event.eventKey);
         (this.eventListener[event.eventKey] || []).forEach((callback) => callback(event));
         const index = this.blockedEvents.indexOf(event.eventKey);
-        if (index > -1) {
-            this.blockedEvents.splice(index, 1);
-        }
+        if (index > -1) this.blockedEvents.splice(index, 1);
     }
 
     static registerEventListener(eventKey: string, callback: (GameEvent) => any) {

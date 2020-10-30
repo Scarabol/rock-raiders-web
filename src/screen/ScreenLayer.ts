@@ -68,10 +68,10 @@ export class ScaledLayer extends ScreenLayer {
     fixedWidth: number;
     fixedHeight: number;
 
-    constructor(fixedWidth: number, fixedHeight: number) {
+    constructor() {
         super(true);
-        this.fixedWidth = fixedWidth;
-        this.fixedHeight = fixedHeight;
+        this.fixedWidth = 640; // TODO externalize constant
+        this.fixedHeight = 480; // TODO externalize constant
     }
 
     toScaledCoords(windowX: number, windowY: number) {

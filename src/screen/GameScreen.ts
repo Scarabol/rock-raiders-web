@@ -3,23 +3,29 @@ import { WorldManager } from '../game/engine/WorldManager';
 import { SelectionLayer } from '../game/layer/SelectionLayer';
 import { GameLayer } from '../game/layer/GameLayer';
 import { GuiLayer } from '../game/layer/GuiLayer';
+import { Supervisor } from '../game/engine/Supervisor';
+import { BillboardLayer } from '../game/layer/BillboardLayer';
 
 export class GameScreen extends BaseScreen {
 
     onLevelEnd: (gameResult: string) => void; // TODO game result is actually an object with much more data
     gameLayer: GameLayer;
+    billboardLayer: BillboardLayer;
     selectionLayer: SelectionLayer;
     guiLayer: GuiLayer;
     worldManager: WorldManager;
+    jobSupervisor: Supervisor;
 
     constructor() {
         super();
         this.gameLayer = this.addLayer(new GameLayer(), 0);
+        this.billboardLayer = this.addLayer(new BillboardLayer(), 5);
         this.selectionLayer = this.addLayer(new SelectionLayer(), 10);
         this.guiLayer = this.addLayer(new GuiLayer(), 20);
         this.worldManager = new WorldManager(this.gameLayer.canvas);
         this.gameLayer.setWorldManager(this.worldManager);
         this.selectionLayer.setWorldManager(this.worldManager);
+        this.jobSupervisor = new Supervisor();
     }
 
     startLevel(levelName) {
@@ -32,10 +38,12 @@ export class GameScreen extends BaseScreen {
     show() {
         super.show();
         this.worldManager.start();
+        this.jobSupervisor.start();
     }
 
     hide() {
         this.worldManager.stop();
+        this.jobSupervisor.stop();
         super.hide();
     }
 

@@ -1,10 +1,10 @@
 import { Color, Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
 import { Terrain } from './Terrain';
-import { GROUND, RUBBLE4, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
+import { GROUND, RUBBLE4, SurfaceType } from './SurfaceType';
 import { ResourceManager } from '../../engine/ResourceManager';
 import { Selectable, SelectionType } from '../Selectable';
 import { EventBus } from '../../event/EventBus';
-import { SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../event/LocalEvent';
+import { SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../event/LocalEvents';
 
 const HEIGHT_MULTIPLER = 0.05;
 
@@ -29,7 +29,7 @@ export class Surface implements Selectable {
 
     constructor(terrain, surface, x, y, high) {
         this.terrain = terrain;
-        this.surfaceType = SURF_TO_TYPE[surface];
+        this.surfaceType = SurfaceType.getTypeByNum(surface);
         if (this.surfaceType === null) {
             console.warn('surface ' + surface + ' unknown, using ground as fallback');
             this.surfaceType = GROUND;
@@ -326,7 +326,6 @@ export class Surface implements Selectable {
 
 export enum WALL_TYPE {
 
-    GROUND = 0,
     CORNER = 1,
     WALL = 2, // or WEIRD_CREVICE
     INVERTED_CORNER = 3,

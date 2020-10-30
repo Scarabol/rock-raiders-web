@@ -5,10 +5,14 @@ import { MathUtils, Raycaster, Vector3 } from 'three';
 import { iGet } from '../../core/Util';
 import { ENERGY_PATH_BUILDING } from '../model/map/SurfaceType';
 import { Terrain } from '../model/map/Terrain';
-import { Selectable, SelectionType } from '../model/Selectable';
-import { AnimEntity } from '../model/entity/AnimEntity';
 import { EventBus } from '../event/EventBus';
-import { SurfaceDeselectEvent } from '../event/LocalEvent';
+import { SurfaceDeselectEvent } from '../event/LocalEvents';
+import { SpawnEvent } from '../event/WorldEvents';
+import { Raider } from '../model/entity/Raider';
+import { BuildingEntity } from '../model/entity/building/BuildingEntity';
+import { GameState } from '../model/GameState';
+import { SelectionType } from '../model/Selectable';
+import { Building, TOOLSTATION } from '../model/entity/building/Building';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
@@ -17,15 +21,28 @@ export class WorldManager {
 
     terrain: Terrain;
     sceneManager: SceneManager;
-    selectedEntities: Selectable[] = [];
-    selectionType: SelectionType;
-    buildings = {};
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas);
         this.sceneManager.cursorTorchlight.distance *= this.tileSize;
         EventBus.registerEventListener(SurfaceDeselectEvent.eventKey, () => {
-            if (this.selectionType === SelectionType.SURFACE) this.selectedEntities.forEach((entity) => entity.deselect());
+            if (GameState.selectionType === SelectionType.SURFACE) GameState.selectedEntities.forEach((entity) => entity.deselect());
+        });
+        EventBus.registerEventListener(SpawnEvent.eventKey, () => {
+            // TODO check max amount
+            // look for unused toolstation/teleport
+            const toolstations = GameState.getBuildingsByType(TOOLSTATION);
+            // console.log(toolstations);
+            // TODO check for powered/idling building
+            const station = toolstations[0];
+            // add raider with teleport animation
+            const raider = new Raider();
+            raider.setActivity('TeleportIn', () => raider.setActivity('Stand'));
+            raider.group.position.copy(station.group.position).add(new Vector3(0, 0, this.tileSize / 2).applyEuler(station.group.rotation));
+            raider.group.rotation.copy(station.group.rotation);
+            this.sceneManager.scene.add(raider.group);
+            // TODO after add to available pilots
+            // TODO default action: walk to building power path
         });
     }
 
@@ -60,17 +77,15 @@ export class WorldManager {
                 this.sceneManager.controls.update();
                 this.setTorchPosition(target);
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
-                const entityType = iGet(ResourceManager.entity, 'mini-figures/pilot/pilot.ae');
-                const pilot = new AnimEntity(entityType);
-                pilot.setActivity('Stand');
-                pilot.group.position.set(worldX, worldY, worldZ);
-                pilot.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
-                this.sceneManager.scene.add(pilot.group);
+                const raider = new Raider();
+                raider.setActivity('Stand');
+                raider.group.position.set(worldX, worldY, worldZ);
+                raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
+                this.sceneManager.scene.add(raider.group);
             } else if (buildingType) {
-                const bfilename = buildingType + '/' + buildingType.slice(buildingType.lastIndexOf('/') + 1) + '.ae';
-                const entityType = iGet(ResourceManager.entity, bfilename);
-                const entity = new AnimEntity(entityType);
-                entity.setActivity('Teleport', () => entity.setActivity('Stand'));
+                const building = Building.getByName(buildingType);
+                const entity = new BuildingEntity(building);
+                entity.setActivity('Stand');
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
                 // TODO rotate building with normal vector of surface
@@ -83,9 +98,7 @@ export class WorldManager {
                 const path2Surface = this.terrain.getSurface(pathOffset.x / this.tileSize, pathOffset.z / this.tileSize);
                 path2Surface.surfaceType = ENERGY_PATH_BUILDING;
                 path2Surface.updateMesh();
-                const buildingName = buildingType.slice(buildingType.lastIndexOf('/') + 1);
-                this.buildings[buildingName] = this.buildings[buildingName] || [];
-                this.buildings[buildingName].push(entity); // TODO push more complex building type???
+                GameState.buildings.push(entity);
                 // TODO need to explore map here?
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 console.warn('Loose power crystals on start not yet implemented'); // TODO implement power crystals on start
@@ -157,10 +170,6 @@ export class WorldManager {
         // multiple? =>
         // raiders? => select group
         // buildings? => select building
-        // TODO handle event triggering here (avoid sending unecessary events)
-        this.selectedEntities.forEach((entity) => entity.deselect());
-        this.selectedEntities = [];
-        this.selectionType = SelectionType.NONE;
         const raycaster = new Raycaster();
         raycaster.setFromCamera({x: r2x, y: r2y}, this.sceneManager.camera);
         const intersects = raycaster.intersectObject(this.sceneManager.scene, true);
@@ -169,11 +178,8 @@ export class WorldManager {
             while (obj) {
                 const userData = obj.userData;
                 if (userData && userData.hasOwnProperty('selectable')) {
-                    const selected = userData['selectable'].select();
-                    if (selected) {
-                        this.selectedEntities.push(selected);
-                        this.selectionType = SelectionType.SURFACE;
-                    }
+                    const selectable = userData['selectable'];
+                    if (selectable) GameState.selectEntities([selectable]);
                     break;
                 }
                 obj = obj.parent;

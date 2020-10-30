@@ -1,8 +1,17 @@
-import { CanvasTexture, ClampToEdgeWrapping, Group, LinearFilter, MeshPhongMaterial, Object3D, RGBAFormat, Sprite, SpriteMaterial } from 'three';
+import {
+    CanvasTexture,
+    ClampToEdgeWrapping,
+    Group,
+    LinearFilter,
+    MeshPhongMaterial,
+    Object3D,
+    RGBAFormat,
+    Sprite,
+    SpriteMaterial,
+} from 'three';
 import { AnimClip } from './AnimClip';
 import { iGet } from '../../../core/Util';
 import { ResourceManager } from '../../engine/ResourceManager';
-import { Selectable, SelectionType } from '../Selectable';
 
 export class AnimationEntityType {
 
@@ -13,7 +22,7 @@ export class AnimationEntityType {
 
 }
 
-export class AnimEntity implements Selectable {
+export class AnimEntity {
 
     entityType: AnimationEntityType = null;
     poly: Object3D[] = [];
@@ -23,8 +32,8 @@ export class AnimEntity implements Selectable {
 
     constructor(entityType: AnimationEntityType) {
         this.entityType = entityType;
-        this.group.userData = {'selectable': this};
 
+        // TODO render selection frame on billboard layer or handle this in layer itself?
         const ctx = document.createElement('canvas').getContext('2d');
         const size = 128;
         ctx.canvas.width = size; // TODO read from cfg?
@@ -130,19 +139,6 @@ export class AnimEntity implements Selectable {
         } else {
             // console.log('not an object or no material');
         }
-    }
-
-    getSelectionType(): SelectionType {
-        return SelectionType.PILOT; // TODO implement Selectable interface in subclasses
-    }
-
-    select(): Selectable {
-        this.selectionFrame.visible = true;
-        return this;
-    }
-
-    deselect() {
-        this.selectionFrame.visible = false;
     }
 
 }

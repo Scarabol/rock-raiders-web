@@ -23,7 +23,7 @@ export class GuiLayer extends ScaledLayer {
     panelIcons: MainPanel;
 
     constructor() {
-        super(640, 480);
+        super();
         const panelsCfg = ResourceManager.cfg('Panels640x480');
         const buttonsCfg = ResourceManager.cfg('Buttons640x480');
         const layer = this;

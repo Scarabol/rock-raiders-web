@@ -366,6 +366,7 @@ class WadLoader {
         this.addAsset(this.loadWadImageAsset, 'Interface/Airmeter/msgpanel_air_juice.bmp');
         this.addAssetFolder('Interface/InfoPanel/');
         this.addAssetFolder('Interface/PriorityPanel/');
+        this.addAssetFolder('Interface/Priorities');
         this.addAssetFolder('Interface/CameraControl/');
         this.addAssetFolder('Interface/MessageTabs/');
         this.addAssetFolder('Interface/IconPanel/');
