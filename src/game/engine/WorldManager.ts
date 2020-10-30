@@ -7,8 +7,8 @@ import { ENERGY_PATH_BUILDING } from '../model/map/SurfaceType';
 import { Terrain } from '../model/map/Terrain';
 import { Selectable, SelectionType } from '../model/Selectable';
 import { AnimEntity } from '../model/entity/AnimEntity';
-import { EventBus } from './EventBus';
-import { SurfaceDeselectEvent } from './LocalEvent';
+import { EventBus } from '../event/EventBus';
+import { SurfaceDeselectEvent } from '../event/LocalEvent';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {

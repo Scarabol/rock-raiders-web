@@ -1,5 +1,5 @@
-import { ScreenLayer } from '../../screen/ScreenLayer';
-import { BaseScreen } from '../../screen/BaseScreen';
+import { ScreenLayer } from '../screen/ScreenLayer';
+import { BaseScreen } from '../screen/BaseScreen';
 
 // noinspection JSUnusedGlobalSymbols
 export enum MOUSE_BUTTON {

@@ -1,6 +1,6 @@
 import {IconPanel} from './IconPanel';
-import {EventBus} from '../../game/engine/EventBus';
-import {SurfaceDeselectEvent, SurfaceSelectedEvent} from '../../game/engine/LocalEvent';
+import {EventBus} from '../../game/event/EventBus';
+import {SurfaceDeselectEvent, SurfaceSelectedEvent} from '../../game/event/LocalEvent';
 
 export class MainPanel extends IconPanel {
 

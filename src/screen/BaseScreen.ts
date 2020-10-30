@@ -1,5 +1,5 @@
 import { ScreenLayer } from './ScreenLayer';
-import { EventManager } from '../game/engine/EventManager';
+import { EventManager } from '../core/EventManager';
 
 export class BaseScreen {
 

@@ -3,8 +3,8 @@ import { Terrain } from './Terrain';
 import { GROUND, RUBBLE4, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
 import { ResourceManager } from '../../engine/ResourceManager';
 import { Selectable, SelectionType } from '../Selectable';
-import { EventBus } from '../../engine/EventBus';
-import { SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../engine/LocalEvent';
+import { EventBus } from '../../event/EventBus';
+import { SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../event/LocalEvent';
 
 const HEIGHT_MULTIPLER = 0.05;
 
