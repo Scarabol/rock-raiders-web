@@ -5,8 +5,10 @@ import { MathUtils, Raycaster, Vector3 } from 'three';
 import { iGet } from '../../core/Util';
 import { ENERGY_PATH_BUILDING } from '../model/map/SurfaceType';
 import { Terrain } from '../model/map/Terrain';
-import { Selectable } from '../model/Selectable';
+import { Selectable, SelectionType } from '../model/Selectable';
 import { AnimEntity } from '../model/entity/AnimEntity';
+import { EventBus } from './EventBus';
+import { SurfaceDeselectEvent } from './LocalEvent';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
@@ -15,12 +17,16 @@ export class WorldManager {
 
     terrain: Terrain;
     sceneManager: SceneManager;
-    selectedEntity: Selectable;
+    selectedEntities: Selectable[] = [];
+    selectionType: SelectionType;
     buildings = {};
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas);
         this.sceneManager.cursorTorchlight.distance *= this.tileSize;
+        EventBus.registerEventListener(SurfaceDeselectEvent.eventKey, () => {
+            if (this.selectionType === SelectionType.SURFACE) this.selectedEntities.forEach((entity) => entity.deselect());
+        });
     }
 
     setup(levelName: string) {
@@ -145,20 +151,29 @@ export class WorldManager {
         }
     }
 
-    selectEntity(rx: number, ry: number) {
-        if (this.selectedEntity) {
-            this.selectedEntity.deselect();
-            this.selectedEntity = null;
-        }
+    selectEntities(r1x: number, r1y: number, r2x: number, r2y: number) {
+        // TODO determine entities in rect
+        // => only one? => select
+        // multiple? =>
+        // raiders? => select group
+        // buildings? => select building
+        // TODO handle event triggering here (avoid sending unecessary events)
+        this.selectedEntities.forEach((entity) => entity.deselect());
+        this.selectedEntities = [];
+        this.selectionType = SelectionType.NONE;
         const raycaster = new Raycaster();
-        raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
+        raycaster.setFromCamera({x: r2x, y: r2y}, this.sceneManager.camera);
         const intersects = raycaster.intersectObject(this.sceneManager.scene, true);
         if (intersects.length > 0) {
             let obj = intersects[0].object;
             while (obj) {
                 const userData = obj.userData;
                 if (userData && userData.hasOwnProperty('selectable')) {
-                    this.selectedEntity = userData['selectable'].select();
+                    const selected = userData['selectable'].select();
+                    if (selected) {
+                        this.selectedEntities.push(selected);
+                        this.selectionType = SelectionType.SURFACE;
+                    }
                     break;
                 }
                 obj = obj.parent;

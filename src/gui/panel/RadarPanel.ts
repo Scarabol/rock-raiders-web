@@ -19,7 +19,7 @@ export class RadarPanel extends Panel {
         this.overlay = this.addChild(new Panel('Panel_RadarOverlay', panelsCfg, buttonsCfg));
         // this.overlay.hide();
         this.btnToggle = iGet(this.buttons, 'PanelButton_Radar_Toggle');
-        this.btnToggle.onClick = () => this.toggle();
+        this.btnToggle.onClick = () => this.toggleState();
         this.btnMap = iGet(this.buttons, 'PanelButton_Radar_MapView');
         this.btnMap.onClick = () => {
             // this.fill.hide();

@@ -2,7 +2,7 @@ import { CanvasTexture, ClampToEdgeWrapping, Group, LinearFilter, MeshPhongMater
 import { AnimClip } from './AnimClip';
 import { iGet } from '../../../core/Util';
 import { ResourceManager } from '../../engine/ResourceManager';
-import { Selectable } from '../Selectable';
+import { Selectable, SelectionType } from '../Selectable';
 
 export class AnimationEntityType {
 
@@ -130,6 +130,10 @@ export class AnimEntity implements Selectable {
         } else {
             // console.log('not an object or no material');
         }
+    }
+
+    getSelectionType(): SelectionType {
+        return SelectionType.PILOT; // TODO implement Selectable interface in subclasses
     }
 
     select(): Selectable {

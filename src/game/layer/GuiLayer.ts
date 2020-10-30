@@ -2,10 +2,10 @@ import { ScaledLayer } from '../../screen/ScreenLayer';
 import { ResourceManager } from '../engine/ResourceManager';
 import { InfoDockPanel, Panel, TopPanel } from '../../gui/panel/Panel';
 import { BaseElement } from '../../gui/BaseElement';
-import { IconPanel } from '../../gui/panel/IconPanel';
 import { RadarPanel } from '../../gui/panel/RadarPanel';
 import { MessagePanel } from '../../gui/panel/MessagePanel';
 import { PanelCrystalSideBar } from '../../gui/panel/PanelCrystalSideBar';
+import { MainPanel } from '../../gui/panel/MainPanel';
 
 export class GuiLayer extends ScaledLayer {
 
@@ -20,7 +20,7 @@ export class GuiLayer extends ScaledLayer {
     panelCameraControl: Panel;
     panelInfoDock: InfoDockPanel;
     panelEncyclopedia: Panel;
-    panelIcons: IconPanel;
+    panelIcons: MainPanel;
 
     constructor() {
         super(640, 480);
@@ -35,13 +35,16 @@ export class GuiLayer extends ScaledLayer {
         this.panelPriorityList = this.addPanel(new Panel('Panel_PriorityList', panelsCfg, buttonsCfg));
         this.panelInformation = this.addPanel(new Panel('Panel_Information', panelsCfg, buttonsCfg));
         this.panelTopPanel = this.addPanel(new TopPanel('Panel_TopPanel', panelsCfg, buttonsCfg));
-        this.panelIcons = this.addPanel(new IconPanel());
+        this.panelIcons = this.addPanel(new MainPanel());
         this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar('Panel_CrystalSideBar', panelsCfg, buttonsCfg));
         this.panelMessagesSide = this.addPanel(new Panel('Panel_MessagesSide', panelsCfg, buttonsCfg));
         this.panelMessages = this.addPanel(new MessagePanel('Panel_Messages', panelsCfg, buttonsCfg));
         this.panelRadar = this.addPanel(new RadarPanel('Panel_Radar', panelsCfg, buttonsCfg));
         // link panels
-        this.panelTopPanel.btnPriorities.onClick = () => this.panelIcons.toggle(() => this.panelPriorityList.toggle());
+        this.panelTopPanel.btnPriorities.onClick = () => {
+            const pressed = this.panelTopPanel.btnPriorities.pressed; // TODO this requires toggle buttons
+            // this.panelIcons.setMovedIn(!pressed, () => this.panelPriorityList.setMovedIn(pressed));
+        };
         this.onRedraw = (context: CanvasRenderingContext2D) => {
             context.clearRect(0, 0, context.canvas.width, context.canvas.height);
             this.rootElement.onRedraw(context);

@@ -12,7 +12,8 @@ export class Panel extends BaseElement {
     xOut: number = 0;
     yOut: number = 0;
     buttons = {};
-    animated: boolean = false;
+    animationTimeout = null;
+    movedIn: boolean = false;
 
     constructor(panelName: string = null, panelsCfg: {} = {}, buttonsCfg: {} = {}) {
         super();
@@ -43,7 +44,7 @@ export class Panel extends BaseElement {
     }
 
     isInactive(): boolean {
-        return this.animated || super.isInactive();
+        return this.animationTimeout || super.isInactive();
     }
 
     updateAnimation(targetX: number, targetY: number, speed: number, onDone: () => any) {
@@ -52,24 +53,36 @@ export class Panel extends BaseElement {
         if (Math.abs(diffX) <= speed && Math.abs(diffY) <= speed) {
             this.relX = targetX;
             this.relY = targetY;
-            this.animated = false;
+            this.animationTimeout = null;
             if (onDone) onDone();
         } else {
             this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * speed);
             this.relY += Math.round(Math.sign(diffY) * Math.sqrt(Math.abs(diffY)) * speed);
             const panel = this;
-            setTimeout(() => panel.updateAnimation(targetX, targetY, speed, onDone), 1000 / 30); // synced with 30 FPS // TODO externalize constant
+            this.animationTimeout = setTimeout(() => panel.updateAnimation(targetX, targetY, speed, onDone), 1000 / 30); // synced with 30 FPS // TODO externalize constant
         }
         this.updatePosition();
         this.notifyRedraw();
     }
 
-    toggle(onDone: () => any = null) {
-        if (this.animated) return; // animation already in progress
-        this.animated = true;
-        if (this.relX === this.xIn && this.relY === this.yIn) {
+    setMovedIn(movedIn: boolean, onDone: () => any = null) {
+        if (this.movedIn !== movedIn) {
+            this.toggleState(onDone);
+        } else if (onDone) {
+            onDone();
+        }
+    }
+
+    toggleState(onDone: () => any = null) {
+        if (this.animationTimeout) {
+            clearTimeout(this.animationTimeout);
+            this.animationTimeout = null;
+        }
+        if (this.movedIn) {
+            this.movedIn = false;
             this.updateAnimation(this.xOut, this.yOut, 3, onDone); // TODO externalize constant
         } else {
+            this.movedIn = true;
             this.updateAnimation(this.xIn, this.yIn, 3, onDone); // TODO externalize constant
         }
     }

@@ -2,7 +2,9 @@ import { Color, Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } fro
 import { Terrain } from './Terrain';
 import { GROUND, RUBBLE4, SURF_TO_TYPE, SurfaceType } from './SurfaceType';
 import { ResourceManager } from '../../engine/ResourceManager';
-import { Selectable } from '../Selectable';
+import { Selectable, SelectionType } from '../Selectable';
+import { EventBus } from '../../engine/EventBus';
+import { SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../engine/LocalEvent';
 
 const HEIGHT_MULTIPLER = 0.05;
 
@@ -16,11 +18,14 @@ export class Surface implements Selectable {
     containedCrystals: number = 0;
     heightOffset: number = null;
     discovered: boolean = false;
+    selected: boolean = false;
 
     wallType: WALL_TYPE = null;
     geometry: Geometry = null;
     mesh: Mesh = null;
     needsMeshUpdate: boolean = false;
+
+    // TODO lavaLevel and rubbleLevel
 
     constructor(terrain, surface, x, y, high) {
         this.terrain = terrain;
@@ -293,16 +298,28 @@ export class Surface implements Selectable {
         this.terrain.floorGroup.add(this.mesh);
     }
 
+    getSelectionType(): SelectionType {
+        return SelectionType.SURFACE;
+    }
+
     select(): Selectable {
         if (this.surfaceType.selectable) {
-            this.mesh.material['color'].setHex(0xa0a0a0);
+            if (!this.selected) {
+                this.selected = true;
+                this.mesh.material['color'].setHex(0xa0a0a0);
+                EventBus.publishEvent(new SurfaceSelectedEvent(this.surfaceType));
+            }
             return this;
         }
         return null;
     }
 
     deselect(): any {
-        this.mesh.material['color'] = new Color(0xffffff);
+        if (this.selected) {
+            this.selected = false;
+            this.mesh.material['color'] = new Color(0xffffff);
+            EventBus.publishEvent(new SurfaceDeselectEvent());
+        }
     }
 
 }

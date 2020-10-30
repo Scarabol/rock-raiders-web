@@ -43,10 +43,12 @@ export class SelectionLayer extends ScreenLayer {
     selectEntities(screenX: number, screenY: number) {
         if (!this.selectStart) return false; // selection was not started on this layer
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        const rx = (screenX / this.canvas.width) * 2 - 1;
-        const ry = -(screenY / this.canvas.height) * 2 + 1;
+        const r1x = (this.selectStart.x / this.canvas.width) * 2 - 1;
+        const r1y = -(this.selectStart.y / this.canvas.height) * 2 - 1;
+        const r2x = (screenX / this.canvas.width) * 2 - 1;
+        const r2y = -(screenY / this.canvas.height) * 2 + 1;
         if (this.selectStart.x === screenX && this.selectStart.y === screenY) {
-            this.worldManager.selectEntity(rx, ry);
+            this.worldManager.selectEntities(r1x, r1y, r2x, r2y);
         } else {
             // TODO select multiple entities, but do not select floor with selection rect
             console.warn('Selection of multiple entities not yet implemented');
