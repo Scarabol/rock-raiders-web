@@ -29,6 +29,7 @@ export abstract class MovableEntity extends AnimEntity {
             if (dist > this.getSpeed()) {
                 step.setLength(this.getSpeed());
             }
+            step.y = 0; // TODO determine height from terrain
             this.group.position.add(step); // TODO instead send entity moved like world events
         } else {
             this.group.position.copy(target);
