@@ -37,7 +37,7 @@ export class Supervisor {
     }
 
     scheduleJobs() {
-        console.log('Scheduling jobs; available: ' + this.availableJobs.length);
+        // console.log('Scheduling jobs; available: ' + this.availableJobs.length);
         if (this.availableJobs.length < 1) return;
         const stillAvailable = [];
         this.availableJobs.forEach((job) => { // TODO sort jobs by priority
