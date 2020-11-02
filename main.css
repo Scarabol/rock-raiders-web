@@ -17,17 +17,8 @@ html, body {
     justify-content: center;
 }
 
-canvas {
+#game-canvas-container > canvas {
     position: absolute;
-}
-
-#game-canvas {
-    z-index: 20;
-}
-
-#loading-canvas {
-    z-index: 50;
-    background: #000;
 }
 
 .github-box {
