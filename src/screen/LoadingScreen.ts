@@ -1,5 +1,5 @@
 import { BaseScreen } from './BaseScreen';
-import { ResourceManager } from '../game/engine/ResourceManager';
+import { ResourceManager } from '../resource/ResourceManager';
 import { ScreenLayer } from './ScreenLayer';
 
 export class LoadingScreen extends BaseScreen {

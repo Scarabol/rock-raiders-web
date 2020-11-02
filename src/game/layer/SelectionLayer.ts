@@ -1,6 +1,6 @@
 import { ScreenLayer } from '../../screen/ScreenLayer';
-import { MOUSE_BUTTON } from '../../core/EventManager';
-import { WorldManager } from '../engine/WorldManager';
+import { MOUSE_BUTTON } from '../../event/EventManager';
+import { WorldManager } from '../../scene/WorldManager';
 
 export class SelectionLayer extends ScreenLayer {
 

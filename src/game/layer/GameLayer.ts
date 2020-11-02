@@ -1,5 +1,5 @@
 import { ScreenLayer } from '../../screen/ScreenLayer';
-import { WorldManager } from '../engine/WorldManager';
+import { WorldManager } from '../../scene/WorldManager';
 
 export class GameLayer extends ScreenLayer {
 

@@ -8,6 +8,10 @@ const config = {
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
+            {
+                test: /\.worker\.js$/,
+                loader: 'worker-loader',
+            },
         ],
     },
     resolve: {

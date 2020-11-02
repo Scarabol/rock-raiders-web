@@ -1,6 +1,6 @@
 import { BaseScreen } from './BaseScreen';
 import { ScreenLayer } from './ScreenLayer';
-import { ResourceManager } from '../game/engine/ResourceManager';
+import { ResourceManager } from '../resource/ResourceManager';
 
 export class MainMenuScreen extends BaseScreen {
 

@@ -1,8 +1,8 @@
-import { BuildingEntity } from './entity/building/BuildingEntity';
+import { BuildingEntity } from '../../scene/model/BuildingEntity';
 import { Building } from './entity/building/Building';
 import { Selectable, SelectionType } from './Selectable';
-import { Raider } from './entity/Raider';
-import { VehicleEntity } from './entity/vehicle/VehicleEntity';
+import { Raider } from '../../scene/model/Raider';
+import { VehicleEntity } from '../../scene/model/VehicleEntity';
 
 export class GameState {
 

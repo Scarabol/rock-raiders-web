@@ -1,11 +1,11 @@
 import { ScaledLayer } from '../../screen/ScreenLayer';
-import { ResourceManager } from '../engine/ResourceManager';
-import { InfoDockPanel, Panel, TopPanel } from '../../gui/panel/Panel';
-import { BaseElement } from '../../gui/BaseElement';
-import { RadarPanel } from '../../gui/panel/RadarPanel';
-import { MessagePanel } from '../../gui/panel/MessagePanel';
-import { PanelCrystalSideBar } from '../../gui/panel/PanelCrystalSideBar';
-import { MainPanel } from '../../gui/panel/MainPanel';
+import { ResourceManager } from '../../resource/ResourceManager';
+import { InfoDockPanel, Panel, TopPanel } from '../gui/ingame/panel/Panel';
+import { BaseElement } from '../gui/base/BaseElement';
+import { RadarPanel } from '../gui/ingame/panel/RadarPanel';
+import { MessagePanel } from '../gui/ingame/panel/MessagePanel';
+import { PanelCrystalSideBar } from '../gui/ingame/panel/PanelCrystalSideBar';
+import { MainPanel } from '../gui/ingame/panel/MainPanel';
 
 export class GuiLayer extends ScaledLayer {
 

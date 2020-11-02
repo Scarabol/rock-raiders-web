@@ -1,4 +1,4 @@
-import { Surface } from '../map/Surface';
+import { Surface } from '../../../scene/model/map/Surface';
 import { MovableEntity } from '../entity/MovableEntity';
 import { Vector3 } from 'three';
 

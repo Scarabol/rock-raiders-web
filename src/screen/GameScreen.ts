@@ -1,9 +1,9 @@
 import { BaseScreen } from './BaseScreen';
-import { WorldManager } from '../game/engine/WorldManager';
+import { WorldManager } from '../scene/WorldManager';
 import { SelectionLayer } from '../game/layer/SelectionLayer';
 import { GameLayer } from '../game/layer/GameLayer';
 import { GuiLayer } from '../game/layer/GuiLayer';
-import { Supervisor } from '../game/engine/Supervisor';
+import { Supervisor } from '../game/Supervisor';
 import { BillboardLayer } from '../game/layer/BillboardLayer';
 
 export class GameScreen extends BaseScreen {

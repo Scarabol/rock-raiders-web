@@ -1,6 +1,7 @@
-import { AnimationEntityType, AnimEntity } from './AnimEntity';
+import { AnimEntity } from '../../../scene/model/AnimEntity';
 import { Task } from '../job/Task';
 import { Vector3 } from 'three';
+import { AnimationEntityType } from '../../../scene/model/AnimationEntityType';
 
 export abstract class MovableEntity extends AnimEntity {
 

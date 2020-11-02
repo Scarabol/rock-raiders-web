@@ -1,16 +1,23 @@
+import { ResourceManager } from './resource/ResourceManager';
 import { LoadingScreen } from './screen/LoadingScreen';
-import { ResourceManager } from './game/engine/ResourceManager';
 import { MainMenuScreen } from './screen/MainMenuScreen';
 import { GameScreen } from './screen/GameScreen';
 import { RewardScreen } from './screen/RewardScreen';
 
-// setup basic game engine structure
-
 const loadingScreen = new LoadingScreen();
 
-// link all components with callbacks
+// link all components
 
-ResourceManager.wadLoader.onLoad = () => {
+ResourceManager.onMessage = (msg: string) => {
+    loadingScreen.setLoadingMessage(msg);
+};
+ResourceManager.onInitialLoad = (totalResources: number) => {
+    loadingScreen.enableGraphicMode(totalResources);
+};
+ResourceManager.onAssetLoaded = (assetIndex: number) => {
+    loadingScreen.onAssetLoaded(assetIndex);
+};
+ResourceManager.onLoadDone = () => {
     // complete setup
     const mainMenuScreen = new MainMenuScreen();
     const gameScreen = new GameScreen();
@@ -29,21 +36,8 @@ ResourceManager.wadLoader.onLoad = () => {
     // mainMenuScreen.showMainMenu();
     mainMenuScreen.selectLevel('Level02');
 };
-ResourceManager.wadLoader.onMessage = (msg: string) => {
-    loadingScreen.setLoadingMessage(msg);
-};
-ResourceManager.wadLoader.onInitialLoad = (totalResources: number) => {
-    loadingScreen.enableGraphicMode(totalResources);
-};
-ResourceManager.wadLoader.onAssetLoaded = (assetIndex: number) => {
-    loadingScreen.onAssetLoaded(assetIndex);
-};
 
 // start the game engine with loading resources
 
 loadingScreen.show();
-ResourceManager.wadLoader.startWithCachedFiles(() => {
-    // as fallback load wad files from local URL
-    // TODO load WAD files from HTML input element or external URL (CORS?!)
-    ResourceManager.wadLoader.loadWadFiles('./LegoRR0.wad', './LegoRR1.wad');
-});
+ResourceManager.startLoading('./LegoRR0.wad', './LegoRR1.wad'); // TODO use input elements to define URLs
