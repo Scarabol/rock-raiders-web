@@ -47,7 +47,7 @@ export class WadLoader {
     }
 
     loadWadImageAsset(name, callback) { // TODO use BitmapLoader and avoid creating local urls
-        this.loadImageAsset(this.wad0File.getEntry(name), name, callback);
+        this.loadImageAsset(this.wad0File.getEntryUrl(name), name, callback);
     }
 
     loadWadTexture(name, callback) { // TODO use BitmapLoader and avoid creating local urls
@@ -90,7 +90,7 @@ export class WadLoader {
             if (callback != null) callback();
         };
 
-        img.src = this.wad0File.getEntry(name);
+        img.src = this.wad0File.getEntryUrl(name);
     }
 
     loadAlphaImageAsset(name, callback) {
@@ -111,7 +111,7 @@ export class WadLoader {
             if (callback != null) callback();
         };
 
-        img.src = this.wad0File.getEntry(name.toLowerCase());
+        img.src = this.wad0File.getEntryUrl(name.toLowerCase());
     }
 
     loadFontImageAsset(name, callback) {
@@ -132,7 +132,7 @@ export class WadLoader {
             if (callback != null) callback();
         };
 
-        img.src = this.wad0File.getEntry(name);
+        img.src = this.wad0File.getEntryUrl(name);
     }
 
     loadNerpAsset(name, callback) {
@@ -297,9 +297,9 @@ export class WadLoader {
         }
         // try (localized) wad1 file first, then use generic wad0 file
         try {
-            snd.src = this.wad1File.getEntry(path);
+            snd.src = this.wad1File.getEntryUrl(path);
         } catch (e) {
-            snd.src = this.wad0File.getEntry(path);
+            snd.src = this.wad0File.getEntryUrl(path);
         }
     }
 

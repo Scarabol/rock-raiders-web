@@ -70,13 +70,17 @@ export class WadFile {
         }
     }
 
+    getEntryBlob(entryName): Blob {
+        return new Blob([this.getEntryBuffer(entryName)], {'type': 'image/bmp'});
+    }
+
     /**
      * Returns the entries content by name extracted from the managed WAD file
      * @param entryName Entry name to be extracted
      * @returns {string} Returns the local object url to the extracted data
      */
-    getEntry(entryName): string { // TODO rename to getEntryUrl
-        return URL.createObjectURL(new Blob([this.getEntryBuffer(entryName)], {'type': 'image/bmp'}));
+    getEntryUrl(entryName): string {
+        return URL.createObjectURL(this.getEntryBlob(entryName));
     }
 
     /**
