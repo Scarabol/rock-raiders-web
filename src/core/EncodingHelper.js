@@ -1,4 +1,4 @@
-function encodeChar(charCode) { // encoding of the original files still remains a mystery
+export function encodeChar(charCode) { // encoding of the original files still remains a mystery
     if (charCode === 130) {
         return 'ä'.charCodeAt(0);
     } else if (charCode === 142) {
@@ -14,5 +14,3 @@ function encodeChar(charCode) { // encoding of the original files still remains 
     }
     return charCode;
 }
-
-export { encodeChar };

@@ -1,6 +1,6 @@
 import { AnimSubObj } from './AnimSubObj';
 
-class AnimClip {
+export class AnimClip {
 
     looping: boolean = false;
     firstFrame: number = null;
@@ -36,5 +36,3 @@ class AnimClip {
     }
 
 }
-
-export { AnimClip };

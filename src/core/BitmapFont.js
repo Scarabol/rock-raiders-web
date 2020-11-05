@@ -1,6 +1,6 @@
 import { createContext, createDummyImage } from './ImageHelper';
 
-function BitmapFont(fontImage, cols = 10, rows = 19) { // font images always consist of 10 columns and 19 rows with last row empty
+export function BitmapFont(fontImage, cols = 10, rows = 19) { // font images always consist of 10 columns and 19 rows with last row empty
     // actually chars are font dependent and have to be externalized in future
     // maybe CP850 was used... not sure, doesn't fit...
     const chars = [' ', '!', '"', '#', '$', '%', '⌵', '`', '(', ')',
@@ -91,12 +91,10 @@ BitmapFont.prototype.createTextImage = function (text) {
     return surface;
 };
 
-function DummyFont() {
+export function DummyFont() {
     this.charImg = createDummyImage(80, 20);
 }
 
 DummyFont.prototype.createTextImage = function () {
     return this.charImg;
 };
-
-export { BitmapFont, DummyFont };

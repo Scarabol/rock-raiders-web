@@ -3,7 +3,7 @@ import { encodeChar } from '../EncodingHelper';
 /**
  * Handles the extraction of single files from a bigger WAD data blob
  */
-class WadFile {
+export class WadFile {
 
     buffer: Int8Array = null;
     entries = [];
@@ -125,5 +125,3 @@ class WadFile {
     }
 
 }
-
-export { WadFile };

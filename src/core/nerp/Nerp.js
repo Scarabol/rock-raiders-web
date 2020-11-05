@@ -427,7 +427,7 @@ function preProcess(expression) {
     }
 }
 
-function NerpParser(nerpScript, nerps) {
+export function NerpParser(nerpScript, nerps) {
     const nerpRunner = new NerpRunner();
     const lines = nerpScript.split('\n').map(l => l
         .split('//')[0].trim() // before comment starts
@@ -526,5 +526,3 @@ function NerpParser(nerpScript, nerps) {
     }
     return nerpRunner;
 }
-
-export { NerpParser };

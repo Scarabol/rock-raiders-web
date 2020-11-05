@@ -2,7 +2,7 @@ import { AmbientLight, MOUSE, PerspectiveCamera, PointLight, Scene, WebGLRendere
 import { DebugHelper } from '../../core/DebugHelper';
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls';
 
-class SceneManager {
+export class SceneManager {
 
     maxFps: number = 30; // most animations use 25 fps so this should be enough
     renderer: WebGLRenderer;
@@ -61,5 +61,3 @@ class SceneManager {
     }
 
 }
-
-export { SceneManager };

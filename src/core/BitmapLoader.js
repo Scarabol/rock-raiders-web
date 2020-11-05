@@ -5,7 +5,7 @@
 
 import * as THREE from 'three';
 
-function BitmapLoader(manager) {
+export function BitmapLoader(manager) {
     this.manager = (manager !== undefined) ? manager : THREE.DefaultLoadingManager;
     this.path = '';
 }
@@ -165,5 +165,3 @@ BitmapLoader.prototype = {
         }
     },
 };
-
-export { BitmapLoader };

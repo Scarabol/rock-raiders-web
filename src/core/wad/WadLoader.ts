@@ -11,7 +11,7 @@ import { RonFile } from './RonFile';
 import { getFilename, iGet } from '../Util';
 import * as THREE from 'three';
 
-class WadLoader {
+export class WadLoader {
 
     wad0File: WadFile = null;
     wad1File: WadFile = null;
@@ -619,5 +619,3 @@ class WadLoader {
         });
     }
 }
-
-export { WadLoader };

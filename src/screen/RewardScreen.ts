@@ -1,6 +1,6 @@
 import { BaseScreen } from './BaseScreen';
 
-class RewardScreen extends BaseScreen {
+export class RewardScreen extends BaseScreen {
 
     onContinue: () => void;
 
@@ -9,5 +9,3 @@ class RewardScreen extends BaseScreen {
     }
 
 }
-
-export { RewardScreen };

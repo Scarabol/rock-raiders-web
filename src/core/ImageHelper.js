@@ -4,7 +4,7 @@
  * @param height: the desired height of the new context
  * @returns RenderingContext the newly created canvas
  */
-function createContext(width, height) {
+export function createContext(width, height) {
     if (width < 1 || height < 1) {
         console.error('Can\'t create context with size ' + width + ' x ' + height);
         return createDummyImage(64, 64);
@@ -23,7 +23,7 @@ function createContext(width, height) {
  * @param width: expected width of the original image
  * @param height: expected height of the original image
  */
-function createDummyImage(width, height) {
+export function createDummyImage(width, height) {
     const result = createContext(width, height);
     for (let y = 0; y < height; y += 16) {
         for (let x = 0; x < width; x += 16) {
@@ -37,5 +37,3 @@ function createDummyImage(width, height) {
     }
     return result.canvas;
 }
-
-export { createContext, createDummyImage };

@@ -2,7 +2,7 @@ import { BaseScreen } from './BaseScreen';
 import { ScreenLayer } from './ScreenLayer';
 import { ResourceManager } from '../game/engine/ResourceManager';
 
-class MainMenuScreen extends BaseScreen {
+export class MainMenuScreen extends BaseScreen {
 
     onLevelSelected: (levelName: string) => void = null;
     startCanvas: ScreenLayer;
@@ -42,5 +42,3 @@ class MainMenuScreen extends BaseScreen {
     }
 
 }
-
-export { MainMenuScreen };

@@ -1,6 +1,6 @@
 const Stats = require('stats.js');
 
-class DebugHelper {
+export class DebugHelper {
 
     stats;
 
@@ -33,5 +33,3 @@ class DebugHelper {
     }
 
 }
-
-export { DebugHelper };
