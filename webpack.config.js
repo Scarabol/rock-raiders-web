@@ -13,9 +13,6 @@ const config = {
     resolve: {
         extensions: ['.ts', '.js'],
     },
-    output: {
-        filename: './app.bundle.js',
-    },
     devtool: 'source-map',
 };
 
