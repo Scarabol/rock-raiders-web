@@ -346,12 +346,12 @@ export class WadLoader {
         //     this.addAsset(this.loadWadImageAsset, imgPath);
         // });
         // spaces
-        // this.wad0File.filterEntryNames('World/WorldTextures/IceSplit/Ice..\\.bmp').forEach(imgPath => {
-        //     this.addAsset(this.loadWadImageAsset, imgPath);
-        // });
-        // this.wad0File.filterEntryNames('World/WorldTextures/LavaSplit/Lava..\\.bmp').forEach(imgPath => {
-        //     this.addAsset(this.loadWadImageAsset, imgPath);
-        // });
+        this.wad0File.filterEntryNames('World/WorldTextures/IceSplit/Ice..\\.bmp').forEach(imgPath => {
+            this.addAsset(this.loadWadTexture, imgPath);
+        });
+        this.wad0File.filterEntryNames('World/WorldTextures/LavaSplit/Lava..\\.bmp').forEach(imgPath => {
+            this.addAsset(this.loadWadTexture, imgPath);
+        });
         this.wad0File.filterEntryNames('World/WorldTextures/RockSplit/Rock..\\.bmp').forEach(imgPath => {
             this.addAsset(this.loadWadTexture, imgPath);
         });
