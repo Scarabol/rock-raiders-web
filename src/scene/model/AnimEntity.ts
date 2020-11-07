@@ -3,9 +3,11 @@ import { AnimClip } from './AnimClip';
 import { getFilename, iGet } from '../../core/Util';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { AnimationEntityType } from './AnimationEntityType';
+import { WorldManager } from '../WorldManager';
 
 export class AnimEntity {
 
+    worldMgr: WorldManager;
     entityType: AnimationEntityType = null;
     poly: Object3D[] = [];
     group: Group = new Group();

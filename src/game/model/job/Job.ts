@@ -1,6 +1,6 @@
 import { Surface } from '../../../scene/model/map/Surface';
-import { MovableEntity } from '../entity/MovableEntity';
 import { Vector3 } from 'three';
+import { Raider } from '../../../scene/model/Raider';
 
 export enum JobType {
 
@@ -19,11 +19,13 @@ export abstract class Job {
         this.type = type;
     }
 
-    isQualified(entity: MovableEntity) {
+    isQualified(entity: Raider) {
         return true;
     }
 
     abstract getPosition(): Vector3; // TODO job system in 2d should be sufficient and decouple from three for deps and worker reasons
+
+    abstract isInArea(x: number, z: number);
 
 }
 
@@ -49,7 +51,13 @@ export class SurfaceJob extends Job {
     }
 
     getPosition(): Vector3 {
-        return new Vector3(this.surface.x * 40, 0, this.surface.y * 40); // TODO externalize tile size or manage world position for surfaces?!
+        return new Vector3(this.surface.x * 40 + 20, 0, this.surface.y * 40 + 20); // TODO externalize tile size or manage world position for surfaces?!
+    }
+
+    isInArea(x: number, z: number) {
+        // TODO check square distance first
+        return x >= this.surface.x * 40 && x < this.surface.x * 40 + 40
+            && z >= this.surface.y * 40 && z < this.surface.y * 40 + 40;
     }
 
 }

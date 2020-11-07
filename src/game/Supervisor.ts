@@ -3,15 +3,17 @@ import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents';
 import { Job } from './model/job/Job';
 import { GameState } from './model/GameState';
 import { Vector3 } from 'three';
-import { MoveToTarget } from './model/job/MoveToTarget';
 import { Raider } from '../scene/model/Raider';
+import { WorldManager } from '../scene/WorldManager';
 
 export class Supervisor {
 
+    worldMgr: WorldManager;
     availableJobs: Job[] = [];
     interval = null;
 
-    constructor() {
+    constructor(worldMgr: WorldManager) {
+        this.worldMgr = worldMgr;
         EventBus.registerEventListener(JobCreateEvent.eventKey, (event: JobCreateEvent) => {
             this.availableJobs.push(event.job);
         });
@@ -45,7 +47,7 @@ export class Supervisor {
             let closestRaider: Raider = null;
             let minDistance = null;
             GameState.raiders.forEach((raider) => {
-                if (raider.tasks.length < 1 && job.isQualified(raider)) {
+                if (!raider.job && job.isQualified(raider)) {
                     const dist = new Vector3().copy(job.getPosition()).sub(raider.getPosition()).lengthSq();
                     if (minDistance === null || dist < minDistance) {
                         closestRaider = raider;
@@ -54,8 +56,7 @@ export class Supervisor {
                 }
             });
             if (closestRaider) {
-                // TODO compute what needs to be done to fulfill this task, so far just move
-                closestRaider.tasks = [new MoveToTarget(closestRaider, job.getPosition())]; // so far... just move!
+                closestRaider.job = job;
             } else {
                 stillAvailable.push(job);
             }

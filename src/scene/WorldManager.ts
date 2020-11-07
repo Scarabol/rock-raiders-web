@@ -40,6 +40,7 @@ export class WorldManager {
             if (event.type === SpawnType.RAIDER) {
                 // add raider with teleport animation
                 const raider = new Raider();
+                raider.worldMgr = this;
                 raider.setActivity('TeleportIn', () => raider.setActivity('Stand'));
                 raider.group.position.copy(station.group.position).add(new Vector3(0, 0, this.tileSize / 2).applyEuler(station.group.rotation));
                 raider.group.rotation.copy(station.group.rotation);
@@ -84,6 +85,7 @@ export class WorldManager {
                 this.setTorchPosition(target);
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
                 const raider = new Raider();
+                raider.worldMgr = this;
                 raider.setActivity('Stand');
                 raider.group.position.set(worldX, worldY, worldZ);
                 raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
@@ -93,6 +95,7 @@ export class WorldManager {
             } else if (buildingType) {
                 const building = Building.getByName(buildingType);
                 const entity = new BuildingEntity(building);
+                entity.worldMgr = this;
                 entity.setActivity('Stand');
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);

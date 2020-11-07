@@ -25,7 +25,7 @@ export class GameScreen extends BaseScreen {
         this.worldManager = new WorldManager(this.gameLayer.canvas);
         this.gameLayer.setWorldManager(this.worldManager);
         this.selectionLayer.setWorldManager(this.worldManager);
-        this.jobSupervisor = new Supervisor();
+        this.jobSupervisor = new Supervisor(this.worldManager);
     }
 
     startLevel(levelName) {

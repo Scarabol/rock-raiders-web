@@ -6,6 +6,7 @@ import { iGet } from '../core/Util';
 export class TerrainLoader {
 
     static loadTerrain(levelConf): Terrain {
+        // const tileSize = Number(iGet(levelConf, 'BlockSize'));
         const terrain = new Terrain();
 
         const themeName = levelConf['TextureSet'][1];
