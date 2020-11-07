@@ -87,6 +87,7 @@ export class WorldManager {
                 raider.setActivity('Stand');
                 raider.group.position.set(worldX, worldY, worldZ);
                 raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
+                raider.group.visible = this.terrain.getSurface(raider.group.position.x / this.tileSize, raider.group.position.z / this.tileSize).discovered;
                 this.sceneManager.scene.add(raider.group);
                 GameState.raiders.push(raider);
             } else if (buildingType) {
@@ -95,6 +96,7 @@ export class WorldManager {
                 entity.setActivity('Stand');
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
+                entity.group.visible = this.terrain.getSurface(entity.group.position.x / this.tileSize, entity.group.position.z / this.tileSize).discovered;
                 // TODO rotate building with normal vector of surface
                 this.sceneManager.scene.add(entity.group);
                 const path1Surface = this.terrain.getSurface(entity.group.position.x / this.tileSize, entity.group.position.z / this.tileSize);

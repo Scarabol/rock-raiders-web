@@ -67,7 +67,7 @@ export class TerrainLoader {
             if (predugMap[s.y][s.x] === 1 || predugMap[s.y][s.x] === 3) { // predug map is rows (y) first, columns (x) second
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
-                        terrain.getSurfaceOrNull(x, y).discovered = true;
+                        terrain.getSurfaceOrNull(x, y).discovered = true; // TODO make all entities on this surface visible
                     }
                 }
             }

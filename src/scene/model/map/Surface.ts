@@ -45,7 +45,7 @@ export class Surface implements Selectable {
      * @return {boolean} Returns true, if a new cave was discovered
      */
     discoverNeighbors(): boolean {
-        this.discovered = true;
+        this.discovered = true; // TODO make all entities on this surface visible
         this.needsMeshUpdate = true;
         let foundCave = false;
         if (this.surfaceType.floor) {
