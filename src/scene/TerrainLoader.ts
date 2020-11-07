@@ -62,8 +62,6 @@ export class TerrainLoader {
             }
         }
 
-        // TODO crumble unsupported walls (this may change discover result in next step)
-
         // exlpore predug surfaces
         terrain.surfaces.forEach(c => c.forEach(s => {
             if (predugMap[s.y][s.x] === 1 || predugMap[s.y][s.x] === 3) { // predug map is rows (y) first, columns (x) second
@@ -73,6 +71,11 @@ export class TerrainLoader {
                     }
                 }
             }
+        }));
+
+        // crumble unsupported walls
+        terrain.surfaces.forEach((c) => c.forEach((s) => {
+            if (!s.surfaceType.floor && !s.isSupported()) s.collapse();
         }));
 
         terrain.surfaces.forEach(c => c.forEach(s => s.updateMesh()));
