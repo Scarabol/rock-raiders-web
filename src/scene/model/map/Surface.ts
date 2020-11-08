@@ -66,6 +66,7 @@ export class Surface implements Selectable {
 
     collapse() {
         this.surfaceType = RUBBLE4; // TODO drop contained ore/crystals
+        this.job = null;
         this.needsMeshUpdate = true;
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors();
@@ -99,7 +100,7 @@ export class Surface implements Selectable {
 
     updateMesh(force: boolean = true) {
         if (!force && !this.needsMeshUpdate) return;
-        if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
+        this.needsMeshUpdate = false;
 
         const topLeftVertex = new Vector3(this.x, 0, this.y);
         const topRightVertex = new Vector3(this.x + 1, 0, this.y);
@@ -294,6 +295,10 @@ export class Surface implements Selectable {
         this.mesh = new Mesh(this.geometry, new MeshPhongMaterial({map: texture, shininess: 0}));
 
         this.mesh.userData = {selectable: this};
+
+        let color = new Color(0xffffff);
+        if (this.job) color = new Color(this.job.color);
+        this.mesh.material['color'] = color;
 
         this.terrain.surfaces[this.x][this.y] = this;
         this.terrain.floorGroup.add(this.mesh);
