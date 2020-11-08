@@ -51,6 +51,11 @@ export class ResourceManager {
         return iGet(ResourceManager.configuration, ...keys);
     }
 
+    static filterEntryNames(basename: string): string[] {
+        const lBasename = basename.toLowerCase();
+        return Object.keys(this.resourceByName).filter((name) => name.startsWith(lBasename));
+    }
+
     static getResource(resourceName: string): any {
         const lName = resourceName ? resourceName.toString().toLowerCase() : null;
         if (lName && this.resourceByName.hasOwnProperty(lName)) {

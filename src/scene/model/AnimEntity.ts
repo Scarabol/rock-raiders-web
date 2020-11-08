@@ -1,6 +1,6 @@
 import { CanvasTexture, ClampToEdgeWrapping, Group, LinearFilter, MeshPhongMaterial, Object3D, RGBAFormat, Sprite, SpriteMaterial } from 'three';
 import { AnimClip } from './AnimClip';
-import { iGet } from '../../core/Util';
+import { getFilename, iGet } from '../../core/Util';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { AnimationEntityType } from './AnimationEntityType';
 
@@ -98,18 +98,20 @@ export class AnimEntity {
                 if (mat.userData && mat.userData['textureFilename']) {
                     const textureFilename = mat.userData['textureFilename'];
                     if (mat.userData && mat.userData['sequenceTexture']) {
-                        // FIXME reimplement sequence textures
-                        // const match = textureFilename.match(/(\D+)0+(\d+)\..+/);
-                        // const basename = match[1];
-                        // const seqStart = Number(match[2]);
-                        // const sequenceNames = ResourceManager.wadLoader.wad0File.filterEntryNames(basename);
-                        // const lastNum = sequenceNames.length - 1;
-                        // let seqNum = seqStart;
-                        // setInterval(() => {
-                        //     mat.map = ResourceManager.getTexture(sequenceNames[seqNum - seqStart]);
-                        //     seqNum++;
-                        //     if (seqNum > lastNum) seqNum = seqStart;
-                        // }, 1000 / 5); // TODO 5? FPS for texture animations?
+                        const match = textureFilename.match(/(\D+)0+(\d+)\..+/);
+                        const basename = match[1];
+                        const seqStart = Number(match[2]);
+                        let sequenceNames = ResourceManager.filterEntryNames(basename);
+                        if (sequenceNames.length < 1) { // no match try shared path
+                            sequenceNames = ResourceManager.filterEntryNames('world/shared/' + getFilename(basename));
+                        }
+                        const lastNum = sequenceNames.length - 1;
+                        let seqNum = seqStart;
+                        setInterval(() => {
+                            mat.map = ResourceManager.getTexture(sequenceNames[seqNum - seqStart]);
+                            seqNum++;
+                            if (seqNum > lastNum) seqNum = seqStart;
+                        }, 1000 / 5); // TODO 5? FPS for texture animations?
                     }
                     // console.log('lazy loading texture from ' + textureFilename);
                     mat.map = ResourceManager.getTexture(textureFilename);
