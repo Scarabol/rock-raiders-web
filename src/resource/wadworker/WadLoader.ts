@@ -54,7 +54,7 @@ export class WadLoader {
                         // TODO dirty hack, because BitmapDecoder not working for sequence textures (surrounding is white instead of black)
                         imgData.data[n + 3] = 0;
                     } else {
-                        imgData.data[n + 3] = Math.min(255, (imgData.data[n] * 3 + imgData.data[n + 1] * 3 + imgData.data[n + 2] * 3) / 3);
+                        imgData.data[n + 3] = (imgData.data[n] + imgData.data[n + 1] + imgData.data[n + 2]) / 3;
                     }
                 } else if (imgData.data[n] === alpha.r && imgData.data[n + 1] === alpha.g && imgData.data[n + 2] === alpha.b) {
                     imgData.data[n + 3] = 0;
