@@ -71,11 +71,13 @@ export class AnimEntityLoader {
                     const act = iGet(root, keyname);
                     const file = iGet(act, 'FILE');
                     const isLws = iGet(act, 'LWSFILE') === true;
+                    const transcoef = iGet(act, 'TRANSCOEF');
                     const looping = iGet(act, 'LOOPING') === true;
                     if (isLws) {
                         const content = ResourceManager.getResource(path + file + '.lws');
                         act.animation = LWSCLoader.parse(path, content);
                         act.animation.looping = looping;
+                        act.animation.transcoef = transcoef ? Number(transcoef) : 1;
                         (entityType.activities)[keyname] = act;
                     } else {
                         console.error('Found activity which is not an LWS file');

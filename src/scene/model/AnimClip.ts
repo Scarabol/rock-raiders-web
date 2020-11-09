@@ -3,6 +3,7 @@ import { AnimSubObj } from './AnimSubObj';
 export class AnimClip {
 
     looping: boolean = false;
+    transcoef: number = 1;
     firstFrame: number = null;
     lastFrame: number = null;
     framesPerSecond: number = null;
@@ -22,7 +23,7 @@ export class AnimClip {
         if (!(frameIndex + 1 > this.lastFrame) || this.looping) {
             const nextFrame = frameIndex + 1 > this.lastFrame ? this.firstFrame : frameIndex + 1;
             const that = this;
-            this.animationTimeout = setTimeout(() => that.animate(poly, nextFrame, onAnimationDone), 1000 / this.framesPerSecond); // TODO get this in sync with threejs
+            this.animationTimeout = setTimeout(() => that.animate(poly, nextFrame, onAnimationDone), 1000 / this.framesPerSecond * this.transcoef); // TODO get this in sync with threejs
         } else if (onAnimationDone) {
             onAnimationDone();
         }
