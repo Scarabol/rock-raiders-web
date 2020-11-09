@@ -313,7 +313,7 @@ export class Surface implements Selectable {
             if (!this.selected) {
                 this.selected = true;
                 this.mesh.material['color'].setHex(0xa0a0a0);
-                EventBus.publishEvent(new SurfaceSelectedEvent(this.surfaceType));
+                EventBus.publishEvent(new SurfaceSelectedEvent(this));
             }
             return this;
         }

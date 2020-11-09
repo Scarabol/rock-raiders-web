@@ -87,7 +87,7 @@ export class MainPanel extends IconPanel {
         itemDeselect.disabled = false;
         itemDeselect.onClick = () => EventBus.publishEvent(new SurfaceDeselectEvent());
         EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, (event: SurfaceSelectedEvent) => {
-            const type = event.type;
+            const type = event.surface.surfaceType;
             if (type.floor) {
                 this.selectSubPanel(selectFloorPanel);
             } else {

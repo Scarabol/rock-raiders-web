@@ -1,7 +1,6 @@
 import { GameEvent } from './EventBus';
-import { SurfaceType } from '../scene/model/map/SurfaceType';
-import { Raider } from '../scene/model/Raider';
 import { BuildingEntity } from '../scene/model/BuildingEntity';
+import { Surface } from '../scene/model/map/Surface';
 
 export class LocalEvent extends GameEvent {
 
@@ -16,11 +15,11 @@ export class SurfaceSelectedEvent extends LocalEvent {
 
     static eventKey: string = 'surface.selected';
 
-    type: SurfaceType;
+    surface: Surface;
 
-    constructor(type: SurfaceType) {
+    constructor(surface: Surface) {
         super(SurfaceSelectedEvent.eventKey);
-        this.type = type;
+        this.surface = surface;
     }
 
 }
