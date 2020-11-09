@@ -99,6 +99,8 @@ export class MainPanel extends IconPanel {
             }
         });
         EventBus.registerEventListener(SurfaceDeselectEvent.eventKey, () => this.selectSubPanel(this.mainPanel));
+        EventBus.registerEventListener(RaiderDeselected.eventKey, () => this.selectSubPanel(this.mainPanel));
+        EventBus.registerEventListener(BuildingDeselected.eventKey, () => this.selectSubPanel(this.mainPanel));
         selectWallPanel.backBtn.onClick = () => EventBus.publishEvent(new SurfaceDeselectEvent());
         selectFloorPanel.backBtn.onClick = () => EventBus.publishEvent(new SurfaceDeselectEvent());
         selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_LayPath');
