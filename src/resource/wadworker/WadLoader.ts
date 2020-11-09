@@ -290,19 +290,19 @@ export class WadLoader {
 
     registerAllAssets(mainConf) { // dynamically register all assets from config
         // this.addAsset(this.loadFontImageAsset, 'Interface/Fonts/ToolTipFont.bmp');
-        this.addAssetFolder('Interface/TopPanel/'); // top panel
-        this.addAssetFolder('Interface/RightPanel/'); // crystal side bar
-        this.addAssetFolder('Interface/RadarPanel/');
-        this.addAssetFolder('Interface/MessagePanel/');
+        this.addAlphaImageFolder('Interface/TopPanel/'); // top panel
+        this.addAlphaImageFolder('Interface/RightPanel/'); // crystal side bar
+        this.addAlphaImageFolder('Interface/RadarPanel/');
+        this.addAlphaImageFolder('Interface/MessagePanel/');
         this.addAsset(this.loadWadImageAsset, 'Interface/Airmeter/msgpanel_air_juice.bmp');
-        this.addAssetFolder('Interface/InfoPanel/');
-        this.addAssetFolder('Interface/PriorityPanel/');
-        this.addAssetFolder('Interface/Priorities');
-        this.addAssetFolder('Interface/CameraControl/');
-        this.addAssetFolder('Interface/MessageTabs/');
-        this.addAssetFolder('Interface/IconPanel/');
-        this.addAssetFolder('Interface/Icons/');
-        this.addAssetFolder('Interface/Menus/');
+        this.addAlphaImageFolder('Interface/InfoPanel/');
+        this.addAlphaImageFolder('Interface/PriorityPanel/');
+        this.addAlphaImageFolder('Interface/Priorities');
+        this.addAlphaImageFolder('Interface/CameraControl/');
+        this.addAlphaImageFolder('Interface/MessageTabs/');
+        this.addAlphaImageFolder('Interface/IconPanel/');
+        this.addAlphaImageFolder('Interface/Icons/');
+        this.addAlphaImageFolder('Interface/Menus/');
         // level files
         Object.keys(mainConf['Levels']).forEach(levelKey => {
             if (!(levelKey.startsWith('Tutorial') || levelKey.startsWith('Level'))) return; // ignore incomplete test levels and duplicates
@@ -320,9 +320,7 @@ export class WadLoader {
             if (menuConf) menuConf.forEach((imgKey) => this.addAsset(this.loadAlphaImageAsset, imgKey));
         });
         // load all shared textures
-        this.wad0File.filterEntryNames('World/Shared/.+\\.bmp').forEach((texturePath) => {
-            this.addAsset(this.loadWadTexture, texturePath);
-        });
+        this.addTextureFolder('World/Shared/');
         // load all building types
         const buildingTypes = mainConf['BuildingTypes'];
         Object.values(buildingTypes).forEach((bType: string) => {
@@ -351,15 +349,9 @@ export class WadLoader {
         //     this.addAsset(this.loadWadImageAsset, imgPath);
         // });
         // spaces
-        this.wad0File.filterEntryNames('World/WorldTextures/IceSplit/Ice..\\.bmp').forEach(imgPath => {
-            this.addAsset(this.loadWadTexture, imgPath);
-        });
-        this.wad0File.filterEntryNames('World/WorldTextures/LavaSplit/Lava..\\.bmp').forEach(imgPath => {
-            this.addAsset(this.loadWadTexture, imgPath);
-        });
-        this.wad0File.filterEntryNames('World/WorldTextures/RockSplit/Rock..\\.bmp').forEach(imgPath => {
-            this.addAsset(this.loadWadTexture, imgPath);
-        });
+        this.addTextureFolder('World/WorldTextures/IceSplit/Ice');
+        this.addTextureFolder('World/WorldTextures/LavaSplit/Lava');
+        this.addTextureFolder('World/WorldTextures/RockSplit/Rock');
         // // pause screen
         // const pauseConf = mainConf['Menu']['PausedMenu'];
         // this.addAsset(this.loadAlphaImageAsset, pauseConf['Menu1']['MenuImage'][0]);
@@ -434,9 +426,7 @@ export class WadLoader {
             });
         }
         // load all textures for this type
-        this.wad0File.filterEntryNames(getPath(aeFile) + '.+\\.bmp').forEach((bTexture) => {
-            this.addAsset(this.loadWadTexture, bTexture);
-        });
+        this.addTextureFolder(getPath(aeFile));
     }
 
     extractLwoFiles(path: string, content: string): string[] {
@@ -453,9 +443,15 @@ export class WadLoader {
             .map((objLine) => path + getFilename(objLine.substring('LoadObject '.length)).toLowerCase());
     }
 
-    addAssetFolder(folderPath) {
+    addAlphaImageFolder(folderPath) {
         this.wad0File.filterEntryNames(folderPath + '.+\\.bmp').forEach((assetPath) => {
             this.addAsset(this.loadAlphaImageAsset, assetPath);
+        });
+    }
+
+    addTextureFolder(folderPath) {
+        this.wad0File.filterEntryNames(folderPath + '.+\\.bmp').forEach((assetPath) => {
+            this.addAsset(this.loadWadTexture, assetPath);
         });
     }
 
