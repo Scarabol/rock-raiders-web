@@ -228,14 +228,17 @@ export class LWOLoader {
     COUNTER_CLOCKWISE: false;
 
     path: string = '';
+    verbose: boolean = false;
     materials: MeshPhongMaterial[] = [];
     geometry: BufferGeometry = new BufferGeometry();
     vertices: Float32Array = null;
     indices: Uint16Array = null;
     uvs: Float32Array = null;
 
-    constructor(path: string) {
+    constructor(path: string, verbose: boolean = false) {
+        this.verbose = verbose;
         this.path = path;
+        if (this.verbose) console.log('LWO path: ' + this.path);
     }
 
     parsePoints(view, chunkOffset, chunkSize) {
@@ -269,6 +272,7 @@ export class LWOLoader {
 
             this.materials.push(new_material);
         }
+        if (this.verbose) console.log('LWO contains ' + this.materials.length + ' materials with following names: ' + surfaceNames);
     }
 
     parsePolygons(view, chunkOffset, chunkSize) {
@@ -319,6 +323,7 @@ export class LWOLoader {
         while (view.getUint8(chunkOffset + offset) !== 0) offset++;
 
         let materialName = decodeString(new Uint8Array(buffer, chunkOffset, offset));
+        if (this.verbose) console.log('Parsing surface: ' + materialName);
         let materialIndex = -1;
         let material: MeshPhongMaterial = null;
 
@@ -348,26 +353,35 @@ export class LWOLoader {
                 const subchunkType = view.getInt32(subchunkOffset);
                 const subchunkSize = view.getInt16(subchunkOffset + ID4_SIZE);
 
+                if (this.verbose) console.log('Parsing subchunk ' + new TextDecoder().decode(new Uint8Array(buffer, subchunkOffset, ID4_SIZE)) + ' at ' + subchunkOffset + '; length ' + subchunkSize);
+
                 switch (subchunkType) {
                     case SURF_COLR:
-                        const colorArray = [];
-                        for (let i = 0; i < 4; i++) {
-                            colorArray.push(view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + i) / 255);
-                        }
+                        const colorArray = [
+                            view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 0) / 255,
+                            view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 1) / 255,
+                            view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 2) / 255,
+                            view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 3) / 255,
+                        ];
                         material.color = new Color().fromArray(colorArray);
+                        if (this.verbose) console.log('Material color (COLR): ' + colorArray.join(' '));
                         break;
                     case SURF_FLAG:
                         const flags = view.getUint16(subchunkOffset + SUBCHUNK_HEADER_SIZE);
+                        if (this.verbose) console.log('Flags (FLAG): ' + flags.toString(2));
                         break;
                     case SURF_LUMI:
-                        let luminosity = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
+                        const luminosity = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
+                        if (this.verbose) console.log('Luminosity (LUMI): ' + luminosity);
                         break;
                     case SURF_DIFF:
-                        let diffuse = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
+                        const diffuse = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
+                        if (this.verbose) console.log('Diffuse (DIFF): ' + diffuse);
                         break;
                     case SURF_SPEC:
-                        let specular = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
+                        const specular = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
                         // material.specular = material.color.multiplyScalar(specular);
+                        if (this.verbose) console.log('Specular (SPEC): ' + specular);
                         break;
                     case SURF_REFL:
                         let reflection = 0;
@@ -377,6 +391,7 @@ export class LWOLoader {
                             reflection = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
                         }
                         material.reflectivity = reflection;
+                        if (this.verbose) console.log('Reflectivity (REFL): ' + material.reflectivity);
                         break;
                     case SURF_TRAN:
                     case SURF_VTRN:
@@ -387,29 +402,57 @@ export class LWOLoader {
                             transparency = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255;
                         }
                         material.opacity = 1 - transparency;
+                        if (this.verbose) console.log('Opacity (TRAN/VTRN): ' + material.opacity);
                         if (transparency > 0) material.transparent = true;
                         break;
                     case SURF_VLUM:
-                        let luminosity2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
+                        const luminosity2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
+                        if (this.verbose) console.log('Luminosity (VLUM): ' + luminosity2);
                         break;
                     case SURF_VDIF:
                         let diffuse2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
+                        if (this.verbose) console.log('Diffuse (VDIF): ' + diffuse2);
                         break;
                     case SURF_VSPC:
                         let specular2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE);
                         // material.specular = material.color.multiplyScalar(specular2);
+                        if (this.verbose) console.log('Specular (VSPC): ' + specular2);
                         break;
                     case SURF_TFLG:
                         textureFlags = view.getUint16(subchunkOffset + SUBCHUNK_HEADER_SIZE);
+                        if (this.verbose) console.log('Flags (TFLG): ' + textureFlags.toString(2));
                         break;
                     case SURF_TSIZ:
                         textureSize = getVector3AtOffset(view, subchunkOffset + SUBCHUNK_HEADER_SIZE);
+                        if (this.verbose) console.log('Texture size (TSIZ): ' + textureSize.toArray().join(' '));
                         break;
                     case SURF_TCTR:
                         textureCenter = getVector3AtOffset(view, subchunkOffset + SUBCHUNK_HEADER_SIZE);
+                        if (this.verbose) console.log('Texture center (TCTR): ' + textureCenter.toArray().join(' '));
+                        break;
+                    case SURF_CTEX:
+                    case SURF_DTEX:
+                    case SURF_STEX:
+                    case SURF_RTEX:
+                    case SURF_TTEX:
+                    case SURF_BTEX:
+                        const textureTypeName = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
+                        if (this.verbose) console.log('Texture typename: ' + textureTypeName);
+                        break;
+                    case SURF_TCLR:
+                        const textureColorArray = [
+                            view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 0) / 255,
+                            view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 1) / 255,
+                            view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 2) / 255,
+                            view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 3) / 255,
+                        ];
+                        // const textureColor = new Color().fromArray(textureColorArray);
+                        // seems to be 0 0 0 anyway...
+                        if (this.verbose) console.log('Texture color (TCLR): ' + textureColorArray.join(' '));
                         break;
                     case SURF_TIMG:
                         let textureFilepath = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
+                        if (this.verbose) console.log('Texture filepath (TIMG): ' + textureFilepath);
                         if (textureFilepath === '(none)') break; // TODO create fake texture?
                         let sequenceTexture = false;
                         if (textureFilepath.endsWith(' (sequence)')) {
@@ -418,10 +461,11 @@ export class LWOLoader {
                         }
                         let filename = getFilename(textureFilepath);
                         const textureFilename = this.path + filename;
-                        material.userData = {textureFilename: textureFilename, sequenceTexture: sequenceTexture};
+                        material.userData = {textureFilename: textureFilename, sequenceTexture: sequenceTexture}; // FIXME this is probably unneeded, since parsing moved to creation
                         break;
-                    default:
-                    // console.warn('Found unrecognised SURF subchunk type ' + new TextDecoder().decode(new Uint8Array(buffer, subchunkOffset, ID4_SIZE)) + ' at ' + subchunkOffset + '; length ' + subchunkSize);
+                    default: // TODO implement all LWO features
+                        if (this.verbose) console.warn('Found unrecognised SURF subchunk type ' + new TextDecoder().decode(new Uint8Array(buffer, subchunkOffset, ID4_SIZE)) + ' at ' + subchunkOffset + '; length ' + subchunkSize);
+                        break;
                 }
 
                 offset += SUBCHUNK_HEADER_SIZE + subchunkSize;
