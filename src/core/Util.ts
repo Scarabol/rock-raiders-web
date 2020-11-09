@@ -33,3 +33,17 @@ export function decodeString(data) {
 export function decodeFilepath(data) {
     return decodeString(data).replace(/\\/g, '/');
 }
+
+export function getRandomInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function getRandom(max) {
+    return getRandomInclusive(0, max);
+}
+
+export function getRandomSign() {
+    return -1 + getRandomInclusive(0, 1) * 2;
+}
