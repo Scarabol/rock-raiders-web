@@ -5,7 +5,8 @@ import { ResourceManager } from '../../../resource/ResourceManager';
 import { Selectable, SelectionType } from '../../../game/model/Selectable';
 import { EventBus } from '../../../event/EventBus';
 import { SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../../event/LocalEvents';
-import { SurfaceJob } from '../../../game/model/job/Job';
+import { JobType, SurfaceJob, SurfaceJobType } from '../../../game/model/job/Job';
+import { JobCreateEvent } from '../../../event/WorldEvents';
 
 const HEIGHT_MULTIPLER = 0.05;
 
@@ -20,7 +21,7 @@ export class Surface implements Selectable {
     heightOffset: number = null;
     discovered: boolean = false;
     selected: boolean = false;
-    job: SurfaceJob = null;
+    jobs: SurfaceJob[] = [];
 
     wallType: WALL_TYPE = null;
     geometry: Geometry = null;
@@ -39,6 +40,17 @@ export class Surface implements Selectable {
         this.x = x;
         this.y = y;
         this.heightOffset = high;
+        EventBus.registerEventListener(JobCreateEvent.eventKey, (event: JobCreateEvent) => {
+            const jobType = event.job.type;
+            if (jobType === JobType.SURFACE) {
+                const surfaceJob = event.job as SurfaceJob;
+                if (surfaceJob.surface === this && !this.hasJobType(surfaceJob.workType)) this.jobs.push(surfaceJob);
+            }
+        });
+    }
+
+    hasJobType(type: SurfaceJobType) {
+        return this.jobs.filter((job) => job.workType === type).length > 0;
     }
 
     /**
@@ -66,7 +78,7 @@ export class Surface implements Selectable {
 
     collapse() {
         this.surfaceType = RUBBLE4; // TODO drop contained ore/crystals
-        this.job = null;
+        this.cancelJobs();
         this.needsMeshUpdate = true;
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors();
@@ -87,6 +99,12 @@ export class Surface implements Selectable {
         }
         // update meshes
         this.terrain.surfaces.forEach((c) => c.forEach((surf) => surf.updateMesh(false)));
+    }
+
+    cancelJobs() {
+        this.jobs.forEach((job) => job.cancel());
+        this.jobs = [];
+        this.updateJobColor();
     }
 
     isSupported(): boolean {
@@ -296,9 +314,7 @@ export class Surface implements Selectable {
 
         this.mesh.userData = {selectable: this};
 
-        let color = new Color(0xffffff);
-        if (this.job) color = new Color(this.job.color);
-        this.mesh.material['color'] = color;
+        this.updateJobColor();
 
         this.terrain.surfaces[this.x][this.y] = this;
         this.terrain.floorGroup.add(this.mesh);
@@ -323,11 +339,15 @@ export class Surface implements Selectable {
     deselect(): any {
         if (this.selected) {
             this.selected = false;
-            let color = new Color(0xffffff);
-            if (this.job) color = new Color(this.job.color);
-            this.mesh.material['color'] = color;
+            this.updateJobColor();
             EventBus.publishEvent(new SurfaceDeselectEvent());
         }
+    }
+
+    updateJobColor() {
+        let color = 0xffffff;
+        this.jobs.forEach((job) => color = job.workType.color); // TODO prioritize colors?
+        this.mesh.material['color'] = new Color(color);
     }
 
 }

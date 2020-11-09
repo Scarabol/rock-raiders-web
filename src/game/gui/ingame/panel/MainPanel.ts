@@ -1,13 +1,14 @@
 import { IconPanel } from './IconPanel';
 import { EventBus } from '../../../../event/EventBus';
 import { BuildingDeselected, BuildingSelected, SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../../../event/LocalEvents';
-import { JobCreateEvent, JobDeleteEvent, RaiderDeselected, RaiderSelected, SpawnEvent, SpawnType, VehicleDeselected, VehicleSelected } from '../../../../event/WorldEvents';
-import { JobType, SurfaceJob } from '../../../model/job/Job';
+import { JobCreateEvent, RaiderDeselected, RaiderSelected, SpawnEvent, SpawnType, VehicleDeselected, VehicleSelected } from '../../../../event/WorldEvents';
+import { SurfaceJob, SurfaceJobType } from '../../../model/job/Job';
 import { GameState } from '../../../model/GameState';
 import { Raider } from '../../../../scene/model/Raider';
 import { VehicleEntity } from '../../../../scene/model/VehicleEntity';
 import { BuildingEntity } from '../../../../scene/model/BuildingEntity';
 import { Surface } from '../../../../scene/model/map/Surface';
+import { RUBBLE1, RUBBLE2, RUBBLE3, RUBBLE4 } from '../../../../scene/model/map/SurfaceType';
 
 export class MainPanel extends IconPanel {
 
@@ -59,33 +60,29 @@ export class MainPanel extends IconPanel {
         const itemDrill = selectWallPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_Dig');
         itemDrill.onClick = () => {
             const selectedSurface = GameState.selectedEntities[0] as Surface;
-            if (!selectedSurface.job || selectedSurface.job.type !== JobType.DRILL) {
-                if (selectedSurface.job && selectedSurface.job.type !== JobType.DRILL) {
-                    EventBus.publishEvent(new JobDeleteEvent(selectedSurface.job));
-                }
-                selectedSurface.job = new SurfaceJob(JobType.DRILL, selectedSurface);
-                EventBus.publishEvent(new JobCreateEvent(selectedSurface.job));
-            }
+            EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.DRILL, selectedSurface)));
             EventBus.publishEvent(new SurfaceDeselectEvent());
         };
         const itemReinforce = selectWallPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_Reinforce');
-        // itemReinforce.onClick = () => { // TODO implement reinforcements
-        //     const selectedSurface = GameState.selectedEntities[0] as Surface;
-        //     if (!selectedSurface.job) {
-        //         EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(JobType.REINFORCE, selectedSurface)));
-        //     }
-        //     EventBus.publishEvent(new SurfaceDeselectEvent());
-        // };
+        itemReinforce.onClick = () => {
+            const selectedSurface = GameState.selectedEntities[0] as Surface;
+            EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.REINFORCE, selectedSurface)));
+            EventBus.publishEvent(new SurfaceDeselectEvent());
+        };
         const itemDynamite = selectWallPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_Dynamite');
-        // itemDynamite.onClick = () => { // TODO implement dynamite
-        //     const selectedSurface = GameState.selectedEntities[0] as Surface;
-        //     EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(JobType.BLOW, selectedSurface)));
-        //     EventBus.publishEvent(new SpawnEvent(SpawnType.DYNAMITE));
-        //     EventBus.publishEvent(new SurfaceDeselectEvent());
-        // };
+        itemDynamite.onClick = () => {
+            const selectedSurface = GameState.selectedEntities[0] as Surface;
+            EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.BLOW, selectedSurface)));
+            EventBus.publishEvent(new SpawnEvent(SpawnType.DYNAMITE));
+            EventBus.publishEvent(new SurfaceDeselectEvent());
+        };
         const itemDeselect = selectWallPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig');
         itemDeselect.disabled = false;
-        itemDeselect.onClick = () => EventBus.publishEvent(new SurfaceDeselectEvent());
+        itemDeselect.onClick = () => {
+            const selectedSurface = GameState.selectedEntities[0] as Surface;
+            selectedSurface.cancelJobs();
+            EventBus.publishEvent(new SurfaceDeselectEvent());
+        };
         EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, (event: SurfaceSelectedEvent) => {
             const type = event.surface.surfaceType;
             if (type.floor) {
@@ -104,7 +101,17 @@ export class MainPanel extends IconPanel {
         selectWallPanel.backBtn.onClick = () => EventBus.publishEvent(new SurfaceDeselectEvent());
         selectFloorPanel.backBtn.onClick = () => EventBus.publishEvent(new SurfaceDeselectEvent());
         selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_LayPath');
-        selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_ClearRubble');
+        const clearRubbleItem = selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_ClearRubble');
+        EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, (event: SurfaceSelectedEvent) => {
+            const type = event.surface.surfaceType;
+            clearRubbleItem.disabled = (type !== RUBBLE1 && type !== RUBBLE2 && type !== RUBBLE3 && type !== RUBBLE4);
+            this.notifyRedraw(); // TODO performance: actually just the buttons need to be redrawn
+        });
+        clearRubbleItem.onClick = () => {
+            const selectedSurface = GameState.selectedEntities[0] as Surface;
+            EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.CLEAR_RUBBLE, selectedSurface)));
+            EventBus.publishEvent(new SurfaceDeselectEvent());
+        };
         selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence');
         EventBus.registerEventListener(BuildingSelected.eventKey, () => this.selectSubPanel(selectBuildingPanel));
         EventBus.registerEventListener(BuildingDeselected.eventKey, () => this.selectSubPanel(this.mainPanel));

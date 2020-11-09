@@ -20,8 +20,8 @@ export class Supervisor {
         EventBus.registerEventListener(JobDeleteEvent.eventKey, (event: JobDeleteEvent) => {
             const index = this.availableJobs.indexOf(event.job);
             if (index > -1) {
-                this.availableJobs.splice(index, 5);
-                // TODO remove raider from job, if taken
+                event.job.cancel();
+                this.availableJobs.splice(index, 1);
             }
         });
     }
@@ -57,6 +57,7 @@ export class Supervisor {
             });
             if (closestRaider) {
                 closestRaider.job = job;
+                job.assign(closestRaider);
             } else {
                 stillAvailable.push(job);
             }
