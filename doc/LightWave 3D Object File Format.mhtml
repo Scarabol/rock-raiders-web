@@ -1,0 +1,1234 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: https://sandbox.de/osg/lightwave.htm
+Subject: LightWave 3D Object File Format
+Date: Mon, 9 Nov 2020 22:50:35 -0000
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--l08QlECD1X9LcwALzIoyQWHFn7wWC71H5q8fXuMV5i----"
+
+
+------MultipartBoundary--l08QlECD1X9LcwALzIoyQWHFn7wWC71H5q8fXuMV5i----
+Content-Type: text/html
+Content-ID: <frame-3FF12CA180E5F923F3070142B945F8FB@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://sandbox.de/osg/lightwave.htm
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=
+=3Dwindows-1252">
+
+<meta name=3D"Generator" content=3D"Microsoft Word 97">
+<title>LightWave 3D Object File Format</title>
+</head>
+<body link=3D"#008080" vlink=3D"#800080" bgcolor=3D"#ffffff">
+
+<h1 align=3D"CENTER">LightWave 3D Object File Format </h1>
+<h2 align=3D"CENTER">Oct 16, 1996 </h2>
+<p><!----></p>
+<p></p><hr><p></p>
+<h3>Contents </h3>
+
+<ul>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#S1">Introduction</a> </=
+li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#S2">Types and Structure=
+s</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#S3">Object File Chunks<=
+/a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#S4">Surface Sub-chunks<=
+/a> </li>
+
+<ul>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#S4.1">Basic Surface Par=
+ameters</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#S4.2">Texture Definitio=
+ns</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#S4.3">Plug-in Shaders</=
+a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#S4.4">Image Filenames a=
+nd Options</a> </li></ul>
+
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#S5">Object File Example=
+</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#S6">Index</a> </li></ul=
+>
+
+<p><!----></p>
+<p></p><hr><p></p>
+<h2><a name=3D"S1"></a>Introduction </h2>
+<p>LightWave 3D objects are stored on disk as 3D meshes consistsing of poin=
+ts, polygons (which can be faces, curves or patches), and surfaces. Files c=
+an contain a single connected mesh or several disjoint meshes describing a =
+single logical object. An object file may also contain one or more surface =
+definitions with no mesh. </p>
+<p>This document describes the high-level format of the file, and describes=
+ in detail all the elements of the file. There is a sample file at the end =
+displayed as an annotated dump. </p>
+<p><!----></p>
+<p></p><hr><p></p>
+<h2><a name=3D"S2"></a>Types and Structures </h2>
+<p>LightWave 3D object files are binary files composed of a series of bytes=
+ in the range of 0 to 255. The format conforms to the IFF ("Interchange Fil=
+e Format") specification with a FORM-type of <tt>LWOB</tt>. The full IFF fo=
+rmat specification can be found in "<i>EA IFF 85 Standard for Interchange F=
+ormat Files</i>," but a simplified description is included here. </p>
+<p>The atomic (or lowest-level) types in the file are listed below along wi=
+th their type name (<b>I2</b>, <b>F4</b>, etc.). These are used interpret s=
+equences of bytes in the file. </p>
+<i></i><dl><i>
+<dt><a name=3D"t_ID4"></a>ID Tag </dt>
+<b><tt><dd>ID4 </dd>
+</tt></b></i><dd>An ID tag is a sequence of 4 bytes interpreted as 7-bit AS=
+CII values, usually upper-case. These tags are used to identify the type of=
+ data which follows. <tt>FORM</tt>, <tt>SURF</tt>, <tt>POLS</tt>, and <tt>L=
+WOB</tt> are all examples of ID tags. </dd>
+<i><dt><a name=3D"t_I"></a>Signed Integer </dt>
+<b><tt><dd>I1, I2, I4 </dd>
+</tt></b><dt>Unsigned Integer </dt>
+<b><tt><dd>I1, I2, I4 </dd>
+</tt></b></i><dd>Integers can have 1, 2 or 4 bytes and can be signed or uns=
+igned. The most significant byte comes first in the file, so bytes read int=
+o memory should be reversed before being interpreted on Intel and compatibl=
+e CPUs. </dd>
+<i><dt><a name=3D"t_F4"></a>Float </dt>
+<b><tt><dd>F4 </dd>
+</tt></b></i><dd>Floats are written as 4 byte IEEE floating-point values. T=
+he bytes should generally be reversed before being interpreted on Intel and=
+ compatible CPUs. </dd>
+<i><dt><a name=3D"t_S0"></a>String </dt>
+<b><tt><dd>S0 </dd>
+</tt></b></i><dd>Names or other character strings are written as a series o=
+f ASCII character values followed by a zero (or null) byte. If the length o=
+f the string plus the null terminating byte is odd, an extra null is added =
+to make the total length even. </dd>
+</dl>
+<p><a name=3D"t_CHUNK"></a>The basic structural element in an IFF file is t=
+he <i>Chunk</i>. This is given by the structure: </p>
+<b><tt></tt></b><tt></tt><dl><tt><b>
+</b></tt><dd><tt><b>CHUNK ::=3D tag</b></tt><a href=3D"https://sandbox.de/o=
+sg/lightwave.htm#t_ID4"><b><font face=3D"Courier New" size=3D"2">[ID4]</fon=
+t></b></a><b><tt>, length</tt></b><a href=3D"https://sandbox.de/osg/lightwa=
+ve.htm#t_I"><b><font face=3D"Courier New" size=3D"2">[U4]</font></b></a><b>=
+<tt>, data[...], pad</tt></b><a href=3D"https://sandbox.de/osg/lightwave.ht=
+m#t_I"><b><font face=3D"Courier New" size=3D"2">[U1]</font></b></a><b><tt> =
+? </tt></b></dd><b><tt>
+</tt></b></dl><b><tt>
+</tt></b><p>Each chunk starts with an ID tag which indicates the type of ch=
+unk, and an unsigned four-byte integer which indicates the length of the da=
+ta. After that follows <i>length</i> bytes of data and an optional pad byte=
+ if <i>length</i> is odd. The pad byte, if included, should have a value of=
+ zero. </p>
+<p><a name=3D"t_SUBCH"></a>LightWave objects also have the <i>Sub-chunk</i>=
+ (or mini-chunk) structural element which is just like a chunk except that =
+the length is given by a two-byte unsigned integer. Sub-chunks are specific=
+ to LightWave objects, not general IFF files. </p>
+<b><tt></tt></b><tt></tt><dl><tt><b>
+</b></tt><dd><tt><b>SUB-CHUNK ::=3D tag</b></tt><a href=3D"https://sandbox.=
+de/osg/lightwave.htm#t_ID4"><b><font face=3D"Courier New" size=3D"2">[ID4]<=
+/font></b></a><b><tt>, length</tt></b><a href=3D"https://sandbox.de/osg/lig=
+htwave.htm#t_I"><b><font face=3D"Courier New" size=3D"2">[U2]</font></b></a=
+><b><tt>, data[...], pad</tt></b><a href=3D"https://sandbox.de/osg/lightwav=
+e.htm#t_I"><b><font face=3D"Courier New" size=3D"2">[U1]</font></b></a><b><=
+tt> ? </tt></b></dd><b><tt>
+</tt></b></dl><b><tt>
+</tt></b><p><a name=3D"t_FORM"></a>For the purposes of this document, chunk=
+s and sub-chunks are written as "<b><i>id-tag</i> { <i>data</i> }</b>". The=
+ entire file can be an example of this notation, since it is itself a <tt>F=
+ORM</tt> chunk containing the ID tag <tt>LWOB</tt> and a series of data chu=
+nks. </p>
+<b><tt></tt></b><tt></tt><dl><tt><b>
+</b></tt><dd><tt><b>FORM { 'LWOB'</b></tt><a href=3D"https://sandbox.de/osg=
+/lightwave.htm#t_ID4"><b><font face=3D"Courier New" size=3D"2">[ID4]</font>=
+</b></a><b><tt>, data</tt></b><a href=3D"https://sandbox.de/osg/lightwave.h=
+tm#t_CHUNK"><b><font face=3D"Courier New" size=3D"2">[CHUNK]</font></b></a>=
+<b><tt> * } </tt></b></dd><b><tt>
+</tt></b></dl><b><tt>
+</tt></b><p>Very roughly, object files start with the four bytes "<tt>FORM<=
+/tt>" followed by a four-byte integer giving the length of the file (not in=
+cluding the first 8 bytes) and the four bytes of the FORM-type, "<tt>LWOB</=
+tt>". The remainder of the data is a series of chunks, each given by a four=
+-character type and a four-byte length for the data which follows. The cont=
+ents of each chunk is determined by its type. </p>
+<p>The chunks can occur in any order except when the data in a chunk depend=
+s on knowing the values in previous chunks, in which case the dependant chu=
+nk must occur after the chunk it depends upon. The Layout and Modeler porti=
+ons of LightWave 3D write their chunks in slightly different orders, so it =
+is important for parsers to support order-independence. </p>
+<p>The LightWave format has some composite datatypes that is uses consisten=
+tly which are built from the fundamental types. </p>
+<i></i><dl><i>
+<dt><a name=3D"t_COL4"></a>Color </dt>
+<b></b></i><dd><i><b>COL4 ::=3D red</b></i><a href=3D"https://sandbox.de/os=
+g/lightwave.htm#t_I"><b><i>[U1]</i></b></a><b><i>, green</i></b><a href=3D"=
+https://sandbox.de/osg/lightwave.htm#t_I"><b><i>[U1]</i></b></a><b><i>, blu=
+e</i></b><a href=3D"https://sandbox.de/osg/lightwave.htm#t_I"><b><i>[U1]</i=
+></b></a><b><i>, pad</i></b><a href=3D"https://sandbox.de/osg/lightwave.htm=
+#t_I"><b><i>[U1]</i></b></a><b><i> </i></b></dd><b><i>
+</i></b><dd>A color is written as an RGB triple, with each color component =
+being in the range of 0 to 255. 0,0,0 is full black and 255,255,255 is full=
+ white and the total number of possible colors is 16,777,216. Colors are wr=
+itten with a pad byte to make the length even which is currently unused and=
+ should always be zero. </dd>
+<i><dt><a name=3D"t_VEC12"></a>Coordinate </dt>
+<b></b></i><dd><i><b>VEC12 ::=3D X</b></i><a href=3D"https://sandbox.de/osg=
+/lightwave.htm#t_F4"><b><i>[F4]</i></b></a><b><i>, Y</i></b><a href=3D"http=
+s://sandbox.de/osg/lightwave.htm#t_F4"><b><i>[F4]</i></b></a><b><i>, Z</i><=
+/b><a href=3D"https://sandbox.de/osg/lightwave.htm#t_F4"><b><i>[F4]</i></b>=
+</a><b><i> </i></b></dd><b><i>
+</i></b><dd>3D coordinates are written as an XYZ vector in floating point f=
+ormat. The values are distances along the X, Y, and Z axes. </dd>
+<i><dt><a name=3D"t_IP2"></a>Integer Percentage </dt>
+<b></b></i><dd><i><b>IP2 ::=3D scaled-value</b></i><a href=3D"https://sandb=
+ox.de/osg/lightwave.htm#t_I"><b><i>[I2]</i></b></a><b><i> </i></b></dd><b><=
+i>
+</i></b><dd>Percentages can be written as a fixed-point integer value, wher=
+e 0 is equal to 0% and 256 is equal to 100%. </dd>
+<i><dt><a name=3D"t_FP4"></a>Floating Point Percentage </dt>
+<b></b></i><dd><i><b>FP4 ::=3D fractional-value</b></i><a href=3D"https://s=
+andbox.de/osg/lightwave.htm#t_F4"><b><i>[F4]</i></b></a><b><i> </i></b></dd=
+><b><i>
+</i></b><dd>Percentages can also be written as a floating point value, wher=
+e 0.0 is equal to 0% and 1.0 is equal to 100%. </dd>
+<i><dt><a name=3D"t_DEG4"></a>Angle </dt>
+<b></b></i><dd><i><b>DEG4 ::=3D degrees</b></i><a href=3D"https://sandbox.d=
+e/osg/lightwave.htm#t_F4"><b><i>[F4]</i></b></a><b><i> </i></b></dd><b><i>
+</i></b><dd>Angles are specified as floating point values expressed in degr=
+ees. </dd>
+<i><dt><a name=3D"t_FNAM0"></a>Filename </dt>
+<b></b></i><dd><i><b>FNAM0 ::=3D name</b></i><a href=3D"https://sandbox.de/=
+osg/lightwave.htm#t_S0"><b><i>[S0]</i></b></a><b><i> </i></b></dd><b><i>
+</i></b><dd>Filenames (such as the names of images) are written as strings.=
+ They are interpreted as filenames on the host system directly, except for =
+the automatic conversion of forward-slashes into backslashes on DOS systems=
+, and backslashes into forward-slashes on Unix systems. </dd>
+</dl>
+<p><!----></p>
+<p></p><hr><p></p>
+<h2><a name=3D"S3"></a>Object File Chunks </h2>
+<p>The following section describes all the chunks that can be found in a Li=
+ghtWave object file. Their order here is not important, except that chunks =
+which define values in other chunks are listed first. </p>
+<i></i><dl><i>
+<dt><a name=3D"c_PNTS"></a>Point List </dt>
+<tt></tt></i><tt></tt><dd><tt><i>PNTS { point-location</i></tt><a href=3D"h=
+ttps://sandbox.de/osg/lightwave.htm#t_VEC12"><i><font face=3D"Courier New" =
+size=3D"2">[VEC12]</font></i></a><i><tt> * } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This chunk contains a list of the X, Y, and Z coordinates of al=
+l the points in an object. Since each coordinate has three components, and =
+each component is stored as a four byte floating point number, the number o=
+f points in an object can be determined by dividing the size in bytes of th=
+e <tt>PNTS</tt> chunk by 12. </p>
+<p>By convention, the +X direction is to the right or east, the +Y directio=
+n is upward, and the +Z direction is forward or north. For models of real-w=
+orld objects, the unit size is usually considered to be one meter. The coor=
+dinates are specified relative to an object's pivot point. See the LightWav=
+e Modeler manual for more information about LightWave 3D's geometric conven=
+tions. </p>
+<p>Points in the <tt>PNTS</tt> chunk are numbered in the order they occur, =
+starting with zero. This index is then used by polygons to define their ver=
+tices. The <tt>PNTS</tt> chunk must be before the <a href=3D"https://sandbo=
+x.de/osg/lightwave.htm#c_POLS"><font face=3D"Courier New" size=3D"2">POLS</=
+font></a>, <a href=3D"https://sandbox.de/osg/lightwave.htm#c_CRVS"><font fa=
+ce=3D"Courier New" size=3D"2">CRVS</font></a>, and <a href=3D"https://sandb=
+ox.de/osg/lightwave.htm#c_PCHS"><font face=3D"Courier New" size=3D"2">PCHS<=
+/font></a> chunks in the file. </p>
+<i></i><dl><i>
+<dt><a name=3D"c_SRFS"></a>Surface List </dt>
+<tt></tt></i><tt></tt><dd><tt><i>SRFS { surf-name</i></tt><a href=3D"https:=
+//sandbox.de/osg/lightwave.htm#t_S0"><i><font face=3D"Courier New" size=3D"=
+2">[S0]</font></i></a><i><tt> * } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This chunk contains a list of the names of all the surfaces in =
+an object. Each surface name appears as a null-terminated character string.=
+ If the length of the string (including the null) is odd, an extra null byt=
+e is added. Surface names should be read from the file until as many bytes =
+as the chunk size specifies have been read. </p>
+<p>In LightWave 3D terminology, a "surface" is defined as a named set of sh=
+ading attributes. Each polygon contains a reference to the surface used to =
+color the polygon. The names as listed in the <tt>SRFS</tt> chunk are numbe=
+red in the order they occur, starting from 1, and this index is used by pol=
+ygons to define their surface. The <tt>SRFS</tt> chunk must be before the <=
+a href=3D"https://sandbox.de/osg/lightwave.htm#c_POLS"><font face=3D"Courie=
+r New" size=3D"2">POLS</font></a>, <a href=3D"https://sandbox.de/osg/lightw=
+ave.htm#c_CRVS"><font face=3D"Courier New" size=3D"2">CRVS</font></a>, and =
+<a href=3D"https://sandbox.de/osg/lightwave.htm#c_PCHS"><font face=3D"Couri=
+er New" size=3D"2">PCHS</font></a> chunks in the file. </p>
+<i></i><dl><i>
+<dt><a name=3D"c_POLS"></a>Face List </dt>
+<tt></tt></i><tt></tt><dd><tt><i>POLS { ( numvert</i></tt><a href=3D"https:=
+//sandbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2=
+">[U2]</font></i></a><i><tt>, vert</tt></i><a href=3D"https://sandbox.de/os=
+g/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U2]</font></=
+i></a><i><tt> # numvert, surf</tt></i><a href=3D"https://sandbox.de/osg/lig=
+htwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[I2]</font></i></a=
+><i><tt> )* } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This chunk contains a list of all the polygons in an object. Ea=
+ch entry consists of a short integer specifying the number of vertices in t=
+he polygon followed by that many short integers specifying the vertices the=
+mselves (as indices into the points list) followed by a short integer speci=
+fying which surface is used by the polygon (as an index into the surfaces l=
+ist). The number of vertices in a polygon currently may vary from one to 20=
+0. The vertex list for each polygon should begin at a convex vertex and pro=
+ceed clockwise as seen from the visible side of the polygon (LightWave 3D p=
+olygons are single-sided, except for those whose surfaces have the double- =
+sided flag set). Polygons should be read from the file until as many bytes =
+as the chunk size specifies have been read. </p>
+<i></i><p><i>Since the points in the </i><a href=3D"https://sandbox.de/osg/=
+lightwave.htm#c_PNTS"><i><font face=3D"Courier New" size=3D"2">PNTS</font><=
+/i></a><i> chunk are referenced using two-byte integers, the effective maxi=
+mum number of points in a LightWave object file is 65,536. This is an inher=
+ient limitation of this current format.</i> </p>
+<p>A negative surface number for a polygon indicates that the polygon has d=
+etail polygons (which are drawn on top of the main polygon and may be copla=
+nar with it). In this case, the next number in the file is a short integer =
+specifying how many detail polygons belong to the current polygon. This is =
+followed by a list of those detail polygons, where each entry is of the sam=
+e format as described above for regular polygons (except that the detail po=
+lygons cannot have details of their own). The list of regular polygons then=
+ resumes. To determine which surface is used by a polygon with a negative s=
+urface number, the absolute value of that number should be used. Note, howe=
+ver, that detail polygons are mostly obsolete so even though they may be re=
+cognized by LightWave and old files contain them, they should be ignored. <=
+/p>
+<i></i><dl><i>
+<dt><a name=3D"c_CRVS"></a>Curve List </dt>
+<tt></tt></i><tt></tt><dd><tt><i>CRVS { ( numvert</i></tt><a href=3D"https:=
+//sandbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2=
+">[U2]</font></i></a><i><tt>, vert</tt></i><a href=3D"https://sandbox.de/os=
+g/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U2]</font></=
+i></a><i><tt> # numvert, surf</tt></i><a href=3D"https://sandbox.de/osg/lig=
+htwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[I2]</font></i></a=
+><i><tt>, flags</tt></i><a href=3D"https://sandbox.de/osg/lightwave.htm#t_I=
+"><i><font face=3D"Courier New" size=3D"2">[U2]</font></i></a><i><tt> )* } =
+</tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This chunk contains a list of all the spline curves in an objec=
+t. Each entry consists of a short integer specifying the number of vertices=
+ in a curve followed by that many short integers specifying the vertices th=
+emselves in sequential order, followed by a short integer specifying which =
+surface is used by the curve, followed by another short integer specifying =
+bit-flags associated with the curve. If bit zero is set then the first poin=
+t is a continuity control point, and if bit one is set then the last point =
+is. The point and surface indices are as they are in the <a href=3D"https:/=
+/sandbox.de/osg/lightwave.htm#c_POLS"><font face=3D"Courier New" size=3D"2"=
+>POLS</font></a> chunk, except that curves cannot have details. Curves shou=
+ld be read from the file until as many bytes as the chunk size specifies ha=
+ve been read. </p>
+<i></i><dl><i>
+<dt><a name=3D"c_PCHS"></a>Patch List </dt>
+<tt></tt></i><tt></tt><dd><tt><i>PCHS { ( numvert</i></tt><a href=3D"https:=
+//sandbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2=
+">[U2]</font></i></a><i><tt>, vert</tt></i><a href=3D"https://sandbox.de/os=
+g/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U2]</font></=
+i></a><i><tt> # numvert, surf</tt></i><a href=3D"https://sandbox.de/osg/lig=
+htwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[I2]</font></i></a=
+><i><tt> )* } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This chunk contains a list of all the MetaNURBS(tm) patches in =
+an object. The entries are the same as the <a href=3D"https://sandbox.de/os=
+g/lightwave.htm#c_POLS"><font face=3D"Courier New" size=3D"2">POLS</font></=
+a> chunk, except that patches cannot have details. Patches should be read f=
+rom the file until as many bytes as the chunk size specifies have been read=
+. </p>
+<i></i><p><i>MetaNURBS patches are currently limited to four vertices. Othe=
+r numbers of vertices will load and save but will not display. MetaNURBS pa=
+tches are also limited to Modeler only and do not display in Layout or rend=
+er.</i> </p>
+<i></i><dl><i>
+<dt><a name=3D"c_SURF"></a>Surface Definition </dt>
+<tt></tt></i><tt></tt><dd><tt><i>SURF { name</i></tt><a href=3D"https://san=
+dbox.de/osg/lightwave.htm#t_S0"><i><font face=3D"Courier New" size=3D"2">[S=
+0]</font></i></a><i><tt>, attributes</tt></i><a href=3D"https://sandbox.de/=
+osg/lightwave.htm#t_SUBCH"><i><font face=3D"Courier New" size=3D"2">[SUB-CH=
+UNK]</font></i></a><i><tt> * } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>Each <tt>SURF</tt> chunk describes the surface attributes of a =
+particular surface. These chunks begin with the name of the surface being d=
+escribed. Following the name is a series of sub-chunks, which are like norm=
+al IFF chunks except that their sizes are specified by short integers inste=
+ad of longs. It is likely that the variety of sub-chunks will grow as new s=
+urface attributes are added to the program, but any unknown sub-chunks may =
+be skipped over by using the size. Sub-chunks should be read from the file =
+until as many bytes as the chunk size specifies have been read. </p>
+<p><!----></p>
+<p></p><hr><p></p>
+<h2><a name=3D"S4"></a>Surface Sub-chunks </h2>
+<p>The <a href=3D"https://sandbox.de/osg/lightwave.htm#c_SURF"><font face=
+=3D"Courier New" size=3D"2">SURF</font></a> surface sub-chunks create a sim=
+ple but varied language for describing surface parameters of LightWave obje=
+cts. These chunks mostly correspond to the settings in the program's interf=
+ace, so a complete understanding of the program is very useful for interpre=
+ting these chunks. </p>
+<h3><a name=3D"S4_1"></a>Basic Surface Parameters </h3>
+<p>The following surface sub-chunks define the base characteristics of a su=
+rface. These are values that are independent of texturing and correspond ro=
+ughly to the main Surface control panel in Layout. Even if the effects of t=
+extures and shaders overrides these settings completely in final rendering,=
+ as many of these should still be specified as possible since they are also=
+ used for previewing and real-time rendering. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_COLR"></a>Base Color </dt>
+<tt></tt></i><tt></tt><dd><tt><i>COLR { base-color</i></tt><a href=3D"https=
+://sandbox.de/osg/lightwave.htm#t_COL4"><i><font face=3D"Courier New" size=
+=3D"2">[COL4]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This defines the base color of the surface, which is the color =
+that lies under all the other texturing attributes. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_FLAG"></a>Surface State Flags </dt>
+<tt></tt></i><tt></tt><dd><tt><i>FLAG { flags</i></tt><a href=3D"https://sa=
+ndbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U=
+2]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>Surface flags are stored in a short integer whose bits specify =
+various options for the current surface. Currently only the nine least sign=
+ificant bits are used. The options that set bits indicate are (starting wit=
+h the least significant bit): Luminous, Outline, Smoothing, Color Highlight=
+s, Color Filter, Opaque Edge, Transparent Edge, Sharp Terminator, Double Si=
+ded, Additive, and Shadow Alpha. </p>
+<p>The two edge transparency bits should not both be set. The luminous bit =
+has been superceded by the <tt>LUMI</tt> and <tt>VLUM</tt> chunks which spe=
+cify an explicit luminosity percentage. If no explicit luminosity is specif=
+ied, the Luminous bit sets the luminosity to 100%. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_Vxxx"></a>Base Shading Values </dt>
+<tt></tt></i><tt></tt><dd><tt><i>LUMI, DIFF, SPEC, REFL, TRAN { percentage<=
+/i></tt><a href=3D"https://sandbox.de/osg/lightwave.htm#t_IP2"><i><font fac=
+e=3D"Courier New" size=3D"2">[IP2]</font></i></a><i><tt> }<br>
+VLUM, VDIF, VSPC, VRFL, VTRN { percentage</tt></i><a href=3D"https://sandbo=
+x.de/osg/lightwave.htm#t_FP4"><i><font face=3D"Courier New" size=3D"2">[FP4=
+]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>These sub-chunks specify the base level of the surface's lumino=
+sity, diffuse, specular, reflection, or transparency settings. Each setting=
+ has a fixed-point and a floating-point form, but if both are present the f=
+loating-point form should take precedence. The fixed-point value should be =
+rounded to the nearest half percent. Even though the floating-point form is=
+ prefered, the convention is to write both sub-chunks to a surface descript=
+ion to support older parsers. If any of these sub-chunks are absent for a s=
+urface, a value of zero is assumed. The <tt>LUMI</tt> or <tt>VLUM</tt> sub-=
+chunk overrides the Luminous bit of the <tt>FLAG</tt> sub-chunk. </p>
+<tt></tt><p><tt>REFL</tt> and <tt>SPEC</tt> sub-chunks may have an incorrec=
+t length of 4 instead of 2. Even though that bug has been fixed, there may =
+still be object files around with this error. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_GLOS"></a>Specular Glossiness </dt>
+<tt></tt></i><tt></tt><dd><tt><i>GLOS { glossiness</i></tt><a href=3D"https=
+://sandbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"=
+2">[I2]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>Glossiness is stored as a short integer and is only needed if t=
+he specular setting in the <tt>SPEC</tt> or <tt>VSPC</tt> sub-chunk is non-=
+zero. A value of 16 indicates low glossiness, 64 indicates medium glossines=
+s, 256 indicates high glossiness, and 1024 indicates maximum glossiness. Th=
+is parameter is related to the "specular exponent" used in many lighting mo=
+dels. </p>
+<tt></tt><p><tt>GLOS</tt> sub-chunks may have have an incorrect length of 4=
+ instead of 2. Even though that bug has been fixed, there may still be obje=
+ct files around with this error. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_RFLT"></a>Reflection Mode </dt>
+<tt></tt></i><tt></tt><dd><tt><i>RFLT { reflection-mode</i></tt><a href=3D"=
+https://sandbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" siz=
+e=3D"2">[U2]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>The reflection mode is a numeric code that describes how reflec=
+tions are handled for this surface and is only meaningful if the reflectivi=
+ty of the surface is non-zero. If the mode is 0, then only the backdrop col=
+ors in the scene are reflected. If the mode is 1, it is the same as 0 excep=
+t that raytracing is used for objects in the scene when it is enabled. If t=
+he mode is 2 and an image is provided by the <tt>RIMG</tt> sub-chunk, then =
+the image wrapped spherically around the scene is reflected. If the mode is=
+ 3, it is the same as 2 except that raytracing is used when enabled. If the=
+re is no <tt>RFLT</tt> sub-chunk, a value of 3 is assumed. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_RIMG"></a>Reflection Map Image </dt>
+<tt></tt></i><tt></tt><dd><tt><i>RIMG { image-file</i></tt><a href=3D"https=
+://sandbox.de/osg/lightwave.htm#t_FNAM0"><i><font face=3D"Courier New" size=
+=3D"2">[FNAM0]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>The reflection image is wrapped around the scene and is used fo=
+r reflection mapping if the <tt>RFLT</tt> mode is set to use an image and t=
+he reflectivity of the surface is non-zero. If the <tt>RFLT</tt> mode setti=
+ng expects an image and there is no <tt>RIMG</tt> chunk, then the backdrop =
+colors are reflected. See the section on <a href=3D"https://sandbox.de/osg/=
+lightwave.htm#S4.4">Image Options</a> for more on specifying image names.</=
+p>
+<i></i><dl><i>
+<dt><a name=3D"s_RSAN"></a>Reflection Map Image Seam Angle </dt>
+<tt></tt></i><tt></tt><dd><tt><i>RSAN { seam-angle</i></tt><a href=3D"https=
+://sandbox.de/osg/lightwave.htm#t_DEG4"><i><font face=3D"Courier New" size=
+=3D"2">[DEG4]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This angle is the heading angle of the reflection map seam. If =
+missing, a value of zero is assumed. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_RIND"></a>Refractive Index </dt>
+<tt></tt></i><tt></tt><dd><tt><i>RIND { refractive-index</i></tt><a href=3D=
+"https://sandbox.de/osg/lightwave.htm#t_F4"><i><font face=3D"Courier New" s=
+ize=3D"2">[F4]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>The surface's refractive index is defined as the ratio of the s=
+peed of light in a vacuum to the speed of light in the material. Since ligh=
+t is fastest in a vacuum, this value should therefore be greater than or eq=
+ual to 1.0. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_EDGE"></a>Edge Transparency Threshold </dt>
+<tt></tt></i><tt></tt><dd><tt><i>EDGE { edge-trans</i></tt><a href=3D"https=
+://sandbox.de/osg/lightwave.htm#t_F4"><i><font face=3D"Courier New" size=3D=
+"2">[F4]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>The edge transparency threshold of the current surface should l=
+ie between 0.0 and 1.0. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_SMAN"></a>Max Smoothing Angle </dt>
+<tt></tt></i><tt></tt><dd><tt><i>SMAN { max-smoothing-angle</i></tt><a href=
+=3D"https://sandbox.de/osg/lightwave.htm#t_DEG4"><i><font face=3D"Courier N=
+ew" size=3D"2">[DEG4]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This specifies the maximum angle between two adjacent polygons =
+that can be smooth shaded. Polygons with a greater angle between them will =
+appear to meet at a sharp seam. </p>
+<h3><a name=3D"S4_2"></a>Texture Definitions </h3>
+<p>Surface textures in LightWave correspond closely to the Textures panel a=
+ccessed though the Surfaces panel. They are algorithmic or image-based modu=
+lations of one of the shading parameters. Any number of textures may be use=
+d and their effect is cumulative. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_xTEX"></a>Start Texture Definition </dt>
+<tt></tt></i><tt></tt><dd><tt><i>CTEX, DTEX, STEX, RTEX, TTEX, LTEX, BTEX {=
+ texture-type</i></tt><a href=3D"https://sandbox.de/osg/lightwave.htm#t_S0"=
+><i><font face=3D"Courier New" size=3D"2">[S0]</font></i></a><i><tt> } </tt=
+></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>The presence of one of these sub-chunks indicates that the curr=
+ent surface has a color, diffuse, specular, reflection, transparency, lumin=
+osity, or bump texture. The contents of the sub-chunk is a character string=
+ specifying the texture type as shown on the control panel. Once one of the=
+se sub-chunks is encountered within a <tt>SURF</tt> chunk, all subsequent t=
+exture-related sub-chunks are considered to pertain to the current texture,=
+ until another one of these texture strating sub-chunks is read. There may =
+be any number of textures for each parameter, and the textures are layered =
+in the order they are read. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TFLG"></a>Texture Flags </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TFLG { texture-flags</i></tt><a href=3D"ht=
+tps://sandbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=
+=3D"2">[U2]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This short integer has bits which specify various options for t=
+he current texture. Currently only the seven least significant bits are use=
+d. The options that set bits indicate are (starting with the least signific=
+ant bit): X Axis, Y Axis, Z Axis, World Coords, Negative Image, Pixel Blend=
+ing, and Antialiasing. Note that only one of the three axis bits should be =
+set. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TSIZ"></a>Location and Size </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TSIZ, TCTR, TFAL, TVEL { vector</i></tt><a=
+ href=3D"https://sandbox.de/osg/lightwave.htm#t_VEC12"><i><font face=3D"Cou=
+rier New" size=3D"2">[VEC12]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>These sub-chunks each consist of a vector for the current textu=
+re's size, center, falloff, or velocity. If missing, the center, falloff an=
+d velocity are assumed to be zero. The size should always be specified for =
+any texture. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TCLR"></a>Texture Color </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TCLR { texture-color</i></tt><a href=3D"ht=
+tps://sandbox.de/osg/lightwave.htm#t_COL4"><i><font face=3D"Courier New" si=
+ze=3D"2">[COL4]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This specifies the modifying color used by a <tt>CTEX</tt> text=
+ure. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TVAL"></a>Texture Value </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TVAL { texture-value</i></tt><a href=3D"ht=
+tps://sandbox.de/osg/lightwave.htm#t_IP2"><i><font face=3D"Courier New" siz=
+e=3D"2">[IP2]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This specifies the modifying value of a <tt>DTEX</tt>, <tt>STEX=
+</tt>, <tt>RTEX</tt>, <tt>TTEX</tt>, or <tt>LTEX</tt> texture as a fixed-po=
+int percentage. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TAMP"></a>Bump Texture Amplitude </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TAMP { bump-amplitude</i></tt><a href=3D"h=
+ttps://sandbox.de/osg/lightwave.htm#t_FP4"><i><font face=3D"Courier New" si=
+ze=3D"2">[FP4]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This specifies the amplitude of the current <tt>BTEX</tt> bump =
+texture as a floating-point percentage. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TxPn"></a>Algorithmic Texture Parameters </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TFP0, TFP1, TFP2, ... { float-parameter</i=
+></tt><a href=3D"https://sandbox.de/osg/lightwave.htm#t_F4"><i><font face=
+=3D"Courier New" size=3D"2">[F4]</font></i></a><i><tt> }<br>
+TIP0, TIP1, TIP2, ... { integer-parameter</tt></i><a href=3D"https://sandbo=
+x.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[I2]</=
+font></i></a><i><tt> }<br>
+<br>
+TSP0, TSP1, TSP2 { float-parameter</tt></i><a href=3D"https://sandbox.de/os=
+g/lightwave.htm#t_F4"><i><font face=3D"Courier New" size=3D"2">[F4]</font><=
+/i></a><i><tt> }<br>
+TFRQ { noise-freq</tt></i><a href=3D"https://sandbox.de/osg/lightwave.htm#t=
+_I"><i><font face=3D"Courier New" size=3D"2">[U2]</font></i></a><i><tt> } <=
+/tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>The <tt>TFPn</tt> sub-chunks each contain a floating point numb=
+er that specifies one of the special texture type-specific parameters (such=
+ as Contrast, Turbulence, Wavelength, etc). The <tt>TIPn</tt> sub-chunks ar=
+e similar but are used for integer parameters (such as number of Frequencie=
+s, Wave Sources, etc). Which sub-chunk is used to record a particular param=
+eter depends on the order in which that parameter's button appears on the c=
+ontrol panel. The total number of possible sub-chunks may increase in the f=
+uture, but the totals for 5.0 are 4 floating-point and 1 integer. </p>
+<p>The <tt>TSPn</tt> sub-chunks are an obsolete form of the <tt>TFPn</tt> s=
+ub-chunks. The <tt>TFRQ</tt> sub-chunk is an obsolete form of <tt>TIP0</tt>=
+ from a time when the number of fractal noise frequencies or number of wave=
+ sources was the only integer algorithmic parameter. LightWave will still p=
+arse these older sub-chunks but it no longer writes them. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TIMG"></a>Image Map </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TIMG { texture-image</i></tt><a href=3D"ht=
+tps://sandbox.de/osg/lightwave.htm#t_FNAM0"><i><font face=3D"Courier New" s=
+ize=3D"2">[FNAM0]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This specifies an image name to be used for image texture mappi=
+ng. See the section on <a href=3D"https://sandbox.de/osg/lightwave.htm#S4.4=
+">Image Options</a> for more on specifying image names. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TALP"></a>Image Alpha </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TALP { texture-alpha</i></tt><a href=3D"ht=
+tps://sandbox.de/osg/lightwave.htm#t_FNAM0"><i><font face=3D"Courier New" s=
+ize=3D"2">[FNAM0]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This specifies an image name to be used as the alpha map for th=
+is texture. See the section on <a href=3D"https://sandbox.de/osg/lightwave.=
+htm#S4.4">Image Options</a> for more on specifying image names. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TWRP"></a>Image Wrap Options </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TWRP { width-wrap</i></tt><a href=3D"https=
+://sandbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"=
+2">[U2]</font></i></a><i><tt>, height-wrap</tt></i><a href=3D"https://sandb=
+ox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U2]<=
+/font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This specifies how image-based textures will interpret the colo=
+r of areas outside the image. If the mode is 0, then outside the image is c=
+onsidered to be black. If the mode is 1, areas outside the image are clampe=
+d to the closest image edge value. If the mode is 2, then the image repeats=
+ outside the image area resulting in a uniform tiling. If the mode is 3, th=
+en the image repeats but with mirroring, so that each each adjacent repetit=
+ion is reversed. If no wrap options are specified, 2 is assumed. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TAAS"></a>Antialiasing Strength </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TAAS { antialising-strength</i></tt><a hre=
+f=3D"https://sandbox.de/osg/lightwave.htm#t_FP4"><i><font face=3D"Courier N=
+ew" size=3D"2">[FP4]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This specifies the strength of antialiasing used for the textur=
+e. If the Antialiasing bit is set in the <tt>TFLG</tt> sub-chunk and this s=
+ub-chunk is missing, 100% is assumed. This setting currently only affects i=
+mage-based textures. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_TOPC"></a>Texture Opacity </dt>
+<tt></tt></i><tt></tt><dd><tt><i>TOPC { texture-opacity</i></tt><a href=3D"=
+https://sandbox.de/osg/lightwave.htm#t_FP4"><i><font face=3D"Courier New" s=
+ize=3D"2">[FP4]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This specifies how opaque this texture is with respect to the t=
+extures before it. If no opacity is specified, 100% is assumed. </p>
+<h3><a name=3D"S4_3"></a>Plug-in Shaders </h3>
+<p>Plug-in shaders are applied to a surface after all built-in textures. Th=
+ey are evaluated in the order specified in the surface description and ther=
+e can currently be up to four. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_SHDR"></a>Shader Plug-in </dt>
+<tt></tt></i><tt></tt><dd><tt><i>SHDR { name</i></tt><a href=3D"https://san=
+dbox.de/osg/lightwave.htm#t_S0"><i><font face=3D"Courier New" size=3D"2">[S=
+0]</font></i></a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>Plug-in shaders are identified by their server name, which is s=
+tored in this sub-chunk. </p>
+<i><dl>
+<dt><a name=3D"s_SDAT"></a>Shader Data </dt>
+<tt><dd>SDAT { shader-data[...] } </dd>
+</tt></dl><tt>
+</tt></i><p>A shader can store up to 65,535 bytes of data to describe its s=
+ettings, and these are stored directly in this sub-chunk without modificati=
+on. The length and contents of this chunk will depend completely on the sha=
+der specified by the previous <tt>SHDR</tt> chunk. </p>
+<h3><a name=3D"S4_4"></a>Image Filenames and Options </h3>
+<p>Images are specified, either by the <tt>RIMG</tt>, <tt>TIMG</tt>, or <tt=
+>TALP</tt> sub-chunks, as a filename string. If this is a simple filename, =
+then it represents a still image. However, if the last part of the string i=
+s <tt>" (sequence)"</tt>, then the first part of the string specifies the p=
+refix of an image sequence and the actual filename is generated by appendin=
+g the three digit frame number to the prefix when loading the image file fo=
+r each frame. If the last part of the string is <tt>" (clip)"</tt>, then th=
+e string is the name of a Flyer clip. </p>
+<p>The following sub-chunks may be used to set options for images. Each of =
+these sub-chunks refers to image immediately preceeding it in the <tt>SURF<=
+/tt> data. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_IMSQ"></a>Sequence Options </dt>
+<tt></tt></i><tt></tt><dd><tt><i>IMSQ { offset</i></tt><a href=3D"https://s=
+andbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[=
+U2]</font></i></a><i><tt>, flags</tt></i><a href=3D"https://sandbox.de/osg/=
+lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U2]</font></i>=
+</a><i><tt>, loop-length</tt></i><a href=3D"https://sandbox.de/osg/lightwav=
+e.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U2]</font></i></a><i><=
+tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This only applies if the image is a sequence. The offset is add=
+ed to the frame number to get the image number for that frame. The loop-len=
+gth is the number of frames before the sequence starts at the beginning aga=
+in. The least significant flag bit indicates that the sequence does loop, a=
+nd the next bit indicates that the images are interlaced and should be trea=
+ted as fields. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_FLYR"></a>Flyer Clip Options </dt>
+<tt></tt></i><tt></tt><dd><tt><i>FLYR { begin</i></tt><a href=3D"https://sa=
+ndbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U=
+4]</font></i></a><i><tt>, end</tt></i><a href=3D"https://sandbox.de/osg/lig=
+htwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U4]</font></i></a=
+><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>This only applies if the image is a Flyer clip. The two values =
+are the clip endpoints stored in Flyer timecode format. </p>
+<i></i><dl><i>
+<dt><a name=3D"s_IMCC"></a>Color Cycle Options </dt>
+<tt></tt></i><tt></tt><dd><tt><i>IMCC { cycle-speed</i></tt><a href=3D"http=
+s://sandbox.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D=
+"2">[U2]</font></i></a><i><tt>, low-index</tt></i><a href=3D"https://sandbo=
+x.de/osg/lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U2]</=
+font></i></a><i><tt>, high-index</tt></i><a href=3D"https://sandbox.de/osg/=
+lightwave.htm#t_I"><i><font face=3D"Courier New" size=3D"2">[U2]</font></i>=
+</a><i><tt> } </tt></i></dd><i><tt>
+</tt></i></dl><i><tt>
+</tt></i><p>Only color-mapped images can use color cycling. The cycle-speed=
+ can be +1, -1 or 0, but 0 means the sub-chunk can be ignored. The low-inde=
+x and high-index give the color table range to cycle through while renderin=
+g. </p>
+<p><!----></p>
+<p></p><hr><p></p>
+<h2><a name=3D"S5"></a>Object File Example </h2>
+<p>A simple object (with somewhat complex surfaces) is listed below to illu=
+strate some of the features of a FORM LWOB. The object is an image-mapped s=
+quare polygon and a transparent, reflective, bumpy yellow triangle. They ar=
+e made from 5 points in the XY plane. The annotations are laid out like a d=
+isassembly, with left collumn showing the binary file data listed as two he=
+xadecimal digits per byte, the center collumn showing a symbolic breakdown =
+of the file, and the far right showing commentary on each line. </p>
+<dl>
+<dd>The file starts with the standard simple form IFF header. It is just a =
+chunk of type <a href=3D"https://sandbox.de/osg/lightwave.htm#t_FORM"><font=
+ face=3D"Courier New" size=3D"2">FORM</font></a> which identifies this file=
+ as an IFF. The first four bytes in the main outer chunk are the ID <tt>LWO=
+B</tt> which specifies this is a LightWave Object File IFF. </dd>
+</dl>
+<pre>464f524d 000001fe            FORM {                IFF file header; FO=
+RM chunk
+
+                                                   file length is 510 + 8 b=
+ytes
+
+4c574f42                       LWOB                FORM type ID for LW OBje=
+cts
+</pre>
+<dl>
+<dd>The first data chunk in this file is the <a href=3D"https://sandbox.de/=
+osg/lightwave.htm#c_PNTS"><font face=3D"Courier New" size=3D"2">PNTS</font>=
+</a> chunk. The chunk length is 60, so we know there are 5 points. We just =
+read X, Y, and Z triples until we are get them all. The points are numbered=
+ starting from zero for indexing later. </dd>
+</dl>
+<pre>504e5453 0000003c              PNTS {              60 bytes / 12 =3D 5=
+ points
+
+00000000 3f800000 00000000       0.0,  1.0, 0.0    point 0
+
+40200000 3f800000 00000000       2.5,  1.0, 0.0    point 1
+
+40200000 bf800000 00000000       2.5, -1.0, 0.0    point 2
+
+00000000 bf800000 00000000       0.0, -1.0, 0.0    point 3
+
+c0000000 00000000 00000000      -2.0,  0.0, 0.0    point 4
+
+                               }
+</pre>
+<dl>
+<dd>Next is the <a href=3D"https://sandbox.de/osg/lightwave.htm#c_SRFS"><fo=
+nt face=3D"Courier New" size=3D"2">SRFS</font></a> chunk which lists the su=
+rfaces used by the polygons. The surface names are numbered from 1. Note th=
+e double-nulls to make string lengths even. </dd>
+</dl>
+<pre>53524653 00000012              SRFS {
+
+54 72 69 61 6e 67 6c 65 00 00    "Triangle"        surface 1
+
+53 71 75 61 72 65 00 00          "Square"          surface 2
+
+                               }
+</pre>
+<dl>
+<dd>Now that we have points and surfaces indexed, we can read the <a href=
+=3D"https://sandbox.de/osg/lightwave.htm#c_POLS"><font face=3D"Courier New"=
+ size=3D"2">POLS</font></a> chunk. Polygon descriptions are variable-length=
+, but we keep reading until we have consumed the 22 bytes listed in the chu=
+nk header. Note that vertex indices are 0 to 4, but surface indices are 1 t=
+o 2. A negative surface index would flag detail polygons. </dd>
+</dl>
+<pre>504f4c53 00000016              POLS {
+
+  0003                           3                 polygon 1 has 3 vertices
+
+     0003 0004 0000              3, 4, 0           polygon 1 vertex list
+
+     0001                        1                 polygon 1 uses "Triangle=
+" surface
+
+
+
+  0004                           4                 polygon 2 has 4 vertices
+
+     0000 0001 0002 0003         0, 1, 2, 3        polygon 2 vertex list
+
+     0002                        2                 polygon 2 uses "Square" =
+surface
+
+                               }
+</pre>
+<dl>
+<dd>The complete geometry has been read, so the rest of the file is dedicat=
+ed to surface definitions. The following <a href=3D"https://sandbox.de/osg/=
+lightwave.htm#c_SURF"><font face=3D"Courier New" size=3D"2">SURF</font></a>=
+ chunk describes the "Triangle" surface. It is a double-sided, glossy, tran=
+sparent yellow surface with a fractal bump map. The chunk contains <a href=
+=3D"https://sandbox.de/osg/lightwave.htm#t_SUBCH">sub-chunks</a> which have=
+ a two-byte length instead of the four bytes used by the main data chunks. =
+Note that there is a fixed-point and floating-point value for each shading =
+parameter, like <tt>DIFF</tt> and <tt>VDIF</tt>. The fixed-point form is in=
+cluded by LightWave when writing objects in order to assure backward compat=
+ibility. When writing objects for 4.0 LightWave or higher, only the floatin=
+g-point forms need to be used. </dd>
+</dl>
+<pre>53555246 000000c8              SURF {              start defintion of =
+"Triangle"
+
+54 72 69 61 6e 67 6c 65 00 00    "Triangle"        surface settings
+
+
+
+    434f4c52 0004                COLR {            base color is yellow
+
+    f0 b4 00 00                    240, 180, 0
+
+                                 }
+
+    464c4147 0002                FLAG {            surface is double-sided
+
+    0100                           [00100000000]
+
+                                 }
+
+    44494646 0002                DIFF {            fixed 60% diffuse
+
+    009a                           154
+
+                                 }
+
+    56444946 0004                VDIF {            float 60% diffuse
+
+    3f19999a                       0.6
+
+                                 }
+
+    53504543 0002                SPEC {            fixed 80% specular
+
+    00cd                           205
+
+                                 }
+
+    56535043 0004                VSPC {            float 80% specular
+
+    3f4ccccd                       0.8
+
+                                 }
+
+    474c4f53 0002                GLOS {            "High" glossiness
+
+    0100                           256
+
+                                 }
+
+    5245464c 0002                REFL {            fixed 20% reflective
+
+    0033                           51
+
+                                 }
+
+    5652464c 0004                VRFL {            float 20% reflective
+
+    3e4ccccd                       0.2
+
+                                 }
+
+    52464c54 0002                RFLT {            reflect backdrop colors =
+and
+
+    0001                           1               raytraced objects
+
+                                 }
+
+    5452414e 0002                TRAN {            fixed 40% transparent
+
+    0066                           102
+
+                                 }
+
+    5654524e 0004                VTRN {            float 40% transparent
+
+    3ecccccd                       0.4
+
+                                 }
+
+    52494e44 0004                RIND {            refractive index
+
+    3f800000                       1.2             1.2
+
+                                 }
+
+
+
+    42544558 000e                BTEX {            start bump map
+
+    46 72 61 63 74 61 6c 20                        using "Fractal Bumps" al=
+gorithm
+
+    42 75 6d 70 73 00              "Fractal Bumps"
+
+                                 }
+
+    54464c47 0002                TFLG {            Y-axis; world-coords;
+
+    006a                           [1101010]       pixel blending; antialia=
+sing
+
+                                 }
+
+    5453495a 000c                TSIZ {            texture size
+
+    3dcccccd 3dcccccd 3dcccccd     0.1, 0.1, 0.1
+
+                                 }
+
+    54414153 0004                TAAS {            texture antializing stre=
+ngth
+
+    3f800000                       1.0             100%
+
+                                 }
+
+    54414d50 0004                TAMP {            bump amplitude
+
+    3f000000                       1.5             150%
+
+                                 }
+
+    54495030 0002                TIP0 {            first integer parameter
+
+    0003                           3               3 fractal noise frequenc=
+es
+
+                                 }
+
+                               }                   end of SURF chunk
+</pre>
+<dl>
+<dd>Last is the <a href=3D"https://sandbox.de/osg/lightwave.htm#c_SURF"><fo=
+nt face=3D"Courier New" size=3D"2">SURF</font></a> chunk for the "Square" s=
+urface. It is a single-sided surface with a color map from an image. Even t=
+hough both surfaces have only one texture each, they could either of them h=
+ave no textures, or an unlimited number. They would be applied in the order=
+ they were read from the surface definition. </dd>
+</dl>
+<pre>53555246 000000a6              SURF {              start definition of=
+ "Square"
+
+53 71 75 61 72 65 00 00          "Square"          surface settings
+
+
+
+    434f4c52 0004                COLR {            base color is white
+
+    c8 c8 c8 00                    200, 200, 200
+
+                                 }
+
+    464c4147 0002                FLAG {            all surface flags clear
+
+    0000                           [000000000]
+
+                                 }
+
+    44494646 0002                DIFF {            fixed 100% diffuse
+
+    0100                           256
+
+                                 }
+
+    56444946 0004                VDIF {            float 100% diffuse
+
+    3f800000                       1.0
+
+                                 }
+
+
+
+    43544558 0012                CTEX {            start color map using
+
+    50 6c 61 6e 61 72 20 49 6d                     "Planar Image Map" algor=
+ithm
+
+    61 67 65 20 4d 61 70 00 00     "Planar Image Map"
+
+                                 }
+
+    54494d47 0012                TIMG {            static image used for ma=
+pping
+
+    49 6d 61 67 65 73 5c 6d 69 =20
+
+    72 61 67 65 2e 69 66 66 00     "Images\mirage.iff"
+
+                                 }
+
+    54575250 0004                TWRP {            image will tile in both =
+directions
+
+    0002 0002                      2, 2
+
+                                 }
+
+    54464c47 0002                TFLG {            Z-axis; pixel blending;
+
+    0064                           [1100100]       antialiasing
+
+                                 }
+
+    5453495a 000c                TSIZ {            image size (only X and Y=
+ matter)
+
+    40200000 40000000 3f800000     2.5, 2.0, 1.0
+
+                                 }
+
+    54435452 000c                TCTR {            image center (only X and=
+ Y matter)
+
+    3fa00000 00000000 00000000     1.25, 0.0, 0.0
+
+                                 }
+
+    54414153 0004                TAAS {            texture antialiasing str=
+ength
+
+    3f800000                       1.0             100%
+
+                                 }
+
+    54434c52 0004                TCLR {            texture color is black (=
+unused)
+
+    00 00 00 00                    0, 0, 0
+
+                                 }
+
+                               }                   end of SURF chunk
+
+                             }                     end of FORM chunk and fi=
+le
+</pre>
+<p><!----></p>
+<p></p><hr><p></p>
+<h3><a name=3D"S6"></a>Index </h3>
+
+<ul>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_COLR">Base Color</a> =
+</li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">Base Shading Va=
+lues</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_xTEX">BTEX</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_CHUNK">Chunk</a> </li=
+>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_COL4">COL4</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_COLR">COLR</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_IMCC">Color Cycling</=
+a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_xTEX">CTEX</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#c_CRVS">Curve List</a> =
+</li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_DEG4">DEG4</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">DIFF</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_xTEX">DTEX</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_EDGE">EDGE</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_EDGE">Edge Tranparenc=
+y Threshold</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_F4">F4</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#c_POLS">Face List</a> <=
+/li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_FLAG">FLAG</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_FLYR">FLYR</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_FLYR">Flyer Clip Opti=
+ons</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_FNAM0">FNAM0</a> </li=
+>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_FORM">FORM</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_FORM">Format Header</=
+a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_FP4">FP4</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_GLOS">GLOS</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_I">I1</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_I">I2</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_I">I4</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_ID4">ID4</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_IMCC">IMCC</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_IMSQ">IMSQ</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_IP2">IP2</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">LUMI</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_xTEX">LTEX</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_FORM">LWOB</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_SMAN">Max Smoothing A=
+ngle</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_SUBCH">Mini-chunk</a>=
+ </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#c_PCHS">Patch List</a> =
+</li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_SHDR">Plug-in Shader<=
+/a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_SDAT">Plug-in Shader =
+Data</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#c_PNTS">Point List</a> =
+</li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">REFL</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_RIMG">Reflection Map =
+Image</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_RSAN">Reflection Map =
+Seam Angle</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_RFLT">Reflection Mode=
+</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_RIND">Refractive Inde=
+x</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_RFLT">RFLT</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_RIMG">RIMG</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_RIND">RIND</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_RSAN">RSAN</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_xTEX">RTEX</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_S0">S0</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_SDAT">SDAT</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_IMSQ">Sequence Option=
+s</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_SHDR">SHDR</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_SMAN">SMAN</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_SMAN">Smoothing Angle=
+</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_GLOS">Specular Glossi=
+ness</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">SPEC</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_xTEX">STEX</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_SUBCH">Sub-chunk</a> =
+</li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#c_SURF">Surface Definit=
+ion</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_FLAG">Surface Flags</=
+a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#c_SRFS">Surface List</a=
+> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TAAS">TAAS</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TALP">TALP</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TAMP">TAMP</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TCLR">TCLR</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TSIZ">TCTR</a> </li>
+<li>Texture </li>
+
+<ul>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TxPn">Algorithmic Par=
+ameters</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TAAS">Antialiasing St=
+rength</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TAMP">Bump Amplitude<=
+/a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TCLR">Color</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TFLG">Flags</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TALP">Image Alpha</a>=
+ </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TIMG">Image Map</a> <=
+/li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TWRP">Image Wrap Mode=
+s</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TSIZ">Location and Si=
+ze</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TxPn">Noise Frequenci=
+es</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TOPC">Opacity</a> </l=
+i>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_xTEX">Start Definitio=
+n</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TVAL">Value</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TxPn">Wave Sources</a=
+> </li></ul>
+
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TSIZ">TFAL</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TFLG">TFLG</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TxPn">TFPn</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TxPn">TFRQ</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TIMG">TIMG</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TxPn">TIPn</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TOPC">TOPC</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">TRAN</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TSIZ">TSIZ</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TxPn">TSPn</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_xTEX">TTEX</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TVAL">TVAL</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TSIZ">TVEL</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_TWRP">TWRP</a> </li>
+<li>Type </li>
+
+<ul>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_DEG4">Angle</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_COL4">Color</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_VEC12">Coordinate</a>=
+ </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_FNAM0">Filename</a> <=
+/li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_F4">Float</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_ID4">ID Tag</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_I">Integer, Signed</a=
+> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_I">Integer, Unsigned<=
+/a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_IP2">Percentage, Inte=
+ger</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_FP4">Percentage, Floa=
+ting-point</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_S0">String</a> </li><=
+/ul>
+
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_I">U1</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_I">U2</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_I">U4</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">VDIF</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#t_VEC12">VEC12</a> </li=
+>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">VLUM</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">VRFL</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">VSPC</a> </li>
+<li><a href=3D"https://sandbox.de/osg/lightwave.htm#s_Vxxx">VTRN</a> </li><=
+/ul>
+
+
+</body></html>
+------MultipartBoundary--l08QlECD1X9LcwALzIoyQWHFn7wWC71H5q8fXuMV5i------
