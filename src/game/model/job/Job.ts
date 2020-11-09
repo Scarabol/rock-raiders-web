@@ -98,7 +98,7 @@ export class SurfaceJob extends Job {
                 // this.surface.reinforce(); // TODO implement this
                 break;
             case SurfaceJobType.CLEAR_RUBBLE:
-                // this.surface.reduceRubble(); // TODO implement this
+                this.surface.reduceRubble();
                 break;
         }
     }

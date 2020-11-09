@@ -5,7 +5,7 @@ import { RaiderDeselected, RaiderSelected } from '../../event/WorldEvents';
 import { MovableEntity } from '../../game/model/entity/MovableEntity';
 import { Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
 import { Vector3 } from 'three';
-import { getRandomSign } from '../../core/Util';
+import { getRandom, getRandomSign } from '../../core/Util';
 
 export class Raider extends MovableEntity implements Selectable {
 
@@ -15,7 +15,7 @@ export class Raider extends MovableEntity implements Selectable {
     job: Job = null;
     state: RaiderState = null;
     jobSubPos: Vector3 = null;
-    tools: string[] = ['drill'];
+    tools: string[] = ['drill', 'shovel'];
     skills: string[] = [];
 
     constructor() {
@@ -73,7 +73,7 @@ export class Raider extends MovableEntity implements Selectable {
                         this.group.lookAt(new Vector3(jobPos.x, this.group.position.y, jobPos.z));
                     } else {
                         if (!this.jobSubPos) {
-                            this.jobSubPos = new Vector3(jobPos.x + getRandomSign() * 10, 0, jobPos.z + getRandomSign() * 10);
+                            this.jobSubPos = new Vector3(jobPos.x + getRandomSign() * getRandom(10), 0, jobPos.z + getRandomSign() * getRandom(10));
                             this.jobSubPos.y = this.worldMgr.getTerrainHeight(this.jobSubPos.x, this.jobSubPos.z);
                         }
                         const distance = new Vector3().copy(this.jobSubPos).sub(this.getPosition());

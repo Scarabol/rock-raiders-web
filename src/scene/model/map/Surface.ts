@@ -1,12 +1,13 @@
 import { Color, Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
 import { Terrain } from './Terrain';
-import { GROUND, RUBBLE4, SurfaceType } from './SurfaceType';
+import { GROUND, RUBBLE1, RUBBLE2, RUBBLE3, RUBBLE4, SurfaceType } from './SurfaceType';
 import { ResourceManager } from '../../../resource/ResourceManager';
 import { Selectable, SelectionType } from '../../../game/model/Selectable';
 import { EventBus } from '../../../event/EventBus';
 import { SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../../event/LocalEvents';
 import { JobType, SurfaceJob, SurfaceJobType } from '../../../game/model/job/Job';
 import { JobCreateEvent } from '../../../event/WorldEvents';
+import { getRandom, getRandomSign } from '../../../core/Util';
 
 const HEIGHT_MULTIPLER = 0.05;
 
@@ -77,14 +78,12 @@ export class Surface implements Selectable {
     }
 
     collapse() {
-        this.surfaceType = RUBBLE4; // TODO drop contained ore/crystals
         this.cancelJobs();
+        this.surfaceType = RUBBLE4;
         this.needsMeshUpdate = true;
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors();
-        if (foundCave) {
-            console.log('A new cave was discovered'); // TODO emit new-cave event instead
-        }
+        if (foundCave) console.log('A new cave was discovered'); // TODO emit new-cave event instead
         // check for unsupported neighbors
         for (let x = this.x - 1; x <= this.x + 1; x++) {
             for (let y = this.y - 1; y <= this.y + 1; y++) {
@@ -99,12 +98,40 @@ export class Surface implements Selectable {
         }
         // update meshes
         this.terrain.surfaces.forEach((c) => c.forEach((surf) => surf.updateMesh(false)));
+        this.terrain.floorGroup.updateWorldMatrix(true, true);
+        // drop contained crystals and ores
+        for (let c = 0; c < this.containedCrystals; c++) {
+            const x = this.x * 40 + 20 + getRandomSign() * getRandom(10);
+            const z = this.y * 40 + 20 + getRandomSign() * getRandom(10);
+            this.terrain.worldMgr.addCrystal(x, z);
+        }
+        this.dropContainedOre();
+        // hide ore in the rubble
+        this.containedOre = 1;
+    }
+
+    private dropContainedOre() {
+        for (let c = 0; c < this.containedOre; c++) {
+            const x = this.x * 40 + 20 + getRandomSign() * getRandom(10);
+            const z = this.y * 40 + 20 + getRandomSign() * getRandom(10);
+            this.terrain.worldMgr.addOre(x, z);
+        }
     }
 
     cancelJobs() {
         this.jobs.forEach((job) => job.cancel());
         this.jobs = [];
         this.updateJobColor();
+    }
+
+    reduceRubble() {
+        if (this.surfaceType === RUBBLE4) this.surfaceType = RUBBLE3;
+        else if (this.surfaceType === RUBBLE3) this.surfaceType = RUBBLE2;
+        else if (this.surfaceType === RUBBLE2) this.surfaceType = RUBBLE1;
+        else if (this.surfaceType === RUBBLE1) this.surfaceType = GROUND;
+        this.dropContainedOre();
+        this.containedOre = this.surfaceType !== GROUND ? 1 : 0;
+        this.updateMesh();
     }
 
     isSupported(): boolean {

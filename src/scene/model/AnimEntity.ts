@@ -1,20 +1,18 @@
-import { CanvasTexture, ClampToEdgeWrapping, Group, LinearFilter, MeshPhongMaterial, Object3D, RGBAFormat, Sprite, SpriteMaterial } from 'three';
+import { CanvasTexture, ClampToEdgeWrapping, LinearFilter, Object3D, Sprite, SpriteMaterial } from 'three';
 import { AnimClip } from './AnimClip';
-import { getFilename, iGet } from '../../core/Util';
-import { ResourceManager } from '../../resource/ResourceManager';
+import { iGet } from '../../core/Util';
 import { AnimationEntityType } from './AnimationEntityType';
-import { WorldManager } from '../WorldManager';
+import { BaseEntity } from './BaseEntity';
 
-export class AnimEntity {
+export class AnimEntity extends BaseEntity {
 
-    worldMgr: WorldManager;
     entityType: AnimationEntityType = null;
     poly: Object3D[] = [];
-    group: Group = new Group();
     animation: AnimClip = null;
     selectionFrame: Sprite = null;
 
     constructor(entityType: AnimationEntityType) {
+        super();
         this.entityType = entityType;
 
         // TODO render selection frame on billboard layer or handle this in layer itself?
@@ -80,52 +78,6 @@ export class AnimEntity {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
         }
         this.loadTextures(); // TODO this step should be done at the end of the loading process (postLoading)
-    }
-
-    loadTextures(grp: Object3D[] = [this.group]) {
-        const that = this;
-        if (grp) {
-            grp.forEach((obj) => {
-                that.handleObject(obj);
-                that.loadTextures(obj.children);
-            });
-        } else {
-            console.log('not a group');
-        }
-    }
-
-    handleObject(obj) {
-        if (obj && obj.material && Array.isArray(obj.material)) {
-            obj.material.forEach((mat: MeshPhongMaterial) => {
-                if (mat.userData && mat.userData['textureFilename']) {
-                    const textureFilename = mat.userData['textureFilename'];
-                    if (mat.userData && mat.userData['sequenceTexture']) {
-                        const match = textureFilename.match(/(\D+)0+(\d+)\..+/);
-                        const basename = match[1];
-                        const seqStart = Number(match[2]);
-                        let sequenceNames = ResourceManager.filterEntryNames(basename);
-                        if (sequenceNames.length < 1) { // no match try shared path
-                            sequenceNames = ResourceManager.filterEntryNames('world/shared/' + getFilename(basename));
-                        }
-                        const lastNum = sequenceNames.length - 1;
-                        let seqNum = seqStart;
-                        setInterval(() => {
-                            mat.map = ResourceManager.getTexture(sequenceNames[seqNum - seqStart]);
-                            seqNum++;
-                            if (seqNum > lastNum) seqNum = seqStart;
-                        }, 1000 / 5); // TODO 5? FPS for texture animations?
-                    }
-                    // console.log('lazy loading texture from ' + textureFilename);
-                    mat.map = ResourceManager.getTexture(textureFilename);
-                    mat.transparent = mat.map.format === RGBAFormat;
-                    mat.color = null; // no need for color, when color map (texture) in use
-                } else {
-                    // console.log('no userdata set for material');
-                }
-            });
-        } else {
-            // console.log('not an object or no material');
-        }
     }
 
 }

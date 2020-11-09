@@ -13,6 +13,8 @@ import { BuildingEntity } from './model/BuildingEntity';
 import { GameState } from '../game/model/GameState';
 import { SelectionType } from '../game/model/Selectable';
 import { Building, TOOLSTATION } from '../game/model/entity/building/Building';
+import { Crystal } from './model/Crystal';
+import { Ore } from './model/Ore';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
@@ -60,6 +62,7 @@ export class WorldManager {
 
         // create terrain mesh and add it to the scene
         this.terrain = TerrainLoader.loadTerrain(levelConf);
+        this.terrain.worldMgr = this;
         this.terrain.floorGroup.scale.set(this.tileSize, this.tileSize, this.tileSize); // TODO read terrain scale from level file
         this.terrain.floorGroup.updateWorldMatrix(true, true); // otherwise ray intersection is not working before rendering
         this.sceneManager.scene.add(this.terrain.floorGroup);
@@ -197,6 +200,26 @@ export class WorldManager {
                 obj = obj.parent;
             }
         }
+    }
+
+    addCrystal(worldX: number, worldZ: number) {
+        const worldY = this.getTerrainHeight(worldX, worldZ);
+        const crystal = new Crystal();
+        crystal.worldMgr = this;
+        crystal.group.position.set(worldX, worldY, worldZ);
+        // TODO raider.group.visible = this.terrain.getSurface(raider.group.position.x / this.tileSize, raider.group.position.z / this.tileSize).discovered;
+        this.sceneManager.scene.add(crystal.group);
+        // GameState.raiders.push(raider); // TODO add to collectables
+    }
+
+    addOre(worldX: number, worldZ: number) {
+        const worldY = this.getTerrainHeight(worldX, worldZ);
+        const ore = new Ore();
+        ore.worldMgr = this;
+        ore.group.position.set(worldX, worldY, worldZ);
+        // TODO raider.group.visible = this.terrain.getSurface(raider.group.position.x / this.tileSize, raider.group.position.z / this.tileSize).discovered;
+        this.sceneManager.scene.add(ore.group);
+        // GameState.raiders.push(raider); // TODO add to collectables
     }
 
 }

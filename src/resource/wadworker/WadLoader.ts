@@ -36,7 +36,8 @@ export class WadLoader {
         function isTranslucentTexture(name): boolean { // TODO check for better approach
             const filename = getFilename(name);
             return !!filename.match(/\d\d\d\..+$/i) || !!filename.match(/^trans/i)
-                || !!filename.match(/telepulse/i) || !!filename.match(/^t_/i);
+                || !!filename.match(/telepulse/i) || !!filename.match(/^t_/i)
+                || !!filename.includes('crystalglow');
         }
 
         function isAlphaTexture(name): boolean { // TODO check for better approach
@@ -329,6 +330,17 @@ export class WadLoader {
             this.addAnimatedEntity(aeFile);
         });
         this.addAnimatedEntity('mini-figures/pilot/pilot.ae');
+        // load misc objects
+        this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Dynamite') + '/Dynamite.ae');
+        this.addAsset(this.loadLWOFile, 'World/Shared/Crystal.lwo'); // highpoly version, but unused?
+        this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'Crystal') + '.lwo');
+        this.addTextureFolder('MiscAnims/Crystal/');
+        const orePath = iGet(mainConf, 'MiscObjects', 'Ore');
+        this.addAsset(this.loadLWOFile, orePath + '.lwo');
+        this.addAsset(this.loadWadTexture, 'MiscAnims/Ore/Ore.bmp'); // TODO this could be extracted from LWO file
+        this.addAsset(this.loadLWOFile, 'World/Shared/Brick.lwo');
+        this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ProcessedOre') + '.lwo');
+        this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae');
         // // reward screen
         // const rewardConf = mainConf['Reward'];
         // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);

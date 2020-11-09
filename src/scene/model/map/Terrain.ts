@@ -1,8 +1,10 @@
 import { Group } from 'three';
 import { Surface } from './Surface';
+import { WorldManager } from '../../WorldManager';
 
 export class Terrain {
 
+    worldMgr: WorldManager;
     textureSet: any = {};
     width: number = 0;
     height: number = 0;
