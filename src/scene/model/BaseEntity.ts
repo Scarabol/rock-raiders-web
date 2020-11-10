@@ -1,5 +1,5 @@
 import { WorldManager } from '../WorldManager';
-import { Group, MeshPhongMaterial, Object3D, RGBAFormat } from 'three';
+import { Group, Material, MeshPhongMaterial, Object3D, RGBAFormat } from 'three';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { getFilename } from '../../core/Util';
 
@@ -22,8 +22,9 @@ export class BaseEntity {
     }
 
     handleObject(obj) {
-        if (obj && obj.material && Array.isArray(obj.material)) {
-            obj.material.forEach((mat: MeshPhongMaterial) => {
+        if (obj && obj.material) {
+            const mats: Material[] = Array.isArray(obj.material) ? obj.material : [obj.material];
+            mats.forEach((mat: MeshPhongMaterial) => {
                 if (mat.userData && mat.userData['textureFilename']) {
                     const textureFilename = mat.userData['textureFilename'];
                     if (mat.userData && mat.userData['sequenceTexture']) {
