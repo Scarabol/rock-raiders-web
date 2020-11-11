@@ -7,7 +7,7 @@ import { ENERGY_PATH_BUILDING } from './model/map/SurfaceType';
 import { Terrain } from './model/map/Terrain';
 import { EventBus } from '../event/EventBus';
 import { SurfaceDeselectEvent } from '../event/LocalEvents';
-import { SpawnEvent, SpawnType } from '../event/WorldEvents';
+import { JobCreateEvent, SpawnEvent, SpawnType } from '../event/WorldEvents';
 import { Raider } from './model/Raider';
 import { BuildingEntity } from './model/BuildingEntity';
 import { GameState } from '../game/model/GameState';
@@ -15,6 +15,7 @@ import { SelectionType } from '../game/model/Selectable';
 import { Building, TOOLSTATION } from '../game/model/entity/building/Building';
 import { Crystal } from './model/Crystal';
 import { Ore } from './model/Ore';
+import { CollectJob } from '../game/model/job/Job';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
@@ -115,9 +116,7 @@ export class WorldManager {
                 path2Surface.updateMesh();
                 GameState.buildings.push(entity);
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
-                console.warn('Loose power crystals on start not yet implemented'); // TODO implement power crystals on start
-                // const currentSpace = terrain[Math.floor(parseFloat(olObject.yPos))][Math.floor(parseFloat(olObject.xPos))];
-                // collectables.push(new Collectable(currentSpace, "crystal", olObject.xPos, olObject.yPos));
+                this.addCrystal(worldX, worldZ);
             } else {
                 // TODO implement remaining object types like: spider, drives and hovercraft
                 console.log('Object type ' + olObject.type + ' not yet implemented');
@@ -208,7 +207,8 @@ export class WorldManager {
         crystal.group.position.set(worldX, worldY, worldZ);
         // TODO raider.group.visible = this.terrain.getSurface(raider.group.position.x / this.tileSize, raider.group.position.z / this.tileSize).discovered;
         this.sceneManager.scene.add(crystal.group);
-        // GameState.raiders.push(raider); // TODO add to collectables
+        GameState.collectables.push(crystal); // TODO only add if surface is visible
+        EventBus.publishEvent(new JobCreateEvent(new CollectJob(crystal))); // TODO only add if surface is visible
     }
 
     addOre(worldX: number, worldZ: number) {
@@ -218,7 +218,8 @@ export class WorldManager {
         ore.group.position.set(worldX, worldY, worldZ);
         // TODO raider.group.visible = this.terrain.getSurface(raider.group.position.x / this.tileSize, raider.group.position.z / this.tileSize).discovered;
         this.sceneManager.scene.add(ore.group);
-        // GameState.raiders.push(raider); // TODO add to collectables
+        GameState.collectables.push(ore); // TODO only add if surface is visible
+        EventBus.publishEvent(new JobCreateEvent(new CollectJob(ore))); // TODO only add if surface is visible
     }
 
 }

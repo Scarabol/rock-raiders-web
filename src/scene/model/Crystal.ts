@@ -2,8 +2,9 @@ import { BaseEntity } from './BaseEntity';
 import { LWOLoader } from '../../resource/LWOLoader';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { Color, Material, MeshPhongMaterial } from 'three';
+import { Collectable, CollectableType } from './Collectable';
 
-export class Crystal extends BaseEntity { // TODO implements collectable/carryable
+export class Crystal extends BaseEntity implements Collectable {
 
     constructor() {
         super();
@@ -29,6 +30,10 @@ export class Crystal extends BaseEntity { // TODO implements collectable/carryab
         });
         this.group.add(mesh);
         this.sequenceIntervals.forEach((interval) => clearInterval(interval)); // TODO looks better without sequence, maybe just slow it down or merge it?
+    }
+
+    getCollectableType(): CollectableType {
+        return CollectableType.CRYSTAL;
     }
 
 }

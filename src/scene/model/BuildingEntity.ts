@@ -4,6 +4,8 @@ import { Building } from '../../game/model/entity/building/Building';
 import { AnimEntity } from './AnimEntity';
 import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { ResourceManager } from '../../resource/ResourceManager';
+import { MathUtils, Vector3 } from 'three';
+import degToRad = MathUtils.degToRad;
 
 export class BuildingEntity extends AnimEntity implements Selectable {
 
@@ -35,6 +37,13 @@ export class BuildingEntity extends AnimEntity implements Selectable {
             this.selectionFrame.visible = false;
             EventBus.publishEvent(new BuildingDeselected(this));
         }
+    }
+
+    getDropPosition(): Vector3 {
+        const dropPos = this.getPosition().add(new Vector3(0, 0, this.type.dropPosDist)
+            .applyEuler(this.getRotation()).applyAxisAngle(new Vector3(0, 1, 0), degToRad(this.type.dropPosAngleDeg)));
+        dropPos.y = this.worldMgr.getTerrainHeight(dropPos.x, dropPos.z);
+        return dropPos;
     }
 
 }

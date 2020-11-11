@@ -3,9 +3,12 @@ import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { EventBus } from '../../event/EventBus';
 import { RaiderDeselected, RaiderSelected } from '../../event/WorldEvents';
 import { MovableEntity } from '../../game/model/entity/MovableEntity';
-import { Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
+import { CollectJob, Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
 import { Vector3 } from 'three';
 import { getRandom, getRandomSign } from '../../core/Util';
+import { Collectable, CollectableType } from './Collectable';
+import { GameState } from '../../game/model/GameState';
+import { TOOLSTATION } from '../../game/model/entity/building/Building';
 
 export class Raider extends MovableEntity implements Selectable {
 
@@ -17,6 +20,8 @@ export class Raider extends MovableEntity implements Selectable {
     jobSubPos: Vector3 = null;
     tools: string[] = ['drill', 'shovel'];
     skills: string[] = [];
+    carries: Collectable = null;
+    carryTarget: Vector3 = null;
 
     constructor() {
         super(ResourceManager.getAnimationEntityType('mini-figures/pilot/pilot.ae'), 0.8); // TODO read speed (and other stats) from cfg
@@ -104,7 +109,97 @@ export class Raider extends MovableEntity implements Selectable {
                     // console.warn('Job type not yet implemented: ' + this.job.type); // LEADS TO SPAM!
                     break;
             }
+        } else if (this.job.type === JobType.CARRY) {
+            const carryJob = this.job as CollectJob;
+            if (this.carries !== carryJob.item) {
+                this.dropItem();
+                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
+                    if (this.state !== RaiderState.WALKING && this.state !== RaiderState.RUNING) {
+                        this.state = RaiderState.RUNING;
+                        this.setActivity('Run');
+                        this.animation.looping = true; // TODO add option to move exactly one animation length?
+                    }
+                    const jobPos = this.job.getPosition();
+                    const distance = new Vector3().copy(jobPos).sub(this.getPosition());
+                    if (distance.length() > this.getSpeed()) distance.setLength(this.getSpeed());
+                    this.group.position.add(distance);
+                    this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
+                    this.group.lookAt(new Vector3(jobPos.x, this.group.position.y, jobPos.z));
+                } else {
+                    this.state = RaiderState.STANDING;
+                    this.setActivity('Pickup'); // TODO on complete switch to standing
+                    this.pickupItem(carryJob.item);
+                }
+            } else if (!this.carryTarget) {
+                // TODO sleep 5 seconds, before retry
+                this.carryTarget = this.tryFindCarryTarget();
+            } else if (this.getPosition().sub(this.carryTarget).lengthSq() > 5 * 5) { // TODO externalize constant (drop range)
+                if (this.state !== RaiderState.WALKING && this.state !== RaiderState.RUNING) {
+                    this.state = RaiderState.RUNING;
+                    this.setActivity('Carry');
+                    this.animation.looping = true; // TODO add option to move exactly one animation length?
+                }
+                const jobPos = this.carryTarget;
+                const distance = new Vector3().copy(jobPos).sub(this.getPosition());
+                if (distance.length() > this.getSpeed()) distance.setLength(this.getSpeed());
+                this.group.position.add(distance);
+                this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
+                this.group.lookAt(new Vector3(jobPos.x, this.group.position.y, jobPos.z));
+            } else if (this.state !== RaiderState.STANDING) { // TODO find better condition?
+                this.state = RaiderState.STANDING;
+                this.setActivity('Deposit');
+                this.dropItem();
+                const raider = this;
+                setTimeout(() => {
+                    raider.job.onJobComplete();
+                    raider.stopJob();
+                }, 1000);
+            }
         }
+    }
+
+    tryFindCarryTarget(): Vector3 {
+        const carryType = this.carries.getCollectableType();
+        if (carryType === CollectableType.CRYSTAL) {
+            const targetBuildings = GameState.getBuildingsByType(TOOLSTATION); // TODO look for power station preferrably
+            let closest = null, minDist = null;
+            targetBuildings.forEach((b) => {
+                const bPos = b.getDropPosition();
+                const dist = this.getPosition().sub(bPos).lengthSq();
+                if (closest === null || dist < minDist) {
+                    closest = bPos;
+                    minDist = dist;
+                }
+            });
+            return closest;
+        } else if (carryType === CollectableType.ORE) {
+            const targetBuildings = GameState.getBuildingsByType(TOOLSTATION); // TODO look for refinery preferrably
+            let closest = null, minDist = null;
+            targetBuildings.forEach((b) => {
+                const bPos = b.getDropPosition();
+                const dist = this.getPosition().sub(bPos).lengthSq();
+                if (closest === null || dist < minDist) {
+                    closest = bPos;
+                    minDist = dist;
+                }
+            });
+            return closest;
+        } // TODO implement other types
+        return null;
+    }
+
+    dropItem() {
+        if (!this.carries) return;
+        this.group.remove(this.carries.getGroup()); // TODO remove from carry joint
+        this.carries.getGroup().position.copy(this.carryTarget);
+        this.carries = null;
+        this.carryTarget = null;
+    }
+
+    pickupItem(item: Collectable) {
+        this.carries = item;
+        this.group.add(this.carries.getGroup());
+        this.carries.getGroup().position.set(0, 7, 4); // TODO use carry joint offset
     }
 
     setJob(job: Job) {
@@ -116,6 +211,7 @@ export class Raider extends MovableEntity implements Selectable {
         if (!this.job) return;
         this.job.unassign(this);
         this.jobSubPos = null;
+        this.carryTarget = null; // TODO also drop item?
         this.job = null;
         this.state = RaiderState.STANDING;
         this.setActivity('Stand');

@@ -3,6 +3,7 @@ import { Building } from './entity/building/Building';
 import { Selectable, SelectionType } from './Selectable';
 import { Raider } from '../../scene/model/Raider';
 import { VehicleEntity } from '../../scene/model/VehicleEntity';
+import { Collectable } from '../../scene/model/Collectable';
 
 export class GameState {
 
@@ -16,6 +17,7 @@ export class GameState {
     static buildings: BuildingEntity[] = [];
     static raiders: Raider[] = [];
     static vehicles: VehicleEntity[] = [];
+    static collectables: Collectable[] = [];
 
     static reset() {
         this.numOre = 0;
@@ -28,6 +30,7 @@ export class GameState {
         this.buildings = [];
         this.raiders = [];
         this.vehicles = [];
+        this.collectables = [];
     }
 
     static getBuildingsByType(buildingType: Building): BuildingEntity[] { // TODO allow to search for multiple types at once

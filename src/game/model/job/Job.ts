@@ -1,10 +1,12 @@
 import { Surface } from '../../../scene/model/map/Surface';
 import { Vector3 } from 'three';
 import { Raider } from '../../../scene/model/Raider';
+import { Collectable } from '../../../scene/model/Collectable';
 
 export enum JobType {
 
     SURFACE,
+    CARRY,
 
 }
 
@@ -101,6 +103,35 @@ export class SurfaceJob extends Job {
                 this.surface.reduceRubble();
                 break;
         }
+    }
+
+}
+
+export class CollectJob extends Job {
+
+    item: Collectable;
+
+    constructor(item: Collectable) {
+        super(JobType.CARRY);
+        this.item = item;
+    }
+
+    getPosition(): Vector3 {
+        return this.item.getPosition();
+    }
+
+    isInArea(x: number, z: number) {
+        const pos = this.getPosition();
+        return pos.sub(new Vector3(x, pos.y, z)).lengthSq() < 5 * 5; // TODO externalize constant (pickup range)
+    }
+
+    isQualified(raider: Raider) {
+        return raider.carries === null;
+    }
+
+    onJobComplete() {
+        console.log('Collect job done');
+        // TODO fire item collected event (will remove entity from world)
     }
 
 }

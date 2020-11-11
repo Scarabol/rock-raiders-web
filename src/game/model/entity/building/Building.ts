@@ -2,10 +2,14 @@ export class Building {
 
     name: string;
     aeFile: string;
+    dropPosAngleDeg: number = 0;
+    dropPosDist: number = 0;
 
-    constructor(name: string) {
+    constructor(name: string, dropPosAngleDeg: number = 0, dropPosDist: number = 0) {
         this.name = name;
         this.aeFile = name + '/' + name.slice(name.lastIndexOf('/') + 1) + '.ae';
+        this.dropPosAngleDeg = dropPosAngleDeg;
+        this.dropPosDist = dropPosDist;
     }
 
     static getByName(buildingType: string) {
@@ -17,6 +21,7 @@ export class Building {
                 throw 'Unknown building type: ' + buildingType;
         }
     }
+
 }
 
-export const TOOLSTATION = new Building('Buildings/Toolstation');
+export const TOOLSTATION = new Building('Buildings/Toolstation', 130, 10);

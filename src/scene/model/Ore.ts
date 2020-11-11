@@ -1,8 +1,9 @@
 import { BaseEntity } from './BaseEntity';
 import { LWOLoader } from '../../resource/LWOLoader';
 import { ResourceManager } from '../../resource/ResourceManager';
+import { Collectable, CollectableType } from './Collectable';
 
-export class Ore extends BaseEntity { // TODO implements collectable/carryable
+export class Ore extends BaseEntity implements Collectable {
 
     constructor() {
         super();
@@ -10,6 +11,10 @@ export class Ore extends BaseEntity { // TODO implements collectable/carryable
         const mesh = new LWOLoader('MiscAnims/Ore/').parse(resource);
         this.group.add(mesh);
         this.loadTextures();
+    }
+
+    getCollectableType(): CollectableType {
+        return CollectableType.ORE;
     }
 
 }

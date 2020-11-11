@@ -1,5 +1,5 @@
 import { WorldManager } from '../WorldManager';
-import { Group, Material, MeshPhongMaterial, Object3D, RGBAFormat } from 'three';
+import { Euler, Group, Material, MeshPhongMaterial, Object3D, RGBAFormat, Vector3 } from 'three';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { getFilename } from '../../core/Util';
 
@@ -54,6 +54,18 @@ export class BaseEntity {
         } else {
             // console.log('not an object or no material');
         }
+    }
+
+    getPosition() {
+        return new Vector3().copy(this.group.position);
+    }
+
+    getRotation() {
+        return new Euler().copy(this.group.rotation);
+    }
+
+    getGroup() {
+        return this.group;
     }
 
 }
