@@ -19,7 +19,7 @@ export class Raider extends MovableEntity implements Selectable {
     skills: string[] = [];
 
     constructor() {
-        super(ResourceManager.getAnimationEntityType('mini-figures/pilot/pilot.ae'), 0.8); // FIXME read speed (and other stats) from cfg
+        super(ResourceManager.getAnimationEntityType('mini-figures/pilot/pilot.ae'), 0.8); // TODO read speed (and other stats) from cfg
         this.group.userData = {'selectable': this};
         this.workInterval = setInterval(this.work.bind(this), 1000 / 30 / 2); // update with twice the frame rate // TODO externalize framerate
     }

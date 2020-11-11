@@ -77,7 +77,7 @@ export class WorldManager {
             const worldZ = (olObject.yPos - 1) * this.tileSize;
             const worldY = this.getTerrainHeight(worldX, worldZ);
             const buildingType = ResourceManager.cfg('BuildingTypes', olObject.type);
-            let radHeading = degToRad(olObject.heading);
+            const radHeading = degToRad(olObject.heading);
             if (lTypeName === 'TVCamera'.toLowerCase()) {
                 const target = new Vector3(worldX, worldY, worldZ - this.tileSize / 2);
                 const offset = new Vector3(5 * this.tileSize, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(target);
@@ -114,7 +114,6 @@ export class WorldManager {
                 path2Surface.surfaceType = ENERGY_PATH_BUILDING;
                 path2Surface.updateMesh();
                 GameState.buildings.push(entity);
-                // TODO need to explore map here?
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 console.warn('Loose power crystals on start not yet implemented'); // TODO implement power crystals on start
                 // const currentSpace = terrain[Math.floor(parseFloat(olObject.yPos))][Math.floor(parseFloat(olObject.xPos))];

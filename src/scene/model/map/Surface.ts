@@ -374,7 +374,7 @@ export class Surface implements Selectable {
     updateJobColor() {
         let color = 0xffffff;
         this.jobs.forEach((job) => color = job.workType.color); // TODO prioritize colors?
-        this.mesh.material['color'] = new Color(color);
+        if (this.mesh) this.mesh.material['color'] = new Color(color);
     }
 
 }

@@ -30,7 +30,7 @@ export class GameState {
         this.vehicles = [];
     }
 
-    static getBuildingsByType(buildingType: Building): BuildingEntity[] {
+    static getBuildingsByType(buildingType: Building): BuildingEntity[] { // TODO allow to search for multiple types at once
         return this.buildings.filter((b) => b.type === buildingType);
     }
 

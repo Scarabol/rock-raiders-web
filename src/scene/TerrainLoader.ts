@@ -74,7 +74,7 @@ export class TerrainLoader {
             }
         }));
 
-        // crumble unsupported walls
+        // crumble unsupported walls // TODO level12 crumbles too much
         terrain.surfaces.forEach((c) => c.forEach((s) => {
             if (!s.surfaceType.floor && !s.isSupported()) s.collapse();
         }));

@@ -77,6 +77,7 @@ export class AnimEntity extends BaseEntity {
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
         }
+        // FIXME this fails for carried items, load textures somewhere else!
         this.loadTextures(); // TODO this step should be done at the end of the loading process (postLoading)
     }
 
