@@ -9,6 +9,10 @@ export class BaseEntity {
     group: Group = new Group();
     sequenceIntervals = [];
 
+    constructor() {
+        // this.group.add(new AxesHelper(40)); // TODO debug orientations and possible x-axis flip
+    }
+
     loadTextures(grp: Object3D[] = [this.group]) {
         const that = this;
         if (grp) {

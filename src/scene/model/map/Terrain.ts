@@ -1,6 +1,7 @@
 import { Group } from 'three';
 import { Surface } from './Surface';
 import { WorldManager } from '../../WorldManager';
+import { SurfaceType } from './SurfaceType';
 
 export class Terrain {
 
@@ -12,14 +13,15 @@ export class Terrain {
     floorGroup: Group = new Group();
     roofGroup: Group = new Group();
 
-    constructor() {
+    constructor(worldMgr: WorldManager) {
+        this.worldMgr = worldMgr;
         this.roofGroup.visible = false; // keep roof hidden unless switched to other camera
     }
 
     getSurface(x, y): Surface {
         x = Math.floor(x);
         y = Math.floor(y);
-        return this.getSurfaceOrNull(x, y) || new Surface(this, 1, x, y, 0); // 1 = solid rock
+        return this.getSurfaceOrNull(x, y) || new Surface(this, SurfaceType.SOLID_ROCK, x, y, 0);
     }
 
     getSurfaceOrNull(x, y): Surface {

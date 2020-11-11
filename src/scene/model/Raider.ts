@@ -6,9 +6,8 @@ import { MovableEntity } from '../../game/model/entity/MovableEntity';
 import { CollectJob, Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
 import { Vector3 } from 'three';
 import { getRandom, getRandomSign } from '../../core/Util';
-import { Collectable, CollectableType } from './Collectable';
+import { Collectable } from './Collectable';
 import { GameState } from '../../game/model/GameState';
-import { TOOLSTATION } from '../../game/model/entity/building/Building';
 
 export class Raider extends MovableEntity implements Selectable {
 
@@ -16,7 +15,7 @@ export class Raider extends MovableEntity implements Selectable {
     workInterval = null;
     moveInterval = null;
     job: Job = null;
-    state: RaiderState = null;
+    activity: RaiderActivity = null;
     jobSubPos: Vector3 = null;
     tools: string[] = ['drill', 'shovel'];
     skills: string[] = [];
@@ -26,6 +25,7 @@ export class Raider extends MovableEntity implements Selectable {
     constructor() {
         super(ResourceManager.getAnimationEntityType('mini-figures/pilot/pilot.ae'), 0.8); // TODO read speed (and other stats) from cfg
         this.group.userData = {'selectable': this};
+        // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
         this.workInterval = setInterval(this.work.bind(this), 1000 / 30 / 2); // update with twice the frame rate // TODO externalize framerate
     }
 
@@ -35,72 +35,38 @@ export class Raider extends MovableEntity implements Selectable {
             const surfaceJobType = (this.job as SurfaceJob).workType;
             switch (surfaceJobType) {
                 case SurfaceJobType.DRILL: {
-                    const jobPos = this.job.getPosition();
-                    jobPos.y = this.worldMgr.getTerrainHeight(jobPos.x, jobPos.z);
-                    const distance = new Vector3().copy(jobPos).sub(this.getPosition());
                     if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                        if (this.state !== RaiderState.WALKING && this.state !== RaiderState.RUNING) {
-                            this.state = RaiderState.RUNING;
-                            this.setActivity('Run');
-                            this.animation.looping = true; // TODO add option to move exactly one animation length?
-                        }
-                        if (distance.length() > this.getSpeed()) distance.setLength(this.getSpeed());
-                        this.group.position.add(distance);
-                        this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
-                        this.group.lookAt(new Vector3(jobPos.x, this.group.position.y, jobPos.z));
+                        this.moveToTarget(this.job.getPosition());
                     } else {
-                        if (this.state !== RaiderState.DRILLING) {
-                            this.state = RaiderState.DRILLING;
-                            this.setActivity('Drill');
-                            this.animation.looping = true; // TODO reduce to one drill step? or make everything looping?
-                            const raider = this;
-                            setTimeout(() => {
-                                raider.job.onJobComplete();
-                                raider.stopJob();
-                            }, 1500);
-                        }
+                        this.changeActivity(RaiderActivity.DRILLING, () => {
+                            this.job.onJobComplete();
+                            this.stopJob();
+                        });
                     }
                 }
                     break;
                 case SurfaceJobType.CLEAR_RUBBLE: {
-                    const jobPos = this.job.getPosition();
-                    jobPos.y = this.worldMgr.getTerrainHeight(jobPos.x, jobPos.z);
-                    const distance = new Vector3().copy(jobPos).sub(this.getPosition());
                     if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                        if (this.state !== RaiderState.WALKING && this.state !== RaiderState.RUNING) {
-                            this.state = RaiderState.RUNING;
-                            this.setActivity('Run');
-                            this.animation.looping = true; // TODO add option to move exactly one animation length?
-                        }
-                        if (distance.length() > this.getSpeed()) distance.setLength(this.getSpeed());
-                        this.group.position.add(distance);
-                        this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
-                        this.group.lookAt(new Vector3(jobPos.x, this.group.position.y, jobPos.z));
+                        this.moveToTarget(this.job.getPosition());
                     } else {
                         if (!this.jobSubPos) {
+                            const jobPos = this.job.getPosition();
                             this.jobSubPos = new Vector3(jobPos.x + getRandomSign() * getRandom(10), 0, jobPos.z + getRandomSign() * getRandom(10));
                             this.jobSubPos.y = this.worldMgr.getTerrainHeight(this.jobSubPos.x, this.jobSubPos.z);
                         }
                         const distance = new Vector3().copy(this.jobSubPos).sub(this.getPosition());
                         if (distance.length() > this.getSpeed()) {
-                            if (this.state !== RaiderState.WALKING && this.state !== RaiderState.RUNING) {
-                                this.state = RaiderState.RUNING;
-                                this.setActivity('Run');
-                                this.animation.looping = true; // TODO add option to move exactly one animation length?
-                            }
-                            if (distance.length() > this.getSpeed()) distance.setLength(this.getSpeed());
-                            this.group.position.add(distance);
-                            this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
-                            this.group.lookAt(new Vector3(this.jobSubPos.x, this.group.position.y, this.jobSubPos.z));
-                        } else if (this.state !== RaiderState.SHOVELING) {
-                            this.state = RaiderState.SHOVELING;
-                            this.setActivity('ClearRubble');
-                            this.animation.looping = true; // TODO reduce to one shovel step? or make everything looping?
-                            const raider = this;
-                            setTimeout(() => {
-                                raider.job.onJobComplete();
-                                raider.stopJob();
-                            }, 2000);
+                            this.moveToTarget(this.jobSubPos);
+                        } else {
+                            this.changeActivity(RaiderActivity.SHOVELING, () => {
+                                this.job.onJobComplete();
+                                const surfJob = this.job as SurfaceJob;
+                                if (surfJob.surface.hasRubble()) {
+                                    this.jobSubPos = null;
+                                } else {
+                                    this.stopJob();
+                                }
+                            });
                         }
                     }
                 }
@@ -114,78 +80,41 @@ export class Raider extends MovableEntity implements Selectable {
             if (this.carries !== carryJob.item) {
                 this.dropItem();
                 if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                    if (this.state !== RaiderState.WALKING && this.state !== RaiderState.RUNING) {
-                        this.state = RaiderState.RUNING;
-                        this.setActivity('Run');
-                        this.animation.looping = true; // TODO add option to move exactly one animation length?
-                    }
-                    const jobPos = this.job.getPosition();
-                    const distance = new Vector3().copy(jobPos).sub(this.getPosition());
-                    if (distance.length() > this.getSpeed()) distance.setLength(this.getSpeed());
-                    this.group.position.add(distance);
-                    this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
-                    this.group.lookAt(new Vector3(jobPos.x, this.group.position.y, jobPos.z));
+                    this.moveToTarget(this.job.getPosition());
                 } else {
-                    this.state = RaiderState.STANDING;
-                    this.setActivity('Pickup'); // TODO on complete switch to standing
-                    this.pickupItem(carryJob.item);
+                    this.changeActivity(RaiderActivity.PICKING, () => {
+                        this.pickupItem(carryJob.item);
+                    });
                 }
             } else if (!this.carryTarget) {
                 // TODO sleep 5 seconds, before retry
                 this.carryTarget = this.tryFindCarryTarget();
             } else if (this.getPosition().sub(this.carryTarget).lengthSq() > 5 * 5) { // TODO externalize constant (drop range)
-                if (this.state !== RaiderState.WALKING && this.state !== RaiderState.RUNING) {
-                    this.state = RaiderState.RUNING;
-                    this.setActivity('Carry');
-                    this.animation.looping = true; // TODO add option to move exactly one animation length?
-                }
-                const jobPos = this.carryTarget;
-                const distance = new Vector3().copy(jobPos).sub(this.getPosition());
-                if (distance.length() > this.getSpeed()) distance.setLength(this.getSpeed());
-                this.group.position.add(distance);
-                this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
-                this.group.lookAt(new Vector3(jobPos.x, this.group.position.y, jobPos.z));
-            } else if (this.state !== RaiderState.STANDING) { // TODO find better condition?
-                this.state = RaiderState.STANDING;
-                this.setActivity('Deposit');
-                this.dropItem();
-                const raider = this;
-                setTimeout(() => {
-                    raider.job.onJobComplete();
-                    raider.stopJob();
-                }, 1000);
+                this.moveToTarget(this.carryTarget);
+            } else {
+                this.changeActivity(RaiderActivity.PICKING, () => {
+                    this.dropItem();
+                    this.job.onJobComplete();
+                    this.stopJob();
+                });
             }
         }
     }
 
+    moveToTarget(target: Vector3) {
+        // TODO adjust speed to possible rubble on the floor
+        target.y = this.worldMgr.getTerrainHeight(target.x, target.z);
+        this.changeActivity(RaiderActivity.MOVING);
+        const step = new Vector3().copy(target).sub(this.getPosition());
+        if (step.length() > this.getSpeed()) step.setLength(this.getSpeed());
+        this.group.position.add(step);
+        this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
+        this.group.lookAt(new Vector3(target.x, this.group.position.y, target.z));
+    }
+
     tryFindCarryTarget(): Vector3 {
-        const carryType = this.carries.getCollectableType();
-        if (carryType === CollectableType.CRYSTAL) {
-            const targetBuildings = GameState.getBuildingsByType(TOOLSTATION); // TODO look for power station preferrably
-            let closest = null, minDist = null;
-            targetBuildings.forEach((b) => {
-                const bPos = b.getDropPosition();
-                const dist = this.getPosition().sub(bPos).lengthSq();
-                if (closest === null || dist < minDist) {
-                    closest = bPos;
-                    minDist = dist;
-                }
-            });
-            return closest;
-        } else if (carryType === CollectableType.ORE) {
-            const targetBuildings = GameState.getBuildingsByType(TOOLSTATION); // TODO look for refinery preferrably
-            let closest = null, minDist = null;
-            targetBuildings.forEach((b) => {
-                const bPos = b.getDropPosition();
-                const dist = this.getPosition().sub(bPos).lengthSq();
-                if (closest === null || dist < minDist) {
-                    closest = bPos;
-                    minDist = dist;
-                }
-            });
-            return closest;
-        } // TODO implement other types
-        return null;
+        const targetBuilding = GameState.getClosestBuildingByType(this.getPosition(), ...this.carries.getTargetBuildingTypes());
+        return targetBuilding ? targetBuilding.getDropPosition() : null;
     }
 
     dropItem() {
@@ -213,8 +142,7 @@ export class Raider extends MovableEntity implements Selectable {
         this.jobSubPos = null;
         this.carryTarget = null; // TODO also drop item?
         this.job = null;
-        this.state = RaiderState.STANDING;
-        this.setActivity('Stand');
+        this.changeActivity(RaiderActivity.STANDING);
     }
 
     hasTools(toolnames: string[]) {
@@ -253,14 +181,45 @@ export class Raider extends MovableEntity implements Selectable {
         }
     }
 
+    changeActivity(activity: RaiderActivity, onChangeDone = null) {
+        if (onChangeDone) onChangeDone.bind(this);
+        if (this.activity !== activity) {
+            this.activity = activity;
+            switch (this.activity) {
+                case RaiderActivity.STANDING:
+                    this.setActivity('Stand', onChangeDone);
+                    break;
+                case RaiderActivity.MOVING:
+                    if (this.carries) {
+                        // TODO check floor (rubble?)
+                        this.setActivity('Carry', onChangeDone);
+                    } else {
+                        // TODO check floor (rubble?)
+                        this.setActivity('Run', onChangeDone);
+                    }
+                    break;
+                case RaiderActivity.DRILLING:
+                    // TODO adapt drilling time to material hardness
+                    this.setActivity('Drill', onChangeDone);
+                    break;
+                case RaiderActivity.SHOVELING:
+                    this.setActivity('ClearRubble', onChangeDone);
+                    break;
+                case RaiderActivity.PICKING:
+                    this.setActivity('Pickup', onChangeDone);
+                    break;
+            }
+            this.animation.looping = true; // make all looping?
+        }
+    }
 }
 
-enum RaiderState { // TODO same as animationState?
+enum RaiderActivity {
 
     STANDING,
-    WALKING,
-    RUNING,
+    MOVING,
     DRILLING,
     SHOVELING,
+    PICKING,
 
 }

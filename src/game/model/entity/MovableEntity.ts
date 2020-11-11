@@ -4,7 +4,7 @@ import { AnimationEntityType } from '../../../scene/model/AnimationEntityType';
 
 export abstract class MovableEntity extends AnimEntity {
 
-    speed: number; // world coords per frame at 30 frames (tileSize is 40 by default)
+    speed: number;
 
     constructor(entityType: AnimationEntityType, speed: number) {
         super(entityType);

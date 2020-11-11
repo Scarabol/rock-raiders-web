@@ -2,12 +2,15 @@ import { Surface } from './model/map/Surface';
 import { Terrain } from './model/map/Terrain';
 import { ResourceManager } from '../resource/ResourceManager';
 import { iGet } from '../core/Util';
+import { SurfaceType } from './model/map/SurfaceType';
+import { WorldManager } from './WorldManager';
 
 export class TerrainLoader {
 
-    static loadTerrain(levelConf): Terrain {
-        // const tileSize = Number(iGet(levelConf, 'BlockSize'));
-        const terrain = new Terrain();
+    static loadTerrain(levelConf, worldMgr: WorldManager): Terrain {
+        const tileSize = Number(iGet(levelConf, 'BlockSize'));
+        if (tileSize !== WorldManager.TILESIZE) console.error('Unexpected tile size in level configuration: ' + tileSize);
+        const terrain = new Terrain(worldMgr);
 
         const themeName = levelConf['TextureSet'][1];
         terrain.textureSet = ResourceManager.cfg('Textures', themeName);
@@ -27,30 +30,31 @@ export class TerrainLoader {
             for (let c = 0; c < (terrainMap.level)[r].length; c++) {
                 (terrain.surfaces)[c] = (terrain.surfaces)[c] || [];
                 // give the path map the highest priority, if it exists
-                if (pathMap && pathMap.level[r][c] === 1) {
-                    // rubble 1 space id = 100
-                    (terrain.surfaces)[c].push(new Surface(terrain, 100, c, r, surfaceMap[r][c]));
-                } else if (pathMap && pathMap.level[r][c] === 2) {
-                    // building power path space id = -1
-                    (terrain.surfaces)[c].push(new Surface(terrain, -1, c, r, surfaceMap[r][c]));
+                if (pathMap && pathMap.level[r][c] !== 0) {
+                    const pathMapLevel = pathMap.level[r][c];
+                    if (pathMap && pathMapLevel === 1) {
+                        (terrain.surfaces)[c].push(new Surface(terrain, SurfaceType.RUBBLE4, c, r, surfaceMap[r][c]));
+                    } else if (pathMap && pathMapLevel === 2) {
+                        (terrain.surfaces)[c].push(new Surface(terrain, SurfaceType.POWER_PATH_BUILDING, c, r, surfaceMap[r][c]));
+                    } else {
+                        console.error('Unexpected path map level: ' + pathMapLevel);
+                    }
                 } else {
-                    if (predugMap[r][c] === 0) {
-                        // soil(5) was removed pre-release, so replace it with dirt(4)
-                        if ((terrainMap.level)[r][c] === 5) {
-                            (terrain.surfaces)[c].push(new Surface(terrain, 4, c, r, surfaceMap[r][c]));
+                    const predugLevel = predugMap[r][c];
+                    const surfaceTypeNum = (terrainMap.level)[r][c];
+                    const surfaceType = SurfaceType.getByNum(surfaceTypeNum);
+                    if (predugLevel === 0) {
+                        (terrain.surfaces)[c].push(new Surface(terrain, surfaceType, c, r, surfaceMap[r][c]));
+                    } else if (predugLevel === 1 || predugLevel === 2) {
+                        if (surfaceTypeNum === 5) { // 5 with predug means GROUND, without it is SOIL
+                            (terrain.surfaces)[c].push(new Surface(terrain, SurfaceType.GROUND, c, r, surfaceMap[r][c]));
                         } else {
-                            (terrain.surfaces)[c].push(new Surface(terrain, (terrainMap.level)[r][c], c, r, surfaceMap[r][c]));
+                            (terrain.surfaces)[c].push(new Surface(terrain, surfaceType, c, r, surfaceMap[r][c]));
                         }
-                    } else if (predugMap[r][c] === 3 || predugMap[r][c] === 4) { // slug holes
-                        (terrain.surfaces)[c].push(new Surface(terrain, predugMap[r][c] * 10, c, r, surfaceMap[r][c]));
-                    } else if (predugMap[r][c] === 1 || predugMap[r][c] === 2) {
-                        if ((terrainMap.level)[r][c] === 6) {
-                            (terrain.surfaces)[c].push(new Surface(terrain, 6, c, r, surfaceMap[r][c]));
-                        } else if ((terrainMap.level)[r][c] === 9) {
-                            (terrain.surfaces)[c].push(new Surface(terrain, 9, c, r, surfaceMap[r][c]));
-                        } else {
-                            (terrain.surfaces)[c].push(new Surface(terrain, 0, c, r, surfaceMap[r][c]));
-                        }
+                    } else if (predugLevel === 3 || predugLevel === 4) { // slug holes
+                        (terrain.surfaces)[c].push(new Surface(terrain, SurfaceType.SLUG_HOLE, c, r, surfaceMap[r][c]));
+                    } else {
+                        console.error('Unexpected predug level: ' + predugLevel);
                     }
 
                     const currentCryOre = cryOreMap[r][c];
@@ -65,7 +69,7 @@ export class TerrainLoader {
 
         // exlpore predug surfaces
         terrain.surfaces.forEach(c => c.forEach(s => {
-            if (predugMap[s.y][s.x] === 1 || predugMap[s.y][s.x] === 3) { // predug map is rows (y) first, columns (x) second
+            if (predugMap[s.y][s.x] === 1 || predugMap[s.y][s.x] === 3) { // map are rows (y) first, columns (x) second
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
                         terrain.getSurfaceOrNull(x, y).discovered = true; // TODO make all entities on this surface visible
@@ -82,6 +86,9 @@ export class TerrainLoader {
         terrain.surfaces.forEach(c => c.forEach(s => s.updateMesh()));
 
         // TODO add landslides
+
+        terrain.floorGroup.scale.set(tileSize, tileSize, tileSize);
+        terrain.floorGroup.updateWorldMatrix(true, true); // otherwise ray intersection is not working before rendering
 
         return terrain;
 

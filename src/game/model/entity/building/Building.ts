@@ -1,5 +1,12 @@
 export class Building {
 
+    static readonly TOOLSTATION = new Building('Buildings/Toolstation', 130, 10);
+    static readonly TELEPORTS = new Building('Buildings/Teleports'); // TODO test with level 25
+    static readonly POWER_STATION = new Building('Buildings/Powerstation'); // TODO test with level 09
+    static readonly UPGRADE = new Building('Buildings/Upgrade'); // TODO test with level 09
+    static readonly REFINERY = new Building('Buildings/Refinery');
+    static readonly GEODOME = new Building('Buildings/Geo-dome'); // TODO test with level 25
+
     name: string;
     aeFile: string;
     dropPosAngleDeg: number = 0;
@@ -13,15 +20,23 @@ export class Building {
     }
 
     static getByName(buildingType: string) {
-        const typename = buildingType.slice(buildingType.lastIndexOf('/') + 1);
-        switch (typename.toLowerCase()) {
+        const typename = buildingType.slice(buildingType.lastIndexOf('/') + 1).toLowerCase();
+        switch (typename) {
             case 'toolstation':
-                return TOOLSTATION;
+                return this.TOOLSTATION;
+            case 'teleports':
+                return this.TELEPORTS;
+            case 'upgrade':
+                return this.UPGRADE;
+            case 'powerstation':
+                return this.POWER_STATION;
+            case 'refinery':
+                return this.REFINERY;
+            case 'geo-dome':
+                return this.GEODOME;
             default:
                 throw 'Unknown building type: ' + buildingType;
         }
     }
 
 }
-
-export const TOOLSTATION = new Building('Buildings/Toolstation', 130, 10);

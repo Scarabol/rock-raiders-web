@@ -20,7 +20,7 @@ export class AnimClip {
             const opacity = body.opacity[frameIndex];
             if (material && opacity !== undefined) material.opacity = opacity;
         });
-        if (!(frameIndex + 1 > this.lastFrame) || this.looping) {
+        if (!(frameIndex + 1 > this.lastFrame) || (this.looping && !onAnimationDone)) {
             const nextFrame = frameIndex + 1 > this.lastFrame ? this.firstFrame : frameIndex + 1;
             const that = this;
             this.animationTimeout = setTimeout(() => that.animate(poly, nextFrame, onAnimationDone), 1000 / this.framesPerSecond * this.transcoef); // TODO get this in sync with threejs

@@ -2,7 +2,8 @@ import { BaseEntity } from './BaseEntity';
 import { LWOLoader } from '../../resource/LWOLoader';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { Color, Material, MeshPhongMaterial } from 'three';
-import { Collectable, CollectableType } from './Collectable';
+import { Collectable } from './Collectable';
+import { Building } from '../../game/model/entity/building/Building';
 
 export class Crystal extends BaseEntity implements Collectable {
 
@@ -32,8 +33,8 @@ export class Crystal extends BaseEntity implements Collectable {
         this.sequenceIntervals.forEach((interval) => clearInterval(interval)); // TODO looks better without sequence, maybe just slow it down or merge it?
     }
 
-    getCollectableType(): CollectableType {
-        return CollectableType.CRYSTAL;
+    getTargetBuildingTypes(): Building[] {
+        return [Building.POWER_STATION, Building.TOOLSTATION];
     }
 
 }

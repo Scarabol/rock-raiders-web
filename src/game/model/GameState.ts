@@ -4,6 +4,7 @@ import { Selectable, SelectionType } from './Selectable';
 import { Raider } from '../../scene/model/Raider';
 import { VehicleEntity } from '../../scene/model/VehicleEntity';
 import { Collectable } from '../../scene/model/Collectable';
+import { Vector3 } from 'three';
 
 export class GameState {
 
@@ -33,8 +34,26 @@ export class GameState {
         this.collectables = [];
     }
 
-    static getBuildingsByType(buildingType: Building): BuildingEntity[] { // TODO allow to search for multiple types at once
-        return this.buildings.filter((b) => b.type === buildingType);
+    static getBuildingsByType(...buildingTypes: Building[]): BuildingEntity[] {
+        const matches = [];
+        for (let c = 0; c < buildingTypes.length; c++) {
+            matches.push(...this.buildings.filter((b) => b.type === buildingTypes[c]));
+        }
+        return matches;
+    }
+
+    static getClosestBuildingByType(position: Vector3, ...buildingTypes: Building[]): BuildingEntity {
+        const targetBuildings = GameState.getBuildingsByType(...buildingTypes);
+        let closest = null, minDist = null;
+        targetBuildings.forEach((b) => {
+            const bPos = b.getDropPosition();
+            const dist = new Vector3().copy(position).sub(bPos).lengthSq();
+            if (closest === null || dist < minDist) {
+                closest = b;
+                minDist = dist;
+            }
+        });
+        return closest;
     }
 
     static selectEntities(entities: Selectable[]) {

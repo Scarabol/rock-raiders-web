@@ -1,6 +1,6 @@
 import { Color, Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
 import { Terrain } from './Terrain';
-import { GROUND, RUBBLE1, RUBBLE2, RUBBLE3, RUBBLE4, SurfaceType } from './SurfaceType';
+import { SurfaceType } from './SurfaceType';
 import { ResourceManager } from '../../../resource/ResourceManager';
 import { Selectable, SelectionType } from '../../../game/model/Selectable';
 import { EventBus } from '../../../event/EventBus';
@@ -8,6 +8,9 @@ import { SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../../event/Local
 import { JobType, SurfaceJob, SurfaceJobType } from '../../../game/model/job/Job';
 import { JobCreateEvent } from '../../../event/WorldEvents';
 import { getRandom, getRandomSign } from '../../../core/Util';
+import { Crystal } from '../Crystal';
+import { Ore } from '../Ore';
+import { WorldManager } from '../../WorldManager';
 
 const HEIGHT_MULTIPLER = 0.05;
 
@@ -29,18 +32,14 @@ export class Surface implements Selectable {
     mesh: Mesh = null;
     needsMeshUpdate: boolean = false;
 
-    // TODO lavaLevel and rubbleLevel
+    // TODO lavaLevel and rubbleLevel for GROUND
 
-    constructor(terrain, surface, x, y, high) {
+    constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain;
-        this.surfaceType = SurfaceType.getTypeByNum(surface);
-        if (this.surfaceType === null) {
-            console.warn('surface ' + surface + ' unknown, using ground as fallback');
-            this.surfaceType = GROUND;
-        }
+        this.surfaceType = surfaceType;
         this.x = x;
         this.y = y;
-        this.heightOffset = high;
+        this.heightOffset = heightOffset;
         EventBus.registerEventListener(JobCreateEvent.eventKey, (event: JobCreateEvent) => {
             const jobType = event.job.type;
             if (jobType === JobType.SURFACE) {
@@ -79,7 +78,7 @@ export class Surface implements Selectable {
 
     collapse() {
         this.cancelJobs();
-        this.surfaceType = RUBBLE4;
+        this.surfaceType = SurfaceType.RUBBLE4;
         this.needsMeshUpdate = true;
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors();
@@ -101,9 +100,9 @@ export class Surface implements Selectable {
         this.terrain.floorGroup.updateWorldMatrix(true, true);
         // drop contained crystals and ores
         for (let c = 0; c < this.containedCrystals; c++) {
-            const x = this.x * 40 + 20 + getRandomSign() * getRandom(10);
-            const z = this.y * 40 + 20 + getRandomSign() * getRandom(10);
-            this.terrain.worldMgr.addCrystal(x, z);
+            const x = this.x * WorldManager.TILESIZE + WorldManager.TILESIZE / 2 + getRandomSign() * getRandom(WorldManager.TILESIZE / 4);
+            const z = this.y * WorldManager.TILESIZE + WorldManager.TILESIZE / 2 + getRandomSign() * getRandom(WorldManager.TILESIZE / 4);
+            this.terrain.worldMgr.addCollectable(new Crystal(), x, z);
         }
         this.dropContainedOre();
         // hide ore in the rubble
@@ -112,9 +111,9 @@ export class Surface implements Selectable {
 
     private dropContainedOre() {
         for (let c = 0; c < this.containedOre; c++) {
-            const x = this.x * 40 + 20 + getRandomSign() * getRandom(10);
-            const z = this.y * 40 + 20 + getRandomSign() * getRandom(10);
-            this.terrain.worldMgr.addOre(x, z);
+            const x = this.x * WorldManager.TILESIZE + WorldManager.TILESIZE / 2 + getRandomSign() * getRandom(WorldManager.TILESIZE / 4);
+            const z = this.y * WorldManager.TILESIZE + WorldManager.TILESIZE / 2 + getRandomSign() * getRandom(WorldManager.TILESIZE / 4);
+            this.terrain.worldMgr.addCollectable(new Ore(), x, z);
         }
     }
 
@@ -125,12 +124,12 @@ export class Surface implements Selectable {
     }
 
     reduceRubble() {
-        if (this.surfaceType === RUBBLE4) this.surfaceType = RUBBLE3;
-        else if (this.surfaceType === RUBBLE3) this.surfaceType = RUBBLE2;
-        else if (this.surfaceType === RUBBLE2) this.surfaceType = RUBBLE1;
-        else if (this.surfaceType === RUBBLE1) this.surfaceType = GROUND;
+        if (this.surfaceType === SurfaceType.RUBBLE4) this.surfaceType = SurfaceType.RUBBLE3;
+        else if (this.surfaceType === SurfaceType.RUBBLE3) this.surfaceType = SurfaceType.RUBBLE2;
+        else if (this.surfaceType === SurfaceType.RUBBLE2) this.surfaceType = SurfaceType.RUBBLE1;
+        else if (this.surfaceType === SurfaceType.RUBBLE1) this.surfaceType = SurfaceType.GROUND;
         this.dropContainedOre();
-        this.containedOre = this.surfaceType !== GROUND ? 1 : 0;
+        this.containedOre = this.surfaceType !== SurfaceType.GROUND ? 1 : 0;
         this.updateMesh();
     }
 
@@ -261,7 +260,7 @@ export class Surface implements Selectable {
         //		Quad 0-1-3-2
         */
 
-        if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
+        if (this.mesh) this.terrain.floorGroup.remove(this.mesh); // FIXME mesh change is unnecessary, when floor stays floor
         if (this.geometry) this.geometry.dispose();
         this.geometry = new Geometry();
 
@@ -345,6 +344,7 @@ export class Surface implements Selectable {
 
         this.terrain.surfaces[this.x][this.y] = this;
         this.terrain.floorGroup.add(this.mesh);
+        this.terrain.floorGroup.updateWorldMatrix(true, true); // otherwise ray intersection is not working before rendering
     }
 
     getSelectionType(): SelectionType {
@@ -375,6 +375,13 @@ export class Surface implements Selectable {
         let color = 0xffffff;
         this.jobs.forEach((job) => color = job.workType.color); // TODO prioritize colors?
         if (this.mesh) this.mesh.material['color'] = new Color(color);
+    }
+
+    hasRubble(): boolean {
+        return this.surfaceType === SurfaceType.RUBBLE1
+            || this.surfaceType === SurfaceType.RUBBLE2
+            || this.surfaceType === SurfaceType.RUBBLE3
+            || this.surfaceType === SurfaceType.RUBBLE4;
     }
 
 }

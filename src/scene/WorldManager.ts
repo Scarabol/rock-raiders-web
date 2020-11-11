@@ -3,7 +3,7 @@ import { TerrainLoader } from './TerrainLoader';
 import { ResourceManager } from '../resource/ResourceManager';
 import { MathUtils, Raycaster, Vector3 } from 'three';
 import { iGet } from '../core/Util';
-import { ENERGY_PATH_BUILDING } from './model/map/SurfaceType';
+import { SurfaceType } from './model/map/SurfaceType';
 import { Terrain } from './model/map/Terrain';
 import { EventBus } from '../event/EventBus';
 import { SurfaceDeselectEvent } from '../event/LocalEvents';
@@ -12,29 +12,29 @@ import { Raider } from './model/Raider';
 import { BuildingEntity } from './model/BuildingEntity';
 import { GameState } from '../game/model/GameState';
 import { SelectionType } from '../game/model/Selectable';
-import { Building, TOOLSTATION } from '../game/model/entity/building/Building';
+import { Building } from '../game/model/entity/building/Building';
 import { Crystal } from './model/Crystal';
-import { Ore } from './model/Ore';
 import { CollectJob } from '../game/model/job/Job';
+import { Collectable } from './model/Collectable';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
 
-    readonly tileSize: number = 40; // TODO read from cfg
+    static readonly TILESIZE: number = 40;
 
     terrain: Terrain;
     sceneManager: SceneManager;
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas);
-        this.sceneManager.cursorTorchlight.distance *= this.tileSize;
+        this.sceneManager.cursorTorchlight.distance *= WorldManager.TILESIZE;
         EventBus.registerEventListener(SurfaceDeselectEvent.eventKey, () => {
             if (GameState.selectionType === SelectionType.SURFACE) GameState.selectedEntities.forEach((entity) => entity.deselect());
         });
         EventBus.registerEventListener(SpawnEvent.eventKey, (event: SpawnEvent) => {
             // TODO check max amount
             // look for unused toolstation/teleport
-            const toolstations = GameState.getBuildingsByType(TOOLSTATION);
+            const toolstations = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS);
             if (!toolstations || toolstations.length < 1) return;
             // console.log(toolstations);
             // TODO check for powered/idling building
@@ -45,7 +45,7 @@ export class WorldManager {
                 const raider = new Raider();
                 raider.worldMgr = this;
                 raider.setActivity('TeleportIn', () => raider.setActivity('Stand'));
-                raider.group.position.copy(station.group.position).add(new Vector3(0, 0, this.tileSize / 2).applyEuler(station.group.rotation));
+                raider.group.position.copy(station.group.position).add(new Vector3(0, 0, WorldManager.TILESIZE / 2).applyEuler(station.group.rotation));
                 raider.group.rotation.copy(station.group.rotation);
                 this.sceneManager.scene.add(raider.group);
                 // TODO after add to available pilots
@@ -62,10 +62,7 @@ export class WorldManager {
         console.log('Starting level ' + levelName + ' - ' + iGet(levelConf, 'FullName'));
 
         // create terrain mesh and add it to the scene
-        this.terrain = TerrainLoader.loadTerrain(levelConf);
-        this.terrain.worldMgr = this;
-        this.terrain.floorGroup.scale.set(this.tileSize, this.tileSize, this.tileSize); // TODO read terrain scale from level file
-        this.terrain.floorGroup.updateWorldMatrix(true, true); // otherwise ray intersection is not working before rendering
+        this.terrain = TerrainLoader.loadTerrain(levelConf, this);
         this.sceneManager.scene.add(this.terrain.floorGroup);
 
         // load in non-space objects next
@@ -74,16 +71,16 @@ export class WorldManager {
         Object.values(objectList).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type;
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
-            const worldX = (olObject.xPos - 1) * this.tileSize;
-            const worldZ = (olObject.yPos - 1) * this.tileSize;
+            const worldX = (olObject.xPos - 1) * WorldManager.TILESIZE;
+            const worldZ = (olObject.yPos - 1) * WorldManager.TILESIZE;
             const worldY = this.getTerrainHeight(worldX, worldZ);
             const buildingType = ResourceManager.cfg('BuildingTypes', olObject.type);
             const radHeading = degToRad(olObject.heading);
             if (lTypeName === 'TVCamera'.toLowerCase()) {
-                const target = new Vector3(worldX, worldY, worldZ - this.tileSize / 2);
-                const offset = new Vector3(5 * this.tileSize, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(target);
+                const target = new Vector3(worldX, worldY, worldZ - WorldManager.TILESIZE / 2);
+                const offset = new Vector3(5 * WorldManager.TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(target);
                 this.sceneManager.camera.position.copy(offset);
-                this.sceneManager.camera.position.y = 4.5 * this.tileSize;
+                this.sceneManager.camera.position.y = 4.5 * WorldManager.TILESIZE;
                 this.sceneManager.controls.target.copy(target);
                 this.sceneManager.controls.update();
                 this.setTorchPosition(target);
@@ -93,9 +90,11 @@ export class WorldManager {
                 raider.setActivity('Stand');
                 raider.group.position.set(worldX, worldY, worldZ);
                 raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
-                raider.group.visible = this.terrain.getSurface(raider.group.position.x / this.tileSize, raider.group.position.z / this.tileSize).discovered;
-                this.sceneManager.scene.add(raider.group);
-                GameState.raiders.push(raider);
+                raider.group.visible = this.terrain.getSurface(raider.group.position.x / WorldManager.TILESIZE, raider.group.position.z / WorldManager.TILESIZE).discovered;
+                if (raider.group.visible) {
+                    this.sceneManager.scene.add(raider.group);
+                    GameState.raiders.push(raider);
+                }
             } else if (buildingType) {
                 const building = Building.getByName(buildingType);
                 const entity = new BuildingEntity(building);
@@ -103,23 +102,25 @@ export class WorldManager {
                 entity.setActivity('Stand');
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
-                entity.group.visible = this.terrain.getSurface(entity.group.position.x / this.tileSize, entity.group.position.z / this.tileSize).discovered;
+                entity.group.visible = this.terrain.getSurface(entity.group.position.x / WorldManager.TILESIZE, entity.group.position.z / WorldManager.TILESIZE).discovered;
                 // TODO rotate building with normal vector of surface
                 this.sceneManager.scene.add(entity.group);
-                const path1Surface = this.terrain.getSurface(entity.group.position.x / this.tileSize, entity.group.position.z / this.tileSize);
-                path1Surface.surfaceType = ENERGY_PATH_BUILDING;
+                const path1Surface = this.terrain.getSurface(entity.group.position.x / WorldManager.TILESIZE, entity.group.position.z / WorldManager.TILESIZE);
+                path1Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path1Surface.updateMesh();
-                const pathOffset = new Vector3(0, 0, this.tileSize).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
+                const pathOffset = new Vector3(0, 0, WorldManager.TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
                 pathOffset.add(entity.group.position);
-                const path2Surface = this.terrain.getSurface(pathOffset.x / this.tileSize, pathOffset.z / this.tileSize);
-                path2Surface.surfaceType = ENERGY_PATH_BUILDING;
+                const path2Surface = this.terrain.getSurface(pathOffset.x / WorldManager.TILESIZE, pathOffset.z / WorldManager.TILESIZE);
+                path2Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path2Surface.updateMesh();
-                GameState.buildings.push(entity);
+                if (entity.group.visible) {
+                    GameState.buildings.push(entity); // TODO introduce raider/building/vehicle discovered event
+                }
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
-                this.addCrystal(worldX, worldZ);
+                this.addCollectable(new Crystal(), worldX, worldZ);
             } else {
                 // TODO implement remaining object types like: spider, drives and hovercraft
-                console.log('Object type ' + olObject.type + ' not yet implemented');
+                console.warn('Object type ' + olObject.type + ' not yet implemented');
             }
         });
 
@@ -163,11 +164,11 @@ export class WorldManager {
 
     setTorchPosition(position: Vector3) {
         this.sceneManager.cursorTorchlight.position.copy(position);
-        this.sceneManager.cursorTorchlight.position.y = this.getTerrainHeight(position.x, position.z) + 2 * this.tileSize;
+        this.sceneManager.cursorTorchlight.position.y = this.getTerrainHeight(position.x, position.z) + 2 * WorldManager.TILESIZE;
     }
 
     getTerrainHeight(worldX: number, worldZ: number): number {
-        const raycaster = new Raycaster(new Vector3(Number(worldX), 3 * this.tileSize, Number(worldZ)), new Vector3(0, -1, 0));
+        const raycaster = new Raycaster(new Vector3(Number(worldX), 3 * WorldManager.TILESIZE, Number(worldZ)), new Vector3(0, -1, 0));
         const intersect = raycaster.intersectObject(this.terrain.floorGroup, true);
         if (intersect.length > 0) {
             return intersect[0].point.y;
@@ -200,26 +201,17 @@ export class WorldManager {
         }
     }
 
-    addCrystal(worldX: number, worldZ: number) {
+    addCollectable(collectable: Collectable, worldX: number, worldZ: number) {
         const worldY = this.getTerrainHeight(worldX, worldZ);
-        const crystal = new Crystal();
-        crystal.worldMgr = this;
-        crystal.group.position.set(worldX, worldY, worldZ);
-        // TODO raider.group.visible = this.terrain.getSurface(raider.group.position.x / this.tileSize, raider.group.position.z / this.tileSize).discovered;
-        this.sceneManager.scene.add(crystal.group);
-        GameState.collectables.push(crystal); // TODO only add if surface is visible
-        EventBus.publishEvent(new JobCreateEvent(new CollectJob(crystal))); // TODO only add if surface is visible
-    }
-
-    addOre(worldX: number, worldZ: number) {
-        const worldY = this.getTerrainHeight(worldX, worldZ);
-        const ore = new Ore();
-        ore.worldMgr = this;
-        ore.group.position.set(worldX, worldY, worldZ);
-        // TODO raider.group.visible = this.terrain.getSurface(raider.group.position.x / this.tileSize, raider.group.position.z / this.tileSize).discovered;
-        this.sceneManager.scene.add(ore.group);
-        GameState.collectables.push(ore); // TODO only add if surface is visible
-        EventBus.publishEvent(new JobCreateEvent(new CollectJob(ore))); // TODO only add if surface is visible
+        collectable.worldMgr = this;
+        collectable.group.position.set(worldX, worldY, worldZ);
+        collectable.group.visible = this.terrain.getSurface(collectable.group.position.x / WorldManager.TILESIZE, collectable.group.position.z / WorldManager.TILESIZE).discovered;
+        this.sceneManager.scene.add(collectable.group);
+        if (collectable.group.visible) {
+            GameState.collectables.push(collectable);
+            // TODO publish crystal discovered event
+            EventBus.publishEvent(new JobCreateEvent(new CollectJob(collectable)));
+        }
     }
 
 }

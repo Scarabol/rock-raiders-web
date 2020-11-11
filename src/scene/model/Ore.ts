@@ -1,7 +1,8 @@
 import { BaseEntity } from './BaseEntity';
 import { LWOLoader } from '../../resource/LWOLoader';
 import { ResourceManager } from '../../resource/ResourceManager';
-import { Collectable, CollectableType } from './Collectable';
+import { Collectable } from './Collectable';
+import { Building } from '../../game/model/entity/building/Building';
 
 export class Ore extends BaseEntity implements Collectable {
 
@@ -13,8 +14,8 @@ export class Ore extends BaseEntity implements Collectable {
         this.loadTextures();
     }
 
-    getCollectableType(): CollectableType {
-        return CollectableType.ORE;
+    getTargetBuildingTypes(): Building[] {
+        return [Building.REFINERY, Building.TOOLSTATION];
     }
 
 }

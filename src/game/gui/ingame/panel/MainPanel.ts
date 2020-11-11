@@ -8,7 +8,6 @@ import { Raider } from '../../../../scene/model/Raider';
 import { VehicleEntity } from '../../../../scene/model/VehicleEntity';
 import { BuildingEntity } from '../../../../scene/model/BuildingEntity';
 import { Surface } from '../../../../scene/model/map/Surface';
-import { RUBBLE1, RUBBLE2, RUBBLE3, RUBBLE4 } from '../../../../scene/model/map/SurfaceType';
 
 export class MainPanel extends IconPanel {
 
@@ -103,8 +102,7 @@ export class MainPanel extends IconPanel {
         selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_LayPath');
         const clearRubbleItem = selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_ClearRubble');
         EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, (event: SurfaceSelectedEvent) => {
-            const type = event.surface.surfaceType;
-            clearRubbleItem.disabled = (type !== RUBBLE1 && type !== RUBBLE2 && type !== RUBBLE3 && type !== RUBBLE4);
+            clearRubbleItem.disabled = !event.surface.hasRubble();
             this.notifyRedraw(); // TODO performance: actually just the buttons need to be redrawn
         });
         clearRubbleItem.onClick = () => {

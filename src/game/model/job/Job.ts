@@ -2,6 +2,7 @@ import { Surface } from '../../../scene/model/map/Surface';
 import { Vector3 } from 'three';
 import { Raider } from '../../../scene/model/Raider';
 import { Collectable } from '../../../scene/model/Collectable';
+import { WorldManager } from '../../../scene/WorldManager';
 
 export enum JobType {
 
@@ -80,12 +81,14 @@ export class SurfaceJob extends Job {
     }
 
     getPosition(): Vector3 {
-        return new Vector3(this.surface.x * 40 + 20, 0, this.surface.y * 40 + 20); // TODO externalize tile size or manage world position for surfaces?!
+        return new Vector3(this.surface.x * WorldManager.TILESIZE + WorldManager.TILESIZE / 2, 0,
+            this.surface.y * WorldManager.TILESIZE + WorldManager.TILESIZE / 2);
     }
 
     isInArea(x: number, z: number) {
-        // TODO check square distance first
-        return x >= this.surface.x * 40 && x < this.surface.x * 40 + 40 && z >= this.surface.y * 40 && z < this.surface.y * 40 + 40;
+        // TODO check square distance first?
+        return x >= this.surface.x * WorldManager.TILESIZE && x < this.surface.x * WorldManager.TILESIZE + WorldManager.TILESIZE
+            && z >= this.surface.y * WorldManager.TILESIZE && z < this.surface.y * WorldManager.TILESIZE + WorldManager.TILESIZE;
     }
 
     onJobComplete() {
