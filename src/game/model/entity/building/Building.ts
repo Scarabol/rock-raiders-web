@@ -1,6 +1,6 @@
 export class Building {
 
-    static readonly TOOLSTATION = new Building('Buildings/Toolstation', 130, 10);
+    static readonly TOOLSTATION = new Building('Buildings/Toolstation', 130, 10, true);
     static readonly TELEPORTS = new Building('Buildings/Teleports'); // TODO test with level 25
     static readonly POWER_STATION = new Building('Buildings/Powerstation'); // TODO test with level 09
     static readonly UPGRADE = new Building('Buildings/Upgrade'); // TODO test with level 09
@@ -11,12 +11,14 @@ export class Building {
     aeFile: string;
     dropPosAngleDeg: number = 0;
     dropPosDist: number = 0;
+    selfPowered: boolean = false;
 
-    constructor(name: string, dropPosAngleDeg: number = 0, dropPosDist: number = 0) {
+    constructor(name: string, dropPosAngleDeg: number = 0, dropPosDist: number = 0, selfPowered: boolean = false) {
         this.name = name;
         this.aeFile = name + '/' + name.slice(name.lastIndexOf('/') + 1) + '.ae';
         this.dropPosAngleDeg = dropPosAngleDeg;
         this.dropPosDist = dropPosDist;
+        this.selfPowered = selfPowered;
     }
 
     static getByName(buildingType: string) {

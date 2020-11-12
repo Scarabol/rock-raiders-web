@@ -30,13 +30,10 @@ export class WorldManager {
             GameState.selectedEntities.forEach((entity) => entity.deselect());
         });
         EventBus.registerEventListener(SpawnEvent.eventKey, (event: SpawnEvent) => {
-            // TODO check max amount
-            // look for unused toolstation/teleport
-            const toolstations = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS);
-            if (!toolstations || toolstations.length < 1) return;
-            // console.log(toolstations);
-            // TODO check for powered/idling building
-            const station = toolstations[0];
+            // TODO check max raider amount
+            const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).filter((b) => b.isPowered());
+            if (spawnBuildings.length < 1) return;
+            const station = spawnBuildings[0];
             if (!station) return;
             if (event.type === SpawnType.RAIDER) {
                 // add raider with teleport animation
