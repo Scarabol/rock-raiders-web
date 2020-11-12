@@ -88,7 +88,7 @@ export class WorldManager {
                 raider.setActivity('Stand');
                 raider.group.position.set(worldX, worldY, worldZ);
                 raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
-                raider.group.visible = this.terrain.getSurface(raider.group.position.x / WorldManager.TILESIZE, raider.group.position.z / WorldManager.TILESIZE).discovered;
+                raider.group.visible = this.terrain.getSurfaceFromWorld(raider.group.position).discovered;
                 if (raider.group.visible) {
                     this.sceneManager.scene.add(raider.group);
                     GameState.raiders.push(raider);
@@ -100,15 +100,15 @@ export class WorldManager {
                 entity.setActivity('Stand');
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
-                entity.group.visible = this.terrain.getSurface(entity.group.position.x / WorldManager.TILESIZE, entity.group.position.z / WorldManager.TILESIZE).discovered;
+                entity.group.visible = this.terrain.getSurfaceFromWorld(entity.group.position).discovered;
                 // TODO rotate building with normal vector of surface
                 this.sceneManager.scene.add(entity.group);
-                const path1Surface = this.terrain.getSurface(entity.group.position.x / WorldManager.TILESIZE, entity.group.position.z / WorldManager.TILESIZE);
+                const path1Surface = this.terrain.getSurfaceFromWorld(entity.group.position);
                 path1Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path1Surface.updateMesh();
                 const pathOffset = new Vector3(0, 0, WorldManager.TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
                 pathOffset.add(entity.group.position);
-                const path2Surface = this.terrain.getSurface(pathOffset.x / WorldManager.TILESIZE, pathOffset.z / WorldManager.TILESIZE);
+                const path2Surface = this.terrain.getSurfaceFromWorld(pathOffset);
                 path2Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path2Surface.updateMesh();
                 if (entity.group.visible) {
@@ -203,7 +203,7 @@ export class WorldManager {
         const worldY = this.getTerrainHeight(worldX, worldZ);
         collectable.worldMgr = this;
         collectable.group.position.set(worldX, worldY, worldZ);
-        collectable.group.visible = this.terrain.getSurface(collectable.group.position.x / WorldManager.TILESIZE, collectable.group.position.z / WorldManager.TILESIZE).discovered;
+        collectable.group.visible = this.terrain.getSurfaceFromWorld(collectable.group.position).discovered;
         this.sceneManager.scene.add(collectable.group);
         if (collectable.group.visible) {
             GameState.collectables.push(collectable);

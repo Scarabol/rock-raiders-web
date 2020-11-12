@@ -1,4 +1,4 @@
-import { Group } from 'three';
+import { Group, Vector3 } from 'three';
 import { Surface } from './Surface';
 import { WorldManager } from '../../WorldManager';
 import { SurfaceType } from './SurfaceType';
@@ -16,6 +16,10 @@ export class Terrain {
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr;
         this.roofGroup.visible = false; // keep roof hidden unless switched to other camera
+    }
+
+    getSurfaceFromWorld(worldPosition: Vector3) {
+        return this.getSurface(worldPosition.x / WorldManager.TILESIZE, worldPosition.z / WorldManager.TILESIZE);
     }
 
     getSurface(x, y): Surface {
