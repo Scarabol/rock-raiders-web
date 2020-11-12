@@ -407,6 +407,16 @@ export class Surface implements Selectable {
             || this.surfaceType === SurfaceType.RUBBLE4;
     }
 
+    isPath(): boolean {
+        return this.surfaceType === SurfaceType.POWER_PATH_ALL
+            || this.surfaceType === SurfaceType.POWER_PATH_SITE
+            || this.surfaceType === SurfaceType.POWER_PATH_STRAIGHT
+            || this.surfaceType === SurfaceType.POWER_PATH_CORNER
+            || this.surfaceType === SurfaceType.POWER_PATH_TCROSSING
+            || this.surfaceType === SurfaceType.POWER_PATH_END
+            || this.surfaceType === SurfaceType.POWER_PATH_BUILDING;
+    }
+
 }
 
 export enum WALL_TYPE {

@@ -15,8 +15,8 @@ export abstract class MovableEntity extends AnimEntity {
         return new Vector3().copy(this.group.position);
     }
 
-    getSpeed() { // TODO adapt speed to surrounding or carrying status?!
-        return this.speed; // TODO derive max speed from entity type
+    getSpeed() {
+        return this.speed;
     }
 
     move(target: Vector3) {

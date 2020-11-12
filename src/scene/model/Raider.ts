@@ -102,14 +102,21 @@ export class Raider extends MovableEntity implements Selectable {
     }
 
     moveToTarget(target: Vector3) {
-        // TODO adjust speed to possible rubble on the floor
         target.y = this.worldMgr.getTerrainHeight(target.x, target.z);
-        this.changeActivity(RaiderActivity.MOVING);
+        if (this.isOnRubble()) {
+            this.changeActivity(RaiderActivity.MOVING_RUBBLE);
+        } else {
+            this.changeActivity(RaiderActivity.MOVING);
+        }
         const step = new Vector3().copy(target).sub(this.getPosition());
         if (step.length() > this.getSpeed()) step.setLength(this.getSpeed());
         this.group.position.add(step);
         this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
         this.group.lookAt(new Vector3(target.x, this.group.position.y, target.z));
+    }
+
+    isOnRubble() {
+        return this.worldMgr.terrain.getSurfaceFromWorld(this.group.position).hasRubble();
     }
 
     tryFindCarryTarget(): Vector3 {
@@ -183,8 +190,12 @@ export class Raider extends MovableEntity implements Selectable {
     getSpeed(): number {
         let speed = super.getSpeed();
         if (this.animation && !isNaN(this.animation.transcoef)) speed *= this.animation.transcoef;
-        // TODO check if raider is on path
+        if (this.isOnPath()) speed *= 2; // TODO read from cfg
         return speed;
+    }
+
+    isOnPath(): boolean {
+        return this.worldMgr.terrain.getSurfaceFromWorld(this.group.position).isPath();
     }
 
     changeActivity(activity: RaiderActivity, onChangeDone = null) {
@@ -193,15 +204,24 @@ export class Raider extends MovableEntity implements Selectable {
             this.activity = activity;
             switch (this.activity) {
                 case RaiderActivity.STANDING:
-                    this.setActivity('Stand', onChangeDone);
+                    if (this.carries) {
+                        this.setActivity('StandCarry', onChangeDone);
+                    } else {
+                        this.setActivity('Stand', onChangeDone);
+                    }
                     break;
                 case RaiderActivity.MOVING:
                     if (this.carries) {
-                        // TODO check floor (rubble?)
                         this.setActivity('Carry', onChangeDone);
                     } else {
-                        // TODO check floor (rubble?)
                         this.setActivity('Run', onChangeDone);
+                    }
+                    break;
+                case RaiderActivity.MOVING_RUBBLE:
+                    if (this.carries) {
+                        this.setActivity('Carryrubble', onChangeDone);
+                    } else {
+                        this.setActivity('Routerubble', onChangeDone);
                     }
                     break;
                 case RaiderActivity.DRILLING:
@@ -224,6 +244,7 @@ enum RaiderActivity {
 
     STANDING,
     MOVING,
+    MOVING_RUBBLE,
     DRILLING,
     SHOVELING,
     PICKING,
