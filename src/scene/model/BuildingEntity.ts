@@ -13,6 +13,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     selected: boolean;
     powerSwitch: boolean = true;
     powerLink: boolean = false;
+    spawning: boolean = false;
 
     constructor(buildingType: Building) {
         super(ResourceManager.getAnimationEntityType(buildingType.aeFile));

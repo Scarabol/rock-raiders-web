@@ -7,8 +7,11 @@ import { RewardScreen } from './screen/RewardScreen';
 // define constants
 
 export const JOB_SCHEDULE_INTERVAL = 1000; // milliseconds
+export const CHECK_SPANW_RAIDER_TIMER = 1000; // milliseconds
 export const PICKUP_RANGE = 10; // also deposit range
 export const RAIDER_SPEED = 2.0;
+export const MAX_RAIDER_BASE = 12;
+export const ADDITIONAL_RAIDER_PER_SUPPORT = 10;
 
 export const PANEL_ANIMATION_MULTIPLIER = 3;
 export const HEIGHT_MULTIPLER = 0.05;
@@ -50,7 +53,7 @@ ResourceManager.onLoadDone = () => {
     // setup complete
     loadingScreen.hide();
     // mainMenuScreen.showMainMenu();
-    mainMenuScreen.selectLevel('Level02');
+    mainMenuScreen.selectLevel('Level03');
 };
 
 // start the game engine with loading resources

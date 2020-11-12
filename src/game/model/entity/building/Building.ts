@@ -3,6 +3,7 @@ export class Building {
     static readonly TOOLSTATION = new Building('Buildings/Toolstation', 130, 10, true);
     static readonly TELEPORTS = new Building('Buildings/Teleports'); // TODO test with level 25
     static readonly POWER_STATION = new Building('Buildings/Powerstation'); // TODO test with level 09
+    static readonly SUPPORT = new Building('Buildings/Support');
     static readonly UPGRADE = new Building('Buildings/Upgrade'); // TODO test with level 09
     static readonly REFINERY = new Building('Buildings/Refinery');
     static readonly GEODOME = new Building('Buildings/Geo-dome'); // TODO test with level 25
@@ -32,6 +33,8 @@ export class Building {
                 return this.UPGRADE;
             case 'powerstation':
                 return this.POWER_STATION;
+            case 'support':
+                return this.SUPPORT;
             case 'refinery':
                 return this.REFINERY;
             case 'geo-dome':

@@ -5,6 +5,7 @@ import { Raider } from '../../scene/model/Raider';
 import { VehicleEntity } from '../../scene/model/VehicleEntity';
 import { Collectable } from '../../scene/model/Collectable';
 import { Vector3 } from 'three';
+import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE } from '../../main';
 
 export class GameState {
 
@@ -18,6 +19,7 @@ export class GameState {
     static selectionType: SelectionType = null;
     static buildings: BuildingEntity[] = [];
     static raiders: Raider[] = [];
+    static requestedRaiders: number = 0;
     static vehicles: VehicleEntity[] = [];
     static collectables: Collectable[] = [];
 
@@ -31,6 +33,7 @@ export class GameState {
         this.selectionType = null;
         this.buildings = [];
         this.raiders = [];
+        this.requestedRaiders = 0;
         this.vehicles = [];
         this.collectables = [];
     }
@@ -73,6 +76,10 @@ export class GameState {
                 this.selectionType = SelectionType.GROUP;
             }
         }
+    }
+
+    static getMaxRaiders(): number {
+        return MAX_RAIDER_BASE + this.getBuildingsByType(Building.SUPPORT).length * ADDITIONAL_RAIDER_PER_SUPPORT;
     }
 
 }

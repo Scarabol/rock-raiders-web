@@ -1,7 +1,7 @@
 import { IconPanel } from './IconPanel';
 import { EventBus } from '../../../../event/EventBus';
 import { BuildingDeselected, BuildingSelected, SurfaceSelectedEvent } from '../../../../event/LocalEvents';
-import { EntityDeselected, JobCreateEvent, RaiderSelected, SpawnEvent, SpawnType, VehicleSelected } from '../../../../event/WorldEvents';
+import { EntityDeselected, JobCreateEvent, RaiderRequested, RaiderSelected, SpawnEvent, SpawnType, VehicleSelected } from '../../../../event/WorldEvents';
 import { SurfaceJob, SurfaceJobType } from '../../../model/job/Job';
 import { GameState } from '../../../model/GameState';
 import { BuildingEntity } from '../../../../scene/model/BuildingEntity';
@@ -22,7 +22,8 @@ export class MainPanel extends IconPanel {
         const selectVehiclePanel = this.addSubPanel(7);
         const teleportItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan');
         teleportItem.disabled = false;
-        teleportItem.onClick = () => EventBus.publishEvent(new SpawnEvent(SpawnType.RAIDER));
+        teleportItem.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders+1));
+        // FIXME add decrease requested raider spawn option
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding');
         buildingItem.disabled = false;
         buildingItem.onClick = () => this.mainPanel.toggleState(() => buildingPanel.toggleState());

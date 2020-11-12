@@ -6,7 +6,7 @@ import { iGet } from '../core/Util';
 import { SurfaceType } from './model/map/SurfaceType';
 import { Terrain } from './model/map/Terrain';
 import { EventBus } from '../event/EventBus';
-import { EntityDeselected, JobCreateEvent, SpawnEvent, SpawnType } from '../event/WorldEvents';
+import { EntityDeselected, JobCreateEvent, RaiderRequested, SpawnEvent } from '../event/WorldEvents';
 import { Raider } from './model/Raider';
 import { BuildingEntity } from './model/BuildingEntity';
 import { GameState } from '../game/model/GameState';
@@ -14,13 +14,14 @@ import { Building } from '../game/model/entity/building/Building';
 import { Crystal } from './model/Crystal';
 import { CollectJob } from '../game/model/job/Job';
 import { Collectable } from './model/Collectable';
-import { TILESIZE } from '../main';
+import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
 
     terrain: Terrain;
     sceneManager: SceneManager;
+    spawnRaiderInterval = null;
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas);
@@ -28,25 +29,15 @@ export class WorldManager {
         EventBus.registerEventListener(EntityDeselected.eventKey, () => {
             GameState.selectedEntities.forEach((entity) => entity.deselect());
         });
-        EventBus.registerEventListener(SpawnEvent.eventKey, (event: SpawnEvent) => {
-            // TODO check max raider amount
-            const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).filter((b) => b.isPowered());
-            if (spawnBuildings.length < 1) return;
-            const station = spawnBuildings[0];
-            if (!station) return;
-            if (event.type === SpawnType.RAIDER) {
-                // add raider with teleport animation
-                const raider = new Raider();
-                raider.worldMgr = this;
-                raider.setActivity('TeleportIn', () => raider.setActivity('Stand'));
-                raider.group.position.copy(station.group.position).add(new Vector3(0, 0, TILESIZE / 2).applyEuler(station.group.rotation));
-                raider.group.rotation.copy(station.group.rotation);
-                this.sceneManager.scene.add(raider.group);
-                // TODO after add to available pilots
-                // TODO default action: walk to building power path
-            } else {
-                console.warn('Spawn not yet implemented: ' + event.type);
+        EventBus.registerEventListener(RaiderRequested.eventKey, (event: RaiderRequested) => {
+            GameState.requestedRaiders = event.numRequested;
+            console.log('requested raiders: ' + GameState.requestedRaiders);
+            if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
+                this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER);
             }
+        });
+        EventBus.registerEventListener(SpawnEvent.eventKey, (event: SpawnEvent) => {
+            console.warn('Spawn not yet implemented: ' + event.type);
         });
     }
 
@@ -203,6 +194,35 @@ export class WorldManager {
             GameState.collectables.push(collectable);
             // TODO publish crystal discovered event
             EventBus.publishEvent(new JobCreateEvent(new CollectJob(collectable)));
+        }
+    }
+
+    checkSpawnRaiders() {
+        console.log('check spawn raiders');
+        if (GameState.requestedRaiders < 1) {
+            console.log('No raiders requested, canceling interval');
+            if (this.spawnRaiderInterval) clearInterval(this.spawnRaiderInterval);
+            this.spawnRaiderInterval = null;
+            return;
+        }
+        if (GameState.raiders.length >= GameState.getMaxRaiders()) return;
+        const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS)
+            .filter((b) => b.isPowered() && !b.spawning);
+        for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
+            GameState.requestedRaiders--;
+            const station = spawnBuildings[c];
+            station.spawning = true;
+            const raider = new Raider();
+            raider.worldMgr = this;
+            raider.setActivity('TeleportIn', () => {
+                station.spawning = false;
+                raider.setActivity('Stand', () => { // FIXME walk to random position on building power path
+                    GameState.raiders.push(raider);
+                });
+            });
+            raider.group.position.copy(station.group.position).add(new Vector3(0, 0, TILESIZE / 2).applyEuler(station.group.rotation));
+            raider.group.rotation.copy(station.group.rotation);
+            this.sceneManager.scene.add(raider.group);
         }
     }
 

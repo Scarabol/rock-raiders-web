@@ -60,8 +60,20 @@ export class SpawnEvent extends WorldEvent {
 
 export enum SpawnType {
 
-    RAIDER,
     DYNAMITE,
+
+}
+
+export class RaiderRequested extends WorldEvent {
+
+    static eventKey = 'raider.request';
+
+    numRequested: number = 0;
+
+    constructor(numRequested: number) {
+        super(RaiderRequested.eventKey);
+        this.numRequested = numRequested;
+    }
 
 }
 
