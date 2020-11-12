@@ -234,7 +234,7 @@ export class Raider extends MovableEntity implements Selectable {
                     this.setActivity('Pickup', onChangeDone);
                     break;
             }
-            this.animation.looping = true; // make all looping?
+            this.animation.looping = true; // TODO make all looping?
         }
     }
 }

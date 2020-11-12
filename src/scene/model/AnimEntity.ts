@@ -3,12 +3,15 @@ import { AnimClip } from './AnimClip';
 import { iGet } from '../../core/Util';
 import { AnimationEntityType } from './AnimationEntityType';
 import { BaseEntity } from './BaseEntity';
+import { AnimSubObj } from './AnimSubObj';
+import { GameState } from '../../game/model/GameState';
 
 export class AnimEntity extends BaseEntity {
 
     entityType: AnimationEntityType = null;
     poly: Object3D[] = [];
     animation: AnimClip = null;
+    animationTimeout: NodeJS.Timeout = null;
     selectionFrame: Sprite = null;
 
     constructor(entityType: AnimationEntityType) {
@@ -46,7 +49,10 @@ export class AnimEntity extends BaseEntity {
     }
 
     setActivity(keyname, onAnimationDone = null) {
-        if (this.animation) this.animation.cancelAnimation();
+        if (this.animationTimeout) {
+            clearTimeout(this.animationTimeout);
+            this.animationTimeout = null;
+        }
         const activity = iGet(this.entityType.activities, keyname);
         if (!activity) {
             console.error('Activity \'' + keyname + '\' unknown');
@@ -73,12 +79,38 @@ export class AnimEntity extends BaseEntity {
                     this.group.add(polyPart);
                 }
             });
-            this.animation.animate(this.poly, 0, onAnimationDone);
+            this.animate(0, onAnimationDone);
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
         }
         // FIXME this fails for carried items, load textures somewhere else!
         this.loadTextures(); // TODO this step should be done at the end of the loading process (postLoading)
+    }
+
+    animate(frameIndex, onAnimationDone) {
+        if (this.poly.length !== this.animation.bodies.length) throw 'Cannot animate poly. Length differs from bodies length';
+        this.animation.bodies.forEach((body: AnimSubObj, index) => {
+            const p = this.poly[index];
+            p.position.copy(body.relPos[frameIndex]);
+            p.rotation.copy(body.relRot[frameIndex]);
+            p.scale.copy(body.relScale[frameIndex]);
+            if (p.hasOwnProperty('material')) {
+                const material = p['material'];
+                const opacity = body.opacity[frameIndex];
+                if (material && opacity !== undefined) {
+                    const matArr = Array.isArray(material) ? material : [material];
+                    matArr.forEach((mat) => mat.opacity = opacity);
+                }
+            }
+        });
+        this.animationTimeout = null;
+        if (!(frameIndex + 1 > this.animation.lastFrame) || (this.animation.looping && !onAnimationDone)) {
+            const nextFrame = frameIndex + 1 > this.animation.lastFrame ? this.animation.firstFrame : frameIndex + 1;
+            const that = this;
+            this.animationTimeout = setTimeout(() => that.animate(nextFrame, onAnimationDone), 1000 / this.animation.framesPerSecond * this.animation.transcoef / GameState.gameSpeedMultiplier); // TODO get this in sync with threejs
+        } else if (onAnimationDone) {
+            onAnimationDone();
+        }
     }
 
 }
