@@ -6,12 +6,10 @@ import { iGet } from '../core/Util';
 import { SurfaceType } from './model/map/SurfaceType';
 import { Terrain } from './model/map/Terrain';
 import { EventBus } from '../event/EventBus';
-import { SurfaceDeselectEvent } from '../event/LocalEvents';
-import { JobCreateEvent, SpawnEvent, SpawnType } from '../event/WorldEvents';
+import { EntityDeselected, JobCreateEvent, SpawnEvent, SpawnType } from '../event/WorldEvents';
 import { Raider } from './model/Raider';
 import { BuildingEntity } from './model/BuildingEntity';
 import { GameState } from '../game/model/GameState';
-import { SelectionType } from '../game/model/Selectable';
 import { Building } from '../game/model/entity/building/Building';
 import { Crystal } from './model/Crystal';
 import { CollectJob } from '../game/model/job/Job';
@@ -28,8 +26,8 @@ export class WorldManager {
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas);
         this.sceneManager.cursorTorchlight.distance *= WorldManager.TILESIZE;
-        EventBus.registerEventListener(SurfaceDeselectEvent.eventKey, () => {
-            if (GameState.selectionType === SelectionType.SURFACE) GameState.selectedEntities.forEach((entity) => entity.deselect());
+        EventBus.registerEventListener(EntityDeselected.eventKey, () => {
+            GameState.selectedEntities.forEach((entity) => entity.deselect());
         });
         EventBus.registerEventListener(SpawnEvent.eventKey, (event: SpawnEvent) => {
             // TODO check max amount

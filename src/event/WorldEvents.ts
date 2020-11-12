@@ -78,19 +78,6 @@ export class RaiderSelected extends LocalEvent {
 
 }
 
-export class RaiderDeselected extends LocalEvent {
-
-    static eventKey: string = 'raider.deselect';
-
-    raider: Raider;
-
-    constructor(raider: Raider) {
-        super(RaiderDeselected.eventKey);
-        this.raider = raider;
-    }
-
-}
-
 export class VehicleSelected extends LocalEvent {
 
     static eventKey: string = 'vehicle.select';
@@ -104,15 +91,12 @@ export class VehicleSelected extends LocalEvent {
 
 }
 
-export class VehicleDeselected extends LocalEvent {
+export class EntityDeselected extends LocalEvent {
 
-    static eventKey: string = 'vehicle.deselect';
+    static eventKey: string = 'entity.deselect';
 
-    vehicle: VehicleEntity;
-
-    constructor(vehicle: VehicleEntity) {
-        super(VehicleDeselected.eventKey);
-        this.vehicle = vehicle;
+    constructor() {
+        super(EntityDeselected.eventKey);
     }
 
 }

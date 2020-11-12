@@ -4,7 +4,7 @@ import { SurfaceType } from './SurfaceType';
 import { ResourceManager } from '../../../resource/ResourceManager';
 import { Selectable, SelectionType } from '../../../game/model/Selectable';
 import { EventBus } from '../../../event/EventBus';
-import { SurfaceDeselectEvent, SurfaceSelectedEvent } from '../../../event/LocalEvents';
+import { SurfaceSelectedEvent } from '../../../event/LocalEvents';
 import { JobType, SurfaceJob, SurfaceJobType } from '../../../game/model/job/Job';
 import { JobCreateEvent } from '../../../event/WorldEvents';
 import { getRandom, getRandomSign } from '../../../core/Util';
@@ -367,7 +367,6 @@ export class Surface implements Selectable {
         if (this.selected) {
             this.selected = false;
             this.updateJobColor();
-            EventBus.publishEvent(new SurfaceDeselectEvent());
         }
     }
 

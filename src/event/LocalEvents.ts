@@ -24,16 +24,6 @@ export class SurfaceSelectedEvent extends LocalEvent {
 
 }
 
-export class SurfaceDeselectEvent extends LocalEvent {
-
-    static eventKey: string = 'surface.deselect';
-
-    constructor() {
-        super(SurfaceDeselectEvent.eventKey);
-    }
-
-}
-
 export class BuildingSelected extends LocalEvent {
 
     static eventKey: string = 'building.selected';

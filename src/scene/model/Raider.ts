@@ -1,7 +1,7 @@
 import { ResourceManager } from '../../resource/ResourceManager';
 import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { EventBus } from '../../event/EventBus';
-import { RaiderDeselected, RaiderSelected } from '../../event/WorldEvents';
+import { RaiderSelected } from '../../event/WorldEvents';
 import { MovableEntity } from '../../game/model/entity/MovableEntity';
 import { CollectJob, Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
 import { Vector3 } from 'three';
@@ -177,7 +177,6 @@ export class Raider extends MovableEntity implements Selectable {
         if (this.selected) {
             this.selected = false;
             this.selectionFrame.visible = false;
-            EventBus.publishEvent(new RaiderDeselected(this));
         }
     }
 
