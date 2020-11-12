@@ -14,11 +14,12 @@ export class EventManager {
 
     constructor(screen: BaseScreen) {
         screen.gameCanvasContainer.addEventListener('contextmenu', (event: MouseEvent) => {
-            event.preventDefault(); // TODO only prevent default, when over canvas
+            if (screen.isInRect(event)) event.preventDefault();
         });
         ['pointermove', 'pointerdown', 'pointerup']
             .forEach((eventType) => {
                 screen.gameCanvasContainer.addEventListener(eventType, (event: PointerEvent) => {
+                    if (!screen.isInRect(event)) return;
                     // all event attibutes used by controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
                     const nonBubblingClone = new PointerEvent(event.type, {
                         bubbles: false, // disable bubbling otherwise we'll trigger this same event handler again
@@ -45,6 +46,7 @@ export class EventManager {
                 });
             });
         screen.gameCanvasContainer.addEventListener('wheel', (event: WheelEvent) => {
+            if (!screen.isInRect(event)) return;
             // all event attibutes used by controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
             const nonBubblingClone = new WheelEvent(event.type, {
                 bubbles: false, // disable bubbling otherwise we'll trigger this same event handler again
