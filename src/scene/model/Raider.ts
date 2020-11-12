@@ -30,7 +30,7 @@ export class Raider extends MovableEntity implements Selectable {
     }
 
     work() {
-        if (!this.job) return;
+        if (!this.job || this.selected) return;
         if (this.job.type === JobType.SURFACE) {
             const surfaceJobType = (this.job as SurfaceJob).workType;
             switch (surfaceJobType) {
@@ -174,7 +174,7 @@ export class Raider extends MovableEntity implements Selectable {
         if (!this.selected) {
             this.selected = true;
             this.selectionFrame.visible = true;
-            // TODO stop any movement/job execution
+            this.changeActivity(RaiderActivity.STANDING);
             EventBus.publishEvent(new RaiderSelected(this));
         }
         return this;
