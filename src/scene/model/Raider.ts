@@ -23,7 +23,7 @@ export class Raider extends MovableEntity implements Selectable {
     carryTarget: Vector3 = null;
 
     constructor() {
-        super(ResourceManager.getAnimationEntityType('mini-figures/pilot/pilot.ae'), 0.8); // TODO read speed (and other stats) from cfg
+        super(ResourceManager.getAnimationEntityType('mini-figures/pilot/pilot.ae'), 1.0); // TODO read speed (and other stats) from cfg
         this.group.userData = {'selectable': this};
         // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
         this.workInterval = setInterval(this.work.bind(this), 1000 / 30 / 2); // update with twice the frame rate // TODO externalize framerate
@@ -38,7 +38,7 @@ export class Raider extends MovableEntity implements Selectable {
                     if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
                         this.moveToTarget(this.job.getPosition());
                     } else {
-                        this.changeActivity(RaiderActivity.DRILLING, () => {
+                        this.changeActivity(RaiderActivity.DRILLING, () => { // TODO use drilling times from cfg
                             this.job.onJobComplete();
                             this.stopJob();
                         });
@@ -140,7 +140,7 @@ export class Raider extends MovableEntity implements Selectable {
         if (!this.job) return;
         this.job.unassign(this);
         this.jobSubPos = null;
-        this.carryTarget = null; // TODO also drop item?
+        this.carryTarget = null;
         this.job = null;
         this.changeActivity(RaiderActivity.STANDING);
     }
@@ -178,6 +178,13 @@ export class Raider extends MovableEntity implements Selectable {
             this.selected = false;
             this.selectionFrame.visible = false;
         }
+    }
+
+    getSpeed(): number {
+        let speed = super.getSpeed();
+        if (this.animation && !isNaN(this.animation.transcoef)) speed *= this.animation.transcoef;
+        // TODO check if raider is on path
+        return speed;
     }
 
     changeActivity(activity: RaiderActivity, onChangeDone = null) {
