@@ -20,6 +20,7 @@ export class AnimClip {
             const opacity = body.opacity[frameIndex];
             if (material && opacity !== undefined) material.opacity = opacity;
         });
+        this.animationTimeout = null;
         if (!(frameIndex + 1 > this.lastFrame) || (this.looping && !onAnimationDone)) {
             const nextFrame = frameIndex + 1 > this.lastFrame ? this.firstFrame : frameIndex + 1;
             const that = this;
