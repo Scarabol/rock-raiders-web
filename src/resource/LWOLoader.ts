@@ -8,7 +8,7 @@
  *  -
  */
 
-import { BufferAttribute, BufferGeometry, Color, Mesh, MeshPhongMaterial, RGBAFormat, Vector3 } from 'three';
+import { BufferAttribute, BufferGeometry, Color, Mesh, MeshPhongMaterial, Vector3 } from 'three';
 import { decodeFilepath, decodeString, getFilename } from '../core/Util';
 import { ResourceManager } from './ResourceManager';
 
@@ -477,9 +477,10 @@ export class LWOLoader {
                                 seqNum++;
                                 if (seqNum > lastNum) seqNum = seqStart;
                             }, 1000 / 5); // TODO 5? FPS for texture animations?
+                            material.transparent = true;
                         }
                         material.map = ResourceManager.getTexture(textureFilename);
-                        material.transparent = material.map.format === RGBAFormat;
+                        material.alphaTest = material.transparent ? 0 : 0.5;
                         material.color = null; // no need for color, when color map (texture) in use
                         break;
                     default: // TODO implement all LWO features
