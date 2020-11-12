@@ -4,12 +4,13 @@ import { ResourceManager } from '../resource/ResourceManager';
 import { iGet } from '../core/Util';
 import { SurfaceType } from './model/map/SurfaceType';
 import { WorldManager } from './WorldManager';
+import { TILESIZE } from '../main';
 
 export class TerrainLoader {
 
     static loadTerrain(levelConf, worldMgr: WorldManager): Terrain {
         const tileSize = Number(iGet(levelConf, 'BlockSize'));
-        if (tileSize !== WorldManager.TILESIZE) console.error('Unexpected tile size in level configuration: ' + tileSize);
+        if (tileSize !== TILESIZE) console.error('Unexpected tile size in level configuration: ' + tileSize);
         const terrain = new Terrain(worldMgr);
 
         const themeName = levelConf['TextureSet'][1];

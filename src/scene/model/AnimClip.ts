@@ -1,4 +1,5 @@
 import { AnimSubObj } from './AnimSubObj';
+import { GameState } from '../../game/model/GameState';
 
 export class AnimClip {
 
@@ -24,7 +25,7 @@ export class AnimClip {
         if (!(frameIndex + 1 > this.lastFrame) || (this.looping && !onAnimationDone)) {
             const nextFrame = frameIndex + 1 > this.lastFrame ? this.firstFrame : frameIndex + 1;
             const that = this;
-            this.animationTimeout = setTimeout(() => that.animate(poly, nextFrame, onAnimationDone), 1000 / this.framesPerSecond * this.transcoef); // TODO get this in sync with threejs
+            this.animationTimeout = setTimeout(() => that.animate(poly, nextFrame, onAnimationDone), 1000 / this.framesPerSecond * this.transcoef / GameState.gameSpeedMultiplier); // TODO get this in sync with threejs
         } else if (onAnimationDone) {
             onAnimationDone();
         }

@@ -4,9 +4,25 @@ import { MainMenuScreen } from './screen/MainMenuScreen';
 import { GameScreen } from './screen/GameScreen';
 import { RewardScreen } from './screen/RewardScreen';
 
-const loadingScreen = new LoadingScreen();
+// define constants
 
-// link all components
+export const JOB_SCHEDULE_INTERVAL = 1000; // milliseconds
+export const PICKUP_RANGE = 10; // also deposit range
+export const RAIDER_SPEED = 2.0;
+
+export const PANEL_ANIMATION_MULTIPLIER = 3;
+export const HEIGHT_MULTIPLER = 0.05;
+
+// native constants (do not change)
+
+export const SPRITE_RESOLUTION_WIDTH = 640;
+export const SPRITE_RESOLUTION_HEIGHT = 480;
+export const TILESIZE = 40;
+export const NATIVE_FRAMERATE = 30;
+
+// setup and link all components
+
+const loadingScreen = new LoadingScreen();
 
 ResourceManager.onMessage = (msg: string) => {
     loadingScreen.setLoadingMessage(msg);

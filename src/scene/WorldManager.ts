@@ -14,18 +14,17 @@ import { Building } from '../game/model/entity/building/Building';
 import { Crystal } from './model/Crystal';
 import { CollectJob } from '../game/model/job/Job';
 import { Collectable } from './model/Collectable';
+import { TILESIZE } from '../main';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
-
-    static readonly TILESIZE: number = 40;
 
     terrain: Terrain;
     sceneManager: SceneManager;
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas);
-        this.sceneManager.cursorTorchlight.distance *= WorldManager.TILESIZE;
+        this.sceneManager.cursorTorchlight.distance *= TILESIZE;
         EventBus.registerEventListener(EntityDeselected.eventKey, () => {
             GameState.selectedEntities.forEach((entity) => entity.deselect());
         });
@@ -40,7 +39,7 @@ export class WorldManager {
                 const raider = new Raider();
                 raider.worldMgr = this;
                 raider.setActivity('TeleportIn', () => raider.setActivity('Stand'));
-                raider.group.position.copy(station.group.position).add(new Vector3(0, 0, WorldManager.TILESIZE / 2).applyEuler(station.group.rotation));
+                raider.group.position.copy(station.group.position).add(new Vector3(0, 0, TILESIZE / 2).applyEuler(station.group.rotation));
                 raider.group.rotation.copy(station.group.rotation);
                 this.sceneManager.scene.add(raider.group);
                 // TODO after add to available pilots
@@ -66,16 +65,16 @@ export class WorldManager {
         Object.values(objectList).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type;
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
-            const worldX = (olObject.xPos - 1) * WorldManager.TILESIZE;
-            const worldZ = (olObject.yPos - 1) * WorldManager.TILESIZE;
+            const worldX = (olObject.xPos - 1) * TILESIZE;
+            const worldZ = (olObject.yPos - 1) * TILESIZE;
             const worldY = this.getTerrainHeight(worldX, worldZ);
             const buildingType = ResourceManager.cfg('BuildingTypes', olObject.type);
             const radHeading = degToRad(olObject.heading);
             if (lTypeName === 'TVCamera'.toLowerCase()) {
-                const target = new Vector3(worldX, worldY, worldZ - WorldManager.TILESIZE / 2);
-                const offset = new Vector3(5 * WorldManager.TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(target);
+                const target = new Vector3(worldX, worldY, worldZ - TILESIZE / 2);
+                const offset = new Vector3(5 * TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(target);
                 this.sceneManager.camera.position.copy(offset);
-                this.sceneManager.camera.position.y = 4.5 * WorldManager.TILESIZE;
+                this.sceneManager.camera.position.y = 4.5 * TILESIZE;
                 this.sceneManager.controls.target.copy(target);
                 this.sceneManager.controls.update();
                 this.setTorchPosition(target);
@@ -103,7 +102,7 @@ export class WorldManager {
                 const path1Surface = this.terrain.getSurfaceFromWorld(entity.group.position);
                 path1Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path1Surface.updateMesh();
-                const pathOffset = new Vector3(0, 0, WorldManager.TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
+                const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
                 pathOffset.add(entity.group.position);
                 const path2Surface = this.terrain.getSurfaceFromWorld(pathOffset);
                 path2Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
@@ -157,11 +156,11 @@ export class WorldManager {
 
     setTorchPosition(position: Vector3) {
         this.sceneManager.cursorTorchlight.position.copy(position);
-        this.sceneManager.cursorTorchlight.position.y = this.getTerrainHeight(position.x, position.z) + 2 * WorldManager.TILESIZE;
+        this.sceneManager.cursorTorchlight.position.y = this.getTerrainHeight(position.x, position.z) + 2 * TILESIZE;
     }
 
     getTerrainHeight(worldX: number, worldZ: number): number {
-        const raycaster = new Raycaster(new Vector3(Number(worldX), 3 * WorldManager.TILESIZE, Number(worldZ)), new Vector3(0, -1, 0));
+        const raycaster = new Raycaster(new Vector3(Number(worldX), 3 * TILESIZE, Number(worldZ)), new Vector3(0, -1, 0));
         const intersect = raycaster.intersectObject(this.terrain.floorGroup, true);
         if (intersect.length > 0) {
             return intersect[0].point.y;

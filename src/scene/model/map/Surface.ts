@@ -10,9 +10,7 @@ import { JobCreateEvent } from '../../../event/WorldEvents';
 import { getRandom, getRandomSign } from '../../../core/Util';
 import { Crystal } from '../Crystal';
 import { Ore } from '../Ore';
-import { WorldManager } from '../../WorldManager';
-
-const HEIGHT_MULTIPLER = 0.05;
+import { HEIGHT_MULTIPLER, TILESIZE } from '../../../main';
 
 export class Surface implements Selectable {
 
@@ -100,8 +98,8 @@ export class Surface implements Selectable {
         this.terrain.floorGroup.updateWorldMatrix(true, true);
         // drop contained crystals and ores
         for (let c = 0; c < this.containedCrystals; c++) {
-            const x = this.x * WorldManager.TILESIZE + WorldManager.TILESIZE / 2 + getRandomSign() * getRandom(WorldManager.TILESIZE / 4);
-            const z = this.y * WorldManager.TILESIZE + WorldManager.TILESIZE / 2 + getRandomSign() * getRandom(WorldManager.TILESIZE / 4);
+            const x = this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4);
+            const z = this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4);
             this.terrain.worldMgr.addCollectable(new Crystal(), x, z);
         }
         this.dropContainedOre();
@@ -111,8 +109,8 @@ export class Surface implements Selectable {
 
     private dropContainedOre() {
         for (let c = 0; c < this.containedOre; c++) {
-            const x = this.x * WorldManager.TILESIZE + WorldManager.TILESIZE / 2 + getRandomSign() * getRandom(WorldManager.TILESIZE / 4);
-            const z = this.y * WorldManager.TILESIZE + WorldManager.TILESIZE / 2 + getRandomSign() * getRandom(WorldManager.TILESIZE / 4);
+            const x = this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4);
+            const z = this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4);
             this.terrain.worldMgr.addCollectable(new Ore(), x, z);
         }
     }

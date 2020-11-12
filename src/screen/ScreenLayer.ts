@@ -1,3 +1,5 @@
+import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../main';
+
 export class ScreenLayer {
 
     canvas: HTMLCanvasElement;
@@ -70,8 +72,8 @@ export class ScaledLayer extends ScreenLayer {
 
     constructor() {
         super(true);
-        this.fixedWidth = 640; // TODO externalize constant
-        this.fixedHeight = 480; // TODO externalize constant
+        this.fixedWidth = SPRITE_RESOLUTION_WIDTH;
+        this.fixedHeight = SPRITE_RESOLUTION_HEIGHT;
     }
 
     toScaledCoords(windowX: number, windowY: number) {

@@ -8,6 +8,7 @@ import { Vector3 } from 'three';
 import { getRandom, getRandomSign } from '../../core/Util';
 import { Collectable } from './Collectable';
 import { GameState } from '../../game/model/GameState';
+import { NATIVE_FRAMERATE, PICKUP_RANGE, RAIDER_SPEED } from '../../main';
 
 export class Raider extends MovableEntity implements Selectable {
 
@@ -23,10 +24,9 @@ export class Raider extends MovableEntity implements Selectable {
     carryTarget: Vector3 = null;
 
     constructor() {
-        super(ResourceManager.getAnimationEntityType('mini-figures/pilot/pilot.ae'), 1.0); // TODO read speed (and other stats) from cfg
+        super(ResourceManager.getAnimationEntityType('mini-figures/pilot/pilot.ae'), RAIDER_SPEED);
         this.group.userData = {'selectable': this};
-        // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
-        this.workInterval = setInterval(this.work.bind(this), 1000 / 30 / 2); // update with twice the frame rate // TODO externalize framerate
+        this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE / GameState.gameSpeedMultiplier); // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
 
     work() {
@@ -87,9 +87,8 @@ export class Raider extends MovableEntity implements Selectable {
                     });
                 }
             } else if (!this.carryTarget) {
-                // TODO sleep 5 seconds, before retry
-                this.carryTarget = this.tryFindCarryTarget();
-            } else if (this.getPosition().sub(this.carryTarget).lengthSq() > 5 * 5) { // TODO externalize constant (drop range)
+                this.carryTarget = this.tryFindCarryTarget(); // TODO sleep 5 seconds, before retry
+            } else if (this.getPosition().sub(this.carryTarget).length() > PICKUP_RANGE) {
                 this.moveToTarget(this.carryTarget);
             } else {
                 this.changeActivity(RaiderActivity.PICKING, () => {

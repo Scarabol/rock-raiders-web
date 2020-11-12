@@ -2,6 +2,7 @@ import { ResourceManager } from '../../../../resource/ResourceManager';
 import { Button } from '../../base/Button';
 import { BaseElement } from '../../base/BaseElement';
 import { iGet } from '../../../../core/Util';
+import { PANEL_ANIMATION_MULTIPLIER, NATIVE_FRAMERATE } from '../../../../main';
 
 export class Panel extends BaseElement {
 
@@ -59,7 +60,7 @@ export class Panel extends BaseElement {
             this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * speed);
             this.relY += Math.round(Math.sign(diffY) * Math.sqrt(Math.abs(diffY)) * speed);
             const panel = this;
-            this.animationTimeout = setTimeout(() => panel.updateAnimation(targetX, targetY, speed, onDone), 1000 / 30); // synced with 30 FPS // TODO externalize constant
+            this.animationTimeout = setTimeout(() => panel.updateAnimation(targetX, targetY, speed, onDone), 1000 / NATIVE_FRAMERATE);
         }
         this.updatePosition();
         this.notifyRedraw();
@@ -80,10 +81,10 @@ export class Panel extends BaseElement {
         }
         if (this.movedIn) {
             this.movedIn = false;
-            this.updateAnimation(this.xOut, this.yOut, 3, onDone); // TODO externalize constant
+            this.updateAnimation(this.xOut, this.yOut, PANEL_ANIMATION_MULTIPLIER, onDone);
         } else {
             this.movedIn = true;
-            this.updateAnimation(this.xIn, this.yIn, 3, onDone); // TODO externalize constant
+            this.updateAnimation(this.xIn, this.yIn, PANEL_ANIMATION_MULTIPLIER, onDone);
         }
     }
 

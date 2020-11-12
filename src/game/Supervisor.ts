@@ -5,6 +5,7 @@ import { GameState } from './model/GameState';
 import { Vector3 } from 'three';
 import { Raider } from '../scene/model/Raider';
 import { WorldManager } from '../scene/WorldManager';
+import { JOB_SCHEDULE_INTERVAL } from '../main';
 
 export class Supervisor {
 

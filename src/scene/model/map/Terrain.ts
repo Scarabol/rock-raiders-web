@@ -2,6 +2,7 @@ import { Group, Vector3 } from 'three';
 import { Surface } from './Surface';
 import { WorldManager } from '../../WorldManager';
 import { SurfaceType } from './SurfaceType';
+import { TILESIZE } from '../../../main';
 
 export class Terrain {
 
@@ -19,7 +20,7 @@ export class Terrain {
     }
 
     getSurfaceFromWorld(worldPosition: Vector3) {
-        return this.getSurface(worldPosition.x / WorldManager.TILESIZE, worldPosition.z / WorldManager.TILESIZE);
+        return this.getSurface(worldPosition.x / TILESIZE, worldPosition.z / TILESIZE);
     }
 
     getSurface(x, y): Surface {

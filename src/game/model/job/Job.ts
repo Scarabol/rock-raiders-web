@@ -2,7 +2,7 @@ import { Surface } from '../../../scene/model/map/Surface';
 import { Vector3 } from 'three';
 import { Raider } from '../../../scene/model/Raider';
 import { Collectable } from '../../../scene/model/Collectable';
-import { WorldManager } from '../../../scene/WorldManager';
+import { PICKUP_RANGE, TILESIZE } from '../../../main';
 
 export enum JobType {
 
@@ -81,14 +81,14 @@ export class SurfaceJob extends Job {
     }
 
     getPosition(): Vector3 {
-        return new Vector3(this.surface.x * WorldManager.TILESIZE + WorldManager.TILESIZE / 2, 0,
-            this.surface.y * WorldManager.TILESIZE + WorldManager.TILESIZE / 2);
+        return new Vector3(this.surface.x * TILESIZE + TILESIZE / 2, 0,
+            this.surface.y * TILESIZE + TILESIZE / 2);
     }
 
     isInArea(x: number, z: number) {
         // TODO check square distance first?
-        return x >= this.surface.x * WorldManager.TILESIZE && x < this.surface.x * WorldManager.TILESIZE + WorldManager.TILESIZE
-            && z >= this.surface.y * WorldManager.TILESIZE && z < this.surface.y * WorldManager.TILESIZE + WorldManager.TILESIZE;
+        return x >= this.surface.x * TILESIZE && x < this.surface.x * TILESIZE + TILESIZE
+            && z >= this.surface.y * TILESIZE && z < this.surface.y * TILESIZE + TILESIZE;
     }
 
     onJobComplete() {
@@ -125,7 +125,7 @@ export class CollectJob extends Job {
 
     isInArea(x: number, z: number) {
         const pos = this.getPosition();
-        return pos.sub(new Vector3(x, pos.y, z)).lengthSq() < 5 * 5; // TODO externalize constant (pickup range)
+        return pos.sub(new Vector3(x, pos.y, z)).length() < PICKUP_RANGE;
     }
 
     isQualified(raider: Raider) {
