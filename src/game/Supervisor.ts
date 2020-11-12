@@ -28,7 +28,7 @@ export class Supervisor {
 
     start() {
         stop();
-        this.interval = setInterval(this.scheduleJobs.bind(this), 1000); // TODO externalize constant
+        this.interval = setInterval(this.scheduleJobs.bind(this), JOB_SCHEDULE_INTERVAL);
     }
 
     stop() {

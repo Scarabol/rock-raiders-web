@@ -27,7 +27,7 @@ export abstract class MovableEntity extends AnimEntity {
             if (stepLength > this.getSpeed()) {
                 step.setLength(this.getSpeed());
             }
-            this.group.position.add(step); // TODO instead send entity moved like world events
+            this.group.position.add(step);
         } else {
             this.group.position.copy(target);
         }

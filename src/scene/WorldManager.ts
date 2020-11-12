@@ -137,12 +137,10 @@ export class WorldManager {
     }
 
     start() {
-        // TODO start simulation
         this.sceneManager.startRendering();
     }
 
     stop() {
-        // TODO stop simulation
         this.sceneManager.stopRendering();
     }
 
