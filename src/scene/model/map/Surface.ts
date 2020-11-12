@@ -177,7 +177,57 @@ export class Surface implements Selectable {
             if (isHighGround(surfBottom, surfBottomLeft, surfLeft)) bottomLeftVertex.y = 1;
         }
 
-        this.wallType = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y;
+        // update mesh (geometry), if wall type changed
+        const walltype = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y;
+        if (this.wallType !== walltype) {
+            this.wallType = walltype;
+            this.updateGeometry(topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex, surfTopLeft, surfTop, surfLeft, surfTopRight, surfRight, surfBottomRight, surfBottom, surfBottomLeft);
+        }
+
+        // update texture
+        this.updateTexture(topLeftVertex, bottomRightVertex);
+
+        this.updateJobColor();
+
+        this.terrain.surfaces[this.x][this.y] = this;
+    }
+
+    updateTexture(topLeftVertex: Vector3, bottomRightVertex: Vector3) {
+        let textureName = this.terrain.textureSet.texturebasename;
+        if (!this.discovered) {
+            textureName += '70';
+        } else if (!this.surfaceType.shaping) {
+            textureName += this.surfaceType.matIndex.toString();
+        } else if (this.wallType === WALL_TYPE.WALL && (topLeftVertex.y === bottomRightVertex.y)) {
+            textureName += '77';
+        } else {
+            if (this.wallType === WALL_TYPE.CORNER) {
+                textureName += '5';
+            } else if (this.wallType === WALL_TYPE.INVERTED_CORNER) {
+                textureName += '3';
+            } else {
+                textureName += '0';
+            }
+            textureName += this.surfaceType.matIndex;
+        }
+        textureName += '.bmp';
+
+        const texture = ResourceManager.getTexture(textureName);
+        texture.flipY = false; // TODO is this necessary? Maybe turn around UV or vertices?
+
+        this.accessMaterials().forEach((mat) => mat.map = texture);
+    }
+
+    accessMaterials(): MeshPhongMaterial[] {
+        if (!this.mesh || !this.mesh.material) return [];
+        if (Array.isArray(this.mesh.material)) {
+            return this.mesh.material as MeshPhongMaterial[];
+        } else {
+            return [this.mesh.material as MeshPhongMaterial];
+        }
+    }
+
+    updateGeometry(topLeftVertex: Vector3, bottomRightVertex: Vector3, topRightVertex: Vector3, bottomLeftVertex: Vector3, surfTopLeft: Surface, surfTop: Surface, surfLeft: Surface, surfTopRight: Surface, surfRight: Surface, surfBottomRight: Surface, surfBottom: Surface, surfBottomLeft: Surface) {
         let uvOffset = 0;
 
         // not-rotated
@@ -221,28 +271,6 @@ export class Surface implements Selectable {
             }
         }
 
-        let textureName = this.terrain.textureSet.texturebasename;
-        if (!this.discovered) {
-            textureName += '70';
-        } else if (!this.surfaceType.shaping) {
-            textureName += this.surfaceType.matIndex.toString();
-        } else if (this.wallType === WALL_TYPE.WALL && (topLeftVertex.y === bottomRightVertex.y)) {
-            textureName += '77';
-        } else {
-            if (this.wallType === WALL_TYPE.CORNER) {
-                textureName += '5';
-            } else if (this.wallType === WALL_TYPE.INVERTED_CORNER) {
-                textureName += '3';
-            } else {
-                textureName += '0';
-            }
-            textureName += this.surfaceType.matIndex;
-        }
-        textureName += '.bmp';
-
-        const texture = ResourceManager.getTexture(textureName);
-        texture.flipY = false; // TODO is this necessary? Maybe turn around UV or vertices?
-
         /*
         //		0---1                1         0---1
         //		|   |  becomes      /|   and   |  /
@@ -260,7 +288,7 @@ export class Surface implements Selectable {
         //		Quad 0-1-3-2
         */
 
-        if (this.mesh) this.terrain.floorGroup.remove(this.mesh); // FIXME mesh change is unnecessary, when floor stays floor
+        if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
         if (this.geometry) this.geometry.dispose();
         this.geometry = new Geometry();
 
@@ -336,13 +364,9 @@ export class Surface implements Selectable {
         this.geometry.computeFaceNormals();
         this.geometry.computeVertexNormals();
 
-        this.mesh = new Mesh(this.geometry, new MeshPhongMaterial({map: texture, shininess: 0}));
-
+        this.mesh = new Mesh(this.geometry, new MeshPhongMaterial({shininess: 0}));
         this.mesh.userData = {selectable: this};
 
-        this.updateJobColor();
-
-        this.terrain.surfaces[this.x][this.y] = this;
         this.terrain.floorGroup.add(this.mesh);
         this.terrain.floorGroup.updateWorldMatrix(true, true); // otherwise ray intersection is not working before rendering
     }
@@ -355,7 +379,7 @@ export class Surface implements Selectable {
         if (this.surfaceType.selectable) {
             if (!this.selected) {
                 this.selected = true;
-                this.mesh.material['color'].setHex(0xa0a0a0);
+                this.accessMaterials().forEach((mat) => mat.color.setHex(0xa0a0a0));
                 EventBus.publishEvent(new SurfaceSelectedEvent(this));
             }
             return this;
@@ -373,7 +397,7 @@ export class Surface implements Selectable {
     updateJobColor() {
         let color = 0xffffff;
         this.jobs.forEach((job) => color = job.workType.color); // TODO prioritize colors?
-        if (this.mesh) this.mesh.material['color'] = new Color(color);
+        this.accessMaterials().forEach((mat) => mat.color = new Color(color));
     }
 
     hasRubble(): boolean {
