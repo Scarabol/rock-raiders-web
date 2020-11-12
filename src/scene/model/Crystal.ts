@@ -20,7 +20,6 @@ export class Crystal extends BaseEntity implements Collectable {
         });
         mesh2.scale.set(1.75, 1.75, 1.75); // TODO derive from texture scale?
         this.group.add(mesh2);
-        this.loadTextures();
         const resource = ResourceManager.getResource('World/Shared/Crystal.lwo'); // highpoly version
         const mesh = new LWOLoader('World/Shared/').parse(resource);
         (mesh.material as Material[]).forEach((mat: MeshPhongMaterial) => {

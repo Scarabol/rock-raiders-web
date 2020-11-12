@@ -8,8 +8,9 @@
  *  -
  */
 
-import { BufferAttribute, BufferGeometry, Color, Mesh, MeshPhongMaterial, Vector3 } from 'three';
+import { BufferAttribute, BufferGeometry, Color, Mesh, MeshPhongMaterial, RGBAFormat, Vector3 } from 'three';
 import { decodeFilepath, decodeString, getFilename } from '../core/Util';
+import { ResourceManager } from './ResourceManager';
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42; // "LWOB"
@@ -461,7 +462,25 @@ export class LWOLoader {
                         }
                         let filename = getFilename(textureFilepath);
                         const textureFilename = this.path + filename;
-                        material.userData = {textureFilename: textureFilename, sequenceTexture: sequenceTexture}; // FIXME this is probably unneeded, since parsing moved to creation
+                        if (sequenceTexture) {
+                            const match = textureFilename.match(/(\D+)0+(\d+)\..+/);
+                            const basename = match[1];
+                            const seqStart = Number(match[2]);
+                            let sequenceNames = ResourceManager.filterEntryNames(basename);
+                            if (sequenceNames.length < 1) { // no match try shared path
+                                sequenceNames = ResourceManager.filterEntryNames('world/shared/' + getFilename(basename));
+                            }
+                            const lastNum = sequenceNames.length - 1;
+                            let seqNum = seqStart;
+                            setInterval(() => { // TODO need to keep track on these intervals?
+                                material.map = ResourceManager.getTexture(sequenceNames[seqNum - seqStart]);
+                                seqNum++;
+                                if (seqNum > lastNum) seqNum = seqStart;
+                            }, 1000 / 5); // TODO 5? FPS for texture animations?
+                        }
+                        material.map = ResourceManager.getTexture(textureFilename);
+                        material.transparent = material.map.format === RGBAFormat;
+                        material.color = null; // no need for color, when color map (texture) in use
                         break;
                     default: // TODO implement all LWO features
                         if (this.verbose) console.warn('Found unrecognised SURF subchunk type ' + new TextDecoder().decode(new Uint8Array(buffer, subchunkOffset, ID4_SIZE)) + ' at ' + subchunkOffset + '; length ' + subchunkSize);

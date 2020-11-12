@@ -11,7 +11,6 @@ export class Ore extends BaseEntity implements Collectable {
         const resource = ResourceManager.getResource('MiscAnims/Ore/Ore1st.lwo');
         const mesh = new LWOLoader('MiscAnims/Ore/').parse(resource);
         this.group.add(mesh);
-        this.loadTextures();
     }
 
     getTargetBuildingTypes(): Building[] {
