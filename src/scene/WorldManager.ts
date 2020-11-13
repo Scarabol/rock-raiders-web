@@ -136,13 +136,18 @@ export class WorldManager {
         if (this.sceneManager) this.sceneManager.renderer.setSize(width, height);
     }
 
-    moveMouseTorch(rx: number, ry: number) {
-        if (!this.terrain) return;
+    getTerrainIntersectionPoint(rx: number, ry: number): Vector3 {
+        if (!this.terrain) return null;
         const raycaster = new Raycaster();
         raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
         const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children);
-        if (intersects.length > 0) {
-            this.setTorchPosition(intersects[0].point);
+        return intersects.length > 0 ? intersects[0].point : null;
+    }
+
+    moveMouseTorch(rx: number, ry: number) {
+        const intersectionPoint = this.getTerrainIntersectionPoint(rx, ry);
+        if (intersectionPoint) {
+            this.setTorchPosition(intersectionPoint);
         }
     }
 

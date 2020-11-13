@@ -96,6 +96,15 @@ export class Raider extends MovableEntity implements Selectable {
                     this.stopJob();
                 });
             }
+        } else if (this.job.type === JobType.MOVE) {
+            if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
+                this.moveToTarget(this.job.getPosition());
+            } else {
+                this.changeActivity(RaiderActivity.STANDING, () => {
+                    this.job.onJobComplete();
+                    this.stopJob();
+                });
+            }
         }
     }
 

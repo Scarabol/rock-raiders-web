@@ -416,6 +416,10 @@ export class Surface implements Selectable {
             || this.surfaceType === SurfaceType.POWER_PATH_BUILDING;
     }
 
+    isWalkable(): boolean {
+        return this.surfaceType.floor && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER;
+    }
+
 }
 
 export enum WALL_TYPE {

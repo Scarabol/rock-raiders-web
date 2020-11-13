@@ -2,12 +2,13 @@ import { Surface } from '../../../scene/model/map/Surface';
 import { Vector3 } from 'three';
 import { Raider } from '../../../scene/model/Raider';
 import { Collectable } from '../../../scene/model/Collectable';
-import { PICKUP_RANGE, TILESIZE } from '../../../main';
+import { PICKUP_RANGE, RAIDER_SPEED, TILESIZE } from '../../../main';
 
 export enum JobType {
 
     SURFACE,
     CARRY,
+    MOVE,
 
 }
 
@@ -36,13 +37,17 @@ export abstract class Job {
         this.raiders.forEach((raider) => raider.stopJob());
     }
 
-    abstract isQualified(raider: Raider);
+    isQualified(raider: Raider): boolean {
+        return true;
+    }
+
+    onJobComplete() {
+        // nothing to do here
+    }
 
     abstract getPosition(): Vector3; // TODO job system in 2d should be sufficient and decouple from three for deps and worker reasons
 
     abstract isInArea(x: number, z: number);
-
-    abstract onJobComplete();
 
 }
 
@@ -135,6 +140,25 @@ export class CollectJob extends Job {
     onJobComplete() {
         console.log('Collect job done');
         // TODO fire item collected event (will remove entity from world)
+    }
+
+}
+
+export class MoveJob extends Job {
+
+    target: Vector3;
+
+    constructor(target: Vector3) {
+        super(JobType.MOVE);
+        this.target = target;
+    }
+
+    getPosition(): Vector3 {
+        return new Vector3().copy(this.target);
+    }
+
+    isInArea(x: number, z: number) {
+        return this.getPosition().sub(new Vector3(x, this.target.y, z)).lengthSq() < RAIDER_SPEED * RAIDER_SPEED;
     }
 
 }
