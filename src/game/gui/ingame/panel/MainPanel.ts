@@ -23,7 +23,7 @@ export class MainPanel extends IconPanel {
         const teleportItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan');
         teleportItem.disabled = false;
         teleportItem.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders+1));
-        // FIXME add decrease requested raider spawn option
+        // TODO add decrease requested raider spawn option
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding');
         buildingItem.disabled = false;
         buildingItem.onClick = () => this.mainPanel.toggleState(() => buildingPanel.toggleState());

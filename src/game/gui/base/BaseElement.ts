@@ -81,8 +81,9 @@ export class BaseElement {
         if (this.isInactive()) return false;
         const inRect = this.isInRect(cx, cy);
         if (inRect && this.pressed) this.onClick();
-        let updated = this.release();
+        let updated = false;
         this.children.forEach((child) => updated = child.checkRelease(cx, cy) || updated);
+        updated = this.release() || updated;
         return updated;
     }
 
@@ -90,7 +91,7 @@ export class BaseElement {
         let updated = this.pressed || this.hover;
         this.pressed = false;
         this.hover = false;
-        // no recursion with children here, otherwise children cannot react on release events
+        this.children.forEach((child) => updated = child.release() || updated);
         return updated;
     }
 
