@@ -5,4 +5,16 @@ export interface Collectable extends BaseEntity {
 
     getTargetBuildingTypes(): Building[];
 
+    getCollectableType(): CollectableType;
+
+}
+
+export enum CollectableType {
+
+    CRYSTAL,
+    ORE,
+    BRICK,
+    DYNAMITE,
+    BARRIER,
+
 }

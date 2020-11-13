@@ -3,6 +3,7 @@ import { Job } from '../game/model/job/Job';
 import { Raider } from '../scene/model/Raider';
 import { LocalEvent } from './LocalEvents';
 import { VehicleEntity } from '../scene/model/VehicleEntity';
+import { CollectableType } from '../scene/model/Collectable';
 
 export class WorldEvent extends GameEvent {
 
@@ -73,6 +74,19 @@ export class RaiderRequested extends WorldEvent {
     constructor(numRequested: number) {
         super(RaiderRequested.eventKey);
         this.numRequested = numRequested;
+    }
+
+}
+
+export class CollectEvent extends WorldEvent {
+
+    static eventKey = 'item.collected';
+
+    collectType: CollectableType;
+
+    constructor(collectType: CollectableType) {
+        super(CollectEvent.eventKey);
+        this.collectType = collectType;
     }
 
 }

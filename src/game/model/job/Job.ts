@@ -1,8 +1,11 @@
 import { Surface } from '../../../scene/model/map/Surface';
 import { Vector3 } from 'three';
 import { Raider } from '../../../scene/model/Raider';
-import { Collectable } from '../../../scene/model/Collectable';
+import { Collectable, CollectableType } from '../../../scene/model/Collectable';
 import { PICKUP_RANGE, RAIDER_SPEED, TILESIZE } from '../../../main';
+import { GameState } from '../GameState';
+import { EventBus } from '../../../event/EventBus';
+import { CollectEvent } from '../../../event/WorldEvents';
 
 export enum JobType {
 
@@ -138,8 +141,16 @@ export class CollectJob extends Job {
     }
 
     onJobComplete() {
-        console.log('Collect job done');
-        // TODO fire item collected event (will remove entity from world)
+        switch (this.item.getCollectableType()) {
+            case CollectableType.CRYSTAL:
+                GameState.numCrystal++;
+                EventBus.publishEvent(new CollectEvent(this.item.getCollectableType()));
+                break;
+            case CollectableType.ORE:
+                GameState.numOre++;
+                EventBus.publishEvent(new CollectEvent(this.item.getCollectableType()));
+                break;
+        }
     }
 
 }

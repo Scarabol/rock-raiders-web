@@ -2,7 +2,7 @@ import { BaseEntity } from './BaseEntity';
 import { LWOLoader } from '../../resource/LWOLoader';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { Color, Material, MeshPhongMaterial } from 'three';
-import { Collectable } from './Collectable';
+import { Collectable, CollectableType } from './Collectable';
 import { Building } from '../../game/model/entity/building/Building';
 
 export class Crystal extends BaseEntity implements Collectable {
@@ -34,6 +34,10 @@ export class Crystal extends BaseEntity implements Collectable {
 
     getTargetBuildingTypes(): Building[] {
         return [Building.POWER_STATION, Building.TOOLSTATION];
+    }
+
+    getCollectableType(): CollectableType {
+        return CollectableType.CRYSTAL;
     }
 
 }
