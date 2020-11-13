@@ -58,20 +58,26 @@ export class MainPanel extends IconPanel {
         const itemDrill = selectWallPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_Dig');
         itemDrill.onClick = () => {
             const selectedSurface = GameState.selectedEntities[0] as Surface;
-            EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.DRILL, selectedSurface)));
+            if (!selectedSurface.hasJobType(SurfaceJobType.DRILL)) {
+                EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.DRILL, selectedSurface)));
+            }
             EventBus.publishEvent(new EntityDeselected());
         };
         const itemReinforce = selectWallPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_Reinforce');
         itemReinforce.onClick = () => {
             const selectedSurface = GameState.selectedEntities[0] as Surface;
-            EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.REINFORCE, selectedSurface)));
+            if (!selectedSurface.hasJobType(SurfaceJobType.REINFORCE)) {
+                EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.REINFORCE, selectedSurface)));
+            }
             EventBus.publishEvent(new EntityDeselected());
         };
         const itemDynamite = selectWallPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_Dynamite');
         itemDynamite.onClick = () => {
             const selectedSurface = GameState.selectedEntities[0] as Surface;
-            EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.BLOW, selectedSurface)));
-            EventBus.publishEvent(new SpawnEvent(SpawnType.DYNAMITE));
+            if (!selectedSurface.hasJobType(SurfaceJobType.BLOW)) {
+                EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.BLOW, selectedSurface)));
+                EventBus.publishEvent(new SpawnEvent(SpawnType.DYNAMITE));
+            }
             EventBus.publishEvent(new EntityDeselected());
         };
         const itemDeselect = selectWallPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig');
