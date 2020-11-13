@@ -131,12 +131,16 @@ export class Surface implements Selectable {
     }
 
     isSupported(): boolean {
-        const floorLeft = Number(this.terrain.getSurface(this.x - 1, this.y).surfaceType.floor);
-        const floorTop = Number(this.terrain.getSurface(this.x, this.y - 1).surfaceType.floor);
-        const floorRight = Number(this.terrain.getSurface(this.x + 1, this.y).surfaceType.floor);
-        const floorBottom = Number(this.terrain.getSurface(this.x, this.y + 1).surfaceType.floor);
+        const floorLeft = Number(this.terrain.getSurface(this.x - 1, this.y).isDiscoveredFloor());
+        const floorTop = Number(this.terrain.getSurface(this.x, this.y - 1).isDiscoveredFloor());
+        const floorRight = Number(this.terrain.getSurface(this.x + 1, this.y).isDiscoveredFloor());
+        const floorBottom = Number(this.terrain.getSurface(this.x, this.y + 1).isDiscoveredFloor());
         let floorSum = floorLeft + floorTop + floorRight + floorBottom;
         return floorSum <= 2;
+    }
+
+    isDiscoveredFloor(): boolean {
+        return this.surfaceType.floor && this.discovered;
     }
 
     updateMesh(force: boolean = true) {
