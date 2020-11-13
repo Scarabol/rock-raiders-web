@@ -8,8 +8,8 @@ import { SurfaceSelectedEvent } from '../../../event/LocalEvents';
 import { JobType, SurfaceJob, SurfaceJobType } from '../../../game/model/job/Job';
 import { JobCreateEvent, JobDeleteEvent } from '../../../event/WorldEvents';
 import { getRandom, getRandomSign } from '../../../core/Util';
-import { Crystal } from '../Crystal';
-import { Ore } from '../Ore';
+import { Crystal } from '../collect/Crystal';
+import { Ore } from '../collect/Ore';
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../main';
 
 export class Surface implements Selectable {

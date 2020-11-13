@@ -1,9 +1,9 @@
-import { BaseEntity } from './BaseEntity';
-import { LWOLoader } from '../../resource/LWOLoader';
-import { ResourceManager } from '../../resource/ResourceManager';
+import { BaseEntity } from '../BaseEntity';
+import { LWOLoader } from '../../../resource/LWOLoader';
+import { ResourceManager } from '../../../resource/ResourceManager';
 import { Color, Material, MeshPhongMaterial } from 'three';
 import { Collectable, CollectableType } from './Collectable';
-import { Building } from '../../game/model/entity/building/Building';
+import { Building } from '../../../game/model/entity/building/Building';
 
 export class Crystal extends BaseEntity implements Collectable {
 

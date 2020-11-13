@@ -1,5 +1,5 @@
-import { AnimEntity } from './AnimEntity';
+import { MovableEntity } from './MovableEntity';
 
-export class MonsterEntity extends AnimEntity {
+export class MonsterEntity extends MovableEntity {
 
 }

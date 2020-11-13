@@ -1,4 +1,4 @@
-import { AnimationEntityType } from '../scene/model/AnimationEntityType';
+import { AnimationEntityType } from '../scene/model/anim/AnimationEntityType';
 import { getPath, iGet } from './wadworker/WadUtil';
 import { ResourceManager } from './ResourceManager';
 import { LWOLoader } from './LWOLoader';

@@ -3,7 +3,7 @@ import { Building } from './entity/building/Building';
 import { Selectable, SelectionType } from './Selectable';
 import { Raider } from '../../scene/model/Raider';
 import { VehicleEntity } from '../../scene/model/VehicleEntity';
-import { Collectable } from '../../scene/model/Collectable';
+import { Collectable } from '../../scene/model/collect/Collectable';
 import { Vector3 } from 'three';
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE } from '../../main';
 

@@ -6,8 +6,8 @@
  * File format description: http://www.martinreddy.net/gfx/3d/LWSC.txt
  */
 
-import { AnimClip } from '../scene/model/AnimClip';
-import { AnimSubObj } from '../scene/model/AnimSubObj';
+import { AnimClip } from '../scene/model/anim/AnimClip';
+import { AnimSubObj } from '../scene/model/anim/AnimSubObj';
 import { Group } from 'three';
 import { getFilename } from '../core/Util';
 import { ResourceManager } from './ResourceManager';

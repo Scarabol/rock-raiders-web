@@ -16,7 +16,7 @@ export class Supervisor {
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr;
         EventBus.registerEventListener(JobCreateEvent.eventKey, (event: JobCreateEvent) => {
-            if (event.job.raiders.length < 1) this.availableJobs.push(event.job);
+            if (event.job.fulfiller.length < 1) this.availableJobs.push(event.job);
         });
         EventBus.registerEventListener(JobDeleteEvent.eventKey, (event: JobDeleteEvent) => {
             event.job.cancel();

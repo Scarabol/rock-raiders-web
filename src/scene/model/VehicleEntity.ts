@@ -1,25 +1,14 @@
-import { Selectable, SelectionType } from '../../game/model/Selectable';
-import { MovableEntity } from '../../game/model/entity/MovableEntity';
+import { SelectionType } from '../../game/model/Selectable';
+import { FulfillerEntity } from './FulfillerEntity';
 
-export class VehicleEntity extends MovableEntity implements Selectable {
+export class VehicleEntity extends FulfillerEntity {
 
-    selected: boolean;
-
-    getSelectionType(): SelectionType {
-        return SelectionType.VEHICLE;
+    constructor(aeFilename: string, speed: number) {
+        super(SelectionType.VEHICLE, aeFilename, speed);
     }
 
-    select(): Selectable {
-        if (!this.selected) {
-            this.selected = true;
-        }
-        return this;
-    }
-
-    deselect(): any {
-        if (this.selected) {
-            this.selected = false;
-        }
+    isOnRubble(): boolean {
+        return false;
     }
 
 }

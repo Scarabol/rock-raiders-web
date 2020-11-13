@@ -1,10 +1,10 @@
 import { CanvasTexture, ClampToEdgeWrapping, LinearFilter, MeshPhongMaterial, Object3D, Sprite, SpriteMaterial } from 'three';
 import { AnimClip } from './AnimClip';
-import { iGet } from '../../core/Util';
+import { iGet } from '../../../core/Util';
 import { AnimationEntityType } from './AnimationEntityType';
-import { BaseEntity } from './BaseEntity';
+import { BaseEntity } from '../BaseEntity';
 import { AnimSubObj } from './AnimSubObj';
-import { GameState } from '../../game/model/GameState';
+import { GameState } from '../../../game/model/GameState';
 
 export class AnimEntity extends BaseEntity {
 

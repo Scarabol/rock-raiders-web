@@ -1,11 +1,11 @@
 import { Surface } from '../../../scene/model/map/Surface';
 import { Vector3 } from 'three';
-import { Raider } from '../../../scene/model/Raider';
-import { Collectable, CollectableType } from '../../../scene/model/Collectable';
+import { Collectable, CollectableType } from '../../../scene/model/collect/Collectable';
 import { PICKUP_RANGE, RAIDER_SPEED, TILESIZE } from '../../../main';
 import { GameState } from '../GameState';
 import { EventBus } from '../../../event/EventBus';
 import { CollectEvent } from '../../../event/WorldEvents';
+import { FulfillerEntity } from '../../../scene/model/FulfillerEntity';
 
 export enum JobType {
 
@@ -18,29 +18,29 @@ export enum JobType {
 export abstract class Job {
 
     type: JobType;
-    raiders: Raider[] = [];
+    fulfiller: FulfillerEntity[] = [];
 
     constructor(type: JobType) {
         this.type = type;
     }
 
-    assign(raider: Raider) {
-        const index = this.raiders.indexOf(raider);
-        if (raider && index === -1) {
-            this.raiders.push(raider);
+    assign(fulfiller: FulfillerEntity) {
+        const index = this.fulfiller.indexOf(fulfiller);
+        if (fulfiller && index === -1) {
+            this.fulfiller.push(fulfiller);
         }
     }
 
-    unassign(raider: Raider) {
-        const index = this.raiders.indexOf(raider);
-        if (index > -1) this.raiders.splice(index, 1);
+    unassign(fulfiller: FulfillerEntity) {
+        const index = this.fulfiller.indexOf(fulfiller);
+        if (index > -1) this.fulfiller.splice(index, 1);
     }
 
     cancel() {
-        this.raiders.forEach((raider) => raider.stopJob());
+        this.fulfiller.forEach((fulfiller) => fulfiller.stopJob());
     }
 
-    isQualified(raider: Raider): boolean {
+    isQualified(fulfiller: FulfillerEntity): boolean {
         return true;
     }
 
@@ -84,8 +84,8 @@ export class SurfaceJob extends Job {
         this.workType = workType;
     }
 
-    isQualified(raider: Raider) {
-        return raider.hasTools(this.workType.requiredTools) && raider.hasSkills(this.workType.requiredSkills);
+    isQualified(fulfiller: FulfillerEntity) {
+        return fulfiller.hasTools(this.workType.requiredTools) && fulfiller.hasSkills(this.workType.requiredSkills);
     }
 
     getPosition(): Vector3 {
@@ -136,8 +136,8 @@ export class CollectJob extends Job {
         return pos.sub(new Vector3(x, pos.y, z)).length() < PICKUP_RANGE;
     }
 
-    isQualified(raider: Raider) {
-        return raider.carries === null;
+    isQualified(fulfiller: FulfillerEntity) {
+        return fulfiller.carries === null;
     }
 
     onJobComplete() {

@@ -1,6 +1,6 @@
 import ResourceWorker from 'worker-loader!./wadworker/Resource.worker';
 import { RepeatWrapping, Texture } from 'three';
-import { AnimationEntityType } from '../scene/model/AnimationEntityType';
+import { AnimationEntityType } from '../scene/model/anim/AnimationEntityType';
 import { InitLoadingMessage } from './wadworker/InitLoadingMessage';
 import { createContext, createDummyImage } from '../core/ImageHelper';
 import { iGet } from './wadworker/WadUtil';

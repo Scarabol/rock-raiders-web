@@ -1,7 +1,7 @@
 import { EventBus } from '../../event/EventBus';
 import { BuildingDeselected, BuildingSelected } from '../../event/LocalEvents';
 import { Building } from '../../game/model/entity/building/Building';
-import { AnimEntity } from './AnimEntity';
+import { AnimEntity } from './anim/AnimEntity';
 import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { MathUtils, Vector3 } from 'three';
