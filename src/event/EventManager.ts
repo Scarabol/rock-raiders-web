@@ -20,6 +20,7 @@ export class EventManager {
             .forEach((eventType) => {
                 screen.gameCanvasContainer.addEventListener(eventType, (event: PointerEvent) => {
                     if (!screen.isInRect(event)) return;
+                    event.preventDefault();
                     // all event attibutes used by controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
                     const nonBubblingClone = new PointerEvent(event.type, {
                         bubbles: false, // disable bubbling otherwise we'll trigger this same event handler again
