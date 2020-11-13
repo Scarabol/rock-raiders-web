@@ -64,7 +64,7 @@ export class GameState {
         // TODO handle event triggering here (avoid sending unecessary events)
         this.selectedEntities.forEach((entity) => entity.deselect()); // TODO only deselect entities not in new selection
         this.selectedEntities = [];
-        this.selectionType = SelectionType.NONE;
+        this.selectionType = null;
         if (entities) {
             entities.forEach((entity) => entity.select());
             if (entities.length === 1) {

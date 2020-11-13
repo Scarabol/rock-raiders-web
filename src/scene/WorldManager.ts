@@ -28,6 +28,8 @@ export class WorldManager {
         this.sceneManager.cursorTorchlight.distance *= TILESIZE;
         EventBus.registerEventListener(EntityDeselected.eventKey, () => {
             GameState.selectedEntities.forEach((entity) => entity.deselect());
+            GameState.selectedEntities = [];
+            GameState.selectionType = null;
         });
         EventBus.registerEventListener(RaiderRequested.eventKey, (event: RaiderRequested) => {
             GameState.requestedRaiders = event.numRequested;

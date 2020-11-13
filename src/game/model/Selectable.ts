@@ -10,7 +10,6 @@ export interface Selectable {
 
 export enum SelectionType {
 
-    NONE,
     SURFACE,
     PILOT,
     BUILDING,
