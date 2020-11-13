@@ -6,7 +6,7 @@ import { getRandom, iGet } from '../core/Util';
 import { SurfaceType } from './model/map/SurfaceType';
 import { Terrain } from './model/map/Terrain';
 import { EventBus } from '../event/EventBus';
-import { EntityDeselected, JobCreateEvent, RaiderRequested, SpawnEvent } from '../event/WorldEvents';
+import { JobCreateEvent, RaiderRequested, SpawnEvent } from '../event/WorldEvents';
 import { Raider } from './model/Raider';
 import { BuildingEntity } from './model/BuildingEntity';
 import { GameState } from '../game/model/GameState';
@@ -16,6 +16,7 @@ import { CollectJob, MoveJob } from '../game/model/job/Job';
 import { Collectable } from './model/Collectable';
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main';
 import degToRad = MathUtils.degToRad;
+import { EntityDeselected } from '../event/LocalEvents';
 
 export class WorldManager {
 
@@ -142,13 +143,6 @@ export class WorldManager {
         raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
         const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children);
         return intersects.length > 0 ? intersects[0].point : null;
-    }
-
-    moveMouseTorch(rx: number, ry: number) {
-        const intersectionPoint = this.getTerrainIntersectionPoint(rx, ry);
-        if (intersectionPoint) {
-            this.setTorchPosition(intersectionPoint);
-        }
     }
 
     setTorchPosition(position: Vector3) {

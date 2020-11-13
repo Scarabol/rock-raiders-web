@@ -5,8 +5,9 @@ import { GameState } from '../model/GameState';
 import { Raider } from '../../scene/model/Raider';
 import { MoveJob, SurfaceJob, SurfaceJobType } from '../model/job/Job';
 import { EventBus } from '../../event/EventBus';
-import { EntityDeselected, JobCreateEvent } from '../../event/WorldEvents';
+import { JobCreateEvent } from '../../event/WorldEvents';
 import { Surface } from '../../scene/model/map/Surface';
+import { EntityDeselected } from '../../event/LocalEvents';
 
 export class GameLayer extends ScreenLayer {
 

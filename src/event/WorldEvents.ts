@@ -1,8 +1,5 @@
 import { GameEvent } from './EventBus';
 import { Job } from '../game/model/job/Job';
-import { Raider } from '../scene/model/Raider';
-import { LocalEvent } from './LocalEvents';
-import { VehicleEntity } from '../scene/model/VehicleEntity';
 import { CollectableType } from '../scene/model/Collectable';
 
 export class WorldEvent extends GameEvent {
@@ -91,38 +88,3 @@ export class CollectEvent extends WorldEvent {
 
 }
 
-export class RaiderSelected extends LocalEvent {
-
-    static eventKey: string = 'raider.select';
-
-    raider: Raider;
-
-    constructor(raider: Raider) {
-        super(RaiderSelected.eventKey);
-        this.raider = raider;
-    }
-
-}
-
-export class VehicleSelected extends LocalEvent {
-
-    static eventKey: string = 'vehicle.select';
-
-    vehicle: VehicleEntity;
-
-    constructor(vehicle: VehicleEntity) {
-        super(VehicleSelected.eventKey);
-        this.vehicle = vehicle;
-    }
-
-}
-
-export class EntityDeselected extends LocalEvent {
-
-    static eventKey: string = 'entity.deselect';
-
-    constructor() {
-        super(EntityDeselected.eventKey);
-    }
-
-}

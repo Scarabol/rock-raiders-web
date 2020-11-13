@@ -1,7 +1,7 @@
 import { ResourceManager } from '../../resource/ResourceManager';
 import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { EventBus } from '../../event/EventBus';
-import { JobCreateEvent, RaiderSelected } from '../../event/WorldEvents';
+import { JobCreateEvent} from '../../event/WorldEvents';
 import { MovableEntity } from '../../game/model/entity/MovableEntity';
 import { CollectJob, Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
 import { Vector3 } from 'three';
@@ -9,6 +9,7 @@ import { getRandom, getRandomSign } from '../../core/Util';
 import { Collectable } from './Collectable';
 import { GameState } from '../../game/model/GameState';
 import { NATIVE_FRAMERATE, PICKUP_RANGE, RAIDER_SPEED } from '../../main';
+import { RaiderSelected } from '../../event/LocalEvents';
 
 export class Raider extends MovableEntity implements Selectable {
 

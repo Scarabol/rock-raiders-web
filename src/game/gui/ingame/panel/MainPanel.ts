@@ -1,7 +1,7 @@
 import { IconPanel } from './IconPanel';
 import { EventBus } from '../../../../event/EventBus';
-import { BuildingDeselected, BuildingSelected, SurfaceSelectedEvent } from '../../../../event/LocalEvents';
-import { EntityDeselected, JobCreateEvent, RaiderRequested, RaiderSelected, SpawnEvent, SpawnType, VehicleSelected } from '../../../../event/WorldEvents';
+import { BuildingDeselected, BuildingSelected, EntityDeselected, RaiderSelected, SurfaceSelectedEvent, VehicleSelected } from '../../../../event/LocalEvents';
+import { JobCreateEvent, RaiderRequested, SpawnEvent, SpawnType} from '../../../../event/WorldEvents';
 import { SurfaceJob, SurfaceJobType } from '../../../model/job/Job';
 import { GameState } from '../../../model/GameState';
 import { BuildingEntity } from '../../../../scene/model/BuildingEntity';
