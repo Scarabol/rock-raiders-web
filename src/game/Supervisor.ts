@@ -19,9 +19,9 @@ export class Supervisor {
             if (event.job.raiders.length < 1) this.availableJobs.push(event.job);
         });
         EventBus.registerEventListener(JobDeleteEvent.eventKey, (event: JobDeleteEvent) => {
+            event.job.cancel();
             const index = this.availableJobs.indexOf(event.job);
             if (index > -1) {
-                event.job.cancel();
                 this.availableJobs.splice(index, 1);
             }
         });

@@ -6,7 +6,7 @@ import { Selectable, SelectionType } from '../../../game/model/Selectable';
 import { EventBus } from '../../../event/EventBus';
 import { SurfaceSelectedEvent } from '../../../event/LocalEvents';
 import { JobType, SurfaceJob, SurfaceJobType } from '../../../game/model/job/Job';
-import { JobCreateEvent } from '../../../event/WorldEvents';
+import { JobCreateEvent, JobDeleteEvent } from '../../../event/WorldEvents';
 import { getRandom, getRandomSign } from '../../../core/Util';
 import { Crystal } from '../Crystal';
 import { Ore } from '../Ore';
@@ -42,7 +42,7 @@ export class Surface implements Selectable {
             const jobType = event.job.type;
             if (jobType === JobType.SURFACE) {
                 const surfaceJob = event.job as SurfaceJob;
-                if (surfaceJob.surface === this && !this.hasJobType(surfaceJob.workType)) this.jobs.push(surfaceJob);
+                if (surfaceJob.surface === this) this.jobs.push(surfaceJob);
             }
         });
     }
@@ -116,7 +116,7 @@ export class Surface implements Selectable {
     }
 
     cancelJobs() {
-        this.jobs.forEach((job) => job.cancel());
+        this.jobs.forEach((job) => EventBus.publishEvent(new JobDeleteEvent(job)));
         this.jobs = [];
         this.updateJobColor();
     }
