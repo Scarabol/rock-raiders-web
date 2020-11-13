@@ -22,7 +22,7 @@ export class MainPanel extends IconPanel {
         const selectVehiclePanel = this.addSubPanel(7);
         const teleportItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan');
         teleportItem.disabled = false;
-        teleportItem.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders+1));
+        teleportItem.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders + 1));
         // TODO add decrease requested raider spawn option
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding');
         buildingItem.disabled = false;

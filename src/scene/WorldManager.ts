@@ -33,7 +33,6 @@ export class WorldManager {
         });
         EventBus.registerEventListener(RaiderRequested.eventKey, (event: RaiderRequested) => {
             GameState.requestedRaiders = event.numRequested;
-            console.log('requested raiders: ' + GameState.requestedRaiders);
             if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
                 this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER);
             }
@@ -200,9 +199,7 @@ export class WorldManager {
     }
 
     checkSpawnRaiders() {
-        console.log('check spawn raiders');
         if (GameState.requestedRaiders < 1) {
-            console.log('No raiders requested, canceling interval');
             if (this.spawnRaiderInterval) clearInterval(this.spawnRaiderInterval);
             this.spawnRaiderInterval = null;
             return;

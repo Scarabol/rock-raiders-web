@@ -53,7 +53,7 @@ ResourceManager.onLoadDone = () => {
     // setup complete
     loadingScreen.hide();
     // mainMenuScreen.showMainMenu();
-    mainMenuScreen.selectLevel('Level03');
+    mainMenuScreen.selectLevel('Level01');
 };
 
 // start the game engine with loading resources

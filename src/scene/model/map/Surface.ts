@@ -30,8 +30,6 @@ export class Surface implements Selectable {
     mesh: Mesh = null;
     needsMeshUpdate: boolean = false;
 
-    // TODO lavaLevel and rubbleLevel for GROUND
-
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain;
         this.surfaceType = surfaceType;

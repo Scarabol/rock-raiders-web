@@ -19,7 +19,7 @@ export class Terrain {
         this.roofGroup.visible = false; // keep roof hidden unless switched to other camera
     }
 
-    getSurfaceFromWorld(worldPosition: Vector3) {
+    getSurfaceFromWorld(worldPosition: Vector3): Surface | null {
         return this.getSurface(worldPosition.x / TILESIZE, worldPosition.z / TILESIZE);
     }
 
@@ -29,7 +29,7 @@ export class Terrain {
         return this.getSurfaceOrNull(x, y) || new Surface(this, SurfaceType.SOLID_ROCK, x, y, 0);
     }
 
-    getSurfaceOrNull(x, y): Surface {
+    getSurfaceOrNull(x, y): Surface | null {
         if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
             return this.surfaces[x][y];
         } else {

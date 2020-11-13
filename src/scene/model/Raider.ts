@@ -14,7 +14,6 @@ export class Raider extends MovableEntity implements Selectable {
 
     selected: boolean;
     workInterval = null;
-    moveInterval = null;
     job: Job = null;
     activity: RaiderActivity = null;
     jobSubPos: Vector3 = null;
