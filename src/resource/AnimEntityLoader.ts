@@ -75,7 +75,7 @@ export class AnimEntityLoader {
                     const looping = iGet(act, 'LOOPING') === true;
                     if (isLws) {
                         const content = ResourceManager.getResource(path + file + '.lws');
-                        act.animation = LWSCLoader.parse(path, content);
+                        act.animation = new LWSCLoader(path).parse(content);
                         act.animation.looping = looping;
                         act.animation.transcoef = transcoef ? Number(transcoef) : 1;
                         (entityType.activities)[keyname] = act;

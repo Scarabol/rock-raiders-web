@@ -15,93 +15,42 @@ import { LWOLoader } from './LWOLoader';
 
 export class LWSCLoader {
 
-    static parse(path, content): AnimClip {
-        const lines: string[] = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
+    path: string = '';
+    verbose: boolean = false;
+    animationClip: AnimClip = new AnimClip();
+    lines: string[] = [];
+    lineIndex: number = 0;
+
+    constructor(path: string, verbose: boolean = false) {
+        this.path = path;
+        this.verbose = verbose;
+        if (this.verbose) console.log('Using verbose mode');
+    }
+
+    parse(content): AnimClip {
+        this.lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
             .split('\n')
-            .map((l) => l.trim());
+            .map(l => l.trim());
 
-        if (lines[0] !== 'LWSC') {
+        if (this.lines[0] !== 'LWSC') {
             throw 'Invalid start of file! Expected \'LWSC\' in first line';
         }
 
-        const numOfModels = parseInt(lines[1], 10); // TODO is this correct? May be something else
+        const numOfModels = parseInt(this.lines[1], 10); // TODO is this correct? May be something else
         if (numOfModels !== 1) {
             console.warn('Number of models has unexpected value: ' + numOfModels);
         }
 
-        const animationClip = new AnimClip();
-        for (let c = 2; c < lines.length; c++) {
-            let line = lines[c];
+        for (this.lineIndex = 2; this.lineIndex < this.lines.length; this.lineIndex++) {
+            let line = this.lines[this.lineIndex];
             if (!line) continue; // empty line: object separator
-            const [key, value] = line.split(' ').filter((l: string) => l !== '');
+            const key = line.split(' ')[0];
             if (key === 'FirstFrame') {
-                animationClip.firstFrame = parseInt(value);
-            } else if (key === 'LastFrame') {
-                animationClip.lastFrame = parseInt(value);
-            } else if (key === 'FrameStep') {
-                const frameStep = parseInt(value);
-                if (frameStep !== 1) console.error('Animation frameStep has unexpected value: ' + frameStep);
-            } else if (key === 'FramesPerSecond') {
-                animationClip.framesPerSecond = parseInt(value);
+                this.parseFrameBlock();
             } else if (key === 'AddNullObject' || key === 'LoadObject') {
-                const subObj = new AnimSubObj();
-                if (key === 'LoadObject') {
-                    const filename = getFilename(value);
-                    subObj.name = filename.slice(0, filename.length - '.lwo'.length);
-                    subObj.filename = path + filename;
-                    // TODO do not parse twice, read from cache first
-                    const lwoBuffer = ResourceManager.getResource(subObj.filename);
-                    subObj.model = new LWOLoader(path).parse(lwoBuffer);
-                } else if (key === 'AddNullObject') {
-                    subObj.name = value;
-                    subObj.model = new Group();
-                } else {
-                    throw 'Unexpected line: ' + line;
-                }
-                line = lines[++c];
-                while (line) {
-                    if (line.startsWith('ObjectMotion ')) {
-                        line = lines[++c];
-                        const lenInfos = parseInt(line);
-                        line = lines[++c];
-                        const lenFrames = parseInt(line);
-                        for (let x = 0; x < lenFrames && !line.startsWith('EndBehavior '); x++) {
-                            line = lines[++c];
-                            const infos = line.split(' ').map(Number);
-                            if (infos.length !== lenInfos) console.warn('Number of infos (' + infos.length + ') does not match if specified count (' + lenInfos + ')');
-                            line = lines[++c];
-                            const animationFrameIndex = parseInt(line.split(' ')[0]); // other entries in line should be zeros
-                            subObj.setFrameAndFollowing(animationFrameIndex, animationClip.lastFrame, infos);
-                        }
-                        line = lines[++c];
-                    } else if (line.startsWith('ParentObject ')) {
-                        subObj.parentObjInd = Number(line.split(' ')[1]) - 1; // index is 1 based
-                    } else if (line.startsWith('ShowObject ') || line.startsWith('LockedChannels ')) {
-                        // only used in editor
-                    } else if (line.startsWith('ShadowOptions ')) { // TODO implement shadow options (bitwise)
-                        // 0 - Self Shadow
-                        // 1 - Cast Shadow
-                        // 2 - Receive Shadow
-                    } else if (line.startsWith('ObjDissolve ')) {
-                        line = lines[++c];
-                        // const numOfInformationChannels = Number(line);
-                        line = lines[++c];
-                        const numOfKeyframes = Number(line);
-                        line = lines[++c];
-                        for (let x = 0; x < numOfKeyframes && !line.startsWith('EndBehavior '); x++) {
-                            const opacity = 1 - Number(line);
-                            line = lines[++c];
-                            const frameNum = Number(line.split(' ')[0]);
-                            subObj.setOpacityAndFollowing(frameNum, animationClip.lastFrame, opacity);
-                            line = lines[++c];
-                        }
-                    } else {
-                        // console.log('Unhandled line: ' + line); // TODO debug logging, analyze remaining entries
-                    }
-                    line = lines[++c];
-                }
-                animationClip.bodies.push(subObj);
+                this.parseObjectBlock();
+                if (this.verbose) console.log(this.animationClip.bodies[this.animationClip.bodies.length - 1]);
             } else if (line.startsWith('PreviewFirstFrame ') || line.startsWith('PreviewLastFrame ') || line.startsWith('PreviewFrameStep ')) {
                 // only used in editor
             } else {
@@ -109,6 +58,110 @@ export class LWSCLoader {
             }
         }
 
-        return animationClip;
+        if (this.verbose) console.log(this.animationClip);
+        return this.animationClip;
     }
+
+    parseLine(line: string): string[] {
+        return line.split(' ').filter((l: string) => l !== '');
+    }
+
+    parseFrameBlock() {
+        for (; this.lineIndex < this.lines.length; this.lineIndex++) {
+            const line = this.lines[this.lineIndex];
+            if (!line) return;
+            const [key, value] = this.parseLine(line);
+            if (key === 'FirstFrame') {
+                this.animationClip.firstFrame = parseInt(value);
+            } else if (key === 'LastFrame') {
+                this.animationClip.lastFrame = parseInt(value);
+            } else if (key === 'FrameStep') {
+                const frameStep = parseInt(value);
+                if (frameStep !== 1) console.error('Animation frameStep has unexpected value: ' + frameStep);
+            } else if (key === 'FramesPerSecond') {
+                this.animationClip.framesPerSecond = parseInt(value);
+            } else if (key === 'PreviewFirstFrame' || key === 'PreviewLastFrame' || key === 'PreviewFrameStep') {
+                // only used in editor
+            } else {
+                console.warn('Unexpected key in frame block');
+            }
+        }
+        console.error('Parsing block reached content end');
+    }
+
+    parseObjectBlock(): AnimSubObj {
+        const subObj = new AnimSubObj();
+        this.animationClip.bodies.push(subObj);
+        for (; this.lineIndex < this.lines.length; this.lineIndex++) {
+            let line = this.lines[this.lineIndex];
+            if (!line) return;
+            const [key, value] = this.parseLine(line);
+            if (key === 'AddNullObject' || key === 'LoadObject') {
+                if (key === 'LoadObject') {
+                    const filename = getFilename(value);
+                    subObj.name = filename.slice(0, filename.length - '.lwo'.length);
+                    subObj.filename = this.path + filename;
+                    // TODO do not parse twice, read from cache first
+                    const lwoBuffer = ResourceManager.getResource(subObj.filename);
+                    subObj.model = new LWOLoader(this.path).parse(lwoBuffer);
+                } else if (key === 'AddNullObject') {
+                    subObj.name = value;
+                    subObj.model = new Group();
+                } else {
+                    throw 'Unexpected line: ' + line;
+                }
+            } else if (key === 'ObjectMotion') {
+                let line = this.lines[++this.lineIndex];
+                const lenInfos = parseInt(line);
+                line = this.lines[++this.lineIndex];
+                const lenFrames = parseInt(line);
+                this.lineIndex++;
+                for (let c = 0; c < lenFrames; c++) {
+                    let line = this.lines[this.lineIndex + c * 2];
+                    if (line.startsWith('EndBehavior')) break;
+                    const infos = line.split(' ').map(Number);
+                    if (infos.length !== lenInfos) console.warn('Number of infos (' + infos.length + ') does not match if specified count (' + lenInfos + ')');
+                    line = this.lines[this.lineIndex + c * 2 + 1];
+                    const animationFrameIndex = parseInt(line.split(' ')[0]); // other entries in line should be zeros
+                    subObj.setFrameAndFollowing(animationFrameIndex, this.animationClip.lastFrame, infos);
+                }
+                this.lineIndex += lenFrames * 2;
+            } else if (key === 'ParentObject') {
+                subObj.parentObjInd = Number(value) - 1; // index is 1 based
+                if (this.verbose) console.log('parent obj ind is: ' + subObj.parentObjInd);
+            } else if (key === 'ShowObject ' || key === 'LockedChannels') {
+                // only used in editor
+            } else if (key === 'ShadowOptions') { // TODO implement shadow options (bitwise)
+                // 0 - Self Shadow
+                // 1 - Cast Shadow
+                // 2 - Receive Shadow
+            } else if (key === 'ObjDissolve') {
+                if (value == '(envelope)') {
+                    let line = this.lines[++this.lineIndex];
+                    const numOfInformationChannels = parseInt(line);
+                    if (numOfInformationChannels !== 1) console.error('Number of information channels for opacity is not 1, but: ' + numOfInformationChannels);
+                    line = this.lines[++this.lineIndex];
+                    const numOfKeyframes = parseInt(line);
+                    this.lineIndex++;
+                    for (let c = 0; c < numOfKeyframes; c++) {
+                        let line = this.lines[this.lineIndex + c * 2];
+                        if (line.startsWith('EndBehavior')) break;
+                        const opacity = 1 - Number(line);
+                        line = this.lines[this.lineIndex + c * 2 + 1];
+                        const frameNum = Number(line.split(' ')[0]);
+                        subObj.setOpacityAndFollowing(frameNum, this.animationClip.lastFrame, opacity);
+                    }
+                    this.lineIndex += numOfKeyframes * 2;
+                } else {
+                    const opacity = 1 - Number(value);
+                    subObj.setOpacityAndFollowing(0, this.animationClip.lastFrame, opacity);
+                }
+            } else {
+                // console.log('Unhandled line in object block: ' + line); // TODO debug logging
+            }
+        }
+        console.error('Parsing block reached content end');
+        return subObj;
+    }
+
 }

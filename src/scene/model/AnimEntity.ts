@@ -1,4 +1,4 @@
-import { CanvasTexture, ClampToEdgeWrapping, LinearFilter, Object3D, Sprite, SpriteMaterial } from 'three';
+import { CanvasTexture, ClampToEdgeWrapping, LinearFilter, MeshPhongMaterial, Object3D, Sprite, SpriteMaterial } from 'three';
 import { AnimClip } from './AnimClip';
 import { iGet } from '../../core/Util';
 import { AnimationEntityType } from './AnimationEntityType';
@@ -97,7 +97,11 @@ export class AnimEntity extends BaseEntity {
                 const opacity = body.opacity[frameIndex];
                 if (material && opacity !== undefined) {
                     const matArr = Array.isArray(material) ? material : [material];
-                    matArr.forEach((mat) => mat.opacity = opacity);
+                    matArr.forEach((mat: MeshPhongMaterial) => {
+                        mat.opacity = opacity;
+                        mat.transparent = true;
+                        mat.alphaTest = 0;
+                    });
                 }
             }
         });
