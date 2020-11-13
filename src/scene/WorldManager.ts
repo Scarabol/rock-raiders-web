@@ -2,7 +2,7 @@ import { SceneManager } from './SceneManager';
 import { TerrainLoader } from './TerrainLoader';
 import { ResourceManager } from '../resource/ResourceManager';
 import { MathUtils, Raycaster, Vector3 } from 'three';
-import { iGet } from '../core/Util';
+import { getRandom, iGet } from '../core/Util';
 import { SurfaceType } from './model/map/SurfaceType';
 import { Terrain } from './model/map/Terrain';
 import { EventBus } from '../event/EventBus';
@@ -12,7 +12,7 @@ import { BuildingEntity } from './model/BuildingEntity';
 import { GameState } from '../game/model/GameState';
 import { Building } from '../game/model/entity/building/Building';
 import { Crystal } from './model/Crystal';
-import { CollectJob } from '../game/model/job/Job';
+import { CollectJob, MoveJob } from '../game/model/job/Job';
 import { Collectable } from './model/Collectable';
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main';
 import degToRad = MathUtils.degToRad;
@@ -220,9 +220,11 @@ export class WorldManager {
             raider.worldMgr = this;
             raider.setActivity('TeleportIn', () => {
                 station.spawning = false;
-                raider.setActivity('Stand', () => { // FIXME walk to random position on building power path
-                    GameState.raiders.push(raider);
-                });
+                const walkOutPos = station.getPosition().add(new Vector3(0, 0, TILESIZE / 2 + getRandom(TILESIZE / 4))
+                    .applyEuler(station.getRotation()).applyAxisAngle(new Vector3(0, 1, 0), degToRad(-30 + getRandom(60))));
+                walkOutPos.y = this.getTerrainHeight(walkOutPos.x, walkOutPos.z);
+                raider.setJob(new MoveJob(walkOutPos));
+                GameState.raiders.push(raider);
             });
             raider.group.position.copy(station.group.position).add(new Vector3(0, 0, TILESIZE / 2).applyEuler(station.group.rotation));
             raider.group.rotation.copy(station.group.rotation);

@@ -152,6 +152,7 @@ export class Raider extends MovableEntity implements Selectable {
             if (oldJob && oldJob.type === JobType.SURFACE) EventBus.publishEvent(new JobCreateEvent(oldJob));
         }
         this.job = job;
+        this.job.assign(this);
     }
 
     stopJob() {
