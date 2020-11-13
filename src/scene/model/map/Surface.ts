@@ -77,6 +77,7 @@ export class Surface implements Selectable {
     collapse() {
         this.cancelJobs();
         this.surfaceType = SurfaceType.RUBBLE4;
+        this.containedOre += 4;
         this.needsMeshUpdate = true;
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors();
@@ -102,13 +103,12 @@ export class Surface implements Selectable {
             const z = this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4);
             this.terrain.worldMgr.addCollectable(new Crystal(), x, z);
         }
-        this.dropContainedOre();
-        // hide ore in the rubble
-        this.containedOre = 1;
+        this.dropContainedOre(this.containedOre - 4);
     }
 
-    private dropContainedOre() {
-        for (let c = 0; c < this.containedOre; c++) {
+    private dropContainedOre(dropAmount: number) {
+        for (let c = 0; c < dropAmount && this.containedOre > 0; c++) {
+            this.containedOre--;
             const x = this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4);
             const z = this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4);
             this.terrain.worldMgr.addCollectable(new Ore(), x, z);
@@ -126,8 +126,7 @@ export class Surface implements Selectable {
         else if (this.surfaceType === SurfaceType.RUBBLE3) this.surfaceType = SurfaceType.RUBBLE2;
         else if (this.surfaceType === SurfaceType.RUBBLE2) this.surfaceType = SurfaceType.RUBBLE1;
         else if (this.surfaceType === SurfaceType.RUBBLE1) this.surfaceType = SurfaceType.GROUND;
-        this.dropContainedOre();
-        this.containedOre = this.surfaceType !== SurfaceType.GROUND ? 1 : 0;
+        this.dropContainedOre(1);
         this.updateMesh();
     }
 
