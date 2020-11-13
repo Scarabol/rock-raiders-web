@@ -24,53 +24,51 @@ export class TerrainLoader {
         const surfaceMap = ResourceManager.getMap(iGet(levelConf, 'SurfaceMap')).level;
         const predugMap = ResourceManager.getMap(iGet(levelConf, 'PreDugMap')).level;
         const cryOreMap = ResourceManager.getMap(iGet(levelConf, 'CryOreMap')).level;
-        // const fallinMapName = levelConf['FallinMap']; // TODO landslides
+        const fallinMap = ResourceManager.getMap(iGet(levelConf, 'FallinMap')); // TODO implement fallins
+        const erodeMap = ResourceManager.getMap(iGet(levelConf, 'ErodeMap')); // TODO implement lava erosion
 
         // maps parsed from WAD are row-wise saved, which means y (row) comes first and x (column) second
         for (let r = 0; r < terrainMap.level.length; r++) {
             for (let c = 0; c < (terrainMap.level)[r].length; c++) {
                 (terrain.surfaces)[c] = (terrain.surfaces)[c] || [];
+                const surfaceTypeNum = (terrainMap.level)[r][c];
+                let surfaceType = SurfaceType.getByNum(surfaceTypeNum);
+                const predugLevel = predugMap[r][c];
+                if (predugLevel === PredugMap.CAVERN_EXPOSED) {
+                    if (surfaceType === SurfaceType.DIRT) {
+                        surfaceType = SurfaceType.GROUND;
+                    } else if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA) {
+                        console.warn('Unexpected exposed surface type: ' + surfaceType.name);
+                    }
+                } else if (predugLevel === PredugMap.SLUG_HOLE_EXPOSED || predugLevel === PredugMap.SLUG_HOLE_HIDDEN) {
+                    surfaceType = SurfaceType.SLUG_HOLE;
+                } else if (predugLevel !== PredugMap.WALL && predugLevel !== PredugMap.CAVERN_HIDDEN) {
+                    console.warn('Unexpected predug level: ' + predugLevel);
+                }
                 // give the path map the highest priority, if it exists
-                if (pathMap && pathMap.level[r][c] !== 0) {
-                    const pathMapLevel = pathMap.level[r][c];
-                    if (pathMap && pathMapLevel === 1) {
-                        (terrain.surfaces)[c].push(new Surface(terrain, SurfaceType.RUBBLE4, c, r, surfaceMap[r][c]));
-                    } else if (pathMap && pathMapLevel === 2) {
-                        (terrain.surfaces)[c].push(new Surface(terrain, SurfaceType.POWER_PATH_BUILDING, c, r, surfaceMap[r][c]));
-                    } else {
-                        console.error('Unexpected path map level: ' + pathMapLevel);
-                    }
-                } else {
-                    const predugLevel = predugMap[r][c];
-                    const surfaceTypeNum = (terrainMap.level)[r][c];
-                    const surfaceType = SurfaceType.getByNum(surfaceTypeNum);
-                    if (predugLevel === 0) {
-                        (terrain.surfaces)[c].push(new Surface(terrain, surfaceType, c, r, surfaceMap[r][c]));
-                    } else if (predugLevel === 1 || predugLevel === 2) {
-                        if (surfaceTypeNum === 5) { // 5 with predug means GROUND, without it is SOIL
-                            (terrain.surfaces)[c].push(new Surface(terrain, SurfaceType.GROUND, c, r, surfaceMap[r][c]));
-                        } else {
-                            (terrain.surfaces)[c].push(new Surface(terrain, surfaceType, c, r, surfaceMap[r][c]));
-                        }
-                    } else if (predugLevel === 3 || predugLevel === 4) { // slug holes
-                        (terrain.surfaces)[c].push(new Surface(terrain, SurfaceType.SLUG_HOLE, c, r, surfaceMap[r][c]));
-                    } else {
-                        console.error('Unexpected predug level: ' + predugLevel);
-                    }
+                const pathMapLevel = pathMap ? pathMap.level[r][c] : PathMap.NONE;
+                if (pathMapLevel === PathMap.RUBBLE) {
+                    surfaceType = SurfaceType.RUBBLE4;
+                } else if (pathMapLevel === PathMap.POWER_PATH) {
+                    surfaceType = SurfaceType.POWER_PATH_BUILDING;
+                } else if (pathMapLevel !== PathMap.NONE) {
+                    console.warn('Unexpected path map level: ' + pathMapLevel);
+                }
 
-                    const currentCryOre = cryOreMap[r][c];
-                    if (currentCryOre % 2 === 1) {
-                        (terrain.surfaces)[c][r].containedCrystals = (currentCryOre + 1) / 2;
-                    } else {
-                        (terrain.surfaces)[c][r].containedOre = currentCryOre / 2;
-                    }
+                (terrain.surfaces)[c].push(new Surface(terrain, surfaceType, c, r, surfaceMap[r][c]));
+
+                const currentCryOre = cryOreMap[r][c];
+                if (currentCryOre % 2 === 1) {
+                    (terrain.surfaces)[c][r].containedCrystals = (currentCryOre + 1) / 2;
+                } else {
+                    (terrain.surfaces)[c][r].containedOre = currentCryOre / 2;
                 }
             }
         }
 
         // exlpore predug surfaces
         terrain.surfaces.forEach(c => c.forEach(s => {
-            if (predugMap[s.y][s.x] === 1 || predugMap[s.y][s.x] === 3) { // map are rows (y) first, columns (x) second
+            if (predugMap[s.y][s.x] === PredugMap.CAVERN_EXPOSED || predugMap[s.y][s.x] === PredugMap.SLUG_HOLE_EXPOSED) { // map are rows (y) first, columns (x) second
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
                         terrain.getSurfaceOrNull(x, y).discovered = true; // TODO make all entities on this surface visible
@@ -79,7 +77,7 @@ export class TerrainLoader {
             }
         }));
 
-        // crumble unsupported walls // TODO level12 crumbles too much
+        // crumble unsupported walls
         terrain.surfaces.forEach((c) => c.forEach((s) => {
             if (!s.surfaceType.floor && !s.isSupported()) s.collapse();
         }));
@@ -95,4 +93,21 @@ export class TerrainLoader {
 
     }
 
+}
+
+enum PathMap {
+
+    NONE = 0,
+    RUBBLE = 1,
+    POWER_PATH = 2,
+
+}
+
+enum PredugMap {
+
+    WALL = 0,
+    CAVERN_EXPOSED = 1,
+    CAVERN_HIDDEN = 2,
+    SLUG_HOLE_EXPOSED = 3,
+    SLUG_HOLE_HIDDEN = 4,
 }
