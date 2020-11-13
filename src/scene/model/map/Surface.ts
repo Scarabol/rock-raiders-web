@@ -375,7 +375,7 @@ export class Surface implements Selectable {
     }
 
     select(): Selectable {
-        if (this.surfaceType.selectable) {
+        if (this.surfaceType.selectable && this.wallType !== WALL_TYPE.INVERTED_CORNER) {
             if (!this.selected) {
                 this.selected = true;
                 this.accessMaterials().forEach((mat) => mat.color.setHex(0xa0a0a0));
