@@ -20,4 +20,9 @@ export class Ore extends CollectableEntity {
         return CollectableType.ORE;
     }
 
+    onDiscover() {
+        super.onDiscover();
+        console.log('Ore has been discovered');
+    }
+
 }

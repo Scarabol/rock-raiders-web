@@ -5,6 +5,7 @@ import { AnimEntity } from './anim/AnimEntity';
 import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { MathUtils, Vector3 } from 'three';
+import { GameState } from '../../game/model/GameState';
 import degToRad = MathUtils.degToRad;
 
 export class BuildingEntity extends AnimEntity implements Selectable {
@@ -50,6 +51,13 @@ export class BuildingEntity extends AnimEntity implements Selectable {
 
     isPowered(): boolean {
         return this.powerSwitch && (this.type.selfPowered || this.powerLink);
+    }
+
+    onDiscover() {
+        super.onDiscover();
+        const index = GameState.buildingsUndiscovered.indexOf(this);
+        if (index !== -1) GameState.buildingsUndiscovered.splice(index, 1);
+        GameState.buildings.push(this);
     }
 
 }

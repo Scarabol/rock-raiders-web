@@ -11,6 +11,7 @@ import { getRandom, getRandomSign } from '../../../core/Util';
 import { Crystal } from '../collect/Crystal';
 import { Ore } from '../collect/Ore';
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../main';
+import { GameState } from '../../../game/model/GameState';
 
 export class Surface implements Selectable {
 
@@ -50,10 +51,11 @@ export class Surface implements Selectable {
     }
 
     /**
-     * @return {boolean} Returns true, if a new cave was discovered
+     * @return {boolean} Returns true, if a new cave has been discovered
      */
     discoverNeighbors(): boolean {
-        this.discovered = true; // TODO make all entities on this surface visible
+        if (!this.discovered) GameState.discoverSurface(this);
+        this.discovered = true;
         this.needsMeshUpdate = true;
         let foundCave = false;
         if (this.surfaceType.floor) {
@@ -79,7 +81,7 @@ export class Surface implements Selectable {
         this.needsMeshUpdate = true;
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors();
-        if (foundCave) console.log('A new cave was discovered'); // TODO emit new-cave event instead
+        if (foundCave) console.log('A new cave has been discovered'); // TODO emit new-cave event instead
         // check for unsupported neighbors
         for (let x = this.x - 1; x <= this.x + 1; x++) {
             for (let y = this.y - 1; y <= this.y + 1; y++) {
@@ -102,6 +104,8 @@ export class Surface implements Selectable {
             this.terrain.worldMgr.addCollectable(new Crystal(), x, z);
         }
         this.dropContainedOre(this.containedOre - 4);
+        // TODO workaround until buildings can be placed without terrain ray intersection
+        GameState.buildings.forEach((b) => b.group.position.y = this.terrain.worldMgr.getTerrainHeight(b.group.position.x, b.group.position.z));
     }
 
     private dropContainedOre(dropAmount: number) {

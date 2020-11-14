@@ -39,4 +39,9 @@ export class Crystal extends CollectableEntity {
         return CollectableType.CRYSTAL;
     }
 
+    onDiscover() {
+        super.onDiscover();
+        console.log('An energy crystal has been discovered');
+    }
+
 }

@@ -5,7 +5,9 @@ import { Raider } from '../../scene/model/Raider';
 import { VehicleEntity } from '../../scene/model/VehicleEntity';
 import { CollectableEntity } from '../../scene/model/collect/CollectableEntity';
 import { Vector3 } from 'three';
-import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE } from '../../main';
+import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../main';
+import { Surface } from '../../scene/model/map/Surface';
+import { BaseEntity } from '../../scene/model/BaseEntity';
 
 export class GameState {
 
@@ -18,10 +20,14 @@ export class GameState {
     static selectedEntities: Selectable[] = [];
     static selectionType: SelectionType = null;
     static buildings: BuildingEntity[] = [];
+    static buildingsUndiscovered: BuildingEntity[] = [];
     static raiders: Raider[] = [];
+    static raidersUndiscovered: Raider[] = [];
     static requestedRaiders: number = 0;
     static vehicles: VehicleEntity[] = [];
+    static vehiclesUndiscovered: VehicleEntity[] = [];
     static collectables: CollectableEntity[] = [];
+    static collectablesUndiscovered: CollectableEntity[] = [];
 
     static reset() {
         this.numOre = 0;
@@ -32,10 +38,14 @@ export class GameState {
         this.selectedEntities = [];
         this.selectionType = null;
         this.buildings = [];
+        this.buildingsUndiscovered = [];
         this.raiders = [];
+        this.raidersUndiscovered = [];
         this.requestedRaiders = 0;
         this.vehicles = [];
+        this.vehiclesUndiscovered = [];
         this.collectables = [];
+        this.collectablesUndiscovered = [];
     }
 
     static getBuildingsByType(...buildingTypes: Building[]): BuildingEntity[] {
@@ -80,6 +90,30 @@ export class GameState {
 
     static getMaxRaiders(): number {
         return MAX_RAIDER_BASE + this.getBuildingsByType(Building.SUPPORT).length * ADDITIONAL_RAIDER_PER_SUPPORT;
+    }
+
+    static discoverSurface(surface: Surface) {
+        const minX = surface.x * TILESIZE, minZ = surface.y * TILESIZE;
+        const maxX = minX + TILESIZE, maxZ = minZ + TILESIZE;
+        this.discoverEntities(this.raidersUndiscovered, minX, maxX, minZ, maxZ);
+        this.discoverEntities(this.buildingsUndiscovered, minX, maxX, minZ, maxZ);
+        this.discoverEntities(this.vehiclesUndiscovered, minX, maxX, minZ, maxZ);
+        this.discoverEntities(this.collectablesUndiscovered, minX, maxX, minZ, maxZ);
+    }
+
+    static discoverEntities(undiscovered: BaseEntity[], minX, maxX, minZ, maxZ) {
+        const discovered = [];
+        undiscovered.forEach((e) => {
+            const pos = e.getPosition();
+            if (pos.x >= minX && pos.x < maxX && pos.z >= minZ && pos.z < maxZ) {
+                e.onDiscover();
+                discovered.push(e);
+            }
+        });
+        discovered.forEach((r) => {
+            const index = undiscovered.indexOf(r);
+            if (index !== -1) undiscovered.splice(index, 1);
+        });
     }
 
 }

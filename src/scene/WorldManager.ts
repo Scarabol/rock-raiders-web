@@ -5,11 +5,11 @@ import { MathUtils, Raycaster, Vector3 } from 'three';
 import { getRandom, iGet } from '../core/Util';
 import { Terrain } from './model/map/Terrain';
 import { EventBus } from '../event/EventBus';
-import { JobCreateEvent, RaiderRequested, SpawnEvent } from '../event/WorldEvents';
+import { RaiderRequested, SpawnEvent } from '../event/WorldEvents';
 import { Raider } from './model/Raider';
 import { GameState } from '../game/model/GameState';
 import { Building } from '../game/model/entity/building/Building';
-import { CollectJob, MoveJob } from '../game/model/job/Job';
+import { MoveJob } from '../game/model/job/Job';
 import { CollectableEntity } from './model/collect/CollectableEntity';
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main';
 import { EntityDeselected } from '../event/LocalEvents';
@@ -135,8 +135,9 @@ export class WorldManager {
         this.sceneManager.scene.add(collectable.group);
         if (collectable.group.visible) {
             GameState.collectables.push(collectable);
-            // TODO publish crystal/ore discovered event
-            EventBus.publishEvent(new JobCreateEvent(new CollectJob(collectable)));
+            collectable.onDiscover();
+        } else {
+            GameState.collectablesUndiscovered.push(collectable);
         }
     }
 

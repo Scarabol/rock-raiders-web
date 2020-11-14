@@ -23,4 +23,8 @@ export class BaseEntity {
         return this.group;
     }
 
+    onDiscover() {
+        this.group.visible = true;
+    }
+
 }

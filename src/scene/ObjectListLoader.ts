@@ -37,9 +37,11 @@ export class ObjectListLoader {
                 raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
                 raider.group.visible = worldMgr.terrain.getSurfaceFromWorld(raider.group.position).discovered;
                 if (raider.group.visible) {
-                    worldMgr.sceneManager.scene.add(raider.group);
                     GameState.raiders.push(raider);
+                } else {
+                    GameState.raidersUndiscovered.push(raider);
                 }
+                worldMgr.sceneManager.scene.add(raider.group);
             } else if (buildingType) {
                 const building = Building.getByName(buildingType);
                 const entity = new BuildingEntity(building);
@@ -48,6 +50,11 @@ export class ObjectListLoader {
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
                 entity.group.visible = worldMgr.terrain.getSurfaceFromWorld(entity.group.position).discovered;
+                if (entity.group.visible) {
+                    GameState.buildings.push(entity);
+                } else {
+                    GameState.buildingsUndiscovered.push(entity);
+                }
                 // TODO rotate building with normal vector of surface
                 worldMgr.sceneManager.scene.add(entity.group);
                 const path1Surface = worldMgr.terrain.getSurfaceFromWorld(entity.group.position);
@@ -58,9 +65,6 @@ export class ObjectListLoader {
                 const path2Surface = worldMgr.terrain.getSurfaceFromWorld(pathOffset);
                 path2Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path2Surface.updateMesh();
-                if (entity.group.visible) {
-                    GameState.buildings.push(entity); // TODO introduce raider/building/vehicle discovered event
-                }
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 worldMgr.addCollectable(new Crystal(), worldX, worldZ);
             } else {

@@ -3,6 +3,7 @@ import { EventBus } from '../../event/EventBus';
 import { RAIDER_SPEED } from '../../main';
 import { RaiderSelected } from '../../event/LocalEvents';
 import { FulfillerActivity, FulfillerEntity } from './FulfillerEntity';
+import { GameState } from '../../game/model/GameState';
 
 export class Raider extends FulfillerEntity {
 
@@ -70,6 +71,14 @@ export class Raider extends FulfillerEntity {
             }
             this.animation.looping = true; // TODO make all looping?
         }
+    }
+
+    onDiscover() {
+        super.onDiscover();
+        const index = GameState.raidersUndiscovered.indexOf(this);
+        if (index !== -1) GameState.raidersUndiscovered.splice(index, 1);
+        GameState.raiders.push(this);
+        console.log('A rock raider has been discovered');
     }
 
 }

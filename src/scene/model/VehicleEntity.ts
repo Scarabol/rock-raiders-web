@@ -1,5 +1,6 @@
 import { SelectionType } from '../../game/model/Selectable';
 import { FulfillerEntity } from './FulfillerEntity';
+import { GameState } from '../../game/model/GameState';
 
 export class VehicleEntity extends FulfillerEntity {
 
@@ -9,6 +10,14 @@ export class VehicleEntity extends FulfillerEntity {
 
     isOnRubble(): boolean {
         return false;
+    }
+
+    onDiscover() {
+        super.onDiscover();
+        const index = GameState.vehiclesUndiscovered.indexOf(this);
+        if (index !== -1) GameState.vehiclesUndiscovered.splice(index, 1);
+        GameState.vehicles.push(this);
+        console.log('A vehicle has been discovered');
     }
 
 }
