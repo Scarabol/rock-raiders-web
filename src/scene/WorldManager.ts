@@ -214,8 +214,8 @@ export class WorldManager {
             raider.worldMgr = this;
             raider.setActivity('TeleportIn', () => {
                 station.spawning = false;
-                const walkOutPos = station.getPosition().add(new Vector3(0, 0, TILESIZE / 2 + getRandom(TILESIZE / 4))
-                    .applyEuler(station.getRotation()).applyAxisAngle(new Vector3(0, 1, 0), degToRad(-30 + getRandom(60))));
+                const walkOutPos = station.getPosition().add(new Vector3(0, 0, TILESIZE * 3 / 4 + getRandom(TILESIZE / 2))
+                    .applyEuler(station.getRotation()).applyAxisAngle(new Vector3(0, 1, 0), degToRad(-10 + getRandom(20))));
                 walkOutPos.y = this.getTerrainHeight(walkOutPos.x, walkOutPos.z);
                 raider.setJob(new MoveJob(walkOutPos));
                 GameState.raiders.push(raider);
