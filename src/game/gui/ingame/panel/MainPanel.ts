@@ -12,11 +12,13 @@ export class MainPanel extends IconPanel {
     constructor() {
         super();
         this.mainPanel = this.addSubPanel(4);
+        EventBus.registerEventListener(EntityDeselected.eventKey, () => this.selectSubPanel(this.mainPanel));
         const buildingPanel = this.addSubPanel(10);
         const smallVehiclePanel = this.addSubPanel(6);
         const largeVehiclePanel = this.addSubPanel(5);
         const selectWallPanel = this.addSubPanel(4);
         const selectFloorPanel = this.addSubPanel(3);
+        const selectRubblePanel = this.addSubPanel(2);
         const selectBuildingPanel = this.addSubPanel(4);
         const selectRaiderPanel = this.addSubPanel(10);
         const selectVehiclePanel = this.addSubPanel(7);
@@ -88,9 +90,14 @@ export class MainPanel extends IconPanel {
             EventBus.publishEvent(new EntityDeselected());
         };
         EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, (event: SurfaceSelectedEvent) => {
-            const type = event.surface.surfaceType;
+            const surface = event.surface;
+            const type = surface.surfaceType;
             if (type.floor) {
-                this.selectSubPanel(selectFloorPanel);
+                if (surface.hasRubble()) {
+                    this.selectSubPanel(selectRubblePanel);
+                } else {
+                    this.selectSubPanel(selectFloorPanel);
+                }
             } else {
                 this.selectSubPanel(selectWallPanel);
                 itemDrill.disabled = !type.drillable;
@@ -99,11 +106,13 @@ export class MainPanel extends IconPanel {
                 this.notifyRedraw(); // TODO performance: actually just the buttons need to be redrawn
             }
         });
-        EventBus.registerEventListener(EntityDeselected.eventKey, () => this.selectSubPanel(this.mainPanel));
         selectWallPanel.backBtn.onClick = () => EventBus.publishEvent(new EntityDeselected());
         selectFloorPanel.backBtn.onClick = () => EventBus.publishEvent(new EntityDeselected());
         selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_LayPath');
-        const clearRubbleItem = selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_ClearRubble');
+        selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_RemovePath');
+        selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence');
+        selectRubblePanel.backBtn.onClick = () => EventBus.publishEvent(new EntityDeselected());
+        const clearRubbleItem = selectRubblePanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_ClearRubble');
         EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, (event: SurfaceSelectedEvent) => {
             clearRubbleItem.disabled = !event.surface.hasRubble();
             this.notifyRedraw(); // TODO performance: actually just the buttons need to be redrawn
@@ -113,7 +122,7 @@ export class MainPanel extends IconPanel {
             EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.CLEAR_RUBBLE, selectedSurface)));
             EventBus.publishEvent(new EntityDeselected());
         };
-        selectFloorPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence');
+        selectRubblePanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence');
         EventBus.registerEventListener(BuildingSelected.eventKey, () => this.selectSubPanel(selectBuildingPanel));
         EventBus.registerEventListener(BuildingDeselected.eventKey, () => this.selectSubPanel(this.mainPanel));
         selectBuildingPanel.backBtn.onClick = () => {
