@@ -5,7 +5,7 @@ import { ResourceManager } from '../../../../resource/ResourceManager';
 import { Panel } from './Panel';
 import { EventBus } from '../../../../event/EventBus';
 import { CollectEvent } from '../../../../event/WorldEvents';
-import { CollectableType } from '../../../../scene/model/collect/Collectable';
+import { CollectableType } from '../../../../scene/model/collect/CollectableEntity';
 
 export class PanelCrystalSideBar extends Panel {
 

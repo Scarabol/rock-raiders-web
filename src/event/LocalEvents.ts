@@ -39,19 +39,6 @@ export class BuildingSelected extends LocalEvent {
 
 }
 
-export class BuildingDeselected extends LocalEvent {
-
-    static eventKey: string = 'building.deselected';
-
-    building: BuildingEntity;
-
-    constructor(building: BuildingEntity) {
-        super(BuildingDeselected.eventKey);
-        this.building = building;
-    }
-
-}
-
 export class RaiderSelected extends LocalEvent {
 
     static eventKey: string = 'raider.select';

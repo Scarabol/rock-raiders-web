@@ -1,6 +1,6 @@
 import { Surface } from '../../../scene/model/map/Surface';
 import { Vector3 } from 'three';
-import { Collectable, CollectableType } from '../../../scene/model/collect/Collectable';
+import { CollectableEntity, CollectableType } from '../../../scene/model/collect/CollectableEntity';
 import { PICKUP_RANGE, RAIDER_SPEED, TILESIZE } from '../../../main';
 import { GameState } from '../GameState';
 import { EventBus } from '../../../event/EventBus';
@@ -120,9 +120,9 @@ export class SurfaceJob extends Job {
 
 export class CollectJob extends Job {
 
-    item: Collectable;
+    item: CollectableEntity;
 
-    constructor(item: Collectable) {
+    constructor(item: CollectableEntity) {
         super(JobType.CARRY);
         this.item = item;
     }

@@ -1,6 +1,6 @@
 import { GameEvent } from './EventBus';
 import { Job } from '../game/model/job/Job';
-import { CollectableType } from '../scene/model/collect/Collectable';
+import { CollectableType } from '../scene/model/collect/CollectableEntity';
 
 export class WorldEvent extends GameEvent {
 

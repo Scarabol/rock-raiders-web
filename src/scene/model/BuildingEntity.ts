@@ -1,5 +1,5 @@
 import { EventBus } from '../../event/EventBus';
-import { BuildingDeselected, BuildingSelected } from '../../event/LocalEvents';
+import { BuildingSelected } from '../../event/LocalEvents';
 import { Building } from '../../game/model/entity/building/Building';
 import { AnimEntity } from './anim/AnimEntity';
 import { Selectable, SelectionType } from '../../game/model/Selectable';
@@ -38,7 +38,6 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         if (this.selected) {
             this.selected = false;
             this.selectionFrame.visible = false;
-            EventBus.publishEvent(new BuildingDeselected(this));
         }
     }
 

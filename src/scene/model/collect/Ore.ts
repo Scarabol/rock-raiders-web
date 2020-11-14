@@ -1,10 +1,9 @@
-import { BaseEntity } from '../BaseEntity';
 import { LWOLoader } from '../../../resource/LWOLoader';
 import { ResourceManager } from '../../../resource/ResourceManager';
-import { Collectable, CollectableType } from './Collectable';
+import { CollectableEntity, CollectableType } from './CollectableEntity';
 import { Building } from '../../../game/model/entity/building/Building';
 
-export class Ore extends BaseEntity implements Collectable {
+export class Ore extends CollectableEntity {
 
     constructor() {
         super();

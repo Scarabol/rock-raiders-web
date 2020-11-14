@@ -1,10 +1,9 @@
 import { IconPanel } from './IconPanel';
 import { EventBus } from '../../../../event/EventBus';
-import { BuildingDeselected, BuildingSelected, EntityDeselected, RaiderSelected, SurfaceSelectedEvent, VehicleSelected } from '../../../../event/LocalEvents';
-import { JobCreateEvent, RaiderRequested, SpawnEvent, SpawnType} from '../../../../event/WorldEvents';
+import { BuildingSelected, EntityDeselected, RaiderSelected, SurfaceSelectedEvent, VehicleSelected } from '../../../../event/LocalEvents';
+import { JobCreateEvent, RaiderRequested, SpawnEvent, SpawnType } from '../../../../event/WorldEvents';
 import { SurfaceJob, SurfaceJobType } from '../../../model/job/Job';
 import { GameState } from '../../../model/GameState';
-import { BuildingEntity } from '../../../../scene/model/BuildingEntity';
 import { Surface } from '../../../../scene/model/map/Surface';
 
 export class MainPanel extends IconPanel {
@@ -124,12 +123,8 @@ export class MainPanel extends IconPanel {
         };
         selectRubblePanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence');
         EventBus.registerEventListener(BuildingSelected.eventKey, () => this.selectSubPanel(selectBuildingPanel));
-        EventBus.registerEventListener(BuildingDeselected.eventKey, () => this.selectSubPanel(this.mainPanel));
-        selectBuildingPanel.backBtn.onClick = () => {
-            GameState.selectedEntities.forEach((entity: BuildingEntity) => {
-                EventBus.publishEvent(new BuildingDeselected(entity));
-            });
-        };
+        EventBus.registerEventListener(EntityDeselected.eventKey, () => this.selectSubPanel(this.mainPanel));
+        selectBuildingPanel.backBtn.onClick = () => EventBus.publishEvent(new EntityDeselected());
         selectBuildingPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_Repair');
         selectBuildingPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_PowerOff'); // TODO other option is Interface_MenuItem_PowerOn
         selectBuildingPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeBuilding');

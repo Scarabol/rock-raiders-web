@@ -3,7 +3,7 @@ import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { CollectJob, Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
 import { Vector3 } from 'three';
-import { Collectable } from './collect/Collectable';
+import { CollectableEntity } from './collect/CollectableEntity';
 import { NATIVE_FRAMERATE, PICKUP_RANGE } from '../../main';
 import { GameState } from '../../game/model/GameState';
 import { getRandom, getRandomSign } from '../../core/Util';
@@ -20,7 +20,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     jobSubPos: Vector3 = null;
     tools: string[] = [];
     skills: string[] = [];
-    carries: Collectable = null;
+    carries: CollectableEntity = null;
     carryTarget: Vector3 = null;
 
     constructor(selectionType: SelectionType, aeFilename: string, speed: number) {
@@ -139,7 +139,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.carryTarget = null;
     }
 
-    pickupItem(item: Collectable) {
+    pickupItem(item: CollectableEntity) {
         this.carries = item;
         this.group.add(this.carries.getGroup());
         this.carries.getGroup().position.set(0, 7, 4); // TODO use carry joint offset

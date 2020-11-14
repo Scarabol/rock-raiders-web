@@ -1,11 +1,11 @@
 import { BaseEntity } from '../BaseEntity';
 import { Building } from '../../../game/model/entity/building/Building';
 
-export interface Collectable extends BaseEntity {
+export abstract class CollectableEntity extends BaseEntity {
 
-    getTargetBuildingTypes(): Building[];
+    abstract getTargetBuildingTypes(): Building[];
 
-    getCollectableType(): CollectableType;
+    abstract getCollectableType(): CollectableType;
 
 }
 
