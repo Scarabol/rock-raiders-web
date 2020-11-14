@@ -3,7 +3,6 @@ import { TerrainLoader } from './TerrainLoader';
 import { ResourceManager } from '../resource/ResourceManager';
 import { MathUtils, Raycaster, Vector3 } from 'three';
 import { getRandom, iGet } from '../core/Util';
-import { Terrain } from './model/map/Terrain';
 import { EventBus } from '../event/EventBus';
 import { RaiderRequested, SpawnEvent } from '../event/WorldEvents';
 import { Raider } from './model/Raider';
@@ -18,18 +17,13 @@ import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
 
-    terrain: Terrain;
     sceneManager: SceneManager;
     spawnRaiderInterval = null;
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas);
         this.sceneManager.cursorTorchlight.distance *= TILESIZE;
-        EventBus.registerEventListener(EntityDeselected.eventKey, () => {
-            GameState.selectedEntities.forEach((entity) => entity.deselect());
-            GameState.selectedEntities = [];
-            GameState.selectionType = null;
-        });
+        EventBus.registerEventListener(EntityDeselected.eventKey, () => GameState.selectEntities([]));
         EventBus.registerEventListener(RaiderRequested.eventKey, (event: RaiderRequested) => {
             GameState.requestedRaiders = event.numRequested;
             if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
@@ -47,8 +41,8 @@ export class WorldManager {
         console.log('Starting level ' + levelName + ' - ' + iGet(levelConf, 'FullName'));
 
         // create terrain mesh and add it to the scene
-        this.terrain = TerrainLoader.loadTerrain(levelConf, this);
-        this.sceneManager.scene.add(this.terrain.floorGroup);
+        this.sceneManager.terrain = TerrainLoader.loadTerrain(levelConf, this);
+        this.sceneManager.scene.add(this.sceneManager.terrain.floorGroup);
 
         // load in non-space objects next
         const objectListConf = ResourceManager.getResource(iGet(levelConf, 'OListFile'));
@@ -81,10 +75,10 @@ export class WorldManager {
     }
 
     getTerrainIntersectionPoint(rx: number, ry: number): Vector3 {
-        if (!this.terrain) return null;
+        if (!this.sceneManager.terrain) return null;
         const raycaster = new Raycaster();
         raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera);
-        const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children);
+        const intersects = raycaster.intersectObjects(this.sceneManager.terrain.floorGroup.children);
         return intersects.length > 0 ? intersects[0].point : null;
     }
 
@@ -95,7 +89,7 @@ export class WorldManager {
 
     getTerrainHeight(worldX: number, worldZ: number): number {
         const raycaster = new Raycaster(new Vector3(Number(worldX), 3 * TILESIZE, Number(worldZ)), new Vector3(0, -1, 0));
-        const intersect = raycaster.intersectObject(this.terrain.floorGroup, true);
+        const intersect = raycaster.intersectObject(this.sceneManager.terrain.floorGroup, true);
         if (intersect.length > 0) {
             return intersect[0].point.y;
         } else {
@@ -104,34 +98,11 @@ export class WorldManager {
         }
     }
 
-    selectEntities(r1x: number, r1y: number, r2x: number, r2y: number) {
-        // TODO determine entities in rect
-        // => only one? => select
-        // multiple? =>
-        // raiders? => select group
-        // buildings? => select building
-        const raycaster = new Raycaster();
-        raycaster.setFromCamera({x: r2x, y: r2y}, this.sceneManager.camera);
-        const intersects = raycaster.intersectObject(this.sceneManager.scene, true);
-        if (intersects.length > 0) {
-            let obj = intersects[0].object;
-            while (obj) {
-                const userData = obj.userData;
-                if (userData && userData.hasOwnProperty('selectable')) {
-                    const selectable = userData['selectable'];
-                    if (selectable) GameState.selectEntities([selectable]);
-                    break;
-                }
-                obj = obj.parent;
-            }
-        }
-    }
-
     addCollectable(collectable: CollectableEntity, worldX: number, worldZ: number) {
         const worldY = this.getTerrainHeight(worldX, worldZ);
         collectable.worldMgr = this;
         collectable.group.position.set(worldX, worldY, worldZ);
-        collectable.group.visible = this.terrain.getSurfaceFromWorld(collectable.group.position).discovered;
+        collectable.group.visible = this.sceneManager.terrain.getSurfaceFromWorld(collectable.group.position).discovered;
         this.sceneManager.scene.add(collectable.group);
         if (collectable.group.visible) {
             GameState.collectables.push(collectable);

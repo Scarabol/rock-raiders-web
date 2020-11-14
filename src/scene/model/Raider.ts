@@ -4,21 +4,19 @@ import { RAIDER_SPEED } from '../../main';
 import { RaiderSelected } from '../../event/LocalEvents';
 import { FulfillerActivity, FulfillerEntity } from './FulfillerEntity';
 import { GameState } from '../../game/model/GameState';
+import { Vector3 } from 'three';
 
 export class Raider extends FulfillerEntity {
 
     constructor() {
         super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae', RAIDER_SPEED);
         this.tools = ['drill', 'shovel'];
+        this.pickSphereRadius = 10; // TODO read pick sphere size from cfg
+        this.selectionFrameSize = 10;
     }
 
     isOnRubble() {
-        return this.worldMgr.terrain.getSurfaceFromWorld(this.group.position).hasRubble();
-    }
-
-    onSelect() {
-        this.changeActivity(FulfillerActivity.STANDING);
-        EventBus.publishEvent(new RaiderSelected(this));
+        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).hasRubble();
     }
 
     getSpeed(): number {
@@ -29,7 +27,7 @@ export class Raider extends FulfillerEntity {
     }
 
     isOnPath(): boolean {
-        return this.worldMgr.terrain.getSurfaceFromWorld(this.group.position).isPath();
+        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).isPath();
     }
 
     changeActivity(activity: FulfillerActivity, onChangeDone = null) {
@@ -79,6 +77,19 @@ export class Raider extends FulfillerEntity {
         if (index !== -1) GameState.raidersUndiscovered.splice(index, 1);
         GameState.raiders.push(this);
         console.log('A rock raider has been discovered');
+    }
+
+    onSelect() {
+        this.changeActivity(FulfillerActivity.STANDING);
+        EventBus.publishEvent(new RaiderSelected(this));
+    }
+
+    getSelectionCenter(): Vector3 {
+        return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null;
+    }
+
+    getSelectionEvent(): RaiderSelected {
+        return new RaiderSelected(this);
     }
 
 }

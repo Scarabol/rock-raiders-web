@@ -8,6 +8,8 @@ import { Vector3 } from 'three';
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../main';
 import { Surface } from '../../scene/model/map/Surface';
 import { BaseEntity } from '../../scene/model/BaseEntity';
+import { EventBus } from '../../event/EventBus';
+import { EntityDeselected } from '../../event/LocalEvents';
 
 export class GameState {
 
@@ -71,20 +73,20 @@ export class GameState {
     }
 
     static selectEntities(entities: Selectable[]) {
-        // TODO handle event triggering here (avoid sending unecessary events)
-        this.selectedEntities.forEach((entity) => entity.deselect()); // TODO only deselect entities not in new selection
-        this.selectedEntities = [];
-        this.selectionType = null;
-        if (entities) {
-            entities.forEach((entity) => entity.select());
-            if (entities.length === 1) {
-                const entity = entities[0];
-                this.selectedEntities.push(entity);
-                this.selectionType = entity.getSelectionType();
-            } else {
-                entities.forEach((entity) => this.selectedEntities.push(entity));
-                this.selectionType = SelectionType.GROUP;
-            }
+        // deselect and remove entities that are not selected anymore
+        this.selectedEntities.filter((e) => entities.indexOf(e) === -1).forEach((e) => e.deselect());
+        this.selectedEntities = this.selectedEntities.filter((e) => entities.indexOf(e) !== -1);
+        // add and select new entities (if they are selectable)
+        this.selectedEntities.push(...(entities.filter((e) => e.select())));
+        // determine and set next selection type
+        const len = this.selectedEntities.length;
+        if (len > 1) {
+            this.selectionType = SelectionType.GROUP;
+        } else if (len === 1) {
+            this.selectionType = this.selectedEntities[0].getSelectionType();
+        } else if (this.selectionType !== null) {
+            this.selectionType = null;
+            EventBus.publishEvent(new EntityDeselected());
         }
     }
 

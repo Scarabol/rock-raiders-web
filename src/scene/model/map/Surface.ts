@@ -379,12 +379,10 @@ export class Surface implements Selectable {
     }
 
     select(): Selectable {
-        if (this.surfaceType.selectable && this.wallType !== WALL_TYPE.INVERTED_CORNER) {
-            if (!this.selected) {
-                this.selected = true;
-                this.accessMaterials().forEach((mat) => mat.color.setHex(0xa0a0a0));
-                EventBus.publishEvent(new SurfaceSelectedEvent(this));
-            }
+        if (this.surfaceType.selectable && this.wallType !== WALL_TYPE.INVERTED_CORNER && !this.selected) {
+            this.selected = true;
+            this.accessMaterials().forEach((mat) => mat.color.setHex(0x6060a0)); // TODO externalize constant
+            EventBus.publishEvent(new SurfaceSelectedEvent(this));
             return this;
         }
         return null;
@@ -395,6 +393,14 @@ export class Surface implements Selectable {
             this.selected = false;
             this.updateJobColor();
         }
+    }
+
+    getSelectionCenter(): Vector3 {
+        return null; // not used
+    }
+
+    getSelectionEvent(): SurfaceSelectedEvent {
+        return new SurfaceSelectedEvent(this);
     }
 
     updateJobColor() {

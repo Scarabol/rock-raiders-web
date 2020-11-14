@@ -35,7 +35,7 @@ export class ObjectListLoader {
                 raider.setActivity('Stand');
                 raider.group.position.set(worldX, worldY, worldZ);
                 raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
-                raider.group.visible = worldMgr.terrain.getSurfaceFromWorld(raider.group.position).discovered;
+                raider.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(raider.group.position).discovered;
                 if (raider.group.visible) {
                     GameState.raiders.push(raider);
                 } else {
@@ -49,7 +49,7 @@ export class ObjectListLoader {
                 entity.setActivity('Stand');
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
-                entity.group.visible = worldMgr.terrain.getSurfaceFromWorld(entity.group.position).discovered;
+                entity.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered;
                 if (entity.group.visible) {
                     GameState.buildings.push(entity);
                 } else {
@@ -57,12 +57,12 @@ export class ObjectListLoader {
                 }
                 // TODO rotate building with normal vector of surface
                 worldMgr.sceneManager.scene.add(entity.group);
-                const path1Surface = worldMgr.terrain.getSurfaceFromWorld(entity.group.position);
+                const path1Surface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position);
                 path1Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path1Surface.updateMesh(); // TODO performance actually just update texture
                 const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
                 pathOffset.add(entity.group.position);
-                const path2Surface = worldMgr.terrain.getSurfaceFromWorld(pathOffset);
+                const path2Surface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset);
                 path2Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path2Surface.updateMesh(); // TODO performance actually just update texture
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {

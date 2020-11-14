@@ -1,4 +1,4 @@
-import { CanvasTexture, ClampToEdgeWrapping, LinearFilter, MeshPhongMaterial, Object3D, Sprite, SpriteMaterial } from 'three';
+import { Box3, CanvasTexture, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three';
 import { AnimClip } from './AnimClip';
 import { iGet } from '../../../core/Util';
 import { AnimationEntityType } from './AnimationEntityType';
@@ -6,46 +6,20 @@ import { BaseEntity } from '../BaseEntity';
 import { AnimSubObj } from './AnimSubObj';
 import { GameState } from '../../../game/model/GameState';
 
-export class AnimEntity extends BaseEntity {
+export abstract class AnimEntity extends BaseEntity {
 
     entityType: AnimationEntityType = null;
     poly: Object3D[] = [];
     animation: AnimClip = null;
     animationTimeout: NodeJS.Timeout = null;
     selectionFrame: Sprite = null;
+    pickSphere: Mesh = null;
+    pickSphereRadius: number = 10;
+    selectionFrameSize: number = 10;
 
     constructor(entityType: AnimationEntityType) {
         super();
         this.entityType = entityType;
-
-        // TODO render selection frame on billboard layer or handle this in layer itself?
-        const ctx = document.createElement('canvas').getContext('2d');
-        const size = 128;
-        ctx.canvas.width = size; // TODO read from cfg?
-        ctx.canvas.height = size;
-        ctx.fillStyle = '#0f0';
-        const strength = size / 20;
-        const length = size / 3;
-        ctx.fillRect(0, 0, length, strength);
-        ctx.fillRect(0, 0, strength, length);
-        ctx.fillRect(size - length, 0, length, strength);
-        ctx.fillRect(size - strength, 0, strength, length);
-        ctx.fillRect(size - strength, size - length, strength, length);
-        ctx.fillRect(size - length, size - strength, length, strength);
-        ctx.fillRect(0, size - strength, length, strength);
-        ctx.fillRect(0, size - length, strength, length);
-        const texture = new CanvasTexture(ctx.canvas);
-        // because our canvas is likely not a power of 2
-        // in both dimensions set the filtering appropriately.
-        texture.minFilter = LinearFilter;
-        texture.wrapS = ClampToEdgeWrapping;
-        texture.wrapT = ClampToEdgeWrapping;
-        const selectionMaterial = new SpriteMaterial({map: texture, transparent: true});
-        this.selectionFrame = new Sprite(selectionMaterial);
-        this.selectionFrame.position.y = 40 / 4; // TODO position with bounding box
-        this.selectionFrame.scale.set(40, 40, 40).multiplyScalar(0.5); // TODO scale with bounding box
-        this.selectionFrame.visible = false;
-        this.group.add(this.selectionFrame);
     }
 
     setActivity(keyname, onAnimationDone = null) {
@@ -83,6 +57,7 @@ export class AnimEntity extends BaseEntity {
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
         }
+        this.createPickSphere();
     }
 
     animate(frameIndex, onAnimationDone) {
@@ -113,6 +88,42 @@ export class AnimEntity extends BaseEntity {
         } else if (onAnimationDone) {
             onAnimationDone();
         }
+    }
+
+    createPickSphere() {
+        if (this.pickSphere) return;
+        const center = new Vector3();
+        new Box3().setFromObject(this.group).getCenter(center);
+        center.sub(this.group.position);
+        const geometry = new SphereGeometry(this.pickSphereRadius, this.pickSphereRadius, this.pickSphereRadius);
+        const material = new MeshBasicMaterial({color: 0xffff00, visible: false}); // change to true for debugging
+        this.pickSphere = new Mesh(geometry, material);
+        this.pickSphere.userData = {selectable: this};
+        this.pickSphere.position.copy(center);
+        this.group.add(this.pickSphere);
+
+        const ctx = document.createElement('canvas').getContext('2d');
+        const size = 128;
+        ctx.canvas.width = size; // TODO read from cfg?
+        ctx.canvas.height = size;
+        ctx.fillStyle = '#0f0';
+        const strength = 50 / this.selectionFrameSize;
+        const length = size / 3;
+        ctx.fillRect(0, 0, length, strength);
+        ctx.fillRect(0, 0, strength, length);
+        ctx.fillRect(size - length, 0, length, strength);
+        ctx.fillRect(size - strength, 0, strength, length);
+        ctx.fillRect(size - strength, size - length, strength, length);
+        ctx.fillRect(size - length, size - strength, length, strength);
+        ctx.fillRect(0, size - strength, length, strength);
+        ctx.fillRect(0, size - length, strength, length);
+        const texture = new CanvasTexture(ctx.canvas);
+        const selectionMaterial = new SpriteMaterial({map: texture, depthTest: false});
+        this.selectionFrame = new Sprite(selectionMaterial);
+        this.selectionFrame.position.copy(center);
+        this.selectionFrame.scale.set(this.selectionFrameSize, this.selectionFrameSize, this.selectionFrameSize);
+        this.selectionFrame.visible = false;
+        this.group.add(this.selectionFrame);
     }
 
 }

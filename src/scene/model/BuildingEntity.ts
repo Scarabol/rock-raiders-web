@@ -20,6 +20,8 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         super(ResourceManager.getAnimationEntityType(buildingType.aeFile));
         this.type = buildingType;
         this.group.userData = {'selectable': this};
+        this.pickSphereRadius = 30; // TODO read pick sphere size from cfg
+        this.selectionFrameSize = 15;
     }
 
     getSelectionType(): SelectionType {
@@ -27,19 +29,26 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     select() {
+        this.selectionFrame.visible = true;
         if (!this.selected) {
             this.selected = true;
-            this.selectionFrame.visible = true;
             EventBus.publishEvent(new BuildingSelected(this));
+            return this;
         }
-        return this;
+        return null;
     }
 
     deselect() {
-        if (this.selected) {
-            this.selected = false;
-            this.selectionFrame.visible = false;
-        }
+        this.selectionFrame.visible = false;
+        this.selected = false;
+    }
+
+    getSelectionCenter(): Vector3 {
+        return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null;
+    }
+
+    getSelectionEvent(): BuildingSelected {
+        return new BuildingSelected(this);
     }
 
     getDropPosition(): Vector3 {

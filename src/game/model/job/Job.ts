@@ -66,10 +66,10 @@ export class SurfaceJobType {
         this.requiredSkills = requiredSkills;
     }
 
-    static readonly DRILL = new SurfaceJobType(0xa0a0a0, ['drill'], []);
-    static readonly REINFORCE = new SurfaceJobType(0x6060a0, ['hammer'], []);
-    static readonly BLOW = new SurfaceJobType(0xa06060, [], ['demolition']);
-    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, ['shovel'], []);
+    static readonly DRILL = new SurfaceJobType(0xa0a0a0, ['drill'], []); // TODO externalize constant
+    static readonly REINFORCE = new SurfaceJobType(0x60a060, ['hammer'], []); // TODO externalize constant
+    static readonly BLOW = new SurfaceJobType(0xa06060, [], ['demolition']); // TODO externalize constant
+    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, ['shovel'], []); // TODO externalize constant
 
 }
 

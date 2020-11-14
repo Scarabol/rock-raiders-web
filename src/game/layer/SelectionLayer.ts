@@ -35,7 +35,8 @@ export class SelectionLayer extends ScreenLayer {
     changeSelection(screenX: number, screenY: number) {
         if (!this.selectStart) return false; // selection was not started on this layer
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.strokeStyle = '#0f0';
+        this.context.strokeStyle = 'rgba(128, 192, 192, 0.5)';
+        this.context.lineWidth = 2;
         this.context.strokeRect(this.selectStart.x, this.selectStart.y, screenX - this.selectStart.x, screenY - this.selectStart.y);
         return true;
     }
@@ -47,13 +48,12 @@ export class SelectionLayer extends ScreenLayer {
         const r1y = -(this.selectStart.y / this.canvas.height) * 2 + 1;
         const r2x = (screenX / this.canvas.width) * 2 - 1;
         const r2y = -(screenY / this.canvas.height) * 2 + 1;
-        if (this.selectStart.x === screenX && this.selectStart.y === screenY) {
-            this.worldManager.selectEntities(r1x, r1y, r2x, r2y);
+        if (Math.abs(screenX - this.selectStart.x) < 5 && Math.abs(screenY - this.selectStart.y) < 5) {
+            const x = (this.selectStart.x + screenX) / this.canvas.width - 1;
+            const y = -(this.selectStart.y + screenY) / this.canvas.height + 1;
+            this.worldManager.sceneManager.selectEntitiesByRay(x, y);
         } else {
-            // TODO select multiple entities (raider, vehicle, building, floor) for building and floor select closest to center
-            console.warn('Selection of multiple entities not yet implemented');
-            this.worldManager.selectEntities(undefined, undefined,
-                (this.selectStart.x + screenX) / this.canvas.width - 1, -(this.selectStart.y + screenY) / this.canvas.height + 1);
+            this.worldManager.sceneManager.selectEntitiesInFrustum(r1x, r1y, r2x, r2y);
         }
         this.selectStart = null;
         return true;

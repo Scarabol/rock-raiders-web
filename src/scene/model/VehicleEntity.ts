@@ -2,10 +2,11 @@ import { SelectionType } from '../../game/model/Selectable';
 import { FulfillerEntity } from './FulfillerEntity';
 import { GameState } from '../../game/model/GameState';
 
-export class VehicleEntity extends FulfillerEntity {
+export abstract class VehicleEntity extends FulfillerEntity {
 
     constructor(aeFilename: string, speed: number) {
         super(SelectionType.VEHICLE, aeFilename, speed);
+        // TODO call create picksphere after mesh initialized
     }
 
     isOnRubble(): boolean {

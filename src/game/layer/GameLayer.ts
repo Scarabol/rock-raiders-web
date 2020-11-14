@@ -11,25 +11,25 @@ import { EntityDeselected } from '../../event/LocalEvents';
 
 export class GameLayer extends ScreenLayer {
 
-    private worldManager: WorldManager;
+    private worldMgr: WorldManager;
 
     constructor() {
         super(false, false);
     }
 
-    setWorldManager(worldManager: WorldManager) {
-        this.worldManager = worldManager;
+    setWorldManager(worldMgr: WorldManager) {
+        this.worldMgr = worldMgr;
     }
 
     handlePointerEvent(eventType: string, event: PointerEvent): boolean {
         if (eventType === 'pointermove') {
             const intersectionPoint = this.getTerrainPositionFromEvent(event);
-            if (intersectionPoint) this.worldManager.setTorchPosition(intersectionPoint);
+            if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint);
         } else if (eventType === 'pointerup' && !event.isPrimary) {
             if (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP) {
                 const intersectionPoint = this.getTerrainPositionFromEvent(event);
                 if (intersectionPoint) {
-                    const surface = this.worldManager.terrain.getSurfaceFromWorld(intersectionPoint);
+                    const surface = this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(intersectionPoint);
                     if (surface) {
                         if (surface.surfaceType.drillable && surface.wallType !== WALL_TYPE.INVERTED_CORNER) {
                             this.createSurfaceJob(SurfaceJobType.DRILL, surface);
@@ -62,7 +62,7 @@ export class GameLayer extends ScreenLayer {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY);
         const rx = (cx / this.canvas.width) * 2 - 1;
         const ry = -(cy / this.canvas.height) * 2 + 1;
-        return this.worldManager.getTerrainIntersectionPoint(rx, ry);
+        return this.worldMgr.getTerrainIntersectionPoint(rx, ry);
     }
 
     handleWheelEvent(eventType: string, event: WheelEvent): boolean {

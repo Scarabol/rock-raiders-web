@@ -9,6 +9,7 @@ import { GameState } from '../../game/model/GameState';
 import { getRandom, getRandomSign } from '../../core/Util';
 import { EventBus } from '../../event/EventBus';
 import { JobCreateEvent } from '../../event/WorldEvents';
+import { LocalEvent } from '../../event/LocalEvents';
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
@@ -186,23 +187,26 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     deselect() {
-        if (this.selected) {
-            this.selected = false;
-            this.selectionFrame.visible = false;
-        }
+        this.selectionFrame.visible = false;
+        this.selected = false;
     }
 
     select() {
+        this.selectionFrame.visible = true;
         if (!this.selected) {
             this.selected = true;
-            this.selectionFrame.visible = true;
             this.onSelect();
+            return this;
         }
-        return this;
+        return null;
     }
 
     onSelect() {
     }
+
+    abstract getSelectionCenter(): Vector3;
+
+    abstract getSelectionEvent(): LocalEvent;
 
 }
 
