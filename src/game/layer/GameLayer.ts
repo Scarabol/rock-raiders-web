@@ -6,7 +6,7 @@ import { Raider } from '../../scene/model/Raider';
 import { MoveJob, SurfaceJob, SurfaceJobType } from '../model/job/Job';
 import { EventBus } from '../../event/EventBus';
 import { JobCreateEvent } from '../../event/WorldEvents';
-import { Surface } from '../../scene/model/map/Surface';
+import { Surface, WALL_TYPE } from '../../scene/model/map/Surface';
 import { EntityDeselected } from '../../event/LocalEvents';
 
 export class GameLayer extends ScreenLayer {
@@ -31,7 +31,7 @@ export class GameLayer extends ScreenLayer {
                 if (intersectionPoint) {
                     const surface = this.worldManager.terrain.getSurfaceFromWorld(intersectionPoint);
                     if (surface) {
-                        if (surface.surfaceType.drillable) {
+                        if (surface.surfaceType.drillable && surface.wallType !== WALL_TYPE.INVERTED_CORNER) {
                             this.createSurfaceJob(SurfaceJobType.DRILL, surface);
                         } else if (surface.hasRubble()) {
                             this.createSurfaceJob(SurfaceJobType.CLEAR_RUBBLE, surface);
