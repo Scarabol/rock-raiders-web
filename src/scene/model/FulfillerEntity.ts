@@ -118,7 +118,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             this.changeActivity(FulfillerActivity.MOVING);
         }
         const step = new Vector3().copy(target).sub(this.getPosition());
-        if (step.length() > this.getSpeed()) step.setLength(this.getSpeed());
+        if (step.length() > this.getSpeed()) step.setLength(this.getSpeed()); // TODO use average speed between current and target position
         this.group.position.add(step);
         this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
         this.group.lookAt(new Vector3(target.x, this.group.position.y, target.z));
