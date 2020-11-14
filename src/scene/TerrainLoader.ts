@@ -35,10 +35,10 @@ export class TerrainLoader {
                 let surfaceType = SurfaceType.getByNum(surfaceTypeNum);
                 const predugLevel = predugMap[r][c];
                 if (predugLevel === PredugMap.CAVERN_EXPOSED) {
-                    if (surfaceType === SurfaceType.DIRT) {
+                    if (surfaceType === SurfaceType.GROUND || surfaceType === SurfaceType.DIRT) {
                         surfaceType = SurfaceType.GROUND;
                     } else if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA) {
-                        console.warn('Unexpected exposed surface type: ' + surfaceType.name);
+                        console.warn('Unexpected cavern surface type: ' + surfaceType.name);
                     }
                 } else if (predugLevel === PredugMap.SLUG_HOLE_EXPOSED || predugLevel === PredugMap.SLUG_HOLE_HIDDEN) {
                     surfaceType = SurfaceType.SLUG_HOLE;
@@ -74,6 +74,14 @@ export class TerrainLoader {
                         terrain.getSurfaceOrNull(x, y).discovered = true; // TODO make all entities on this surface visible
                     }
                 }
+            }
+        }));
+
+        // create hidden caverns
+        terrain.surfaces.forEach(c => c.forEach(s => {
+            const surface = terrain.getSurfaceOrNull(s.x, s.y);
+            if (predugMap[s.y][s.x] === PredugMap.CAVERN_HIDDEN && !surface.discovered) {
+                surface.surfaceType = SurfaceType.GROUND;
             }
         }));
 
