@@ -52,7 +52,7 @@ export class WorldManager {
         this.terrain = TerrainLoader.loadTerrain(levelConf, this);
         this.sceneManager.scene.add(this.terrain.floorGroup);
 
-        // load in non-space objects next
+        // load in non-space objects next // TODO refactor implement object list loader
         const objectList = ResourceManager.getResource(iGet(levelConf, 'OListFile'));
         // console.log(objectList);
         Object.values(objectList).forEach((olObject: any) => {
@@ -192,7 +192,7 @@ export class WorldManager {
         this.sceneManager.scene.add(collectable.group);
         if (collectable.group.visible) {
             GameState.collectables.push(collectable);
-            // TODO publish crystal discovered event
+            // TODO publish crystal/ore discovered event
             EventBus.publishEvent(new JobCreateEvent(new CollectJob(collectable)));
         }
     }
