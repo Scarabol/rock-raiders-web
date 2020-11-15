@@ -8,6 +8,7 @@ import { EventBus } from '../../event/EventBus';
 import { JobCreateEvent } from '../../event/WorldEvents';
 import { Surface } from '../../scene/model/map/Surface';
 import { EntityDeselected } from '../../event/LocalEvents';
+import { FulfillerEntity } from '../../scene/model/FulfillerEntity';
 
 export class GameLayer extends ScreenLayer {
 
@@ -27,6 +28,7 @@ export class GameLayer extends ScreenLayer {
             if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint);
         } else if (eventType === 'pointerup' && !event.isPrimary) {
             if (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP) {
+                // TODO check for collectable entity first
                 const intersectionPoint = this.getTerrainPositionFromEvent(event);
                 if (intersectionPoint) {
                     const surface = this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(intersectionPoint);
@@ -49,9 +51,8 @@ export class GameLayer extends ScreenLayer {
 
     createSurfaceJob(surfaceJobType: SurfaceJobType, surface: Surface) {
         const surfJob = new SurfaceJob(surfaceJobType, surface);
-        GameState.selectedEntities.filter((e: Raider) => surfJob.isQualified(e)).forEach((e: Raider) => {
-            e.job = surfJob;
-            surfJob.assign(e);
+        GameState.selectedEntities.forEach((e: FulfillerEntity) => {
+            if (surfJob.isQualified(e)) e.setJob(surfJob);
         });
         EventBus.publishEvent(new JobCreateEvent(surfJob));
         surface.updateJobColor();

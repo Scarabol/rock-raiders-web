@@ -6,6 +6,7 @@ import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { MathUtils, Vector3 } from 'three';
 import { GameState } from '../../game/model/GameState';
+import { EntityAddedEvent, EntityType } from '../../event/WorldEvents';
 import degToRad = MathUtils.degToRad;
 
 export class BuildingEntity extends AnimEntity implements Selectable {
@@ -67,6 +68,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         const index = GameState.buildingsUndiscovered.indexOf(this);
         if (index !== -1) GameState.buildingsUndiscovered.splice(index, 1);
         GameState.buildings.push(this);
+        EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, this));
     }
 
 }

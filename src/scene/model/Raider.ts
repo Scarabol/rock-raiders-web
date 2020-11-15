@@ -5,6 +5,7 @@ import { RaiderSelected } from '../../event/LocalEvents';
 import { FulfillerActivity, FulfillerEntity } from './FulfillerEntity';
 import { GameState } from '../../game/model/GameState';
 import { Vector3 } from 'three';
+import { EntityAddedEvent, EntityType } from '../../event/WorldEvents';
 
 export class Raider extends FulfillerEntity {
 
@@ -76,7 +77,7 @@ export class Raider extends FulfillerEntity {
         const index = GameState.raidersUndiscovered.indexOf(this);
         if (index !== -1) GameState.raidersUndiscovered.splice(index, 1);
         GameState.raiders.push(this);
-        console.log('A rock raider has been discovered');
+        EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, this));
     }
 
     onSelect() {

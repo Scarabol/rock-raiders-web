@@ -4,11 +4,11 @@ import { ResourceManager } from '../resource/ResourceManager';
 import { MathUtils, Raycaster, Vector3 } from 'three';
 import { getRandom, iGet } from '../core/Util';
 import { EventBus } from '../event/EventBus';
-import { RaiderRequested, SpawnEvent } from '../event/WorldEvents';
+import { EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnEvent } from '../event/WorldEvents';
 import { Raider } from './model/Raider';
 import { GameState } from '../game/model/GameState';
 import { Building } from '../game/model/entity/building/Building';
-import { MoveJob } from '../game/model/job/Job';
+import { CollectJob, MoveJob } from '../game/model/job/Job';
 import { CollectableEntity } from './model/collect/CollectableEntity';
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main';
 import { EntityDeselected } from '../event/LocalEvents';
@@ -106,7 +106,7 @@ export class WorldManager {
         this.sceneManager.scene.add(collectable.group);
         if (collectable.group.visible) {
             GameState.collectables.push(collectable);
-            collectable.onDiscover();
+            EventBus.publishEvent(new JobCreateEvent(new CollectJob(collectable)));
         } else {
             GameState.collectablesUndiscovered.push(collectable);
         }
@@ -134,6 +134,7 @@ export class WorldManager {
                 walkOutPos.y = this.getTerrainHeight(walkOutPos.x, walkOutPos.z);
                 raider.setJob(new MoveJob(walkOutPos));
                 GameState.raiders.push(raider);
+                EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, raider));
             });
             raider.group.position.copy(station.group.position).add(new Vector3(0, 0, TILESIZE / 2).applyEuler(station.group.rotation));
             raider.group.rotation.copy(station.group.rotation);

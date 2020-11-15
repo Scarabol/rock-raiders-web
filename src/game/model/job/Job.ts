@@ -15,13 +15,23 @@ export enum JobType {
 
 }
 
+export enum JobState {
+
+    OPEN,
+    COMPLETE,
+    CANCELED,
+
+}
+
 export abstract class Job {
 
     type: JobType;
+    jobstate: JobState;
     fulfiller: FulfillerEntity[] = [];
 
     constructor(type: JobType) {
         this.type = type;
+        this.jobstate = JobState.OPEN;
     }
 
     assign(fulfiller: FulfillerEntity) {
@@ -37,7 +47,10 @@ export abstract class Job {
     }
 
     cancel() {
-        this.fulfiller.forEach((fulfiller) => fulfiller.stopJob());
+        this.jobstate = JobState.CANCELED;
+        const fulfiller = this.fulfiller; // ensure consistency while processing
+        this.fulfiller = [];
+        fulfiller.forEach((fulfiller) => fulfiller.stopJob());
     }
 
     isQualified(fulfiller: FulfillerEntity): boolean {
@@ -45,7 +58,7 @@ export abstract class Job {
     }
 
     onJobComplete() {
-        // nothing to do here
+        this.jobstate = JobState.COMPLETE;
     }
 
     abstract getPosition(): Vector3; // TODO job system in 2d should be sufficient and decouple from three for deps and worker reasons
@@ -100,6 +113,7 @@ export class SurfaceJob extends Job {
     }
 
     onJobComplete() {
+        super.onJobComplete();
         switch (this.workType) {
             case SurfaceJobType.DRILL:
                 this.surface.collapse();
@@ -141,6 +155,7 @@ export class CollectJob extends Job {
     }
 
     onJobComplete() {
+        super.onJobComplete();
         switch (this.item.getCollectableType()) {
             case CollectableType.CRYSTAL:
                 GameState.numCrystal++;

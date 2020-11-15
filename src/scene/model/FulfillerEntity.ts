@@ -7,8 +7,6 @@ import { CollectableEntity } from './collect/CollectableEntity';
 import { NATIVE_FRAMERATE, PICKUP_RANGE } from '../../main';
 import { GameState } from '../../game/model/GameState';
 import { getRandom, getRandomSign } from '../../core/Util';
-import { EventBus } from '../../event/EventBus';
-import { JobCreateEvent } from '../../event/WorldEvents';
 import { LocalEvent } from '../../event/LocalEvents';
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
@@ -111,22 +109,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         }
     }
 
-    moveToTarget(target: Vector3) {
-        target.y = this.worldMgr.getTerrainHeight(target.x, target.z);
-        if (this.isOnRubble()) {
-            this.changeActivity(FulfillerActivity.MOVING_RUBBLE);
-        } else {
-            this.changeActivity(FulfillerActivity.MOVING);
-        }
-        const step = new Vector3().copy(target).sub(this.getPosition());
-        if (step.length() > this.getSpeed()) step.setLength(this.getSpeed()); // TODO use average speed between current and target position
-        this.group.position.add(step);
-        this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
-        this.group.lookAt(new Vector3(target.x, this.group.position.y, target.z));
-    }
-
-    abstract isOnRubble(): boolean;
-
     tryFindCarryTarget(): Vector3 {
         const targetBuilding = GameState.getClosestBuildingByType(this.getPosition(), ...this.carries.getTargetBuildingTypes());
         return targetBuilding ? targetBuilding.getDropPosition() : null;
@@ -147,13 +129,9 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     setJob(job: Job) {
-        if (this.job !== job) {
-            const oldJob = this.job;
-            this.stopJob();
-            if (oldJob && oldJob.type === JobType.SURFACE) EventBus.publishEvent(new JobCreateEvent(oldJob));
-        }
+        if (this.job !== job) this.stopJob();
         this.job = job;
-        this.job.assign(this);
+        if (this.job) this.job.assign(this);
     }
 
     stopJob() {
@@ -177,9 +155,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             if (this.skills.indexOf(skillKeys[c]) === -1) return false;
         }
         return true;
-    }
-
-    changeActivity(activity: FulfillerActivity, onChangeDone = null) {
     }
 
     getSelectionType(): SelectionType {

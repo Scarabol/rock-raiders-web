@@ -1,6 +1,6 @@
 import { EventBus } from '../event/EventBus';
 import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents';
-import { Job } from './model/job/Job';
+import { Job, JobState } from './model/job/Job';
 import { GameState } from './model/GameState';
 import { Vector3 } from 'three';
 import { Raider } from '../scene/model/Raider';
@@ -10,20 +10,16 @@ import { JOB_SCHEDULE_INTERVAL } from '../main';
 export class Supervisor {
 
     worldMgr: WorldManager;
-    availableJobs: Job[] = [];
+    jobs: Job[] = [];
     interval = null;
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr;
         EventBus.registerEventListener(JobCreateEvent.eventKey, (event: JobCreateEvent) => {
-            if (event.job.fulfiller.length < 1) this.availableJobs.push(event.job);
+            this.jobs.push(event.job);
         });
         EventBus.registerEventListener(JobDeleteEvent.eventKey, (event: JobDeleteEvent) => {
             event.job.cancel();
-            const index = this.availableJobs.indexOf(event.job);
-            if (index > -1) {
-                this.availableJobs.splice(index, 1);
-            }
         });
     }
 
@@ -40,10 +36,8 @@ export class Supervisor {
     }
 
     scheduleJobs() {
-        // console.log('Scheduling jobs; available: ' + this.availableJobs.length);
-        if (this.availableJobs.length < 1) return;
-        const stillAvailable = [];
-        this.availableJobs.forEach((job) => { // TODO sort jobs by priority
+        this.jobs = this.jobs.filter((j) => j.jobstate === JobState.OPEN);
+        this.jobs.filter((j) => j.fulfiller.length < 1).forEach((job) => { // TODO sort jobs by priority
             // find closest, qualified, unemployed raider
             let closestRaider: Raider = null;
             let minDistance = null;
@@ -56,14 +50,8 @@ export class Supervisor {
                     }
                 }
             });
-            if (closestRaider) {
-                closestRaider.job = job;
-                job.assign(closestRaider);
-            } else {
-                stillAvailable.push(job);
-            }
+            if (closestRaider) closestRaider.setJob(job);
         });
-        this.availableJobs = stillAvailable;
     }
 
 }

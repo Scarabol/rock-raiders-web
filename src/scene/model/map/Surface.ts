@@ -118,8 +118,9 @@ export class Surface implements Selectable {
     }
 
     cancelJobs() {
-        this.jobs.forEach((job) => EventBus.publishEvent(new JobDeleteEvent(job)));
+        const jobs = this.jobs; // ensure consistency while processing
         this.jobs = [];
+        jobs.forEach((job) => EventBus.publishEvent(new JobDeleteEvent(job)));
         this.updateJobColor();
     }
 
@@ -191,7 +192,7 @@ export class Surface implements Selectable {
                 this.jobs = this.jobs.filter((j) => j.workType !== SurfaceJobType.REINFORCE);
                 this.updateJobColor();
             }
-            // TODO if wall was reinforced remove it
+            // TODO if wall was reinforced remove it (same for fallin)
         }
 
         // update texture

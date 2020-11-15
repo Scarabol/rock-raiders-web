@@ -8,6 +8,8 @@ import { BuildingEntity } from './model/BuildingEntity';
 import { SurfaceType } from './model/map/SurfaceType';
 import { Crystal } from './model/collect/Crystal';
 import { WorldManager } from './WorldManager';
+import { EventBus } from '../event/EventBus';
+import { EntityAddedEvent, EntityType } from '../event/WorldEvents';
 import degToRad = MathUtils.degToRad;
 
 export class ObjectListLoader {
@@ -38,6 +40,8 @@ export class ObjectListLoader {
                 raider.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(raider.group.position).discovered;
                 if (raider.group.visible) {
                     GameState.raiders.push(raider);
+                    EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, raider));
+
                 } else {
                     GameState.raidersUndiscovered.push(raider);
                 }
@@ -52,6 +56,7 @@ export class ObjectListLoader {
                 entity.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered;
                 if (entity.group.visible) {
                     GameState.buildings.push(entity);
+                    EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, entity));
                 } else {
                     GameState.buildingsUndiscovered.push(entity);
                 }

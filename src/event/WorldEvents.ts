@@ -1,6 +1,7 @@
 import { GameEvent } from './EventBus';
 import { Job } from '../game/model/job/Job';
 import { CollectableType } from '../scene/model/collect/CollectableEntity';
+import { AnimEntity } from '../scene/model/anim/AnimEntity';
 
 export class WorldEvent extends GameEvent {
 
@@ -88,3 +89,40 @@ export class CollectEvent extends WorldEvent {
 
 }
 
+export class EntityAddedEvent extends WorldEvent {
+
+    static eventKey = 'added.entity';
+
+    type: EntityType;
+    entity: AnimEntity;
+
+    constructor(type: EntityType, entity: AnimEntity) {
+        super(EntityAddedEvent.eventKey);
+        this.type = type;
+        this.entity = entity;
+    }
+
+}
+
+export class EntityRemovedEvent extends WorldEvent {
+
+    static eventKey = 'remove.entity';
+
+    type: EntityType;
+    entity: AnimEntity;
+
+    constructor(type: EntityType, entity: AnimEntity) {
+        super(EntityRemovedEvent.eventKey);
+        this.type = type;
+        this.entity = entity;
+    }
+
+}
+
+export enum EntityType {
+
+    RAIDER,
+    VEHICLE,
+    BUILDING,
+
+}

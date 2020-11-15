@@ -1,6 +1,7 @@
 import { AnimEntity } from './anim/AnimEntity';
 import { Vector3 } from 'three';
 import { AnimationEntityType } from './anim/AnimationEntityType';
+import { FulfillerActivity } from './FulfillerEntity';
 
 export abstract class MovableEntity extends AnimEntity {
 
@@ -19,19 +20,23 @@ export abstract class MovableEntity extends AnimEntity {
         return this.speed;
     }
 
-    move(target: Vector3) {
-        this.group.lookAt(target);
-        const step = new Vector3().copy(target).sub(this.group.position);
-        const stepLength = step.length();
-        if (stepLength > this.getSpeed() / 10) {
-            if (stepLength > this.getSpeed()) {
-                step.setLength(this.getSpeed());
-            }
-            this.group.position.add(step);
+    moveToTarget(target: Vector3) {
+        target.y = this.worldMgr.getTerrainHeight(target.x, target.z);
+        if (this.isOnRubble()) {
+            this.changeActivity(FulfillerActivity.MOVING_RUBBLE);
         } else {
-            this.group.position.copy(target);
+            this.changeActivity(FulfillerActivity.MOVING);
         }
+        const step = new Vector3().copy(target).sub(this.getPosition());
+        if (step.length() > this.getSpeed()) step.setLength(this.getSpeed()); // TODO use average speed between current and target position
+        this.group.position.add(step);
         this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z);
+        this.group.lookAt(new Vector3(target.x, this.group.position.y, target.z));
+    }
+
+    abstract isOnRubble(): boolean;
+
+    changeActivity(activity: FulfillerActivity, onChangeDone = null) {
     }
 
 }

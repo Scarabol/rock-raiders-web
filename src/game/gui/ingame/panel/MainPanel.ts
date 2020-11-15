@@ -1,10 +1,11 @@
 import { IconPanel } from './IconPanel';
 import { EventBus } from '../../../../event/EventBus';
 import { BuildingSelected, EntityDeselected, RaiderSelected, SurfaceSelectedEvent, VehicleSelected } from '../../../../event/LocalEvents';
-import { JobCreateEvent, RaiderRequested, SpawnEvent, SpawnType } from '../../../../event/WorldEvents';
+import { EntityAddedEvent, EntityRemovedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnEvent, SpawnType } from '../../../../event/WorldEvents';
 import { SurfaceJob, SurfaceJobType } from '../../../model/job/Job';
 import { GameState } from '../../../model/GameState';
 import { Surface } from '../../../../scene/model/map/Surface';
+import { Building } from '../../../model/entity/building/Building';
 
 export class MainPanel extends IconPanel {
 
@@ -22,7 +23,19 @@ export class MainPanel extends IconPanel {
         const selectRaiderPanel = this.addSubPanel(10);
         const selectVehiclePanel = this.addSubPanel(7);
         const teleportItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan');
-        teleportItem.disabled = false;
+        teleportItem.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1;
+        EventBus.registerEventListener(EntityAddedEvent.eventKey, (event: EntityAddedEvent) => {
+            if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) {
+                teleportItem.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1
+                    && GameState.raiders.length < GameState.getMaxRaiders();
+            }
+        });
+        EventBus.registerEventListener(EntityRemovedEvent.eventKey, (event: EntityRemovedEvent) => {
+            if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) {
+                teleportItem.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1
+                    && GameState.raiders.length < GameState.getMaxRaiders();
+            }
+        });
         teleportItem.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders + 1));
         // TODO add decrease requested raider spawn option
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding');
