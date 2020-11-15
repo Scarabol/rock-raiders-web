@@ -182,26 +182,33 @@ export class Surface implements Selectable {
 
         // update mesh (geometry), if wall type changed
         const walltype = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y;
+        if (walltype === WALL_TYPE.WALL && (topLeftVertex.y === bottomRightVertex.y)) this.wallType = WALL_TYPE.WEIRD_CREVICE;
         if (this.wallType !== walltype) {
             this.wallType = walltype;
             this.updateGeometry(topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex, surfTopLeft, surfTop, surfLeft, surfTopRight, surfRight, surfBottomRight, surfBottom, surfBottomLeft);
+            if (this.hasJobType(SurfaceJobType.REINFORCE)) {
+                this.jobs.filter((j) => j.workType === SurfaceJobType.REINFORCE).forEach((j) => EventBus.publishEvent(new JobDeleteEvent(j)));
+                this.jobs = this.jobs.filter((j) => j.workType !== SurfaceJobType.REINFORCE);
+                this.updateJobColor();
+            }
+            // TODO if wall was reinforced remove it
         }
 
         // update texture
-        this.updateTexture(topLeftVertex, bottomRightVertex);
+        this.updateTexture();
 
         this.updateJobColor();
 
         this.terrain.surfaces[this.x][this.y] = this;
     }
 
-    updateTexture(topLeftVertex: Vector3, bottomRightVertex: Vector3) {
+    updateTexture() {
         let textureName = this.terrain.textureSet.texturebasename;
         if (!this.discovered) {
             textureName += '70';
         } else if (!this.surfaceType.shaping) {
             textureName += this.surfaceType.matIndex.toString();
-        } else if (this.wallType === WALL_TYPE.WALL && (topLeftVertex.y === bottomRightVertex.y)) {
+        } else if (this.wallType === WALL_TYPE.WEIRD_CREVICE) {
             textureName += '77';
         } else {
             if (this.wallType === WALL_TYPE.CORNER) {
@@ -430,12 +437,25 @@ export class Surface implements Selectable {
         return this.surfaceType.floor && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER;
     }
 
+    isDrillable(): boolean {
+        return this.surfaceType.drillable && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER);
+    }
+
+    isReinforcable(): boolean {
+        return this.surfaceType.reinforcable && this.wallType === WALL_TYPE.WALL;
+    }
+
+    isExplodable(): boolean {
+        return this.surfaceType.explodable && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER);
+    }
+
 }
 
 export enum WALL_TYPE {
 
     CORNER = 1,
-    WALL = 2, // or WEIRD_CREVICE
+    WALL = 2,
     INVERTED_CORNER = 3,
+    WEIRD_CREVICE = 20,
 
 }

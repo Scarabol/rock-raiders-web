@@ -90,8 +90,7 @@ export class MainPanel extends IconPanel {
         };
         EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, (event: SurfaceSelectedEvent) => {
             const surface = event.surface;
-            const type = surface.surfaceType;
-            if (type.floor) {
+            if (surface.surfaceType.floor) {
                 if (surface.hasRubble()) {
                     this.selectSubPanel(selectRubblePanel);
                 } else {
@@ -99,9 +98,9 @@ export class MainPanel extends IconPanel {
                 }
             } else {
                 this.selectSubPanel(selectWallPanel);
-                itemDrill.disabled = !type.drillable;
-                itemReinforce.disabled = !type.reinforcable;
-                itemDynamite.disabled = !type.explodable;
+                itemDrill.disabled = !surface.isDrillable();
+                itemReinforce.disabled = !surface.isReinforcable();
+                itemDynamite.disabled = !surface.isExplodable();
                 this.notifyRedraw(); // TODO performance: actually just the buttons need to be redrawn
             }
         });

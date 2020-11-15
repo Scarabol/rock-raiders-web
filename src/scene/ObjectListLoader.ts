@@ -59,12 +59,12 @@ export class ObjectListLoader {
                 worldMgr.sceneManager.scene.add(entity.group);
                 const path1Surface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position);
                 path1Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
-                path1Surface.updateMesh(); // TODO performance actually just update texture
+                path1Surface.updateTexture();
                 const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
                 pathOffset.add(entity.group.position);
                 const path2Surface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset);
                 path2Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
-                path2Surface.updateMesh(); // TODO performance actually just update texture
+                path2Surface.updateTexture();
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 worldMgr.addCollectable(new Crystal(), worldX, worldZ);
             } else {
