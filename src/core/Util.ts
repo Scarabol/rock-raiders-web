@@ -1,13 +1,3 @@
-export function getPath(url: string) {
-    if (!url) return url;
-    let strUrl = url.toString().replace(/\\/g, '/');
-    if (strUrl.startsWith('/')) strUrl = strUrl.substring(1);
-    const lastInd = strUrl.lastIndexOf('/');
-    strUrl = strUrl.substring(0, lastInd + 1);
-    if (strUrl.startsWith('/')) strUrl = strUrl.substring(1);
-    return strUrl;
-}
-
 export function getFilename(url: string) {
     if (!url) return url;
     let strUrl = url.toString().replace(/\\/g, '/');
