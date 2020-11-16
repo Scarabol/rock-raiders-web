@@ -4,18 +4,23 @@ import { Building } from '../../../game/model/entity/building/Building';
 import { AnimEntity } from '../anim/AnimEntity';
 import { Carryable } from './Carryable';
 import { Surface } from '../map/Surface';
+import { Vector3 } from 'three';
+import { GameState } from '../../../game/model/GameState';
 
 export class Dynamite extends AnimEntity implements Carryable {
 
     targetSurface: Surface;
 
-    constructor(targetSurface: Surface) {
+    constructor() {
         super(ResourceManager.getAnimationEntityType('MiscAnims/Dynamite/Dynamite.ae'));
-        this.targetSurface = targetSurface;
     }
 
-    getTargetBuildingTypes(): Building[] {
-        return []; // TODO return toolstation, if no job is assigned/active
+    getTargetPos(): Vector3 {
+        if (this.targetSurface && this.targetSurface.isExplodable()) {
+            return this.targetSurface.getDigPositions()[0]; // TODO find closest dig position
+        } else {
+            return GameState.getClosestBuildingByType(this.getPosition(), Building.TOOLSTATION).getDropPosition();
+        }
     }
 
     getCollectableType(): CollectableType {

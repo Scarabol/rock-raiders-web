@@ -4,7 +4,7 @@ import { ResourceManager } from '../resource/ResourceManager';
 import { MathUtils, Raycaster, Vector3 } from 'three';
 import { getRandom, iGet } from '../core/Util';
 import { EventBus } from '../event/EventBus';
-import { EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent } from '../event/WorldEvents';
+import { EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent, SpawnMaterialEvent } from '../event/WorldEvents';
 import { Raider } from './model/Raider';
 import { GameState } from '../game/model/GameState';
 import { Building } from '../game/model/entity/building/Building';
@@ -14,8 +14,8 @@ import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main';
 import { EntityDeselected } from '../event/LocalEvents';
 import { ObjectListLoader } from './ObjectListLoader';
 import { Dynamite } from './model/collect/Dynamite';
-import degToRad = MathUtils.degToRad;
 import { DynamiteJob } from '../game/model/job/SurfaceJob';
+import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
 
@@ -38,15 +38,17 @@ export class WorldManager {
                 throw 'Could not find toolstation to spawn dynamite';
             }
             const pos = targetBuilding.getDropPosition(); // TODO use ToolNullName from cfg
-            const dynamite = new Dynamite(event.surface);
+            const dynamite = new Dynamite();
+            dynamite.targetSurface = event.surface;
             dynamite.worldMgr = this;
             dynamite.setActivity('Normal');
             dynamite.group.position.copy(pos);
             this.sceneManager.scene.add(dynamite.group);
-            // create related job
             EventBus.publishEvent(new JobCreateEvent(new DynamiteJob(event.surface, dynamite)));
         });
-        // TODO implement barriers, ...
+        EventBus.registerEventListener(SpawnMaterialEvent.eventKey, (event: SpawnMaterialEvent) => {
+            this.addCollectable(event.collectable, event.spawnPosition.x, event.spawnPosition.z);
+        });
     }
 
     setup(levelName: string) {

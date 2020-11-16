@@ -3,18 +3,23 @@ import { Building } from './entity/building/Building';
 import { Selectable, SelectionType } from './Selectable';
 import { Raider } from '../../scene/model/Raider';
 import { VehicleEntity } from '../../scene/model/VehicleEntity';
-import { CollectableEntity } from '../../scene/model/collect/CollectableEntity';
+import { CollectableEntity, CollectableType } from '../../scene/model/collect/CollectableEntity';
 import { Vector3 } from 'three';
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../main';
 import { Surface } from '../../scene/model/map/Surface';
 import { BaseEntity } from '../../scene/model/BaseEntity';
 import { EventBus } from '../../event/EventBus';
 import { EntityDeselected } from '../../event/LocalEvents';
+import { BuildingSite } from '../../scene/model/BuildingSite';
+import { Dynamite } from '../../scene/model/collect/Dynamite';
+import { Crystal } from '../../scene/model/collect/Crystal';
+import { Ore } from '../../scene/model/collect/Ore';
 
 export class GameState {
 
-    static numOre: number = 0;
     static numCrystal: number = 0;
+    static numOre: number = 0;
+    static numBrick: number = 0;
     static usedCrystals: number = 0;
     static neededCrystals: number = 0;
     static airlevel: number = 1; // airlevel in percent from 0 to 1.0
@@ -29,10 +34,12 @@ export class GameState {
     static vehiclesUndiscovered: VehicleEntity[] = [];
     static collectables: CollectableEntity[] = [];
     static collectablesUndiscovered: CollectableEntity[] = [];
+    static buildingSites: BuildingSite[] = [];
 
     static reset() {
-        this.numOre = 0;
         this.numCrystal = 0;
+        this.numOre = 0;
+        this.numBrick = 0;
         this.usedCrystals = 0;
         this.neededCrystals = 0;
         this.airlevel = 1;
@@ -47,6 +54,7 @@ export class GameState {
         this.vehiclesUndiscovered = [];
         this.collectables = [];
         this.collectablesUndiscovered = [];
+        this.buildingSites = [];
     }
 
     static getBuildingsByType(...buildingTypes: Building[]): BuildingEntity[] {
@@ -64,6 +72,19 @@ export class GameState {
             const bPos = b.getDropPosition();
             const dist = new Vector3().copy(position).sub(bPos).lengthSq();
             if (closest === null || dist < minDist) {
+                closest = b;
+                minDist = dist;
+            }
+        });
+        return closest;
+    }
+
+    static getClosestSiteThatRequires(position: Vector3, collectableType: CollectableType): BuildingSite {
+        let closest = null, minDist = null;
+        this.buildingSites.forEach((b) => {
+            const bPos = b.getPosition();
+            const dist = new Vector3().copy(position).sub(bPos).lengthSq();
+            if ((closest === null || dist < minDist) && b.needs(collectableType)) {
                 closest = b;
                 minDist = dist;
             }
@@ -115,6 +136,26 @@ export class GameState {
             const index = undiscovered.indexOf(r);
             if (index !== -1) undiscovered.splice(index, 1);
         });
+    }
+
+    static dropMaterial(type: CollectableType, quantity: number): CollectableEntity[] {
+        const result = [];
+        if (type === CollectableType.DYNAMITE) {
+            for (let c = 0; c < quantity; c++) result.push(new Dynamite());
+        } else if (type === CollectableType.CRYSTAL) {
+            while (GameState.numCrystal > 0 && result.length < quantity) {
+                GameState.numCrystal--;
+                result.push(new Crystal());
+            }
+        } else if (type === CollectableType.ORE) {
+            while (GameState.numOre > 0 && result.length < quantity) {
+                GameState.numOre--;
+                result.push(new Ore());
+            }
+        } else {
+            console.error('Material drop not yet implemented: ' + type);
+        }
+        return result;
     }
 
 }

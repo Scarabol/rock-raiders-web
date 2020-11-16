@@ -1,7 +1,8 @@
 import { GameEvent } from './EventBus';
 import { Job } from '../game/model/job/Job';
-import { CollectableType } from '../scene/model/collect/CollectableEntity';
+import { CollectableEntity, CollectableType } from '../scene/model/collect/CollectableEntity';
 import { AnimEntity } from '../scene/model/anim/AnimEntity';
+import { Vector3 } from 'three';
 import { Surface } from '../scene/model/map/Surface';
 
 export class WorldEvent extends GameEvent {
@@ -79,6 +80,21 @@ export class SpawnDynamiteEvent extends WorldEvent {
     constructor(surface: Surface) {
         super(SpawnDynamiteEvent.eventKey);
         this.surface = surface;
+    }
+
+}
+
+export class SpawnMaterialEvent extends WorldEvent {
+
+    static eventKey = 'spawn.material';
+
+    collectable: CollectableEntity;
+    spawnPosition: Vector3;
+
+    constructor(collectable: CollectableEntity, spawnPosition: Vector3) {
+        super(SpawnMaterialEvent.eventKey);
+        this.collectable = collectable;
+        this.spawnPosition = spawnPosition;
     }
 
 }

@@ -4,6 +4,8 @@ import { Vector3 } from 'three';
 import { JOB_ACTION_RANGE, TILESIZE } from '../../../main';
 import { Dynamite } from '../../../scene/model/collect/Dynamite';
 import { Job, JobType } from './Job';
+import { SurfaceType } from '../../../scene/model/map/SurfaceType';
+import { CollectableEntity } from '../../../scene/model/collect/CollectableEntity';
 
 export class SurfaceJobType {
 
@@ -92,6 +94,24 @@ export class DynamiteJob extends SurfaceJob { // TODO actually this is a carry j
     onJobComplete() {
         super.onJobComplete();
         this.dynamite.ignite();
+    }
+
+}
+
+export class CompletePowerPathJob extends SurfaceJob {
+
+    placedItems: CollectableEntity[];
+
+    constructor(surface: Surface, placedItems: CollectableEntity[]) {
+        super(SurfaceJobType.CLEAR_RUBBLE, surface);
+        this.placedItems = placedItems;
+    }
+
+    onJobComplete() {
+        super.onJobComplete();
+        this.placedItems.forEach((placed) => placed.worldMgr.sceneManager.scene.remove(placed.group));
+        this.surface.surfaceType = SurfaceType.POWER_PATH_ALL;
+        this.surface.updateTexture();
     }
 
 }

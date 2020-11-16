@@ -3,9 +3,7 @@ import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { CollectJob, Job, JobType } from '../../game/model/job/Job';
 import { Vector3 } from 'three';
-import { CollectableEntity } from './collect/CollectableEntity';
 import { JOB_ACTION_RANGE, NATIVE_FRAMERATE } from '../../main';
-import { GameState } from '../../game/model/GameState';
 import { getRandom, getRandomSign } from '../../core/Util';
 import { LocalEvent } from '../../event/LocalEvents';
 import { Carryable } from './collect/Carryable';
@@ -111,7 +109,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                     });
                 }
             } else if (!this.carryTarget) {
-                this.carryTarget = this.tryFindCarryTarget(); // TODO sleep 5 seconds, before retry
+                this.carryTarget = this.carries.getTargetPos(); // TODO sleep 5 seconds, before retry
             } else if (this.getPosition().sub(this.carryTarget).length() > JOB_ACTION_RANGE) {
                 this.moveToTarget(this.carryTarget);
             } else {
@@ -133,11 +131,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         }
     }
 
-    tryFindCarryTarget(): Vector3 {
-        const targetBuilding = GameState.getClosestBuildingByType(this.getPosition(), ...this.carries.getTargetBuildingTypes());
-        return targetBuilding ? targetBuilding.getDropPosition() : null;
-    }
-
     dropItem() {
         if (!this.carries) return;
         this.group.remove(this.carries.group); // TODO remove from carry joint
@@ -146,7 +139,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.carryTarget = null;
     }
 
-    pickupItem(item: CollectableEntity) {
+    pickupItem(item: Carryable) {
         this.carries = item;
         this.group.add(this.carries.group);
         this.carries.group.position.set(0, 7, 4); // TODO use carry joint offset

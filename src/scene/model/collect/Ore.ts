@@ -6,7 +6,7 @@ import { Building } from '../../../game/model/entity/building/Building';
 export class Ore extends CollectableEntity {
 
     constructor() {
-        super();
+        super(CollectableType.ORE);
         const resource = ResourceManager.getResource('MiscAnims/Ore/Ore1st.lwo');
         const mesh = new LWOLoader('MiscAnims/Ore/').parse(resource);
         this.group.add(mesh);
@@ -14,10 +14,6 @@ export class Ore extends CollectableEntity {
 
     getTargetBuildingTypes(): Building[] {
         return [Building.REFINERY, Building.TOOLSTATION];
-    }
-
-    getCollectableType(): CollectableType {
-        return CollectableType.ORE;
     }
 
     onDiscover() {

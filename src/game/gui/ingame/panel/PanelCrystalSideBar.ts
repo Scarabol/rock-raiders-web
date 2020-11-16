@@ -4,7 +4,7 @@ import { GameState } from '../../../model/GameState';
 import { ResourceManager } from '../../../../resource/ResourceManager';
 import { Panel } from './Panel';
 import { EventBus } from '../../../../event/EventBus';
-import { CollectEvent } from '../../../../event/WorldEvents';
+import { CollectEvent, SpawnMaterialEvent } from '../../../../event/WorldEvents';
 import { CollectableType } from '../../../../scene/model/collect/CollectableEntity';
 
 export class PanelCrystalSideBar extends Panel {
@@ -27,12 +27,20 @@ export class PanelCrystalSideBar extends Panel {
         this.imgUsedCrystal = ResourceManager.getImage('Interface/RightPanel/UsedCrystal.bmp');
         this.imgOre = ResourceManager.getImage('Interface/RightPanel/CrystalSideBar_Ore.bmp');
         EventBus.registerEventListener(CollectEvent.eventKey, (event: CollectEvent) => {
-            if (event.collectType === CollectableType.CRYSTAL || event.collectType === CollectableType.ORE || event.collectType === CollectableType.BRICK) {
-                this.btnOre.label = GameState.numOre.toString();
-                this.btnCrystal.label = GameState.numCrystal.toString();
-                this.notifyRedraw();
-            }
+            this.updateQuantities(event.collectType);
         });
+        EventBus.registerEventListener(SpawnMaterialEvent.eventKey, (event: SpawnMaterialEvent) => {
+            this.updateQuantities(event.collectable.getCollectableType());
+        });
+    }
+
+    updateQuantities(type: CollectableType) {
+        if (type === CollectableType.CRYSTAL || type === CollectableType.ORE || type === CollectableType.BRICK) {
+            this.btnOre.label = GameState.numOre.toString();
+            this.btnCrystal.label = GameState.numCrystal.toString();
+            // TODO implement bricks
+            this.notifyRedraw();
+        }
     }
 
     onRedraw(context: CanvasRenderingContext2D) {

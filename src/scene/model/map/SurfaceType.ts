@@ -26,7 +26,7 @@ export class SurfaceType {
     static readonly ENERGY_CRYSTAL_SEAM = new SurfaceType({name: 'energy crystal seam', matIndex: '20', selectable: true, drillable: true, explodable: true, reinforcable: true});
     static readonly RECHARGE_SEAM = new SurfaceType({name: 'recharge seam', matIndex: '67'});
     static readonly POWER_PATH_ALL = new SurfaceType({name: 'power path all', floor: true, matIndex: '60', matIndexPowered: '71'});
-    static readonly POWER_PATH_SITE = new SurfaceType({name: 'power path site', floor: true, matIndex: '61'});
+    static readonly POWER_PATH_SITE = new SurfaceType({name: 'power path site', floor: true, matIndex: '61', selectable: true});
     static readonly POWER_PATH_STRAIGHT = new SurfaceType({name: 'power path straight', floor: true, matIndex: '62', matIndexPowered: '72'});
     static readonly POWER_PATH_CORNER = new SurfaceType({name: 'power path corner', floor: true, matIndex: '63', matIndexPowered: '73'});
     static readonly POWER_PATH_TCROSSING = new SurfaceType({name: 'power path t crossing', floor: true, matIndex: '64', matIndexPowered: '74'});

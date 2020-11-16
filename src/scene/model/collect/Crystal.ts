@@ -7,7 +7,7 @@ import { Building } from '../../../game/model/entity/building/Building';
 export class Crystal extends CollectableEntity {
 
     constructor() {
-        super();
+        super(CollectableType.CRYSTAL);
         const resource2 = ResourceManager.getResource('MiscAnims/Crystal/vlp_greencrystal.lwo');
         const mesh2 = new LWOLoader('MiscAnims/Crystal/').parse(resource2);
         (mesh2.material as Material[]).forEach((mat: MeshPhongMaterial) => {
@@ -33,10 +33,6 @@ export class Crystal extends CollectableEntity {
 
     getTargetBuildingTypes(): Building[] {
         return [Building.POWER_STATION, Building.TOOLSTATION];
-    }
-
-    getCollectableType(): CollectableType {
-        return CollectableType.CRYSTAL;
     }
 
     onDiscover() {

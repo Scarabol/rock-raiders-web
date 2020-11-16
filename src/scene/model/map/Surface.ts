@@ -435,7 +435,6 @@ export class Surface implements Selectable {
 
     isPath(): boolean { // TODO performance: use boolean on surfacetype
         return this.surfaceType === SurfaceType.POWER_PATH_ALL
-            || this.surfaceType === SurfaceType.POWER_PATH_SITE
             || this.surfaceType === SurfaceType.POWER_PATH_STRAIGHT
             || this.surfaceType === SurfaceType.POWER_PATH_CORNER
             || this.surfaceType === SurfaceType.POWER_PATH_TCROSSING

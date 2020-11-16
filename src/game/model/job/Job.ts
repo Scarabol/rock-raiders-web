@@ -1,10 +1,11 @@
 import { Vector3 } from 'three';
-import { CollectableEntity, CollectableType } from '../../../scene/model/collect/CollectableEntity';
+import { CollectableEntity, CollectableType, CollectTargetType } from '../../../scene/model/collect/CollectableEntity';
 import { JOB_ACTION_RANGE, RAIDER_SPEED } from '../../../main';
 import { GameState } from '../GameState';
 import { EventBus } from '../../../event/EventBus';
 import { CollectEvent } from '../../../event/WorldEvents';
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity';
+import { Building } from '../entity/building/Building';
 
 export enum JobType {
 
@@ -85,20 +86,26 @@ export class CollectJob extends Job {
     }
 
     isQualified(fulfiller: FulfillerEntity) {
-        return fulfiller.carries === null && GameState.getBuildingsByType(...this.item.getTargetBuildingTypes()).length > 0;
+        return fulfiller.carries === null && this.item.getTargetPos() !== null;
     }
 
     onJobComplete() {
         super.onJobComplete();
-        switch (this.item.getCollectableType()) {
-            case CollectableType.CRYSTAL:
-                GameState.numCrystal++;
-                EventBus.publishEvent(new CollectEvent(this.item.getCollectableType()));
-                break;
-            case CollectableType.ORE:
-                GameState.numOre++;
-                EventBus.publishEvent(new CollectEvent(this.item.getCollectableType()));
-                break;
+        if (this.item.getTargetType() === Building.TOOLSTATION) {
+            switch (this.item.getCollectableType()) {
+                case CollectableType.CRYSTAL:
+                    GameState.numCrystal++;
+                    EventBus.publishEvent(new CollectEvent(this.item.getCollectableType()));
+                    break;
+                case CollectableType.ORE:
+                    GameState.numOre++;
+                    EventBus.publishEvent(new CollectEvent(this.item.getCollectableType()));
+                    break;
+            }
+        } else if (this.item.getTargetType() === CollectTargetType.BUILDING_SITE) {
+            this.item.targetSite.addItem(this.item);
+        } else {
+            console.error('target type not yet implemented: ' + this.item.getTargetType());
         }
     }
 
