@@ -34,4 +34,5 @@ export class Dynamite extends AnimEntity implements Carryable {
             // TODO damage raider, vehicle, buildings
         });
     }
+
 }

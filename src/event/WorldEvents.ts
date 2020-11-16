@@ -44,19 +44,6 @@ export class JobDeleteEvent extends JobEvent {
 
 }
 
-export class SpawnDynamiteEvent extends WorldEvent {
-
-    static eventKey = 'spawn.dynamite';
-
-    surface: Surface;
-
-    constructor(surface: Surface) {
-        super(SpawnDynamiteEvent.eventKey);
-        this.surface = surface;
-    }
-
-}
-
 export class RaiderRequested extends WorldEvent {
 
     static eventKey = 'raider.request';
@@ -79,6 +66,19 @@ export class CollectEvent extends WorldEvent {
     constructor(collectType: CollectableType) {
         super(CollectEvent.eventKey);
         this.collectType = collectType;
+    }
+
+}
+
+export class SpawnDynamiteEvent extends WorldEvent {
+
+    static eventKey = 'spawn.dynamite';
+
+    surface: Surface;
+
+    constructor(surface: Surface) {
+        super(SpawnDynamiteEvent.eventKey);
+        this.surface = surface;
     }
 
 }
