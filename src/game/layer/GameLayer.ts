@@ -3,12 +3,13 @@ import { WorldManager } from '../../scene/WorldManager';
 import { SelectionType } from '../model/Selectable';
 import { GameState } from '../model/GameState';
 import { Raider } from '../../scene/model/Raider';
-import { MoveJob, SurfaceJob, SurfaceJobType } from '../model/job/Job';
+import { MoveJob } from '../model/job/Job';
 import { EventBus } from '../../event/EventBus';
 import { JobCreateEvent } from '../../event/WorldEvents';
 import { Surface } from '../../scene/model/map/Surface';
 import { EntityDeselected } from '../../event/LocalEvents';
 import { FulfillerEntity } from '../../scene/model/FulfillerEntity';
+import { SurfaceJob, SurfaceJobType } from '../model/job/SurfaceJob';
 
 export class GameLayer extends ScreenLayer {
 

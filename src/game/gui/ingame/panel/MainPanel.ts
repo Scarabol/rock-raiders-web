@@ -2,10 +2,10 @@ import { IconPanel } from './IconPanel';
 import { EventBus } from '../../../../event/EventBus';
 import { BuildingSelected, EntityDeselected, RaiderSelected, SurfaceSelectedEvent, VehicleSelected } from '../../../../event/LocalEvents';
 import { EntityAddedEvent, EntityRemovedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent } from '../../../../event/WorldEvents';
-import { SurfaceJob, SurfaceJobType } from '../../../model/job/Job';
 import { GameState } from '../../../model/GameState';
 import { Surface } from '../../../../scene/model/map/Surface';
 import { Building } from '../../../model/entity/building/Building';
+import { SurfaceJob, SurfaceJobType } from '../../../model/job/SurfaceJob';
 
 export class MainPanel extends IconPanel {
 

@@ -1,7 +1,7 @@
 import { MovableEntity } from './MovableEntity';
 import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { ResourceManager } from '../../resource/ResourceManager';
-import { CollectJob, DynamiteJob, Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
+import { CollectJob, Job, JobType} from '../../game/model/job/Job';
 import { Vector3 } from 'three';
 import { CollectableEntity } from './collect/CollectableEntity';
 import { JOB_ACTION_RANGE, NATIVE_FRAMERATE } from '../../main';
@@ -9,6 +9,7 @@ import { GameState } from '../../game/model/GameState';
 import { getRandom, getRandomSign } from '../../core/Util';
 import { LocalEvent } from '../../event/LocalEvents';
 import { Carryable } from './collect/Carryable';
+import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob';
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 

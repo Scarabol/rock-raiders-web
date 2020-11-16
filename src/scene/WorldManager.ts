@@ -8,13 +8,14 @@ import { EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDyn
 import { Raider } from './model/Raider';
 import { GameState } from '../game/model/GameState';
 import { Building } from '../game/model/entity/building/Building';
-import { CollectJob, DynamiteJob, MoveJob } from '../game/model/job/Job';
+import { CollectJob, MoveJob } from '../game/model/job/Job';
 import { CollectableEntity } from './model/collect/CollectableEntity';
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main';
 import { EntityDeselected } from '../event/LocalEvents';
 import { ObjectListLoader } from './ObjectListLoader';
 import { Dynamite } from './model/collect/Dynamite';
 import degToRad = MathUtils.degToRad;
+import { DynamiteJob } from '../game/model/job/SurfaceJob';
 
 export class WorldManager {
 
