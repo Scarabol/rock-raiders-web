@@ -27,13 +27,15 @@ export class MainPanel extends IconPanel {
         EventBus.registerEventListener(EntityAddedEvent.eventKey, (event: EntityAddedEvent) => {
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) {
                 teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1
-                    && GameState.raiders.length < GameState.getMaxRaiders();
+                    || GameState.raiders.length >= GameState.getMaxRaiders();
+                this.notifyRedraw(); // TODO performance: actually just the button needs to be redrawn
             }
         });
         EventBus.registerEventListener(EntityRemovedEvent.eventKey, (event: EntityRemovedEvent) => {
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) {
                 teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1
-                    && GameState.raiders.length < GameState.getMaxRaiders();
+                    || GameState.raiders.length >= GameState.getMaxRaiders();
+                this.notifyRedraw(); // TODO performance: actually just the button needs to be redrawn
             }
         });
         teleportRaider.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders + 1));
