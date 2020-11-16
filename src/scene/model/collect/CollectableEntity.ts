@@ -1,15 +1,16 @@
 import { BaseEntity } from '../BaseEntity';
-import { Building } from '../../../game/model/entity/building/Building';
 import { GameState } from '../../../game/model/GameState';
 import { EventBus } from '../../../event/EventBus';
 import { JobCreateEvent } from '../../../event/WorldEvents';
 import { CollectJob } from '../../../game/model/job/Job';
+import { Carryable } from './Carryable';
+import { Building } from '../../../game/model/entity/building/Building';
 
-export abstract class CollectableEntity extends BaseEntity {
-
-    abstract getTargetBuildingTypes(): Building[];
+export abstract class CollectableEntity extends BaseEntity implements Carryable {
 
     abstract getCollectableType(): CollectableType;
+
+    abstract getTargetBuildingTypes(): Building[];
 
     onDiscover() {
         super.onDiscover();

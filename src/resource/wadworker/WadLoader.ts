@@ -342,6 +342,7 @@ export class WadLoader {
         this.addAsset(this.loadLWOFile, 'World/Shared/Brick.lwo');
         this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ProcessedOre') + '.lwo');
         this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae');
+        this.addAnimatedEntity('MiscAnims/Dynamite/Dynamite.ae');
         // // reward screen
         // const rewardConf = mainConf['Reward'];
         // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);

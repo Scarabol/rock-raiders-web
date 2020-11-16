@@ -4,15 +4,16 @@ import { ResourceManager } from '../resource/ResourceManager';
 import { MathUtils, Raycaster, Vector3 } from 'three';
 import { getRandom, iGet } from '../core/Util';
 import { EventBus } from '../event/EventBus';
-import { EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnEvent } from '../event/WorldEvents';
+import { EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent } from '../event/WorldEvents';
 import { Raider } from './model/Raider';
 import { GameState } from '../game/model/GameState';
 import { Building } from '../game/model/entity/building/Building';
-import { CollectJob, MoveJob } from '../game/model/job/Job';
+import { CollectJob, DynamiteJob, MoveJob } from '../game/model/job/Job';
 import { CollectableEntity } from './model/collect/CollectableEntity';
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main';
 import { EntityDeselected } from '../event/LocalEvents';
 import { ObjectListLoader } from './ObjectListLoader';
+import { Dynamite } from './model/collect/Dynamite';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
@@ -30,8 +31,19 @@ export class WorldManager {
                 this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER);
             }
         });
-        EventBus.registerEventListener(SpawnEvent.eventKey, (event: SpawnEvent) => {
-            console.warn('Spawn not yet implemented: ' + event.type);
+        EventBus.registerEventListener(SpawnDynamiteEvent.eventKey, (event: SpawnDynamiteEvent) => {
+            const targetBuilding = GameState.getClosestBuildingByType(event.surface.getDigPositions()[0], Building.TOOLSTATION);
+            if (!targetBuilding) {
+                throw 'Could not find toolstation to spawn dynamite';
+            }
+            const pos = targetBuilding.getDropPosition(); // TODO use ToolNullName from cfg
+            const dynamite = new Dynamite(event.surface);
+            dynamite.worldMgr = this;
+            dynamite.setActivity('Normal');
+            dynamite.group.position.copy(pos);
+            this.sceneManager.scene.add(dynamite.group);
+            // create related job
+            EventBus.publishEvent(new JobCreateEvent(new DynamiteJob(event.surface, dynamite)));
         });
         // TODO implement barriers, ...
     }

@@ -2,6 +2,7 @@ import { GameEvent } from './EventBus';
 import { Job } from '../game/model/job/Job';
 import { CollectableType } from '../scene/model/collect/CollectableEntity';
 import { AnimEntity } from '../scene/model/anim/AnimEntity';
+import { Surface } from '../scene/model/map/Surface';
 
 export class WorldEvent extends GameEvent {
 
@@ -43,23 +44,16 @@ export class JobDeleteEvent extends JobEvent {
 
 }
 
-export class SpawnEvent extends WorldEvent {
+export class SpawnDynamiteEvent extends WorldEvent {
 
-    static eventKey = 'spawn.entity';
+    static eventKey = 'spawn.dynamite';
 
-    type: SpawnType;
-    consumed: boolean;
+    surface: Surface;
 
-    constructor(type: SpawnType) {
-        super(SpawnEvent.eventKey);
-        this.type = type;
+    constructor(surface: Surface) {
+        super(SpawnDynamiteEvent.eventKey);
+        this.surface = surface;
     }
-
-}
-
-export enum SpawnType {
-
-    DYNAMITE,
 
 }
 

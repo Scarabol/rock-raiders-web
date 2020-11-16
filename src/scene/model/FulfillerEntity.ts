@@ -1,13 +1,14 @@
 import { MovableEntity } from './MovableEntity';
 import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { ResourceManager } from '../../resource/ResourceManager';
-import { CollectJob, Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
+import { CollectJob, DynamiteJob, Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
 import { Vector3 } from 'three';
 import { CollectableEntity } from './collect/CollectableEntity';
 import { JOB_ACTION_RANGE, NATIVE_FRAMERATE } from '../../main';
 import { GameState } from '../../game/model/GameState';
 import { getRandom, getRandomSign } from '../../core/Util';
 import { LocalEvent } from '../../event/LocalEvents';
+import { Carryable } from './collect/Carryable';
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
@@ -19,7 +20,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     jobSubPos: Vector3 = null;
     tools: string[] = [];
     skills: string[] = [];
-    carries: CollectableEntity = null;
+    carries: Carryable = null; // TODO implement multi carry for vehicles
     carryTarget: Vector3 = null;
 
     protected constructor(selectionType: SelectionType, aeFilename: string, speed: number) {
@@ -73,6 +74,28 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                         this.job.onJobComplete();
                         this.stopJob();
                     }, 3);
+                }
+            } else if (surfaceJobType === SurfaceJobType.BLOW) {
+                const bj = this.job as DynamiteJob;
+                if (this.carries !== bj.dynamite) {
+                    this.dropItem();
+                    if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
+                        this.moveToTarget(this.job.getPosition());
+                    } else {
+                        this.changeActivity(FulfillerActivity.PICKING, () => {
+                            this.pickupItem(bj.dynamite);
+                        });
+                    }
+                } else if (!this.carryTarget) {
+                    this.carryTarget = bj.surface.getDigPositions()[0];
+                } else if (this.getPosition().sub(this.carryTarget).length() > JOB_ACTION_RANGE) {
+                    this.moveToTarget(this.carryTarget);
+                } else {
+                    this.changeActivity(FulfillerActivity.PICKING, () => {
+                        this.dropItem();
+                        this.job.onJobComplete();
+                        this.stopJob();
+                    });
                 }
             }
         } else if (this.job.type === JobType.CARRY) {

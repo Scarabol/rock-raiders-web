@@ -475,6 +475,12 @@ export class Surface implements Selectable {
         }
     }
 
+    getCenterWorld(): Vector3 {
+        const center = new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE + TILESIZE / 2);
+        center.y = this.terrain.worldMgr.getTerrainHeight(center.x, center.z);
+        return center;
+    }
+
 }
 
 export enum WALL_TYPE {

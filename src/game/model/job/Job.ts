@@ -6,6 +6,7 @@ import { GameState } from '../GameState';
 import { EventBus } from '../../../event/EventBus';
 import { CollectEvent } from '../../../event/WorldEvents';
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity';
+import { Dynamite } from '../../../scene/model/collect/Dynamite';
 
 export enum JobType {
 
@@ -103,7 +104,7 @@ export class SurfaceJob extends Job { // TODO refactor move to separate file and
 
     getPosition(): Vector3 {
         if (this.workType === SurfaceJobType.CLEAR_RUBBLE) {
-            return new Vector3(this.surface.x * TILESIZE + TILESIZE / 2, 0, this.surface.y * TILESIZE + TILESIZE / 2);
+            return this.surface.getCenterWorld();
         } else {
             const digPos = this.surface.getDigPositions()[0];
             digPos.y = this.surface.terrain.worldMgr.getTerrainHeight(digPos.x, digPos.z);
@@ -127,9 +128,6 @@ export class SurfaceJob extends Job { // TODO refactor move to separate file and
             case SurfaceJobType.DRILL:
                 this.surface.collapse();
                 break;
-            case SurfaceJobType.BLOW:
-                // TODO start dynamite countdown
-                break;
             case SurfaceJobType.REINFORCE:
                 this.surface.reinforce();
                 break;
@@ -137,6 +135,26 @@ export class SurfaceJob extends Job { // TODO refactor move to separate file and
                 this.surface.reduceRubble();
                 break;
         }
+    }
+
+}
+
+export class DynamiteJob extends SurfaceJob { // TODO actually this is a carry job that targets a surface
+
+    dynamite: Dynamite;
+
+    constructor(surface: Surface, dynamite: Dynamite) {
+        super(SurfaceJobType.BLOW, surface);
+        this.dynamite = dynamite;
+    }
+
+    getPosition(): Vector3 {
+        return this.dynamite.getPosition();
+    }
+
+    onJobComplete() {
+        super.onJobComplete();
+        this.dynamite.ignite();
     }
 
 }
