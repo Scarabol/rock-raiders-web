@@ -1,7 +1,7 @@
 import { Surface } from '../../../scene/model/map/Surface';
 import { Vector3 } from 'three';
 import { CollectableEntity, CollectableType } from '../../../scene/model/collect/CollectableEntity';
-import { PICKUP_RANGE, RAIDER_SPEED, TILESIZE } from '../../../main';
+import { JOB_ACTION_RANGE, RAIDER_SPEED, TILESIZE } from '../../../main';
 import { GameState } from '../GameState';
 import { EventBus } from '../../../event/EventBus';
 import { CollectEvent } from '../../../event/WorldEvents';
@@ -29,7 +29,7 @@ export abstract class Job {
     jobstate: JobState;
     fulfiller: FulfillerEntity[] = [];
 
-    constructor(type: JobType) {
+    protected constructor(type: JobType) {
         this.type = type;
         this.jobstate = JobState.OPEN;
     }
@@ -63,7 +63,7 @@ export abstract class Job {
 
     abstract getPosition(): Vector3; // TODO job system in 2d should be sufficient and decouple from three for deps and worker reasons
 
-    abstract isInArea(x: number, z: number);
+    abstract isInArea(x: number, z: number): boolean;
 
 }
 
@@ -79,14 +79,14 @@ export class SurfaceJobType {
         this.requiredSkills = requiredSkills;
     }
 
-    static readonly DRILL = new SurfaceJobType(0xa0a0a0, ['drill'], []); // TODO externalize constant
-    static readonly REINFORCE = new SurfaceJobType(0x60a060, ['hammer'], []); // TODO externalize constant
-    static readonly BLOW = new SurfaceJobType(0xa06060, [], ['demolition']); // TODO externalize constant
-    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, ['shovel'], []); // TODO externalize constant
+    static readonly DRILL = new SurfaceJobType(0xa0a0a0, ['drill'], []);
+    static readonly REINFORCE = new SurfaceJobType(0x60a060, ['hammer'], []);
+    static readonly BLOW = new SurfaceJobType(0xa06060, [], ['demolition']);
+    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, ['shovel'], []);
 
 }
 
-export class SurfaceJob extends Job {
+export class SurfaceJob extends Job { // TODO refactor move to separate file and create subclasses
 
     surface: Surface;
     workType: SurfaceJobType;
@@ -111,7 +111,7 @@ export class SurfaceJob extends Job {
         }
     }
 
-    isInArea(x: number, z: number) {
+    isInArea(x: number, z: number): boolean {
         if (this.workType === SurfaceJobType.CLEAR_RUBBLE) {
             return x >= this.surface.x * TILESIZE + 5 && x < this.surface.x * TILESIZE + TILESIZE + 5
                 && z >= this.surface.y * TILESIZE + 5 && z < this.surface.y * TILESIZE + TILESIZE + 5;
@@ -154,9 +154,9 @@ export class CollectJob extends Job {
         return this.item.getPosition();
     }
 
-    isInArea(x: number, z: number) {
+    isInArea(x: number, z: number): boolean {
         const pos = this.getPosition();
-        return pos.sub(new Vector3(x, pos.y, z)).length() < PICKUP_RANGE;
+        return pos.sub(new Vector3(x, pos.y, z)).length() < JOB_ACTION_RANGE;
     }
 
     isQualified(fulfiller: FulfillerEntity) {

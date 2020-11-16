@@ -33,6 +33,7 @@ export class WorldManager {
         EventBus.registerEventListener(SpawnEvent.eventKey, (event: SpawnEvent) => {
             console.warn('Spawn not yet implemented: ' + event.type);
         });
+        // TODO implement barriers, ...
     }
 
     setup(levelName: string) {

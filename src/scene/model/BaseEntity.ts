@@ -19,10 +19,6 @@ export class BaseEntity {
         return new Euler().copy(this.group.rotation);
     }
 
-    getGroup() {
-        return this.group;
-    }
-
     onDiscover() {
         this.group.visible = true;
     }

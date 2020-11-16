@@ -4,7 +4,7 @@ import { ResourceManager } from '../../resource/ResourceManager';
 import { CollectJob, Job, JobType, SurfaceJob, SurfaceJobType } from '../../game/model/job/Job';
 import { Vector3 } from 'three';
 import { CollectableEntity } from './collect/CollectableEntity';
-import { NATIVE_FRAMERATE, PICKUP_RANGE } from '../../main';
+import { JOB_ACTION_RANGE, NATIVE_FRAMERATE } from '../../main';
 import { GameState } from '../../game/model/GameState';
 import { getRandom, getRandomSign } from '../../core/Util';
 import { LocalEvent } from '../../event/LocalEvents';
@@ -22,11 +22,11 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     carries: CollectableEntity = null;
     carryTarget: Vector3 = null;
 
-    constructor(selectionType: SelectionType, aeFilename: string, speed: number) {
+    protected constructor(selectionType: SelectionType, aeFilename: string, speed: number) {
         super(ResourceManager.getAnimationEntityType(aeFilename), speed);
         this.selectionType = selectionType;
         this.group.userData = {'selectable': this};
-        this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE / GameState.gameSpeedMultiplier); // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
+        this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE); // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
 
     work() {
@@ -88,7 +88,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 }
             } else if (!this.carryTarget) {
                 this.carryTarget = this.tryFindCarryTarget(); // TODO sleep 5 seconds, before retry
-            } else if (this.getPosition().sub(this.carryTarget).length() > PICKUP_RANGE) {
+            } else if (this.getPosition().sub(this.carryTarget).length() > JOB_ACTION_RANGE) {
                 this.moveToTarget(this.carryTarget);
             } else {
                 this.changeActivity(FulfillerActivity.PICKING, () => {
@@ -116,16 +116,16 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     dropItem() {
         if (!this.carries) return;
-        this.group.remove(this.carries.getGroup()); // TODO remove from carry joint
-        this.carries.getGroup().position.copy(this.carryTarget);
+        this.group.remove(this.carries.group); // TODO remove from carry joint
+        this.carries.group.position.copy(this.carryTarget);
         this.carries = null;
         this.carryTarget = null;
     }
 
     pickupItem(item: CollectableEntity) {
         this.carries = item;
-        this.group.add(this.carries.getGroup());
-        this.carries.getGroup().position.set(0, 7, 4); // TODO use carry joint offset
+        this.group.add(this.carries.group);
+        this.carries.group.position.set(0, 7, 4); // TODO use carry joint offset
     }
 
     setJob(job: Job) {

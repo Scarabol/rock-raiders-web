@@ -13,7 +13,6 @@ import { EntityDeselected } from '../../event/LocalEvents';
 
 export class GameState {
 
-    static gameSpeedMultiplier: number = 1;
     static numOre: number = 0;
     static numCrystal: number = 0;
     static usedCrystals: number = 0;

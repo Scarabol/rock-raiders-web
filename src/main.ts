@@ -7,8 +7,8 @@ import { RewardScreen } from './screen/RewardScreen';
 // define constants
 
 export const JOB_SCHEDULE_INTERVAL = 1000; // milliseconds
+export const JOB_ACTION_RANGE = 5;
 export const CHECK_SPANW_RAIDER_TIMER = 1000; // milliseconds
-export const PICKUP_RANGE = 10; // also deposit range
 export const RAIDER_SPEED = 2.0;
 export const MAX_RAIDER_BASE = 12;
 export const ADDITIONAL_RAIDER_PER_SUPPORT = 10;

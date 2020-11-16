@@ -4,7 +4,6 @@ import { iGet } from '../../../core/Util';
 import { AnimationEntityType } from './AnimationEntityType';
 import { BaseEntity } from '../BaseEntity';
 import { AnimSubObj } from './AnimSubObj';
-import { GameState } from '../../../game/model/GameState';
 
 export abstract class AnimEntity extends BaseEntity {
 
@@ -17,7 +16,7 @@ export abstract class AnimEntity extends BaseEntity {
     pickSphereRadius: number = 10;
     selectionFrameSize: number = 10;
 
-    constructor(entityType: AnimationEntityType) {
+    protected constructor(entityType: AnimationEntityType) {
         super();
         this.entityType = entityType;
     }
@@ -88,7 +87,7 @@ export abstract class AnimEntity extends BaseEntity {
                 iterations--;
             }
             const that = this;
-            this.animationTimeout = setTimeout(() => that.animate(nextFrame, onAnimationDone, iterations), 1000 / this.animation.framesPerSecond * this.animation.transcoef / GameState.gameSpeedMultiplier); // TODO get this in sync with threejs
+            this.animationTimeout = setTimeout(() => that.animate(nextFrame, onAnimationDone, iterations), 1000 / this.animation.framesPerSecond * this.animation.transcoef); // TODO get this in sync with threejs
         } else if (onAnimationDone) {
             onAnimationDone();
         }
