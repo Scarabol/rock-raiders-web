@@ -102,15 +102,9 @@ export class ResourceManager {
     }
 
     static getAnimationEntityType(aeFilename: string): AnimationEntityType {
-        const lFilename = aeFilename.toLowerCase();
-        const entityType = this.entityTypes[lFilename];
-        if (entityType) {
-            return entityType;
-        } else {
-            let cfgRoot = this.getResource(aeFilename);
-            this.entityTypes[lFilename] = AnimEntityLoader.loadModels(aeFilename, cfgRoot);
-            return this.entityTypes[lFilename];
-        }
+        let cfgRoot = this.getResource(aeFilename);
+        if (!cfgRoot) throw 'Could not get animation entity type for: ' + aeFilename;
+        return AnimEntityLoader.loadModels(aeFilename, cfgRoot);
     }
 
 }

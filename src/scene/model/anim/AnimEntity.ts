@@ -38,7 +38,7 @@ export abstract class AnimEntity extends BaseEntity {
             this.poly = [];
             // bodies are defined in animation and second in high/medium/low poly groups
             this.animation.bodies.forEach((body) => {
-                let model = iGet(this.entityType.highPoly, body.name);
+                let model: Object3D = iGet(this.entityType.highPoly, body.name);
                 if (!model) model = iGet(this.entityType.mediumPoly, body.name);
                 if (!model) model = body.model;
                 this.poly.push(model.clone(true));
