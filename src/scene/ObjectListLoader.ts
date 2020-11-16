@@ -35,13 +35,13 @@ export class ObjectListLoader {
                 const raider = new Raider();
                 raider.worldMgr = worldMgr;
                 raider.setActivity('Stand');
+                raider.createPickSphere();
                 raider.group.position.set(worldX, worldY, worldZ);
                 raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2);
                 raider.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(raider.group.position).discovered;
                 if (raider.group.visible) {
                     GameState.raiders.push(raider);
                     EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, raider));
-
                 } else {
                     GameState.raidersUndiscovered.push(raider);
                 }
@@ -51,6 +51,7 @@ export class ObjectListLoader {
                 const entity = new BuildingEntity(building);
                 entity.worldMgr = worldMgr;
                 entity.setActivity('Stand');
+                entity.createPickSphere();
                 entity.group.position.set(worldX, worldY, worldZ);
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
                 entity.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered;

@@ -142,6 +142,8 @@ export class WorldManager {
             raider.worldMgr = this;
             raider.setActivity('TeleportIn', () => {
                 station.spawning = false;
+                raider.setActivity('Stand');
+                raider.createPickSphere();
                 const walkOutPos = station.getPosition().add(new Vector3(0, 0, TILESIZE * 3 / 4 + getRandom(TILESIZE / 2))
                     .applyEuler(station.getRotation()).applyAxisAngle(new Vector3(0, 1, 0), degToRad(-10 + getRandom(20))));
                 walkOutPos.y = this.getTerrainHeight(walkOutPos.x, walkOutPos.z);

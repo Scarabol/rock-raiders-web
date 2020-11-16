@@ -56,7 +56,6 @@ export abstract class AnimEntity extends BaseEntity {
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
         }
-        this.createPickSphere();
     }
 
     animate(frameIndex, onAnimationDone, iterations) {
