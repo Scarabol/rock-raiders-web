@@ -1,4 +1,4 @@
-import { Color, Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
+import { Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
 import { Terrain } from './Terrain';
 import { SurfaceType } from './SurfaceType';
 import { ResourceManager } from '../../../resource/ResourceManager';
@@ -397,7 +397,7 @@ export class Surface implements Selectable {
     select(): Selectable {
         if (this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected) {
             this.selected = true;
-            this.accessMaterials().forEach((mat) => mat.color.setHex(0x6060a0)); // TODO externalize constant
+            this.accessMaterials().forEach((mat) => mat.color.setHex(0x6060a0));
             EventBus.publishEvent(new SurfaceSelectedEvent(this));
             return this;
         }
@@ -422,7 +422,7 @@ export class Surface implements Selectable {
     updateJobColor() {
         let color = 0xffffff;
         this.jobs.forEach((job) => color = job.workType.color); // TODO prioritize colors?
-        this.accessMaterials().forEach((mat) => mat.color = new Color(color));
+        this.accessMaterials().forEach((mat) => mat.color.setHex(color));
     }
 
     hasRubble(): boolean { // TODO performance: use boolean on surfacetype
