@@ -22,21 +22,21 @@ export class MainPanel extends IconPanel {
         const selectBuildingPanel = this.addSubPanel(4);
         const selectRaiderPanel = this.addSubPanel(10);
         const selectVehiclePanel = this.addSubPanel(7);
-        const teleportItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan');
-        teleportItem.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1;
+        const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan');
+        teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1;
         EventBus.registerEventListener(EntityAddedEvent.eventKey, (event: EntityAddedEvent) => {
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) {
-                teleportItem.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1
+                teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1
                     && GameState.raiders.length < GameState.getMaxRaiders();
             }
         });
         EventBus.registerEventListener(EntityRemovedEvent.eventKey, (event: EntityRemovedEvent) => {
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) {
-                teleportItem.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1
+                teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1
                     && GameState.raiders.length < GameState.getMaxRaiders();
             }
         });
-        teleportItem.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders + 1));
+        teleportRaider.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders + 1));
         // TODO add decrease requested raider spawn option
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding');
         buildingItem.disabled = false;
