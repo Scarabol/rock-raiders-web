@@ -66,6 +66,7 @@ export class Raider extends FulfillerEntity {
                     this.setActivity('ClearRubble', onChangeDone, iterations);
                     break;
                 case FulfillerActivity.PICKING:
+                case FulfillerActivity.DROPPING:
                     this.setActivity('Pickup', onChangeDone, iterations);
                     break;
                 case FulfillerActivity.REINFORCE:

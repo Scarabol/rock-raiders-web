@@ -1,7 +1,7 @@
 import { MovableEntity } from './MovableEntity';
 import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { ResourceManager } from '../../resource/ResourceManager';
-import { CollectJob, Job, JobType} from '../../game/model/job/Job';
+import { CollectJob, Job, JobType } from '../../game/model/job/Job';
 import { Vector3 } from 'three';
 import { CollectableEntity } from './collect/CollectableEntity';
 import { JOB_ACTION_RANGE, NATIVE_FRAMERATE } from '../../main';
@@ -92,7 +92,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 } else if (this.getPosition().sub(this.carryTarget).length() > JOB_ACTION_RANGE) {
                     this.moveToTarget(this.carryTarget);
                 } else {
-                    this.changeActivity(FulfillerActivity.PICKING, () => {
+                    this.changeActivity(FulfillerActivity.DROPPING, () => {
                         this.dropItem();
                         this.job.onJobComplete();
                         this.stopJob();
@@ -115,7 +115,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             } else if (this.getPosition().sub(this.carryTarget).length() > JOB_ACTION_RANGE) {
                 this.moveToTarget(this.carryTarget);
             } else {
-                this.changeActivity(FulfillerActivity.PICKING, () => {
+                this.changeActivity(FulfillerActivity.DROPPING, () => {
                     this.dropItem();
                     this.job.onJobComplete();
                     this.stopJob();
@@ -217,6 +217,7 @@ export enum FulfillerActivity {
     DRILLING,
     SHOVELING,
     PICKING,
+    DROPPING,
     REINFORCE,
 
 }
