@@ -151,7 +151,7 @@ export class CollectJob extends Job {
     }
 
     isQualified(fulfiller: FulfillerEntity) {
-        return fulfiller.carries === null;
+        return fulfiller.carries === null && GameState.getBuildingsByType(...this.item.getTargetBuildingTypes()).length > 0;
     }
 
     onJobComplete() {
