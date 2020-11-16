@@ -182,12 +182,14 @@ export class Surface implements Selectable {
         }
 
         // update mesh (geometry), if wall type changed
-        const walltype = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y;
-        if (walltype === WALL_TYPE.WALL && (topLeftVertex.y === bottomRightVertex.y)) this.wallType = WALL_TYPE.WEIRD_CREVICE;
-        if (this.wallType !== walltype) {
-            this.wallType = walltype;
+        let wallType = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y;
+        if (wallType === WALL_TYPE.WALL && topLeftVertex.y === bottomRightVertex.y) {
+            wallType = WALL_TYPE.WEIRD_CREVICE;
+        }
+        if (this.wallType !== wallType) {
+            this.wallType = wallType;
             this.updateGeometry(topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex, surfTopLeft, surfTop, surfLeft, surfTopRight, surfRight, surfBottomRight, surfBottom, surfBottomLeft);
-            if (this.hasJobType(SurfaceJobType.REINFORCE)) {
+            if (this.wallType !== WALL_TYPE.WALL && this.hasJobType(SurfaceJobType.REINFORCE)) {
                 this.jobs.filter((j) => j.workType === SurfaceJobType.REINFORCE).forEach((j) => EventBus.publishEvent(new JobDeleteEvent(j)));
                 this.jobs = this.jobs.filter((j) => j.workType !== SurfaceJobType.REINFORCE);
                 this.updateJobColor();
@@ -387,7 +389,7 @@ export class Surface implements Selectable {
     }
 
     select(): Selectable {
-        if (this.surfaceType.selectable && this.wallType !== WALL_TYPE.INVERTED_CORNER && !this.selected) {
+        if (this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected) {
             this.selected = true;
             this.accessMaterials().forEach((mat) => mat.color.setHex(0x6060a0)); // TODO externalize constant
             EventBus.publishEvent(new SurfaceSelectedEvent(this));
