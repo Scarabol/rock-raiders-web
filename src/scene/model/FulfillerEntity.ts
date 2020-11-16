@@ -33,47 +33,47 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (!this.job || this.selected) return;
         if (this.job.type === JobType.SURFACE) {
             const surfaceJobType = (this.job as SurfaceJob).workType;
-            switch (surfaceJobType) {
-                case SurfaceJobType.DRILL: {
-                    if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                        this.moveToTarget(this.job.getPosition());
+            if (surfaceJobType === SurfaceJobType.DRILL) {
+                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
+                    this.moveToTarget(this.job.getPosition());
+                } else {
+                    this.changeActivity(FulfillerActivity.DRILLING, () => { // TODO use drilling times from cfg
+                        this.job.onJobComplete();
+                        this.stopJob();
+                    });
+                }
+            } else if (surfaceJobType === SurfaceJobType.CLEAR_RUBBLE) {
+                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
+                    this.moveToTarget(this.job.getPosition());
+                } else {
+                    if (!this.jobSubPos) {
+                        const jobPos = this.job.getPosition();
+                        this.jobSubPos = new Vector3(jobPos.x + getRandomSign() * getRandom(10), 0, jobPos.z + getRandomSign() * getRandom(10));
+                        this.jobSubPos.y = this.worldMgr.getTerrainHeight(this.jobSubPos.x, this.jobSubPos.z);
+                    }
+                    if (new Vector3().copy(this.jobSubPos).sub(this.getPosition()).length() > this.getSpeed()) {
+                        this.moveToTarget(this.jobSubPos);
                     } else {
-                        this.changeActivity(FulfillerActivity.DRILLING, () => { // TODO use drilling times from cfg
+                        this.changeActivity(FulfillerActivity.SHOVELING, () => {
                             this.job.onJobComplete();
-                            this.stopJob();
+                            const surfJob = this.job as SurfaceJob;
+                            if (surfJob.surface.hasRubble()) {
+                                this.jobSubPos = null;
+                            } else {
+                                this.stopJob();
+                            }
                         });
                     }
                 }
-                    break;
-                case SurfaceJobType.CLEAR_RUBBLE: {
-                    if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                        this.moveToTarget(this.job.getPosition());
-                    } else {
-                        if (!this.jobSubPos) {
-                            const jobPos = this.job.getPosition();
-                            this.jobSubPos = new Vector3(jobPos.x + getRandomSign() * getRandom(10), 0, jobPos.z + getRandomSign() * getRandom(10));
-                            this.jobSubPos.y = this.worldMgr.getTerrainHeight(this.jobSubPos.x, this.jobSubPos.z);
-                        }
-                        const distance = new Vector3().copy(this.jobSubPos).sub(this.getPosition());
-                        if (distance.length() > this.getSpeed()) {
-                            this.moveToTarget(this.jobSubPos);
-                        } else {
-                            this.changeActivity(FulfillerActivity.SHOVELING, () => {
-                                this.job.onJobComplete();
-                                const surfJob = this.job as SurfaceJob;
-                                if (surfJob.surface.hasRubble()) {
-                                    this.jobSubPos = null;
-                                } else {
-                                    this.stopJob();
-                                }
-                            });
-                        }
-                    }
+            } else if (surfaceJobType === SurfaceJobType.REINFORCE) {
+                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
+                    this.moveToTarget(this.job.getPosition());
+                } else {
+                    this.changeActivity(FulfillerActivity.REINFORCE, () => {
+                        this.job.onJobComplete();
+                        this.stopJob();
+                    }, 3);
                 }
-                    break;
-                default:
-                    // console.warn('Job type not yet implemented: ' + this.job.type); // LEADS TO SPAM!
-                    break;
             }
         } else if (this.job.type === JobType.CARRY) {
             const carryJob = this.job as CollectJob;
@@ -193,5 +193,6 @@ export enum FulfillerActivity {
     DRILLING,
     SHOVELING,
     PICKING,
+    REINFORCE,
 
 }

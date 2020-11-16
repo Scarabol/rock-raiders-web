@@ -22,7 +22,7 @@ export abstract class AnimEntity extends BaseEntity {
         this.entityType = entityType;
     }
 
-    setActivity(keyname, onAnimationDone = null) {
+    setActivity(keyname, onAnimationDone = null, iterations = 1) {
         if (this.animationTimeout) {
             clearTimeout(this.animationTimeout);
             this.animationTimeout = null;
@@ -53,14 +53,14 @@ export abstract class AnimEntity extends BaseEntity {
                     this.group.add(polyPart);
                 }
             });
-            this.animate(0, onAnimationDone);
+            this.animate(0, onAnimationDone, iterations);
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet');
         }
         this.createPickSphere();
     }
 
-    animate(frameIndex, onAnimationDone) {
+    animate(frameIndex, onAnimationDone, iterations) {
         if (this.poly.length !== this.animation.bodies.length) throw 'Cannot animate poly. Length differs from bodies length';
         this.animation.bodies.forEach((body: AnimSubObj, index) => {
             const p = this.poly[index];
@@ -81,10 +81,14 @@ export abstract class AnimEntity extends BaseEntity {
             }
         });
         this.animationTimeout = null;
-        if (!(frameIndex + 1 > this.animation.lastFrame) || (this.animation.looping && !onAnimationDone)) {
-            const nextFrame = frameIndex + 1 > this.animation.lastFrame ? this.animation.firstFrame : frameIndex + 1;
+        if (!(frameIndex + 1 > this.animation.lastFrame) || (this.animation.looping && (!onAnimationDone || iterations > 1))) {
+            let nextFrame = frameIndex + 1;
+            if (nextFrame > this.animation.lastFrame) {
+                nextFrame = this.animation.firstFrame;
+                iterations--;
+            }
             const that = this;
-            this.animationTimeout = setTimeout(() => that.animate(nextFrame, onAnimationDone), 1000 / this.animation.framesPerSecond * this.animation.transcoef / GameState.gameSpeedMultiplier); // TODO get this in sync with threejs
+            this.animationTimeout = setTimeout(() => that.animate(nextFrame, onAnimationDone, iterations), 1000 / this.animation.framesPerSecond * this.animation.transcoef / GameState.gameSpeedMultiplier); // TODO get this in sync with threejs
         } else if (onAnimationDone) {
             onAnimationDone();
         }

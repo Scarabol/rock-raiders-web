@@ -102,14 +102,23 @@ export class SurfaceJob extends Job {
     }
 
     getPosition(): Vector3 {
-        return new Vector3(this.surface.x * TILESIZE + TILESIZE / 2, 0,
-            this.surface.y * TILESIZE + TILESIZE / 2);
+        if (this.workType === SurfaceJobType.CLEAR_RUBBLE) {
+            return new Vector3(this.surface.x * TILESIZE + TILESIZE / 2, 0, this.surface.y * TILESIZE + TILESIZE / 2);
+        } else {
+            const digPos = this.surface.getDigPositions()[0];
+            digPos.y = this.surface.terrain.worldMgr.getTerrainHeight(digPos.x, digPos.z);
+            return digPos;
+        }
     }
 
     isInArea(x: number, z: number) {
-        // TODO check square distance first?
-        return x >= this.surface.x * TILESIZE && x < this.surface.x * TILESIZE + TILESIZE
-            && z >= this.surface.y * TILESIZE && z < this.surface.y * TILESIZE + TILESIZE;
+        if (this.workType === SurfaceJobType.CLEAR_RUBBLE) {
+            return x >= this.surface.x * TILESIZE + 5 && x < this.surface.x * TILESIZE + TILESIZE + 5
+                && z >= this.surface.y * TILESIZE + 5 && z < this.surface.y * TILESIZE + TILESIZE + 5;
+        } else {
+            const pos = this.getPosition();
+            return pos.sub(new Vector3(x, pos.y, z)).length() < JOB_ACTION_RANGE;
+        }
     }
 
     onJobComplete() {
@@ -122,7 +131,7 @@ export class SurfaceJob extends Job {
                 // TODO start dynamite countdown
                 break;
             case SurfaceJobType.REINFORCE:
-                // this.surface.reinforce(); // TODO implement this
+                this.surface.reinforce();
                 break;
             case SurfaceJobType.CLEAR_RUBBLE:
                 this.surface.reduceRubble();

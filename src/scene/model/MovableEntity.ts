@@ -34,9 +34,11 @@ export abstract class MovableEntity extends AnimEntity {
         this.group.lookAt(new Vector3(target.x, this.group.position.y, target.z));
     }
 
-    abstract isOnRubble(): boolean;
+    isOnRubble(): boolean {
+        return false;
+    }
 
-    changeActivity(activity: FulfillerActivity, onChangeDone = null) {
+    changeActivity(activity: FulfillerActivity, onChangeDone = null, iterations = 1) {
     }
 
 }

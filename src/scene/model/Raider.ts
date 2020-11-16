@@ -11,7 +11,7 @@ export class Raider extends FulfillerEntity {
 
     constructor() {
         super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae', RAIDER_SPEED);
-        this.tools = ['drill', 'shovel'];
+        this.tools = ['drill', 'shovel', 'hammer']; // TODO only add drill by default
         this.pickSphereRadius = 10; // TODO read pick sphere size from cfg
         this.selectionFrameSize = 10;
     }
@@ -31,41 +31,44 @@ export class Raider extends FulfillerEntity {
         return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).isPath();
     }
 
-    changeActivity(activity: FulfillerActivity, onChangeDone = null) {
+    changeActivity(activity: FulfillerActivity, onChangeDone = null, iterations = 1) {
         if (onChangeDone) onChangeDone.bind(this);
         if (this.activity !== activity) {
             this.activity = activity;
             switch (this.activity) {
                 case FulfillerActivity.STANDING:
                     if (this.carries) {
-                        this.setActivity('StandCarry', onChangeDone);
+                        this.setActivity('StandCarry', onChangeDone, iterations);
                     } else {
-                        this.setActivity('Stand', onChangeDone);
+                        this.setActivity('Stand', onChangeDone, iterations);
                     }
                     break;
                 case FulfillerActivity.MOVING:
                     if (this.carries) {
-                        this.setActivity('Carry', onChangeDone);
+                        this.setActivity('Carry', onChangeDone, iterations);
                     } else {
-                        this.setActivity('Run', onChangeDone);
+                        this.setActivity('Run', onChangeDone, iterations);
                     }
                     break;
                 case FulfillerActivity.MOVING_RUBBLE:
                     if (this.carries) {
-                        this.setActivity('Carryrubble', onChangeDone);
+                        this.setActivity('Carryrubble', onChangeDone, iterations);
                     } else {
-                        this.setActivity('Routerubble', onChangeDone);
+                        this.setActivity('Routerubble', onChangeDone, iterations);
                     }
                     break;
                 case FulfillerActivity.DRILLING:
                     // TODO adapt drilling time to material hardness
-                    this.setActivity('Drill', onChangeDone);
+                    this.setActivity('Drill', onChangeDone, iterations);
                     break;
                 case FulfillerActivity.SHOVELING:
-                    this.setActivity('ClearRubble', onChangeDone);
+                    this.setActivity('ClearRubble', onChangeDone, iterations);
                     break;
                 case FulfillerActivity.PICKING:
-                    this.setActivity('Pickup', onChangeDone);
+                    this.setActivity('Pickup', onChangeDone, iterations);
+                    break;
+                case FulfillerActivity.REINFORCE:
+                    this.setActivity('Reinforce', onChangeDone, iterations);
                     break;
             }
             this.animation.looping = true; // TODO make all looping?

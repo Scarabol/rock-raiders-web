@@ -24,6 +24,7 @@ export class Surface implements Selectable {
     heightOffset: number = null;
     discovered: boolean = false;
     selected: boolean = false;
+    reinforced: boolean = false;
     jobs: SurfaceJob[] = [];
 
     wallType: WALL_TYPE = null;
@@ -189,11 +190,7 @@ export class Surface implements Selectable {
         if (this.wallType !== wallType) {
             this.wallType = wallType;
             this.updateGeometry(topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex, surfTopLeft, surfTop, surfLeft, surfTopRight, surfRight, surfBottomRight, surfBottom, surfBottomLeft);
-            if (this.wallType !== WALL_TYPE.WALL && this.hasJobType(SurfaceJobType.REINFORCE)) {
-                this.jobs.filter((j) => j.workType === SurfaceJobType.REINFORCE).forEach((j) => EventBus.publishEvent(new JobDeleteEvent(j)));
-                this.jobs = this.jobs.filter((j) => j.workType !== SurfaceJobType.REINFORCE);
-                this.updateJobColor();
-            }
+            if (this.wallType !== WALL_TYPE.WALL) this.cancelReinforceJobs();
             // TODO if wall was reinforced remove it (same for fallin)
         }
 
@@ -203,6 +200,12 @@ export class Surface implements Selectable {
         this.updateJobColor();
 
         this.terrain.surfaces[this.x][this.y] = this;
+    }
+
+    cancelReinforceJobs() {
+        this.jobs.filter((j) => j.workType === SurfaceJobType.REINFORCE).forEach((j) => EventBus.publishEvent(new JobDeleteEvent(j)));
+        this.jobs = this.jobs.filter((j) => j.workType !== SurfaceJobType.REINFORCE);
+        this.updateJobColor();
     }
 
     updateTexture() {
@@ -218,6 +221,8 @@ export class Surface implements Selectable {
                 textureName += '5';
             } else if (this.wallType === WALL_TYPE.INVERTED_CORNER) {
                 textureName += '3';
+            } else if (this.reinforced) {
+                textureName += '2';
             } else {
                 textureName += '0';
             }
@@ -445,11 +450,28 @@ export class Surface implements Selectable {
     }
 
     isReinforcable(): boolean {
-        return this.surfaceType.reinforcable && this.wallType === WALL_TYPE.WALL;
+        return this.surfaceType.reinforcable && this.wallType === WALL_TYPE.WALL && !this.reinforced;
     }
 
     isExplodable(): boolean {
         return this.surfaceType.explodable && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER);
+    }
+
+    getDigPositions(): Vector3[] {
+        const digPosition = [];
+        if (this.terrain.getSurface(this.x - 1, this.y).surfaceType.floor) digPosition.push(new Vector3(this.x * TILESIZE, 0, this.y * TILESIZE + TILESIZE / 2));
+        if (this.terrain.getSurface(this.x, this.y - 1).surfaceType.floor) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE));
+        if (this.terrain.getSurface(this.x + 1, this.y).surfaceType.floor) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE, 0, this.y * TILESIZE + TILESIZE / 2));
+        if (this.terrain.getSurface(this.x, this.y + 1).surfaceType.floor) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE + TILESIZE));
+        return digPosition;
+    }
+
+    reinforce() {
+        this.cancelReinforceJobs();
+        if (!this.reinforced) {
+            this.reinforced = true;
+            this.updateTexture();
+        }
     }
 
 }

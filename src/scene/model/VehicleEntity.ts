@@ -9,10 +9,6 @@ export abstract class VehicleEntity extends FulfillerEntity {
         // TODO call create picksphere after mesh initialized
     }
 
-    isOnRubble(): boolean {
-        return false;
-    }
-
     onDiscover() {
         super.onDiscover();
         const index = GameState.vehiclesUndiscovered.indexOf(this);
