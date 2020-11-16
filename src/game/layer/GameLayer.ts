@@ -26,7 +26,7 @@ export class GameLayer extends ScreenLayer {
         if (eventType === 'pointermove') {
             const intersectionPoint = this.getTerrainPositionFromEvent(event);
             if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint);
-        } else if (eventType === 'pointerup' && !event.isPrimary) {
+        } else if (eventType === 'pointerup' && event.button === 2) {
             if (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP) {
                 // TODO check for collectable entity first
                 const intersectionPoint = this.getTerrainPositionFromEvent(event);
