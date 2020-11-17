@@ -5,7 +5,7 @@ export class EventBus {
 
     static publishEvent(event: GameEvent) {
         if (this.blockedEvents.includes(event.eventKey)) return; // event is currently blocked from publishing
-        console.log('Event published: ' + event.eventKey);
+        if (!event.isLocal) console.log('Event published: ' + event.eventKey);
         this.blockedEvents.push(event.eventKey);
         (this.eventListener[event.eventKey] || []).forEach((callback) => callback(event));
         const index = this.blockedEvents.indexOf(event.eventKey);
