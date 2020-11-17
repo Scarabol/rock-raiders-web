@@ -2,7 +2,7 @@ import ResourceWorker from 'worker-loader!./wadworker/Resource.worker';
 import { RepeatWrapping, Texture } from 'three';
 import { AnimationEntityType } from '../scene/model/anim/AnimationEntityType';
 import { InitLoadingMessage } from './wadworker/InitLoadingMessage';
-import { createContext, createDummyImage } from '../core/ImageHelper';
+import { createContext, createDummyImage, createDummyImgData } from '../core/ImageHelper';
 import { iGet } from './wadworker/WadUtil';
 import { getFilename } from '../core/Util';
 import { AnimEntityLoader } from './AnimEntityLoader';
@@ -72,7 +72,7 @@ export class ResourceManager {
         let imgData = this.getResource(lImageName);
         if (!imgData) {
             console.error('Image \'' + imageName + '\' unknown! Using placeholder image instead');
-            ResourceManager.resourceByName[lImageName] = createDummyImage(64, 64);
+            ResourceManager.resourceByName[lImageName] = createDummyImgData(64, 64);
             return ResourceManager.resourceByName[lImageName];
         }
         imgData = ResourceManager.resourceByName[lImageName];
@@ -90,7 +90,7 @@ export class ResourceManager {
         let imgData = this.getResource(lTextureName) || this.getResource(lSharedTextureName);
         if (!imgData) {
             console.error('Texture \'' + textureName + '\' (' + lTextureName + ', ' + lSharedTextureName + ') unknown! Using placeholder texture instead');
-            ResourceManager.resourceByName[lTextureName] = imgData = createDummyImage(64, 64);
+            ResourceManager.resourceByName[lTextureName] = imgData = createDummyImgData(64, 64);
         }
         const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping);
         texture.needsUpdate = true;
