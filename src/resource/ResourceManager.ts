@@ -2,10 +2,11 @@ import ResourceWorker from 'worker-loader!./wadworker/Resource.worker';
 import { RepeatWrapping, Texture } from 'three';
 import { AnimationEntityType } from '../scene/model/anim/AnimationEntityType';
 import { InitLoadingMessage } from './wadworker/InitLoadingMessage';
-import { createContext, createDummyImage, createDummyImgData } from '../core/ImageHelper';
+import { createContext, createDummyImgData } from '../core/ImageHelper';
 import { iGet } from './wadworker/WadUtil';
 import { getFilename } from '../core/Util';
 import { AnimEntityLoader } from './AnimEntityLoader';
+import { BitmapFont } from '../core/BitmapFont';
 
 export class ResourceManager {
 
@@ -105,6 +106,10 @@ export class ResourceManager {
         let cfgRoot = this.getResource(aeFilename);
         if (!cfgRoot) throw 'Could not get animation entity type for: ' + aeFilename;
         return AnimEntityLoader.loadModels(aeFilename, cfgRoot);
+    }
+
+    static getBitmapFont(name: string) {
+        return new BitmapFont(this.getResource(name));
     }
 
 }

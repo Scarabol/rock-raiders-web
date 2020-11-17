@@ -3,6 +3,8 @@ import { WadFile } from './WadFile';
 import { getFilename, getPath, iGet } from './WadUtil';
 import { RonFile } from './RonFile';
 import { AlphaBitmapDecoder } from './AlphaBitmapDecoder';
+import { MainMenuFullCfg } from './MainMenuFullCfg';
+import { LevelEntryCfg, LevelsCfg } from './LevelsCfg';
 
 export class WadLoader {
 
@@ -78,25 +80,9 @@ export class WadLoader {
     }
 
     loadFontImageAsset(name, callback) {
-        console.error('Font loading not yet implemented'); // TODO implement this
-        // const img = new Image();
-        //
-        // img.onload = function () {
-        //     const context = createContext(img.naturalWidth, img.naturalHeight);
-        //     context.drawImage(img, 0, 0);
-        //     const imgData = context.getImageData(0, 0, context.width, context.height);
-        //     for (let n = 0; n < imgData.data.length; n += 4) {
-        //         if (imgData.data[n] === imgData.data[0] && imgData.data[n + 1] === imgData.data[1] && imgData.data[n + 2] === imgData.data[2]) {
-        //             imgData.data[n + 3] = 0;
-        //         }
-        //     }
-        //     context.putImageData(imgData, 0, 0);
-        //     ResourceManager.fonts[name.toLowerCase()] = new BitmapFont(context);
-        //     URL.revokeObjectURL(img.src);
-        //     if (callback != null) callback();
-        // };
-        //
-        // img.src = this.wad0File.getEntryUrl(name);
+        const data = this.wad0File.getEntryData(name);
+        const imgData = AlphaBitmapDecoder.parse(data);
+        callback(imgData);
     }
 
     loadNerpAsset(name, callback) {
@@ -291,7 +277,19 @@ export class WadLoader {
     }
 
     registerAllAssets(mainConf) { // dynamically register all assets from config
-        // this.addAsset(this.loadFontImageAsset, 'Interface/Fonts/ToolTipFont.bmp');
+        // add fonts and cursors
+        this.addAssetFolder(this.loadFontImageAsset, 'Interface/Fonts/');
+        this.addAssetFolder(this.loadAlphaImageAsset, 'Interface/Pointers/');
+        // add menu assets
+        const menuFullCfg = new MainMenuFullCfg(iGet(mainConf, 'Menu', 'MainMenuFull'));
+        this.onAssetLoaded(0, 'MainMenuFull', menuFullCfg);
+        menuFullCfg.menus.forEach((menuCfg) => {
+            this.addAsset(this.loadWadImageAsset, menuCfg.menuImage);
+            this.addAsset(this.loadFontImageAsset, menuCfg.menuFont);
+            this.addAsset(this.loadFontImageAsset, menuCfg.loFont);
+            this.addAsset(this.loadFontImageAsset, menuCfg.hiFont);
+        });
+        // add ingame assets
         this.addAlphaImageFolder('Interface/TopPanel/'); // top panel
         this.addAlphaImageFolder('Interface/RightPanel/'); // crystal side bar
         this.addAlphaImageFolder('Interface/RadarPanel/');
@@ -305,21 +303,23 @@ export class WadLoader {
         this.addAlphaImageFolder('Interface/IconPanel/');
         this.addAlphaImageFolder('Interface/Icons/');
         this.addAlphaImageFolder('Interface/Menus/');
+        this.addAssetFolder(this.loadWadImageAsset, 'Interface/FrontEnd/lp_');
         // level files
-        Object.keys(mainConf['Levels']).forEach(levelKey => {
-            if (!(levelKey.startsWith('Tutorial') || levelKey.startsWith('Level'))) return; // ignore incomplete test levels and duplicates
-            const levelConf = mainConf['Levels'][levelKey];
-            this.addAsset(this.loadMapAsset, levelConf['SurfaceMap']);
-            this.addAsset(this.loadMapAsset, levelConf['PreDugMap']);
-            this.addAsset(this.loadMapAsset, levelConf['TerrainMap']);
-            this.addAsset(this.loadMapAsset, levelConf['BlockPointersMap'], true);
-            this.addAsset(this.loadMapAsset, levelConf['CryOreMap']);
-            this.addAsset(this.loadMapAsset, levelConf['PathMap'], true);
-            this.addAsset(this.loadObjectListAsset, levelConf['OListFile']);
-            // this.addAsset(this.loadNerpAsset, levelConf['NERPFile']); // TODO add nerp support
-            // this.addAsset(this.loadNerpMsg, levelConf['NERPMessageFile']); // TODO add nerp support
-            const menuConf = levelConf['MenuBMP'];
-            if (menuConf) menuConf.forEach((imgKey) => this.addAsset(this.loadAlphaImageAsset, imgKey));
+        const levelsCfg = new LevelsCfg(iGet(mainConf, 'Levels'));
+        this.onAssetLoaded(0, 'Levels', levelsCfg);
+        Object.values(levelsCfg.levelsByName).forEach((level: LevelEntryCfg) => {
+            level.menuBMP.forEach((bmpName) => {
+                this.addAsset(this.loadAlphaImageAsset, bmpName);
+            });
+                this.addAsset(this.loadMapAsset, level.surfaceMap);
+                this.addAsset(this.loadMapAsset, level.predugMap);
+                this.addAsset(this.loadMapAsset, level.terrainMap);
+                this.addAsset(this.loadMapAsset, level.blockPointersMap, true);
+                this.addAsset(this.loadMapAsset, level.cryOreMap);
+                this.addAsset(this.loadMapAsset, level.pathMap, true);
+                this.addAsset(this.loadObjectListAsset, level.oListFile);
+                // this.addAsset(this.loadNerpAsset, level.NERPFile); // TODO add nerp support
+                // this.addAsset(this.loadNerpMsg, level.NERPMessageFile); // TODO add nerp support
         });
         // load all shared textures
         this.addTextureFolder('World/Shared/');
@@ -343,6 +343,10 @@ export class WadLoader {
         this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ProcessedOre') + '.lwo');
         this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae');
         this.addAnimatedEntity('MiscAnims/Dynamite/Dynamite.ae');
+        // spaces
+        this.addTextureFolder('World/WorldTextures/IceSplit/Ice');
+        this.addTextureFolder('World/WorldTextures/LavaSplit/Lava');
+        this.addTextureFolder('World/WorldTextures/RockSplit/Rock');
         // // reward screen
         // const rewardConf = mainConf['Reward'];
         // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);
@@ -362,10 +366,6 @@ export class WadLoader {
         // rewardConf['AdvanceButton'].slice(0, 4).forEach(imgPath => {
         //     this.addAsset(this.loadWadImageAsset, imgPath);
         // });
-        // spaces
-        this.addTextureFolder('World/WorldTextures/IceSplit/Ice');
-        this.addTextureFolder('World/WorldTextures/LavaSplit/Lava');
-        this.addTextureFolder('World/WorldTextures/RockSplit/Rock');
         // // pause screen
         // const pauseConf = mainConf['Menu']['PausedMenu'];
         // this.addAsset(this.loadAlphaImageAsset, pauseConf['Menu1']['MenuImage'][0]);
@@ -421,7 +421,6 @@ export class WadLoader {
                     const act = iGet(cfgRoot, keyname);
                     const file = iGet(act, 'FILE');
                     const isLws = iGet(act, 'LWSFILE') === true;
-                    const looping = iGet(act, 'LOOPING') === true;
                     if (isLws) {
                         const lwsFilepath = path + file + '.lws';
                         const content = this.wad0File.getEntryText(lwsFilepath);
@@ -458,14 +457,16 @@ export class WadLoader {
     }
 
     addAlphaImageFolder(folderPath) {
-        this.wad0File.filterEntryNames(folderPath + '.+\\.bmp').forEach((assetPath) => {
-            this.addAsset(this.loadAlphaImageAsset, assetPath);
-        });
+        this.addAssetFolder(this.loadAlphaImageAsset, folderPath);
     }
 
     addTextureFolder(folderPath) {
+        this.addAssetFolder(this.loadWadTexture, folderPath);
+    }
+
+    addAssetFolder(callback, folderPath) {
         this.wad0File.filterEntryNames(folderPath + '.+\\.bmp').forEach((assetPath) => {
-            this.addAsset(this.loadWadTexture, assetPath);
+            this.addAsset(callback, assetPath);
         });
     }
 

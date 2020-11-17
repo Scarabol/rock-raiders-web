@@ -53,8 +53,20 @@ export function createDummyImgData(width, height) {
     return result;
 }
 
-function setPixel(imgData, x, y, r, g, b) {
-    imgData.data[y * imgData.width + x] = r;
-    imgData.data[y * imgData.width + x + 1] = g;
-    imgData.data[y * imgData.width + x + 2] = b;
+export function setPixel(imgData, x, y, r, g, b, a = 255) {
+    const n = (y * imgData.width + x) * 4;
+    imgData.data[n] = r;
+    imgData.data[n + 1] = g;
+    imgData.data[n + 2] = b;
+    imgData.data[n + 3] = a;
+}
+
+export function getPixel(imgData, x, y) {
+    const n = (y * imgData.width + x) * 4;
+    return { r: imgData.data[n], g: imgData.data[n + 1], b: imgData.data[n + 2], a: imgData.data[n + 3] };
+}
+
+export function copyPixel(originData, targetData, x, y) {
+    const p = getPixel(originData);
+    setPixel(targetData, p.r, p.g, p.b, p.a);
 }
