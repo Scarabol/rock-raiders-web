@@ -133,7 +133,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     dropItem() {
         if (!this.carries) return;
-        this.group.remove(this.carries.group); // TODO remove from carry joint
+        if (this.carryJoint) this.carryJoint.remove(this.carries.group);
         this.carries.group.position.copy(this.carryTarget);
         this.carries = null;
         this.carryTarget = null;
@@ -141,8 +141,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     pickupItem(item: Carryable) {
         this.carries = item;
-        this.group.add(this.carries.group);
-        this.carries.group.position.set(0, 7, 4); // TODO use carry joint offset
+        if (this.carryJoint) this.carryJoint.add(this.carries.group);
+        this.carries.group.position.set(0, 0, 0);
     }
 
     setJob(job: Job) {

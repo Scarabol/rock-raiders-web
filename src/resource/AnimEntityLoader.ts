@@ -11,6 +11,8 @@ export class AnimEntityLoader {
 
         const entityType = new AnimationEntityType();
 
+        entityType.carryNullName = iGet(root, 'CarryNullName');
+
         // TODO load other poly quality models (if available)
         // let mediumPoly = iGet(root, 'MediumPoly');
         // if (mediumPoly) {

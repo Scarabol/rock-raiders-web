@@ -15,6 +15,7 @@ export abstract class AnimEntity extends BaseEntity {
     pickSphere: Mesh = null;
     pickSphereRadius: number = 10;
     selectionFrameSize: number = 10;
+    carryJoint: Object3D = null;
 
     protected constructor(entityType: AnimationEntityType) {
         super();
@@ -36,12 +37,19 @@ export abstract class AnimEntity extends BaseEntity {
             this.animation = activity.animation;
             this.group.remove(...this.poly);
             this.poly = [];
+            const carries = (this.carryJoint && this.carryJoint.children) || [];
+            this.carryJoint = null;
             // bodies are defined in animation and second in high/medium/low poly groups
             this.animation.bodies.forEach((body) => {
                 let model: Object3D = iGet(this.entityType.highPoly, body.name);
                 if (!model) model = iGet(this.entityType.mediumPoly, body.name);
                 if (!model) model = body.model;
-                this.poly.push(model.clone(true));
+                const polyModel = model.clone(true);
+                this.poly.push(polyModel);
+                if (this.entityType.carryNullName && body.name && this.entityType.carryNullName.toLowerCase() === body.name.toLowerCase()) {
+                    this.carryJoint = polyModel;
+                    this.carryJoint.add(...carries);
+                }
             });
             this.animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
                 const polyPart = this.poly[index];
