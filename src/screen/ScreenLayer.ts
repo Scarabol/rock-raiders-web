@@ -4,7 +4,7 @@ export class ScreenLayer {
 
     canvas: HTMLCanvasElement;
     context: CanvasRenderingContext2D;
-    onRedraw: (context: CanvasRenderingContext2D) => void;
+    onRedraw: (context: CanvasRenderingContext2D) => any;
 
     constructor(alpha: boolean = false, withContext: boolean = true) {
         this.canvas = document.createElement('canvas');
@@ -51,7 +51,7 @@ export class ScreenLayer {
         return [windowX - clientRect.left, windowY - clientRect.top];
     }
 
-    handlePointerEvent(eventType: string, event: PointerEvent) {
+    handlePointerEvent(eventType: string, event: PointerEvent) { // TODO refactor: performance: create enum for eventType
         return false;
     }
 

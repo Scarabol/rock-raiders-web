@@ -59,7 +59,7 @@ export class GuiLayer extends ScaledLayer {
     handlePointerEvent(eventType: string, event: PointerEvent): boolean {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY);
         const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY);
-        const hit = !this.context || this.context.getImageData(cx, cy, 1, 1).data[3] > 0;
+        const hit = this.context && this.context.getImageData(cx, cy, 1, 1).data[3] > 0;
         let needsRedraw = false;
         if (hit) {
             event.preventDefault();

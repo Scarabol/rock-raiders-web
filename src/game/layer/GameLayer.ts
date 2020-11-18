@@ -10,6 +10,7 @@ import { Surface } from '../../scene/model/map/Surface';
 import { EntityDeselected } from '../../event/LocalEvents';
 import { FulfillerEntity } from '../../scene/model/FulfillerEntity';
 import { SurfaceJob, SurfaceJobType } from '../model/job/SurfaceJob';
+import { MOUSE_BUTTON } from '../../event/EventManager';
 
 export class GameLayer extends ScreenLayer {
 
@@ -27,7 +28,7 @@ export class GameLayer extends ScreenLayer {
         if (eventType === 'pointermove') {
             const intersectionPoint = this.getTerrainPositionFromEvent(event);
             if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint);
-        } else if (eventType === 'pointerup' && event.button === 2) {
+        } else if (eventType === 'pointerup' && event.button === MOUSE_BUTTON.SECONDARY) {
             if (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP) {
                 // TODO check for collectable entity first
                 const intersectionPoint = this.getTerrainPositionFromEvent(event);

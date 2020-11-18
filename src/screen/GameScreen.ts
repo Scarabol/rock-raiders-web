@@ -4,13 +4,11 @@ import { SelectionLayer } from '../game/layer/SelectionLayer';
 import { GameLayer } from '../game/layer/GameLayer';
 import { GuiLayer } from '../game/layer/GuiLayer';
 import { Supervisor } from '../game/Supervisor';
-import { BillboardLayer } from '../game/layer/BillboardLayer';
 
 export class GameScreen extends BaseScreen {
 
     onLevelEnd: (gameResult: string) => void; // TODO game result is actually an object with much more data
     gameLayer: GameLayer;
-    billboardLayer: BillboardLayer;
     selectionLayer: SelectionLayer;
     guiLayer: GuiLayer;
     worldManager: WorldManager;
@@ -19,7 +17,6 @@ export class GameScreen extends BaseScreen {
     constructor() {
         super();
         this.gameLayer = this.addLayer(new GameLayer(), 0);
-        this.billboardLayer = this.addLayer(new BillboardLayer(), 5);
         this.selectionLayer = this.addLayer(new SelectionLayer(), 10);
         this.guiLayer = this.addLayer(new GuiLayer(), 20);
         this.worldManager = new WorldManager(this.gameLayer.canvas);
