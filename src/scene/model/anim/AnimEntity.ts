@@ -48,7 +48,7 @@ export abstract class AnimEntity extends BaseEntity {
                 this.poly.push(polyModel);
                 if (this.entityType.carryNullName && body.name && this.entityType.carryNullName.toLowerCase() === body.name.toLowerCase()) {
                     this.carryJoint = polyModel;
-                    this.carryJoint.add(...carries);
+                    if (carries.length > 0) this.carryJoint.add(...carries);
                 }
             });
             this.animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
