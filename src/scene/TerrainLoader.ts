@@ -46,7 +46,7 @@ export class TerrainLoader {
                     console.warn('Unexpected predug level: ' + predugLevel);
                 }
                 // give the path map the highest priority, if it exists
-                const pathMapLevel = pathMap ? pathMap.level[r][c] : PathMap.NONE;
+                const pathMapLevel = pathMap && surfaceType.floor ? pathMap.level[r][c] : PathMap.NONE;
                 if (pathMapLevel === PathMap.RUBBLE) {
                     surfaceType = SurfaceType.RUBBLE4;
                 } else if (pathMapLevel === PathMap.POWER_PATH) {
