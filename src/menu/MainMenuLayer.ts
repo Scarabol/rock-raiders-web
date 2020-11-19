@@ -45,12 +45,13 @@ export class MainMenuLayer extends ScaledLayer {
             }
         });
 
-        if (this.title === 'Levels') {
+        if (this.title === 'Levels') { // TODO refactor: move to separate class
             const levelsCfg: LevelsCfg = ResourceManager.getResource('Levels');
             Object.keys(levelsCfg.levelsByName).forEach((levelKey) => {
                 const level = levelsCfg.levelsByName[levelKey];
                 this.buttons.push(new MainMenuLevelButton(this, levelKey, level));
             });
+            this.buttons.forEach((b: MainMenuLevelButton) => b.unlocked = true); // TODO don't unlock everything by default
         }
 
         this.onRedraw = (context => {
