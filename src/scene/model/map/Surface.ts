@@ -186,9 +186,8 @@ export class Surface implements Selectable {
 
         // update mesh (geometry), if wall type changed
         let wallType = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y;
-        if (wallType === WALL_TYPE.WALL && topLeftVertex.y === bottomRightVertex.y) {
-            wallType = WALL_TYPE.WEIRD_CREVICE;
-        }
+        if (wallType === WALL_TYPE.WALL && topLeftVertex.y === bottomRightVertex.y) wallType = WALL_TYPE.WEIRD_CREVICE;
+
         if (this.wallType !== wallType) {
             this.wallType = wallType;
             this.updateGeometry(topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex, surfTopLeft, surfTop, surfLeft, surfTopRight, surfRight, surfBottomRight, surfBottom, surfBottomLeft);
@@ -196,12 +195,8 @@ export class Surface implements Selectable {
             // TODO if wall was reinforced remove it (same for fallin)
         }
 
-        // update texture
         this.updateTexture();
-
         this.updateJobColor();
-
-        this.terrain.surfaces[this.x][this.y] = this;
     }
 
     cancelReinforceJobs() {
