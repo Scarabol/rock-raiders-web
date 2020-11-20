@@ -8,6 +8,7 @@ import { MathUtils, Vector3 } from 'three';
 import { GameState } from '../../game/model/GameState';
 import { EntityAddedEvent, EntityType } from '../../event/WorldEvents';
 import degToRad = MathUtils.degToRad;
+import { Surface } from './map/Surface';
 
 export class BuildingEntity extends AnimEntity implements Selectable {
 
@@ -16,6 +17,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     powerSwitch: boolean = true;
     powerLink: boolean = false;
     spawning: boolean = false;
+    surfaces: Surface[] = [];
 
     constructor(buildingType: Building) {
         super(ResourceManager.getAnimationEntityType(buildingType.aeFile));

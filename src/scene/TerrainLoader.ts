@@ -50,7 +50,7 @@ export class TerrainLoader {
                 if (pathMapLevel === PathMap.RUBBLE) {
                     surfaceType = SurfaceType.RUBBLE4;
                 } else if (pathMapLevel === PathMap.POWER_PATH) {
-                    surfaceType = SurfaceType.POWER_PATH_BUILDING;
+                    surfaceType = SurfaceType.POWER_PATH;
                 } else if (pathMapLevel !== PathMap.NONE) {
                     console.warn('Unexpected path map level: ' + pathMapLevel);
                 }

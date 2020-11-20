@@ -27,6 +27,7 @@ export class Surface implements Selectable {
     selected: boolean = false;
     reinforced: boolean = false;
     jobs: SurfaceJob[] = [];
+    surfaceRotation: number = 0;
 
     wallType: WALL_TYPE = null;
     geometry: Geometry = null;
@@ -217,6 +218,8 @@ export class Surface implements Selectable {
         let textureName = this.terrain.textureSet.texturebasename;
         if (!this.discovered) {
             textureName += '70';
+        } else if (this.surfaceType === SurfaceType.POWER_PATH) {
+            textureName += this.updatePowerPathTexture();
         } else if (!this.surfaceType.shaping) {
             textureName += this.surfaceType.matIndex.toString();
         } else if (this.wallType === WALL_TYPE.WEIRD_CREVICE) {
@@ -237,8 +240,42 @@ export class Surface implements Selectable {
 
         const texture = ResourceManager.getTexture(textureName);
         texture.flipY = false; // TODO is this necessary? Maybe turn around UV or vertices?
+        texture.center.set(0.5, 0.5);
+        texture.rotation = this.surfaceRotation;
 
         this.accessMaterials().forEach((mat) => mat.map = texture);
+    }
+
+    updatePowerPathTexture(): string {
+        this.surfaceRotation = 0;
+        const left = this.terrain.getSurface(this.x - 1, this.y).isPath();
+        const top = this.terrain.getSurface(this.x, this.y - 1).isPath();
+        const right = this.terrain.getSurface(this.x + 1, this.y).isPath();
+        const bottom = this.terrain.getSurface(this.x, this.y + 1).isPath();
+        const pathSum = (left ? 1 : 0) + (top ? 1 : 0) + (right ? 1 : 0) + (bottom ? 1 : 0);
+        if (pathSum === 0 || pathSum === 1) {
+            if (left) this.surfaceRotation = Math.PI / 2;
+            if (top) this.surfaceRotation = Math.PI;
+            if (right) this.surfaceRotation = -Math.PI / 2;
+            return '65';
+        } else if (pathSum === 2) {
+            if (left === right) {
+                this.surfaceRotation = left ? Math.PI / 2 : 0;
+                return '62';
+            } else {
+                if (left && bottom) this.surfaceRotation = Math.PI / 2;
+                if (left && top) this.surfaceRotation = Math.PI;
+                if (top && right) this.surfaceRotation = -Math.PI / 2;
+                return '63';
+            }
+        } else if (pathSum === 3) {
+            if (!top) this.surfaceRotation = Math.PI / 2;
+            if (!right) this.surfaceRotation = Math.PI;
+            if (!bottom) this.surfaceRotation = -Math.PI / 2;
+            return '64';
+        } else {
+            return '60';
+        }
     }
 
     accessMaterials(): MeshPhongMaterial[] {
@@ -436,13 +473,8 @@ export class Surface implements Selectable {
             || this.surfaceType === SurfaceType.RUBBLE4;
     }
 
-    isPath(): boolean { // TODO performance: use boolean on surfacetype
-        return this.surfaceType === SurfaceType.POWER_PATH_ALL
-            || this.surfaceType === SurfaceType.POWER_PATH_STRAIGHT
-            || this.surfaceType === SurfaceType.POWER_PATH_CORNER
-            || this.surfaceType === SurfaceType.POWER_PATH_TCROSSING
-            || this.surfaceType === SurfaceType.POWER_PATH_END
-            || this.surfaceType === SurfaceType.POWER_PATH_BUILDING;
+    isPath(): boolean {
+        return this.surfaceType === SurfaceType.POWER_PATH || this.surfaceType === SurfaceType.POWER_PATH_BUILDING;
     }
 
     isWalkable(): boolean {

@@ -66,11 +66,13 @@ export class ObjectListLoader {
                 const path1Surface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position);
                 path1Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path1Surface.updateTexture();
+                entity.surfaces.push(path1Surface);
                 const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading - Math.PI);
                 pathOffset.add(entity.group.position);
                 const path2Surface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset);
                 path2Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path2Surface.updateTexture();
+                entity.surfaces.push(path2Surface);
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 worldMgr.addCollectable(new Crystal(), worldX, worldZ);
             } else {
@@ -78,6 +80,14 @@ export class ObjectListLoader {
                 console.warn('Object type ' + olObject.type + ' not yet implemented');
             }
         });
+        // update path textures when all buildings are added
+        GameState.buildings.forEach((b) => b.surfaces.forEach((bSurf) => {
+            for (let x = -1; x <= 1; x++) {
+                for (let y = -1; y <= 1; y++) {
+                    worldMgr.sceneManager.terrain.getSurface(bSurf.x + x, bSurf.y + y).updateTexture();
+                }
+            }
+        }));
     }
 
 }

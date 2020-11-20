@@ -3,7 +3,6 @@ export class SurfaceType {
     name: string; // humand readable, maybe used as label lateron
     shaping: boolean = false;
     matIndex: string = '00';
-    matIndexPowered: string = null;
     floor: boolean = false;
     selectable: boolean = false;
     drillable: boolean = false;
@@ -25,13 +24,9 @@ export class SurfaceType {
     static readonly WATER = new SurfaceType({name: 'water', floor: true, matIndex: '45'});
     static readonly ENERGY_CRYSTAL_SEAM = new SurfaceType({name: 'energy crystal seam', matIndex: '20', selectable: true, drillable: true, explodable: true, reinforcable: true});
     static readonly RECHARGE_SEAM = new SurfaceType({name: 'recharge seam', matIndex: '67'});
-    static readonly POWER_PATH_ALL = new SurfaceType({name: 'power path all', floor: true, matIndex: '60', matIndexPowered: '71'});
+    static readonly POWER_PATH = new SurfaceType({name: 'power path all', floor: true, matIndex: '60', selectable: true});
     static readonly POWER_PATH_SITE = new SurfaceType({name: 'power path site', floor: true, matIndex: '61', selectable: true});
-    static readonly POWER_PATH_STRAIGHT = new SurfaceType({name: 'power path straight', floor: true, matIndex: '62', matIndexPowered: '72'});
-    static readonly POWER_PATH_CORNER = new SurfaceType({name: 'power path corner', floor: true, matIndex: '63', matIndexPowered: '73'});
-    static readonly POWER_PATH_TCROSSING = new SurfaceType({name: 'power path t crossing', floor: true, matIndex: '64', matIndexPowered: '74'});
-    static readonly POWER_PATH_END = new SurfaceType({name: 'power path end', floor: true, matIndex: '65', matIndexPowered: '75'});
-    static readonly POWER_PATH_BUILDING = new SurfaceType({name: 'power path', floor: true, matIndex: '76', matIndexPowered: '66'});
+    static readonly POWER_PATH_BUILDING = new SurfaceType({name: 'power path', floor: true, matIndex: '76'});
     static readonly RUBBLE1 = new SurfaceType({name: 'rubble 1', floor: true, matIndex: '13', selectable: true});
     static readonly RUBBLE2 = new SurfaceType({name: 'rubble 2', floor: true, matIndex: '12', selectable: true});
     static readonly RUBBLE3 = new SurfaceType({name: 'rubble 3', floor: true, matIndex: '11', selectable: true});
