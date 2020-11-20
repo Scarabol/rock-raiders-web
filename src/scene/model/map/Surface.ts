@@ -5,7 +5,7 @@ import { ResourceManager } from '../../../resource/ResourceManager';
 import { Selectable, SelectionType } from '../../../game/model/Selectable';
 import { EventBus } from '../../../event/EventBus';
 import { SurfaceSelectedEvent } from '../../../event/LocalEvents';
-import { JobType} from '../../../game/model/job/Job';
+import { JobType } from '../../../game/model/job/Job';
 import { JobCreateEvent, JobDeleteEvent } from '../../../event/WorldEvents';
 import { getRandom, getRandomSign } from '../../../core/Util';
 import { Crystal } from '../collect/Crystal';
@@ -137,16 +137,24 @@ export class Surface implements Selectable {
     }
 
     isSupported(): boolean {
-        const floorLeft = Number(this.terrain.getSurface(this.x - 1, this.y).isDiscoveredFloor());
-        const floorTop = Number(this.terrain.getSurface(this.x, this.y - 1).isDiscoveredFloor());
-        const floorRight = Number(this.terrain.getSurface(this.x + 1, this.y).isDiscoveredFloor());
-        const floorBottom = Number(this.terrain.getSurface(this.x, this.y + 1).isDiscoveredFloor());
-        let floorSum = floorLeft + floorTop + floorRight + floorBottom;
-        return floorSum <= 2;
-    }
+        const surfLeft = this.terrain.getSurface(this.x - 1, this.y);
+        const surfTopLeft = this.terrain.getSurface(this.x - 1, this.y - 1);
+        const surfTop = this.terrain.getSurface(this.x, this.y - 1);
+        const surfTopRight = this.terrain.getSurface(this.x + 1, this.y - 1);
+        const surfRight = this.terrain.getSurface(this.x + 1, this.y);
+        const surfBottomRight = this.terrain.getSurface(this.x + 1, this.y + 1);
+        const surfBottom = this.terrain.getSurface(this.x, this.y + 1);
+        const surfBottomLeft = this.terrain.getSurface(this.x - 1, this.y + 1);
 
-    isDiscoveredFloor(): boolean {
-        return this.surfaceType.floor && this.discovered;
+        function isHighGround(surf1: Surface, surf2: Surface, surf3: Surface) {
+            return !surf1.discovered || !surf2.discovered || !surf3.discovered ||
+                (!surf1.surfaceType.floor && !surf2.surfaceType.floor && !surf3.surfaceType.floor);
+        }
+
+        return isHighGround(surfLeft, surfTopLeft, surfTop)
+            || isHighGround(surfTop, surfTopRight, surfRight)
+            || isHighGround(surfRight, surfBottomRight, surfBottom)
+            || isHighGround(surfBottom, surfBottomLeft, surfLeft);
     }
 
     updateMesh(force: boolean = true) {
