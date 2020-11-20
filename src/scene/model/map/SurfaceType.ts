@@ -22,7 +22,7 @@ export class SurfaceType {
     static readonly LAVA = new SurfaceType({name: 'lava', floor: true, matIndex: '46'});
     static readonly ORE_SEAM = new SurfaceType({name: 'ore seam', matIndex: '40', selectable: true, drillable: true, explodable: true, reinforcable: true});
     static readonly WATER = new SurfaceType({name: 'water', floor: true, matIndex: '45'});
-    static readonly ENERGY_CRYSTAL_SEAM = new SurfaceType({name: 'energy crystal seam', matIndex: '20', selectable: true, drillable: true, explodable: true, reinforcable: true});
+    static readonly CRYSTAL_SEAM = new SurfaceType({name: 'energy crystal seam', matIndex: '20', selectable: true, drillable: true, explodable: true, reinforcable: true});
     static readonly RECHARGE_SEAM = new SurfaceType({name: 'recharge seam', matIndex: '67'});
     static readonly POWER_PATH = new SurfaceType({name: 'power path all', floor: true, matIndex: '60', selectable: true});
     static readonly POWER_PATH_SITE = new SurfaceType({name: 'power path site', floor: true, matIndex: '61', selectable: true});
@@ -52,7 +52,7 @@ export class SurfaceType {
             case 9:
                 return SurfaceType.WATER;
             case 10:
-                return SurfaceType.ENERGY_CRYSTAL_SEAM;
+                return SurfaceType.CRYSTAL_SEAM;
             case 11:
                 return SurfaceType.RECHARGE_SEAM;
             case 30:

@@ -28,6 +28,7 @@ export class Surface implements Selectable {
     reinforced: boolean = false;
     jobs: SurfaceJob[] = [];
     surfaceRotation: number = 0;
+    seamLevel: number = 0;
 
     wallType: WALL_TYPE = null;
     geometry: Geometry = null;
@@ -37,6 +38,7 @@ export class Surface implements Selectable {
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain;
         this.surfaceType = surfaceType;
+        if (surfaceType === SurfaceType.CRYSTAL_SEAM || surfaceType === SurfaceType.ORE_SEAM) this.seamLevel = 4;
         this.x = x;
         this.y = y;
         this.heightOffset = heightOffset;

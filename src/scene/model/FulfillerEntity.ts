@@ -2,12 +2,16 @@ import { MovableEntity } from './MovableEntity';
 import { Selectable, SelectionType } from '../../game/model/Selectable';
 import { ResourceManager } from '../../resource/ResourceManager';
 import { CollectJob, Job, JobType } from '../../game/model/job/Job';
-import { Vector3 } from 'three';
+import { MathUtils, Vector3 } from 'three';
 import { JOB_ACTION_RANGE, NATIVE_FRAMERATE } from '../../main';
 import { getRandom, getRandomSign } from '../../core/Util';
 import { LocalEvent } from '../../event/LocalEvents';
 import { Carryable } from './collect/Carryable';
 import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob';
+import { SurfaceType } from './map/SurfaceType';
+import { Crystal } from './collect/Crystal';
+import { Ore } from './collect/Ore';
+import degToRad = MathUtils.degToRad;
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
@@ -32,14 +36,29 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     work() {
         if (!this.job || this.selected) return;
         if (this.job.type === JobType.SURFACE) {
-            const surfaceJobType = (this.job as SurfaceJob).workType;
+            const surfJob = this.job as SurfaceJob;
+            const surfaceJobType = surfJob.workType;
             if (surfaceJobType === SurfaceJobType.DRILL) {
                 if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
                     this.moveToTarget(this.job.getPosition());
                 } else {
                     this.changeActivity(FulfillerActivity.DRILLING, () => { // TODO use drilling times from cfg
-                        this.job.onJobComplete();
-                        this.stopJob();
+                        if (surfJob.surface.seamLevel > 0) {
+                            surfJob.surface.seamLevel--;
+                            const vec = new Vector3().copy(this.getPosition()).sub(surfJob.surface.getCenterWorld())
+                                .multiplyScalar(0.3 + getRandom(3) / 10)
+                                .applyAxisAngle(new Vector3(0, 1, 0), degToRad(-10 + getRandom(20)))
+                                .add(this.getPosition());
+                            if (surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
+                                this.worldMgr.addCollectable(new Crystal(), vec.x, vec.z);
+                            } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM) {
+                                this.worldMgr.addCollectable(new Ore(), vec.x, vec.z);
+                            }
+                            this.changeActivity(FulfillerActivity.STANDING);
+                        } else {
+                            this.job.onJobComplete();
+                            this.stopJob();
+                        }
                     });
                 }
             } else if (surfaceJobType === SurfaceJobType.CLEAR_RUBBLE) {
@@ -56,7 +75,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                     } else {
                         this.changeActivity(FulfillerActivity.SHOVELING, () => {
                             this.job.onJobComplete();
-                            const surfJob = this.job as SurfaceJob;
                             if (surfJob.surface.hasRubble()) {
                                 this.jobSubPos = null;
                             } else {
