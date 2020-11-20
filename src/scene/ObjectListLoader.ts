@@ -53,7 +53,7 @@ export class ObjectListLoader {
                 entity.setActivity('Stand');
                 entity.createPickSphere();
                 entity.group.position.set(worldX, worldY, worldZ);
-                entity.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading);
+                entity.group.rotateOnAxis(new Vector3(0, 1, 0), -radHeading - Math.PI);
                 entity.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered;
                 if (entity.group.visible) {
                     GameState.buildings.push(entity);
@@ -66,7 +66,7 @@ export class ObjectListLoader {
                 const path1Surface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position);
                 path1Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
                 path1Surface.updateTexture();
-                const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading);
+                const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading - Math.PI);
                 pathOffset.add(entity.group.position);
                 const path2Surface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset);
                 path2Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING;
