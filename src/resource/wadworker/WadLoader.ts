@@ -311,15 +311,15 @@ export class WadLoader {
             level.menuBMP.forEach((bmpName) => {
                 this.addAsset(this.loadAlphaImageAsset, bmpName);
             });
-                this.addAsset(this.loadMapAsset, level.surfaceMap);
-                this.addAsset(this.loadMapAsset, level.predugMap);
-                this.addAsset(this.loadMapAsset, level.terrainMap);
-                this.addAsset(this.loadMapAsset, level.blockPointersMap, true);
-                this.addAsset(this.loadMapAsset, level.cryOreMap);
-                this.addAsset(this.loadMapAsset, level.pathMap, true);
-                this.addAsset(this.loadObjectListAsset, level.oListFile);
-                // this.addAsset(this.loadNerpAsset, level.NERPFile); // TODO add nerp support
-                // this.addAsset(this.loadNerpMsg, level.NERPMessageFile); // TODO add nerp support
+            this.addAsset(this.loadMapAsset, level.surfaceMap);
+            this.addAsset(this.loadMapAsset, level.predugMap);
+            this.addAsset(this.loadMapAsset, level.terrainMap);
+            this.addAsset(this.loadMapAsset, level.blockPointersMap, true);
+            this.addAsset(this.loadMapAsset, level.cryOreMap);
+            this.addAsset(this.loadMapAsset, level.pathMap, true);
+            this.addAsset(this.loadObjectListAsset, level.oListFile);
+            // this.addAsset(this.loadNerpAsset, level.NERPFile); // TODO add nerp support
+            // this.addAsset(this.loadNerpMsg, level.NERPMessageFile); // TODO add nerp support
         });
         // load all shared textures
         this.addTextureFolder('World/Shared/');

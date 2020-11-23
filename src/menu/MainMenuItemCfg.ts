@@ -15,7 +15,7 @@ export class MainMenuItemCfg {
         this.x = Number(cfgObj[1]);
         this.y = Number(cfgObj[2]);
         if (cfgObj.length === 5) {
-            this.label = cfgObj[3].replace('_', ' ');
+            this.label = cfgObj[3].replace(/_/g, ' ');
         } else if (cfgObj.length === 8) {
             this.imgNormal = cfgObj[3];
             this.imgHover = cfgObj[4];

@@ -26,6 +26,7 @@ export class MainMenuLevelButton extends MainMenuButton {
         this.width = Math.max(this.imgActive.width, this.imgInactive.width, this.imgCross.width);
         this.height = Math.max(this.imgActive.height, this.imgInactive.height, this.imgCross.height);
         this.unlocked = levelCfg.frontEndOpen;
+        this.unlocked = true; // TODO don't unlock everything by default
     }
 
     draw(context: CanvasRenderingContext2D) {

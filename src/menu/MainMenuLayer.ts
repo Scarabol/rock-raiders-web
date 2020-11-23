@@ -20,28 +20,27 @@ export class MainMenuLayer extends ScaledLayer {
     menuFont: BitmapFont;
     loFont: BitmapFont;
     hiFont: BitmapFont;
-    menuImage: HTMLImageElement;
-    buttons: MainMenuButton[] = [];
+    menuImage: HTMLCanvasElement;
+    items: MainMenuButton[] = [];
     scrollY: number = 0;
 
     constructor(screen: MainMenuScreen, menuCfg: MenuCfg) {
         super();
         this.screen = screen;
         this.cfg = menuCfg;
-        this.fullName = menuCfg.fullName.replace('_', ' ');
-        this.title = menuCfg.title.replace('_', ' ');
+        this.fullName = menuCfg.fullName.replace(/_/g, ' ');
+        this.title = menuCfg.title.replace(/_/g, ' ');
         this.menuFont = menuCfg.menuFont ? ResourceManager.getBitmapFont(menuCfg.menuFont) : null;
         this.loFont = menuCfg.loFont ? ResourceManager.getBitmapFont(menuCfg.loFont) : null;
         this.hiFont = menuCfg.hiFont ? ResourceManager.getBitmapFont(menuCfg.hiFont) : null;
         this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : null;
-
         this.titleImage = this.loFont.createTextImage(this.fullName);
 
         menuCfg.items.forEach((item) => {
             if (item.label) {
-                this.buttons.push(new MainMenuLabelButton(this, item));
+                this.items.push(new MainMenuLabelButton(this, item));
             } else {
-                this.buttons.push(new MainMenuIconButton(this, item));
+                this.items.push(new MainMenuIconButton(this, item));
             }
         });
 
@@ -49,16 +48,15 @@ export class MainMenuLayer extends ScaledLayer {
             const levelsCfg: LevelsCfg = ResourceManager.getResource('Levels');
             Object.keys(levelsCfg.levelsByName).forEach((levelKey) => {
                 const level = levelsCfg.levelsByName[levelKey];
-                this.buttons.push(new MainMenuLevelButton(this, levelKey, level));
+                this.items.push(new MainMenuLevelButton(this, levelKey, level));
             });
-            this.buttons.forEach((b: MainMenuLevelButton) => b.unlocked = true); // TODO don't unlock everything by default
         }
 
-        this.onRedraw = (context => {
+        this.onRedraw = (context) => {
             context.drawImage(this.menuImage, 0, -this.scrollY);
             if (menuCfg.displayTitle) context.drawImage(this.titleImage, (this.fixedWidth - this.titleImage.width) / 2, this.cfg.position[1]);
-            this.buttons.forEach((item) => item.draw(context));
-        });
+            this.items.forEach((item) => item.draw(context));
+        };
     }
 
     handlePointerEvent(eventType: string, event: PointerEvent): boolean {
@@ -66,7 +64,7 @@ export class MainMenuLayer extends ScaledLayer {
             let [sx, sy] = this.toScaledCoords(event.clientX, event.clientY);
             sy += this.scrollY;
             let hovered = false;
-            this.buttons.forEach((item) => {
+            this.items.forEach((item) => {
                 if (!hovered) {
                     hovered = item.checkHover(sx, sy);
                 } else {
@@ -77,11 +75,11 @@ export class MainMenuLayer extends ScaledLayer {
             });
         } else if (eventType === 'pointerdown') {
             if (event.button === MOUSE_BUTTON.MAIN) {
-                this.buttons.forEach((item) => item.checkSetPressed());
+                this.items.forEach((item) => item.checkSetPressed());
             }
         } else if (eventType === 'pointerup') {
             if (event.button === MOUSE_BUTTON.MAIN) {
-                this.buttons.forEach((item) => {
+                this.items.forEach((item) => {
                     if (item.pressed) {
                         item.setReleased();
                         if (item.actionName.toLowerCase() === 'next') {
@@ -100,18 +98,14 @@ export class MainMenuLayer extends ScaledLayer {
     }
 
     handleWheelEvent(eventType: string, event: WheelEvent): boolean {
-        this.setScroll(event.deltaY);
-        return false;
-    }
-
-    setScroll(diff: number) {
-        if (!this.cfg.canScroll) return;
-        this.scrollY = Math.min(Math.max(this.scrollY + diff, 0), this.menuImage.height - this.fixedHeight);
+        if (!this.cfg.canScroll) return false;
+        this.scrollY = Math.min(Math.max(this.scrollY + event.deltaY, 0), this.menuImage.height - this.fixedHeight);
         this.redraw();
+        return true;
     }
 
     needsRedraw(): boolean {
-        return this.buttons.some((item) => item.needsRedraw);
+        return this.items.some((item) => item.needsRedraw);
     }
 
 }

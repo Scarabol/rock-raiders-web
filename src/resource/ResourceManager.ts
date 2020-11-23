@@ -65,7 +65,7 @@ export class ResourceManager {
         return null;
     }
 
-    static getImage(imageName): HTMLImageElement {
+    static getImageData(imageName): ImageData {
         if (!imageName || imageName.length === 0) {
             throw 'imageName must not be undefined, null or empty - was ' + imageName;
         }
@@ -74,10 +74,13 @@ export class ResourceManager {
         if (!imgData) {
             console.error('Image \'' + imageName + '\' unknown! Using placeholder image instead');
             ResourceManager.resourceByName[lImageName] = createDummyImgData(64, 64);
-            return ResourceManager.resourceByName[lImageName];
         }
-        imgData = ResourceManager.resourceByName[lImageName];
-        const context = createContext(imgData.width, imgData.height);
+        return ResourceManager.resourceByName[lImageName];
+    }
+
+    static getImage(imageName): HTMLCanvasElement {
+        const imgData = this.getImageData(imageName);
+        const context: CanvasRenderingContext2D = createContext(imgData.width, imgData.height);
         context.putImageData(imgData, 0, 0);
         return context.canvas;
     }

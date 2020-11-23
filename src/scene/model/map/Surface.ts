@@ -458,10 +458,6 @@ export class Surface implements Selectable {
         return null; // not used
     }
 
-    getSelectionEvent(): SurfaceSelectedEvent {
-        return new SurfaceSelectedEvent(this);
-    }
-
     updateJobColor() {
         let color = 0xffffff;
         this.jobs.forEach((job) => color = job.workType.color); // TODO prioritize colors?

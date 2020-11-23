@@ -7,8 +7,8 @@ import { ResourceManager } from '../../resource/ResourceManager';
 import { MathUtils, Vector3 } from 'three';
 import { GameState } from '../../game/model/GameState';
 import { EntityAddedEvent, EntityType } from '../../event/WorldEvents';
-import degToRad = MathUtils.degToRad;
 import { Surface } from './map/Surface';
+import degToRad = MathUtils.degToRad;
 
 export class BuildingEntity extends AnimEntity implements Selectable {
 
@@ -48,10 +48,6 @@ export class BuildingEntity extends AnimEntity implements Selectable {
 
     getSelectionCenter(): Vector3 {
         return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null;
-    }
-
-    getSelectionEvent(): BuildingSelected {
-        return new BuildingSelected(this);
     }
 
     getDropPosition(): Vector3 {

@@ -15,7 +15,7 @@ export class MainMenuIconButton extends MainMenuButton {
         this.imgNormal = ResourceManager.getImage(cfg.imgNormal);
         this.imgHover = ResourceManager.getImage(cfg.imgHover);
         this.imgPressed = ResourceManager.getImage(cfg.imgPressed);
-        this.tooltip = (cfg.tooltip || '').replace('_', ' ');
+        this.tooltip = (cfg.tooltip || '').replace(/_/g, ' ');
         this.width = Math.max(this.imgNormal.width, this.imgHover.width, this.imgPressed.width);
         this.height = Math.max(this.imgNormal.height, this.imgHover.height, this.imgPressed.height);
         this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x;

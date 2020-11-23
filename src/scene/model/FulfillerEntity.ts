@@ -5,7 +5,6 @@ import { CollectJob, Job, JobType } from '../../game/model/job/Job';
 import { MathUtils, Vector3 } from 'three';
 import { JOB_ACTION_RANGE, NATIVE_FRAMERATE } from '../../main';
 import { getRandom, getRandomSign } from '../../core/Util';
-import { LocalEvent } from '../../event/LocalEvents';
 import { Carryable } from './collect/Carryable';
 import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob';
 import { SurfaceType } from './map/SurfaceType';
@@ -215,8 +214,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     abstract getSelectionCenter(): Vector3;
-
-    abstract getSelectionEvent(): LocalEvent;
 
 }
 

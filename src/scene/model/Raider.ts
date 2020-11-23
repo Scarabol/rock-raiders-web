@@ -96,8 +96,4 @@ export class Raider extends FulfillerEntity {
         return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null;
     }
 
-    getSelectionEvent(): RaiderSelected {
-        return new RaiderSelected(this);
-    }
-
 }

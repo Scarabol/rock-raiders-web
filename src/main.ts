@@ -34,7 +34,7 @@ ResourceManager.onInitialLoad = (totalResources: number) => {
     loadingScreen.enableGraphicMode(totalResources);
 };
 ResourceManager.onAssetLoaded = (assetIndex: number) => {
-    loadingScreen.onAssetLoaded(assetIndex);
+    loadingScreen.setLoadingState(assetIndex);
 };
 ResourceManager.onLoadDone = () => {
     // complete setup

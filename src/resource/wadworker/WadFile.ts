@@ -32,8 +32,6 @@ export class WadFile {
         }
         pos = 8;
 
-        // const wad = new WadHandler(buffer);
-
         let bufferStart = pos;
         for (let i = 0; i < numberOfEntries; pos++) {
             if (this.buffer[pos] === 0) {

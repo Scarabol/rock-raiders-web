@@ -101,7 +101,7 @@ export class BitmapFont {
                 letterX += letterImgData.width;
             } // missing letter issue already reported above
         }
-        const img = createContext(result.width, result.height);
+        const img: CanvasRenderingContext2D = createContext(result.width, result.height);
         img.putImageData(result, 0, 0);
         return img.canvas;
     }
