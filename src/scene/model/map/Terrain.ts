@@ -19,6 +19,7 @@ export class Terrain {
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr;
+        this.floorGroup.scale.set(TILESIZE, TILESIZE, TILESIZE);
         this.roofGroup.visible = false; // keep roof hidden unless switched to other camera
         EventBus.registerEventListener(EntityAddedEvent.eventKey, (event: EntityAddedEvent) => {
             if (event.type !== EntityType.BUILDING) return;
@@ -48,6 +49,11 @@ export class Terrain {
         } else {
             return null;
         }
+    }
+
+    updateSurfaceMeshes(force: boolean = false) {
+        this.surfaces.forEach((r) => r.forEach((s) => s.updateMesh(force)));
+        this.floorGroup.updateWorldMatrix(true, true); // otherwise ray intersection is not working before rendering
     }
 
 }

@@ -93,14 +93,12 @@ export class Surface implements Selectable {
                 if (x !== this.x || y !== this.y) {
                     const surf = this.terrain.getSurface(x, y);
                     surf.needsMeshUpdate = true;
-                    if (!surf.surfaceType.floor && !surf.isSupported()) {
-                        surf.collapse();
-                    }
+                    if (!surf.isSupported()) surf.collapse();
                 }
             }
         }
         // update meshes
-        this.terrain.surfaces.forEach((c) => c.forEach((surf) => surf.updateMesh(false)));
+        this.terrain.updateSurfaceMeshes();
         this.terrain.floorGroup.updateWorldMatrix(true, true);
         // drop contained crystals and ores
         for (let c = 0; c < this.containedCrystals; c++) {
@@ -136,10 +134,11 @@ export class Surface implements Selectable {
         else if (this.surfaceType === SurfaceType.RUBBLE2) this.surfaceType = SurfaceType.RUBBLE1;
         else if (this.surfaceType === SurfaceType.RUBBLE1) this.surfaceType = SurfaceType.GROUND;
         this.dropContainedOre(1);
-        this.updateMesh();
+        this.updateTexture();
     }
 
     isSupported(): boolean {
+        if (this.surfaceType.floor) return true;
         const surfLeft = this.terrain.getSurface(this.x - 1, this.y);
         const surfTopLeft = this.terrain.getSurface(this.x - 1, this.y - 1);
         const surfTop = this.terrain.getSurface(this.x, this.y - 1);
@@ -417,7 +416,7 @@ export class Surface implements Selectable {
             return sum / cnt;
         }
 
-        // apply height modification
+        // apply height fine-tuning
         topLeftVertex.y += avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER;
         topRightVertex.y += avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER;
         bottomRightVertex.y += avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER;

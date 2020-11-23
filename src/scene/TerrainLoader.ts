@@ -87,15 +87,12 @@ export class TerrainLoader {
 
         // crumble unsupported walls
         terrain.surfaces.forEach((c) => c.forEach((s) => {
-            if (!s.surfaceType.floor && !s.isSupported()) s.collapse();
+            if (!s.isSupported()) s.collapse();
         }));
 
-        terrain.surfaces.forEach(c => c.forEach(s => s.updateMesh()));
+        terrain.updateSurfaceMeshes(true);
 
         // TODO add landslides
-
-        terrain.floorGroup.scale.set(tileSize, tileSize, tileSize);
-        terrain.floorGroup.updateWorldMatrix(true, true); // otherwise ray intersection is not working before rendering
 
         return terrain;
 
