@@ -29,6 +29,7 @@ export class MainMenuScreen extends BaseScreen {
     showMainMenu(index: number = 0) {
         this.hide();
         this.menus[index].show();
+        this.cursorLayer.show();
     }
 
     showLevelSelection() {

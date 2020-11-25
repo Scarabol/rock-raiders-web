@@ -1,4 +1,4 @@
-import { ScreenLayer } from './ScreenLayer';
+import { CursorLayer, ScreenLayer } from './ScreenLayer';
 import { EventManager } from '../event/EventManager';
 
 export class BaseScreen {
@@ -9,12 +9,14 @@ export class BaseScreen {
     width: number = 800;
     height: number = 600;
     ratio: number = 800 / 600;
+    cursorLayer: CursorLayer;
 
     constructor() {
         this.gameCanvasContainer = document.getElementById('game-canvas-container');
         this.eventMgr = new EventManager(this);
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!';
         window.addEventListener('resize', () => this.onWindowResize());
+        this.cursorLayer = this.addLayer(new CursorLayer(), 1000);
         this.onWindowResize();
     }
 

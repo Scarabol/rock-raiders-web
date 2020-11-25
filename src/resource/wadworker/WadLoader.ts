@@ -630,6 +630,13 @@ export class WadLoader {
                     resolve();
                 });
             }),
+            new Promise((resolve) => {
+                const name = iGet(cfg, 'Pointers', 'Pointer_Standard');
+                this.loadAlphaImageAsset(name, (imgData) => {
+                    this.onAssetLoaded(0, name, imgData);
+                    resolve();
+                });
+            }),
         ]).then(() => {
             this.onMessage('Start loading assets...');
             this.assetsFromCfg = Object.values(this.assetsFromCfgByName);

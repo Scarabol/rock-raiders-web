@@ -26,6 +26,11 @@ export class LoadingScreen extends BaseScreen {
         };
     }
 
+    show() {
+        this.layers.filter((l) => l !== this.cursorLayer).forEach((layer) => layer.show());
+        this.redraw();
+    }
+
     setLoadingMessage(text) {
         this.layer.onRedraw = (context) => {
             // wipe old message text
@@ -50,6 +55,7 @@ export class LoadingScreen extends BaseScreen {
             context.drawImage(imgProgress, 142 * screenZoom, 450 * screenZoom, loadingBarWidth, 9 * screenZoom);
             // TODO show LoadingText from cfg
         });
+        this.cursorLayer.show();
         this.redraw();
     }
 
