@@ -1,9 +1,9 @@
 import { MainMenuLayer } from './MainMenuLayer';
-import { MainMenuButton } from './MainMenuButton';
+import { MainMenuBaseItem } from './MainMenuBaseItem';
 import { LevelEntryCfg } from '../resource/wadworker/LevelsCfg';
 import { ResourceManager } from '../resource/ResourceManager';
 
-export class MainMenuLevelButton extends MainMenuButton {
+export class MainMenuLevelButton extends MainMenuBaseItem {
 
     layer: MainMenuLayer;
     imgActive = null;
@@ -19,6 +19,8 @@ export class MainMenuLevelButton extends MainMenuButton {
         this.levelKey = levelKey;
         this.x = levelCfg.frontEndX;
         this.y = levelCfg.frontEndY;
+        this.zIndex = 10;
+        this.scrollAffected = true;
         const [imgActive, imgInactive, imgCross] = levelCfg.menuBMP;
         this.imgActive = ResourceManager.getImage(imgActive);
         this.imgInactive = ResourceManager.getImage(imgInactive);

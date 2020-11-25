@@ -1,9 +1,9 @@
 import { MainMenuLayer } from './MainMenuLayer';
 import { MainMenuItemCfg } from './MainMenuItemCfg';
-import { MainMenuButton } from './MainMenuButton';
+import { MainMenuBaseItem } from './MainMenuBaseItem';
 import { ResourceManager } from '../resource/ResourceManager';
 
-export class MainMenuIconButton extends MainMenuButton {
+export class MainMenuIconButton extends MainMenuBaseItem {
 
     imgNormal = null;
     imgHover = null;

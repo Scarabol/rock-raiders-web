@@ -1,8 +1,8 @@
 import { MainMenuLayer } from './MainMenuLayer';
 import { MainMenuItemCfg } from './MainMenuItemCfg';
-import { MainMenuButton } from './MainMenuButton';
+import { MainMenuBaseItem } from './MainMenuBaseItem';
 
-export class MainMenuLabelButton extends MainMenuButton {
+export class MainMenuLabelButton extends MainMenuBaseItem {
 
     labelImgLo = null;
     labelImgHi = null;

@@ -6,8 +6,7 @@ import { BitmapFont } from '../core/BitmapFont';
 import { MOUSE_BUTTON } from '../event/EventManager';
 import { MainMenuScreen } from '../screen/MainMenuScreen';
 import { MainMenuIconButton } from './MainMenuIconButton';
-import { MainMenuButton } from './MainMenuButton';
-import { LevelsCfg } from '../resource/wadworker/LevelsCfg';
+import { MainMenuBaseItem } from './MainMenuBaseItem';
 import { MainMenuLevelButton } from './MainMenuLevelButton';
 
 export class MainMenuLayer extends ScaledLayer {
@@ -21,7 +20,7 @@ export class MainMenuLayer extends ScaledLayer {
     loFont: BitmapFont;
     hiFont: BitmapFont;
     menuImage: HTMLCanvasElement;
-    items: MainMenuButton[] = [];
+    items: MainMenuBaseItem[] = [];
     scrollY: number = 0;
 
     constructor(screen: MainMenuScreen, menuCfg: MenuCfg) {
@@ -44,29 +43,23 @@ export class MainMenuLayer extends ScaledLayer {
             }
         });
 
-        if (this.title === 'Levels') { // TODO refactor: move to separate class
-            const levelsCfg: LevelsCfg = ResourceManager.getResource('Levels');
-            Object.keys(levelsCfg.levelsByName).forEach((levelKey) => {
-                const level = levelsCfg.levelsByName[levelKey];
-                this.items.push(new MainMenuLevelButton(this, levelKey, level));
-            });
-        }
+        this.items.sort((a, b) => MainMenuBaseItem.compareZ(a, b));
 
         this.onRedraw = (context) => {
             context.drawImage(this.menuImage, 0, -this.scrollY);
             if (menuCfg.displayTitle) context.drawImage(this.titleImage, (this.fixedWidth - this.titleImage.width) / 2, this.cfg.position[1]);
-            this.items.forEach((item) => item.draw(context));
+            this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context));
         };
     }
 
     handlePointerEvent(eventType: string, event: PointerEvent): boolean {
         if (eventType === 'pointermove') { // TODO scroll when close to menu top/bottom border
-            let [sx, sy] = this.toScaledCoords(event.clientX, event.clientY);
-            sy += this.scrollY;
+            const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY);
             let hovered = false;
             this.items.forEach((item) => {
                 if (!hovered) {
-                    hovered = item.checkHover(sx, sy);
+                    const absY = sy + (item.scrollAffected ? this.scrollY : 0);
+                    hovered = item.checkHover(sx, absY);
                 } else {
                     if (item.hover) item.needsRedraw = true;
                     item.hover = false;
@@ -86,7 +79,7 @@ export class MainMenuLayer extends ScaledLayer {
                             this.screen.showMainMenu(item.targetIndex);
                         } else if (item.actionName.toLowerCase() === 'selectlevel') {
                             this.screen.selectLevel((item as MainMenuLevelButton).levelKey);
-                        } else {
+                        } else if (item.actionName) {
                             console.warn('not implemented: ' + item.actionName + ' - ' + item.targetIndex);
                         }
                     }
