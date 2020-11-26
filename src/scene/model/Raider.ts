@@ -11,7 +11,7 @@ export class Raider extends FulfillerEntity {
 
     constructor() {
         super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae', RAIDER_SPEED);
-        this.tools = ['drill'];
+        this.tools = ['drill', 'shovel'];
         this.skills = [];
         this.pickSphereRadius = 10; // TODO read pick sphere size from cfg
         this.selectionFrameSize = 10;

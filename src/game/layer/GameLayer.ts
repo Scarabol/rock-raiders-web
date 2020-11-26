@@ -52,10 +52,15 @@ export class GameLayer extends ScreenLayer {
     }
 
     handleKeyEvent(eventType: string, event: KeyboardEvent): boolean {
-        if (eventType === 'keyup' && event.key === 'c') {
+        if (eventType === 'keyup') {
             if (GameState.selectionType === SelectionType.SURFACE) {
                 GameState.selectedEntities.forEach((s: Surface) => {
-                    if (!s.surfaceType.floor) s.collapse();
+                    if (event.key === 'c') {
+                        if (!s.surfaceType.floor) s.collapse();
+                    } else if (event.key === 'f') {
+                        const t = s.terrain.findFallInTarget(s.x, s.y);
+                        if (!s.surfaceType.floor) s.createFallin(t[0], t[1]);
+                    }
                 });
                 EventBus.publishEvent(new EntityDeselected());
                 return true;

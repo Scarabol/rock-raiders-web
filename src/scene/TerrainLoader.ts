@@ -24,8 +24,8 @@ export class TerrainLoader {
         const surfaceMap = ResourceManager.getMap(iGet(levelConf, 'SurfaceMap')).level;
         const predugMap = ResourceManager.getMap(iGet(levelConf, 'PreDugMap')).level;
         const cryOreMap = ResourceManager.getMap(iGet(levelConf, 'CryOreMap')).level;
-        const fallinMap = ResourceManager.getMap(iGet(levelConf, 'FallinMap')); // TODO implement fallins
-        const erodeMap = ResourceManager.getMap(iGet(levelConf, 'ErodeMap')); // TODO implement lava erosion
+        const fallinMap = ResourceManager.getMap(iGet(levelConf, 'FallinMap'));
+        const erodeMap = ResourceManager.getMap(iGet(levelConf, 'ErodeMap'));
 
         // maps parsed from WAD are row-wise saved, which means y (row) comes first and x (column) second
         for (let r = 0; r < terrainMap.level.length; r++) {
@@ -55,14 +55,15 @@ export class TerrainLoader {
                     console.warn('Unexpected path map level: ' + pathMapLevel);
                 }
 
-                (terrain.surfaces)[c].push(new Surface(terrain, surfaceType, c, r, surfaceMap[r][c]));
-
+                const surface = new Surface(terrain, surfaceType, c, r, surfaceMap[r][c]);
                 const currentCryOre = cryOreMap[r][c];
                 if (currentCryOre % 2 === 1) {
-                    (terrain.surfaces)[c][r].containedCrystals = (currentCryOre + 1) / 2;
+                    surface.containedCrystals = (currentCryOre + 1) / 2;
                 } else {
-                    (terrain.surfaces)[c][r].containedOre = currentCryOre / 2;
+                    surface.containedOre = currentCryOre / 2;
                 }
+
+                (terrain.surfaces)[c].push(surface);
             }
         }
 
@@ -92,10 +93,19 @@ export class TerrainLoader {
 
         terrain.updateSurfaceMeshes(true);
 
-        // TODO add landslides
+        if (fallinMap) {
+            for (let x = 0; x < terrain.width; x++) {
+                for (let y = 0; y < terrain.height; y++) {
+                    terrain.getSurface(x, y).setFallinLevel(fallinMap.level[y][x]); // rows (y) before columns (x) used in maps
+                }
+            }
+        }
+
+        if (erodeMap) { // TODO implement lava erosion
+            console.warn('Lucky you! Lava erosion not yet implemented');
+        }
 
         return terrain;
-
     }
 
 }

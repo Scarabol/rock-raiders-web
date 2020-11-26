@@ -56,4 +56,36 @@ export class Terrain {
         this.floorGroup.updateWorldMatrix(true, true); // otherwise ray intersection is not working before rendering
     }
 
+    findFallInOrigin(x: number, y: number): [number, number] {
+        const leftSurface = this.getSurface(x - 1, y);
+        if (leftSurface.isReinforcable()) return [leftSurface.x, leftSurface.y];
+        const topSurface = this.getSurface(x, y - 1);
+        if (topSurface.isReinforcable()) return [topSurface.x, topSurface.y];
+        const rightSurface = this.getSurface(x + 1, y);
+        if (rightSurface.isReinforcable()) return [rightSurface.x, rightSurface.y];
+        const bottomSurface = this.getSurface(x, y + 1);
+        if (bottomSurface.isReinforcable()) return [bottomSurface.x, bottomSurface.y];
+        const leftSurface2 = this.getSurface(x - 1, y);
+        if (leftSurface2.isDigable()) return [leftSurface2.x, leftSurface2.y];
+        const topSurface2 = this.getSurface(x, y - 1);
+        if (topSurface2.isDigable()) return [topSurface2.x, topSurface2.y];
+        const rightSurface2 = this.getSurface(x + 1, y);
+        if (rightSurface2.isDigable()) return [rightSurface2.x, rightSurface2.y];
+        const bottomSurface2 = this.getSurface(x, y + 1);
+        if (bottomSurface2.isDigable()) return [bottomSurface2.x, bottomSurface2.y];
+        return null;
+    }
+
+    findFallInTarget(x: number, y: number): [number, number] {
+        const leftSurface = this.getSurface(x - 1, y);
+        if (leftSurface.isWalkable()) return [leftSurface.x, leftSurface.y];
+        const topSurface = this.getSurface(x, y - 1);
+        if (topSurface.isWalkable()) return [topSurface.x, topSurface.y];
+        const rightSurface = this.getSurface(x + 1, y);
+        if (rightSurface.isWalkable()) return [rightSurface.x, rightSurface.y];
+        const bottomSurface = this.getSurface(x, y + 1);
+        if (bottomSurface.isWalkable()) return [bottomSurface.x, bottomSurface.y];
+        return null;
+    }
+
 }

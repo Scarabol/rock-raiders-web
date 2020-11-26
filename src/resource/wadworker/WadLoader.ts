@@ -318,6 +318,8 @@ export class WadLoader {
             this.addAsset(this.loadMapAsset, level.blockPointersMap, true);
             this.addAsset(this.loadMapAsset, level.cryOreMap);
             this.addAsset(this.loadMapAsset, level.pathMap, true);
+            if (level.fallinMap) this.addAsset(this.loadMapAsset, level.fallinMap);
+            if (level.erodeMap) this.addAsset(this.loadMapAsset, level.erodeMap);
             this.addAsset(this.loadObjectListAsset, level.oListFile);
             // this.addAsset(this.loadNerpAsset, level.NERPFile); // TODO add nerp support
             // this.addAsset(this.loadNerpMsg, level.NERPMessageFile); // TODO add nerp support
@@ -344,6 +346,8 @@ export class WadLoader {
         this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ProcessedOre') + '.lwo');
         this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae');
         this.addAnimatedEntity('MiscAnims/Dynamite/Dynamite.ae');
+        this.addLWSFile('MiscAnims/RockFall/Rock3Sides.lws');
+        this.addTextureFolder('MiscAnims/RockFall/');
         // spaces
         this.addTextureFolder('World/WorldTextures/IceSplit/Ice');
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava');
@@ -423,11 +427,7 @@ export class WadLoader {
                     const file = iGet(act, 'FILE');
                     const isLws = iGet(act, 'LWSFILE') === true;
                     if (isLws) {
-                        const lwsFilepath = path + file + '.lws';
-                        const content = this.wad0File.getEntryText(lwsFilepath);
-                        this.onAssetLoaded(0, lwsFilepath, content);
-                        const lwoFiles: string[] = this.extractLwoFiles(path, content);
-                        lwoFiles.forEach((lwoFile) => this.addAsset(this.loadLWOFile, lwoFile));
+                        this.addLWSFile(path + file + '.lws');
                     } else {
                         console.error('Found activity which is not an LWS file');
                     }
@@ -441,6 +441,13 @@ export class WadLoader {
         }
         // load all textures for this type
         this.addTextureFolder(getPath(aeFile));
+    }
+
+    addLWSFile(lwsFilepath: string) {
+        const content = this.wad0File.getEntryText(lwsFilepath);
+        this.onAssetLoaded(0, lwsFilepath, content);
+        const lwoFiles: string[] = this.extractLwoFiles(getPath(lwsFilepath), content);
+        lwoFiles.forEach((lwoFile) => this.addAsset(this.loadLWOFile, lwoFile));
     }
 
     extractLwoFiles(path: string, content: string): string[] {

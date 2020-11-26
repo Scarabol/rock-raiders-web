@@ -1,4 +1,4 @@
-import { Face3, Geometry, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
+import { Face3, Geometry, Group, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
 import { Terrain } from './Terrain';
 import { SurfaceType } from './SurfaceType';
 import { ResourceManager } from '../../../resource/ResourceManager';
@@ -13,6 +13,8 @@ import { Ore } from '../collect/Ore';
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../main';
 import { GameState } from '../../../game/model/GameState';
 import { SurfaceJob, SurfaceJobType } from '../../../game/model/job/SurfaceJob';
+import { LWSCLoader } from '../../../resource/LWSCLoader';
+import { AnimSubObj } from '../anim/AnimSubObj';
 
 export class Surface implements Selectable {
 
@@ -29,6 +31,10 @@ export class Surface implements Selectable {
     jobs: SurfaceJob[] = [];
     surfaceRotation: number = 0;
     seamLevel: number = 0;
+    fallinTimeout = null;
+
+    fallinGrp: Group = null;
+    animationTimeout = null;
 
     wallType: WALL_TYPE = null;
     geometry: Geometry = null;
@@ -81,6 +87,7 @@ export class Surface implements Selectable {
 
     collapse() {
         this.cancelJobs();
+        if (this.fallinTimeout) clearTimeout(this.fallinTimeout);
         this.surfaceType = SurfaceType.RUBBLE4;
         this.containedOre += 4;
         this.needsMeshUpdate = true;
@@ -489,6 +496,10 @@ export class Surface implements Selectable {
         return this.surfaceType.explodable && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER);
     }
 
+    isDigable(): boolean {
+        return this.isDrillable() || this.isExplodable();
+    }
+
     getDigPositions(): Vector3[] {
         const digPosition = [];
         if (this.terrain.getSurface(this.x - 1, this.y).surfaceType.floor) digPosition.push(new Vector3(this.x * TILESIZE, 0, this.y * TILESIZE + TILESIZE / 2));
@@ -500,16 +511,104 @@ export class Surface implements Selectable {
 
     reinforce() {
         this.cancelReinforceJobs();
-        if (!this.reinforced) {
-            this.reinforced = true;
-            this.updateTexture();
-        }
+        if (this.fallinTimeout) clearTimeout(this.fallinTimeout);
+        if (!this.reinforced) this.updateTexture();
+        this.reinforced = true;
     }
 
     getCenterWorld(): Vector3 {
         const center = new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE + TILESIZE / 2);
         center.y = this.terrain.worldMgr.getTerrainHeight(center.x, center.z);
         return center;
+    }
+
+    setFallinLevel(fallinLevel: number) {
+        if (fallinLevel < 1) return;
+        let originPos;
+        let targetPos;
+        if (this.surfaceType.floor) {
+            originPos = this.terrain.findFallInOrigin(this.x, this.y);
+            targetPos = [this.x, this.y];
+        } else {
+            originPos = [this.x, this.y];
+            targetPos = this.terrain.findFallInTarget(this.x, this.y);
+        }
+        if (originPos && targetPos) {
+            this.terrain.getSurface(originPos[0], originPos[1]).scheduleFallin(targetPos[0], targetPos[1]);
+        }
+    }
+
+    scheduleFallin(targetX: number, targetY: number) {
+        this.fallinTimeout = setTimeout(() => {
+            this.createFallin(targetX, targetY);
+            this.scheduleFallin(targetX, targetY);
+        }, (60 + getRandom(120)) * 1000); // TODO adapt timer to level multiplier and fallin value
+    }
+
+    createFallin(targetX: number, targetY: number) {
+        console.log('there was a fallin'); // TODO publish event notice
+
+        // FIXME refactor animation handling
+        const content = ResourceManager.getResource('MiscAnims/RockFall/Rock3Sides.lws');
+        const animation = new LWSCLoader('MiscAnims/RockFall/').parse(content);
+        this.fallinGrp = new Group();
+        this.fallinGrp.position.copy(this.terrain.getSurface(targetX, targetY).getCenterWorld());
+        const dx = this.x - targetX, dy = targetY - this.y;
+        this.fallinGrp.rotateOnAxis(new Vector3(0, 1, 0), Math.atan2(dy, dx) + Math.PI / 2);
+        this.terrain.worldMgr.sceneManager.scene.add(this.fallinGrp);
+        const poly = [];
+        animation.bodies.forEach((body) => {
+            const polyModel = body.model.clone(true);
+            poly.push(polyModel);
+        });
+        animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
+            const polyPart = poly[index];
+            const parentInd = body.parentObjInd;
+            if (parentInd !== undefined && parentInd !== null) { // can be 0
+                poly[parentInd].add(polyPart);
+            } else {
+                this.fallinGrp.add(polyPart);
+            }
+        });
+        this.animate(poly, animation, 0);
+
+        const targetSurface = this.terrain.getSurface(targetX, targetY);
+        targetSurface.surfaceType = SurfaceType.RUBBLE4;
+        targetSurface.updateTexture();
+    }
+
+    animate(poly, animation, frameIndex) { // FIXME refactor animation handling
+        if (poly.length !== animation.bodies.length) throw 'Cannot animate poly. Length differs from bodies length';
+        animation.bodies.forEach((body: AnimSubObj, index) => {
+            const p = poly[index];
+            p.position.copy(body.relPos[frameIndex]);
+            p.rotation.copy(body.relRot[frameIndex]);
+            p.scale.copy(body.relScale[frameIndex]);
+            if (p.hasOwnProperty('material')) {
+                const material = p['material'];
+                const opacity = body.opacity[frameIndex];
+                if (material && opacity !== undefined) {
+                    const matArr = Array.isArray(material) ? material : [material];
+                    matArr.forEach((mat: MeshPhongMaterial) => {
+                        mat.opacity = opacity;
+                        mat.transparent = true;
+                        mat.alphaTest = 0;
+                    });
+                }
+            }
+        });
+        this.animationTimeout = null;
+        if (!(frameIndex + 1 > animation.lastFrame) || animation.looping) {
+            let nextFrame = frameIndex + 1;
+            if (nextFrame > animation.lastFrame) {
+                nextFrame = animation.firstFrame;
+            }
+            const that = this;
+            this.animationTimeout = setTimeout(() => that.animate(poly, animation, nextFrame), 1000 / animation.framesPerSecond * animation.transcoef);
+        } else {
+            this.terrain.worldMgr.sceneManager.scene.remove(this.fallinGrp);
+            this.fallinGrp = null;
+        }
     }
 
 }
