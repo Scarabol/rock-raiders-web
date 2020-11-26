@@ -51,6 +51,19 @@ export class GameLayer extends ScreenLayer {
         return true;
     }
 
+    handleKeyEvent(eventType: string, event: KeyboardEvent): boolean {
+        if (eventType === 'keyup' && event.key === 'c') {
+            if (GameState.selectionType === SelectionType.SURFACE) {
+                GameState.selectedEntities.forEach((s: Surface) => {
+                    if (!s.surfaceType.floor) s.collapse();
+                });
+                EventBus.publishEvent(new EntityDeselected());
+                return true;
+            }
+        }
+        return false;
+    }
+
     createSurfaceJob(surfaceJobType: SurfaceJobType, surface: Surface) {
         const surfJob = new SurfaceJob(surfaceJobType, surface);
         GameState.selectedEntities.forEach((e: FulfillerEntity) => {
