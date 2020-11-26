@@ -86,7 +86,7 @@ export class CollectJob extends Job {
     }
 
     isQualified(fulfiller: FulfillerEntity) {
-        return fulfiller.carries === null && this.item.getTargetPos() !== null;
+        return fulfiller.carries === null && !!this.item.getTargetPos();
     }
 
     onJobComplete() {

@@ -14,7 +14,7 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
     collectableType: CollectableType;
     targetSite: BuildingSite;
     targetBuilding: BuildingEntity;
-    targetPos: Vector3;
+    targetPos: Vector3 = null;
     targetType: CollectTargetType | Building;
 
     protected constructor(collectableType: CollectableType) {
