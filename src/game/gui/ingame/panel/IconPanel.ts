@@ -47,7 +47,6 @@ export class IconSubPanel extends Panel {
     }
 
     addMenuItem(menuItemGroup, itemKey) {
-        // TODO assert that number of items is below planned size
         const menuItem = this.addChild(new MenuItem(this, menuItemGroup, itemKey));
         menuItem.relY += menuItem.height * this.countMenuItems;
         this.countMenuItems++;

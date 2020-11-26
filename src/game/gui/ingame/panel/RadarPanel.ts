@@ -28,7 +28,7 @@ export class RadarPanel extends Panel {
         this.btnTagged = iGet(this.buttons, 'PanelButton_Radar_TaggedObjectView');
         this.btnTagged.onClick = () => {
             // this.fill.show();
-            // // this.overlay.show(); // TODO only show overlay, when entity selected
+            // this.overlay.show(); // TODO only show overlay, when entity selected
         };
     }
 

@@ -113,8 +113,8 @@ export abstract class AnimEntity extends BaseEntity {
         this.group.add(this.pickSphere);
 
         const ctx = document.createElement('canvas').getContext('2d');
-        const size = 128;
-        ctx.canvas.width = size; // TODO read from cfg?
+        const size = 128; // TODO read from cfg?
+        ctx.canvas.width = size;
         ctx.canvas.height = size;
         ctx.fillStyle = '#0f0';
         const strength = 50 / this.selectionFrameSize;

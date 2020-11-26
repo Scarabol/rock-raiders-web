@@ -78,7 +78,7 @@ export class SurfaceJob extends Job {
 
 }
 
-export class DynamiteJob extends SurfaceJob { // TODO actually this is a carry job that targets a surface
+export class DynamiteJob extends SurfaceJob {
 
     dynamite: Dynamite;
 

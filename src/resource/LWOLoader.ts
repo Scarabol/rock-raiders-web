@@ -454,7 +454,7 @@ export class LWOLoader {
                     case SURF_TIMG:
                         let textureFilepath = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize));
                         if (this.verbose) console.log('Texture filepath (TIMG): ' + textureFilepath);
-                        if (textureFilepath === '(none)') break; // TODO create fake texture?
+                        if (textureFilepath === '(none)') break;
                         let sequenceTexture = false;
                         if (textureFilepath.endsWith(' (sequence)')) {
                             sequenceTexture = true;
