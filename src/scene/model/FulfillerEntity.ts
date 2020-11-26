@@ -164,6 +164,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     setJob(job: Job) {
         if (this.job !== job) this.stopJob();
+        if (job.type === JobType.SURFACE) this.dropItem();
         this.job = job;
         if (this.job) this.job.assign(this);
     }
