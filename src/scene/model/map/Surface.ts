@@ -301,7 +301,7 @@ export class Surface implements Selectable {
         // 1 ?
         // ? 0
         if (topLeftVertex.y && !bottomRightVertex.y &&
-            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL) === Boolean(topRightVertex.y)))) {
+            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(topRightVertex.y)))) {
             uvOffset = 0;
         }
 
@@ -309,7 +309,7 @@ export class Surface implements Selectable {
         // ? 1
         // 0 ?
         if (topRightVertex.y && !bottomLeftVertex.y &&
-            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL) === Boolean(bottomRightVertex.y)))) {
+            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(bottomRightVertex.y)))) {
             uvOffset = 3;
         }
 
@@ -317,7 +317,7 @@ export class Surface implements Selectable {
         // 0 ?
         // ? 1
         if (bottomRightVertex.y && !topLeftVertex.y &&
-            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL) === Boolean(bottomLeftVertex.y)))) {
+            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(bottomLeftVertex.y)))) {
             uvOffset = 2;
         }
 
@@ -325,11 +325,11 @@ export class Surface implements Selectable {
         // ? 0
         // 1 ?
         if (bottomLeftVertex.y && !topRightVertex.y &&
-            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL) === Boolean(topLeftVertex.y)))) {
+            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(topLeftVertex.y)))) {
             uvOffset = 1;
         }
 
-        if (this.wallType === WALL_TYPE.WALL) {
+        if (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) {
             if (topLeftVertex.y && bottomRightVertex.y) {
                 uvOffset = 0;
             }
@@ -374,7 +374,7 @@ export class Surface implements Selectable {
         ];
 
         if (topRightVertex.y !== bottomLeftVertex.y ||
-            (this.wallType === WALL_TYPE.WALL && !(topRightVertex.y && bottomLeftVertex.y))) {
+            ((this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) && !(topRightVertex.y && bottomLeftVertex.y))) {
             this.geometry.faceVertexUvs[0].push([
                 uv[(1 + uvOffset) % 4],
                 uv[(3 + uvOffset) % 4],
