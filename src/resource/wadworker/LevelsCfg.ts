@@ -67,10 +67,10 @@ export class LevelEntryCfg {
     erodeLockTime: number = 0;
     nextLevel: any = '';
     levelLinks: any = '';
-    frontEndX: any = '';
-    frontEndY: any = '';
-    frontEndOpen: any = '';
-    menuBMP: any = '';
+    frontEndX: number = 0;
+    frontEndY: number = 0;
+    frontEndOpen: boolean = false;
+    menuBMP: string[] = [];
 
     constructor(cfgObj: any) {
         Object.keys(cfgObj).forEach((cfgKey) => {

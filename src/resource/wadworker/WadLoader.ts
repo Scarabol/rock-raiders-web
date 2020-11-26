@@ -5,6 +5,7 @@ import { RonFile } from './RonFile';
 import { AlphaBitmapDecoder } from './AlphaBitmapDecoder';
 import { MainMenuFullCfg } from './MainMenuFullCfg';
 import { LevelEntryCfg, LevelsCfg } from './LevelsCfg';
+import { RewardCfg } from '../../menu/RewardCfg';
 
 export class WadLoader {
 
@@ -344,19 +345,16 @@ export class WadLoader {
         this.addTextureFolder('World/WorldTextures/IceSplit/Ice');
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava');
         this.addTextureFolder('World/WorldTextures/RockSplit/Rock');
-        // // reward screen
-        // const rewardConf = mainConf['Reward'];
-        // this.addAsset(this.loadWadImageAsset, rewardConf['Wallpaper']);
-        // this.addAsset(this.loadFontImageAsset, rewardConf['BackFont']);
-        // Object.values(rewardConf['Fonts']).forEach(imgPath => {
-        //     this.addAsset(this.loadFontImageAsset, imgPath);
-        // });
-        // Object.values(rewardConf['Images']).forEach(img => {
-        //     this.addAsset(this.loadAlphaImageAsset, img[0]);
-        // });
-        // Object.values(rewardConf['BoxImages']).forEach(img => {
-        //     this.addAsset(this.loadWadImageAsset, img[0]);
-        // });
+        // reward screen
+        const rewardCfg = new RewardCfg(iGet(mainConf, 'Reward'));
+        this.onAssetLoaded(0, 'Reward', rewardCfg);
+        this.addAsset(this.loadWadImageAsset, rewardCfg.wallpaper);
+        this.addAsset(this.loadFontImageAsset, rewardCfg.backFont);
+        Object.values(rewardCfg.fonts).forEach(imgPath => this.addAsset(this.loadFontImageAsset, imgPath));
+        rewardCfg.images.forEach(img => this.addAsset(this.loadAlphaImageAsset, img.filePath));
+        rewardCfg.boxImages.forEach(img => this.addAsset(this.loadWadImageAsset, img.filePath));
+        rewardCfg.saveButton.splice(0, 4).forEach(img => this.addAsset(this.loadWadImageAsset, img));
+        rewardCfg.advanceButton.splice(0, 4).forEach(img => this.addAsset(this.loadWadImageAsset, img));
         // rewardConf['SaveButton'].slice(0, 4).forEach(imgPath => {
         //     this.addAsset(this.loadWadImageAsset, imgPath);
         // });

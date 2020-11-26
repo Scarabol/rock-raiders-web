@@ -59,7 +59,8 @@ export class WorldManager {
     setup(levelName: string, gameScreen: GameScreen) {
         const levelConf = ResourceManager.cfg('Levels', levelName);
         if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'; // TODO error handling
-        console.log('Starting level ' + levelName + ' - ' + iGet(levelConf, 'FullName'));
+        GameState.levelFullName = iGet(levelConf, 'FullName').replace(/_/g, ' ');
+        console.log('Starting level ' + levelName + ' - ' + GameState.levelFullName);
 
         // create terrain mesh and add it to the scene
         this.sceneManager.terrain = TerrainLoader.loadTerrain(levelConf, this);
@@ -78,33 +79,30 @@ export class WorldManager {
         this.nerpRunner.messages.push(...nerpMessages);
         this.nerpRunner.onLevelComplete = () => gameScreen.onLevelEnd();
 
-        // TODO gather level start details for game result score calculation
-        // levelConf.numOfCrystals = 0;
-        // levelConf.numOfOres = 0;
-        // levelConf.numOfDigables = 0;
-        // for (let x = 0; x < terrain.length; x++) {
-        //     for (let y = 0; y < terrain[x].length; y++) {
-        //         const space = terrain[x][y];
-        //         levelConf.numOfCrystals += space.containedCrystals;
-        //         levelConf.numOfOres += space.containedOre + space.getRubbleOreContained();
-        //         levelConf.numOfDigables += space.isDigable() ? 1 : 0;
-        //     }
-        // }
+        // gather level start details for game result score calculation
+        GameState.totalDiggables = this.sceneManager.terrain.surfaces.filter((r) => r.forEach((s) => s.isDigable())).length;
+        GameState.totalCrystals = 0;
+        this.sceneManager.terrain.surfaces.forEach((r) => r.forEach((s) => GameState.totalCrystals += s.containedCrystals));
+        GameState.totalOres = 0;
+        this.sceneManager.terrain.surfaces.forEach((r) => r.forEach((s) => GameState.totalOres += s.containedOres));
     }
 
     start() {
-        this.nerpInterval = setInterval(() => { // FIXME track interval
+        this.nerpInterval = setInterval(() => {
             this.nerpRunner.execute();
         }, 2000);
         this.sceneManager.startRendering();
+        GameState.levelStartTime = Date.now();
     }
 
     stop() {
+        GameState.levelStopTime = Date.now();
         this.sceneManager.stopRendering();
         if (this.nerpInterval) clearInterval(this.nerpInterval);
         this.nerpInterval = null;
         if (this.spawnRaiderInterval) clearInterval(this.spawnRaiderInterval);
         this.spawnRaiderInterval = null;
+        GameState.remainingDiggables = this.sceneManager.terrain.surfaces.filter((r) => r.forEach((s) => s.isDigable())).length;
     }
 
     resize(width: number, height: number) {

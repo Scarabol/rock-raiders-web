@@ -22,7 +22,7 @@ export class Surface implements Selectable {
     surfaceType: SurfaceType;
     x: number;
     y: number;
-    containedOre: number = 0;
+    containedOres: number = 0;
     containedCrystals: number = 0;
     heightOffset: number = null;
     discovered: boolean = false;
@@ -89,7 +89,7 @@ export class Surface implements Selectable {
         this.cancelJobs();
         if (this.fallinTimeout) clearTimeout(this.fallinTimeout);
         this.surfaceType = SurfaceType.RUBBLE4;
-        this.containedOre += 4;
+        this.containedOres += 4;
         this.needsMeshUpdate = true;
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors();
@@ -113,14 +113,14 @@ export class Surface implements Selectable {
             const z = this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4);
             this.terrain.worldMgr.addCollectable(new Crystal(), x, z);
         }
-        this.dropContainedOre(this.containedOre - 4);
+        this.dropContainedOre(this.containedOres - 4);
         // TODO workaround until buildings can be placed without terrain ray intersection
         GameState.buildings.forEach((b) => b.group.position.y = this.terrain.worldMgr.getTerrainHeight(b.group.position.x, b.group.position.z));
     }
 
     private dropContainedOre(dropAmount: number) {
-        for (let c = 0; c < dropAmount && this.containedOre > 0; c++) {
-            this.containedOre--;
+        for (let c = 0; c < dropAmount && this.containedOres > 0; c++) {
+            this.containedOres--;
             const x = this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4);
             const z = this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4);
             this.terrain.worldMgr.addCollectable(new Ore(), x, z);

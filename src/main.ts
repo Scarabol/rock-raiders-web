@@ -3,6 +3,7 @@ import { LoadingScreen } from './screen/LoadingScreen';
 import { MainMenuScreen } from './screen/MainMenuScreen';
 import { GameScreen } from './screen/GameScreen';
 import { RewardScreen } from './screen/RewardScreen';
+import { GameState } from './game/model/GameState';
 
 // define constants
 
@@ -49,12 +50,17 @@ ResourceManager.onLoadDone = () => {
         gameScreen.hide();
         rewardScreen.show();
     };
-    rewardScreen.onContinue = mainMenuScreen.showLevelSelection;
+    rewardScreen.onAdvance = () => {
+        GameState.reset();
+        mainMenuScreen.showLevelSelection();
+    };
 
     // setup complete
     loadingScreen.hide();
-    // mainMenuScreen.showMainMenu();
-    mainMenuScreen.selectLevel('Level01');
+    mainMenuScreen.showMainMenu();
+    // mainMenuScreen.selectLevel('Level05');
+    // rewardScreen.show();
+
 };
 
 // start the game engine with loading resources

@@ -27,6 +27,7 @@ export enum GameResultState {
 export class GameState {
 
     static resultState: GameResultState = GameResultState.RUNNING;
+    static levelFullName: string = '';
     static numCrystal: number = 0;
     static numOre: number = 0;
     static numBrick: number = 0;
@@ -45,9 +46,18 @@ export class GameState {
     static collectables: CollectableEntity[] = [];
     static collectablesUndiscovered: CollectableEntity[] = [];
     static buildingSites: BuildingSite[] = [];
+    static totalCrystals: number = 0;
+    static totalOres: number = 0;
+    static totalDiggables: number = 0;
+    static remainingDiggables: number = 0;
+    static totalCaverns: number = 0;
+    static remainingCaverns: number = 0;
+    static levelStartTime: number = 0;
+    static levelStopTime: number = 0;
 
     static reset() {
         this.resultState = GameResultState.RUNNING;
+        this.levelFullName = '';
         this.numCrystal = 0;
         this.numOre = 0;
         this.numBrick = 0;
@@ -66,6 +76,14 @@ export class GameState {
         this.collectables = [];
         this.collectablesUndiscovered = [];
         this.buildingSites = [];
+        this.totalCrystals = 0;
+        this.totalOres = 0;
+        this.totalDiggables = 0;
+        this.remainingDiggables = 0;
+        this.totalCaverns = 0;
+        this.remainingCaverns = 0;
+        this.levelStartTime = 0;
+        this.levelStopTime = 0;
     }
 
     static getBuildingsByType(...buildingTypes: Building[]): BuildingEntity[] {

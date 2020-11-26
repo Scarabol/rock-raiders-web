@@ -60,7 +60,7 @@ export class TerrainLoader {
                 if (currentCryOre % 2 === 1) {
                     surface.containedCrystals = (currentCryOre + 1) / 2;
                 } else {
-                    surface.containedOre = currentCryOre / 2;
+                    surface.containedOres = currentCryOre / 2;
                 }
 
                 (terrain.surfaces)[c].push(surface);
