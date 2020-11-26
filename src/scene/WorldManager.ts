@@ -15,12 +15,17 @@ import { EntityDeselected } from '../event/LocalEvents';
 import { ObjectListLoader } from './ObjectListLoader';
 import { Dynamite } from './model/collect/Dynamite';
 import { DynamiteJob } from '../game/model/job/SurfaceJob';
+import { NerpParser } from '../core/NerpParser';
+import { NerpRunner } from '../core/NerpRunner';
+import { GameScreen } from '../screen/GameScreen';
 import degToRad = MathUtils.degToRad;
 
 export class WorldManager {
 
     sceneManager: SceneManager;
     spawnRaiderInterval = null;
+    nerpRunner: NerpRunner = null;
+    nerpInterval = null;
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas);
@@ -51,7 +56,7 @@ export class WorldManager {
         });
     }
 
-    setup(levelName: string) {
+    setup(levelName: string, gameScreen: GameScreen) {
         const levelConf = ResourceManager.cfg('Levels', levelName);
         if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'; // TODO error handling
         console.log('Starting level ' + levelName + ' - ' + iGet(levelConf, 'FullName'));
@@ -63,6 +68,15 @@ export class WorldManager {
         // load in non-space objects next
         const objectListConf = ResourceManager.getResource(iGet(levelConf, 'OListFile'));
         ObjectListLoader.loadObjectList(this, objectListConf);
+
+        // load nerp script
+        const nerpFile = iGet(levelConf, 'NERPFile');
+        const nerpScriptContent = ResourceManager.getResource(nerpFile);
+        this.nerpRunner = NerpParser.parse(nerpScriptContent);
+        const nerpMsgFile = iGet(levelConf, 'NERPMessageFile');
+        const nerpMessages = ResourceManager.getResource(nerpMsgFile);
+        this.nerpRunner.messages.push(...nerpMessages);
+        this.nerpRunner.onLevelComplete = () => gameScreen.onLevelEnd();
 
         // TODO gather level start details for game result score calculation
         // levelConf.numOfCrystals = 0;
@@ -79,11 +93,18 @@ export class WorldManager {
     }
 
     start() {
+        this.nerpInterval = setInterval(() => { // FIXME track interval
+            this.nerpRunner.execute();
+        }, 2000);
         this.sceneManager.startRendering();
     }
 
     stop() {
         this.sceneManager.stopRendering();
+        if (this.nerpInterval) clearInterval(this.nerpInterval);
+        this.nerpInterval = null;
+        if (this.spawnRaiderInterval) clearInterval(this.spawnRaiderInterval);
+        this.spawnRaiderInterval = null;
     }
 
     resize(width: number, height: number) {
@@ -135,7 +156,7 @@ export class WorldManager {
             return;
         }
         if (GameState.raiders.length >= GameState.getMaxRaiders()) return;
-        const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS)
+        const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD)
             .filter((b) => b.isPowered() && !b.spawning);
         for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
             GameState.requestedRaiders--;

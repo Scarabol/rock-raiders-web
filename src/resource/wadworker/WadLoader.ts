@@ -86,90 +86,81 @@ export class WadLoader {
     }
 
     loadNerpAsset(name, callback) {
-        console.error('Nerp loading not yet implemented'); // TODO implement this
-        // name = name.replace(/.npl$/, '.nrn');
-        // const script = this.wad0File.getEntryText(name);
-        // ResourceManager.nerps[name] = NerpParser(script, ResourceManager.nerps);
-        // if (callback != null) {
-        //     callback();
-        // }
+        name = name.replace(/.npl$/, '.nrn');
+        const script = this.wad0File.getEntryText(name);
+        callback(script);
     }
 
     parseNerpMsgFile(wadFile, name) {
-        console.error('Nerp parsing not yet implemented'); // TODO implement this
-        // const result = [];
-        // const lines = wadFile.getEntryText(name).split('\n');
-        // for (let c = 0; c < lines.length; c++) {
-        //     const line = lines[c].trim();
-        //     if (line.length < 1 || line === '-') {
-        //         continue;
-        //     }
-        //     // line formatting differs between wad0 and wad1 files!
-        //     const txt0Match = line.match(/\\\[([^\\]+)\\](\s*#([^#]+)#)?/);
-        //     const txt1Match = line.match(/^([^$][^#]+)(\s*#([^#]+)#)?/);
-        //     const sndMatch = line.match(/\$([^\s]+)\s*([^\s]+)/);
-        //     if (wadFile === this.wad0File && txt0Match) {
-        //         const index = txt0Match[3] !== undefined ? this.numericNameToNumber(txt0Match[3]) : c; // THIS IS MADNESS! #number# at the end of line is OPTIONAL
-        //         result[index] = result[index] || {};
-        //         result[index].txt = txt0Match[1];
-        //     } else if (wadFile === this.wad1File && txt1Match) {
-        //         const index = txt1Match[3] !== undefined ? this.numericNameToNumber(txt1Match[3]) : c; // THIS IS MADNESS! #number# at the end of line is OPTIONAL
-        //         result[index] = result[index] || {};
-        //         result[index].txt = txt1Match[1].replace(/_/g, ' ').trim();
-        //     } else if (sndMatch && sndMatch.length === 3) {
-        //         const index = this.numericNameToNumber(sndMatch[1]);
-        //         result[index] = result[index] || {};
-        //         result[index].snd = sndMatch[2].replace(/\\/g, '/');
-        //     } else {
-        //         throw 'Line in nerps message file did not match anything';
-        //     }
-        // }
-        // return result;
+        const result = [];
+        const lines = wadFile.getEntryText(name).split('\n');
+        for (let c = 0; c < lines.length; c++) {
+            const line = lines[c].trim();
+            if (line.length < 1 || line === '-') {
+                continue;
+            }
+            // line formatting differs between wad0 and wad1 files!
+            const txt0Match = line.match(/\\\[([^\\]+)\\](\s*#([^#]+)#)?/);
+            const txt1Match = line.match(/^([^$][^#]+)(\s*#([^#]+)#)?/);
+            const sndMatch = line.match(/\$([^\s]+)\s*([^\s]+)/);
+            if (wadFile === this.wad0File && txt0Match) {
+                const index = txt0Match[3] !== undefined ? this.numericNameToNumber(txt0Match[3]) : c; // THIS IS MADNESS! #number# at the end of line is OPTIONAL
+                result[index] = result[index] || {};
+                result[index].txt = txt0Match[1];
+            } else if (wadFile === this.wad1File && txt1Match) {
+                const index = txt1Match[3] !== undefined ? this.numericNameToNumber(txt1Match[3]) : c; // THIS IS MADNESS! #number# at the end of line is OPTIONAL
+                result[index] = result[index] || {};
+                result[index].txt = txt1Match[1].replace(/_/g, ' ').trim();
+            } else if (sndMatch && sndMatch.length === 3) {
+                const index = this.numericNameToNumber(sndMatch[1]);
+                result[index] = result[index] || {};
+                result[index].snd = sndMatch[2].replace(/\\/g, '/');
+            } else {
+                throw 'Line in nerps message file did not match anything';
+            }
+        }
+        return result;
     }
 
-    // numericNameToNumber(name) {
-    //     if (name === undefined) {
-    //         throw 'Numeric name must not be undefined';
-    //     }
-    //     const digits = {one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9};
-    //     const specials = {
-    //         ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
-    //         sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19,
-    //     };
-    //     const tens = {twenty: 20, thirty: 30, forty: 40};
-    //     let number = specials[name] || digits[name];
-    //     if (number === undefined) {
-    //         Object.keys(tens).forEach(ten => {
-    //             if (name.startsWith(ten)) {
-    //                 const digitName = name.replace(ten, '');
-    //                 number = tens[ten] + (digitName ? digits[digitName] : 0);
-    //             }
-    //         });
-    //     }
-    //     if (number === undefined) {
-    //         throw 'Found unexpected numeric name ' + name;
-    //     }
-    //     return number;
-    // }
+    numericNameToNumber(name) {
+        if (name === undefined) {
+            throw 'Numeric name must not be undefined';
+        }
+        const digits = {one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9};
+        const specials = {
+            ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
+            sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19,
+        };
+        const tens = {twenty: 20, thirty: 30, forty: 40};
+        let number = specials[name] || digits[name];
+        if (number === undefined) {
+            Object.keys(tens).forEach(ten => {
+                if (name.startsWith(ten)) {
+                    const digitName = name.replace(ten, '');
+                    number = tens[ten] + (digitName ? digits[digitName] : 0);
+                }
+            });
+        }
+        if (number === undefined) {
+            throw 'Found unexpected numeric name ' + name;
+        }
+        return number;
+    }
 
     loadNerpMsg(name, callback) {
-        console.error('Nerp msg not yet implemented'); // TODO implement this
-        // const result = this.parseNerpMsgFile(this.wad0File, name);
-        // const msg1 = this.parseNerpMsgFile(this.wad1File, name);
-        // for (let c = 0; c < msg1.length; c++) {
-        //     const m1 = msg1[c];
-        //     if (!m1) continue;
-        //     if (m1.txt) {
-        //         result[c].txt = m1.txt;
-        //     }
-        //     if (m1.snd) {
-        //         result[c].snd = m1.snd;
-        //     }
-        // }
-        // ResourceManager.nerpMessages[name] = result;
-        // if (callback) {
-        //     callback();
-        // }
+        const result = this.parseNerpMsgFile(this.wad0File, name);
+        const msg1 = this.parseNerpMsgFile(this.wad1File, name);
+        for (let c = 0; c < msg1.length; c++) {
+            const m1 = msg1[c];
+            if (!m1) continue;
+            if (m1.txt) {
+                result[c].txt = m1.txt;
+            }
+            if (m1.snd) {
+                result[c].snd = m1.snd;
+            }
+        }
+        callback(result);
     }
 
     loadMapAsset(name, callback) {
@@ -306,6 +297,7 @@ export class WadLoader {
         this.addAssetFolder(this.loadWadImageAsset, 'Interface/FrontEnd/lp_');
         this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/LowerPanel.bmp');
         // level files
+        this.addAsset(this.loadNerpAsset, 'Levels/nerpnrn.h');
         const levelsCfg = new LevelsCfg(iGet(mainConf, 'Levels'));
         this.onAssetLoaded(0, 'Levels', levelsCfg);
         Object.values(levelsCfg.levelsByName).forEach((level: LevelEntryCfg) => {
@@ -321,8 +313,8 @@ export class WadLoader {
             if (level.fallinMap) this.addAsset(this.loadMapAsset, level.fallinMap);
             if (level.erodeMap) this.addAsset(this.loadMapAsset, level.erodeMap);
             this.addAsset(this.loadObjectListAsset, level.oListFile);
-            // this.addAsset(this.loadNerpAsset, level.NERPFile); // TODO add nerp support
-            // this.addAsset(this.loadNerpMsg, level.NERPMessageFile); // TODO add nerp support
+            this.addAsset(this.loadNerpAsset, level.nerpFile);
+            this.addAsset(this.loadNerpMsg, level.nerpMessageFile);
         });
         // load all shared textures
         this.addTextureFolder('World/Shared/');

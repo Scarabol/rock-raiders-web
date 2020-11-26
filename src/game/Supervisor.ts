@@ -29,10 +29,24 @@ export class Supervisor {
     }
 
     stop() {
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-        }
+        if (this.interval) clearInterval(this.interval);
+        this.interval = null;
+        GameState.raiders.forEach((r) => {
+            if (r.workInterval) clearInterval(r.workInterval);
+            r.workInterval = null;
+        });
+        GameState.raidersUndiscovered.forEach((r) => {
+            if (r.workInterval) clearInterval(r.workInterval);
+            r.workInterval = null;
+        });
+        GameState.vehicles.forEach((v) => {
+            if (v.workInterval) clearInterval(v.workInterval);
+            v.workInterval = null;
+        });
+        GameState.vehiclesUndiscovered.forEach((v) => {
+            if (v.workInterval) clearInterval(v.workInterval);
+            v.workInterval = null;
+        });
     }
 
     scheduleJobs() {

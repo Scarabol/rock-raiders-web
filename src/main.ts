@@ -45,15 +45,16 @@ ResourceManager.onLoadDone = () => {
     mainMenuScreen.onLevelSelected = (levelName) => {
         gameScreen.startLevel(levelName);
     };
-    gameScreen.onLevelEnd = (gameResult) => {
-        rewardScreen.showReward(gameResult);
+    gameScreen.onLevelEnd = () => {
+        gameScreen.hide();
+        rewardScreen.show();
     };
     rewardScreen.onContinue = mainMenuScreen.showLevelSelection;
 
     // setup complete
     loadingScreen.hide();
     // mainMenuScreen.showMainMenu();
-    mainMenuScreen.selectLevel('Level05');
+    mainMenuScreen.selectLevel('Level01');
 };
 
 // start the game engine with loading resources

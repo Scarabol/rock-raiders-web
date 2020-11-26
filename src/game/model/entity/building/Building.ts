@@ -1,7 +1,7 @@
 export class Building {
 
     static readonly TOOLSTATION = new Building('Buildings/Toolstation', 130, 10, true);
-    static readonly TELEPORTS = new Building('Buildings/Teleports'); // TODO test with level 25
+    static readonly TELEPORT_PAD = new Building('Buildings/Teleports'); // TODO test with level 25
     static readonly POWER_STATION = new Building('Buildings/Powerstation'); // TODO test with level 09
     static readonly SUPPORT = new Building('Buildings/Support');
     static readonly UPGRADE = new Building('Buildings/Upgrade'); // TODO test with level 09
@@ -28,7 +28,7 @@ export class Building {
             case 'toolstation':
                 return this.TOOLSTATION;
             case 'teleports':
-                return this.TELEPORTS;
+                return this.TELEPORT_PAD;
             case 'upgrade':
                 return this.UPGRADE;
             case 'powerstation':

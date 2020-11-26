@@ -26,17 +26,17 @@ export class MainPanel extends IconPanel {
         const selectRaiderPanel = this.addSubPanel(10);
         const selectVehiclePanel = this.addSubPanel(7);
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan');
-        teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1;
+        teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).length < 1;
         EventBus.registerEventListener(EntityAddedEvent.eventKey, (event: EntityAddedEvent) => {
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) {
-                teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1
+                teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).length < 1
                     || GameState.raiders.length >= GameState.getMaxRaiders();
                 this.notifyRedraw(); // TODO performance: actually just the button needs to be redrawn
             }
         });
         EventBus.registerEventListener(EntityRemovedEvent.eventKey, (event: EntityRemovedEvent) => {
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) {
-                teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORTS).length < 1
+                teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).length < 1
                     || GameState.raiders.length >= GameState.getMaxRaiders();
                 this.notifyRedraw(); // TODO performance: actually just the button needs to be redrawn
             }

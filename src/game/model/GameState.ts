@@ -15,8 +15,18 @@ import { Dynamite } from '../../scene/model/collect/Dynamite';
 import { Crystal } from '../../scene/model/collect/Crystal';
 import { Ore } from '../../scene/model/collect/Ore';
 
+export enum GameResultState {
+
+    RUNNING,
+    COMPLETE,
+    FAILED,
+    CANCELED,
+
+}
+
 export class GameState {
 
+    static resultState: GameResultState = GameResultState.RUNNING;
     static numCrystal: number = 0;
     static numOre: number = 0;
     static numBrick: number = 0;
@@ -37,6 +47,7 @@ export class GameState {
     static buildingSites: BuildingSite[] = [];
 
     static reset() {
+        this.resultState = GameResultState.RUNNING;
         this.numCrystal = 0;
         this.numOre = 0;
         this.numBrick = 0;

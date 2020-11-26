@@ -7,7 +7,7 @@ import { Supervisor } from '../game/Supervisor';
 
 export class GameScreen extends BaseScreen {
 
-    onLevelEnd: (gameResult: string) => void; // TODO game result is actually an object with much more data
+    onLevelEnd: () => void;
     gameLayer: GameLayer;
     selectionLayer: SelectionLayer;
     guiLayer: GuiLayer;
@@ -26,7 +26,7 @@ export class GameScreen extends BaseScreen {
     }
 
     startLevel(levelName) {
-        this.worldManager.setup(levelName);
+        this.worldManager.setup(levelName, this);
         // finally show all the layers
         this.gameLayer.show();
         this.show();
