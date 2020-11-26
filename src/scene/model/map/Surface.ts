@@ -109,7 +109,6 @@ export class Surface implements Selectable {
         this.dropContainedOre(this.containedOre - 4);
         // TODO workaround until buildings can be placed without terrain ray intersection
         GameState.buildings.forEach((b) => b.group.position.y = this.terrain.worldMgr.getTerrainHeight(b.group.position.x, b.group.position.z));
-        EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(SurfaceJobType.CLEAR_RUBBLE, this)));
     }
 
     private dropContainedOre(dropAmount: number) {
