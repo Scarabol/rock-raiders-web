@@ -60,11 +60,12 @@ export class BitmapFont {
     }
 
     extractData(imgData, startX, startY, width, height): ImageData {
+        const alpha = getPixel(imgData, startX, startY);
         const result = new ImageData(width, height);
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
                 const p = getPixel(imgData, startX + x, startY + y);
-                if (p.r === 0 && p.g === 0 && p.b === 0) p.a = 0; // apply alpha channel
+                if (p.r === alpha.r && p.g === alpha.g && p.b === alpha.b) p.a = 0; // apply alpha channel
                 setPixel(result, x, y, p.r, p.g, p.b, p.a);
             }
         }
