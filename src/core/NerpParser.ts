@@ -30,7 +30,7 @@ export class NerpParser {
                 }
                 nerpRunner.scriptLines = nerpRunner.scriptLines.concat(includedRunner.scriptLines);
                 // copy macros from included file to current file
-                nerpRunner.macros = Object.assign({}, nerpRunner.macros, includedRunner.macros);
+                nerpRunner.macrosByName = Object.assign({}, nerpRunner.macrosByName, includedRunner.macrosByName);
             } else if (line.startsWith('#define ')) { // parse C++ preprocessor macro
                 const firstLine = line.replace(/^#define /, '').split(' ');
                 const macroLines = [firstLine.splice(1).join(' ').replace(/\\$/, '').trim()];
@@ -53,22 +53,22 @@ export class NerpParser {
                     }
                 }
                 const macroCall = firstLine[0].split('(');
-                nerpRunner.macros[macroCall[0]] = {
+                nerpRunner.macrosByName[macroCall[0]] = {
                     args: macroCall[1].replace(/\)$/, '').split(','),
                     lines: macroLines,
                 };
             } else {
                 // check if this line contains a macro
                 const split = line.split('('); // not a very stable check though...
-                const macroName = nerpRunner.macros[split[0]];
-                if (macroName) {
+                const macro = nerpRunner.macrosByName[split[0]];
+                if (macro) {
                     const argValues = split.splice(1).join('(').slice(0, -1).split(',');
-                    if (argValues.length !== macroName.args.length) {
+                    if (argValues.length !== macro.args.length) {
                         throw 'Invalid number of args provided for macro in line ' + line;
                     }
-                    const macroLinesWithArgs = macroName.lines.map(function (line) {
+                    const macroLinesWithArgs = macro.lines.map((line) => {
                         for (let c = 0; c < argValues.length; c++) {
-                            line = line.replace(new RegExp('\\b' + macroName.args[c] + '\\b'), argValues[c]);
+                            line = line.replace(new RegExp('\\b' + macro.args[c] + '\\b'), argValues[c]);
                         }
                         return line;
                     });
@@ -92,7 +92,7 @@ export class NerpParser {
                 };
             } else if (labelMatch) { // keep label line number for later usage
                 const labelName = labelMatch[1].toLowerCase();
-                nerpRunner.labels[labelName] = c;
+                nerpRunner.labelsByName[labelName] = c;
                 nerpRunner.statements[c] = {label: labelName};
             } else if (nerpRunner.statements[c].length === 1) { // just a call
                 nerpRunner.statements[c] = this.preProcess(nerpRunner.statements[c][0]);

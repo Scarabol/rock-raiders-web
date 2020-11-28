@@ -17,8 +17,8 @@ export class NerpRunner {
     timers = new Array(4).fill(0);
     scriptLines = []; // contains humand readable script strings
     statements = []; // contains parsed statements for execution
-    macros = {};
-    labels = {};
+    macrosByName = {};
+    labelsByName = {};
     halted = false;
     programCounter = 0;
     messages = [];
@@ -36,7 +36,7 @@ export class NerpRunner {
      */
     checkRegister(register) {
         const num = parseInt(register);
-        if (isNaN(num) || num < 0 || num > this.registers.length) throw 'Invalid register (' + register + ') provided';
+        if (isNaN(num) || num < 0 || num > this.registers.length) throw new Error('Invalid register (' + register + ') provided');
         return num;
     }
 
@@ -47,7 +47,7 @@ export class NerpRunner {
      */
     checkRegisterValue(value) {
         const num = parseInt(value);
-        if (isNaN(num)) throw 'Invalid register value (' + value + ') provided';
+        if (isNaN(num)) throw new Error('Invalid register value (' + value + ') provided');
         return num;
     }
 
@@ -90,7 +90,7 @@ export class NerpRunner {
      */
     setTimer(timer, value) {
         const num = parseInt(value);
-        if (isNaN(num)) throw 'Can\'t set timer to NaN value: ' + value;
+        if (isNaN(num)) throw new Error('Can\'t set timer to NaN value: ' + value);
         this.timers[timer] = new Date().getTime() + num;
     }
 
@@ -300,7 +300,7 @@ export class NerpRunner {
                 return this[memberName].apply(this, methodArgs);
             }
         }
-        throw 'Undefined method: ' + methodName;
+        throw new Error('Undefined method: ' + methodName);
     }
 
     conditional(left, right) {
@@ -334,21 +334,21 @@ export class NerpRunner {
                 return left > right;
             } else {
                 console.log(expression);
-                throw 'Unknown comparator: ' + expression.comparator;
+                throw new Error('Unknown comparator: ' + expression.comparator);
             }
         } else if (!isNaN(expression)) { // just a number
             return expression;
         } else if (expression.jump) {
-            this.programCounter = this.labels[expression.jump];
+            this.programCounter = this.labelsByName[expression.jump];
             if (this.programCounter === undefined) {
-                throw 'Label \'' + expression.jump + '\' is unknown!';
+                throw new Error('Label \'' + expression.jump + '\' is unknown!');
             }
             if (this.debug) {
                 console.log('Jumping to label \'' + expression.jump + '\' in line ' + this.programCounter);
             }
         } else {
             console.log(expression);
-            throw 'Unknown expression: ' + expression;
+            throw new Error('Unknown expression: ' + expression);
         }
     }
 
@@ -374,11 +374,10 @@ export class NerpRunner {
             if (e === 'Stop') {
                 return;
             }
-            console.log(e);
+            console.error(e);
             console.error('FATAL ERROR! Script execution failed! You can NOT win anymore!');
             this.halted = true;
             debugger;
-            throw e;
         }
     }
 
