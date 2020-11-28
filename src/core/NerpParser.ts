@@ -58,24 +58,7 @@ export class NerpParser {
                     lines: macroLines,
                 };
             } else {
-                // check if this line contains a macro
-                const split = line.split('('); // not a very stable check though...
-                const macro = nerpRunner.macrosByName[split[0]];
-                if (macro) {
-                    const argValues = split.splice(1).join('(').slice(0, -1).split(',');
-                    if (argValues.length !== macro.args.length) {
-                        throw 'Invalid number of args provided for macro in line ' + line;
-                    }
-                    const macroLinesWithArgs = macro.lines.map((line) => {
-                        for (let c = 0; c < argValues.length; c++) {
-                            line = line.replace(new RegExp('\\b' + macro.args[c] + '\\b'), argValues[c]);
-                        }
-                        return line;
-                    });
-                    nerpRunner.scriptLines = nerpRunner.scriptLines.concat(macroLinesWithArgs);
-                } else {
-                    nerpRunner.scriptLines.push(line);
-                }
+                nerpRunner.scriptLines = nerpRunner.scriptLines.concat(this.replaceMacros(nerpRunner.macrosByName, line));
             }
         }
         // somewhat precompile the script and create syntax tree
@@ -103,8 +86,30 @@ export class NerpParser {
         return nerpRunner;
     }
 
+    static replaceMacros(macrosByName, line): string[] {
+        // check if this line contains a macro
+        const split = line.split('('); // not a very stable check though...
+        const macro = macrosByName[split[0]];
+        if (macro) {
+            const argValues = split.splice(1).join('(').slice(0, -1).split(',');
+            if (argValues.length !== macro.args.length) {
+                throw 'Invalid number of args provided for macro in line ' + line;
+            }
+            const macroLines = [];
+            macro.lines.forEach((line) => {
+                for (let c = 0; c < argValues.length; c++) {
+                    line = line.replace(new RegExp('\\b' + macro.args[c] + '\\b'), argValues[c]);
+                }
+                macroLines.push(...(this.replaceMacros(macrosByName, line)));
+            });
+            return macroLines;
+        } else {
+            return [line];
+        }
+    }
+
     static preProcess(expression) {
-        expression = expression.replace(/^_/, ''); // remove leading underscore
+        expression = expression.trim().replace(/^_/, ''); // remove whitespace and leading underscore
         const number = parseInt(expression);
         if (!isNaN(number)) {
             return number;

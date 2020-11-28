@@ -348,7 +348,7 @@ export class NerpRunner {
             }
         } else {
             console.log(expression);
-            throw new Error('Unknown expression: ' + expression);
+            throw new Error('Unknown expression in line ' + this.programCounter + ': ' + expression);
         }
     }
 
@@ -363,7 +363,7 @@ export class NerpRunner {
             for (this.programCounter = 0; this.programCounter < this.statements.length; this.programCounter++) {
                 const statement = this.statements[this.programCounter];
                 if (this.debug) {
-                    console.log(this.scriptLines[this.programCounter]);
+                    console.log(this.programCounter + ': ' + this.scriptLines[this.programCounter]);
                     console.log(statement);
                 }
                 if (!statement.label) { // do nothing for label markers
