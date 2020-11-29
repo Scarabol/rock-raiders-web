@@ -510,10 +510,10 @@ export class Surface implements Selectable {
     }
 
     reinforce() {
+        this.reinforced = true;
         this.cancelReinforceJobs();
         if (this.fallinTimeout) clearTimeout(this.fallinTimeout);
-        if (!this.reinforced) this.updateTexture();
-        this.reinforced = true;
+        this.updateTexture();
     }
 
     getCenterWorld(): Vector3 {
