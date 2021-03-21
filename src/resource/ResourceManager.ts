@@ -13,9 +13,16 @@ export class ResourceManager {
     static worker: ResourceWorker = new ResourceWorker();
     static configuration: any = {};
     static resourceByName: {} = {};
-    static entityTypes: any = {};
 
-    static startLoading(wad0Url: string, wad1Url: string) {
+    static startLoadingFromCache() {
+        return this.startLoading(null);
+    }
+
+    static startLoadingFromUrl(wad0Url: string, wad1Url: string) {
+        return this.startLoading(new InitLoadingMessage(wad0Url, wad1Url));
+    }
+
+    private static startLoading(msg: InitLoadingMessage) {
         this.worker.onmessage = (event) => {
             const data = event.data;
             if (data.hasOwnProperty('msg')) {
@@ -23,6 +30,8 @@ export class ResourceManager {
             } else if (data.hasOwnProperty('cfg')) {
                 this.configuration = data.cfg;
                 this.onInitialLoad(data.totalResources);
+            } else if (data.hasOwnProperty('cacheMissed')) {
+                this.onCacheMissed();
             } else if (data.hasOwnProperty('assetIndex')) {
                 this.resourceByName[data.assetName.toLowerCase()] = data.assetObj;
                 this.onAssetLoaded(data.assetIndex);
@@ -31,11 +40,15 @@ export class ResourceManager {
                 this.onLoadDone();
             }
         };
-        this.worker.postMessage(new InitLoadingMessage(wad0Url, wad1Url));
+        this.worker.postMessage(msg);
     }
 
     static onMessage: (msg: string) => any = (msg: string) => {
         console.log(msg);
+    };
+
+    static onCacheMissed: () => any = () => {
+        console.log("Worker missed cache");
     };
 
     static onInitialLoad: (totalResources: number) => any = () => {

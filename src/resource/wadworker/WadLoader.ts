@@ -51,7 +51,11 @@ export class WadLoader {
         const imgData = AlphaBitmapDecoder.parse(data);
         const isTranslucent = isTranslucentTexture(name);
         const isAlpha = isAlphaTexture(name);
-        const alpha = {r: imgData.data[imgData.data.length - 4], g: imgData.data[imgData.data.length - 3], b: imgData.data[imgData.data.length - 2]}; // TODO how to determine alpha color?
+        const alpha = {
+            r: imgData.data[imgData.data.length - 4],
+            g: imgData.data[imgData.data.length - 3],
+            b: imgData.data[imgData.data.length - 2]
+        }; // TODO how to determine alpha color?
         for (let n = 0; n < imgData.data.length; n += 4) {
             if (isTranslucent) {
                 if (imgData.data[n] === 255 && imgData.data[n + 1] === 255 && imgData.data[n + 2] === 255) {
@@ -573,7 +577,7 @@ export class WadLoader {
     loadWadFile(url) {
         return new Promise(resolve => {
             console.log('Loading WAD file from ' + url);
-            fetch(url).then((response) => {
+            fetch(url, {mode: "no-cors"}).then((response) => {
                 if (response.ok) {
                     response.arrayBuffer().then((buffer) => {
                         const wadFile = new WadFile();

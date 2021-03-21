@@ -4,7 +4,6 @@ import { WadLoader } from './WadLoader';
 const resourceWorker: Worker = self as any;
 
 resourceWorker.addEventListener('message', (event) => {
-    const msg = event.data as InitLoadingMessage;
     const wadLoader = new WadLoader();
     // set callbacks on wadLoader
     wadLoader.onMessage = (msg: string) => {
@@ -17,10 +16,19 @@ resourceWorker.addEventListener('message', (event) => {
         resourceWorker.postMessage({assetIndex: assetIndex, assetName: assetName, assetObj: assetObj});
     };
     wadLoader.onLoadDone = (totalResources: number, loadingTimeSeconds: string) => {
-        resourceWorker.postMessage({done: true, totalResources: totalResources, loadingTimeSeconds: loadingTimeSeconds});
+        resourceWorker.postMessage({
+            done: true,
+            totalResources: totalResources,
+            loadingTimeSeconds: loadingTimeSeconds
+        });
     };
     // start loading
-    wadLoader.startWithCachedFiles(() => {
+    const msg = event.data as InitLoadingMessage;
+    if (msg) {
         wadLoader.loadWadFiles(msg.wad0FileUrl, msg.wad1FileUrl);
-    });
+    } else {
+        wadLoader.startWithCachedFiles(() => {
+            resourceWorker.postMessage({cacheMissed: true});
+        });
+    }
 });
