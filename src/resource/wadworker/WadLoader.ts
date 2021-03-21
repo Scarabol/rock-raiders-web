@@ -483,7 +483,7 @@ export class WadLoader {
         const promises = [];
         const that = this;
         this.assetsFromCfg.forEach((asset) => {
-            promises.push(new Promise((resolve) => {
+            promises.push(new Promise<void>((resolve) => {
                 try {
                     asset.method(asset.assetPath, (assetObj) => {
                         this.assetIndex++;
@@ -613,21 +613,21 @@ export class WadLoader {
         this.registerAllAssets(cfg);
         this.onMessage('Loading initial assets...');
         Promise.all([
-            new Promise((resolve) => {
+            new Promise<void>((resolve) => {
                 const name = iGet(cfg, 'Main', 'LoadScreen'); // loading screen image
                 this.loadWadImageAsset(name, (imgData) => {
                     this.onAssetLoaded(0, name, imgData);
                     resolve();
                 });
             }),
-            new Promise((resolve) => {
+            new Promise<void>((resolve) => {
                 const name = iGet(cfg, 'Main', 'ProgressBar'); // loading bar container image
                 this.loadWadImageAsset(name, (imgData) => {
                     this.onAssetLoaded(0, name, imgData);
                     resolve();
                 });
             }),
-            new Promise((resolve) => {
+            new Promise<void>((resolve) => {
                 const name = iGet(cfg, 'Pointers', 'Pointer_Standard');
                 this.loadAlphaImageAsset(name, (imgData) => {
                     this.onAssetLoaded(0, name, imgData);

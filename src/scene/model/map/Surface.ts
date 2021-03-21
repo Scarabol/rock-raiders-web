@@ -37,7 +37,7 @@ export class Surface implements Selectable {
     animationTimeout = null;
 
     wallType: WALL_TYPE = null;
-    geometry: Geometry = null;
+    geometry: Geometry = null; // TODO replace with custom SurfaceMesh class to prevent issues with upgrade to threejs 126.0.0
     mesh: Mesh = null;
     needsMeshUpdate: boolean = false;
 

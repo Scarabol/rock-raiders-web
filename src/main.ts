@@ -58,6 +58,7 @@ ResourceManager.onLoadDone = () => {
     // setup complete
     loadingScreen.hide();
     mainMenuScreen.showMainMenu();
+    // mainMenuScreen.selectLevel('Level01');
     // mainMenuScreen.selectLevel('Level05');
     // mainMenuScreen.selectLevel('Level09');
     // rewardScreen.show();
