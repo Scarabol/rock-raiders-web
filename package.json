@@ -4,8 +4,9 @@
   "description": "Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999) using browser based technologies.",
   "private": true,
   "scripts": {
-    "dev": "./node_modules/.bin/webpack serve",
-    "build": "./node_modules/.bin/webpack"
+    "dev": "webpack serve --mode=development",
+    "local": "webpack serve",
+    "prod": "webpack"
   },
   "repository": {
     "type": "git",
