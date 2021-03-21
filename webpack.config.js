@@ -1,23 +1,28 @@
-const config = {
-    mode: 'development',
+const path = require('path');
+
+module.exports = {
+    mode: "production",
     entry: './src/main.ts',
+    output: {
+        filename: 'main.js',
+        path: path.resolve(__dirname, 'dist'),
+        clean: true,
+    },
     module: {
         rules: [
             {
-                test: /\.tsx?$/,
+                test: /\.tsx?$/i,
                 use: 'ts-loader',
                 exclude: /node_modules/,
             },
             {
-                test: /\.worker\.js$/,
+                test: /\.worker\.js$/i,
                 loader: 'worker-loader',
             },
         ],
     },
     resolve: {
-        extensions: ['.ts', '.js'],
+        extensions: ['.tsx', '.ts', '.js'],
     },
     devtool: 'source-map',
 };
-
-module.exports = config;
