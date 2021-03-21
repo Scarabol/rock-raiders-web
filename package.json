@@ -1,6 +1,6 @@
 {
   "name": "rock-raiders-web",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999) using browser based technologies.",
   "main": "./app.bundle.js",
   "scripts": {
