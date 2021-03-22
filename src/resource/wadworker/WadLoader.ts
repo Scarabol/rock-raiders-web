@@ -577,7 +577,7 @@ export class WadLoader {
     loadWadFile(url) {
         return new Promise(resolve => {
             console.log('Loading WAD file from ' + url);
-            fetch(url, {mode: "no-cors"}).then((response) => {
+            fetch(url).then((response) => {
                 if (response.ok) {
                     response.arrayBuffer().then((buffer) => {
                         const wadFile = new WadFile();
@@ -585,7 +585,7 @@ export class WadLoader {
                         resolve(wadFile);
                     });
                 }
-            });
+            }); // TODO error handling
         });
     }
 

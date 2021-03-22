@@ -16,14 +16,14 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="wadfileSelectModalLabel">Load WAD Files</h5>
+                    <h5 class="modal-title" id="wadfileSelectModalLabel">Load .wad files</h5>
                 </div>
                 <div class="modal-body">
                     <p>Assets not included! In order to play the game, please select the game files.</p>
 
                     <nav>
                         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                            <button class="nav-link active" id="nav-file-tab" data-bs-toggle="tab" data-bs-target="#nav-file" type="button" role="tab" aria-controls="nav-file" aria-selected="true">Local file (recommended)</button>
+                            <button class="nav-link active" id="nav-file-tab" data-bs-toggle="tab" data-bs-target="#nav-file" type="button" role="tab" aria-controls="nav-file" aria-selected="true">Local files (recommended)</button>
                             <button class="nav-link" id="nav-url-tab" data-bs-toggle="tab" data-bs-target="#nav-url" type="button" role="tab" aria-controls="nav-url" aria-selected="false">Online from URL</button>
                         </div>
                     </nav>
@@ -41,12 +41,19 @@
                         </div>
                         <div class="tab-pane fade" id="nav-url" role="tabpanel" aria-labelledby="nav-url-tab">
                             <div class="my-3">
+                                Provide direct links with correct allow origin CORS headers to the files.
+                            </div>
+                            <div class="my-3">
                                 <label for="wad0-url" class="form-label">Enter url for <span class="fw-bold">LegoRR0.wad</span> here:</label>
-                                <input type="url" class="form-control" id="wad0-url" value="https://drive.google.com/uc?export=download&id=11t9AJnGCWnEWlLxSsYQeB_Y4jrKfxVxQ" required>
+                                <input type="url" class="form-control" id="wad0-url" required>
+                                <!-- https://drive.google.com/uc?export=download&id=11t9AJnGCWnEWlLxSsYQeB_Y4jrKfxVxQ -->
+                                <!-- https://www.dropbox.com/s/jbc8giqtcchhxkp/LegoRR0.wad?dl=0 -->
                             </div>
                             <div class="mb-3">
                                 <label for="wad1-url" class="form-label">Enter url for <span class="fw-bold">LegoRR1.wad</span> here</label>
-                                <input type="url" class="form-control" id="wad1-url" value="https://drive.google.com/uc?export=download&id=11lDL8ewSIWrRVTJvoLDYF9YOx2ra1ULN" required>
+                                <input type="url" class="form-control" id="wad1-url" required>
+                                <!-- https://drive.google.com/uc?export=download&id=11lDL8ewSIWrRVTJvoLDYF9YOx2ra1ULN -->
+                                <!-- https://www.dropbox.com/s/fl6pgbo7ox4qo9z/LegoRR1.wad?dl=0 -->
                             </div>
                             <!--// TODO show loading progress for WAD files-->
                             <button type="submit" class="btn btn-primary float-end" id="button-start-url">Start Game</button>
