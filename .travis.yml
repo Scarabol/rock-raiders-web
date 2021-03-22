@@ -1,0 +1,27 @@
+language: node_js
+node_js:
+  - 'stable'
+cache:
+  yarn: true
+  directories:
+    - dist
+    - .cache
+script:
+  - npm run prod
+
+deploy:
+  # Use Github pages deploy process
+  provider: pages
+  # Keep builded pages
+  skip-cleanup: true
+  # Directory where your generated files are located
+  local_dir: dist
+  # Github security/auth token
+  github-token: $GITHUB_TOKEN
+  # Incremental commit to keep old build/files from previous deployments
+  keep-history: true
+  # Git branch on which it should deploy (master, gh-pages, foo...)
+  target_branch: gh-pages
+  on:
+    # Which branch on commit/push will trigger deployment
+    branch: master
