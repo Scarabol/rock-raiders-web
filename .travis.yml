@@ -8,6 +8,9 @@ cache:
     - .cache
 script:
   - npm run prod
+branches:
+  only:
+    - master
 
 deploy:
   # Use Github pages deploy process
