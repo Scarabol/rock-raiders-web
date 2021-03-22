@@ -9,7 +9,10 @@ module.exports = {
         path: path.resolve(__dirname, 'dist'),
         clean: true,
     },
-    plugins: [new HtmlWebpackPlugin({template: 'index.html', inject: false})],
+    plugins: [new HtmlWebpackPlugin({
+        template: 'index.html',
+        favicon: "favicon-32x32.png",
+    })],
     module: {
         rules: [
             {
