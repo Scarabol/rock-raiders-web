@@ -1,4 +1,4 @@
-import { Face3, Geometry, Group, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three';
+import { Group, Mesh, MeshPhongMaterial, Vector3 } from 'three';
 import { Terrain } from './Terrain';
 import { SurfaceType } from './SurfaceType';
 import { ResourceManager } from '../../../resource/ResourceManager';
@@ -15,6 +15,7 @@ import { GameState } from '../../../game/model/GameState';
 import { SurfaceJob, SurfaceJobType } from '../../../game/model/job/SurfaceJob';
 import { LWSCLoader } from '../../../resource/LWSCLoader';
 import { AnimSubObj } from '../anim/AnimSubObj';
+import { SurfaceGeometry } from "./SurfaceGeometry";
 
 export class Surface implements Selectable {
 
@@ -37,7 +38,6 @@ export class Surface implements Selectable {
     animationTimeout = null;
 
     wallType: WALL_TYPE = null;
-    geometry: Geometry = null; // TODO replace with custom SurfaceMesh class to prevent issues with upgrade to threejs 126.0.0
     mesh: Mesh = null;
     needsMeshUpdate: boolean = false;
 
@@ -246,7 +246,6 @@ export class Surface implements Selectable {
         textureName += '.bmp';
 
         const texture = ResourceManager.getTexture(textureName);
-        texture.flipY = false; // TODO is this necessary? Maybe turn around UV or vertices?
         texture.center.set(0.5, 0.5);
         texture.rotation = this.surfaceRotation;
 
@@ -295,123 +294,8 @@ export class Surface implements Selectable {
     }
 
     updateGeometry(topLeftVertex: Vector3, bottomRightVertex: Vector3, topRightVertex: Vector3, bottomLeftVertex: Vector3, surfTopLeft: Surface, surfTop: Surface, surfLeft: Surface, surfTopRight: Surface, surfRight: Surface, surfBottomRight: Surface, surfBottom: Surface, surfBottomLeft: Surface) {
-        let uvOffset = 0;
-
-        // not-rotated
-        // 1 ?
-        // ? 0
-        if (topLeftVertex.y && !bottomRightVertex.y &&
-            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(topRightVertex.y)))) {
-            uvOffset = 0;
-        }
-
-        // 90 clock-wise
-        // ? 1
-        // 0 ?
-        if (topRightVertex.y && !bottomLeftVertex.y &&
-            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(bottomRightVertex.y)))) {
-            uvOffset = 3;
-        }
-
-        // 180 clock-wise
-        // 0 ?
-        // ? 1
-        if (bottomRightVertex.y && !topLeftVertex.y &&
-            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(bottomLeftVertex.y)))) {
-            uvOffset = 2;
-        }
-
-        // 270 clock-wise
-        // ? 0
-        // 1 ?
-        if (bottomLeftVertex.y && !topRightVertex.y &&
-            (this.wallType === WALL_TYPE.INVERTED_CORNER || ((this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(topLeftVertex.y)))) {
-            uvOffset = 1;
-        }
-
-        if (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) {
-            if (topLeftVertex.y && bottomRightVertex.y) {
-                uvOffset = 0;
-            }
-            if (topRightVertex.y && bottomLeftVertex.y) {
-                uvOffset = 3;
-            }
-        }
-
-        /*
-        //		0---1                1         0---1
-        //		|   |  becomes      /|   and   |  /
-        //		|   |             /  |         |/
-        //		3---2            3---2         3
-        //
-        //		OR
-        //
-        //		0---1            0             0---1
-        //		|   |  becomes   |\    	 and    \  |
-        //		|   |            |  \             \|
-        //		3---2            3---2             2
-        //
-        //		Triangles 0-1-3 and 0-3-2
-        //		Quad 0-1-3-2
-        */
-
         if (this.mesh) this.terrain.floorGroup.remove(this.mesh);
-        if (this.geometry) this.geometry.dispose();
-        this.geometry = new Geometry();
-
-        this.geometry.vertices.push(
-            topLeftVertex,
-            topRightVertex,
-            bottomRightVertex,
-            bottomLeftVertex,
-        );
-
-        const uv = [
-            new Vector2(0, 0),
-            new Vector2(1, 0),
-            new Vector2(1, 1),
-            new Vector2(0, 1),
-        ];
-
-        if (topRightVertex.y !== bottomLeftVertex.y ||
-            ((this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.WEIRD_CREVICE) && !(topRightVertex.y && bottomLeftVertex.y))) {
-            this.geometry.faceVertexUvs[0].push([
-                uv[(1 + uvOffset) % 4],
-                uv[(3 + uvOffset) % 4],
-                uv[(2 + uvOffset) % 4],
-            ]);
-
-            // noinspection PointlessArithmeticExpressionJS
-            this.geometry.faceVertexUvs[0].push([
-                uv[(1 + uvOffset) % 4],
-                uv[(0 + uvOffset) % 4],
-                uv[(3 + uvOffset) % 4],
-            ]);
-
-            this.geometry.faces.push(
-                new Face3(1, 3, 2),
-                new Face3(1, 0, 3),
-            );
-        } else {
-            // noinspection PointlessArithmeticExpressionJS
-            this.geometry.faceVertexUvs[0].push([
-                uv[(0 + uvOffset) % 4],
-                uv[(3 + uvOffset) % 4],
-                uv[(2 + uvOffset) % 4],
-            ]);
-
-            // noinspection PointlessArithmeticExpressionJS
-            this.geometry.faceVertexUvs[0].push([
-                uv[(0 + uvOffset) % 4],
-                uv[(2 + uvOffset) % 4],
-                uv[(1 + uvOffset) % 4],
-            ]);
-
-            this.geometry.faces.push(
-                new Face3(0, 3, 2),
-                new Face3(0, 2, 1),
-            );
-        }
+        this.mesh?.geometry?.dispose();
 
         function avgHeight(...args: Surface[]) {
             let sum = 0, cnt = 0;
@@ -422,16 +306,15 @@ export class Surface implements Selectable {
             return sum / cnt;
         }
 
+        const geometry = SurfaceGeometry.create(this.wallType, topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex);
+
         // apply height fine-tuning
         topLeftVertex.y += avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER;
         topRightVertex.y += avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER;
         bottomRightVertex.y += avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER;
         bottomLeftVertex.y += avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER;
 
-        this.geometry.computeFaceNormals();
-        this.geometry.computeVertexNormals();
-
-        this.mesh = new Mesh(this.geometry, new MeshPhongMaterial({shininess: 0}));
+        this.mesh = new Mesh(geometry, new MeshPhongMaterial({shininess: 0}));
         this.mesh.userData = {selectable: this};
 
         this.terrain.floorGroup.add(this.mesh);
