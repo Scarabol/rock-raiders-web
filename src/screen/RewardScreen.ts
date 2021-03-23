@@ -140,8 +140,8 @@ export class RewardScreen extends BaseScreen {
         this.descriptionTextLayer.onRedraw = (context) => {
             const descriptionTextImg = this.texts[this.resultIndex];
             context.clearRect(0, this.cfg.textPos[1], this.descriptionTextLayer.fixedWidth, this.descriptionTextLayer.fixedHeight - this.cfg.textPos[1]);
-            const tx = this.resultIndex !== this.images.length ? this.cfg.textPos[0] : 305;
-            const ty = this.resultIndex !== this.images.length ? this.cfg.textPos[1] : 195;
+            const tx = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[0] : 305;
+            const ty = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[1] : 195;
             context.drawImage(descriptionTextImg, tx - descriptionTextImg.width / 2, ty);
         };
         super.show();
