@@ -46,7 +46,7 @@ export class SceneManager {
         let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere));
         if (intersects.length < 1) intersects = raycaster.intersectObjects(GameState.vehicles.map((v) => v.pickSphere));
         if (intersects.length < 1) intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere));
-        if (intersects.length < 1) intersects = raycaster.intersectObjects(this.terrain.floorGroup.children);
+        if (intersects.length < 1 && this.terrain) intersects = raycaster.intersectObjects(this.terrain.floorGroup.children);
         const selected = [];
         if (intersects.length > 0) {
             const userData = intersects[0].object.userData;

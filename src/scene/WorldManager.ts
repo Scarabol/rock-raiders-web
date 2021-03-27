@@ -56,6 +56,7 @@ export class WorldManager {
     }
 
     setup(levelName: string, gameScreen: GameScreen) {
+        if (!levelName) return;
         const levelConf = ResourceManager.cfg('Levels', levelName);
         if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'; // TODO error handling
         GameState.levelFullName = iGet(levelConf, 'FullName').replace(/_/g, ' ');
