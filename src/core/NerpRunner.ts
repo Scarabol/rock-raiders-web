@@ -12,6 +12,7 @@ export class NerpRunner {
 
     debug = false;
     onLevelComplete: () => any = null;
+    nerpInterval: NodeJS.Timeout = null;
 
     registers = new Array(8).fill(0);
     timers = new Array(4).fill(0);
@@ -27,6 +28,18 @@ export class NerpRunner {
 
     constructor(debug = false) {
         this.debug = debug;
+    }
+
+    startExecution() {
+        const that = this;
+        this.nerpInterval = setInterval(() => {
+            that.execute();
+        }, 2000);
+    }
+
+    pauseExecution() {
+        if (this.nerpInterval) clearInterval(this.nerpInterval);
+        this.nerpInterval = null;
     }
 
     /**

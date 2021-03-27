@@ -25,7 +25,6 @@ export class WorldManager {
     sceneManager: SceneManager;
     spawnRaiderInterval = null;
     nerpRunner: NerpRunner = null;
-    nerpInterval = null;
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas);
@@ -88,9 +87,7 @@ export class WorldManager {
     }
 
     start() {
-        this.nerpInterval = setInterval(() => {
-            this.nerpRunner.execute();
-        }, 2000);
+        this.nerpRunner?.startExecution();
         this.sceneManager.startRendering();
         GameState.levelStartTime = Date.now();
     }
@@ -98,8 +95,7 @@ export class WorldManager {
     stop() {
         GameState.levelStopTime = Date.now();
         this.sceneManager.stopRendering();
-        if (this.nerpInterval) clearInterval(this.nerpInterval);
-        this.nerpInterval = null;
+        this.nerpRunner?.pauseExecution();
         if (this.spawnRaiderInterval) clearInterval(this.spawnRaiderInterval);
         this.spawnRaiderInterval = null;
         GameState.remainingDiggables = this.sceneManager.terrain.surfaces.filter((r) => r.forEach((s) => s.isDigable())).length;
