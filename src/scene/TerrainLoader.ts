@@ -20,12 +20,12 @@ export class TerrainLoader {
         const terrainMap = ResourceManager.getMap(iGet(levelConf, 'TerrainMap'));
         terrain.width = terrainMap.width;
         terrain.height = terrainMap.height;
-        const pathMap = ResourceManager.getMap(iGet(levelConf, 'PathMap'));
-        const surfaceMap = ResourceManager.getMap(iGet(levelConf, 'SurfaceMap')).level;
-        const predugMap = ResourceManager.getMap(iGet(levelConf, 'PreDugMap')).level;
-        const cryOreMap = ResourceManager.getMap(iGet(levelConf, 'CryOreMap')).level;
-        const fallinMap = ResourceManager.getMap(iGet(levelConf, 'FallinMap'));
-        const erodeMap = ResourceManager.getMap(iGet(levelConf, 'ErodeMap'));
+        const pathMap = ResourceManager.getMap(iGet(levelConf, 'PathMap'))?.level;
+        const surfaceMap = ResourceManager.getMap(iGet(levelConf, 'SurfaceMap'))?.level;
+        const predugMap = ResourceManager.getMap(iGet(levelConf, 'PreDugMap'))?.level;
+        const cryOreMap = ResourceManager.getMap(iGet(levelConf, 'CryOreMap'))?.level;
+        const fallinMap = ResourceManager.getMap(iGet(levelConf, 'FallinMap'))?.level;
+        const erodeMap = ResourceManager.getMap(iGet(levelConf, 'ErodeMap'))?.level;
 
         // maps parsed from WAD are row-wise saved, which means y (row) comes first and x (column) second
         for (let r = 0; r < terrainMap.level.length; r++) {
@@ -46,7 +46,7 @@ export class TerrainLoader {
                     console.warn('Unexpected predug level: ' + predugLevel);
                 }
                 // give the path map the highest priority, if it exists
-                const pathMapLevel = pathMap && surfaceType.floor ? pathMap.level[r][c] : PathMap.NONE;
+                const pathMapLevel = pathMap && surfaceType.floor ? pathMap[r][c] : PathMap.NONE;
                 if (pathMapLevel === PathMap.RUBBLE) {
                     surfaceType = SurfaceType.RUBBLE4;
                 } else if (pathMapLevel === PathMap.POWER_PATH) {
@@ -56,11 +56,13 @@ export class TerrainLoader {
                 }
 
                 const surface = new Surface(terrain, surfaceType, c, r, surfaceMap[r][c]);
-                const currentCryOre = cryOreMap[r][c];
-                if (currentCryOre % 2 === 1) {
-                    surface.containedCrystals = (currentCryOre + 1) / 2;
-                } else {
-                    surface.containedOres = currentCryOre / 2;
+                if (cryOreMap) {
+                    const currentCryOre = cryOreMap[r][c];
+                    if (currentCryOre % 2 === 1) {
+                        surface.containedCrystals = (currentCryOre + 1) / 2;
+                    } else {
+                        surface.containedOres = currentCryOre / 2;
+                    }
                 }
 
                 (terrain.surfaces)[c].push(surface);
@@ -96,7 +98,7 @@ export class TerrainLoader {
         if (fallinMap) {
             for (let x = 0; x < terrain.width; x++) {
                 for (let y = 0; y < terrain.height; y++) {
-                    terrain.getSurface(x, y).setFallinLevel(fallinMap.level[y][x]); // rows (y) before columns (x) used in maps
+                    terrain.getSurface(x, y).setFallinLevel(fallinMap[y][x]); // rows (y) before columns (x) used in maps
                 }
             }
         }
