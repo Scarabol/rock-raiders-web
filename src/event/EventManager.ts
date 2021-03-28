@@ -1,5 +1,5 @@
-import { ScreenLayer } from '../screen/ScreenLayer';
-import { BaseScreen } from '../screen/BaseScreen';
+import { ScreenLayer } from '../screen/ScreenLayer'
+import { BaseScreen } from '../screen/BaseScreen'
 
 // noinspection JSUnusedGlobalSymbols
 export enum MOUSE_BUTTON {
@@ -14,13 +14,13 @@ export class EventManager {
 
     constructor(screen: BaseScreen) {
         screen.gameCanvasContainer.addEventListener('contextmenu', (event: MouseEvent) => {
-            if (screen.isInRect(event)) event.preventDefault();
+            if (screen.isInRect(event)) event.preventDefault()
         });
         ['pointermove', 'pointerdown', 'pointerup']
             .forEach((eventType) => {
                 screen.gameCanvasContainer.addEventListener(eventType, (event: PointerEvent) => {
-                    if (!screen.isInRect(event)) return;
-                    event.preventDefault();
+                    if (!screen.isInRect(event)) return
+                    event.preventDefault()
                     // all event attibutes used by controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
                     const nonBubblingClone = new PointerEvent(event.type, {
                         bubbles: false, // disable bubbling otherwise we'll trigger this same event handler again
@@ -31,11 +31,11 @@ export class EventManager {
                         ctrlKey: event.ctrlKey,
                         metaKey: event.metaKey,
                         shiftKey: event.shiftKey,
-                    });
+                    })
                     screen.layers.filter(l => l.isActive())
                         .sort((a, b) => ScreenLayer.compareZ(a, b))
-                        .some(l => l.handlePointerEvent(eventType, nonBubblingClone));
-                });
+                        .some(l => l.handlePointerEvent(eventType, nonBubblingClone))
+                })
             });
         ['keydown', 'keyup']
             .forEach((eventType) => {
@@ -43,11 +43,11 @@ export class EventManager {
                     // event.preventDefault(); // otherwise page reload with F5 stops working (may be intended in future)
                     screen.layers.filter(l => l.isActive())
                         .sort((a, b) => ScreenLayer.compareZ(a, b))
-                        .some(l => l.handleKeyEvent(eventType, event));
-                });
-            });
+                        .some(l => l.handleKeyEvent(eventType, event))
+                })
+            })
         screen.gameCanvasContainer.addEventListener('wheel', (event: WheelEvent) => {
-            if (!screen.isInRect(event)) return;
+            if (!screen.isInRect(event)) return
             // all event attibutes used by controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
             const nonBubblingClone = new WheelEvent(event.type, {
                 bubbles: false, // disable bubbling otherwise we'll trigger this same event handler again
@@ -60,11 +60,11 @@ export class EventManager {
                 ctrlKey: event.ctrlKey,
                 metaKey: event.metaKey,
                 shiftKey: event.shiftKey,
-            });
+            })
             screen.layers.filter(l => l.isActive())
                 .sort((a, b) => ScreenLayer.compareZ(a, b))
-                .some(l => l.handleWheelEvent('wheel', nonBubblingClone));
-        });
+                .some(l => l.handleWheelEvent('wheel', nonBubblingClone))
+        })
     }
 
 }

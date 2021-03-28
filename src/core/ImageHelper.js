@@ -63,7 +63,7 @@ export function setPixel(imgData, x, y, r, g, b, a = 255) {
 
 export function getPixel(imgData, x, y) {
     const n = (y * imgData.width + x) * 4;
-    return { r: imgData.data[n], g: imgData.data[n + 1], b: imgData.data[n + 2], a: imgData.data[n + 3] };
+    return {r: imgData.data[n], g: imgData.data[n + 1], b: imgData.data[n + 2], a: imgData.data[n + 3]};
 }
 
 export function copyPixel(originData, targetData, x, y) {

@@ -1,6 +1,6 @@
-import { Group, Vector3 } from 'three';
-import { CollectableType } from './CollectableEntity';
-import { WorldManager } from '../../WorldManager';
+import { Group, Vector3 } from 'three'
+import { CollectableType } from './CollectableEntity'
+import { WorldManager } from '../../WorldManager'
 
 export interface Carryable {
 

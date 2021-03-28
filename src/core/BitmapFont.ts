@@ -1,9 +1,9 @@
-import { createContext, createDummyImgData, getPixel, setPixel } from './ImageHelper';
+import { createContext, createDummyImgData, getPixel, setPixel } from './ImageHelper'
 
 export class BitmapFont {
 
-    charHeight: number;
-    letters: ImageData[] = [];
+    charHeight: number
+    letters: ImageData[] = []
 
     constructor(fontImageData: ImageData, cols = 10, rows = 19) { // font images always consist of 10 columns and 19 rows with last row empty
         // actually chars are font dependent and have to be externalized in future
@@ -26,84 +26,84 @@ export class BitmapFont {
             '', '', '', '', '', '', '', '', '', '',
             '', '', '', 'ß', '', '', '', 'Ñ', '', 'ñ',
             '',
-        ]; // TODO complete this character list
+        ] // TODO complete this character list
 
-        const maxCharWidth = fontImageData.width / cols;
-        this.charHeight = fontImageData.height / rows;
+        const maxCharWidth = fontImageData.width / cols
+        this.charHeight = fontImageData.height / rows
 
         function getActualCharacterWidth(imgData) {
             for (let y = 0; y < imgData.height / rows; y++) { // find non-empty row first
-                let rowPixelIndex = y * 4 * imgData.width;
+                let rowPixelIndex = y * 4 * imgData.width
                 if (imgData.data[rowPixelIndex] !== 255 && imgData.data[rowPixelIndex + 2] !== 255) { // red/blue pixels indicate end of character
                     for (let x = 0; x < maxCharWidth; x++) {
-                        let colPixelIndex = x * 4;
+                        let colPixelIndex = x * 4
                         if (imgData.data[colPixelIndex] === 255 || imgData.data[colPixelIndex + 2] === 255) { // red/blue pixels indicate end of character
-                            return x;
+                            return x
                         }
                     }
-                    return maxCharWidth;
+                    return maxCharWidth
                 }
             }
-            return 0;
+            return 0
         }
 
         for (let i = 0; i < chars.length; i++) {
-            let imgData = this.extractData(fontImageData, (i % 10) * maxCharWidth, Math.floor(i / 10) * this.charHeight, maxCharWidth, this.charHeight);
-            let actualWidth = getActualCharacterWidth(imgData);
+            let imgData = this.extractData(fontImageData, (i % 10) * maxCharWidth, Math.floor(i / 10) * this.charHeight, maxCharWidth, this.charHeight)
+            let actualWidth = getActualCharacterWidth(imgData)
             if (actualWidth > 0) {
-                imgData = this.extractData(imgData, 0, 0, actualWidth, this.charHeight);
+                imgData = this.extractData(imgData, 0, 0, actualWidth, this.charHeight)
             } else {
-                imgData = createDummyImgData(maxCharWidth, this.charHeight);
+                imgData = createDummyImgData(maxCharWidth, this.charHeight)
             }
-            this.letters[chars[i]] = imgData;
+            this.letters[chars[i]] = imgData
         }
     }
 
     extractData(imgData, startX, startY, width, height): ImageData {
-        const alpha = getPixel(imgData, startX, startY);
-        const result = new ImageData(width, height);
+        const alpha = getPixel(imgData, startX, startY)
+        const result = new ImageData(width, height)
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
-                const p = getPixel(imgData, startX + x, startY + y);
-                if (p.r === alpha.r && p.g === alpha.g && p.b === alpha.b) p.a = 0; // apply alpha channel
-                setPixel(result, x, y, p.r, p.g, p.b, p.a);
+                const p = getPixel(imgData, startX + x, startY + y)
+                if (p.r === alpha.r && p.g === alpha.g && p.b === alpha.b) p.a = 0 // apply alpha channel
+                setPixel(result, x, y, p.r, p.g, p.b, p.a)
             }
         }
-        return result;
+        return result
     }
 
     createTextImage(text): HTMLCanvasElement {
         if (text === undefined || text === null || text.length < 1) {
             // empty text requested, context with width 0 is not allowed, but 1 with alpha is close enough
-            return createContext(1, 1).canvas;
+            return createContext(1, 1).canvas
         }
-        text = text.replace(/_/g, ' ');
-        let width = 0;
+        text = text.replace(/_/g, ' ')
+        let width = 0
         for (let c = 0; c < text.length; c++) {
-            const letter = text.charAt(c);
-            const letterImg = this.letters[letter];
+            const letter = text.charAt(c)
+            const letterImg = this.letters[letter]
             if (letterImg) {
-                width += letterImg.width;
+                width += letterImg.width
             } else {
-                console.error('Letter \'' + letter + '\' not found in charset! Ignoring it');
+                console.error('Letter \'' + letter + '\' not found in charset! Ignoring it')
             }
         }
-        const result = new ImageData(width, this.charHeight);
-        let letterX = 0;
+        const result = new ImageData(width, this.charHeight)
+        let letterX = 0
         for (let c = 0; c < text.length; c++) {
-            const letterImgData = this.letters[text.charAt(c)];
+            const letterImgData = this.letters[text.charAt(c)]
             if (letterImgData) {
                 for (let x = letterX; x < letterX + letterImgData.width; x++) {
                     for (let y = 0; y < letterImgData.height; y++) {
-                        const p = getPixel(letterImgData, x - letterX, y);
-                        setPixel(result, x, y, p.r, p.g, p.b, p.a);
+                        const p = getPixel(letterImgData, x - letterX, y)
+                        setPixel(result, x, y, p.r, p.g, p.b, p.a)
                     }
                 }
-                letterX += letterImgData.width;
+                letterX += letterImgData.width
             } // missing letter issue already reported above
         }
-        const img: CanvasRenderingContext2D = createContext(result.width, result.height);
-        img.putImageData(result, 0, 0);
-        return img.canvas;
+        const img: CanvasRenderingContext2D = createContext(result.width, result.height)
+        img.putImageData(result, 0, 0)
+        return img.canvas
     }
 }

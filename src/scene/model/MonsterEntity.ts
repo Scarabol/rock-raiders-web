@@ -1,4 +1,4 @@
-import { MovableEntity } from './MovableEntity';
+import { MovableEntity } from './MovableEntity'
 
 export class MonsterEntity extends MovableEntity {
 

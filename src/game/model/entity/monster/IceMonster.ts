@@ -1,4 +1,4 @@
-import { Monster } from './Monster';
+import { Monster } from './Monster'
 
 export class IceMonster extends Monster {
 

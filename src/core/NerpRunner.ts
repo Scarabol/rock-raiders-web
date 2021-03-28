@@ -5,41 +5,41 @@
  * https://kb.rockraidersunited.com/NERPs_documentation#Labels
  *
  */
-import { GameResultState, GameState } from '../game/model/GameState';
-import { Building } from '../game/model/entity/building/Building';
+import { GameResultState, GameState } from '../game/model/GameState'
+import { Building } from '../game/model/entity/building/Building'
 
 export class NerpRunner {
 
-    debug = false;
-    onLevelComplete: () => any = null;
-    nerpInterval: NodeJS.Timeout = null;
+    debug = false
+    onLevelComplete: () => any = null
+    nerpInterval: NodeJS.Timeout = null
 
-    registers = new Array(8).fill(0);
-    timers = new Array(4).fill(0);
-    scriptLines = []; // contains humand readable script strings
-    statements = []; // contains parsed statements for execution
-    macrosByName = {};
-    labelsByName = {};
-    halted = false;
-    programCounter = 0;
-    messages = [];
+    registers = new Array(8).fill(0)
+    timers = new Array(4).fill(0)
+    scriptLines = [] // contains humand readable script strings
+    statements = [] // contains parsed statements for execution
+    macrosByName = {}
+    labelsByName = {}
+    halted = false
+    programCounter = 0
+    messages = []
     // more state variables and switches
-    messagePermit = null;
+    messagePermit = null
 
     constructor(debug = false) {
-        this.debug = debug;
+        this.debug = debug
     }
 
     startExecution() {
-        const that = this;
+        const that = this
         this.nerpInterval = setInterval(() => {
-            that.execute();
-        }, 2000);
+            that.execute()
+        }, 2000)
     }
 
     pauseExecution() {
-        if (this.nerpInterval) clearInterval(this.nerpInterval);
-        this.nerpInterval = null;
+        if (this.nerpInterval) clearInterval(this.nerpInterval)
+        this.nerpInterval = null
     }
 
     /**
@@ -48,9 +48,9 @@ export class NerpRunner {
      * @return {number}
      */
     checkRegister(register) {
-        const num = parseInt(register);
-        if (isNaN(num) || num < 0 || num > this.registers.length) throw new Error('Invalid register (' + register + ') provided');
-        return num;
+        const num = parseInt(register)
+        if (isNaN(num) || num < 0 || num > this.registers.length) throw new Error('Invalid register (' + register + ') provided')
+        return num
     }
 
     /**
@@ -59,9 +59,9 @@ export class NerpRunner {
      * @return {number}
      */
     checkRegisterValue(value) {
-        const num = parseInt(value);
-        if (isNaN(num)) throw new Error('Invalid register value (' + value + ') provided');
-        return num;
+        const num = parseInt(value)
+        if (isNaN(num)) throw new Error('Invalid register value (' + value + ') provided')
+        return num
     }
 
     /**
@@ -70,8 +70,8 @@ export class NerpRunner {
      * @return {number} returns the value currently stored in the register
      */
     getR(register) {
-        register = this.checkRegister(register);
-        return this.registers[register];
+        register = this.checkRegister(register)
+        return this.registers[register]
     }
 
     /**
@@ -80,9 +80,9 @@ export class NerpRunner {
      * @param value the value to set for the given register
      */
     setR(register, value) {
-        register = this.checkRegister(register);
-        value = this.checkRegisterValue(value);
-        this.registers[register] = value;
+        register = this.checkRegister(register)
+        value = this.checkRegisterValue(value)
+        this.registers[register] = value
     }
 
     /**
@@ -91,9 +91,9 @@ export class NerpRunner {
      * @param value the value to add to the given register
      */
     addR(register, value) {
-        register = this.checkRegister(register);
-        value = this.checkRegisterValue(value);
-        this.registers[register] += value;
+        register = this.checkRegister(register)
+        value = this.checkRegisterValue(value)
+        this.registers[register] += value
     }
 
     /**
@@ -102,9 +102,9 @@ export class NerpRunner {
      * @param value
      */
     setTimer(timer, value) {
-        const num = parseInt(value);
-        if (isNaN(num)) throw new Error('Can\'t set timer to NaN value: ' + value);
-        this.timers[timer] = new Date().getTime() + num;
+        const num = parseInt(value)
+        if (isNaN(num)) throw new Error('Can\'t set timer to NaN value: ' + value)
+        this.timers[timer] = new Date().getTime() + num
     }
 
     /**
@@ -113,25 +113,25 @@ export class NerpRunner {
      * @return {number}
      */
     getTimer(timer) {
-        return new Date().getTime() - this.timers[timer];
+        return new Date().getTime() - this.timers[timer]
     }
 
     /**
      * End the level successfully and show the score screen.
      */
     setLevelCompleted() {
-        this.halted = true;
-        GameState.resultState = GameResultState.COMPLETE;
-        this.onLevelComplete();
+        this.halted = true
+        GameState.resultState = GameResultState.COMPLETE
+        this.onLevelComplete()
     }
 
     /**
      * End the level as failure and show the score screen.
      */
     setLevelFail() {
-        this.halted = true;
-        GameState.resultState = GameResultState.FAILED;
-        this.onLevelComplete();
+        this.halted = true
+        GameState.resultState = GameResultState.FAILED
+        this.onLevelComplete()
     }
 
     /**
@@ -152,28 +152,28 @@ export class NerpRunner {
      * @param messagesAllowed
      */
     setMessagePermit(messagesAllowed) {
-        this.messagePermit = !messagesAllowed;
+        this.messagePermit = !messagesAllowed
     }
 
     setBuildingsUpgradeLevel(typeName, level) {
-        console.error('Buildings upgrade level not yet implemented'); // TODO implement this
+        console.error('Buildings upgrade level not yet implemented') // TODO implement this
         // buildings.filter(b => b.type === typeName).forEach(b => b.upgradeLevel = level);
     }
 
     setToolStoreLevel(level) {
-        this.setBuildingsUpgradeLevel(Building.TOOLSTATION, level);
+        this.setBuildingsUpgradeLevel(Building.TOOLSTATION, level)
     }
 
     setTeleportPadLevel(level) {
-        this.setBuildingsUpgradeLevel(Building.TELEPORT_PAD, level);
+        this.setBuildingsUpgradeLevel(Building.TELEPORT_PAD, level)
     }
 
     setPowerStationLevel(level) {
-        this.setBuildingsUpgradeLevel(Building.POWER_STATION, level);
+        this.setBuildingsUpgradeLevel(Building.POWER_STATION, level)
     }
 
     setBarracksLevel(level) {
-        this.setBuildingsUpgradeLevel(Building.SUPPORT, level);
+        this.setBuildingsUpgradeLevel(Building.SUPPORT, level)
     }
 
     /**
@@ -181,7 +181,7 @@ export class NerpRunner {
      * @return {number}
      */
     getToolStoresBuilt() {
-        return GameState.getBuildingsByType(Building.TOOLSTATION).length;
+        return GameState.getBuildingsByType(Building.TOOLSTATION).length
     }
 
     /**
@@ -189,7 +189,7 @@ export class NerpRunner {
      * @return {number}
      */
     getMinifiguresOnLevel() {
-        return GameState.raiders.length;
+        return GameState.raiders.length
     }
 
     /**
@@ -197,12 +197,12 @@ export class NerpRunner {
      * @return {number}
      */
     getCrystalsCurrentlyStored() {
-        return GameState.numCrystal;
+        return GameState.numCrystal
     }
 
     getObjectiveSwitch() {
         // TODO implement this
-        return 0;
+        return 0
     }
 
     setMessageTimerValues(arg1, arg2, arg3) {
@@ -210,7 +210,7 @@ export class NerpRunner {
     }
 
     getMessageTimer() {
-        return 0; // TODO return remaining amount of time needed to fully play WAV message
+        return 0 // TODO return remaining amount of time needed to fully play WAV message
     }
 
     cameraUnlock() {
@@ -219,11 +219,11 @@ export class NerpRunner {
 
     setMessage(messageNumber, arrowDisabled) {
         if (!this.messagePermit) {
-            return;
+            return
         }
-        const msg = this.messages[messageNumber];
+        const msg = this.messages[messageNumber]
         // TODO show message to user
-        console.log(msg.txt);
+        console.log(msg.txt)
         // msg.snd resides in sounds/streamed/ which is currently not loaded :(
     }
 
@@ -233,22 +233,22 @@ export class NerpRunner {
 
     getTutorialBlockIsGround(arg1) {
         // TODO implement this
-        return 0;
+        return 0
     }
 
     getTutorialBlockIsPath(arg1) {
         // TODO implement this
-        return 0;
+        return 0
     }
 
     getOxygenLevel() {
         // TODO implement this
-        return 100;
+        return 100
     }
 
     getObjectiveShowing() {
         // TODO implement this
-        return false;
+        return false
     }
 
     addPoweredCrystals() {
@@ -260,11 +260,11 @@ export class NerpRunner {
     }
 
     getPoweredPowerStationsBuilt() {
-        return GameState.getBuildingsByType(Building.POWER_STATION).filter((b) => b.isPowered()).length;
+        return GameState.getBuildingsByType(Building.POWER_STATION).filter((b) => b.isPowered()).length
     }
 
     getPoweredBarracksBuilt() {
-        return GameState.getBuildingsByType(Building.SUPPORT).filter((b) => b.isPowered()).length;
+        return GameState.getBuildingsByType(Building.SUPPORT).filter((b) => b.isPowered()).length
     }
 
     getRecordObjectAtTutorial() {
@@ -273,123 +273,123 @@ export class NerpRunner {
 
     getHiddenObjectsFound() {
         // TODO implement this
-        return 0;
+        return 0
     }
 
     callMethod(methodName, methodArgs) {
         if (methodName === 'Stop') {
-            throw 'Stop';
+            throw 'Stop'
         } else if (methodName === 'TRUE') {
-            return true;
+            return true
         } else if (methodName === 'FALSE') {
-            return false;
+            return false
         }
-        const setRegisterMatch = methodName.match(/^SetR([0-7])$/);
+        const setRegisterMatch = methodName.match(/^SetR([0-7])$/)
         if (setRegisterMatch) {
-            return this.setR(setRegisterMatch[1], methodArgs[0]);
+            return this.setR(setRegisterMatch[1], methodArgs[0])
         }
-        const addRegisterMatch = methodName.match(/^AddR([0-7])$/);
+        const addRegisterMatch = methodName.match(/^AddR([0-7])$/)
         if (addRegisterMatch) {
-            return this.addR(addRegisterMatch[1], methodArgs[0]);
+            return this.addR(addRegisterMatch[1], methodArgs[0])
         }
-        const getRegisterMatch = methodName.match(/^GetR([0-7])$/);
+        const getRegisterMatch = methodName.match(/^GetR([0-7])$/)
         if (getRegisterMatch) {
-            return this.getR(getRegisterMatch[1]);
+            return this.getR(getRegisterMatch[1])
         }
-        const setTimerMatch = methodName.match(/^SetTimer([0-3])$/);
+        const setTimerMatch = methodName.match(/^SetTimer([0-3])$/)
         if (setTimerMatch) {
-            return this.setTimer(setTimerMatch[1], methodArgs[0]);
+            return this.setTimer(setTimerMatch[1], methodArgs[0])
         }
-        const getTimerMatch = methodName.match(/^GetTimer([0-3])$/);
+        const getTimerMatch = methodName.match(/^GetTimer([0-3])$/)
         if (getTimerMatch) {
-            return this.getTimer(getTimerMatch[1]);
+            return this.getTimer(getTimerMatch[1])
         }
-        const lMethodName = methodName.toLowerCase();
+        const lMethodName = methodName.toLowerCase()
         for (const memberName in this) {
             // noinspection JSUnfilteredForInLoop
             if (memberName.toLowerCase() === lMethodName) {
                 // @ts-ignore
                 // noinspection JSUnfilteredForInLoop
-                return this[memberName].apply(this, methodArgs);
+                return this[memberName].apply(this, methodArgs)
             }
         }
-        throw new Error('Undefined method: ' + methodName);
+        throw new Error('Undefined method: ' + methodName)
     }
 
     conditional(left, right) {
-        const conditionResult = this.executeStatement(left);
+        const conditionResult = this.executeStatement(left)
         if (this.debug) {
-            console.log('Condition evaluated to ' + conditionResult);
+            console.log('Condition evaluated to ' + conditionResult)
         }
         if (conditionResult) {
-            this.executeStatement(right);
+            this.executeStatement(right)
         }
     }
 
     executeStatement(expression) {
         if (expression.invoke) {
-            const argValues = expression.invoke !== 'conditional' ? expression.args.map(e => this.executeStatement(e)) : expression.args;
-            const result = this.callMethod(expression.invoke, argValues);
+            const argValues = expression.invoke !== 'conditional' ? expression.args.map(e => this.executeStatement(e)) : expression.args
+            const result = this.callMethod(expression.invoke, argValues)
             if (result !== undefined && this.debug) {
-                console.log('Method returned: ' + result);
+                console.log('Method returned: ' + result)
             }
-            return result;
+            return result
         } else if (expression.comparator) {
-            const left = this.executeStatement(expression.left);
-            const right = this.executeStatement(expression.right);
+            const left = this.executeStatement(expression.left)
+            const right = this.executeStatement(expression.right)
             if (expression.comparator === '=') {
-                return left === right;
+                return left === right
             } else if (expression.comparator === '!=') {
-                return left !== right;
+                return left !== right
             } else if (expression.comparator === '<') {
-                return left < right;
+                return left < right
             } else if (expression.comparator === '>') {
-                return left > right;
+                return left > right
             } else {
-                console.log(expression);
-                throw new Error('Unknown comparator: ' + expression.comparator);
+                console.log(expression)
+                throw new Error('Unknown comparator: ' + expression.comparator)
             }
         } else if (!isNaN(expression)) { // just a number
-            return expression;
+            return expression
         } else if (expression.jump) {
-            this.programCounter = this.labelsByName[expression.jump];
+            this.programCounter = this.labelsByName[expression.jump]
             if (this.programCounter === undefined) {
-                throw new Error('Label \'' + expression.jump + '\' is unknown!');
+                throw new Error('Label \'' + expression.jump + '\' is unknown!')
             }
             if (this.debug) {
-                console.log('Jumping to label \'' + expression.jump + '\' in line ' + this.programCounter);
+                console.log('Jumping to label \'' + expression.jump + '\' in line ' + this.programCounter)
             }
         } else {
-            console.log(expression);
-            throw new Error('Unknown expression in line ' + this.programCounter + ': ' + expression);
+            console.log(expression)
+            throw new Error('Unknown expression in line ' + this.programCounter + ': ' + expression)
         }
     }
 
     execute(debug = false) {
-        this.debug = debug;
-        if (this.halted) return;
+        this.debug = debug
+        if (this.halted) return
         try {
             if (this.debug) {
-                console.log('Executing following script\n' + this.scriptLines.join('\n'));
-                console.log('Registers: ' + this.registers);
+                console.log('Executing following script\n' + this.scriptLines.join('\n'))
+                console.log('Registers: ' + this.registers)
             }
             for (this.programCounter = 0; this.programCounter < this.statements.length; this.programCounter++) {
-                const statement = this.statements[this.programCounter];
+                const statement = this.statements[this.programCounter]
                 if (this.debug) {
-                    console.log(this.programCounter + ': ' + this.scriptLines[this.programCounter]);
-                    console.log(statement);
+                    console.log(this.programCounter + ': ' + this.scriptLines[this.programCounter])
+                    console.log(statement)
                 }
                 if (!statement.label) { // do nothing for label markers
-                    this.executeStatement(statement);
+                    this.executeStatement(statement)
                 }
             }
         } catch (e) {
             if (e === 'Stop') {
-                return;
+                return
             }
-            console.error(e);
-            console.error('FATAL ERROR! Script execution failed! You can NOT win anymore!');
-            this.halted = true;
+            console.error(e)
+            console.error('FATAL ERROR! Script execution failed! You can NOT win anymore!')
+            this.halted = true
             debugger;
         }
     }
