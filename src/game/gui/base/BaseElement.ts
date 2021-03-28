@@ -27,7 +27,15 @@ export class BaseElement {
     onRedraw(context: CanvasRenderingContext2D) {
         if (this.hidden) return;
         this.children.forEach((child) => child.onRedraw(context));
-    };
+        this.children.forEach((child) => child.drawHover(context));
+        this.children.forEach((child) => child.drawTooltip(context));
+    }
+
+    drawHover(context: CanvasRenderingContext2D) {
+    }
+
+    drawTooltip(context: CanvasRenderingContext2D) {
+    }
 
     onClick() {
     }

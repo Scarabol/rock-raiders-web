@@ -29,7 +29,7 @@ export class MenuItem extends BaseElement {
         if (normalFile) this.imgNormal = ResourceManager.getImage(normalFile);
         if (disabledFile) this.imgDisabled = ResourceManager.getImage(disabledFile);
         if (pressedFile) this.imgPressed = ResourceManager.getImage(pressedFile);
-        this.disabled = true; // TODO only enable, if requirements are met, check each time game state changes
+        this.disabled = true;
     }
 
     onClick() {
@@ -45,12 +45,16 @@ export class MenuItem extends BaseElement {
             img = this.imgPressed;
         }
         if (img) context.drawImage(img, this.x, this.y);
+        super.onRedraw(context);
+    }
+
+    drawHover(context: CanvasRenderingContext2D) {
+        super.drawHover(context);
         if (!this.disabled && this.hover) {
             context.strokeStyle = '#0f0';
             context.lineWidth = 2;
             context.strokeRect(this.x - context.lineWidth / 2, this.y - context.lineWidth / 2, this.width + context.lineWidth - 1, this.height + context.lineWidth - 1);
         }
-        super.onRedraw(context);
     }
 
 }
