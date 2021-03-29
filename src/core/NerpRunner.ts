@@ -156,8 +156,7 @@ export class NerpRunner {
     }
 
     setBuildingsUpgradeLevel(typeName, level) {
-        console.error('Buildings upgrade level not yet implemented') // TODO implement this
-        // buildings.filter(b => b.type === typeName).forEach(b => b.upgradeLevel = level);
+        GameState.buildings.filter(b => b.type === typeName).forEach(b => b.upgrades = level);
     }
 
     setToolStoreLevel(level) {

@@ -1,7 +1,7 @@
 import { IconPanel } from './IconPanel'
 import { EventBus } from '../../../../event/EventBus'
 import { BuildingSelected, EntityDeselected, RaiderSelected, SurfaceSelectedEvent, VehicleSelected } from '../../../../event/LocalEvents'
-import { EntityAddedEvent, EntityRemovedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent, SpawnMaterialEvent } from '../../../../event/WorldEvents'
+import { CollectEvent, EntityAddedEvent, EntityRemovedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent, SpawnMaterialEvent } from '../../../../event/WorldEvents'
 import { GameState } from '../../../model/GameState'
 import { Surface } from '../../../../scene/model/map/Surface'
 import { Building } from '../../../model/entity/building/Building'
@@ -9,8 +9,11 @@ import { SurfaceJob, SurfaceJobType } from '../../../model/job/SurfaceJob'
 import { SurfaceType } from '../../../../scene/model/map/SurfaceType'
 import { CollectableType } from '../../../../scene/model/collect/CollectableEntity'
 import { BuildingSite } from '../../../../scene/model/BuildingSite'
+import { BuildingEntity } from '../../../../scene/model/BuildingEntity'
 
 export class MainPanel extends IconPanel {
+
+    // TODO refactor menu item handling and classes
 
     constructor() {
         super()
@@ -154,11 +157,23 @@ export class MainPanel extends IconPanel {
             }
         })
         EventBus.registerEventListener(BuildingSelected.eventKey, () => this.selectSubPanel(selectBuildingPanel))
-        EventBus.registerEventListener(EntityDeselected.eventKey, () => this.selectSubPanel(this.mainPanel))
         selectBuildingPanel.backBtn.onClick = () => EventBus.publishEvent(new EntityDeselected())
         selectBuildingPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_Repair')
         selectBuildingPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_PowerOff') // TODO other option is Interface_MenuItem_PowerOn
-        selectBuildingPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeBuilding')
+        const upgradeItem = selectBuildingPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeBuilding')
+        upgradeItem.disabled = false // TODO actually could use correct check, but state is not updated, when panel is moved in
+        EventBus.registerEventListener(CollectEvent.eventKey, (event: CollectEvent) => {
+            upgradeItem.disabled = GameState.numOre < 5 || GameState.selectedEntities.length < 1 || (GameState.selectedEntities[0] as BuildingEntity).hasMaxUpgrades()
+            this.notifyRedraw() // TODO performance: actually just the buttons need to be redrawn
+        })
+        EventBus.registerEventListener(SpawnMaterialEvent.eventKey, (event: SpawnMaterialEvent) => {
+            upgradeItem.disabled = GameState.numOre < 5 || GameState.selectedEntities.length < 1 || (GameState.selectedEntities[0] as BuildingEntity).hasMaxUpgrades()
+            this.notifyRedraw() // TODO performance: actually just the buttons need to be redrawn
+        })
+        upgradeItem.onClick = () => {
+            (GameState.selectedEntities[0] as BuildingEntity).upgrade()
+            EventBus.publishEvent(new EntityDeselected())
+        }
         selectBuildingPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteBuilding')
         EventBus.registerEventListener(RaiderSelected.eventKey, () => this.selectSubPanel(selectRaiderPanel))
         selectRaiderPanel.backBtn.onClick = () => EventBus.publishEvent(new EntityDeselected())

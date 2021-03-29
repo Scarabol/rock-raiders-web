@@ -6,8 +6,9 @@ import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { MathUtils, Vector3 } from 'three'
 import { GameState } from '../../game/model/GameState'
-import { EntityAddedEvent, EntityType } from '../../event/WorldEvents'
+import { CollectEvent, EntityAddedEvent, EntityType } from '../../event/WorldEvents'
 import { Surface } from './map/Surface'
+import { CollectableType } from './collect/CollectableEntity'
 import degToRad = MathUtils.degToRad
 
 export class BuildingEntity extends AnimEntity implements Selectable {
@@ -18,6 +19,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     powerLink: boolean = false
     spawning: boolean = false
     surfaces: Surface[] = []
+    upgrades: number = 0
 
     constructor(buildingType: Building) {
         super(ResourceManager.getAnimationEntityType(buildingType.aeFile))
@@ -67,6 +69,17 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         if (index !== -1) GameState.buildingsUndiscovered.splice(index, 1)
         GameState.buildings.push(this)
         EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, this))
+    }
+
+    hasMaxUpgrades(): boolean {
+        return this.upgrades >= this.type.maxUpgrades
+    }
+
+    upgrade() {
+        if (GameState.numOre < 5) return
+        GameState.numOre -= 5
+        this.upgrades++
+        EventBus.publishEvent(new CollectEvent(CollectableType.ORE))
     }
 
 }
