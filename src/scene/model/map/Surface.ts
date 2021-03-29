@@ -364,19 +364,19 @@ export class Surface implements Selectable {
     }
 
     isWalkable(): boolean {
-        return this.surfaceType.floor && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER
+        return this.surfaceType.floor && this.discovered && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER
     }
 
     isDrillable(): boolean {
-        return this.surfaceType.drillable && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER)
+        return this.surfaceType.drillable && this.discovered && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER)
     }
 
     isReinforcable(): boolean {
-        return this.surfaceType.reinforcable && this.wallType === WALL_TYPE.WALL && !this.reinforced
+        return this.surfaceType.reinforcable && this.discovered && this.wallType === WALL_TYPE.WALL && !this.reinforced
     }
 
     isExplodable(): boolean {
-        return this.surfaceType.explodable && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER)
+        return this.surfaceType.explodable && this.discovered && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER)
     }
 
     isDigable(): boolean {
@@ -385,10 +385,10 @@ export class Surface implements Selectable {
 
     getDigPositions(): Vector3[] {
         const digPosition = []
-        if (this.terrain.getSurface(this.x - 1, this.y).surfaceType.floor) digPosition.push(new Vector3(this.x * TILESIZE, 0, this.y * TILESIZE + TILESIZE / 2))
-        if (this.terrain.getSurface(this.x, this.y - 1).surfaceType.floor) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE))
-        if (this.terrain.getSurface(this.x + 1, this.y).surfaceType.floor) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE, 0, this.y * TILESIZE + TILESIZE / 2))
-        if (this.terrain.getSurface(this.x, this.y + 1).surfaceType.floor) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE + TILESIZE))
+        if (this.terrain.getSurface(this.x - 1, this.y).isWalkable()) digPosition.push(new Vector3(this.x * TILESIZE - 1, 0, this.y * TILESIZE + TILESIZE / 2))
+        if (this.terrain.getSurface(this.x, this.y - 1).isWalkable()) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE - 1))
+        if (this.terrain.getSurface(this.x + 1, this.y).isWalkable()) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE + 1, 0, this.y * TILESIZE + TILESIZE / 2))
+        if (this.terrain.getSurface(this.x, this.y + 1).isWalkable()) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE + TILESIZE + 1))
         return digPosition
     }
 
