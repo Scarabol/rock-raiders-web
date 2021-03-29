@@ -19,7 +19,6 @@ TODO insert some screenshots here
 
 ## Missing features
 * Escape screen not working to quit levels
-* No pathfinding, Raider can walk over lava/water
 * Vehicles not implemented
 * Monsters not implemented (yeah!)
 * Mission briefing screen missing

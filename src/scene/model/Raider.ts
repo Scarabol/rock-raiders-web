@@ -17,10 +17,6 @@ export class Raider extends FulfillerEntity {
         this.selectionFrameSize = 10
     }
 
-    isOnRubble() {
-        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).hasRubble()
-    }
-
     getSpeed(): number {
         let speed = super.getSpeed()
         if (this.animation && !isNaN(this.animation.transcoef)) speed *= this.animation.transcoef
@@ -28,8 +24,16 @@ export class Raider extends FulfillerEntity {
         return speed
     }
 
+    isOnRubble() {
+        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).hasRubble()
+    }
+
     isOnPath(): boolean {
         return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).isPath()
+    }
+
+    findPathToTarget(target: Vector3): Vector3[] {
+        return this.worldMgr.sceneManager.terrain.findPath(this.getPosition(), target)
     }
 
     changeActivity(activity: FulfillerActivity, onChangeDone = null, iterations = 1) {

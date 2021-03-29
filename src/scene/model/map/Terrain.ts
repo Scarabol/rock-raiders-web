@@ -6,6 +6,7 @@ import { TILESIZE } from '../../../main'
 import { EventBus } from '../../../event/EventBus'
 import { EntityAddedEvent, EntityType } from '../../../event/WorldEvents'
 import { BuildingEntity } from '../BuildingEntity'
+import { astar, Graph } from './astar'
 
 export class Terrain {
 
@@ -16,6 +17,8 @@ export class Terrain {
     surfaces: Surface[][] = []
     floorGroup: Group = new Group()
     roofGroup: Group = new Group()
+    graphWalk: Graph = null
+    cachedPaths = new Map()
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
@@ -54,6 +57,38 @@ export class Terrain {
     updateSurfaceMeshes(force: boolean = false) {
         this.surfaces.forEach((r) => r.forEach((s) => s.updateMesh(force)))
         this.floorGroup.updateWorldMatrix(true, true) // otherwise ray intersection is not working before rendering
+
+        // TODO performance: update specific graph entry, when surface type changes
+        this.graphWalk = new Graph(this.surfaces.map(c => c.map(s => s.isWalkable() ? s.hasRubble() ? 4 : 1 : 0)))
+        console.log('Cached paths cleared')
+        this.cachedPaths.clear()
+    }
+
+    findPath(start: Vector3, end: Vector3, canFly = false, canSwim = false): Vector3[] {
+        const startSurface = this.getSurfaceFromWorld(start)
+        const endSurface = this.getSurfaceFromWorld(end)
+        if (startSurface.x === endSurface.x && startSurface.y === endSurface.y) {
+            return [end]
+        }
+        const cacheIdentifier = startSurface.x + '/' + startSurface.y + ' -> ' + endSurface.x + '/' + endSurface.y
+        const cachedPath = this.cachedPaths.get(cacheIdentifier)
+        if (cachedPath) {
+            return [...cachedPath, end]
+        } else {
+            return this.searchPath(startSurface, endSurface, end, cacheIdentifier)
+        }
+    }
+
+    private searchPath(startSurface: Surface, endSurface: Surface, end, cacheIdentifier: string) {
+        const startNode = this.graphWalk.grid[startSurface.x][startSurface.y]
+        const endNode = this.graphWalk.grid[endSurface.x][endSurface.y]
+        const worldPath = astar.search(this.graphWalk, startNode, endNode).map(p => this.getSurface(p.x, p.y).getCenterWorld())
+        if (worldPath.length < 1) return null // no path found
+        // replace last surface center with actual target position
+        worldPath.pop()
+        worldPath.push(end)
+        this.cachedPaths.set(cacheIdentifier, worldPath.slice(0, -1)) // cache shallow copy to avoid interference
+        return worldPath
     }
 
     findFallInOrigin(x: number, y: number): [number, number] {

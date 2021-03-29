@@ -148,6 +148,15 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         }
     }
 
+    moveToTarget(target): boolean {
+        const result = super.moveToTarget(target)
+        if (!result) {
+            console.log('Entity could not move to job target, stopping job')
+            this.stopJob()
+        }
+        return result
+    }
+
     dropItem() {
         if (!this.carries) return
         if (this.carryJoint) this.carryJoint.remove(this.carries.group)
