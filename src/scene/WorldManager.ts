@@ -28,7 +28,6 @@ export class WorldManager {
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas)
-        this.sceneManager.cursorTorchlight.distance *= TILESIZE
         EventBus.registerEventListener(EntityDeselected.eventKey, () => GameState.selectEntities([]))
         EventBus.registerEventListener(RaiderRequested.eventKey, (event: RaiderRequested) => {
             GameState.requestedRaiders = event.numRequested
@@ -62,6 +61,8 @@ export class WorldManager {
         GameState.levelFullName = iGet(levelConf, 'FullName').replace(/_/g, ' ')
         console.log('Starting level ' + levelName + ' - ' + GameState.levelFullName)
 
+        this.sceneManager.setupScene()
+
         // create terrain mesh and add it to the scene
         this.sceneManager.terrain = TerrainLoader.loadTerrain(levelConf, this)
         this.sceneManager.scene.add(this.sceneManager.terrain.floorGroup)
@@ -88,18 +89,18 @@ export class WorldManager {
     }
 
     start() {
+        this.sceneManager.startScene()
         this.nerpRunner?.startExecution()
-        this.sceneManager.startRendering()
         GameState.levelStartTime = Date.now()
     }
 
     stop() {
         GameState.levelStopTime = Date.now()
-        this.sceneManager.stopRendering()
         this.nerpRunner?.pauseExecution()
         if (this.spawnRaiderInterval) clearInterval(this.spawnRaiderInterval)
         this.spawnRaiderInterval = null
         GameState.remainingDiggables = this.sceneManager.terrain.surfaces.filter((r) => r.forEach((s) => s.isDigable())).length
+        this.sceneManager.disposeScene()
     }
 
     resize(width: number, height: number) {

@@ -3,13 +3,14 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { Color, Material, MeshPhongMaterial } from 'three'
 import { CollectableEntity, CollectableType } from './CollectableEntity'
 import { Building } from '../../../game/model/entity/building/Building'
+import { SceneManager } from '../../SceneManager'
 
 export class Crystal extends CollectableEntity {
 
     constructor() {
         super(CollectableType.CRYSTAL)
         const resource2 = ResourceManager.getResource('MiscAnims/Crystal/vlp_greencrystal.lwo')
-        const mesh2 = new LWOLoader('MiscAnims/Crystal/').parse(resource2);
+        const mesh2 = SceneManager.registerMesh(new LWOLoader('MiscAnims/Crystal/').parse(resource2));
         (mesh2.material as Material[]).forEach((mat: MeshPhongMaterial) => {
             mat.color = new Color(0, 0, 0) // TODO read from LWO file?
             mat.emissive = new Color(0, 255, 0) // TODO should be luminosity color from mesh file?
@@ -20,7 +21,7 @@ export class Crystal extends CollectableEntity {
         mesh2.scale.set(1.75, 1.75, 1.75) // TODO derive from texture scale?
         this.group.add(mesh2)
         const resource = ResourceManager.getResource('World/Shared/Crystal.lwo') // highpoly version
-        const mesh = new LWOLoader('World/Shared/').parse(resource);
+        const mesh = SceneManager.registerMesh(new LWOLoader('World/Shared/').parse(resource));
         (mesh.material as Material[]).forEach((mat: MeshPhongMaterial) => {
             mat.emissive = new Color(0, 8, 0) // TODO read from LWO file?
             mat.color = new Color(0, 0, 0) // TODO read from LWO file?

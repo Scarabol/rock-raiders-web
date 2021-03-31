@@ -3,6 +3,7 @@ import { getPath, iGet } from './wadworker/WadUtil'
 import { ResourceManager } from './ResourceManager'
 import { LWOLoader } from './LWOLoader'
 import { LWSCLoader } from './LWSCLoader'
+import { SceneManager } from '../scene/SceneManager'
 
 export class AnimEntityLoader {
 
@@ -40,7 +41,7 @@ export class AnimEntityLoader {
                 // console.log(path + polyname);
                 // TODO do not parse twice, read from cache first
                 const lwoBuffer = ResourceManager.getResource(path + polyname)
-                entityType.highPoly[polykey] = new LWOLoader(path).parse(lwoBuffer)
+                entityType.highPoly[polykey] = SceneManager.registerMesh(new LWOLoader(path).parse(lwoBuffer))
             })
         }
 

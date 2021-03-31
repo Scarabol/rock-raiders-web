@@ -1,11 +1,14 @@
-import { AmbientLight, Frustum, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector3, WebGLRenderer } from 'three'
 import { DebugHelper } from './DebugHelper'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GameState } from '../game/model/GameState'
 import { Selectable } from '../game/model/Selectable'
 import { Terrain } from './model/map/Terrain'
+import { TILESIZE } from '../main'
 
 export class SceneManager {
+
+    static meshRegistry = []
 
     maxFps: number = 30 // most animations use 25 fps so this should be enough
     renderer: WebGLRenderer
@@ -23,15 +26,6 @@ export class SceneManager {
     constructor(canvas: HTMLCanvasElement) {
         this.renderer = new WebGLRenderer({antialias: true, canvas: canvas})
         this.renderer.setClearColor(0x000000)
-
-        this.scene = new Scene()
-        // this.scene.fog = new FogExp2(0x6e6e9b, 0.05); // TODO derive from level config
-
-        this.amb = new AmbientLight(0x808080) // TODO use "cave" light setup
-        this.scene.add(this.amb)
-
-        this.cursorTorchlight = new PointLight(0xffffff, 1, 7, 2)
-        this.scene.add(this.cursorTorchlight)
 
         this.camera = new PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 5000) // TODO make these params configurable
 
@@ -130,7 +124,19 @@ export class SceneManager {
         GameState.selectEntities(entities)
     }
 
-    startRendering() {
+    setupScene() {
+        this.scene = new Scene()
+        // this.scene.fog = new FogExp2(0x6e6e9b, 0.05); // TODO derive from level config
+
+        this.amb = new AmbientLight(0x808080) // TODO use "cave" light setup
+        this.scene.add(this.amb)
+
+        this.cursorTorchlight = new PointLight(0xffffff, 1, 7, 2)
+        this.cursorTorchlight.distance *= TILESIZE
+        this.scene.add(this.cursorTorchlight)
+    }
+
+    startScene() {
         this.debugHelper.show()
         this.renderInterval = setInterval(() => {
             this.animRequest = requestAnimationFrame(() => {
@@ -141,7 +147,7 @@ export class SceneManager {
         }, 1000 / this.maxFps)
     }
 
-    stopRendering() {
+    disposeScene() {
         this.debugHelper.hide()
         if (this.renderInterval) {
             clearInterval(this.renderInterval)
@@ -151,6 +157,19 @@ export class SceneManager {
             cancelAnimationFrame(this.animRequest)
             this.animRequest = null
         }
+        this.scene.children.filter(c => c)
+        this.terrain.dispose()
+        this.terrain = null
+        SceneManager.meshRegistry.forEach(mesh => {
+            mesh.geometry.dispose()
+            Array.isArray(mesh.material) ? mesh.material.forEach(mat => mat.dispose()) : mesh.material?.dispose()
+        })
+        SceneManager.meshRegistry = []
+    }
+
+    static registerMesh(mesh: Mesh): Mesh {
+        this.meshRegistry.push(mesh)
+        return mesh
     }
 
 }

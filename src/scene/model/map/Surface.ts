@@ -493,6 +493,11 @@ export class Surface implements Selectable {
         }
     }
 
+    dispose() {
+        this.mesh.geometry.dispose()
+        this.accessMaterials().forEach(m => m.dispose())
+    }
+
 }
 
 export enum WALL_TYPE {
