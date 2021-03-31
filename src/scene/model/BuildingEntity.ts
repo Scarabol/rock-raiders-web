@@ -4,7 +4,7 @@ import { Building } from '../../game/model/entity/building/Building'
 import { AnimEntity } from './anim/AnimEntity'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { MathUtils, Vector3 } from 'three'
+import { MathUtils, Vector3, Matrix4 } from 'three'
 import { GameState } from '../../game/model/GameState'
 import { CollectEvent, EntityAddedEvent, EntityType } from '../../event/WorldEvents'
 import { Surface } from './map/Surface'
@@ -24,6 +24,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     constructor(buildingType: Building) {
         super(ResourceManager.getAnimationEntityType(buildingType.aeFile))
         this.type = buildingType
+        this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
         this.pickSphereRadius = 30 // TODO read pick sphere size from cfg
         this.selectionFrameSize = 15
