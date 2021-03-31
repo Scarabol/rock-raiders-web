@@ -306,13 +306,12 @@ export class Surface implements Selectable {
             return sum / cnt
         }
 
-        const geometry = SurfaceGeometry.create(this.wallType, topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex)
-
-        // apply height fine-tuning
-        topLeftVertex.y += avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER
-        topRightVertex.y += avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER
-        bottomRightVertex.y += avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER
-        bottomLeftVertex.y += avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER
+        const geometry = SurfaceGeometry.create(this.wallType, topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex,
+            topLeftVertex.y + avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER,
+            topRightVertex.y + avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER,
+            bottomRightVertex.y + avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER,
+            bottomLeftVertex.y + avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER,
+        )
 
         this.mesh = new Mesh(geometry, new MeshPhongMaterial({shininess: 0}))
         this.mesh.userData = {selectable: this}

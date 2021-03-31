@@ -4,7 +4,10 @@ import { BufferAttribute } from 'three/src/core/BufferAttribute'
 
 export class SurfaceGeometry {
 
-    public static create(wallType: WALL_TYPE, topLeftVertex: Vector3, bottomRightVertex: Vector3, topRightVertex: Vector3, bottomLeftVertex: Vector3) {
+    public static create(wallType: WALL_TYPE,
+                         topLeftVertex: Vector3, bottomRightVertex: Vector3, topRightVertex: Vector3, bottomLeftVertex: Vector3,
+                         topLeftHeight: number, topRightHeight: number, bottomRightHeight: number, bottomLeftHeight: number,
+    ) {
         let uvOffset = 0
 
         // not-rotated
@@ -74,7 +77,6 @@ export class SurfaceGeometry {
 
         const bufferVertices = []
         const bufferNormals = []
-        const bufferVertexUvs = []
 
         function addFaceAndNormals(a, b, c) {
             bufferVertices.push(a, b, c)
@@ -84,41 +86,35 @@ export class SurfaceGeometry {
             bufferNormals.push(normal, normal, normal)
         }
 
+        const uvIndexes = []
         if (topRightVertex.y !== bottomLeftVertex.y ||
             ((wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) && !(topRightVertex.y && bottomLeftVertex.y))) {
-            bufferVertexUvs.push(
-                uv[(1 + uvOffset) % 4],
-                uv[(3 + uvOffset) % 4],
-                uv[(2 + uvOffset) % 4],
-            )
+            uvIndexes.push(1, 3, 2)
+            uvIndexes.push(1, 0, 3)
 
-            // noinspection PointlessArithmeticExpressionJS
-            bufferVertexUvs.push(
-                uv[(1 + uvOffset) % 4],
-                uv[(0 + uvOffset) % 4],
-                uv[(3 + uvOffset) % 4],
-            )
+            // apply height fine-tuning
+            topLeftVertex.y = topLeftHeight
+            topRightVertex.y = topRightHeight
+            bottomRightVertex.y = bottomRightHeight
+            bottomLeftVertex.y = bottomLeftHeight
 
             addFaceAndNormals(topRightVertex, bottomLeftVertex, bottomRightVertex)
             addFaceAndNormals(topRightVertex, topLeftVertex, bottomLeftVertex)
         } else {
-            // noinspection PointlessArithmeticExpressionJS
-            bufferVertexUvs.push(
-                uv[(0 + uvOffset) % 4],
-                uv[(3 + uvOffset) % 4],
-                uv[(2 + uvOffset) % 4],
-            )
+            uvIndexes.push(0, 3, 2)
+            uvIndexes.push(0, 2, 1)
 
-            // noinspection PointlessArithmeticExpressionJS
-            bufferVertexUvs.push(
-                uv[(0 + uvOffset) % 4],
-                uv[(2 + uvOffset) % 4],
-                uv[(1 + uvOffset) % 4],
-            )
+            // apply height fine-tuning
+            topLeftVertex.y = topLeftHeight
+            topRightVertex.y = topRightHeight
+            bottomRightVertex.y = bottomRightHeight
+            bottomLeftVertex.y = bottomLeftHeight
 
             addFaceAndNormals(topLeftVertex, bottomLeftVertex, bottomRightVertex)
             addFaceAndNormals(topLeftVertex, bottomRightVertex, topRightVertex)
         }
+
+        const bufferVertexUvs = uvIndexes.map(i => uv[(i + uvOffset) % 4])
 
         const bufferGeometry = new BufferGeometry()
         bufferGeometry.setAttribute('position', new BufferAttribute(new Float32Array(18), 3).copyVector3sArray(bufferVertices))

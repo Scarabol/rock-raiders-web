@@ -16,7 +16,7 @@ export const MAX_RAIDER_BASE = 12
 export const ADDITIONAL_RAIDER_PER_SUPPORT = 10
 
 export const PANEL_ANIMATION_MULTIPLIER = 3
-export const HEIGHT_MULTIPLER = 0.05
+export const HEIGHT_MULTIPLER = 0.1
 
 // native constants (do not change)
 
