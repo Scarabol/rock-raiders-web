@@ -64,7 +64,7 @@ export class RewardScreen extends BaseScreen {
         this.btnSave.disabled = true
         this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton)
         this.btnLayer.handlePointerEvent = ((eventType, event) => {
-            if (eventType === 'pointermove') { // TODO scroll when close to menu top/bottom border
+            if (eventType === 'pointermove') {
                 const [sx, sy] = this.btnLayer.toScaledCoords(event.clientX, event.clientY)
                 this.btnSave.checkHover(sx, sy)
                 this.btnAdvance.checkHover(sx, sy)

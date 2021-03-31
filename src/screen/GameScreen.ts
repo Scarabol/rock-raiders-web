@@ -27,8 +27,6 @@ export class GameScreen extends BaseScreen {
 
     startLevel(levelName) {
         this.worldManager.setup(levelName, this)
-        // finally show all the layers
-        this.gameLayer.show()
         this.show()
     }
 
