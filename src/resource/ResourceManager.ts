@@ -65,9 +65,10 @@ export class ResourceManager {
         return iGet(ResourceManager.configuration, ...keys)
     }
 
-    static filterEntryNames(basename: string): string[] {
+    static filterTextureSequenceNames(basename: string): string[] {
         const lBasename = basename.toLowerCase()
-        return Object.keys(this.resourceByName).filter((name) => name.startsWith(lBasename))
+        const result = Object.keys(this.resourceByName).filter((name) => name.startsWith(lBasename))
+        return result.length > 0 ? result : ResourceManager.filterTextureSequenceNames('world/shared/' + getFilename(basename))
     }
 
     static getResource(resourceName: string): any {

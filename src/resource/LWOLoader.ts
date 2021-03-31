@@ -464,18 +464,12 @@ export class LWOLoader {
                         const textureFilename = this.path + filename
                         if (sequenceTexture) {
                             const match = textureFilename.match(/(\D+)0+(\d+)\..+/)
-                            const basename = match[1]
-                            const seqStart = Number(match[2])
-                            let sequenceNames = ResourceManager.filterEntryNames(basename)
-                            if (sequenceNames.length < 1) { // no match try shared path
-                                sequenceNames = ResourceManager.filterEntryNames('world/shared/' + getFilename(basename))
-                            }
-                            const lastNum = sequenceNames.length - 1
-                            let seqNum = seqStart
+                            const sequenceNames = ResourceManager.filterTextureSequenceNames(match[1])
+                            let seqNum = 0
                             setInterval(() => { // TODO need to keep track on these intervals?
-                                material.map = ResourceManager.getTexture(sequenceNames[seqNum - seqStart])
+                                material.map = ResourceManager.getTexture(sequenceNames[seqNum])
                                 seqNum++
-                                if (seqNum > lastNum) seqNum = seqStart
+                                if (seqNum >= sequenceNames.length) seqNum = 0
                             }, 1000 / 5) // TODO 5? FPS for texture animations?
                             material.transparent = true
                         }
