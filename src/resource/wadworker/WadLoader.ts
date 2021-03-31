@@ -40,7 +40,8 @@ export class WadLoader {
             const filename = getFilename(name)
             return !!filename.match(/\d\d\d\..+$/i) || !!filename.match(/^trans/i)
                 || !!filename.match(/telepulse/i) || !!filename.match(/^t_/i)
-                || !!filename.includes('crystalglow')
+                || !!filename.includes('crystalglow') || !!filename.match(/^glin/i)
+                || !!filename.match(/glow.bmp/i) || !!filename.match(/spankle/i)
         }
 
         function isAlphaTexture(name): boolean { // TODO check for better approach
@@ -49,25 +50,25 @@ export class WadLoader {
 
         const data = this.wad0File.getEntryData(name)
         const imgData = AlphaBitmapDecoder.parse(data)
-        const isTranslucent = isTranslucentTexture(name)
-        const isAlpha = isAlphaTexture(name)
-        const alpha = { // last pixel defines alpha color
-            r: imgData.data[imgData.data.length - 4],
-            g: imgData.data[imgData.data.length - 3],
-            b: imgData.data[imgData.data.length - 2],
-        }
-        for (let n = 0; n < imgData.data.length; n += 4) {
-            if (isTranslucent) {
+        if (isTranslucentTexture(name)) {
+            for (let n = 0; n < imgData.data.length; n += 4) {
                 if (imgData.data[n] === 255 && imgData.data[n + 1] === 255 && imgData.data[n + 2] === 255) {
                     // TODO BitmapDecoder not working for sequence textures, surrounding color is white instead of black
                     imgData.data[n + 3] = 0
                 } else {
                     imgData.data[n + 3] = Math.max(imgData.data[n], imgData.data[n + 1], imgData.data[n + 2])
                 }
-            } else if (isAlpha && imgData.data[n] === alpha.r && imgData.data[n + 1] === alpha.g && imgData.data[n + 2] === alpha.b) {
-                imgData.data[n + 3] = 0
-            } else if (imgData.data[n] <= 2 && imgData.data[n + 1] <= 2 && imgData.data[n + 2] <= 2) {
-                imgData.data[n + 3] = 0
+            }
+        } else if (isAlphaTexture(name)) {
+            const alpha = { // last pixel defines alpha color
+                r: imgData.data[imgData.data.length - 4],
+                g: imgData.data[imgData.data.length - 3],
+                b: imgData.data[imgData.data.length - 2],
+            }
+            for (let n = 0; n < imgData.data.length; n += 4) {
+                if (imgData.data[n] === alpha.r && imgData.data[n + 1] === alpha.g && imgData.data[n + 2] === alpha.b) {
+                    imgData.data[n + 3] = 0
+                }
             }
         }
         callback(imgData)
