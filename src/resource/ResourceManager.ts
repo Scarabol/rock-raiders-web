@@ -91,11 +91,16 @@ export class ResourceManager {
         return ResourceManager.resourceByName[lImageName]
     }
 
-    static getImage(imageName): HTMLCanvasElement {
+    static getImage(imageName: string): HTMLCanvasElement {
         const imgData = this.getImageData(imageName)
         const context: CanvasRenderingContext2D = createContext(imgData.width, imgData.height)
         context.putImageData(imgData, 0, 0)
         return context.canvas
+    }
+
+    static getImageOrNull(imageName: string): HTMLCanvasElement | null {
+        if (!imageName) return null
+        return this.getImage(imageName)
     }
 
     static getTexture(textureName): Texture {

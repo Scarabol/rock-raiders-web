@@ -1,4 +1,4 @@
-import { Button } from '../../base/Button'
+import { Button } from '../../base/button/Button'
 import { iGet } from '../../../../core/Util'
 import { Panel } from './Panel'
 

@@ -1,7 +1,9 @@
-import { Button, InterfaceBackButton } from '../../base/Button'
+import { Button } from '../../base/button/Button'
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { MenuItem } from '../../base/MenuItem'
 import { Panel } from './Panel'
+import { InterfaceBackButton } from '../../base/button/InterfaceBackButton'
+import { ButtonCfg } from '../../base/button/ButtonCfg'
 
 export class IconPanel extends Panel {
 
@@ -36,7 +38,8 @@ export class IconSubPanel extends Panel {
     constructor(numOfItems, onBackPanel: Panel = null) {
         super()
         if (onBackPanel) {
-            this.backBtn = this.addButton(new InterfaceBackButton(this))
+            const backBtnCfg = new ButtonCfg(ResourceManager.cfg('InterfaceBackButton'))
+            this.backBtn = this.addButton(new InterfaceBackButton(this, backBtnCfg))
             const panel = this
             this.backBtn.onClick = () => panel.toggleState(() => onBackPanel.toggleState())
         }

@@ -20,7 +20,7 @@ export class GuiLayer extends ScaledLayer {
     panelCameraControl: Panel
     panelInfoDock: InfoDockPanel
     panelEncyclopedia: Panel
-    panelIcons: MainPanel
+    panelMain: MainPanel
 
     constructor() {
         super()
@@ -35,7 +35,7 @@ export class GuiLayer extends ScaledLayer {
         this.panelPriorityList = this.addPanel(new Panel('Panel_PriorityList', panelsCfg, buttonsCfg))
         this.panelInformation = this.addPanel(new Panel('Panel_Information', panelsCfg, buttonsCfg))
         this.panelTopPanel = this.addPanel(new TopPanel('Panel_TopPanel', panelsCfg, buttonsCfg))
-        this.panelIcons = this.addPanel(new MainPanel())
+        this.panelMain = this.addPanel(new MainPanel())
         this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar('Panel_CrystalSideBar', panelsCfg, buttonsCfg))
         this.panelMessagesSide = this.addPanel(new Panel('Panel_MessagesSide', panelsCfg, buttonsCfg))
         this.panelMessages = this.addPanel(new MessagePanel('Panel_Messages', panelsCfg, buttonsCfg))
@@ -52,8 +52,7 @@ export class GuiLayer extends ScaledLayer {
     }
 
     addPanel<T extends Panel>(panel: T): T {
-        this.rootElement.addChild(panel)
-        return panel
+        return this.rootElement.addChild(panel)
     }
 
     handlePointerEvent(eventType: string, event: PointerEvent): boolean {

@@ -1,8 +1,9 @@
 import { ResourceManager } from '../../../../resource/ResourceManager'
-import { Button } from '../../base/Button'
+import { Button } from '../../base/button/Button'
 import { BaseElement } from '../../base/BaseElement'
 import { iGet } from '../../../../core/Util'
 import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../../../main'
+import { ButtonCfg } from '../../base/button/ButtonCfg'
 
 export class Panel extends BaseElement {
 
@@ -30,9 +31,9 @@ export class Panel extends BaseElement {
             let panelButtonsCfg = iGet(buttonsCfg, panelName)
             if (panelButtonsCfg) {
                 if (panelName === 'Panel_Encyclopedia') { // TODO refactor cfg handling
-                    this.addButton(new Button(this, panelButtonsCfg))
+                    this.addButton(new Button(this, new ButtonCfg(panelButtonsCfg)))
                 } else {
-                    panelButtonsCfg.forEach((btnCfg) => this.addButton(new Button(this, btnCfg)))
+                    panelButtonsCfg.forEach((btnCfg) => this.addButton(new Button(this, new ButtonCfg(btnCfg))))
                 }
             }
         }
