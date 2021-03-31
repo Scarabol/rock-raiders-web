@@ -60,7 +60,7 @@ export class BitmapFont {
     }
 
     extractData(imgData, startX, startY, width, height): ImageData {
-        const alpha = getPixel(imgData, startX, startY)
+        const alpha = getPixel(imgData, startX + width - 1, startY + height - 1)
         const result = new ImageData(width, height)
         for (let x = 0; x < width; x++) {
             for (let y = 0; y < height; y++) {
