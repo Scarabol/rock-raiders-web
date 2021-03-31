@@ -132,7 +132,7 @@ export class SceneManager {
 
     startRendering() {
         this.debugHelper.show()
-        this.renderInterval = setInterval(() => { // TODO cancel interval when not in game mode
+        this.renderInterval = setInterval(() => {
             this.animRequest = requestAnimationFrame(() => {
                 this.debugHelper.renderStart()
                 this.renderer.render(this.scene, this.camera)

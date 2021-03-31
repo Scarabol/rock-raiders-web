@@ -51,15 +51,15 @@ export class WadLoader {
         const imgData = AlphaBitmapDecoder.parse(data)
         const isTranslucent = isTranslucentTexture(name)
         const isAlpha = isAlphaTexture(name)
-        const alpha = {
+        const alpha = { // last pixel defines alpha color
             r: imgData.data[imgData.data.length - 4],
             g: imgData.data[imgData.data.length - 3],
             b: imgData.data[imgData.data.length - 2],
-        } // TODO how to determine alpha color?
+        }
         for (let n = 0; n < imgData.data.length; n += 4) {
             if (isTranslucent) {
                 if (imgData.data[n] === 255 && imgData.data[n + 1] === 255 && imgData.data[n + 2] === 255) {
-                    // TODO dirty hack, because BitmapDecoder not working for sequence textures (surrounding is white instead of black)
+                    // TODO BitmapDecoder not working for sequence textures, surrounding color is white instead of black
                     imgData.data[n + 3] = 0
                 } else {
                     imgData.data[n + 3] = Math.max(imgData.data[n], imgData.data[n + 1], imgData.data[n + 2])
