@@ -4,7 +4,7 @@ import { MainMenuScreen } from './screen/MainMenuScreen'
 import { GameScreen } from './screen/GameScreen'
 import { RewardScreen } from './screen/RewardScreen'
 import { GameState } from './game/model/GameState'
-import { Modal } from 'bootstrap'
+import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
 
 // define constants
 
@@ -28,26 +28,11 @@ export const NATIVE_FRAMERATE = 30
 // setup and link all components
 
 const loadingScreen = new LoadingScreen()
-// TODO strip modal from HTML and make it a dynamically loaded tsx component with sass compiled bootstrap css
-const wadfileSelectModal = new Modal(document.getElementById('wadfiles_select_modal'), {
-    backdrop: 'static',
-    keyboard: false,
-})
-const btnStartFile = document.getElementById('button-start-file') as HTMLButtonElement
-btnStartFile.addEventListener('click', () => {
-    btnStartFile.disabled = true
-    const wad0File = URL.createObjectURL((document.getElementById('wad0-file') as HTMLInputElement).files[0])
-    const wad1File = URL.createObjectURL((document.getElementById('wad1-file') as HTMLInputElement).files[0])
-    ResourceManager.startLoadingFromUrl(wad0File, wad1File)
-})
-const btnStartUrl = document.getElementById('button-start-url') as HTMLButtonElement
-btnStartUrl.addEventListener('click', () => {
-    btnStartUrl.disabled = true
-    const wad0Url = (document.getElementById('wad0-url') as HTMLInputElement).value
-    const wda1Url = (document.getElementById('wad1-url') as HTMLInputElement).value
-    ResourceManager.startLoadingFromUrl(wad0Url, wda1Url)
-})
+const wadfileSelectModal = new WadFileSelectionModal('game-container')
 
+wadfileSelectModal.onStart = (wad0Url, wad1Url) => {
+    ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
+}
 ResourceManager.onMessage = (msg: string) => {
     loadingScreen.setLoadingMessage(msg)
 }
