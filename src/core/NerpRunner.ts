@@ -240,6 +240,11 @@ export class NerpRunner {
         return 0
     }
 
+    getUnitAtBlock(arg1) {
+        // TODO implement this
+        return 0
+    }
+
     getOxygenLevel() {
         // TODO implement this
         return 100
