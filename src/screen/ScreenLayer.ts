@@ -1,5 +1,6 @@
 import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../main'
 import { ResourceManager } from '../resource/ResourceManager'
+import { KEY_EVENT, POINTER_EVENT } from '../event/EventManager'
 
 export class ScreenLayer {
 
@@ -52,15 +53,15 @@ export class ScreenLayer {
         return [windowX - clientRect.left, windowY - clientRect.top]
     }
 
-    handlePointerEvent(eventType: string, event: PointerEvent) { // TODO refactor: performance: create enum for eventType
+    handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
         return false
     }
 
-    handleKeyEvent(eventType: string, event: KeyboardEvent) {
+    handleKeyEvent(eventEnum: KEY_EVENT, event: KeyboardEvent): boolean {
         return false
     }
 
-    handleWheelEvent(eventType: string, event: WheelEvent) {
+    handleWheelEvent(event: WheelEvent): boolean {
         return false
     }
 

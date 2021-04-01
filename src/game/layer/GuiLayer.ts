@@ -6,6 +6,7 @@ import { RadarPanel } from '../gui/ingame/panel/RadarPanel'
 import { MessagePanel } from '../gui/ingame/panel/MessagePanel'
 import { PanelCrystalSideBar } from '../gui/ingame/panel/PanelCrystalSideBar'
 import { MainPanel } from '../gui/ingame/panel/MainPanel'
+import { POINTER_EVENT } from '../../event/EventManager'
 
 export class GuiLayer extends ScaledLayer {
 
@@ -55,28 +56,28 @@ export class GuiLayer extends ScaledLayer {
         return this.rootElement.addChild(panel)
     }
 
-    handlePointerEvent(eventType: string, event: PointerEvent): boolean {
+    handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
         const hit = this.context && this.context.getImageData(cx, cy, 1, 1).data[3] > 0
         let needsRedraw = false
         if (hit) {
             event.preventDefault()
-            if (eventType === 'pointermove') {
+            if (eventEnum === POINTER_EVENT.MOVE) {
                 needsRedraw = this.rootElement.checkHover(sx, sy) || needsRedraw
-            } else if (eventType === 'pointerdown') {
+            } else if (eventEnum === POINTER_EVENT.DOWN) {
                 needsRedraw = this.rootElement.checkClick(sx, sy) || needsRedraw
-            } else if (eventType === 'pointerup') {
+            } else if (eventEnum === POINTER_EVENT.UP) {
                 needsRedraw = this.rootElement.checkRelease(sx, sy) || needsRedraw
             }
-        } else if (eventType === 'pointermove') {
+        } else if (eventEnum === POINTER_EVENT.MOVE) {
             needsRedraw = this.rootElement.release() || needsRedraw
         }
         if (needsRedraw) this.redraw() // TODO performance: only redraw certain buttons/panels?
         return hit
     }
 
-    handleWheelEvent(eventType: string, event: WheelEvent): boolean {
+    handleWheelEvent(event: WheelEvent): boolean {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         return !this.context || this.context.getImageData(cx, cy, 1, 1).data[3] > 0
     }

@@ -10,7 +10,7 @@ import { Surface } from '../../scene/model/map/Surface'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { FulfillerEntity } from '../../scene/model/FulfillerEntity'
 import { SurfaceJob, SurfaceJobType } from '../model/job/SurfaceJob'
-import { MOUSE_BUTTON } from '../../event/EventManager'
+import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventManager'
 
 export class GameLayer extends ScreenLayer {
 
@@ -24,11 +24,11 @@ export class GameLayer extends ScreenLayer {
         this.worldMgr = worldMgr
     }
 
-    handlePointerEvent(eventType: string, event: PointerEvent): boolean {
-        if (eventType === 'pointermove') {
+    handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
+        if (eventEnum === POINTER_EVENT.MOVE) {
             const intersectionPoint = this.getTerrainPositionFromEvent(event)
             if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint)
-        } else if (eventType === 'pointerup' && event.button === MOUSE_BUTTON.SECONDARY) {
+        } else if (eventEnum === POINTER_EVENT.UP && event.button === MOUSE_BUTTON.SECONDARY) {
             if (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP) {
                 // TODO check for collectable entity first
                 const intersectionPoint = this.getTerrainPositionFromEvent(event)
@@ -51,8 +51,8 @@ export class GameLayer extends ScreenLayer {
         return true
     }
 
-    handleKeyEvent(eventType: string, event: KeyboardEvent): boolean {
-        if (eventType === 'keyup') {
+    handleKeyEvent(eventEnum: KEY_EVENT, event: KeyboardEvent): boolean {
+        if (eventEnum === KEY_EVENT.UP) {
             if (GameState.selectionType === SelectionType.SURFACE) {
                 GameState.selectedEntities.forEach((s: Surface) => {
                     if (event.key === 'c') {
@@ -86,7 +86,7 @@ export class GameLayer extends ScreenLayer {
         return this.worldMgr.getTerrainIntersectionPoint(rx, ry)
     }
 
-    handleWheelEvent(eventType: string, event: WheelEvent): boolean {
+    handleWheelEvent(event: WheelEvent): boolean {
         this.canvas.dispatchEvent(event)
         return true
     }

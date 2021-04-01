@@ -1,5 +1,5 @@
 import { ScreenLayer } from '../../screen/ScreenLayer'
-import { MOUSE_BUTTON } from '../../event/EventManager'
+import { MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventManager'
 import { WorldManager } from '../../scene/WorldManager'
 
 export class SelectionLayer extends ScreenLayer {
@@ -15,13 +15,13 @@ export class SelectionLayer extends ScreenLayer {
         this.worldManager = worldManager
     }
 
-    handlePointerEvent(eventType: string, event: PointerEvent): boolean {
+    handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
-        if (eventType === 'pointerdown') {
+        if (eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.MAIN) return this.startSelection(cx, cy)
-        } else if (eventType === 'pointermove') {
+        } else if (eventEnum === POINTER_EVENT.MOVE) {
             return this.changeSelection(cx, cy)
-        } else if (eventType === 'pointerup') {
+        } else if (eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) return this.selectEntities(cx, cy)
         }
         return false

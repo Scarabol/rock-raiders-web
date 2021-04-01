@@ -3,7 +3,7 @@ import { MainMenuLabelButton } from './MainMenuLabelButton'
 import { ScaledLayer } from '../screen/ScreenLayer'
 import { MenuCfg } from '../resource/wadworker/MenuCfg'
 import { BitmapFont } from '../core/BitmapFont'
-import { MOUSE_BUTTON } from '../event/EventManager'
+import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventManager'
 import { MainMenuScreen } from '../screen/MainMenuScreen'
 import { MainMenuIconButton } from './MainMenuIconButton'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
@@ -52,8 +52,8 @@ export class MainMenuLayer extends ScaledLayer {
         }
     }
 
-    handlePointerEvent(eventType: string, event: PointerEvent): boolean {
-        if (eventType === 'pointermove') { // TODO scroll when close to menu top/bottom border
+    handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
+        if (eventEnum === POINTER_EVENT.MOVE) { // TODO scroll when close to menu top/bottom border
             const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
             let hovered = false
             this.items.forEach((item) => {
@@ -66,11 +66,11 @@ export class MainMenuLayer extends ScaledLayer {
                     item.setReleased()
                 }
             })
-        } else if (eventType === 'pointerdown') {
+        } else if (eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 this.items.forEach((item) => item.checkSetPressed())
             }
-        } else if (eventType === 'pointerup') {
+        } else if (eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 this.items.forEach((item) => {
                     if (item.pressed) {
@@ -90,7 +90,7 @@ export class MainMenuLayer extends ScaledLayer {
         return false
     }
 
-    handleWheelEvent(eventType: string, event: WheelEvent): boolean {
+    handleWheelEvent(event: WheelEvent): boolean {
         if (!this.cfg.canScroll) return false
         this.scrollY = Math.min(Math.max(this.scrollY + event.deltaY, 0), this.menuImage.height - this.fixedHeight)
         this.redraw()

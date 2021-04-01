@@ -5,7 +5,7 @@ import { RewardCfg } from '../menu/RewardCfg'
 import { GameResultState, GameState } from '../game/model/GameState'
 import { BitmapFont } from '../core/BitmapFont'
 import { RewardScreenButton } from '../menu/RewardScreenButton'
-import { MOUSE_BUTTON } from '../event/EventManager'
+import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventManager'
 
 export class RewardScreen extends BaseScreen {
 
@@ -47,7 +47,7 @@ export class RewardScreen extends BaseScreen {
         })
         this.resultsLayer = this.addLayer(new ScaledLayer())
         this.resultsLayer.handlePointerEvent = ((eventType) => {
-            if (eventType === 'pointerup') {
+            if (eventType === POINTER_EVENT.UP) {
                 if (this.uncoverTimeout) clearTimeout(this.uncoverTimeout)
                 this.uncoverTimeout = null
                 this.resultIndex = this.resultLastIndex
@@ -64,16 +64,16 @@ export class RewardScreen extends BaseScreen {
         this.btnSave.disabled = true
         this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton)
         this.btnLayer.handlePointerEvent = ((eventType, event) => {
-            if (eventType === 'pointermove') {
+            if (eventType === POINTER_EVENT.MOVE) {
                 const [sx, sy] = this.btnLayer.toScaledCoords(event.clientX, event.clientY)
                 this.btnSave.checkHover(sx, sy)
                 this.btnAdvance.checkHover(sx, sy)
-            } else if (eventType === 'pointerdown') {
+            } else if (eventType === POINTER_EVENT.DOWN) {
                 if (event.button === MOUSE_BUTTON.MAIN) {
                     this.btnSave.checkSetPressed()
                     this.btnAdvance.checkSetPressed()
                 }
-            } else if (eventType === 'pointerup') {
+            } else if (eventType === POINTER_EVENT.UP) {
                 if (event.button === MOUSE_BUTTON.MAIN) {
                     if (this.btnSave.pressed) {
                         this.btnSave.setReleased()
