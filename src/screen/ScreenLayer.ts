@@ -28,7 +28,6 @@ export class ScreenLayer {
     resize(width, height) {
         this.canvas.width = width
         this.canvas.height = height
-        this.redraw()
     }
 
     redraw() {
