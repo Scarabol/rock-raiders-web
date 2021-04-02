@@ -1,5 +1,5 @@
 import { MainMenuLayer } from './MainMenuLayer'
-import { MainMenuItemCfg } from './MainMenuItemCfg'
+import { MainMenuItemCfg } from '../cfg/MainMenuItemCfg'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {

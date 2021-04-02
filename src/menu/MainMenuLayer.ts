@@ -1,7 +1,7 @@
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuLabelButton } from './MainMenuLabelButton'
 import { ScaledLayer } from '../screen/ScreenLayer'
-import { MenuCfg } from '../resource/wadworker/MenuCfg'
+import { MenuCfg } from '../cfg/MenuCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventManager'
 import { MainMenuScreen } from '../screen/MainMenuScreen'
@@ -27,8 +27,8 @@ export class MainMenuLayer extends ScaledLayer {
         super()
         this.screen = screen
         this.cfg = menuCfg
-        this.fullName = menuCfg.fullName.replace(/_/g, ' ')
-        this.title = menuCfg.title.replace(/_/g, ' ')
+        this.fullName = menuCfg.fullName
+        this.title = menuCfg.title
         this.menuFont = menuCfg.menuFont ? ResourceManager.getBitmapFont(menuCfg.menuFont) : null
         this.loFont = menuCfg.loFont ? ResourceManager.getBitmapFont(menuCfg.loFont) : null
         this.hiFont = menuCfg.hiFont ? ResourceManager.getBitmapFont(menuCfg.hiFont) : null

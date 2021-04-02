@@ -3,9 +3,9 @@ import { WadFile } from './WadFile'
 import { getFilename, getPath, iGet } from './WadUtil'
 import { RonFile } from './RonFile'
 import { AlphaBitmapDecoder } from './AlphaBitmapDecoder'
-import { MainMenuFullCfg } from './MainMenuFullCfg'
-import { LevelEntryCfg, LevelsCfg } from './LevelsCfg'
-import { RewardCfg } from '../../menu/RewardCfg'
+import { MainMenuFullCfg } from '../../cfg/MainMenuFullCfg'
+import { LevelEntryCfg, LevelsCfg } from '../../cfg/LevelsCfg'
+import { RewardCfg } from '../../cfg/RewardCfg'
 
 export class WadLoader {
 

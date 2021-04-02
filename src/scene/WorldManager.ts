@@ -2,7 +2,7 @@ import { SceneManager } from './SceneManager'
 import { TerrainLoader } from './TerrainLoader'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MathUtils, Raycaster, Vector3 } from 'three'
-import { getRandom, iGet } from '../core/Util'
+import { getRandom } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent, SpawnMaterialEvent } from '../event/WorldEvents'
 import { Raider } from './model/Raider'
@@ -18,6 +18,7 @@ import { DynamiteJob } from '../game/model/job/SurfaceJob'
 import { NerpParser } from '../core/NerpParser'
 import { NerpRunner } from '../core/NerpRunner'
 import { GameScreen } from '../screen/GameScreen'
+import { LevelEntryCfg, LevelsCfg } from '../cfg/LevelsCfg'
 import degToRad = MathUtils.degToRad
 
 export class WorldManager {
@@ -55,10 +56,10 @@ export class WorldManager {
     }
 
     setup(levelName: string, gameScreen: GameScreen) {
-        if (!levelName) return
-        const levelConf = ResourceManager.cfg('Levels', levelName)
+        const levelsCfg: LevelsCfg = ResourceManager.getResource('Levels')
+        const levelConf: LevelEntryCfg = levelsCfg.levelsByName[levelName]
         if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'
-        GameState.levelFullName = iGet(levelConf, 'FullName').replace(/_/g, ' ')
+        GameState.levelFullName = levelConf.fullName
         console.log('Starting level ' + levelName + ' - ' + GameState.levelFullName)
 
         this.sceneManager.setupScene()
@@ -68,16 +69,12 @@ export class WorldManager {
         this.sceneManager.scene.add(this.sceneManager.terrain.floorGroup)
 
         // load in non-space objects next
-        const objectListConf = ResourceManager.getResource(iGet(levelConf, 'OListFile'))
+        const objectListConf = ResourceManager.getResource(levelConf.oListFile)
         ObjectListLoader.loadObjectList(this, objectListConf)
 
         // load nerp script
-        const nerpFile = iGet(levelConf, 'NERPFile')
-        const nerpScriptContent = ResourceManager.getResource(nerpFile)
-        this.nerpRunner = NerpParser.parse(nerpScriptContent)
-        const nerpMsgFile = iGet(levelConf, 'NERPMessageFile')
-        const nerpMessages = ResourceManager.getResource(nerpMsgFile)
-        this.nerpRunner.messages.push(...nerpMessages)
+        this.nerpRunner = NerpParser.parse(ResourceManager.getResource(levelConf.nerpFile))
+        this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
         this.nerpRunner.onLevelComplete = () => gameScreen.onLevelEnd()
 
         // gather level start details for game result score calculation

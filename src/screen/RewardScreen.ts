@@ -1,7 +1,7 @@
 import { BaseScreen } from './BaseScreen'
 import { ResourceManager } from '../resource/ResourceManager'
 import { ScaledLayer } from './ScreenLayer'
-import { RewardCfg } from '../menu/RewardCfg'
+import { RewardCfg } from '../cfg/RewardCfg'
 import { GameResultState, GameState } from '../game/model/GameState'
 import { BitmapFont } from '../core/BitmapFont'
 import { RewardScreenButton } from '../menu/RewardScreenButton'

@@ -1,6 +1,6 @@
 import { MainMenuLayer } from './MainMenuLayer'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
-import { LevelEntryCfg } from '../resource/wadworker/LevelsCfg'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { ResourceManager } from '../resource/ResourceManager'
 
 export class MainMenuLevelButton extends MainMenuBaseItem {

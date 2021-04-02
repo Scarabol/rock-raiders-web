@@ -1,31 +1,31 @@
 import { Surface } from './model/map/Surface'
 import { Terrain } from './model/map/Terrain'
 import { ResourceManager } from '../resource/ResourceManager'
-import { iGet } from '../core/Util'
 import { SurfaceType } from './model/map/SurfaceType'
 import { WorldManager } from './WorldManager'
 import { TILESIZE } from '../main'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 
 export class TerrainLoader {
 
-    static loadTerrain(levelConf, worldMgr: WorldManager): Terrain {
-        const tileSize = Number(iGet(levelConf, 'BlockSize'))
+    static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager): Terrain {
+        const tileSize = levelConf.blockSize
         if (tileSize !== TILESIZE) console.error('Unexpected tile size in level configuration: ' + tileSize)
         const terrain = new Terrain(worldMgr)
 
-        const themeName = levelConf['TextureSet'][1]
+        const themeName = levelConf.textureSet[1]
         terrain.textureSet = ResourceManager.cfg('Textures', themeName)
         // console.log(terrain.textureSet);
 
-        const terrainMap = ResourceManager.getMap(iGet(levelConf, 'TerrainMap'))
+        const terrainMap = ResourceManager.getMap(levelConf.terrainMap)
         terrain.width = terrainMap.width
         terrain.height = terrainMap.height
-        const pathMap = ResourceManager.getMap(iGet(levelConf, 'PathMap'))?.level
-        const surfaceMap = ResourceManager.getMap(iGet(levelConf, 'SurfaceMap'))?.level
-        const predugMap = ResourceManager.getMap(iGet(levelConf, 'PreDugMap'))?.level
-        const cryOreMap = ResourceManager.getMap(iGet(levelConf, 'CryOreMap'))?.level
-        const fallinMap = ResourceManager.getMap(iGet(levelConf, 'FallinMap'))?.level
-        const erodeMap = ResourceManager.getMap(iGet(levelConf, 'ErodeMap'))?.level
+        const pathMap = ResourceManager.getMap(levelConf.pathMap)?.level
+        const surfaceMap = ResourceManager.getMap(levelConf.surfaceMap)?.level
+        const predugMap = ResourceManager.getMap(levelConf.predugMap)?.level
+        const cryOreMap = ResourceManager.getMap(levelConf.cryOreMap)?.level
+        const fallinMap = ResourceManager.getMap(levelConf.fallinMap)?.level
+        const erodeMap = ResourceManager.getMap(levelConf.erodeMap)?.level
 
         // maps parsed from WAD are row-wise saved, which means y (row) comes first and x (column) second
         for (let r = 0; r < terrainMap.level.length; r++) {

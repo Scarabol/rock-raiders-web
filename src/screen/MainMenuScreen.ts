@@ -1,6 +1,6 @@
 import { BaseScreen } from './BaseScreen'
 import { ResourceManager } from '../resource/ResourceManager'
-import { MainMenuFullCfg } from '../resource/wadworker/MainMenuFullCfg'
+import { MainMenuFullCfg } from '../cfg/MainMenuFullCfg'
 import { MainMenuLayer } from '../menu/MainMenuLayer'
 import { LevelSelectLayer } from '../menu/LevelSelectLayer'
 
