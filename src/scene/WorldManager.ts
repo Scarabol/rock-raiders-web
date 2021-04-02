@@ -57,7 +57,7 @@ export class WorldManager {
     setup(levelName: string, gameScreen: GameScreen) {
         if (!levelName) return
         const levelConf = ResourceManager.cfg('Levels', levelName)
-        if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"' // TODO error handling
+        if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'
         GameState.levelFullName = iGet(levelConf, 'FullName').replace(/_/g, ' ')
         console.log('Starting level ' + levelName + ' - ' + GameState.levelFullName)
 
@@ -99,7 +99,7 @@ export class WorldManager {
         this.nerpRunner?.pauseExecution()
         if (this.spawnRaiderInterval) clearInterval(this.spawnRaiderInterval)
         this.spawnRaiderInterval = null
-        GameState.remainingDiggables = this.sceneManager.terrain.surfaces.filter((r) => r.forEach((s) => s.isDigable())).length
+        GameState.remainingDiggables = this.sceneManager?.terrain?.surfaces?.filter((r) => r.forEach((s) => s.isDigable())).length || 0
         this.sceneManager.disposeScene()
     }
 

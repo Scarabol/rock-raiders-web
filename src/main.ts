@@ -53,7 +53,13 @@ ResourceManager.onLoadDone = () => {
     const rewardScreen = new RewardScreen()
 
     mainMenuScreen.onLevelSelected = (levelName) => {
-        gameScreen.startLevel(levelName)
+        try {
+            gameScreen.startLevel(levelName)
+        } catch (e) {
+            console.error('Could not load level: ' + levelName, e)
+            gameScreen.hide()
+            mainMenuScreen.showLevelSelection()
+        }
     }
     gameScreen.onLevelEnd = () => {
         gameScreen.hide()
