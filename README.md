@@ -3,34 +3,69 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 **Enjoy!**
 
-## Development Screenshots
-TODO insert some screenshots here
+## Screenshots
+<a href="https://github.com/Scarabol/rock-raiders-web/blob/test/screenshots/2021-04-02%2001.png?raw=true">
+<img src="https://github.com/Scarabol/rock-raiders-web/blob/test/screenshots/2021-04-02%2001.png?raw=true" width="360" alt="Screenshot">
+</a>
+<a href="https://github.com/Scarabol/rock-raiders-web/blob/test/screenshots/2021-04-02%2002.png?raw=true">
+<img src="https://github.com/Scarabol/rock-raiders-web/blob/test/screenshots/2021-04-02%2002.png?raw=true" width="360" alt="Screenshot">
+</a>
 
-## Playable levels
-* Level 1
-* Level 2
-* Level 3
+<a href="https://github.com/Scarabol/rock-raiders-web/blob/test/screenshots/2021-04-02%2003.png?raw=true">
+<img src="https://github.com/Scarabol/rock-raiders-web/blob/test/screenshots/2021-04-02%2003.png?raw=true" width="360" alt="Screenshot">
+</a>
+<a href="https://github.com/Scarabol/rock-raiders-web/blob/test/screenshots/2021-04-02%2004.png?raw=true">
+<img src="https://github.com/Scarabol/rock-raiders-web/blob/test/screenshots/2021-04-02%2004.png?raw=true" width="360" alt="Screenshot">
+</a>
 
-## Broken Level
-* Level 4: not loaded correctly
-* Level 5: not loaded correctly
-* Level 7: not loaded at all
-* Others: untested
+## Development Roadmap
 
-## Missing features
-* Escape screen not working to quit levels
-* Vehicles not implemented
-* Monsters not implemented (yeah!)
-* Mission briefing screen missing
-* "Beam up"-sequence missing on level completion
-* Sounds and music
-* Save and load not working (but all levels unlocked by default)
-* ...and much more :(
+### Near
+- UI Performance
+- Work priority order screen
+- Info messages
+- Escape screen
+- Mission briefing
+- Options screen
+- Limit zoom in/out
+- Raider Training
+- Spiders, Bats
 
-### Minor issues
-* Modal flickering on page load (make a component)
-* Score calculation not yet implemented
-* Level score not shown in overview
+### Mid
+- Carry energy crystals to power stations
+- Electric fences and power consumption/outage
+- Air consumption and production
+- Brick refinery
+- All other buildings
+- Damage
+- Teleport up on demand or at bad health
+- Vehicles
+- Radar map
+
+### Far
+- Alarm mode and shooting
+- Monsters
+- Sounds and music
+- Level score shown and level unlocking
+- Save and load
+- First-Person and shoulder camera
+- Tutorial levels
+
+## Known Bugs
+
+### Important
+- Right click commands raider and moves camera too
+- Drilling time not related to material
+- Reward screen not reset
+
+### Nice to have
+- Requirements tooltip for buildings/vehicles not shown
+- When scene is disposed animation interval must be canceled
+
+### Cosmetics
+- Requested number of raiders not shown in icon panel
+- No tooltips
+- Cursor does not react on targeted object
 
 ## Development
 To start development environment, please follow the following steps:

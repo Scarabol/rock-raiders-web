@@ -161,7 +161,8 @@ export class SceneManager {
         this.terrain?.dispose()
         this.terrain = null
         SceneManager.meshRegistry.forEach(mesh => {
-            mesh.geometry.dispose()
+            // TODO stop animation intervals/timeouts
+            mesh.geometry.dispose() // TODO refactor better handle on entity level
             Array.isArray(mesh.material) ? mesh.material.forEach(mat => mat.dispose()) : mesh.material?.dispose()
         })
         SceneManager.meshRegistry = []
