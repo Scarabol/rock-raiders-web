@@ -113,12 +113,12 @@ export class RewardScreen extends BaseScreen {
         resultValues.push(this.fonts['ore'].createTextImage(this.percentString(GameState.numOre, GameState.totalOres)))
         resultValues.push(this.fonts['diggable'].createTextImage(this.percentString(GameState.remainingDiggables, GameState.totalDiggables, true)))
         resultValues.push(this.fonts['constructions'].createTextImage(GameState.buildings.length.toString()))
-        resultValues.push(this.fonts['caverns'].createTextImage(this.percentString(GameState.remainingCaverns, GameState.totalCaverns, true)))
+        resultValues.push(this.fonts['caverns'].createTextImage(this.percentString(GameState.discoveredCaverns, GameState.totalCaverns)))
         resultValues.push(this.fonts['figures'].createTextImage(this.percentString(GameState.raiders.length, GameState.getMaxRaiders())))
         resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(0))) // TODO show defence report
         resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(GameState.airlevel)))
-        resultValues.push(this.fonts['timer'].createTextImage(this.timeString(GameState.levelStopTime - GameState.levelStartTime)))
-        resultValues.push(this.fonts['score'].createTextImage(this.percentString(0.99))) // TODO calculate level score
+        resultValues.push(this.fonts['timer'].createTextImage(this.timeString(GameState.gameTimeSeconds)))
+        resultValues.push(this.fonts['score'].createTextImage(this.percentString(GameState.score)))
         const gameResultTextImg = this.titleFont.createTextImage(resultText)
         this.resultsLayer.onRedraw = (context) => {
             for (let c = 0; c <= this.resultIndex; c++) {
@@ -159,8 +159,7 @@ export class RewardScreen extends BaseScreen {
         return value
     }
 
-    timeString(timediffMs: number) {
-        const seconds = Math.round(timediffMs / 1000)
+    timeString(seconds: number) {
         const ss = this.padLeft((seconds % 60).toString())
         const minutes = Math.floor(seconds / 60)
         const mm = this.padLeft(((minutes % 60).toString()))

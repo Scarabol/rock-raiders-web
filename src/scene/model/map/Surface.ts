@@ -93,7 +93,10 @@ export class Surface implements Selectable {
         this.needsMeshUpdate = true
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors()
-        if (foundCave) console.log('A new cave has been discovered') // TODO emit new-cave event instead
+        if (foundCave) {
+            GameState.discoveredCaverns++ // TODO emit new-cave event instead
+            console.log('A new cave has been discovered')
+        }
         // check for unsupported neighbors
         for (let x = this.x - 1; x <= this.x + 1; x++) {
             for (let y = this.y - 1; y <= this.y + 1; y++) {

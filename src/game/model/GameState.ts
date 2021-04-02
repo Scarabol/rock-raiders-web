@@ -14,6 +14,7 @@ import { BuildingSite } from '../../scene/model/BuildingSite'
 import { Dynamite } from '../../scene/model/collect/Dynamite'
 import { Crystal } from '../../scene/model/collect/Crystal'
 import { Ore } from '../../scene/model/collect/Ore'
+import { LevelRewardConfig } from '../../cfg/LevelsCfg'
 
 export enum GameResultState {
 
@@ -51,9 +52,10 @@ export class GameState {
     static totalDiggables: number = 0
     static remainingDiggables: number = 0
     static totalCaverns: number = 0
-    static remainingCaverns: number = 0
+    static discoveredCaverns: number = 0
     static levelStartTime: number = 0
     static levelStopTime: number = 0
+    static rewardConfig: LevelRewardConfig = null
 
     static reset() {
         this.resultState = GameResultState.RUNNING
@@ -81,9 +83,10 @@ export class GameState {
         this.totalDiggables = 0
         this.remainingDiggables = 0
         this.totalCaverns = 0
-        this.remainingCaverns = 0
+        this.discoveredCaverns = 0
         this.levelStartTime = 0
         this.levelStopTime = 0
+        this.rewardConfig = null
     }
 
     static getBuildingsByType(...buildingTypes: Building[]): BuildingEntity[] {
@@ -185,6 +188,23 @@ export class GameState {
             console.error('Material drop not yet implemented: ' + type)
         }
         return result
+    }
+
+    static get gameTimeSeconds() {
+        return Math.round((GameState.levelStopTime - GameState.levelStartTime) / 1000)
+    }
+
+    static get score() {
+        if (!GameState.rewardConfig) return 0
+        let quota = GameState.rewardConfig.quota
+        let importance = GameState.rewardConfig.importance
+        const scoreCrystals = GameState.numCrystal >= (quota.crystals || Infinity) ? importance.crystals : 0
+        const scoreTimer = GameState.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
+        const scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
+        const scoreConstructions = quota.constructions ? Math.min(1, GameState.buildings.length / quota.constructions * importance.constructions) : 0
+        const scoreOxygen = GameState.airlevel * importance.oxygen
+        const scoreFigures = GameState.raiders.length >= MAX_RAIDER_BASE ? importance.figures : 0
+        return Math.round(scoreCrystals + scoreTimer + scoreCaverns + scoreConstructions + scoreOxygen + scoreFigures) / 100
     }
 
 }

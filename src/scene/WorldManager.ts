@@ -61,6 +61,8 @@ export class WorldManager {
         if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'
         GameState.levelFullName = levelConf.fullName
         console.log('Starting level ' + levelName + ' - ' + GameState.levelFullName)
+        GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
+        GameState.rewardConfig = levelConf.reward
 
         this.sceneManager.setupScene()
 
