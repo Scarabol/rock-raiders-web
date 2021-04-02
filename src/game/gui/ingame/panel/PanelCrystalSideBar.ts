@@ -36,14 +36,13 @@ export class PanelCrystalSideBar extends Panel {
 
     updateQuantities(type: CollectableType) {
         if (type === CollectableType.CRYSTAL || type === CollectableType.ORE || type === CollectableType.BRICK) {
-            this.btnOre.label = GameState.numOre.toString()
-            this.btnCrystal.label = GameState.numCrystal.toString()
-            // TODO implement bricks
-            this.notifyRedraw()
+            this.notifyRedraw() // TODO performance: only redraw this panel
         }
     }
 
     onRedraw(context: CanvasRenderingContext2D) {
+        this.btnOre.label = GameState.numOre.toString() // TODO include number of bricks
+        this.btnCrystal.label = GameState.numCrystal.toString()
         super.onRedraw(context)
         // draw crystals
         let curX = this.x + this.img.width - 8
