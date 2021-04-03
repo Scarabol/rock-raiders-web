@@ -27,7 +27,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Escape screen
 - Mission briefing
 - Options screen
-- Limit zoom in/out
 - Raider Training
 - Spiders, Bats
 
@@ -40,6 +39,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Damage
 - Teleport up on demand or at bad health
 - Vehicles
+- Raider commands (eat, board, pickup, drop, grab, train...)
 - Radar map
 
 ### Far
@@ -61,11 +61,14 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Nice to have
 - Requirements tooltip for buildings/vehicles not shown
 - When scene is disposed animation interval must be canceled
+- Camera can glitch through terrain and zoom in/out infinitely
+- Scene should be rendered in its own worker (thread)
 
 ### Cosmetics
 - Requested number of raiders not shown in icon panel
 - No tooltips
 - Cursor does not react on targeted object
+- Loading screen does not resize with window
 
 ## Development
 To start development environment, please follow the following steps:
