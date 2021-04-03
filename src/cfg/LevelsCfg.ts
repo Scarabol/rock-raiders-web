@@ -88,7 +88,7 @@ export class LevelEntryCfg extends BaseConfig {
 
     parseValue(lCfgKeyName: string, cfgValue: any): any {
         if (lCfgKeyName === 'fullName'.toLowerCase()) {
-            return this.parseLabel(cfgValue)
+            return cfgValue.replace(/_/g, ' ')
         } else if (lCfgKeyName.endsWith('rgb')) {
             return new ConfigColor(cfgValue)
         } else if (lCfgKeyName === 'priorities') {
@@ -104,17 +104,17 @@ export class LevelEntryCfg extends BaseConfig {
 
 export class LevelPrioritiesConfig extends BaseConfig {
 
-    AI_Priority_Crystal: boolean = true
-    AI_Priority_Destruction: boolean = true
-    AI_Priority_Clearing: boolean = true
-    AI_Priority_Ore: boolean = true
-    AI_Priority_Repair: boolean = true
-    AI_Priority_GetIn: boolean = true
-    AI_Priority_Construction: boolean = true
-    AI_Priority_Reinforce: boolean = true
-    AI_Priority_GetTool: boolean = true
-    AI_Priority_Train: boolean = true
-    AI_Priority_Recharge: boolean = true
+    aiPriorityCrystal: boolean = true
+    aiPriorityDestruction: boolean = true
+    aiPriorityClearing: boolean = true
+    aiPriorityOre: boolean = true
+    aiPriorityRepair: boolean = true
+    aiPriorityGetIn: boolean = true
+    aiPriorityConstruction: boolean = true
+    aiPriorityReinforce: boolean = true
+    aiPriorityGetTool: boolean = true
+    aiPriorityTrain: boolean = true
+    aiPriorityRecharge: boolean = true
 
     constructor(cfgObj: any) {
         super()

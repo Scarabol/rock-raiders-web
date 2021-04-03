@@ -1,6 +1,6 @@
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { BaseElement } from '../BaseElement'
-import { ButtonCfg } from './ButtonCfg'
+import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
 
 export class Button extends BaseElement {
 
@@ -8,7 +8,6 @@ export class Button extends BaseElement {
     imgNormal
     imgHover
     imgPressed
-    label: string
     tooltip: string
 
     constructor(parent: BaseElement, btnCfg: ButtonCfg) {
@@ -37,14 +36,7 @@ export class Button extends BaseElement {
         } else if (this.hover) {
             img = this.imgHover
         }
-        if (img) {
-            context.drawImage(img, this.x, this.y)
-        } else if (this.label) {
-            context.textAlign = 'center'
-            context.font = 'bold 10px Arial'
-            context.fillStyle = '#fff'
-            context.fillText(this.label, this.x + this.width / 2, this.y + this.height - 2)
-        }
+        if (img) context.drawImage(img, this.x, this.y)
         super.onRedraw(context)
     }
 

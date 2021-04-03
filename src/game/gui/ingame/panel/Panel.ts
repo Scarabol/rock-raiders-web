@@ -1,48 +1,29 @@
 import { ResourceManager } from '../../../../resource/ResourceManager'
-import { Button } from '../../base/button/Button'
 import { BaseElement } from '../../base/BaseElement'
-import { iGet } from '../../../../core/Util'
 import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../../../main'
-import { ButtonCfg } from '../../base/button/ButtonCfg'
+import { PanelCfg } from '../../../../cfg/PanelsCfg'
 
 export class Panel extends BaseElement {
 
-    name: string
-    img
+    img: HTMLCanvasElement = null
     xIn: number = 0
     yIn: number = 0
     xOut: number = 0
     yOut: number = 0
-    buttons = {}
     animationTimeout = null
     movedIn: boolean = false
 
-    constructor(panelName: string = null, panelsCfg: {} = {}, buttonsCfg: {} = {}) {
+    constructor(panelCfg?: PanelCfg) {
         super()
-        this.name = panelName
-        if (panelsCfg && panelName) {
-            let imgName;
-            [imgName, this.xOut, this.yOut, this.xIn, this.yIn] = iGet(panelsCfg, panelName)
-            this.img = ResourceManager.getImage(imgName)
+        if (panelCfg) {
+            this.img = ResourceManager.getImage(panelCfg.filename)
+            this.xIn = panelCfg.xIn
+            this.yIn = panelCfg.yIn
+            this.xOut = panelCfg.xOut
+            this.yOut = panelCfg.yOut
             this.relX = this.xIn
             this.relY = this.yIn
         }
-        if (buttonsCfg && panelName) {
-            let panelButtonsCfg = iGet(buttonsCfg, panelName)
-            if (panelButtonsCfg) {
-                if (panelName === 'Panel_Encyclopedia') { // TODO refactor cfg handling
-                    this.addButton(new Button(this, new ButtonCfg(panelButtonsCfg)))
-                } else {
-                    panelButtonsCfg.forEach((btnCfg) => this.addButton(new Button(this, new ButtonCfg(btnCfg))))
-                }
-            }
-        }
-    }
-
-    addButton<T extends Button>(button: T): T {
-        this.buttons[button.buttonType] = button
-        this.addChild(button)
-        return button
     }
 
     isInactive(): boolean {
@@ -97,28 +78,3 @@ export class Panel extends BaseElement {
 
 }
 
-export class TopPanel extends Panel {
-
-    btnPriorities: Button
-
-    constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
-        super(panelName, panelsCfg, buttonsCfg)
-        this.btnPriorities = iGet(this.buttons, 'PanelButton_TopPanel_Priorities')
-    }
-
-}
-
-export class InfoDockPanel extends Panel {
-
-    btnGoto: Button
-    btnClose: Button
-
-    constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
-        super(panelName, panelsCfg, buttonsCfg)
-        this.btnGoto = iGet(this.buttons, 'PanelButton_InfoDock_Goto')
-        this.btnGoto.disabled = true
-        this.btnClose = iGet(this.buttons, 'PanelButton_InfoDock_Close')
-        this.btnClose.disabled = true
-    }
-
-}

@@ -1,6 +1,6 @@
 import { BaseElement } from '../BaseElement'
 import { Button } from './Button'
-import { ButtonCfg } from './ButtonCfg'
+import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
 
 export class InterfaceBackButton extends Button {
 

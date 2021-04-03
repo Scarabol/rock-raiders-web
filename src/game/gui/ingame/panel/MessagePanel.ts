@@ -1,13 +1,14 @@
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { GameState } from '../../../model/GameState'
 import { Panel } from './Panel'
+import { PanelCfg } from '../../../../cfg/PanelsCfg'
 
 export class MessagePanel extends Panel {
 
-    imgAir
+    imgAir: HTMLCanvasElement = null
 
-    constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
-        super(panelName, panelsCfg, buttonsCfg)
+    constructor(panelCfg: PanelCfg) {
+        super(panelCfg)
         this.relX = this.xOut = this.xIn = 42
         this.relY = this.yOut = this.yIn = 409
         this.imgAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')

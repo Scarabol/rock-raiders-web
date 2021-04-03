@@ -1,27 +1,27 @@
-import { Button } from '../../base/button/Button'
-import { iGet } from '../../../../core/Util'
 import { GameState } from '../../../model/GameState'
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { Panel } from './Panel'
 import { EventBus } from '../../../../event/EventBus'
 import { CollectEvent, SpawnMaterialEvent } from '../../../../event/WorldEvents'
 import { CollectableType } from '../../../../scene/model/collect/CollectableEntity'
+import { PanelCfg } from '../../../../cfg/PanelsCfg'
+import { BaseConfig } from '../../../../cfg/BaseConfig'
+import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
+import { Label } from '../../base/Label'
 
 export class PanelCrystalSideBar extends Panel {
 
-    btnOre: Button
-    btnCrystal: Button
-    imgNoCrystal
-    imgSmallCrystal
-    imgUsedCrystal
-    imgOre
+    labelOre: Label
+    labelCrystal: Label
+    imgNoCrystal: HTMLCanvasElement
+    imgSmallCrystal: HTMLCanvasElement
+    imgUsedCrystal: HTMLCanvasElement
+    imgOre: HTMLCanvasElement
 
-    constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
-        super(panelName, panelsCfg, buttonsCfg)
-        this.btnOre = iGet(this.buttons, 'PanelButton_CrystalSideBar_Ore')
-        this.btnOre.label = GameState.numOre.toString()
-        this.btnCrystal = iGet(this.buttons, 'PanelButton_CrystalSideBar_Crystals')
-        this.btnCrystal.label = GameState.numCrystal.toString()
+    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonCrystalSideBarCfg) {
+        super(panelCfg)
+        this.labelOre = this.addChild(new Label(this, buttonsCfg.panelButtonCrystalSideBarOre, GameState.numOre.toString())) // TODO include number of bricks
+        this.labelCrystal = this.addChild(new Label(this, buttonsCfg.panelButtonCrystalSideBarCrystals, GameState.numCrystal.toString()))
         this.imgNoCrystal = ResourceManager.getImage('Interface/RightPanel/NoSmallCrystal.bmp')
         this.imgSmallCrystal = ResourceManager.getImage('Interface/RightPanel/SmallCrystal.bmp')
         this.imgUsedCrystal = ResourceManager.getImage('Interface/RightPanel/UsedCrystal.bmp')
@@ -41,8 +41,8 @@ export class PanelCrystalSideBar extends Panel {
     }
 
     onRedraw(context: CanvasRenderingContext2D) {
-        this.btnOre.label = GameState.numOre.toString() // TODO include number of bricks
-        this.btnCrystal.label = GameState.numCrystal.toString()
+        this.labelOre.label = GameState.numOre.toString() // TODO include number of bricks
+        this.labelCrystal.label = GameState.numCrystal.toString()
         super.onRedraw(context)
         // draw crystals
         let curX = this.x + this.img.width - 8
@@ -64,6 +64,22 @@ export class PanelCrystalSideBar extends Panel {
             curY -= this.imgOre.height
             context.drawImage(this.imgOre, curX - this.imgOre.width / 2, curY)
         }
+    }
+
+}
+
+export class ButtonCrystalSideBarCfg extends BaseConfig {
+
+    panelButtonCrystalSideBarOre: ButtonCfg = null
+    panelButtonCrystalSideBarCrystals: ButtonCfg = null
+
+    constructor(cfgObj: any) {
+        super()
+        BaseConfig.setFromCfg(this, cfgObj)
+    }
+
+    parseValue(lCfgKeyName: string, cfgValue: any): any {
+        return new ButtonCfg(cfgValue)
     }
 
 }

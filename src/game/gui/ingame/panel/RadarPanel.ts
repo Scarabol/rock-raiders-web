@@ -1,6 +1,8 @@
 import { Button } from '../../base/button/Button'
-import { iGet } from '../../../../core/Util'
 import { Panel } from './Panel'
+import { PanelCfg } from '../../../../cfg/PanelsCfg'
+import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
+import { BaseConfig } from '../../../../cfg/BaseConfig'
 
 export class RadarPanel extends Panel {
 
@@ -10,26 +12,45 @@ export class RadarPanel extends Panel {
     btnMap: Button
     btnTagged: Button
 
-    constructor(panelName: string, panelsCfg: {}, buttonsCfg: {}) {
-        super(panelName, panelsCfg, buttonsCfg)
-        this.fill = this.addChild(new Panel('Panel_RadarFill', panelsCfg, buttonsCfg))
+    constructor(panelCfg: PanelCfg, panelFillCfg: PanelCfg, panelOverlayCfg: PanelCfg, buttonsCfg: ButtonRadarCfg) {
+        super(panelCfg)
+        this.fill = this.addChild(new Panel(panelFillCfg))
         // fill cords given in abs, turn to rel (otherwise animation wont work)
         this.fill.relX = this.relX - this.fill.relX
         this.fill.relY = this.relY - this.fill.relY
-        this.overlay = this.addChild(new Panel('Panel_RadarOverlay', panelsCfg, buttonsCfg))
+        this.overlay = this.addChild(new Panel(panelOverlayCfg))
         // this.overlay.hide();
-        this.btnToggle = iGet(this.buttons, 'PanelButton_Radar_Toggle')
+        this.btnToggle = this.addChild(new Button(this, buttonsCfg.panelButtonRadarToggle))
         this.btnToggle.onClick = () => this.toggleState()
-        this.btnMap = iGet(this.buttons, 'PanelButton_Radar_MapView')
+        this.btnMap = this.addChild(new Button(this, buttonsCfg.panelButtonRadarMapView))
         this.btnMap.onClick = () => {
             // this.fill.hide();
             // this.overlay.hide();
         }
-        this.btnTagged = iGet(this.buttons, 'PanelButton_Radar_TaggedObjectView')
+        this.btnTagged = this.addChild(new Button(this, buttonsCfg.panelButtonRadarTaggedObjectView))
         this.btnTagged.onClick = () => {
             // this.fill.show();
             // this.overlay.show(); // TODO only show overlay, when entity selected
         }
+    }
+
+}
+
+export class ButtonRadarCfg extends BaseConfig {
+
+    panelButtonRadarToggle: ButtonCfg = null
+    panelButtonRadarTaggedObjectView: ButtonCfg = null
+    panelButtonRadarZoomIn: ButtonCfg = null
+    panelButtonRadarZoomOut: ButtonCfg = null
+    panelButtonRadarMapView: ButtonCfg = null
+
+    constructor(cfgObj: any) {
+        super()
+        BaseConfig.setFromCfg(this, cfgObj)
+    }
+
+    parseValue(lCfgKeyName: string, cfgValue: any): any {
+        return new ButtonCfg(cfgValue)
     }
 
 }

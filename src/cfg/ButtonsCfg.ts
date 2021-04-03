@@ -1,0 +1,138 @@
+import { BaseConfig } from './BaseConfig'
+import { ButtonRadarCfg } from '../game/gui/ingame/panel/RadarPanel'
+import { ButtonCrystalSideBarCfg } from '../game/gui/ingame/panel/PanelCrystalSideBar'
+import { ButtonTopCfg } from '../game/gui/ingame/panel/TopPanel'
+import { ButtonInfoDockCfg } from '../game/gui/ingame/panel/InfoDockPanel'
+
+export class ButtonsCfg extends BaseConfig {
+
+    panelRadar: ButtonRadarCfg = null
+    panelCrystalSideBar: ButtonCrystalSideBarCfg = null
+    panelTopPanel: ButtonTopCfg = null
+    panelInformation: ButtonInformationCfg = null
+    panelPriorityList: ButtonPriorityListCfg = null
+    panelCameraControl: ButtonCameraControlCfg = null
+    panelInfoDock: ButtonInfoDockCfg = null
+    panelEncyclopedia: any = null // not used in the game
+
+    constructor(cfgObj: any) {
+        super()
+        BaseConfig.setFromCfg(this, cfgObj)
+    }
+
+    parseValue(lCfgKeyName: string, cfgValue: any): any {
+        const btnCfgValue = {}
+        cfgValue.forEach(arr => btnCfgValue[arr[0]] = arr)
+        if (lCfgKeyName === 'panelRadar'.toLowerCase()) {
+            return new ButtonRadarCfg(btnCfgValue)
+        } else if (lCfgKeyName === 'panelCrystalSideBar'.toLowerCase()) {
+            return new ButtonCrystalSideBarCfg(btnCfgValue)
+        } else if (lCfgKeyName === 'panelTopPanel'.toLowerCase()) {
+            return new ButtonTopCfg(btnCfgValue)
+        } else if (lCfgKeyName === 'panelInformation'.toLowerCase()) {
+            return new ButtonInformationCfg(btnCfgValue)
+        } else if (lCfgKeyName === 'panelPriorityList'.toLowerCase()) {
+            return new ButtonPriorityListCfg(btnCfgValue)
+        } else if (lCfgKeyName === 'panelCameraControl'.toLowerCase()) {
+            return new ButtonCameraControlCfg(btnCfgValue)
+        } else if (lCfgKeyName === 'panelInfoDock'.toLowerCase()) {
+            return new ButtonInfoDockCfg(btnCfgValue)
+        } else if (lCfgKeyName === 'panelEncyclopedia'.toLowerCase()) {
+            return null // not used in the game
+        } else {
+            return btnCfgValue
+        }
+    }
+
+}
+
+export class ButtonInformationCfg extends BaseConfig {
+
+    panelButtonInformationToggle: ButtonCfg = null
+    panelButtonInformationFunction: ButtonCfg = null
+
+    constructor(cfgObj: any) {
+        super()
+        BaseConfig.setFromCfg(this, cfgObj)
+    }
+
+    parseValue(lCfgKeyName: string, cfgValue: any): any {
+        return new ButtonCfg(cfgValue)
+    }
+
+}
+
+export class ButtonPriorityListCfg extends BaseConfig {
+
+    panelButtonPriorityListDisable1: ButtonCfg = null
+    panelButtonPriorityListDisable2: ButtonCfg = null
+    panelButtonPriorityListDisable3: ButtonCfg = null
+    panelButtonPriorityListDisable4: ButtonCfg = null
+    panelButtonPriorityListDisable5: ButtonCfg = null
+    panelButtonPriorityListDisable6: ButtonCfg = null
+    panelButtonPriorityListDisable7: ButtonCfg = null
+    panelButtonPriorityListDisable8: ButtonCfg = null
+    panelButtonPriorityListDisable9: ButtonCfg = null
+    panelButtonPriorityListUpOne1: ButtonCfg = null
+    panelButtonPriorityListUpOne2: ButtonCfg = null
+    panelButtonPriorityListUpOne3: ButtonCfg = null
+    panelButtonPriorityListUpOne4: ButtonCfg = null
+    panelButtonPriorityListUpOne5: ButtonCfg = null
+    panelButtonPriorityListUpOne6: ButtonCfg = null
+    panelButtonPriorityListUpOne7: ButtonCfg = null
+    panelButtonPriorityListUpOne8: ButtonCfg = null
+    panelButtonPriorityListClose: ButtonCfg = null
+    panelButtonPriorityListReset: ButtonCfg = null
+
+    constructor(cfgObj: any) {
+        super()
+        BaseConfig.setFromCfg(this, cfgObj)
+    }
+
+    parseValue(lCfgKeyName: string, cfgValue: any): any {
+        return new ButtonCfg(cfgValue)
+    }
+
+}
+
+export class ButtonCameraControlCfg extends BaseConfig {
+
+    panelButtonCameraControlZoomIn: ButtonCfg = null
+    panelButtonCameraControlZoomOut: ButtonCfg = null
+    panelButtonCameraControlCycleBuildings: ButtonCfg = null
+    panelButtonCameraControlRotate: ButtonCfg = null
+
+    constructor(cfgObj: any) {
+        super()
+        BaseConfig.setFromCfg(this, cfgObj)
+    }
+
+    parseValue(lCfgKeyName: string, cfgValue: any): any {
+        return new ButtonCfg(cfgValue)
+    }
+
+}
+
+export class ButtonCfg {
+
+    buttonType?: string
+    normalFile?: string
+    highlightFile?: string
+    pressedFile?: string
+    relX?: number
+    relY?: number
+    width?: number
+    height?: number
+    tooltip?: string
+
+    constructor(cfgValue: any) {
+        if (cfgValue.length === 9) {
+            [this.buttonType, this.normalFile, this.highlightFile, this.pressedFile, this.relX, this.relY, this.width, this.height, this.tooltip] = cfgValue
+        } else if (cfgValue.length === 5) {
+            [this.width, this.height, this.highlightFile, this.pressedFile, this.tooltip] = cfgValue
+        } else {
+            throw 'Invalid number of arguments (' + cfgValue.length + ') given for button configuration expected 9 or 5'
+        }
+    }
+
+}

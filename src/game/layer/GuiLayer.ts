@@ -1,12 +1,16 @@
 import { ScaledLayer } from '../../screen/ScreenLayer'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { InfoDockPanel, Panel, TopPanel } from '../gui/ingame/panel/Panel'
+import { Panel } from '../gui/ingame/panel/Panel'
 import { BaseElement } from '../gui/base/BaseElement'
 import { RadarPanel } from '../gui/ingame/panel/RadarPanel'
 import { MessagePanel } from '../gui/ingame/panel/MessagePanel'
 import { PanelCrystalSideBar } from '../gui/ingame/panel/PanelCrystalSideBar'
 import { MainPanel } from '../gui/ingame/panel/MainPanel'
 import { POINTER_EVENT } from '../../event/EventManager'
+import { TopPanel } from '../gui/ingame/panel/TopPanel'
+import { InfoDockPanel } from '../gui/ingame/panel/InfoDockPanel'
+import { PanelsCfg } from '../../cfg/PanelsCfg'
+import { ButtonsCfg } from '../../cfg/ButtonsCfg'
 
 export class GuiLayer extends ScaledLayer {
 
@@ -15,32 +19,32 @@ export class GuiLayer extends ScaledLayer {
     panelMessages: MessagePanel
     panelMessagesSide: Panel
     panelCrystalSideBar: PanelCrystalSideBar
+    panelMain: MainPanel
     panelTopPanel: TopPanel
     panelInformation: Panel
     panelPriorityList: Panel
     panelCameraControl: Panel
     panelInfoDock: InfoDockPanel
     panelEncyclopedia: Panel
-    panelMain: MainPanel
 
     constructor() {
         super()
-        const panelsCfg = ResourceManager.cfg('Panels640x480')
-        const buttonsCfg = ResourceManager.cfg('Buttons640x480')
+        const panelsCfg = new PanelsCfg(ResourceManager.cfg('Panels640x480'))
+        const buttonsCfg = new ButtonsCfg(ResourceManager.cfg('Buttons640x480'))
         const layer = this
         this.rootElement.notifyRedraw = () => layer.redraw() // TODO performance only redraw updated parts
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
-        this.panelEncyclopedia = this.addPanel(new Panel('Panel_Encyclopedia', panelsCfg, buttonsCfg))
-        this.panelInfoDock = this.addPanel(new InfoDockPanel('Panel_InfoDock', panelsCfg, buttonsCfg))
-        this.panelCameraControl = this.addPanel(new Panel('Panel_CameraControl', panelsCfg, buttonsCfg))
-        this.panelPriorityList = this.addPanel(new Panel('Panel_PriorityList', panelsCfg, buttonsCfg))
-        this.panelInformation = this.addPanel(new Panel('Panel_Information', panelsCfg, buttonsCfg))
-        this.panelTopPanel = this.addPanel(new TopPanel('Panel_TopPanel', panelsCfg, buttonsCfg))
+        this.panelEncyclopedia = this.addPanel(new Panel(panelsCfg.panelEncyclopedia))
+        this.panelInfoDock = this.addPanel(new InfoDockPanel(panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock))
+        this.panelCameraControl = this.addPanel(new Panel(panelsCfg.panelCameraControl))
+        this.panelPriorityList = this.addPanel(new Panel(panelsCfg.panelPriorityList))
+        this.panelInformation = this.addPanel(new Panel(panelsCfg.panelInformation))
+        this.panelTopPanel = this.addPanel(new TopPanel(panelsCfg.panelTopPanel, buttonsCfg.panelTopPanel))
         this.panelMain = this.addPanel(new MainPanel())
-        this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar('Panel_CrystalSideBar', panelsCfg, buttonsCfg))
-        this.panelMessagesSide = this.addPanel(new Panel('Panel_MessagesSide', panelsCfg, buttonsCfg))
-        this.panelMessages = this.addPanel(new MessagePanel('Panel_Messages', panelsCfg, buttonsCfg))
-        this.panelRadar = this.addPanel(new RadarPanel('Panel_Radar', panelsCfg, buttonsCfg))
+        this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(panelsCfg.panelCrystalSideBar, buttonsCfg.panelCrystalSideBar))
+        this.panelMessagesSide = this.addPanel(new Panel(panelsCfg.panelMessagesSide))
+        this.panelMessages = this.addPanel(new MessagePanel(panelsCfg.panelMessages))
+        this.panelRadar = this.addPanel(new RadarPanel(panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         // link panels
         this.panelTopPanel.btnPriorities.onClick = () => {
             const pressed = this.panelTopPanel.btnPriorities.pressed // TODO this requires toggle buttons

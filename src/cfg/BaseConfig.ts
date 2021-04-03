@@ -2,7 +2,7 @@ export class BaseConfig {
 
     static setFromCfg(config: BaseConfig, cfgObj: any) {
         Object.keys(cfgObj).forEach((cfgKey) => {
-            const lCfgKeyName = (cfgKey.startsWith('!') ? cfgKey.substring(1) : cfgKey).toLowerCase()
+            const lCfgKeyName = (cfgKey.startsWith('!') ? cfgKey.substring(1) : cfgKey).toLowerCase().replace(/_/g, '')
             const found = Object.keys(config).some((objKey) => {
                 return config.assignValue(objKey, lCfgKeyName, cfgObj[cfgKey])
             })
@@ -22,10 +22,6 @@ export class BaseConfig {
 
     parseValue(lCfgKeyName: string, cfgValue: any): any {
         return cfgValue
-    }
-
-    parseLabel(cfgValue) {
-        return cfgValue.replace(/_/g, ' ')
     }
 
 }
