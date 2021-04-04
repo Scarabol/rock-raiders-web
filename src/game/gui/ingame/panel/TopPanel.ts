@@ -3,18 +3,19 @@ import { Panel } from './Panel'
 import { PanelCfg } from '../../../../cfg/PanelsCfg'
 import { BaseConfig } from '../../../../cfg/BaseConfig'
 import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
+import { ToggleButton } from '../../base/button/ToggleButton'
 
 export class TopPanel extends Panel {
 
-    btnCallToArms: Button
+    btnCallToArms: ToggleButton
     btnOptions: Button
-    btnPriorities: Button
+    btnPriorities: ToggleButton
 
     constructor(panelCfg: PanelCfg, buttonsCfg: ButtonTopCfg) {
         super(panelCfg)
-        this.btnCallToArms = this.addChild(new Button(this, buttonsCfg.panelButtonTopPanelCallToArms)) // FIXME use toggle button
+        this.btnCallToArms = this.addChild(new ToggleButton(this, buttonsCfg.panelButtonTopPanelCallToArms))
         this.btnOptions = this.addChild(new Button(this, buttonsCfg.panelButtonTopPanelOptions))
-        this.btnPriorities = this.addChild(new Button(this, buttonsCfg.panelButtonTopPanelPriorities)) // FIXME use toggle button
+        this.btnPriorities = this.addChild(new ToggleButton(this, buttonsCfg.panelButtonTopPanelPriorities))
     }
 
 }

@@ -47,8 +47,8 @@ export class GuiLayer extends ScaledLayer {
         this.panelRadar = this.addPanel(new RadarPanel(panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         // link panels
         this.panelTopPanel.btnPriorities.onClick = () => {
-            const pressed = this.panelTopPanel.btnPriorities.pressed // TODO this requires toggle buttons
-            // this.panelIcons.setMovedIn(!pressed, () => this.panelPriorityList.setMovedIn(pressed));
+            const toggleState = this.panelTopPanel.btnPriorities.toggleState
+            this.panelMain.setMovedIn(toggleState, () => this.panelPriorityList.setMovedIn(!toggleState))
         }
         this.onRedraw = (context: CanvasRenderingContext2D) => {
             context.clearRect(0, 0, context.canvas.width, context.canvas.height)
