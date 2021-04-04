@@ -75,7 +75,6 @@ export class MainPanel extends IconPanel {
         largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'LargeMLP')
         largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'LargeDigger')
         largeVehiclePanel.addMenuItem('InterfaceBuildImages', 'LargeCat')
-        this.mainPanel.setMovedIn(true)
         const itemDrill = selectWallPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_Dig')
         itemDrill.onClick = () => {
             const selectedSurface = GameState.selectedEntities[0] as Surface

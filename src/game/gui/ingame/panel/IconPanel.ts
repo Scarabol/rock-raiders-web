@@ -12,10 +12,14 @@ export class IconPanel extends Panel {
 
     constructor() {
         super()
-        this.xOut = 640 + 95
-        this.relX = this.xIn = 640 - 16
-        this.relY = this.yIn = this.yOut = 9
+        this.relX = this.xOut = 640 - 16
+        this.xIn = 640 + 95
+        this.relY = this.yOut = this.yIn = 9
+        this.movedIn = false
         this.mainPanel = this.addSubPanel(4)
+        this.mainPanel.relX = this.mainPanel.xOut
+        this.mainPanel.relY = this.mainPanel.yOut
+        this.mainPanel.movedIn = false
     }
 
     addSubPanel(numOfItems: number) {
@@ -25,8 +29,8 @@ export class IconPanel extends Panel {
     }
 
     selectSubPanel(targetPanel: IconSubPanel) {
-        this.subPanels.forEach((subPanel) => subPanel.setMovedIn(false))
-        targetPanel.setMovedIn(true)
+        this.subPanels.forEach((subPanel) => subPanel.setMovedIn(true))
+        targetPanel.setMovedIn(false)
     }
 
 }
@@ -47,7 +51,7 @@ export class IconSubPanel extends Panel {
         const frameImgCfg = ResourceManager.cfg('InterfaceSurroundImages', numOfItems.toString())
         const [imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2] = frameImgCfg
         this.img = onBackPanel ? ResourceManager.getImage(imgName) : ResourceManager.getImage(imgNameWoBackName)
-        this.xIn = -this.img.width
+        this.xOut = -this.img.width
     }
 
     addMenuItem(menuItemGroup, itemKey) {

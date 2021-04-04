@@ -11,7 +11,7 @@ export class Panel extends BaseElement {
     xIn: number = 0
     yIn: number = 0
     animationTimeout = null
-    movedIn: boolean = false
+    movedIn: boolean = true // xIn, yIn is the collapsed position out of screen
 
     constructor(panelCfg?: PanelCfg) {
         super()
