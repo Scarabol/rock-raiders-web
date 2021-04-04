@@ -34,14 +34,14 @@ export class MainPanel extends IconPanel {
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) {
                 teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).length < 1
                     || GameState.raiders.length >= GameState.getMaxRaiders()
-                this.notifyRedraw() // TODO performance: actually just the button needs to be redrawn
+                this.notifyRedraw()
             }
         })
         EventBus.registerEventListener(EntityRemovedEvent.eventKey, (event: EntityRemovedEvent) => {
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) {
                 teleportRaider.disabled = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).length < 1
                     || GameState.raiders.length >= GameState.getMaxRaiders()
-                this.notifyRedraw() // TODO performance: actually just the button needs to be redrawn
+                this.notifyRedraw()
             }
         })
         teleportRaider.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders + 1))
@@ -153,7 +153,7 @@ export class MainPanel extends IconPanel {
                 itemDrill.disabled = !surface.isDrillable()
                 itemReinforce.disabled = !surface.isReinforcable()
                 itemDynamite.disabled = !surface.isExplodable()
-                this.notifyRedraw() // TODO performance: actually just the buttons need to be redrawn
+                this.notifyRedraw()
             }
         })
         EventBus.registerEventListener(BuildingSelected.eventKey, () => this.selectSubPanel(selectBuildingPanel))
@@ -164,11 +164,11 @@ export class MainPanel extends IconPanel {
         upgradeItem.disabled = false // TODO actually could use correct check, but state is not updated, when panel is moved in
         EventBus.registerEventListener(CollectEvent.eventKey, (event: CollectEvent) => {
             upgradeItem.disabled = GameState.numOre < 5 || GameState.selectedEntities.length < 1 || (GameState.selectedEntities[0] as BuildingEntity).hasMaxUpgrades()
-            this.notifyRedraw() // TODO performance: actually just the buttons need to be redrawn
+            this.notifyRedraw()
         })
         EventBus.registerEventListener(SpawnMaterialEvent.eventKey, (event: SpawnMaterialEvent) => {
             upgradeItem.disabled = GameState.numOre < 5 || GameState.selectedEntities.length < 1 || (GameState.selectedEntities[0] as BuildingEntity).hasMaxUpgrades()
-            this.notifyRedraw() // TODO performance: actually just the buttons need to be redrawn
+            this.notifyRedraw()
         })
         upgradeItem.onClick = () => {
             (GameState.selectedEntities[0] as BuildingEntity).upgrade()

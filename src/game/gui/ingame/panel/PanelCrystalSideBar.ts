@@ -36,7 +36,7 @@ export class PanelCrystalSideBar extends Panel {
 
     updateQuantities(type: CollectableType) {
         if (type === CollectableType.CRYSTAL || type === CollectableType.ORE || type === CollectableType.BRICK) {
-            this.notifyRedraw() // TODO performance: only redraw this panel
+            this.notifyRedraw()
         }
     }
 

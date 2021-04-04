@@ -32,7 +32,7 @@ export class GuiLayer extends ScaledLayer {
         const panelsCfg = new PanelsCfg(ResourceManager.cfg('Panels640x480'))
         const buttonsCfg = new ButtonsCfg(ResourceManager.cfg('Buttons640x480'))
         const layer = this
-        this.rootElement.notifyRedraw = () => layer.redraw() // TODO performance only redraw updated parts
+        this.rootElement.notifyRedraw = () => layer.redraw()
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
         this.panelEncyclopedia = this.addPanel(new Panel(panelsCfg.panelEncyclopedia))
         this.panelInfoDock = this.addPanel(new InfoDockPanel(panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock))
@@ -77,7 +77,7 @@ export class GuiLayer extends ScaledLayer {
         } else if (eventEnum === POINTER_EVENT.MOVE) {
             needsRedraw = this.rootElement.release() || needsRedraw
         }
-        if (needsRedraw) this.redraw() // TODO performance: only redraw certain buttons/panels?
+        if (needsRedraw) this.redraw()
         return hit
     }
 
