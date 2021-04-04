@@ -17,7 +17,6 @@ export class MainPanel extends IconPanel {
 
     constructor() {
         super()
-        this.mainPanel = this.addSubPanel(4)
         EventBus.registerEventListener(EntityDeselected.eventKey, () => this.selectSubPanel(this.mainPanel))
         const buildingPanel = this.addSubPanel(10)
         const smallVehiclePanel = this.addSubPanel(6)

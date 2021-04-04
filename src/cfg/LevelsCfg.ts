@@ -82,10 +82,6 @@ export class LevelEntryCfg extends BaseConfig {
         BaseConfig.setFromCfg(this, cfgObj)
     }
 
-    assignValue(objKey, lCfgKeyName, cfgValue): boolean {
-        return super.assignValue(objKey, lCfgKeyName, cfgValue)
-    }
-
     parseValue(lCfgKeyName: string, cfgValue: any): any {
         if (lCfgKeyName === 'fullName'.toLowerCase()) {
             return cfgValue.replace(/_/g, ' ')

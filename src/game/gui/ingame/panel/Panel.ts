@@ -6,10 +6,10 @@ import { PanelCfg } from '../../../../cfg/PanelsCfg'
 export class Panel extends BaseElement {
 
     img: HTMLCanvasElement = null
-    xIn: number = 0
-    yIn: number = 0
     xOut: number = 0
     yOut: number = 0
+    xIn: number = 0
+    yIn: number = 0
     animationTimeout = null
     movedIn: boolean = false
 
@@ -17,10 +17,10 @@ export class Panel extends BaseElement {
         super()
         if (panelCfg) {
             this.img = ResourceManager.getImage(panelCfg.filename)
-            this.xIn = panelCfg.xIn
-            this.yIn = panelCfg.yIn
             this.xOut = panelCfg.xOut
             this.yOut = panelCfg.yOut
+            this.xIn = panelCfg.xIn
+            this.yIn = panelCfg.yIn
             this.relX = this.xIn
             this.relY = this.yIn
         }

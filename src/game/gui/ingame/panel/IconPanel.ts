@@ -15,6 +15,7 @@ export class IconPanel extends Panel {
         this.xOut = 640 + 95
         this.relX = this.xIn = 640 - 16
         this.relY = this.yIn = this.yOut = 9
+        this.mainPanel = this.addSubPanel(4)
     }
 
     addSubPanel(numOfItems: number) {
