@@ -91,7 +91,8 @@ export class BaseElement {
         if (inRect && this.pressed) this.onClick()
         let updated = false
         this.children.forEach((child) => updated = child.checkRelease(cx, cy) || updated)
-        updated = this.release() || updated
+        updated = this.pressed || updated
+        this.pressed = false
         return updated
     }
 

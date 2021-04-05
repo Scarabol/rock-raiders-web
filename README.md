@@ -21,7 +21,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ## Development Roadmap
 
 ### Near
-- UI Performance
 - Work priority order screen
 - Info messages
 - Escape screen
