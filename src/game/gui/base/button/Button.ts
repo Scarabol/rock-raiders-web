@@ -8,6 +8,7 @@ export class Button extends BaseElement {
     imgNormal
     imgHover
     imgPressed
+    imgDisabled
     tooltip: string
 
     constructor(parent: BaseElement, btnCfg: ButtonCfg) {
@@ -16,10 +17,11 @@ export class Button extends BaseElement {
         this.imgNormal = ResourceManager.getImageOrNull(btnCfg.normalFile)
         this.imgHover = ResourceManager.getImageOrNull(btnCfg.highlightFile)
         this.imgPressed = ResourceManager.getImageOrNull(btnCfg.pressedFile)
+        this.imgDisabled = ResourceManager.getImageOrNull(btnCfg.disabledFile)
         this.relX = btnCfg.relX
         this.relY = btnCfg.relY
-        this.width = btnCfg.width
-        this.height = btnCfg.height
+        this.width = btnCfg.width || this.imgNormal?.width || this.imgPressed?.width
+        this.height = btnCfg.height || this.imgNormal?.height || this.imgPressed?.height
         this.tooltip = btnCfg.tooltip
         this.updatePosition()
     }
@@ -31,7 +33,9 @@ export class Button extends BaseElement {
     onRedraw(context: CanvasRenderingContext2D) {
         if (this.hidden) return
         let img = this.imgNormal
-        if (this.disabled || this.pressed) {
+        if (this.disabled) {
+            img = this.imgDisabled || this.imgPressed
+        } else if (this.pressed) {
             img = this.imgPressed
         } else if (this.hover) {
             img = this.imgHover

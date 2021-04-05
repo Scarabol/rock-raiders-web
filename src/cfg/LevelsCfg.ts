@@ -73,7 +73,7 @@ export class LevelEntryCfg extends BaseConfig {
     frontEndX: number = 0
     frontEndY: number = 0
     frontEndOpen: boolean = false
-    priorities: LevelPrioritiesConfig = null
+    priorities: LevelPrioritiesEntryConfig[] = [] // priority order matters!
     reward: LevelRewardConfig = null
     menuBMP: string[] = []
 
@@ -88,7 +88,9 @@ export class LevelEntryCfg extends BaseConfig {
         } else if (lCfgKeyName.endsWith('rgb')) {
             return new ConfigColor(cfgValue)
         } else if (lCfgKeyName === 'priorities') {
-            return new LevelPrioritiesConfig(cfgValue)
+            return Object.keys(cfgValue)
+                .filter(name => name.toLowerCase() !== 'AI_Priority_GetTool'.toLowerCase()) // not used in the game
+                .map(name => new LevelPrioritiesEntryConfig(name, cfgValue[name]))
         } else if (lCfgKeyName === 'reward') {
             return new LevelRewardConfig(cfgValue)
         } else {
@@ -98,23 +100,14 @@ export class LevelEntryCfg extends BaseConfig {
 
 }
 
-export class LevelPrioritiesConfig extends BaseConfig {
+export class LevelPrioritiesEntryConfig {
 
-    aiPriorityCrystal: boolean = true
-    aiPriorityDestruction: boolean = true
-    aiPriorityClearing: boolean = true
-    aiPriorityOre: boolean = true
-    aiPriorityRepair: boolean = true
-    aiPriorityGetIn: boolean = true
-    aiPriorityConstruction: boolean = true
-    aiPriorityReinforce: boolean = true
-    aiPriorityGetTool: boolean = true
-    aiPriorityTrain: boolean = true
-    aiPriorityRecharge: boolean = true
+    key: string
+    enabled: boolean
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
+    constructor(name: string, enabled: boolean) {
+        this.key = name.replace(/_/g, '')
+        this.enabled = enabled
     }
 
 }

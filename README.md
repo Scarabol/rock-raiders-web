@@ -21,11 +21,11 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ## Development Roadmap
 
 ### Near
-- Work priority order screen
 - Info messages
 - Escape screen
 - Mission briefing
 - Options screen
+- Actually use work priority
 - Raider Training
 - Spiders, Bats
 

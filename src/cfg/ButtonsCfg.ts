@@ -3,6 +3,7 @@ import { ButtonRadarCfg } from '../game/gui/ingame/panel/RadarPanel'
 import { ButtonCrystalSideBarCfg } from '../game/gui/ingame/panel/PanelCrystalSideBar'
 import { ButtonTopCfg } from '../game/gui/ingame/panel/TopPanel'
 import { ButtonInfoDockCfg } from '../game/gui/ingame/panel/InfoDockPanel'
+import { ButtonPriorityListCfg } from '../game/gui/ingame/panel/PriorityListPanel'
 
 export class ButtonsCfg extends BaseConfig {
 
@@ -62,39 +63,6 @@ export class ButtonInformationCfg extends BaseConfig {
 
 }
 
-export class ButtonPriorityListCfg extends BaseConfig {
-
-    panelButtonPriorityListDisable1: ButtonCfg = null
-    panelButtonPriorityListDisable2: ButtonCfg = null
-    panelButtonPriorityListDisable3: ButtonCfg = null
-    panelButtonPriorityListDisable4: ButtonCfg = null
-    panelButtonPriorityListDisable5: ButtonCfg = null
-    panelButtonPriorityListDisable6: ButtonCfg = null
-    panelButtonPriorityListDisable7: ButtonCfg = null
-    panelButtonPriorityListDisable8: ButtonCfg = null
-    panelButtonPriorityListDisable9: ButtonCfg = null
-    panelButtonPriorityListUpOne1: ButtonCfg = null
-    panelButtonPriorityListUpOne2: ButtonCfg = null
-    panelButtonPriorityListUpOne3: ButtonCfg = null
-    panelButtonPriorityListUpOne4: ButtonCfg = null
-    panelButtonPriorityListUpOne5: ButtonCfg = null
-    panelButtonPriorityListUpOne6: ButtonCfg = null
-    panelButtonPriorityListUpOne7: ButtonCfg = null
-    panelButtonPriorityListUpOne8: ButtonCfg = null
-    panelButtonPriorityListClose: ButtonCfg = null
-    panelButtonPriorityListReset: ButtonCfg = null
-
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
-    }
-
-}
-
 export class ButtonCameraControlCfg extends BaseConfig {
 
     panelButtonCameraControlZoomIn: ButtonCfg = null
@@ -119,6 +87,7 @@ export class ButtonCfg {
     normalFile?: string
     highlightFile?: string
     pressedFile?: string
+    disabledFile?: string
     relX?: number
     relY?: number
     width?: number

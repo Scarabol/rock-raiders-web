@@ -15,6 +15,7 @@ import { Dynamite } from '../../scene/model/collect/Dynamite'
 import { Crystal } from '../../scene/model/collect/Crystal'
 import { Ore } from '../../scene/model/collect/Ore'
 import { LevelRewardConfig } from '../../cfg/LevelsCfg'
+import { PriorityList } from './job/PriorityList'
 
 export enum GameResultState {
 
@@ -56,6 +57,7 @@ export class GameState {
     static levelStartTime: number = 0
     static levelStopTime: number = 0
     static rewardConfig: LevelRewardConfig = null
+    static priorityList: PriorityList = null
 
     static reset() {
         this.resultState = GameResultState.RUNNING
@@ -87,6 +89,7 @@ export class GameState {
         this.levelStartTime = 0
         this.levelStopTime = 0
         this.rewardConfig = null
+        this.priorityList = null
     }
 
     static getBuildingsByType(...buildingTypes: Building[]): BuildingEntity[] {

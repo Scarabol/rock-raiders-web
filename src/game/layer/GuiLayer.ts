@@ -11,6 +11,7 @@ import { TopPanel } from '../gui/ingame/panel/TopPanel'
 import { InfoDockPanel } from '../gui/ingame/panel/InfoDockPanel'
 import { PanelsCfg } from '../../cfg/PanelsCfg'
 import { ButtonsCfg } from '../../cfg/ButtonsCfg'
+import { PriorityButtonsConfig, PriorityListPanel, PriorityPositionsEntry } from '../gui/ingame/panel/PriorityListPanel'
 
 export class GuiLayer extends ScaledLayer {
 
@@ -22,7 +23,7 @@ export class GuiLayer extends ScaledLayer {
     panelMain: MainPanel
     panelTopPanel: TopPanel
     panelInformation: Panel
-    panelPriorityList: Panel
+    panelPriorityList: PriorityListPanel
     panelCameraControl: Panel
     panelInfoDock: InfoDockPanel
     panelEncyclopedia: Panel
@@ -37,7 +38,9 @@ export class GuiLayer extends ScaledLayer {
         this.panelEncyclopedia = this.addPanel(new Panel(panelsCfg.panelEncyclopedia))
         this.panelInfoDock = this.addPanel(new InfoDockPanel(panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock))
         this.panelCameraControl = this.addPanel(new Panel(panelsCfg.panelCameraControl))
-        this.panelPriorityList = this.addPanel(new Panel(panelsCfg.panelPriorityList))
+        const priorityButtonsConfig = new PriorityButtonsConfig(ResourceManager.cfg('PriorityImages'))
+        const priorityPositionsConfig = Object.values(ResourceManager.cfg('PrioritiesImagePositions')).map(cfgValue => new PriorityPositionsEntry(cfgValue))
+        this.panelPriorityList = this.addPanel(new PriorityListPanel(panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, priorityPositionsConfig, priorityButtonsConfig))
         this.panelInformation = this.addPanel(new Panel(panelsCfg.panelInformation))
         this.panelTopPanel = this.addPanel(new TopPanel(panelsCfg.panelTopPanel, buttonsCfg.panelTopPanel))
         this.panelMain = this.addPanel(new MainPanel())
@@ -54,6 +57,11 @@ export class GuiLayer extends ScaledLayer {
             context.clearRect(0, 0, context.canvas.width, context.canvas.height)
             this.rootElement.onRedraw(context)
         }
+    }
+
+    setup() {
+        // FIXME reset GUI including all panels
+        this.panelPriorityList.reset()
     }
 
     addPanel<T extends Panel>(panel: T): T {

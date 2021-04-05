@@ -18,8 +18,9 @@ import { DynamiteJob } from '../game/model/job/SurfaceJob'
 import { NerpParser } from '../core/NerpParser'
 import { NerpRunner } from '../core/NerpRunner'
 import { GameScreen } from '../screen/GameScreen'
-import { LevelEntryCfg, LevelsCfg } from '../cfg/LevelsCfg'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import degToRad = MathUtils.degToRad
+import { PriorityList } from '../game/model/job/PriorityList'
 
 export class WorldManager {
 
@@ -55,14 +56,11 @@ export class WorldManager {
         })
     }
 
-    setup(levelName: string, gameScreen: GameScreen) {
-        const levelsCfg: LevelsCfg = ResourceManager.getResource('Levels')
-        const levelConf: LevelEntryCfg = levelsCfg.levelsByName[levelName]
-        if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'
+    setup(levelConf: LevelEntryCfg, gameScreen: GameScreen) {
         GameState.levelFullName = levelConf.fullName
-        console.log('Starting level ' + levelName + ' - ' + GameState.levelFullName)
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         GameState.rewardConfig = levelConf.reward
+        GameState.priorityList = new PriorityList(levelConf.priorities)
 
         this.sceneManager.setupScene()
 
