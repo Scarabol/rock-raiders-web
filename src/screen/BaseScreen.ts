@@ -13,6 +13,7 @@ export class BaseScreen {
 
     constructor() {
         this.gameCanvasContainer = document.getElementById('game-canvas-container')
+        this.gameCanvasContainer.focus()
         this.eventMgr = new EventManager(this)
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!'
         window.addEventListener('resize', () => this.onWindowResize())
