@@ -72,38 +72,70 @@ export class BitmapFont {
         return result
     }
 
-    createTextImage(text): HTMLCanvasElement {
+    createTextImage(text: string, maxWidth?: number): HTMLCanvasElement {
         if (text === undefined || text === null || text.length < 1) {
             // empty text requested, context with width 0 is not allowed, but 1 with alpha is close enough
             return createContext(1, 1).canvas
         }
         text = text.replace(/_/g, ' ')
-        let width = 0
-        for (let c = 0; c < text.length; c++) {
-            const letter = text.charAt(c)
-            const letterImg = this.letters[letter]
-            if (letterImg) {
-                width += letterImg.width
-            } else {
-                console.error('Letter \'' + letter + '\' not found in charset! Ignoring it')
-            }
-        }
-        const result = new ImageData(width, this.charHeight)
-        let letterX = 0
-        for (let c = 0; c < text.length; c++) {
-            const letterImgData = this.letters[text.charAt(c)]
-            if (letterImgData) {
-                for (let x = letterX; x < letterX + letterImgData.width; x++) {
-                    for (let y = 0; y < letterImgData.height; y++) {
-                        const p = getPixel(letterImgData, x - letterX, y)
-                        setPixel(result, x, y, p.r, p.g, p.b, p.a)
+        const rows = this.determineRows(text, maxWidth)
+        const width = Math.max(...(rows.map(r => r.width)))
+        const result = new ImageData(width, this.charHeight * rows.length)
+        rows.forEach((row, index) => {
+            const rowText = row.text
+            const rowX = Math.round((width - row.width) / 2)
+            const rowY = index * this.charHeight
+            let letterX = 0
+            for (let c = 0; c < rowText.length; c++) {
+                const letterImgData = this.letters[rowText.charAt(c)]
+                if (letterImgData) {
+                    for (let x = letterX; x < letterX + letterImgData.width; x++) {
+                        for (let y = 0; y < letterImgData.height; y++) {
+                            const p = getPixel(letterImgData, x - letterX, y)
+                            setPixel(result, rowX + x, rowY + y, p.r, p.g, p.b, p.a)
+                        }
                     }
-                }
-                letterX += letterImgData.width
-            } // missing letter issue already reported above
-        }
+                    letterX += letterImgData.width
+                } // missing letter issue already reported above
+            }
+        })
         const img: CanvasRenderingContext2D = createContext(result.width, result.height)
         img.putImageData(result, 0, 0)
         return img.canvas
+    }
+
+    private determineRows(text: string, maxWidth?: number): { text: string, width: number }[] {
+        const spaceWidth = this.letters[' '].width
+        const rows: { text: string, width: number }[] = []
+        let rowText = ''
+        let rowWidth = 0
+        text.split(' ').map(word => {
+            let wordWidth = 0
+            for (let c = 0; c < word.length; c++) {
+                const letter = word.charAt(c)
+                const letterImg = this.letters[letter]
+                if (letterImg) {
+                    wordWidth += letterImg.width
+                } else {
+                    console.error('Letter \'' + letter + '\' not found in charset! Ignoring it')
+                }
+            }
+            if (rowWidth > 0) {
+                if (!maxWidth || rowWidth + spaceWidth + wordWidth < maxWidth) {
+                    rowText += ' ' + word
+                    rowWidth += spaceWidth + wordWidth
+                } else {
+                    rows.push({text: rowText, width: rowWidth})
+                    rowText = word
+                    rowWidth = wordWidth
+                }
+            } else {
+                rowText += word
+                rowWidth += wordWidth
+            }
+            return wordWidth
+        })
+        if (rowWidth > 0) rows.push({text: rowText, width: rowWidth})
+        return rows
     }
 }

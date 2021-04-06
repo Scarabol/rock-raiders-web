@@ -130,7 +130,7 @@ export class ResourceManager {
         return AnimEntityLoader.loadModels(aeFilename, cfgRoot)
     }
 
-    static getBitmapFont(name: string) {
+    static getBitmapFont(name: string): BitmapFont {
         return new BitmapFont(this.getResource(name))
     }
 
