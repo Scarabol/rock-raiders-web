@@ -51,7 +51,8 @@ export class Supervisor {
 
     scheduleJobs() {
         this.jobs = this.jobs.filter((j) => j.jobstate === JobState.OPEN)
-        this.jobs.filter((j) => j.fulfiller.length < 1).forEach((job) => { // TODO sort jobs by priority
+        this.jobs.forEach((job) => { // TODO sort jobs by priority list
+            if (job.fulfiller.length > 0) return
             // find closest, qualified, unemployed raider
             let closestRaider: Raider = null
             let minDistance = null

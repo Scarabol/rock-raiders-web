@@ -19,8 +19,8 @@ import { NerpParser } from '../core/NerpParser'
 import { NerpRunner } from '../core/NerpRunner'
 import { GameScreen } from '../screen/GameScreen'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import degToRad = MathUtils.degToRad
 import { PriorityList } from '../game/model/job/PriorityList'
+import degToRad = MathUtils.degToRad
 
 export class WorldManager {
 
@@ -96,7 +96,8 @@ export class WorldManager {
         this.nerpRunner?.pauseExecution()
         if (this.spawnRaiderInterval) clearInterval(this.spawnRaiderInterval)
         this.spawnRaiderInterval = null
-        GameState.remainingDiggables = this.sceneManager?.terrain?.surfaces?.filter((r) => r.forEach((s) => s.isDigable())).length || 0
+        GameState.remainingDiggables = 0
+        this.sceneManager?.terrain?.surfaces?.forEach((r) => r.forEach((s) => GameState.remainingDiggables += s.isDigable() ? 1 : 0))
         this.sceneManager.disposeScene()
     }
 
@@ -149,8 +150,7 @@ export class WorldManager {
             return
         }
         if (GameState.raiders.length >= GameState.getMaxRaiders()) return
-        const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD)
-            .filter((b) => b.isPowered() && !b.spawning)
+        const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).filter((b) => !b.spawning)
         for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
             GameState.requestedRaiders--
             const station = spawnBuildings[c]

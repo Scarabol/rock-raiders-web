@@ -93,11 +93,7 @@ export class GameState {
     }
 
     static getBuildingsByType(...buildingTypes: Building[]): BuildingEntity[] {
-        const matches = []
-        for (let c = 0; c < buildingTypes.length; c++) {
-            matches.push(...this.buildings.filter((b) => b.type === buildingTypes[c]))
-        }
-        return matches
+        return this.buildings.filter(b => b.isPowered() && buildingTypes.some(bt => b.type === bt))
     }
 
     static getClosestBuildingByType(position: Vector3, ...buildingTypes: Building[]): BuildingEntity {

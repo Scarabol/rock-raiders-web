@@ -59,7 +59,7 @@ export class Surface implements Selectable {
     }
 
     hasJobType(type: SurfaceJobType) {
-        return this.jobs.filter((job) => job.workType === type).length > 0 // TODO performance: use some?
+        return this.jobs.some((job) => job.workType === type)
     }
 
     /**
@@ -220,8 +220,15 @@ export class Surface implements Selectable {
     }
 
     cancelReinforceJobs() {
-        this.jobs.filter((j) => j.workType === SurfaceJobType.REINFORCE).forEach((j) => EventBus.publishEvent(new JobDeleteEvent(j)))
-        this.jobs = this.jobs.filter((j) => j.workType !== SurfaceJobType.REINFORCE)
+        const otherJobs = []
+        this.jobs.forEach((job) => {
+            if (job.workType === SurfaceJobType.REINFORCE) {
+                EventBus.publishEvent(new JobDeleteEvent(job))
+            } else {
+                otherJobs.push(job)
+            }
+        })
+        this.jobs = otherJobs
         this.updateJobColor()
     }
 

@@ -13,6 +13,7 @@ export class ResourceManager {
     static worker: ResourceWorker = new ResourceWorker()
     static configuration: any = {}
     static resourceByName: {} = {}
+    static fontCache = {}
 
     static startLoadingFromCache() {
         return this.startLoading(null)
@@ -131,7 +132,8 @@ export class ResourceManager {
     }
 
     static getBitmapFont(name: string): BitmapFont {
-        return new BitmapFont(this.getResource(name))
+        ResourceManager.fontCache[name] = ResourceManager.fontCache[name] || new BitmapFont(this.getResource(name))
+        return ResourceManager.fontCache[name]
     }
 
 }

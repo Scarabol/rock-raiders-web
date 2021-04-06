@@ -37,7 +37,8 @@ export class BuildingSite {
 
     unAssign(item: CollectableEntity) {
         const collectableType = item.getCollectableType()
-        this.assignedByType[collectableType] = (this.assignedByType[collectableType] || []).filter((assigned) => assigned !== item)
+        this.assignedByType[collectableType] = (this.assignedByType[collectableType] || [])
+        this.assignedByType[collectableType].splice(this.assignedByType[collectableType].indexOf(item), 1)
     }
 
     addItem(item: CollectableEntity) {
@@ -68,7 +69,7 @@ export class BuildingSite {
         })
         if (complete) {
             this.complete = complete
-            GameState.buildingSites = GameState.buildingSites.filter((site) => site !== this)
+            GameState.buildingSites.splice(GameState.buildingSites.indexOf(this), 1)
             const items = []
             Object.keys(this.onSiteByType).forEach((collectableType) => items.push(...this.onSiteByType[collectableType]))
             if (this.isPowerPath) {

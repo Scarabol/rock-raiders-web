@@ -27,7 +27,9 @@ export class LoadingScreen extends BaseScreen {
     }
 
     show() {
-        this.layers.filter((l) => l !== this.cursorLayer).forEach((layer) => layer.show())
+        this.layers.forEach((layer) => {
+            if (layer !== this.cursorLayer) layer.show()
+        })
         this.redraw()
     }
 

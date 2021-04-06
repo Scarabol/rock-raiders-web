@@ -30,7 +30,9 @@ export class BaseScreen {
     }
 
     redraw() {
-        this.layers.filter(layer => layer.isActive()).forEach((layer) => layer.redraw())
+        this.layers.forEach((layer) => {
+            if (layer.isActive()) layer.redraw()
+        })
     }
 
     show() {

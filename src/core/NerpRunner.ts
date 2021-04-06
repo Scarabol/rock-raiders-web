@@ -156,7 +156,9 @@ export class NerpRunner {
     }
 
     setBuildingsUpgradeLevel(typeName, level) {
-        GameState.buildings.filter(b => b.type === typeName).forEach(b => b.upgrades = level);
+        GameState.buildings.forEach(b => {
+            if (b.type === typeName) b.upgrades = level
+        })
     }
 
     setToolStoreLevel(level) {
@@ -264,11 +266,11 @@ export class NerpRunner {
     }
 
     getPoweredPowerStationsBuilt() {
-        return GameState.getBuildingsByType(Building.POWER_STATION).filter((b) => b.isPowered()).length
+        return GameState.getBuildingsByType(Building.POWER_STATION).length
     }
 
     getPoweredBarracksBuilt() {
-        return GameState.getBuildingsByType(Building.SUPPORT).filter((b) => b.isPowered()).length
+        return GameState.getBuildingsByType(Building.SUPPORT).length
     }
 
     getRecordObjectAtTutorial() {
