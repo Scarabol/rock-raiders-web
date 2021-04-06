@@ -3,7 +3,7 @@ import { ResourceManager } from '../../../../resource/ResourceManager'
 import { MenuItem } from '../../base/MenuItem'
 import { Panel } from './Panel'
 import { InterfaceBackButton } from '../../base/button/InterfaceBackButton'
-import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
+import { BaseButtonCfg } from '../../../../cfg/ButtonsCfg'
 
 export class IconPanel extends Panel {
 
@@ -43,7 +43,7 @@ export class IconSubPanel extends Panel {
     constructor(numOfItems, onBackPanel: Panel = null) {
         super()
         if (onBackPanel) {
-            const backBtnCfg = new ButtonCfg(ResourceManager.cfg('InterfaceBackButton'))
+            const backBtnCfg = new InterfaceBackButtonCfg(ResourceManager.cfg('InterfaceBackButton'))
             this.backBtn = this.addChild(new InterfaceBackButton(this, backBtnCfg))
             const panel = this
             this.backBtn.onClick = () => panel.toggleState(() => onBackPanel.toggleState())
@@ -59,6 +59,15 @@ export class IconSubPanel extends Panel {
         menuItem.relY += menuItem.height * this.countMenuItems
         this.countMenuItems++
         return menuItem
+    }
+
+}
+
+class InterfaceBackButtonCfg extends BaseButtonCfg {
+
+    constructor(cfgValue: any) {
+        super();
+        [this.width, this.height, this.highlightFile, this.pressedFile, this.tooltip] = cfgValue // Interface back button
     }
 
 }

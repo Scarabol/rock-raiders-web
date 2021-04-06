@@ -81,7 +81,7 @@ export class ButtonCameraControlCfg extends BaseConfig {
 
 }
 
-export class ButtonCfg {
+export class BaseButtonCfg {
 
     buttonType?: string
     normalFile?: string
@@ -93,12 +93,14 @@ export class ButtonCfg {
     width?: number
     height?: number
     tooltip?: string
+}
+
+    export class ButtonCfg extends BaseButtonCfg {
 
     constructor(cfgValue: any) {
+        super()
         if (cfgValue.length === 9) {
             [this.buttonType, this.normalFile, this.highlightFile, this.pressedFile, this.relX, this.relY, this.width, this.height, this.tooltip] = cfgValue
-        } else if (cfgValue.length === 5) {
-            [this.width, this.height, this.highlightFile, this.pressedFile, this.tooltip] = cfgValue
         } else {
             throw 'Invalid number of arguments (' + cfgValue.length + ') given for button configuration expected 9 or 5'
         }
