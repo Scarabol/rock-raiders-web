@@ -59,7 +59,7 @@ export class Surface implements Selectable {
     }
 
     hasJobType(type: SurfaceJobType) {
-        return this.jobs.filter((job) => job.workType === type).length > 0
+        return this.jobs.filter((job) => job.workType === type).length > 0 // TODO performance: use some?
     }
 
     /**
