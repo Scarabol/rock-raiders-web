@@ -428,7 +428,7 @@ export class Surface implements Selectable {
         this.fallinTimeout = setTimeout(() => {
             this.createFallin(targetX, targetY)
             this.scheduleFallin(targetX, targetY)
-        }, (60 + getRandom(120)) * 1000) // TODO adapt timer to level multiplier and fallin value
+        }, (30 + getRandom(60)) * 1000) // TODO adapt timer to level multiplier and fallin value
     }
 
     createFallin(targetX: number, targetY: number) {
