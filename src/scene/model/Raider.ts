@@ -6,6 +6,7 @@ import { FulfillerActivity, FulfillerEntity } from './FulfillerEntity'
 import { GameState } from '../../game/model/GameState'
 import { Vector3 } from 'three'
 import { EntityAddedEvent, EntityType } from '../../event/WorldEvents'
+import { RaiderDiscoveredEvent } from '../../event/WorldLocationEvent'
 
 export class Raider extends FulfillerEntity {
 
@@ -89,6 +90,7 @@ export class Raider extends FulfillerEntity {
         if (index !== -1) GameState.raidersUndiscovered.splice(index, 1)
         GameState.raiders.push(this)
         EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, this))
+        EventBus.publishEvent(new RaiderDiscoveredEvent(this.getPosition()))
     }
 
     onSelect() {

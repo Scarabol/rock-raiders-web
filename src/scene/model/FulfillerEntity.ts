@@ -10,6 +10,8 @@ import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/Su
 import { SurfaceType } from './map/SurfaceType'
 import { Crystal } from './collect/Crystal'
 import { Ore } from './collect/Ore'
+import { EventBus } from '../../event/EventBus'
+import { CrystalFoundEvent } from '../../event/WorldLocationEvent'
 import degToRad = MathUtils.degToRad
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
@@ -47,9 +49,10 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                             const vec = new Vector3().copy(this.getPosition()).sub(surfJob.surface.getCenterWorld())
                                 .multiplyScalar(0.3 + getRandom(3) / 10)
                                 .applyAxisAngle(new Vector3(0, 1, 0), degToRad(-10 + getRandom(20)))
-                                .add(this.getPosition())
+                                .add(this.getPosition()) // TODO set y to terrain height at this position?
                             if (surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
                                 this.worldMgr.addCollectable(new Crystal(), vec.x, vec.z)
+                                EventBus.publishEvent(new CrystalFoundEvent(vec))
                             } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM) {
                                 this.worldMgr.addCollectable(new Ore(), vec.x, vec.z)
                             }

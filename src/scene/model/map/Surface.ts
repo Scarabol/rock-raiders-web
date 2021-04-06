@@ -16,6 +16,7 @@ import { SurfaceJob, SurfaceJobType } from '../../../game/model/job/SurfaceJob'
 import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { AnimSubObj } from '../anim/AnimSubObj'
 import { SurfaceGeometry } from './SurfaceGeometry'
+import { LandslideEvent } from '../../../event/WorldLocationEvent'
 
 export class Surface implements Selectable {
 
@@ -431,13 +432,14 @@ export class Surface implements Selectable {
     }
 
     createFallin(targetX: number, targetY: number) {
-        console.log('there was a fallin') // TODO publish event notice
+        const fallinPosition = this.terrain.getSurface(targetX, targetY).getCenterWorld()
+        EventBus.publishEvent(new LandslideEvent(fallinPosition))
 
         // FIXME refactor animation handling
         const content = ResourceManager.getResource('MiscAnims/RockFall/Rock3Sides.lws')
         const animation = new LWSCLoader('MiscAnims/RockFall/').parse(content)
         this.fallinGrp = new Group()
-        this.fallinGrp.position.copy(this.terrain.getSurface(targetX, targetY).getCenterWorld())
+        this.fallinGrp.position.copy(fallinPosition)
         const dx = this.x - targetX, dy = targetY - this.y
         this.fallinGrp.rotateOnAxis(new Vector3(0, 1, 0), Math.atan2(dy, dx) + Math.PI / 2)
         this.terrain.worldMgr.sceneManager.scene.add(this.fallinGrp)
