@@ -2,8 +2,8 @@ import { BaseConfig } from './BaseConfig'
 import { ButtonRadarCfg } from '../game/gui/ingame/panel/RadarPanel'
 import { ButtonCrystalSideBarCfg } from '../game/gui/ingame/panel/PanelCrystalSideBar'
 import { ButtonTopCfg } from '../game/gui/ingame/panel/TopPanel'
-import { ButtonInfoDockCfg } from '../game/gui/ingame/panel/InfoDockPanel'
 import { ButtonPriorityListCfg } from '../game/gui/ingame/panel/PriorityListPanel'
+import { ButtonInfoDockCfg } from '../game/gui/ingame/infodock/ButtonInfoDockCfg'
 
 export class ButtonsCfg extends BaseConfig {
 
@@ -104,6 +104,20 @@ export class BaseButtonCfg {
         } else {
             throw 'Invalid number of arguments (' + cfgValue.length + ') given for button configuration expected 9 or 5'
         }
+    }
+
+}
+
+export class InfoButtonCfg extends BaseButtonCfg {
+
+    constructor(buttonImageFilename: string) {
+        super()
+        this.normalFile = buttonImageFilename
+        this.highlightFile = buttonImageFilename
+        this.pressedFile = buttonImageFilename
+        this.disabledFile = buttonImageFilename
+        this.relX = 0
+        this.relY = 0
     }
 
 }

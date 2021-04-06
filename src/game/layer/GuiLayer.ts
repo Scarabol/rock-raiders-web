@@ -8,10 +8,12 @@ import { PanelCrystalSideBar } from '../gui/ingame/panel/PanelCrystalSideBar'
 import { MainPanel } from '../gui/ingame/panel/MainPanel'
 import { POINTER_EVENT } from '../../event/EventManager'
 import { TopPanel } from '../gui/ingame/panel/TopPanel'
-import { InfoDockPanel } from '../gui/ingame/panel/InfoDockPanel'
+import { InfoDockPanel } from '../gui/ingame/infodock/InfoDockPanel'
 import { PanelsCfg } from '../../cfg/PanelsCfg'
 import { ButtonsCfg } from '../../cfg/ButtonsCfg'
 import { PriorityButtonsConfig, PriorityListPanel, PriorityPositionsEntry } from '../gui/ingame/panel/PriorityListPanel'
+import { InfoMessagesConfig } from '../gui/ingame/infodock/InfoMessagesConfig'
+import { InformationPanel } from '../gui/ingame/infodock/InformationPanel'
 
 export class GuiLayer extends ScaledLayer {
 
@@ -22,7 +24,7 @@ export class GuiLayer extends ScaledLayer {
     panelCrystalSideBar: PanelCrystalSideBar
     panelMain: MainPanel
     panelTopPanel: TopPanel
-    panelInformation: Panel
+    panelInformation: InformationPanel
     panelPriorityList: PriorityListPanel
     panelCameraControl: Panel
     panelInfoDock: InfoDockPanel
@@ -36,12 +38,12 @@ export class GuiLayer extends ScaledLayer {
         this.rootElement.notifyRedraw = () => layer.redraw()
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
         this.panelEncyclopedia = this.addPanel(new Panel(panelsCfg.panelEncyclopedia))
-        this.panelInfoDock = this.addPanel(new InfoDockPanel(panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock))
+        this.panelInformation = this.addPanel(new InformationPanel(panelsCfg.panelInformation))
+        this.panelInfoDock = this.addPanel(new InfoDockPanel(panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, new InfoMessagesConfig(ResourceManager.cfg('InfoMessages')), this.panelInformation))
         this.panelCameraControl = this.addPanel(new Panel(panelsCfg.panelCameraControl))
         const priorityButtonsConfig = new PriorityButtonsConfig(ResourceManager.cfg('PriorityImages'))
         const priorityPositionsConfig = Object.values(ResourceManager.cfg('PrioritiesImagePositions')).map(cfgValue => new PriorityPositionsEntry(cfgValue))
         this.panelPriorityList = this.addPanel(new PriorityListPanel(panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, priorityPositionsConfig, priorityButtonsConfig))
-        this.panelInformation = this.addPanel(new Panel(panelsCfg.panelInformation))
         this.panelTopPanel = this.addPanel(new TopPanel(panelsCfg.panelTopPanel, buttonsCfg.panelTopPanel))
         this.panelMain = this.addPanel(new MainPanel())
         this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(panelsCfg.panelCrystalSideBar, buttonsCfg.panelCrystalSideBar))

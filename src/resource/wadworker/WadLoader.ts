@@ -300,6 +300,7 @@ export class WadLoader {
         this.addAlphaImageFolder('Interface/IconPanel/')
         this.addAlphaImageFolder('Interface/Icons/')
         this.addAlphaImageFolder('Interface/Menus/')
+        this.addAlphaImageFolder('Interface/Buttons/')
         this.addAssetFolder(this.loadWadImageAsset, 'Interface/FrontEnd/lp_')
         this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/LowerPanel.bmp')
         // level files
