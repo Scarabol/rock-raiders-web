@@ -6,7 +6,7 @@ import { RadarPanel } from '../gui/radar/RadarPanel'
 import { MessagePanel } from '../gui/messagepanel/MessagePanel'
 import { PanelCrystalSideBar } from '../gui/sidebar/PanelCrystalSideBar'
 import { MainPanel } from '../gui/main/MainPanel'
-import { POINTER_EVENT } from '../../event/EventManager'
+import { KEY_EVENT, POINTER_EVENT } from '../../event/EventManager'
 import { TopPanel } from '../gui/toppanel/TopPanel'
 import { InfoDockPanel } from '../gui/infodock/InfoDockPanel'
 import { PanelsCfg } from '../../cfg/PanelsCfg'
@@ -17,10 +17,13 @@ import { InformationPanel } from '../gui/infodock/InformationPanel'
 import { PriorityButtonsConfig } from '../gui/toppanel/PriorityButtonsConfig'
 import { PriorityPositionsEntry } from '../gui/toppanel/PriorityPositionsEntry'
 import { TextInfoMessageConfig } from '../gui/messagepanel/TextInfoMessageConfig'
+import { PausePanel } from '../gui/overlay/PausePanel'
+import { MenuCfg } from '../../cfg/MenuCfg'
 
 export class GuiLayer extends ScaledLayer {
 
     rootElement: BaseElement = new BaseElement()
+    panelPause: PausePanel
     panelRadar: RadarPanel
     panelMessages: MessagePanel
     panelMessagesSide: Panel
@@ -54,15 +57,28 @@ export class GuiLayer extends ScaledLayer {
         this.panelMessagesSide = this.addPanel(new Panel(panelsCfg.panelMessagesSide))
         this.panelMessages = this.addPanel(new MessagePanel(panelsCfg.panelMessages, new TextInfoMessageConfig(ResourceManager.cfg('TextMessagesWithImages'))))
         this.panelRadar = this.addPanel(new RadarPanel(panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
-        // link panels
-        this.panelTopPanel.btnPriorities.onClick = () => {
-            const toggleState = this.panelTopPanel.btnPriorities.toggleState
-            this.panelMain.setMovedIn(toggleState, () => this.panelPriorityList.setMovedIn(!toggleState))
-        }
+        this.panelPause = this.addPanel(new PausePanel(this, ResourceManager.getResource('PausedMenu') as MenuCfg))
         this.onRedraw = (context: CanvasRenderingContext2D) => {
             this.needsRedraw = false
             context.clearRect(0, 0, context.canvas.width, context.canvas.height)
             this.rootElement.onRedraw(context)
+        }
+        // link panels
+        this.panelTopPanel.btnOptions.onClick = () => {
+            console.log('TODO open options menu') // TODO open options menu
+        }
+        this.panelTopPanel.btnPriorities.onClick = () => {
+            const toggleState = this.panelTopPanel.btnPriorities.toggleState
+            this.panelMain.setMovedIn(toggleState, () => this.panelPriorityList.setMovedIn(!toggleState))
+        }
+        this.panelPause.onRepeatBriefing = () => {
+            console.log('TODO repeat mission briefing here') // TODO repeat briefing
+        }
+        this.panelPause.onAbortGame = () => {
+            console.log('TODO abort game here') // TODO abort game
+        }
+        this.panelPause.onRestartGame = () => {
+            console.log('TODO restart game here') // TODO restart game
         }
     }
 
@@ -98,6 +114,24 @@ export class GuiLayer extends ScaledLayer {
     handleWheelEvent(event: WheelEvent): boolean {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         return !this.context || this.context.getImageData(cx, cy, 1, 1).data[3] > 0
+    }
+
+    handleKeyEvent(eventEnum: KEY_EVENT, event: KeyboardEvent): boolean {
+        let result: boolean
+        if (eventEnum === KEY_EVENT.UP && event.key.toLowerCase() === 'escape') {
+            if (this.panelPause.hidden) {
+                // TODO actually pause the game
+                this.panelPause.show()
+            } else {
+                // TODO actually unpause the game
+                this.panelPause.hide()
+            }
+            result = true
+        } else {
+            result = super.handleKeyEvent(eventEnum, event)
+        }
+        if (this.needsRedraw) this.redraw()
+        return result
     }
 
 }

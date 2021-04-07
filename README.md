@@ -21,7 +21,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ## Development Roadmap
 
 ### Near
-- Escape screen
 - Mission briefing
 - Options screen
 - Actually use work priority
@@ -67,6 +66,13 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - No tooltips
 - Cursor does not react on targeted object
 - Loading screen does not resize with window
+
+## Technicl Debt
+
+- refactor terrain height handling
+-- introduce methode to determine terrain height, without ray intersection
+-- provide option to determine location "on" the terrain by x and z coordinate
+- make game pausable and actually pause in escape screen (also fixes elapsed game time)
 
 ## Development
 To start development environment, please follow the following steps:

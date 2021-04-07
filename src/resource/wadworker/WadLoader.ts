@@ -278,14 +278,8 @@ export class WadLoader {
         this.addAssetFolder(this.loadFontImageAsset, 'Interface/Fonts/')
         this.addAssetFolder(this.loadAlphaImageAsset, 'Interface/Pointers/')
         // add menu assets
-        const menuFullCfg = new MenuCfg(iGet(mainConf, 'Menu', 'MainMenuFull'))
-        this.onAssetLoaded(0, 'MainMenuFull', menuFullCfg)
-        menuFullCfg.menus.forEach((menuCfg) => {
-            this.addAsset(this.loadWadImageAsset, menuCfg.menuImage)
-            this.addAsset(this.loadFontImageAsset, menuCfg.menuFont)
-            this.addAsset(this.loadFontImageAsset, menuCfg.loFont)
-            this.addAsset(this.loadFontImageAsset, menuCfg.hiFont)
-        })
+        this.addMenuWithAssets(mainConf, 'MainMenuFull')
+        this.addMenuWithAssets(mainConf, 'PausedMenu')
         // add ingame assets
         this.addAlphaImageFolder('Interface/TopPanel/') // top panel
         this.addAlphaImageFolder('Interface/RightPanel/') // crystal side bar
@@ -302,6 +296,7 @@ export class WadLoader {
         this.addAlphaImageFolder('Interface/Menus/')
         this.addAlphaImageFolder('Interface/Buttons/')
         this.addAlphaImageFolder('Interface/InfoImages/')
+        this.addAlphaImageFolder('Interface/FrontEnd/')
         this.addAssetFolder(this.loadWadImageAsset, 'Interface/FrontEnd/lp_')
         this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/LowerPanel.bmp')
         // level files
@@ -472,6 +467,17 @@ export class WadLoader {
     addAssetFolder(callback, folderPath) {
         this.wad0File.filterEntryNames(folderPath + '.+\\.bmp').forEach((assetPath) => {
             this.addAsset(callback, assetPath)
+        })
+    }
+
+    addMenuWithAssets(mainConf, name: string) {
+        const menuCfg = new MenuCfg(iGet(mainConf, 'Menu', name))
+        this.onAssetLoaded(0, name, menuCfg)
+        menuCfg.menus.forEach((menuCfg) => {
+            this.addAsset(this.loadAlphaImageAsset, Array.isArray(menuCfg.menuImage) ? menuCfg.menuImage[0] : menuCfg.menuImage)
+            this.addAsset(this.loadFontImageAsset, menuCfg.menuFont)
+            this.addAsset(this.loadFontImageAsset, menuCfg.loFont)
+            this.addAsset(this.loadFontImageAsset, menuCfg.hiFont)
         })
     }
 
