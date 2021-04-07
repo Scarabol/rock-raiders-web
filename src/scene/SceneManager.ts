@@ -157,7 +157,6 @@ export class SceneManager {
             cancelAnimationFrame(this.animRequest)
             this.animRequest = null
         }
-        this.scene?.children?.filter(c => c)
         this.terrain?.dispose()
         this.terrain = null
         SceneManager.meshRegistry.forEach(mesh => {

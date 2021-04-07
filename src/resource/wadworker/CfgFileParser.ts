@@ -98,8 +98,6 @@ export class CfgFileParser {
     }
 
     static parseValue(val) {
-        const num = Number(val)
-
         function splitShrink(sep) {
             val = val.split(sep).filter(val => val !== '').map(val => CfgFileParser.parseValue(val))
             if (val.length === 0) {
@@ -109,6 +107,7 @@ export class CfgFileParser {
             }
         }
 
+        const num = Number(val)
         if (isNaN(num)) {
             val = val.toString().replace(/\\/g, '/')
             const lVal = val.toLowerCase()

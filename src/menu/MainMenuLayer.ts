@@ -13,13 +13,10 @@ export class MainMenuLayer extends ScaledLayer {
 
     screen: MainMenuScreen
     cfg: MenuCfg
-    fullName: string
-    titleImage: HTMLCanvasElement
-    title: string
-    menuFont: BitmapFont
     loFont: BitmapFont
     hiFont: BitmapFont
     menuImage: HTMLCanvasElement
+    titleImage: HTMLCanvasElement
     items: MainMenuBaseItem[] = []
     scrollY: number = 0
 
@@ -27,13 +24,10 @@ export class MainMenuLayer extends ScaledLayer {
         super()
         this.screen = screen
         this.cfg = menuCfg
-        this.fullName = menuCfg.fullName
-        this.title = menuCfg.title
-        this.menuFont = menuCfg.menuFont ? ResourceManager.getBitmapFont(menuCfg.menuFont) : null
         this.loFont = menuCfg.loFont ? ResourceManager.getBitmapFont(menuCfg.loFont) : null
         this.hiFont = menuCfg.hiFont ? ResourceManager.getBitmapFont(menuCfg.hiFont) : null
         this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : null
-        this.titleImage = this.loFont.createTextImage(this.fullName)
+        this.titleImage = this.loFont.createTextImage(menuCfg.fullName)
 
         menuCfg.items.forEach((item) => {
             if (item.label) {

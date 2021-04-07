@@ -95,7 +95,7 @@ export class BaseButtonCfg {
     tooltip?: string
 }
 
-    export class ButtonCfg extends BaseButtonCfg {
+export class ButtonCfg extends BaseButtonCfg {
 
     constructor(cfgValue: any) {
         super()
