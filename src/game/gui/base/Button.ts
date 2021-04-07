@@ -1,6 +1,6 @@
-import { ResourceManager } from '../../../../resource/ResourceManager'
-import { BaseElement } from '../BaseElement'
-import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { BaseElement } from './BaseElement'
+import { ButtonCfg } from '../../../cfg/ButtonsCfg'
 
 export class Button extends BaseElement {
 

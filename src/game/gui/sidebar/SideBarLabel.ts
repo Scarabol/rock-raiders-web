@@ -1,7 +1,7 @@
-import { BaseElement } from './BaseElement'
+import { BaseElement } from '../base/BaseElement'
 import { ButtonCfg } from '../../../cfg/ButtonsCfg'
 
-export class Label extends BaseElement {
+export class SideBarLabel extends BaseElement {
 
     tooltip: string
     label: string

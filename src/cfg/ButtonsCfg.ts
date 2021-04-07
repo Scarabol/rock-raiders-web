@@ -1,9 +1,9 @@
 import { BaseConfig } from './BaseConfig'
-import { ButtonRadarCfg } from '../game/gui/ingame/panel/RadarPanel'
-import { ButtonCrystalSideBarCfg } from '../game/gui/ingame/panel/PanelCrystalSideBar'
-import { ButtonTopCfg } from '../game/gui/ingame/panel/TopPanel'
-import { ButtonPriorityListCfg } from '../game/gui/ingame/panel/PriorityListPanel'
-import { ButtonInfoDockCfg } from '../game/gui/ingame/infodock/ButtonInfoDockCfg'
+import { ButtonRadarCfg } from '../game/gui/radar/RadarPanel'
+import { ButtonCrystalSideBarCfg } from '../game/gui/sidebar/PanelCrystalSideBar'
+import { ButtonInfoDockCfg } from '../game/gui/infodock/ButtonInfoDockCfg'
+import { ButtonPriorityListCfg } from '../game/gui/toppanel/ButtonPriorityListCfg'
+import { ButtonTopCfg } from '../game/gui/toppanel/ButtonTopCfg'
 
 export class ButtonsCfg extends BaseConfig {
 

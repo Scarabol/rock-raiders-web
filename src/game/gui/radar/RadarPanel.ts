@@ -1,8 +1,8 @@
-import { Button } from '../../base/button/Button'
-import { Panel } from './Panel'
-import { PanelCfg } from '../../../../cfg/PanelsCfg'
-import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
-import { BaseConfig } from '../../../../cfg/BaseConfig'
+import { Button } from '../base/Button'
+import { Panel } from '../base/Panel'
+import { PanelCfg } from '../../../cfg/PanelsCfg'
+import { ButtonCfg } from '../../../cfg/ButtonsCfg'
+import { BaseConfig } from '../../../cfg/BaseConfig'
 
 export class RadarPanel extends Panel {
 

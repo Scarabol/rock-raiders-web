@@ -1,7 +1,7 @@
-import { ResourceManager } from '../../../../resource/ResourceManager'
-import { GameState } from '../../../model/GameState'
-import { Panel } from './Panel'
-import { PanelCfg } from '../../../../cfg/PanelsCfg'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { GameState } from '../../model/GameState'
+import { Panel } from '../base/Panel'
+import { PanelCfg } from '../../../cfg/PanelsCfg'
 
 export class MessagePanel extends Panel {
 

@@ -1,4 +1,4 @@
-import { BaseConfig } from '../../../../cfg/BaseConfig'
+import { BaseConfig } from '../../../cfg/BaseConfig'
 import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
 
 export class InfoMessagesConfig extends BaseConfig {

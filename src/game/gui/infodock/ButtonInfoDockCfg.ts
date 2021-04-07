@@ -1,5 +1,5 @@
-import { BaseConfig } from '../../../../cfg/BaseConfig'
-import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
+import { BaseConfig } from '../../../cfg/BaseConfig'
+import { ButtonCfg } from '../../../cfg/ButtonsCfg'
 
 export class ButtonInfoDockCfg extends BaseConfig {
 

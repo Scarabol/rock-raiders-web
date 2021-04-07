@@ -1,9 +1,9 @@
-import { Button } from '../../base/button/Button'
-import { Panel } from '../panel/Panel'
-import { PanelCfg } from '../../../../cfg/PanelsCfg'
+import { Button } from '../base/Button'
+import { Panel } from '../base/Panel'
+import { PanelCfg } from '../../../cfg/PanelsCfg'
 import { ButtonInfoDockCfg } from './ButtonInfoDockCfg'
 import { InfoMessagesConfig } from './InfoMessagesConfig'
-import { GenericDeathEvent, GenericMonsterEvent, LandslideEvent, PowerDrainEvent, RaiderDiscoveredEvent, SlugEmergeEvent, UnderAttackEvent } from '../../../../event/WorldLocationEvent'
+import { GenericDeathEvent, GenericMonsterEvent, LandslideEvent, PowerDrainEvent, RaiderDiscoveredEvent, SlugEmergeEvent, UnderAttackEvent } from '../../../event/WorldLocationEvent'
 import { InfoDockButton } from './InfoDockButton'
 import { InformationPanel } from './InformationPanel'
 

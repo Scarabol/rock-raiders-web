@@ -1,11 +1,12 @@
-import { Panel } from './Panel'
-import { PanelCfg } from '../../../../cfg/PanelsCfg'
-import { BaseConfig } from '../../../../cfg/BaseConfig'
-import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
-import { Button } from '../../base/button/Button'
-import { iGet } from '../../../../core/Util'
-import { GameState } from '../../../model/GameState'
-import { LevelPrioritiesEntryConfig } from '../../../../cfg/LevelsCfg'
+import { Panel } from '../base/Panel'
+import { PanelCfg } from '../../../cfg/PanelsCfg'
+import { Button } from '../base/Button'
+import { iGet } from '../../../core/Util'
+import { GameState } from '../../model/GameState'
+import { LevelPrioritiesEntryConfig } from '../../../cfg/LevelsCfg'
+import { ButtonPriorityListCfg } from './ButtonPriorityListCfg'
+import { PriorityButtonsConfig } from './PriorityButtonsConfig'
+import { PriorityPositionsEntry } from './PriorityPositionsEntry'
 
 export class PriorityListPanel extends Panel {
 
@@ -73,67 +74,3 @@ export class PriorityListPanel extends Panel {
 
 }
 
-export class ButtonPriorityListCfg extends BaseConfig {
-
-    panelButtonPriorityListDisable: ButtonCfg[] = []
-    panelButtonPriorityListUpOne: ButtonCfg[] = []
-    panelButtonPriorityListClose: ButtonCfg = null // not used in the game
-    panelButtonPriorityListReset: ButtonCfg = null
-
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    assignValue(objKey, lCfgKeyName, cfgValue): boolean {
-        if (lCfgKeyName.match(/panelButtonPriorityListDisable\d+/i)) {
-            this.panelButtonPriorityListDisable.push(this.parseValue(lCfgKeyName, cfgValue))
-            return true
-        } else if (lCfgKeyName.match(/panelButtonPriorityListUpOne\d+/i)) {
-            this.panelButtonPriorityListUpOne.push(this.parseValue(lCfgKeyName, cfgValue))
-            return true
-        } else {
-            return super.assignValue(objKey, lCfgKeyName, cfgValue)
-        }
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
-    }
-
-}
-
-export class PriorityButtonsConfig extends BaseConfig {
-
-    aiPriorityTrain: ButtonCfg = null
-    aiPriorityGetIn: ButtonCfg = null
-    aiPriorityCrystal: ButtonCfg = null
-    aiPriorityOre: ButtonCfg = null
-    aiPriorityRepair: ButtonCfg = null
-    aiPriorityClearing: ButtonCfg = null
-    aiPriorityDestruction: ButtonCfg = null
-    aiPriorityConstruction: ButtonCfg = null
-    aiPriorityReinforce: ButtonCfg = null
-    aiPriorityRecharge: ButtonCfg = null
-
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): ButtonCfg {
-        return {buttonType: cfgValue[0], normalFile: cfgValue[1], highlightFile: cfgValue[1], pressedFile: cfgValue[2], disabledFile: cfgValue[3]}
-    }
-
-}
-
-export class PriorityPositionsEntry {
-
-    x: number
-    y: number
-
-    constructor(cfgValue: any) {
-        [this.x, this.y] = cfgValue
-    }
-
-}

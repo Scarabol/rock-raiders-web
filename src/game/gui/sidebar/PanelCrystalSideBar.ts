@@ -1,18 +1,18 @@
-import { GameState } from '../../../model/GameState'
-import { ResourceManager } from '../../../../resource/ResourceManager'
-import { Panel } from './Panel'
-import { EventBus } from '../../../../event/EventBus'
-import { CollectEvent, SpawnMaterialEvent } from '../../../../event/WorldEvents'
-import { CollectableType } from '../../../../scene/model/collect/CollectableEntity'
-import { PanelCfg } from '../../../../cfg/PanelsCfg'
-import { BaseConfig } from '../../../../cfg/BaseConfig'
-import { ButtonCfg } from '../../../../cfg/ButtonsCfg'
-import { Label } from '../../base/Label'
+import { GameState } from '../../model/GameState'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { Panel } from '../base/Panel'
+import { EventBus } from '../../../event/EventBus'
+import { CollectEvent, SpawnMaterialEvent } from '../../../event/WorldEvents'
+import { CollectableType } from '../../../scene/model/collect/CollectableEntity'
+import { PanelCfg } from '../../../cfg/PanelsCfg'
+import { BaseConfig } from '../../../cfg/BaseConfig'
+import { ButtonCfg } from '../../../cfg/ButtonsCfg'
+import { SideBarLabel } from './SideBarLabel'
 
 export class PanelCrystalSideBar extends Panel {
 
-    labelOre: Label
-    labelCrystal: Label
+    labelOre: SideBarLabel
+    labelCrystal: SideBarLabel
     imgNoCrystal: HTMLCanvasElement
     imgSmallCrystal: HTMLCanvasElement
     imgUsedCrystal: HTMLCanvasElement
@@ -20,8 +20,8 @@ export class PanelCrystalSideBar extends Panel {
 
     constructor(panelCfg: PanelCfg, buttonsCfg: ButtonCrystalSideBarCfg) {
         super(panelCfg)
-        this.labelOre = this.addChild(new Label(this, buttonsCfg.panelButtonCrystalSideBarOre, GameState.numOre.toString())) // TODO include number of bricks
-        this.labelCrystal = this.addChild(new Label(this, buttonsCfg.panelButtonCrystalSideBarCrystals, GameState.numCrystal.toString()))
+        this.labelOre = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarOre, GameState.numOre.toString())) // TODO include number of bricks
+        this.labelCrystal = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarCrystals, GameState.numCrystal.toString()))
         this.imgNoCrystal = ResourceManager.getImage('Interface/RightPanel/NoSmallCrystal.bmp')
         this.imgSmallCrystal = ResourceManager.getImage('Interface/RightPanel/SmallCrystal.bmp')
         this.imgUsedCrystal = ResourceManager.getImage('Interface/RightPanel/UsedCrystal.bmp')
