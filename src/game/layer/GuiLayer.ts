@@ -16,6 +16,7 @@ import { InfoMessagesConfig } from '../gui/infodock/InfoMessagesConfig'
 import { InformationPanel } from '../gui/infodock/InformationPanel'
 import { PriorityButtonsConfig } from '../gui/toppanel/PriorityButtonsConfig'
 import { PriorityPositionsEntry } from '../gui/toppanel/PriorityPositionsEntry'
+import { TextInfoMessageConfig } from '../gui/messagepanel/TextInfoMessageConfig'
 
 export class GuiLayer extends ScaledLayer {
 
@@ -50,7 +51,7 @@ export class GuiLayer extends ScaledLayer {
         this.panelMain = this.addPanel(new MainPanel())
         this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(panelsCfg.panelCrystalSideBar, buttonsCfg.panelCrystalSideBar))
         this.panelMessagesSide = this.addPanel(new Panel(panelsCfg.panelMessagesSide))
-        this.panelMessages = this.addPanel(new MessagePanel(panelsCfg.panelMessages))
+        this.panelMessages = this.addPanel(new MessagePanel(panelsCfg.panelMessages, new TextInfoMessageConfig(ResourceManager.cfg('TextMessagesWithImages'))))
         this.panelRadar = this.addPanel(new RadarPanel(panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         // link panels
         this.panelTopPanel.btnPriorities.onClick = () => {
