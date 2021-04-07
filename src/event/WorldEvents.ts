@@ -136,3 +136,23 @@ export enum EntityType {
     BUILDING,
 
 }
+
+export class CavernDiscovered extends WorldEvent {
+
+    static eventKey = 'cavern.discovered'
+
+    constructor() {
+        super(CavernDiscovered.eventKey)
+    }
+
+}
+
+export class OreFoundEvent extends WorldEvent {
+
+    static eventKey = 'ore.found'
+
+    constructor() {
+        super(OreFoundEvent.eventKey)
+    }
+
+}

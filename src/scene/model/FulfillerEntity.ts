@@ -12,6 +12,7 @@ import { Crystal } from './collect/Crystal'
 import { Ore } from './collect/Ore'
 import { EventBus } from '../../event/EventBus'
 import { CrystalFoundEvent } from '../../event/WorldLocationEvent'
+import { OreFoundEvent } from '../../event/WorldEvents'
 import degToRad = MathUtils.degToRad
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
@@ -55,6 +56,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                                 EventBus.publishEvent(new CrystalFoundEvent(vec))
                             } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM) {
                                 this.worldMgr.addCollectable(new Ore(), vec.x, vec.z)
+                                EventBus.publishEvent(new OreFoundEvent())
                             }
                             this.changeActivity(FulfillerActivity.STANDING)
                         } else {

@@ -6,7 +6,7 @@ import { Selectable, SelectionType } from '../../../game/model/Selectable'
 import { EventBus } from '../../../event/EventBus'
 import { SurfaceSelectedEvent } from '../../../event/LocalEvents'
 import { JobType } from '../../../game/model/job/Job'
-import { JobCreateEvent, JobDeleteEvent } from '../../../event/WorldEvents'
+import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { getRandom, getRandomSign } from '../../../core/Util'
 import { Crystal } from '../collect/Crystal'
 import { Ore } from '../collect/Ore'
@@ -16,7 +16,7 @@ import { SurfaceJob, SurfaceJobType } from '../../../game/model/job/SurfaceJob'
 import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { AnimSubObj } from '../anim/AnimSubObj'
 import { SurfaceGeometry } from './SurfaceGeometry'
-import { LandslideEvent } from '../../../event/WorldLocationEvent'
+import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
 
 export class Surface implements Selectable {
 
@@ -94,10 +94,7 @@ export class Surface implements Selectable {
         this.needsMeshUpdate = true
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors()
-        if (foundCave) {
-            GameState.discoveredCaverns++ // TODO emit new-cave event instead
-            console.log('A new cave has been discovered')
-        }
+        if (foundCave) EventBus.publishEvent(new CavernDiscovered())
         // check for unsupported neighbors
         for (let x = this.x - 1; x <= this.x + 1; x++) {
             for (let y = this.y - 1; y <= this.y + 1; y++) {
@@ -115,7 +112,8 @@ export class Surface implements Selectable {
         for (let c = 0; c < this.containedCrystals; c++) {
             const x = this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4)
             const z = this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4)
-            this.terrain.worldMgr.addCollectable(new Crystal(), x, z)
+            const crystal = this.terrain.worldMgr.addCollectable(new Crystal(), x, z)
+            EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
         }
         this.dropContainedOre(this.containedOres - 4)
         // TODO workaround until buildings can be placed without terrain ray intersection
@@ -128,6 +126,7 @@ export class Surface implements Selectable {
             const x = this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4)
             const z = this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4)
             this.terrain.worldMgr.addCollectable(new Ore(), x, z)
+            EventBus.publishEvent(new OreFoundEvent())
         }
     }
 

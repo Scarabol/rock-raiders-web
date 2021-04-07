@@ -4,7 +4,7 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { MathUtils, Raycaster, Vector3 } from 'three'
 import { getRandom } from '../core/Util'
 import { EventBus } from '../event/EventBus'
-import { EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent, SpawnMaterialEvent } from '../event/WorldEvents'
+import { CavernDiscovered, EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent, SpawnMaterialEvent } from '../event/WorldEvents'
 import { Raider } from './model/Raider'
 import { GameState } from '../game/model/GameState'
 import { Building } from '../game/model/entity/building/Building'
@@ -53,6 +53,9 @@ export class WorldManager {
         })
         EventBus.registerEventListener(SpawnMaterialEvent.eventKey, (event: SpawnMaterialEvent) => {
             this.addCollectable(event.collectable, event.spawnPosition.x, event.spawnPosition.z)
+        })
+        EventBus.registerEventListener(CavernDiscovered.eventKey, () => {
+            GameState.discoveredCaverns++
         })
     }
 
@@ -141,6 +144,7 @@ export class WorldManager {
         } else {
             GameState.collectablesUndiscovered.push(collectable)
         }
+        return collectable
     }
 
     checkSpawnRaiders() {
