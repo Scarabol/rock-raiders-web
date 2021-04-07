@@ -9,13 +9,16 @@ export class MainMenuItemCfg {
     imgPressed: string
     tooltip: string
     target: string
+    flag: string
 
     constructor(cfgObj: any) {
         this.actionName = cfgObj[0]
         this.x = Number(cfgObj[1])
         this.y = Number(cfgObj[2])
-        if (cfgObj.length === 5) {
-            this.label = cfgObj[3].replace(/_/g, ' ')
+        if (cfgObj.length === 5 || cfgObj.length === 6) {
+            this.label = (Array.isArray(cfgObj[3]) ? cfgObj[3].join(',') : cfgObj[3]).replace(/_/g, ' ') // TODO improve cfg handling, remove join
+            this.target = cfgObj[4]
+            this.flag = cfgObj[5] || ''
         } else if (cfgObj.length === 8) {
             this.imgNormal = cfgObj[3]
             this.imgHover = cfgObj[4]

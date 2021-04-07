@@ -35,4 +35,12 @@ export class MenuCfg extends BaseConfig {
         return super.assignValue(objKey, lCfgKeyName, cfgValue)
     }
 
+    parseValue(lCfgKeyName: string, cfgValue: any): any {
+        if (lCfgKeyName === 'fullName'.toLowerCase() || lCfgKeyName === 'title') {
+            return cfgValue.replace(/_/g, ' ')
+        } else {
+            return super.parseValue(lCfgKeyName, cfgValue)
+        }
+    }
+
 }

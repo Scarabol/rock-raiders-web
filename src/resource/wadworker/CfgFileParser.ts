@@ -114,10 +114,10 @@ export class CfgFileParser {
             if (lVal === 'true') return true
             if (lVal === 'false') return false
             if (lVal === 'null') return ''
-            if (val.includes(',')) {
-                splitShrink.call(this, ',')
-            } else if (val.includes(':')) {
+            if (val.includes(':')) {
                 splitShrink.call(this, ':')
+            } else if (val.includes(',')) { // TODO improve cfg handling: what about strings
+                splitShrink.call(this, ',')
             } else if (val.includes('|')) {
                 splitShrink.call(this, '|')
             }
