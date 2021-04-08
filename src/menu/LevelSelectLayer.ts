@@ -3,7 +3,7 @@ import { LevelEntryCfg, LevelsCfg } from '../cfg/LevelsCfg'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuLevelButton } from './MainMenuLevelButton'
 import { MainMenuScreen } from '../screen/MainMenuScreen'
-import { MenuCfg } from '../cfg/MenuCfg'
+import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { iGet } from '../core/Util'
 import { MainMenuPanel } from './MainMenuPanel'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
@@ -11,7 +11,7 @@ import { MainMenuWindow } from './MainMenuWindow'
 
 export class LevelSelectLayer extends MainMenuLayer {
 
-    constructor(screen: MainMenuScreen, menuCfg: MenuCfg, modeLevel: boolean) {
+    constructor(screen: MainMenuScreen, menuCfg: MenuEntryCfg, modeLevel: boolean) {
         super(screen, menuCfg)
         const levelsCfg: LevelsCfg = ResourceManager.getResource('Levels')
         const levelTextCfg = new LevelTextCfg()

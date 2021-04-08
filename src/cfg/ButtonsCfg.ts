@@ -83,16 +83,16 @@ export class ButtonCameraControlCfg extends BaseConfig {
 
 export class BaseButtonCfg {
 
-    buttonType?: string
-    normalFile?: string
-    highlightFile?: string
-    pressedFile?: string
-    disabledFile?: string
-    relX?: number
-    relY?: number
-    width?: number
-    height?: number
-    tooltip?: string
+    buttonType?: string = null
+    normalFile?: string = null
+    highlightFile?: string = null
+    pressedFile?: string = null
+    disabledFile?: string = null
+    relX?: number = 0
+    relY?: number = 0
+    width?: number = 0
+    height?: number = 0
+    tooltip?: string = null
 }
 
 export class ButtonCfg extends BaseButtonCfg {

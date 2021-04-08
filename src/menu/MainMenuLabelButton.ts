@@ -1,13 +1,13 @@
 import { MainMenuLayer } from './MainMenuLayer'
-import { MainMenuItemCfg } from '../cfg/MainMenuItemCfg'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
+import { MenuLabelItemCfg } from '../cfg/MenuLabelItemCfg'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {
 
     labelImgLo = null
     labelImgHi = null
 
-    constructor(layer: MainMenuLayer, cfg: MainMenuItemCfg) {
+    constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()
         this.labelImgLo = layer.loFont.createTextImage(cfg.label)
         this.labelImgHi = layer.hiFont.createTextImage(cfg.label)

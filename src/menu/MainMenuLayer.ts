@@ -1,7 +1,7 @@
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuLabelButton } from './MainMenuLabelButton'
 import { ScaledLayer } from '../screen/ScreenLayer'
-import { MenuCfg } from '../cfg/MenuCfg'
+import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventManager'
 import { MainMenuScreen } from '../screen/MainMenuScreen'
@@ -12,7 +12,7 @@ import { MainMenuLevelButton } from './MainMenuLevelButton'
 export class MainMenuLayer extends ScaledLayer {
 
     screen: MainMenuScreen
-    cfg: MenuCfg
+    cfg: MenuEntryCfg
     loFont: BitmapFont
     hiFont: BitmapFont
     menuImage: HTMLCanvasElement
@@ -20,7 +20,7 @@ export class MainMenuLayer extends ScaledLayer {
     items: MainMenuBaseItem[] = []
     scrollY: number = 0
 
-    constructor(screen: MainMenuScreen, menuCfg: MenuCfg) {
+    constructor(screen: MainMenuScreen, menuCfg: MenuEntryCfg) {
         super()
         this.screen = screen
         this.cfg = menuCfg
@@ -29,13 +29,14 @@ export class MainMenuLayer extends ScaledLayer {
         this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : null
         this.titleImage = this.loFont.createTextImage(menuCfg.fullName)
 
-        menuCfg.items.forEach((item) => {
+        menuCfg.itemsLabel.forEach((item) => {
             if (item.label) {
                 this.items.push(new MainMenuLabelButton(this, item))
             } else {
                 this.items.push(new MainMenuIconButton(this, item))
             }
         })
+        // TODO implement other elements like itemsTrigger
 
         this.items.sort((a, b) => MainMenuBaseItem.compareZ(a, b))
 

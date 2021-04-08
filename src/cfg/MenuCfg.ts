@@ -1,23 +1,10 @@
-import { MainMenuItemCfg } from './MainMenuItemCfg'
+import { MenuEntryCfg } from './MenuEntryCfg'
 import { BaseConfig } from './BaseConfig'
 
 export class MenuCfg extends BaseConfig {
 
-    fullName: string = ''
-    title: string = ''
-    position: [number, number] = [0, 0]
-    menuFont: string = ''
-    loFont: string = ''
-    hiFont: string = ''
-    itemCount: number = 0
-    menuImage: string = ''
-    autoCenter: boolean = false
-    displayTitle: boolean = false
-    overlays: any[] = []
-    playRandom: boolean = false
-    items: MainMenuItemCfg[] = []
-    anchored: boolean = false
-    canScroll: boolean = false
+    menuCount: number = 0
+    menus: MenuEntryCfg[] = []
 
     constructor(cfgObj: any) {
         super()
@@ -25,22 +12,11 @@ export class MenuCfg extends BaseConfig {
     }
 
     assignValue(objKey, lCfgKeyName, cfgValue): boolean {
-        if (lCfgKeyName.match(/item\d+/i)) {
-            this.items.push(new MainMenuItemCfg(cfgValue))
-            return true
-        } else if (lCfgKeyName.match(/overlay\d+/i)) {
-            this.overlays.push(cfgValue)
+        if (lCfgKeyName.match(/menu\d+/i)) {
+            this.menus.push(new MenuEntryCfg(cfgValue))
             return true
         }
         return super.assignValue(objKey, lCfgKeyName, cfgValue)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
-        if (lCfgKeyName === 'fullName'.toLowerCase() || lCfgKeyName === 'title') {
-            return cfgValue.replace(/_/g, ' ')
-        } else {
-            return super.parseValue(lCfgKeyName, cfgValue)
-        }
     }
 
 }

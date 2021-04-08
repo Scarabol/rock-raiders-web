@@ -1,7 +1,7 @@
 import { MainMenuLayer } from './MainMenuLayer'
-import { MainMenuItemCfg } from '../cfg/MainMenuItemCfg'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { ResourceManager } from '../resource/ResourceManager'
+import { MenuLabelItemCfg } from '../cfg/MenuLabelItemCfg'
 
 export class MainMenuIconButton extends MainMenuBaseItem {
 
@@ -10,7 +10,7 @@ export class MainMenuIconButton extends MainMenuBaseItem {
     imgPressed = null
     tooltip = ''
 
-    constructor(layer: MainMenuLayer, cfg: MainMenuItemCfg) {
+    constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()
         this.imgNormal = ResourceManager.getImage(cfg.imgNormal)
         this.imgHover = ResourceManager.getImage(cfg.imgHover)

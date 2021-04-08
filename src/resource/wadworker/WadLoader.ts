@@ -3,7 +3,7 @@ import { WadFile } from './WadFile'
 import { getFilename, getPath, iGet } from './WadUtil'
 import { RonFile } from './RonFile'
 import { AlphaBitmapDecoder } from './AlphaBitmapDecoder'
-import { MainMenuFullCfg } from '../../cfg/MainMenuFullCfg'
+import { MenuCfg } from '../../cfg/MenuCfg'
 import { LevelEntryCfg, LevelsCfg } from '../../cfg/LevelsCfg'
 import { RewardCfg } from '../../cfg/RewardCfg'
 
@@ -278,7 +278,7 @@ export class WadLoader {
         this.addAssetFolder(this.loadFontImageAsset, 'Interface/Fonts/')
         this.addAssetFolder(this.loadAlphaImageAsset, 'Interface/Pointers/')
         // add menu assets
-        const menuFullCfg = new MainMenuFullCfg(iGet(mainConf, 'Menu', 'MainMenuFull'))
+        const menuFullCfg = new MenuCfg(iGet(mainConf, 'Menu', 'MainMenuFull'))
         this.onAssetLoaded(0, 'MainMenuFull', menuFullCfg)
         menuFullCfg.menus.forEach((menuCfg) => {
             this.addAsset(this.loadWadImageAsset, menuCfg.menuImage)
