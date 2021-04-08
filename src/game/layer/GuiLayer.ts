@@ -32,13 +32,14 @@ export class GuiLayer extends ScaledLayer {
     panelCameraControl: Panel
     panelInfoDock: InfoDockPanel
     panelEncyclopedia: Panel
+    needsRedraw: boolean = false
 
     constructor() {
         super()
         const panelsCfg = new PanelsCfg(ResourceManager.cfg('Panels640x480'))
         const buttonsCfg = new ButtonsCfg(ResourceManager.cfg('Buttons640x480'))
         const layer = this
-        this.rootElement.notifyRedraw = () => layer.redraw()
+        this.rootElement.notifyRedraw = () => layer.needsRedraw = true
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
         this.panelEncyclopedia = this.addPanel(new Panel(panelsCfg.panelEncyclopedia))
         this.panelInformation = this.addPanel(new InformationPanel(panelsCfg.panelInformation))
@@ -59,6 +60,7 @@ export class GuiLayer extends ScaledLayer {
             this.panelMain.setMovedIn(toggleState, () => this.panelPriorityList.setMovedIn(!toggleState))
         }
         this.onRedraw = (context: CanvasRenderingContext2D) => {
+            this.needsRedraw = false
             context.clearRect(0, 0, context.canvas.width, context.canvas.height)
             this.rootElement.onRedraw(context)
         }
@@ -77,20 +79,19 @@ export class GuiLayer extends ScaledLayer {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
         const hit = this.context && this.context.getImageData(cx, cy, 1, 1).data[3] > 0
-        let needsRedraw = false
         if (hit) {
             event.preventDefault()
             if (eventEnum === POINTER_EVENT.MOVE) {
-                needsRedraw = this.rootElement.checkHover(sx, sy) || needsRedraw
+                this.rootElement.checkHover(sx, sy)
             } else if (eventEnum === POINTER_EVENT.DOWN) {
-                needsRedraw = this.rootElement.checkClick(sx, sy) || needsRedraw
+                this.rootElement.checkClick(sx, sy)
             } else if (eventEnum === POINTER_EVENT.UP) {
-                needsRedraw = this.rootElement.checkRelease(sx, sy) || needsRedraw
+                this.rootElement.checkRelease(sx, sy)
             }
         } else if (eventEnum === POINTER_EVENT.MOVE) {
-            needsRedraw = this.rootElement.release() || needsRedraw
+            this.rootElement.release()
         }
-        if (needsRedraw) this.redraw()
+        if (this.needsRedraw) this.redraw()
         return hit
     }
 

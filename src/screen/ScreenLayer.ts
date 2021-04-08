@@ -31,7 +31,11 @@ export class ScreenLayer {
     }
 
     redraw() {
-        if (this.isActive() && this.onRedraw) this.onRedraw(this.context)
+        const callback = this.onRedraw
+        if (this.isActive() && callback) {
+            const context = this.context
+            requestAnimationFrame(() => callback(context))
+        }
     }
 
     show() {

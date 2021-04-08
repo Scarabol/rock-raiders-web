@@ -30,6 +30,30 @@ export class Button extends BaseElement {
         console.log('button pressed: ' + this.buttonType)
     }
 
+    checkHover(cx, cy): boolean {
+        const stateChanged = super.checkHover(cx, cy)
+        if (stateChanged) this.notifyRedraw()
+        return stateChanged
+    }
+
+    checkClick(cx, cy): boolean {
+        const stateChanged = super.checkClick(cx, cy)
+        if (stateChanged) this.notifyRedraw()
+        return stateChanged
+    }
+
+    checkRelease(cx, cy): boolean {
+        const stateChanged = super.checkRelease(cx, cy)
+        if (stateChanged) this.notifyRedraw()
+        return stateChanged
+    }
+
+    release(): boolean {
+        const stateChanged = super.release()
+        if (stateChanged) this.notifyRedraw()
+        return stateChanged
+    }
+
     onRedraw(context: CanvasRenderingContext2D) {
         if (this.hidden) return
         let img = this.imgNormal

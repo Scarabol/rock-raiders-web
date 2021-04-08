@@ -68,40 +68,40 @@ export class BaseElement {
     checkHover(cx, cy): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
-        let updated = this.hover !== inRect
+        let stateChanged = this.hover !== inRect
         this.hover = inRect
         this.pressed = this.pressed && this.hover
         // TODO start tooltip timeout (if not already started)
-        this.children.forEach((child) => updated = child.checkHover(cx, cy) || updated)
-        return updated
+        this.children.forEach((child) => stateChanged = child.checkHover(cx, cy) || stateChanged)
+        return stateChanged
     }
 
     checkClick(cx, cy): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
-        let updated = this.pressed !== inRect
+        let stateChanged = this.pressed !== inRect
         this.pressed = inRect
-        this.children.forEach((child) => updated = child.checkClick(cx, cy) || updated)
-        return updated
+        this.children.forEach((child) => stateChanged = child.checkClick(cx, cy) || stateChanged)
+        return stateChanged
     }
 
     checkRelease(cx, cy): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
         if (inRect && this.pressed) this.onClick()
-        let updated = false
-        this.children.forEach((child) => updated = child.checkRelease(cx, cy) || updated)
-        updated = this.pressed || updated
+        let stateChanged = false
+        this.children.forEach((child) => stateChanged = child.checkRelease(cx, cy) || stateChanged)
+        stateChanged = this.pressed || stateChanged
         this.pressed = false
-        return updated
+        return stateChanged
     }
 
     release(): boolean {
-        let updated = this.pressed || this.hover
+        let stateChanged = this.pressed || this.hover
         this.pressed = false
         this.hover = false
-        this.children.forEach((child) => updated = child.release() || updated)
-        return updated
+        this.children.forEach((child) => stateChanged = child.release() || stateChanged)
+        return stateChanged
     }
 
     notifyRedraw() {
