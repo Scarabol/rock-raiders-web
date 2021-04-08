@@ -1,10 +1,9 @@
 import { Panel } from '../base/Panel'
 import { Button } from '../base/Button'
-import { InterfaceBackButtonCfg } from './InterfaceBackButtonCfg'
+import { IconPanelBackButtonCfg } from '../../../cfg/IconPanelBackButtonCfg'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { InterfaceBackButton } from './InterfaceBackButton'
 import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
-import { MenuItem } from '../base/MenuItem'
+import { IconPanelButton } from './IconPanelButton'
 
 export class IconSubPanel extends Panel {
 
@@ -14,8 +13,8 @@ export class IconSubPanel extends Panel {
     constructor(numOfItems, onBackPanel: Panel = null) {
         super()
         if (onBackPanel) {
-            const backBtnCfg = new InterfaceBackButtonCfg(ResourceManager.cfg('InterfaceBackButton'))
-            this.backBtn = this.addChild(new InterfaceBackButton(this, backBtnCfg))
+            const backBtnCfg = new IconPanelBackButtonCfg(ResourceManager.cfg('InterfaceBackButton'))
+            this.backBtn = this.addChild(new Button(this, backBtnCfg))
             const panel = this
             this.backBtn.onClick = () => panel.toggleState(() => onBackPanel.toggleState())
         }
@@ -27,7 +26,7 @@ export class IconSubPanel extends Panel {
 
     addMenuItem(menuItemGroup: string, itemKey: string) {
         const menuItemCfg = new MenuItemCfg(ResourceManager.cfg(menuItemGroup, itemKey))
-        const menuItem = this.addChild(new MenuItem(this, menuItemCfg, itemKey, this.img.width, this.countMenuItems))
+        const menuItem = this.addChild(new IconPanelButton(this, menuItemCfg, itemKey, this.img.width, this.countMenuItems))
         this.countMenuItems++
         return menuItem
     }
