@@ -1,51 +1,24 @@
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { BaseElement } from './BaseElement'
-import { Panel } from './Panel'
+import { Button } from './Button'
+import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
 
-export class MenuItem extends BaseElement {
+export class MenuItem extends Button {
 
-    panel: Panel
-    itemKey: string
-    imgNormal
-    imgDisabled
-    imgPressed
-    tooltip: string
     tooltipDisabled: string
     hotkey: string
 
-    constructor(panel: Panel, menuItemGroup, itemKey) {
-        super()
-        this.panel = panel
-        this.itemKey = itemKey
-        this.relX = panel.img.width - 59
-        this.relY = 9
-        this.width = 40
-        this.height = 40
-        const menuItemCfg = ResourceManager.cfg(menuItemGroup, itemKey)
-        let normalFile, disabledFile, pressedFile
-        if (menuItemCfg) {
-            [normalFile, disabledFile, pressedFile, this.tooltip, this.tooltipDisabled, this.hotkey] = menuItemCfg
-        }
-        if (normalFile) this.imgNormal = ResourceManager.getImage(normalFile)
-        if (disabledFile) this.imgDisabled = ResourceManager.getImage(disabledFile)
-        if (pressedFile) this.imgPressed = ResourceManager.getImage(pressedFile)
+    constructor(parent: BaseElement, menuItemCfg: MenuItemCfg, itemKey: string, parentWidth: number, menuIndex: number) {
+        super(parent, menuItemCfg)
+        this.buttonType = itemKey
+        this.relX = parentWidth - 59
+        this.relY = 9 + this.height * menuIndex
+        this.tooltipDisabled = menuItemCfg.tooltipDisabled
+        this.hotkey = menuItemCfg.hotkey
         this.disabled = true
     }
 
     onClick() {
-        console.log('menu item pressed: ' + this.itemKey)
-    }
-
-    onRedraw(context: CanvasRenderingContext2D) {
-        if (this.hidden) return
-        let img = this.imgNormal
-        if (this.disabled) {
-            img = this.imgDisabled
-        } else if (this.pressed) {
-            img = this.imgPressed
-        }
-        if (img) context.drawImage(img, this.x, this.y)
-        super.onRedraw(context)
+        console.log('menu item pressed: ' + this.buttonType)
     }
 
     drawHover(context: CanvasRenderingContext2D) {

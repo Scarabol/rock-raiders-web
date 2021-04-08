@@ -4,12 +4,12 @@ import { ButtonCfg } from '../../../cfg/ButtonsCfg'
 
 export class Button extends BaseElement {
 
-    buttonType: string
-    imgNormal
-    imgHover
-    imgPressed
-    imgDisabled
-    tooltip: string
+    buttonType: string = null
+    imgNormal: HTMLCanvasElement = null
+    imgHover: HTMLCanvasElement = null
+    imgPressed: HTMLCanvasElement = null
+    imgDisabled: HTMLCanvasElement = null
+    tooltip: string = null
 
     constructor(parent: BaseElement, btnCfg: ButtonCfg) {
         super(parent)
@@ -34,11 +34,11 @@ export class Button extends BaseElement {
         if (this.hidden) return
         let img = this.imgNormal
         if (this.disabled) {
-            img = this.imgDisabled || this.imgPressed
+            img = this.imgDisabled || this.imgPressed || this.imgNormal
         } else if (this.pressed) {
-            img = this.imgPressed
+            img = this.imgPressed || this.imgNormal
         } else if (this.hover) {
-            img = this.imgHover
+            img = this.imgHover || this.imgNormal
         }
         if (img) context.drawImage(img, this.x, this.y)
         super.onRedraw(context)

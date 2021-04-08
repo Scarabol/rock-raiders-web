@@ -3,6 +3,7 @@ import { Button } from '../base/Button'
 import { InterfaceBackButtonCfg } from './InterfaceBackButtonCfg'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { InterfaceBackButton } from './InterfaceBackButton'
+import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
 import { MenuItem } from '../base/MenuItem'
 
 export class IconSubPanel extends Panel {
@@ -24,9 +25,9 @@ export class IconSubPanel extends Panel {
         this.xOut = -this.img.width
     }
 
-    addMenuItem(menuItemGroup, itemKey) {
-        const menuItem = this.addChild(new MenuItem(this, menuItemGroup, itemKey))
-        menuItem.relY += menuItem.height * this.countMenuItems
+    addMenuItem(menuItemGroup: string, itemKey: string) {
+        const menuItemCfg = new MenuItemCfg(ResourceManager.cfg(menuItemGroup, itemKey))
+        const menuItem = this.addChild(new MenuItem(this, menuItemCfg, itemKey, this.img.width, this.countMenuItems))
         this.countMenuItems++
         return menuItem
     }
