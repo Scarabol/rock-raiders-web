@@ -97,6 +97,22 @@ export class WadLoader {
         callback(script)
     }
 
+    loadNerpMsg(name, callback) {
+        const result = this.parseNerpMsgFile(this.wad0File, name)
+        const msg1 = this.parseNerpMsgFile(this.wad1File, name)
+        for (let c = 0; c < msg1.length; c++) {
+            const m1 = msg1[c]
+            if (!m1) continue
+            if (m1.txt) {
+                result[c].txt = m1.txt
+            }
+            if (m1.snd) {
+                result[c].snd = m1.snd
+            }
+        }
+        callback(result)
+    }
+
     parseNerpMsgFile(wadFile, name) {
         const result = []
         const lines = wadFile.getEntryText(name).split('\n')
@@ -151,22 +167,6 @@ export class WadLoader {
             throw 'Found unexpected numeric name ' + name
         }
         return number
-    }
-
-    loadNerpMsg(name, callback) {
-        const result = this.parseNerpMsgFile(this.wad0File, name)
-        const msg1 = this.parseNerpMsgFile(this.wad1File, name)
-        for (let c = 0; c < msg1.length; c++) {
-            const m1 = msg1[c]
-            if (!m1) continue
-            if (m1.txt) {
-                result[c].txt = m1.txt
-            }
-            if (m1.snd) {
-                result[c].snd = m1.snd
-            }
-        }
-        callback(result)
     }
 
     loadMapAsset(name, callback) {

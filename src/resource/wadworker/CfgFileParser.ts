@@ -16,7 +16,7 @@ export class CfgFileParser {
             if (charCode === 123 && key === 'FullName') { // dirty workaround but in the original file { (123) was used instead of Ä (142)
                 charCode = 142
             }
-            let charStr = String.fromCharCode(encodeChar(charCode))
+            let charStr = String.fromCharCode(encodeChar[charCode])
             if (charStr === ';' || charStr === '/') { // someone used // as a marker for a comment
                 isComment = true
             } else if (charCode === 10 || charCode === 13) {

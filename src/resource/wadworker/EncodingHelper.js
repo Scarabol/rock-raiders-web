@@ -1,16 +1,11 @@
-export function encodeChar(charCode) { // encoding of the original files still remains a mystery
-    if (charCode === 130) {
-        return 'ä'.charCodeAt(0);
-    } else if (charCode === 142) {
-        return 'Ä'.charCodeAt(0);
-    } else if (charCode === 162) {
-        return 'ö'.charCodeAt(0);
-    } else if (charCode === 167) {
-        return 'Ü'.charCodeAt(0);
-    } else if (charCode === 171) {
-        return 'ü'.charCodeAt(0);
-    } else if (charCode === 195) {
-        return 'ß'.charCodeAt(0);
-    }
-    return charCode;
+export const encodeChar = []
+
+for (let c = 0; c < 256; c++) {
+    encodeChar[c] = c
 }
+encodeChar[130] = 0x00E4 // ä
+encodeChar[142] = 0x00C4 // Ä
+encodeChar[162] = 0x00F6 // ö
+encodeChar[167] = 0x00DC // Ü
+encodeChar[171] = 0x00FC // ü
+encodeChar[195] = 0x00DF // ß
