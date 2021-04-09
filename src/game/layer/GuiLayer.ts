@@ -20,10 +20,13 @@ import { TextInfoMessageConfig } from '../gui/messagepanel/TextInfoMessageConfig
 import { PausePanel } from '../gui/overlay/PausePanel'
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { OptionsPanel } from '../gui/overlay/OptionsPanel'
+import { BriefingPanel } from '../gui/briefing/BriefingPanel'
+import { BriefingPanelCfg } from '../../cfg/BriefingPanelCfg'
 
 export class GuiLayer extends ScaledLayer {
 
     rootElement: BaseElement = new BaseElement()
+    panelBriefing: BriefingPanel
     panelOptions: OptionsPanel
     panelPause: PausePanel
     panelRadar: RadarPanel
@@ -61,6 +64,7 @@ export class GuiLayer extends ScaledLayer {
         this.panelRadar = this.addPanel(new RadarPanel(panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         this.panelPause = this.addPanel(new PausePanel(this, ResourceManager.getResource('PausedMenu') as MenuCfg))
         this.panelOptions = this.addPanel(new OptionsPanel(this, ResourceManager.getResource('OptionsMenu') as MenuCfg))
+        this.panelBriefing = this.addPanel(new BriefingPanel(this.panelMessages, new BriefingPanelCfg()))
         this.onRedraw = (context: CanvasRenderingContext2D) => {
             this.needsRedraw = false
             context.clearRect(0, 0, context.canvas.width, context.canvas.height)
@@ -75,7 +79,8 @@ export class GuiLayer extends ScaledLayer {
             this.panelMain.setMovedIn(toggleState, () => this.panelPriorityList.setMovedIn(!toggleState))
         }
         this.panelPause.onRepeatBriefing = () => {
-            console.log('TODO repeat mission briefing here') // TODO repeat briefing
+            this.panelPause.hide()
+            this.panelBriefing.show()
         }
         this.panelPause.onAbortGame = () => {
             console.log('TODO abort game here') // TODO abort game
@@ -84,13 +89,15 @@ export class GuiLayer extends ScaledLayer {
             console.log('TODO restart game here') // TODO restart game
         }
         this.panelOptions.onRepeatBriefing = () => {
-            console.log('TODO repeat mission briefing here') // TODO repeat briefing
+            this.panelOptions.hide()
+            this.panelBriefing.show()
         }
     }
 
-    setup() {
+    setup(objectiveText: string, objectiveBackImgCfg: { filename: string, x: number, y: number }) {
         // FIXME reset GUI including all panels
         this.panelPriorityList.reset()
+        this.panelBriefing.setup(objectiveText, objectiveBackImgCfg)
     }
 
     addPanel<T extends Panel>(panel: T): T {
@@ -124,17 +131,23 @@ export class GuiLayer extends ScaledLayer {
 
     handleKeyEvent(eventEnum: KEY_EVENT, event: KeyboardEvent): boolean {
         let result: boolean
-        if (eventEnum === KEY_EVENT.UP && event.key.toLowerCase() === 'escape') {
-            if (this.panelPause.hidden) {
-                // TODO actually pause the game
-                this.panelPause.show()
-            } else {
-                // TODO actually unpause the game
-                this.panelPause.hide()
+        const lEventKey = event.key.toLowerCase()
+        if (eventEnum === KEY_EVENT.UP) {
+            if (lEventKey === 'escape') {
+                if (this.panelPause.hidden) {
+                    // TODO actually pause the game
+                    this.panelPause.show()
+                } else {
+                    // TODO actually unpause the game
+                    this.panelPause.hide()
+                }
+                result = true
+            } else if (lEventKey === ' ') { // space
+                if (!this.panelBriefing.hidden) {
+                    this.panelBriefing.nextParagraph()
+                    result = true
+                }
             }
-            result = true
-        } else {
-            result = super.handleKeyEvent(eventEnum, event)
         }
         if (this.needsRedraw) this.redraw()
         return result

@@ -6,6 +6,8 @@ import { GuiLayer } from '../game/layer/GuiLayer'
 import { Supervisor } from '../game/Supervisor'
 import { LevelEntryCfg, LevelsCfg } from '../cfg/LevelsCfg'
 import { ResourceManager } from '../resource/ResourceManager'
+import { iGet } from '../core/Util'
+import { LevelObjectiveTextEntry } from '../resource/wadworker/ObjectiveTextParser'
 
 export class GameScreen extends BaseScreen {
 
@@ -33,7 +35,12 @@ export class GameScreen extends BaseScreen {
         if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'
         console.log('Starting level ' + levelName + ' - ' + levelConf.fullName)
         this.worldManager.setup(levelConf, this)
-        this.guiLayer.setup()
+        const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(levelConf.objectiveText), levelName)
+        this.guiLayer.setup(objectiveText.objective, {
+            filename: levelConf.objectiveImage640x480[0],
+            x: levelConf.objectiveImage640x480[1],
+            y: levelConf.objectiveImage640x480[2],
+        })
         this.show()
     }
 

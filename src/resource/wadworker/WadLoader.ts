@@ -6,6 +6,7 @@ import { AlphaBitmapDecoder } from './AlphaBitmapDecoder'
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { LevelEntryCfg, LevelsCfg } from '../../cfg/LevelsCfg'
 import { RewardCfg } from '../../cfg/RewardCfg'
+import { ObjectiveTextParser } from './ObjectiveTextParser'
 
 export class WadLoader {
 
@@ -169,6 +170,12 @@ export class WadLoader {
         return number
     }
 
+    loadObjectiveTexts(name, callback) { // FIXME optimize this
+        const txtContent = this.wad1File.getEntryData(name)
+        const result = new ObjectiveTextParser().parseObjectiveTextFile(txtContent)
+        callback(result)
+    }
+
     loadMapAsset(name, callback) {
         const buffer = this.wad0File.getEntryData(name)
         if (buffer.length < 13 || String.fromCharCode.apply(String, buffer.slice(0, 3)) !== 'MAP') {
@@ -281,6 +288,8 @@ export class WadLoader {
         this.addMenuWithAssets(mainConf, 'MainMenuFull')
         this.addMenuWithAssets(mainConf, 'PausedMenu')
         this.addMenuWithAssets(mainConf, 'OptionsMenu')
+        this.addAsset(this.loadAlphaImageAsset, 'Interface/BriefingPanel/BriefingPanel.bmp')
+        this.addAsset(this.loadObjectiveTexts, 'Languages/ObjectiveText.txt')
         // add in-game assets
         this.addAlphaImageFolder('Interface/TopPanel/') // top panel
         this.addAlphaImageFolder('Interface/RightPanel/') // crystal side bar

@@ -21,8 +21,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ## Development Roadmap
 
 ### Near
-- Mission briefing
-- Options screen
 - Actually use work priority
 - Raider Training
 - Spiders, Bats
@@ -54,12 +52,14 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Right click commands raider and moves camera too
 - Drilling time not related to material
 - Reward screen not reset
+- make game pausable and actually pause in escape screen (also fixes elapsed game time)
 
 ### Nice to have
 - Requirements tooltip for buildings/vehicles not shown
 - When scene is disposed animation interval must be canceled
 - Camera can glitch through terrain and zoom in/out infinitely
 - Scene should be rendered in its own worker (thread)
+- Teleport In animation for buildings at level start missing
 
 ### Cosmetics
 - Requested number of raiders not shown in icon panel
@@ -72,7 +72,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - refactor terrain height handling
 -- introduce methode to determine terrain height, without ray intersection
 -- provide option to determine location "on" the terrain by x and z coordinate
-- make game pausable and actually pause in escape screen (also fixes elapsed game time)
 
 ## Development
 To start development environment, please follow the following steps:
