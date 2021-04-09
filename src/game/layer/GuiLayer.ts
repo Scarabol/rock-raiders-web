@@ -19,10 +19,12 @@ import { PriorityPositionsEntry } from '../gui/toppanel/PriorityPositionsEntry'
 import { TextInfoMessageConfig } from '../gui/messagepanel/TextInfoMessageConfig'
 import { PausePanel } from '../gui/overlay/PausePanel'
 import { MenuCfg } from '../../cfg/MenuCfg'
+import { OptionsPanel } from '../gui/overlay/OptionsPanel'
 
 export class GuiLayer extends ScaledLayer {
 
     rootElement: BaseElement = new BaseElement()
+    panelOptions: OptionsPanel
     panelPause: PausePanel
     panelRadar: RadarPanel
     panelMessages: MessagePanel
@@ -58,6 +60,7 @@ export class GuiLayer extends ScaledLayer {
         this.panelMessages = this.addPanel(new MessagePanel(panelsCfg.panelMessages, new TextInfoMessageConfig(ResourceManager.cfg('TextMessagesWithImages'))))
         this.panelRadar = this.addPanel(new RadarPanel(panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         this.panelPause = this.addPanel(new PausePanel(this, ResourceManager.getResource('PausedMenu') as MenuCfg))
+        this.panelOptions = this.addPanel(new OptionsPanel(this, ResourceManager.getResource('OptionsMenu') as MenuCfg))
         this.onRedraw = (context: CanvasRenderingContext2D) => {
             this.needsRedraw = false
             context.clearRect(0, 0, context.canvas.width, context.canvas.height)
@@ -65,7 +68,7 @@ export class GuiLayer extends ScaledLayer {
         }
         // link panels
         this.panelTopPanel.btnOptions.onClick = () => {
-            console.log('TODO open options menu') // TODO open options menu
+            this.panelOptions.show()
         }
         this.panelTopPanel.btnPriorities.onClick = () => {
             const toggleState = this.panelTopPanel.btnPriorities.toggleState
@@ -79,6 +82,9 @@ export class GuiLayer extends ScaledLayer {
         }
         this.panelPause.onRestartGame = () => {
             console.log('TODO restart game here') // TODO restart game
+        }
+        this.panelOptions.onRepeatBriefing = () => {
+            console.log('TODO repeat mission briefing here') // TODO repeat briefing
         }
     }
 

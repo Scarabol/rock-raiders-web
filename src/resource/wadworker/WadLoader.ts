@@ -280,6 +280,7 @@ export class WadLoader {
         // add menu assets
         this.addMenuWithAssets(mainConf, 'MainMenuFull')
         this.addMenuWithAssets(mainConf, 'PausedMenu')
+        this.addMenuWithAssets(mainConf, 'OptionsMenu')
         // add ingame assets
         this.addAlphaImageFolder('Interface/TopPanel/') // top panel
         this.addAlphaImageFolder('Interface/RightPanel/') // crystal side bar

@@ -1,3 +1,4 @@
+import { Panel } from '../base/Panel'
 import { MenuCfg } from '../../../cfg/MenuCfg'
 import { ScaledLayer } from '../../../screen/ScreenLayer'
 import { MenuBasePanel } from './MenuBasePanel'
