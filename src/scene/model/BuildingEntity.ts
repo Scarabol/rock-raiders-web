@@ -77,7 +77,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     upgrade() {
-        if (GameState.numOre < 5) return
+        if (GameState.numOre < 5) return // TODO read from cfg BuildingUpgradeCostOre and BuildingUpgradeCostStuds
         GameState.numOre -= 5
         this.upgrades++
         EventBus.publishEvent(new CollectEvent(CollectableType.ORE))
