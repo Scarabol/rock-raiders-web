@@ -17,9 +17,8 @@ export class BriefingPanel extends Panel {
     imgParagraph: HTMLCanvasElement[] = []
     paragraph: number = 0
 
-    constructor(messagePanel: MessagePanel, cfg: BriefingPanelCfg) {
+    constructor(cfg: BriefingPanelCfg) {
         super()
-        this.messagePanel = messagePanel
         this.cfg = cfg
         this.imgTitle = cfg.titleFont.createTextImage(cfg.title)
         this.titleRelX = cfg.titleWindow.x + (cfg.titleWindow.w - this.imgTitle.width) / 2
