@@ -52,8 +52,11 @@ export class GuiMainLayer extends GuiBaseLayer {
         // link panels
         this.panelTopPanel.btnOptions.onClick = () => this.onOptionsShow()
         this.panelTopPanel.btnPriorities.onClick = () => {
-            const toggleState = this.panelTopPanel.btnPriorities.toggleState
-            this.panelMain.setMovedIn(toggleState, () => this.panelPriorityList.setMovedIn(!toggleState))
+            if (this.panelTopPanel.btnPriorities.toggleState) {
+                this.panelMain.setMovedIn(true, () => this.panelPriorityList.setMovedIn(false))
+            } else {
+                this.panelPriorityList.setMovedIn(true, () => this.panelMain.setMovedIn(false))
+            }
         }
     }
 
