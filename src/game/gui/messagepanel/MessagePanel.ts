@@ -14,6 +14,13 @@ export class MessagePanel extends Panel {
     currentMessage: TextInfoMessage = null
     messageTimeout = null
 
+    msgSpaceToContinue: TextInfoMessage
+    msgAirSupplyLow: TextInfoMessage
+    msgAirSupplyRunningOut: TextInfoMessage
+    msgGameCompleted: TextInfoMessage
+    msgManTrained: TextInfoMessage
+    msgUnitUpgraded: TextInfoMessage
+
     constructor(panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageConfig) {
         super(panelCfg)
         this.relX = this.xOut = this.xIn = 42
@@ -23,27 +30,36 @@ export class MessagePanel extends Panel {
         const font = ResourceManager.getBitmapFont('Interface/Fonts/Font5_Hi.bmp')
         const crystalFound = new TextInfoMessage(font, textInfoMessageConfig.textCrystalFound, this.img.width)
         EventBus.registerEventListener(CrystalFoundEvent.eventKey, () => this.setMessage(crystalFound))
-        const spaceToContinue = new TextInfoMessage(font, textInfoMessageConfig.textSpaceToContinue, this.img.width)
+        this.msgSpaceToContinue = new TextInfoMessage(font, textInfoMessageConfig.textSpaceToContinue, this.img.width)
         const cavernDiscovered = new TextInfoMessage(font, textInfoMessageConfig.textCavernDiscovered, this.img.width)
         EventBus.registerEventListener(CavernDiscovered.eventKey, () => this.setMessage(cavernDiscovered))
         const oreFound = new TextInfoMessage(font, textInfoMessageConfig.textOreFound, this.img.width)
         EventBus.registerEventListener(OreFoundEvent.eventKey, () => this.setMessage(oreFound))
-        const airSupplyLow = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyLow, this.img.width)
-        const airSupplyRunningOut = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
-        const gameCompleted = new TextInfoMessage(font, textInfoMessageConfig.textGameCompleted, this.img.width)
-        const manTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
-        const unitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
+        this.msgAirSupplyLow = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyLow, this.img.width)
+        this.msgAirSupplyRunningOut = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
+        this.msgGameCompleted = new TextInfoMessage(font, textInfoMessageConfig.textGameCompleted, this.img.width)
+        this.msgManTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
+        this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
     }
 
-    private setMessage(textInfoMessage: TextInfoMessage) {
+    setMessage(textInfoMessage: TextInfoMessage, timeout: number = 3000) {
         if (this.messageTimeout) clearTimeout(this.messageTimeout)
         this.currentMessage = textInfoMessage
         this.notifyRedraw()
-        const that = this
-        this.messageTimeout = setTimeout(() => {
-            that.currentMessage = null
-            that.notifyRedraw()
-        }, 5000)
+        if (timeout) {
+            const that = this
+            this.messageTimeout = setTimeout(() => {
+                that.currentMessage = null
+                that.notifyRedraw()
+            }, timeout)
+        }
+    }
+
+    unsetMessage(textInfoMessage: TextInfoMessage) {
+        if (this.currentMessage === textInfoMessage) {
+            this.currentMessage = null
+            this.notifyRedraw()
+        }
     }
 
     onRedraw(context: CanvasRenderingContext2D) {
