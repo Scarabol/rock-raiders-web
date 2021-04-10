@@ -206,4 +206,12 @@ export class GameState {
         return Math.round(scoreCrystals + scoreTimer + scoreCaverns + scoreConstructions + scoreOxygen + scoreFigures) / 100
     }
 
+    static get selectedSurface(): Surface {
+        return this.selectionType === SelectionType.SURFACE && this.selectedEntities.length > 0 ? this.selectedEntities[0] as Surface : null
+    }
+
+    static get selectedBuilding(): BuildingEntity {
+        return this.selectionType === SelectionType.BUILDING && this.selectedEntities.length > 0 ? this.selectedEntities[0] as BuildingEntity : null
+    }
+
 }

@@ -6,6 +6,7 @@ export class IconPanelButton extends Button {
 
     tooltipDisabled: string
     hotkey: string
+    isDisabled: () => boolean
 
     constructor(parent: BaseElement, menuItemCfg: MenuItemCfg, itemKey: string, parentWidth: number, menuIndex: number) {
         super(parent, menuItemCfg)
@@ -19,6 +20,14 @@ export class IconPanelButton extends Button {
 
     onClick() {
         console.log('menu item pressed: ' + this.buttonType)
+    }
+
+    updateState(): boolean {
+        if (!this.disabled) return false
+        const targetState = !!this.isDisabled()
+        const stateChanged = this.disabled !== targetState
+        this.disabled = targetState
+        if (stateChanged) this.notifyRedraw()
     }
 
     drawHover(context: CanvasRenderingContext2D) {

@@ -1,5 +1,5 @@
 import { EventBus } from '../../event/EventBus'
-import { BuildingSelected } from '../../event/LocalEvents'
+import { BuildingSelected, EntityDeselected } from '../../event/LocalEvents'
 import { Building } from '../../game/model/entity/building/Building'
 import { AnimEntity } from './anim/AnimEntity'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
@@ -81,6 +81,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         GameState.numOre -= 5
         this.upgrades++
         EventBus.publishEvent(new CollectEvent(CollectableType.ORE))
+        EventBus.publishEvent(new EntityDeselected())
     }
 
 }
