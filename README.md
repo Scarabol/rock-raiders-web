@@ -24,11 +24,11 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Actually use work priority
 - Raider Training
 - Spiders, Bats
-
-### Mid
 - Carry energy crystals to power stations
 - Electric fences and power consumption/outage
 - Air consumption and production
+
+### Mid
 - Brick refinery
 - All other buildings
 - Damage
@@ -49,7 +49,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ## Known Bugs
 
 ### Important
-- Right click commands raider and moves camera too
 - Drilling time not related to material
 - make game pausable and actually pause in escape screen (also fixes elapsed game time)
 

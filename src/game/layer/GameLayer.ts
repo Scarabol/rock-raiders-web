@@ -15,6 +15,7 @@ import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventManager
 export class GameLayer extends ScreenLayer {
 
     private worldMgr: WorldManager
+    private rightDown: { x: number, y: number } = {x: 0, y: 0}
 
     constructor() {
         super(false, false)
@@ -29,7 +30,8 @@ export class GameLayer extends ScreenLayer {
             const intersectionPoint = this.getTerrainPositionFromEvent(event)
             if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint)
         } else if (eventEnum === POINTER_EVENT.UP && event.button === MOUSE_BUTTON.SECONDARY) {
-            if (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP) {
+            const downUpDistance = Math.abs(event.x - this.rightDown.x) + Math.abs(event.y - this.rightDown.y)
+            if (downUpDistance < 3 && GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP) {
                 // TODO check for collectable entity first
                 const intersectionPoint = this.getTerrainPositionFromEvent(event)
                 if (intersectionPoint) {
@@ -46,6 +48,9 @@ export class GameLayer extends ScreenLayer {
                     }
                 }
             }
+        } else if (eventEnum === POINTER_EVENT.DOWN && event.button === MOUSE_BUTTON.SECONDARY) {
+            this.rightDown.x = event.x
+            this.rightDown.y = event.y
         }
         this.canvas.dispatchEvent(event)
         return true
