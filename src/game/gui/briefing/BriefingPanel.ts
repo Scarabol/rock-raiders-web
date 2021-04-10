@@ -3,6 +3,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { Button } from '../base/Button'
 import { BriefingPanelCfg } from '../../../cfg/BriefingPanelCfg'
 import { MessagePanel } from '../messagepanel/MessagePanel'
+import { ObjectiveImageCfg } from '../../../cfg/ObjectiveImageCfg'
 
 export class BriefingPanel extends Panel {
 
@@ -30,10 +31,10 @@ export class BriefingPanel extends Panel {
         this.hidden = true
     }
 
-    setup(objectiveText: string, objectiveBackImgCfg: { filename: string, x: number, y: number }) {
+    setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
+        this.imgBack = ResourceManager.getImageOrNull(objectiveBackImgCfg.filename)
         this.relX = objectiveBackImgCfg.x
         this.relY = objectiveBackImgCfg.y
-        this.imgBack = ResourceManager.getImageOrNull(objectiveBackImgCfg.filename)
         this.width = this.imgBack.width
         this.height = this.imgBack.height
         this.updatePosition()

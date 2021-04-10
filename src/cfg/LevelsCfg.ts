@@ -1,5 +1,6 @@
 import { BaseConfig } from './BaseConfig'
 import { ConfigColor } from './ConfigColor'
+import { ObjectiveImageCfg } from './ObjectiveImageCfg'
 
 export class LevelsCfg {
 
@@ -64,7 +65,7 @@ export class LevelEntryCfg extends BaseConfig {
     nerpFile: any = ''
     nerpMessageFile: any = ''
     objectiveText: any = ''
-    objectiveImage640x480: any = ''
+    objectiveImage640x480: ObjectiveImageCfg = null
     erodeTriggerTime: number = 0
     erodeErodeTime: number = 0
     erodeLockTime: number = 0
@@ -93,6 +94,8 @@ export class LevelEntryCfg extends BaseConfig {
                 .map(name => new LevelPrioritiesEntryConfig(name, cfgValue[name]))
         } else if (lCfgKeyName === 'reward') {
             return new LevelRewardConfig(cfgValue)
+        } else if (lCfgKeyName === 'objectiveimage640x480') {
+            return new ObjectiveImageCfg(cfgValue)
         } else {
             return super.parseValue(lCfgKeyName, cfgValue)
         }

@@ -43,11 +43,7 @@ export class GameScreen extends BaseScreen {
         this.worldManager.setup(levelConf, this)
         const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(levelConf.objectiveText), levelName)
         this.guiLayer.reset()
-        this.overlayLayer.setup(objectiveText.objective, {
-            filename: levelConf.objectiveImage640x480[0],
-            x: levelConf.objectiveImage640x480[1],
-            y: levelConf.objectiveImage640x480[2],
-        })
+        this.overlayLayer.setup(objectiveText.objective, levelConf.objectiveImage640x480)
         this.show()
     }
 
