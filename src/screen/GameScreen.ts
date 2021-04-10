@@ -9,6 +9,7 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { iGet } from '../core/Util'
 import { LevelObjectiveTextEntry } from '../resource/wadworker/ObjectiveTextParser'
 import { OverlayLayer } from '../game/layer/OverlayLayer'
+import { GameState } from '../game/model/GameState'
 
 export class GameScreen extends BaseScreen {
 
@@ -19,6 +20,8 @@ export class GameScreen extends BaseScreen {
     overlayLayer: OverlayLayer
     worldManager: WorldManager
     jobSupervisor: Supervisor
+    levelName: string
+    levelConf: LevelEntryCfg
 
     constructor() {
         super()
@@ -33,16 +36,29 @@ export class GameScreen extends BaseScreen {
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.panelOptions.show()
         this.overlayLayer.panelBriefing.messagePanel = this.guiLayer.panelMessages
+        this.overlayLayer.panelPause.onAbortGame = () => this.onLevelEnd && this.onLevelEnd()
+        this.overlayLayer.panelPause.onRestartGame = () => this.restartLevel()
     }
 
     startLevel(levelName) {
-        const levelConf: LevelEntryCfg = ResourceManager.getResource('Levels').levelsByName[levelName]
-        if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'
-        console.log('Starting level ' + levelName + ' - ' + levelConf.fullName)
-        this.worldManager.setup(levelConf, this)
-        const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(levelConf.objectiveText), levelName)
+        this.levelName = levelName
+        this.levelConf = ResourceManager.getResource('Levels').levelsByName[this.levelName]
+        if (!this.levelConf) throw 'Could not find level configuration for "' + this.levelName + '"'
+        this.setupAndStartLevel()
+    }
+
+    restartLevel() {
+        this.hide()
+        GameState.reset()
+        this.setupAndStartLevel()
+    }
+
+    private setupAndStartLevel() {
+        console.log('Starting level ' + this.levelName + ' - ' + this.levelConf.fullName)
+        this.worldManager.setup(this.levelConf, this)
+        const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(this.levelConf.objectiveText), this.levelName)
         this.guiLayer.reset()
-        this.overlayLayer.setup(objectiveText.objective, levelConf.objectiveImage640x480)
+        this.overlayLayer.setup(objectiveText.objective, this.levelConf.objectiveImage640x480)
         this.show()
     }
 
