@@ -276,7 +276,7 @@ export class WadLoader {
         this.addAssetFolder(this.loadFontImageAsset, 'Interface/Fonts/')
         this.addAssetFolder(this.loadAlphaImageAsset, 'Interface/Pointers/')
         // add menu assets
-        this.addMenuWithAssets(mainConf, 'MainMenuFull')
+        this.addMenuWithAssets(mainConf, 'MainMenuFull', false)
         this.addMenuWithAssets(mainConf, 'PausedMenu')
         this.addMenuWithAssets(mainConf, 'OptionsMenu')
         this.addAsset(this.loadAlphaImageAsset, 'Interface/BriefingPanel/BriefingPanel.bmp')
@@ -297,7 +297,7 @@ export class WadLoader {
         this.addAlphaImageFolder('Interface/Menus/')
         this.addAlphaImageFolder('Interface/Buttons/')
         this.addAlphaImageFolder('Interface/InfoImages/')
-        this.addAlphaImageFolder('Interface/FrontEnd/')
+        this.addAssetFolder(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_')
         this.addAssetFolder(this.loadWadImageAsset, 'Interface/FrontEnd/lp_')
         this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/LowerPanel.bmp')
         // level files
@@ -451,11 +451,13 @@ export class WadLoader {
         })
     }
 
-    addMenuWithAssets(mainConf, name: string) {
+    addMenuWithAssets(mainConf, name: string, menuImageAlpha: boolean = true) {
         const menuCfg = new MenuCfg(iGet(mainConf, 'Menu', name))
         this.onAssetLoaded(0, name, menuCfg)
         menuCfg.menus.forEach((menuCfg) => {
-            this.addAsset(this.loadAlphaImageAsset, Array.isArray(menuCfg.menuImage) ? menuCfg.menuImage[0] : menuCfg.menuImage)
+            const method = menuImageAlpha ? this.loadAlphaImageAsset : this.loadWadImageAsset
+            const menuImage = Array.isArray(menuCfg.menuImage) ? menuCfg.menuImage[0] : menuCfg.menuImage
+            this.addAsset(method, menuImage)
             this.addAsset(this.loadFontImageAsset, menuCfg.menuFont)
             this.addAsset(this.loadFontImageAsset, menuCfg.loFont)
             this.addAsset(this.loadFontImageAsset, menuCfg.hiFont)
