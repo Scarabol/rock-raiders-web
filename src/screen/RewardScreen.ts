@@ -121,6 +121,7 @@ export class RewardScreen extends BaseScreen {
         resultValues.push(this.fonts['score'].createTextImage(this.percentString(GameState.score)))
         const gameResultTextImg = this.titleFont.createTextImage(resultText)
         this.resultsLayer.onRedraw = (context) => {
+            context.clearRect(0, 0, this.resultsLayer.fixedWidth, this.resultsLayer.fixedHeight)
             for (let c = 0; c <= this.resultIndex; c++) {
                 const img = this.images[c]
                 if (img) context.drawImage(img.img, img.x, img.y)
