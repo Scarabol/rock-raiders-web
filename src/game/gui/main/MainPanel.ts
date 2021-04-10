@@ -161,11 +161,11 @@ export class MainPanel extends IconPanel {
         selectBuildingPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_PowerOff') // TODO other option is Interface_MenuItem_PowerOn
         const upgradeItem = selectBuildingPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeBuilding')
         upgradeItem.disabled = false // TODO actually could use correct check, but state is not updated, when panel is moved in
-        EventBus.registerEventListener(CollectEvent.eventKey, (event: CollectEvent) => {
+        EventBus.registerEventListener(CollectEvent.eventKey, () => {
             upgradeItem.disabled = GameState.numOre < 5 || GameState.selectedEntities.length < 1 || (GameState.selectedEntities[0] as BuildingEntity).hasMaxUpgrades()
             this.notifyRedraw()
         })
-        EventBus.registerEventListener(SpawnMaterialEvent.eventKey, (event: SpawnMaterialEvent) => {
+        EventBus.registerEventListener(SpawnMaterialEvent.eventKey, () => {
             upgradeItem.disabled = GameState.numOre < 5 || GameState.selectedEntities.length < 1 || (GameState.selectedEntities[0] as BuildingEntity).hasMaxUpgrades()
             this.notifyRedraw()
         })

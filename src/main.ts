@@ -75,8 +75,8 @@ ResourceManager.onLoadDone = () => {
     mainMenuScreen.showMainMenu()
     // mainMenuScreen.showLevelSelection()
     // mainMenuScreen.selectLevel('') // UI Testmode
-    // mainMenuScreen.selectLevel('Level01')
-    // mainMenuScreen.selectLevel('Level05')
+    // mainMenuScreen.selectLevel('Level02')
+    // mainMenuScreen.selectLevel('Level06')
     // mainMenuScreen.selectLevel('Level09')
     // mainMenuScreen.selectLevel('Level25')
     // rewardScreen.show();

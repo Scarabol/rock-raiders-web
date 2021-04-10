@@ -4,7 +4,7 @@ import { SelectionLayer } from '../game/layer/SelectionLayer'
 import { GameLayer } from '../game/layer/GameLayer'
 import { GuiMainLayer } from '../game/layer/GuiMainLayer'
 import { Supervisor } from '../game/Supervisor'
-import { LevelEntryCfg, LevelsCfg } from '../cfg/LevelsCfg'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { ResourceManager } from '../resource/ResourceManager'
 import { iGet } from '../core/Util'
 import { LevelObjectiveTextEntry } from '../resource/wadworker/ObjectiveTextParser'
@@ -36,8 +36,7 @@ export class GameScreen extends BaseScreen {
     }
 
     startLevel(levelName) {
-        const levelsCfg: LevelsCfg = ResourceManager.getResource('Levels')
-        const levelConf: LevelEntryCfg = levelsCfg.levelsByName[levelName]
+        const levelConf: LevelEntryCfg = ResourceManager.getResource('Levels').levelsByName[levelName]
         if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"'
         console.log('Starting level ' + levelName + ' - ' + levelConf.fullName)
         this.worldManager.setup(levelConf, this)
