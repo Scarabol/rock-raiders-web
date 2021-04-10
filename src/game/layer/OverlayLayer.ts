@@ -68,7 +68,6 @@ export class OverlayLayer extends GuiBaseLayer {
                 }
             }
         }
-        if (this.needsRedraw) this.redraw()
         return result || this.isActive() // catch em all
     }
 

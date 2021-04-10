@@ -7,14 +7,11 @@ export class GuiBaseLayer extends ScaledLayer {
 
     rootElement: BaseElement = new BaseElement()
     panels: Panel[] = []
-    needsRedraw: boolean = false
 
     constructor() {
         super()
-        const layer = this
-        this.rootElement.notifyRedraw = () => layer.needsRedraw = true
+        this.rootElement.notifyRedraw = () => this.redraw()
         this.onRedraw = (context: CanvasRenderingContext2D) => {
-            this.needsRedraw = false
             context.clearRect(0, 0, context.canvas.width, context.canvas.height)
             this.rootElement.onRedraw(context)
         }
@@ -42,7 +39,6 @@ export class GuiBaseLayer extends ScaledLayer {
         } else if (eventEnum === POINTER_EVENT.MOVE) {
             this.rootElement.release()
         }
-        if (this.needsRedraw) this.redraw()
         return hit
     }
 
