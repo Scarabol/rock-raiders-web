@@ -72,7 +72,7 @@ export class BitmapFont {
         return result
     }
 
-    createTextImage(text: string, maxWidth?: number): HTMLCanvasElement {
+    createTextImage(text: string, maxWidth?: number, autoCenter: boolean = true): HTMLCanvasElement {
         if (text === undefined || text === null || text.length < 1) {
             // empty text requested, context with width 0 is not allowed, but 1 with alpha is close enough
             return createContext(1, 1).canvas
@@ -82,12 +82,11 @@ export class BitmapFont {
         const width = Math.max(...(rows.map(r => r.width)))
         const result = new ImageData(width, this.charHeight * rows.length)
         rows.forEach((row, index) => {
-            const rowText = row.text
-            const rowX = Math.round((width - row.width) / 2)
+            const rowX = autoCenter ? Math.round((width - row.width) / 2) : 0
             const rowY = index * this.charHeight
             let letterX = 0
-            for (let c = 0; c < rowText.length; c++) {
-                const letterImgData = this.letters[rowText.charAt(c)]
+            for (let c = 0; c < row.text.length; c++) {
+                const letterImgData = this.letters[row.text.charAt(c)]
                 if (letterImgData) {
                     for (let x = letterX; x < letterX + letterImgData.width; x++) {
                         for (let y = 0; y < letterImgData.height; y++) {
