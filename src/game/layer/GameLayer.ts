@@ -11,6 +11,7 @@ import { EntityDeselected } from '../../event/LocalEvents'
 import { FulfillerEntity } from '../../scene/model/FulfillerEntity'
 import { SurfaceJob, SurfaceJobType } from '../model/job/SurfaceJob'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventManager'
+import { DEV_MODE } from '../../main'
 
 export class GameLayer extends ScreenLayer {
 
@@ -57,7 +58,7 @@ export class GameLayer extends ScreenLayer {
     }
 
     handleKeyEvent(eventEnum: KEY_EVENT, event: KeyboardEvent): boolean {
-        if (eventEnum === KEY_EVENT.UP) {
+        if (DEV_MODE && eventEnum === KEY_EVENT.UP) {
             if (GameState.selectionType === SelectionType.SURFACE) {
                 GameState.selectedEntities.forEach((s: Surface) => {
                     if (event.key === 'c') {

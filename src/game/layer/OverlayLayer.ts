@@ -8,6 +8,7 @@ import { KEY_EVENT, POINTER_EVENT } from '../../event/EventManager'
 import { Panel } from '../gui/base/Panel'
 import { GuiBaseLayer } from './GuiBaseLayer'
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
+import { DEV_MODE } from '../../main'
 
 export class OverlayLayer extends GuiBaseLayer {
 
@@ -39,7 +40,7 @@ export class OverlayLayer extends GuiBaseLayer {
 
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
         this.panelBriefing.setup(objectiveText, objectiveBackImgCfg)
-        this.setActivePanel(this.panelBriefing)
+        if (!DEV_MODE) this.setActivePanel(this.panelBriefing)
     }
 
     handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {

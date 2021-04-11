@@ -8,6 +8,9 @@ import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
 
 // define constants
 
+export const DEV_MODE = process.env.WEBPACK_MODE === 'development'
+if (DEV_MODE) console.warn('DEV MODE ACTIVE')
+
 export const JOB_SCHEDULE_INTERVAL = 1000 // milliseconds
 export const JOB_ACTION_RANGE = 5
 export const CHECK_SPANW_RAIDER_TIMER = 1000 // milliseconds
@@ -72,14 +75,17 @@ ResourceManager.onLoadDone = () => {
 
     // setup complete
     loadingScreen.hide()
-    mainMenuScreen.showMainMenu()
-    // mainMenuScreen.showLevelSelection()
-    // mainMenuScreen.selectLevel('') // UI Testmode
-    // mainMenuScreen.selectLevel('Level02')
-    // mainMenuScreen.selectLevel('Level06')
-    // mainMenuScreen.selectLevel('Level09')
-    // mainMenuScreen.selectLevel('Level25')
-    // rewardScreen.show();
+    const params = new URLSearchParams(window.location.search)
+    const entry = params.get('entry')
+    if (DEV_MODE && entry) {
+        GameState.numOre = Number(params.get('numOre')) || 0
+        GameState.numCrystal = Number(params.get('numCrystal')) || 0
+        if (entry === 'level') mainMenuScreen.showLevelSelection()
+        else if (entry === 'reward') rewardScreen.show()
+        else if (entry) mainMenuScreen.selectLevel(entry)
+    } else {
+        mainMenuScreen.showMainMenu()
+    }
 }
 
 // start the game engine with loading resources
