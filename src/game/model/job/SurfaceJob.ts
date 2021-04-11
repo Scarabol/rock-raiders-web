@@ -76,6 +76,15 @@ export class SurfaceJob extends Job {
         }
     }
 
+    getPriorityIdentifier(): string {
+        if (this.workType === SurfaceJobType.DRILL) return 'aiPriorityDestruction'
+        else if (this.workType === SurfaceJobType.BLOW) return 'aiPriorityDestruction'
+        else if (this.workType === SurfaceJobType.CLEAR_RUBBLE) return 'aiPriorityClearing'
+        else if (this.workType === SurfaceJobType.REINFORCE) return 'aiPriorityReinforce'
+        console.warn('Unexpected work type: ' + this.workType)
+        return ''
+    }
+
 }
 
 export class DynamiteJob extends SurfaceJob {
@@ -112,6 +121,10 @@ export class CompletePowerPathJob extends SurfaceJob {
         this.placedItems.forEach((placed) => placed.worldMgr.sceneManager.scene.remove(placed.group))
         this.surface.surfaceType = SurfaceType.POWER_PATH
         this.surface.updateTexture()
+    }
+
+    getPriorityIdentifier(): string {
+        return 'aiPriorityConstruction'
     }
 
 }

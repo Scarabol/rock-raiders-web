@@ -39,7 +39,10 @@ export class Supervisor {
 
     scheduleJobs() {
         this.jobs = this.jobs.filter((j) => j.jobstate === JobState.OPEN)
-        this.jobs.forEach((job) => { // TODO sort jobs by priority list
+        this.jobs.sort((left, right) => {
+            return Math.sign(GameState.priorityList.getPriority(left) - GameState.priorityList.getPriority(right))
+        })
+        this.jobs.forEach((job) => {
             if (job.fulfiller.length > 0) return
             const closestRaider = this.findClosestPossibleRaider(job)
             if (closestRaider) closestRaider.setJob(job)

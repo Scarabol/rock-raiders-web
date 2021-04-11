@@ -65,6 +65,8 @@ export abstract class Job {
 
     abstract isInArea(x: number, z: number): boolean;
 
+    abstract getPriorityIdentifier(): string
+
 }
 
 export class CollectJob extends Job {
@@ -109,6 +111,10 @@ export class CollectJob extends Job {
         }
     }
 
+    getPriorityIdentifier(): string {
+        return this.item.getCollectableType() === CollectableType.CRYSTAL ? 'aiPriorityCrystal' : 'aiPriorityOre'
+    }
+
 }
 
 export class MoveJob extends Job {
@@ -126,6 +132,10 @@ export class MoveJob extends Job {
 
     isInArea(x: number, z: number) {
         return this.getPosition().sub(new Vector3(x, this.target.y, z)).lengthSq() < RAIDER_SPEED * RAIDER_SPEED
+    }
+
+    getPriorityIdentifier(): string {
+        return '' // TODO move to separate job class, that is not shareable with others
     }
 
 }

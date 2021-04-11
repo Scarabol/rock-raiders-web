@@ -1,4 +1,5 @@
 import { LevelPrioritiesEntryConfig } from '../../../cfg/LevelsCfg'
+import { Job } from './Job'
 
 export class PriorityList {
 
@@ -30,6 +31,10 @@ export class PriorityList {
             this.current[c] = this.current[c - 1]
         }
         this.current[0] = element
+    }
+
+    getPriority(job: Job) {
+        return this.current[job.getPriorityIdentifier()] || 0
     }
 
 }
