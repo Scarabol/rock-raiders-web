@@ -7,6 +7,7 @@ import { iGet } from './wadworker/WadUtil'
 import { getFilename } from '../core/Util'
 import { AnimEntityLoader } from './AnimEntityLoader'
 import { BitmapFont } from '../core/BitmapFont'
+import { WorkerMessage, WorkerMessageType } from './wadworker/WorkerMessage'
 
 export class ResourceManager {
 
@@ -25,19 +26,19 @@ export class ResourceManager {
 
     private static startLoading(msg: InitLoadingMessage) {
         this.worker.onmessage = (event) => {
-            const data = event.data
-            if (data.hasOwnProperty('msg')) {
-                this.onMessage(data.msg)
-            } else if (data.hasOwnProperty('cfg')) {
-                this.configuration = data.cfg
-                this.onInitialLoad(data.totalResources)
-            } else if (data.hasOwnProperty('cacheMissed')) {
+            const msg: WorkerMessage = event.data
+            if (msg.type === WorkerMessageType.ASSET) {
+                this.resourceByName[msg.assetName.toLowerCase()] = msg.assetObj
+                this.onAssetLoaded(msg.assetIndex)
+            } else if (msg.type === WorkerMessageType.MSG) {
+                this.onMessage(msg.text)
+            } else if (msg.type === WorkerMessageType.CFG) {
+                this.configuration = msg.cfg
+                this.onInitialLoad(msg.totalResources)
+            } else if (msg.type === WorkerMessageType.CACHE_MISS) {
                 this.onCacheMissed()
-            } else if (data.hasOwnProperty('assetIndex')) {
-                this.resourceByName[data.assetName.toLowerCase()] = data.assetObj
-                this.onAssetLoaded(data.assetIndex)
-            } else if (data.hasOwnProperty('done')) {
-                console.log('Loading of about ' + data.totalResources + ' assets complete! Total load time: ' + data.loadingTimeSeconds + ' seconds.')
+            } else if (msg.type === WorkerMessageType.DONE) {
+                console.log('Loading of about ' + msg.totalResources + ' assets complete! Total load time: ' + msg.loadingTimeSeconds + ' seconds.')
                 this.onLoadDone()
             }
         }

@@ -1,34 +1,29 @@
 import { InitLoadingMessage } from './InitLoadingMessage'
 import { WadLoader } from './WadLoader'
+import { WorkerMessage, WorkerMessageType } from './WorkerMessage'
 
 const resourceWorker: Worker = self as any
+
+function postMessage(assetMessage: WorkerMessage) {
+    resourceWorker.postMessage(assetMessage)
+}
 
 resourceWorker.addEventListener('message', (event) => {
     const wadLoader = new WadLoader()
     // set callbacks on wadLoader
-    wadLoader.onMessage = (msg: string) => {
-        resourceWorker.postMessage({msg: msg})
-    }
-    wadLoader.onInitialLoad = (totalResources: number, cfg: any) => {
-        resourceWorker.postMessage({totalResources: totalResources, cfg: cfg})
-    }
+    wadLoader.onMessage = (text: string) => postMessage(WorkerMessage.createTextMessage(text))
+    wadLoader.onInitialLoad = (totalResources: number, cfg: any) => postMessage(WorkerMessage.createCfgLoaded(cfg, totalResources))
     wadLoader.onAssetLoaded = (assetIndex: number, assetName: string, assetObj: any) => {
-        resourceWorker.postMessage({assetIndex: assetIndex, assetName: assetName, assetObj: assetObj})
+        postMessage(WorkerMessage.createAssetLoaded(assetIndex, assetName, assetObj))
     }
     wadLoader.onLoadDone = (totalResources: number, loadingTimeSeconds: string) => {
-        resourceWorker.postMessage({
-            done: true,
-            totalResources: totalResources,
-            loadingTimeSeconds: loadingTimeSeconds,
-        })
+        postMessage(WorkerMessage.createLoadDone(totalResources, loadingTimeSeconds))
     }
     // start loading
     const msg = event.data as InitLoadingMessage
     if (msg) {
         wadLoader.loadWadFiles(msg.wad0FileUrl, msg.wad1FileUrl)
     } else {
-        wadLoader.startWithCachedFiles(() => {
-            resourceWorker.postMessage({cacheMissed: true})
-        })
+        wadLoader.startWithCachedFiles(() => postMessage(new WorkerMessage(WorkerMessageType.CACHE_MISS)))
     }
 })
