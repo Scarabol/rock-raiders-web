@@ -32,7 +32,7 @@ export class GameLayer extends ScreenLayer {
             if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint)
         } else if (eventEnum === POINTER_EVENT.UP && event.button === MOUSE_BUTTON.SECONDARY) {
             const downUpDistance = Math.abs(event.x - this.rightDown.x) + Math.abs(event.y - this.rightDown.y)
-            if (downUpDistance < 3 && GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP) {
+            if (downUpDistance < 3 && (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP)) {
                 // TODO check for collectable entity first
                 const intersectionPoint = this.getTerrainPositionFromEvent(event)
                 if (intersectionPoint) {

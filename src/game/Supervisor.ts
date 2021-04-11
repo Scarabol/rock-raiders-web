@@ -31,42 +31,33 @@ export class Supervisor {
     stop() {
         if (this.interval) clearInterval(this.interval)
         this.interval = null
-        GameState.raiders.forEach((r) => {
-            if (r.workInterval) clearInterval(r.workInterval)
-            r.workInterval = null
-        })
-        GameState.raidersUndiscovered.forEach((r) => {
-            if (r.workInterval) clearInterval(r.workInterval)
-            r.workInterval = null
-        })
-        GameState.vehicles.forEach((v) => {
-            if (v.workInterval) clearInterval(v.workInterval)
-            v.workInterval = null
-        })
-        GameState.vehiclesUndiscovered.forEach((v) => {
-            if (v.workInterval) clearInterval(v.workInterval)
-            v.workInterval = null
-        })
+        GameState.raiders.forEach((r) => r.resetWorkInterval())
+        GameState.raidersUndiscovered.forEach((r) => r.resetWorkInterval())
+        GameState.vehicles.forEach((v) => v.resetWorkInterval())
+        GameState.vehiclesUndiscovered.forEach((v) => v.resetWorkInterval())
     }
 
     scheduleJobs() {
         this.jobs = this.jobs.filter((j) => j.jobstate === JobState.OPEN)
         this.jobs.forEach((job) => { // TODO sort jobs by priority list
             if (job.fulfiller.length > 0) return
-            // find closest, qualified, unemployed raider
-            let closestRaider: Raider = null
-            let minDistance = null
-            GameState.raiders.forEach((raider) => {
-                if (!raider.job && job.isQualified(raider)) {
-                    const dist = new Vector3().copy(job.getPosition()).sub(raider.getPosition()).lengthSq()
-                    if (minDistance === null || dist < minDistance) {
-                        closestRaider = raider
-                        minDistance = dist
-                    }
-                }
-            })
+            const closestRaider = this.findClosestPossibleRaider(job)
             if (closestRaider) closestRaider.setJob(job)
         })
     }
 
+    private findClosestPossibleRaider(job: Job) {
+        let closestRaider: Raider = null
+        let minDistance = null
+        GameState.raiders.forEach((raider) => {
+            if (!raider.job && job.isQualified(raider)) {
+                const dist = new Vector3().copy(job.getPosition()).sub(raider.getPosition()).lengthSq()
+                if (minDistance === null || dist < minDistance) {
+                    closestRaider = raider
+                    minDistance = dist
+                }
+            }
+        })
+        return closestRaider
+    }
 }

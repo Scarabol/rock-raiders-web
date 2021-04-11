@@ -35,6 +35,12 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
 
+    resetWorkInterval() {
+        if (!this.workInterval) return
+        clearInterval(this.workInterval)
+        this.workInterval = null
+    }
+
     work() {
         if (!this.job || this.selected) return
         if (this.job.type === JobType.SURFACE) {
@@ -223,9 +229,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             return this
         }
         return null
-    }
-
-    onSelect() {
     }
 
     abstract getSelectionCenter(): Vector3;

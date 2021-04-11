@@ -22,7 +22,6 @@ export enum GameResultState {
     RUNNING,
     COMPLETE,
     FAILED,
-    CANCELED,
 
 }
 
@@ -124,11 +123,11 @@ export class GameState {
     }
 
     static selectEntities(entities: Selectable[]) {
-        // deselect and remove entities that are not selected anymore
-        this.selectedEntities.filter((e) => entities.indexOf(e) === -1).forEach((e) => e.deselect())
-        this.selectedEntities = this.selectedEntities.filter((e) => entities.indexOf(e) !== -1)
-        // add and select new entities (if they are selectable)
-        this.selectedEntities.push(...(entities.filter((e) => e.select())))
+        this.selectedEntities = this.selectedEntities.filter((previouslySelected) => {
+            const stillSelected = entities.indexOf(previouslySelected) !== -1
+            if (!stillSelected) previouslySelected.deselect()
+            return stillSelected
+        }).concat(entities.filter((e) => e.select())) // add new entities that are selectable
         // determine and set next selection type
         const len = this.selectedEntities.length
         if (len > 1) {

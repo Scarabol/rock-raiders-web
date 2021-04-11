@@ -51,6 +51,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Important
 - Drilling time not related to material
 - make game pausable and actually pause in escape screen (also fixes elapsed game time)
+- Pick sphere for power station not in the right place
 
 ### Nice to have
 - Requirements tooltip for buildings/vehicles not shown
@@ -64,6 +65,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - No tooltips
 - Cursor does not react on targeted object
 - Loading screen does not resize with window
+- Power paths not rotated correctly to nearby buildings
 
 ## Technicl Debt
 

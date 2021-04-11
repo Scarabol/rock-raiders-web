@@ -64,7 +64,6 @@ export class Raider extends FulfillerEntity {
                     }
                     break
                 case FulfillerActivity.DRILLING:
-                    // TODO adapt drilling time to material hardness
                     this.setActivity('Drill', onChangeDone, iterations)
                     break
                 case FulfillerActivity.SHOVELING:
