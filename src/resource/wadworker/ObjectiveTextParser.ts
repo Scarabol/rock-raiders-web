@@ -16,7 +16,7 @@ export class ObjectiveTextParser {
                     if (currentLevel) result[currentLevel.key] = currentLevel
                     currentLevel = new LevelObjectiveTextEntry()
                     state = PARSING_STATE.KEY
-                } else if (char === ':') {
+                } else if (currentLevel && char === ':') {
                     const lLine = line.toLowerCase()
                     if (lLine === 'objective') {
                         line = ''
@@ -82,6 +82,8 @@ export class ObjectiveTextParser {
                 }
             }
         }
+        if (currentLevel) result[currentLevel.key] = currentLevel
+        currentLevel = null
         return result
     }
 
