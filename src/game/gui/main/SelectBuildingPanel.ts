@@ -3,6 +3,7 @@ import { SelectBasePanel } from './SelectBasePanel'
 import { EventBus } from '../../../event/EventBus'
 import { CollectEvent, SpawnMaterialEvent } from '../../../event/WorldEvents'
 import { GameState } from '../../model/GameState'
+import { BuildingSelected } from '../../../event/LocalEvents'
 
 export class SelectBuildingPanel extends SelectBasePanel {
 
@@ -15,6 +16,7 @@ export class SelectBuildingPanel extends SelectBasePanel {
         upgradeItem.updateState() // TODO auto trigger update state when panel is shown
         upgradeItem.onClick = () => GameState.selectedBuilding?.upgrade()
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteBuilding')
+        EventBus.registerEventListener(BuildingSelected.eventKey, () => upgradeItem.updateState())
         EventBus.registerEventListener(CollectEvent.eventKey, () => upgradeItem.updateState())
         EventBus.registerEventListener(SpawnMaterialEvent.eventKey, () => upgradeItem.updateState())
     }

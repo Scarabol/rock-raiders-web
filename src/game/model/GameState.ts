@@ -122,6 +122,10 @@ export class GameState {
         return closest
     }
 
+    static hasBuildingWithUpgrades(building: Building, upgrades: number): boolean {
+        return this.buildings.some((b) => b.type === building && b.upgrades >= upgrades)
+    }
+
     static selectEntities(entities: Selectable[]) {
         this.selectedEntities = this.selectedEntities.filter((previouslySelected) => {
             const stillSelected = entities.indexOf(previouslySelected) !== -1

@@ -6,7 +6,7 @@ export class IconPanelButton extends Button {
 
     tooltipDisabled: string
     hotkey: string
-    isDisabled: () => boolean
+    isDisabled: () => boolean = () => this.disabled
 
     constructor(parent: BaseElement, menuItemCfg: MenuItemCfg, itemKey: string, parentWidth: number, menuIndex: number) {
         super(parent, menuItemCfg)
@@ -22,8 +22,7 @@ export class IconPanelButton extends Button {
         console.log('menu item pressed: ' + this.buttonType)
     }
 
-    updateState(): boolean {
-        if (!this.disabled) return false
+    updateState() {
         const targetState = !!this.isDisabled()
         const stateChanged = this.disabled !== targetState
         this.disabled = targetState

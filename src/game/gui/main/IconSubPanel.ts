@@ -7,8 +7,8 @@ import { IconPanelButton } from './IconPanelButton'
 
 export class IconSubPanel extends Panel {
 
-    countMenuItems: number = 0
     backBtn: Button = null
+    iconPanelButtons: IconPanelButton[] = []
 
     constructor(numOfItems, onBackPanel: Panel = null) {
         super()
@@ -26,9 +26,14 @@ export class IconSubPanel extends Panel {
 
     addMenuItem(menuItemGroup: string, itemKey: string) {
         const menuItemCfg = new MenuItemCfg(ResourceManager.cfg(menuItemGroup, itemKey))
-        const menuItem = this.addChild(new IconPanelButton(this, menuItemCfg, itemKey, this.img.width, this.countMenuItems))
-        this.countMenuItems++
+        const menuItem = this.addChild(new IconPanelButton(this, menuItemCfg, itemKey, this.img.width, this.iconPanelButtons.length))
+        this.iconPanelButtons.push(menuItem)
         return menuItem
+    }
+
+    toggleState(onDone: () => any = null) {
+        super.toggleState(onDone)
+        if (!this.movedIn) this.iconPanelButtons.forEach((button) => button.updateState())
     }
 
 }
