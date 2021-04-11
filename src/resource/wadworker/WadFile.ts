@@ -6,7 +6,7 @@ import { encodeChar } from './EncodingHelper'
 export class WadFile {
 
     buffer: Int8Array = null
-    entries: string[] = []
+    entryIndexByName: Map<string, number> = new Map()
     fLength: number[] = []
     fStart: number[] = []
 
@@ -35,14 +35,14 @@ export class WadFile {
         let bufferStart = pos
         for (let i = 0; i < numberOfEntries; pos++) {
             if (this.buffer[pos] === 0) {
-                this.entries[i] = String.fromCharCode.apply(null, this.buffer.slice(bufferStart, pos)).replace(/\\/g, '/').toLowerCase()
+                this.entryIndexByName.set(String.fromCharCode.apply(null, this.buffer.slice(bufferStart, pos)).replace(/\\/g, '/').toLowerCase(), i)
                 bufferStart = pos + 1
                 i++
             }
         }
 
         if (debug) {
-            console.log(this.entries)
+            console.log(this.entryIndexByName)
         }
 
         for (let i = 0; i < numberOfEntries; pos++) {
@@ -92,24 +92,19 @@ export class WadFile {
      * @returns {Int8Array} Returns the content as buffer slice
      */
     getEntryBuffer(entryName): Int8Array {
-        const lEntryName = entryName.toLowerCase()
-        for (let i = 0; i < this.entries.length; i++) {
-            if (this.entries[i] === lEntryName) {
-                return this.buffer.slice(this.fStart[i], this.fStart[i] + this.fLength[i])
-            }
+        const index = this.entryIndexByName.get(entryName.toLowerCase())
+        if (index === undefined || index === null) {
+            throw 'Entry \'' + entryName + '\' not found in WAD file'
         }
-        throw 'Entry \'' + entryName + '\' not found in WAD file'
+        return this.buffer.slice(this.fStart[index], this.fStart[index] + this.fLength[index])
     }
 
     filterEntryNames(regexStr) {
         const regex = new RegExp(regexStr.toLowerCase())
         const result = []
-        for (let c = 0; c < this.entries.length; c++) {
-            const entry = this.entries[c]
-            if (entry.toLowerCase().match(regex)) {
-                result.push(entry)
-            }
-        }
+        this.entryIndexByName.forEach((index, entry) => {
+            if (entry.match(regex)) result.push(entry)
+        })
         return result
     }
 
