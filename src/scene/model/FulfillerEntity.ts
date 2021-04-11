@@ -13,6 +13,7 @@ import { Ore } from './collect/Ore'
 import { EventBus } from '../../event/EventBus'
 import { CrystalFoundEvent } from '../../event/WorldLocationEvent'
 import { OreFoundEvent } from '../../event/WorldEvents'
+import { SelectionEvent } from '../../event/LocalEvents'
 import degToRad = MathUtils.degToRad
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
@@ -221,15 +222,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.selected = false
     }
 
-    select() {
-        this.selectionFrame.visible = true
-        if (!this.selected) {
-            this.selected = true
-            this.onSelect()
-            return this
-        }
-        return null
-    }
+    abstract select(): SelectionEvent;
 
     abstract getSelectionCenter(): Vector3;
 

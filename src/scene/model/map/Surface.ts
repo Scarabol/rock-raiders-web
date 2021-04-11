@@ -4,7 +4,7 @@ import { SurfaceType } from './SurfaceType'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { Selectable, SelectionType } from '../../../game/model/Selectable'
 import { EventBus } from '../../../event/EventBus'
-import { SurfaceSelectedEvent } from '../../../event/LocalEvents'
+import { SelectionEvent, SurfaceSelectedEvent } from '../../../event/LocalEvents'
 import { JobType } from '../../../game/model/job/Job'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { getRandom, getRandomSign } from '../../../core/Util'
@@ -334,12 +334,11 @@ export class Surface implements Selectable {
         return SelectionType.SURFACE
     }
 
-    select(): Selectable {
+    select(): SelectionEvent {
         if (this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected) {
             this.selected = true
             this.accessMaterials().forEach((mat) => mat.color.setHex(0x6060a0))
-            EventBus.publishEvent(new SurfaceSelectedEvent(this))
-            return this
+            return new SurfaceSelectedEvent(this)
         }
         return null
     }

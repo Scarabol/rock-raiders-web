@@ -131,7 +131,16 @@ export class GameState {
             const stillSelected = entities.indexOf(previouslySelected) !== -1
             if (!stillSelected) previouslySelected.deselect()
             return stillSelected
-        }).concat(entities.filter((e) => e.select())) // add new entities that are selectable
+        })
+        // add new entities that are selectable
+        const selectionEvents = []
+        entities.forEach((freshlySelected) => {
+            const selectionEvent = freshlySelected.select()
+            if (selectionEvent) {
+                this.selectedEntities.push(freshlySelected)
+                selectionEvents.push(selectionEvent)
+            }
+        })
         // determine and set next selection type
         const len = this.selectedEntities.length
         if (len > 1) {
@@ -142,6 +151,8 @@ export class GameState {
             this.selectionType = null
             EventBus.publishEvent(new EntityDeselected())
         }
+        // AFTER updating selected entities and selection type, publish all events
+        selectionEvents.forEach((event) => EventBus.publishEvent(event))
     }
 
     static getMaxRaiders(): number {

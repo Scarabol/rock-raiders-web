@@ -1,7 +1,7 @@
 import { SelectionType } from '../../game/model/Selectable'
 import { EventBus } from '../../event/EventBus'
 import { RAIDER_SPEED } from '../../main'
-import { RaiderSelected } from '../../event/LocalEvents'
+import { RaiderSelected, SelectionEvent } from '../../event/LocalEvents'
 import { FulfillerActivity, FulfillerEntity } from './FulfillerEntity'
 import { GameState } from '../../game/model/GameState'
 import { Vector3 } from 'three'
@@ -92,9 +92,14 @@ export class Raider extends FulfillerEntity {
         EventBus.publishEvent(new RaiderDiscoveredEvent(this.getPosition()))
     }
 
-    onSelect() {
-        this.changeActivity(FulfillerActivity.STANDING)
-        EventBus.publishEvent(new RaiderSelected(this))
+    select(): SelectionEvent {
+        this.selectionFrame.visible = true
+        if (!this.selected) {
+            this.selected = true
+            this.changeActivity(FulfillerActivity.STANDING)
+            return new RaiderSelected(this)
+        }
+        return null
     }
 
     getSelectionCenter(): Vector3 {

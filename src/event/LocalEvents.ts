@@ -13,53 +13,67 @@ export class LocalEvent extends GameEvent {
 
 }
 
-export class SurfaceSelectedEvent extends LocalEvent {
+export class SelectionEvent extends LocalEvent {
 
-    static eventKey: string = 'surface.selected'
+    static eventKey = 'selected'
+
+    constructor(eventSuffix: string) {
+        super(SelectionEvent.eventKey + '.' + eventSuffix)
+    }
+
+}
+
+export class SurfaceSelectedEvent extends SelectionEvent {
+
+    static eventSuffix = 'surface'
+    static eventKey = SelectionEvent.eventKey + '.' + SurfaceSelectedEvent.eventSuffix
 
     surface: Surface
 
     constructor(surface: Surface) {
-        super(SurfaceSelectedEvent.eventKey)
+        super(SurfaceSelectedEvent.eventSuffix)
         this.surface = surface
     }
 
 }
 
-export class BuildingSelected extends LocalEvent {
+export class BuildingSelected extends SelectionEvent {
 
-    static eventKey: string = 'building.selected'
+    static eventSuffix = 'building'
+    static eventKey = SelectionEvent.eventKey + '.' + BuildingSelected.eventSuffix
 
     building: BuildingEntity
 
     constructor(building: BuildingEntity) {
-        super(BuildingSelected.eventKey)
+        super(BuildingSelected.eventSuffix)
         this.building = building
     }
 
 }
 
-export class RaiderSelected extends LocalEvent {
+export class RaiderSelected extends SelectionEvent {
 
-    static eventKey: string = 'raider.select'
+    static eventSuffix = 'raider'
+    static eventKey = SelectionEvent.eventKey + '.' + RaiderSelected.eventSuffix
 
     raider: Raider
 
     constructor(raider: Raider) {
-        super(RaiderSelected.eventKey)
+        super(RaiderSelected.eventSuffix)
         this.raider = raider
     }
 
 }
 
-export class VehicleSelected extends LocalEvent {
+export class VehicleSelected extends SelectionEvent {
 
-    static eventKey: string = 'vehicle.select'
+    static eventSuffix = 'vehicle'
+    static eventKey = SelectionEvent.eventKey + '.' + VehicleSelected.eventSuffix
 
     vehicle: VehicleEntity
 
     constructor(vehicle: VehicleEntity) {
-        super(VehicleSelected.eventKey)
+        super(VehicleSelected.eventSuffix)
         this.vehicle = vehicle
     }
 
@@ -67,7 +81,7 @@ export class VehicleSelected extends LocalEvent {
 
 export class EntityDeselected extends LocalEvent {
 
-    static eventKey: string = 'entity.deselect'
+    static eventKey = 'deselected.entity'
 
     constructor() {
         super(EntityDeselected.eventKey)

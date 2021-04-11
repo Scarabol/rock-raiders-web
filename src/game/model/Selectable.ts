@@ -1,10 +1,11 @@
 import { Vector3 } from 'three'
+import { SelectionEvent } from '../../event/LocalEvents'
 
 export interface Selectable {
 
     getSelectionType(): SelectionType;
 
-    select();
+    select(): SelectionEvent;
 
     deselect(): any;
 

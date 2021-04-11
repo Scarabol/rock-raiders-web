@@ -1,13 +1,13 @@
 export class EventBus {
 
-    static eventListener = {}
+    static eventListener = {} // TODO use map
     static blockedEvents = []
 
     static publishEvent(event: GameEvent) {
         if (this.blockedEvents.includes(event.eventKey)) return // event is currently blocked from publishing
         if (!event.isLocal) console.log('Event published: ' + event.eventKey)
         this.blockedEvents.push(event.eventKey);
-        (this.eventListener[event.eventKey] || []).forEach((callback) => callback(event))
+        (this.eventListener[event.eventKey] || []).forEach((callback) => callback(event)) // TODO add inheritance match by prefix
         const index = this.blockedEvents.indexOf(event.eventKey)
         if (index > -1) this.blockedEvents.splice(index, 1)
     }
