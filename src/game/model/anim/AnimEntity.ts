@@ -1,4 +1,6 @@
-import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
+import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
+import { Sample } from '../../../audio/Sample'
+import { SoundManager } from '../../../audio/SoundManager'
 import { createContext } from '../../../core/ImageHelper'
 import { clearTimeoutSafe, iGet } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
@@ -41,6 +43,7 @@ export abstract class AnimEntity extends BaseEntity {
         this.changeActivity()
         // TODO insert beam animation
         AnimEntity.moveUp(this, 6 * TILESIZE)
+        this.playPositionalSample(Sample.SND_TeleUp)
     }
 
     private static moveUp(entity: AnimEntity, counter: number) {
@@ -196,6 +199,30 @@ export abstract class AnimEntity extends BaseEntity {
         this.selectionFrame.scale.set(selectionFrameSize, selectionFrameSize, selectionFrameSize)
         this.selectionFrame.visible = false
         this.group.add(this.selectionFrame)
+    }
+
+    playPositionalSample(sample: Sample, loop: boolean = false): PositionalAudio { // TODO duplicate code (see below)
+        const audio = new PositionalAudio(this.sceneMgr.listener)
+        audio.setRefDistance(TILESIZE * 2)
+        audio.loop = loop // TODO retry playing sound for looped ones, when audio context fails
+        this.group.add(audio)
+        SoundManager.getSampleBuffer(sample).then((audioBuffer) => {
+            audio.setBuffer(audioBuffer).play()
+            // TODO if (!loop) remove audio node from group, when done
+        })
+        return audio
+    }
+
+    playPositionalSfxName(sfxName: string, loop: boolean = false): PositionalAudio { // TODO duplicate code (see above)
+        const audio = new PositionalAudio(this.sceneMgr.listener)
+        audio.setRefDistance(TILESIZE * 2)
+        audio.loop = loop // TODO retry playing sound for looped ones, when audio context fails
+        this.group.add(audio)
+        SoundManager.getSound(sfxName).then((audioBuffer) => {
+            audio.setBuffer(audioBuffer).play()
+            // TODO if (!loop) remove audio node from group, when done
+        })
+        return audio
     }
 
 }

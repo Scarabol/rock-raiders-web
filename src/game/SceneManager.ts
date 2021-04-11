@@ -1,4 +1,4 @@
-import { AmbientLight, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe } from '../core/Util'
@@ -25,6 +25,7 @@ export class SceneManager {
     renderInterval
     animRequest
     scene: Scene
+    listener: AudioListener
     camera: PerspectiveCamera
     ambientLight: AmbientLight
     light: PointLight
@@ -37,7 +38,10 @@ export class SceneManager {
         this.renderer = new WebGLRenderer({antialias: true, canvas: canvas})
         this.renderer.setClearColor(0x000000)
 
+        this.listener = new AudioListener()
+
         this.camera = new PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 5000) // TODO make these params configurable
+        this.camera.add(this.listener)
 
         this.controls = new MapControls(this.camera, this.renderer.domElement)
         this.controls.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}

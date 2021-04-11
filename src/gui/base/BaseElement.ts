@@ -1,5 +1,6 @@
+import { Sample } from '../../audio/Sample'
 import { EventKey } from '../../event/EventKeyEnum'
-import { ChangeCursor, LocalEvent } from '../../event/LocalEvents'
+import { ChangeCursor, LocalEvent, PlaySoundEvent } from '../../event/LocalEvents'
 import { Cursor } from '../../screen/Cursor'
 
 export class BaseElement {
@@ -18,6 +19,7 @@ export class BaseElement {
     pressed: boolean = false
     onClick: () => any = null
     onPublishEvent: (event: LocalEvent) => any = (event) => console.log('TODO publish event: ' + EventKey[event.eventKey])
+    tooltipTimeout = null
 
     constructor(parent: BaseElement) {
         this.parent = parent
@@ -82,10 +84,18 @@ export class BaseElement {
         const inRect = this.isInRect(cx, cy)
         let stateChanged = this.hover !== inRect
         this.hover = inRect
+        if (this.hover) {
+            if (!this.tooltipTimeout) this.tooltipTimeout = setTimeout(() => this.showTooltip(), 1000)
+        } else if (this.tooltipTimeout) {
+            clearTimeout(this.tooltipTimeout)
+            this.tooltipTimeout = null
+        }
         this.pressed = this.pressed && this.hover
-        // TODO start tooltip timeout (if not already started)
         this.children.forEach((child) => stateChanged = child.checkHover(cx, cy) || stateChanged)
         return stateChanged
+    }
+
+    showTooltip() {
     }
 
     checkClick(cx, cy): boolean {
@@ -110,6 +120,7 @@ export class BaseElement {
 
     clicked() {
         this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
+        this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
         this.onClick()
     }
 

@@ -1,3 +1,4 @@
+import { Sample } from '../audio/Sample'
 import { BuildingEntity } from '../game/model/building/BuildingEntity'
 import { EntityType } from '../game/model/EntityType'
 import { GameState } from '../game/model/GameState'
@@ -130,6 +131,17 @@ export class RaidersChangedEvent extends LocalEvent {
         super(EventKey.RAIDERS_CHANGED)
         this.numRaiders = GameState.raiders.length
         this.training = training
+    }
+
+}
+
+export class PlaySoundEvent extends LocalEvent {
+
+    sample: Sample
+
+    constructor(sample: Sample) {
+        super(EventKey.PLAY_SOUND)
+        this.sample = sample
     }
 
 }

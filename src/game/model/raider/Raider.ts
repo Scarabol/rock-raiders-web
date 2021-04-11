@@ -1,4 +1,5 @@
-import { Vector3 } from 'three'
+import { PositionalAudio, Vector3 } from 'three'
+import { Sample } from '../../../audio/Sample'
 import { getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { RaidersChangedEvent } from '../../../event/LocalEvents'
@@ -24,6 +25,7 @@ export class Raider extends FulfillerEntity {
     tools: Map<RaiderTool, boolean> = new Map()
     trainings: Map<RaiderTraining, boolean> = new Map()
     slipped: boolean = false
+    workAudio: PositionalAudio
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntitySuperType.RAIDER, EntityType.PILOT, 'mini-figures/pilot/pilot.ae', SelectionType.RAIDER)
@@ -104,6 +106,7 @@ export class Raider extends FulfillerEntity {
         if (getRandomInclusive(0, 100) < 10) this.stopJob()
         this.dropItem()
         this.slipped = true
+        this.playPositionalSample(Sample.SND_Slipup) // FIXME also second parameter in LWS files for AddNullObject SFX,
         this.changeActivity(RaiderActivity.Slip, () => {
             this.slipped = false
         })
@@ -125,7 +128,12 @@ export class Raider extends FulfillerEntity {
             } else if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                 if (this.job.isReadyToComplete()) {
                     const workActivity = this.job.getWorkActivity() || this.getDefaultActivity()
+                    if (!this.workAudio && workActivity === RaiderActivity.Drill) {
+                        this.workAudio = this.playPositionalSample(Sample.SFX_Drill, true)
+                    }
                     this.changeActivity(workActivity, () => {
+                        this.workAudio?.stop()
+                        this.workAudio = null
                         this.completeJob()
                     }, this.job.getWorkDuration(this))
                 } else {

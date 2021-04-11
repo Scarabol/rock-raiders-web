@@ -1,4 +1,5 @@
 import { MathUtils, Vector2 } from 'three'
+import { Sample } from '../audio/Sample'
 import { LevelObjectiveTextEntry } from '../cfg/LevelObjectiveTextEntry'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe, getRandom, iGet } from '../core/Util'
@@ -127,6 +128,7 @@ export class GameScreen extends BaseScreen {
             station.spawning = true
             const raider = new Raider(this.worldMgr, this.sceneMgr)
             const heading = station.getHeading()
+            raider.playPositionalSample(Sample.SND_teleport)
             raider.changeActivity(RaiderActivity.TeleportIn, () => {
                 station.spawning = false
                 raider.changeActivity()

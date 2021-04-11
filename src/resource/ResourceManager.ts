@@ -25,6 +25,7 @@ export class ResourceManager extends ResourceCache { // TODO rename to WadResour
             const msg: WadWorkerMessage = event.data
             if (msg.type === WorkerMessageType.ASSET) {
                 msg.assetNames.forEach((assetName) => this.resourceByName.set(assetName.toLowerCase(), msg.assetObj))
+                msg.sfxKeys?.forEach((sfxKey) => this.sfxByKey.set(sfxKey, msg.assetObj))
                 this.onAssetLoaded()
             } else if (msg.type === WorkerMessageType.MSG) {
                 this.onMessage(msg.text)

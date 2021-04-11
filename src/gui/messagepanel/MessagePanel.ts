@@ -1,7 +1,7 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
-import { AirLevelChanged, RaidersChangedEvent } from '../../event/LocalEvents'
+import { AirLevelChanged, PlaySoundEvent, RaidersChangedEvent } from '../../event/LocalEvents'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { GuiResourceCache } from '../GuiResourceCache'
@@ -58,6 +58,7 @@ export class MessagePanel extends Panel {
         this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
         this.currentMessage = textInfoMessage
         this.notifyRedraw()
+        if (textInfoMessage.sfxSample) this.publishEvent(new PlaySoundEvent(textInfoMessage.sfxSample))
         if (timeout) {
             const that = this
             this.messageTimeout = setTimeout(() => {

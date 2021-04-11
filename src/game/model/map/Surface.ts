@@ -1,4 +1,6 @@
-import { Group, MathUtils, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three'
+import { Group, MathUtils, Mesh, MeshPhongMaterial, PositionalAudio, Vector2, Vector3 } from 'three'
+import { Sample } from '../../../audio/Sample'
+import { SoundManager } from '../../../audio/SoundManager'
 import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
@@ -190,6 +192,7 @@ export class Surface implements Selectable {
         // update meshes
         this.terrain.updateSurfaceMeshes()
         this.terrain.floorGroup.updateWorldMatrix(true, true)
+        this.playPositionalSample(Sample.SFX_RockBreak)
     }
 
     private dropContainedOre(dropAmount: number) {
@@ -427,6 +430,8 @@ export class Surface implements Selectable {
         if (this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered) {
             this.selected = true
             this.forEachMaterial((mat) => mat.color.setHex(0x6060a0))
+            if (this.surfaceType.floor) SoundManager.playSample(Sample.SFX_Floor)
+            if (this.surfaceType.shaping) SoundManager.playSample(Sample.SFX_Wall)
             console.log('Surface selected at ' + this.x + '/' + this.y)
             return true
         }
@@ -532,6 +537,7 @@ export class Surface implements Selectable {
     createFallin(targetX: number, targetY: number) {
         const fallinPosition = this.terrain.getSurface(targetX, targetY).getCenterWorld()
         EventBus.publishEvent(new LandslideEvent(fallinPosition))
+        this.playPositionalSample(Sample.SFX_FallIn)
 
         // TODO refactor mesh and animation handling
         const content = ResourceManager.getResource('MiscAnims/RockFall/Rock3Sides.lws')
@@ -702,6 +708,17 @@ export class Surface implements Selectable {
     setSite(site: BuildingSite) {
         this.site = site
         this.setSurfaceTypeAndUpdateNeighbors(this.site ? SurfaceType.POWER_PATH_CONSTRUCTION : SurfaceType.GROUND)
+    }
+
+    playPositionalSample(sample: Sample): PositionalAudio { // TODO merge with AnimEntity code (at least in SceneEntity maybe)
+        const audio = new PositionalAudio(this.sceneMgr.listener)
+        audio.setRefDistance(TILESIZE * 6)
+        this.mesh.add(audio)
+        SoundManager.getSampleBuffer(sample).then((audioBuffer) => {
+            audio.setBuffer(audioBuffer)
+            audio.play()
+        })
+        return audio
     }
 
 }

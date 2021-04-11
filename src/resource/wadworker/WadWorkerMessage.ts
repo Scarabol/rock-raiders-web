@@ -11,6 +11,7 @@ export class WadWorkerMessage {
     totalResources?: number
     assetNames?: string[]
     assetObj?: any
+    sfxKeys?: string[]
     loadingTimeSeconds?: string
     messageState?: boolean
 
@@ -31,8 +32,8 @@ export class WadWorkerMessage {
         }
     }
 
-    static createAssetLoaded(assetIndex: number, assetNames: string[], assetObj: any): WadWorkerMessage {
-        return {type: WorkerMessageType.ASSET, assetNames: assetNames, assetObj: assetObj}
+    static createAssetLoaded(assetIndex: number, assetNames: string[], assetObj: any, sfxKeys: string[]): WadWorkerMessage {
+        return {type: WorkerMessageType.ASSET, assetNames: assetNames, assetObj: assetObj, sfxKeys: sfxKeys}
     }
 
     static createLoadDone(totalResources: number, loadingTimeSeconds: string): WadWorkerMessage {

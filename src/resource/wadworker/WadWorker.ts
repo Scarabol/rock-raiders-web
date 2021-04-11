@@ -14,8 +14,8 @@ worker.addEventListener('message', (event) => {
     // set callbacks on wadLoader
     wadLoader.onMessage = (text: string) => postMessage(WadWorkerMessage.createTextMessage(text))
     wadLoader.onInitialLoad = (totalResources: number, cfg: any) => postMessage(WadWorkerMessage.createCfgLoaded(cfg, totalResources))
-    wadLoader.onAssetLoaded = (assetIndex: number, assetNames: string[], assetObj: any) => {
-        postMessage(WadWorkerMessage.createAssetLoaded(assetIndex, assetNames, assetObj))
+    wadLoader.onAssetLoaded = (assetIndex: number, assetNames: string[], assetObj: any, sfxKeys: string[]) => {
+        postMessage(WadWorkerMessage.createAssetLoaded(assetIndex, assetNames, assetObj, sfxKeys))
     }
     wadLoader.onLoadDone = (totalResources: number, loadingTimeSeconds: string) => {
         postMessage(WadWorkerMessage.createLoadDone(totalResources, loadingTimeSeconds))

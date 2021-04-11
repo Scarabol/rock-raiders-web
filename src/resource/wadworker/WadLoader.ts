@@ -25,7 +25,7 @@ export class WadLoader {
     onInitialLoad: (totalResources: number, cfg: any) => any = () => {
         console.log('Initial loading done.')
     }
-    onAssetLoaded: (assetIndex: number, assetNames: string[], assetObj: any) => any = () => {
+    onAssetLoaded: (assetIndex: number, assetNames: string[], assetObj: any, sfxKeys?: string[]) => any = () => {
     }
     onLoadDone: (totalResources: number, loadingTimeSeconds: string) => any = (totalResources: number, loadingTimeSeconds: string) => {
         console.log('Loading of about ' + totalResources + ' assets complete! Total load time: ' + loadingTimeSeconds + ' seconds.')
@@ -108,27 +108,15 @@ export class WadLoader {
      * Load a WAV file format sound asset from the WAD file.
      * @param path Path inside the WAD file
      * @param callback A callback that is triggered after the file has been loaded
-     * @param key Optional key to store the sound, should look like SND_pilotdrill
      */
-    loadWavAsset(path, callback, key) {
-        console.error('wav asset loading not yet implemented') // TODO implement this
-        // const snd = document.createElement('audio');
-        // if (callback != null) {
-        //     snd.oncanplay = function () {
-        //         snd.oncanplay = null; // otherwise the callback is triggered multiple times
-        //         const keyPath = key || path;
-        //         // use array, because sounds have multiple variants sometimes
-        //         ResourceManager.sounds[keyPath] = ResourceManager.sounds[keyPath] || [];
-        //         ResourceManager.sounds[keyPath].push(snd);
-        //         callback();
-        //     };
-        // }
-        // // try (localized) wad1 file first, then use generic wad0 file
-        // try {
-        //     snd.src = this.wad1File.getEntryUrl(path);
-        // } catch (e) {
-        //     snd.src = this.wad0File.getEntryUrl(path);
-        // }
+    loadWavAsset(path: string, callback: (assetNames: string[], obj: any) => any) {
+        let buffer: ArrayBufferLike
+        try { // localized wad1 file first, then generic wad0 file
+            buffer = this.wad1File.getEntryBuffer(path)
+        } catch (e) {
+            buffer = this.wad0File.getEntryBuffer(path)
+        }
+        callback([path], buffer)
     }
 
     loadLWOFile(lwoFilepath: string, callback: (assetNames: string[], obj: any) => any) {
@@ -168,13 +156,13 @@ export class WadLoader {
                 try {
                     asset.method(asset.assetPath, (assetNames, assetObj) => {
                         this.assetIndex++
-                        that.onAssetLoaded(this.assetIndex, assetNames, assetObj)
+                        that.onAssetLoaded(this.assetIndex, assetNames, assetObj, asset.sfxKeys)
                         resolve()
                     })
                 } catch (e) {
                     if (!asset.optional) console.error(e)
                     this.assetIndex++
-                    that.onAssetLoaded(this.assetIndex, [asset.assetPath], null)
+                    that.onAssetLoaded(this.assetIndex, [asset.assetPath], null, asset.sfxKeys)
                     resolve()
                 }
             }))

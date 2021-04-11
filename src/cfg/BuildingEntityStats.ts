@@ -10,5 +10,6 @@ export class BuildingEntityStats extends BaseConfig {
     CostOre: number = 0
     CostCrystal: number = 0
     OxygenCoef: number = 0
+    EngineSound: string = null
 
 }

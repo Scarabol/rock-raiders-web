@@ -1,10 +1,12 @@
 import { MathUtils } from 'three'
+import { SoundManager } from '../../audio/SoundManager'
 import { EventBus } from '../../event/EventBus'
+import { EventKey } from '../../event/EventKeyEnum'
 import { GameEvent } from '../../event/GameEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
-import { BuildingsChangedEvent, RaidersChangedEvent } from '../../event/LocalEvents'
+import { BuildingsChangedEvent, PlaySoundEvent, RaidersChangedEvent } from '../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
@@ -38,6 +40,9 @@ export abstract class OffscreenLayer extends ScreenLayer {
                 this.resolveCallbackByEventId.delete(eventResponse.eventId)
             } else if (response.type === WorkerMessageType.GAME_EVENT) {
                 const event = (response as WorkerPublishEvent).gameEvent
+                if (event.eventKey === EventKey.PLAY_SOUND) {
+                    SoundManager.playSample((event as PlaySoundEvent).sample)
+                }
                 EventBus.publishEvent(event)
             } else if (!this.onMessage(response)) {
                 console.warn('Offscreen layer ignored message: ' + WorkerMessageType[response.type])

@@ -45,5 +45,6 @@ export enum EventKey {
     CHANGE_PRIORITY_LIST,
     SETUP_PRIORITY_LIST,
     CHANGE_CURSOR,
+    PLAY_SOUND,
 
 }

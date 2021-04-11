@@ -9,6 +9,7 @@ interface WadAsset {
     method: ((name: string, callback: (assetName: string[], assetData: any) => void) => void)
     assetPath: string
     optional: boolean
+    sfxKeys: string[]
 }
 
 export class WadAssetRegistry extends Map<string, WadAsset> {
@@ -125,24 +126,32 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         rewardCfg.boxImages.forEach(img => this.addAsset(this.wadLoader.loadWadImageAsset, img.filePath))
         rewardCfg.saveButton.splice(0, 4).forEach(img => this.addAsset(this.wadLoader.loadWadImageAsset, img))
         rewardCfg.advanceButton.splice(0, 4).forEach(img => this.addAsset(this.wadLoader.loadWadImageAsset, img))
-        // // sounds
-        // const samplesConf = mainConf['Samples'];
-        // Object.keys(samplesConf).forEach(sndKey => {
-        //     let sndPath = samplesConf[sndKey] + '.wav';
-        //     if (sndKey.startsWith('!')) { // TODO no clue what this means... loop? duplicate?!
-        //         sndKey = sndKey.slice(1);
-        //     }
-        //     if (sndPath.startsWith('*')) { // TODO no clue what this means... don't loop, see telportup
-        //         sndPath = sndPath.slice(1);
-        //     } else if (sndPath.startsWith('@')) {
-        //         // sndPath = sndPath.slice(1);
-        //         // console.warn('Sound ' + sndPath + ' must be loaded from program files folder. Not yet implemented!');
-        //         return;
-        //     }
-        //     sndPath.split(',').forEach(sndPath => {
-        //         this.addAsset(this.wadLoader.loadWavAsset, sndPath, false, sndKey);
-        //     });
-        // });
+        // sounds
+        const sndPathToKeys = new Map<string, string[]>()
+        const samplesConf = mainConf['Samples']
+        Object.keys(samplesConf).forEach((sndKey) => {
+            const value = samplesConf[sndKey]
+            sndKey = sndKey.toLowerCase()
+            if (sndKey === '!sfx_drip') {
+                return // Sounds/dripB.wav missing and seems unused anyway
+            } else if (sndKey.startsWith('!')) { // TODO no clue what this means... loop? duplicate?!
+                sndKey = sndKey.slice(1)
+            }
+            const sndFilePaths = Array.isArray(value) ? value : [value] // TODO improve config parsing
+            sndFilePaths.forEach(sndPath => {
+                if (sndPath.startsWith('*')) { // TODO no clue what this means... don't loop maybe, see telportup
+                    sndPath = sndPath.slice(1)
+                } else if (sndPath.startsWith('@')) {
+                    // sndPath = sndPath.slice(1)
+                    // console.warn('Sound ' + sndPath + ' must be loaded from program files folder. Not yet implemented!')
+                    return // TODO implement sounds from program files folder
+                }
+                sndPathToKeys.getOrUpdate(sndPath + '.wav', () => []).push(sndKey)
+            })
+        })
+        sndPathToKeys.forEach((sndKeys, sndPath) => {
+            this.addAsset(this.wadLoader.loadWavAsset, sndPath, false, sndKeys)
+        })
     }
 
     addAnimatedEntity(aeFile: string) {
@@ -231,11 +240,16 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         })
     }
 
-    addAsset(method: (name: string, callback: (assetNames: string[], assetData: any) => void) => void, assetPath, optional = false) {
+    addAsset(method: (name: string, callback: (assetNames: string[], assetData: any) => void) => void, assetPath, optional = false, sfxKeys: string[] = []) {
         if (!assetPath || this.hasOwnProperty(assetPath) || assetPath === 'NULL') {
             return // do not load assets twice
         }
-        this.set(assetPath, {method: method.bind(this.wadLoader), assetPath: assetPath, optional: optional})
+        this.set(assetPath, {
+            method: method.bind(this.wadLoader),
+            assetPath: assetPath,
+            optional: optional,
+            sfxKeys: sfxKeys,
+        })
     }
 
 }

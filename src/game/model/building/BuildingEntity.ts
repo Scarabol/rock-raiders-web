@@ -1,4 +1,6 @@
-import { Matrix4, Vector2, Vector3 } from 'three'
+import { Matrix4, PositionalAudio, Vector2, Vector3 } from 'three'
+import { Sample } from '../../../audio/Sample'
+import { SoundManager } from '../../../audio/SoundManager'
 import { BuildingEntityStats } from '../../../cfg/BuildingEntityStats'
 import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
@@ -46,6 +48,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     crystalsInUse: number = 0
     inBeam: boolean = false
     pathTarget: BuildingPathTarget = null
+    engineSound: PositionalAudio
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, EntitySuperType.BUILDING, entityType, aeFilename)
@@ -68,6 +71,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         if (this.selected || this.inBeam) return false
         this.selectionFrame.visible = true
         this.selected = true
+        SoundManager.playSample(Sample.SFX_Okay)
         return true
     }
 
@@ -198,6 +202,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         this.surfaces.forEach((s) => s.setHasPower(true, true))
         this.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent())
+        this.engineSound = this.playPositionalSfxName(this.stats.EngineSound, true)
     }
 
     turnOffPower() {
@@ -207,6 +212,8 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         this.surfaces.forEach((s) => s.setHasPower(false, false))
         this.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent())
+        this.engineSound?.stop()
+        this.engineSound = null
     }
 
     get surfaces(): Surface[] { // TODO performance cache this in member variable
