@@ -1,7 +1,10 @@
 import { Panel } from '../base/Panel'
+import { IconPanelButton } from './IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectRaiderPanel extends SelectBasePanel {
+
+    trainItem: IconPanelButton
 
     constructor(onBackPanel: Panel) {
         super(10, onBackPanel)
@@ -11,7 +14,8 @@ export class SelectRaiderPanel extends SelectBasePanel {
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GetTool')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DropBirdScarer')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeMan')
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainSkill')
+        this.trainItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainSkill')
+        this.trainItem.isDisabled = () => false
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GotoFirstPerson')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GotoSecondPerson')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteMan')

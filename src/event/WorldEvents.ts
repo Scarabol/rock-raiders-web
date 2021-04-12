@@ -156,3 +156,16 @@ export class OreFoundEvent extends WorldEvent {
     }
 
 }
+
+export class BuildingUpgraded extends WorldEvent {
+
+    static eventKey = 'upgraded.building'
+
+    building: BuildingEntity
+
+    constructor(building: BuildingEntity) {
+        super(BuildingUpgraded.eventKey)
+        this.building = building
+    }
+
+}

@@ -6,7 +6,7 @@ import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { MathUtils, Vector3, Matrix4 } from 'three'
 import { GameState } from '../../game/model/GameState'
-import { CollectEvent, EntityAddedEvent, EntityType } from '../../event/WorldEvents'
+import { BuildingUpgraded, CollectEvent, EntityAddedEvent, EntityType } from '../../event/WorldEvents'
 import { Surface } from './map/Surface'
 import { CollectableType } from './collect/CollectableEntity'
 import degToRad = MathUtils.degToRad
@@ -86,6 +86,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.level++
         EventBus.publishEvent(new CollectEvent(CollectableType.ORE))
         EventBus.publishEvent(new EntityDeselected())
+        EventBus.publishEvent(new BuildingUpgraded(this))
     }
 
 }
