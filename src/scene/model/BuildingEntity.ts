@@ -26,8 +26,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.type = buildingType
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
-        this.pickSphereRadius = 30 // TODO read pick sphere size from cfg
-        this.selectionFrameSize = 15
+        this.pickSphereRadius = 30 / 2 // TODO read pick sphere size from cfg
     }
 
     getSelectionType(): SelectionType {
@@ -50,6 +49,12 @@ export class BuildingEntity extends AnimEntity implements Selectable {
 
     getSelectionCenter(): Vector3 {
         return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null
+    }
+
+    getPickSphereCenter() {
+        const pickSphereCenter = this.getPosition()
+        pickSphereCenter.y += this.pickSphereRadius / 2
+        return pickSphereCenter
     }
 
     getDropPosition(): Vector3 {

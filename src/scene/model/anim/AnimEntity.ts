@@ -1,9 +1,10 @@
-import { Box3, CanvasTexture, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
+import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
 import { AnimClip } from './AnimClip'
 import { iGet } from '../../../core/Util'
 import { AnimationEntityType } from './AnimationEntityType'
 import { BaseEntity } from '../BaseEntity'
 import { AnimSubObj } from './AnimSubObj'
+import { createContext } from '../../../core/ImageHelper'
 
 export abstract class AnimEntity extends BaseEntity {
 
@@ -13,8 +14,7 @@ export abstract class AnimEntity extends BaseEntity {
     animationTimeout: NodeJS.Timeout = null
     selectionFrame: Sprite = null
     pickSphere: Mesh = null
-    pickSphereRadius: number = 10
-    selectionFrameSize: number = 10
+    pickSphereRadius: number = 10 / 2
     carryJoint: Object3D = null
 
     protected constructor(entityType: AnimationEntityType) {
@@ -102,36 +102,48 @@ export abstract class AnimEntity extends BaseEntity {
 
     createPickSphere() {
         if (this.pickSphere) return
+        const pickSphereCenter = this.getPickSphereCenter()
+        const geometry = new SphereGeometry(this.pickSphereRadius, this.pickSphereRadius, this.pickSphereRadius)
+        const material = new MeshBasicMaterial({color: 0xffff00, visible: false}) // change visible to true for debugging
+        this.pickSphere = new Mesh(geometry, material)
+        this.pickSphere.userData = {selectable: this}
+        this.pickSphere.position.copy(pickSphereCenter)
+        this.group.add(this.pickSphere)
+        this.createSelectionFrame(pickSphereCenter)
+    }
+
+    getPickSphereCenter(): Vector3 {
+        return this.getBoundingBoxCenter()
+    }
+
+    getBoundingBoxCenter() {
         const center = new Vector3()
         new Box3().setFromObject(this.group).getCenter(center)
         center.sub(this.group.position)
-        const geometry = new SphereGeometry(this.pickSphereRadius, this.pickSphereRadius, this.pickSphereRadius)
-        const material = new MeshBasicMaterial({color: 0xffff00, visible: false}) // change to true for debugging
-        this.pickSphere = new Mesh(geometry, material)
-        this.pickSphere.userData = {selectable: this}
-        this.pickSphere.position.copy(center)
-        this.group.add(this.pickSphere)
+        center.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
+        return center
+    }
 
-        const ctx = document.createElement('canvas').getContext('2d')
-        const size = 128 // TODO read from cfg?
-        ctx.canvas.width = size
-        ctx.canvas.height = size
+    private createSelectionFrame(pickSphereCenter: Vector3) {
+        const selectionFrameTextureSize = 128
+        const ctx = createContext(selectionFrameTextureSize, selectionFrameTextureSize)
         ctx.fillStyle = '#0f0'
-        const strength = 50 / this.selectionFrameSize
-        const length = size / 3
+        const strength = Math.round(25 / this.pickSphereRadius)
+        const length = selectionFrameTextureSize / 6
         ctx.fillRect(0, 0, length, strength)
         ctx.fillRect(0, 0, strength, length)
-        ctx.fillRect(size - length, 0, length, strength)
-        ctx.fillRect(size - strength, 0, strength, length)
-        ctx.fillRect(size - strength, size - length, strength, length)
-        ctx.fillRect(size - length, size - strength, length, strength)
-        ctx.fillRect(0, size - strength, length, strength)
-        ctx.fillRect(0, size - length, strength, length)
-        const texture = new CanvasTexture(ctx.canvas)
-        const selectionMaterial = new SpriteMaterial({map: texture, depthTest: false})
+        ctx.fillRect(selectionFrameTextureSize - length, 0, length, strength)
+        ctx.fillRect(selectionFrameTextureSize - strength, 0, strength, length)
+        ctx.fillRect(selectionFrameTextureSize - strength, selectionFrameTextureSize - length, strength, length)
+        ctx.fillRect(selectionFrameTextureSize - length, selectionFrameTextureSize - strength, length, strength)
+        ctx.fillRect(0, selectionFrameTextureSize - strength, length, strength)
+        ctx.fillRect(0, selectionFrameTextureSize - length, strength, length)
+        const selectionFrameTexture = new CanvasTexture(ctx.canvas)
+        const selectionMaterial = new SpriteMaterial({map: selectionFrameTexture, depthTest: false})
         this.selectionFrame = new Sprite(selectionMaterial)
-        this.selectionFrame.position.copy(center)
-        this.selectionFrame.scale.set(this.selectionFrameSize, this.selectionFrameSize, this.selectionFrameSize)
+        this.selectionFrame.position.copy(pickSphereCenter)
+        const selectionFrameSize = this.pickSphereRadius * 2
+        this.selectionFrame.scale.set(selectionFrameSize, selectionFrameSize, selectionFrameSize)
         this.selectionFrame.visible = false
         this.group.add(this.selectionFrame)
     }
