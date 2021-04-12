@@ -13,7 +13,7 @@ export class Building {
     dropPosAngleDeg: number = 0
     dropPosDist: number = 0
     selfPowered: boolean = false
-    maxUpgrades: number = 2 // TODO read from cfg
+    maxLevel: number = 2 // TODO read from cfg
 
     constructor(name: string, dropPosAngleDeg: number = 0, dropPosDist: number = 0, selfPowered: boolean = false) {
         this.name = name

@@ -19,7 +19,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     powerLink: boolean = false
     spawning: boolean = false
     surfaces: Surface[] = []
-    upgrades: number = 0
+    level: number = 0
 
     constructor(buildingType: Building) {
         super(ResourceManager.getAnimationEntityType(buildingType.aeFile))
@@ -76,14 +76,14 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, this))
     }
 
-    hasMaxUpgrades(): boolean {
-        return this.upgrades >= this.type.maxUpgrades
+    hasMaxLevel(): boolean {
+        return this.level >= this.type.maxLevel
     }
 
     upgrade() {
         if (GameState.numOre < 5) return // TODO read from cfg BuildingUpgradeCostOre and BuildingUpgradeCostStuds
         GameState.numOre -= 5
-        this.upgrades++
+        this.level++
         EventBus.publishEvent(new CollectEvent(CollectableType.ORE))
         EventBus.publishEvent(new EntityDeselected())
     }

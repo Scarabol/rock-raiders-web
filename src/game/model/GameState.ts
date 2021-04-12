@@ -123,7 +123,7 @@ export class GameState {
     }
 
     static hasBuildingWithUpgrades(building: Building, upgrades: number): boolean {
-        return this.buildings.some((b) => b.type === building && b.upgrades >= upgrades)
+        return this.buildings.some((b) => b.type === building && b.level >= upgrades)
     }
 
     static selectEntities(entities: Selectable[]) {
