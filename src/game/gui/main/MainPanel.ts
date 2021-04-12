@@ -1,4 +1,3 @@
-import { IconPanel } from './IconPanel'
 import { EventBus } from '../../../event/EventBus'
 import { BuildingSelected, EntityDeselected, RaiderSelected, SurfaceSelectedEvent, VehicleSelected } from '../../../event/LocalEvents'
 import { EntityAddedEvent, EntityRemovedEvent, EntityType, RaiderRequested } from '../../../event/WorldEvents'
@@ -13,11 +12,25 @@ import { SelectRubblePanel } from './SelectRubblePanel'
 import { SelectBuildingPanel } from './SelectBuildingPanel'
 import { SelectRaiderPanel } from './SelectRaiderPanel'
 import { SelectVehiclePanel } from './SelectVehiclePanel'
+import { IconSubPanel } from './IconSubPanel'
+import { Panel } from '../base/Panel'
 
-export class MainPanel extends IconPanel {
+export class MainPanel extends Panel {
+
+    subPanels: IconSubPanel[] = []
+    mainPanel: IconSubPanel // don't use root itself, since sub panel must be decoupled from (animated) main panel position
 
     constructor() {
         super()
+        this.relX = this.xOut = 640 - 16
+        this.xIn = 640 + 95
+        this.relY = this.yOut = this.yIn = 9
+        this.movedIn = false
+        this.mainPanel = this.addSubPanel(new IconSubPanel(4))
+        this.mainPanel.relX = this.mainPanel.xOut
+        this.mainPanel.relY = this.mainPanel.yOut
+        this.mainPanel.movedIn = false
+
         const buildingPanel = this.addSubPanel(new BuildingPanel(this.mainPanel))
         const smallVehiclePanel = this.addSubPanel(new SmallVehiclePanel(this.mainPanel))
         const largeVehiclePanel = this.addSubPanel(new LargeVehiclePanel(this.mainPanel))
@@ -66,6 +79,17 @@ export class MainPanel extends IconPanel {
         EventBus.registerEventListener(BuildingSelected.eventKey, () => this.selectSubPanel(selectBuildingPanel))
         EventBus.registerEventListener(RaiderSelected.eventKey, () => this.selectSubPanel(selectRaiderPanel))
         EventBus.registerEventListener(VehicleSelected.eventKey, () => this.selectSubPanel(selectVehiclePanel))
+    }
+
+    addSubPanel<T extends IconSubPanel>(childPanel: T): T {
+        this.addChild(childPanel)
+        this.subPanels.push(childPanel)
+        return childPanel
+    }
+
+    selectSubPanel(targetPanel: IconSubPanel) {
+        this.subPanels.forEach((subPanel) => subPanel !== targetPanel && subPanel.setMovedIn(true))
+        targetPanel.setMovedIn(false)
     }
 
 }
