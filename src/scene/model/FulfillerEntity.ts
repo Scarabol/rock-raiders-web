@@ -29,8 +29,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     carries: Carryable = null // TODO implement multi carry for vehicles
     carryTarget: Vector3 = null
 
-    protected constructor(selectionType: SelectionType, aeFilename: string, speed: number) {
-        super(ResourceManager.getAnimationEntityType(aeFilename), speed)
+    protected constructor(selectionType: SelectionType, aeFilename: string) {
+        super(ResourceManager.getAnimationEntityType(aeFilename))
         this.selectionType = selectionType
         this.group.userData = {'selectable': this}
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done

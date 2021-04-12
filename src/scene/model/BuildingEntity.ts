@@ -26,7 +26,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.type = buildingType
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
-        this.pickSphereRadius = 30 / 2 // TODO read pick sphere size from cfg
+        this.pickSphereRadius = this.type.stats.pickSphere / 2
     }
 
     getSelectionType(): SelectionType {
@@ -65,7 +65,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     isPowered(): boolean {
-        return this.powerSwitch && (this.type.selfPowered || this.powerLink)
+        return this.powerSwitch && (this.type.stats.selfPowered || this.powerLink)
     }
 
     onDiscover() {
@@ -77,12 +77,12 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     hasMaxLevel(): boolean {
-        return this.level >= this.type.maxLevel
+        return this.level >= this.type.stats.levels - 1
     }
 
     upgrade() {
-        if (GameState.numOre < 5) return // TODO read from cfg BuildingUpgradeCostOre and BuildingUpgradeCostStuds
-        GameState.numOre -= 5
+        if (GameState.numOre < 5 || this.hasMaxLevel()) return
+        GameState.numOre -= 5 // TODO read from cfg BuildingUpgradeCostOre and BuildingUpgradeCostStuds
         this.level++
         EventBus.publishEvent(new CollectEvent(CollectableType.ORE))
         EventBus.publishEvent(new EntityDeselected())

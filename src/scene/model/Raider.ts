@@ -1,26 +1,31 @@
 import { SelectionType } from '../../game/model/Selectable'
 import { EventBus } from '../../event/EventBus'
-import { RAIDER_SPEED } from '../../main'
 import { RaiderSelected, SelectionEvent } from '../../event/LocalEvents'
 import { FulfillerActivity, FulfillerEntity } from './FulfillerEntity'
 import { GameState } from '../../game/model/GameState'
 import { Vector3 } from 'three'
 import { EntityAddedEvent, EntityType } from '../../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../../event/WorldLocationEvent'
+import { ResourceManager } from '../../resource/ResourceManager'
+import { RaiderStatsCfg } from '../../cfg/RaiderStatsCfg'
 
 export class Raider extends FulfillerEntity {
 
+    level: number = 0 // TODO same as in BuildingEntity -> move to parent class
+    stats: RaiderStatsCfg
+
     constructor() {
-        super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae', RAIDER_SPEED)
+        super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae')
+        this.stats = new RaiderStatsCfg(ResourceManager.cfg('Stats', 'Pilot')) // TODO group all stats in single class
         this.tools = ['drill']
         this.skills = []
-        this.pickSphereRadius = 10 / 2 // TODO read pick sphere size from cfg
+        this.pickSphereRadius = this.stats.pickSphere / 2
     }
 
     getSpeed(): number {
-        let speed = super.getSpeed()
+        let speed = this.stats.routeSpeed[this.level]
         if (this.animation && !isNaN(this.animation.transcoef)) speed *= this.animation.transcoef
-        if (this.isOnPath()) speed *= 2 // TODO read from cfg
+        if (this.isOnPath()) speed *= this.stats.pathCoef
         return speed
     }
 

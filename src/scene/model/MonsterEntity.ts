@@ -1,5 +1,5 @@
 import { MovableEntity } from './MovableEntity'
 
-export class MonsterEntity extends MovableEntity {
+export abstract class MonsterEntity extends MovableEntity {
 
 }

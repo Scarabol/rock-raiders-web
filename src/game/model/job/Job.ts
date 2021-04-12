@@ -1,6 +1,6 @@
 import { Vector3 } from 'three'
 import { CollectableEntity, CollectableType, CollectTargetType } from '../../../scene/model/collect/CollectableEntity'
-import { JOB_ACTION_RANGE, RAIDER_SPEED } from '../../../main'
+import { JOB_ACTION_RANGE } from '../../../main'
 import { GameState } from '../GameState'
 import { EventBus } from '../../../event/EventBus'
 import { CollectEvent } from '../../../event/WorldEvents'
@@ -117,7 +117,7 @@ export class CollectJob extends Job {
 
 }
 
-export class MoveJob extends Job {
+export class MoveJob extends Job { // TODO this is actually not a job...
 
     target: Vector3
 
@@ -131,7 +131,7 @@ export class MoveJob extends Job {
     }
 
     isInArea(x: number, z: number) {
-        return this.getPosition().sub(new Vector3(x, this.target.y, z)).lengthSq() < RAIDER_SPEED * RAIDER_SPEED
+        return this.getPosition().sub(new Vector3(x, this.target.y, z)).lengthSq() < Math.pow(this.fulfiller[0].getSpeed(), 2)
     }
 
     getPriorityIdentifier(): string {

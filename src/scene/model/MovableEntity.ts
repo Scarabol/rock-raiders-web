@@ -5,21 +5,17 @@ import { FulfillerActivity } from './FulfillerEntity'
 
 export abstract class MovableEntity extends AnimEntity {
 
-    speed: number
     pathToTarget: Vector3[] = null
 
-    constructor(entityType: AnimationEntityType, speed: number) {
+    constructor(entityType: AnimationEntityType) {
         super(entityType)
-        this.speed = speed
     }
 
     getPosition(): Vector3 {
         return new Vector3().copy(this.group.position)
     }
 
-    getSpeed() {
-        return this.speed
-    }
+    abstract getSpeed(): number
 
     moveToTarget(target: Vector3): boolean {
         if (!this.pathToTarget || !this.pathToTarget[this.pathToTarget.length - 1].equals(target)) {
