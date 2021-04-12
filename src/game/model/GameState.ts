@@ -100,7 +100,7 @@ export class GameState {
         let closest = null, minDist = null
         targetBuildings.forEach((b) => {
             const bPos = b.getDropPosition()
-            const dist = new Vector3().copy(position).sub(bPos).lengthSq()
+            const dist = new Vector3().copy(position).sub(bPos).lengthSq() // TODO better use pathfinding
             if (closest === null || dist < minDist) {
                 closest = b
                 minDist = dist

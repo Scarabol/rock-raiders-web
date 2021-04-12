@@ -47,6 +47,7 @@ export class Supervisor {
             const closestRaider = this.findClosestPossibleRaider(job)
             if (closestRaider) closestRaider.setJob(job)
         })
+        // TODO find unemployed raider and check if the can be trained or take tools
     }
 
     private findClosestPossibleRaider(job: Job) {

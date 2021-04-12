@@ -139,6 +139,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 }
             } else if (!this.carryTarget) {
                 this.carryTarget = this.carries.getTargetPos() // TODO sleep 5 seconds, before retry
+                // TODO better stop job if no carry target can be found?
             } else if (this.getPosition().sub(this.carryTarget).length() > JOB_ACTION_RANGE) {
                 this.moveToTarget(this.carryTarget)
             } else {
@@ -164,7 +165,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         const result = super.moveToTarget(target)
         if (!result) {
             console.log('Entity could not move to job target, stopping job')
-            this.stopJob()
+            this.stopJob() // TODO what about other targets for the same purpose that may be reachable?
         }
         return result
     }
