@@ -8,7 +8,6 @@ import { CavernDiscovered, EntityAddedEvent, EntityType, JobCreateEvent, RaiderR
 import { Raider } from './model/Raider'
 import { GameState } from '../game/model/GameState'
 import { Building } from '../game/model/entity/building/Building'
-import { CollectJob, MoveJob } from '../game/model/job/Job'
 import { CollectableEntity } from './model/collect/CollectableEntity'
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main'
 import { EntityDeselected } from '../event/LocalEvents'
@@ -21,6 +20,8 @@ import { GameScreen } from '../screen/GameScreen'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { PriorityList } from '../game/model/job/PriorityList'
 import degToRad = MathUtils.degToRad
+import { CollectJob } from '../game/model/job/CollectJob'
+import { MoveJob } from '../game/model/job/MoveJob'
 
 export class WorldManager {
 

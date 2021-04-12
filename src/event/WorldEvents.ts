@@ -1,9 +1,10 @@
 import { GameEvent } from './EventBus'
-import { Job } from '../game/model/job/Job'
+import { PublicJob } from '../game/model/job/Job'
 import { CollectableEntity, CollectableType } from '../scene/model/collect/CollectableEntity'
 import { AnimEntity } from '../scene/model/anim/AnimEntity'
 import { Vector3 } from 'three'
 import { Surface } from '../scene/model/map/Surface'
+import { BuildingEntity } from '../scene/model/BuildingEntity'
 
 export class WorldEvent extends GameEvent {
 
@@ -16,9 +17,9 @@ export class WorldEvent extends GameEvent {
 
 export class JobEvent extends WorldEvent {
 
-    job: Job
+    job: PublicJob
 
-    constructor(eventKey: string, job: Job) {
+    constructor(eventKey: string, job: PublicJob) {
         super(eventKey)
         this.job = job
     }
@@ -29,7 +30,7 @@ export class JobCreateEvent extends JobEvent {
 
     static eventKey = 'job.create'
 
-    constructor(job: Job) {
+    constructor(job: PublicJob) {
         super(JobCreateEvent.eventKey, job)
     }
 
@@ -39,7 +40,7 @@ export class JobDeleteEvent extends JobEvent {
 
     static eventKey = 'job.delete'
 
-    constructor(job: Job) {
+    constructor(job: PublicJob) {
         super(JobDeleteEvent.eventKey, job)
     }
 

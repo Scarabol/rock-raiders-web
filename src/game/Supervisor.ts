@@ -1,6 +1,6 @@
 import { EventBus } from '../event/EventBus'
 import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
-import { Job, JobState } from './model/job/Job'
+import { Job, JobState, PublicJob } from './model/job/Job'
 import { GameState } from './model/GameState'
 import { Vector3 } from 'three'
 import { Raider } from '../scene/model/Raider'
@@ -10,7 +10,7 @@ import { JOB_SCHEDULE_INTERVAL } from '../main'
 export class Supervisor {
 
     worldMgr: WorldManager
-    jobs: Job[] = []
+    jobs: PublicJob[] = []
     interval = null
 
     constructor(worldMgr: WorldManager) {

@@ -3,7 +3,6 @@ import { WorldManager } from '../../scene/WorldManager'
 import { SelectionType } from '../model/Selectable'
 import { GameState } from '../model/GameState'
 import { Raider } from '../../scene/model/Raider'
-import { MoveJob } from '../model/job/Job'
 import { EventBus } from '../../event/EventBus'
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { Surface } from '../../scene/model/map/Surface'
@@ -12,6 +11,7 @@ import { FulfillerEntity } from '../../scene/model/FulfillerEntity'
 import { SurfaceJob, SurfaceJobType } from '../model/job/SurfaceJob'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventManager'
 import { DEV_MODE } from '../../main'
+import { MoveJob } from '../model/job/MoveJob'
 
 export class GameLayer extends ScreenLayer {
 

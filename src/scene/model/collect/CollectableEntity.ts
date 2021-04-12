@@ -2,12 +2,12 @@ import { BaseEntity } from '../BaseEntity'
 import { GameState } from '../../../game/model/GameState'
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
-import { CollectJob } from '../../../game/model/job/Job'
 import { Carryable } from './Carryable'
 import { Vector3 } from 'three'
 import { Building } from '../../../game/model/entity/building/Building'
 import { BuildingEntity } from '../BuildingEntity'
 import { BuildingSite } from '../BuildingSite'
+import { CollectJob } from '../../../game/model/job/CollectJob'
 
 export abstract class CollectableEntity extends BaseEntity implements Carryable {
 

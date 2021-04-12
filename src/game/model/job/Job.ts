@@ -1,11 +1,5 @@
 import { Vector3 } from 'three'
-import { CollectableEntity, CollectableType, CollectTargetType } from '../../../scene/model/collect/CollectableEntity'
-import { JOB_ACTION_RANGE } from '../../../main'
-import { GameState } from '../GameState'
-import { EventBus } from '../../../event/EventBus'
-import { CollectEvent } from '../../../event/WorldEvents'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
-import { Building } from '../entity/building/Building'
 
 export enum JobType {
 
@@ -65,77 +59,11 @@ export abstract class Job {
 
     abstract isInArea(x: number, z: number): boolean;
 
+}
+
+export abstract class PublicJob extends Job {
+
     abstract getPriorityIdentifier(): string
 
 }
 
-export class CollectJob extends Job {
-
-    item: CollectableEntity
-
-    constructor(item: CollectableEntity) {
-        super(JobType.CARRY)
-        this.item = item
-    }
-
-    getPosition(): Vector3 {
-        return this.item.getPosition()
-    }
-
-    isInArea(x: number, z: number): boolean {
-        const pos = this.getPosition()
-        return pos.sub(new Vector3(x, pos.y, z)).length() < JOB_ACTION_RANGE
-    }
-
-    isQualified(fulfiller: FulfillerEntity) {
-        return fulfiller.carries === null && !!this.item.getTargetPos()
-    }
-
-    onJobComplete() {
-        super.onJobComplete()
-        if (this.item.getTargetType() === Building.TOOLSTATION) {
-            switch (this.item.getCollectableType()) {
-                case CollectableType.CRYSTAL:
-                    GameState.numCrystal++
-                    EventBus.publishEvent(new CollectEvent(this.item.getCollectableType()))
-                    break
-                case CollectableType.ORE:
-                    GameState.numOre++
-                    EventBus.publishEvent(new CollectEvent(this.item.getCollectableType()))
-                    break
-            }
-        } else if (this.item.getTargetType() === CollectTargetType.BUILDING_SITE) {
-            this.item.targetSite.addItem(this.item)
-        } else {
-            console.error('target type not yet implemented: ' + this.item.getTargetType())
-        }
-    }
-
-    getPriorityIdentifier(): string {
-        return this.item.getCollectableType() === CollectableType.CRYSTAL ? 'aiPriorityCrystal' : 'aiPriorityOre'
-    }
-
-}
-
-export class MoveJob extends Job { // TODO this is actually not a job...
-
-    target: Vector3
-
-    constructor(target: Vector3) {
-        super(JobType.MOVE)
-        this.target = target
-    }
-
-    getPosition(): Vector3 {
-        return new Vector3().copy(this.target)
-    }
-
-    isInArea(x: number, z: number) {
-        return this.getPosition().sub(new Vector3(x, this.target.y, z)).lengthSq() < Math.pow(this.fulfiller[0].getSpeed(), 2)
-    }
-
-    getPriorityIdentifier(): string {
-        return '' // TODO move to separate job class, that is not shareable with others
-    }
-
-}

@@ -3,7 +3,7 @@ import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { Vector3 } from 'three'
 import { JOB_ACTION_RANGE, TILESIZE } from '../../../main'
 import { Dynamite } from '../../../scene/model/collect/Dynamite'
-import { Job, JobType } from './Job'
+import { JobType, PublicJob } from './Job'
 import { SurfaceType } from '../../../scene/model/map/SurfaceType'
 import { CollectableEntity } from '../../../scene/model/collect/CollectableEntity'
 
@@ -26,7 +26,7 @@ export class SurfaceJobType {
 
 }
 
-export class SurfaceJob extends Job {
+export class SurfaceJob extends PublicJob {
 
     surface: Surface
     workType: SurfaceJobType

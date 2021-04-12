@@ -1,7 +1,7 @@
 import { MovableEntity } from './MovableEntity'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { CollectJob, Job, JobType } from '../../game/model/job/Job'
+import { Job, JobType } from '../../game/model/job/Job'
 import { MathUtils, Vector3 } from 'three'
 import { JOB_ACTION_RANGE, NATIVE_FRAMERATE } from '../../main'
 import { getRandom, getRandomSign } from '../../core/Util'
@@ -15,6 +15,7 @@ import { CrystalFoundEvent } from '../../event/WorldLocationEvent'
 import { OreFoundEvent } from '../../event/WorldEvents'
 import { SelectionEvent } from '../../event/LocalEvents'
 import degToRad = MathUtils.degToRad
+import { CollectJob } from '../../game/model/job/CollectJob'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
