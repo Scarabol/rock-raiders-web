@@ -1,6 +1,10 @@
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
+import { GameState } from '../../model/GameState'
+import { EatJob } from '../../model/job/EatJob'
+import { EventBus } from '../../../event/EventBus'
+import { EntityDeselected } from '../../../event/LocalEvents'
 
 export class SelectRaiderPanel extends SelectBasePanel {
 
@@ -9,7 +13,12 @@ export class SelectRaiderPanel extends SelectBasePanel {
 
     constructor(onBackPanel: Panel) {
         super(10, onBackPanel)
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GoFeed')
+        const feedItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GoFeed')
+        feedItem.isDisabled = () => false
+        feedItem.onClick = () => {
+            GameState.selectedRaiders.forEach((r) => !r.isDriving() && r.setJob(new EatJob()))
+            EventBus.publishEvent(new EntityDeselected())
+        }
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UnLoadMinifigure')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_MinifigurePickUp')
         this.getToolItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GetTool')

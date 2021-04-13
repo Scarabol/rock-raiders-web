@@ -109,6 +109,9 @@ export class Raider extends FulfillerEntity {
                 case FulfillerActivity.TRAINING:
                     this.setActivity('Train', onChangeDone, iterations)
                     break
+                case FulfillerActivity.EATING:
+                    this.setActivity('Eat', onChangeDone, iterations)
+                    break
             }
             this.animation.looping = true // TODO make all looping?
         }
@@ -135,6 +138,10 @@ export class Raider extends FulfillerEntity {
 
     getSelectionCenter(): Vector3 {
         return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null
+    }
+
+    isDriving(): boolean {
+        return false // TODO implement vehicles
     }
 
 }

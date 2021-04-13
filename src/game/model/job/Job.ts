@@ -8,6 +8,7 @@ export enum JobType {
     MOVE,
     TRAIN,
     GET_TOOL,
+    EAT,
 
 }
 

@@ -181,6 +181,12 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 this.job.onJobComplete()
                 this.stopJob()
             }
+        } else if (this.job.type === JobType.EAT) {
+            this.changeActivity(FulfillerActivity.EATING, () => {
+                // TODO implement endurance fill eat level
+                this.job.onJobComplete()
+                this.stopJob()
+            })
         }
     }
 
@@ -263,5 +269,6 @@ export enum FulfillerActivity {
     DROPPING,
     REINFORCE,
     TRAINING,
+    EATING,
 
 }
