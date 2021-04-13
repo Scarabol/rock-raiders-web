@@ -19,11 +19,11 @@ export class TrainRaiderPanel extends IconSubPanel {
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainSailor')
         const trainDynamite = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainDynamite')
         trainDynamite.isDisabled = () => !GameState.getBuildingsByType(Building.TOOLSTATION).some((b) => b.type.stats.trainDynamite[b.level]) ||
-            GameState.selectedRaiders.every((r) => r.hasSkills([RaiderSkills.DEMOLITION]))
+            GameState.selectedRaiders.every((r) => r.hasSkill(RaiderSkills.DEMOLITION))
         trainDynamite.onClick = () => {
             GameState.getBuildingsByType(Building.TOOLSTATION).some((b) => { // TODO find closest with pathfinding for every raider
                 if (b.type.stats.trainDynamite[b.level]) {
-                    GameState.selectedRaiders.forEach((r) => !r.hasSkills([RaiderSkills.DEMOLITION]) && r.setJob(new TrainJob(b.getPosition(), RaiderSkills.DEMOLITION)))
+                    GameState.selectedRaiders.forEach((r) => !r.hasSkill(RaiderSkills.DEMOLITION) && r.setJob(new TrainJob(b.getPosition(), RaiderSkills.DEMOLITION)))
                     EventBus.publishEvent(new EntityDeselected())
                     return true
                 }

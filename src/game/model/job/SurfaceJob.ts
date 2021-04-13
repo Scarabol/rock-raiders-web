@@ -11,19 +11,19 @@ import { RaiderSkills, RaiderTools } from '../../../scene/model/Raider'
 export class SurfaceJobType {
 
     color: number
-    requiredTools: string[]
-    requiredSkills: string[]
+    requiredTool: string
+    requiredSkill: string
 
-    constructor(color: number, requiredTools: string[], requiredSkills: string[]) {
+    constructor(color: number, requiredTools: string, requiredSkills: string) {
         this.color = color
-        this.requiredTools = requiredTools
-        this.requiredSkills = requiredSkills
+        this.requiredTool = requiredTools
+        this.requiredSkill = requiredSkills
     }
 
-    static readonly DRILL = new SurfaceJobType(0xa0a0a0, [RaiderTools.DRILL], [])
-    static readonly REINFORCE = new SurfaceJobType(0x60a060, [RaiderTools.HAMMER], [])
-    static readonly BLOW = new SurfaceJobType(0xa06060, [], [RaiderSkills.DEMOLITION])
-    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, [RaiderTools.SHOVEL], [])
+    static readonly DRILL = new SurfaceJobType(0xa0a0a0, RaiderTools.DRILL, null)
+    static readonly REINFORCE = new SurfaceJobType(0x60a060, RaiderTools.HAMMER, null)
+    static readonly BLOW = new SurfaceJobType(0xa06060, null, RaiderSkills.DEMOLITION)
+    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, RaiderTools.SHOVEL, null)
 
 }
 
@@ -39,7 +39,8 @@ export class SurfaceJob extends PublicJob {
     }
 
     isQualified(fulfiller: FulfillerEntity) {
-        return fulfiller.hasTools(this.workType.requiredTools) && fulfiller.hasSkills(this.workType.requiredSkills)
+        return (!this.workType.requiredTool || fulfiller.hasTool(this.workType.requiredTool))
+            && (!this.workType.requiredSkill || fulfiller.hasSkill(this.workType.requiredSkill))
     }
 
     getPosition(): Vector3 {

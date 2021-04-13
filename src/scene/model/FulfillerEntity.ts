@@ -229,18 +229,12 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.changeActivity(FulfillerActivity.STANDING)
     }
 
-    hasTools(toolnames: string[]) {
-        for (let c = 0; c < toolnames.length; c++) {
-            if (this.tools.indexOf(toolnames[c]) === -1) return false
-        }
-        return true
+    hasTool(toolname: string) {
+        return this.tools.indexOf(toolname) !== -1
     }
 
-    hasSkills(skillKeys: string[]) {
-        for (let c = 0; c < skillKeys.length; c++) {
-            if (this.skills.indexOf(skillKeys[c]) === -1) return false
-        }
-        return true
+    hasSkill(skillKey: string) {
+        return this.skills.indexOf(skillKey) !== -1
     }
 
     getSelectionType(): SelectionType {

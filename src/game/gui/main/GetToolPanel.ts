@@ -25,10 +25,10 @@ export class GetToolPanel extends IconSubPanel {
     addGetToolItem(menuItemGroup: string, itemKey: string, tool: string): IconPanelButton {
         const menuItem = super.addMenuItem(menuItemGroup, itemKey)
         menuItem.isDisabled = () => GameState.hasBuildingWithUpgrades(Building.TOOLSTATION, 0) &&
-            GameState.selectedRaiders.every((r) => r.hasTools([tool]))
+            GameState.selectedRaiders.every((r) => r.hasTool(tool))
         menuItem.onClick = () => {
             GameState.selectedRaiders.forEach((r) => {
-                if (!r.hasTools([tool])) {
+                if (!r.hasTool(tool)) {
                     const toolstation = GameState.getClosestBuildingByType(r.getPosition(), Building.TOOLSTATION)
                     r.setJob(new GetToolJob(toolstation.getDropPosition(), tool))
                 }

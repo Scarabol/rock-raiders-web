@@ -19,7 +19,7 @@ export class SelectWallPanel extends SelectBasePanel {
         const itemDynamite = this.addWallMenuItem('Interface_MenuItem_Dynamite', SurfaceJobType.BLOW)
         itemDynamite.isDisabled = () => {
             return !GameState.hasBuildingWithUpgrades(Building.TOOLSTATION, 2) &&
-                !GameState.raiders.some((r) => r.hasSkills([RaiderSkills.DEMOLITION]))
+                !GameState.raiders.some((r) => r.hasSkill(RaiderSkills.DEMOLITION))
             // TODO and NOT has vehicle that can drill hard stone
         }
         const itemDeselect = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig')
