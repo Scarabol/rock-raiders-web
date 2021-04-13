@@ -4,7 +4,7 @@ import { GameState } from '../../model/GameState'
 import { Surface } from '../../../scene/model/map/Surface'
 import { SurfaceJob, SurfaceJobType } from '../../model/job/SurfaceJob'
 import { EventBus } from '../../../event/EventBus'
-import { JobCreateEvent } from '../../../event/WorldEvents'
+import { JobCreateEvent, SpawnDynamiteEvent } from '../../../event/WorldEvents'
 import { EntityDeselected, SurfaceSelectedEvent } from '../../../event/LocalEvents'
 import { IconPanelButton } from './IconPanelButton'
 import { Building } from '../../model/entity/building/Building'
@@ -42,11 +42,15 @@ export class SelectWallPanel extends SelectBasePanel {
     addWallMenuItem(itemKey: string, jobType: SurfaceJobType): IconPanelButton {
         const item = this.addMenuItem('InterfaceImages', itemKey)
         item.onClick = () => {
-            const selectedSurface = GameState.selectedEntities[0] as Surface
-            if (!selectedSurface.hasJobType(jobType)) {
-                EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(jobType, selectedSurface)))
+            const selectedSurface = GameState.selectedSurface
+            if (selectedSurface) {
+                if (jobType === SurfaceJobType.BLOW) {
+                    EventBus.publishEvent(new SpawnDynamiteEvent(selectedSurface))
+                } else if (!selectedSurface.hasJobType(jobType)) {
+                    EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(jobType, selectedSurface)))
+                }
+                EventBus.publishEvent(new EntityDeselected())
             }
-            EventBus.publishEvent(new EntityDeselected())
         }
         return item
     }
