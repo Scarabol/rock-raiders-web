@@ -174,7 +174,7 @@ export class NerpRunner {
     }
 
     setBarracksLevel(level) {
-        this.setBuildingsUpgradeLevel(Building.SUPPORT, level)
+        this.setBuildingsUpgradeLevel(Building.BARRACKS, level)
     }
 
     /**
@@ -270,7 +270,7 @@ export class NerpRunner {
     }
 
     getPoweredBarracksBuilt() {
-        return GameState.getBuildingsByType(Building.SUPPORT).length
+        return GameState.getBuildingsByType(Building.BARRACKS).length
     }
 
     getRecordObjectAtTutorial() {

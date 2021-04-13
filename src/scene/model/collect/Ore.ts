@@ -14,7 +14,7 @@ export class Ore extends CollectableEntity {
     }
 
     getTargetBuildingTypes(): Building[] {
-        return [Building.REFINERY, Building.TOOLSTATION]
+        return [Building.ORE_REFINERY, Building.TOOLSTATION]
     }
 
     onDiscover() {
