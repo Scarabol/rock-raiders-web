@@ -58,8 +58,7 @@ export class SurfaceJob extends PublicJob {
             return x >= this.surface.x * TILESIZE + 5 && x < this.surface.x * TILESIZE + TILESIZE + 5
                 && z >= this.surface.y * TILESIZE + 5 && z < this.surface.y * TILESIZE + TILESIZE + 5
         } else {
-            const pos = this.getPosition()
-            return pos.sub(new Vector3(x, pos.y, z)).length() < JOB_ACTION_RANGE
+            return this.getPosition().distanceTo(new Vector3(x, this.getPosition().y, z)) < JOB_ACTION_RANGE
         }
     }
 

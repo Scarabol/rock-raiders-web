@@ -84,7 +84,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                         this.jobSubPos = new Vector3(jobPos.x + getRandomSign() * getRandom(10), 0, jobPos.z + getRandomSign() * getRandom(10))
                         this.jobSubPos.y = this.worldMgr.getTerrainHeight(this.jobSubPos.x, this.jobSubPos.z)
                     }
-                    if (new Vector3().copy(this.jobSubPos).sub(this.getPosition()).length() > this.getSpeed()) {
+                    if (this.jobSubPos.distanceTo(this.getPosition()) > this.getSpeed()) {
                         this.moveToTarget(this.jobSubPos)
                     } else {
                         this.changeActivity(FulfillerActivity.SHOVELING, () => {
@@ -119,7 +119,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                     }
                 } else if (!this.carryTarget) {
                     this.carryTarget = bj.surface.getDigPositions()[0]
-                } else if (this.getPosition().sub(this.carryTarget).length() > JOB_ACTION_RANGE) {
+                } else if (this.getPosition().distanceTo(this.carryTarget) > JOB_ACTION_RANGE) {
                     this.moveToTarget(this.carryTarget)
                 } else {
                     this.changeActivity(FulfillerActivity.DROPPING, () => {
@@ -143,7 +143,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             } else if (!this.carryTarget) {
                 this.carryTarget = this.carries.getTargetPos() // TODO sleep 5 seconds, before retry
                 // TODO better stop job if no carry target can be found?
-            } else if (this.getPosition().sub(this.carryTarget).length() > JOB_ACTION_RANGE) {
+            } else if (this.getPosition().distanceTo(this.carryTarget) > JOB_ACTION_RANGE) {
                 this.moveToTarget(this.carryTarget)
             } else {
                 this.changeActivity(FulfillerActivity.DROPPING, () => {

@@ -22,8 +22,7 @@ export class CollectJob extends PublicJob {
     }
 
     isInArea(x: number, z: number): boolean {
-        const pos = this.getPosition()
-        return pos.sub(new Vector3(x, pos.y, z)).length() < JOB_ACTION_RANGE
+        return this.getPosition().distanceTo(new Vector3(x, this.getPosition().y, z)) < JOB_ACTION_RANGE
     }
 
     isQualified(fulfiller: FulfillerEntity) {

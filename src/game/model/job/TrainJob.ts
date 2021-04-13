@@ -18,7 +18,7 @@ export class TrainJob extends Job {
     }
 
     isInArea(x: number, z: number): boolean {
-        return this.getPosition().sub(new Vector3(x, this.target.y, z)).lengthSq() < Math.pow(TILESIZE / 2, 2)
+        return this.getPosition().distanceToSquared(new Vector3(x, this.target.y, z)) < Math.pow(TILESIZE / 2, 2)
     }
 
 }

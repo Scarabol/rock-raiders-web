@@ -100,7 +100,7 @@ export class GameState {
         let closest = null, minDist = null
         targetBuildings.forEach((b) => {
             const bPos = b.getDropPosition()
-            const dist = new Vector3().copy(position).sub(bPos).lengthSq() // TODO better use pathfinding
+            const dist = position.distanceToSquared(bPos) // TODO better use pathfinding
             if (closest === null || dist < minDist) {
                 closest = b
                 minDist = dist
@@ -113,7 +113,7 @@ export class GameState {
         let closest = null, minDist = null
         this.buildingSites.forEach((b) => {
             const bPos = b.getPosition()
-            const dist = new Vector3().copy(position).sub(bPos).lengthSq()
+            const dist = position.distanceToSquared(bPos)
             if ((closest === null || dist < minDist) && b.needs(collectableType)) {
                 closest = b
                 minDist = dist

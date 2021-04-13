@@ -18,7 +18,7 @@ export class GetToolJob extends Job {
     }
 
     isInArea(x: number, z: number): boolean {
-        return this.getPosition().sub(new Vector3(x, this.target.y, z)).lengthSq() < JOB_ACTION_RANGE
+        return this.getPosition().distanceToSquared(new Vector3(x, this.target.y, z)) < JOB_ACTION_RANGE
     }
 
 }
