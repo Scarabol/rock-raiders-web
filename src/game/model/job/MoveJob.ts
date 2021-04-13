@@ -14,7 +14,7 @@ export class MoveJob extends Job {
         return new Vector3().copy(this.target)
     }
 
-    isInArea(x: number, z: number) {
+    isInArea(x: number, z: number): boolean {
         return this.getPosition().sub(new Vector3(x, this.target.y, z)).lengthSq() < Math.pow(this.fulfiller[0].getSpeed(), 2)
     }
 

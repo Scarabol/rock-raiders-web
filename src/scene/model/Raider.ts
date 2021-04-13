@@ -9,6 +9,30 @@ import { RaiderDiscoveredEvent } from '../../event/WorldLocationEvent'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { RaiderStatsCfg } from '../../cfg/RaiderStatsCfg'
 
+export class RaiderSkills {
+
+    static DRIVER = 'driver'
+    static ENGINEER = 'engineer'
+    static GEOLOGIST = 'geologist'
+    static PILOT = 'pilot'
+    static SAILOR = 'sailor'
+    static DEMOLITION = 'demolition'
+
+}
+
+export class RaiderTools {
+
+    static DRILL = 'drill'
+    static HAMMER = 'hammer'
+    static SHOVEL = 'shovel'
+    static SPANNER = 'SPANNER'
+    static FREEZERGUN = 'freezergun'
+    static LASER = 'laser'
+    static PUSHERGUN = 'pushergun'
+    static BIRDSCARER = 'birdscarer'
+
+}
+
 export class Raider extends FulfillerEntity {
 
     level: number = 0 // TODO same as in BuildingEntity -> move to parent class
@@ -17,7 +41,7 @@ export class Raider extends FulfillerEntity {
     constructor() {
         super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae')
         this.stats = new RaiderStatsCfg(ResourceManager.cfg('Stats', 'Pilot')) // TODO group all stats in single class
-        this.tools = ['drill']
+        this.tools = [RaiderTools.DRILL]
         this.skills = []
         this.pickSphereRadius = this.stats.pickSphere / 2
     }
@@ -81,6 +105,9 @@ export class Raider extends FulfillerEntity {
                     break
                 case FulfillerActivity.REINFORCE:
                     this.setActivity('Reinforce', onChangeDone, iterations)
+                    break
+                case FulfillerActivity.TRAINING:
+                    this.setActivity('Train', onChangeDone, iterations)
                     break
             }
             this.animation.looping = true // TODO make all looping?

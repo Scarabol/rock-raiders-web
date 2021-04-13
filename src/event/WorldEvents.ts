@@ -5,6 +5,7 @@ import { AnimEntity } from '../scene/model/anim/AnimEntity'
 import { Vector3 } from 'three'
 import { Surface } from '../scene/model/map/Surface'
 import { BuildingEntity } from '../scene/model/BuildingEntity'
+import { FulfillerEntity } from '../scene/model/FulfillerEntity'
 
 export class WorldEvent extends GameEvent {
 
@@ -167,6 +168,21 @@ export class BuildingUpgraded extends WorldEvent {
     constructor(building: BuildingEntity) {
         super(BuildingUpgraded.eventKey)
         this.building = building
+    }
+
+}
+
+export class RaiderTrained extends WorldEvent {
+
+    static eventKey = 'trained.raider'
+
+    entity: FulfillerEntity
+    skill: string
+
+    constructor(raider: FulfillerEntity, skill: string) {
+        super(RaiderTrained.eventKey)
+        this.entity = raider
+        this.skill = skill
     }
 
 }

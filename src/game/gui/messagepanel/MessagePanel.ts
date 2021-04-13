@@ -6,7 +6,7 @@ import { TextInfoMessageConfig } from './TextInfoMessageConfig'
 import { EventBus } from '../../../event/EventBus'
 import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
 import { TextInfoMessage } from './TextInfoMessage'
-import { CavernDiscovered, OreFoundEvent } from '../../../event/WorldEvents'
+import { CavernDiscovered, OreFoundEvent, RaiderTrained } from '../../../event/WorldEvents'
 
 export class MessagePanel extends Panel {
 
@@ -39,6 +39,7 @@ export class MessagePanel extends Panel {
         this.msgAirSupplyRunningOut = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
         this.msgGameCompleted = new TextInfoMessage(font, textInfoMessageConfig.textGameCompleted, this.img.width)
         this.msgManTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
+        EventBus.registerEventListener(RaiderTrained.eventKey, () => this.setMessage(this.msgManTrained))
         this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
     }
 

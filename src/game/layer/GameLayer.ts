@@ -12,6 +12,7 @@ import { SurfaceJob, SurfaceJobType } from '../model/job/SurfaceJob'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventManager'
 import { DEV_MODE } from '../../main'
 import { MoveJob } from '../model/job/MoveJob'
+import { Vector3 } from 'three'
 
 export class GameLayer extends ScreenLayer {
 
@@ -39,9 +40,9 @@ export class GameLayer extends ScreenLayer {
                     const surface = this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(intersectionPoint)
                     if (surface) {
                         if (surface.isDrillable()) {
-                            this.createSurfaceJob(SurfaceJobType.DRILL, surface)
+                            this.createSurfaceJob(SurfaceJobType.DRILL, surface, intersectionPoint)
                         } else if (surface.hasRubble()) {
-                            this.createSurfaceJob(SurfaceJobType.CLEAR_RUBBLE, surface)
+                            this.createSurfaceJob(SurfaceJobType.CLEAR_RUBBLE, surface, intersectionPoint)
                         } else if (surface.isWalkable()) {
                             GameState.selectedEntities.forEach((raider: Raider) => raider.setJob(new MoveJob(intersectionPoint)))
                             if (GameState.selectedEntities.length > 0) EventBus.publishEvent(new EntityDeselected())
@@ -75,10 +76,14 @@ export class GameLayer extends ScreenLayer {
         return false
     }
 
-    createSurfaceJob(surfaceJobType: SurfaceJobType, surface: Surface) {
+    createSurfaceJob(surfaceJobType: SurfaceJobType, surface: Surface, intersectionPoint: Vector3) {
         const surfJob = new SurfaceJob(surfaceJobType, surface)
         GameState.selectedEntities.forEach((e: FulfillerEntity) => {
-            if (surfJob.isQualified(e)) e.setJob(surfJob)
+            if (surfJob.isQualified(e)) {
+                e.setJob(surfJob)
+            } else if (surface.isWalkable()) {
+                e.setJob(new MoveJob(intersectionPoint))
+            }
         })
         EventBus.publishEvent(new JobCreateEvent(surfJob))
         surface.updateJobColor()

@@ -6,6 +6,7 @@ import { Dynamite } from '../../../scene/model/collect/Dynamite'
 import { JobType, PublicJob } from './Job'
 import { SurfaceType } from '../../../scene/model/map/SurfaceType'
 import { CollectableEntity } from '../../../scene/model/collect/CollectableEntity'
+import { RaiderSkills, RaiderTools } from '../../../scene/model/Raider'
 
 export class SurfaceJobType {
 
@@ -19,10 +20,10 @@ export class SurfaceJobType {
         this.requiredSkills = requiredSkills
     }
 
-    static readonly DRILL = new SurfaceJobType(0xa0a0a0, ['drill'], [])
-    static readonly REINFORCE = new SurfaceJobType(0x60a060, ['hammer'], [])
-    static readonly BLOW = new SurfaceJobType(0xa06060, [], ['demolition'])
-    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, ['shovel'], [])
+    static readonly DRILL = new SurfaceJobType(0xa0a0a0, [RaiderTools.DRILL], [])
+    static readonly REINFORCE = new SurfaceJobType(0x60a060, [RaiderTools.HAMMER], [])
+    static readonly BLOW = new SurfaceJobType(0xa06060, [], [RaiderSkills.DEMOLITION])
+    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, [RaiderTools.SHOVEL], [])
 
 }
 

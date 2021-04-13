@@ -12,10 +12,12 @@ import { Crystal } from './collect/Crystal'
 import { Ore } from './collect/Ore'
 import { EventBus } from '../../event/EventBus'
 import { CrystalFoundEvent } from '../../event/WorldLocationEvent'
-import { OreFoundEvent } from '../../event/WorldEvents'
+import { OreFoundEvent, RaiderTrained } from '../../event/WorldEvents'
 import { SelectionEvent } from '../../event/LocalEvents'
-import degToRad = MathUtils.degToRad
 import { CollectJob } from '../../game/model/job/CollectJob'
+import { TrainJob } from '../../game/model/job/TrainJob'
+import { GetToolJob } from '../../game/model/job/GetToolJob'
+import degToRad = MathUtils.degToRad
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
@@ -159,6 +161,26 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                     this.stopJob()
                 })
             }
+        } else if (this.job.type === JobType.TRAIN) {
+            if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
+                this.moveToTarget(this.job.getPosition())
+            } else {
+                const trainJob = this.job as TrainJob
+                this.changeActivity(FulfillerActivity.TRAINING, () => { // TODO change to time based training instead of animation length
+                    this.skills.push(trainJob.skill)
+                    EventBus.publishEvent(new RaiderTrained(this, trainJob.skill))
+                    this.job.onJobComplete()
+                    this.stopJob()
+                })
+            }
+        } else if (this.job.type === JobType.GET_TOOL) {
+            if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
+                this.moveToTarget(this.job.getPosition())
+            } else {
+                this.tools.push((this.job as GetToolJob).tool)
+                this.job.onJobComplete()
+                this.stopJob()
+            }
         }
     }
 
@@ -240,5 +262,6 @@ export enum FulfillerActivity {
     PICKING,
     DROPPING,
     REINFORCE,
+    TRAINING,
 
 }

@@ -228,4 +228,8 @@ export class GameState {
         return this.selectionType === SelectionType.BUILDING && this.selectedEntities.length > 0 ? this.selectedEntities[0] as BuildingEntity : null
     }
 
+    static get selectedRaiders(): Raider[] {
+        return (this.selectionType === SelectionType.PILOT || this.selectionType === SelectionType.GROUP) && this.selectedEntities.length > 0 ? this.selectedEntities as Raider[] : []
+    }
+
 }

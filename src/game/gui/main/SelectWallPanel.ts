@@ -8,6 +8,7 @@ import { JobCreateEvent } from '../../../event/WorldEvents'
 import { EntityDeselected, SurfaceSelectedEvent } from '../../../event/LocalEvents'
 import { IconPanelButton } from './IconPanelButton'
 import { Building } from '../../model/entity/building/Building'
+import { RaiderSkills } from '../../../scene/model/Raider'
 
 export class SelectWallPanel extends SelectBasePanel {
 
@@ -17,7 +18,8 @@ export class SelectWallPanel extends SelectBasePanel {
         const itemReinforce = this.addWallMenuItem('Interface_MenuItem_Reinforce', SurfaceJobType.REINFORCE)
         const itemDynamite = this.addWallMenuItem('Interface_MenuItem_Dynamite', SurfaceJobType.BLOW)
         itemDynamite.isDisabled = () => {
-            return !GameState.hasBuildingWithUpgrades(Building.TOOLSTATION, 2)
+            return !GameState.hasBuildingWithUpgrades(Building.TOOLSTATION, 2) &&
+                !GameState.raiders.some((r) => r.hasSkills([RaiderSkills.DEMOLITION]))
             // TODO and NOT has vehicle that can drill hard stone
         }
         const itemDeselect = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig')

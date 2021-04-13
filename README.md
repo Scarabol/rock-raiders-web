@@ -21,7 +21,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ## Development Roadmap
 
 ### Near
-- Raider Training
 - Spiders, Bats
 - Carry energy crystals to power stations
 - Electric fences and power consumption/outage

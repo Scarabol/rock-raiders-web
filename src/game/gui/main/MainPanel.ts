@@ -15,6 +15,7 @@ import { SelectVehiclePanel } from './SelectVehiclePanel'
 import { IconSubPanel } from './IconSubPanel'
 import { Panel } from '../base/Panel'
 import { TrainRaiderPanel } from './TrainRaiderPanel'
+import { GetToolPanel } from './GetToolPanel'
 
 export class MainPanel extends Panel {
 
@@ -42,6 +43,8 @@ export class MainPanel extends Panel {
         const selectRaiderPanel = this.addSubPanel(new SelectRaiderPanel(this.mainPanel))
         const trainRaiderPanel = this.addSubPanel(new TrainRaiderPanel(selectRaiderPanel))
         selectRaiderPanel.trainItem.onClick = () => selectRaiderPanel.toggleState(() => trainRaiderPanel.toggleState())
+        const getToolPanel = this.addSubPanel(new GetToolPanel(selectRaiderPanel))
+        selectRaiderPanel.getToolItem.onClick = () => selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
         const selectVehiclePanel = this.addSubPanel(new SelectVehiclePanel(this.mainPanel))
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
         teleportRaider.isDisabled = () => GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).length < 1
