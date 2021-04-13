@@ -54,6 +54,14 @@ export abstract class Job {
         return true
     }
 
+    isQualifiedWithTool(fulfiller: FulfillerEntity): string {
+        return null
+    }
+
+    isQualifiedWithTraining(fulfiller: FulfillerEntity): string {
+        return null
+    }
+
     onJobComplete() {
         this.jobstate = JobState.COMPLETE
     }

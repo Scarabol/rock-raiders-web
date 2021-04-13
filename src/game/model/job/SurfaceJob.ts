@@ -43,6 +43,14 @@ export class SurfaceJob extends PublicJob {
             && (!this.workType.requiredSkill || fulfiller.hasSkill(this.workType.requiredSkill))
     }
 
+    isQualifiedWithTool(fulfiller: FulfillerEntity): string {
+        return this.workType.requiredTool
+    }
+
+    isQualifiedWithTraining(fulfiller: FulfillerEntity): string {
+        return this.workType.requiredSkill
+    }
+
     getPosition(): Vector3 {
         if (this.workType === SurfaceJobType.CLEAR_RUBBLE) {
             return this.surface.getCenterWorld()

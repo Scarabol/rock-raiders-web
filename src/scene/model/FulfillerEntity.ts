@@ -25,6 +25,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     selected: boolean
     workInterval = null
     job: Job = null
+    followUpJob: Job = null
     activity: FulfillerActivity = null
     jobSubPos: Vector3 = null
     tools: string[] = []
@@ -70,8 +71,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                             }
                             this.changeActivity(FulfillerActivity.STANDING)
                         } else {
-                            this.job.onJobComplete()
-                            this.stopJob()
+                            this.completeJob()
                         }
                     })
                 }
@@ -102,8 +102,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                     this.moveToTarget(this.job.getPosition())
                 } else {
                     this.changeActivity(FulfillerActivity.REINFORCE, () => {
-                        this.job.onJobComplete()
-                        this.stopJob()
+                        this.completeJob()
                     }, 3)
                 }
             } else if (surfaceJobType === SurfaceJobType.BLOW) {
@@ -124,8 +123,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 } else {
                     this.changeActivity(FulfillerActivity.DROPPING, () => {
                         this.dropItem()
-                        this.job.onJobComplete()
-                        this.stopJob()
+                        this.completeJob()
                     })
                 }
             }
@@ -148,8 +146,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             } else {
                 this.changeActivity(FulfillerActivity.DROPPING, () => {
                     this.dropItem()
-                    this.job.onJobComplete()
-                    this.stopJob()
+                    this.completeJob()
                 })
             }
         } else if (this.job.type === JobType.MOVE) {
@@ -157,8 +154,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 this.moveToTarget(this.job.getPosition())
             } else {
                 this.changeActivity(FulfillerActivity.STANDING, () => {
-                    this.job.onJobComplete()
-                    this.stopJob()
+                    this.completeJob()
                 })
             }
         } else if (this.job.type === JobType.TRAIN) {
@@ -169,8 +165,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 this.changeActivity(FulfillerActivity.TRAINING, () => { // TODO change to time based training instead of animation length
                     this.skills.push(trainJob.skill)
                     EventBus.publishEvent(new RaiderTrained(this, trainJob.skill))
-                    this.job.onJobComplete()
-                    this.stopJob()
+                    this.completeJob()
                 })
             }
         } else if (this.job.type === JobType.GET_TOOL) {
@@ -178,14 +173,12 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 this.moveToTarget(this.job.getPosition())
             } else {
                 this.tools.push((this.job as GetToolJob).tool)
-                this.job.onJobComplete()
-                this.stopJob()
+                this.completeJob()
             }
         } else if (this.job.type === JobType.EAT) {
             this.changeActivity(FulfillerActivity.EATING, () => {
                 // TODO implement endurance fill eat level
-                this.job.onJobComplete()
-                this.stopJob()
+                this.completeJob()
             })
         }
     }
@@ -213,19 +206,33 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.carries.group.position.set(0, 0, 0)
     }
 
-    setJob(job: Job) {
+    setJob(job: Job, followUpJob: Job = null) {
         if (this.job !== job) this.stopJob()
         if (job.type === JobType.SURFACE) this.dropItem()
         this.job = job
         if (this.job) this.job.assign(this)
+        this.followUpJob = followUpJob
+        if (this.followUpJob) this.followUpJob.assign(this)
+    }
+
+    private completeJob() {
+        this.job.onJobComplete()
+        this.job.unassign(this)
+        this.jobSubPos = null
+        this.carryTarget = null
+        this.job = this.followUpJob
+        this.followUpJob = null
+        this.changeActivity(FulfillerActivity.STANDING)
     }
 
     stopJob() {
         if (!this.job) return
         this.job.unassign(this)
+        if (this.followUpJob) this.followUpJob.unassign(this)
         this.jobSubPos = null
         this.carryTarget = null
         this.job = null
+        this.followUpJob = null
         this.changeActivity(FulfillerActivity.STANDING)
     }
 
