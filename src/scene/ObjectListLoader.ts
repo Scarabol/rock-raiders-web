@@ -63,16 +63,24 @@ export class ObjectListLoader {
                 }
                 // TODO rotate building with normal vector of surface
                 worldMgr.sceneManager.scene.add(entity.group)
-                const path1Surface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position)
-                path1Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING
-                path1Surface.updateTexture()
-                entity.surfaces.push(path1Surface)
+                const primaryPathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position)
+                primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
+                primaryPathSurface.updateTexture()
+                entity.surfaces.push(primaryPathSurface)
+                if (building === Building.POWER_STATION) {
+                    const secondaryOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading + Math.PI / 2)
+                    secondaryOffset.add(entity.group.position)
+                    const secondarySurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(secondaryOffset)
+                    secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
+                    secondarySurface.updateTexture()
+                    entity.surfaces.push(secondarySurface)
+                }
                 const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading - Math.PI)
                 pathOffset.add(entity.group.position)
-                const path2Surface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
-                path2Surface.surfaceType = SurfaceType.POWER_PATH_BUILDING
-                path2Surface.updateTexture()
-                entity.surfaces.push(path2Surface)
+                const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
+                pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
+                pathSurface.updateTexture()
+                entity.surfaces.push(pathSurface)
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 worldMgr.addCollectable(new Crystal(), worldX, worldZ)
             } else {
