@@ -258,17 +258,29 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
 }
 
-export enum FulfillerActivity {
+export class FulfillerActivity {
 
-    STANDING,
-    MOVING,
-    MOVING_RUBBLE,
-    DRILLING,
-    SHOVELING,
-    PICKING,
-    DROPPING,
-    REINFORCE,
-    TRAINING,
-    EATING,
+    static STANDING = new FulfillerActivity('Stand', 'StandCarry')
+    static MOVING = new FulfillerActivity('Run', 'Carry')
+    static MOVING_RUBBLE = new FulfillerActivity('Routerubble', 'Carryrubble')
+    static DRILLING = new FulfillerActivity('Drill')
+    static SHOVELING = new FulfillerActivity('ClearRubble')
+    static PICKING = new FulfillerActivity('Pickup')
+    static DROPPING = new FulfillerActivity('Place')
+    static REINFORCE = new FulfillerActivity('Reinforce')
+    static TRAINING = new FulfillerActivity('train')
+    static EATING = new FulfillerActivity('eat')
+
+    value: string
+    carryValue: string
+
+    constructor(value: string, carryValue: string = null) {
+        this.value = value
+        this.carryValue = carryValue
+    }
+
+    getValue(carries: boolean) {
+        return carries ? (this.carryValue || this.value) : this.value
+    }
 
 }

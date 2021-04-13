@@ -69,51 +69,8 @@ export class Raider extends FulfillerEntity {
         if (onChangeDone) onChangeDone.bind(this)
         if (this.activity !== activity) {
             this.activity = activity
-            switch (this.activity) {
-                case FulfillerActivity.STANDING:
-                    if (this.carries) {
-                        this.setActivity('StandCarry', onChangeDone, iterations)
-                    } else {
-                        this.setActivity('Stand', onChangeDone, iterations)
-                    }
-                    break
-                case FulfillerActivity.MOVING:
-                    if (this.carries) {
-                        this.setActivity('Carry', onChangeDone, iterations)
-                    } else {
-                        this.setActivity('Run', onChangeDone, iterations)
-                    }
-                    break
-                case FulfillerActivity.MOVING_RUBBLE:
-                    if (this.carries) {
-                        this.setActivity('Carryrubble', onChangeDone, iterations)
-                    } else {
-                        this.setActivity('Routerubble', onChangeDone, iterations)
-                    }
-                    break
-                case FulfillerActivity.DRILLING:
-                    this.setActivity('Drill', onChangeDone, iterations)
-                    break
-                case FulfillerActivity.SHOVELING:
-                    this.setActivity('ClearRubble', onChangeDone, iterations)
-                    break
-                case FulfillerActivity.PICKING:
-                    this.setActivity('Pickup', onChangeDone, iterations)
-                    break
-                case FulfillerActivity.DROPPING:
-                    this.setActivity('Place', onChangeDone, iterations)
-                    break
-                case FulfillerActivity.REINFORCE:
-                    this.setActivity('Reinforce', onChangeDone, iterations)
-                    break
-                case FulfillerActivity.TRAINING:
-                    this.setActivity('Train', onChangeDone, iterations)
-                    break
-                case FulfillerActivity.EATING:
-                    this.setActivity('Eat', onChangeDone, iterations)
-                    break
-            }
-            this.animation.looping = true // TODO make all looping?
+            this.setActivity(this.activity.getValue(!!this.carries), onChangeDone, iterations)
+            this.animation.looping = true
         }
     }
 
