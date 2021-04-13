@@ -16,6 +16,7 @@ import { IconSubPanel } from './IconSubPanel'
 import { Panel } from '../base/Panel'
 import { TrainRaiderPanel } from './TrainRaiderPanel'
 import { GetToolPanel } from './GetToolPanel'
+import { IconPanelButtonLabel } from './IconPanelButtonLabel'
 
 export class MainPanel extends Panel {
 
@@ -59,7 +60,8 @@ export class MainPanel extends Panel {
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) teleportRaider.updateState()
         })
         teleportRaider.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders + 1))
-        // TODO add decrease requested raider spawn option
+        // TODO add decrease requested raider spawn option (needs right click for gui elements)
+        teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding')
         buildingItem.disabled = false
         buildingItem.onClick = () => this.mainPanel.toggleState(() => buildingPanel.toggleState())

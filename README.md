@@ -58,7 +58,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Teleport In animation for buildings at level start missing
 
 ### Cosmetics
-- Requested number of raiders not shown in icon panel
 - No tooltips
 - Cursor does not react on targeted object
 - Loading screen does not resize with window

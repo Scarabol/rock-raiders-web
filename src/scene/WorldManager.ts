@@ -157,7 +157,7 @@ export class WorldManager {
         if (GameState.raiders.length >= GameState.getMaxRaiders()) return
         const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).filter((b) => !b.spawning)
         for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
-            GameState.requestedRaiders--
+            EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders - 1))
             const station = spawnBuildings[c]
             station.spawning = true
             const raider = new Raider()
