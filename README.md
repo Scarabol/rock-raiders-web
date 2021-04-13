@@ -22,22 +22,22 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near
 - Spiders, Bats
-- Carry energy crystals to power stations
+- Carry energy crystals primarily to power stations
 - Electric fences and power consumption/outage
 - Air consumption and production
+- Bricks and brick refinery
+- Actual building and more training options
 
 ### Mid
-- Brick refinery
-- All other buildings
-- Damage
+- Damage and show health bar
 - Teleport up on demand or at bad health
 - Vehicles
-- Raider commands (eat, board, pickup, drop, grab, train...)
-- Radar map
+- Raider commands (board, pickup, drop, grab...)
+- Radar map and Geologists
+- Alarm mode and shooting
 
 ### Far
-- Alarm mode and shooting
-- Monsters
+- Rock-Monsters and Slugs
 - Sounds and music
 - Level score shown and level unlocking
 - Save and load
@@ -63,14 +63,14 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Loading screen does not resize with window
 - Power paths not rotated correctly to nearby buildings
 
-## Technicl Debt
+## Technical Debt
 
 - refactor terrain height handling
 -- introduce methode to determine terrain height, without ray intersection
 -- provide option to determine location "on" the terrain by x and z coordinate
 
 ## Development
-To start development environment, please follow the following steps:
+To start development environment, please take the following steps:
 
 ```bash
 git clone https://github.com/scarabol/rock-raiders-web.git
