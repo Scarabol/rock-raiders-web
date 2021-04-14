@@ -1,7 +1,7 @@
 import { AnimEntity } from './anim/AnimEntity'
 import { Vector3 } from 'three'
 import { AnimationEntityType } from './anim/AnimationEntityType'
-import { FulfillerActivity } from './FulfillerEntity'
+import { BaseActivity } from './activities/BaseActivity'
 
 export abstract class MovableEntity extends AnimEntity {
 
@@ -30,16 +30,14 @@ export abstract class MovableEntity extends AnimEntity {
             this.pathToTarget = this.findPathToTarget(target)
             if (!this.pathToTarget) return false
         }
-        if (this.isOnRubble()) {
-            this.changeActivity(FulfillerActivity.MOVING_RUBBLE)
-        } else {
-            this.changeActivity(FulfillerActivity.MOVING)
-        }
+        this.changeActivity(this.getRouteActivity())
         this.group.position.add(this.determineStep())
         this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z)
         this.group.lookAt(new Vector3(this.pathToTarget[0].x, this.group.position.y, this.pathToTarget[0].z))
         return true
     }
+
+    abstract getRouteActivity(): BaseActivity
 
     findPathToTarget(target: Vector3): Vector3[] {
         return [target]
@@ -64,9 +62,6 @@ export abstract class MovableEntity extends AnimEntity {
 
     isOnPath(): boolean {
         return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).isPath()
-    }
-
-    changeActivity(activity: FulfillerActivity, onChangeDone = null, durationTimeMs: number = null) {
     }
 
 }

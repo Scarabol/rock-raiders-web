@@ -6,6 +6,7 @@ import { Carryable } from './Carryable'
 import { Surface } from '../map/Surface'
 import { Vector3 } from 'three'
 import { GameState } from '../../../game/model/GameState'
+import { DynamiteActivity } from '../activities/DynamiteActivity'
 
 export class Dynamite extends AnimEntity implements Carryable {
 
@@ -13,6 +14,7 @@ export class Dynamite extends AnimEntity implements Carryable {
 
     constructor() {
         super(ResourceManager.getAnimationEntityType('MiscAnims/Dynamite/Dynamite.ae'))
+        this.setActivity(DynamiteActivity.Normal)
     }
 
     getTargetPos(): Vector3 {
@@ -32,7 +34,7 @@ export class Dynamite extends AnimEntity implements Carryable {
         const center = this.targetSurface.getCenterWorld()
         center.y = this.group.position.y
         this.group.lookAt(center)
-        this.setActivity('TickDown', () => {
+        this.setActivity(DynamiteActivity.TickDown, () => {
             this.worldMgr.sceneManager.scene.remove(this.group)
             this.targetSurface.collapse()
             // TODO add explosion animation

@@ -21,6 +21,7 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { PriorityList } from '../game/model/job/PriorityList'
 import { CollectJob } from '../game/model/job/CollectJob'
 import { MoveJob } from '../game/model/job/MoveJob'
+import { RaiderActivity } from './model/activities/RaiderActivity'
 import degToRad = MathUtils.degToRad
 
 export class WorldManager {
@@ -47,7 +48,6 @@ export class WorldManager {
             const dynamite = new Dynamite()
             dynamite.targetSurface = event.surface
             dynamite.worldMgr = this
-            dynamite.setActivity('Normal')
             dynamite.group.position.copy(pos)
             this.sceneManager.scene.add(dynamite.group)
             EventBus.publishEvent(new JobCreateEvent(new DynamiteJob(event.surface, dynamite)))
@@ -160,9 +160,9 @@ export class WorldManager {
             station.spawning = true
             const raider = new Raider()
             raider.worldMgr = this
-            raider.setActivity('TeleportIn', () => {
+            raider.setActivity(RaiderActivity.TeleportIn, () => {
                 station.spawning = false
-                raider.setActivity('Stand')
+                raider.setActivity(RaiderActivity.Stand)
                 raider.createPickSphere()
                 const walkOutPos = station.getPosition().add(new Vector3(0, 0, TILESIZE * 3 / 4 + getRandom(TILESIZE / 2))
                     .applyEuler(station.getRotation()).applyAxisAngle(new Vector3(0, 1, 0), degToRad(-10 + getRandom(20))))

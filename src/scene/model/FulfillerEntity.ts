@@ -2,22 +2,12 @@ import { MovableEntity } from './MovableEntity'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Job, JobType } from '../../game/model/job/Job'
-import { MathUtils, Vector3 } from 'three'
-import { JOB_ACTION_RANGE, NATIVE_FRAMERATE } from '../../main'
-import { clearIntervalSafe, getRandom, getRandomSign } from '../../core/Util'
+import { Vector3 } from 'three'
+import { NATIVE_FRAMERATE } from '../../main'
+import { clearIntervalSafe } from '../../core/Util'
 import { Carryable } from './collect/Carryable'
-import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob'
-import { SurfaceType } from './map/SurfaceType'
-import { Crystal } from './collect/Crystal'
-import { Ore } from './collect/Ore'
-import { EventBus } from '../../event/EventBus'
-import { CrystalFoundEvent } from '../../event/WorldLocationEvent'
-import { OreFoundEvent, RaiderTrained } from '../../event/WorldEvents'
 import { SelectionEvent } from '../../event/LocalEvents'
-import { CollectJob } from '../../game/model/job/CollectJob'
-import { TrainJob } from '../../game/model/job/TrainJob'
-import { GetToolJob } from '../../game/model/job/GetToolJob'
-import degToRad = MathUtils.degToRad
+import { BaseActivity } from './activities/BaseActivity'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
@@ -26,7 +16,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     workInterval = null
     job: Job = null
     followUpJob: Job = null
-    activity: FulfillerActivity = null
     jobSubPos: Vector3 = null
     tools: string[] = []
     skills: string[] = []
@@ -44,154 +33,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.workInterval = clearIntervalSafe(this.workInterval)
     }
 
-    work() {
-        if (!this.job || this.selected) return
-        if (this.job.type === JobType.SURFACE) {
-            const surfJob = this.job as SurfaceJob
-            const surfaceJobType = surfJob.workType
-            if (surfaceJobType === SurfaceJobType.DRILL) {
-                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                    this.moveToTarget(this.job.getPosition())
-                } else {
-                    let drillTimeMs = null
-                    if (surfJob.surface.surfaceType === SurfaceType.HARD_ROCK) {
-                        drillTimeMs = this.stats.hardDrillTime[this.level] * 1000
-                    } else if (surfJob.surface.surfaceType === SurfaceType.LOOSE_ROCK) {
-                        drillTimeMs = this.stats.looseDrillTime[this.level] * 1000
-                    } else if (surfJob.surface.surfaceType === SurfaceType.DIRT) {
-                        drillTimeMs = this.stats.soilDrillTime[this.level] * 1000
-                    } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM ||
-                        surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                        drillTimeMs = this.stats.seamDrillTime[this.level] * 1000
-                    }
-                    if (drillTimeMs === 0) console.warn('According to cfg this entity cannot drill this material')
-                    this.changeActivity(FulfillerActivity.DRILLING, () => {
-                        if (surfJob.surface.seamLevel > 0) {
-                            surfJob.surface.seamLevel--
-                            const vec = new Vector3().copy(this.getPosition()).sub(surfJob.surface.getCenterWorld())
-                                .multiplyScalar(0.3 + getRandom(3) / 10)
-                                .applyAxisAngle(new Vector3(0, 1, 0), degToRad(-10 + getRandom(20)))
-                                .add(this.getPosition()) // TODO set y to terrain height at this position?
-                            if (surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                                this.worldMgr.addCollectable(new Crystal(), vec.x, vec.z)
-                                EventBus.publishEvent(new CrystalFoundEvent(vec))
-                            } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM) {
-                                this.worldMgr.addCollectable(new Ore(), vec.x, vec.z)
-                                EventBus.publishEvent(new OreFoundEvent())
-                            }
-                            this.changeActivity(FulfillerActivity.STANDING)
-                        } else {
-                            this.completeJob()
-                        }
-                    }, drillTimeMs)
-                }
-            } else if (surfaceJobType === SurfaceJobType.CLEAR_RUBBLE) {
-                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                    this.moveToTarget(this.job.getPosition())
-                } else {
-                    if (!this.jobSubPos) {
-                        const jobPos = this.job.getPosition()
-                        this.jobSubPos = new Vector3(jobPos.x + getRandomSign() * getRandom(10), 0, jobPos.z + getRandomSign() * getRandom(10))
-                        this.jobSubPos.y = this.worldMgr.getTerrainHeight(this.jobSubPos.x, this.jobSubPos.z)
-                    }
-                    if (this.jobSubPos.distanceTo(this.getPosition()) > this.getSpeed()) {
-                        this.moveToTarget(this.jobSubPos)
-                    } else {
-                        this.changeActivity(FulfillerActivity.SHOVELING, () => {
-                            this.job.onJobComplete()
-                            if (surfJob.surface.hasRubble()) {
-                                this.jobSubPos = null
-                            } else {
-                                this.stopJob()
-                            }
-                        })
-                    }
-                }
-            } else if (surfaceJobType === SurfaceJobType.REINFORCE) {
-                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                    this.moveToTarget(this.job.getPosition())
-                } else {
-                    this.changeActivity(FulfillerActivity.REINFORCE, () => {
-                        this.completeJob()
-                    }, 2700)
-                }
-            } else if (surfaceJobType === SurfaceJobType.BLOW) {
-                const bj = this.job as DynamiteJob
-                if (this.carries !== bj.dynamite) {
-                    this.dropItem()
-                    if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                        this.moveToTarget(this.job.getPosition())
-                    } else {
-                        this.changeActivity(FulfillerActivity.PICKING, () => {
-                            this.pickupItem(bj.dynamite)
-                        })
-                    }
-                } else if (!this.carryTarget) {
-                    this.carryTarget = bj.surface.getDigPositions()[0]
-                } else if (this.getPosition().distanceTo(this.carryTarget) > JOB_ACTION_RANGE) {
-                    this.moveToTarget(this.carryTarget)
-                } else {
-                    this.changeActivity(FulfillerActivity.DROPPING, () => {
-                        this.dropItem()
-                        this.completeJob()
-                    })
-                }
-            }
-        } else if (this.job.type === JobType.CARRY) {
-            const carryJob = this.job as CollectJob
-            if (this.carries !== carryJob.item) {
-                this.dropItem()
-                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                    this.moveToTarget(this.job.getPosition())
-                } else {
-                    this.changeActivity(FulfillerActivity.PICKING, () => {
-                        this.pickupItem(carryJob.item)
-                    })
-                }
-            } else if (!this.carryTarget) {
-                this.carryTarget = this.carries.getTargetPos() // TODO sleep 5 seconds, before retry
-                // TODO better stop job if no carry target can be found?
-            } else if (this.getPosition().distanceTo(this.carryTarget) > JOB_ACTION_RANGE) {
-                this.moveToTarget(this.carryTarget)
-            } else {
-                this.changeActivity(FulfillerActivity.DROPPING, () => {
-                    this.dropItem()
-                    this.completeJob()
-                })
-            }
-        } else if (this.job.type === JobType.MOVE) {
-            if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                this.moveToTarget(this.job.getPosition())
-            } else {
-                this.changeActivity(FulfillerActivity.STANDING, () => {
-                    this.completeJob()
-                })
-            }
-        } else if (this.job.type === JobType.TRAIN) {
-            if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                this.moveToTarget(this.job.getPosition())
-            } else {
-                const trainJob = this.job as TrainJob
-                this.changeActivity(FulfillerActivity.TRAINING, () => { // TODO change to time based training instead of animation length
-                    this.skills.push(trainJob.skill)
-                    EventBus.publishEvent(new RaiderTrained(this, trainJob.skill))
-                    this.completeJob()
-                })
-            }
-        } else if (this.job.type === JobType.GET_TOOL) {
-            if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                this.moveToTarget(this.job.getPosition())
-            } else {
-                this.tools.push((this.job as GetToolJob).tool)
-                this.completeJob()
-            }
-        } else if (this.job.type === JobType.EAT) {
-            this.changeActivity(FulfillerActivity.EATING, () => {
-                // TODO implement endurance fill eat level
-                this.completeJob()
-            })
-        }
-    }
+    abstract work()
 
     moveToTarget(target): boolean {
         const result = super.moveToTarget(target)
@@ -225,15 +67,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (this.followUpJob) this.followUpJob.assign(this)
     }
 
-    private completeJob() {
-        this.job.onJobComplete()
-        this.job.unassign(this)
-        this.jobSubPos = null
-        this.carryTarget = null
-        this.job = this.followUpJob
-        this.followUpJob = null
-        this.changeActivity(FulfillerActivity.STANDING)
-    }
+    abstract getStandActivity(): BaseActivity
 
     stopJob() {
         if (!this.job) return
@@ -243,7 +77,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.carryTarget = null
         this.job = null
         this.followUpJob = null
-        this.changeActivity(FulfillerActivity.STANDING)
+        this.changeActivity(this.getStandActivity())
     }
 
     hasTool(toolname: string) {
@@ -266,32 +100,5 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     abstract select(): SelectionEvent;
 
     abstract getSelectionCenter(): Vector3;
-
-}
-
-export class FulfillerActivity {
-
-    static STANDING = new FulfillerActivity('Stand', 'StandCarry')
-    static MOVING = new FulfillerActivity('Run', 'Carry')
-    static MOVING_RUBBLE = new FulfillerActivity('Routerubble', 'Carryrubble')
-    static DRILLING = new FulfillerActivity('Drill')
-    static SHOVELING = new FulfillerActivity('ClearRubble')
-    static PICKING = new FulfillerActivity('Pickup')
-    static DROPPING = new FulfillerActivity('Place')
-    static REINFORCE = new FulfillerActivity('Reinforce')
-    static TRAINING = new FulfillerActivity('train')
-    static EATING = new FulfillerActivity('eat')
-
-    value: string
-    carryValue: string
-
-    constructor(value: string, carryValue: string = null) {
-        this.value = value
-        this.carryValue = carryValue
-    }
-
-    getValue(carries: boolean) {
-        return carries ? (this.carryValue || this.value) : this.value
-    }
 
 }

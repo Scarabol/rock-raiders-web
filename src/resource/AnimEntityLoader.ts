@@ -4,6 +4,7 @@ import { ResourceManager } from './ResourceManager'
 import { LWOLoader } from './LWOLoader'
 import { LWSCLoader } from './LWSCLoader'
 import { SceneManager } from '../scene/SceneManager'
+import { AnimClip } from '../scene/model/anim/AnimClip'
 
 export class AnimEntityLoader {
 
@@ -71,7 +72,7 @@ export class AnimEntityLoader {
             Object.keys(activities).forEach((activity) => {
                 try {
                     let keyname = iGet(activities, activity)
-                    const act = iGet(root, keyname)
+                    const act: {file: string, transcoef: number, lwsfile: boolean, animation: AnimClip} = iGet(root, keyname)
                     const file = iGet(act, 'FILE')
                     const isLws = iGet(act, 'LWSFILE') === true
                     const transcoef = iGet(act, 'TRANSCOEF')
@@ -81,7 +82,7 @@ export class AnimEntityLoader {
                         act.animation = new LWSCLoader(path).parse(content)
                         act.animation.looping = looping
                         act.animation.transcoef = transcoef ? Number(transcoef) : 1;
-                        (entityType.activities)[keyname] = act
+                        entityType.activities.set(activity.toLowerCase(), act)
                     } else {
                         console.error('Found activity which is not an LWS file')
                     }

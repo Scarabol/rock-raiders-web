@@ -5,6 +5,7 @@ import { AnimationEntityType } from './AnimationEntityType'
 import { BaseEntity } from '../BaseEntity'
 import { AnimSubObj } from './AnimSubObj'
 import { createContext } from '../../../core/ImageHelper'
+import { BaseActivity } from '../activities/BaseActivity'
 
 export abstract class AnimEntity extends BaseEntity {
 
@@ -16,55 +17,69 @@ export abstract class AnimEntity extends BaseEntity {
     pickSphere: Mesh = null
     pickSphereRadius: number = 10 / 2
     carryJoint: Object3D = null
+    activity: BaseActivity = null
 
     protected constructor(entityType: AnimationEntityType) {
         super()
         this.entityType = entityType
     }
 
-    setActivity(keyname, onAnimationDone = null, durationTimeMs = null) {
-        if (this.animationTimeout) {
-            clearTimeout(this.animationTimeout)
-            this.animationTimeout = null
+    changeActivity(activity: BaseActivity, onChangeDone = null, durationTimeMs: number = null) {
+        if (onChangeDone) onChangeDone.bind(this)
+        if (this.activity !== activity) {
+            this.activity = activity
+            this.setActivity(this.activity, onChangeDone, durationTimeMs)
         }
-        const activity = iGet(this.entityType.activities, keyname)
-        if (!activity) {
-            console.error('Activity \'' + keyname + '\' unknown')
+    }
+
+    setActivity(activity: BaseActivity, onAnimationDone = null, durationTimeMs = null) {
+        let activityKey = activity.activityKey
+        let act = this.entityType.activities.get(activityKey.toLowerCase())
+        if (!act) { // find by prefix
+            this.entityType.activities.forEach((a, key) => {
+                if (activityKey.toLowerCase().startsWith(key)) {
+                    act = a
+                }
+            })
+        }
+        if (!act?.animation) {
+            console.warn('Activity ' + activityKey + ' unknown or has no animation defined yet')
             console.log(this.entityType.activities)
             return
         }
+        this.setAnimation(act?.animation, onAnimationDone, durationTimeMs)
+    }
+
+    setAnimation(animation: AnimClip, onAnimationDone = null, durationTimeMs = null) {
+        this.animation = animation
+        this.animation.looping = true
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
-        if (activity.animation) {
-            this.animation = activity.animation
-            this.group.remove(...this.poly)
-            this.poly = []
-            const carries = (this.carryJoint && this.carryJoint.children) || []
-            this.carryJoint = null
-            // bodies are defined in animation and second in high/medium/low poly groups
-            this.animation.bodies.forEach((body) => {
-                let model: Object3D = iGet(this.entityType.highPoly, body.name)
-                if (!model) model = iGet(this.entityType.mediumPoly, body.name)
-                if (!model) model = body.model
-                const polyModel = model.clone(true)
-                this.poly.push(polyModel)
-                if (this.entityType.carryNullName && body.name && this.entityType.carryNullName.toLowerCase() === body.name.toLowerCase()) {
-                    this.carryJoint = polyModel
-                    if (carries.length > 0) this.carryJoint.add(...carries)
-                }
-            })
-            this.animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
-                const polyPart = this.poly[index]
-                const parentInd = body.parentObjInd
-                if (parentInd !== undefined && parentInd !== null) { // can be 0
-                    this.poly[parentInd].add(polyPart)
-                } else {
-                    this.group.add(polyPart)
-                }
-            })
-            this.animate(0, onAnimationDone, durationTimeMs)
-        } else {
-            console.warn('Activity ' + keyname + ' has no animation defined yet')
-        }
+        this.group.remove(...this.poly)
+        this.poly = []
+        const carries = (this.carryJoint && this.carryJoint.children) || []
+        this.carryJoint = null
+        // bodies are defined in animation and second in high/medium/low poly groups
+        this.animation.bodies.forEach((body) => {
+            let model: Object3D = iGet(this.entityType.highPoly, body.name)
+            if (!model) model = iGet(this.entityType.mediumPoly, body.name)
+            if (!model) model = body.model
+            const polyModel = model.clone(true)
+            this.poly.push(polyModel)
+            if (this.entityType.carryNullName && body.name && this.entityType.carryNullName.toLowerCase() === body.name.toLowerCase()) {
+                this.carryJoint = polyModel
+                if (carries.length > 0) this.carryJoint.add(...carries)
+            }
+        })
+        this.animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
+            const polyPart = this.poly[index]
+            const parentInd = body.parentObjInd
+            if (parentInd !== undefined && parentInd !== null) { // can be 0
+                this.poly[parentInd].add(polyPart)
+            } else {
+                this.group.add(polyPart)
+            }
+        })
+        this.animate(0, onAnimationDone, durationTimeMs)
     }
 
     animate(frameIndex, onAnimationDone, durationTimeMs) {
