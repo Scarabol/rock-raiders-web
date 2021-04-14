@@ -464,15 +464,17 @@ export class LWOLoader {
                         let filename = getFilename(textureFilepath)
                         const textureFilename = this.path + filename
                         if (sequenceTexture) {
-                            const match = textureFilename.match(/(\D+)0+(\d+)\..+/)
+                            const match = textureFilename.match(/(.+\D)0+(\d+)\..+/)
                             const sequenceNames = ResourceManager.filterTextureSequenceNames(match[1])
-                            let seqNum = 0
-                            setInterval(() => { // TODO need to keep track on these intervals?
-                                material.map = ResourceManager.getTexture(sequenceNames[seqNum])
-                                seqNum++
-                                if (seqNum >= sequenceNames.length) seqNum = 0
-                            }, 1000 / 5) // TODO 5? FPS for texture animations?
-                            material.transparent = true
+                            if (sequenceNames) {
+                                let seqNum = 0
+                                setInterval(() => { // TODO need to keep track on these intervals?
+                                    material.map = ResourceManager.getTexture(sequenceNames[seqNum])
+                                    seqNum++
+                                    if (seqNum >= sequenceNames.length) seqNum = 0
+                                }, 1000 / 5) // TODO 5? FPS for texture animations?
+                                material.transparent = true
+                            }
                         }
                         material.map = ResourceManager.getTexture(textureFilename)
                         material.alphaTest = material.transparent ? 0 : 0.5

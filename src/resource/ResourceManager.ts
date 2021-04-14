@@ -70,7 +70,14 @@ export class ResourceManager {
     static filterTextureSequenceNames(basename: string): string[] {
         const lBasename = basename.toLowerCase()
         const result = Object.keys(this.resourceByName).filter((name) => name.startsWith(lBasename))
-        return result.length > 0 ? result : ResourceManager.filterTextureSequenceNames('world/shared/' + getFilename(basename))
+        if (result.length > 0) {
+            return result
+        } else if (!lBasename.startsWith('world/shared/')) {
+            return ResourceManager.filterTextureSequenceNames('world/shared/' + getFilename(basename))
+        } else {
+            console.warn('Texture sequence not found: ' + basename)
+            return null
+        }
     }
 
     static getResource(resourceName: string): any {
