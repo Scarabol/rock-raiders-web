@@ -7,6 +7,7 @@
  */
 import { GameResultState, GameState } from '../game/model/GameState'
 import { Building } from '../game/model/entity/building/Building'
+import { clearIntervalSafe } from './Util'
 
 export class NerpRunner {
 
@@ -38,8 +39,7 @@ export class NerpRunner {
     }
 
     pauseExecution() {
-        if (this.nerpInterval) clearInterval(this.nerpInterval)
-        this.nerpInterval = null
+        this.nerpInterval = clearIntervalSafe(this.nerpInterval)
     }
 
     /**

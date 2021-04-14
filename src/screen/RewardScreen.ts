@@ -6,6 +6,7 @@ import { GameResultState, GameState } from '../game/model/GameState'
 import { BitmapFont } from '../core/BitmapFont'
 import { RewardScreenButton } from '../menu/RewardScreenButton'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventManager'
+import { clearTimeoutSafe } from '../core/Util'
 
 export class RewardScreen extends BaseScreen {
 
@@ -48,7 +49,7 @@ export class RewardScreen extends BaseScreen {
         this.resultsLayer = this.addLayer(new ScaledLayer())
         this.resultsLayer.handlePointerEvent = ((eventType) => {
             if (eventType === POINTER_EVENT.UP) {
-                if (this.uncoverTimeout) clearTimeout(this.uncoverTimeout)
+                this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
                 this.uncoverTimeout = null
                 this.resultIndex = this.resultLastIndex
                 this.btnSave.visible = true

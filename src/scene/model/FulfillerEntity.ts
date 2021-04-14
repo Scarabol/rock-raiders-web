@@ -4,7 +4,7 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { Job, JobType } from '../../game/model/job/Job'
 import { MathUtils, Vector3 } from 'three'
 import { JOB_ACTION_RANGE, NATIVE_FRAMERATE } from '../../main'
-import { getRandom, getRandomSign } from '../../core/Util'
+import { clearIntervalSafe, getRandom, getRandomSign } from '../../core/Util'
 import { Carryable } from './collect/Carryable'
 import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob'
 import { SurfaceType } from './map/SurfaceType'
@@ -41,9 +41,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     resetWorkInterval() {
-        if (!this.workInterval) return
-        clearInterval(this.workInterval)
-        this.workInterval = null
+        this.workInterval = clearIntervalSafe(this.workInterval)
     }
 
     work() {

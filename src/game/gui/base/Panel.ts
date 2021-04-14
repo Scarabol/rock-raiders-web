@@ -2,6 +2,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { BaseElement } from './BaseElement'
 import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../../main'
 import { PanelCfg } from '../../../cfg/PanelsCfg'
+import { clearTimeoutSafe } from '../../../core/Util'
 
 export class Panel extends BaseElement {
 
@@ -57,10 +58,7 @@ export class Panel extends BaseElement {
     }
 
     toggleState(onDone: () => any = null) {
-        if (this.animationTimeout) {
-            clearTimeout(this.animationTimeout)
-            this.animationTimeout = null
-        }
+        this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         if (this.movedIn) {
             this.movedIn = false
             this.updateAnimation(this.xOut, this.yOut, PANEL_ANIMATION_MULTIPLIER, onDone)

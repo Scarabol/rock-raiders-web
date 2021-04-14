@@ -5,6 +5,7 @@ import { GameState } from '../game/model/GameState'
 import { Selectable } from '../game/model/Selectable'
 import { Terrain } from './model/map/Terrain'
 import { TILESIZE } from '../main'
+import { clearIntervalSafe } from '../core/Util'
 
 export class SceneManager {
 
@@ -149,10 +150,7 @@ export class SceneManager {
 
     disposeScene() {
         this.debugHelper.hide()
-        if (this.renderInterval) {
-            clearInterval(this.renderInterval)
-            this.renderInterval = null
-        }
+        this.renderInterval = clearIntervalSafe(this.renderInterval)
         if (this.animRequest) {
             cancelAnimationFrame(this.animRequest)
             this.animRequest = null

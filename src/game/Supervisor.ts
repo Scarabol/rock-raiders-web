@@ -9,6 +9,7 @@ import { JOB_SCHEDULE_INTERVAL } from '../main'
 import { Building } from './model/entity/building/Building'
 import { GetToolJob } from './model/job/GetToolJob'
 import { TrainJob } from './model/job/TrainJob'
+import { clearIntervalSafe } from '../core/Util'
 
 export class Supervisor {
 
@@ -32,8 +33,7 @@ export class Supervisor {
     }
 
     stop() {
-        if (this.assignInterval) clearInterval(this.assignInterval)
-        this.assignInterval = null
+        this.assignInterval = clearIntervalSafe(this.assignInterval)
         GameState.raiders.forEach((r) => r.resetWorkInterval())
         GameState.raidersUndiscovered.forEach((r) => r.resetWorkInterval())
         GameState.vehicles.forEach((v) => v.resetWorkInterval())

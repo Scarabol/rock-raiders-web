@@ -7,6 +7,7 @@ import { EventBus } from '../../../event/EventBus'
 import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
 import { TextInfoMessage } from './TextInfoMessage'
 import { CavernDiscovered, OreFoundEvent, RaiderTrained } from '../../../event/WorldEvents'
+import { clearTimeoutSafe } from '../../../core/Util'
 
 export class MessagePanel extends Panel {
 
@@ -44,7 +45,7 @@ export class MessagePanel extends Panel {
     }
 
     setMessage(textInfoMessage: TextInfoMessage, timeout: number = 3000) {
-        if (this.messageTimeout) clearTimeout(this.messageTimeout)
+        this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
         this.currentMessage = textInfoMessage
         this.notifyRedraw()
         if (timeout) {

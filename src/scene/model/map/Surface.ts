@@ -7,7 +7,7 @@ import { EventBus } from '../../../event/EventBus'
 import { SelectionEvent, SurfaceSelectedEvent } from '../../../event/LocalEvents'
 import { JobType } from '../../../game/model/job/Job'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
-import { getRandom, getRandomSign } from '../../../core/Util'
+import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
 import { Crystal } from '../collect/Crystal'
 import { Ore } from '../collect/Ore'
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../main'
@@ -88,7 +88,7 @@ export class Surface implements Selectable {
 
     collapse() {
         this.cancelJobs()
-        if (this.fallinTimeout) clearTimeout(this.fallinTimeout)
+        this.fallinTimeout = clearTimeoutSafe(this.fallinTimeout)
         this.surfaceType = SurfaceType.RUBBLE4
         this.containedOres += 4
         this.needsMeshUpdate = true
@@ -407,7 +407,7 @@ export class Surface implements Selectable {
     reinforce() {
         this.reinforced = true
         this.cancelReinforceJobs()
-        if (this.fallinTimeout) clearTimeout(this.fallinTimeout)
+        this.fallinTimeout = clearTimeoutSafe(this.fallinTimeout)
         this.updateTexture()
     }
 

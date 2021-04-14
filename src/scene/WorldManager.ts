@@ -2,7 +2,7 @@ import { SceneManager } from './SceneManager'
 import { TerrainLoader } from './TerrainLoader'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MathUtils, Raycaster, Vector3 } from 'three'
-import { getRandom } from '../core/Util'
+import { clearIntervalSafe, getRandom } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { CavernDiscovered, EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent, SpawnMaterialEvent } from '../event/WorldEvents'
 import { Raider } from './model/Raider'
@@ -19,9 +19,9 @@ import { NerpRunner } from '../core/NerpRunner'
 import { GameScreen } from '../screen/GameScreen'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { PriorityList } from '../game/model/job/PriorityList'
-import degToRad = MathUtils.degToRad
 import { CollectJob } from '../game/model/job/CollectJob'
 import { MoveJob } from '../game/model/job/MoveJob'
+import degToRad = MathUtils.degToRad
 
 export class WorldManager {
 
@@ -98,8 +98,7 @@ export class WorldManager {
     stop() {
         GameState.levelStopTime = Date.now()
         this.nerpRunner?.pauseExecution()
-        if (this.spawnRaiderInterval) clearInterval(this.spawnRaiderInterval)
-        this.spawnRaiderInterval = null
+        this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
         GameState.remainingDiggables = 0
         this.sceneManager?.terrain?.surfaces?.forEach((r) => r.forEach((s) => GameState.remainingDiggables += s.isDigable() ? 1 : 0))
         this.sceneManager.disposeScene()
@@ -150,8 +149,7 @@ export class WorldManager {
 
     checkSpawnRaiders() {
         if (GameState.requestedRaiders < 1) {
-            if (this.spawnRaiderInterval) clearInterval(this.spawnRaiderInterval)
-            this.spawnRaiderInterval = null
+            this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
             return
         }
         if (GameState.raiders.length >= GameState.getMaxRaiders()) return

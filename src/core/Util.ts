@@ -37,3 +37,13 @@ export function getRandom(max) {
 export function getRandomSign() {
     return -1 + getRandomInclusive(0, 1) * 2
 }
+
+export function clearTimeoutSafe(timeout: NodeJS.Timeout) {
+    if (timeout) clearTimeout(timeout)
+    return null
+}
+
+export function clearIntervalSafe(interval: NodeJS.Timeout) {
+    if (interval) clearInterval(interval)
+    return null
+}

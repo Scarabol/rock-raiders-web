@@ -1,6 +1,6 @@
 import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
 import { AnimClip } from './AnimClip'
-import { iGet } from '../../../core/Util'
+import { clearTimeoutSafe, iGet } from '../../../core/Util'
 import { AnimationEntityType } from './AnimationEntityType'
 import { BaseEntity } from '../BaseEntity'
 import { AnimSubObj } from './AnimSubObj'
@@ -33,6 +33,7 @@ export abstract class AnimEntity extends BaseEntity {
             console.log(this.entityType.activities)
             return
         }
+        this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         if (activity.animation) {
             this.animation = activity.animation
             this.group.remove(...this.poly)
@@ -86,8 +87,7 @@ export abstract class AnimEntity extends BaseEntity {
                 }
             }
         })
-        if (this.animationTimeout) clearTimeout(this.animationTimeout)
-        this.animationTimeout = null
+        this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         let nextFrame = frameIndex + 1
         if (nextFrame <= this.animation.lastFrame || (!onAnimationDone || (durationTimeMs !== null && durationTimeMs > 0))) {
             if (nextFrame > this.animation.lastFrame) {

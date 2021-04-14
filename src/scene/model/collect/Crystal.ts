@@ -4,6 +4,7 @@ import { Color, Material, MeshPhongMaterial } from 'three'
 import { CollectableEntity, CollectableType } from './CollectableEntity'
 import { Building } from '../../../game/model/entity/building/Building'
 import { SceneManager } from '../../SceneManager'
+import { clearIntervalSafe } from '../../../core/Util'
 
 export class Crystal extends CollectableEntity {
 
@@ -29,7 +30,7 @@ export class Crystal extends CollectableEntity {
             mat.opacity = 0.4 // TODO read from LWO file?
         })
         this.group.add(mesh)
-        this.sequenceIntervals.forEach((interval) => clearInterval(interval)) // TODO looks better without sequence, maybe just slow it down or merge it?
+        this.sequenceIntervals.forEach((interval) => clearIntervalSafe(interval)) // TODO looks better without sequence, maybe just slow it down or merge it?
     }
 
     getTargetBuildingTypes(): Building[] {
