@@ -15,7 +15,15 @@ export abstract class MovableEntity extends AnimEntity {
         return new Vector3().copy(this.group.position)
     }
 
-    abstract getSpeed(): number
+    getSpeed(): number {
+        let speed = this.stats.routeSpeed[this.level]
+        if (this.isOnRubble()) {
+            speed *= this.stats.rubbleCoef
+        } else if (this.isOnPath()) {
+            speed *= this.stats.pathCoef
+        }
+        return speed
+    }
 
     moveToTarget(target: Vector3): boolean {
         if (!this.pathToTarget || !this.pathToTarget[this.pathToTarget.length - 1].equals(target)) {
@@ -50,8 +58,12 @@ export abstract class MovableEntity extends AnimEntity {
         return step
     }
 
-    isOnRubble(): boolean {
-        return false
+    isOnRubble() {
+        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).hasRubble()
+    }
+
+    isOnPath(): boolean {
+        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).isPath()
     }
 
     changeActivity(activity: FulfillerActivity, onChangeDone = null, durationTimeMs: number = null) {

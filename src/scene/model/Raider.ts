@@ -41,18 +41,9 @@ export class Raider extends FulfillerEntity {
     }
 
     getSpeed(): number {
-        let speed = this.stats.routeSpeed[this.level]
+        let speed = super.getSpeed()
         if (this.animation && !isNaN(this.animation.transcoef)) speed *= this.animation.transcoef
-        if (this.isOnPath()) speed *= this.stats.pathCoef
         return speed
-    }
-
-    isOnRubble() {
-        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).hasRubble()
-    }
-
-    isOnPath(): boolean {
-        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).isPath()
     }
 
     findPathToTarget(target: Vector3): Vector3[] {
