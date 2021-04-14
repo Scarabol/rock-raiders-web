@@ -55,6 +55,18 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
                     this.moveToTarget(this.job.getPosition())
                 } else {
+                    let drillTimeMs = null
+                    if (surfJob.surface.surfaceType === SurfaceType.HARD_ROCK) {
+                        drillTimeMs = this.stats.hardDrillTime[this.level] * 1000
+                    } else if (surfJob.surface.surfaceType === SurfaceType.LOOSE_ROCK) {
+                        drillTimeMs = this.stats.looseDrillTime[this.level] * 1000
+                    } else if (surfJob.surface.surfaceType === SurfaceType.DIRT) {
+                        drillTimeMs = this.stats.soilDrillTime[this.level] * 1000
+                    } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM ||
+                        surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
+                        drillTimeMs = this.stats.seamDrillTime[this.level] * 1000
+                    }
+                    if (drillTimeMs === 0) console.warn('According to cfg this entity cannot drill this material')
                     this.changeActivity(FulfillerActivity.DRILLING, () => {
                         if (surfJob.surface.seamLevel > 0) {
                             surfJob.surface.seamLevel--
@@ -73,7 +85,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                         } else {
                             this.completeJob()
                         }
-                    }) // TODO use drilling times from cfg
+                    }, drillTimeMs)
                 }
             } else if (surfaceJobType === SurfaceJobType.CLEAR_RUBBLE) {
                 if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {

@@ -47,7 +47,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ## Known Bugs
 
 ### Important
-- Drilling time not related to material
 - make game pausable and actually pause in escape screen (also fixes elapsed game time)
 
 ### Nice to have
