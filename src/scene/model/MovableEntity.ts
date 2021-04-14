@@ -54,7 +54,7 @@ export abstract class MovableEntity extends AnimEntity {
         return false
     }
 
-    changeActivity(activity: FulfillerActivity, onChangeDone = null, iterations = 1) {
+    changeActivity(activity: FulfillerActivity, onChangeDone = null, durationTimeMs: number = null) {
     }
 
 }

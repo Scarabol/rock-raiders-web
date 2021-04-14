@@ -55,7 +55,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
                     this.moveToTarget(this.job.getPosition())
                 } else {
-                    this.changeActivity(FulfillerActivity.DRILLING, () => { // TODO use drilling times from cfg
+                    this.changeActivity(FulfillerActivity.DRILLING, () => {
                         if (surfJob.surface.seamLevel > 0) {
                             surfJob.surface.seamLevel--
                             const vec = new Vector3().copy(this.getPosition()).sub(surfJob.surface.getCenterWorld())
@@ -73,7 +73,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                         } else {
                             this.completeJob()
                         }
-                    })
+                    }) // TODO use drilling times from cfg
                 }
             } else if (surfaceJobType === SurfaceJobType.CLEAR_RUBBLE) {
                 if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
@@ -103,7 +103,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 } else {
                     this.changeActivity(FulfillerActivity.REINFORCE, () => {
                         this.completeJob()
-                    }, 3)
+                    }, 2700)
                 }
             } else if (surfaceJobType === SurfaceJobType.BLOW) {
                 const bj = this.job as DynamiteJob

@@ -65,11 +65,11 @@ export class Raider extends FulfillerEntity {
         return this.worldMgr.sceneManager.terrain.findPath(this.getPosition(), target)
     }
 
-    changeActivity(activity: FulfillerActivity, onChangeDone = null, iterations = 1) {
+    changeActivity(activity: FulfillerActivity, onChangeDone = null, durationTimeMs: number = null) {
         if (onChangeDone) onChangeDone.bind(this)
         if (this.activity !== activity) {
             this.activity = activity
-            this.setActivity(this.activity.getValue(!!this.carries), onChangeDone, iterations)
+            this.setActivity(this.activity.getValue(!!this.carries), onChangeDone, durationTimeMs)
             this.animation.looping = true
         }
     }

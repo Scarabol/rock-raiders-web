@@ -22,7 +22,7 @@ export abstract class AnimEntity extends BaseEntity {
         this.entityType = entityType
     }
 
-    setActivity(keyname, onAnimationDone = null, iterations = 1) {
+    setActivity(keyname, onAnimationDone = null, durationTimeMs = null) {
         if (this.animationTimeout) {
             clearTimeout(this.animationTimeout)
             this.animationTimeout = null
@@ -60,13 +60,13 @@ export abstract class AnimEntity extends BaseEntity {
                     this.group.add(polyPart)
                 }
             })
-            this.animate(0, onAnimationDone, iterations)
+            this.animate(0, onAnimationDone, durationTimeMs)
         } else {
             console.warn('Activity ' + keyname + ' has no animation defined yet')
         }
     }
 
-    animate(frameIndex, onAnimationDone, iterations) {
+    animate(frameIndex, onAnimationDone, durationTimeMs) {
         if (this.poly.length !== this.animation.bodies.length) throw 'Cannot animate poly. Length differs from bodies length'
         this.animation.bodies.forEach((body: AnimSubObj, index) => {
             const p = this.poly[index]
@@ -86,15 +86,18 @@ export abstract class AnimEntity extends BaseEntity {
                 }
             }
         })
+        if (this.animationTimeout) clearTimeout(this.animationTimeout)
         this.animationTimeout = null
-        if (!(frameIndex + 1 > this.animation.lastFrame) || (this.animation.looping && (!onAnimationDone || iterations > 1))) {
-            let nextFrame = frameIndex + 1
+        let nextFrame = frameIndex + 1
+        if (nextFrame <= this.animation.lastFrame || (!onAnimationDone || (durationTimeMs !== null && durationTimeMs > 0))) {
             if (nextFrame > this.animation.lastFrame) {
                 nextFrame = this.animation.firstFrame
-                iterations--
             }
+            const standardDurationTimeMs = 1000 / this.animation.framesPerSecond * this.animation.transcoef
+            if (durationTimeMs !== null) durationTimeMs -= standardDurationTimeMs
             const that = this
-            this.animationTimeout = setTimeout(() => that.animate(nextFrame, onAnimationDone, iterations), 1000 / this.animation.framesPerSecond * this.animation.transcoef) // TODO get this in sync with threejs
+            const timeoutTimeMs = durationTimeMs !== null ? Math.max(0, Math.min(durationTimeMs, standardDurationTimeMs)) : standardDurationTimeMs
+            this.animationTimeout = setTimeout(() => that.animate(nextFrame, onAnimationDone, durationTimeMs), timeoutTimeMs) // TODO get this in sync with threejs
         } else if (onAnimationDone) {
             onAnimationDone()
         }
