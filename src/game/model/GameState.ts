@@ -126,6 +126,10 @@ export class GameState {
         return this.buildings.some((b) => b.type === building && b.level >= upgrades)
     }
 
+    static hasVehicleWithSkill(skillName: string): boolean {
+        return false // TODO implement vehicles
+    }
+
     static getClosestTrainingSite(position: Vector3, training: string): BuildingEntity {
         if (training === 'demolition') { // TODO refactor this
             const targetBuildings = this.buildings.filter((b) => {

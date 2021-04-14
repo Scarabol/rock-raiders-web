@@ -22,11 +22,12 @@ export class IconPanelButton extends Button {
         console.log('menu item pressed: ' + this.buttonType)
     }
 
-    updateState() {
+    updateState(autoRedraw: boolean = true) {
         const targetState = !!this.isDisabled()
         const stateChanged = this.disabled !== targetState
         this.disabled = targetState
-        if (stateChanged) this.notifyRedraw()
+        if (stateChanged && autoRedraw) this.notifyRedraw()
+        return stateChanged
     }
 
     drawHover(context: CanvasRenderingContext2D) {

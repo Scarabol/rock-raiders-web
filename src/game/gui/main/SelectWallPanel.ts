@@ -15,27 +15,24 @@ export class SelectWallPanel extends SelectBasePanel {
     constructor(onBackPanel: Panel) {
         super(4, onBackPanel)
         const itemDrill = this.addWallMenuItem('Interface_MenuItem_Dig', SurfaceJobType.DRILL)
+        itemDrill.isDisabled = () => !(GameState.selectedSurface?.isDrillable()) &&
+            !(GameState.selectedSurface?.isDrillableHard() && GameState.hasVehicleWithSkill('drillHard'))
         const itemReinforce = this.addWallMenuItem('Interface_MenuItem_Reinforce', SurfaceJobType.REINFORCE)
+        itemReinforce.isDisabled = () => !(GameState.selectedSurface?.isReinforcable())
         const itemDynamite = this.addWallMenuItem('Interface_MenuItem_Dynamite', SurfaceJobType.BLOW)
-        itemDynamite.isDisabled = () => {
-            return !GameState.hasBuildingWithUpgrades(Building.TOOLSTATION, 2) &&
+        itemDynamite.isDisabled = () => !GameState.hasBuildingWithUpgrades(Building.TOOLSTATION, 2) &&
                 !GameState.raiders.some((r) => r.hasSkill(RaiderSkills.DEMOLITION))
-            // TODO and NOT has vehicle that can drill hard stone
-        }
         const itemDeselect = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig')
         itemDeselect.onClick = () => {
             const selectedSurface = GameState.selectedEntities[0] as Surface
             selectedSurface.cancelJobs()
             EventBus.publishEvent(new EntityDeselected())
         }
-        EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, (event: SurfaceSelectedEvent) => {
-            const surface = event.surface
-            if (!surface.surfaceType.floor) {
-                itemDrill.disabled = !surface.isDrillable()
-                itemReinforce.disabled = !surface.isReinforcable()
-                itemDynamite.disabled = !surface.isExplodable()
-                this.notifyRedraw()
-            }
+        EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, () => {
+            itemDrill.updateState(false)
+            itemReinforce.updateState(false)
+            itemDynamite.updateState(false)
+            this.notifyRedraw()
         })
     }
 

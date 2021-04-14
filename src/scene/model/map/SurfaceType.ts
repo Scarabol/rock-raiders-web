@@ -6,6 +6,7 @@ export class SurfaceType {
     floor: boolean = false
     selectable: boolean = false
     drillable: boolean = false
+    drillableHard: boolean = false
     explodable: boolean = false
     reinforcable: boolean = false
 
@@ -20,6 +21,7 @@ export class SurfaceType {
         shaping: true,
         matIndex: '4',
         selectable: true,
+        drillableHard: true,
         explodable: true,
         reinforcable: true,
     })
@@ -29,6 +31,7 @@ export class SurfaceType {
         matIndex: '3',
         selectable: true,
         drillable: true,
+        drillableHard: true,
         explodable: true,
         reinforcable: true,
     })
@@ -38,6 +41,7 @@ export class SurfaceType {
         matIndex: '1',
         selectable: true,
         drillable: true,
+        drillableHard: true,
         explodable: true,
         reinforcable: true,
     })
@@ -48,6 +52,7 @@ export class SurfaceType {
         matIndex: '40',
         selectable: true,
         drillable: true,
+        drillableHard: true,
         explodable: true,
         reinforcable: true,
     })
@@ -57,6 +62,7 @@ export class SurfaceType {
         matIndex: '20',
         selectable: true,
         drillable: true,
+        drillableHard: true,
         explodable: true,
         reinforcable: true,
     })
