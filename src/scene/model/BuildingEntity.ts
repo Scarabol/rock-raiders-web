@@ -80,8 +80,9 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     upgrade() {
-        if (GameState.numOre < 5 || this.hasMaxLevel()) return
-        GameState.numOre -= 5 // TODO read from cfg BuildingUpgradeCostOre and BuildingUpgradeCostStuds
+        const costOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre') || 5 // TODO implement bricks use BuildingUpgradeCostStuds
+        if (GameState.numOre < costOre || this.hasMaxLevel()) return
+        GameState.numOre -= costOre
         this.level++
         EventBus.publishEvent(new CollectEvent(CollectableType.ORE))
         EventBus.publishEvent(new EntityDeselected())
