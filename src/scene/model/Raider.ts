@@ -6,8 +6,6 @@ import { GameState } from '../../game/model/GameState'
 import { Vector3 } from 'three'
 import { EntityAddedEvent, EntityType } from '../../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../../event/WorldLocationEvent'
-import { ResourceManager } from '../../resource/ResourceManager'
-import { RaiderStatsCfg } from '../../cfg/RaiderStatsCfg'
 
 export class RaiderSkills {
 
@@ -35,12 +33,8 @@ export class RaiderTools {
 
 export class Raider extends FulfillerEntity {
 
-    level: number = 0 // TODO same as in BuildingEntity -> move to parent class
-    stats: RaiderStatsCfg
-
     constructor() {
         super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae')
-        this.stats = new RaiderStatsCfg(ResourceManager.cfg('Stats', 'Pilot')) // TODO group all stats in single class
         this.tools = [RaiderTools.DRILL]
         this.skills = []
         this.pickSphereRadius = this.stats.pickSphere / 2

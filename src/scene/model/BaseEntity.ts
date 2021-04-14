@@ -1,14 +1,18 @@
 import { WorldManager } from '../WorldManager'
 import { Euler, Group, Vector3 } from 'three'
+import { EntityStatsCfg } from '../../cfg/EntityStatsCfg'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class BaseEntity {
 
     worldMgr: WorldManager
     group: Group = new Group()
     sequenceIntervals = []
+    level: number = 0
+    stats: EntityStatsCfg
 
     constructor() {
-        // this.group.add(new AxesHelper(40)); // TODO debug orientations and possible x-axis flip
+        this.stats = new EntityStatsCfg(ResourceManager.cfg('Stats', 'Pilot') || {}) // TODO group all stats in single class
     }
 
     getPosition() {

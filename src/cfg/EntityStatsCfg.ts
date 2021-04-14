@@ -1,6 +1,6 @@
 import { BaseConfig } from './BaseConfig'
 
-export class RaiderStatsCfg extends BaseConfig {
+export class EntityStatsCfg extends BaseConfig {
 
     levels: number = null
     routeSpeed: number[] = null

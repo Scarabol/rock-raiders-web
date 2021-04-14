@@ -19,7 +19,6 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     powerLink: boolean = false
     spawning: boolean = false
     surfaces: Surface[] = []
-    level: number = 0
 
     constructor(buildingType: Building) {
         super(ResourceManager.getAnimationEntityType(buildingType.aeFile))
