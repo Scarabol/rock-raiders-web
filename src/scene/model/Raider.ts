@@ -53,12 +53,6 @@ export class Raider extends FulfillerEntity {
         this.pickSphereRadius = this.stats.pickSphere / 2
     }
 
-    getSpeed(): number {
-        let speed = super.getSpeed()
-        if (this.animation && !isNaN(this.animation.transcoef)) speed *= this.animation.transcoef
-        return speed
-    }
-
     findPathToTarget(target: Vector3): Vector3[] {
         return this.worldMgr.sceneManager.terrain.findPath(this.getPosition(), target)
     }
@@ -123,6 +117,9 @@ export class Raider extends FulfillerEntity {
                         drillTimeMs = this.stats.seamDrillTime[this.level] * 1000
                     }
                     if (drillTimeMs === 0) console.warn('According to cfg this entity cannot drill this material')
+                    const focusPoint = surfJob.surface.getCenterWorld()
+                    focusPoint.y = this.group.position.y
+                    this.group.lookAt(focusPoint)
                     this.changeActivity(RaiderActivity.Drill, () => {
                         if (surfJob.surface.seamLevel > 0) {
                             surfJob.surface.seamLevel--
@@ -253,7 +250,7 @@ export class Raider extends FulfillerEntity {
 
     private completeJob() {
         this.job.onJobComplete()
-        this.job.unassign(this)
+        if (this.job) this.job.unassign(this)
         this.jobSubPos = null
         this.carryTarget = null
         this.job = this.followUpJob
