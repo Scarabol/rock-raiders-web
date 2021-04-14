@@ -94,6 +94,14 @@ export class Raider extends FulfillerEntity {
         return this.isOnRubble() ? RaiderActivity.routeRubble : RaiderActivity.Route
     }
 
+    moveToTarget(target): boolean {
+        const result = super.moveToTarget(target)
+        if (result) {
+            // TODO check if Raider stepped on a Spider
+        }
+        return result
+    }
+
     work() {
         if (!this.job || this.selected) return
         if (this.job.type === JobType.SURFACE) {

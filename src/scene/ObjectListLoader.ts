@@ -12,6 +12,8 @@ import { EventBus } from '../event/EventBus'
 import { EntityAddedEvent, EntityType } from '../event/WorldEvents'
 import { BuildingActivity } from './model/activities/BuildingActivity'
 import { RaiderActivity } from './model/activities/RaiderActivity'
+import { SmallSpider } from '../game/model/entity/monster/SmallSpider'
+import { MonsterActivity } from './model/activities/MonsterActivity'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -85,8 +87,17 @@ export class ObjectListLoader {
                 entity.surfaces.push(pathSurface)
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 worldMgr.addCollectable(new Crystal(), worldX, worldZ)
+            } else if (lTypeName === 'SmallSpider'.toLowerCase()) {
+                const spider = new SmallSpider()
+                spider.worldMgr = worldMgr
+                spider.setActivity(MonsterActivity.Stand)
+                spider.group.position.set(worldX, worldY, worldZ)
+                spider.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position).discovered
+                worldMgr.sceneManager.scene.add(spider.group)
+                GameState.spiders.push(spider)
+                spider.startMoving()
             } else {
-                // TODO implement remaining object types like: spider, drives and hovercraft
+                // TODO implement remaining object types
                 console.warn('Object type ' + olObject.type + ' not yet implemented')
             }
         })

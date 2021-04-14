@@ -16,6 +16,7 @@ import { Crystal } from '../../scene/model/collect/Crystal'
 import { Ore } from '../../scene/model/collect/Ore'
 import { LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { PriorityList } from './job/PriorityList'
+import { SmallSpider } from './entity/monster/SmallSpider'
 
 export enum GameResultState {
 
@@ -47,6 +48,7 @@ export class GameState {
     static collectables: CollectableEntity[] = []
     static collectablesUndiscovered: CollectableEntity[] = []
     static buildingSites: BuildingSite[] = []
+    static spiders: SmallSpider[] = []
     static totalCrystals: number = 0
     static totalOres: number = 0
     static totalDiggables: number = 0
@@ -79,6 +81,7 @@ export class GameState {
         this.collectables = []
         this.collectablesUndiscovered = []
         this.buildingSites = []
+        this.spiders = []
         this.totalCrystals = 0
         this.totalOres = 0
         this.totalDiggables = 0
