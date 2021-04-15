@@ -266,4 +266,15 @@ export class Raider extends FulfillerEntity {
         return this.carries ? RaiderActivity.CarryStand : RaiderActivity.Stand
     }
 
+    beamUp() {
+        this.stopJob()
+        this.dropItem()
+        super.beamUp()
+    }
+
+    removeFromScene() {
+        super.removeFromScene()
+        removeFromArray(GameState.raiders, this)
+    }
+
 }

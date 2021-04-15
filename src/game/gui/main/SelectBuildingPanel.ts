@@ -15,7 +15,9 @@ export class SelectBuildingPanel extends SelectBasePanel {
         upgradeItem.isDisabled = () => GameState.numOre < 5 || GameState.selectedBuilding?.hasMaxLevel()
         upgradeItem.updateState() // TODO auto trigger update state when panel is shown
         upgradeItem.onClick = () => GameState.selectedBuilding?.upgrade()
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteBuilding')
+        const deleteBuildingItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteBuilding')
+        deleteBuildingItem.isDisabled = () => false
+        deleteBuildingItem.onClick = () => GameState.selectedBuilding?.beamUp()
         EventBus.registerEventListener(BuildingSelected.eventKey, () => upgradeItem.updateState())
         EventBus.registerEventListener(CollectEvent.eventKey, () => upgradeItem.updateState())
         EventBus.registerEventListener(SpawnMaterialEvent.eventKey, () => upgradeItem.updateState())

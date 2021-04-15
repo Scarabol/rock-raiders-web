@@ -29,7 +29,9 @@ export class SelectRaiderPanel extends SelectBasePanel {
         this.trainItem.isDisabled = () => false
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GotoFirstPerson')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GotoSecondPerson')
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteMan')
+        const deleteRaiderItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteMan')
+        deleteRaiderItem.isDisabled = () => false
+        deleteRaiderItem.onClick = () => GameState.selectedRaiders.forEach((r) => r.beamUp())
     }
 
 }

@@ -12,6 +12,9 @@ import { CollectableType } from './collect/CollectableEntity'
 import { BuildingActivity } from './activities/BuildingActivity'
 import { removeFromArray } from '../../core/Util'
 import { BuildingEntityStats } from '../../cfg/BuildingEntityStats'
+import { Ore } from './collect/Ore'
+import { Crystal } from './collect/Crystal'
+import { SurfaceType } from './map/SurfaceType'
 import degToRad = MathUtils.degToRad
 
 export class BuildingEntity extends AnimEntity implements Selectable {
@@ -97,6 +100,27 @@ export class BuildingEntity extends AnimEntity implements Selectable {
 
     getStandActivity() {
         return !this.isPowered() && this.type !== Building.GUNSTATION ? BuildingActivity.Unpowered : BuildingActivity.Stand
+    }
+
+    beamUp() {
+        for (let c = 0; c < this.stats.CostOre; c++) {
+            const [x, z] = this.surfaces[0].getRandomPosition()
+            this.worldMgr.addCollectable(new Ore(), x, z)
+        }
+        for (let c = 0; c < this.stats.CostCrystal; c++) {
+            const [x, z] = this.surfaces[0].getRandomPosition()
+            this.worldMgr.addCollectable(new Crystal(), x, z)
+        }
+        this.surfaces.forEach((s) => {
+            s.surfaceType = SurfaceType.GROUND
+            s.updateTexture()
+        })
+        super.beamUp()
+    }
+
+    removeFromScene() {
+        super.removeFromScene()
+        removeFromArray(GameState.buildings, this)
     }
 
 }

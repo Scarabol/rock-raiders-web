@@ -6,6 +6,10 @@ import { BaseEntity } from '../BaseEntity'
 import { AnimSubObj } from './AnimSubObj'
 import { createContext } from '../../../core/ImageHelper'
 import { BaseActivity } from '../activities/BaseActivity'
+import { BuildingActivity } from '../activities/BuildingActivity'
+import { NATIVE_FRAMERATE, TILESIZE } from '../../../main'
+import { EventBus } from '../../../event/EventBus'
+import { EntityDeselected } from '../../../event/LocalEvents'
 
 export abstract class AnimEntity extends BaseEntity {
 
@@ -22,6 +26,30 @@ export abstract class AnimEntity extends BaseEntity {
     protected constructor(entityType: AnimationEntityType) {
         super()
         this.entityType = entityType
+    }
+
+    beamUp() {
+        // TODO avoid all further state changes and mark as unavailable here
+        // TODO publish event: check jobs with this target, update power state...
+        EventBus.publishEvent(new EntityDeselected())
+        this.setActivity(BuildingActivity.Stand, () => { // TODO drop stuff, resources in process, ect.
+            // TODO insert beam animation
+            AnimEntity.moveUp(this, 6 * TILESIZE)
+        })
+    }
+
+    private static moveUp(entity: AnimEntity, counter: number) {
+        if (counter > 0) {
+            counter--
+            entity.group.position.y += (TILESIZE / NATIVE_FRAMERATE) / 2
+            setTimeout(() => AnimEntity.moveUp(entity, counter), 1000 / NATIVE_FRAMERATE)
+        } else {
+            entity.removeFromScene()
+        }
+    }
+
+    removeFromScene() {
+        this.worldMgr.sceneManager.scene.remove(this.group)
     }
 
     changeActivity(activity: BaseActivity, onChangeDone = null, durationTimeMs: number = null) {

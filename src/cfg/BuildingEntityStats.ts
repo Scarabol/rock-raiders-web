@@ -8,6 +8,8 @@ export class BuildingEntityStats extends BaseConfig {
     SelfPowered: boolean = false
     PickSphere: number = 0
     TrainDynamite: boolean[] = null
+    CostOre: number = 0
+    CostCrystal: number = 0
 
     static getByType(type: Building): BuildingEntityStats {
         switch (type) {
