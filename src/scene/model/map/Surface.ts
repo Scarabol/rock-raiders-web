@@ -110,8 +110,7 @@ export class Surface implements Selectable {
         this.terrain.floorGroup.updateWorldMatrix(true, true)
         // drop contained crystals and ores
         for (let c = 0; c < this.containedCrystals; c++) {
-            const x = this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4)
-            const z = this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4)
+            const [x, z] = this.getRandomPosition()
             const crystal = this.terrain.worldMgr.addCollectable(new Crystal(), x, z)
             EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
         }
@@ -123,11 +122,17 @@ export class Surface implements Selectable {
     private dropContainedOre(dropAmount: number) {
         for (let c = 0; c < dropAmount && this.containedOres > 0; c++) {
             this.containedOres--
-            const x = this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4)
-            const z = this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4)
+            const [x, z] = this.getRandomPosition()
             this.terrain.worldMgr.addCollectable(new Ore(), x, z)
             EventBus.publishEvent(new OreFoundEvent())
         }
+    }
+
+    getRandomPosition(): number[] {
+        return [
+            this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4),
+            this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4),
+        ]
     }
 
     cancelJobs() {

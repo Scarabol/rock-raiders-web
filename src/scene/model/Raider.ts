@@ -11,7 +11,7 @@ import { RaiderActivity } from './activities/RaiderActivity'
 import { JobType } from '../../game/model/job/Job'
 import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob'
 import { SurfaceType } from './map/SurfaceType'
-import { getRandom, getRandomSign, removeFromArray } from '../../core/Util'
+import { getRandom, removeFromArray } from '../../core/Util'
 import { Crystal } from './collect/Crystal'
 import { Ore } from './collect/Ore'
 import { JOB_ACTION_RANGE } from '../../main'
@@ -149,9 +149,8 @@ export class Raider extends FulfillerEntity {
                     this.moveToTarget(this.job.getPosition())
                 } else {
                     if (!this.jobSubPos) {
-                        const jobPos = this.job.getPosition()
-                        this.jobSubPos = new Vector3(jobPos.x + getRandomSign() * getRandom(10), 0, jobPos.z + getRandomSign() * getRandom(10))
-                        this.jobSubPos.y = this.worldMgr.getTerrainHeight(this.jobSubPos.x, this.jobSubPos.z)
+                        const [x, z] = surfJob.surface.getRandomPosition()
+                        this.jobSubPos = new Vector3(x, this.worldMgr.getTerrainHeight(x, z), z)
                     }
                     if (this.jobSubPos.distanceTo(this.getPosition()) > this.getSpeed()) {
                         this.moveToTarget(this.jobSubPos)
