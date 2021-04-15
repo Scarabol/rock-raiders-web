@@ -12,6 +12,7 @@ export const DEV_MODE = process.env.WEBPACK_MODE === 'development'
 if (DEV_MODE) console.warn('DEV MODE ACTIVE')
 
 export const JOB_SCHEDULE_INTERVAL = 1000 // milliseconds
+export const CHECK_CLEARRUBBLE_INTERVAL = 5000 // milliseconds
 export const JOB_ACTION_RANGE = 5
 export const CHECK_SPANW_RAIDER_TIMER = 1000 // milliseconds
 export const MAX_RAIDER_BASE = 12

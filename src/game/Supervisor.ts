@@ -5,17 +5,19 @@ import { GameState } from './model/GameState'
 import { Vector3 } from 'three'
 import { Raider } from '../scene/model/Raider'
 import { WorldManager } from '../scene/WorldManager'
-import { JOB_SCHEDULE_INTERVAL } from '../main'
+import { CHECK_CLEARRUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../main'
 import { Building } from './model/entity/building/Building'
 import { GetToolJob } from './model/job/GetToolJob'
 import { TrainJob } from './model/job/TrainJob'
 import { clearIntervalSafe } from '../core/Util'
+import { SurfaceJob, SurfaceJobType } from './model/job/SurfaceJob'
 
 export class Supervisor {
 
     worldMgr: WorldManager
     jobs: PublicJob[] = []
     assignInterval = null
+    checkRubbleInterval = null
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
@@ -30,10 +32,12 @@ export class Supervisor {
     start() {
         stop()
         this.assignInterval = setInterval(this.assignJobs.bind(this), JOB_SCHEDULE_INTERVAL)
+        this.checkRubbleInterval = setInterval(this.checkUnclearedRubble.bind(this), CHECK_CLEARRUBBLE_INTERVAL)
     }
 
     stop() {
         this.assignInterval = clearIntervalSafe(this.assignInterval)
+        this.checkRubbleInterval = clearIntervalSafe(this.checkRubbleInterval)
         GameState.raiders.forEach((r) => r.resetWorkInterval())
         GameState.raidersUndiscovered.forEach((r) => r.resetWorkInterval())
         GameState.vehicles.forEach((v) => v.resetWorkInterval())
@@ -47,7 +51,6 @@ export class Supervisor {
             if (result && j.fulfiller.length < 1) availableJobs.push(j)
             return result
         })
-        if (availableJobs.length < 1) return
         availableJobs.sort((left, right) => {
             return Math.sign(GameState.priorityList.getPriority(left) - GameState.priorityList.getPriority(right))
         })
@@ -117,6 +120,35 @@ export class Supervisor {
             } else if (closestTrainingRaider) {
                 closestTrainingRaider.setJob(new TrainJob(closestTrainingLocation, closestNeededTraining), job)
                 unemployedRaider.splice(closestTrainingRaiderIndex, 1)
+            }
+        })
+    }
+
+    checkUnclearedRubble() {
+        GameState.raiders.forEach((raider) => {
+            if (raider.job) return
+            const startSurface = raider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(raider.getPosition())
+            for (let rad = 0; rad < 10; rad++) {
+                for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
+                    for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
+                        const surface = raider.worldMgr.sceneManager.terrain.getSurfaceOrNull(x, y)
+                        if (!(surface?.hasRubble()) || !surface.discovered || surface.hasJobType(SurfaceJobType.CLEAR_RUBBLE)) continue
+                        const surfJob = new SurfaceJob(SurfaceJobType.CLEAR_RUBBLE, surface)
+                        if (surfJob.isQualified(raider)) {
+                            raider.setJob(surfJob)
+                        } else {
+                            const neededTool = surfJob.isQualifiedWithTool(raider)
+                            if (neededTool) {
+                                const toolstation = GameState.getClosestBuildingByType(raider.getPosition(), Building.TOOLSTATION)
+                                if (toolstation) raider.setJob(new GetToolJob(toolstation.getPosition(), neededTool), surfJob)
+                            } else {
+                                continue
+                            }
+                        }
+                        EventBus.publishEvent(new JobCreateEvent(surfJob))
+                        surface.updateJobColor()
+                    }
+                }
             }
         })
     }
