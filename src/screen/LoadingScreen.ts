@@ -1,61 +1,50 @@
 import { BaseScreen } from './BaseScreen'
 import { ResourceManager } from '../resource/ResourceManager'
-import { ScreenLayer } from './ScreenLayer'
+import { ScaledLayer } from './ScreenLayer'
 
 export class LoadingScreen extends BaseScreen {
 
-    layer: ScreenLayer
+    layer: ScaledLayer
     assetIndex: number = 0
-    totalResources: number = 0
 
     constructor() {
         super()
-        this.layer = this.addLayer(new ScreenLayer())
-        this.layer.onRedraw = (context) => {
-            // clear the screen to black
-            context.fillStyle = 'black'
-            context.fillRect(0, 0, this.width, this.height)
-            // draw the loading title
-            context.font = '48px Arial'
-            context.fillStyle = 'white'
-            context.fillText('Loading Rock Raiders', 5, this.height - 80)
-            // hard-code the first loading message
-            context.font = '30px Arial'
-            context.fillStyle = 'white'
-            context.fillText('Loading...', 20, this.height - 30)
-        }
+        this.layer = this.addLayer(new ScaledLayer())
     }
 
     show() {
         this.layers.forEach((layer) => {
             if (layer !== this.cursorLayer) layer.show()
         })
-        this.redraw()
+        this.setLoadingMessage('Loading...')
     }
 
     setLoadingMessage(text) {
         this.layer.onRedraw = (context) => {
-            // wipe old message text
+            // clear the screen to black
             context.fillStyle = 'black'
-            context.fillRect(0, this.height - 60, this.width, 60)
-            // write new message text
-            context.font = '30px Arial'
+            context.fillRect(0, 0, this.layer.fixedWidth, this.layer.fixedHeight)
+            // draw the loading title
+            context.font = '24px Arial'
             context.fillStyle = 'white'
-            context.fillText(text, 20, this.height - 30)
+            context.fillText('Loading Rock Raiders', 20, this.layer.fixedHeight - 50)
+            // hard-code the first loading message
+            context.font = '18px Arial'
+            context.fillStyle = 'white'
+            context.fillText(text, 20, this.layer.fixedHeight - 20)
         }
         this.redraw()
     }
 
     enableGraphicMode(totalResources: number) {
-        this.totalResources = totalResources
         const imgBackground = ResourceManager.getImage(ResourceManager.cfg('Main', 'LoadScreen'))
         const imgProgress = ResourceManager.getImage(ResourceManager.cfg('Main', 'ProgressBar'))
+        const imgLoading = ResourceManager.getDefaultFont().createTextImage(ResourceManager.cfg('Main', 'LoadingText'))
         this.layer.onRedraw = (context => {
-            const screenZoom = this.width / imgBackground.width
-            const loadingBarWidth = 353 * this.assetIndex / this.totalResources * screenZoom
-            context.drawImage(imgBackground, 0, 0, this.width, this.height)
-            context.drawImage(imgProgress, 142 * screenZoom, 450 * screenZoom, loadingBarWidth, 9 * screenZoom)
-            // FIXME show LoadingText from cfg
+            const loadingBarWidth = Math.round(353 * this.assetIndex / totalResources)
+            context.drawImage(imgBackground, 0, 0)
+            context.drawImage(imgProgress, 142, 450, loadingBarWidth, 9)
+            context.drawImage(imgLoading, Math.round(320 - imgLoading.width / 2), Math.round(456 - imgLoading.height / 2))
         })
         this.cursorLayer.show()
         this.redraw()
