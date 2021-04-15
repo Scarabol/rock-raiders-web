@@ -21,8 +21,9 @@ export class SelectWallPanel extends SelectBasePanel {
         itemReinforce.isDisabled = () => !(GameState.selectedSurface?.isReinforcable())
         const itemDynamite = this.addWallMenuItem('Interface_MenuItem_Dynamite', SurfaceJobType.BLOW)
         itemDynamite.isDisabled = () => !GameState.hasBuildingWithUpgrades(Building.TOOLSTATION, 2) &&
-                !GameState.raiders.some((r) => r.hasSkill(RaiderSkills.DEMOLITION))
+            !GameState.raiders.some((r) => r.hasSkill(RaiderSkills.DEMOLITION))
         const itemDeselect = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig')
+        itemDeselect.isDisabled = () => false
         itemDeselect.onClick = () => {
             const selectedSurface = GameState.selectedEntities[0] as Surface
             selectedSurface.cancelJobs()
