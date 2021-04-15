@@ -47,6 +47,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Important
 - make game pausable and actually pause in escape screen (also fixes elapsed game time)
+- GunStation mesh not loaded correctly missing "head" part
 
 ### Nice to have
 - Requirements tooltip for buildings/vehicles not shown
