@@ -3,7 +3,7 @@ import { Panel } from '../base/Panel'
 import { PanelCfg } from '../../../cfg/PanelsCfg'
 import { ButtonInfoDockCfg } from './ButtonInfoDockCfg'
 import { InfoMessagesConfig } from './InfoMessagesConfig'
-import { GenericDeathEvent, GenericMonsterEvent, LandslideEvent, PowerDrainEvent, RaiderDiscoveredEvent, SlugEmergeEvent, UnderAttackEvent } from '../../../event/WorldLocationEvent'
+import { CrystalFoundEvent, GenericDeathEvent, GenericMonsterEvent, LandslideEvent, PowerDrainEvent, RaiderDiscoveredEvent, SlugEmergeEvent, UnderAttackEvent } from '../../../event/WorldLocationEvent'
 import { InfoDockButton } from './InfoDockButton'
 import { InformationPanel } from './InformationPanel'
 
@@ -20,7 +20,7 @@ export class InfoDockPanel extends Panel {
 
         this.addChild(new InfoDockButton(this, infoMessagesConfig.infoGenericDeath, GenericDeathEvent.eventKey))
         this.addChild(new InfoDockButton(this, infoMessagesConfig.infoGenericMonster, GenericMonsterEvent.eventKey))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoCrystalFound, UnderAttackEvent.eventKey))
+        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoCrystalFound, CrystalFoundEvent.eventKey))
         this.addChild(new InfoDockButton(this, infoMessagesConfig.infoUnderAttack, UnderAttackEvent.eventKey))
         this.addChild(new InfoDockButton(this, infoMessagesConfig.infoLandslide, LandslideEvent.eventKey))
         this.addChild(new InfoDockButton(this, infoMessagesConfig.infoPowerDrain, PowerDrainEvent.eventKey))
