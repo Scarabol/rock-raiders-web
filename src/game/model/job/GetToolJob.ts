@@ -1,13 +1,14 @@
 import { Job, JobType } from './Job'
 import { Vector3 } from 'three'
 import { JOB_ACTION_RANGE } from '../../../main'
+import { RaiderTool } from '../../../scene/model/RaiderTool'
 
 export class GetToolJob extends Job {
 
     target: Vector3
-    tool: string
+    tool: RaiderTool
 
-    constructor(target: Vector3, tool: string) {
+    constructor(target: Vector3, tool: RaiderTool) {
         super(JobType.GET_TOOL)
         this.target = target
         this.tool = tool

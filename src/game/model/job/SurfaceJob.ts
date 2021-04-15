@@ -6,24 +6,25 @@ import { Dynamite } from '../../../scene/model/collect/Dynamite'
 import { JobType, PublicJob } from './Job'
 import { SurfaceType } from '../../../scene/model/map/SurfaceType'
 import { CollectableEntity } from '../../../scene/model/collect/CollectableEntity'
-import { RaiderSkills, RaiderTools } from '../../../scene/model/Raider'
+import { RaiderSkill } from '../../../scene/model/RaiderSkill'
+import { RaiderTool } from '../../../scene/model/RaiderTool'
 
 export class SurfaceJobType {
 
     color: number
-    requiredTool: string
-    requiredSkill: string
+    requiredTool: RaiderTool
+    requiredSkill: RaiderSkill
 
-    constructor(color: number, requiredTools: string, requiredSkills: string) {
+    constructor(color: number, requiredTool: RaiderTool, requiredSkill: RaiderSkill) {
         this.color = color
-        this.requiredTool = requiredTools
-        this.requiredSkill = requiredSkills
+        this.requiredTool = requiredTool
+        this.requiredSkill = requiredSkill
     }
 
-    static readonly DRILL = new SurfaceJobType(0xa0a0a0, RaiderTools.DRILL, null)
-    static readonly REINFORCE = new SurfaceJobType(0x60a060, RaiderTools.HAMMER, null)
-    static readonly BLOW = new SurfaceJobType(0xa06060, null, RaiderSkills.DEMOLITION)
-    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, RaiderTools.SHOVEL, null)
+    static readonly DRILL = new SurfaceJobType(0xa0a0a0, RaiderTool.DRILL, null)
+    static readonly REINFORCE = new SurfaceJobType(0x60a060, RaiderTool.HAMMER, null)
+    static readonly BLOW = new SurfaceJobType(0xa06060, null, RaiderSkill.DEMOLITION)
+    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, RaiderTool.SHOVEL, null)
 
 }
 
@@ -43,11 +44,11 @@ export class SurfaceJob extends PublicJob {
             && (!this.workType.requiredSkill || fulfiller.hasSkill(this.workType.requiredSkill))
     }
 
-    isQualifiedWithTool(fulfiller: FulfillerEntity): string {
+    isQualifiedWithTool(fulfiller: FulfillerEntity): RaiderTool {
         return this.workType.requiredTool
     }
 
-    isQualifiedWithTraining(fulfiller: FulfillerEntity): string {
+    isQualifiedWithTraining(fulfiller: FulfillerEntity): RaiderSkill {
         return this.workType.requiredSkill
     }
 

@@ -11,6 +11,8 @@ import { GetToolJob } from './model/job/GetToolJob'
 import { TrainJob } from './model/job/TrainJob'
 import { clearIntervalSafe } from '../core/Util'
 import { SurfaceJob, SurfaceJobType } from './model/job/SurfaceJob'
+import { RaiderSkill } from '../scene/model/RaiderSkill'
+import { RaiderTool } from '../scene/model/RaiderTool'
 
 export class Supervisor {
 
@@ -63,12 +65,12 @@ export class Supervisor {
             let closestToolRaiderIndex: number = null
             let minToolDistance: number = null
             let closestToolstationPosition: Vector3 = null
-            let closestNeededTool: string = null
+            let closestNeededTool: RaiderTool = null
             let closestTrainingRaider: Raider = null
             let closestTrainingRaiderIndex: number = null
             let minTrainingDistance: number = null
             let closestTrainingLocation: Vector3 = null
-            let closestNeededTraining: string = null
+            let closestNeededTraining: RaiderSkill = null
             unemployedRaider.forEach((raider, index) => {
                 const raiderPosition = raider.getPosition()
                 if (job.isQualified(raider)) {

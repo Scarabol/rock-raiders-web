@@ -1,6 +1,8 @@
 import { Vector3 } from 'three'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { removeFromArray } from '../../../core/Util'
+import { RaiderSkill } from '../../../scene/model/RaiderSkill'
+import { RaiderTool } from '../../../scene/model/RaiderTool'
 
 export enum JobType {
 
@@ -54,11 +56,11 @@ export abstract class Job {
         return true
     }
 
-    isQualifiedWithTool(fulfiller: FulfillerEntity): string {
+    isQualifiedWithTool(fulfiller: FulfillerEntity): RaiderTool {
         return null
     }
 
-    isQualifiedWithTraining(fulfiller: FulfillerEntity): string {
+    isQualifiedWithTraining(fulfiller: FulfillerEntity): RaiderSkill {
         return null
     }
 

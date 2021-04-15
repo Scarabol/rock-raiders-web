@@ -19,37 +19,18 @@ import { CollectJob } from '../../game/model/job/CollectJob'
 import { TrainJob } from '../../game/model/job/TrainJob'
 import { GetToolJob } from '../../game/model/job/GetToolJob'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { RaiderTool } from './RaiderTool'
 import degToRad = MathUtils.degToRad
-
-export class RaiderSkills {
-
-    static DRIVER = 'driver'
-    static ENGINEER = 'engineer'
-    static GEOLOGIST = 'geologist'
-    static PILOT = 'pilot'
-    static SAILOR = 'sailor'
-    static DEMOLITION = 'demolition'
-
-}
-
-export class RaiderTools {
-
-    static DRILL = 'drill'
-    static HAMMER = 'hammer'
-    static SHOVEL = 'shovel'
-    static SPANNER = 'SPANNER'
-    static FREEZERGUN = 'freezergun'
-    static LASER = 'laser'
-    static PUSHERGUN = 'pushergun'
-    static BIRDSCARER = 'birdscarer'
-
-}
+import { RaiderSkill } from './RaiderSkill'
 
 export class Raider extends FulfillerEntity {
 
+    tools: RaiderTool[] = []
+    skills: RaiderSkill[] = []
+
     constructor() {
         super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae')
-        this.tools = [RaiderTools.DRILL]
+        this.tools = [RaiderTool.DRILL]
         this.skills = []
         this.pickSphereRadius = this.stats.PickSphere / 2
     }
@@ -278,6 +259,14 @@ export class Raider extends FulfillerEntity {
     removeFromScene() {
         super.removeFromScene()
         removeFromArray(GameState.raiders, this)
+    }
+
+    hasTool(tool: RaiderTool) {
+        return this.tools.indexOf(tool) !== -1
+    }
+
+    hasSkill(skill: RaiderSkill) {
+        return this.skills.indexOf(skill) !== -1
     }
 
 }

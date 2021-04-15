@@ -6,6 +6,7 @@ import { Vector3 } from 'three'
 import { Surface } from '../scene/model/map/Surface'
 import { BuildingEntity } from '../scene/model/BuildingEntity'
 import { FulfillerEntity } from '../scene/model/FulfillerEntity'
+import { RaiderSkill } from '../scene/model/RaiderSkill'
 
 export class WorldEvent extends GameEvent {
 
@@ -177,9 +178,9 @@ export class RaiderTrained extends WorldEvent {
     static eventKey = 'trained.raider'
 
     entity: FulfillerEntity
-    skill: string
+    skill: RaiderSkill
 
-    constructor(raider: FulfillerEntity, skill: string) {
+    constructor(raider: FulfillerEntity, skill: RaiderSkill) {
         super(RaiderTrained.eventKey)
         this.entity = raider
         this.skill = skill

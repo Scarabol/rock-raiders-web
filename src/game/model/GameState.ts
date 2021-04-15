@@ -1,7 +1,7 @@
 import { BuildingEntity } from '../../scene/model/BuildingEntity'
 import { Building } from './entity/building/Building'
 import { Selectable, SelectionType } from './Selectable'
-import { Raider } from '../../scene/model/Raider'
+import { Raider} from '../../scene/model/Raider'
 import { VehicleEntity } from '../../scene/model/VehicleEntity'
 import { CollectableEntity, CollectableType } from '../../scene/model/collect/CollectableEntity'
 import { Vector3 } from 'three'
@@ -19,6 +19,7 @@ import { PriorityList } from './job/PriorityList'
 import { SmallSpider } from './entity/monster/SmallSpider'
 import { Bat } from './entity/monster/Bat'
 import { removeFromArray } from '../../core/Util'
+import { RaiderSkill } from '../../scene/model/RaiderSkill'
 
 export enum GameResultState {
 
@@ -133,12 +134,8 @@ export class GameState {
         return this.buildings.some((b) => b.type === building && b.level >= upgrades)
     }
 
-    static hasVehicleWithSkill(skillName: string): boolean {
-        return false // TODO implement vehicles
-    }
-
-    static getClosestTrainingSite(position: Vector3, training: string): BuildingEntity {
-        if (training === 'demolition') { // FIXME refactor this
+    static getClosestTrainingSite(position: Vector3, training: RaiderSkill): BuildingEntity {
+        if (training === RaiderSkill.DEMOLITION) {
             const targetBuildings = this.buildings.filter((b) => {
                 return b.stats.TrainDynamite && b.stats.TrainDynamite[b.level]
             })

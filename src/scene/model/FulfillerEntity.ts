@@ -8,6 +8,8 @@ import { clearIntervalSafe } from '../../core/Util'
 import { Carryable } from './collect/Carryable'
 import { SelectionEvent } from '../../event/LocalEvents'
 import { BaseActivity } from './activities/BaseActivity'
+import { RaiderSkill } from './RaiderSkill'
+import { RaiderTool } from './RaiderTool'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
@@ -17,8 +19,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     job: Job = null
     followUpJob: Job = null
     jobSubPos: Vector3 = null
-    tools: string[] = []
-    skills: string[] = []
     carries: Carryable = null // FIXME implement multi carry for vehicles
     carryTarget: Vector3 = null
 
@@ -80,13 +80,9 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.changeActivity(this.getStandActivity())
     }
 
-    hasTool(toolname: string) {
-        return this.tools.indexOf(toolname) !== -1
-    }
+    abstract hasTool(tool: RaiderTool)
 
-    hasSkill(skillKey: string) {
-        return this.skills.indexOf(skillKey) !== -1
-    }
+    abstract hasSkill(skill: RaiderSkill)
 
     getSelectionType(): SelectionType {
         return this.selectionType

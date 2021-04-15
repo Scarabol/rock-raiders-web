@@ -1,13 +1,14 @@
 import { Job, JobType } from './Job'
 import { Vector3 } from 'three'
 import { TILESIZE } from '../../../main'
+import { RaiderSkill } from '../../../scene/model/RaiderSkill'
 
 export class TrainJob extends Job {
 
     target: Vector3
-    skill: string
+    skill: RaiderSkill
 
-    constructor(target: Vector3, skill: string) {
+    constructor(target: Vector3, skill: RaiderSkill) {
         super(JobType.TRAIN)
         this.target = target
         this.skill = skill
