@@ -70,7 +70,7 @@ export class OverlayLayer extends GuiBaseLayer {
                 }
             }
         }
-        return result || this.isActive() // catch em all
+        return result
     }
 
 }
