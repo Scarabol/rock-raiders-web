@@ -1,9 +1,7 @@
 node_modules/
 *.log
 
-LegoRR0
-LegoRR1
+/wad
 
 /.idea
 /dist
-
