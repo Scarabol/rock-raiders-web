@@ -79,12 +79,14 @@ export class ObjectListLoader {
                     secondarySurface.updateTexture()
                     entity.surfaces.push(secondarySurface)
                 }
-                const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading - Math.PI)
-                pathOffset.add(entity.group.position)
-                const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
-                pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
-                pathSurface.updateTexture()
-                entity.surfaces.push(pathSurface)
+                if (building !== Building.GUNSTATION) {
+                    const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading - Math.PI)
+                    pathOffset.add(entity.group.position)
+                    const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
+                    pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
+                    pathSurface.updateTexture()
+                    entity.surfaces.push(pathSurface)
+                }
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 worldMgr.addCollectable(new Crystal(), worldX, worldZ)
             } else if (lTypeName === 'SmallSpider'.toLowerCase()) {
