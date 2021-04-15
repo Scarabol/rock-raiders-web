@@ -18,7 +18,7 @@ export class IconPanelButtonLabel extends BaseElement {
         if (!requestedRaiders) return
         context.textAlign = 'left'
         context.font = 'bold 10px Arial'
-        context.fillStyle = '#fff'
+        context.fillStyle = this.disabled || (this.parent && this.parent.disabled) ? '#444' : '#fff'
         context.fillText(requestedRaiders.toString(), this.x, this.y)
         super.onRedraw(context)
     }

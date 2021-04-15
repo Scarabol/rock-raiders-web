@@ -49,8 +49,9 @@ export class MainPanel extends Panel {
         const selectVehiclePanel = this.addSubPanel(new SelectVehiclePanel(this.mainPanel))
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
         teleportRaider.isDisabled = () => GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).length < 1
-            || GameState.raiders.length >= GameState.getMaxRaiders()
-        teleportRaider.updateState() // TODO auto call this for each button, when icon panel is shown
+            || GameState.raiders.length + GameState.requestedRaiders >= GameState.getMaxRaiders()
+        teleportRaider.updateState()
+        EventBus.registerEventListener(RaiderRequested.eventKey, () => teleportRaider.updateState())
         EventBus.registerEventListener(EntityAddedEvent.eventKey, (event: EntityAddedEvent) => {
             // TODO add event inheritance by using event key prefix checking
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) teleportRaider.updateState()
