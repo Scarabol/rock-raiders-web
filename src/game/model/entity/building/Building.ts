@@ -1,6 +1,6 @@
 export class Building {
 
-    // TODO read building types from cfg at BuildingTypes
+    // XXX dynamically read building types from cfg at BuildingTypes
     static readonly TOOLSTATION = new Building('Toolstation', 'Buildings/Toolstation', 130, 10)
     static readonly TELEPORT_PAD = new Building('TeleportPad', 'Buildings/Teleports')
     static readonly DOCKS = new Building('Docks', 'Buildings/Docks')

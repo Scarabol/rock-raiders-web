@@ -36,7 +36,6 @@ export class MainMenuLayer extends ScaledLayer {
                 this.items.push(new MainMenuIconButton(this, item))
             }
         })
-        // TODO implement other elements like itemsTrigger
 
         this.items.sort((a, b) => MainMenuBaseItem.compareZ(a, b))
 
@@ -48,7 +47,7 @@ export class MainMenuLayer extends ScaledLayer {
     }
 
     handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
-        if (eventEnum === POINTER_EVENT.MOVE) { // TODO scroll when close to menu top/bottom border
+        if (eventEnum === POINTER_EVENT.MOVE) { // FIXME scroll when close to menu top/bottom border
             const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
             let hovered = false
             this.items.forEach((item) => {

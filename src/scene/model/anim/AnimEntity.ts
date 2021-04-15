@@ -32,7 +32,7 @@ export abstract class AnimEntity extends BaseEntity {
         // TODO avoid all further state changes and mark as unavailable here
         // TODO publish event: check jobs with this target, update power state...
         EventBus.publishEvent(new EntityDeselected())
-        this.setActivity(BuildingActivity.Stand, () => { // TODO drop stuff, resources in process, ect.
+        this.setActivity(BuildingActivity.Stand, () => { // FIXME don't use BuildingActivity
             // TODO insert beam animation
             AnimEntity.moveUp(this, 6 * TILESIZE)
         })

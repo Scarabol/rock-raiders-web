@@ -138,7 +138,7 @@ export class GameState {
     }
 
     static getClosestTrainingSite(position: Vector3, training: string): BuildingEntity {
-        if (training === 'demolition') { // TODO refactor this
+        if (training === 'demolition') { // FIXME refactor this
             const targetBuildings = this.buildings.filter((b) => {
                 return b.stats.TrainDynamite && b.stats.TrainDynamite[b.level]
             })

@@ -23,7 +23,7 @@ export class Dynamite extends AnimEntity implements Carryable {
 
     getTargetPos(): Vector3 {
         if (this.targetSurface && this.targetSurface.isExplodable()) {
-            return this.targetSurface.getDigPositions()[0] // TODO find closest dig position
+            return this.targetSurface.getDigPositions()[0] // FIXME find closest dig position
         } else {
             return GameState.getClosestBuildingByType(this.getPosition(), Building.TOOLSTATION).getDropPosition()
         }
@@ -34,7 +34,8 @@ export class Dynamite extends AnimEntity implements Carryable {
     }
 
     ignite() {
-        this.worldMgr.sceneManager.scene.add(this.group) // TODO add as explosive and scare em all!
+        // TODO add as explosive and scare em all!
+        this.worldMgr.sceneManager.scene.add(this.group)
         const center = this.targetSurface.getCenterWorld()
         center.y = this.group.position.y
         this.group.lookAt(center)

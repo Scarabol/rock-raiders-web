@@ -37,7 +37,7 @@ export class LWSCLoader {
             throw 'Invalid start of file! Expected \'LWSC\' in first line'
         }
 
-        const numOfModels = parseInt(this.lines[1], 10) // TODO is this correct? May be something else
+        const numOfModels = parseInt(this.lines[1], 10) // FIXME check website, could be something else
         if (numOfModels !== 1) {
             console.warn('Number of models has unexpected value: ' + numOfModels)
         }
@@ -54,7 +54,7 @@ export class LWSCLoader {
             } else if (line.startsWith('PreviewFirstFrame ') || line.startsWith('PreviewLastFrame ') || line.startsWith('PreviewFrameStep ')) {
                 // only used in editor
             } else {
-                // console.warn('Unexpected line: ' + line); // TODO debug logging, analyze remaining entries
+                // console.warn('Unexpected line: ' + line); // TODO analyze remaining entries
             }
         }
 
@@ -101,7 +101,7 @@ export class LWSCLoader {
                     const filename = getFilename(value)
                     subObj.name = filename.slice(0, filename.length - '.lwo'.length)
                     subObj.filename = this.path + filename
-                    // TODO do not parse twice, read from cache first
+                    // FIXME do not parse twice, read from cache first
                     const lwoBuffer = ResourceManager.getResource(subObj.filename)
                     subObj.model = new LWOLoader(this.path).parse(lwoBuffer)
                 } else if (key === 'AddNullObject') {
@@ -157,7 +157,7 @@ export class LWSCLoader {
                     subObj.setOpacityAndFollowing(0, this.animationClip.lastFrame, opacity)
                 }
             } else {
-                // console.log('Unhandled line in object block: ' + line); // TODO debug logging
+                // console.log('Unhandled line in object block: ' + line); // TODO analyze unhandled lines
             }
         }
         console.error('Parsing block reached content end')

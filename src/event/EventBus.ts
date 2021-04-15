@@ -2,7 +2,7 @@ import { removeFromArray } from '../core/Util'
 
 export class EventBus {
 
-    static eventListener = {} // TODO use map
+    static eventListener = {} // FIXME use map
     static blockedEvents = []
 
     static publishEvent(event: GameEvent) {

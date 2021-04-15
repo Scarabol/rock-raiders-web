@@ -32,7 +32,7 @@ export class SelectFloorPanel extends SelectBasePanel {
             GameState.buildingSites.push(site)
             EventBus.publishEvent(new EntityDeselected())
         }
-        pathItem.isDisabled = () => GameState.selectedSurface?.hasRubble() // TODO introduce GameState getselected surface
+        pathItem.isDisabled = () => GameState.selectedSurface?.hasRubble()
         EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, () => pathItem.updateState())
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_RemovePath')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence')

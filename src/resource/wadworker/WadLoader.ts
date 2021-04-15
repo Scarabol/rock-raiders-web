@@ -260,7 +260,6 @@ export class WadLoader {
         try {
             lwoContent = this.wad0File.getEntryBuffer(lwoFilepath)
         } catch (e) {
-            // console.log('load failed for ' + subObj.filename + ' trying shared path at ' + sharedPath + filename + '; error: ' + e); // TODO debug logging
             try {
                 lwoContent = this.wad0File.getEntryBuffer('world/shared/' + getFilename(lwoFilepath))
             } catch (e) {
@@ -340,7 +339,6 @@ export class WadLoader {
         this.addTextureFolder('MiscAnims/Crystal/')
         const orePath = iGet(mainConf, 'MiscObjects', 'Ore')
         this.addAsset(this.loadLWOFile, orePath + '.lwo')
-        this.addAsset(this.loadWadTexture, 'MiscAnims/Ore/Ore.bmp') // TODO this could be extracted from LWO file
         this.addAsset(this.loadLWOFile, 'World/Shared/Brick.lwo')
         this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ProcessedOre') + '.lwo')
         this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae')
@@ -576,7 +574,7 @@ export class WadLoader {
                         resolve(wadFile)
                     })
                 }
-            }) // TODO error handling
+            }) // FIXME error handling
         })
     }
 

@@ -7,7 +7,7 @@ import { ButtonCfg } from './ButtonsCfg'
 
 export class BriefingPanelCfg extends PanelCfg {
 
-    // TODO find config values for this class
+    // XXX find config values for this class
 
     titleFont: BitmapFont
     title: string

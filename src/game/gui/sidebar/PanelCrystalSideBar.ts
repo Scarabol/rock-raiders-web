@@ -20,7 +20,7 @@ export class PanelCrystalSideBar extends Panel {
 
     constructor(panelCfg: PanelCfg, buttonsCfg: ButtonCrystalSideBarCfg) {
         super(panelCfg)
-        this.labelOre = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarOre, GameState.numOre.toString())) // TODO include number of bricks
+        this.labelOre = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarOre, GameState.numOre.toString())) // FIXME include number of bricks
         this.labelCrystal = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarCrystals, GameState.numCrystal.toString()))
         this.imgNoCrystal = ResourceManager.getImage('Interface/RightPanel/NoSmallCrystal.bmp')
         this.imgSmallCrystal = ResourceManager.getImage('Interface/RightPanel/SmallCrystal.bmp')
@@ -41,7 +41,7 @@ export class PanelCrystalSideBar extends Panel {
     }
 
     onRedraw(context: CanvasRenderingContext2D) {
-        this.labelOre.label = GameState.numOre.toString() // TODO include number of bricks
+        this.labelOre.label = GameState.numOre.toString() // FIXME include number of bricks
         this.labelCrystal.label = GameState.numCrystal.toString()
         super.onRedraw(context)
         // draw crystals

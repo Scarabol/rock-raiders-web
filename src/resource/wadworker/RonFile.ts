@@ -2,6 +2,8 @@
 
 export class RonFile {
 
+    // FIXME run performance check on ALL the parsed config files, which technique works best?
+    
     parse(content: string) { // TODO read from ArrayBuffer and fix encoding?
         const lines: string[][] = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces

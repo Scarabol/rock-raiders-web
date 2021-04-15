@@ -40,11 +40,11 @@ export class WorldManager {
             }
         })
         EventBus.registerEventListener(SpawnDynamiteEvent.eventKey, (event: SpawnDynamiteEvent) => {
-            const targetBuilding = GameState.getClosestBuildingByType(event.surface.getDigPositions()[0], Building.TOOLSTATION)
+            const targetBuilding = GameState.getClosestBuildingByType(event.surface.getCenterWorld(), Building.TOOLSTATION)
             if (!targetBuilding) {
                 throw 'Could not find toolstation to spawn dynamite'
             }
-            const pos = targetBuilding.getDropPosition() // TODO use ToolNullName from cfg
+            const pos = targetBuilding.getDropPosition() // FIXME use ToolNullName from cfg
             const dynamite = new Dynamite()
             dynamite.targetSurface = event.surface
             dynamite.worldMgr = this

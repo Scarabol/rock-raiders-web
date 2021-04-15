@@ -127,9 +127,9 @@ export class SceneManager {
 
     setupScene() {
         this.scene = new Scene()
-        // this.scene.fog = new FogExp2(0x6e6e9b, 0.05); // TODO derive from level config
+        // this.scene.fog = new FogExp2(0x6e6e9b, 0.05); // FIXME derive from level config
 
-        this.amb = new AmbientLight(0x808080) // TODO use "cave" light setup
+        this.amb = new AmbientLight(0x808080) // FIXME use "cave" light setup
         this.scene.add(this.amb)
 
         this.cursorTorchlight = new PointLight(0xffffff, 1, 7, 2)
@@ -158,7 +158,7 @@ export class SceneManager {
         this.terrain?.dispose()
         this.terrain = null
         SceneManager.meshRegistry.forEach(mesh => {
-            // TODO stop animation intervals/timeouts
+            // FIXME stop animation intervals/timeouts
             mesh.geometry.dispose() // TODO refactor better handle on entity level
             Array.isArray(mesh.material) ? mesh.material.forEach(mat => mat.dispose()) : mesh.material?.dispose()
         })

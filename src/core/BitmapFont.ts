@@ -26,7 +26,7 @@ export class BitmapFont {
             '', '', '', '', '', '', '', '', '', '',
             '', '', '', 'ß', '', '', '', 'Ñ', '', 'ñ',
             '',
-        ] // TODO complete this character list
+        ] // XXX complete this character list
 
         const maxCharWidth = fontImageData.width / cols
         this.charHeight = fontImageData.height / rows

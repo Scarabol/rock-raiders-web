@@ -106,16 +106,16 @@ export class Surface implements Selectable {
             }
         }
         // update meshes
-        this.terrain.updateSurfaceMeshes()
+        this.terrain.updateSurfaceMeshes() // FIXME update only neighbors
         this.terrain.floorGroup.updateWorldMatrix(true, true)
-        // drop contained crystals and ores
+        // drop contained crystals and ores // FIXME this should happen before collapsing neighbors
         for (let c = 0; c < this.containedCrystals; c++) {
             const [x, z] = this.getRandomPosition()
             const crystal = this.terrain.worldMgr.addCollectable(new Crystal(), x, z)
             EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
         }
         this.dropContainedOre(this.containedOres - 4)
-        // TODO workaround until buildings can be placed without terrain ray intersection
+        // FIXME workaround until buildings can be placed without terrain ray intersection
         GameState.buildings.forEach((b) => b.group.position.y = this.terrain.worldMgr.getTerrainHeight(b.group.position.x, b.group.position.z))
     }
 

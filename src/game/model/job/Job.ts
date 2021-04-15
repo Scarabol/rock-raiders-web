@@ -66,7 +66,7 @@ export abstract class Job {
         this.jobstate = JobState.COMPLETE
     }
 
-    abstract getPosition(): Vector3; // TODO job system in 2d should be sufficient and decouple from three for deps and worker reasons
+    abstract getPosition(): Vector3;
 
     abstract isInArea(x: number, z: number): boolean;
 

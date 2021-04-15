@@ -19,7 +19,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     jobSubPos: Vector3 = null
     tools: string[] = []
     skills: string[] = []
-    carries: Carryable = null // TODO implement multi carry for vehicles
+    carries: Carryable = null // FIXME implement multi carry for vehicles
     carryTarget: Vector3 = null
 
     protected constructor(selectionType: SelectionType, aeFilename: string) {
@@ -39,7 +39,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         const result = super.moveToTarget(target)
         if (!result) {
             console.log('Entity could not move to job target, stopping job')
-            this.stopJob() // TODO what about other targets for the same purpose that may be reachable?
+            this.stopJob()
         }
         return result
     }

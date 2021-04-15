@@ -55,7 +55,7 @@ export class LoadingScreen extends BaseScreen {
             const loadingBarWidth = 353 * this.assetIndex / this.totalResources * screenZoom
             context.drawImage(imgBackground, 0, 0, this.width, this.height)
             context.drawImage(imgProgress, 142 * screenZoom, 450 * screenZoom, loadingBarWidth, 9 * screenZoom)
-            // TODO show LoadingText from cfg
+            // FIXME show LoadingText from cfg
         })
         this.cursorLayer.show()
         this.redraw()

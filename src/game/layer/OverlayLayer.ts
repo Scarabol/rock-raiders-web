@@ -23,12 +23,6 @@ export class OverlayLayer extends GuiBaseLayer {
         this.panelBriefing = this.addPanel(new BriefingPanel(new BriefingPanelCfg()))
         // link items
         this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
-        this.panelPause.onAbortGame = () => {
-            console.log('TODO abort game here') // TODO abort game
-        }
-        this.panelPause.onRestartGame = () => {
-            console.log('TODO restart game here') // TODO restart game
-        }
         this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
     }
 

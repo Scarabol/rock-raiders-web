@@ -40,7 +40,7 @@ export class AnimEntityLoader {
                 const polyname = highPoly[key] + '.lwo'
                 const polykey = key.startsWith('!') ? key.slice(1) : key
                 // console.log(path + polyname);
-                // TODO do not parse twice, read from cache first
+                // FIXME do not parse twice, read from cache first
                 const lwoBuffer = ResourceManager.getResource(path + polyname)
                 entityType.highPoly[polykey] = SceneManager.registerMesh(new LWOLoader(path).parse(lwoBuffer))
             })

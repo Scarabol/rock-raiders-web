@@ -55,7 +55,7 @@ export class Supervisor {
             return Math.sign(GameState.priorityList.getPriority(left) - GameState.priorityList.getPriority(right))
         })
         const unemployedRaider = GameState.raiders.filter((r) => !r.job)
-        availableJobs.forEach((job) => { // TODO refactor: better use estimated time to complete as metric
+        availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
             let closestRaider: Raider = null
             let closestRaiderIndex: number = null
             let minDistance: number = null

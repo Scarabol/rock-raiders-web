@@ -118,7 +118,7 @@ export class WadFileSelectionModal {
         btnStartUrl.innerText = 'Start Game'
         btnStartUrl.addEventListener('click', () => {
             btnStartUrl.disabled = true
-            // TODO show loading progress for WAD files
+            // XXX show loading progress for WAD files
             this.onStart(wad0Url.value, wad1Url.value)
         })
     }

@@ -116,7 +116,7 @@ export class RewardScreen extends BaseScreen {
         resultValues.push(this.fonts['constructions'].createTextImage(GameState.buildings.length.toString()))
         resultValues.push(this.fonts['caverns'].createTextImage(this.percentString(GameState.discoveredCaverns, GameState.totalCaverns)))
         resultValues.push(this.fonts['figures'].createTextImage(this.percentString(GameState.raiders.length, GameState.getMaxRaiders())))
-        resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(0))) // TODO show defence report
+        resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(0))) // TODO show defence report, is either 0% or 100%
         resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(GameState.airlevel)))
         resultValues.push(this.fonts['timer'].createTextImage(this.timeString(GameState.gameTimeSeconds)))
         resultValues.push(this.fonts['score'].createTextImage(this.percentString(GameState.score)))

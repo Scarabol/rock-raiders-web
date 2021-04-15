@@ -1,3 +1,5 @@
+// noinspection JSUnusedLocalSymbols
+
 /**
  * @author Marcus-Bizal https://github.com/marcbizal
  * patched by Scarabol
@@ -220,7 +222,7 @@ function planarMapUVS(geometry, vertices, uvs, indices, materialIndex, size, cen
             }
         }
     } else {
-        // console.warn("LWOLoader.planarMapUVS: No axis bit is set!"); // TODO what is this about
+        // console.warn("LWOLoader.planarMapUVS: No axis bit is set!"); // XXX what is this about
     }
 }
 
@@ -468,11 +470,11 @@ export class LWOLoader {
                             const sequenceNames = ResourceManager.filterTextureSequenceNames(match[1])
                             if (sequenceNames) {
                                 let seqNum = 0
-                                setInterval(() => { // TODO need to keep track on these intervals?
+                                setInterval(() => { // FIXME need to keep track on these intervals?
                                     material.map = ResourceManager.getTexture(sequenceNames[seqNum])
                                     seqNum++
                                     if (seqNum >= sequenceNames.length) seqNum = 0
-                                }, 1000 / 5) // TODO 5? FPS for texture animations?
+                                }, 1000 / 5) // FIXME Externalize FPS for texture animations
                                 material.transparent = true
                             }
                         }

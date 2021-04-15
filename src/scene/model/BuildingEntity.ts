@@ -89,7 +89,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     upgrade() {
-        const costOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre') || 5 // TODO implement bricks use BuildingUpgradeCostStuds
+        const costOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre') || 5 // FIXME implement bricks use BuildingUpgradeCostStuds
         if (GameState.numOre < costOre || this.hasMaxLevel()) return
         GameState.numOre -= costOre
         this.level++

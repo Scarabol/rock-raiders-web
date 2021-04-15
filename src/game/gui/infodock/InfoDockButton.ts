@@ -52,7 +52,7 @@ export class InfoDockButton extends Button {
             this.animationTimeout = setTimeout(() => that.updateAnimation(targetX, targetY, onDone), 1000 / NATIVE_FRAMERATE)
         }
         this.updatePosition()
-        this.notifyRedraw() // FIXME performance: sync redraw for all animations on this layer (if hasAnimation, use requestAnimationFrame)
+        this.notifyRedraw()
     }
 
     onRedraw(context: CanvasRenderingContext2D) {
