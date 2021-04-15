@@ -20,13 +20,7 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     getSpeed(): number {
-        let speed = this.stats.RouteSpeed[this.level]
-        if (this.isOnRubble()) {
-            speed *= this.stats.RubbleCoef
-        } else if (this.isOnPath()) {
-            speed *= this.stats.PathCoef
-        }
-        return speed
+        return this.stats.RouteSpeed[this.level] * (this.animation?.transcoef || 1) * (this.isOnPath() ? this.stats.PathCoef : 1)
     }
 
     moveToTarget(target: Vector3): boolean {
