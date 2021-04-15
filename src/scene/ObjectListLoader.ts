@@ -10,12 +10,11 @@ import { Crystal } from './model/collect/Crystal'
 import { WorldManager } from './WorldManager'
 import { EventBus } from '../event/EventBus'
 import { EntityAddedEvent, EntityType } from '../event/WorldEvents'
-import { BuildingActivity } from './model/activities/BuildingActivity'
 import { RaiderActivity } from './model/activities/RaiderActivity'
 import { SmallSpider } from '../game/model/entity/monster/SmallSpider'
 import { MonsterActivity } from './model/activities/MonsterActivity'
-import degToRad = MathUtils.degToRad
 import { Bat } from '../game/model/entity/monster/Bat'
+import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
 
@@ -55,7 +54,7 @@ export class ObjectListLoader {
                 const building = Building.getByName(buildingType)
                 const entity = new BuildingEntity(building)
                 entity.worldMgr = worldMgr
-                entity.setActivity(BuildingActivity.Stand)
+                entity.setActivity(entity.getStandActivity())
                 entity.createPickSphere()
                 entity.group.position.set(worldX, worldY, worldZ)
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), -radHeading - Math.PI)

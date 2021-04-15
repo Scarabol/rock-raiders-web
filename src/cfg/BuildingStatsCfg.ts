@@ -29,6 +29,8 @@ export class BuildingStatsCfg extends BaseConfig {
     oxygenCoef: number = 0
     engineSound: string = null
     showHealthBar: boolean = false
+    tracker: boolean = false
+    canDoubleSelect: boolean = false
 
     constructor(cfgObj: any) {
         super()

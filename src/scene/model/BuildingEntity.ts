@@ -10,6 +10,7 @@ import { BuildingUpgraded, CollectEvent, EntityAddedEvent, EntityType } from '..
 import { Surface } from './map/Surface'
 import { CollectableType } from './collect/CollectableEntity'
 import degToRad = MathUtils.degToRad
+import { BuildingActivity } from './activities/BuildingActivity'
 
 export class BuildingEntity extends AnimEntity implements Selectable {
 
@@ -87,6 +88,10 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         EventBus.publishEvent(new CollectEvent(CollectableType.ORE))
         EventBus.publishEvent(new EntityDeselected())
         EventBus.publishEvent(new BuildingUpgraded(this))
+    }
+
+    getStandActivity() {
+        return !this.isPowered() && this.type !== Building.GUNSTATION ? BuildingActivity.Unpowered : BuildingActivity.Stand
     }
 
 }
