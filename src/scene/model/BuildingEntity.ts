@@ -25,6 +25,8 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     powerLink: boolean = false
     spawning: boolean = false
     surfaces: Surface[] = []
+    upgradeCostOre: number = 5
+    upgradeCostBrick: number = 1
 
     constructor(buildingType: Building) {
         super(ResourceManager.getAnimationEntityType(buildingType.aeFile))
@@ -32,6 +34,8 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
         this.pickSphereRadius = this.stats.PickSphere / 2
+        this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre') || 5
+        this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds') || 5
     }
 
     get stats(): BuildingEntityStats {
@@ -89,11 +93,15 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     upgrade() {
-        const costOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre') || 5 // FIXME implement bricks use BuildingUpgradeCostStuds
-        if (GameState.numOre < costOre || this.hasMaxLevel()) return
-        GameState.numOre -= costOre
+        if (!this.canUpgrade()) return
+        if (GameState.numBrick >= this.upgradeCostBrick) {
+            GameState.numBrick -= this.upgradeCostBrick
+            EventBus.publishEvent(new CollectEvent(CollectableType.BRICK))
+        } else {
+            GameState.numOre -= this.upgradeCostOre
+            EventBus.publishEvent(new CollectEvent(CollectableType.ORE)) // FIXME refactor merge with SpawnMaterialEvent into MaterialAmountChangedEvent
+        }
         this.level++
-        EventBus.publishEvent(new CollectEvent(CollectableType.ORE))
         EventBus.publishEvent(new EntityDeselected())
         EventBus.publishEvent(new BuildingUpgraded(this))
     }
@@ -123,4 +131,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         removeFromArray(GameState.buildings, this)
     }
 
+    canUpgrade() {
+        return !this.hasMaxLevel() && (GameState.numOre >= this.upgradeCostOre || GameState.numBrick >= this.upgradeCostBrick)
+    }
 }

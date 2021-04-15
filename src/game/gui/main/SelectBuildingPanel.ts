@@ -12,7 +12,7 @@ export class SelectBuildingPanel extends SelectBasePanel {
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Repair')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PowerOff') // TODO other option is Interface_MenuItem_PowerOn
         const upgradeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeBuilding')
-        upgradeItem.isDisabled = () => GameState.numOre < 5 || GameState.selectedBuilding?.hasMaxLevel()
+        upgradeItem.isDisabled = () => !GameState.selectedBuilding?.canUpgrade()
         upgradeItem.updateState()
         upgradeItem.onClick = () => GameState.selectedBuilding?.upgrade()
         const deleteBuildingItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteBuilding')

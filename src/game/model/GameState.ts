@@ -256,4 +256,8 @@ export class GameState {
         return (this.selectionType === SelectionType.PILOT || this.selectionType === SelectionType.GROUP) && this.selectedEntities.length > 0 ? this.selectedEntities as Raider[] : []
     }
 
+    static get totalOre(): number {
+        return this.numOre + this.numBrick * 5
+    }
+
 }
