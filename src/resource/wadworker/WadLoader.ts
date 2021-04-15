@@ -627,6 +627,13 @@ export class WadLoader {
                     resolve()
                 })
             }),
+            new Promise<void>((resolve) => {
+                const name = 'Interface/Fonts/Font5_Hi.bmp'
+                this.loadFontImageAsset(name, (imgData) => {
+                    this.onAssetLoaded(0, name, imgData)
+                    resolve()
+                })
+            }),
         ]).then(() => {
             this.onMessage('Start loading assets...')
             this.totalResources = this.assetsFromCfgByName.size

@@ -28,7 +28,7 @@ export class MessagePanel extends Panel {
         this.relY = this.yOut = this.yIn = 409
         this.imgAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
 
-        const font = ResourceManager.getBitmapFont('Interface/Fonts/Font5_Hi.bmp')
+        const font = ResourceManager.getDefaultFont()
         const crystalFound = new TextInfoMessage(font, textInfoMessageConfig.textCrystalFound, this.img.width)
         EventBus.registerEventListener(CrystalFoundEvent.eventKey, () => this.setMessage(crystalFound))
         this.msgSpaceToContinue = new TextInfoMessage(font, textInfoMessageConfig.textSpaceToContinue, this.img.width)

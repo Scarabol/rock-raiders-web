@@ -16,7 +16,7 @@ export class LevelSelectLayer extends MainMenuLayer {
         const levelsCfg: LevelsCfg = ResourceManager.getResource('Levels')
         const levelTextCfg = new LevelTextCfg()
         this.items.push(new MainMenuPanel(levelTextCfg.panelImgData, levelTextCfg.panelPos))
-        const levelTextWindow = new MainMenuWindow(ResourceManager.getBitmapFont('Interface/Fonts/Font5_Hi.bmp'), levelTextCfg.window)
+        const levelTextWindow = new MainMenuWindow(ResourceManager.getDefaultFont(), levelTextCfg.window)
         levelTextWindow.setFirstLine(modeLevel ? levelTextCfg.level : levelTextCfg.tutorial)
         this.items.push(levelTextWindow)
         Object.keys(levelsCfg.levelsByName).forEach((levelKey) => {

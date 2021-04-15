@@ -10,7 +10,7 @@ export class InformationPanel extends Panel {
 
     constructor(panelCfg: PanelCfg) {
         super(panelCfg)
-        this.font = ResourceManager.getBitmapFont('Interface/Fonts/Font5_Hi.bmp')
+        this.font = ResourceManager.getDefaultFont()
     }
 
     setText(text?: string) {

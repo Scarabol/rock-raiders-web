@@ -147,8 +147,13 @@ export class ResourceManager {
     }
 
     static getBitmapFont(name: string): BitmapFont {
-        ResourceManager.fontCache[name] = ResourceManager.fontCache[name] || new BitmapFont(this.getResource(name))
+        const fontImageData = this.getResource(name)
+        if (!fontImageData) throw 'Could not load font image data for: ' + name
+        ResourceManager.fontCache[name] = ResourceManager.fontCache[name] || new BitmapFont(fontImageData)
         return ResourceManager.fontCache[name]
     }
 
+    static getDefaultFont() {
+        return ResourceManager.getBitmapFont('Interface/Fonts/Font5_Hi.bmp')
+    }
 }
