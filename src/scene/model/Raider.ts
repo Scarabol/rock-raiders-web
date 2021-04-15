@@ -89,7 +89,11 @@ export class Raider extends FulfillerEntity {
     }
 
     getRouteActivity(): BaseActivity {
-        return this.isOnRubble() ? RaiderActivity.routeRubble : RaiderActivity.Route
+        if (this.isOnRubble()) {
+            return !!this.carries ? RaiderActivity.CarryRubble : RaiderActivity.routeRubble
+        } else {
+            return !!this.carries ? RaiderActivity.Carry : RaiderActivity.Route
+        }
     }
 
     moveToTarget(target): boolean {
