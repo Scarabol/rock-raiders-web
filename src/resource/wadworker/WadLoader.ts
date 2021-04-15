@@ -332,6 +332,7 @@ export class WadLoader {
         this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
         // load monsters
         this.addAnimatedEntity('Creatures/SpiderSB/SpiderSB.ae')
+        this.addAnimatedEntity('Creatures/bat/bat.ae')
         // load misc objects
         this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Dynamite') + '/Dynamite.ae')
         this.addAsset(this.loadLWOFile, 'World/Shared/Crystal.lwo') // highpoly version, but unused?

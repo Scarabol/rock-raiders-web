@@ -100,6 +100,7 @@ export class WorldManager {
         this.nerpRunner?.pauseExecution()
         this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
         GameState.spiders.forEach((m) => m.onLevelEnd())
+        GameState.bats.forEach((b) => b.onLevelEnd())
         GameState.remainingDiggables = 0
         this.sceneManager?.terrain?.surfaces?.forEach((r) => r.forEach((s) => GameState.remainingDiggables += s.isDigable() ? 1 : 0))
         this.sceneManager.disposeScene()

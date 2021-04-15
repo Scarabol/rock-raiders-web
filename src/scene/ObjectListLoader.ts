@@ -15,6 +15,7 @@ import { RaiderActivity } from './model/activities/RaiderActivity'
 import { SmallSpider } from '../game/model/entity/monster/SmallSpider'
 import { MonsterActivity } from './model/activities/MonsterActivity'
 import degToRad = MathUtils.degToRad
+import { Bat } from '../game/model/entity/monster/Bat'
 
 export class ObjectListLoader {
 
@@ -96,6 +97,15 @@ export class ObjectListLoader {
                 worldMgr.sceneManager.scene.add(spider.group)
                 GameState.spiders.push(spider)
                 spider.startMoving()
+            } else if (lTypeName === 'Bat'.toLowerCase()) {
+                const bat = new Bat()
+                bat.worldMgr = worldMgr
+                bat.setActivity(MonsterActivity.Stand)
+                bat.group.position.set(worldX, worldY + TILESIZE, worldZ)
+                bat.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(bat.group.position).discovered
+                worldMgr.sceneManager.scene.add(bat.group)
+                GameState.bats.push(bat)
+                bat.startMoving()
             } else {
                 // TODO implement remaining object types
                 console.warn('Object type ' + olObject.type + ' not yet implemented')
