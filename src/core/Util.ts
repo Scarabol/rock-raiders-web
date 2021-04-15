@@ -47,3 +47,9 @@ export function clearIntervalSafe(interval: NodeJS.Timeout) {
     if (interval) clearInterval(interval)
     return null
 }
+
+export function removeFromArray<T>(array: T[], element: T) {
+    if (!array || !Array.isArray(array)) return
+    const index = array.indexOf(element)
+    if (index !== -1) array.splice(index, 1)
+}

@@ -2,7 +2,7 @@ import { Monster } from './Monster'
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { Vector3 } from 'three'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../../main'
-import { clearTimeoutSafe, getRandomInclusive } from '../../../../core/Util'
+import { clearTimeoutSafe, getRandomInclusive, removeFromArray } from '../../../../core/Util'
 import { GameState } from '../../GameState'
 import { MonsterActivity } from '../../../../scene/model/activities/MonsterActivity'
 import { BaseActivity } from '../../../../scene/model/activities/BaseActivity'
@@ -53,8 +53,7 @@ export class Bat extends Monster {
     onDeath() {
         this.onLevelEnd()
         this.worldMgr.sceneManager.scene.remove(this.group)
-        const index = GameState.bats.indexOf(this)
-        if (index !== -1) GameState.bats.splice(index, 1)
+        removeFromArray(GameState.bats, this)
     }
 
     onLevelEnd() {

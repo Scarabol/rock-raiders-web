@@ -11,6 +11,7 @@ import { Surface } from './map/Surface'
 import { CollectableType } from './collect/CollectableEntity'
 import degToRad = MathUtils.degToRad
 import { BuildingActivity } from './activities/BuildingActivity'
+import { removeFromArray } from '../../core/Util'
 
 export class BuildingEntity extends AnimEntity implements Selectable {
 
@@ -70,8 +71,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
 
     onDiscover() {
         super.onDiscover()
-        const index = GameState.buildingsUndiscovered.indexOf(this)
-        if (index !== -1) GameState.buildingsUndiscovered.splice(index, 1)
+        removeFromArray(GameState.buildingsUndiscovered, this)
         GameState.buildings.push(this)
         EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, this))
     }

@@ -8,6 +8,7 @@ import { Building } from '../../../game/model/entity/building/Building'
 import { BuildingEntity } from '../BuildingEntity'
 import { BuildingSite } from '../BuildingSite'
 import { CollectJob } from '../../../game/model/job/CollectJob'
+import { removeFromArray } from '../../../core/Util'
 
 export abstract class CollectableEntity extends BaseEntity implements Carryable {
 
@@ -62,8 +63,7 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
 
     onDiscover() {
         super.onDiscover()
-        const index = GameState.collectablesUndiscovered.indexOf(this)
-        if (index !== -1) GameState.collectablesUndiscovered.splice(index, 1)
+        removeFromArray(GameState.collectablesUndiscovered, this)
         GameState.collectables.push(this)
         EventBus.publishEvent(new JobCreateEvent(new CollectJob(this)))
     }

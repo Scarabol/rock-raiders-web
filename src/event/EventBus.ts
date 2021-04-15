@@ -1,3 +1,5 @@
+import { removeFromArray } from '../core/Util'
+
 export class EventBus {
 
     static eventListener = {} // TODO use map
@@ -8,8 +10,7 @@ export class EventBus {
         if (!event.isLocal) console.log('Event published: ' + event.eventKey)
         this.blockedEvents.push(event.eventKey);
         (this.eventListener[event.eventKey] || []).forEach((callback) => callback(event)) // TODO add inheritance match by prefix
-        const index = this.blockedEvents.indexOf(event.eventKey)
-        if (index > -1) this.blockedEvents.splice(index, 1)
+        removeFromArray(this.blockedEvents, event.eventKey)
     }
 
     static registerEventListener(eventKey: string, callback: (GameEvent) => any) {

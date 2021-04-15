@@ -2,7 +2,7 @@ import { Monster } from './Monster'
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { Vector3 } from 'three'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../../main'
-import { clearTimeoutSafe, getRandom, getRandomInclusive } from '../../../../core/Util'
+import { clearTimeoutSafe, getRandom, getRandomInclusive, removeFromArray } from '../../../../core/Util'
 import { SurfaceType } from '../../../../scene/model/map/SurfaceType'
 import { GameState } from '../../GameState'
 import { MonsterActivity } from '../../../../scene/model/activities/MonsterActivity'
@@ -63,8 +63,7 @@ export class SmallSpider extends Monster {
     onDeath() {
         this.onLevelEnd()
         this.worldMgr.sceneManager.scene.remove(this.group)
-        const index = GameState.spiders.indexOf(this)
-        if (index !== -1) GameState.spiders.splice(index, 1)
+        removeFromArray(GameState.spiders, this)
     }
 
     onLevelEnd() {

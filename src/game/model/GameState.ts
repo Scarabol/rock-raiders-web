@@ -18,6 +18,7 @@ import { LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { PriorityList } from './job/PriorityList'
 import { SmallSpider } from './entity/monster/SmallSpider'
 import { Bat } from './entity/monster/Bat'
+import { removeFromArray } from '../../core/Util'
 
 export enum GameResultState {
 
@@ -206,10 +207,7 @@ export class GameState {
                 discovered.push(e)
             }
         })
-        discovered.forEach((r) => {
-            const index = undiscovered.indexOf(r)
-            if (index !== -1) undiscovered.splice(index, 1)
-        })
+        discovered.forEach((r) => removeFromArray(undiscovered, r))
     }
 
     static dropMaterial(type: CollectableType, quantity: number): CollectableEntity[] {

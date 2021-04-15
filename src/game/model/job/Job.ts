@@ -1,5 +1,6 @@
 import { Vector3 } from 'three'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
+import { removeFromArray } from '../../../core/Util'
 
 export enum JobType {
 
@@ -39,8 +40,7 @@ export abstract class Job {
     }
 
     unassign(fulfiller: FulfillerEntity) {
-        const index = this.fulfiller.indexOf(fulfiller)
-        if (index > -1) this.fulfiller.splice(index, 1)
+        removeFromArray(this.fulfiller, fulfiller)
     }
 
     cancel() {

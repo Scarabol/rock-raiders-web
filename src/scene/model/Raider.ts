@@ -11,7 +11,7 @@ import { RaiderActivity } from './activities/RaiderActivity'
 import { JobType } from '../../game/model/job/Job'
 import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob'
 import { SurfaceType } from './map/SurfaceType'
-import { getRandom, getRandomSign } from '../../core/Util'
+import { getRandom, getRandomSign, removeFromArray } from '../../core/Util'
 import { Crystal } from './collect/Crystal'
 import { Ore } from './collect/Ore'
 import { JOB_ACTION_RANGE } from '../../main'
@@ -59,8 +59,7 @@ export class Raider extends FulfillerEntity {
 
     onDiscover() {
         super.onDiscover()
-        const index = GameState.raidersUndiscovered.indexOf(this)
-        if (index !== -1) GameState.raidersUndiscovered.splice(index, 1)
+        removeFromArray(GameState.raidersUndiscovered, this)
         GameState.raiders.push(this)
         EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, this))
         EventBus.publishEvent(new RaiderDiscoveredEvent(this.getPosition()))
