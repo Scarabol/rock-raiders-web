@@ -17,6 +17,10 @@ export class Bat extends Monster {
         this.heightOffset = TILESIZE
     }
 
+    get stats() {
+        return ResourceManager.stats.Bat
+    }
+
     startMoving() {
         Bat.onMove(this)
     }

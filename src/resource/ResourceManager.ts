@@ -8,6 +8,7 @@ import { getFilename } from '../core/Util'
 import { AnimEntityLoader } from './AnimEntityLoader'
 import { BitmapFont } from '../core/BitmapFont'
 import { WorkerMessage, WorkerMessageType } from './wadworker/WorkerMessage'
+import { GameStatsCfg } from '../cfg/GameStatsCfg'
 
 export class ResourceManager {
 
@@ -15,6 +16,7 @@ export class ResourceManager {
     static configuration: any = {}
     static resourceByName: {} = {}
     static fontCache = {}
+    static stats: GameStatsCfg
 
     static startLoadingFromCache() {
         return this.startLoading(null)
@@ -34,6 +36,7 @@ export class ResourceManager {
                 this.onMessage(msg.text)
             } else if (msg.type === WorkerMessageType.CFG) {
                 this.configuration = msg.cfg
+                this.stats = new GameStatsCfg(this.cfg('Stats'))
                 this.onInitialLoad(msg.totalResources)
             } else if (msg.type === WorkerMessageType.CACHE_MISS) {
                 this.onCacheMissed()

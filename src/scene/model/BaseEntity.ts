@@ -1,19 +1,14 @@
 import { WorldManager } from '../WorldManager'
 import { Euler, Group, Vector3 } from 'three'
-import { EntityStatsCfg } from '../../cfg/EntityStatsCfg'
-import { ResourceManager } from '../../resource/ResourceManager'
 
-export class BaseEntity {
+export abstract class BaseEntity {
 
     worldMgr: WorldManager
     group: Group = new Group()
     sequenceIntervals = []
     level: number = 0
-    stats: EntityStatsCfg
 
-    constructor() {
-        this.stats = new EntityStatsCfg(ResourceManager.cfg('Stats', 'Pilot') || {}) // TODO group all stats in single class
-    }
+    abstract get stats()
 
     getPosition() {
         return new Vector3().copy(this.group.position)

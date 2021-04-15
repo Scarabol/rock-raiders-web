@@ -4,14 +4,15 @@ import { Building } from '../../game/model/entity/building/Building'
 import { AnimEntity } from './anim/AnimEntity'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { MathUtils, Vector3, Matrix4 } from 'three'
+import { MathUtils, Matrix4, Vector3 } from 'three'
 import { GameState } from '../../game/model/GameState'
 import { BuildingUpgraded, CollectEvent, EntityAddedEvent, EntityType } from '../../event/WorldEvents'
 import { Surface } from './map/Surface'
 import { CollectableType } from './collect/CollectableEntity'
-import degToRad = MathUtils.degToRad
 import { BuildingActivity } from './activities/BuildingActivity'
 import { removeFromArray } from '../../core/Util'
+import { BuildingEntityStats } from '../../cfg/BuildingEntityStats'
+import degToRad = MathUtils.degToRad
 
 export class BuildingEntity extends AnimEntity implements Selectable {
 
@@ -27,7 +28,11 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.type = buildingType
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
-        this.pickSphereRadius = this.type.stats.pickSphere / 2
+        this.pickSphereRadius = this.stats.PickSphere / 2
+    }
+
+    get stats(): BuildingEntityStats {
+        return BuildingEntityStats.getByType(this.type)
     }
 
     getSelectionType(): SelectionType {
@@ -66,7 +71,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     isPowered(): boolean {
-        return this.powerSwitch && (this.type.stats.selfPowered || this.powerLink)
+        return this.powerSwitch && (this.stats.SelfPowered || this.powerLink)
     }
 
     onDiscover() {
@@ -77,7 +82,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     hasMaxLevel(): boolean {
-        return this.level >= this.type.stats.levels - 1
+        return this.level >= this.stats.Levels - 1
     }
 
     upgrade() {

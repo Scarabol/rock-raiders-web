@@ -17,6 +17,10 @@ export class Dynamite extends AnimEntity implements Carryable {
         this.setActivity(DynamiteActivity.Normal)
     }
 
+    get stats() {
+        return {}
+    }
+
     getTargetPos(): Vector3 {
         if (this.targetSurface && this.targetSurface.isExplodable()) {
             return this.targetSurface.getDigPositions()[0] // TODO find closest dig position

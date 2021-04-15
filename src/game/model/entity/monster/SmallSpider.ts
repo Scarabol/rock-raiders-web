@@ -17,6 +17,10 @@ export class SmallSpider extends Monster {
         super(ResourceManager.getAnimationEntityType('Creatures/SpiderSB/SpiderSB.ae'))
     }
 
+    get stats() {
+        return ResourceManager.stats.SmallSpider
+    }
+
     startMoving() {
         SmallSpider.onMove(this)
     }

@@ -2,6 +2,7 @@ import { AnimEntity } from './anim/AnimEntity'
 import { Vector3 } from 'three'
 import { AnimationEntityType } from './anim/AnimationEntityType'
 import { BaseActivity } from './activities/BaseActivity'
+import { MovableEntityStats } from '../../cfg/MovableEntityStats'
 
 export abstract class MovableEntity extends AnimEntity {
 
@@ -12,16 +13,18 @@ export abstract class MovableEntity extends AnimEntity {
         super(entityType)
     }
 
+    abstract get stats(): MovableEntityStats
+
     getPosition(): Vector3 {
         return new Vector3().copy(this.group.position)
     }
 
     getSpeed(): number {
-        let speed = this.stats.routeSpeed[this.level]
+        let speed = this.stats.RouteSpeed[this.level]
         if (this.isOnRubble()) {
-            speed *= this.stats.rubbleCoef
+            speed *= this.stats.RubbleCoef
         } else if (this.isOnPath()) {
-            speed *= this.stats.pathCoef
+            speed *= this.stats.PathCoef
         }
         return speed
     }

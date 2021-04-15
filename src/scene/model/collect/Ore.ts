@@ -13,6 +13,10 @@ export class Ore extends CollectableEntity {
         this.group.add(mesh)
     }
 
+    get stats() {
+        return ResourceManager.stats.Ore
+    }
+
     getTargetBuildingTypes(): Building[] {
         return [Building.ORE_REFINERY, Building.TOOLSTATION]
     }

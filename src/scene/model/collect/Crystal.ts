@@ -33,6 +33,10 @@ export class Crystal extends CollectableEntity {
         this.sequenceIntervals.forEach((interval) => clearIntervalSafe(interval)) // TODO looks better without sequence, maybe just slow it down or merge it?
     }
 
+    get stats() {
+        return ResourceManager.stats.PowerCrystal
+    }
+
     getTargetBuildingTypes(): Building[] {
         return [Building.POWER_STATION, Building.TOOLSTATION]
     }

@@ -1,6 +1,3 @@
-import { BuildingStatsCfg } from '../../../../cfg/BuildingStatsCfg'
-import { ResourceManager } from '../../../../resource/ResourceManager'
-
 export class Building {
 
     // TODO read building types from cfg at BuildingTypes
@@ -19,7 +16,6 @@ export class Building {
     aeFile: string
     dropPosAngleDeg: number = 0
     dropPosDist: number = 0
-    statsCache: BuildingStatsCfg
 
     constructor(name: string, folder: string, dropPosAngleDeg: number = 0, dropPosDist: number = 0) {
         this.name = name
@@ -54,11 +50,6 @@ export class Building {
             default:
                 throw 'Unknown building type: ' + buildingType
         }
-    }
-
-    get stats(): BuildingStatsCfg {
-        this.statsCache = this.statsCache || new BuildingStatsCfg(ResourceManager.cfg('Stats', this.name))
-        return this.statsCache
     }
 
 }

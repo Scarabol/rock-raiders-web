@@ -140,7 +140,7 @@ export class GameState {
     static getClosestTrainingSite(position: Vector3, training: string): BuildingEntity {
         if (training === 'demolition') { // TODO refactor this
             const targetBuildings = this.buildings.filter((b) => {
-                return b.type.stats.trainDynamite && b.type.stats.trainDynamite[b.level]
+                return b.stats.TrainDynamite && b.stats.TrainDynamite[b.level]
             })
             let closest = null, minDist = null
             targetBuildings.forEach((b) => {

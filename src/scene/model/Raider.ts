@@ -18,6 +18,7 @@ import { JOB_ACTION_RANGE } from '../../main'
 import { CollectJob } from '../../game/model/job/CollectJob'
 import { TrainJob } from '../../game/model/job/TrainJob'
 import { GetToolJob } from '../../game/model/job/GetToolJob'
+import { ResourceManager } from '../../resource/ResourceManager'
 import degToRad = MathUtils.degToRad
 
 export class RaiderSkills {
@@ -50,7 +51,11 @@ export class Raider extends FulfillerEntity {
         super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae')
         this.tools = [RaiderTools.DRILL]
         this.skills = []
-        this.pickSphereRadius = this.stats.pickSphere / 2
+        this.pickSphereRadius = this.stats.PickSphere / 2
+    }
+
+    get stats() {
+        return ResourceManager.stats.Pilot
     }
 
     findPathToTarget(target: Vector3): Vector3[] {
@@ -106,14 +111,14 @@ export class Raider extends FulfillerEntity {
                 } else {
                     let drillTimeMs = null
                     if (surfJob.surface.surfaceType === SurfaceType.HARD_ROCK) {
-                        drillTimeMs = this.stats.hardDrillTime[this.level] * 1000
+                        drillTimeMs = this.stats.HardDrillTime[this.level] * 1000
                     } else if (surfJob.surface.surfaceType === SurfaceType.LOOSE_ROCK) {
-                        drillTimeMs = this.stats.looseDrillTime[this.level] * 1000
+                        drillTimeMs = this.stats.LooseDrillTime[this.level] * 1000
                     } else if (surfJob.surface.surfaceType === SurfaceType.DIRT) {
-                        drillTimeMs = this.stats.soilDrillTime[this.level] * 1000
+                        drillTimeMs = this.stats.SoilDrillTime[this.level] * 1000
                     } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM ||
                         surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                        drillTimeMs = this.stats.seamDrillTime[this.level] * 1000
+                        drillTimeMs = this.stats.SeamDrillTime[this.level] * 1000
                     }
                     if (drillTimeMs === 0) console.warn('According to cfg this entity cannot drill this material')
                     const focusPoint = surfJob.surface.getCenterWorld()
