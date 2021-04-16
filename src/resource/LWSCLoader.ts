@@ -12,6 +12,7 @@ import { Group } from 'three'
 import { getFilename } from '../core/Util'
 import { ResourceManager } from './ResourceManager'
 import { LWOLoader } from './LWOLoader'
+import { SceneManager } from '../scene/SceneManager'
 
 export class LWSCLoader {
 
@@ -103,7 +104,7 @@ export class LWSCLoader {
                     subObj.filename = this.path + filename
                     // FIXME do not parse twice, read from cache first
                     const lwoBuffer = ResourceManager.getResource(subObj.filename)
-                    subObj.model = new LWOLoader(this.path).parse(lwoBuffer)
+                    subObj.model = SceneManager.registerMesh(new LWOLoader(this.path).parse(lwoBuffer))
                 } else if (key === 'AddNullObject') {
                     subObj.name = value
                     subObj.model = new Group()

@@ -6,10 +6,11 @@ import { Selectable } from '../game/model/Selectable'
 import { Terrain } from './model/map/Terrain'
 import { TILESIZE } from '../main'
 import { clearIntervalSafe } from '../core/Util'
+import { AnimatedMesh } from '../resource/AnimatedMesh'
 
 export class SceneManager {
 
-    static meshRegistry = []
+    static meshRegistry: AnimatedMesh[] = []
 
     maxFps: number = 30 // most animations use 25 fps so this should be enough
     renderer: WebGLRenderer
@@ -157,17 +158,13 @@ export class SceneManager {
         }
         this.terrain?.dispose()
         this.terrain = null
-        SceneManager.meshRegistry.forEach(mesh => {
-            // FIXME stop animation intervals/timeouts
-            mesh.geometry.dispose() // TODO refactor better handle on entity level
-            Array.isArray(mesh.material) ? mesh.material.forEach(mat => mat.dispose()) : mesh.material?.dispose()
-        })
+        SceneManager.meshRegistry.forEach(mesh => mesh.dispose())
         SceneManager.meshRegistry = []
     }
 
-    static registerMesh(mesh: Mesh): Mesh {
-        this.meshRegistry.push(mesh)
-        return mesh
+    static registerMesh(animatedMesh: AnimatedMesh): Mesh {
+        this.meshRegistry.push(animatedMesh)
+        return animatedMesh.mesh
     }
 
 }

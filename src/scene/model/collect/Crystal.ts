@@ -30,7 +30,6 @@ export class Crystal extends CollectableEntity {
             mat.opacity = 0.4 // XXX read from LWO file?
         })
         this.group.add(mesh)
-        this.sequenceIntervals.forEach((interval) => clearIntervalSafe(interval)) // TODO looks better without sequence, maybe just slow it down or merge it?
     }
 
     get stats() {

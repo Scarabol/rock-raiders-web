@@ -14,6 +14,7 @@ import { BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, MeshPhongMate
 import { decodeFilepath, decodeString, getFilename } from '../core/Util'
 import { ResourceManager } from './ResourceManager'
 import { SEQUENCE_TEXTURE_FRAMERATE } from '../main'
+import { AnimatedMesh } from './AnimatedMesh'
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42 // "LWOB"
@@ -238,6 +239,7 @@ export class LWOLoader {
     vertices: Float32Array = null
     indices: Uint16Array = null
     uvs: Float32Array = null
+    sequenceIntervals = []
 
     constructor(path: string, verbose: boolean = false) {
         this.verbose = verbose
@@ -471,11 +473,11 @@ export class LWOLoader {
                             const sequenceNames = ResourceManager.filterTextureSequenceNames(match[1])
                             if (sequenceNames) {
                                 let seqNum = 0
-                                setInterval(() => { // FIXME need to keep track on these intervals?
+                                this.sequenceIntervals.push(setInterval(() => {
                                     material.map = ResourceManager.getTexture(sequenceNames[seqNum])
                                     seqNum++
                                     if (seqNum >= sequenceNames.length) seqNum = 0
-                                }, 1000 / SEQUENCE_TEXTURE_FRAMERATE)
+                                }, 1000 / SEQUENCE_TEXTURE_FRAMERATE))
                                 material.transparent = true
                             }
                         }
@@ -495,7 +497,7 @@ export class LWOLoader {
         planarMapUVS(this.geometry, this.vertices, this.uvs, this.indices, materialIndex, textureSize, textureCenter, textureFlags)
     }
 
-    parse(buffer: ArrayBuffer): Mesh {
+    parse(buffer: ArrayBuffer): AnimatedMesh {
         const view = new DataView(buffer)
 
         if (view.getUint32(0) !== LWO_FORM) {
@@ -553,6 +555,6 @@ export class LWOLoader {
         this.geometry.setIndex(new BufferAttribute(this.indices, 1))
         this.geometry.computeVertexNormals()
 
-        return new Mesh(this.geometry, this.materials)
+        return new AnimatedMesh(new Mesh(this.geometry, this.materials), this.sequenceIntervals)
     }
 }

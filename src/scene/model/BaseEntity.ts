@@ -5,7 +5,6 @@ export abstract class BaseEntity {
 
     worldMgr: WorldManager
     group: Group = new Group()
-    sequenceIntervals = []
     level: number = 0
 
     abstract get stats()
