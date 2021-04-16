@@ -574,7 +574,7 @@ export class WadLoader {
                         resolve(wadFile)
                     })
                 }
-            }) // FIXME error handling
+            }).catch((e) => console.error(e))
         })
     }
 
