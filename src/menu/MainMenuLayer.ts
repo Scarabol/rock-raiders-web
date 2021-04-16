@@ -8,6 +8,8 @@ import { MainMenuScreen } from '../screen/MainMenuScreen'
 import { MainMenuIconButton } from './MainMenuIconButton'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLevelButton } from './MainMenuLevelButton'
+import { clearIntervalSafe } from '../core/Util'
+import { NATIVE_FRAMERATE } from '../main'
 
 export class MainMenuLayer extends ScaledLayer {
 
@@ -19,6 +21,8 @@ export class MainMenuLayer extends ScaledLayer {
     titleImage: HTMLCanvasElement
     items: MainMenuBaseItem[] = []
     scrollY: number = 0
+    scrollSpeedY: number = 0
+    scrollInterval = null
 
     constructor(screen: MainMenuScreen, menuCfg: MenuEntryCfg) {
         super()
@@ -46,8 +50,22 @@ export class MainMenuLayer extends ScaledLayer {
         }
     }
 
+    show() {
+        super.show()
+        const that = this
+        this.scrollInterval = setInterval(() => {
+            if (that.scrollSpeedY === 0) return
+            that.setScrollY(that.scrollSpeedY)
+        }, 1000 / NATIVE_FRAMERATE)
+    }
+
+    hide() {
+        this.scrollInterval = clearIntervalSafe(this.scrollInterval)
+        super.hide()
+    }
+
     handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
-        if (eventEnum === POINTER_EVENT.MOVE) { // FIXME scroll when close to menu top/bottom border
+        if (eventEnum === POINTER_EVENT.MOVE) {
             const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
             let hovered = false
             this.items.forEach((item) => {
@@ -60,6 +78,14 @@ export class MainMenuLayer extends ScaledLayer {
                     item.setReleased()
                 }
             })
+            if (this.cfg.canScroll) {
+                const scrollAreaHeight = 100
+                if (sy < scrollAreaHeight) {
+                    this.setScrollSpeedY(-(scrollAreaHeight - sy))
+                } else if (sy > this.fixedHeight - scrollAreaHeight) {
+                    this.setScrollSpeedY(sy - (this.fixedHeight - scrollAreaHeight))
+                }
+            }
         } else if (eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 this.items.forEach((item) => item.checkSetPressed())
@@ -84,11 +110,20 @@ export class MainMenuLayer extends ScaledLayer {
         return false
     }
 
+    private setScrollSpeedY(deltaY: number) {
+        this.scrollSpeedY = Math.sign(deltaY) * Math.pow(Math.round(deltaY / 20), 2)
+    }
+
     handleWheelEvent(event: WheelEvent): boolean {
         if (!this.cfg.canScroll) return false
-        this.scrollY = Math.min(Math.max(this.scrollY + event.deltaY, 0), this.menuImage.height - this.fixedHeight)
-        this.redraw()
+        this.setScrollY(event.deltaY)
         return true
+    }
+
+    private setScrollY(deltaY: number) {
+        const scrollYBefore = this.scrollY
+        this.scrollY = Math.min(Math.max(this.scrollY + deltaY, 0), this.menuImage.height - this.fixedHeight)
+        if (scrollYBefore !== this.scrollY) this.redraw()
     }
 
     needsRedraw(): boolean {
