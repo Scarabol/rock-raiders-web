@@ -1,7 +1,7 @@
 import { SceneManager } from './SceneManager'
 import { TerrainLoader } from './TerrainLoader'
 import { ResourceManager } from '../resource/ResourceManager'
-import { MathUtils, Raycaster, Vector3 } from 'three'
+import { Color, MathUtils, Raycaster, Vector3 } from 'three'
 import { clearIntervalSafe, getRandom } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { CavernDiscovered, EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent, SpawnMaterialEvent } from '../event/WorldEvents'
@@ -66,7 +66,11 @@ export class WorldManager {
         GameState.rewardConfig = levelConf.reward
         GameState.priorityList = new PriorityList(levelConf.priorities)
 
-        this.sceneManager.setupScene()
+        const ambientRgb = ResourceManager.cfg('Main', 'AmbientRGB') || [10, 10, 10]
+        const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
+        const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
+        const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])
+        this.sceneManager.setupScene(ambientColor)
 
         // create terrain mesh and add it to the scene
         this.sceneManager.terrain = TerrainLoader.loadTerrain(levelConf, this)

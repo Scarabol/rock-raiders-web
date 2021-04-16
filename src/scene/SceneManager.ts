@@ -1,4 +1,4 @@
-import { AmbientLight, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector3, WebGLRenderer } from 'three'
 import { DebugHelper } from './DebugHelper'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GameState } from '../game/model/GameState'
@@ -18,7 +18,7 @@ export class SceneManager {
     animRequest
     scene: Scene
     camera: PerspectiveCamera
-    amb: AmbientLight
+    ambientLight: AmbientLight
     light: PointLight
     terrain: Terrain
     controls: MapControls
@@ -125,14 +125,14 @@ export class SceneManager {
         GameState.selectEntities(entities)
     }
 
-    setupScene() {
+    setupScene(ambientColor: Color) {
         this.scene = new Scene()
         // this.scene.fog = new FogExp2(0x6e6e9b, 0.05); // FIXME derive from level config
 
-        this.amb = new AmbientLight(0x808080) // FIXME use "cave" light setup
-        this.scene.add(this.amb)
+        this.ambientLight = new AmbientLight(ambientColor, 0.4)
+        this.scene.add(this.ambientLight)
 
-        this.cursorTorchlight = new PointLight(0xffffff, 1, 7, 2)
+        this.cursorTorchlight = new PointLight(0xffffff, 1.5, 4, 1)
         this.cursorTorchlight.distance *= TILESIZE
         this.scene.add(this.cursorTorchlight)
     }
