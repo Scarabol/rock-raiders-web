@@ -132,7 +132,7 @@ export abstract class AnimEntity extends BaseEntity {
         })
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         let nextFrame = frameIndex + 1
-        if (nextFrame <= this.animation.lastFrame || (!onAnimationDone || (durationTimeMs !== null && durationTimeMs > 0))) {
+        if (nextFrame <= this.animation.lastFrame || !onAnimationDone || (durationTimeMs !== null && durationTimeMs > 0)) {
             if (nextFrame > this.animation.lastFrame) {
                 nextFrame = this.animation.firstFrame
             }

@@ -53,8 +53,3 @@ export function removeFromArray<T>(array: T[], element: T) {
     const index = array.indexOf(element)
     if (index !== -1) array.splice(index, 1)
 }
-
-export function toCamelCase(name: string) {
-    if (!name) return name
-    return name.charAt(0).toLowerCase() + name.substring(1)
-}

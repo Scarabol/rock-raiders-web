@@ -60,7 +60,7 @@ export class SmallSpider extends Monster {
                 return target
             }
         }
-        console.warn('Could not find a solid target for spider')
+        console.warn('Could not find a solid target')
         return null
     }
 
