@@ -13,6 +13,7 @@
 import { BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, MeshPhongMaterial, Vector3 } from 'three'
 import { decodeFilepath, decodeString, getFilename } from '../core/Util'
 import { ResourceManager } from './ResourceManager'
+import { SEQUENCE_TEXTURE_FRAMERATE } from '../main'
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42 // "LWOB"
@@ -474,7 +475,7 @@ export class LWOLoader {
                                     material.map = ResourceManager.getTexture(sequenceNames[seqNum])
                                     seqNum++
                                     if (seqNum >= sequenceNames.length) seqNum = 0
-                                }, 1000 / 5) // FIXME Externalize FPS for texture animations
+                                }, 1000 / SEQUENCE_TEXTURE_FRAMERATE)
                                 material.transparent = true
                             }
                         }

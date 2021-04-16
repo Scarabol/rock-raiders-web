@@ -20,6 +20,7 @@ export const ADDITIONAL_RAIDER_PER_SUPPORT = 10
 
 export const PANEL_ANIMATION_MULTIPLIER = 3
 export const HEIGHT_MULTIPLER = 0.1
+export const SEQUENCE_TEXTURE_FRAMERATE = 5
 
 // native constants (do not change)
 
