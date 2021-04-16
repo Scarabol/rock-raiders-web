@@ -6,10 +6,10 @@ import { BaseEntity } from '../BaseEntity'
 import { AnimSubObj } from './AnimSubObj'
 import { createContext } from '../../../core/ImageHelper'
 import { BaseActivity } from '../activities/BaseActivity'
-import { BuildingActivity } from '../activities/BuildingActivity'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../main'
 import { EventBus } from '../../../event/EventBus'
 import { EntityDeselected } from '../../../event/LocalEvents'
+import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 
 export abstract class AnimEntity extends BaseEntity {
 
@@ -32,7 +32,7 @@ export abstract class AnimEntity extends BaseEntity {
         // TODO avoid all further state changes and mark as unavailable here
         // TODO publish event: check jobs with this target, update power state...
         EventBus.publishEvent(new EntityDeselected())
-        this.setActivity(BuildingActivity.Stand, () => { // FIXME don't use BuildingActivity
+        this.setActivity(AnimEntityActivity.Stand, () => {
             // TODO insert beam animation
             AnimEntity.moveUp(this, 6 * TILESIZE)
         })
@@ -52,7 +52,7 @@ export abstract class AnimEntity extends BaseEntity {
         this.worldMgr.sceneManager.scene.remove(this.group)
     }
 
-    changeActivity(activity: BaseActivity, onChangeDone = null, durationTimeMs: number = null) {
+    changeActivity(activity: AnimEntityActivity, onChangeDone = null, durationTimeMs: number = null) {
         if (onChangeDone) onChangeDone.bind(this)
         if (this.activity !== activity) {
             this.activity = activity
@@ -60,7 +60,7 @@ export abstract class AnimEntity extends BaseEntity {
         }
     }
 
-    setActivity(activity: BaseActivity, onAnimationDone = null, durationTimeMs = null) {
+    setActivity(activity: AnimEntityActivity, onAnimationDone = null, durationTimeMs = null) {
         let activityKey = activity.activityKey
         let act = this.entityType.activities.get(activityKey.toLowerCase())
         if (!act) { // find by prefix

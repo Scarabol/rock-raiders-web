@@ -1,8 +1,7 @@
-import { BaseActivity } from './BaseActivity'
+import { AnimEntityActivity } from './AnimEntityActivity'
 
-export class RaiderActivity extends BaseActivity {
+export class RaiderActivity extends AnimEntityActivity {
 
-    static Stand = new RaiderActivity('Activity_Stand')
     static Route = new RaiderActivity('Activity_Route')
     static RunPanic = new RaiderActivity('Activity_RunPanic')
     static Drill = new RaiderActivity('Activity_Drill')

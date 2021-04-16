@@ -1,8 +1,7 @@
-import { BaseActivity } from './BaseActivity'
+import { AnimEntityActivity } from './AnimEntityActivity'
 
-export class BuildingActivity extends BaseActivity {
+export class BuildingActivity extends AnimEntityActivity {
 
-    static Stand = new BuildingActivity('Activity_Stand')
     static Teleport = new BuildingActivity('Activity_Teleport')
     static Deposit = new BuildingActivity('Activity_Deposit')
     static Explode = new BuildingActivity('Activity_Explode')
