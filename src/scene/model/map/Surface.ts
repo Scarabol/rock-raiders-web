@@ -106,7 +106,7 @@ export class Surface implements Selectable {
             }
         }
         // update meshes
-        this.terrain.updateSurfaceMeshes() // FIXME update only neighbors
+        this.terrain.updateSurfaceMeshes()
         this.terrain.floorGroup.updateWorldMatrix(true, true)
         // drop contained crystals and ores // FIXME this should happen before collapsing neighbors
         for (let c = 0; c < this.containedCrystals; c++) {
@@ -216,7 +216,6 @@ export class Surface implements Selectable {
             this.wallType = wallType
             this.updateGeometry(topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex, surfTopLeft, surfTop, surfLeft, surfTopRight, surfRight, surfBottomRight, surfBottom, surfBottomLeft)
             if (this.wallType !== WALL_TYPE.WALL) this.cancelReinforceJobs()
-            // TODO if wall was reinforced remove it (same for fallin)
         }
 
         this.updateTexture()

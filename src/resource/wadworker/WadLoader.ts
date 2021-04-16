@@ -339,6 +339,7 @@ export class WadLoader {
         this.addTextureFolder('MiscAnims/Crystal/')
         const orePath = iGet(mainConf, 'MiscObjects', 'Ore')
         this.addAsset(this.loadLWOFile, orePath + '.lwo')
+        this.addAsset(this.loadWadTexture, 'MiscAnims/Ore/Ore.bmp')
         this.addAsset(this.loadLWOFile, 'World/Shared/Brick.lwo')
         this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ProcessedOre') + '.lwo')
         this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae')

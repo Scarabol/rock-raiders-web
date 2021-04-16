@@ -128,7 +128,6 @@ export class SceneManager {
 
     setupScene(ambientColor: Color) {
         this.scene = new Scene()
-        // this.scene.fog = new FogExp2(0x6e6e9b, 0.05); // FIXME derive from level config
 
         this.ambientLight = new AmbientLight(ambientColor, 0.4)
         this.scene.add(this.ambientLight)
