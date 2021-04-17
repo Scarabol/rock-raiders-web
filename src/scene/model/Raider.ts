@@ -218,11 +218,11 @@ export class Raider extends FulfillerEntity {
                 this.moveToTarget(this.job.getPosition())
             } else {
                 const trainJob = this.job as TrainJob
-                this.changeActivity(RaiderActivity.Stand, () => { // FIXME change to time based training instead of animation length
+                this.changeActivity(RaiderActivity.Train, () => {
                     this.skills.push(trainJob.skill)
                     EventBus.publishEvent(new RaiderTrained(this, trainJob.skill))
                     this.completeJob()
-                })
+                }, 10000) // XXX adjust training time
             }
         } else if (this.job.type === JobType.GET_TOOL) {
             if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
