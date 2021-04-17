@@ -18,6 +18,7 @@ export class ToggleButton extends Button {
         this.pressed = (this.pressed && this.hover) || this.toggleState
         // TODO start tooltip timeout (if not already started)
         this.children.forEach((child) => updated = child.checkHover(cx, cy) || updated)
+        if (updated) this.notifyRedraw()
         return updated
     }
 
@@ -27,6 +28,7 @@ export class ToggleButton extends Button {
         let updated = this.pressed !== isPressed
         this.pressed = isPressed
         this.children.forEach((child) => updated = child.checkClick(cx, cy) || updated)
+        if (updated) this.notifyRedraw()
         return updated
     }
 
@@ -41,6 +43,7 @@ export class ToggleButton extends Button {
             this.hover = inRect
         }
         this.children.forEach((child) => updated = child.checkRelease(cx, cy) || updated)
+        if (updated) this.notifyRedraw()
         return updated
     }
 
