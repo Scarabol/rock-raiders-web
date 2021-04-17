@@ -1,5 +1,6 @@
 import { Vector3 } from 'three'
-import { Job, JobType } from './Job'
+import { Job} from './Job'
+import { JobType } from './JobType'
 
 export class EatJob extends Job {
 

@@ -5,7 +5,6 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { Selectable, SelectionType } from '../../../game/model/Selectable'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionEvent, SurfaceSelectedEvent } from '../../../event/LocalEvents'
-import { JobType } from '../../../game/model/job/Job'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
 import { Crystal } from '../collect/Crystal'
@@ -17,6 +16,7 @@ import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { AnimSubObj } from '../anim/AnimSubObj'
 import { SurfaceGeometry } from './SurfaceGeometry'
 import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
+import { JobType } from '../../../game/model/job/JobType'
 
 export class Surface implements Selectable {
 

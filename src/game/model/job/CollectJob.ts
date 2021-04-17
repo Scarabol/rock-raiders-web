@@ -6,7 +6,8 @@ import { Building } from '../entity/building/Building'
 import { GameState } from '../GameState'
 import { EventBus } from '../../../event/EventBus'
 import { CollectEvent } from '../../../event/WorldEvents'
-import { JobType, PublicJob } from './Job'
+import { PublicJob } from './Job'
+import { JobType } from './JobType'
 
 export class CollectJob extends PublicJob {
 

@@ -3,11 +3,12 @@ import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { Vector3 } from 'three'
 import { JOB_ACTION_RANGE, TILESIZE } from '../../../main'
 import { Dynamite } from '../../../scene/model/collect/Dynamite'
-import { JobType, PublicJob } from './Job'
+import { PublicJob } from './Job'
 import { SurfaceType } from '../../../scene/model/map/SurfaceType'
 import { CollectableEntity } from '../../../scene/model/collect/CollectableEntity'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
 import { RaiderTool } from '../../../scene/model/RaiderTool'
+import { JobType } from './JobType'
 
 export class SurfaceJobType {
 

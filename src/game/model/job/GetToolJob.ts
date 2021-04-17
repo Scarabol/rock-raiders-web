@@ -1,7 +1,8 @@
-import { Job, JobType } from './Job'
+import { Job} from './Job'
 import { Vector3 } from 'three'
 import { JOB_ACTION_RANGE } from '../../../main'
 import { RaiderTool } from '../../../scene/model/RaiderTool'
+import { JobType } from './JobType'
 
 export class GetToolJob extends Job {
 

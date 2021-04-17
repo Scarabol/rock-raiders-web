@@ -1,7 +1,7 @@
 import { MovableEntity } from './MovableEntity'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { Job, JobType } from '../../game/model/job/Job'
+import { Job} from '../../game/model/job/Job'
 import { Vector3 } from 'three'
 import { NATIVE_FRAMERATE } from '../../main'
 import { clearIntervalSafe } from '../../core/Util'
@@ -10,6 +10,7 @@ import { SelectionEvent } from '../../event/LocalEvents'
 import { BaseActivity } from './activities/BaseActivity'
 import { RaiderSkill } from './RaiderSkill'
 import { RaiderTool } from './RaiderTool'
+import { JobType } from '../../game/model/job/JobType'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 

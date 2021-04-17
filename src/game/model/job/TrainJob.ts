@@ -1,7 +1,8 @@
-import { Job, JobType } from './Job'
+import { Job} from './Job'
 import { Vector3 } from 'three'
 import { TILESIZE } from '../../../main'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
+import { JobType } from './JobType'
 
 export class TrainJob extends Job {
 

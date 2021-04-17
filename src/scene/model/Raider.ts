@@ -8,7 +8,6 @@ import { EntityAddedEvent, EntityType, OreFoundEvent, RaiderTrained } from '../.
 import { CrystalFoundEvent, RaiderDiscoveredEvent } from '../../event/WorldLocationEvent'
 import { BaseActivity } from './activities/BaseActivity'
 import { RaiderActivity } from './activities/RaiderActivity'
-import { JobType } from '../../game/model/job/Job'
 import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob'
 import { SurfaceType } from './map/SurfaceType'
 import { getRandom, removeFromArray } from '../../core/Util'
@@ -22,6 +21,7 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { RaiderTool } from './RaiderTool'
 import degToRad = MathUtils.degToRad
 import { RaiderSkill } from './RaiderSkill'
+import { JobType } from '../../game/model/job/JobType'
 
 export class Raider extends FulfillerEntity {
 

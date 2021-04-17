@@ -3,25 +3,8 @@ import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { removeFromArray } from '../../../core/Util'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
 import { RaiderTool } from '../../../scene/model/RaiderTool'
-
-export enum JobType {
-
-    SURFACE,
-    CARRY,
-    MOVE,
-    TRAIN,
-    GET_TOOL,
-    EAT,
-
-}
-
-export enum JobState {
-
-    OPEN,
-    COMPLETE,
-    CANCELED,
-
-}
+import { JobType } from './JobType'
+import { JobState } from './JobState'
 
 export abstract class Job {
 
