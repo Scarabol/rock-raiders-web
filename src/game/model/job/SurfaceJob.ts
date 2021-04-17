@@ -12,19 +12,21 @@ import { RaiderTool } from '../../../scene/model/RaiderTool'
 export class SurfaceJobType {
 
     color: number
+    colorPriority: number
     requiredTool: RaiderTool
     requiredSkill: RaiderSkill
 
-    constructor(color: number, requiredTool: RaiderTool, requiredSkill: RaiderSkill) {
+    constructor(color: number, colorPriority: number, requiredTool: RaiderTool, requiredSkill: RaiderSkill) {
         this.color = color
+        this.colorPriority = colorPriority
         this.requiredTool = requiredTool
         this.requiredSkill = requiredSkill
     }
 
-    static readonly DRILL = new SurfaceJobType(0xa0a0a0, RaiderTool.DRILL, null)
-    static readonly REINFORCE = new SurfaceJobType(0x60a060, RaiderTool.HAMMER, null)
-    static readonly BLOW = new SurfaceJobType(0xa06060, null, RaiderSkill.DEMOLITION)
-    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, RaiderTool.SHOVEL, null)
+    static readonly DRILL = new SurfaceJobType(0xa0a0a0, 0, RaiderTool.DRILL, null)
+    static readonly REINFORCE = new SurfaceJobType(0x60a060, 1, RaiderTool.HAMMER, null)
+    static readonly BLOW = new SurfaceJobType(0xa06060, 2, null, RaiderSkill.DEMOLITION)
+    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, 0, RaiderTool.SHOVEL, null)
 
 }
 
