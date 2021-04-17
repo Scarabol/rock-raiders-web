@@ -123,8 +123,9 @@ export class WorldManager {
     }
 
     setTorchPosition(position: Vector3) {
-        this.sceneManager.cursorTorchlight.position.copy(position)
+        this.sceneManager.cursorTorchlight.position.x = position.x
         this.sceneManager.cursorTorchlight.position.y = this.getFloorHeight(position.x, position.z) + 2 * TILESIZE
+        this.sceneManager.cursorTorchlight.position.z = position.z
     }
 
     getFloorHeight(worldX: number, worldZ: number): number { // FIXME use interpolation to determine ground level height

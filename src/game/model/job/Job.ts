@@ -79,4 +79,3 @@ export abstract class PublicJob extends Job {
     abstract getPriorityIdentifier(): string
 
 }
-

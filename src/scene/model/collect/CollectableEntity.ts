@@ -86,7 +86,6 @@ export enum CollectableType {
 
 export enum CollectTargetType {
 
-    SURFACE,
     BUILDING_SITE,
 
 }

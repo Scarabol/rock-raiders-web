@@ -4,7 +4,6 @@ import { Color, Material, MeshPhongMaterial } from 'three'
 import { CollectableEntity, CollectableType } from './CollectableEntity'
 import { Building } from '../../../game/model/entity/building/Building'
 import { SceneManager } from '../../SceneManager'
-import { clearIntervalSafe } from '../../../core/Util'
 
 export class Crystal extends CollectableEntity {
 
