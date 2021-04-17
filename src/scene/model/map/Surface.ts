@@ -364,11 +364,8 @@ export class Surface implements Selectable {
         this.accessMaterials().forEach((mat) => mat.color.setHex(color))
     }
 
-    hasRubble(): boolean { // TODO performance: use boolean on surfacetype
-        return this.surfaceType === SurfaceType.RUBBLE1
-            || this.surfaceType === SurfaceType.RUBBLE2
-            || this.surfaceType === SurfaceType.RUBBLE3
-            || this.surfaceType === SurfaceType.RUBBLE4
+    hasRubble(): boolean {
+        return this.surfaceType.hasRubble
     }
 
     isPath(): boolean {
