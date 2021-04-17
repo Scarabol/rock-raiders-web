@@ -3,7 +3,7 @@ import { GameState } from '../../../game/model/GameState'
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { Carryable } from './Carryable'
-import { Vector3 } from 'three'
+import { Vector2 } from 'three'
 import { Building } from '../../../game/model/entity/building/Building'
 import { BuildingEntity } from '../BuildingEntity'
 import { BuildingSite } from '../BuildingSite'
@@ -15,7 +15,7 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
     collectableType: CollectableType
     targetSite: BuildingSite
     targetBuilding: BuildingEntity
-    targetPos: Vector3 = null
+    targetPos: Vector2[] = []
     targetType: CollectTargetType | Building
 
     protected constructor(collectableType: CollectableType) {
@@ -25,20 +25,20 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
 
     abstract getTargetBuildingTypes(): Building[];
 
-    getTargetPos(): Vector3 {
-        if (!this.targetPos) {
-            const site = GameState.getClosestSiteThatRequires(this.getPosition(), this.getCollectableType())
-            if (site) {
-                this.targetSite = site
-                this.targetPos = site.getPosition()
+    getTargetPositions(): Vector2[] {
+        if (this.targetPos.length < 1) {
+            const sites = GameState.buildingSites.filter((b) => b.needs(this.getCollectableType()))
+            if (sites.length > 0) {
+                this.targetSite = sites[0] // FIXME consider other sites
+                this.targetPos = [this.targetSite.getPosition2D()] // TODO use random drop position
                 this.targetType = CollectTargetType.BUILDING_SITE
-                site.assign(this)
+                this.targetSite.assign(this)
             } else {
-                const targetBuilding = GameState.getClosestBuildingByType(this.getPosition(), ...this.getTargetBuildingTypes())
-                if (targetBuilding) {
-                    this.targetBuilding = targetBuilding
-                    this.targetPos = targetBuilding.getDropPosition()
-                    this.targetType = targetBuilding.type
+                const buildings = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
+                if (buildings.length > 0) {
+                    this.targetBuilding = buildings[0] // FIXME consider other buildings
+                    this.targetPos = [this.targetBuilding.getDropPosition2D()]
+                    this.targetType = this.targetBuilding.type
                 }
             }
         } else if (this.targetSite) {

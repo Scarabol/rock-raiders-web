@@ -1,8 +1,8 @@
 import { MovableEntity } from './MovableEntity'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { Job} from '../../game/model/job/Job'
-import { Vector3 } from 'three'
+import { Job } from '../../game/model/job/Job'
+import { Vector2, Vector3 } from 'three'
 import { NATIVE_FRAMERATE } from '../../main'
 import { clearIntervalSafe } from '../../core/Util'
 import { Carryable } from './collect/Carryable'
@@ -19,9 +19,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     workInterval = null
     job: Job = null
     followUpJob: Job = null
-    jobSubPos: Vector3 = null
+    jobSubPos: Vector2 = null
     carries: Carryable = null // FIXME implement multi carry for vehicles
-    carryTarget: Vector3 = null
 
     protected constructor(selectionType: SelectionType, aeFilename: string) {
         super(ResourceManager.getAnimationEntityType(aeFilename))
@@ -36,21 +35,11 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     abstract work()
 
-    moveToTarget(target): boolean {
-        const result = super.moveToTarget(target)
-        if (!result) {
-            console.log('Entity could not move to job target, stopping job')
-            this.stopJob()
-        }
-        return result
-    }
-
     dropItem() {
         if (!this.carries) return
         if (this.carryJoint) this.carryJoint.remove(this.carries.group)
         this.carries.group.position.copy(this.group.position)
         this.carries = null
-        this.carryTarget = null
     }
 
     pickupItem(item: Carryable) {
@@ -75,7 +64,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.job.unassign(this)
         if (this.followUpJob) this.followUpJob.unassign(this)
         this.jobSubPos = null
-        this.carryTarget = null
         this.job = null
         this.followUpJob = null
         this.changeActivity(this.getStandActivity())

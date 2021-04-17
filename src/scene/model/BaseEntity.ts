@@ -1,5 +1,5 @@
 import { WorldManager } from '../WorldManager'
-import { Euler, Group, Vector3 } from 'three'
+import { Group, Vector2 } from 'three'
 
 export abstract class BaseEntity {
 
@@ -10,11 +10,15 @@ export abstract class BaseEntity {
     abstract get stats()
 
     getPosition() {
-        return new Vector3().copy(this.group.position)
+        return this.group.position.clone()
     }
 
-    getRotation() {
-        return new Euler().copy(this.group.rotation)
+    getPosition2D() {
+        return new Vector2(this.group.position.x, this.group.position.z)
+    }
+
+    getHeading(): number {
+        return this.group.rotation.y
     }
 
     onDiscover() {

@@ -1,17 +1,19 @@
 import { Monster } from './Monster'
 import { ResourceManager } from '../../../../resource/ResourceManager'
-import { Vector3 } from 'three'
+import { Vector2 } from 'three'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../../main'
 import { clearTimeoutSafe, getRandom, getRandomInclusive, removeFromArray } from '../../../../core/Util'
 import { SurfaceType } from '../../../../scene/model/map/SurfaceType'
 import { GameState } from '../../GameState'
 import { MonsterActivity } from '../../../../scene/model/activities/MonsterActivity'
 import { BaseActivity } from '../../../../scene/model/activities/BaseActivity'
+import { MoveState } from '../../../../scene/model/MoveState'
+import { TerrainPath } from '../../../../scene/model/map/TerrainPath'
 
 export class SmallSpider extends Monster {
 
     moveTimeout
-    target: Vector3 = null
+    target: Vector2 = null
 
     constructor() {
         super(ResourceManager.getAnimationEntityType('Creatures/SpiderSB/SpiderSB.ae'))
@@ -26,9 +28,7 @@ export class SmallSpider extends Monster {
     }
 
     private static onMove(spider: SmallSpider) {
-        if (spider.target && spider.getPosition().distanceToSquared(spider.target) > Math.pow(spider.getSpeed(), 2)) {
-            spider.changeActivity(MonsterActivity.Route)
-            spider.moveToTarget(spider.target)
+        if (spider.target && spider.moveToTarget(spider.target) === MoveState.MOVED) {
             if (!spider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.getPosition()).surfaceType.floor) {
                 spider.onDeath()
             } else {
@@ -43,21 +43,19 @@ export class SmallSpider extends Monster {
         }
     }
 
-    findPathToTarget(target: Vector3): Vector3[] {
-        return [target] // TODO add intermediate point to path to make it more interesting
+    findPathToTarget(target: Vector2): TerrainPath {
+        return new TerrainPath(target) // TODO add intermediate point to path to make it more interesting
     }
 
-    private findSolidTarget(): Vector3 {
+    private findSolidTarget(): Vector2 {
         const terrain = this.worldMgr.sceneManager.terrain
         const currentCenter = terrain.getSurfaceFromWorld(this.getPosition()).getCenterWorld()
         for (let c = 0; c < 20; c++) {
             const targetX = getRandomInclusive(currentCenter.x - (TILESIZE + TILESIZE / 2), currentCenter.x + TILESIZE + TILESIZE / 2)
             const targetZ = getRandomInclusive(currentCenter.z - TILESIZE / 2, currentCenter.z + TILESIZE / 2)
-            const target = new Vector3(targetX, 0, targetZ)
-            const surfaceType = terrain.getSurfaceFromWorld(target).surfaceType
+            const surfaceType = terrain.getSurfaceFromWorldXZ(targetX, targetZ).surfaceType
             if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA) { // TODO evaluate CrossLand, CrossLava, CrossWater from stats
-                target.y = this.worldMgr.getTerrainHeight(targetX, targetZ)
-                return target
+                return new Vector2(targetX, targetZ)
             }
         }
         console.warn('Could not find a solid target')

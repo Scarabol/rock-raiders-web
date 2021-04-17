@@ -30,7 +30,7 @@ export class GetToolPanel extends IconSubPanel {
             GameState.selectedRaiders.forEach((r) => {
                 if (!r.hasTool(tool)) {
                     const toolstation = GameState.getClosestBuildingByType(r.getPosition(), Building.TOOLSTATION)
-                    r.setJob(new GetToolJob(toolstation.getDropPosition(), tool))
+                    r.setJob(new GetToolJob(toolstation.getDropPosition2D(), tool))
                 }
             })
             EventBus.publishEvent(new EntityDeselected())

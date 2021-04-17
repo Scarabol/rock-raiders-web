@@ -1,6 +1,6 @@
 import { ResourceManager } from '../resource/ResourceManager'
 import { TILESIZE } from '../main'
-import { MathUtils, Vector3 } from 'three'
+import { MathUtils, Vector2, Vector3 } from 'three'
 import { Raider } from './model/Raider'
 import { GameState } from '../game/model/GameState'
 import { Building } from '../game/model/entity/building/Building'
@@ -29,13 +29,12 @@ export class ObjectListLoader {
             const buildingType = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
             if (lTypeName === 'TVCamera'.toLowerCase()) {
-                const target = new Vector3(worldX, terrainY, worldZ - TILESIZE / 2)
-                const offset = new Vector3(5 * TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(target)
+                const offset = new Vector3(5 * TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(new Vector3(worldX, terrainY, worldZ - TILESIZE / 2))
                 worldMgr.sceneManager.camera.position.copy(offset)
                 worldMgr.sceneManager.camera.position.y = 4.5 * TILESIZE
-                worldMgr.sceneManager.controls.target.copy(target)
+                worldMgr.sceneManager.controls.target.copy(new Vector3(worldX, terrainY, worldZ - TILESIZE / 2))
                 worldMgr.sceneManager.controls.update()
-                worldMgr.setTorchPosition(target)
+                worldMgr.setTorchPosition(new Vector2(worldX, worldZ - TILESIZE / 2))
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
                 const raider = new Raider()
                 raider.worldMgr = worldMgr

@@ -12,7 +12,7 @@ import { SurfaceJob, SurfaceJobType } from '../model/job/SurfaceJob'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventManager'
 import { DEV_MODE } from '../../main'
 import { MoveJob } from '../model/job/MoveJob'
-import { Vector3 } from 'three'
+import { Vector2 } from 'three'
 
 export class GameLayer extends ScreenLayer {
 
@@ -42,7 +42,7 @@ export class GameLayer extends ScreenLayer {
                 // TODO check for collectable entity first
                 const intersectionPoint = this.getTerrainPositionFromEvent(event)
                 if (intersectionPoint) {
-                    const surface = this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(intersectionPoint)
+                    const surface = this.worldMgr.sceneManager.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
                     if (surface) {
                         if (surface.isDrillable()) {
                             this.createSurfaceJob(SurfaceJobType.DRILL, surface, intersectionPoint)
@@ -81,7 +81,7 @@ export class GameLayer extends ScreenLayer {
         return false
     }
 
-    createSurfaceJob(surfaceJobType: SurfaceJobType, surface: Surface, intersectionPoint: Vector3) {
+    createSurfaceJob(surfaceJobType: SurfaceJobType, surface: Surface, intersectionPoint: Vector2) {
         const surfJob = new SurfaceJob(surfaceJobType, surface)
         GameState.selectedEntities.forEach((e: FulfillerEntity) => {
             if (surfJob.isQualified(e)) {
@@ -95,11 +95,12 @@ export class GameLayer extends ScreenLayer {
         if (GameState.selectedEntities.length > 0) EventBus.publishEvent(new EntityDeselected())
     }
 
-    getTerrainPositionFromEvent(event) {
+    getTerrainPositionFromEvent(event): Vector2 {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         const rx = (cx / this.canvas.width) * 2 - 1
         const ry = -(cy / this.canvas.height) * 2 + 1
-        return this.worldMgr.getTerrainIntersectionPoint(rx, ry)
+        const intersectionPoint = this.worldMgr.getTerrainIntersectionPoint(rx, ry)
+        return new Vector2(intersectionPoint.x, intersectionPoint.z)
     }
 
     handleWheelEvent(event: WheelEvent): boolean {

@@ -1,4 +1,4 @@
-import { Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { Surface } from './map/Surface'
 import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
 import { EventBus } from '../../event/EventBus'
@@ -20,7 +20,11 @@ export class BuildingSite {
     }
 
     getPosition(): Vector3 {
-        return this.surfaces[0].getCenterWorld()
+        return this.surfaces[0].getCenterWorld() // TODO use combined center of all surfaces
+    }
+
+    getPosition2D(): Vector2 {
+        return this.surfaces[0].getCenterWorld2D() // TODO use combined center of all surfaces
     }
 
     needs(collectableType: CollectableType): boolean {
@@ -46,13 +50,16 @@ export class BuildingSite {
         const needed = this.neededByType[collectableType] || 0
         this.onSiteByType[collectableType] = this.onSiteByType[collectableType] || []
         if (this.onSiteByType[collectableType].length < needed) {
-            item.group.position.copy(item.getTargetPos())
+            // item.group.position.copy(item.getTargetPos())
+            item.group.position.copy(this.getPosition())
             item.worldMgr.sceneManager.scene.add(item.group)
             this.onSiteByType[collectableType].push(item)
             this.checkComplete()
         } else {
             item.resetTarget()
-            item.worldMgr.addCollectable(item, item.getTargetPos().x, item.getTargetPos().z)
+            // item.worldMgr.addCollectable(item, item.getTargetPos().x, item.getTargetPos().z)
+            const pos = item.getPosition() // FIXME test this
+            item.worldMgr.addCollectable(item, pos.x, pos.z)
         }
     }
 

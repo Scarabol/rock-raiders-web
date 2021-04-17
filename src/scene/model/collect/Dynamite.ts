@@ -4,7 +4,7 @@ import { Building } from '../../../game/model/entity/building/Building'
 import { AnimEntity } from '../anim/AnimEntity'
 import { Carryable } from './Carryable'
 import { Surface } from '../map/Surface'
-import { Vector3 } from 'three'
+import { Vector2 } from 'three'
 import { GameState } from '../../../game/model/GameState'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
 
@@ -21,11 +21,11 @@ export class Dynamite extends AnimEntity implements Carryable {
         return {}
     }
 
-    getTargetPos(): Vector3 {
+    getTargetPositions(): Vector2[] {
         if (this.targetSurface && this.targetSurface.isExplodable()) {
-            return this.targetSurface.getDigPositions()[0] // FIXME find closest dig position
+            return this.targetSurface.getDigPositions()
         } else {
-            return GameState.getClosestBuildingByType(this.getPosition(), Building.TOOLSTATION).getDropPosition()
+            return GameState.getBuildingsByType(Building.TOOLSTATION).map((b) => b.getDropPosition2D())
         }
     }
 

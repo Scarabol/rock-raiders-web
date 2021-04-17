@@ -1,4 +1,4 @@
-import { Vector3 } from 'three'
+import { Vector2 } from 'three'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { removeFromArray } from '../../../core/Util'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
@@ -51,9 +51,7 @@ export abstract class Job {
         this.jobstate = JobState.COMPLETE
     }
 
-    abstract getPosition(): Vector3;
-
-    abstract isInArea(x: number, z: number): boolean;
+    abstract getWorkplaces(): Vector2[];
 
 }
 

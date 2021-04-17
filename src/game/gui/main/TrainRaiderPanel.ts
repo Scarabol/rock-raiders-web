@@ -23,7 +23,7 @@ export class TrainRaiderPanel extends IconSubPanel {
         trainDynamite.onClick = () => {
             GameState.getBuildingsByType(Building.TOOLSTATION).some((b) => {
                 if (b.stats.TrainDynamite[b.level]) {
-                    GameState.selectedRaiders.forEach((r) => !r.hasSkill(RaiderSkill.DEMOLITION) && r.setJob(new TrainJob(b.getPosition(), RaiderSkill.DEMOLITION)))
+                    GameState.selectedRaiders.forEach((r) => !r.hasSkill(RaiderSkill.DEMOLITION) && r.setJob(new TrainJob(b.getPosition2D(), RaiderSkill.DEMOLITION)))
                     EventBus.publishEvent(new EntityDeselected())
                     return true
                 }

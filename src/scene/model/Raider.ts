@@ -3,7 +3,7 @@ import { EventBus } from '../../event/EventBus'
 import { RaiderSelected, SelectionEvent } from '../../event/LocalEvents'
 import { FulfillerEntity } from './FulfillerEntity'
 import { GameState } from '../../game/model/GameState'
-import { MathUtils, Vector3 } from 'three'
+import { MathUtils, Vector2, Vector3 } from 'three'
 import { EntityAddedEvent, EntityType, OreFoundEvent, RaiderTrained } from '../../event/WorldEvents'
 import { CrystalFoundEvent, RaiderDiscoveredEvent } from '../../event/WorldLocationEvent'
 import { BaseActivity } from './activities/BaseActivity'
@@ -13,15 +13,16 @@ import { SurfaceType } from './map/SurfaceType'
 import { getRandom, removeFromArray } from '../../core/Util'
 import { Crystal } from './collect/Crystal'
 import { Ore } from './collect/Ore'
-import { JOB_ACTION_RANGE } from '../../main'
 import { CollectJob } from '../../game/model/job/CollectJob'
 import { TrainJob } from '../../game/model/job/TrainJob'
 import { GetToolJob } from '../../game/model/job/GetToolJob'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { RaiderTool } from './RaiderTool'
-import degToRad = MathUtils.degToRad
 import { RaiderSkill } from './RaiderSkill'
+import { MoveState } from './MoveState'
 import { JobType } from '../../game/model/job/JobType'
+import { TerrainPath } from './map/TerrainPath'
+import degToRad = MathUtils.degToRad
 
 export class Raider extends FulfillerEntity {
 
@@ -39,8 +40,8 @@ export class Raider extends FulfillerEntity {
         return ResourceManager.stats.Pilot
     }
 
-    findPathToTarget(target: Vector3): Vector3[] {
-        return this.worldMgr.sceneManager.terrain.findPath(this.getPosition(), target)
+    findPathToTarget(target: Vector2): TerrainPath {
+        return this.worldMgr.sceneManager.terrain.findPath(this.getPosition2D(), target)
     }
 
     onDiscover() {
@@ -77,10 +78,13 @@ export class Raider extends FulfillerEntity {
         }
     }
 
-    moveToTarget(target): boolean {
-        const result = super.moveToTarget(target)
-        if (result) {
+    moveToClosestTarget(targets: Vector2[]): MoveState {
+        const result = super.moveToClosestTarget(targets)
+        if (result === MoveState.MOVED) {
             // FIXME check if Raider stepped on a Spider
+        } else if (result === MoveState.TARGET_UNREACHABLE) {
+            console.log('Entity could not move to job target, stopping job')
+            this.stopJob()
         }
         return result
     }
@@ -91,9 +95,7 @@ export class Raider extends FulfillerEntity {
             const surfJob = this.job as SurfaceJob
             const surfaceJobType = surfJob.workType
             if (surfaceJobType === SurfaceJobType.DRILL) {
-                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                    this.moveToTarget(this.job.getPosition())
-                } else {
+                if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                     let drillTimeMs = null
                     if (surfJob.surface.surfaceType === SurfaceType.HARD_ROCK) {
                         drillTimeMs = this.stats.HardDrillTime[this.level] * 1000
@@ -130,16 +132,12 @@ export class Raider extends FulfillerEntity {
                     }, drillTimeMs)
                 }
             } else if (surfaceJobType === SurfaceJobType.CLEAR_RUBBLE) {
-                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                    this.moveToTarget(this.job.getPosition())
-                } else {
+                if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                     if (!this.jobSubPos) {
                         const [x, z] = surfJob.surface.getRandomPosition()
-                        this.jobSubPos = new Vector3(x, this.worldMgr.getTerrainHeight(x, z), z)
+                        this.jobSubPos = new Vector2(x, z)
                     }
-                    if (this.jobSubPos.distanceTo(this.getPosition()) > this.getSpeed()) {
-                        this.moveToTarget(this.jobSubPos)
-                    } else {
+                    if (this.moveToTarget(this.jobSubPos) === MoveState.TARGET_REACHED) {
                         this.changeActivity(RaiderActivity.Clear, () => {
                             this.job.onJobComplete()
                             if (surfJob.surface.hasRubble()) {
@@ -151,9 +149,7 @@ export class Raider extends FulfillerEntity {
                     }
                 }
             } else if (surfaceJobType === SurfaceJobType.REINFORCE) {
-                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                    this.moveToTarget(this.job.getPosition())
-                } else {
+                if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                     this.changeActivity(RaiderActivity.Reinforce, () => {
                         this.completeJob()
                     }, 2700)
@@ -162,61 +158,39 @@ export class Raider extends FulfillerEntity {
                 const bj = this.job as DynamiteJob
                 if (this.carries !== bj.dynamite) {
                     this.dropItem()
-                    if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                        this.moveToTarget(this.job.getPosition())
-                    } else {
+                    if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                         this.changeActivity(RaiderActivity.Collect, () => {
                             this.pickupItem(bj.dynamite)
                         })
                     }
-                } else if (!this.carryTarget) {
-                    this.carryTarget = bj.surface.getDigPositions()[0]
-                } else if (this.getPosition().distanceTo(this.carryTarget) > JOB_ACTION_RANGE) {
-                    this.moveToTarget(this.carryTarget)
-                } else {
+                } else if (this.moveToClosestTarget(bj.surface.getDigPositions()) === MoveState.TARGET_REACHED) {
                     this.changeActivity(RaiderActivity.Place, () => {
-                        this.dropItem()
                         this.completeJob()
                     })
                 }
             }
         } else if (this.job.type === JobType.CARRY) {
-            const carryJob = this.job as CollectJob
-            if (this.carries !== carryJob.item) {
+            const carryJobItem = (this.job as CollectJob).item
+            if (this.carries !== carryJobItem) {
                 this.dropItem()
-                if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                    this.moveToTarget(this.job.getPosition())
-                } else {
+                if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                     this.changeActivity(RaiderActivity.Collect, () => {
-                        this.pickupItem(carryJob.item)
+                        this.pickupItem(carryJobItem)
                     })
                 }
-            } else if (!this.carryTarget) {
-                this.carryTarget = this.carries.getTargetPos()
-                if (!this.carryTarget) {
-                    this.dropItem()
-                    this.stopJob()
-                }
-            } else if (this.getPosition().distanceTo(this.carryTarget) > JOB_ACTION_RANGE) {
-                this.moveToTarget(this.carryTarget)
-            } else {
+            } else if (this.moveToClosestTarget(this.carries.getTargetPositions()) === MoveState.TARGET_REACHED) {
                 this.changeActivity(RaiderActivity.Place, () => {
-                    this.dropItem()
                     this.completeJob()
                 })
             }
         } else if (this.job.type === JobType.MOVE) {
-            if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                this.moveToTarget(this.job.getPosition())
-            } else {
+            if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                 this.changeActivity(RaiderActivity.Stand, () => {
                     this.completeJob()
                 })
             }
         } else if (this.job.type === JobType.TRAIN) {
-            if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                this.moveToTarget(this.job.getPosition())
-            } else {
+            if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                 const trainJob = this.job as TrainJob
                 this.changeActivity(RaiderActivity.Train, () => {
                     this.skills.push(trainJob.skill)
@@ -225,9 +199,7 @@ export class Raider extends FulfillerEntity {
                 }, 10000) // XXX adjust training time
             }
         } else if (this.job.type === JobType.GET_TOOL) {
-            if (!this.job.isInArea(this.group.position.x, this.group.position.z)) {
-                this.moveToTarget(this.job.getPosition())
-            } else {
+            if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                 this.tools.push((this.job as GetToolJob).tool)
                 this.completeJob()
             }
@@ -240,10 +212,10 @@ export class Raider extends FulfillerEntity {
     }
 
     private completeJob() {
+        this.dropItem()
         this.job.onJobComplete()
         if (this.job) this.job.unassign(this)
         this.jobSubPos = null
-        this.carryTarget = null
         this.job = this.followUpJob
         this.followUpJob = null
         this.changeActivity(RaiderActivity.Stand)
@@ -255,7 +227,6 @@ export class Raider extends FulfillerEntity {
 
     beamUp() {
         this.stopJob()
-        this.dropItem()
         super.beamUp()
     }
 

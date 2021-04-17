@@ -1,7 +1,6 @@
 import { Surface } from '../../../scene/model/map/Surface'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
-import { Vector3 } from 'three'
-import { JOB_ACTION_RANGE, TILESIZE } from '../../../main'
+import { Vector2 } from 'three'
 import { Dynamite } from '../../../scene/model/collect/Dynamite'
 import { PublicJob } from './Job'
 import { SurfaceType } from '../../../scene/model/map/SurfaceType'
@@ -55,22 +54,11 @@ export class SurfaceJob extends PublicJob {
         return this.workType.requiredSkill
     }
 
-    getPosition(): Vector3 {
+    getWorkplaces(): Vector2[] {
         if (this.workType === SurfaceJobType.CLEAR_RUBBLE) {
-            return this.surface.getCenterWorld()
+            return [this.surface.getCenterWorld2D()]
         } else {
-            const digPos = this.surface.getDigPositions()[0]
-            digPos.y = this.surface.terrain.worldMgr.getTerrainHeight(digPos.x, digPos.z)
-            return digPos
-        }
-    }
-
-    isInArea(x: number, z: number): boolean {
-        if (this.workType === SurfaceJobType.CLEAR_RUBBLE) {
-            return x >= this.surface.x * TILESIZE + 5 && x < this.surface.x * TILESIZE + TILESIZE + 5
-                && z >= this.surface.y * TILESIZE + 5 && z < this.surface.y * TILESIZE + TILESIZE + 5
-        } else {
-            return this.getPosition().distanceTo(new Vector3(x, this.getPosition().y, z)) < JOB_ACTION_RANGE
+            return this.surface.getDigPositions()
         }
     }
 
@@ -109,8 +97,8 @@ export class DynamiteJob extends SurfaceJob {
         this.dynamite = dynamite
     }
 
-    getPosition(): Vector3 {
-        return this.dynamite.getPosition()
+    getWorkplaces(): Vector2[] {
+        return [this.dynamite.getPosition2D()]
     }
 
     onJobComplete() {

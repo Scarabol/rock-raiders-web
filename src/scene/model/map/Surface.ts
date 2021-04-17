@@ -1,4 +1,4 @@
-import { Group, Mesh, MeshPhongMaterial, Vector3 } from 'three'
+import { Group, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three'
 import { Terrain } from './Terrain'
 import { SurfaceType } from './SurfaceType'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -403,12 +403,12 @@ export class Surface implements Selectable {
         return this.isDrillable() || this.isExplodable()
     }
 
-    getDigPositions(): Vector3[] {
+    getDigPositions(): Vector2[] {
         const digPosition = []
-        if (this.terrain.getSurface(this.x - 1, this.y).isWalkable()) digPosition.push(new Vector3(this.x * TILESIZE - 1, 0, this.y * TILESIZE + TILESIZE / 2))
-        if (this.terrain.getSurface(this.x, this.y - 1).isWalkable()) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE - 1))
-        if (this.terrain.getSurface(this.x + 1, this.y).isWalkable()) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE + 1, 0, this.y * TILESIZE + TILESIZE / 2))
-        if (this.terrain.getSurface(this.x, this.y + 1).isWalkable()) digPosition.push(new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE + TILESIZE + 1))
+        if (this.terrain.getSurface(this.x - 1, this.y).isWalkable()) digPosition.push(new Vector2(this.x * TILESIZE - 1, this.y * TILESIZE + TILESIZE / 2))
+        if (this.terrain.getSurface(this.x, this.y - 1).isWalkable()) digPosition.push(new Vector2(this.x * TILESIZE + TILESIZE / 2, this.y * TILESIZE - 1))
+        if (this.terrain.getSurface(this.x + 1, this.y).isWalkable()) digPosition.push(new Vector2(this.x * TILESIZE + TILESIZE + 1, this.y * TILESIZE + TILESIZE / 2))
+        if (this.terrain.getSurface(this.x, this.y + 1).isWalkable()) digPosition.push(new Vector2(this.x * TILESIZE + TILESIZE / 2, this.y * TILESIZE + TILESIZE + 1))
         return digPosition
     }
 
@@ -419,10 +419,13 @@ export class Surface implements Selectable {
         this.updateTexture()
     }
 
+    getCenterWorld2D(): Vector2 {
+        return new Vector2(this.x * TILESIZE + TILESIZE / 2, this.y * TILESIZE + TILESIZE / 2)
+    }
+
     getCenterWorld(): Vector3 {
-        const center = new Vector3(this.x * TILESIZE + TILESIZE / 2, 0, this.y * TILESIZE + TILESIZE / 2)
-        center.y = this.terrain.worldMgr.getTerrainHeight(center.x, center.z)
-        return center
+        const center = this.getCenterWorld2D()
+        return new Vector3(center.x, this.terrain.worldMgr.getTerrainHeight(center.x, center.y), center.y)
     }
 
     setFallinLevel(fallinLevel: number) {

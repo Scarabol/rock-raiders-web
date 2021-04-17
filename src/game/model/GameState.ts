@@ -134,23 +134,13 @@ export class GameState {
         return this.buildings.some((b) => b.type === building && b.level >= upgrades)
     }
 
-    static getClosestTrainingSite(position: Vector3, training: RaiderSkill): BuildingEntity {
+    static getTrainingSites(position: Vector3, training: RaiderSkill): BuildingEntity[] {
         if (training === RaiderSkill.DEMOLITION) {
-            const targetBuildings = this.buildings.filter((b) => {
+            return this.buildings.filter((b) => {
                 return b.stats.TrainDynamite && b.stats.TrainDynamite[b.level]
             })
-            let closest = null, minDist = null
-            targetBuildings.forEach((b) => {
-                const bPos = b.getDropPosition()
-                const dist = position.distanceToSquared(bPos) // TODO better use pathfinding
-                if (closest === null || dist < minDist) {
-                    closest = b
-                    minDist = dist
-                }
-            })
-            return closest
         }
-        return null
+        return []
     }
 
     static selectEntities(entities: Selectable[]) {

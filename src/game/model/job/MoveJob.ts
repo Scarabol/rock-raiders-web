@@ -1,22 +1,18 @@
-import { Vector3 } from 'three'
-import { Job} from './Job'
+import { Vector2 } from 'three'
+import { Job } from './Job'
 import { JobType } from './JobType'
 
 export class MoveJob extends Job {
 
-    target: Vector3
+    target: Vector2
 
-    constructor(target: Vector3) {
+    constructor(target: Vector2) {
         super(JobType.MOVE)
         this.target = target
     }
 
-    getPosition(): Vector3 {
-        return new Vector3().copy(this.target)
-    }
-
-    isInArea(x: number, z: number): boolean {
-        return this.getPosition().distanceToSquared(new Vector3(x, this.target.y, z)) < Math.pow(this.fulfiller[0].getSpeed(), 2)
+    getWorkplaces(): Vector2[] {
+        return [this.target.clone()]
     }
 
 }

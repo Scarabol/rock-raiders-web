@@ -1,7 +1,7 @@
 import { SceneManager } from './SceneManager'
 import { TerrainLoader } from './TerrainLoader'
 import { ResourceManager } from '../resource/ResourceManager'
-import { Color, MathUtils, Raycaster, Vector3 } from 'three'
+import { Color, MathUtils, Raycaster, Vector2, Vector3 } from 'three'
 import { clearIntervalSafe, getRandom } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { CavernDiscovered, EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent, SpawnMaterialEvent } from '../event/WorldEvents'
@@ -122,10 +122,10 @@ export class WorldManager {
         return intersects.length > 0 ? intersects[0].point : null
     }
 
-    setTorchPosition(position: Vector3) {
+    setTorchPosition(position: Vector2) {
         this.sceneManager.cursorTorchlight.position.x = position.x
-        this.sceneManager.cursorTorchlight.position.y = this.getFloorHeight(position.x, position.z) + 2 * TILESIZE
-        this.sceneManager.cursorTorchlight.position.z = position.z
+        this.sceneManager.cursorTorchlight.position.y = this.getFloorHeight(position.x, position.y) + 2 * TILESIZE
+        this.sceneManager.cursorTorchlight.position.z = position.y
     }
 
     getFloorHeight(worldX: number, worldZ: number): number { // FIXME use interpolation to determine ground level height
@@ -177,9 +177,8 @@ export class WorldManager {
                 station.spawning = false
                 raider.setActivity(RaiderActivity.Stand)
                 raider.createPickSphere()
-                const walkOutPos = station.getPosition().add(new Vector3(0, 0, TILESIZE * 3 / 4 + getRandom(TILESIZE / 2))
-                    .applyEuler(station.getRotation()).applyAxisAngle(new Vector3(0, 1, 0), degToRad(-10 + getRandom(20))))
-                walkOutPos.y = this.getTerrainHeight(walkOutPos.x, walkOutPos.z)
+                const walkOutPos = station.getPosition2D().add(new Vector2(0, TILESIZE * 3 / 4 + getRandom(TILESIZE / 2))
+                    .rotateAround(new Vector2(0, 0), station.getHeading() + degToRad(-10 + getRandom(20))))
                 raider.setJob(new MoveJob(walkOutPos))
                 GameState.raiders.push(raider)
                 EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, raider))

@@ -1,5 +1,5 @@
-import { Vector3 } from 'three'
-import { Job} from './Job'
+import { Vector2 } from 'three'
+import { Job } from './Job'
 import { JobType } from './JobType'
 
 export class EatJob extends Job {
@@ -8,12 +8,8 @@ export class EatJob extends Job {
         super(JobType.EAT)
     }
 
-    getPosition(): Vector3 {
-        return null
-    }
-
-    isInArea(x: number, z: number): boolean {
-        return true
+    getWorkplaces(): Vector2[] {
+        return []
     }
 
 }

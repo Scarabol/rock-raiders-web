@@ -4,7 +4,7 @@ import { Building } from '../../game/model/entity/building/Building'
 import { AnimEntity } from './anim/AnimEntity'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { MathUtils, Matrix4, Vector3 } from 'three'
+import { MathUtils, Matrix4, Vector2, Vector3 } from 'three'
 import { GameState } from '../../game/model/GameState'
 import { BuildingUpgraded, CollectEvent, EntityAddedEvent, EntityType } from '../../event/WorldEvents'
 import { Surface } from './map/Surface'
@@ -70,11 +70,14 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         return pickSphereCenter
     }
 
+    getDropPosition2D(): Vector2 {
+        return this.getPosition2D().add(new Vector2(0, this.type.dropPosDist)
+            .rotateAround(new Vector2(0, 0), this.getHeading() + degToRad(this.type.dropPosAngleDeg)))
+    }
+
     getDropPosition(): Vector3 {
-        const dropPos = this.getPosition().add(new Vector3(0, 0, this.type.dropPosDist)
-            .applyEuler(this.getRotation()).applyAxisAngle(new Vector3(0, 1, 0), degToRad(this.type.dropPosAngleDeg)))
-        dropPos.y = this.worldMgr.getFloorHeight(dropPos.x, dropPos.z)
-        return dropPos
+        const dropPos2D = this.getDropPosition2D()
+        return new Vector3(dropPos2D.x, this.worldMgr.getFloorHeight(dropPos2D.x, dropPos2D.y), dropPos2D.y)
     }
 
     isPowered(): boolean {

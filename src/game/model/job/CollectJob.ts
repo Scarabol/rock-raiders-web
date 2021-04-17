@@ -1,6 +1,5 @@
 import { CollectableEntity, CollectableType, CollectTargetType } from '../../../scene/model/collect/CollectableEntity'
-import { Vector3 } from 'three'
-import { JOB_ACTION_RANGE } from '../../../main'
+import { Vector2 } from 'three'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { Building } from '../entity/building/Building'
 import { GameState } from '../GameState'
@@ -18,16 +17,12 @@ export class CollectJob extends PublicJob {
         this.item = item
     }
 
-    getPosition(): Vector3 {
-        return this.item.getPosition()
-    }
-
-    isInArea(x: number, z: number): boolean {
-        return this.getPosition().distanceTo(new Vector3(x, this.getPosition().y, z)) < JOB_ACTION_RANGE
+    getWorkplaces(): Vector2[] {
+        return [this.item.getPosition2D()]
     }
 
     isQualified(fulfiller: FulfillerEntity) {
-        return fulfiller.carries === null && !!this.item.getTargetPos()
+        return fulfiller.carries === null && this.item.getTargetPositions().length > 0
     }
 
     onJobComplete() {
