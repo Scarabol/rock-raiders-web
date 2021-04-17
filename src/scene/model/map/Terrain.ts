@@ -37,7 +37,11 @@ export class Terrain {
     }
 
     getSurfaceFromWorld(worldPosition: Vector3): Surface | null {
-        return this.getSurface(worldPosition.x / TILESIZE, worldPosition.z / TILESIZE)
+        return this.getSurfaceFromWorldXZ(worldPosition.x, worldPosition.z)
+    }
+
+    getSurfaceFromWorldXZ(worldX: number, worldZ: number): Surface | null {
+        return this.getSurface(worldX / TILESIZE, worldZ / TILESIZE)
     }
 
     getSurface(x, y): Surface {

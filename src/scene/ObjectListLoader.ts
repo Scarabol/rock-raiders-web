@@ -24,11 +24,12 @@ export class ObjectListLoader {
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
             const worldX = (olObject.xPos - 1) * TILESIZE
             const worldZ = (olObject.yPos - 1) * TILESIZE
-            const worldY = worldMgr.getTerrainHeight(worldX, worldZ)
+            const terrainY = worldMgr.getTerrainHeight(worldX, worldZ)
+            const groundY = worldMgr.getFloorHeight(worldX, worldZ)
             const buildingType = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
             if (lTypeName === 'TVCamera'.toLowerCase()) {
-                const target = new Vector3(worldX, worldY, worldZ - TILESIZE / 2)
+                const target = new Vector3(worldX, terrainY, worldZ - TILESIZE / 2)
                 const offset = new Vector3(5 * TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(target)
                 worldMgr.sceneManager.camera.position.copy(offset)
                 worldMgr.sceneManager.camera.position.y = 4.5 * TILESIZE
@@ -40,7 +41,7 @@ export class ObjectListLoader {
                 raider.worldMgr = worldMgr
                 raider.setActivity(RaiderActivity.Stand)
                 raider.createPickSphere()
-                raider.group.position.set(worldX, worldY, worldZ)
+                raider.group.position.set(worldX, terrainY, worldZ)
                 raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2)
                 raider.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(raider.group.position).discovered
                 if (raider.group.visible) {
@@ -56,7 +57,7 @@ export class ObjectListLoader {
                 entity.worldMgr = worldMgr
                 entity.setActivity(entity.getStandActivity())
                 entity.createPickSphere()
-                entity.group.position.set(worldX, worldY, worldZ)
+                entity.group.position.set(worldX, groundY, worldZ)
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), -radHeading - Math.PI)
                 entity.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered
                 if (entity.group.visible) {
@@ -93,7 +94,7 @@ export class ObjectListLoader {
                 const spider = new SmallSpider()
                 spider.worldMgr = worldMgr
                 spider.setActivity(MonsterActivity.Stand)
-                spider.group.position.set(worldX, worldY, worldZ)
+                spider.group.position.set(worldX, terrainY, worldZ)
                 spider.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position).discovered
                 worldMgr.sceneManager.scene.add(spider.group)
                 GameState.spiders.push(spider)
@@ -102,7 +103,7 @@ export class ObjectListLoader {
                 const bat = new Bat()
                 bat.worldMgr = worldMgr
                 bat.setActivity(MonsterActivity.Stand)
-                bat.group.position.set(worldX, worldY + TILESIZE, worldZ)
+                bat.group.position.set(worldX, groundY + TILESIZE, worldZ)
                 bat.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(bat.group.position).discovered
                 worldMgr.sceneManager.scene.add(bat.group)
                 GameState.bats.push(bat)

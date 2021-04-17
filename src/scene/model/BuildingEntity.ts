@@ -73,7 +73,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     getDropPosition(): Vector3 {
         const dropPos = this.getPosition().add(new Vector3(0, 0, this.type.dropPosDist)
             .applyEuler(this.getRotation()).applyAxisAngle(new Vector3(0, 1, 0), degToRad(this.type.dropPosAngleDeg)))
-        dropPos.y = this.worldMgr.getTerrainHeight(dropPos.x, dropPos.z)
+        dropPos.y = this.worldMgr.getFloorHeight(dropPos.x, dropPos.z)
         return dropPos
     }
 

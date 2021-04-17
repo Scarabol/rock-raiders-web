@@ -14,7 +14,6 @@ export class Bat extends Monster {
 
     constructor() {
         super(ResourceManager.getAnimationEntityType('Creatures/bat/bat.ae'))
-        this.heightOffset = TILESIZE
     }
 
     get stats() {
@@ -38,6 +37,14 @@ export class Bat extends Monster {
         }
     }
 
+    protected determinePosY(): number {
+        return this.calculateFlightHeight(this.group.position.x, this.group.position.z)
+    }
+
+    private calculateFlightHeight(x: number, z: number) {
+        return this.worldMgr.getFloorHeight(x, z) * TILESIZE
+    }
+
     private findTarget(): Vector3 { // TODO move to nearby drilling noise, explosions or sonic blasters
         const terrain = this.worldMgr.sceneManager.terrain
         const currentCenter = terrain.getSurfaceFromWorld(this.getPosition()).getCenterWorld()
@@ -46,7 +53,7 @@ export class Bat extends Monster {
             const targetZ = getRandomInclusive(currentCenter.z - TILESIZE / 2, currentCenter.z + TILESIZE / 2)
             const target = new Vector3(targetX, 0, targetZ)
             if (terrain.getSurfaceFromWorld(target).surfaceType.floor) { // TODO evaluate CrossLand, CrossLava, CrossWater from stats
-                target.y = this.worldMgr.getTerrainHeight(targetX, targetZ) + TILESIZE
+                target.y = this.calculateFlightHeight(targetX, targetZ)
                 return target
             }
         }

@@ -42,6 +42,11 @@ export class Surface implements Selectable {
     mesh: Mesh = null
     needsMeshUpdate: boolean = false
 
+    topLeftHeightOffset: number = 0
+    topRightHeightOffset: number = 0
+    bottomLeftHeightOffset: number = 0
+    bottomRightHeightOffset: number = 0
+
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain
         this.surfaceType = surfaceType
@@ -95,6 +100,13 @@ export class Surface implements Selectable {
         // discover surface and all neighbors
         const foundCave = this.discoverNeighbors()
         if (foundCave) EventBus.publishEvent(new CavernDiscovered())
+        // drop contained ores and crystals
+        this.dropContainedOre(this.containedOres - 4)
+        for (let c = 0; c < this.containedCrystals; c++) {
+            const [x, z] = this.getRandomPosition()
+            const crystal = this.terrain.worldMgr.addCollectable(new Crystal(), x, z)
+            EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
+        }
         // check for unsupported neighbors
         for (let x = this.x - 1; x <= this.x + 1; x++) {
             for (let y = this.y - 1; y <= this.y + 1; y++) {
@@ -108,15 +120,6 @@ export class Surface implements Selectable {
         // update meshes
         this.terrain.updateSurfaceMeshes()
         this.terrain.floorGroup.updateWorldMatrix(true, true)
-        // drop contained crystals and ores // FIXME this should happen before collapsing neighbors
-        for (let c = 0; c < this.containedCrystals; c++) {
-            const [x, z] = this.getRandomPosition()
-            const crystal = this.terrain.worldMgr.addCollectable(new Crystal(), x, z)
-            EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
-        }
-        this.dropContainedOre(this.containedOres - 4)
-        // FIXME workaround until buildings can be placed without terrain ray intersection
-        GameState.buildings.forEach((b) => b.group.position.y = this.terrain.worldMgr.getTerrainHeight(b.group.position.x, b.group.position.z))
     }
 
     private dropContainedOre(dropAmount: number) {
@@ -320,11 +323,15 @@ export class Surface implements Selectable {
             return sum / cnt
         }
 
+        this.topLeftHeightOffset = avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER
+        this.topRightHeightOffset = avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER
+        this.bottomRightHeightOffset = avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER
+        this.bottomLeftHeightOffset = avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER
         const geometry = SurfaceGeometry.create(this.wallType, topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex,
-            topLeftVertex.y + avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER,
-            topRightVertex.y + avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER,
-            bottomRightVertex.y + avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER,
-            bottomLeftVertex.y + avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER,
+            topLeftVertex.y + this.topLeftHeightOffset,
+            topRightVertex.y + this.topRightHeightOffset,
+            bottomRightVertex.y + this.bottomRightHeightOffset,
+            bottomLeftVertex.y + this.bottomLeftHeightOffset,
         )
 
         this.mesh = new Mesh(geometry, new MeshPhongMaterial({shininess: 0}))
@@ -513,6 +520,17 @@ export class Surface implements Selectable {
         this.accessMaterials().forEach(m => m.dispose())
     }
 
+    getFloorHeight(worldX: number, worldZ: number) {
+        const sx = worldX / TILESIZE - this.x
+        const sy = worldZ / TILESIZE - this.y
+        const dy0 = Surface.interpolate(this.topLeftHeightOffset, this.topRightHeightOffset, sx)
+        const dy1 = Surface.interpolate(this.bottomLeftHeightOffset, this.bottomRightHeightOffset, sx)
+        return Surface.interpolate(dy0, dy1, sy) * TILESIZE
+    }
+
+    private static interpolate(y0: number, y1: number, x: number): number {
+        return y0 + x * (y1 - y0)
+    }
 }
 
 export enum WALL_TYPE {

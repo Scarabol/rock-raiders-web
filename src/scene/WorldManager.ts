@@ -124,7 +124,13 @@ export class WorldManager {
 
     setTorchPosition(position: Vector3) {
         this.sceneManager.cursorTorchlight.position.copy(position)
-        this.sceneManager.cursorTorchlight.position.y = this.getTerrainHeight(position.x, position.z) + 2 * TILESIZE
+        this.sceneManager.cursorTorchlight.position.y = this.getFloorHeight(position.x, position.z) + 2 * TILESIZE
+    }
+
+    getFloorHeight(worldX: number, worldZ: number): number { // FIXME use interpolation to determine ground level height
+        const surface = this.sceneManager.terrain.getSurfaceFromWorldXZ(worldX, worldZ)
+        if (!surface) return 0
+        return surface.getFloorHeight(worldX, worldZ)
     }
 
     getTerrainHeight(worldX: number, worldZ: number): number {
@@ -139,7 +145,7 @@ export class WorldManager {
     }
 
     addCollectable(collectable: CollectableEntity, worldX: number, worldZ: number) {
-        const worldY = this.getTerrainHeight(worldX, worldZ)
+        const worldY = this.getFloorHeight(worldX, worldZ)
         collectable.worldMgr = this
         collectable.group.position.set(worldX, worldY, worldZ)
         collectable.group.visible = this.sceneManager.terrain.getSurfaceFromWorld(collectable.group.position).discovered

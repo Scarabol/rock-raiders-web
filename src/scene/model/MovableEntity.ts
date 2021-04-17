@@ -7,7 +7,6 @@ import { MovableEntityStats } from '../../cfg/MovableEntityStats'
 export abstract class MovableEntity extends AnimEntity {
 
     pathToTarget: Vector3[] = null
-    heightOffset: number = 0
 
     constructor(entityType: AnimationEntityType) {
         super(entityType)
@@ -30,9 +29,13 @@ export abstract class MovableEntity extends AnimEntity {
         }
         this.changeActivity(this.getRouteActivity())
         this.group.position.add(this.determineStep())
-        this.group.position.y = this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z) + this.heightOffset
+        this.group.position.y = this.determinePosY()
         this.group.lookAt(new Vector3(this.pathToTarget[0].x, this.group.position.y, this.pathToTarget[0].z))
         return true
+    }
+
+    protected determinePosY() {
+        return this.worldMgr.getTerrainHeight(this.group.position.x, this.group.position.z)
     }
 
     abstract getRouteActivity(): BaseActivity
@@ -43,7 +46,7 @@ export abstract class MovableEntity extends AnimEntity {
 
     determineStep(): Vector3 {
         const pathStepTarget = this.pathToTarget[0]
-        pathStepTarget.y = this.worldMgr.getTerrainHeight(pathStepTarget.x, pathStepTarget.z) + this.heightOffset
+        pathStepTarget.y = this.determinePosY()
         const step = new Vector3().copy(pathStepTarget).sub(this.getPosition())
         if (step.length() > this.getSpeed()) {
             step.setLength(this.getSpeed()) // TODO use average speed between current and target position
