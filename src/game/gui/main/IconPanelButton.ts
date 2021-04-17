@@ -18,6 +18,12 @@ export class IconPanelButton extends Button {
         this.disabled = true
     }
 
+    reset() {
+        super.reset()
+        this.disabled = true
+        this.updateState(false)
+    }
+
     onClick() {
         console.log('menu item pressed: ' + this.buttonType)
     }

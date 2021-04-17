@@ -36,6 +36,11 @@ export class MenuLayer extends BaseElement {
         this.hidden = true
     }
 
+    reset() {
+        super.reset()
+        this.hidden = true
+    }
+
     onRedraw(context: CanvasRenderingContext2D) {
         if (this.hidden) return
         context.drawImage(this.menuImage, (this.parent.width - this.menuImage.width) / 2, (this.parent.height - this.menuImage.height) / 2)

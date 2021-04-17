@@ -64,13 +64,13 @@ export class MainPanel extends Panel {
         // TODO add decrease requested raider spawn option (needs right click for gui elements)
         teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding')
-        buildingItem.disabled = false
+        buildingItem.isDisabled = () => false
         buildingItem.onClick = () => this.mainPanel.toggleState(() => buildingPanel.toggleState())
         const smallVehicleItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildSmallVehicle')
-        smallVehicleItem.disabled = false
+        smallVehicleItem.isDisabled = () => false
         smallVehicleItem.onClick = () => this.mainPanel.toggleState(() => smallVehiclePanel.toggleState())
         const largeVehicleItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildLargeVehicle')
-        largeVehicleItem.disabled = false
+        largeVehicleItem.isDisabled = () => false
         largeVehicleItem.onClick = () => this.mainPanel.toggleState(() => largeVehiclePanel.toggleState())
         EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, (event: SurfaceSelectedEvent) => {
             const surface = event.surface
@@ -88,6 +88,18 @@ export class MainPanel extends Panel {
         EventBus.registerEventListener(BuildingSelected.eventKey, () => this.selectSubPanel(selectBuildingPanel))
         EventBus.registerEventListener(RaiderSelected.eventKey, () => this.selectSubPanel(selectRaiderPanel))
         EventBus.registerEventListener(VehicleSelected.eventKey, () => this.selectSubPanel(selectVehiclePanel))
+    }
+
+    reset() {
+        super.reset()
+        this.relX = this.xOut
+        this.relY = this.yOut
+        this.movedIn = false
+        this.updatePosition()
+        this.mainPanel.relX = this.mainPanel.xOut
+        this.mainPanel.relY = this.mainPanel.yOut
+        this.mainPanel.movedIn = false
+        this.mainPanel.updatePosition()
     }
 
     addSubPanel<T extends IconSubPanel>(childPanel: T): T {

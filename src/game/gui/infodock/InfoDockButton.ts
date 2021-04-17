@@ -6,6 +6,7 @@ import { InfoDockPanel } from './InfoDockPanel'
 import { EventBus } from '../../../event/EventBus'
 import { WorldLocationEvent } from '../../../event/WorldLocationEvent'
 import { NATIVE_FRAMERATE } from '../../../main'
+import { clearTimeoutSafe } from '../../../core/Util'
 
 export class InfoDockButton extends Button {
 
@@ -31,6 +32,14 @@ export class InfoDockButton extends Button {
             this.messages.unshift(event)
             parent.showButton(this)
         })
+    }
+
+    reset() {
+        super.reset()
+        this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
+        this.text = null
+        this.hidden = true
+        this.messages = []
     }
 
     slideToTarget(targetX: number, targetY: number): Promise<void> {

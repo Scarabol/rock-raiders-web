@@ -28,6 +28,11 @@ export class InfoDockPanel extends Panel {
         this.addChild(new InfoDockButton(this, infoMessagesConfig.infoFoundMinifigure, RaiderDiscoveredEvent.eventKey))
     }
 
+    reset() {
+        super.reset()
+        this.stackButtons = []
+    }
+
     private gotoLatestMessage() {
         if (this.stackButtons.length < 1) return
         const btn = this.stackButtons[0]

@@ -11,6 +11,11 @@ export class SelectionLayer extends ScreenLayer {
         super(true)
     }
 
+    reset() {
+        super.reset()
+        this.selectStart = null
+    }
+
     setWorldManager(worldManager: WorldManager) {
         this.worldManager = worldManager
     }

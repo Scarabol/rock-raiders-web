@@ -15,6 +15,9 @@ export class ScreenLayer {
         this.hide()
     }
 
+    reset() {
+    }
+
     setZIndex(zIndex: number) {
         this.canvas.style.zIndex = String(zIndex)
     }

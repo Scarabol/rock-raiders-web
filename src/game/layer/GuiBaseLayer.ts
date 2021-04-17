@@ -17,6 +17,11 @@ export class GuiBaseLayer extends ScaledLayer {
         }
     }
 
+    reset() {
+        super.reset()
+        this.panels.forEach((p) => p.reset())
+    }
+
     addPanel<T extends Panel>(panel: T): T {
         this.rootElement.addChild(panel)
         this.panels.push(panel)

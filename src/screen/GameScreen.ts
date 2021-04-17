@@ -71,6 +71,7 @@ export class GameScreen extends BaseScreen {
     hide() {
         this.worldManager.stop()
         this.jobSupervisor.stop()
+        this.layers.forEach((l) => l.reset())
         super.hide()
     }
 

@@ -23,6 +23,11 @@ export class GameLayer extends ScreenLayer {
         super(false, false)
     }
 
+    reset() {
+        super.reset()
+        this.rightDown = {x: 0, y: 0}
+    }
+
     setWorldManager(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
     }

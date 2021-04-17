@@ -50,6 +50,12 @@ export class MainMenuLayer extends ScaledLayer {
         }
     }
 
+    reset() {
+        super.reset()
+        this.scrollY = 0
+        this.scrollSpeedY = 0
+    }
+
     show() {
         super.show()
         const that = this

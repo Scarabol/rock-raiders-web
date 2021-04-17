@@ -31,6 +31,12 @@ export class BriefingPanel extends Panel {
         this.hidden = true
     }
 
+    reset() {
+        super.reset()
+        this.hidden = true
+        this.setParagraph(0)
+    }
+
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
         this.imgBack = ResourceManager.getImageOrNull(objectiveBackImgCfg.filename)
         this.relX = objectiveBackImgCfg.x

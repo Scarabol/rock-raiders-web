@@ -60,9 +60,4 @@ export class GuiMainLayer extends GuiBaseLayer {
         }
     }
 
-    reset() {
-        // FIXME reset GUI including all panels
-        this.panelPriorityList.reset()
-    }
-
 }

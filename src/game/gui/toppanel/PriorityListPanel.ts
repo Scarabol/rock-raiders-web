@@ -26,7 +26,7 @@ export class PriorityListPanel extends Panel {
                 this.setList(GameState.priorityList.current)
             }
         })
-        this.addChild(new Button(this, buttonsCfg.panelButtonPriorityListReset)).onClick = () => this.reset()
+        this.addChild(new Button(this, buttonsCfg.panelButtonPriorityListReset)).onClick = () => this.resetList()
 
         this.prioPositions = pos
         this.prioByName.set('aiPriorityTrain'.toLowerCase(), this.addChild(new Button(this, cfg.aiPriorityTrain)))
@@ -42,6 +42,11 @@ export class PriorityListPanel extends Panel {
     }
 
     reset() {
+        super.reset()
+        this.resetList()
+    }
+
+    resetList() {
         GameState.priorityList.reset()
         this.setList(GameState.priorityList.current)
     }

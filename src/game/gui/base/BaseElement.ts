@@ -17,6 +17,14 @@ export class BaseElement {
         this.parent = parent
     }
 
+    reset() {
+        this.hidden = false
+        this.disabled = false
+        this.hover = false
+        this.pressed = false
+        this.children.forEach((c) => c.reset())
+    }
+
     addChild<T extends BaseElement>(child: T): T {
         child.parent = this
         this.children.push(child)

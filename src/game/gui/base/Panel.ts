@@ -27,6 +27,15 @@ export class Panel extends BaseElement {
         }
     }
 
+    reset() {
+        super.reset()
+        this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
+        this.relX = this.xIn
+        this.relY = this.yIn
+        this.movedIn = true
+        this.updatePosition()
+    }
+
     isInactive(): boolean {
         return this.animationTimeout || super.isInactive()
     }

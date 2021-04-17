@@ -17,6 +17,11 @@ export class MenuBasePanel extends Panel {
         this.layersByKey.forEach((layer) => layer.itemsNext.forEach((item) => item.onClick = () => pausePanel.selectLayer(item.target)))
     }
 
+    reset() {
+        super.reset()
+        this.hidden = true
+    }
+
     show() {
         this.hidden = false
         this.selectLayer('menu1')
