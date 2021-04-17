@@ -38,9 +38,9 @@ export class LWSCLoader {
             throw 'Invalid start of file! Expected \'LWSC\' in first line'
         }
 
-        const numOfModels = parseInt(this.lines[1], 10) // FIXME check website, could be something else
-        if (numOfModels !== 1) {
-            console.warn('Number of models has unexpected value: ' + numOfModels)
+        const sceneFileVersion = parseInt(this.lines[1], 10)
+        if (sceneFileVersion !== 1) {
+            console.warn('Unexpected scene file version: ' + sceneFileVersion)
         }
 
         for (this.lineIndex = 2; this.lineIndex < this.lines.length; this.lineIndex++) {
