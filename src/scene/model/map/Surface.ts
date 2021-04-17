@@ -274,24 +274,24 @@ export class Surface implements Selectable {
         const bottom = this.terrain.getSurface(this.x, this.y + 1).isPath()
         const pathSum = (left ? 1 : 0) + (top ? 1 : 0) + (right ? 1 : 0) + (bottom ? 1 : 0)
         if (pathSum === 0 || pathSum === 1) {
-            if (left) this.surfaceRotation = Math.PI / 2
+            if (left) this.surfaceRotation = -Math.PI / 2
             if (top) this.surfaceRotation = Math.PI
-            if (right) this.surfaceRotation = -Math.PI / 2
+            if (right) this.surfaceRotation = Math.PI / 2
             return '65'
         } else if (pathSum === 2) {
             if (left === right) {
                 this.surfaceRotation = left ? Math.PI / 2 : 0
                 return '62'
             } else {
-                if (left && bottom) this.surfaceRotation = Math.PI / 2
+                if (left && bottom) this.surfaceRotation = -Math.PI / 2
                 if (left && top) this.surfaceRotation = Math.PI
-                if (top && right) this.surfaceRotation = -Math.PI / 2
+                if (top && right) this.surfaceRotation = Math.PI / 2
                 return '63'
             }
         } else if (pathSum === 3) {
-            if (!top) this.surfaceRotation = Math.PI / 2
+            if (!top) this.surfaceRotation = -Math.PI / 2
             if (!right) this.surfaceRotation = Math.PI
-            if (!bottom) this.surfaceRotation = -Math.PI / 2
+            if (!bottom) this.surfaceRotation = Math.PI / 2
             return '64'
         } else {
             return '60'
