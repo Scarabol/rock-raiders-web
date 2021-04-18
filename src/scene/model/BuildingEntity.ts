@@ -115,12 +115,10 @@ export class BuildingEntity extends AnimEntity implements Selectable {
 
     beamUp() {
         for (let c = 0; c < this.stats.CostOre; c++) {
-            const [x, z] = this.surfaces[0].getRandomPosition()
-            this.worldMgr.addCollectable(new Ore(), x, z)
+            this.worldMgr.addCollectable(new Ore(), this.surfaces[0].getRandomPosition())
         }
         for (let c = 0; c < this.stats.CostCrystal; c++) {
-            const [x, z] = this.surfaces[0].getRandomPosition()
-            this.worldMgr.addCollectable(new Crystal(), x, z)
+            this.worldMgr.addCollectable(new Crystal(), this.surfaces[0].getRandomPosition())
         }
         this.surfaces.forEach((s) => {
             s.surfaceType = SurfaceType.GROUND

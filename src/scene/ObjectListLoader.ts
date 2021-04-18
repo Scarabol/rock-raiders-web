@@ -87,7 +87,7 @@ export class ObjectListLoader {
                     entity.surfaces.push(pathSurface)
                 }
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
-                worldMgr.addCollectable(new Crystal(), worldX, worldZ)
+                worldMgr.addCollectable(new Crystal(), new Vector2(worldX, worldZ))
             } else if (lTypeName === 'SmallSpider'.toLowerCase()) {
                 const spider = new SmallSpider()
                 spider.worldMgr = worldMgr

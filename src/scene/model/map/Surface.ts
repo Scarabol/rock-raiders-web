@@ -103,8 +103,7 @@ export class Surface implements Selectable {
         // drop contained ores and crystals
         this.dropContainedOre(this.containedOres - 4)
         for (let c = 0; c < this.containedCrystals; c++) {
-            const [x, z] = this.getRandomPosition()
-            const crystal = this.terrain.worldMgr.addCollectable(new Crystal(), x, z)
+            const crystal = this.terrain.worldMgr.addCollectable(new Crystal(), this.getRandomPosition())
             EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
         }
         // check for unsupported neighbors
@@ -125,17 +124,14 @@ export class Surface implements Selectable {
     private dropContainedOre(dropAmount: number) {
         for (let c = 0; c < dropAmount && this.containedOres > 0; c++) {
             this.containedOres--
-            const [x, z] = this.getRandomPosition()
-            this.terrain.worldMgr.addCollectable(new Ore(), x, z)
+            this.terrain.worldMgr.addCollectable(new Ore(), this.getRandomPosition())
             EventBus.publishEvent(new OreFoundEvent())
         }
     }
 
-    getRandomPosition(): number[] {
-        return [
-            this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4),
-            this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4),
-        ]
+    getRandomPosition(): Vector2 {
+        return new Vector2(this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4),
+            this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4))
     }
 
     cancelJobs() {

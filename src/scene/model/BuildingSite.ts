@@ -57,9 +57,7 @@ export class BuildingSite {
             this.checkComplete()
         } else {
             item.resetTarget()
-            // item.worldMgr.addCollectable(item, item.getTargetPos().x, item.getTargetPos().z)
-            const pos = item.getPosition() // FIXME test this
-            item.worldMgr.addCollectable(item, pos.x, pos.z)
+            item.worldMgr.addCollectable(item, item.getPosition2D())
         }
     }
 

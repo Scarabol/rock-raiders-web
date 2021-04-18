@@ -2,7 +2,7 @@ import { GameEvent } from './EventBus'
 import { PublicJob } from '../game/model/job/Job'
 import { CollectableEntity, CollectableType } from '../scene/model/collect/CollectableEntity'
 import { AnimEntity } from '../scene/model/anim/AnimEntity'
-import { Vector3 } from 'three'
+import { Vector2 } from 'three'
 import { Surface } from '../scene/model/map/Surface'
 import { BuildingEntity } from '../scene/model/BuildingEntity'
 import { FulfillerEntity } from '../scene/model/FulfillerEntity'
@@ -92,9 +92,9 @@ export class SpawnMaterialEvent extends WorldEvent {
     static eventKey = 'spawn.material'
 
     collectable: CollectableEntity
-    spawnPosition: Vector3
+    spawnPosition: Vector2
 
-    constructor(collectable: CollectableEntity, spawnPosition: Vector3) {
+    constructor(collectable: CollectableEntity, spawnPosition: Vector2) {
         super(SpawnMaterialEvent.eventKey)
         this.collectable = collectable
         this.spawnPosition = spawnPosition

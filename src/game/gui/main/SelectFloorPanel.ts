@@ -23,7 +23,7 @@ export class SelectFloorPanel extends SelectBasePanel {
             if (targetBuilding) {
                 const ores = GameState.dropMaterial(CollectableType.ORE, 2)
                 ores.forEach((ore) => {
-                    EventBus.publishEvent(new SpawnMaterialEvent(ore, targetBuilding.getDropPosition())) // TODO use ToolNullName from cfg
+                    EventBus.publishEvent(new SpawnMaterialEvent(ore, targetBuilding.getDropPosition2D())) // TODO use ToolNullName from cfg
                 })
             }
             const site = new BuildingSite(true)

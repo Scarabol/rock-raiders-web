@@ -114,15 +114,15 @@ export class Raider extends FulfillerEntity {
                     this.changeActivity(RaiderActivity.Drill, () => {
                         if (surfJob.surface.seamLevel > 0) {
                             surfJob.surface.seamLevel--
-                            const vec = new Vector3().copy(this.getPosition()).sub(surfJob.surface.getCenterWorld())
+                            const vec = new Vector2().copy(this.getPosition2D()).sub(surfJob.surface.getCenterWorld2D())
                                 .multiplyScalar(0.3 + getRandom(3) / 10)
-                                .applyAxisAngle(new Vector3(0, 1, 0), degToRad(-10 + getRandom(20)))
-                                .add(this.getPosition()) // TODO set y to terrain height at this position?
+                                .rotateAround(new Vector2(0, 0), degToRad(-10 + getRandom(20)))
+                                .add(this.getPosition2D())
                             if (surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                                this.worldMgr.addCollectable(new Crystal(), vec.x, vec.z)
-                                EventBus.publishEvent(new CrystalFoundEvent(vec))
+                                const crystal = this.worldMgr.addCollectable(new Crystal(), vec)
+                                EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
                             } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM) {
-                                this.worldMgr.addCollectable(new Ore(), vec.x, vec.z)
+                                this.worldMgr.addCollectable(new Ore(), vec)
                                 EventBus.publishEvent(new OreFoundEvent())
                             }
                             this.changeActivity(RaiderActivity.Stand)
@@ -134,8 +134,7 @@ export class Raider extends FulfillerEntity {
             } else if (surfaceJobType === SurfaceJobType.CLEAR_RUBBLE) {
                 if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                     if (!this.jobSubPos) {
-                        const [x, z] = surfJob.surface.getRandomPosition()
-                        this.jobSubPos = new Vector2(x, z)
+                        this.jobSubPos = surfJob.surface.getRandomPosition()
                     }
                     if (this.moveToTarget(this.jobSubPos) === MoveState.TARGET_REACHED) {
                         this.changeActivity(RaiderActivity.Clear, () => {

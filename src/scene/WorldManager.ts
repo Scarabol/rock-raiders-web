@@ -53,7 +53,7 @@ export class WorldManager {
             EventBus.publishEvent(new JobCreateEvent(new DynamiteJob(event.surface, dynamite)))
         })
         EventBus.registerEventListener(SpawnMaterialEvent.eventKey, (event: SpawnMaterialEvent) => {
-            this.addCollectable(event.collectable, event.spawnPosition.x, event.spawnPosition.z)
+            this.addCollectable(event.collectable, event.spawnPosition)
         })
         EventBus.registerEventListener(CavernDiscovered.eventKey, () => {
             GameState.discoveredCaverns++
@@ -145,10 +145,9 @@ export class WorldManager {
         }
     }
 
-    addCollectable(collectable: CollectableEntity, worldX: number, worldZ: number) {
-        const worldY = this.getFloorHeight(worldX, worldZ)
+    addCollectable(collectable: CollectableEntity, world: Vector2) {
         collectable.worldMgr = this
-        collectable.group.position.set(worldX, worldY, worldZ)
+        collectable.group.position.set(world.x, this.getFloorHeight(world.x, world.y), world.y)
         collectable.group.visible = this.sceneManager.terrain.getSurfaceFromWorld(collectable.group.position).discovered
         this.sceneManager.scene.add(collectable.group)
         if (collectable.group.visible) {
