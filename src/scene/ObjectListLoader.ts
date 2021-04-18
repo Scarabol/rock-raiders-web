@@ -25,7 +25,6 @@ export class ObjectListLoader {
             const worldX = (olObject.xPos - 1) * TILESIZE
             const worldZ = (olObject.yPos - 1) * TILESIZE
             const terrainY = worldMgr.getTerrainHeight(worldX, worldZ)
-            const groundY = worldMgr.getFloorHeight(worldX, worldZ)
             const buildingType = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
             if (lTypeName === 'TVCamera'.toLowerCase()) {
@@ -56,7 +55,7 @@ export class ObjectListLoader {
                 entity.worldMgr = worldMgr
                 entity.setActivity(entity.getStandActivity())
                 entity.createPickSphere()
-                entity.group.position.set(worldX, groundY, worldZ)
+                entity.group.position.set(worldX, worldMgr.getFloorHeight(worldX, worldZ), worldZ)
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), -radHeading - Math.PI)
                 entity.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered
                 if (entity.group.visible) {
@@ -102,7 +101,7 @@ export class ObjectListLoader {
                 const bat = new Bat()
                 bat.worldMgr = worldMgr
                 bat.setActivity(MonsterActivity.Stand)
-                bat.group.position.set(worldX, groundY + TILESIZE, worldZ)
+                bat.group.position.set(worldX, bat.determinePosY(worldX, worldZ), worldZ)
                 bat.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(bat.group.position).discovered
                 worldMgr.sceneManager.scene.add(bat.group)
                 GameState.bats.push(bat)

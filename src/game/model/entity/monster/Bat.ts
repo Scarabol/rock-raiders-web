@@ -33,7 +33,7 @@ export class Bat extends Monster {
     }
 
     determinePosY(x: number, z: number) {
-        return this.worldMgr.getFloorHeight(x, z) + TILESIZE
+        return this.worldMgr.getFloorHeight(x, z) + TILESIZE / 2
     }
 
     private findTarget(): Vector2 { // TODO move to nearby drilling noise, explosions or sonic blasters
