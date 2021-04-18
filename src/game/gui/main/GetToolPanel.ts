@@ -33,7 +33,7 @@ export class GetToolPanel extends IconSubPanel {
                         .map((b) => r.findPathToTarget(b.getPosition2D()))
                         .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                     if (pathToToolstation) {
-                        r.setJob(new GetToolJob(pathToToolstation.target, tool)) // TODO use precalculated path to toolstation
+                        r.setJob(new GetToolJob(pathToToolstation.targetPosition, tool)) // TODO use precalculated path to toolstation
                     }
                 }
             })

@@ -94,7 +94,7 @@ export class Supervisor {
                                 closestToolRaider = raider
                                 closestToolRaiderIndex = index
                                 minToolDistance = dist
-                                closestToolstationPosition = pathToToolstation.target // TODO use precalculated path to toolstation
+                                closestToolstationPosition = pathToToolstation.targetPosition // TODO use precalculated path to toolstation
                                 closestNeededTool = neededTool
                             }
                         }
@@ -110,7 +110,7 @@ export class Supervisor {
                                     closestTrainingRaider = raider
                                     closestTrainingRaiderIndex = index
                                     minTrainingDistance = dist
-                                    closestTrainingPath = pathToTraining.target // TODO use precalculated path to training
+                                    closestTrainingPath = pathToTraining.targetPosition // TODO use precalculated path to training
                                     closestNeededTraining = neededTraining
                                 }
                             }
@@ -150,7 +150,7 @@ export class Supervisor {
                                     .map((b) => raider.findPathToTarget(b.getPosition2D()))
                                     .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                                 if (pathToToolstation) {
-                                    raider.setJob(new GetToolJob(pathToToolstation.target, neededTool), surfJob) // TODO use precalculated path to toolstation
+                                    raider.setJob(new GetToolJob(pathToToolstation.targetPosition, neededTool), surfJob) // TODO use precalculated path to toolstation
                                 }
                             } else {
                                 continue

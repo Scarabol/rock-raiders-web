@@ -22,8 +22,12 @@ export class TerrainPath {
         return this
     }
 
-    get target(): Vector2 {
+    get targetPosition(): Vector2 {
         return this.locations[this.locations.length - 1] || null
+    }
+
+    get firstLocation(): Vector2 {
+        return this.locations[0] || null
     }
 
 }

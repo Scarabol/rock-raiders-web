@@ -10,7 +10,7 @@ import { TerrainPath } from './map/TerrainPath'
 
 export abstract class MovableEntity extends AnimEntity {
 
-    pathToTarget: Vector2[] = null
+    currentPath: TerrainPath = null
 
     constructor(entityType: AnimationEntityType) {
         super(entityType)
@@ -35,17 +35,18 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     moveToClosestTarget(targets: Vector2[]): MoveState {
-        if (!this.pathToTarget || !targets.some((t) => t.equals(this.pathToTarget[this.pathToTarget.length - 1]))) {
+        if (!this.currentPath || !targets.some((t) => t.equals(this.currentPath.targetPosition))) {
             const paths = targets.map((t) => this.findPathToTarget(t))
                 .sort((l, r) => l.lengthSq - r.lengthSq)
-            this.pathToTarget = paths.length > 0 ? paths[0].locations : null
-            if (!this.pathToTarget) return MoveState.TARGET_UNREACHABLE
+            this.currentPath = paths.length > 0 ? paths[0] : null
+            if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
         const step = this.determineStep()
         if (step.targetReached) return MoveState.TARGET_REACHED
         this.changeActivity(this.getRouteActivity())
         this.group.position.add(step.vec)
-        this.group.lookAt(new Vector3(this.pathToTarget[0].x, this.group.position.y, this.pathToTarget[0].y))
+        const nextLocation = this.currentPath.firstLocation
+        this.group.lookAt(new Vector3(nextLocation.x, this.group.position.y, nextLocation.y))
         return MoveState.MOVED
     }
 
@@ -56,13 +57,13 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     determineStep(): EntityStep {
-        const step = this.getEntityStep(this.pathToTarget[0])
+        const step = this.getEntityStep(this.currentPath.firstLocation)
         const entitySpeed = this.getSpeed() // TODO use average speed between current and target position
         const stepLengthSq = step.vec.lengthSq()
         if (stepLengthSq > entitySpeed * entitySpeed && stepLengthSq > JOB_ACTION_RANGE * JOB_ACTION_RANGE) {
             step.vec.setLength(entitySpeed)
-        } else if (this.pathToTarget.length > 1) {
-            this.pathToTarget.shift()
+        } else if (this.currentPath.locations.length > 1) {
+            this.currentPath.locations.shift()
             return this.determineStep()
         } else {
             step.targetReached = true
