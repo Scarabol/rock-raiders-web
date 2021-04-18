@@ -25,12 +25,17 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
 
     abstract getTargetBuildingTypes(): Building[];
 
+    hasTarget(): boolean {
+        this.targetPos = this.getTargetPositions()
+        return this.targetPos.length > 0
+    }
+
     getTargetPositions(): Vector2[] {
         if (this.targetPos.length < 1) {
             const sites = GameState.buildingSites.filter((b) => b.needs(this.getCollectableType()))
             if (sites.length > 0) {
-                this.targetSite = sites[0] // FIXME consider other sites
-                this.targetPos = [this.targetSite.getPosition2D()] // TODO use random drop position
+                this.targetSite = sites[0]
+                this.targetPos = [this.targetSite.getRandomDropPosition()]
                 this.targetType = CollectTargetType.BUILDING_SITE
                 this.targetSite.assign(this)
             } else {

@@ -24,13 +24,17 @@ export class GetToolPanel extends IconSubPanel {
 
     addGetToolItem(menuItemGroup: string, itemKey: string, tool: RaiderTool): IconPanelButton {
         const menuItem = super.addMenuItem(menuItemGroup, itemKey)
-        menuItem.isDisabled = () => GameState.hasBuildingWithUpgrades(Building.TOOLSTATION, 0) &&
+        menuItem.isDisabled = () => !GameState.hasOneBuildingOf(Building.TOOLSTATION) ||
             GameState.selectedRaiders.every((r) => r.hasTool(tool))
         menuItem.onClick = () => {
             GameState.selectedRaiders.forEach((r) => {
                 if (!r.hasTool(tool)) {
-                    const toolstation = GameState.getClosestBuildingByType(r.getPosition(), Building.TOOLSTATION)
-                    r.setJob(new GetToolJob(toolstation.getDropPosition2D(), tool))
+                    const pathToToolstation = GameState.getBuildingsByType(Building.TOOLSTATION)
+                        .map((b) => r.findPathToTarget(b.getPosition2D()))
+                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                    if (pathToToolstation) {
+                        r.setJob(new GetToolJob(pathToToolstation.target, tool)) // TODO use precalculated path to toolstation
+                    }
                 }
             })
             EventBus.publishEvent(new EntityDeselected())

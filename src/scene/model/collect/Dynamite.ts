@@ -21,6 +21,10 @@ export class Dynamite extends AnimEntity implements Carryable {
         return {}
     }
 
+    hasTarget(): boolean {
+        return this.targetSurface && this.targetSurface.isExplodable() || GameState.hasOneBuildingOf(Building.TOOLSTATION)
+    }
+
     getTargetPositions(): Vector2[] {
         if (this.targetSurface && this.targetSurface.isExplodable()) {
             return this.targetSurface.getDigPositions()

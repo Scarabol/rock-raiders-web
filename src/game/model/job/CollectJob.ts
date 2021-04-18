@@ -22,7 +22,7 @@ export class CollectJob extends PublicJob {
     }
 
     isQualified(fulfiller: FulfillerEntity) {
-        return fulfiller.carries === null && this.item.getTargetPositions().length > 0
+        return fulfiller.carries === null && this.item.hasTarget()
     }
 
     onJobComplete() {

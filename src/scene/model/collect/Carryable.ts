@@ -7,6 +7,8 @@ export interface Carryable {
     worldMgr: WorldManager;
     group: Group;
 
+    hasTarget(): boolean
+
     getTargetPositions(): Vector2[];
 
     getCollectableType(): CollectableType;

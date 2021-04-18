@@ -1,7 +1,7 @@
 import { BuildingEntity } from '../../scene/model/BuildingEntity'
 import { Building } from './entity/building/Building'
 import { Selectable, SelectionType } from './Selectable'
-import { Raider} from '../../scene/model/Raider'
+import { Raider } from '../../scene/model/Raider'
 import { VehicleEntity } from '../../scene/model/VehicleEntity'
 import { CollectableEntity, CollectableType } from '../../scene/model/collect/CollectableEntity'
 import { Vector3 } from 'three'
@@ -117,21 +117,12 @@ export class GameState {
         return closest
     }
 
-    static getClosestSiteThatRequires(position: Vector3, collectableType: CollectableType): BuildingSite {
-        let closest = null, minDist = null
-        this.buildingSites.forEach((b) => {
-            const bPos = b.getPosition()
-            const dist = position.distanceToSquared(bPos)
-            if ((closest === null || dist < minDist) && b.needs(collectableType)) {
-                closest = b
-                minDist = dist
-            }
-        })
-        return closest
+    static hasOneBuildingOf(...buildings: Building[]): boolean {
+        return this.buildings.some((b) => buildings.some((type) => b.type === type) && b.isPowered())
     }
 
-    static hasBuildingWithUpgrades(building: Building, upgrades: number): boolean {
-        return this.buildings.some((b) => b.type === building && b.level >= upgrades)
+    static hasBuildingWithUpgrades(building: Building, upgrades: number = 0): boolean {
+        return this.buildings.some((b) => b.type === building && b.level >= upgrades && b.isPowered())
     }
 
     static getTrainingSites(position: Vector3, training: RaiderSkill): BuildingEntity[] {

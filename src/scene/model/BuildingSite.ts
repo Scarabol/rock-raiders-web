@@ -23,8 +23,8 @@ export class BuildingSite {
         return this.surfaces[0].getCenterWorld() // TODO use combined center of all surfaces
     }
 
-    getPosition2D(): Vector2 {
-        return this.surfaces[0].getCenterWorld2D() // TODO use combined center of all surfaces
+    getRandomDropPosition(): Vector2 {
+        return this.surfaces[0].getRandomPosition() // TODO use "primary" surface
     }
 
     needs(collectableType: CollectableType): boolean {

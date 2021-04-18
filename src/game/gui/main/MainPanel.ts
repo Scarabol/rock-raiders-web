@@ -48,7 +48,7 @@ export class MainPanel extends Panel {
         selectRaiderPanel.getToolItem.onClick = () => selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
         const selectVehiclePanel = this.addSubPanel(new SelectVehiclePanel(this.mainPanel))
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
-        teleportRaider.isDisabled = () => GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).length < 1
+        teleportRaider.isDisabled = () => !GameState.hasOneBuildingOf(Building.TOOLSTATION, Building.TELEPORT_PAD)
             || GameState.raiders.length + GameState.requestedRaiders >= GameState.getMaxRaiders()
         teleportRaider.updateState()
         EventBus.registerEventListener(RaiderRequested.eventKey, () => teleportRaider.updateState())
