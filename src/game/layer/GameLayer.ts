@@ -100,7 +100,7 @@ export class GameLayer extends ScreenLayer {
         const rx = (cx / this.canvas.width) * 2 - 1
         const ry = -(cy / this.canvas.height) * 2 + 1
         const intersectionPoint = this.worldMgr.getTerrainIntersectionPoint(rx, ry)
-        return new Vector2(intersectionPoint.x, intersectionPoint.z)
+        return intersectionPoint ? new Vector2(intersectionPoint.x, intersectionPoint.z) : null
     }
 
     handleWheelEvent(event: WheelEvent): boolean {
