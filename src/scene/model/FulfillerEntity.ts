@@ -10,7 +10,6 @@ import { SelectionEvent } from '../../event/LocalEvents'
 import { BaseActivity } from './activities/BaseActivity'
 import { RaiderSkill } from './RaiderSkill'
 import { RaiderTool } from './RaiderTool'
-import { JobType } from '../../game/model/job/JobType'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
@@ -50,7 +49,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     setJob(job: Job, followUpJob: Job = null) {
         if (this.job !== job) this.stopJob()
-        if (job.type === JobType.SURFACE) this.dropItem()
         this.job = job
         if (this.job) this.job.assign(this)
         this.followUpJob = followUpJob
@@ -60,6 +58,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     abstract getStandActivity(): BaseActivity
 
     stopJob() {
+        this.dropItem()
         if (!this.job) return
         this.job.unassign(this)
         if (this.followUpJob) this.followUpJob.unassign(this)
