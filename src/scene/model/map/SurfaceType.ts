@@ -9,7 +9,6 @@ export class SurfaceType {
     drillableHard: boolean = false
     explodable: boolean = false
     reinforcable: boolean = false
-    hasRubble: boolean = false
 
     constructor(options: Partial<SurfaceType> = {}) {
         Object.assign(this, options)
@@ -86,28 +85,24 @@ export class SurfaceType {
         floor: true,
         matIndex: '13',
         selectable: true,
-        hasRubble: true,
     })
     static readonly RUBBLE2 = new SurfaceType({
         name: 'rubble 2',
         floor: true,
         matIndex: '12',
         selectable: true,
-        hasRubble: true,
     })
     static readonly RUBBLE3 = new SurfaceType({
         name: 'rubble 3',
         floor: true,
         matIndex: '11',
         selectable: true,
-        hasRubble: true,
     })
     static readonly RUBBLE4 = new SurfaceType({
         name: 'rubble 4',
         floor: true,
         matIndex: '10',
         selectable: true,
-        hasRubble: true,
     })
 
     static getByNum(typeNum: number) {

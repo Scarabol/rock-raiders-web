@@ -47,6 +47,8 @@ export class Surface implements Selectable {
     bottomLeftHeightOffset: number = 0
     bottomRightHeightOffset: number = 0
 
+    rubblePositions: Vector2[] = []
+
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain
         this.surfaceType = surfaceType
@@ -95,6 +97,7 @@ export class Surface implements Selectable {
         this.cancelJobs()
         this.fallinTimeout = clearTimeoutSafe(this.fallinTimeout)
         this.surfaceType = SurfaceType.RUBBLE4
+        this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += 4
         this.needsMeshUpdate = true
         // discover surface and all neighbors
@@ -142,6 +145,7 @@ export class Surface implements Selectable {
     }
 
     reduceRubble() {
+        this.rubblePositions.shift()
         if (this.surfaceType === SurfaceType.RUBBLE4) this.surfaceType = SurfaceType.RUBBLE3
         else if (this.surfaceType === SurfaceType.RUBBLE3) this.surfaceType = SurfaceType.RUBBLE2
         else if (this.surfaceType === SurfaceType.RUBBLE2) this.surfaceType = SurfaceType.RUBBLE1
@@ -368,7 +372,7 @@ export class Surface implements Selectable {
     }
 
     hasRubble(): boolean {
-        return this.surfaceType.hasRubble
+        return this.rubblePositions.length > 0
     }
 
     isPath(): boolean {

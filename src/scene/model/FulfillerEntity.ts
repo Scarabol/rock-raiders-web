@@ -2,7 +2,7 @@ import { MovableEntity } from './MovableEntity'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Job } from '../../game/model/job/Job'
-import { Vector2, Vector3 } from 'three'
+import { Vector3 } from 'three'
 import { NATIVE_FRAMERATE } from '../../main'
 import { clearIntervalSafe } from '../../core/Util'
 import { Carryable } from './collect/Carryable'
@@ -18,7 +18,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     workInterval = null
     job: Job = null
     followUpJob: Job = null
-    jobSubPos: Vector2 = null
     carries: Carryable = null // FIXME implement multi carry for vehicles
 
     protected constructor(selectionType: SelectionType, aeFilename: string) {
@@ -62,7 +61,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (!this.job) return
         this.job.unassign(this)
         if (this.followUpJob) this.followUpJob.unassign(this)
-        this.jobSubPos = null
         this.job = null
         this.followUpJob = null
         this.changeActivity(this.getStandActivity())

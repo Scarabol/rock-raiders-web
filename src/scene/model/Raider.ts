@@ -133,19 +133,10 @@ export class Raider extends FulfillerEntity {
                 }
             } else if (surfaceJobType === SurfaceJobType.CLEAR_RUBBLE) {
                 if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
-                    if (!this.jobSubPos) {
-                        this.jobSubPos = surfJob.surface.getRandomPosition()
-                    }
-                    if (this.moveToTarget(this.jobSubPos) === MoveState.TARGET_REACHED) {
-                        this.changeActivity(RaiderActivity.Clear, () => {
-                            this.job.onJobComplete()
-                            if (surfJob.surface.hasRubble()) {
-                                this.jobSubPos = null
-                            } else {
-                                this.stopJob()
-                            }
-                        })
-                    }
+                    this.changeActivity(RaiderActivity.Clear, () => {
+                        this.job.onJobComplete()
+                        if (!surfJob.surface.hasRubble()) this.stopJob()
+                    })
                 }
             } else if (surfaceJobType === SurfaceJobType.REINFORCE) {
                 if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
@@ -214,7 +205,6 @@ export class Raider extends FulfillerEntity {
         this.dropItem()
         this.job.onJobComplete()
         if (this.job) this.job.unassign(this)
-        this.jobSubPos = null
         this.job = this.followUpJob
         this.followUpJob = null
         this.changeActivity(RaiderActivity.Stand)
