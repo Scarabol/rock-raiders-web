@@ -7,6 +7,7 @@ import { EntityStep } from './EntityStep'
 import { MoveState } from './MoveState'
 import { JOB_ACTION_RANGE } from '../../main'
 import { TerrainPath } from './map/TerrainPath'
+import { PathTarget } from './PathTarget'
 
 export abstract class MovableEntity extends AnimEntity {
 
@@ -31,12 +32,12 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     moveToTarget(target: Vector2): MoveState {
-        return this.moveToClosestTarget([target])
+        return this.moveToClosestTarget([new PathTarget(target)])
     }
 
-    moveToClosestTarget(targets: Vector2[]): MoveState {
-        if (!this.currentPath || !targets.some((t) => t.equals(this.currentPath.targetPosition))) {
-            const paths = targets.map((t) => this.findPathToTarget(t))
+    moveToClosestTarget(target: PathTarget[]): MoveState {
+        if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.targetPosition))) {
+            const paths = target.map((t) => this.findPathToTarget(t))
                 .sort((l, r) => l.lengthSq - r.lengthSq)
             this.currentPath = paths.length > 0 ? paths[0] : null
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
@@ -52,8 +53,8 @@ export abstract class MovableEntity extends AnimEntity {
 
     abstract getRouteActivity(): BaseActivity
 
-    findPathToTarget(target: Vector2): TerrainPath {
-        return new TerrainPath(target)
+    findPathToTarget(target: PathTarget): TerrainPath {
+        return new TerrainPath(target, target.targetLocation)
     }
 
     determineStep(): EntityStep {

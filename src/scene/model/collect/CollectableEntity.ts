@@ -3,20 +3,16 @@ import { GameState } from '../../../game/model/GameState'
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { Carryable } from './Carryable'
-import { Vector2 } from 'three'
-import { Building } from '../../../game/model/entity/building/Building'
-import { BuildingEntity } from '../BuildingEntity'
-import { BuildingSite } from '../BuildingSite'
 import { CollectJob } from '../../../game/model/job/CollectJob'
 import { removeFromArray } from '../../../core/Util'
+import { CollectPathTarget } from '../CollectionTarget'
+import { Vector2 } from 'three'
+import { Building } from '../../../game/model/entity/building/Building'
 
 export abstract class CollectableEntity extends BaseEntity implements Carryable {
 
     collectableType: CollectableType
-    targetSite: BuildingSite
-    targetBuilding: BuildingEntity
-    targetPos: Vector2[] = []
-    targetType: CollectTargetType | Building
+    targets: CollectPathTarget[] = []
 
     protected constructor(collectableType: CollectableType) {
         super()
@@ -26,44 +22,39 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
     abstract getTargetBuildingTypes(): Building[];
 
     hasTarget(): boolean {
-        this.targetPos = this.getTargetPositions()
-        return this.targetPos.length > 0
+        return this.updateTargets().length > 0
     }
 
-    getTargetPositions(): Vector2[] {
-        if (this.targetPos.length < 1) {
-            const sites = GameState.buildingSites.filter((b) => b.needs(this.getCollectableType()))
-            if (sites.length > 0) {
-                this.targetSite = sites[0]
-                this.targetPos = [this.targetSite.getRandomDropPosition()]
-                this.targetType = CollectTargetType.BUILDING_SITE
-                this.targetSite.assign(this)
-            } else {
-                const buildings = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
-                if (buildings.length > 0) {
-                    this.targetBuilding = buildings[0] // FIXME consider other buildings
-                    this.targetPos = [this.targetBuilding.getDropPosition2D()]
-                    this.targetType = this.targetBuilding.type
-                }
-            }
-        } else if (this.targetSite) {
-            if (this.targetSite.complete) this.resetTarget()
-        } else if (this.targetBuilding) {
-            // TODO check if building has been teleported away or turned off
-        }
-        return this.targetPos
+    getTargets(): Vector2[] {
+        return this.updateTargets().map((t) => t.targetLocation)
     }
 
-    getTargetType(): CollectTargetType | Building {
-        return this.targetType
+    getCollectTargets(): CollectPathTarget[] {
+        return this.updateTargets()
     }
 
     resetTarget() {
-        if (this.targetSite) this.targetSite.unAssign(this)
-        this.targetSite = null
-        this.targetBuilding = null
-        this.targetPos = null
-        this.targetType = null
+        this.targets = []
+        this.updateTargets()
+    }
+
+    private updateTargets(): CollectPathTarget[] {
+        if (this.targets.length < 1) {
+            const sites = GameState.buildingSites.filter((b) => b.needs(this.getCollectableType()))
+            if (sites.length > 0) {
+                this.targets = sites.map((s) => new CollectPathTarget(s.getRandomDropPosition(), s, null))
+            } else {
+                const buildings = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
+                if (buildings.length > 0) {
+                    this.targets = buildings.map((b) => new CollectPathTarget(b.getDropPosition2D(), null, b))
+                }
+            }
+        } else if (this.targets.some((t) => t.site && t.site.complete)) {
+            this.resetTarget()
+        } else if (this.targets.some((t) => t.building && !t.building.isPowered())) {
+            this.resetTarget()
+        }
+        return this.targets
     }
 
     onDiscover() {
@@ -86,11 +77,5 @@ export enum CollectableType {
     ORE,
     BRICK,
     BARRIER,
-
-}
-
-export enum CollectTargetType {
-
-    BUILDING_SITE,
 
 }

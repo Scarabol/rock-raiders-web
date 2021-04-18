@@ -1,11 +1,14 @@
 import { Vector2 } from 'three'
+import { PathTarget } from '../PathTarget'
 
 export class TerrainPath {
 
+    target: PathTarget = null
     locations: Vector2[] = []
     lengthSq: number = 0
 
-    constructor(locations: Vector2 | Vector2[]) {
+    constructor(target: PathTarget, locations: Vector2[] | Vector2) {
+        this.target = target
         this.locations = Array.isArray(locations) ? locations : [locations]
         for (let c = 0; c < this.locations.length - 1; c++) {
             const start = this.locations[c]

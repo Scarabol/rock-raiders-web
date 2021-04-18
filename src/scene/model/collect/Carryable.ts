@@ -9,7 +9,7 @@ export interface Carryable {
 
     hasTarget(): boolean
 
-    getTargetPositions(): Vector2[];
+    getTargets(): Vector2[];
 
     getCollectableType(): CollectableType;
 

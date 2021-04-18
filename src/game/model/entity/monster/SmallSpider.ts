@@ -8,7 +8,6 @@ import { GameState } from '../../GameState'
 import { MonsterActivity } from '../../../../scene/model/activities/MonsterActivity'
 import { BaseActivity } from '../../../../scene/model/activities/BaseActivity'
 import { MoveState } from '../../../../scene/model/MoveState'
-import { TerrainPath } from '../../../../scene/model/map/TerrainPath'
 
 export class SmallSpider extends Monster {
 
@@ -41,10 +40,6 @@ export class SmallSpider extends Monster {
                 SmallSpider.onMove(spider)
             }, 1000 + getRandom(9000))
         }
-    }
-
-    findPathToTarget(target: Vector2): TerrainPath {
-        return new TerrainPath(target) // TODO add intermediate point to path to make it more interesting
     }
 
     private findSolidTarget(): Vector2 {

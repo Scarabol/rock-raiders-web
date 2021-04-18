@@ -14,6 +14,7 @@ import { SurfaceJob, SurfaceJobType } from './model/job/SurfaceJob'
 import { RaiderSkill } from '../scene/model/RaiderSkill'
 import { RaiderTool } from '../scene/model/RaiderTool'
 import { JobState } from './model/job/JobState'
+import { PathTarget } from '../scene/model/PathTarget'
 
 export class Supervisor {
 
@@ -86,7 +87,7 @@ export class Supervisor {
                     const neededTool = job.isQualifiedWithTool(raider)
                     if (neededTool) {
                         const pathToToolstation = GameState.getBuildingsByType(Building.TOOLSTATION)
-                            .map((b) => raider.findPathToTarget(b.getPosition2D()))
+                            .map((b) => raider.findPathToTarget(new PathTarget(b.getPosition2D())))
                             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                         if (pathToToolstation) {
                             const dist = pathToToolstation.lengthSq
@@ -102,7 +103,7 @@ export class Supervisor {
                         const neededTraining = job.isQualifiedWithTraining(raider)
                         if (neededTraining) {
                             const pathToTraining = GameState.getTrainingSites(raiderPosition, neededTraining)
-                                .map((site) => raider.findPathToTarget(site.getPosition2D()))
+                                .map((site) => raider.findPathToTarget(new PathTarget(site.getPosition2D())))
                                 .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                             if (pathToTraining) {
                                 const dist = pathToTraining.lengthSq
@@ -147,7 +148,7 @@ export class Supervisor {
                             const neededTool = surfJob.isQualifiedWithTool(raider)
                             if (neededTool) {
                                 const pathToToolstation = GameState.getBuildingsByType(Building.TOOLSTATION)
-                                    .map((b) => raider.findPathToTarget(b.getPosition2D()))
+                                    .map((b) => raider.findPathToTarget(new PathTarget(b.getPosition2D())))
                                     .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                                 if (pathToToolstation) {
                                     raider.setJob(new GetToolJob(pathToToolstation.targetPosition, neededTool), surfJob) // TODO use precalculated path to toolstation

@@ -8,6 +8,7 @@ import { EntityAddedEvent, EntityType } from '../../../event/WorldEvents'
 import { BuildingEntity } from '../BuildingEntity'
 import { astar, Graph } from './astar'
 import { TerrainPath } from './TerrainPath'
+import { PathTarget } from '../PathTarget'
 
 export class Terrain {
 
@@ -69,31 +70,32 @@ export class Terrain {
         this.cachedPaths.clear()
     }
 
-    findPath(start: Vector2, end: Vector2): TerrainPath {
+    findPath(start: Vector2, target: PathTarget): TerrainPath {
+        const end = target.targetLocation
         const startSurface = this.getSurfaceFromWorldXZ(start.x, start.y)
         const endSurface = this.getSurfaceFromWorldXZ(end.x, end.y)
         if (startSurface.x === endSurface.x && startSurface.y === endSurface.y) {
-            return new TerrainPath(end)
+            return new TerrainPath(target, end)
         }
         const cacheIdentifier = startSurface.x + '/' + startSurface.y + ' -> ' + endSurface.x + '/' + endSurface.y
         const cachedPath = this.cachedPaths.get(cacheIdentifier)
         if (cachedPath) {
             return cachedPath.addLocation(end)
         } else {
-            return this.searchPath(startSurface, endSurface, end, cacheIdentifier)
+            return this.searchPath(startSurface, endSurface, target, cacheIdentifier)
         }
     }
 
-    private searchPath(startSurface: Surface, endSurface: Surface, end: Vector2, cacheIdentifier: string): TerrainPath {
+    private searchPath(startSurface: Surface, endSurface: Surface, target: PathTarget, cacheIdentifier: string): TerrainPath {
         const startNode = this.graphWalk.grid[startSurface.x][startSurface.y]
         const endNode = this.graphWalk.grid[endSurface.x][endSurface.y]
         const worldPath = astar.search(this.graphWalk, startNode, endNode).map(p => this.getSurface(p.x, p.y).getCenterWorld2D())
         if (worldPath.length < 1) return null // no path found
         // replace last surface center with actual target position
         worldPath.pop()
-        worldPath.push(end)
-        this.cachedPaths.set(cacheIdentifier, new TerrainPath(worldPath.slice(0, -1))) // cache shallow copy to avoid interference
-        return new TerrainPath(worldPath)
+        worldPath.push(target.targetLocation)
+        this.cachedPaths.set(cacheIdentifier, new TerrainPath(target, worldPath.slice(0, -1))) // cache shallow copy to avoid interference
+        return new TerrainPath(target, worldPath)
     }
 
     findFallInOrigin(x: number, y: number): [number, number] {

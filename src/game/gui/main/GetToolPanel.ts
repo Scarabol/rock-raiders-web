@@ -7,6 +7,7 @@ import { GetToolJob } from '../../model/job/GetToolJob'
 import { EventBus } from '../../../event/EventBus'
 import { EntityDeselected } from '../../../event/LocalEvents'
 import { RaiderTool } from '../../../scene/model/RaiderTool'
+import { PathTarget } from '../../../scene/model/PathTarget'
 
 export class GetToolPanel extends IconSubPanel {
 
@@ -30,7 +31,7 @@ export class GetToolPanel extends IconSubPanel {
             GameState.selectedRaiders.forEach((r) => {
                 if (!r.hasTool(tool)) {
                     const pathToToolstation = GameState.getBuildingsByType(Building.TOOLSTATION)
-                        .map((b) => r.findPathToTarget(b.getPosition2D()))
+                        .map((b) => r.findPathToTarget(new PathTarget(b.getPosition2D())))
                         .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                     if (pathToToolstation) {
                         r.setJob(new GetToolJob(pathToToolstation.targetPosition, tool)) // TODO use precalculated path to toolstation
