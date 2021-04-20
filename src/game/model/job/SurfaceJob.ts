@@ -56,7 +56,8 @@ export class SurfaceJob extends PublicJob {
 
     getWorkplaces(): Vector2[] {
         if (this.workType === SurfaceJobType.CLEAR_RUBBLE) {
-            return [this.surface.rubblePositions[0]] // use first (no need to optimize)
+            const rubblePositions = this.surface.rubblePositions
+            return rubblePositions.length > 0 ? [rubblePositions[0]] : [] // use first (no need to optimize)
         } else {
             return this.surface.getDigPositions()
         }
