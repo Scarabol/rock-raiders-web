@@ -33,7 +33,7 @@ export class CollectPathTarget extends PathTarget implements CollectionTarget {
         if (this.site) this.site.addItem(item)
         if (this.building) {
             if (this.building.type === Building.POWER_STATION || this.building.type === Building.ORE_REFINERY) {
-                this.building.setActivity(BuildingActivity.Deposit, () => {
+                this.building.changeActivity(BuildingActivity.Deposit, () => {
                     CollectPathTarget.addItemToStorage(item)
                 })
             } else {

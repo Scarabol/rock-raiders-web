@@ -10,9 +10,7 @@ import { Crystal } from './model/collect/Crystal'
 import { WorldManager } from './WorldManager'
 import { EventBus } from '../event/EventBus'
 import { EntityAddedEvent, EntityType } from '../event/WorldEvents'
-import { RaiderActivity } from './model/activities/RaiderActivity'
 import { SmallSpider } from '../game/model/entity/monster/SmallSpider'
-import { MonsterActivity } from './model/activities/MonsterActivity'
 import { Bat } from '../game/model/entity/monster/Bat'
 import degToRad = MathUtils.degToRad
 
@@ -37,7 +35,7 @@ export class ObjectListLoader {
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
                 const raider = new Raider()
                 raider.worldMgr = worldMgr
-                raider.setActivity(RaiderActivity.Stand)
+                raider.changeActivity()
                 raider.createPickSphere()
                 raider.group.position.set(worldX, terrainY, worldZ)
                 raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2)
@@ -53,7 +51,7 @@ export class ObjectListLoader {
                 const building = Building.getByName(buildingType)
                 const entity = new BuildingEntity(building)
                 entity.worldMgr = worldMgr
-                entity.setActivity(entity.getStandActivity())
+                entity.changeActivity()
                 entity.createPickSphere()
                 entity.group.position.set(worldX, worldMgr.getFloorHeight(worldX, worldZ), worldZ)
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), -radHeading - Math.PI)
@@ -91,7 +89,7 @@ export class ObjectListLoader {
             } else if (lTypeName === 'SmallSpider'.toLowerCase()) {
                 const spider = new SmallSpider()
                 spider.worldMgr = worldMgr
-                spider.setActivity(MonsterActivity.Stand)
+                spider.changeActivity()
                 spider.group.position.set(worldX, terrainY, worldZ)
                 const currentSurface = spider.getCurrentSurface()
                 spider.group.visible = currentSurface.discovered
@@ -102,7 +100,7 @@ export class ObjectListLoader {
             } else if (lTypeName === 'Bat'.toLowerCase()) {
                 const bat = new Bat()
                 bat.worldMgr = worldMgr
-                bat.setActivity(MonsterActivity.Stand)
+                bat.changeActivity()
                 bat.group.position.set(worldX, bat.determinePosY(worldX, worldZ), worldZ)
                 bat.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(bat.group.position).discovered
                 worldMgr.sceneManager.scene.add(bat.group)

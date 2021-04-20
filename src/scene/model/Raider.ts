@@ -59,7 +59,7 @@ export class Raider extends FulfillerEntity {
         this.selectionFrame.visible = !this.slipped
         if (this.selected || this.slipped) return null
         this.selected = true
-        this.changeActivity(RaiderActivity.Stand)
+        this.changeActivity()
         return new RaiderSelected(this)
     }
 
@@ -145,7 +145,7 @@ export class Raider extends FulfillerEntity {
                                 this.worldMgr.addCollectable(new Ore(), vec)
                                 EventBus.publishEvent(new OreFoundEvent())
                             }
-                            this.changeActivity(RaiderActivity.Stand)
+                            this.changeActivity()
                         } else {
                             this.completeJob()
                         }
@@ -154,6 +154,7 @@ export class Raider extends FulfillerEntity {
             } else if (surfaceJobType === SurfaceJobType.CLEAR_RUBBLE) {
                 if (this.moveToClosestWorkplace(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                     this.changeActivity(RaiderActivity.Clear, () => {
+                        this.changeActivity()
                         this.job.onJobComplete()
                         if (!surfJob.surface.hasRubble()) this.stopJob()
                     })
@@ -202,7 +203,7 @@ export class Raider extends FulfillerEntity {
             }
         } else if (this.job.type === JobType.MOVE) {
             if (this.moveToClosestWorkplace(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
-                this.changeActivity(RaiderActivity.Stand, () => {
+                this.changeActivity(this.getDefaultActivity(), () => {
                     this.completeJob()
                 })
             }
@@ -234,11 +235,11 @@ export class Raider extends FulfillerEntity {
         if (this.job) this.job.unassign(this)
         this.job = this.followUpJob
         this.followUpJob = null
-        this.changeActivity(RaiderActivity.Stand)
+        this.changeActivity()
     }
 
-    getStandActivity(): BaseActivity {
-        return this.carries ? RaiderActivity.CarryStand : RaiderActivity.Stand
+    getDefaultActivity(): BaseActivity {
+        return this.carries ? RaiderActivity.CarryStand : super.getDefaultActivity()
     }
 
     beamUp() {

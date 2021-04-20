@@ -1,13 +1,13 @@
 import { AnimEntity } from './anim/AnimEntity'
 import { Vector2, Vector3 } from 'three'
 import { AnimationEntityType } from './anim/AnimationEntityType'
-import { BaseActivity } from './activities/BaseActivity'
 import { MovableEntityStats } from '../../cfg/MovableEntityStats'
 import { EntityStep } from './EntityStep'
 import { MoveState } from './MoveState'
 import { JOB_ACTION_RANGE } from '../../main'
 import { TerrainPath } from './map/TerrainPath'
 import { PathTarget } from './PathTarget'
+import { AnimEntityActivity } from './activities/AnimEntityActivity'
 
 export abstract class MovableEntity extends AnimEntity {
 
@@ -51,7 +51,7 @@ export abstract class MovableEntity extends AnimEntity {
         return MoveState.MOVED
     }
 
-    abstract getRouteActivity(): BaseActivity
+    abstract getRouteActivity(): AnimEntityActivity
 
     findPathToTarget(target: PathTarget): TerrainPath {
         return new TerrainPath(target, target.targetLocation)

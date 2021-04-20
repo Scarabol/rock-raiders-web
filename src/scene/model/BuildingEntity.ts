@@ -14,6 +14,7 @@ import { BuildingEntityStats } from '../../cfg/BuildingEntityStats'
 import { Ore } from './collect/Ore'
 import { Crystal } from './collect/Crystal'
 import { SurfaceType } from './map/SurfaceType'
+import { AnimEntityActivity } from './activities/AnimEntityActivity'
 import degToRad = MathUtils.degToRad
 
 export class BuildingEntity extends AnimEntity implements Selectable {
@@ -108,8 +109,8 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         EventBus.publishEvent(new BuildingUpgraded(this))
     }
 
-    getStandActivity() {
-        return !this.isPowered() && this.type !== Building.GUNSTATION ? BuildingActivity.Unpowered : BuildingActivity.Stand
+    getDefaultActivity() {
+        return !this.isPowered() && this.type !== Building.GUNSTATION ? BuildingActivity.Unpowered : AnimEntityActivity.Stand
     }
 
     beamUp() {

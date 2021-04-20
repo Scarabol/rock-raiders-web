@@ -169,9 +169,9 @@ export class WorldManager {
             station.spawning = true
             const raider = new Raider()
             raider.worldMgr = this
-            raider.setActivity(RaiderActivity.TeleportIn, () => {
+            raider.changeActivity(RaiderActivity.TeleportIn, () => {
                 station.spawning = false
-                raider.setActivity(RaiderActivity.Stand)
+                raider.changeActivity()
                 raider.createPickSphere()
                 const walkOutPos = station.getPosition2D().add(new Vector2(0, TILESIZE * 3 / 4 + getRandom(TILESIZE / 2))
                     .rotateAround(new Vector2(0, 0), station.getHeading() + degToRad(-10 + getRandom(20))))

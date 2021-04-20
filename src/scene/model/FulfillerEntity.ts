@@ -7,7 +7,6 @@ import { NATIVE_FRAMERATE } from '../../main'
 import { clearIntervalSafe } from '../../core/Util'
 import { Carryable } from './collect/Carryable'
 import { SelectionEvent } from '../../event/LocalEvents'
-import { BaseActivity } from './activities/BaseActivity'
 import { RaiderSkill } from './RaiderSkill'
 import { RaiderTool } from './RaiderTool'
 
@@ -54,8 +53,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (this.followUpJob) this.followUpJob.assign(this)
     }
 
-    abstract getStandActivity(): BaseActivity
-
     stopJob() {
         this.dropItem()
         if (!this.job) return
@@ -63,7 +60,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (this.followUpJob) this.followUpJob.unassign(this)
         this.job = null
         this.followUpJob = null
-        this.changeActivity(this.getStandActivity())
+        this.changeActivity()
     }
 
     abstract hasTool(tool: RaiderTool)

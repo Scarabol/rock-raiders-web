@@ -7,6 +7,7 @@ import { Surface } from '../map/Surface'
 import { GameState } from '../../../game/model/GameState'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
 import { Vector2 } from 'three'
+import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 
 export class Dynamite extends AnimEntity implements Carryable {
 
@@ -14,7 +15,7 @@ export class Dynamite extends AnimEntity implements Carryable {
 
     constructor() {
         super(ResourceManager.getAnimationEntityType('MiscAnims/Dynamite/Dynamite.ae'))
-        this.setActivity(DynamiteActivity.Normal)
+        this.changeActivity()
     }
 
     get stats() {
@@ -43,12 +44,16 @@ export class Dynamite extends AnimEntity implements Carryable {
         const center = this.targetSurface.getCenterWorld()
         center.y = this.group.position.y
         this.group.lookAt(center)
-        this.setActivity(DynamiteActivity.TickDown, () => {
+        this.changeActivity(DynamiteActivity.TickDown, () => {
             this.worldMgr.sceneManager.scene.remove(this.group)
             this.targetSurface.collapse()
             // TODO add explosion animation
             // TODO damage raider, vehicle, buildings
         })
+    }
+
+    getDefaultActivity(): AnimEntityActivity {
+        return DynamiteActivity.Normal
     }
 
 }

@@ -33,7 +33,7 @@ export abstract class AnimEntity extends BaseEntity {
         // TODO avoid all further state changes and mark as unavailable here
         // TODO publish event: check jobs with this target, update power state...
         EventBus.publishEvent(new EntityDeselected())
-        this.setActivity(AnimEntityActivity.Stand, () => {
+        this.changeActivity(this.getDefaultActivity(), () => {
             // TODO insert beam animation
             AnimEntity.moveUp(this, 6 * TILESIZE)
         })
@@ -53,33 +53,26 @@ export abstract class AnimEntity extends BaseEntity {
         this.worldMgr.sceneManager.scene.remove(this.group)
     }
 
-    changeActivity(activity: AnimEntityActivity, onChangeDone = null, durationTimeMs: number = null) {
-        if (onChangeDone) onChangeDone.bind(this)
-        if (this.activity !== activity) {
-            this.activity = activity
-            this.setActivity(this.activity, onChangeDone, durationTimeMs)
-        }
-    }
-
-    setActivity(activity: AnimEntityActivity, onAnimationDone = null, durationTimeMs = null) {
-        let activityKey = activity.activityKey
-        let act = this.entityType.activities.get(activityKey.toLowerCase())
-        if (!act) { // find by prefix
+    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onActivityChanged = null, durationTimeMs: number = null) {
+        if (this.activity === activity) return
+        this.activity = activity
+        let lActivityKey = activity.activityKey.toLowerCase()
+        let anim = this.entityType.activities.get(lActivityKey)
+        if (!anim) { // find by prefix
             this.entityType.activities.forEach((a, key) => {
-                if (activityKey.toLowerCase().startsWith(key)) {
-                    act = a
-                }
+                if (!anim && lActivityKey.startsWith(key)) anim = a
             })
         }
-        if (!act?.animation) {
-            console.warn('Activity ' + activityKey + ' unknown or has no animation defined yet')
+        if (!anim?.animation) {
+            console.warn('Activity ' + activity.activityKey + ' unknown or has no animation defined')
             console.log(this.entityType.activities)
             return
         }
-        this.setAnimation(act?.animation, onAnimationDone, durationTimeMs)
+        this.setAnimation(anim?.animation, onActivityChanged, durationTimeMs)
     }
 
-    setAnimation(animation: AnimClip, onAnimationDone = null, durationTimeMs = null) {
+    private setAnimation(animation: AnimClip, onAnimationDone = null, durationTimeMs = null) {
+        if (onAnimationDone) onAnimationDone.bind(this)
         this.animation = animation
         this.animation.looping = true
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
@@ -114,7 +107,7 @@ export abstract class AnimEntity extends BaseEntity {
         this.animate(0, onAnimationDone, durationTimeMs)
     }
 
-    animate(frameIndex, onAnimationDone, durationTimeMs) {
+    private animate(frameIndex, onAnimationDone, durationTimeMs) {
         if (this.poly.length !== this.animation.bodies.length) throw 'Cannot animate poly. Length differs from bodies length'
         this.animation.bodies.forEach((body: AnimSubObj, index) => {
             const p = this.poly[index]
@@ -148,6 +141,10 @@ export abstract class AnimEntity extends BaseEntity {
         } else if (onAnimationDone) {
             onAnimationDone()
         }
+    }
+
+    getDefaultActivity(): AnimEntityActivity {
+        return AnimEntityActivity.Stand
     }
 
     createPickSphere() {

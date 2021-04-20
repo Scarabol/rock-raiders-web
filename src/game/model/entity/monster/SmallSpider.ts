@@ -40,7 +40,7 @@ export class SmallSpider extends Monster {
                 spider.moveTimeout = setTimeout(() => SmallSpider.onMove(spider), 1000 / NATIVE_FRAMERATE)
             }
         } else {
-            spider.changeActivity(MonsterActivity.Stand)
+            spider.changeActivity()
             spider.moveTimeout = setTimeout(() => {
                 spider.target = spider.findSolidTarget()
                 SmallSpider.onMove(spider)
