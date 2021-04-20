@@ -20,6 +20,7 @@ import { SmallSpider } from './entity/monster/SmallSpider'
 import { Bat } from './entity/monster/Bat'
 import { removeFromArray } from '../../core/Util'
 import { RaiderSkill } from '../../scene/model/RaiderSkill'
+import { MaterialAmountChanged } from '../../event/WorldEvents'
 
 export enum GameResultState {
 
@@ -205,6 +206,7 @@ export class GameState {
         } else {
             console.error('Material drop not yet implemented: ' + type)
         }
+        if (result.length > 0) EventBus.publishEvent(new MaterialAmountChanged(type))
         return result
     }
 

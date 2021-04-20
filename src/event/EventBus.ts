@@ -1,36 +1,26 @@
 import { removeFromArray } from '../core/Util'
+import { GameEvent } from './GameEvent'
+import { EventKey } from './EventKeyEnum'
 
 export class EventBus {
 
-    static eventListener = new Map<string, ((event: GameEvent) => any)[]>()
+    static eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
     static blockedEvents = []
 
     static publishEvent(event: GameEvent) {
         if (this.blockedEvents.includes(event.eventKey)) return // event is currently blocked from publishing
-        if (!event.isLocal) console.log('Event published: ' + event.eventKey)
+        if (!event.isLocal) console.log('Event published: ' + EventKey[event.eventKey])
         this.blockedEvents.push(event.eventKey)
-        this.getListener(event.eventKey).forEach((callback) => callback(event)) // TODO add inheritance match by prefix
+        this.getListener(event.eventKey).forEach((callback) => callback(event))
         removeFromArray(this.blockedEvents, event.eventKey)
     }
 
-    static registerEventListener(eventKey: string, callback: (GameEvent) => any) {
-        const listener = this.getListener(eventKey)
-        listener.push(callback)
-        this.eventListener.set(eventKey, listener)
+    static registerEventListener(eventKey: EventKey, callback: (GameEvent) => any) {
+        this.getListener(eventKey).push(callback)
     }
 
-    private static getListener(eventKey: string) {
-        return this.eventListener.get(eventKey) || []
-    }
-}
-
-export class GameEvent {
-
-    eventKey: string
-    isLocal: boolean
-
-    constructor(eventKey: string) {
-        this.eventKey = eventKey
+    private static getListener(eventKey: EventKey) {
+        return this.eventListener.getOrUpdate(eventKey, () => [])
     }
 
 }

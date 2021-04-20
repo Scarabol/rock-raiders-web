@@ -1,7 +1,7 @@
 import { BaseElement } from '../base/BaseElement'
 import { GameState } from '../../model/GameState'
 import { EventBus } from '../../../event/EventBus'
-import { RaiderRequested } from '../../../event/WorldEvents'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class IconPanelButtonLabel extends BaseElement {
 
@@ -9,7 +9,7 @@ export class IconPanelButtonLabel extends BaseElement {
         super(parent)
         this.relX = 4
         this.relY = 11
-        EventBus.registerEventListener(RaiderRequested.eventKey, () => this.notifyRedraw())
+        EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, () => this.notifyRedraw())
     }
 
     onRedraw(context: CanvasRenderingContext2D) {

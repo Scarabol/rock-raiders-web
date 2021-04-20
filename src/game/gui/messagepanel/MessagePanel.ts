@@ -4,10 +4,9 @@ import { Panel } from '../base/Panel'
 import { PanelCfg } from '../../../cfg/PanelsCfg'
 import { TextInfoMessageConfig } from './TextInfoMessageConfig'
 import { EventBus } from '../../../event/EventBus'
-import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
 import { TextInfoMessage } from './TextInfoMessage'
-import { CavernDiscovered, OreFoundEvent, RaiderTrained } from '../../../event/WorldEvents'
 import { clearTimeoutSafe } from '../../../core/Util'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class MessagePanel extends Panel {
 
@@ -30,17 +29,17 @@ export class MessagePanel extends Panel {
 
         const font = ResourceManager.getDefaultFont()
         const crystalFound = new TextInfoMessage(font, textInfoMessageConfig.textCrystalFound, this.img.width)
-        EventBus.registerEventListener(CrystalFoundEvent.eventKey, () => this.setMessage(crystalFound))
+        EventBus.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(crystalFound))
         this.msgSpaceToContinue = new TextInfoMessage(font, textInfoMessageConfig.textSpaceToContinue, this.img.width)
         const cavernDiscovered = new TextInfoMessage(font, textInfoMessageConfig.textCavernDiscovered, this.img.width)
-        EventBus.registerEventListener(CavernDiscovered.eventKey, () => this.setMessage(cavernDiscovered))
+        EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => this.setMessage(cavernDiscovered))
         const oreFound = new TextInfoMessage(font, textInfoMessageConfig.textOreFound, this.img.width)
-        EventBus.registerEventListener(OreFoundEvent.eventKey, () => this.setMessage(oreFound))
+        EventBus.registerEventListener(EventKey.ORE_FOUND, () => this.setMessage(oreFound))
         this.msgAirSupplyLow = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyLow, this.img.width)
         this.msgAirSupplyRunningOut = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
         this.msgGameCompleted = new TextInfoMessage(font, textInfoMessageConfig.textGameCompleted, this.img.width)
         this.msgManTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
-        EventBus.registerEventListener(RaiderTrained.eventKey, () => this.setMessage(this.msgManTrained))
+        EventBus.registerEventListener(EventKey.RAIDER_TRAINED, () => this.setMessage(this.msgManTrained))
         this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
     }
 

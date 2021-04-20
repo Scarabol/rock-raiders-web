@@ -6,9 +6,9 @@ import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { MathUtils, Matrix4, Vector2, Vector3 } from 'three'
 import { GameState } from '../../game/model/GameState'
-import { BuildingUpgraded, CollectEvent, EntityAddedEvent, EntityType } from '../../event/WorldEvents'
+import { BuildingUpgraded, EntityAddedEvent, EntityType, MaterialAmountChanged } from '../../event/WorldEvents'
 import { Surface } from './map/Surface'
-import { CollectableType } from './collect/CollectableEntity'
+import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
 import { BuildingActivity } from './activities/BuildingActivity'
 import { removeFromArray } from '../../core/Util'
 import { BuildingEntityStats } from '../../cfg/BuildingEntityStats'
@@ -99,10 +99,10 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         if (!this.canUpgrade()) return
         if (GameState.numBrick >= this.upgradeCostBrick) {
             GameState.numBrick -= this.upgradeCostBrick
-            EventBus.publishEvent(new CollectEvent(CollectableType.BRICK))
+            EventBus.publishEvent(new MaterialAmountChanged(CollectableType.BRICK))
         } else {
             GameState.numOre -= this.upgradeCostOre
-            EventBus.publishEvent(new CollectEvent(CollectableType.ORE)) // FIXME refactor merge with SpawnMaterialEvent into MaterialAmountChangedEvent
+            EventBus.publishEvent(new MaterialAmountChanged(CollectableType.ORE))
         }
         this.level++
         EventBus.publishEvent(new EntityDeselected())
@@ -135,4 +135,9 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     canUpgrade() {
         return !this.hasMaxLevel() && (GameState.numOre >= this.upgradeCostOre || GameState.numBrick >= this.upgradeCostBrick)
     }
+
+    spawnMaterials(materials: CollectableEntity[]) {
+        materials.forEach((m) => this.worldMgr.addCollectable(m, this.getDropPosition2D()))
+    }
+
 }

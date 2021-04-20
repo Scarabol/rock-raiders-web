@@ -17,6 +17,7 @@ import { AnimSubObj } from '../anim/AnimSubObj'
 import { SurfaceGeometry } from './SurfaceGeometry'
 import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
 import { JobType } from '../../../game/model/job/JobType'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class Surface implements Selectable {
 
@@ -56,7 +57,7 @@ export class Surface implements Selectable {
         this.x = x
         this.y = y
         this.heightOffset = heightOffset
-        EventBus.registerEventListener(JobCreateEvent.eventKey, (event: JobCreateEvent) => {
+        EventBus.registerEventListener(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
             const jobType = event.job.type
             if (jobType === JobType.SURFACE) {
                 const surfaceJob = event.job as SurfaceJob

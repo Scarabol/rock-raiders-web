@@ -9,6 +9,7 @@ import { BuildingEntity } from '../BuildingEntity'
 import { astar, Graph } from './astar'
 import { TerrainPath } from './TerrainPath'
 import { PathTarget } from '../PathTarget'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class Terrain {
 
@@ -26,7 +27,7 @@ export class Terrain {
         this.worldMgr = worldMgr
         this.floorGroup.scale.set(TILESIZE, TILESIZE, TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
-        EventBus.registerEventListener(EntityAddedEvent.eventKey, (event: EntityAddedEvent) => {
+        EventBus.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {
             if (event.type !== EntityType.BUILDING) return;
             (event.entity as BuildingEntity).surfaces.forEach((bSurf) => {
                 for (let x = -1; x <= 1; x++) {

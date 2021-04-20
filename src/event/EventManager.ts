@@ -1,23 +1,6 @@
 import { ScreenLayer } from '../screen/ScreenLayer'
 import { BaseScreen } from '../screen/BaseScreen'
-
-// noinspection JSUnusedGlobalSymbols
-export enum MOUSE_BUTTON {
-    MAIN = 0,
-    MIDDLE = 1,
-    SECONDARY = 2
-}
-
-export enum POINTER_EVENT {
-    MOVE,
-    DOWN,
-    UP,
-}
-
-export enum KEY_EVENT {
-    DOWN,
-    UP,
-}
+import { KEY_EVENT, POINTER_EVENT } from './EventTypeEnum'
 
 export class EventManager {
 

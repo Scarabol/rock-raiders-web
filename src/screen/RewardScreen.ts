@@ -5,7 +5,7 @@ import { RewardCfg } from '../cfg/RewardCfg'
 import { GameResultState, GameState } from '../game/model/GameState'
 import { BitmapFont } from '../core/BitmapFont'
 import { RewardScreenButton } from '../menu/RewardScreenButton'
-import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventManager'
+import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { clearTimeoutSafe } from '../core/Util'
 
 export class RewardScreen extends BaseScreen {

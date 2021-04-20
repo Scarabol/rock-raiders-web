@@ -5,10 +5,11 @@ import { Surface } from '../../../scene/model/map/Surface'
 import { SurfaceJob, SurfaceJobType } from '../../model/job/SurfaceJob'
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent, SpawnDynamiteEvent } from '../../../event/WorldEvents'
-import { EntityDeselected, SurfaceSelectedEvent } from '../../../event/LocalEvents'
+import { EntityDeselected } from '../../../event/LocalEvents'
 import { IconPanelButton } from './IconPanelButton'
 import { Building } from '../../model/entity/building/Building'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class SelectWallPanel extends SelectBasePanel {
 
@@ -29,7 +30,7 @@ export class SelectWallPanel extends SelectBasePanel {
             selectedSurface.cancelJobs()
             EventBus.publishEvent(new EntityDeselected())
         }
-        EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, () => {
+        EventBus.registerEventListener(EventKey.SELECTED_SURFACE, () => {
             itemDrill.updateState(false)
             itemReinforce.updateState(false)
             itemDynamite.updateState(false)

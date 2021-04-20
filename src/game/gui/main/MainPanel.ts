@@ -1,5 +1,5 @@
 import { EventBus } from '../../../event/EventBus'
-import { BuildingSelected, EntityDeselected, RaiderSelected, SurfaceSelectedEvent, VehicleSelected } from '../../../event/LocalEvents'
+import { SurfaceSelectedEvent } from '../../../event/LocalEvents'
 import { EntityAddedEvent, EntityRemovedEvent, EntityType, RaiderRequested } from '../../../event/WorldEvents'
 import { GameState } from '../../model/GameState'
 import { Building } from '../../model/entity/building/Building'
@@ -17,6 +17,7 @@ import { Panel } from '../base/Panel'
 import { TrainRaiderPanel } from './TrainRaiderPanel'
 import { GetToolPanel } from './GetToolPanel'
 import { IconPanelButtonLabel } from './IconPanelButtonLabel'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class MainPanel extends Panel {
 
@@ -51,12 +52,12 @@ export class MainPanel extends Panel {
         teleportRaider.isDisabled = () => !GameState.hasOneBuildingOf(Building.TOOLSTATION, Building.TELEPORT_PAD)
             || GameState.raiders.length + GameState.requestedRaiders >= GameState.getMaxRaiders()
         teleportRaider.updateState()
-        EventBus.registerEventListener(RaiderRequested.eventKey, () => teleportRaider.updateState())
-        EventBus.registerEventListener(EntityAddedEvent.eventKey, (event: EntityAddedEvent) => {
+        EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, () => teleportRaider.updateState())
+        EventBus.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {
             // TODO add event inheritance by using event key prefix checking
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) teleportRaider.updateState()
         })
-        EventBus.registerEventListener(EntityRemovedEvent.eventKey, (event: EntityRemovedEvent) => {
+        EventBus.registerEventListener(EventKey.ENTITY_REMOVED, (event: EntityRemovedEvent) => {
             // TODO add event inheritance by using event key prefix checking
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) teleportRaider.updateState()
         })
@@ -72,7 +73,7 @@ export class MainPanel extends Panel {
         const largeVehicleItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildLargeVehicle')
         largeVehicleItem.isDisabled = () => false
         largeVehicleItem.onClick = () => this.mainPanel.toggleState(() => largeVehiclePanel.toggleState())
-        EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, (event: SurfaceSelectedEvent) => {
+        EventBus.registerEventListener(EventKey.SELECTED_SURFACE, (event: SurfaceSelectedEvent) => {
             const surface = event.surface
             if (surface.surfaceType.floor) {
                 if (surface.hasRubble()) {
@@ -84,10 +85,10 @@ export class MainPanel extends Panel {
                 this.selectSubPanel(selectWallPanel)
             }
         })
-        EventBus.registerEventListener(EntityDeselected.eventKey, () => this.selectSubPanel(this.mainPanel))
-        EventBus.registerEventListener(BuildingSelected.eventKey, () => this.selectSubPanel(selectBuildingPanel))
-        EventBus.registerEventListener(RaiderSelected.eventKey, () => this.selectSubPanel(selectRaiderPanel))
-        EventBus.registerEventListener(VehicleSelected.eventKey, () => this.selectSubPanel(selectVehiclePanel))
+        EventBus.registerEventListener(EventKey.DESELECTED_ENTITY, () => this.selectSubPanel(this.mainPanel))
+        EventBus.registerEventListener(EventKey.SELECTED_BUILDING, () => this.selectSubPanel(selectBuildingPanel))
+        EventBus.registerEventListener(EventKey.SELECTED_RAIDER, () => this.selectSubPanel(selectRaiderPanel))
+        EventBus.registerEventListener(EventKey.SELECTED_VEHICLE, () => this.selectSubPanel(selectVehiclePanel))
     }
 
     reset() {

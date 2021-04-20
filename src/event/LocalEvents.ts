@@ -1,12 +1,13 @@
-import { GameEvent } from './EventBus'
+import { GameEvent } from './GameEvent'
 import { BuildingEntity } from '../scene/model/BuildingEntity'
 import { Surface } from '../scene/model/map/Surface'
 import { Raider } from '../scene/model/Raider'
 import { VehicleEntity } from '../scene/model/VehicleEntity'
+import { EventKey } from './EventKeyEnum'
 
 export class LocalEvent extends GameEvent {
 
-    constructor(eventKey: string) {
+    constructor(eventKey: EventKey) {
         super(eventKey)
         this.isLocal = true
     }
@@ -15,23 +16,18 @@ export class LocalEvent extends GameEvent {
 
 export class SelectionEvent extends LocalEvent {
 
-    static eventKey = 'selected'
-
-    constructor(eventSuffix: string) {
-        super(SelectionEvent.eventKey + '.' + eventSuffix)
+    constructor(eventKey: EventKey) {
+        super(eventKey)
     }
 
 }
 
 export class SurfaceSelectedEvent extends SelectionEvent {
 
-    static eventSuffix = 'surface'
-    static eventKey = SelectionEvent.eventKey + '.' + SurfaceSelectedEvent.eventSuffix
-
     surface: Surface
 
     constructor(surface: Surface) {
-        super(SurfaceSelectedEvent.eventSuffix)
+        super(EventKey.SELECTED_SURFACE)
         this.surface = surface
     }
 
@@ -39,13 +35,10 @@ export class SurfaceSelectedEvent extends SelectionEvent {
 
 export class BuildingSelected extends SelectionEvent {
 
-    static eventSuffix = 'building'
-    static eventKey = SelectionEvent.eventKey + '.' + BuildingSelected.eventSuffix
-
     building: BuildingEntity
 
     constructor(building: BuildingEntity) {
-        super(BuildingSelected.eventSuffix)
+        super(EventKey.SELECTED_BUILDING)
         this.building = building
     }
 
@@ -53,13 +46,10 @@ export class BuildingSelected extends SelectionEvent {
 
 export class RaiderSelected extends SelectionEvent {
 
-    static eventSuffix = 'raider'
-    static eventKey = SelectionEvent.eventKey + '.' + RaiderSelected.eventSuffix
-
     raider: Raider
 
     constructor(raider: Raider) {
-        super(RaiderSelected.eventSuffix)
+        super(EventKey.SELECTED_RAIDER)
         this.raider = raider
     }
 
@@ -67,13 +57,10 @@ export class RaiderSelected extends SelectionEvent {
 
 export class VehicleSelected extends SelectionEvent {
 
-    static eventSuffix = 'vehicle'
-    static eventKey = SelectionEvent.eventKey + '.' + VehicleSelected.eventSuffix
-
     vehicle: VehicleEntity
 
     constructor(vehicle: VehicleEntity) {
-        super(VehicleSelected.eventSuffix)
+        super(EventKey.SELECTED_VEHICLE)
         this.vehicle = vehicle
     }
 
@@ -81,10 +68,8 @@ export class VehicleSelected extends SelectionEvent {
 
 export class EntityDeselected extends LocalEvent {
 
-    static eventKey = 'deselected.entity'
-
     constructor() {
-        super(EntityDeselected.eventKey)
+        super(EventKey.DESELECTED_ENTITY)
     }
 
 }

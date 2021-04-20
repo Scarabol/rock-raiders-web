@@ -7,6 +7,7 @@ import { EventBus } from '../../../event/EventBus'
 import { WorldLocationEvent } from '../../../event/WorldLocationEvent'
 import { NATIVE_FRAMERATE } from '../../../main'
 import { clearTimeoutSafe } from '../../../core/Util'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class InfoDockButton extends Button {
 
@@ -16,7 +17,7 @@ export class InfoDockButton extends Button {
     animationSpeedX = 0.5
     animationSpeedY = 1
 
-    constructor(parent: InfoDockPanel, infoMessagesEntryConfig: InfoMessagesEntryConfig, eventKey: string) {
+    constructor(parent: InfoDockPanel, infoMessagesEntryConfig: InfoMessagesEntryConfig, eventKey: EventKey) {
         super(parent, new InfoButtonCfg(infoMessagesEntryConfig.buttonImageFilename))
         this.text = infoMessagesEntryConfig.message
         this.hidden = true

@@ -1,16 +1,16 @@
-import { GameEvent } from './EventBus'
 import { PublicJob } from '../game/model/job/Job'
-import { CollectableEntity, CollectableType } from '../scene/model/collect/CollectableEntity'
+import { CollectableType } from '../scene/model/collect/CollectableEntity'
 import { AnimEntity } from '../scene/model/anim/AnimEntity'
-import { Vector2 } from 'three'
 import { Surface } from '../scene/model/map/Surface'
 import { BuildingEntity } from '../scene/model/BuildingEntity'
 import { FulfillerEntity } from '../scene/model/FulfillerEntity'
 import { RaiderSkill } from '../scene/model/RaiderSkill'
+import { GameEvent } from './GameEvent'
+import { EventKey } from './EventKeyEnum'
 
 export class WorldEvent extends GameEvent {
 
-    constructor(entityKey: string) {
+    constructor(entityKey: EventKey) {
         super(entityKey)
         this.isLocal = false
     }
@@ -21,7 +21,7 @@ export class JobEvent extends WorldEvent {
 
     job: PublicJob
 
-    constructor(eventKey: string, job: PublicJob) {
+    constructor(eventKey: EventKey, job: PublicJob) {
         super(eventKey)
         this.job = job
     }
@@ -30,87 +30,60 @@ export class JobEvent extends WorldEvent {
 
 export class JobCreateEvent extends JobEvent {
 
-    static eventKey = 'job.create'
-
     constructor(job: PublicJob) {
-        super(JobCreateEvent.eventKey, job)
+        super(EventKey.JOB_CREATE, job)
     }
 
 }
 
 export class JobDeleteEvent extends JobEvent {
 
-    static eventKey = 'job.delete'
-
     constructor(job: PublicJob) {
-        super(JobDeleteEvent.eventKey, job)
+        super(EventKey.JOB_DELETE, job)
     }
 
 }
 
 export class RaiderRequested extends WorldEvent {
 
-    static eventKey = 'raider.request'
-
     numRequested: number = 0
 
     constructor(numRequested: number) {
-        super(RaiderRequested.eventKey)
+        super(EventKey.RAIDER_REQUESTED)
         this.numRequested = numRequested
     }
 
 }
 
-export class CollectEvent extends WorldEvent {
+export class MaterialAmountChanged extends WorldEvent {
 
-    static eventKey = 'item.collected'
+    collectableType: CollectableType
 
-    collectType: CollectableType
-
-    constructor(collectType: CollectableType) {
-        super(CollectEvent.eventKey)
-        this.collectType = collectType
+    constructor(collectableType: CollectableType) {
+        super(EventKey.MATERIAL_AMOUNT_CHANGED)
+        this.collectableType = collectableType
     }
 
 }
 
 export class SpawnDynamiteEvent extends WorldEvent {
 
-    static eventKey = 'spawn.dynamite'
-
     surface: Surface
 
     constructor(surface: Surface) {
-        super(SpawnDynamiteEvent.eventKey)
+        super(EventKey.SPAWN_DYNAMITE)
         this.surface = surface
-    }
-
-}
-
-export class SpawnMaterialEvent extends WorldEvent {
-
-    static eventKey = 'spawn.material'
-
-    collectable: CollectableEntity
-    spawnPosition: Vector2
-
-    constructor(collectable: CollectableEntity, spawnPosition: Vector2) {
-        super(SpawnMaterialEvent.eventKey)
-        this.collectable = collectable
-        this.spawnPosition = spawnPosition
     }
 
 }
 
 export class EntityAddedEvent extends WorldEvent {
 
-    static eventKey = 'added.entity'
-
     type: EntityType
     entity: AnimEntity
 
     constructor(type: EntityType, entity: AnimEntity) {
-        super(EntityAddedEvent.eventKey)
+        super(EventKey.ENTITY_ADDED)
         this.type = type
         this.entity = entity
     }
@@ -119,13 +92,11 @@ export class EntityAddedEvent extends WorldEvent {
 
 export class EntityRemovedEvent extends WorldEvent {
 
-    static eventKey = 'remove.entity'
-
     type: EntityType
     entity: AnimEntity
 
     constructor(type: EntityType, entity: AnimEntity) {
-        super(EntityRemovedEvent.eventKey)
+        super(EventKey.ENTITY_REMOVED)
         this.type = type
         this.entity = entity
     }
@@ -142,32 +113,26 @@ export enum EntityType {
 
 export class CavernDiscovered extends WorldEvent {
 
-    static eventKey = 'cavern.discovered'
-
     constructor() {
-        super(CavernDiscovered.eventKey)
+        super(EventKey.CAVERN_DISCOVERED)
     }
 
 }
 
 export class OreFoundEvent extends WorldEvent {
 
-    static eventKey = 'ore.found'
-
     constructor() {
-        super(OreFoundEvent.eventKey)
+        super(EventKey.ORE_FOUND)
     }
 
 }
 
 export class BuildingUpgraded extends WorldEvent {
 
-    static eventKey = 'upgraded.building'
-
     building: BuildingEntity
 
     constructor(building: BuildingEntity) {
-        super(BuildingUpgraded.eventKey)
+        super(EventKey.BUILDING_UPGRADED)
         this.building = building
     }
 
@@ -175,13 +140,11 @@ export class BuildingUpgraded extends WorldEvent {
 
 export class RaiderTrained extends WorldEvent {
 
-    static eventKey = 'trained.raider'
-
     entity: FulfillerEntity
     skill: RaiderSkill
 
     constructor(raider: FulfillerEntity, skill: RaiderSkill) {
-        super(RaiderTrained.eventKey)
+        super(EventKey.RAIDER_TRAINED)
         this.entity = raider
         this.skill = skill
     }

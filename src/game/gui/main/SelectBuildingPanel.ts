@@ -1,9 +1,8 @@
 import { Panel } from '../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 import { EventBus } from '../../../event/EventBus'
-import { CollectEvent, SpawnMaterialEvent } from '../../../event/WorldEvents'
 import { GameState } from '../../model/GameState'
-import { BuildingSelected } from '../../../event/LocalEvents'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class SelectBuildingPanel extends SelectBasePanel {
 
@@ -18,9 +17,8 @@ export class SelectBuildingPanel extends SelectBasePanel {
         const deleteBuildingItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteBuilding')
         deleteBuildingItem.isDisabled = () => false
         deleteBuildingItem.onClick = () => GameState.selectedBuilding?.beamUp()
-        EventBus.registerEventListener(BuildingSelected.eventKey, () => upgradeItem.updateState())
-        EventBus.registerEventListener(CollectEvent.eventKey, () => upgradeItem.updateState())
-        EventBus.registerEventListener(SpawnMaterialEvent.eventKey, () => upgradeItem.updateState())
+        EventBus.registerEventListener(EventKey.SELECTED_BUILDING, () => upgradeItem.updateState())
+        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => upgradeItem.updateState())
     }
 
 }

@@ -8,7 +8,7 @@ import { BuildingEntity } from './BuildingEntity'
 import { BuildingActivity } from './activities/BuildingActivity'
 import { GameState } from '../../game/model/GameState'
 import { EventBus } from '../../event/EventBus'
-import { CollectEvent } from '../../event/WorldEvents'
+import { MaterialAmountChanged } from '../../event/WorldEvents'
 
 export interface CollectionTarget {
 
@@ -46,11 +46,11 @@ export class CollectPathTarget extends PathTarget implements CollectionTarget {
         switch (item.getCollectableType()) {
             case CollectableType.CRYSTAL:
                 GameState.numCrystal++
-                EventBus.publishEvent(new CollectEvent(item.getCollectableType()))
+                EventBus.publishEvent(new MaterialAmountChanged(item.getCollectableType()))
                 break
             case CollectableType.ORE:
                 GameState.numOre++
-                EventBus.publishEvent(new CollectEvent(item.getCollectableType()))
+                EventBus.publishEvent(new MaterialAmountChanged(item.getCollectableType()))
                 break
         }
     }

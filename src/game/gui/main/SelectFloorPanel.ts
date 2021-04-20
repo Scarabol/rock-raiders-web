@@ -6,9 +6,9 @@ import { SurfaceType } from '../../../scene/model/map/SurfaceType'
 import { Building } from '../../model/entity/building/Building'
 import { CollectableType } from '../../../scene/model/collect/CollectableEntity'
 import { EventBus } from '../../../event/EventBus'
-import { SpawnMaterialEvent } from '../../../event/WorldEvents'
 import { BuildingSite } from '../../../scene/model/BuildingSite'
-import { EntityDeselected, SurfaceSelectedEvent } from '../../../event/LocalEvents'
+import { EntityDeselected } from '../../../event/LocalEvents'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class SelectFloorPanel extends SelectBasePanel {
 
@@ -20,12 +20,7 @@ export class SelectFloorPanel extends SelectBasePanel {
             selectedSurface.surfaceType = SurfaceType.POWER_PATH_SITE
             selectedSurface.updateTexture()
             const targetBuilding = GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), Building.TOOLSTATION)
-            if (targetBuilding) {
-                const ores = GameState.dropMaterial(CollectableType.ORE, 2)
-                ores.forEach((ore) => {
-                    EventBus.publishEvent(new SpawnMaterialEvent(ore, targetBuilding.getDropPosition2D())) // TODO use ToolNullName from cfg
-                })
-            }
+            if (targetBuilding) targetBuilding.spawnMaterials(GameState.dropMaterial(CollectableType.ORE, 2))
             const site = new BuildingSite(true)
             site.surfaces.push(selectedSurface)
             site.neededByType[CollectableType.ORE] = 2
@@ -33,7 +28,7 @@ export class SelectFloorPanel extends SelectBasePanel {
             EventBus.publishEvent(new EntityDeselected())
         }
         pathItem.isDisabled = () => GameState.selectedSurface?.hasRubble()
-        EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, () => pathItem.updateState())
+        EventBus.registerEventListener(EventKey.SELECTED_SURFACE, () => pathItem.updateState())
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_RemovePath')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence')
     }

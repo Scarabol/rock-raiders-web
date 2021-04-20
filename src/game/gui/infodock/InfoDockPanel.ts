@@ -3,9 +3,10 @@ import { Panel } from '../base/Panel'
 import { PanelCfg } from '../../../cfg/PanelsCfg'
 import { ButtonInfoDockCfg } from './ButtonInfoDockCfg'
 import { InfoMessagesConfig } from './InfoMessagesConfig'
-import { CrystalFoundEvent, GenericDeathEvent, GenericMonsterEvent, LandslideEvent, PowerDrainEvent, RaiderDiscoveredEvent, SlugEmergeEvent, UnderAttackEvent } from '../../../event/WorldLocationEvent'
+import { LandslideEvent } from '../../../event/WorldLocationEvent'
 import { InfoDockButton } from './InfoDockButton'
 import { InformationPanel } from './InformationPanel'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class InfoDockPanel extends Panel {
 
@@ -18,14 +19,14 @@ export class InfoDockPanel extends Panel {
         this.addChild(new Button(this, buttonsCfg.panelButtonInfoDockGoto)).onClick = () => this.gotoLatestMessage()
         this.addChild(new Button(this, buttonsCfg.panelButtonInfoDockClose)).onClick = () => this.dropLatestMessage()
 
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoGenericDeath, GenericDeathEvent.eventKey))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoGenericMonster, GenericMonsterEvent.eventKey))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoCrystalFound, CrystalFoundEvent.eventKey))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoUnderAttack, UnderAttackEvent.eventKey))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoLandslide, LandslideEvent.eventKey))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoPowerDrain, PowerDrainEvent.eventKey))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoSlugEmerge, SlugEmergeEvent.eventKey))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoFoundMinifigure, RaiderDiscoveredEvent.eventKey))
+        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoGenericDeath, EventKey.LOCATION_DEATH))
+        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoGenericMonster, EventKey.LOCATION_MONSTER))
+        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoCrystalFound, EventKey.LOCATION_CRYSTAL_FOUND))
+        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoUnderAttack, EventKey.LOCATION_UNDER_ATTACK))
+        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoLandslide, EventKey.LOCATION_LANDSLIDE))
+        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoPowerDrain, EventKey.LOCATION_POWER_DRAIN))
+        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoSlugEmerge, EventKey.LOCATION_SLUG_EMERGE))
+        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoFoundMinifigure, EventKey.LOCATION_RAIDER_DISCOVERED))
     }
 
     reset() {

@@ -2,12 +2,13 @@ import { GameState } from '../../model/GameState'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { Panel } from '../base/Panel'
 import { EventBus } from '../../../event/EventBus'
-import { CollectEvent, SpawnMaterialEvent } from '../../../event/WorldEvents'
+import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { CollectableType } from '../../../scene/model/collect/CollectableEntity'
 import { PanelCfg } from '../../../cfg/PanelsCfg'
 import { BaseConfig } from '../../../cfg/BaseConfig'
 import { ButtonCfg } from '../../../cfg/ButtonsCfg'
 import { SideBarLabel } from './SideBarLabel'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class PanelCrystalSideBar extends Panel {
 
@@ -26,11 +27,8 @@ export class PanelCrystalSideBar extends Panel {
         this.imgSmallCrystal = ResourceManager.getImage('Interface/RightPanel/SmallCrystal.bmp')
         this.imgUsedCrystal = ResourceManager.getImage('Interface/RightPanel/UsedCrystal.bmp')
         this.imgOre = ResourceManager.getImage('Interface/RightPanel/CrystalSideBar_Ore.bmp')
-        EventBus.registerEventListener(CollectEvent.eventKey, (event: CollectEvent) => {
-            this.updateQuantities(event.collectType)
-        })
-        EventBus.registerEventListener(SpawnMaterialEvent.eventKey, (event: SpawnMaterialEvent) => {
-            this.updateQuantities(event.collectable.getCollectableType())
+        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
+            this.updateQuantities(event.collectableType)
         })
     }
 

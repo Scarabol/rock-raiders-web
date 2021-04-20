@@ -53,3 +53,21 @@ export function removeFromArray<T>(array: T[], element: T) { // FIXME refactor t
     const index = array.indexOf(element)
     if (index !== -1) array.splice(index, 1)
 }
+
+declare global {
+
+    interface Map<K, V> {
+        getOrUpdate(key: K, updateCallback: () => V): V
+    }
+
+}
+
+// noinspection JSUnusedGlobalSymbols
+Map.prototype.getOrUpdate = function <K, V>(key: K, updateCallback: () => V): V {
+    let value = this.get(key)
+    if (value === undefined) {
+        value = updateCallback()
+        this.set(key, value)
+    }
+    return value
+}

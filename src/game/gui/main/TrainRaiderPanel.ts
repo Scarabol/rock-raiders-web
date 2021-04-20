@@ -1,12 +1,12 @@
 import { IconSubPanel } from './IconSubPanel'
 import { Panel } from '../base/Panel'
 import { EventBus } from '../../../event/EventBus'
-import { BuildingUpgraded } from '../../../event/WorldEvents'
 import { GameState } from '../../model/GameState'
 import { Building } from '../../model/entity/building/Building'
 import { TrainJob } from '../../model/job/TrainJob'
 import { EntityDeselected } from '../../../event/LocalEvents'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class TrainRaiderPanel extends IconSubPanel {
 
@@ -29,7 +29,7 @@ export class TrainRaiderPanel extends IconSubPanel {
                 }
             })
         }
-        EventBus.registerEventListener(BuildingUpgraded.eventKey, () => trainDynamite.updateState())
+        EventBus.registerEventListener(EventKey.BUILDING_UPGRADED, () => trainDynamite.updateState())
     }
 
 }

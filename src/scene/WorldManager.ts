@@ -4,13 +4,12 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { Color, MathUtils, Raycaster, Vector2, Vector3 } from 'three'
 import { clearIntervalSafe, getRandom } from '../core/Util'
 import { EventBus } from '../event/EventBus'
-import { CavernDiscovered, EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent, SpawnMaterialEvent } from '../event/WorldEvents'
+import { EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent } from '../event/WorldEvents'
 import { Raider } from './model/Raider'
 import { GameState } from '../game/model/GameState'
 import { Building } from '../game/model/entity/building/Building'
 import { CollectableEntity } from './model/collect/CollectableEntity'
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main'
-import { EntityDeselected } from '../event/LocalEvents'
 import { ObjectListLoader } from './ObjectListLoader'
 import { Dynamite } from './model/collect/Dynamite'
 import { DynamiteJob } from '../game/model/job/SurfaceJob'
@@ -22,6 +21,7 @@ import { PriorityList } from '../game/model/job/PriorityList'
 import { CollectJob } from '../game/model/job/CollectJob'
 import { MoveJob } from '../game/model/job/MoveJob'
 import { RaiderActivity } from './model/activities/RaiderActivity'
+import { EventKey } from '../event/EventKeyEnum'
 import degToRad = MathUtils.degToRad
 
 export class WorldManager {
@@ -32,14 +32,14 @@ export class WorldManager {
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas)
-        EventBus.registerEventListener(EntityDeselected.eventKey, () => GameState.selectEntities([]))
-        EventBus.registerEventListener(RaiderRequested.eventKey, (event: RaiderRequested) => {
+        EventBus.registerEventListener(EventKey.DESELECTED_ENTITY, () => GameState.selectEntities([]))
+        EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, (event: RaiderRequested) => {
             GameState.requestedRaiders = event.numRequested
             if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
                 this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER)
             }
         })
-        EventBus.registerEventListener(SpawnDynamiteEvent.eventKey, (event: SpawnDynamiteEvent) => {
+        EventBus.registerEventListener(EventKey.SPAWN_DYNAMITE, (event: SpawnDynamiteEvent) => {
             const targetBuilding = GameState.getClosestBuildingByType(event.surface.getCenterWorld(), Building.TOOLSTATION)
             if (!targetBuilding) {
                 throw 'Could not find toolstation to spawn dynamite'
@@ -52,10 +52,7 @@ export class WorldManager {
             this.sceneManager.scene.add(dynamite.group)
             EventBus.publishEvent(new JobCreateEvent(new DynamiteJob(event.surface, dynamite)))
         })
-        EventBus.registerEventListener(SpawnMaterialEvent.eventKey, (event: SpawnMaterialEvent) => {
-            this.addCollectable(event.collectable, event.spawnPosition)
-        })
-        EventBus.registerEventListener(CavernDiscovered.eventKey, () => {
+        EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => {
             GameState.discoveredCaverns++
         })
     }

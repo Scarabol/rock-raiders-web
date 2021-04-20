@@ -4,7 +4,8 @@ import { GameState } from '../../model/GameState'
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { SurfaceJob, SurfaceJobType } from '../../model/job/SurfaceJob'
-import { EntityDeselected, SurfaceSelectedEvent } from '../../../event/LocalEvents'
+import { EntityDeselected } from '../../../event/LocalEvents'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class SelectRubblePanel extends SelectBasePanel {
 
@@ -17,7 +18,7 @@ export class SelectRubblePanel extends SelectBasePanel {
         }
         clearRubbleItem.isDisabled = () => !GameState.selectedSurface?.hasRubble()
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence')
-        EventBus.registerEventListener(SurfaceSelectedEvent.eventKey, () => clearRubbleItem.updateState())
+        EventBus.registerEventListener(EventKey.SELECTED_SURFACE, () => clearRubbleItem.updateState())
     }
 
 }

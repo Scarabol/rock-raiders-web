@@ -15,6 +15,7 @@ import { RaiderSkill } from '../scene/model/RaiderSkill'
 import { RaiderTool } from '../scene/model/RaiderTool'
 import { JobState } from './model/job/JobState'
 import { PathTarget } from '../scene/model/PathTarget'
+import { EventKey } from '../event/EventKeyEnum'
 
 export class Supervisor {
 
@@ -25,10 +26,10 @@ export class Supervisor {
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
-        EventBus.registerEventListener(JobCreateEvent.eventKey, (event: JobCreateEvent) => {
+        EventBus.registerEventListener(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
             this.jobs.push(event.job)
         })
-        EventBus.registerEventListener(JobDeleteEvent.eventKey, (event: JobDeleteEvent) => {
+        EventBus.registerEventListener(EventKey.JOB_DELETE, (event: JobDeleteEvent) => {
             event.job.cancel()
         })
     }

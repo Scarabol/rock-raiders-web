@@ -1,7 +1,7 @@
 import { ScaledLayer } from '../../screen/ScreenLayer'
 import { Panel } from '../gui/base/Panel'
 import { BaseElement } from '../gui/base/BaseElement'
-import { POINTER_EVENT } from '../../event/EventManager'
+import { POINTER_EVENT } from '../../event/EventTypeEnum'
 
 export class GuiBaseLayer extends ScaledLayer {
 
