@@ -1,5 +1,6 @@
 import { LevelPrioritiesEntryConfig } from '../../../cfg/LevelsCfg'
 import { PublicJob } from './Job'
+import { PriorityIdentifier } from './PriorityIdentifier'
 
 export class PriorityList {
 
@@ -22,7 +23,7 @@ export class PriorityList {
     }
 
     reset() {
-        this.current = this.levelDefault.map(entry => new PriorityEntry(entry)) // deep copy required
+        this.current = this.levelDefault.map(entry => new PriorityEntry(entry)) // use deep copy to avoid interference
     }
 
     pushToTop(index: number) {
@@ -34,14 +35,21 @@ export class PriorityList {
     }
 
     getPriority(job: PublicJob) {
-        return this.current[job.getPriorityIdentifier()] || 0
+        let priority = 0
+        this.current.some((j, index) => {
+            if (j.key === job.getPriorityIdentifier()) {
+                priority = index
+                return true
+            }
+        })
+        return priority
     }
 
 }
 
 export class PriorityEntry {
 
-    key: string
+    key: PriorityIdentifier
     enabled: boolean
 
     constructor(levelPriorityEntry: LevelPrioritiesEntryConfig) {

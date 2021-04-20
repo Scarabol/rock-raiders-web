@@ -8,7 +8,7 @@ import { EntityAddedEvent, EntityType, OreFoundEvent, RaiderTrained } from '../.
 import { CrystalFoundEvent, RaiderDiscoveredEvent } from '../../event/WorldLocationEvent'
 import { BaseActivity } from './activities/BaseActivity'
 import { RaiderActivity } from './activities/RaiderActivity'
-import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob'
+import { DynamiteJob, SurfaceJob } from '../../game/model/job/SurfaceJob'
 import { SurfaceType } from './map/SurfaceType'
 import { getRandom, getRandomInclusive } from '../../core/Util'
 import { Crystal } from './collect/Crystal'
@@ -24,6 +24,7 @@ import { JobType } from '../../game/model/job/JobType'
 import { TerrainPath } from './map/TerrainPath'
 import { PathTarget } from './PathTarget'
 import { CollectPathTarget } from './CollectionTarget'
+import { SurfaceJobType } from '../../game/model/job/SurfaceJobType'
 import degToRad = MathUtils.degToRad
 
 export class Raider extends FulfillerEntity {

@@ -8,11 +8,12 @@ import { JobCreateEvent } from '../../event/WorldEvents'
 import { Surface } from '../../scene/model/map/Surface'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { FulfillerEntity } from '../../scene/model/FulfillerEntity'
-import { SurfaceJob, SurfaceJobType } from '../model/job/SurfaceJob'
+import { SurfaceJob } from '../model/job/SurfaceJob'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { DEV_MODE } from '../../main'
 import { MoveJob } from '../model/job/MoveJob'
 import { Vector2 } from 'three'
+import { SurfaceJobType } from '../model/job/SurfaceJobType'
 
 export class GameLayer extends ScreenLayer {
 

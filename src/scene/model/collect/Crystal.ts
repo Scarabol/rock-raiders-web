@@ -4,11 +4,12 @@ import { Color, Material, MeshPhongMaterial } from 'three'
 import { CollectableEntity, CollectableType } from './CollectableEntity'
 import { Building } from '../../../game/model/entity/building/Building'
 import { SceneManager } from '../../SceneManager'
+import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
 
 export class Crystal extends CollectableEntity {
 
     constructor() {
-        super(CollectableType.CRYSTAL)
+        super()
         const resource2 = ResourceManager.getResource('MiscAnims/Crystal/vlp_greencrystal.lwo')
         const mesh2 = SceneManager.registerMesh(new LWOLoader('MiscAnims/Crystal/').parse(resource2));
         (mesh2.material as Material[]).forEach((mat: MeshPhongMaterial) => {
@@ -42,6 +43,14 @@ export class Crystal extends CollectableEntity {
     onDiscover() {
         super.onDiscover()
         console.log('An energy crystal has been discovered')
+    }
+
+    getCollectableType(): CollectableType {
+        return CollectableType.CRYSTAL
+    }
+
+    getPriorityIdentifier(): PriorityIdentifier {
+        return PriorityIdentifier.aiPriorityCrystal
     }
 
 }

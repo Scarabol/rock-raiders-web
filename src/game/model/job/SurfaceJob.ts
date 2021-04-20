@@ -8,27 +8,8 @@ import { CollectableEntity } from '../../../scene/model/collect/CollectableEntit
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
 import { RaiderTool } from '../../../scene/model/RaiderTool'
 import { JobType } from './JobType'
-
-export class SurfaceJobType {
-
-    color: number
-    colorPriority: number
-    requiredTool: RaiderTool
-    requiredSkill: RaiderSkill
-
-    constructor(color: number, colorPriority: number, requiredTool: RaiderTool, requiredSkill: RaiderSkill) {
-        this.color = color
-        this.colorPriority = colorPriority
-        this.requiredTool = requiredTool
-        this.requiredSkill = requiredSkill
-    }
-
-    static readonly DRILL = new SurfaceJobType(0xa0a0a0, 0, RaiderTool.DRILL, null)
-    static readonly REINFORCE = new SurfaceJobType(0x60a060, 1, RaiderTool.HAMMER, null)
-    static readonly BLOW = new SurfaceJobType(0xa06060, 2, null, RaiderSkill.DEMOLITION)
-    static readonly CLEAR_RUBBLE = new SurfaceJobType(0xffffff, 0, RaiderTool.SHOVEL, null)
-
-}
+import { PriorityIdentifier } from './PriorityIdentifier'
+import { SurfaceJobType } from './SurfaceJobType'
 
 export class SurfaceJob extends PublicJob {
 
@@ -78,13 +59,8 @@ export class SurfaceJob extends PublicJob {
         }
     }
 
-    getPriorityIdentifier(): string {
-        if (this.workType === SurfaceJobType.DRILL) return 'aiPriorityDestruction'
-        else if (this.workType === SurfaceJobType.BLOW) return 'aiPriorityDestruction'
-        else if (this.workType === SurfaceJobType.CLEAR_RUBBLE) return 'aiPriorityClearing'
-        else if (this.workType === SurfaceJobType.REINFORCE) return 'aiPriorityReinforce'
-        console.warn('Unexpected work type: ' + this.workType)
-        return ''
+    getPriorityIdentifier(): PriorityIdentifier {
+        return this.workType.priorityIdentifier
     }
 
 }
@@ -125,8 +101,8 @@ export class CompletePowerPathJob extends SurfaceJob {
         this.surface.updateTexture()
     }
 
-    getPriorityIdentifier(): string {
-        return 'aiPriorityConstruction'
+    getPriorityIdentifier(): PriorityIdentifier {
+        return PriorityIdentifier.aiPriorityConstruction
     }
 
 }

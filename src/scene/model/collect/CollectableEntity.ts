@@ -8,17 +8,12 @@ import { CollectPathTarget } from '../CollectionTarget'
 import { Vector2 } from 'three'
 import { Building } from '../../../game/model/entity/building/Building'
 import { BuildingSite } from '../BuildingSite'
+import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
 
 export abstract class CollectableEntity extends BaseEntity implements Carryable {
 
-    collectableType: CollectableType
     targets: CollectPathTarget[] = []
     targetSite: BuildingSite = null
-
-    protected constructor(collectableType: CollectableType) {
-        super()
-        this.collectableType = collectableType
-    }
 
     abstract getTargetBuildingTypes(): Building[];
 
@@ -66,9 +61,9 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
         EventBus.publishEvent(new JobCreateEvent(new CollectJob(this)))
     }
 
-    getCollectableType(): CollectableType {
-        return this.collectableType
-    }
+    abstract getCollectableType(): CollectableType
+
+    abstract getPriorityIdentifier(): PriorityIdentifier
 
     setTargetSite(site: BuildingSite) {
         if (this.targetSite === site) return

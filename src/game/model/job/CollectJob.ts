@@ -1,8 +1,9 @@
-import { CollectableEntity, CollectableType } from '../../../scene/model/collect/CollectableEntity'
+import { CollectableEntity } from '../../../scene/model/collect/CollectableEntity'
 import { Vector2 } from 'three'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { PublicJob } from './Job'
 import { JobType } from './JobType'
+import { PriorityIdentifier } from './PriorityIdentifier'
 
 export class CollectJob extends PublicJob {
 
@@ -21,8 +22,8 @@ export class CollectJob extends PublicJob {
         return fulfiller.carries === null && this.item.hasTarget()
     }
 
-    getPriorityIdentifier(): string {
-        return this.item.getCollectableType() === CollectableType.CRYSTAL ? 'aiPriorityCrystal' : 'aiPriorityOre'
+    getPriorityIdentifier(): PriorityIdentifier {
+        return this.item.getPriorityIdentifier()
     }
 
 }

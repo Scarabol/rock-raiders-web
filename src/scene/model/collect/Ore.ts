@@ -3,11 +3,12 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { CollectableEntity, CollectableType } from './CollectableEntity'
 import { Building } from '../../../game/model/entity/building/Building'
 import { SceneManager } from '../../SceneManager'
+import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
 
 export class Ore extends CollectableEntity {
 
     constructor() {
-        super(CollectableType.ORE)
+        super()
         const resource = ResourceManager.getResource('MiscAnims/Ore/Ore1st.lwo')
         const mesh = SceneManager.registerMesh(new LWOLoader('MiscAnims/Ore/').parse(resource))
         this.group.add(mesh)
@@ -24,6 +25,14 @@ export class Ore extends CollectableEntity {
     onDiscover() {
         super.onDiscover()
         console.log('Ore has been discovered')
+    }
+
+    getCollectableType(): CollectableType {
+        return CollectableType.ORE
+    }
+
+    getPriorityIdentifier(): PriorityIdentifier {
+        return PriorityIdentifier.aiPriorityOre
     }
 
 }

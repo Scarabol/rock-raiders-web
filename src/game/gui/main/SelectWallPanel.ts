@@ -2,7 +2,7 @@ import { Panel } from '../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 import { GameState } from '../../model/GameState'
 import { Surface } from '../../../scene/model/map/Surface'
-import { SurfaceJob, SurfaceJobType } from '../../model/job/SurfaceJob'
+import { SurfaceJob } from '../../model/job/SurfaceJob'
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent, SpawnDynamiteEvent } from '../../../event/WorldEvents'
 import { EntityDeselected } from '../../../event/LocalEvents'
@@ -10,6 +10,7 @@ import { IconPanelButton } from './IconPanelButton'
 import { Building } from '../../model/entity/building/Building'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { SurfaceJobType } from '../../model/job/SurfaceJobType'
 
 export class SelectWallPanel extends SelectBasePanel {
 

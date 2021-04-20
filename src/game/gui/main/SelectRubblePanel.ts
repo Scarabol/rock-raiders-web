@@ -3,9 +3,10 @@ import { SelectBasePanel } from './SelectBasePanel'
 import { GameState } from '../../model/GameState'
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
-import { SurfaceJob, SurfaceJobType } from '../../model/job/SurfaceJob'
+import { SurfaceJob } from '../../model/job/SurfaceJob'
 import { EntityDeselected } from '../../../event/LocalEvents'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { SurfaceJobType } from '../../model/job/SurfaceJobType'
 
 export class SelectRubblePanel extends SelectBasePanel {
 

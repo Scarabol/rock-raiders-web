@@ -11,13 +11,14 @@ import { Crystal } from '../collect/Crystal'
 import { Ore } from '../collect/Ore'
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../main'
 import { GameState } from '../../../game/model/GameState'
-import { SurfaceJob, SurfaceJobType } from '../../../game/model/job/SurfaceJob'
+import { SurfaceJob } from '../../../game/model/job/SurfaceJob'
 import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { AnimSubObj } from '../anim/AnimSubObj'
 import { SurfaceGeometry } from './SurfaceGeometry'
 import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
 import { JobType } from '../../../game/model/job/JobType'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { SurfaceJobType } from '../../../game/model/job/SurfaceJobType'
 
 export class Surface implements Selectable {
 

@@ -10,12 +10,13 @@ import { Building } from './model/entity/building/Building'
 import { GetToolJob } from './model/job/GetToolJob'
 import { TrainJob } from './model/job/TrainJob'
 import { clearIntervalSafe } from '../core/Util'
-import { SurfaceJob, SurfaceJobType } from './model/job/SurfaceJob'
+import { SurfaceJob } from './model/job/SurfaceJob'
 import { RaiderSkill } from '../scene/model/RaiderSkill'
 import { RaiderTool } from '../scene/model/RaiderTool'
 import { JobState } from './model/job/JobState'
 import { PathTarget } from '../scene/model/PathTarget'
 import { EventKey } from '../event/EventKeyEnum'
+import { SurfaceJobType } from './model/job/SurfaceJobType'
 
 export class Supervisor {
 

@@ -4,6 +4,7 @@ import { RaiderSkill } from '../../../scene/model/RaiderSkill'
 import { RaiderTool } from '../../../scene/model/RaiderTool'
 import { JobType } from './JobType'
 import { JobState } from './JobState'
+import { PriorityIdentifier } from './PriorityIdentifier'
 
 export abstract class Job {
 
@@ -56,6 +57,6 @@ export abstract class Job {
 
 export abstract class PublicJob extends Job {
 
-    abstract getPriorityIdentifier(): string
+    abstract getPriorityIdentifier(): PriorityIdentifier
 
 }

@@ -1,6 +1,8 @@
 import { BaseConfig } from './BaseConfig'
 import { ConfigColor } from './ConfigColor'
 import { ObjectiveImageCfg } from './ObjectiveImageCfg'
+import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
+import { iGet } from '../core/Util'
 
 export class LevelsCfg {
 
@@ -105,11 +107,11 @@ export class LevelEntryCfg extends BaseConfig {
 
 export class LevelPrioritiesEntryConfig {
 
-    key: string
+    key: PriorityIdentifier
     enabled: boolean
 
     constructor(name: string, enabled: boolean) {
-        this.key = name.replace(/_/g, '')
+        this.key = iGet(PriorityIdentifier, name.replace(/_/g, ''))
         this.enabled = enabled
     }
 
