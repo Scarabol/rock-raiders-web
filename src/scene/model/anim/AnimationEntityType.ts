@@ -6,6 +6,6 @@ export class AnimationEntityType {
     mediumPoly: {} = {}
     highPoly: {} = {}
     fPPoly: {} = {}
-    activities: Map<string, {file: string, transcoef: number, lwsfile: boolean, animation: AnimClip}> = new Map()
+    activities: Map<string, { file: string, transcoef: number, lwsfile: boolean, animation: AnimClip }> = new Map()
 
 }
