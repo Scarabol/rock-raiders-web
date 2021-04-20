@@ -176,6 +176,7 @@ export class Raider extends FulfillerEntity {
                 }
             } else {
                 const moveResult = this.moveToClosestTarget(carryJobItem.getCollectTargets())
+                carryJobItem.setTargetSite((this.currentPath?.target as CollectPathTarget)?.site)
                 if (moveResult === MoveState.TARGET_REACHED) {
                     const collectPathTarget = this.currentPath.target as CollectPathTarget
                     const dropAction = collectPathTarget.getDropAction()

@@ -7,11 +7,13 @@ import { CollectJob } from '../../../game/model/job/CollectJob'
 import { CollectPathTarget } from '../CollectionTarget'
 import { Vector2 } from 'three'
 import { Building } from '../../../game/model/entity/building/Building'
+import { BuildingSite } from '../BuildingSite'
 
 export abstract class CollectableEntity extends BaseEntity implements Carryable {
 
     collectableType: CollectableType
     targets: CollectPathTarget[] = []
+    targetSite: BuildingSite = null
 
     protected constructor(collectableType: CollectableType) {
         super()
@@ -34,6 +36,7 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
 
     resetTarget() {
         this.targets = []
+        this.targetSite = null
         this.updateTargets()
     }
 
@@ -65,6 +68,13 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
 
     getCollectableType(): CollectableType {
         return this.collectableType
+    }
+
+    setTargetSite(site: BuildingSite) {
+        if (this.targetSite === site) return
+        this.targetSite?.unAssign(this)
+        this.targetSite = site
+        this.targetSite?.assign(this)
     }
 
 }
