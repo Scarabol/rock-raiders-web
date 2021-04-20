@@ -128,7 +128,7 @@ export class WorldManager {
         this.sceneManager.cursorTorchlight.position.z = position.y
     }
 
-    getFloorHeight(worldX: number, worldZ: number): number { // FIXME use interpolation to determine ground level height
+    getFloorHeight(worldX: number, worldZ: number): number {
         const surface = this.sceneManager.terrain.getSurfaceFromWorldXZ(worldX, worldZ)
         if (!surface) return 0
         return surface.getFloorHeight(worldX, worldZ)
