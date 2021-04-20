@@ -2,9 +2,7 @@
 
 export class RonFile {
 
-    // FIXME run performance check on ALL the parsed config files, which technique works best?
-    
-    parse(content: string) { // TODO read from ArrayBuffer and fix encoding?
+    static parse(content: string) {
         const lines: string[][] = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
             .split('\n')
@@ -22,11 +20,11 @@ export class RonFile {
             .filter(l => l !== '') // filter empty lines
             .map((v) => v.split(' ').filter(v => v !== ''))
         const root = {}
-        this.parseObj(root, lines, 0)
+        RonFile.parseObj(root, lines, 0)
         return root
     }
 
-    parseObj(obj: {}, lines: string[][], start): number {
+    static parseObj(obj: {}, lines: string[][], start): number {
         for (let c = start; c < lines.length; c++) {
             const [name, val] = lines[c]
             const key = name.toLowerCase()
@@ -46,7 +44,7 @@ export class RonFile {
         return lines.length
     }
 
-    parseValue(value: string) {
+    static parseValue(value: string) {
         const num = Number(value)
         const lv = value.toLowerCase()
         if (!isNaN(num)) {

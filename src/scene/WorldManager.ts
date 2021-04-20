@@ -44,7 +44,7 @@ export class WorldManager {
             if (!targetBuilding) {
                 throw 'Could not find toolstation to spawn dynamite'
             }
-            const pos = targetBuilding.getDropPosition() // FIXME use ToolNullName from cfg
+            const pos = targetBuilding.getDropPosition()
             const dynamite = new Dynamite()
             dynamite.targetSurface = event.surface
             dynamite.worldMgr = this

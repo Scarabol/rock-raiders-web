@@ -7,6 +7,7 @@ export class ScreenLayer {
     canvas: HTMLCanvasElement
     context: CanvasRenderingContext2D
     onRedraw: (context: CanvasRenderingContext2D) => any
+    active: boolean = true
 
     constructor(alpha: boolean = false, withContext: boolean = true) {
         this.canvas = document.createElement('canvas')
@@ -42,16 +43,18 @@ export class ScreenLayer {
     }
 
     show() {
+        this.active = true
         this.canvas.style.visibility = 'visible'
         this.redraw()
     }
 
     hide() {
+        this.active = false
         this.canvas.style.visibility = 'hidden'
     }
 
     isActive() {
-        return this.canvas.style.visibility === 'visible'
+        return this.active
     }
 
     toCanvasCoords(windowX: number, windowY: number) {

@@ -382,7 +382,7 @@ export class WadLoader {
 
     addAnimatedEntity(aeFile: string) {
         const content = this.wad0File.getEntryText(aeFile)
-        const cfgRoot = iGet(new RonFile().parse(content), 'Lego*')
+        const cfgRoot = iGet(RonFile.parse(content), 'Lego*')
         this.onAssetLoaded(0, aeFile, cfgRoot)
         const path = getPath(aeFile);
         ['HighPoly', 'MediumPoly', 'LowPoly'].forEach((polyType) => { // TODO add 'FPPoly' (contains two cameras)

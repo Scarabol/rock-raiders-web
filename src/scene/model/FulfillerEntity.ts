@@ -18,7 +18,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     workInterval = null
     job: Job = null
     followUpJob: Job = null
-    carries: Carryable = null // FIXME implement multi carry for vehicles
+    carries: Carryable = null
 
     protected constructor(selectionType: SelectionType, aeFilename: string) {
         super(ResourceManager.getAnimationEntityType(aeFilename))

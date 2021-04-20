@@ -6,7 +6,6 @@ export class WorkerMessage {
     totalResources?: number
     assetName?: string
     assetObj?: any
-    assetIndex?: number
     loadingTimeSeconds?: string
 
     constructor(type: WorkerMessageType) {
@@ -22,7 +21,7 @@ export class WorkerMessage {
     }
 
     static createAssetLoaded(assetIndex: number, assetName: string, assetObj: any) {
-        return {type: WorkerMessageType.ASSET, assetIndex: assetIndex, assetName: assetName, assetObj: assetObj}
+        return {type: WorkerMessageType.ASSET, assetName: assetName, assetObj: assetObj}
     }
 
     static createLoadDone(totalResources: number, loadingTimeSeconds: string) {

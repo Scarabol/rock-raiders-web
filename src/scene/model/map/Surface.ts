@@ -455,7 +455,7 @@ export class Surface implements Selectable {
         const fallinPosition = this.terrain.getSurface(targetX, targetY).getCenterWorld()
         EventBus.publishEvent(new LandslideEvent(fallinPosition))
 
-        // FIXME refactor animation handling
+        // TODO refactor mesh and animation handling
         const content = ResourceManager.getResource('MiscAnims/RockFall/Rock3Sides.lws')
         const animation = new LWSCLoader('MiscAnims/RockFall/').parse(content)
         this.fallinGrp = new Group()
@@ -484,7 +484,7 @@ export class Surface implements Selectable {
         targetSurface.updateTexture()
     }
 
-    animate(poly, animation, frameIndex) { // FIXME refactor animation handling
+    animate(poly, animation, frameIndex) {
         if (poly.length !== animation.bodies.length) throw 'Cannot animate poly. Length differs from bodies length'
         animation.bodies.forEach((body: AnimSubObj, index) => {
             const p = poly[index]

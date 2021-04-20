@@ -39,8 +39,6 @@ export class AnimEntityLoader {
             Object.keys(highPoly).forEach((key) => {
                 const polyname = highPoly[key] + '.lwo'
                 const polykey = key.startsWith('!') ? key.slice(1) : key
-                // console.log(path + polyname);
-                // FIXME do not parse twice, read from cache first
                 const lwoBuffer = ResourceManager.getResource(path + polyname)
                 entityType.highPoly[polykey] = SceneManager.registerMesh(new LWOLoader(path).parse(lwoBuffer))
             })
@@ -72,7 +70,7 @@ export class AnimEntityLoader {
             Object.keys(activities).forEach((activity) => {
                 try {
                     let keyname = iGet(activities, activity)
-                    const act: {file: string, transcoef: number, lwsfile: boolean, animation: AnimClip} = iGet(root, keyname)
+                    const act: { file: string, transcoef: number, lwsfile: boolean, animation: AnimClip } = iGet(root, keyname)
                     const file = iGet(act, 'FILE')
                     const isLws = iGet(act, 'LWSFILE') === true
                     const transcoef = iGet(act, 'TRANSCOEF')
@@ -81,7 +79,7 @@ export class AnimEntityLoader {
                         const content = ResourceManager.getResource(path + file + '.lws')
                         act.animation = new LWSCLoader(path).parse(content)
                         act.animation.looping = looping
-                        act.animation.transcoef = transcoef ? Number(transcoef) : 1;
+                        act.animation.transcoef = transcoef ? Number(transcoef) : 1
                         entityType.activities.set(activity.toLowerCase(), act)
                     } else {
                         console.error('Found activity which is not an LWS file')

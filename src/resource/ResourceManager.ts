@@ -31,7 +31,7 @@ export class ResourceManager {
             const msg: WorkerMessage = event.data
             if (msg.type === WorkerMessageType.ASSET) {
                 this.resourceByName[msg.assetName.toLowerCase()] = msg.assetObj
-                this.onAssetLoaded(msg.assetIndex)
+                this.onAssetLoaded()
             } else if (msg.type === WorkerMessageType.MSG) {
                 this.onMessage(msg.text)
             } else if (msg.type === WorkerMessageType.CFG) {
@@ -60,7 +60,7 @@ export class ResourceManager {
         console.log('Initial loading done.')
     }
 
-    static onAssetLoaded: (assetIndex: number) => any = () => {
+    static onAssetLoaded: () => any = () => {
     }
 
     static onLoadDone: () => any = () => {

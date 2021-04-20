@@ -102,7 +102,6 @@ export class LWSCLoader {
                     const filename = getFilename(value)
                     subObj.name = filename.slice(0, filename.length - '.lwo'.length)
                     subObj.filename = this.path + filename
-                    // FIXME do not parse twice, read from cache first
                     const lwoBuffer = ResourceManager.getResource(subObj.filename)
                     subObj.model = SceneManager.registerMesh(new LWOLoader(this.path).parse(lwoBuffer))
                 } else if (key === 'AddNullObject') {

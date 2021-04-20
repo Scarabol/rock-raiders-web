@@ -20,7 +20,7 @@ export class Building {
     constructor(name: string, folder: string, dropPosAngleDeg: number = 0, dropPosDist: number = 0) {
         this.name = name
         this.aeFile = folder + '/' + folder.slice(folder.lastIndexOf('/') + 1) + '.ae'
-        this.dropPosAngleDeg = dropPosAngleDeg
+        this.dropPosAngleDeg = dropPosAngleDeg // FIXME use ToolNullName from cfg
         this.dropPosDist = dropPosDist
     }
 

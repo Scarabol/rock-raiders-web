@@ -47,8 +47,8 @@ ResourceManager.onInitialLoad = (totalResources: number) => {
     wadfileSelectModal.hide()
     loadingScreen.enableGraphicMode(totalResources)
 }
-ResourceManager.onAssetLoaded = (assetIndex: number) => {
-    loadingScreen.setLoadingState(assetIndex)
+ResourceManager.onAssetLoaded = () => {
+    loadingScreen.increaseLoadingState()
 }
 ResourceManager.onLoadDone = () => {
     // complete setup

@@ -48,7 +48,7 @@ export function clearIntervalSafe(interval: NodeJS.Timeout) {
     return null
 }
 
-export function removeFromArray<T>(array: T[], element: T) {
+export function removeFromArray<T>(array: T[], element: T) { // FIXME refactor this: turn into global
     if (!array || !Array.isArray(array)) return
     const index = array.indexOf(element)
     if (index !== -1) array.splice(index, 1)
