@@ -1,6 +1,5 @@
 import { Vector2 } from 'three'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
-import { removeFromArray } from '../../../core/Util'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
 import { RaiderTool } from '../../../scene/model/RaiderTool'
 import { JobType } from './JobType'
@@ -25,7 +24,7 @@ export abstract class Job {
     }
 
     unassign(fulfiller: FulfillerEntity) {
-        removeFromArray(this.fulfiller, fulfiller)
+        this.fulfiller.remove(fulfiller)
     }
 
     cancel() {

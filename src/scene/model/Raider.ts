@@ -10,7 +10,7 @@ import { BaseActivity } from './activities/BaseActivity'
 import { RaiderActivity } from './activities/RaiderActivity'
 import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob'
 import { SurfaceType } from './map/SurfaceType'
-import { getRandom, removeFromArray } from '../../core/Util'
+import { getRandom } from '../../core/Util'
 import { Crystal } from './collect/Crystal'
 import { Ore } from './collect/Ore'
 import { CollectJob } from '../../game/model/job/CollectJob'
@@ -48,7 +48,7 @@ export class Raider extends FulfillerEntity {
 
     onDiscover() {
         super.onDiscover()
-        removeFromArray(GameState.raidersUndiscovered, this)
+        GameState.raidersUndiscovered.remove(this)
         GameState.raiders.push(this)
         EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, this))
         EventBus.publishEvent(new RaiderDiscoveredEvent(this.getPosition()))
@@ -233,7 +233,7 @@ export class Raider extends FulfillerEntity {
 
     removeFromScene() {
         super.removeFromScene()
-        removeFromArray(GameState.raiders, this)
+        GameState.raiders.remove(this)
     }
 
     hasTool(tool: RaiderTool) {

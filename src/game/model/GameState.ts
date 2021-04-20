@@ -18,7 +18,6 @@ import { LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { PriorityList } from './job/PriorityList'
 import { SmallSpider } from './entity/monster/SmallSpider'
 import { Bat } from './entity/monster/Bat'
-import { removeFromArray } from '../../core/Util'
 import { RaiderSkill } from '../../scene/model/RaiderSkill'
 import { MaterialAmountChanged } from '../../event/WorldEvents'
 
@@ -186,7 +185,7 @@ export class GameState {
                 discovered.push(e)
             }
         })
-        discovered.forEach((r) => removeFromArray(undiscovered, r))
+        discovered.forEach((r) => undiscovered.remove(r))
     }
 
     static dropMaterial(type: CollectableType, quantity: number): CollectableEntity[] {

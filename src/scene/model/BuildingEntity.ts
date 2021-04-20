@@ -10,7 +10,6 @@ import { BuildingUpgraded, EntityAddedEvent, EntityType, MaterialAmountChanged }
 import { Surface } from './map/Surface'
 import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
 import { BuildingActivity } from './activities/BuildingActivity'
-import { removeFromArray } from '../../core/Util'
 import { BuildingEntityStats } from '../../cfg/BuildingEntityStats'
 import { Ore } from './collect/Ore'
 import { Crystal } from './collect/Crystal'
@@ -86,7 +85,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
 
     onDiscover() {
         super.onDiscover()
-        removeFromArray(GameState.buildingsUndiscovered, this)
+        GameState.buildingsUndiscovered.remove(this)
         GameState.buildings.push(this)
         EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, this))
     }
@@ -129,7 +128,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
 
     removeFromScene() {
         super.removeFromScene()
-        removeFromArray(GameState.buildings, this)
+        GameState.buildings.remove(this)
     }
 
     canUpgrade() {

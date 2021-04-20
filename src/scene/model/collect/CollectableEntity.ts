@@ -4,7 +4,6 @@ import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { Carryable } from './Carryable'
 import { CollectJob } from '../../../game/model/job/CollectJob'
-import { removeFromArray } from '../../../core/Util'
 import { CollectPathTarget } from '../CollectionTarget'
 import { Vector2 } from 'three'
 import { Building } from '../../../game/model/entity/building/Building'
@@ -59,7 +58,7 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
 
     onDiscover() {
         super.onDiscover()
-        removeFromArray(GameState.collectablesUndiscovered, this)
+        GameState.collectablesUndiscovered.remove(this)
         GameState.collectables.push(this)
         EventBus.publishEvent(new JobCreateEvent(new CollectJob(this)))
     }

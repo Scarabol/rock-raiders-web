@@ -1,4 +1,3 @@
-import { removeFromArray } from '../core/Util'
 import { GameEvent } from './GameEvent'
 import { EventKey } from './EventKeyEnum'
 
@@ -12,7 +11,7 @@ export class EventBus {
         if (!event.isLocal) console.log('Event published: ' + EventKey[event.eventKey])
         this.blockedEvents.push(event.eventKey)
         this.getListener(event.eventKey).forEach((callback) => callback(event))
-        removeFromArray(this.blockedEvents, event.eventKey)
+        this.blockedEvents.remove(event.eventKey)
     }
 
     static registerEventListener(eventKey: EventKey, callback: (GameEvent) => any) {

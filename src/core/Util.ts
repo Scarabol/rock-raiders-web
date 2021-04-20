@@ -48,18 +48,21 @@ export function clearIntervalSafe(interval: NodeJS.Timeout) {
     return null
 }
 
-export function removeFromArray<T>(array: T[], element: T) { // FIXME refactor this: turn into global
-    if (!array || !Array.isArray(array)) return
-    const index = array.indexOf(element)
-    if (index !== -1) array.splice(index, 1)
-}
-
 declare global {
+
+    interface Array<T> {
+        remove(element: T): T
+    }
 
     interface Map<K, V> {
         getOrUpdate(key: K, updateCallback: () => V): V
     }
 
+}
+
+Array.prototype.remove = function <T>(element: T): void {
+    const index = this.indexOf(element)
+    if (index !== -1) this.splice(index, 1)
 }
 
 // noinspection JSUnusedGlobalSymbols
