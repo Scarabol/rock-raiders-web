@@ -106,7 +106,7 @@ export class Raider extends FulfillerEntity {
     }
 
     moveToClosestWorkplace(target: Vector2[]): MoveState {
-        return super.moveToClosestTarget(target.map((t) => new PathTarget(t)))
+        return this.moveToClosestTarget(target.map((t) => new PathTarget(t)))
     }
 
     work() {
