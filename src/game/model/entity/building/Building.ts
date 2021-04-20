@@ -1,7 +1,7 @@
 export class Building {
 
     // XXX dynamically read building types from cfg at BuildingTypes
-    static readonly TOOLSTATION = new Building('Toolstation', 'Buildings/Toolstation', 130, 10)
+    static readonly TOOLSTATION = new Building('Toolstation', 'Buildings/Toolstation')
     static readonly TELEPORT_PAD = new Building('TeleportPad', 'Buildings/Teleports')
     static readonly DOCKS = new Building('Docks', 'Buildings/Docks')
     static readonly POWER_STATION = new Building('Powerstation', 'Buildings/Powerstation')
@@ -14,14 +14,10 @@ export class Building {
 
     name: string
     aeFile: string
-    dropPosAngleDeg: number = 0
-    dropPosDist: number = 0
 
-    constructor(name: string, folder: string, dropPosAngleDeg: number = 0, dropPosDist: number = 0) {
+    constructor(name: string, folder: string) {
         this.name = name
         this.aeFile = folder + '/' + folder.slice(folder.lastIndexOf('/') + 1) + '.ae'
-        this.dropPosAngleDeg = dropPosAngleDeg // FIXME use ToolNullName from cfg
-        this.dropPosDist = dropPosDist
     }
 
     static getByName(buildingType: string) {

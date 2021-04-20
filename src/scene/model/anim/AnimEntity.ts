@@ -21,6 +21,8 @@ export abstract class AnimEntity extends BaseEntity {
     pickSphere: Mesh = null
     pickSphereRadius: number = 10 / 2
     carryJoint: Object3D = null
+    depositJoint: Object3D = null
+    getToolJoint: Object3D = null
     activity: BaseActivity = null
     radiusSq: number = 0
 
@@ -87,9 +89,16 @@ export abstract class AnimEntity extends BaseEntity {
             if (!model) model = body.model
             const polyModel = model.clone(true)
             this.poly.push(polyModel)
-            if (this.entityType.carryNullName && body.name && this.entityType.carryNullName.toLowerCase() === body.name.toLowerCase()) {
-                this.carryJoint = polyModel
-                if (carries.length > 0) this.carryJoint.add(...carries)
+            if (body.name) {
+                const lBodyName = body.name.toLowerCase()
+                if (lBodyName === this.entityType.carryNullName?.toLowerCase()) {
+                    this.carryJoint = polyModel
+                    if (carries.length > 0) this.carryJoint.add(...carries)
+                } else if (lBodyName === this.entityType.depositNullName?.toLowerCase()) {
+                    this.depositJoint = polyModel
+                } else if (lBodyName === this.entityType.toolNullName?.toLowerCase()) {
+                    this.getToolJoint = polyModel
+                }
             }
         })
         this.animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration

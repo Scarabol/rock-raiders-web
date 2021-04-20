@@ -3,6 +3,8 @@ import { AnimClip } from './AnimClip'
 export class AnimationEntityType {
 
     carryNullName: string = ''
+    depositNullName: string = ''
+    toolNullName: string = ''
     mediumPoly: {} = {}
     highPoly: {} = {}
     fPPoly: {} = {}

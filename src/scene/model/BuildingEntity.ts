@@ -4,7 +4,7 @@ import { Building } from '../../game/model/entity/building/Building'
 import { AnimEntity } from './anim/AnimEntity'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { MathUtils, Matrix4, Vector2, Vector3 } from 'three'
+import { Matrix4, Vector2, Vector3 } from 'three'
 import { GameState } from '../../game/model/GameState'
 import { BuildingUpgraded, EntityAddedEvent, EntityType, MaterialAmountChanged } from '../../event/WorldEvents'
 import { Surface } from './map/Surface'
@@ -15,7 +15,6 @@ import { Ore } from './collect/Ore'
 import { Crystal } from './collect/Crystal'
 import { SurfaceType } from './map/SurfaceType'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
-import degToRad = MathUtils.degToRad
 
 export class BuildingEntity extends AnimEntity implements Selectable {
 
@@ -71,8 +70,17 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     getDropPosition2D(): Vector2 {
-        return this.getPosition2D().add(new Vector2(0, this.type.dropPosDist)
-            .rotateAround(new Vector2(0, 0), this.getHeading() + degToRad(this.type.dropPosAngleDeg)))
+        if (this.getToolJoint) {
+            const worldPos = new Vector3()
+            this.getToolJoint.getWorldPosition(worldPos)
+            return new Vector2(worldPos.x, worldPos.z)
+        } else if (this.depositJoint) {
+            const worldPos = new Vector3()
+            this.depositJoint.getWorldPosition(worldPos)
+            return new Vector2(worldPos.x, worldPos.z)
+        } else {
+            return this.getPosition2D()
+        }
     }
 
     getDropPosition(): Vector3 {
