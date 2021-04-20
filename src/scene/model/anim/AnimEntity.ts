@@ -1,4 +1,4 @@
-import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
+import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
 import { AnimClip } from './AnimClip'
 import { clearTimeoutSafe, iGet } from '../../../core/Util'
 import { AnimationEntityType } from './AnimationEntityType'
@@ -22,6 +22,7 @@ export abstract class AnimEntity extends BaseEntity {
     pickSphereRadius: number = 10 / 2
     carryJoint: Object3D = null
     activity: BaseActivity = null
+    radiusSq: number = 0
 
     protected constructor(entityType: AnimationEntityType) {
         super()
@@ -107,6 +108,9 @@ export abstract class AnimEntity extends BaseEntity {
                 this.group.add(polyPart)
             }
         })
+        const sphere = new Sphere()
+        new Box3().setFromObject(this.group).getBoundingSphere(sphere)
+        this.radiusSq = sphere.radius * sphere.radius
         this.animate(0, onAnimationDone, durationTimeMs)
     }
 

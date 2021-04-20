@@ -10,7 +10,7 @@ import { BaseActivity } from './activities/BaseActivity'
 import { RaiderActivity } from './activities/RaiderActivity'
 import { DynamiteJob, SurfaceJob, SurfaceJobType } from '../../game/model/job/SurfaceJob'
 import { SurfaceType } from './map/SurfaceType'
-import { getRandom } from '../../core/Util'
+import { getRandom, getRandomInclusive } from '../../core/Util'
 import { Crystal } from './collect/Crystal'
 import { Ore } from './collect/Ore'
 import { CollectJob } from '../../game/model/job/CollectJob'
@@ -30,6 +30,7 @@ export class Raider extends FulfillerEntity {
 
     tools: RaiderTool[] = []
     skills: RaiderSkill[] = []
+    slipped: boolean = false
 
     constructor() {
         super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae')
@@ -55,13 +56,11 @@ export class Raider extends FulfillerEntity {
     }
 
     select(): SelectionEvent {
-        this.selectionFrame.visible = true
-        if (!this.selected) {
-            this.selected = true
-            this.changeActivity(RaiderActivity.Stand)
-            return new RaiderSelected(this)
-        }
-        return null
+        this.selectionFrame.visible = !this.slipped
+        if (this.selected || this.slipped) return null
+        this.selected = true
+        this.changeActivity(RaiderActivity.Stand)
+        return new RaiderSelected(this)
     }
 
     getSelectionCenter(): Vector3 {
@@ -83,7 +82,13 @@ export class Raider extends FulfillerEntity {
     moveToClosestTarget(target: PathTarget[]): MoveState {
         const result = super.moveToClosestTarget(target)
         if (result === MoveState.MOVED) {
-            // FIXME check if Raider stepped on a Spider
+            GameState.getNearbySpiders(this).some((spider) => {
+                if (this.group.position.distanceToSquared(spider.group.position) < this.radiusSq + spider.radiusSq) {
+                    this.slip()
+                    spider.onDeath()
+                    return true
+                }
+            })
         } else if (result === MoveState.TARGET_UNREACHABLE) {
             console.log('Entity could not move to job target, stopping job')
             this.stopJob()
@@ -91,12 +96,21 @@ export class Raider extends FulfillerEntity {
         return result
     }
 
+    slip() {
+        if (getRandomInclusive(0, 100) < 10) this.stopJob()
+        this.dropItem()
+        this.slipped = true
+        this.changeActivity(RaiderActivity.Slip, () => {
+            this.slipped = false
+        })
+    }
+
     moveToClosestWorkplace(target: Vector2[]): MoveState {
         return super.moveToClosestTarget(target.map((t) => new PathTarget(t)))
     }
 
     work() {
-        if (!this.job || this.selected) return
+        if (!this.job || this.selected || this.slipped) return
         if (this.job.type === JobType.SURFACE) {
             const surfJob = this.job as SurfaceJob
             const surfaceJobType = surfJob.workType

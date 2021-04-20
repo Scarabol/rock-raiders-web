@@ -52,6 +52,7 @@ export class GameState {
     static collectablesUndiscovered: CollectableEntity[] = []
     static buildingSites: BuildingSite[] = []
     static spiders: SmallSpider[] = []
+    static spidersBySurface: Map<Surface, SmallSpider[]> = new Map()
     static bats: Bat[] = []
     static totalCrystals: number = 0
     static totalOres: number = 0
@@ -86,6 +87,7 @@ export class GameState {
         this.collectablesUndiscovered = []
         this.buildingSites = []
         this.spiders = []
+        this.spidersBySurface = new Map()
         this.bats = []
         this.totalCrystals = 0
         this.totalOres = 0
@@ -240,6 +242,19 @@ export class GameState {
 
     static get totalOre(): number {
         return this.numOre + this.numBrick * 5
+    }
+
+    static getNearbySpiders(entity: BaseEntity): SmallSpider[] {
+        const terrain = entity.worldMgr.sceneManager.terrain
+        const currentSurface = terrain.getSurfaceFromWorld(entity.getPosition())
+        const nearbySpiders: SmallSpider[] = []
+        for (let x = currentSurface.x; x <= currentSurface.x + 1; x++) {
+            for (let y = currentSurface.y; y <= currentSurface.y + 1; y++) {
+                const surface = terrain.getSurface(x, y)
+                nearbySpiders.push(...(GameState.spidersBySurface.get(surface) || []))
+            }
+        }
+        return nearbySpiders
     }
 
 }

@@ -27,7 +27,13 @@ export class SmallSpider extends Monster {
     }
 
     private static onMove(spider: SmallSpider) {
+        const prevSurface = spider.getCurrentSurface()
         if (spider.target && spider.moveToTarget(spider.target) === MoveState.MOVED) {
+            const nextSurface = spider.getCurrentSurface()
+            if (prevSurface !== nextSurface) {
+                (GameState.spidersBySurface.get(prevSurface) || []).remove(spider)
+                GameState.spidersBySurface.getOrUpdate(nextSurface, () => []).push(spider)
+            }
             if (!spider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.getPosition()).surfaceType.floor) {
                 spider.onDeath()
             } else {
@@ -60,7 +66,8 @@ export class SmallSpider extends Monster {
     onDeath() {
         this.onLevelEnd()
         this.worldMgr.sceneManager.scene.remove(this.group)
-        GameState.spiders.remove(this)
+        GameState.spiders.remove(this);
+        (GameState.spidersBySurface.get(this.getCurrentSurface()) || []).remove(this)
     }
 
     onLevelEnd() {

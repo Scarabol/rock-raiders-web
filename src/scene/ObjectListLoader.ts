@@ -93,9 +93,11 @@ export class ObjectListLoader {
                 spider.worldMgr = worldMgr
                 spider.setActivity(MonsterActivity.Stand)
                 spider.group.position.set(worldX, terrainY, worldZ)
-                spider.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position).discovered
+                const currentSurface = spider.getCurrentSurface()
+                spider.group.visible = currentSurface.discovered
                 worldMgr.sceneManager.scene.add(spider.group)
                 GameState.spiders.push(spider)
+                GameState.spidersBySurface.getOrUpdate(currentSurface, () => []).push(spider)
                 spider.startMoving()
             } else if (lTypeName === 'Bat'.toLowerCase()) {
                 const bat = new Bat()
