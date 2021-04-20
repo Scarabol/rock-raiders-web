@@ -5,6 +5,7 @@ import { SurfaceType } from './model/map/SurfaceType'
 import { WorldManager } from './WorldManager'
 import { TILESIZE } from '../main'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { Graph } from './model/map/astar'
 
 export class TerrainLoader {
 
@@ -87,6 +88,8 @@ export class TerrainLoader {
                 surface.surfaceType = SurfaceType.GROUND
             }
         }))
+
+        terrain.graphWalk = new Graph(terrain.surfaces.map(c => c.map(s => s.isWalkable() ? s.hasRubble() ? 4 : 1 : 0)))
 
         // crumble unsupported walls
         terrain.surfaces.forEach((c) => c.forEach((s) => {

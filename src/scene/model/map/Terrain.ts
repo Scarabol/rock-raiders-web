@@ -63,11 +63,9 @@ export class Terrain {
     updateSurfaceMeshes(force: boolean = false) {
         this.surfaces.forEach((r) => r.forEach((s) => s.updateMesh(force)))
         this.floorGroup.updateWorldMatrix(true, true) // otherwise ray intersection is not working before rendering
-
-        // FIXME performance: update specific graph entry, when surface type changes
-        this.graphWalk = new Graph(this.surfaces.map(c => c.map(s => s.isWalkable() ? s.hasRubble() ? 4 : 1 : 0)))
-        console.log('Cached paths cleared')
+        this.graphWalk.init()
         this.cachedPaths.clear()
+        console.log('Cached paths cleared')
     }
 
     findPath(start: Vector2, target: PathTarget): TerrainPath {

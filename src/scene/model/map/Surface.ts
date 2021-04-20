@@ -223,6 +223,7 @@ export class Surface implements Selectable {
 
         this.updateTexture()
         this.updateJobColor()
+        this.terrain.graphWalk.grid[this.x][this.y].weight = this.isWalkable() ? this.hasRubble() ? 4 : 1 : 0
     }
 
     cancelReinforceJobs() {
