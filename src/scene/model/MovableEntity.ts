@@ -31,10 +31,6 @@ export abstract class MovableEntity extends AnimEntity {
         return this.stats.RouteSpeed[this.level] * (this.animation?.transcoef || 1) * (this.isOnPath() ? this.stats.PathCoef : 1)
     }
 
-    moveToTarget(target: Vector2): MoveState {
-        return this.moveToClosestTarget([new PathTarget(target)])
-    }
-
     moveToClosestTarget(target: PathTarget[]): MoveState {
         if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.targetPosition))) {
             const paths = target.map((t) => this.findPathToTarget(t))

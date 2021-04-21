@@ -105,7 +105,7 @@ export class ObjectListLoader {
                 bat.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(bat.group.position).discovered
                 worldMgr.sceneManager.scene.add(bat.group)
                 GameState.bats.push(bat)
-                bat.startMoving()
+                bat.startRandomMove()
             } else {
                 // TODO implement remaining object types
                 console.warn('Object type ' + olObject.type + ' not yet implemented')

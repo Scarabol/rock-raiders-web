@@ -2,17 +2,13 @@ import { Monster } from './Monster'
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { Vector2 } from 'three'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../../main'
-import { clearTimeoutSafe, getRandom, getRandomInclusive } from '../../../../core/Util'
+import { getRandom, getRandomInclusive } from '../../../../core/Util'
 import { SurfaceType } from '../../../../scene/model/map/SurfaceType'
 import { GameState } from '../../GameState'
-import { MonsterActivity } from '../../../../scene/model/activities/MonsterActivity'
-import { BaseActivity } from '../../../../scene/model/activities/BaseActivity'
 import { MoveState } from '../../../../scene/model/MoveState'
+import { PathTarget } from '../../../../scene/model/PathTarget'
 
 export class SmallSpider extends Monster {
-
-    moveTimeout
-    target: Vector2 = null
 
     constructor() {
         super(ResourceManager.getAnimationEntityType('Creatures/SpiderSB/SpiderSB.ae'))
@@ -28,7 +24,7 @@ export class SmallSpider extends Monster {
 
     private static onMove(spider: SmallSpider) {
         const prevSurface = spider.getCurrentSurface()
-        if (spider.target && spider.moveToTarget(spider.target) === MoveState.MOVED) {
+        if (spider.target && spider.moveToClosestTarget([spider.target]) === MoveState.MOVED) {
             const nextSurface = spider.getCurrentSurface()
             if (prevSurface !== nextSurface) {
                 (GameState.spidersBySurface.get(prevSurface) || []).remove(spider)
@@ -42,13 +38,13 @@ export class SmallSpider extends Monster {
         } else {
             spider.changeActivity()
             spider.moveTimeout = setTimeout(() => {
-                spider.target = spider.findSolidTarget()
+                spider.target = spider.findTarget()
                 SmallSpider.onMove(spider)
             }, 1000 + getRandom(9000))
         }
     }
 
-    private findSolidTarget(): Vector2 {
+    private findTarget(): PathTarget {
         const terrain = this.worldMgr.sceneManager.terrain
         const currentCenter = terrain.getSurfaceFromWorld(this.getPosition()).getCenterWorld()
         for (let c = 0; c < 20; c++) {
@@ -56,7 +52,7 @@ export class SmallSpider extends Monster {
             const targetZ = getRandomInclusive(currentCenter.z - TILESIZE / 2, currentCenter.z + TILESIZE / 2)
             const surfaceType = terrain.getSurfaceFromWorldXZ(targetX, targetZ).surfaceType
             if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA) { // TODO evaluate CrossLand, CrossLava, CrossWater from stats
-                return new Vector2(targetX, targetZ)
+                return new PathTarget(new Vector2(targetX, targetZ))
             }
         }
         console.warn('Could not find a solid target')
@@ -65,17 +61,8 @@ export class SmallSpider extends Monster {
 
     onDeath() {
         this.onLevelEnd()
-        this.worldMgr.sceneManager.scene.remove(this.group)
         GameState.spiders.remove(this);
         (GameState.spidersBySurface.get(this.getCurrentSurface()) || []).remove(this)
-    }
-
-    onLevelEnd() {
-        this.moveTimeout = clearTimeoutSafe(this.moveTimeout)
-    }
-
-    getRouteActivity(): BaseActivity {
-        return MonsterActivity.Route
     }
 
 }

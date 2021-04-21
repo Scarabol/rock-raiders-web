@@ -1,7 +1,20 @@
 import { MovableEntity } from '../../../../scene/model/MovableEntity'
+import { PathTarget } from '../../../../scene/model/PathTarget'
+import { clearTimeoutSafe } from '../../../../core/Util'
+import { MonsterActivity } from '../../../../scene/model/activities/MonsterActivity'
 
 export abstract class Monster extends MovableEntity {
 
-    abstract onLevelEnd()
+    moveTimeout: NodeJS.Timeout
+    target: PathTarget = null
+
+    onLevelEnd() {
+        this.moveTimeout = clearTimeoutSafe(this.moveTimeout)
+        this.worldMgr.sceneManager.scene.remove(this.group)
+    }
+
+    getRouteActivity(): MonsterActivity {
+        return MonsterActivity.Route
+    }
 
 }
