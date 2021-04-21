@@ -1,6 +1,6 @@
-import { Vector2 } from 'three'
 import { Job } from './Job'
 import { JobType } from './JobType'
+import { PathTarget } from '../../../scene/model/PathTarget'
 
 export class EatJob extends Job {
 
@@ -8,7 +8,7 @@ export class EatJob extends Job {
         super(JobType.EAT)
     }
 
-    getWorkplaces(): Vector2[] {
+    getWorkplaces(): PathTarget[] {
         return []
     }
 

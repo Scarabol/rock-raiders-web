@@ -1,18 +1,19 @@
 import { Vector2 } from 'three'
 import { Job } from './Job'
 import { JobType } from './JobType'
+import { PathTarget } from '../../../scene/model/PathTarget'
 
 export class MoveJob extends Job {
 
-    target: Vector2
+    target: PathTarget[]
 
     constructor(target: Vector2) {
         super(JobType.MOVE)
-        this.target = target
+        this.target = [new PathTarget(target)]
     }
 
-    getWorkplaces(): Vector2[] {
-        return [this.target.clone()]
+    getWorkplaces(): PathTarget[] {
+        return this.target
     }
 
 }

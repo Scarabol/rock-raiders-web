@@ -1,10 +1,10 @@
-import { Vector2 } from 'three'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
 import { RaiderTool } from '../../../scene/model/RaiderTool'
 import { JobType } from './JobType'
 import { JobState } from './JobState'
 import { PriorityIdentifier } from './PriorityIdentifier'
+import { PathTarget } from '../../../scene/model/PathTarget'
 
 export abstract class Job {
 
@@ -51,7 +51,7 @@ export abstract class Job {
         this.jobstate = JobState.COMPLETE
     }
 
-    abstract getWorkplaces(): Vector2[];
+    abstract getWorkplaces(): PathTarget[];
 
 }
 

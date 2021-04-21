@@ -24,7 +24,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near
 
-- Carry energy crystals primarily to power stations
 - Electric fences and power consumption/outage
 - Air consumption and production
 - Actual building and more training options

@@ -9,6 +9,7 @@ import { Carryable } from './collect/Carryable'
 import { SelectionEvent } from '../../event/LocalEvents'
 import { RaiderSkill } from './RaiderSkill'
 import { RaiderTool } from './RaiderTool'
+import { PathTarget } from './PathTarget'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
@@ -18,6 +19,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     job: Job = null
     followUpJob: Job = null
     carries: Carryable = null
+    jobWorkplaces: PathTarget[] = []
 
     protected constructor(selectionType: SelectionType, aeFilename: string) {
         super(ResourceManager.getAnimationEntityType(aeFilename))
@@ -51,6 +53,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (this.job) this.job.assign(this)
         this.followUpJob = followUpJob
         if (this.followUpJob) this.followUpJob.assign(this)
+        this.jobWorkplaces = this.job.getWorkplaces()
     }
 
     stopJob() {
@@ -60,6 +63,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (this.followUpJob) this.followUpJob.unassign(this)
         this.job = null
         this.followUpJob = null
+        this.jobWorkplaces = []
         this.changeActivity()
     }
 

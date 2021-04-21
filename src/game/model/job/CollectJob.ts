@@ -1,9 +1,9 @@
 import { CollectableEntity } from '../../../scene/model/collect/CollectableEntity'
-import { Vector2 } from 'three'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { PublicJob } from './Job'
 import { JobType } from './JobType'
 import { PriorityIdentifier } from './PriorityIdentifier'
+import { PathTarget } from '../../../scene/model/PathTarget'
 
 export class CollectJob extends PublicJob {
 
@@ -14,8 +14,8 @@ export class CollectJob extends PublicJob {
         this.item = item
     }
 
-    getWorkplaces(): Vector2[] {
-        return [this.item.getPosition2D()]
+    getWorkplaces(): PathTarget[] {
+        return [new PathTarget(this.item.getPosition2D())]
     }
 
     isQualified(fulfiller: FulfillerEntity) {

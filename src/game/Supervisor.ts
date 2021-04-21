@@ -17,6 +17,7 @@ import { JobState } from './model/job/JobState'
 import { PathTarget } from '../scene/model/PathTarget'
 import { EventKey } from '../event/EventKeyEnum'
 import { SurfaceJobType } from './model/job/SurfaceJobType'
+import { Surface } from '../scene/model/map/Surface'
 
 export class Supervisor {
 
@@ -73,16 +74,19 @@ export class Supervisor {
             let closestTrainingRaider: Raider = null
             let closestTrainingRaiderIndex: number = null
             let minTrainingDistance: number = null
-            let closestTrainingPath: Vector2 = null
+            let closestTrainingArea: Surface = null
             let closestNeededTraining: RaiderSkill = null
             unemployedRaider.forEach((raider, index) => {
-                const raiderPosition2D = raider.getPosition2D()
                 if (job.isQualified(raider)) {
-                    const dist = job.getWorkplaces().map((p) => p.distanceToSquared(raiderPosition2D)).sort((l, r) => l - r)[0]
-                    if (minDistance === null || dist < minDistance) {
-                        closestRaider = raider
-                        closestRaiderIndex = index
-                        minDistance = dist
+                    const pathToJob = job.getWorkplaces().map((b) => raider.findPathToTarget(b))
+                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                    if (pathToJob) {
+                        const dist = pathToJob.lengthSq // TODO use precalculated path to job
+                        if (minDistance === null || dist < minDistance) {
+                            closestRaider = raider
+                            closestRaiderIndex = index
+                            minDistance = dist
+                        }
                     }
                 } else {
                     const raiderPosition = raider.getPosition()
@@ -113,7 +117,7 @@ export class Supervisor {
                                     closestTrainingRaider = raider
                                     closestTrainingRaiderIndex = index
                                     minTrainingDistance = dist
-                                    closestTrainingPath = pathToTraining.targetPosition // TODO use precalculated path to training
+                                    closestTrainingArea = raider.worldMgr.sceneManager.terrain.getSurfaceFromWorld2D(pathToTraining.targetPosition) // TODO use precalculated path to training
                                     closestNeededTraining = neededTraining
                                 }
                             }
@@ -128,7 +132,7 @@ export class Supervisor {
                 closestToolRaider.setJob(new GetToolJob(closestToolstationPosition, closestNeededTool), job)
                 unemployedRaider.splice(closestToolRaiderIndex, 1)
             } else if (closestTrainingRaider) {
-                closestTrainingRaider.setJob(new TrainJob(closestTrainingPath, closestNeededTraining), job)
+                closestTrainingRaider.setJob(new TrainJob(closestTrainingArea, closestNeededTraining), job)
                 unemployedRaider.splice(closestTrainingRaiderIndex, 1)
             }
         })

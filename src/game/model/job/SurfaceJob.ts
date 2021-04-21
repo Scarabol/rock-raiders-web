@@ -1,6 +1,5 @@
 import { Surface } from '../../../scene/model/map/Surface'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
-import { Vector2 } from 'three'
 import { Dynamite } from '../../../scene/model/collect/Dynamite'
 import { PublicJob } from './Job'
 import { SurfaceType } from '../../../scene/model/map/SurfaceType'
@@ -10,6 +9,7 @@ import { RaiderTool } from '../../../scene/model/RaiderTool'
 import { JobType } from './JobType'
 import { PriorityIdentifier } from './PriorityIdentifier'
 import { SurfaceJobType } from './SurfaceJobType'
+import { PathTarget } from '../../../scene/model/PathTarget'
 
 export class SurfaceJob extends PublicJob {
 
@@ -35,12 +35,12 @@ export class SurfaceJob extends PublicJob {
         return this.workType.requiredSkill
     }
 
-    getWorkplaces(): Vector2[] {
+    getWorkplaces(): PathTarget[] {
         if (this.workType === SurfaceJobType.CLEAR_RUBBLE) {
             const rubblePositions = this.surface.rubblePositions
-            return rubblePositions.length > 0 ? [rubblePositions[0]] : [] // use first (no need to optimize)
+            return rubblePositions.length > 0 ? [new PathTarget(rubblePositions[0])] : [] // use first (no need to optimize)
         } else {
-            return this.surface.getDigPositions()
+            return this.surface.getDigPositions().map((p) => new PathTarget(p))
         }
     }
 
@@ -74,8 +74,8 @@ export class DynamiteJob extends SurfaceJob {
         this.dynamite = dynamite
     }
 
-    getWorkplaces(): Vector2[] {
-        return [this.dynamite.getPosition2D()]
+    getWorkplaces(): PathTarget[] {
+        return [new PathTarget(this.dynamite.getPosition2D())]
     }
 
     onJobComplete() {

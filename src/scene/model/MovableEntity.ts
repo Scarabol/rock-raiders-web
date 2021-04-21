@@ -32,19 +32,22 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
-        if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.targetPosition))) {
+        if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.target.targetLocation))) {
             const paths = target.map((t) => this.findPathToTarget(t))
                 .sort((l, r) => l.lengthSq - r.lengthSq)
             this.currentPath = paths.length > 0 ? paths[0] : null
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
         const step = this.determineStep()
-        if (step.targetReached) return MoveState.TARGET_REACHED
-        this.changeActivity(this.getRouteActivity())
-        this.group.position.add(step.vec)
-        const nextLocation = this.currentPath.firstLocation
-        this.group.lookAt(new Vector3(nextLocation.x, this.group.position.y, nextLocation.y))
-        return MoveState.MOVED
+        if (step.targetReached || this.currentPath.target.isInArea(this.getPosition2D())) {
+            return MoveState.TARGET_REACHED
+        } else {
+            this.group.position.add(step.vec)
+            this.changeActivity(this.getRouteActivity()) // only change when actually moving
+            const nextLocation = this.currentPath.firstLocation
+            this.group.lookAt(new Vector3(nextLocation.x, this.group.position.y, nextLocation.y))
+            return MoveState.MOVED
+        }
     }
 
     abstract getRouteActivity(): AnimEntityActivity
