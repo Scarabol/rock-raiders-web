@@ -50,7 +50,6 @@ export class BuildingSite {
         const needed = this.neededByType[collectableType] || 0
         this.onSiteByType[collectableType] = this.onSiteByType[collectableType] || []
         if (this.onSiteByType[collectableType].length < needed) {
-            item.group.position.copy(this.getPosition())
             item.worldMgr.sceneManager.scene.add(item.group)
             this.onSiteByType[collectableType].push(item)
             this.checkComplete()
