@@ -36,21 +36,21 @@ export class WadLoader {
     }
 
     loadWadTexture(name: string, callback: (obj: ImageData) => any) {
-        function isTranslucentTexture(name): boolean { // TODO check for better approach
-            const filename = getFilename(name)
+        function isTranslucentTexture(filename): boolean { // TODO check for better approach
             return !!filename.match(/\d\d\d\..+$/i) || !!filename.match(/^trans/i)
                 || !!filename.match(/telepulse/i) || !!filename.match(/^t_/i)
                 || !!filename.includes('crystalglow') || !!filename.match(/^glin/i)
                 || !!filename.match(/glow.bmp/i) || !!filename.match(/spankle/i)
         }
 
-        function isAlphaTexture(name): boolean { // TODO check for better approach
-            return !!getFilename(name).match(/^a.+/i)
+        function isAlphaTexture(filename): boolean { // TODO check for better approach
+            return !!filename.match(/^a.+/i) || !!filename.match(/\d\.bmp/i) // later one used with dynamite
         }
 
         const data = this.wad0File.getEntryData(name)
         const imgData = AlphaBitmapDecoder.parse(data)
-        if (isTranslucentTexture(name)) {
+        const filename = getFilename(name)
+        if (isTranslucentTexture(filename)) {
             for (let n = 0; n < imgData.data.length; n += 4) {
                 if (imgData.data[n] === 255 && imgData.data[n + 1] === 255 && imgData.data[n + 2] === 255) {
                     // TODO BitmapDecoder not working for sequence textures, surrounding color is white instead of black
@@ -59,7 +59,7 @@ export class WadLoader {
                     imgData.data[n + 3] = Math.max(imgData.data[n], imgData.data[n + 1], imgData.data[n + 2])
                 }
             }
-        } else if (isAlphaTexture(name)) {
+        } else if (isAlphaTexture(filename)) {
             const alpha = { // last pixel defines alpha color
                 r: imgData.data[imgData.data.length - 4],
                 g: imgData.data[imgData.data.length - 3],
