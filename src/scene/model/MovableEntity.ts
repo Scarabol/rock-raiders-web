@@ -38,14 +38,14 @@ export abstract class MovableEntity extends AnimEntity {
             this.currentPath = paths.length > 0 ? paths[0] : null
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
+        const nextLocation = this.currentPath.firstLocation
+        this.group.lookAt(new Vector3(nextLocation.x, this.group.position.y, nextLocation.y))
         const step = this.determineStep()
         if (step.targetReached || this.currentPath.target.isInArea(this.getPosition2D())) {
             return MoveState.TARGET_REACHED
         } else {
             this.group.position.add(step.vec)
             this.changeActivity(this.getRouteActivity()) // only change when actually moving
-            const nextLocation = this.currentPath.firstLocation
-            this.group.lookAt(new Vector3(nextLocation.x, this.group.position.y, nextLocation.y))
             return MoveState.MOVED
         }
     }
