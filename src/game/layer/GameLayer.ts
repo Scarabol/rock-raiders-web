@@ -8,12 +8,13 @@ import { JobCreateEvent } from '../../event/WorldEvents'
 import { Surface } from '../../scene/model/map/Surface'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { FulfillerEntity } from '../../scene/model/FulfillerEntity'
-import { SurfaceJob } from '../model/job/SurfaceJob'
+import { SurfaceJob } from '../model/job/surface/SurfaceJob'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { DEV_MODE } from '../../main'
 import { MoveJob } from '../model/job/MoveJob'
 import { Vector2 } from 'three'
-import { SurfaceJobType } from '../model/job/SurfaceJobType'
+import { DrillJob } from '../model/job/surface/DrillJob'
+import { ClearRubbleJob } from '../model/job/surface/ClearRubbleJob'
 
 export class GameLayer extends ScreenLayer {
 
@@ -46,9 +47,9 @@ export class GameLayer extends ScreenLayer {
                     const surface = this.worldMgr.sceneManager.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
                     if (surface) {
                         if (surface.isDrillable()) {
-                            this.createSurfaceJob(SurfaceJobType.DRILL, surface, intersectionPoint)
+                            this.createSurfaceJob(new DrillJob(surface), surface, intersectionPoint)
                         } else if (surface.hasRubble()) {
-                            this.createSurfaceJob(SurfaceJobType.CLEAR_RUBBLE, surface, intersectionPoint)
+                            this.createSurfaceJob(new ClearRubbleJob(surface), surface, intersectionPoint)
                         } else if (surface.isWalkable()) {
                             GameState.selectedEntities.forEach((raider: Raider) => raider.setJob(new MoveJob(intersectionPoint)))
                             if (GameState.selectedEntities.length > 0) EventBus.publishEvent(new EntityDeselected())
@@ -82,8 +83,7 @@ export class GameLayer extends ScreenLayer {
         return false
     }
 
-    createSurfaceJob(surfaceJobType: SurfaceJobType, surface: Surface, intersectionPoint: Vector2) {
-        const surfJob = new SurfaceJob(surfaceJobType, surface)
+    createSurfaceJob(surfJob: SurfaceJob, surface: Surface, intersectionPoint: Vector2) {
         GameState.selectedEntities.forEach((e: FulfillerEntity) => {
             if (surfJob.isQualified(e)) {
                 e.setJob(surfJob)

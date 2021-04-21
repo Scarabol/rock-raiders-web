@@ -2,7 +2,7 @@ import { Panel } from '../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 import { GameState } from '../../model/GameState'
 import { Surface } from '../../../scene/model/map/Surface'
-import { SurfaceJob } from '../../model/job/SurfaceJob'
+import { SurfaceJob } from '../../model/job/surface/SurfaceJob'
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent, SpawnDynamiteEvent } from '../../../event/WorldEvents'
 import { EntityDeselected } from '../../../event/LocalEvents'
@@ -10,18 +10,20 @@ import { IconPanelButton } from './IconPanelButton'
 import { Building } from '../../model/entity/building/Building'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
 import { EventKey } from '../../../event/EventKeyEnum'
-import { SurfaceJobType } from '../../model/job/SurfaceJobType'
+import { JobType } from '../../model/job/JobType'
+import { DrillJob } from '../../model/job/surface/DrillJob'
+import { ReinforceJob } from '../../model/job/surface/ReinforceJob'
 
 export class SelectWallPanel extends SelectBasePanel {
 
     constructor(onBackPanel: Panel) {
         super(4, onBackPanel)
-        const itemDrill = this.addWallMenuItem('Interface_MenuItem_Dig', SurfaceJobType.DRILL)
+        const itemDrill = this.addWallMenuItem('Interface_MenuItem_Dig', JobType.DRILL, (s) => new DrillJob(s))
         itemDrill.isDisabled = () => !(GameState.selectedSurface?.isDrillable()) &&
             !(GameState.selectedSurface?.isDrillableHard()) // TODO implement vehicle check for drill hard skill
-        const itemReinforce = this.addWallMenuItem('Interface_MenuItem_Reinforce', SurfaceJobType.REINFORCE)
+        const itemReinforce = this.addWallMenuItem('Interface_MenuItem_Reinforce', JobType.REINFORCE, (s) => new ReinforceJob(s))
         itemReinforce.isDisabled = () => !(GameState.selectedSurface?.isReinforcable())
-        const itemDynamite = this.addWallMenuItem('Interface_MenuItem_Dynamite', SurfaceJobType.BLOW)
+        const itemDynamite = this.addWallMenuItem('Interface_MenuItem_Dynamite', JobType.BLOW, null)
         itemDynamite.isDisabled = () => !GameState.hasBuildingWithUpgrades(Building.TOOLSTATION, 2) &&
             !GameState.raiders.some((r) => r.hasSkill(RaiderSkill.DEMOLITION))
         const itemDeselect = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig')
@@ -39,15 +41,15 @@ export class SelectWallPanel extends SelectBasePanel {
         })
     }
 
-    addWallMenuItem(itemKey: string, jobType: SurfaceJobType): IconPanelButton {
+    addWallMenuItem(itemKey: string, jobType: JobType, createJob: (surface: Surface) => SurfaceJob): IconPanelButton {
         const item = this.addMenuItem('InterfaceImages', itemKey)
         item.onClick = () => {
             const selectedSurface = GameState.selectedSurface
             if (selectedSurface) {
-                if (jobType === SurfaceJobType.BLOW) {
+                if (jobType === JobType.BLOW) {
                     EventBus.publishEvent(new SpawnDynamiteEvent(selectedSurface))
                 } else if (!selectedSurface.hasJobType(jobType)) {
-                    EventBus.publishEvent(new JobCreateEvent(new SurfaceJob(jobType, selectedSurface)))
+                    EventBus.publishEvent(new JobCreateEvent(createJob(selectedSurface)))
                 }
                 EventBus.publishEvent(new EntityDeselected())
             }

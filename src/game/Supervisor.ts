@@ -10,14 +10,14 @@ import { Building } from './model/entity/building/Building'
 import { GetToolJob } from './model/job/GetToolJob'
 import { TrainJob } from './model/job/TrainJob'
 import { clearIntervalSafe } from '../core/Util'
-import { SurfaceJob } from './model/job/SurfaceJob'
 import { RaiderSkill } from '../scene/model/RaiderSkill'
 import { RaiderTool } from '../scene/model/RaiderTool'
 import { JobState } from './model/job/JobState'
 import { PathTarget } from '../scene/model/PathTarget'
 import { EventKey } from '../event/EventKeyEnum'
-import { SurfaceJobType } from './model/job/SurfaceJobType'
+import { JobType } from './model/job/JobType'
 import { Surface } from '../scene/model/map/Surface'
+import { ClearRubbleJob } from './model/job/surface/ClearRubbleJob'
 
 export class Supervisor {
 
@@ -146,8 +146,8 @@ export class Supervisor {
                 for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                     for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
                         const surface = raider.worldMgr.sceneManager.terrain.getSurfaceOrNull(x, y)
-                        if (!(surface?.hasRubble()) || !surface.discovered || surface.hasJobType(SurfaceJobType.CLEAR_RUBBLE)) continue
-                        const surfJob = new SurfaceJob(SurfaceJobType.CLEAR_RUBBLE, surface)
+                        if (!(surface?.hasRubble()) || !surface.discovered || surface.hasJobType(JobType.CLEAR_RUBBLE)) continue
+                        const surfJob = new ClearRubbleJob(surface)
                         if (surfJob.isQualified(raider)) {
                             raider.setJob(surfJob)
                         } else {

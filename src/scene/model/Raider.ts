@@ -8,7 +8,9 @@ import { EntityAddedEvent, EntityType, OreFoundEvent, RaiderTrained } from '../.
 import { CrystalFoundEvent, RaiderDiscoveredEvent } from '../../event/WorldLocationEvent'
 import { BaseActivity } from './activities/BaseActivity'
 import { RaiderActivity } from './activities/RaiderActivity'
-import { DynamiteJob, SurfaceJob } from '../../game/model/job/SurfaceJob'
+import { DynamiteJob } from '../../game/model/job/surface/DynamiteJob'
+import { DrillJob } from '../../game/model/job/surface/DrillJob'
+import { ClearRubbleJob } from '../../game/model/job/surface/ClearRubbleJob'
 import { SurfaceType } from './map/SurfaceType'
 import { getRandom, getRandomInclusive } from '../../core/Util'
 import { Crystal } from './collect/Crystal'
@@ -24,7 +26,6 @@ import { JobType } from '../../game/model/job/JobType'
 import { TerrainPath } from './map/TerrainPath'
 import { PathTarget } from './PathTarget'
 import { CollectPathTarget } from './CollectionTarget'
-import { SurfaceJobType } from '../../game/model/job/SurfaceJobType'
 import degToRad = MathUtils.degToRad
 
 export class Raider extends FulfillerEntity {
@@ -106,87 +107,85 @@ export class Raider extends FulfillerEntity {
         })
     }
 
-    moveToClosestWorkplace(): MoveState {
-        return this.moveToClosestTarget(this.jobWorkplaces)
+    moveToClosestWorkplace(): boolean {
+        return this.moveToClosestTarget(this.jobWorkplaces) === MoveState.TARGET_REACHED
     }
 
     work() {
         if (!this.job || this.selected || this.slipped) return
-        if (this.job.type === JobType.SURFACE) {
-            const surfJob = this.job as SurfaceJob
-            const surfaceJobType = surfJob.workType
-            if (surfaceJobType === SurfaceJobType.DRILL) {
-                if (this.moveToClosestWorkplace() === MoveState.TARGET_REACHED) {
-                    let drillTimeMs = null
-                    if (surfJob.surface.surfaceType === SurfaceType.HARD_ROCK) {
-                        drillTimeMs = this.stats.HardDrillTime[this.level] * 1000
-                    } else if (surfJob.surface.surfaceType === SurfaceType.LOOSE_ROCK) {
-                        drillTimeMs = this.stats.LooseDrillTime[this.level] * 1000
-                    } else if (surfJob.surface.surfaceType === SurfaceType.DIRT) {
-                        drillTimeMs = this.stats.SoilDrillTime[this.level] * 1000
-                    } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM ||
-                        surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                        drillTimeMs = this.stats.SeamDrillTime[this.level] * 1000
-                    }
-                    if (drillTimeMs === 0) console.warn('According to cfg this entity cannot drill this material')
-                    const focusPoint = surfJob.surface.getCenterWorld()
-                    focusPoint.y = this.group.position.y
-                    this.group.lookAt(focusPoint)
-                    this.changeActivity(RaiderActivity.Drill, () => {
-                        if (surfJob.surface.seamLevel > 0) {
-                            surfJob.surface.seamLevel--
-                            const vec = new Vector2().copy(this.getPosition2D()).sub(surfJob.surface.getCenterWorld2D())
-                                .multiplyScalar(0.3 + getRandom(3) / 10)
-                                .rotateAround(new Vector2(0, 0), degToRad(-10 + getRandom(20)))
-                                .add(this.getPosition2D())
-                            if (surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                                const crystal = this.worldMgr.addCollectable(new Crystal(), vec)
-                                EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
-                            } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM) {
-                                this.worldMgr.addCollectable(new Ore(), vec)
-                                EventBus.publishEvent(new OreFoundEvent())
-                            }
-                            this.changeActivity()
-                        } else {
-                            this.completeJob()
+        if (this.job.type === JobType.DRILL) {
+            const surfJob = this.job as DrillJob
+            if (this.moveToClosestWorkplace()) {
+                let drillTimeMs = null
+                if (surfJob.surface.surfaceType === SurfaceType.HARD_ROCK) {
+                    drillTimeMs = this.stats.HardDrillTime[this.level] * 1000
+                } else if (surfJob.surface.surfaceType === SurfaceType.LOOSE_ROCK) {
+                    drillTimeMs = this.stats.LooseDrillTime[this.level] * 1000
+                } else if (surfJob.surface.surfaceType === SurfaceType.DIRT) {
+                    drillTimeMs = this.stats.SoilDrillTime[this.level] * 1000
+                } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM ||
+                    surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
+                    drillTimeMs = this.stats.SeamDrillTime[this.level] * 1000
+                }
+                if (drillTimeMs === 0) console.warn('According to cfg this entity cannot drill this material')
+                const focusPoint = surfJob.surface.getCenterWorld()
+                focusPoint.y = this.group.position.y
+                this.group.lookAt(focusPoint)
+                this.changeActivity(RaiderActivity.Drill, () => {
+                    if (surfJob.surface.seamLevel > 0) {
+                        surfJob.surface.seamLevel--
+                        const vec = new Vector2().copy(this.getPosition2D()).sub(surfJob.surface.getCenterWorld2D())
+                            .multiplyScalar(0.3 + getRandom(3) / 10)
+                            .rotateAround(new Vector2(0, 0), degToRad(-10 + getRandom(20)))
+                            .add(this.getPosition2D())
+                        if (surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
+                            const crystal = this.worldMgr.addCollectable(new Crystal(), vec)
+                            EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
+                        } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM) {
+                            this.worldMgr.addCollectable(new Ore(), vec)
+                            EventBus.publishEvent(new OreFoundEvent())
                         }
-                    }, drillTimeMs)
-                }
-            } else if (surfaceJobType === SurfaceJobType.CLEAR_RUBBLE) {
-                if (this.moveToClosestWorkplace() === MoveState.TARGET_REACHED) {
-                    this.changeActivity(RaiderActivity.Clear, () => {
                         this.changeActivity()
-                        this.job.onJobComplete()
-                        this.jobWorkplaces = this.job.getWorkplaces()
-                        if (!surfJob.surface.hasRubble()) this.stopJob()
-                    })
-                }
-            } else if (surfaceJobType === SurfaceJobType.REINFORCE) {
-                if (this.moveToClosestWorkplace() === MoveState.TARGET_REACHED) {
-                    this.changeActivity(RaiderActivity.Reinforce, () => {
+                    } else {
                         this.completeJob()
-                    }, 2700)
-                }
-            } else if (surfaceJobType === SurfaceJobType.BLOW) {
-                const bj = this.job as DynamiteJob
-                if (this.carries !== bj.dynamite) {
-                    this.dropItem()
-                    if (this.moveToClosestWorkplace() === MoveState.TARGET_REACHED) {
-                        this.changeActivity(RaiderActivity.Collect, () => {
-                            this.pickupItem(bj.dynamite)
-                        })
                     }
-                } else if (this.moveToClosestTarget(bj.surface.getDigPositions().map((p) => new PathTarget(p))) === MoveState.TARGET_REACHED) {
-                    this.changeActivity(RaiderActivity.Place, () => {
-                        this.completeJob()
+                }, drillTimeMs)
+            }
+        } else if (this.job.type === JobType.CLEAR_RUBBLE) {
+            const surfJob = this.job as ClearRubbleJob
+            if (this.moveToClosestWorkplace()) {
+                this.changeActivity(RaiderActivity.Clear, () => {
+                    this.changeActivity()
+                    this.job.onJobComplete()
+                    this.jobWorkplaces = this.job.getWorkplaces()
+                    if (!surfJob.surface.hasRubble()) this.stopJob()
+                })
+            }
+        } else if (this.job.type === JobType.REINFORCE) {
+            if (this.moveToClosestWorkplace()) {
+                this.changeActivity(RaiderActivity.Reinforce, () => {
+                    this.completeJob()
+                }, 2700)
+            }
+        } else if (this.job.type === JobType.BLOW) {
+            const bj = this.job as DynamiteJob
+            if (this.carries !== bj.dynamite) {
+                this.dropItem()
+                if (this.moveToClosestWorkplace()) {
+                    this.changeActivity(RaiderActivity.Collect, () => {
+                        this.pickupItem(bj.dynamite)
                     })
                 }
+            } else if (this.moveToClosestTarget(bj.surface.getDigPositions().map((p) => new PathTarget(p)))) {
+                this.changeActivity(RaiderActivity.Place, () => {
+                    this.completeJob()
+                })
             }
         } else if (this.job.type === JobType.CARRY) {
             const carryJobItem = (this.job as CollectJob).item
             if (this.carries !== carryJobItem) {
                 this.dropItem()
-                if (this.moveToClosestWorkplace() === MoveState.TARGET_REACHED) {
+                if (this.moveToClosestWorkplace()) {
                     this.changeActivity(RaiderActivity.Collect, () => {
                         this.pickupItem(carryJobItem)
                     })
@@ -194,9 +193,9 @@ export class Raider extends FulfillerEntity {
             } else {
                 const moveResult = this.moveToClosestTarget(carryJobItem.getCollectTargets())
                 carryJobItem.setTargetSite((this.currentPath?.target as CollectPathTarget)?.site)
-                if (moveResult === MoveState.TARGET_REACHED) {
+                if (moveResult) {
                     const collectPathTarget = this.currentPath.target as CollectPathTarget
-                    const dropAction = collectPathTarget.getDropAction()
+                    const dropAction = collectPathTarget.getDropAction() // FIXME sometimes called for PathTarget
                     this.changeActivity(dropAction, () => {
                         this.completeJob()
                         collectPathTarget.gatherItem(carryJobItem)
@@ -204,14 +203,14 @@ export class Raider extends FulfillerEntity {
                 }
             }
         } else if (this.job.type === JobType.MOVE) {
-            if (this.moveToClosestWorkplace() === MoveState.TARGET_REACHED) {
+            if (this.moveToClosestWorkplace()) {
                 this.changeActivity(this.getDefaultActivity(), () => {
                     this.completeJob()
                 })
             }
         } else if (this.job.type === JobType.TRAIN) {
             const trainJob = this.job as TrainJob
-            if (this.moveToClosestWorkplace() === MoveState.TARGET_REACHED) {
+            if (this.moveToClosestWorkplace()) {
                 this.changeActivity(RaiderActivity.Train, () => {
                     this.skills.push(trainJob.skill)
                     EventBus.publishEvent(new RaiderTrained(this, trainJob.skill))
@@ -219,7 +218,7 @@ export class Raider extends FulfillerEntity {
                 }, 10000) // XXX adjust training time
             }
         } else if (this.job.type === JobType.GET_TOOL) {
-            if (this.moveToClosestWorkplace() === MoveState.TARGET_REACHED) {
+            if (this.moveToClosestWorkplace()) {
                 this.tools.push((this.job as GetToolJob).tool)
                 this.completeJob()
             }
@@ -228,6 +227,12 @@ export class Raider extends FulfillerEntity {
                 // TODO implement endurance fill eat level
                 this.completeJob()
             })
+        } else if (this.job.type === JobType.COMPLETE_POWER_PATH) {
+            if (this.moveToClosestWorkplace()) {
+                this.changeActivity(RaiderActivity.Clear, () => {
+                    this.completeJob()
+                })
+            }
         }
     }
 

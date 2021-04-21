@@ -11,14 +11,13 @@ import { Crystal } from '../collect/Crystal'
 import { Ore } from '../collect/Ore'
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../main'
 import { GameState } from '../../../game/model/GameState'
-import { SurfaceJob } from '../../../game/model/job/SurfaceJob'
+import { SurfaceJob } from '../../../game/model/job/surface/SurfaceJob'
 import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { AnimSubObj } from '../anim/AnimSubObj'
 import { SurfaceGeometry } from './SurfaceGeometry'
 import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
 import { JobType } from '../../../game/model/job/JobType'
 import { EventKey } from '../../../event/EventKeyEnum'
-import { SurfaceJobType } from '../../../game/model/job/SurfaceJobType'
 
 export class Surface implements Selectable {
 
@@ -60,15 +59,15 @@ export class Surface implements Selectable {
         this.heightOffset = heightOffset
         EventBus.registerEventListener(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
             const jobType = event.job.type
-            if (jobType === JobType.SURFACE) {
+            if (jobType === JobType.DRILL || jobType === JobType.REINFORCE || jobType === JobType.BLOW) {
                 const surfaceJob = event.job as SurfaceJob
                 if (surfaceJob.surface === this) this.jobs.push(surfaceJob)
             }
         })
     }
 
-    hasJobType(type: SurfaceJobType) {
-        return this.jobs.some((job) => job.workType === type)
+    hasJobType(type: JobType) {
+        return this.jobs.some((job) => job.type === type)
     }
 
     /**
@@ -232,7 +231,7 @@ export class Surface implements Selectable {
     cancelReinforceJobs() {
         const otherJobs = []
         this.jobs.forEach((job) => {
-            if (job.workType === SurfaceJobType.REINFORCE) {
+            if (job.type === JobType.REINFORCE) {
                 EventBus.publishEvent(new JobDeleteEvent(job))
             } else {
                 otherJobs.push(job)
@@ -273,7 +272,7 @@ export class Surface implements Selectable {
         this.accessMaterials().forEach((mat) => mat.map = texture)
     }
 
-    updatePowerPathTexture(): string {
+    private updatePowerPathTexture(): string {
         this.surfaceRotation = 0
         const left = this.terrain.getSurface(this.x - 1, this.y).isPath()
         const top = this.terrain.getSurface(this.x, this.y - 1).isPath()
@@ -370,8 +369,8 @@ export class Surface implements Selectable {
     }
 
     updateJobColor() {
-        const sortedJobs = this.jobs.sort((l, r) => -l.workType.colorPriority + r.workType.colorPriority)
-        const color = sortedJobs[0]?.workType.color || 0xffffff
+        const sortedJobs = this.jobs.sort((l, r) => -l.colorPriority + r.colorPriority)
+        const color = sortedJobs[0]?.color || 0xffffff
         this.accessMaterials().forEach((mat) => mat.color.setHex(color))
     }
 
@@ -538,6 +537,12 @@ export class Surface implements Selectable {
     private static interpolate(y0: number, y1: number, x: number): number {
         return y0 + x * (y1 - y0)
     }
+
+    get neighbors(): Surface[] {
+        return [this.terrain.getSurface(this.x - 1, this.y), this.terrain.getSurface(this.x, this.y - 1),
+            this.terrain.getSurface(this.x + 1, this.y), this.terrain.getSurface(this.x, this.y + 1)]
+    }
+
 }
 
 export enum WALL_TYPE {
