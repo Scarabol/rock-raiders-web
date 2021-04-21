@@ -151,7 +151,7 @@ export class Surface implements Selectable {
         else if (this.surfaceType === SurfaceType.RUBBLE3) this.surfaceType = SurfaceType.RUBBLE2
         else if (this.surfaceType === SurfaceType.RUBBLE2) this.surfaceType = SurfaceType.RUBBLE1
         else if (this.surfaceType === SurfaceType.RUBBLE1) this.surfaceType = SurfaceType.GROUND
-        this.dropContainedOre(1)
+        this.dropContainedOre(this.containedOres - this.rubblePositions.length)
         this.updateTexture()
         EventBus.publishEvent(new SurfaceChanged(this))
     }
@@ -482,9 +482,7 @@ export class Surface implements Selectable {
         })
         this.animate(poly, animation, 0)
 
-        const targetSurface = this.terrain.getSurface(targetX, targetY)
-        targetSurface.surfaceType = SurfaceType.RUBBLE4
-        targetSurface.updateTexture()
+        this.terrain.getSurface(targetX, targetY).makeRubble()
     }
 
     animate(poly, animation, frameIndex) {
@@ -541,6 +539,13 @@ export class Surface implements Selectable {
     get neighbors(): Surface[] {
         return [this.terrain.getSurface(this.x - 1, this.y), this.terrain.getSurface(this.x, this.y - 1),
             this.terrain.getSurface(this.x + 1, this.y), this.terrain.getSurface(this.x, this.y + 1)]
+    }
+
+    makeRubble(containedOre: number = 0) {
+        this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
+        this.containedOres += containedOre
+        this.surfaceType = SurfaceType.RUBBLE4
+        this.updateTexture()
     }
 
 }

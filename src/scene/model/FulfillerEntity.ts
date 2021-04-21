@@ -36,8 +36,10 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     dropItem() {
         if (!this.carries) return
-        if (this.carryJoint) this.carryJoint.remove(this.carries.group)
+        this.carryJoint?.remove(this.carries.group)
         this.carries.group.position.copy(this.group.position)
+        this.carryJoint?.getWorldPosition(this.carries.group.position)
+        this.carries.group.position.y = this.worldMgr.getFloorHeight(this.carries.group.position.x, this.carries.group.position.z)
         this.carries = null
     }
 

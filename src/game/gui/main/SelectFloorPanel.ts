@@ -27,10 +27,18 @@ export class SelectFloorPanel extends SelectBasePanel {
             GameState.buildingSites.push(site)
             EventBus.publishEvent(new EntityDeselected())
         }
-        pathItem.isDisabled = () => GameState.selectedSurface?.hasRubble()
-        EventBus.registerEventListener(EventKey.SELECTED_SURFACE, () => pathItem.updateState())
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_RemovePath')
+        pathItem.isDisabled = () => GameState.selectedSurface?.surfaceType !== SurfaceType.GROUND
+        const removeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_RemovePath')
+        removeItem.onClick = () => {
+            GameState.selectedSurface?.makeRubble(2)
+            EventBus.publishEvent(new EntityDeselected())
+        }
+        removeItem.isDisabled = () => GameState.selectedSurface?.surfaceType !== SurfaceType.POWER_PATH
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence')
+        EventBus.registerEventListener(EventKey.SELECTED_SURFACE, () => {
+            pathItem.updateState()
+            removeItem.updateState()
+        })
     }
 
 }
