@@ -130,6 +130,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         }
         this.surfaces.forEach((s) => {
             s.surfaceType = SurfaceType.GROUND
+            s.setBlockedByBuilding(false)
             s.updateTexture()
         })
         super.beamUp()

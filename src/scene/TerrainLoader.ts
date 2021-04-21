@@ -89,7 +89,7 @@ export class TerrainLoader {
             }
         }))
 
-        terrain.graphWalk = new Graph(terrain.surfaces.map(c => c.map(s => s.isWalkable() ? s.hasRubble() ? 4 : 1 : 0)))
+        terrain.graphWalk = new Graph(terrain.surfaces.map(c => c.map(s => s.getGraphWalkWeight())))
 
         // crumble unsupported walls
         terrain.surfaces.forEach((c) => c.forEach((s) => {

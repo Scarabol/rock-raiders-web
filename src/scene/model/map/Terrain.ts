@@ -68,6 +68,10 @@ export class Terrain {
     updateSurfaceMeshes(force: boolean = false) {
         this.surfaces.forEach((r) => r.forEach((s) => s.updateMesh(force)))
         this.floorGroup.updateWorldMatrix(true, true) // otherwise ray intersection is not working before rendering
+        this.resetGraphWalk()
+    }
+
+    resetGraphWalk() {
         this.graphWalk.init()
         this.cachedPaths.clear()
         console.log('Cached paths cleared')

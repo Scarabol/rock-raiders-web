@@ -23,7 +23,7 @@ export class ObjectListLoader {
             const worldX = (olObject.xPos - 1) * TILESIZE
             const worldZ = (olObject.yPos - 1) * TILESIZE
             const terrainY = worldMgr.getTerrainHeight(worldX, worldZ)
-            const buildingType = ResourceManager.cfg('BuildingTypes', olObject.type)
+            const buildingType: string = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
             if (lTypeName === 'TVCamera'.toLowerCase()) {
                 const offset = new Vector3(5 * TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(new Vector3(worldX, terrainY, worldZ - TILESIZE / 2))
@@ -65,6 +65,7 @@ export class ObjectListLoader {
                 // TODO rotate building with normal vector of surface
                 worldMgr.sceneManager.scene.add(entity.group)
                 const primaryPathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position)
+                primaryPathSurface.setBlockedByBuilding(building.blocksPathSurface)
                 primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                 primaryPathSurface.updateTexture()
                 entity.surfaces.push(primaryPathSurface)
@@ -72,6 +73,7 @@ export class ObjectListLoader {
                     const secondaryOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading + Math.PI / 2)
                     secondaryOffset.add(entity.group.position)
                     const secondarySurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(secondaryOffset)
+                    secondarySurface.setBlockedByBuilding(building.blocksPathSurface)
                     secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                     secondarySurface.updateTexture()
                     entity.surfaces.push(secondarySurface)

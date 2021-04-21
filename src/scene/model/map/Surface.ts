@@ -50,6 +50,8 @@ export class Surface implements Selectable {
 
     rubblePositions: Vector2[] = []
 
+    isBlockedByBuilding: boolean = false
+
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain
         this.surfaceType = surfaceType
@@ -225,7 +227,7 @@ export class Surface implements Selectable {
 
         this.updateTexture()
         this.updateJobColor()
-        this.terrain.graphWalk.grid[this.x][this.y].weight = this.isWalkable() ? this.hasRubble() ? 4 : 1 : 0
+        this.terrain.graphWalk.grid[this.x][this.y].weight = this.getGraphWalkWeight()
     }
 
     cancelReinforceJobs() {
@@ -383,7 +385,7 @@ export class Surface implements Selectable {
     }
 
     isWalkable(): boolean {
-        return this.surfaceType.floor && this.discovered && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER
+        return this.surfaceType.floor && this.discovered && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER && !this.isBlockedByBuilding
     }
 
     isDrillable(): boolean {
@@ -546,6 +548,16 @@ export class Surface implements Selectable {
         this.containedOres += containedOre
         this.surfaceType = SurfaceType.RUBBLE4
         this.updateTexture()
+    }
+
+    setBlockedByBuilding(blocked: boolean) {
+        this.isBlockedByBuilding = blocked
+        this.terrain.graphWalk.grid[this.x][this.y].weight = this.getGraphWalkWeight()
+        this.terrain.resetGraphWalk()
+    }
+
+    getGraphWalkWeight(): number {
+        return this.isWalkable() ? this.hasRubble() ? 4 : 1 : 0
     }
 
 }
