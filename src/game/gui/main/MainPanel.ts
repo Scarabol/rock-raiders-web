@@ -1,5 +1,5 @@
 import { EventBus } from '../../../event/EventBus'
-import { SurfaceSelectedEvent } from '../../../event/LocalEvents'
+import { SurfaceChanged, SurfaceSelectedEvent } from '../../../event/LocalEvents'
 import { EntityAddedEvent, EntityRemovedEvent, EntityType, RaiderRequested } from '../../../event/WorldEvents'
 import { GameState } from '../../model/GameState'
 import { Building } from '../../model/entity/building/Building'
@@ -18,11 +18,15 @@ import { TrainRaiderPanel } from './TrainRaiderPanel'
 import { GetToolPanel } from './GetToolPanel'
 import { IconPanelButtonLabel } from './IconPanelButtonLabel'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { Surface } from '../../../scene/model/map/Surface'
 
 export class MainPanel extends Panel {
 
     subPanels: IconSubPanel[] = []
     mainPanel: IconSubPanel // don't use root itself, since sub panel must be decoupled from (animated) main panel position
+    selectWallPanel: SelectWallPanel
+    selectFloorPanel: SelectFloorPanel
+    selectRubblePanel: SelectRubblePanel
 
     constructor() {
         super()
@@ -38,9 +42,9 @@ export class MainPanel extends Panel {
         const buildingPanel = this.addSubPanel(new BuildingPanel(this.mainPanel))
         const smallVehiclePanel = this.addSubPanel(new SmallVehiclePanel(this.mainPanel))
         const largeVehiclePanel = this.addSubPanel(new LargeVehiclePanel(this.mainPanel))
-        const selectWallPanel = this.addSubPanel(new SelectWallPanel(this.mainPanel))
-        const selectFloorPanel = this.addSubPanel(new SelectFloorPanel(this.mainPanel))
-        const selectRubblePanel = this.addSubPanel(new SelectRubblePanel(this.mainPanel))
+        this.selectWallPanel = this.addSubPanel(new SelectWallPanel(this.mainPanel))
+        this.selectFloorPanel = this.addSubPanel(new SelectFloorPanel(this.mainPanel))
+        this.selectRubblePanel = this.addSubPanel(new SelectRubblePanel(this.mainPanel))
         const selectBuildingPanel = this.addSubPanel(new SelectBuildingPanel(this.mainPanel))
         const selectRaiderPanel = this.addSubPanel(new SelectRaiderPanel(this.mainPanel))
         const trainRaiderPanel = this.addSubPanel(new TrainRaiderPanel(selectRaiderPanel))
@@ -74,16 +78,10 @@ export class MainPanel extends Panel {
         largeVehicleItem.isDisabled = () => false
         largeVehicleItem.onClick = () => this.mainPanel.toggleState(() => largeVehiclePanel.toggleState())
         EventBus.registerEventListener(EventKey.SELECTED_SURFACE, (event: SurfaceSelectedEvent) => {
-            const surface = event.surface
-            if (surface.surfaceType.floor) {
-                if (surface.hasRubble()) {
-                    this.selectSubPanel(selectRubblePanel)
-                } else {
-                    this.selectSubPanel(selectFloorPanel)
-                }
-            } else {
-                this.selectSubPanel(selectWallPanel)
-            }
+            this.onSelectedSurfaceChange(event.surface)
+        })
+        EventBus.registerEventListener(EventKey.SURFACE_CHANGED, (event: SurfaceChanged) => {
+            if (GameState.selectedSurface === event.surface) this.onSelectedSurfaceChange(event.surface)
         })
         EventBus.registerEventListener(EventKey.DESELECTED_ENTITY, () => this.selectSubPanel(this.mainPanel))
         EventBus.registerEventListener(EventKey.SELECTED_BUILDING, () => this.selectSubPanel(selectBuildingPanel))
@@ -112,6 +110,18 @@ export class MainPanel extends Panel {
     selectSubPanel(targetPanel: IconSubPanel) {
         this.subPanels.forEach((subPanel) => subPanel !== targetPanel && subPanel.setMovedIn(true))
         targetPanel.setMovedIn(false)
+    }
+
+    onSelectedSurfaceChange(surface: Surface) {
+        if (surface.surfaceType.floor) {
+            if (surface.hasRubble()) {
+                this.selectSubPanel(this.selectRubblePanel)
+            } else {
+                this.selectSubPanel(this.selectFloorPanel)
+            }
+        } else {
+            this.selectSubPanel(this.selectWallPanel)
+        }
     }
 
 }

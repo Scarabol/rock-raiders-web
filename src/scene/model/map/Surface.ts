@@ -4,7 +4,7 @@ import { SurfaceType } from './SurfaceType'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { Selectable, SelectionType } from '../../../game/model/Selectable'
 import { EventBus } from '../../../event/EventBus'
-import { SelectionEvent, SurfaceSelectedEvent } from '../../../event/LocalEvents'
+import { SelectionEvent, SurfaceChanged, SurfaceSelectedEvent } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
 import { Crystal } from '../collect/Crystal'
@@ -154,6 +154,7 @@ export class Surface implements Selectable {
         else if (this.surfaceType === SurfaceType.RUBBLE1) this.surfaceType = SurfaceType.GROUND
         this.dropContainedOre(1)
         this.updateTexture()
+        EventBus.publishEvent(new SurfaceChanged(this))
     }
 
     isSupported(): boolean {

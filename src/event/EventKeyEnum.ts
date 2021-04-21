@@ -36,4 +36,6 @@ export enum EventKey {
     LOCATION_SLUG_EMERGE,
     LOCATION_RAIDER_DISCOVERED,
 
+    SURFACE_CHANGED,
+
 }

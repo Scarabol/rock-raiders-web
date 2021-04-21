@@ -73,3 +73,14 @@ export class EntityDeselected extends LocalEvent {
     }
 
 }
+
+export class SurfaceChanged extends LocalEvent {
+
+    surface: Surface
+
+    constructor(surface: Surface) {
+        super(EventKey.SURFACE_CHANGED)
+        this.surface = surface
+    }
+
+}
