@@ -65,7 +65,7 @@ export class ObjectListLoader {
                 // TODO rotate building with normal vector of surface
                 worldMgr.sceneManager.scene.add(entity.group)
                 const primaryPathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position)
-                primaryPathSurface.setBlockedByBuilding(building.blocksPathSurface)
+                primaryPathSurface.setBuilding(entity)
                 primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                 primaryPathSurface.updateTexture()
                 entity.surfaces.push(primaryPathSurface)
@@ -73,7 +73,7 @@ export class ObjectListLoader {
                     const secondaryOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading + Math.PI / 2)
                     secondaryOffset.add(entity.group.position)
                     const secondarySurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(secondaryOffset)
-                    secondarySurface.setBlockedByBuilding(building.blocksPathSurface)
+                    secondarySurface.setBuilding(entity)
                     secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                     secondarySurface.updateTexture()
                     entity.surfaces.push(secondarySurface)
@@ -82,6 +82,7 @@ export class ObjectListLoader {
                     const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading - Math.PI)
                     pathOffset.add(entity.group.position)
                     const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
+                    if (building === Building.GEODOME) pathSurface.building = entity
                     pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                     pathSurface.updateTexture()
                     entity.surfaces.push(pathSurface)

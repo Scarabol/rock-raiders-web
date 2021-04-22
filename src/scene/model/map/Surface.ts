@@ -18,6 +18,7 @@ import { SurfaceGeometry } from './SurfaceGeometry'
 import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
 import { JobType } from '../../../game/model/job/JobType'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { BuildingEntity } from '../BuildingEntity'
 
 export class Surface implements Selectable {
 
@@ -50,7 +51,7 @@ export class Surface implements Selectable {
 
     rubblePositions: Vector2[] = []
 
-    isBlockedByBuilding: boolean = false
+    building: BuildingEntity = null
 
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain
@@ -550,8 +551,8 @@ export class Surface implements Selectable {
         this.updateTexture()
     }
 
-    setBlockedByBuilding(blocked: boolean) {
-        this.isBlockedByBuilding = blocked
+    setBuilding(building: BuildingEntity) {
+        this.building = building
         this.terrain.graphWalk.grid[this.x][this.y].weight = this.getGraphWalkWeight()
         this.terrain.resetGraphWalk()
     }
