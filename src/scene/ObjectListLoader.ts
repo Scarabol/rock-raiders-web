@@ -47,7 +47,7 @@ export class ObjectListLoader {
                     GameState.raidersUndiscovered.push(raider)
                 }
                 worldMgr.sceneManager.scene.add(raider.group)
-            } else if (buildingType) {
+            } else if (buildingType) { // FIXME refactor building handling
                 const building = Building.getByName(buildingType)
                 const entity = new BuildingEntity(building)
                 entity.worldMgr = worldMgr

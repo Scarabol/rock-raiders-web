@@ -26,7 +26,7 @@ import degToRad = MathUtils.degToRad
 
 export class WorldManager {
 
-    sceneManager: SceneManager
+    sceneManager: SceneManager = null
     spawnRaiderInterval = null
     nerpRunner: NerpRunner = null
 

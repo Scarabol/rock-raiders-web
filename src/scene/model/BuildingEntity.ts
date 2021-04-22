@@ -115,6 +115,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.level++
         EventBus.publishEvent(new EntityDeselected())
         EventBus.publishEvent(new BuildingUpgraded(this))
+        // TODO add sparkly upgrade animation
     }
 
     getDefaultActivity() {
