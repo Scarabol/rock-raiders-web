@@ -1,4 +1,4 @@
-export function getPath(url: string) {
+export function getPath(url: string): string {
     if (!url) return url
     let strUrl = url.toString().replace(/\\/g, '/')
     if (strUrl.startsWith('/')) strUrl = strUrl.substring(1)
@@ -8,7 +8,7 @@ export function getPath(url: string) {
     return strUrl
 }
 
-export function getFilename(url: string) {
+export function getFilename(url: string): string {
     if (!url) return url
     let strUrl = url.toString().replace(/\\/g, '/')
     if (strUrl.startsWith('/')) strUrl = strUrl.substring(1)

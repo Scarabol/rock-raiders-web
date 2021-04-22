@@ -36,14 +36,15 @@ export class WadLoader {
     }
 
     loadWadTexture(name: string, callback: (obj: ImageData) => any) {
-        function isTranslucentTexture(filename): boolean { // TODO check for better approach
+        function isTranslucentTexture(filename: string): boolean { // TODO check for better approach
             return !!filename.match(/\d\d\d\..+$/i) || !!filename.match(/^trans/i)
                 || !!filename.match(/telepulse/i) || !!filename.match(/^t_/i)
                 || !!filename.includes('crystalglow') || !!filename.match(/^glin/i)
                 || !!filename.match(/glow.bmp/i) || !!filename.match(/spankle/i)
+                || !!filename.startsWith('rd_')
         }
 
-        function isAlphaTexture(filename): boolean { // TODO check for better approach
+        function isAlphaTexture(filename: string): boolean { // TODO check for better approach
             return !!filename.match(/^a.+/i) || !!filename.match(/\d\.bmp/i) // later one used with dynamite
         }
 
