@@ -195,11 +195,15 @@ export class Raider extends FulfillerEntity {
                 carryJobItem.setTargetSite((this.currentPath?.target as CollectPathTarget)?.site)
                 if (moveResult) {
                     const collectPathTarget = this.currentPath.target as CollectPathTarget
-                    const dropAction = collectPathTarget.getDropAction() // FIXME sometimes called for PathTarget
-                    this.changeActivity(dropAction, () => {
-                        this.completeJob()
-                        collectPathTarget.gatherItem(carryJobItem)
-                    })
+                    if (collectPathTarget.canGatherItem()) {
+                        const dropAction = collectPathTarget.getDropAction()
+                        this.changeActivity(dropAction, () => {
+                            this.completeJob()
+                            collectPathTarget.gatherItem(carryJobItem)
+                        })
+                    } else {
+                        this.changeActivity()
+                    }
                 }
             }
         } else if (this.job.type === JobType.MOVE) {

@@ -29,12 +29,26 @@ export class CollectPathTarget extends PathTarget implements CollectionTarget {
         this.building = building
     }
 
+    canGatherItem(): boolean {
+        if (this.building) {
+            return this.building.activity.activityKey === this.building.getDefaultActivity().activityKey
+        }
+        return true
+    }
+
     gatherItem(item: CollectableEntity) {
         if (this.site) this.site.addItem(item)
         if (this.building) {
             if (this.building.type === Building.POWER_STATION || this.building.type === Building.ORE_REFINERY) {
+                if (this.building.carryJoint) {
+                    this.building.carryJoint.add(item.group)
+                    item.group.position.set(0, 0, 0)
+                }
                 this.building.changeActivity(BuildingActivity.Deposit, () => {
+                    this.building.changeActivity()
+                    if (this.building.carryJoint) this.building.carryJoint.remove(item.group)
                     CollectPathTarget.addItemToStorage(item)
+                    // TODO dispose item
                 })
             } else {
                 CollectPathTarget.addItemToStorage(item)
