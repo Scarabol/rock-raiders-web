@@ -30,4 +30,8 @@ export abstract class BaseEntity {
         return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position)
     }
 
+    removeFromScene() {
+        this.worldMgr.sceneManager.scene.remove(this.group)
+    }
+
 }

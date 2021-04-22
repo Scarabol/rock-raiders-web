@@ -51,10 +51,6 @@ export abstract class AnimEntity extends BaseEntity {
         }
     }
 
-    removeFromScene() {
-        this.worldMgr.sceneManager.scene.remove(this.group)
-    }
-
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onActivityChanged = null, durationTimeMs: number = null) {
         if (this.activity === activity) return
         this.activity = activity

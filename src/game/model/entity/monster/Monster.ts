@@ -10,7 +10,7 @@ export abstract class Monster extends MovableEntity {
 
     onLevelEnd() {
         this.moveTimeout = clearTimeoutSafe(this.moveTimeout)
-        this.worldMgr.sceneManager.scene.remove(this.group)
+        this.removeFromScene()
     }
 
     getRouteActivity(): MonsterActivity {

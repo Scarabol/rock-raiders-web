@@ -22,7 +22,7 @@ export class CompletePowerPathJob extends SurfaceJob {
 
     onJobComplete() {
         super.onJobComplete()
-        this.placedItems.forEach((placed) => placed.worldMgr.sceneManager.scene.remove(placed.group))
+        this.placedItems.forEach((placed) => placed.removeFromScene())
         this.surface.surfaceType = SurfaceType.POWER_PATH
         this.surface.updateTexture()
         this.surface.neighbors.forEach((s) => s.updateTexture())

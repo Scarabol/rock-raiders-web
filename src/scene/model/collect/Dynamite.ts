@@ -45,7 +45,7 @@ export class Dynamite extends AnimEntity implements Carryable {
         center.y = this.group.position.y
         this.group.lookAt(center)
         this.changeActivity(DynamiteActivity.TickDown, () => {
-            this.worldMgr.sceneManager.scene.remove(this.group)
+            this.removeFromScene()
             this.targetSurface.collapse()
             // TODO add explosion animation
             // TODO damage raider, vehicle, buildings
