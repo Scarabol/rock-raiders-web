@@ -61,10 +61,17 @@ export class WadLoader {
                 }
             }
         } else if (isAlphaTexture(filename)) {
-            const alpha = { // last pixel defines alpha color
+            let alpha = { // last pixel defines alpha color
                 r: imgData.data[imgData.data.length - 4],
                 g: imgData.data[imgData.data.length - 3],
                 b: imgData.data[imgData.data.length - 2],
+            }
+            if (filename.toLowerCase() === 'a000_sides.bmp') {
+                alpha = { // FIRST pixel defines alpha color
+                    r: imgData.data[0],
+                    g: imgData.data[1],
+                    b: imgData.data[2],
+                }
             }
             for (let n = 0; n < imgData.data.length; n += 4) {
                 if (imgData.data[n] === alpha.r && imgData.data[n + 1] === alpha.g && imgData.data[n + 2] === alpha.b) {
@@ -338,11 +345,12 @@ export class WadLoader {
         this.addAsset(this.loadLWOFile, 'World/Shared/Crystal.lwo') // highpoly version, but unused?
         this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'Crystal') + '.lwo')
         this.addTextureFolder('MiscAnims/Crystal/')
-        const orePath = iGet(mainConf, 'MiscObjects', 'Ore')
-        this.addAsset(this.loadLWOFile, orePath + '.lwo')
+        this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'Ore') + '.lwo')
         this.addAsset(this.loadWadTexture, 'MiscAnims/Ore/Ore.bmp')
         this.addAsset(this.loadLWOFile, 'World/Shared/Brick.lwo')
         this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ProcessedOre') + '.lwo')
+        this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ElectricFence') + '.lwo')
+        this.addTextureFolder('Buildings/E-Fence/')
         this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae')
         this.addAnimatedEntity('MiscAnims/Dynamite/Dynamite.ae')
         this.addLWSFile('MiscAnims/RockFall/Rock3Sides.lws')

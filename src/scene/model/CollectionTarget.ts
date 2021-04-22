@@ -37,8 +37,9 @@ export class CollectPathTarget extends PathTarget implements CollectionTarget {
     }
 
     gatherItem(item: CollectableEntity) {
-        if (this.site) this.site.addItem(item)
-        if (this.building) {
+        if (this.site) {
+            this.site.addItem(item)
+        } else if (this.building) {
             if (this.building.type === Building.POWER_STATION || this.building.type === Building.ORE_REFINERY) {
                 if (this.building.carryJoint) {
                     this.building.carryJoint.add(item.group)
@@ -53,6 +54,8 @@ export class CollectPathTarget extends PathTarget implements CollectionTarget {
             } else {
                 CollectPathTarget.addItemToStorage(item)
             }
+        } else {
+            item.worldMgr.sceneManager.scene.add(item.group)
         }
     }
 

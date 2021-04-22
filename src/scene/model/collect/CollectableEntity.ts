@@ -5,7 +5,6 @@ import { JobCreateEvent } from '../../../event/WorldEvents'
 import { Carryable } from './Carryable'
 import { CollectJob } from '../../../game/model/job/CollectJob'
 import { CollectPathTarget } from '../CollectionTarget'
-import { Vector2 } from 'three'
 import { Building } from '../../../game/model/entity/building/Building'
 import { BuildingSite } from '../BuildingSite'
 import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
@@ -21,11 +20,7 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
         return this.updateTargets().length > 0
     }
 
-    getTargets(): Vector2[] {
-        return this.updateTargets().map((t) => t.targetLocation)
-    }
-
-    getCollectTargets(): CollectPathTarget[] {
+    getCarryTargets(): CollectPathTarget[] {
         return this.updateTargets()
     }
 
@@ -35,7 +30,7 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
         this.updateTargets()
     }
 
-    private updateTargets(): CollectPathTarget[] {
+    protected updateTargets(): CollectPathTarget[] {
         if (this.targets.length < 1) {
             const sites = GameState.buildingSites.filter((b) => b.needs(this.getCollectableType()))
             if (sites.length > 0) {
@@ -81,5 +76,6 @@ export enum CollectableType {
     ORE,
     BRICK,
     BARRIER,
+    ELECTRIC_FENCE,
 
 }

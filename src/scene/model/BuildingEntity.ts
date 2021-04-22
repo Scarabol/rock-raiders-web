@@ -15,17 +15,18 @@ import { Ore } from './collect/Ore'
 import { Crystal } from './collect/Crystal'
 import { SurfaceType } from './map/SurfaceType'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
+import { EventKey } from '../../event/EventKeyEnum'
 
 export class BuildingEntity extends AnimEntity implements Selectable {
 
     type: Building
     selected: boolean
     powerSwitch: boolean = true
-    powerLink: boolean = false
     spawning: boolean = false
     surfaces: Surface[] = []
     upgradeCostOre: number = 5
     upgradeCostBrick: number = 1
+    crystalsInUse: number = 0
 
     constructor(buildingType: Building) {
         super(ResourceManager.getAnimationEntityType(buildingType.aeFile))
@@ -35,6 +36,11 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.pickSphereRadius = this.stats.PickSphere / 2
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre') || 5
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds') || 5
+        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
+            if (event.collectableType === CollectableType.CRYSTAL && this.powerSwitch && this.crystalsInUse < 1) {
+                this.turnOnPower()
+            }
+        })
     }
 
     get stats(): BuildingEntityStats {
@@ -89,7 +95,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     isPowered(): boolean {
-        return this.powerSwitch && (this.stats.SelfPowered || this.powerLink)
+        return this.powerSwitch && (this.stats.SelfPowered || this.stats.PowerBuilding || this.crystalsInUse > 0)
     }
 
     onDiscover() {
@@ -148,6 +154,22 @@ export class BuildingEntity extends AnimEntity implements Selectable {
 
     spawnMaterials(materials: CollectableEntity[]) {
         materials.forEach((m) => this.worldMgr.addCollectable(m, this.getDropPosition2D()))
+    }
+
+    turnOnPower() {
+        if (this.crystalsInUse > 0 || GameState.usedCrystals >= GameState.numCrystal) return
+        this.crystalsInUse = 1
+        GameState.usedCrystals += this.crystalsInUse
+        this.surfaces.forEach((s) => s.setHasPower(true, true))
+        this.changeActivity(BuildingActivity.Stand)
+    }
+
+    turnOffPower() {
+        if (this.crystalsInUse < 1) return
+        GameState.usedCrystals -= this.crystalsInUse
+        this.crystalsInUse = 0
+        this.surfaces.forEach((s) => s.setHasPower(false, false))
+        this.changeActivity(BuildingActivity.Unpowered)
     }
 
 }

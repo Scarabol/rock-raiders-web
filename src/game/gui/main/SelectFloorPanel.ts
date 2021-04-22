@@ -9,6 +9,7 @@ import { EventBus } from '../../../event/EventBus'
 import { BuildingSite } from '../../../scene/model/BuildingSite'
 import { EntityDeselected } from '../../../event/LocalEvents'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { ElectricFence } from '../../../scene/model/collect/ElectricFence'
 
 export class SelectFloorPanel extends SelectBasePanel {
 
@@ -34,10 +35,24 @@ export class SelectFloorPanel extends SelectBasePanel {
             EventBus.publishEvent(new EntityDeselected())
         }
         removeItem.isDisabled = () => GameState.selectedSurface?.surfaceType !== SurfaceType.POWER_PATH
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence')
+        const placeFenceItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence')
+        placeFenceItem.isDisabled = () => {
+            return !GameState.hasOneBuildingOf(Building.POWER_STATION) || !GameState.selectedSurface?.canPlaceFence()
+        }
+        placeFenceItem.onClick = () => {
+            const selectedSurface = GameState.selectedSurface
+            if (selectedSurface) {
+                const toolstation = GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), Building.TOOLSTATION)
+                if (toolstation) {
+                    toolstation?.spawnMaterials([new ElectricFence(selectedSurface)])
+                }
+            }
+            EventBus.publishEvent(new EntityDeselected())
+        }
         EventBus.registerEventListener(EventKey.SELECTED_SURFACE, () => {
             pathItem.updateState()
             removeItem.updateState()
+            placeFenceItem.updateState()
         })
     }
 

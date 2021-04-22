@@ -1,16 +1,17 @@
-import { CollectableEntity } from '../../../scene/model/collect/CollectableEntity'
+import { CollectableEntity, CollectableType } from '../../../scene/model/collect/CollectableEntity'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { PublicJob } from './Job'
 import { JobType } from './JobType'
 import { PriorityIdentifier } from './PriorityIdentifier'
 import { PathTarget } from '../../../scene/model/PathTarget'
+import { ElectricFence } from '../../../scene/model/collect/ElectricFence'
 
 export class CollectJob extends PublicJob {
 
     item: CollectableEntity
 
     constructor(item: CollectableEntity) {
-        super(JobType.CARRY)
+        super(JobType.COLLECT)
         this.item = item
     }
 
@@ -24,6 +25,17 @@ export class CollectJob extends PublicJob {
 
     getPriorityIdentifier(): PriorityIdentifier {
         return this.item.getPriorityIdentifier()
+    }
+
+    onJobComplete() {
+        super.onJobComplete()
+        if (this.item.getCollectableType() === CollectableType.ELECTRIC_FENCE) {
+            const electricFence = this.item as ElectricFence
+            if (electricFence.targetSurface.canPlaceFence()) {
+                this.item.worldMgr.sceneManager.scene.add(this.item.group)
+                electricFence.targetSurface.fence = electricFence
+            } // TODO else dispose item entity with mesh
+        }
     }
 
 }

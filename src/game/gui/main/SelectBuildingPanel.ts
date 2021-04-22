@@ -3,21 +3,43 @@ import { SelectBasePanel } from './SelectBasePanel'
 import { EventBus } from '../../../event/EventBus'
 import { GameState } from '../../model/GameState'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { Building } from '../../model/entity/building/Building'
+import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { IconPanelToggleButton } from './IconPanelToggleButton'
 
 export class SelectBuildingPanel extends SelectBasePanel {
 
     constructor(onBackPanel: Panel) {
         super(4, onBackPanel)
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Repair')
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PowerOff') // TODO other option is Interface_MenuItem_PowerOn
+
+        const menuItemOffCfg = new MenuItemCfg(ResourceManager.cfg('InterfaceImages', 'Interface_MenuItem_PowerOff'))
+        const menuItemOnCfg = new MenuItemCfg(ResourceManager.cfg('InterfaceImages', 'Interface_MenuItem_PowerOn'))
+        const powerSwitchItem = this.addChild(new IconPanelToggleButton(this, menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
+        this.iconPanelButtons.push(powerSwitchItem)
+        powerSwitchItem.isDisabled = () => GameState.usedCrystals >= GameState.numCrystal || GameState.selectedBuilding?.type === Building.POWER_STATION || GameState.selectedBuilding?.stats.SelfPowered
+        powerSwitchItem.onToggleStateChange = () => {
+            if (powerSwitchItem.toggleState) {
+                GameState.selectedBuilding?.turnOffPower()
+            } else {
+                GameState.selectedBuilding?.turnOnPower()
+            }
+        }
         const upgradeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeBuilding')
         upgradeItem.isDisabled = () => !GameState.selectedBuilding?.canUpgrade()
         upgradeItem.onClick = () => GameState.selectedBuilding?.upgrade()
         const deleteBuildingItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteBuilding')
         deleteBuildingItem.isDisabled = () => false
         deleteBuildingItem.onClick = () => GameState.selectedBuilding?.beamUp()
-        EventBus.registerEventListener(EventKey.SELECTED_BUILDING, () => upgradeItem.updateState())
-        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => upgradeItem.updateState())
+        EventBus.registerEventListener(EventKey.SELECTED_BUILDING, () => {
+            powerSwitchItem.updateState()
+            upgradeItem.updateState()
+        })
+        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
+            powerSwitchItem.updateState()
+            upgradeItem.updateState()
+        })
     }
 
 }

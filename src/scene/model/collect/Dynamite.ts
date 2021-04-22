@@ -6,8 +6,8 @@ import { Carryable } from './Carryable'
 import { Surface } from '../map/Surface'
 import { GameState } from '../../../game/model/GameState'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
-import { Vector2 } from 'three'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
+import { PathTarget } from '../PathTarget'
 
 export class Dynamite extends AnimEntity implements Carryable {
 
@@ -26,11 +26,12 @@ export class Dynamite extends AnimEntity implements Carryable {
         return this.targetSurface && this.targetSurface.isExplodable() || GameState.hasOneBuildingOf(Building.TOOLSTATION)
     }
 
-    getTargets(): Vector2[] {
+    getCarryTargets(): PathTarget[] {
         if (this.targetSurface && this.targetSurface.isExplodable()) {
-            return this.targetSurface.getDigPositions()
+            return this.targetSurface.getDigPositions().map((p) => new PathTarget(p))
         } else {
             return GameState.getBuildingsByType(Building.TOOLSTATION).map((b) => b.getDropPosition2D())
+                .map((p) => new PathTarget(p))
         }
     }
 

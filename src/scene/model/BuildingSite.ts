@@ -55,7 +55,6 @@ export class BuildingSite {
             this.checkComplete()
         } else {
             item.resetTarget()
-            item.worldMgr.addCollectable(item, item.getPosition2D())
         }
     }
 

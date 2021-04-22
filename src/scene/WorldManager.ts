@@ -18,10 +18,10 @@ import { NerpRunner } from '../core/NerpRunner'
 import { GameScreen } from '../screen/GameScreen'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { PriorityList } from '../game/model/job/PriorityList'
-import { CollectJob } from '../game/model/job/CollectJob'
 import { MoveJob } from '../game/model/job/MoveJob'
 import { RaiderActivity } from './model/activities/RaiderActivity'
 import { EventKey } from '../event/EventKeyEnum'
+import { CollectJob } from '../game/model/job/CollectJob'
 import degToRad = MathUtils.degToRad
 
 export class WorldManager {

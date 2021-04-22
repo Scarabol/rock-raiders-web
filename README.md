@@ -24,7 +24,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near
 
-- Electric fences and power consumption/outage
 - Air consumption and production
 - Building and all training options
 - Bricks and brick refinery

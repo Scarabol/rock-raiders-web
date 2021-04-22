@@ -87,6 +87,9 @@ export class ObjectListLoader {
                     pathSurface.updateTexture()
                     entity.surfaces.push(pathSurface)
                 }
+                if (building === Building.POWER_STATION || entity.surfaces.some((s) => s.neighbors.some((n) => n.hasPower))) {
+                    entity.turnOnPower()
+                }
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 worldMgr.addCollectable(new Crystal(), new Vector2(worldX, worldZ))
             } else if (lTypeName === 'SmallSpider'.toLowerCase()) {

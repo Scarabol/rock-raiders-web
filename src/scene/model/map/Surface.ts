@@ -19,6 +19,7 @@ import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationE
 import { JobType } from '../../../game/model/job/JobType'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { BuildingEntity } from '../BuildingEntity'
+import { ElectricFence } from '../collect/ElectricFence'
 
 export class Surface implements Selectable {
 
@@ -52,6 +53,8 @@ export class Surface implements Selectable {
     rubblePositions: Vector2[] = []
 
     building: BuildingEntity = null
+    fence: ElectricFence = null
+    hasPower: boolean = false
 
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain
@@ -251,7 +254,11 @@ export class Surface implements Selectable {
         } else if (this.surfaceType === SurfaceType.POWER_PATH) {
             textureName += this.updatePowerPathTexture()
         } else if (!this.surfaceType.shaping) {
-            textureName += this.surfaceType.matIndex.toString()
+            if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.hasPower) {
+                textureName += '66'
+            } else {
+                textureName += this.surfaceType.matIndex.toString()
+            }
         } else if (this.wallType === WALL_TYPE.WEIRD_CREVICE) {
             textureName += '77'
         } else {
@@ -286,24 +293,24 @@ export class Surface implements Selectable {
             if (left) this.surfaceRotation = -Math.PI / 2
             if (top) this.surfaceRotation = Math.PI
             if (right) this.surfaceRotation = Math.PI / 2
-            return '65'
+            return this.hasPower ? '75' : '65'
         } else if (pathSum === 2) {
             if (left === right) {
                 this.surfaceRotation = left ? Math.PI / 2 : 0
-                return '62'
+                return this.hasPower ? '72' : '62'
             } else {
                 if (left && bottom) this.surfaceRotation = -Math.PI / 2
                 if (left && top) this.surfaceRotation = Math.PI
                 if (top && right) this.surfaceRotation = Math.PI / 2
-                return '63'
+                return this.hasPower ? '73' : '63'
             }
         } else if (pathSum === 3) {
             if (!top) this.surfaceRotation = -Math.PI / 2
             if (!right) this.surfaceRotation = Math.PI
             if (!bottom) this.surfaceRotation = Math.PI / 2
-            return '64'
+            return this.hasPower ? '74' : '64'
         } else {
-            return '60'
+            return this.hasPower ? '71' : '60'
         }
     }
 
@@ -386,7 +393,7 @@ export class Surface implements Selectable {
     }
 
     isWalkable(): boolean {
-        return this.surfaceType.floor && this.discovered && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER && !this.isBlockedByBuilding
+        return this.surfaceType.floor && this.discovered && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER && !this.building?.type.blocksPathSurface
     }
 
     isDrillable(): boolean {
@@ -559,6 +566,27 @@ export class Surface implements Selectable {
 
     getGraphWalkWeight(): number {
         return this.isWalkable() ? this.hasRubble() ? 4 : 1 : 0
+    }
+
+    setHasPower(state: boolean, recursive: boolean) {
+        if (this.hasPower === state) return
+        this.hasPower = state
+        this.updateTexture()
+        if (recursive) this.neighbors.forEach((n) => n.isPath() && n.setHasPower(state, recursive))
+    }
+
+    canPlaceFence(): boolean { // TODO performance this can be cached
+        return (this.surfaceType === SurfaceType.GROUND || this.isPath()) && !this.building && !this.fence &&
+            [1, 2].some((n) => {
+                return !!this.terrain.getSurface(this.x - n, this.y).building ||
+                    !!this.terrain.getSurface(this.x, this.y - n).building ||
+                    !!this.terrain.getSurface(this.x + n, this.y).building ||
+                    !!this.terrain.getSurface(this.x, this.y + n).building ||
+                    !!this.terrain.getSurface(this.x - n, this.y).fence ||
+                    !!this.terrain.getSurface(this.x, this.y - n).fence ||
+                    !!this.terrain.getSurface(this.x + n, this.y).fence ||
+                    !!this.terrain.getSurface(this.x, this.y + n).fence
+            })
     }
 
 }

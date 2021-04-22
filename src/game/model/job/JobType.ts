@@ -4,6 +4,7 @@ export enum JobType {
     REINFORCE,
     BLOW,
     CLEAR_RUBBLE,
+    COLLECT,
     CARRY,
     MOVE,
     TRAIN,

@@ -181,25 +181,26 @@ export class Raider extends FulfillerEntity {
                     this.completeJob()
                 })
             }
-        } else if (this.job.type === JobType.CARRY) {
-            const carryJobItem = (this.job as CollectJob).item
-            if (this.carries !== carryJobItem) {
+        } else if (this.job.type === JobType.COLLECT) {
+            const collectJob = this.job as CollectJob
+            const collectJobItem = collectJob.item
+            if (this.carries !== collectJobItem) {
                 this.dropItem()
                 if (this.moveToClosestWorkplace()) {
                     this.changeActivity(RaiderActivity.Collect, () => {
-                        this.pickupItem(carryJobItem)
+                        this.pickupItem(collectJobItem)
                     })
                 }
             } else {
-                const moveResult = this.moveToClosestTarget(carryJobItem.getCollectTargets())
-                carryJobItem.setTargetSite((this.currentPath?.target as CollectPathTarget)?.site)
+                const moveResult = this.moveToClosestTarget(collectJobItem.getCarryTargets())
+                collectJobItem.setTargetSite((this.currentPath?.target as CollectPathTarget)?.site)
                 if (moveResult) {
                     const collectPathTarget = this.currentPath.target as CollectPathTarget
                     if (collectPathTarget.canGatherItem()) {
                         const dropAction = collectPathTarget.getDropAction()
                         this.changeActivity(dropAction, () => {
                             this.completeJob()
-                            collectPathTarget.gatherItem(carryJobItem)
+                            collectPathTarget.gatherItem(collectJobItem)
                         })
                     } else {
                         this.changeActivity()
