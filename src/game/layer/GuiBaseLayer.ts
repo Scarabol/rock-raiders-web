@@ -1,7 +1,7 @@
 import { ScaledLayer } from '../../screen/ScreenLayer'
 import { Panel } from '../gui/base/Panel'
 import { BaseElement } from '../gui/base/BaseElement'
-import { POINTER_EVENT } from '../../event/EventTypeEnum'
+import { MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 
 export class GuiBaseLayer extends ScaledLayer {
 
@@ -37,9 +37,9 @@ export class GuiBaseLayer extends ScaledLayer {
             if (eventEnum === POINTER_EVENT.MOVE) {
                 this.rootElement.checkHover(sx, sy)
             } else if (eventEnum === POINTER_EVENT.DOWN) {
-                this.rootElement.checkClick(sx, sy)
+                if (event.button === MOUSE_BUTTON.MAIN) this.rootElement.checkClick(sx, sy)
             } else if (eventEnum === POINTER_EVENT.UP) {
-                this.rootElement.checkRelease(sx, sy)
+                if (event.button === MOUSE_BUTTON.MAIN) this.rootElement.checkRelease(sx, sy)
             }
         } else if (eventEnum === POINTER_EVENT.MOVE) {
             this.rootElement.release()
