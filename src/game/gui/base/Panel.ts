@@ -40,24 +40,6 @@ export class Panel extends BaseElement {
         return this.animationTimeout || super.isInactive()
     }
 
-    updateAnimation(targetX: number, targetY: number, speed: number, onDone: () => any) {
-        const diffX = targetX - this.relX
-        const diffY = targetY - this.relY
-        if (Math.abs(diffX) <= speed && Math.abs(diffY) <= speed) {
-            this.relX = targetX
-            this.relY = targetY
-            this.animationTimeout = null
-            if (onDone) onDone()
-        } else {
-            this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * speed)
-            this.relY += Math.round(Math.sign(diffY) * Math.sqrt(Math.abs(diffY)) * speed)
-            const panel = this
-            this.animationTimeout = setTimeout(() => panel.updateAnimation(targetX, targetY, speed, onDone), 1000 / NATIVE_FRAMERATE)
-        }
-        this.updatePosition()
-        this.notifyRedraw()
-    }
-
     setMovedIn(movedIn: boolean, onDone: () => any = null) {
         if (this.movedIn !== movedIn) {
             this.toggleState(onDone)
@@ -75,6 +57,24 @@ export class Panel extends BaseElement {
             this.movedIn = true
             this.updateAnimation(this.xIn, this.yIn, PANEL_ANIMATION_MULTIPLIER, onDone)
         }
+    }
+
+    protected updateAnimation(targetX: number, targetY: number, speed: number, onDone: () => any) {
+        const diffX = targetX - this.relX
+        const diffY = targetY - this.relY
+        if (Math.abs(diffX) <= speed && Math.abs(diffY) <= speed) {
+            this.relX = targetX
+            this.relY = targetY
+            this.animationTimeout = null
+            if (onDone) onDone()
+        } else {
+            this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * speed)
+            this.relY += Math.round(Math.sign(diffY) * Math.sqrt(Math.abs(diffY)) * speed)
+            const panel = this
+            this.animationTimeout = setTimeout(() => panel.updateAnimation(targetX, targetY, speed, onDone), 1000 / NATIVE_FRAMERATE)
+        }
+        this.updatePosition()
+        this.notifyRedraw()
     }
 
     onRedraw(context: CanvasRenderingContext2D) {

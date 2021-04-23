@@ -51,7 +51,7 @@ export abstract class AnimEntity extends BaseEntity {
         }
     }
 
-    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onActivityChanged = null, durationTimeMs: number = null) {
+    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone = null, durationTimeMs: number = null) {
         if (this.activity === activity) return
         this.activity = activity
         let lActivityKey = activity.activityKey.toLowerCase()
@@ -66,7 +66,7 @@ export abstract class AnimEntity extends BaseEntity {
             console.log(this.entityType.activities)
             return
         }
-        this.setAnimation(anim?.animation, onActivityChanged, durationTimeMs)
+        this.setAnimation(anim?.animation, onAnimationDone, durationTimeMs)
     }
 
     private setAnimation(animation: AnimClip, onAnimationDone = null, durationTimeMs = null) {
@@ -126,8 +126,7 @@ export abstract class AnimEntity extends BaseEntity {
                     const matArr = Array.isArray(material) ? material : [material]
                     matArr.forEach((mat: MeshPhongMaterial) => {
                         mat.opacity = opacity
-                        mat.transparent = true
-                        mat.alphaTest = 0
+                        mat.transparent = material.opacity < 1
                     })
                 }
             }

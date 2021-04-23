@@ -242,8 +242,8 @@ export class LWOLoader {
     sequenceIntervals = []
 
     constructor(path: string, verbose: boolean = false) {
-        this.verbose = verbose
         this.path = path
+        this.verbose = verbose
         if (this.verbose) console.log('LWO path: ' + this.path)
     }
 
@@ -410,7 +410,7 @@ export class LWOLoader {
                         }
                         material.opacity = 1 - transparency
                         if (this.verbose) console.log('Opacity (TRAN/VTRN): ' + material.opacity)
-                        if (transparency > 0) material.transparent = true
+                        if (material.opacity < 1) material.transparent = true
                         break
                     case SURF_VLUM:
                         const luminosity2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)

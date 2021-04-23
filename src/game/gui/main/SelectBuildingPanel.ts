@@ -3,7 +3,6 @@ import { SelectBasePanel } from './SelectBasePanel'
 import { EventBus } from '../../../event/EventBus'
 import { GameState } from '../../model/GameState'
 import { EventKey } from '../../../event/EventKeyEnum'
-import { Building } from '../../model/entity/building/Building'
 import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { IconPanelToggleButton } from './IconPanelToggleButton'
@@ -18,7 +17,7 @@ export class SelectBuildingPanel extends SelectBasePanel {
         const menuItemOnCfg = new MenuItemCfg(ResourceManager.cfg('InterfaceImages', 'Interface_MenuItem_PowerOn'))
         const powerSwitchItem = this.addChild(new IconPanelToggleButton(this, menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(powerSwitchItem)
-        powerSwitchItem.isDisabled = () => GameState.usedCrystals >= GameState.numCrystal || GameState.selectedBuilding?.type === Building.POWER_STATION || GameState.selectedBuilding?.stats.SelfPowered
+        powerSwitchItem.isDisabled = () => GameState.usedCrystals >= GameState.numCrystal || GameState.selectedBuilding?.stats?.SelfPowered || GameState.selectedBuilding?.stats?.PowerBuilding
         powerSwitchItem.onToggleStateChange = () => {
             if (powerSwitchItem.toggleState) {
                 GameState.selectedBuilding?.turnOffPower()

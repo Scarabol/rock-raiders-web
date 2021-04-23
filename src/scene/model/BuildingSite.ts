@@ -1,4 +1,4 @@
-import { Vector2, Vector3 } from 'three'
+import { Vector2 } from 'three'
 import { Surface } from './map/Surface'
 import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
 import { EventBus } from '../../event/EventBus'
@@ -17,10 +17,6 @@ export class BuildingSite {
 
     constructor(isPowerPath: boolean = false) {
         this.isPowerPath = isPowerPath
-    }
-
-    getPosition(): Vector3 {
-        return this.surfaces[0].getCenterWorld() // TODO use combined center of all surfaces
     }
 
     getRandomDropPosition(): Vector2 {
@@ -71,7 +67,7 @@ export class BuildingSite {
         })
         if (complete) {
             this.complete = complete
-            GameState.buildingSites.splice(GameState.buildingSites.indexOf(this), 1)
+            GameState.buildingSites.remove(this)
             const items = []
             Object.keys(this.onSiteByType).forEach((collectableType) => items.push(...this.onSiteByType[collectableType]))
             if (this.isPowerPath) {

@@ -24,8 +24,8 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     powerSwitch: boolean = true
     spawning: boolean = false
     surfaces: Surface[] = []
-    upgradeCostOre: number = 5
-    upgradeCostBrick: number = 1
+    upgradeCostOre: number = 0
+    upgradeCostBrick: number = 0
     crystalsInUse: number = 0
 
     constructor(buildingType: Building) {
@@ -34,8 +34,8 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
         this.pickSphereRadius = this.stats.PickSphere / 2
-        this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre') || 5
-        this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds') || 5
+        this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
+        this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
             if (event.collectableType === CollectableType.CRYSTAL && this.powerSwitch && this.crystalsInUse < 1) {
                 this.turnOnPower()
@@ -161,7 +161,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.crystalsInUse = 1
         GameState.usedCrystals += this.crystalsInUse
         this.surfaces.forEach((s) => s.setHasPower(true, true))
-        this.changeActivity(BuildingActivity.Stand)
+        this.changeActivity()
     }
 
     turnOffPower() {
@@ -169,7 +169,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         GameState.usedCrystals -= this.crystalsInUse
         this.crystalsInUse = 0
         this.surfaces.forEach((s) => s.setHasPower(false, false))
-        this.changeActivity(BuildingActivity.Unpowered)
+        this.changeActivity()
     }
 
 }

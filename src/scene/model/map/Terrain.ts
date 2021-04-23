@@ -140,5 +140,4 @@ export class Terrain {
     dispose() {
         this.surfaces.forEach(c => c.forEach(s => s.dispose()))
     }
-
 }

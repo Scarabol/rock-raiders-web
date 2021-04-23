@@ -509,8 +509,7 @@ export class Surface implements Selectable {
                     const matArr = Array.isArray(material) ? material : [material]
                     matArr.forEach((mat: MeshPhongMaterial) => {
                         mat.opacity = opacity
-                        mat.transparent = true
-                        mat.alphaTest = 0
+                        mat.transparent = material.opacity < 1
                     })
                 }
             }

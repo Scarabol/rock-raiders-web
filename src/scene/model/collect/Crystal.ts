@@ -17,7 +17,7 @@ export class Crystal extends CollectableEntity {
             mat.emissive = new Color(0, 255, 0) // XXX should be luminosity color from mesh file?
             mat.depthWrite = false // otherwise transparent parts "carve out" objects behind
             mat.opacity = 0.5 // XXX read from LWO file?
-            mat.transparent = true
+            mat.transparent = mat.opacity < 1
         })
         mesh2.scale.set(1.75, 1.75, 1.75) // XXX derive from texture scale?
         this.group.add(mesh2)
@@ -26,8 +26,8 @@ export class Crystal extends CollectableEntity {
         (mesh.material as Material[]).forEach((mat: MeshPhongMaterial) => {
             mat.emissive = new Color(0, 8, 0) // XXX read from LWO file?
             mat.color = new Color(0, 0, 0) // XXX read from LWO file?
-            mat.transparent = true
             mat.opacity = 0.4 // XXX read from LWO file?
+            mat.transparent = mat.opacity < 1
         })
         this.group.add(mesh)
     }
