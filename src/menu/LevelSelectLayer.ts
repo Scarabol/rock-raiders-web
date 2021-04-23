@@ -28,11 +28,6 @@ export class LevelSelectLayer extends MainMenuLayer {
         this.items.sort((a, b) => MainMenuBaseItem.compareZ(a, b))
     }
 
-    show() {
-        this.scrollY = 0
-        super.show()
-    }
-
 }
 
 class LevelTextCfg {
