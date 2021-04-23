@@ -37,5 +37,6 @@ export enum EventKey {
     LOCATION_RAIDER_DISCOVERED,
 
     SURFACE_CHANGED,
+    AIR_LEVEL_CHANGED,
 
 }

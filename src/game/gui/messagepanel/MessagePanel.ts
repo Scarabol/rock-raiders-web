@@ -41,6 +41,7 @@ export class MessagePanel extends Panel {
         this.msgManTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
         EventBus.registerEventListener(EventKey.RAIDER_TRAINED, () => this.setMessage(this.msgManTrained))
         this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
+        EventBus.registerEventListener(EventKey.AIR_LEVEL_CHANGED, () => this.notifyRedraw())
     }
 
     setMessage(textInfoMessage: TextInfoMessage, timeout: number = 3000) {

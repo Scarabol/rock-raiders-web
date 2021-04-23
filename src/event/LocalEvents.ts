@@ -84,3 +84,11 @@ export class SurfaceChanged extends LocalEvent {
     }
 
 }
+
+export class AirLevelChanged extends LocalEvent {
+
+    constructor() {
+        super(EventKey.AIR_LEVEL_CHANGED)
+    }
+
+}

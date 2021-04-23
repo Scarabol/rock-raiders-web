@@ -24,22 +24,21 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near
 
-- Air consumption and production
 - Building and all training options
 - Bricks and brick refinery
 - Damage, show health bar and teleport at bad health
+- Vehicles (Land, Air, Sea)
+- All raider commands (board, pickup, drop...)
 
 ### Mid
 
-- Vehicles (Land, Air, Sea)
-- All raider commands (board, pickup, drop...)
 - Radar map and geologists
 - Alarm mode and shooting
 - Rock-Monsters and Slugs
+- Sounds and music
 
 ### Far
 
-- Sounds and music
 - Level score shown and level unlocking
 - Save and load
 - First-Person and shoulder camera

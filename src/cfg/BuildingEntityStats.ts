@@ -11,6 +11,7 @@ export class BuildingEntityStats extends BaseConfig {
     TrainDynamite: boolean[] = null
     CostOre: number = 0
     CostCrystal: number = 0
+    OxygenCoef: number = 0
 
     static getByType(type: Building): BuildingEntityStats {
         switch (type) {

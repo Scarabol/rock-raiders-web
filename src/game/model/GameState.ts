@@ -64,6 +64,7 @@ export class GameState {
     static levelStopTime: number = 0
     static rewardConfig: LevelRewardConfig = null
     static priorityList: PriorityList = null
+    static oxygenRate: number = 0
 
     static reset() {
         this.resultState = GameResultState.RUNNING
@@ -99,6 +100,7 @@ export class GameState {
         this.levelStopTime = 0
         this.rewardConfig = null
         this.priorityList = null
+        this.oxygenRate = 0
     }
 
     static getBuildingsByType(...buildingTypes: Building[]): BuildingEntity[] {

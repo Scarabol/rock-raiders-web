@@ -9,7 +9,7 @@ import { Raider } from './model/Raider'
 import { GameState } from '../game/model/GameState'
 import { Building } from '../game/model/entity/building/Building'
 import { CollectableEntity } from './model/collect/CollectableEntity'
-import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../main'
+import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../main'
 import { ObjectListLoader } from './ObjectListLoader'
 import { Dynamite } from './model/collect/Dynamite'
 import { DynamiteJob } from '../game/model/job/surface/DynamiteJob'
@@ -22,6 +22,7 @@ import { MoveJob } from '../game/model/job/MoveJob'
 import { RaiderActivity } from './model/activities/RaiderActivity'
 import { EventKey } from '../event/EventKeyEnum'
 import { CollectJob } from '../game/model/job/CollectJob'
+import { AirLevelChanged } from '../event/LocalEvents'
 import degToRad = MathUtils.degToRad
 
 export class WorldManager {
@@ -29,6 +30,7 @@ export class WorldManager {
     sceneManager: SceneManager = null
     spawnRaiderInterval = null
     nerpRunner: NerpRunner = null
+    oxygenUpdateInterval = null
 
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas)
@@ -53,6 +55,7 @@ export class WorldManager {
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => {
             GameState.discoveredCaverns++
         })
+        this.oxygenUpdateInterval = setInterval(this.updateOxygen.bind(this), UPDATE_OXYGEN_TIMER)
     }
 
     setup(levelConf: LevelEntryCfg, gameScreen: GameScreen) {
@@ -60,6 +63,7 @@ export class WorldManager {
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         GameState.rewardConfig = levelConf.reward
         GameState.priorityList = new PriorityList(levelConf.priorities)
+        GameState.oxygenRate = levelConf.oxygenRate
 
         const ambientRgb = ResourceManager.cfg('Main', 'AmbientRGB') || [10, 10, 10]
         const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
@@ -180,6 +184,19 @@ export class WorldManager {
             raider.group.position.copy(station.group.position).add(new Vector3(0, 0, TILESIZE / 2).applyEuler(station.group.rotation))
             raider.group.rotation.copy(station.group.rotation)
             this.sceneManager.scene.add(raider.group)
+        }
+    }
+
+    updateOxygen() {
+        const sum = GameState.raiders.map((r) => r.stats.OxygenCoef).reduce((l, r) => l + r, 0) +
+            GameState.buildings.map((b) => b.stats.OxygenCoef).reduce((l, r) => l + r, 0)
+        const rateMultiplier = 0.001
+        const valuePerSecond = 1 / 25
+        const msToSeconds = 0.001
+        const diff = sum * GameState.oxygenRate * rateMultiplier * valuePerSecond * UPDATE_OXYGEN_TIMER * msToSeconds / 10
+        if (diff) {
+            GameState.airlevel = Math.min(1, Math.max(0, GameState.airlevel + diff))
+            EventBus.publishEvent(new AirLevelChanged())
         }
     }
 

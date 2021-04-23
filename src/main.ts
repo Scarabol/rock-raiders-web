@@ -17,6 +17,7 @@ export const JOB_ACTION_RANGE = 5
 export const CHECK_SPANW_RAIDER_TIMER = 1000 // milliseconds
 export const MAX_RAIDER_BASE = 12
 export const ADDITIONAL_RAIDER_PER_SUPPORT = 10
+export const UPDATE_OXYGEN_TIMER = 5000 // milliseconds
 
 export const PANEL_ANIMATION_MULTIPLIER = 3
 export const HEIGHT_MULTIPLER = 0.1
