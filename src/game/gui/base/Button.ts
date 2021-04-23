@@ -22,7 +22,7 @@ export class Button extends BaseElement {
         this.relY = btnCfg.relY
         this.width = btnCfg.width || this.imgNormal?.width || this.imgPressed?.width
         this.height = btnCfg.height || this.imgNormal?.height || this.imgPressed?.height
-        this.tooltip = btnCfg.tooltip
+        this.tooltip = btnCfg.tooltip?.replace(/_/g, ' ') // TODO refactor cfg handling
         this.updatePosition()
     }
 

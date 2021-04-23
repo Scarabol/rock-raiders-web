@@ -4,8 +4,10 @@ import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
 
 export class IconPanelButton extends Button {
 
-    tooltipDisabled: string
-    hotkey: string
+    tooltipSfx: string = null
+    tooltipDisabled: string = null
+    tooltipDisabledSfx: string = null
+    hotkey: string = null
     isDisabled: () => boolean = () => this.disabled
 
     constructor(parent: BaseElement, menuItemCfg: MenuItemCfg, itemKey: string, parentWidth: number, menuIndex: number) {
@@ -13,7 +15,9 @@ export class IconPanelButton extends Button {
         this.buttonType = itemKey
         this.relX = parentWidth - 59
         this.relY = 9 + this.height * menuIndex
+        this.tooltipSfx = menuItemCfg.tooltipSfx
         this.tooltipDisabled = menuItemCfg.tooltipDisabled
+        this.tooltipDisabledSfx = menuItemCfg.tooltipDisabledSfx
         this.hotkey = menuItemCfg.hotkey
         this.disabled = true
     }
