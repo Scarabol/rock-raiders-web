@@ -46,11 +46,8 @@ export class JobDeleteEvent extends JobEvent {
 
 export class RaiderRequested extends WorldEvent {
 
-    numRequested: number = 0
-
-    constructor(numRequested: number) {
+    constructor() {
         super(EventKey.RAIDER_REQUESTED)
-        this.numRequested = numRequested
     }
 
 }

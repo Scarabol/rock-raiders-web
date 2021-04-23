@@ -19,6 +19,7 @@ import { GetToolPanel } from './GetToolPanel'
 import { IconPanelButtonLabel } from './IconPanelButtonLabel'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { Surface } from '../../../scene/model/map/Surface'
+import { MAX_RAIDER_REQUEST } from '../../../main'
 
 export class MainPanel extends Panel {
 
@@ -53,8 +54,8 @@ export class MainPanel extends Panel {
         selectRaiderPanel.getToolItem.onClick = () => selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
         const selectVehiclePanel = this.addSubPanel(new SelectVehiclePanel(this.mainPanel))
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
-        teleportRaider.isDisabled = () => !GameState.hasOneBuildingOf(Building.TOOLSTATION, Building.TELEPORT_PAD)
-            || GameState.raiders.length + GameState.requestedRaiders >= GameState.getMaxRaiders()
+        teleportRaider.isDisabled = () => GameState.raiders.length >= GameState.getMaxRaiders() || GameState.requestedRaiders >= MAX_RAIDER_REQUEST ||
+            !GameState.hasOneBuildingOf(Building.TOOLSTATION, Building.TELEPORT_PAD)
         teleportRaider.updateState()
         EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, () => teleportRaider.updateState())
         EventBus.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {
@@ -65,7 +66,10 @@ export class MainPanel extends Panel {
             // TODO add event inheritance by using event key prefix checking
             if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) teleportRaider.updateState()
         })
-        teleportRaider.onClick = () => EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders + 1))
+        teleportRaider.onClick = () => {
+            GameState.requestedRaiders++
+            EventBus.publishEvent(new RaiderRequested())
+        }
         // TODO add decrease requested raider spawn option (needs right click for gui elements)
         teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding')

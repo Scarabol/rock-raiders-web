@@ -35,8 +35,7 @@ export class WorldManager {
     constructor(canvas: HTMLCanvasElement) {
         this.sceneManager = new SceneManager(canvas)
         EventBus.registerEventListener(EventKey.DESELECTED_ENTITY, () => GameState.selectEntities([]))
-        EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, (event: RaiderRequested) => {
-            GameState.requestedRaiders = event.numRequested
+        EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, () => {
             if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
                 this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER)
             }
@@ -166,7 +165,8 @@ export class WorldManager {
         if (GameState.raiders.length >= GameState.getMaxRaiders()) return
         const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).filter((b) => !b.spawning)
         for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
-            EventBus.publishEvent(new RaiderRequested(GameState.requestedRaiders - 1))
+            GameState.requestedRaiders--
+            EventBus.publishEvent(new RaiderRequested())
             const station = spawnBuildings[c]
             station.spawning = true
             const raider = new Raider()

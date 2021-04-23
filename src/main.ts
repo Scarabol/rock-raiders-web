@@ -16,6 +16,7 @@ export const CHECK_CLEARRUBBLE_INTERVAL = 5000 // milliseconds
 export const JOB_ACTION_RANGE = 5
 export const CHECK_SPANW_RAIDER_TIMER = 1000 // milliseconds
 export const MAX_RAIDER_BASE = 12
+export const MAX_RAIDER_REQUEST = 9
 export const ADDITIONAL_RAIDER_PER_SUPPORT = 10
 export const UPDATE_OXYGEN_TIMER = 5000 // milliseconds
 
