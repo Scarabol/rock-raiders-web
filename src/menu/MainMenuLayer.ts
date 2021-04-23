@@ -90,6 +90,8 @@ export class MainMenuLayer extends ScaledLayer {
                     this.setScrollSpeedY(-(scrollAreaHeight - sy))
                 } else if (sy > this.fixedHeight - scrollAreaHeight) {
                     this.setScrollSpeedY(sy - (this.fixedHeight - scrollAreaHeight))
+                } else {
+                    this.setScrollSpeedY(0)
                 }
             }
         } else if (eventEnum === POINTER_EVENT.DOWN) {
