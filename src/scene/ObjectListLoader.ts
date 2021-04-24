@@ -47,7 +47,7 @@ export class ObjectListLoader {
                     GameState.raidersUndiscovered.push(raider)
                 }
                 worldMgr.sceneManager.scene.add(raider.group)
-            } else if (buildingType) { // FIXME refactor building handling
+            } else if (buildingType) {
                 const building = Building.getByName(buildingType)
                 const entity = new BuildingEntity(building)
                 entity.worldMgr = worldMgr
@@ -69,17 +69,17 @@ export class ObjectListLoader {
                 primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                 primaryPathSurface.updateTexture()
                 entity.surfaces.push(primaryPathSurface)
-                if (building === Building.POWER_STATION) {
-                    const secondaryOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading + Math.PI / 2)
-                    secondaryOffset.add(entity.group.position)
+                if (building.secondaryBuildingPart) {
+                    const secondaryOffset = new Vector3(TILESIZE * building.secondaryBuildingPart.x, 0, TILESIZE * building.secondaryBuildingPart.y)
+                        .applyAxisAngle(new Vector3(0, 1, 0), -radHeading).add(entity.group.position)
                     const secondarySurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(secondaryOffset)
                     secondarySurface.setBuilding(entity)
                     secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                     secondarySurface.updateTexture()
                     entity.surfaces.push(secondarySurface)
                 }
-                if (building !== Building.GUNSTATION) {
-                    const pathOffset = new Vector3(0, 0, TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), -radHeading - Math.PI)
+                if (building.hasPrimaryPowerPath) {
+                    const pathOffset = new Vector3(0, 0, -TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading)
                     pathOffset.add(entity.group.position)
                     const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
                     if (building === Building.GEODOME) pathSurface.building = entity
