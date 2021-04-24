@@ -316,6 +316,7 @@ export class WadLoader {
         this.addAnimatedEntity('Creatures/bat/bat.ae')
         // load misc objects
         this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Dynamite') + '/Dynamite.ae')
+        this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae')
         this.addAsset(this.loadLWOFile, 'World/Shared/Crystal.lwo') // highpoly version, but unused?
         this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'Crystal') + '.lwo')
         this.addTextureFolder('MiscAnims/Crystal/')

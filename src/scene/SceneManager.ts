@@ -1,11 +1,14 @@
 import { AmbientLight, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector3, WebGLRenderer } from 'three'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { clearIntervalSafe } from '../core/Util'
+import { EventBus } from '../event/EventBus'
+import { EventKey } from '../event/EventKeyEnum'
 import { GameState } from '../game/model/GameState'
 import { Selectable } from '../game/model/Selectable'
 import { TILESIZE } from '../main'
 import { AnimatedMesh } from '../resource/AnimatedMesh'
 import { DebugHelper } from './DebugHelper'
+import { BuildPlacementMarker } from './model/map/BuildPlacementMarker'
 import { Terrain } from './model/map/Terrain'
 
 export class SceneManager {
@@ -24,6 +27,7 @@ export class SceneManager {
     terrain: Terrain
     controls: MapControls
     cursorTorchlight: PointLight
+    buildMarker: BuildPlacementMarker
 
     constructor(canvas: HTMLCanvasElement) {
         this.renderer = new WebGLRenderer({antialias: true, canvas: canvas})
@@ -34,6 +38,12 @@ export class SceneManager {
         this.controls = new MapControls(this.camera, this.renderer.domElement)
         this.controls.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
+
+        this.buildMarker = new BuildPlacementMarker()
+        EventBus.registerEventListener(EventKey.CANCEL_BUILD_MODE, () => {
+            GameState.buildModeSelection = null
+            this.buildMarker.hideAllMarker()
+        })
     }
 
     selectEntitiesByRay(rx: number, ry: number) {
@@ -135,6 +145,8 @@ export class SceneManager {
         this.cursorTorchlight = new PointLight(0xffffff, 1.5, 4, 1)
         this.cursorTorchlight.distance *= TILESIZE
         this.scene.add(this.cursorTorchlight)
+
+        this.scene.add(this.buildMarker.group)
     }
 
     startScene() {

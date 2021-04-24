@@ -22,9 +22,8 @@ export class SelectFloorPanel extends SelectBasePanel {
             selectedSurface.updateTexture()
             const targetBuilding = GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), Building.TOOLSTATION)
             if (targetBuilding) targetBuilding.spawnMaterials(GameState.dropMaterial(CollectableType.ORE, 2))
-            const site = new BuildingSite(true)
-            site.surfaces.push(selectedSurface)
-            site.neededByType[CollectableType.ORE] = 2
+            const site = new BuildingSite(selectedSurface)
+            site.neededByType.set(CollectableType.ORE, 2)
             GameState.buildingSites.push(site)
             EventBus.publishEvent(new EntityDeselected())
         }

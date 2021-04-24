@@ -7,6 +7,7 @@ import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../
 import { BaseEntity } from '../../scene/model/BaseEntity'
 import { BuildingEntity } from '../../scene/model/BuildingEntity'
 import { BuildingSite } from '../../scene/model/BuildingSite'
+import { Barrier } from '../../scene/model/collect/Barrier'
 import { CollectableEntity, CollectableType } from '../../scene/model/collect/CollectableEntity'
 import { Crystal } from '../../scene/model/collect/Crystal'
 import { Dynamite } from '../../scene/model/collect/Dynamite'
@@ -65,6 +66,7 @@ export class GameState {
     static rewardConfig: LevelRewardConfig = null
     static priorityList: PriorityList = null
     static oxygenRate: number = 0
+    static buildModeSelection: Building = null
 
     static reset() {
         this.resultState = GameResultState.RUNNING
@@ -101,6 +103,7 @@ export class GameState {
         this.rewardConfig = null
         this.priorityList = null
         this.oxygenRate = 0
+        this.buildModeSelection = null
     }
 
     static getBuildingsByType(...buildingTypes: Building[]): BuildingEntity[] {
@@ -206,6 +209,8 @@ export class GameState {
                 GameState.numOre--
                 result.push(new Ore())
             }
+        } else if (type === CollectableType.BARRIER) {
+            for (let c = 0; c < quantity; c++) result.push(new Barrier())
         } else {
             console.error('Material drop not yet implemented: ' + type)
         }

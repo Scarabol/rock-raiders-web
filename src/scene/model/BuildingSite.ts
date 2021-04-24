@@ -1,53 +1,59 @@
-import { Vector2 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { EventBus } from '../../event/EventBus'
-import { JobCreateEvent } from '../../event/WorldEvents'
+import { EntityAddedEvent, EntityType, JobCreateEvent } from '../../event/WorldEvents'
+import { Building } from '../../game/model/entity/building/Building'
 import { GameState } from '../../game/model/GameState'
 import { CompletePowerPathJob } from '../../game/model/job/surface/CompletePowerPathJob'
+import { BarrierActivity } from './activities/BarrierActivity'
+import { BuildingActivity } from './activities/BuildingActivity'
+import { BuildingEntity } from './BuildingEntity'
+import { Barrier } from './collect/Barrier'
 import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
 import { Surface } from './map/Surface'
 
 export class BuildingSite {
 
-    isPowerPath: boolean
-    surfaces: Surface[] = []
-    neededByType = {}
-    assignedByType = {}
-    onSiteByType = {}
+    primarySurface: Surface = null
+    secondarySurface: Surface = null
+    building: Building
+    heading: number = 0
+    neededByType: Map<CollectableType, number> = new Map()
+    assignedByType: Map<CollectableType, CollectableEntity[]> = new Map()
+    onSiteByType: Map<CollectableType, CollectableEntity[]> = new Map()
     complete: boolean = false
 
-    constructor(isPowerPath: boolean = false) {
-        this.isPowerPath = isPowerPath
+    constructor(primarySurface: Surface, secondarySurface: Surface = null, building: Building = null) {
+        this.primarySurface = primarySurface
+        this.secondarySurface = secondarySurface
+        this.building = building
     }
 
     getRandomDropPosition(): Vector2 {
-        return this.surfaces[0].getRandomPosition() // TODO use "primary" surface
+        return this.primarySurface.getRandomPosition()
     }
 
     needs(collectableType: CollectableType): boolean {
-        const needed = this.neededByType[collectableType] || 0
-        const assigned = (this.assignedByType[collectableType] || []).length
+        const needed = this.neededByType.getOrUpdate(collectableType, () => 0)
+        const assigned = this.assignedByType.getOrUpdate(collectableType, () => []).length
         return needed > assigned
     }
 
     assign(item: CollectableEntity) {
         const collectableType = item.getCollectableType()
-        this.assignedByType[collectableType] = this.assignedByType[collectableType] || []
-        this.assignedByType[collectableType].push(item)
+        this.assignedByType.getOrUpdate(collectableType, () => []).push(item)
     }
 
     unAssign(item: CollectableEntity) {
         const collectableType = item.getCollectableType()
-        this.assignedByType[collectableType] = (this.assignedByType[collectableType] || [])
-        this.assignedByType[collectableType].splice(this.assignedByType[collectableType].indexOf(item), 1)
+        this.assignedByType.getOrUpdate(collectableType, () => []).remove(item)
     }
 
     addItem(item: CollectableEntity) {
         const collectableType = item.getCollectableType()
-        const needed = this.neededByType[collectableType] || 0
-        this.onSiteByType[collectableType] = this.onSiteByType[collectableType] || []
-        if (this.onSiteByType[collectableType].length < needed) {
+        const needed = this.neededByType.getOrUpdate(collectableType, () => 0)
+        if (this.onSiteByType.getOrUpdate(collectableType, () => []).length < needed) {
             item.worldMgr.sceneManager.scene.add(item.group)
-            this.onSiteByType[collectableType].push(item)
+            this.onSiteByType.getOrUpdate(collectableType, () => []).push(item)
             this.checkComplete()
         } else {
             item.resetTarget()
@@ -56,26 +62,40 @@ export class BuildingSite {
 
     checkComplete() {
         if (this.complete) return
-        let complete = true
-        Object.keys(this.neededByType).some((neededType) => {
-            const needed = this.neededByType[neededType] || 0
-            const onSite = (this.onSiteByType[neededType] || []).length
-            if (onSite < needed) {
-                complete = false
-                return true
-            }
+        this.complete = true
+        this.neededByType.forEach((needed, neededType) => {
+            this.complete = this.complete && this.onSiteByType.getOrUpdate(neededType, () => []).length >= this.neededByType.getOrUpdate(neededType, () => 0)
         })
-        if (complete) {
-            this.complete = complete
-            GameState.buildingSites.remove(this)
+        if (!this.complete) return
+        GameState.buildingSites.remove(this)
+        if (!this.building) {
             const items = []
-            Object.keys(this.onSiteByType).forEach((collectableType) => items.push(...this.onSiteByType[collectableType]))
-            if (this.isPowerPath) {
-                EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.surfaces[0], items)))
-            } else {
-                // TODO implement building spawning
-                console.log('Building site is complete')
-            }
+            this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
+            EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
+        } else {
+            this.onSiteByType.getOrUpdate(CollectableType.BARRIER, () => []).forEach((item) => {
+                const barrier = item as any as Barrier // FIXME refactor this
+                barrier.changeActivity(BarrierActivity.Teleport, () => barrier.removeFromScene())
+            })
+            this.onSiteByType.getOrUpdate(CollectableType.CRYSTAL, () => []).forEach((item) => {
+                item.removeFromScene()
+            })
+            this.onSiteByType.getOrUpdate(CollectableType.ORE, () => []).forEach((item) => {
+                item.removeFromScene()
+            })
+            const entity = new BuildingEntity(this.building)
+            entity.worldMgr = this.primarySurface.terrain.worldMgr // FIXME refactor this
+            entity.changeActivity(BuildingActivity.Teleport, () => {
+                entity.createPickSphere()
+                GameState.buildings.push(entity)
+                entity.turnOnPower()
+                EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, entity))
+            })
+            const world = this.primarySurface.getCenterWorld()
+            entity.group.position.set(world.x, entity.worldMgr.getFloorHeight(world.x, world.z), world.z)
+            entity.group.rotateOnAxis(new Vector3(0, 1, 0), -this.heading + Math.PI / 2)
+            entity.group.visible = entity.worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered
+            entity.worldMgr.sceneManager.scene.add(entity.group)
         }
     }
 

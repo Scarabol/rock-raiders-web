@@ -1,14 +1,20 @@
 import { Vector2 } from 'three'
+import { BuildingEntityStats } from '../../cfg/BuildingEntityStats'
 import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
-import { EntityDeselected } from '../../event/LocalEvents'
+import { CancelBuildMode, EntityDeselected } from '../../event/LocalEvents'
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { DEV_MODE } from '../../main'
+import { BuildingSite } from '../../scene/model/BuildingSite'
+import { Barrier, BarrierPathTarget } from '../../scene/model/collect/Barrier'
+import { CollectableEntity, CollectableType } from '../../scene/model/collect/CollectableEntity'
 import { FulfillerEntity } from '../../scene/model/FulfillerEntity'
 import { Surface } from '../../scene/model/map/Surface'
+import { SurfaceType } from '../../scene/model/map/SurfaceType'
 import { Raider } from '../../scene/model/Raider'
 import { WorldManager } from '../../scene/WorldManager'
 import { ScreenLayer } from '../../screen/ScreenLayer'
+import { Building } from '../model/entity/building/Building'
 import { GameState } from '../model/GameState'
 import { MoveJob } from '../model/job/MoveJob'
 import { ClearRubbleJob } from '../model/job/surface/ClearRubbleJob'
@@ -35,31 +41,74 @@ export class GameLayer extends ScreenLayer {
     }
 
     handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
+        const buildMarker = this.worldMgr.sceneManager.buildMarker
         if (eventEnum === POINTER_EVENT.MOVE) {
             const intersectionPoint = this.getTerrainPositionFromEvent(event)
             if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint)
-        } else if (eventEnum === POINTER_EVENT.UP && event.button === MOUSE_BUTTON.SECONDARY) {
-            const downUpDistance = Math.abs(event.x - this.rightDown.x) + Math.abs(event.y - this.rightDown.y)
-            if (downUpDistance < 3 && (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP)) {
-                // TODO check for collectable entity first
-                const intersectionPoint = this.getTerrainPositionFromEvent(event)
-                if (intersectionPoint) {
-                    const surface = this.worldMgr.sceneManager.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
-                    if (surface) {
-                        if (surface.isDrillable()) {
-                            this.createSurfaceJob(new DrillJob(surface), surface, intersectionPoint)
-                        } else if (surface.hasRubble()) {
-                            this.createSurfaceJob(new ClearRubbleJob(surface), surface, intersectionPoint)
-                        } else if (surface.isWalkable()) {
-                            GameState.selectedEntities.forEach((raider: Raider) => raider.setJob(new MoveJob(intersectionPoint)))
-                            if (GameState.selectedEntities.length > 0) EventBus.publishEvent(new EntityDeselected())
+            if (buildMarker.updateAllMarker(this.worldMgr.sceneManager.terrain, intersectionPoint)) {
+                buildMarker.resetColor()
+            } else {
+                buildMarker.markAsInvalid()
+            }
+        } else if (eventEnum === POINTER_EVENT.UP) {
+            if (event.button === MOUSE_BUTTON.MAIN) {
+                if (GameState.buildModeSelection && buildMarker.lastCheck) {
+                    buildMarker.visibleSurfaces.forEach((s) => {
+                        s.surfaceType = SurfaceType.POWER_PATH_BUILDING
+                        s.updateTexture()
+                        s.neighbors.forEach((n) => n.updateTexture())
+                    })
+                    const barrierLocations = buildMarker.getBarrierLocations()
+                    const stats = BuildingEntityStats.getByType(GameState.buildModeSelection)
+                    const neededCrystals = stats?.CostCrystal || 0
+                    const neededOre = stats?.CostOre || 0
+                    const site = new BuildingSite(buildMarker.primarySurface, buildMarker.secondarySurface, GameState.buildModeSelection)
+                    site.heading = buildMarker.heading
+                    site.neededByType.set(CollectableType.BARRIER, barrierLocations.length)
+                    site.neededByType.set(CollectableType.CRYSTAL, neededCrystals)
+                    site.neededByType.set(CollectableType.ORE, neededOre)
+                    GameState.buildingSites.push(site)
+                    const closestToolstation = GameState.getClosestBuildingByType(buildMarker.primarySurface.getCenterWorld(), Building.TOOLSTATION)
+                    if (closestToolstation) {
+                        closestToolstation.spawnMaterials(barrierLocations.map((t) => {
+                            const barrier = GameState.dropMaterial(CollectableType.BARRIER, 1)[0] as any as Barrier // FIXME refactor this
+                            barrier.targets = [new BarrierPathTarget(t, site)]
+                            return barrier
+                        }) as any[] as CollectableEntity[]) // FIXME refactor this
+                        closestToolstation.spawnMaterials(GameState.dropMaterial(CollectableType.CRYSTAL, neededCrystals))
+                        closestToolstation.spawnMaterials(GameState.dropMaterial(CollectableType.ORE, neededOre))
+                    }
+                    EventBus.publishEvent(new EntityDeselected())
+                    EventBus.publishEvent(new CancelBuildMode())
+                }
+            } else if (event.button === MOUSE_BUTTON.SECONDARY) {
+                const downUpDistance = Math.abs(event.x - this.rightDown.x) + Math.abs(event.y - this.rightDown.y)
+                if (downUpDistance < 3 && (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP)) {
+                    // TODO check for collectable entity first
+                    const intersectionPoint = this.getTerrainPositionFromEvent(event)
+                    if (intersectionPoint) {
+                        const surface = this.worldMgr.sceneManager.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
+                        if (surface) {
+                            if (surface.isDrillable()) {
+                                this.createSurfaceJob(new DrillJob(surface), surface, intersectionPoint)
+                            } else if (surface.hasRubble()) {
+                                this.createSurfaceJob(new ClearRubbleJob(surface), surface, intersectionPoint)
+                            } else if (surface.isWalkable()) {
+                                GameState.selectedEntities.forEach((raider: Raider) => raider.setJob(new MoveJob(intersectionPoint)))
+                                if (GameState.selectedEntities.length > 0) EventBus.publishEvent(new EntityDeselected())
+                            }
                         }
                     }
+                } else {
+                    GameState.buildModeSelection = null
+                    buildMarker.hideAllMarker()
                 }
             }
-        } else if (eventEnum === POINTER_EVENT.DOWN && event.button === MOUSE_BUTTON.SECONDARY) {
-            this.rightDown.x = event.x
-            this.rightDown.y = event.y
+        } else if (eventEnum === POINTER_EVENT.DOWN) {
+            if (event.button === MOUSE_BUTTON.SECONDARY) {
+                this.rightDown.x = event.x
+                this.rightDown.y = event.y
+            }
         }
         this.canvas.dispatchEvent(event)
         return true

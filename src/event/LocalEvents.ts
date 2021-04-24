@@ -92,3 +92,11 @@ export class AirLevelChanged extends LocalEvent {
     }
 
 }
+
+export class CancelBuildMode extends LocalEvent {
+
+    constructor() {
+        super(EventKey.CANCEL_BUILD_MODE)
+    }
+
+}

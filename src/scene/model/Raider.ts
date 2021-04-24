@@ -195,8 +195,8 @@ export class Raider extends FulfillerEntity {
                 const moveResult = this.moveToClosestTarget(collectJobItem.getCarryTargets())
                 collectJobItem.setTargetSite((this.currentPath?.target as CollectPathTarget)?.site)
                 if (moveResult) {
-                    const collectPathTarget = this.currentPath.target as CollectPathTarget
-                    if (collectPathTarget.canGatherItem()) {
+                    const collectPathTarget = this.currentPath?.target as CollectPathTarget
+                    if (collectPathTarget?.canGatherItem()) {
                         const dropAction = collectPathTarget.getDropAction()
                         this.changeActivity(dropAction, () => {
                             this.completeJob()
