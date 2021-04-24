@@ -35,10 +35,9 @@ export abstract class AnimEntity extends BaseEntity {
         // TODO avoid all further state changes and mark as unavailable here
         // TODO publish event: check jobs with this target, update power state...
         EventBus.publishEvent(new EntityDeselected())
-        this.changeActivity(this.getDefaultActivity(), () => {
-            // TODO insert beam animation
-            AnimEntity.moveUp(this, 6 * TILESIZE)
-        })
+        this.changeActivity()
+        // TODO insert beam animation
+        AnimEntity.moveUp(this, 6 * TILESIZE)
     }
 
     private static moveUp(entity: AnimEntity, counter: number) {

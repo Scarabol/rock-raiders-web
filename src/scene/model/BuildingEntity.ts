@@ -27,6 +27,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     upgradeCostOre: number = 0
     upgradeCostBrick: number = 0
     crystalsInUse: number = 0
+    inBeam: boolean = false
 
     constructor(buildingType: Building) {
         super(ResourceManager.getAnimationEntityType(buildingType.aeFile))
@@ -52,6 +53,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     select(): SelectionEvent {
+        if (this.inBeam) return null
         this.selectionFrame.visible = true
         if (!this.selected) {
             this.selected = true
@@ -129,6 +131,9 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     beamUp() {
+        GameState.usedCrystals -= this.crystalsInUse
+        this.crystalsInUse = 0
+        this.inBeam = true
         for (let c = 0; c < this.stats.CostOre; c++) {
             this.worldMgr.addCollectable(new Ore(), this.surfaces[0].getRandomPosition())
         }
@@ -139,6 +144,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
             s.surfaceType = SurfaceType.GROUND
             s.setBuilding(null)
             s.updateTexture()
+            s.neighbors.forEach((n) => n.updateTexture())
         })
         super.beamUp()
     }
