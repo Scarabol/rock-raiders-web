@@ -529,8 +529,8 @@ export class Surface implements Selectable {
     }
 
     dispose() {
-        this.mesh.geometry.dispose()
         this.accessMaterials().forEach(m => m.dispose())
+        this.mesh?.geometry?.dispose()
     }
 
     getFloorHeight(worldX: number, worldZ: number) {
