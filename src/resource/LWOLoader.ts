@@ -10,7 +10,7 @@
  *  -
  */
 
-import { BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, MeshPhongMaterial, Vector3 } from 'three'
+import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, MeshPhongMaterial, Vector3 } from 'three'
 import { decodeFilepath, decodeString, getFilename } from '../core/Util'
 import { ResourceManager } from './ResourceManager'
 import { SEQUENCE_TEXTURE_FRAMERATE } from '../main'
@@ -352,6 +352,8 @@ export class LWOLoader {
             return
         }
 
+        material.shininess = 0
+
         while (offset < chunkSize) {
             const subchunkOffset = chunkOffset + offset
             if (view.getUint8(subchunkOffset) === 0) {
@@ -368,7 +370,6 @@ export class LWOLoader {
                             view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 0) / 255,
                             view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 1) / 255,
                             view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 2) / 255,
-                            view.getUint8(subchunkOffset + SUBCHUNK_HEADER_SIZE + 3) / 255,
                         ]
                         material.color = new Color().fromArray(colorArray)
                         if (this.verbose) console.log('Material color (COLR): ' + colorArray.join(' '))
@@ -376,26 +377,46 @@ export class LWOLoader {
                     case SURF_FLAG:
                         const flags = view.getUint16(subchunkOffset + SUBCHUNK_HEADER_SIZE)
                         if (this.verbose) console.log('Flags (FLAG): ' + flags.toString(2))
+                        // if (this.verbose && flags & LUMINOUS_BIT) console.warn('Flag is set but unhandled: luminous') // flag replaced with LUMI below
+                        if (this.verbose && flags & OUTLINE_BIT) console.warn('Flag is set but unhandled: outline')
+                        if (this.verbose && flags & SMOOTHING_BIT) console.warn('Flag is set but unhandled: smoothing')
+                        if (this.verbose && flags & COLORHIGHLIGHTS_BIT) console.warn('Flag is set but unhandled: colorHighlights')
+                        if (this.verbose && flags & COLORFILTER_BIT) console.warn('Flag is set but unhandled: colorFilter')
+                        if (this.verbose && flags & OPAQUEEDGE_BIT) console.warn('Flag is set but unhandled: opaqueEdge')
+                        if (this.verbose && flags & TRANSPARENTEDGE_BIT) console.warn('Flag is set but unhandled: transparentEdge')
+                        if (this.verbose && flags & SHARPTERMINATOR_BIT) console.warn('Flag is set but unhandled: sharpTerminator')
+                        if (flags & DOUBLESIDED_BIT) material.side = DoubleSide
+                        if (flags & ADDITIVE_BIT) {
+                            material.blending = AdditiveBlending
+                            material.depthWrite = false // otherwise transparent parts "carve out" objects behind
+                        }
+                        if (this.verbose && flags & SHADOWALPHA_BIT) console.warn('Flag is set but unhandled: shadowAlpha')
+                        break
+                    case SURF_EDGE:
+                        const edgeTransparencyThreshold = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)
+                        if (this.verbose) console.warn('Edge transparency threshold (0.0 to 1.0): ' + edgeTransparencyThreshold)
                         break
                     case SURF_LUMI:
-                        const luminosity = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255
+                        const luminosity = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 256
                         if (this.verbose) console.log('Luminosity (LUMI): ' + luminosity)
+                        material.emissiveIntensity = luminosity
                         break
                     case SURF_DIFF:
-                        const diffuse = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255
+                        const diffuse = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 256
                         if (this.verbose) console.log('Diffuse (DIFF): ' + diffuse)
+                        if (!diffuse) material.color = null
                         break
                     case SURF_SPEC:
-                        const specular = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255
+                        const specular = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 256
                         // material.specular = material.color.multiplyScalar(specular);
-                        if (this.verbose) console.log('Specular (SPEC): ' + specular)
+                        if (this.verbose) console.warn('Specular (SPEC): ' + specular)
                         break
                     case SURF_REFL:
                         let reflection = 0
                         if (reflection === SURF_VRFL) {
                             reflection = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)
                         } else {
-                            reflection = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255
+                            reflection = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 256
                         }
                         material.reflectivity = reflection
                         if (this.verbose) console.log('Reflectivity (REFL): ' + material.reflectivity)
@@ -406,36 +427,45 @@ export class LWOLoader {
                         if (subchunkType === SURF_VTRN) {
                             transparency = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)
                         } else {
-                            transparency = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 255
+                            transparency = view.getInt16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 256
                         }
                         material.opacity = 1 - transparency
                         if (this.verbose) console.log('Opacity (TRAN/VTRN): ' + material.opacity)
-                        if (material.opacity < 1) material.transparent = true
+                        material.transparent = material.opacity < 1
                         break
                     case SURF_VLUM:
-                        const luminosity2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)
-                        if (this.verbose) console.log('Luminosity (VLUM): ' + luminosity2)
+                        const vLuminosity = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)
+                        if (this.verbose) console.log('Luminosity (VLUM): ' + vLuminosity)
+                        material.emissiveIntensity = vLuminosity
                         break
                     case SURF_VDIF:
-                        let diffuse2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)
-                        if (this.verbose) console.log('Diffuse (VDIF): ' + diffuse2)
+                        let vDiffuse = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)
+                        if (this.verbose) console.log('Diffuse (VDIF): ' + vDiffuse)
+                        // material.vertexColors = !!vDiffuse // XXX push vertex colors first
                         break
                     case SURF_VSPC:
-                        let specular2 = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)
-                        // material.specular = material.color.multiplyScalar(specular2);
-                        if (this.verbose) console.log('Specular (VSPC): ' + specular2)
+                        let vSpecular = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)
+                        // material.specular = material.color.multiplyScalar(vSpecular);
+                        if (this.verbose) console.warn('Specular (VSPC): ' + vSpecular)
                         break
                     case SURF_TFLG:
                         textureFlags = view.getUint16(subchunkOffset + SUBCHUNK_HEADER_SIZE)
                         if (this.verbose) console.log('Flags (TFLG): ' + textureFlags.toString(2))
+                        if (this.verbose && textureFlags & XAXIS_BIT) console.warn('Flag is set but unhandled: X Axis')
+                        if (this.verbose && textureFlags & YAXIS_BIT) console.warn('Flag is set but unhandled: Y Axis')
+                        if (this.verbose && textureFlags & ZAXIS_BIT) console.warn('Flag is set but unhandled: Z Axis')
+                        if (this.verbose && textureFlags & WORLDCOORDS_BIT) console.warn('Flag is set but unhandled: World Coords')
+                        if (this.verbose && textureFlags & NEGATIVEIMAGE_BIT) console.warn('Flag is set but unhandled: Negative Image')
+                        if (this.verbose && textureFlags & PIXELBLENDING_BIT) console.warn('Flag is set but unhandled: Pixel Blending')
+                        if (this.verbose && textureFlags & ANTIALIASING_BIT) console.log('Flag is set: Antialiasing') // turned on by default
                         break
                     case SURF_TSIZ:
                         textureSize = getVector3AtOffset(view, subchunkOffset + SUBCHUNK_HEADER_SIZE)
-                        if (this.verbose) console.log('Texture size (TSIZ): ' + textureSize.toArray().join(' '))
+                        if (this.verbose) console.warn('Texture size (TSIZ): ' + textureSize.toArray().join(' '))
                         break
                     case SURF_TCTR:
                         textureCenter = getVector3AtOffset(view, subchunkOffset + SUBCHUNK_HEADER_SIZE)
-                        if (this.verbose) console.log('Texture center (TCTR): ' + textureCenter.toArray().join(' '))
+                        if (this.verbose) console.warn('Texture center (TCTR): ' + textureCenter.toArray().join(' '))
                         break
                     case SURF_CTEX:
                     case SURF_DTEX:
@@ -445,6 +475,11 @@ export class LWOLoader {
                     case SURF_BTEX:
                         const textureTypeName = decodeFilepath(new Uint8Array(buffer, subchunkOffset + SUBCHUNK_HEADER_SIZE, subchunkSize))
                         if (this.verbose) console.log('Texture typename: ' + textureTypeName)
+                        // XXX handle different texture types
+                        break
+                    case SURF_TVAL: // always 0 in the game
+                        const textureValue = view.getUint16(subchunkOffset + SUBCHUNK_HEADER_SIZE) / 256
+                        if (this.verbose) console.warn('Texture value (TVAL): ' + textureValue)
                         break
                     case SURF_TCLR:
                         const textureColorArray = [
@@ -467,6 +502,7 @@ export class LWOLoader {
                             textureFilepath = textureFilepath.substring(0, textureFilepath.length - ' (sequence)'.length)
                         }
                         let filename = getFilename(textureFilepath)
+                        material.transparent = !!filename.match(/^a\d+.+.bmp/i)
                         const textureFilename = this.path + filename
                         if (sequenceTexture) {
                             const match = textureFilename.match(/(.+\D)0+(\d+)\..+/)
@@ -475,14 +511,22 @@ export class LWOLoader {
                                 let seqNum = 0
                                 this.sequenceIntervals.push(setInterval(() => {
                                     material.map = ResourceManager.getTexture(sequenceNames[seqNum])
+                                    material.color = null // no need for color, when color map (texture) in use
                                     seqNum++
                                     if (seqNum >= sequenceNames.length) seqNum = 0
                                 }, 1000 / SEQUENCE_TEXTURE_FRAMERATE))
-                                material.transparent = true
                             }
                         }
+                        const lTextureName = textureFilename.toLowerCase()
+                        if (lTextureName === 'miscanims/barrier/a_side.bmp' // workaround (TODO actually never add unknown textures?)
+                            || lTextureName === 'miscanims/barrier/a_top.bmp'
+                            || lTextureName === 'miscanims/barrier/a_bstripes.bmp'
+                            || lTextureName === 'buildings/geo-dome/a_walkie.bmp'
+                            || lTextureName === 'world/shared/teofoilreflections.jpg'
+                            || lTextureName === 'buildings/barracks/wingbase3.bmp') {
+                            break
+                        }
                         material.map = ResourceManager.getTexture(textureFilename)
-                        material.alphaTest = material.transparent ? 0 : 0.5
                         material.color = null // no need for color, when color map (texture) in use
                         break
                     default: // TODO implement all LWO features

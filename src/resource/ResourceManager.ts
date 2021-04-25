@@ -124,11 +124,7 @@ export class ResourceManager {
         const lSharedTextureName = 'world/shared/' + getFilename(lTextureName)
         let imgData = this.getResource(lTextureName) || this.getResource(lSharedTextureName)
         if (!imgData) {
-            if (lTextureName !== 'buildings/geo-dome/a_walkie.bmp' && // ignore known issues
-                lTextureName !== 'world/shared/teofoilreflections.jpg' &&
-                lTextureName !== 'buildings/barracks/wingbase3.bmp') {
-                console.warn('Texture \'' + textureName + '\' (' + lTextureName + ', ' + lSharedTextureName + ') unknown! Using placeholder texture instead')
-            }
+            console.warn('Texture \'' + textureName + '\' (' + lTextureName + ', ' + lSharedTextureName + ') unknown! Using placeholder texture instead')
             ResourceManager.resourceByName[lTextureName] = imgData = createDummyImgData(64, 64)
         }
         const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
