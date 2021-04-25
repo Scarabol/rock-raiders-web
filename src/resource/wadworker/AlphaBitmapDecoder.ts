@@ -364,7 +364,7 @@ class BmpDecoder implements IBitmapImage {
                 if (x * 8 + i < this.width) {
                     const rgb = this.palette[(b >> (7 - i)) & 0x1]
 
-                    this.data[location + i * this.locAlpha] = 0
+                    this.data[location + i * 4 + this.locAlpha] = 0xff
                     this.data[location + i * 4 + this.locBlue] = rgb.blue
                     this.data[location + i * 4 + this.locGreen] = rgb.green
                     this.data[location + i * 4 + this.locRed] = rgb.red
@@ -453,10 +453,10 @@ class BmpDecoder implements IBitmapImage {
                 const first4 = b >> 4
                 let rgb = this.palette[first4]
 
-                this.data[location] = 0
-                this.data[location + 1] = rgb.blue
-                this.data[location + 2] = rgb.green
-                this.data[location + 3] = rgb.red
+                this.data[location + this.locAlpha] = 0xff
+                this.data[location + this.locBlue] = rgb.blue
+                this.data[location + this.locGreen] = rgb.green
+                this.data[location + this.locRed] = rgb.red
 
                 if (x * 2 + 1 >= this.width) {
                     // throw new Error('Something');
@@ -466,10 +466,10 @@ class BmpDecoder implements IBitmapImage {
                 const last4 = b & 0x0f
                 rgb = this.palette[last4]
 
-                this.data[location + 4] = 0
-                this.data[location + 4 + 1] = rgb.blue
-                this.data[location + 4 + 2] = rgb.green
-                this.data[location + 4 + 3] = rgb.red
+                this.data[location + 4 + this.locAlpha] = 0xff
+                this.data[location + 4 + this.locBlue] = rgb.blue
+                this.data[location + 4 + this.locGreen] = rgb.green
+                this.data[location + 4 + this.locRed] = rgb.red
             })
         }
     }
@@ -536,15 +536,10 @@ class BmpDecoder implements IBitmapImage {
                 if (b < this.palette.length) {
                     const rgb = this.palette[b]
 
-                    this.data[location] = 0
-                    this.data[location + 1] = rgb.blue
-                    this.data[location + 2] = rgb.green
-                    this.data[location + 3] = rgb.red
-                } else {
-                    this.data[location] = 0
-                    this.data[location + 1] = 0xff
-                    this.data[location + 2] = 0xff
-                    this.data[location + 3] = 0xff
+                    this.data[location + this.locAlpha] = 0xff
+                    this.data[location + this.locBlue] = rgb.blue
+                    this.data[location + this.locGreen] = rgb.green
+                    this.data[location + this.locRed] = rgb.red
                 }
             })
         }
@@ -574,10 +569,10 @@ class BmpDecoder implements IBitmapImage {
             const green = this.buffer[this.pos++]
             const red = this.buffer[this.pos++]
 
-            this.data[loc + this.locRed] = red
-            this.data[loc + this.locGreen] = green
+            this.data[loc + this.locAlpha] = 0xff
             this.data[loc + this.locBlue] = blue
-            this.data[loc + this.locAlpha] = 0
+            this.data[loc + this.locGreen] = green
+            this.data[loc + this.locRed] = red
         })
     }
 
@@ -586,10 +581,10 @@ class BmpDecoder implements IBitmapImage {
             const loc = line * this.width * 4 + x * 4
             const px = this.readUInt32LE()
 
-            this.data[loc + this.locRed] = this.shiftRed(px)
-            this.data[loc + this.locGreen] = this.shiftGreen(px)
-            this.data[loc + this.locBlue] = this.shiftBlue(px)
             this.data[loc + this.locAlpha] = this.shiftAlpha(px)
+            this.data[loc + this.locBlue] = this.shiftBlue(px)
+            this.data[loc + this.locGreen] = this.shiftGreen(px)
+            this.data[loc + this.locRed] = this.shiftRed(px)
         })
     }
 
@@ -618,10 +613,10 @@ class BmpDecoder implements IBitmapImage {
     private setPixelData(location: number, rgbIndex: number) {
         const {blue, green, red} = this.palette[rgbIndex]
 
-        this.data[location + this.locAlpha] = 0
-        this.data[location + 1 + this.locBlue] = blue
-        this.data[location + 2 + this.locGreen] = green
-        this.data[location + 3 + this.locRed] = red
+        this.data[location + this.locAlpha] = 0xff
+        this.data[location + this.locBlue] = blue
+        this.data[location + this.locGreen] = green
+        this.data[location + this.locRed] = red
 
         return location + 4
     }
@@ -630,14 +625,8 @@ class BmpDecoder implements IBitmapImage {
 export class AlphaBitmapDecoder {
 
     static parse(buffer: Uint8Array): ImageData {
-        const decoder = new BmpDecoder(buffer) // returns data in ABGR order and alpha set 0
-        const data = new Uint8ClampedArray(decoder.data.length)
-        for (let c = 0; c < decoder.data.length; c += 4) {
-            data[c] = decoder.data[c + 3] // red
-            data[c + 1] = decoder.data[c + 2] // green
-            data[c + 2] = decoder.data[c + 1] // blue
-            data[c + 3] = 255 - decoder.data[c] // alpha
-        }
+        const decoder = new BmpDecoder(buffer, {toRGBA: true})
+        const data = new Uint8ClampedArray(decoder.data)
         return new ImageData(data, decoder.width, decoder.height)
     }
 
