@@ -23,10 +23,6 @@ module.exports = (env, argv) => {
                     exclude: /node_modules/,
                 },
                 {
-                    test: /\.worker\.js$/i,
-                    loader: 'worker-loader',
-                },
-                {
                     test: /\.css$/i,
                     use: ['style-loader', 'css-loader'],
                 },

@@ -1,5 +1,4 @@
 import { RepeatWrapping, Texture } from 'three'
-import ResourceWorker from 'worker-loader!./wadworker/Resources'
 import { GameStatsCfg } from '../cfg/GameStatsCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { createContext, createDummyImgData } from '../core/ImageHelper'
@@ -8,11 +7,12 @@ import { AnimationEntityType } from '../scene/model/anim/AnimationEntityType'
 import { AnimEntityLoader } from './AnimEntityLoader'
 import { InitLoadingMessage } from './wadworker/InitLoadingMessage'
 import { iGet } from './wadworker/WadUtil'
-import { WorkerMessage, WorkerMessageType } from './wadworker/WorkerMessage'
+import { WadWorkerMessage } from './wadworker/WadWorkerMessage'
+import { WorkerMessageType } from './wadworker/WorkerMessageType'
 
 export class ResourceManager {
 
-    static worker: ResourceWorker = new ResourceWorker()
+    static worker: Worker = new Worker(new URL('./wadworker/WadWorker', import.meta.url))
     static configuration: any = {}
     static resourceByName: {} = {}
     static fontCache = {}
@@ -28,7 +28,7 @@ export class ResourceManager {
 
     private static startLoading(msg: InitLoadingMessage) {
         this.worker.onmessage = (event) => {
-            const msg: WorkerMessage = event.data
+            const msg: WadWorkerMessage = event.data
             if (msg.type === WorkerMessageType.ASSET) {
                 this.resourceByName[msg.assetName.toLowerCase()] = msg.assetObj
                 this.onAssetLoaded()
