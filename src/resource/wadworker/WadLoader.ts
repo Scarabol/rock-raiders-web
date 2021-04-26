@@ -36,50 +36,24 @@ export class WadLoader {
     }
 
     loadWadTexture(name: string, callback: (obj: ImageData) => any) {
-        function isTranslucentTexture(filename: string): boolean { // TODO check for better approach
-            return !!filename.match(/\d\d\d\..+$/i) || !!filename.match(/^trans/i)
-                || !!filename.match(/telepulse/i) || !!filename.match(/^t_/i)
-                || !!filename.includes('crystalglow') || !!filename.match(/^glin/i)
-                || !!filename.match(/glow.bmp/i) || !!filename.match(/spankle/i)
-                || !!filename.startsWith('rd_')
-        }
-
-        function isAlphaTexture(filename: string): boolean { // TODO check for better approach
-            return !!filename.match(/^a.+/i) || !!filename.match(/\d\.bmp/i) // later one used with dynamite
-        }
-
         const data = this.wad0File.getEntryData(name)
-        const imgData = AlphaBitmapDecoder.parse(data)
-        const filename = getFilename(name)
-        if (isTranslucentTexture(filename)) {
-            for (let n = 0; n < imgData.data.length; n += 4) {
-                if (imgData.data[n] === 255 && imgData.data[n + 1] === 255 && imgData.data[n + 2] === 255) {
-                    // TODO BitmapDecoder not working for sequence textures, surrounding color is white instead of black
-                    imgData.data[n + 3] = 0
-                } else {
-                    imgData.data[n + 3] = Math.max(imgData.data[n], imgData.data[n + 1], imgData.data[n + 2])
-                }
-            }
-        } else if (isAlphaTexture(filename)) {
-            let alpha = { // last pixel defines alpha color
-                r: imgData.data[imgData.data.length - 4],
-                g: imgData.data[imgData.data.length - 3],
-                b: imgData.data[imgData.data.length - 2],
-            }
-            if (filename.toLowerCase() === 'a000_sides.bmp') {
-                alpha = { // FIRST pixel defines alpha color
-                    r: imgData.data[0],
-                    g: imgData.data[1],
-                    b: imgData.data[2],
-                }
-            }
-            for (let n = 0; n < imgData.data.length; n += 4) {
-                if (imgData.data[n] === alpha.r && imgData.data[n + 1] === alpha.g && imgData.data[n + 2] === alpha.b) {
-                    imgData.data[n + 3] = 0
-                }
-            }
+        const alphaIndexMatch = getFilename(name).match(/^a(\d+).+/i)
+        const alphaIndex = alphaIndexMatch ? parseInt(alphaIndexMatch[1]) : null
+        const imgData = AlphaBitmapDecoder.parse(data, alphaIndex)
+        if (name.toLowerCase().startsWith('miscanims/crystal')) { // XXX fix crystal lwo loading
+            callback(WadLoader.grayscaleToGreen(imgData))
+        } else {
+            callback(imgData)
         }
-        callback(imgData)
+    }
+
+    private static grayscaleToGreen(imgData: ImageData): ImageData {
+        const arr = imgData.data
+        for (let c = 0; c < arr.length; c += 4) {
+            arr[c] = 0
+            arr[c + 2] = 0
+        }
+        return imgData
     }
 
     loadAlphaImageAsset(name: string, callback: (obj: ImageData) => any) {

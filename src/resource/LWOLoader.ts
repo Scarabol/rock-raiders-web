@@ -502,7 +502,7 @@ export class LWOLoader {
                             textureFilepath = textureFilepath.substring(0, textureFilepath.length - ' (sequence)'.length)
                         }
                         let filename = getFilename(textureFilepath)
-                        material.transparent = !!filename.match(/^a\d+.+.bmp/i)
+                        material.transparent = material.transparent || !!filename.match(/^a\d+.+.bmp/i)
                         const textureFilename = this.path + filename
                         if (sequenceTexture) {
                             const match = textureFilename.match(/(.+\D)0+(\d+)\..+/)

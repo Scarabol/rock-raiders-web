@@ -1,6 +1,6 @@
 import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { Color, Material, MeshPhongMaterial } from 'three'
+import { AdditiveBlending, Color, Material, MeshPhongMaterial } from 'three'
 import { CollectableEntity, CollectableType } from './CollectableEntity'
 import { Building } from '../../../game/model/entity/building/Building'
 import { SceneManager } from '../../SceneManager'
@@ -13,8 +13,7 @@ export class Crystal extends CollectableEntity {
         const resource2 = ResourceManager.getResource('MiscAnims/Crystal/vlp_greencrystal.lwo')
         const mesh2 = SceneManager.registerMesh(new LWOLoader('MiscAnims/Crystal/').parse(resource2));
         (mesh2.material as Material[]).forEach((mat: MeshPhongMaterial) => {
-            mat.color = new Color(0, 0, 0) // XXX read from LWO file?
-            mat.emissive = new Color(0, 255, 0) // XXX should be luminosity color from mesh file?
+            mat.blending = AdditiveBlending
             mat.depthWrite = false // otherwise transparent parts "carve out" objects behind
             mat.opacity = 0.5 // XXX read from LWO file?
             mat.transparent = mat.opacity < 1

@@ -624,9 +624,15 @@ class BmpDecoder implements IBitmapImage {
 
 export class AlphaBitmapDecoder {
 
-    static parse(buffer: Uint8Array): ImageData {
+    static parse(buffer: Uint8Array, alphaIndex: number = null): ImageData {
         const decoder = new BmpDecoder(buffer, {toRGBA: true})
         const data = new Uint8ClampedArray(decoder.data)
+        if (alphaIndex || alphaIndex === 0) {
+            const alphaColor = decoder.palette?.[alphaIndex] // XXX fails for a102_bigtyre.bmp
+            for (let c = 0; c < decoder.data.length; c += 4) {
+                data[c + 3] = alphaColor?.red === data[c] && alphaColor?.green === data[c + 1] && alphaColor?.blue === data[c + 2] ? 0 : 255
+            }
+        }
         return new ImageData(data, decoder.width, decoder.height)
     }
 
