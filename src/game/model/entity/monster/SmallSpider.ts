@@ -1,12 +1,12 @@
-import { Monster } from './Monster'
-import { ResourceManager } from '../../../../resource/ResourceManager'
 import { Vector2 } from 'three'
-import { NATIVE_FRAMERATE, TILESIZE } from '../../../../main'
 import { getRandom, getRandomInclusive } from '../../../../core/Util'
+import { NATIVE_FRAMERATE, TILESIZE } from '../../../../main'
+import { ResourceManager } from '../../../../resource/ResourceManager'
 import { SurfaceType } from '../../../../scene/model/map/SurfaceType'
-import { GameState } from '../../GameState'
 import { MoveState } from '../../../../scene/model/MoveState'
 import { PathTarget } from '../../../../scene/model/PathTarget'
+import { GameState } from '../../GameState'
+import { Monster } from './Monster'
 
 export class SmallSpider extends Monster {
 

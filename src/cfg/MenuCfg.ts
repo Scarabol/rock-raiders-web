@@ -1,5 +1,5 @@
-import { MenuEntryCfg } from './MenuEntryCfg'
 import { BaseConfig } from './BaseConfig'
+import { MenuEntryCfg } from './MenuEntryCfg'
 
 export class MenuCfg extends BaseConfig {
 

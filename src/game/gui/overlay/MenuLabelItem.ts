@@ -1,6 +1,6 @@
+import { MenuLabelItemCfg } from '../../../cfg/MenuLabelItemCfg'
 import { BaseElement } from '../base/BaseElement'
 import { MenuLayer } from './MenuLayer'
-import { MenuLabelItemCfg } from '../../../cfg/MenuLabelItemCfg'
 
 export class MenuLabelItem extends BaseElement {
 

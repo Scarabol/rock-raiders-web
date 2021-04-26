@@ -1,6 +1,6 @@
-import { BaseConfig } from './BaseConfig'
 import { Building } from '../game/model/entity/building/Building'
 import { ResourceManager } from '../resource/ResourceManager'
+import { BaseConfig } from './BaseConfig'
 
 export class BuildingEntityStats extends BaseConfig {
 

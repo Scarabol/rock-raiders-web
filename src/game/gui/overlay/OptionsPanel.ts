@@ -1,6 +1,6 @@
 import { MenuCfg } from '../../../cfg/MenuCfg'
-import { MenuBasePanel } from './MenuBasePanel'
 import { ScaledLayer } from '../../../screen/ScreenLayer'
+import { MenuBasePanel } from './MenuBasePanel'
 
 export class OptionsPanel extends MenuBasePanel {
 

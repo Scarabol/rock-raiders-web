@@ -1,14 +1,14 @@
-import ResourceWorker from 'worker-loader!./wadworker/Resources'
 import { RepeatWrapping, Texture } from 'three'
-import { AnimationEntityType } from '../scene/model/anim/AnimationEntityType'
-import { InitLoadingMessage } from './wadworker/InitLoadingMessage'
-import { createContext, createDummyImgData } from '../core/ImageHelper'
-import { iGet } from './wadworker/WadUtil'
-import { getFilename } from '../core/Util'
-import { AnimEntityLoader } from './AnimEntityLoader'
-import { BitmapFont } from '../core/BitmapFont'
-import { WorkerMessage, WorkerMessageType } from './wadworker/WorkerMessage'
+import ResourceWorker from 'worker-loader!./wadworker/Resources'
 import { GameStatsCfg } from '../cfg/GameStatsCfg'
+import { BitmapFont } from '../core/BitmapFont'
+import { createContext, createDummyImgData } from '../core/ImageHelper'
+import { getFilename } from '../core/Util'
+import { AnimationEntityType } from '../scene/model/anim/AnimationEntityType'
+import { AnimEntityLoader } from './AnimEntityLoader'
+import { InitLoadingMessage } from './wadworker/InitLoadingMessage'
+import { iGet } from './wadworker/WadUtil'
+import { WorkerMessage, WorkerMessageType } from './wadworker/WorkerMessage'
 
 export class ResourceManager {
 

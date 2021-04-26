@@ -1,15 +1,15 @@
-import { ResourceManager } from '../resource/ResourceManager'
-import { MainMenuLabelButton } from './MainMenuLabelButton'
-import { ScaledLayer } from '../screen/ScreenLayer'
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { BitmapFont } from '../core/BitmapFont'
-import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
-import { MainMenuScreen } from '../screen/MainMenuScreen'
-import { MainMenuIconButton } from './MainMenuIconButton'
-import { MainMenuBaseItem } from './MainMenuBaseItem'
-import { MainMenuLevelButton } from './MainMenuLevelButton'
 import { clearIntervalSafe } from '../core/Util'
+import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { NATIVE_FRAMERATE } from '../main'
+import { ResourceManager } from '../resource/ResourceManager'
+import { MainMenuScreen } from '../screen/MainMenuScreen'
+import { ScaledLayer } from '../screen/ScreenLayer'
+import { MainMenuBaseItem } from './MainMenuBaseItem'
+import { MainMenuIconButton } from './MainMenuIconButton'
+import { MainMenuLabelButton } from './MainMenuLabelButton'
+import { MainMenuLevelButton } from './MainMenuLevelButton'
 
 export class MainMenuLayer extends ScaledLayer {
 

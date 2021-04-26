@@ -1,12 +1,12 @@
-import { IconSubPanel } from './IconSubPanel'
-import { Panel } from '../base/Panel'
 import { EventBus } from '../../../event/EventBus'
-import { GameState } from '../../model/GameState'
-import { Building } from '../../model/entity/building/Building'
-import { TrainJob } from '../../model/job/TrainJob'
+import { EventKey } from '../../../event/EventKeyEnum'
 import { EntityDeselected } from '../../../event/LocalEvents'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
-import { EventKey } from '../../../event/EventKeyEnum'
+import { Building } from '../../model/entity/building/Building'
+import { GameState } from '../../model/GameState'
+import { TrainJob } from '../../model/job/TrainJob'
+import { Panel } from '../base/Panel'
+import { IconSubPanel } from './IconSubPanel'
 
 export class TrainRaiderPanel extends IconSubPanel {
 

@@ -1,5 +1,5 @@
-import { BaseConfig } from './BaseConfig'
 import { Rect } from '../core/Rect'
+import { BaseConfig } from './BaseConfig'
 
 export class DialogCfg extends BaseConfig {
 

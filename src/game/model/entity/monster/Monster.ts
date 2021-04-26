@@ -1,7 +1,7 @@
-import { MovableEntity } from '../../../../scene/model/MovableEntity'
-import { PathTarget } from '../../../../scene/model/PathTarget'
 import { clearTimeoutSafe } from '../../../../core/Util'
 import { MonsterActivity } from '../../../../scene/model/activities/MonsterActivity'
+import { MovableEntity } from '../../../../scene/model/MovableEntity'
+import { PathTarget } from '../../../../scene/model/PathTarget'
 
 export abstract class Monster extends MovableEntity {
 

@@ -1,9 +1,9 @@
-import { SurfaceJob } from './SurfaceJob'
+import { Surface } from '../../../../scene/model/map/Surface'
+import { PathTarget } from '../../../../scene/model/PathTarget'
+import { RaiderTool } from '../../../../scene/model/RaiderTool'
 import { JobType } from '../JobType'
 import { PriorityIdentifier } from '../PriorityIdentifier'
-import { RaiderTool } from '../../../../scene/model/RaiderTool'
-import { PathTarget } from '../../../../scene/model/PathTarget'
-import { Surface } from '../../../../scene/model/map/Surface'
+import { SurfaceJob } from './SurfaceJob'
 
 export class ReinforceJob extends SurfaceJob {
 

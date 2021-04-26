@@ -1,13 +1,13 @@
-import { BaseEntity } from '../BaseEntity'
-import { GameState } from '../../../game/model/GameState'
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
-import { Carryable } from './Carryable'
-import { CollectJob } from '../../../game/model/job/CollectJob'
-import { CollectPathTarget } from '../CollectionTarget'
 import { Building } from '../../../game/model/entity/building/Building'
-import { BuildingSite } from '../BuildingSite'
+import { GameState } from '../../../game/model/GameState'
+import { CollectJob } from '../../../game/model/job/CollectJob'
 import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
+import { BaseEntity } from '../BaseEntity'
+import { BuildingSite } from '../BuildingSite'
+import { CollectPathTarget } from '../CollectionTarget'
+import { Carryable } from './Carryable'
 
 export abstract class CollectableEntity extends BaseEntity implements Carryable {
 

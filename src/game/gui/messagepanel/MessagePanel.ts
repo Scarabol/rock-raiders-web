@@ -1,12 +1,12 @@
+import { PanelCfg } from '../../../cfg/PanelsCfg'
+import { clearTimeoutSafe } from '../../../core/Util'
+import { EventBus } from '../../../event/EventBus'
+import { EventKey } from '../../../event/EventKeyEnum'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { GameState } from '../../model/GameState'
 import { Panel } from '../base/Panel'
-import { PanelCfg } from '../../../cfg/PanelsCfg'
-import { TextInfoMessageConfig } from './TextInfoMessageConfig'
-import { EventBus } from '../../../event/EventBus'
 import { TextInfoMessage } from './TextInfoMessage'
-import { clearTimeoutSafe } from '../../../core/Util'
-import { EventKey } from '../../../event/EventKeyEnum'
+import { TextInfoMessageConfig } from './TextInfoMessageConfig'
 
 export class MessagePanel extends Panel {
 

@@ -1,13 +1,13 @@
-import { Button } from '../base/Button'
-import { WorldEvent } from '../../../event/WorldEvents'
-import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
 import { InfoButtonCfg } from '../../../cfg/ButtonsCfg'
-import { InfoDockPanel } from './InfoDockPanel'
+import { clearTimeoutSafe } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
+import { EventKey } from '../../../event/EventKeyEnum'
+import { WorldEvent } from '../../../event/WorldEvents'
 import { WorldLocationEvent } from '../../../event/WorldLocationEvent'
 import { NATIVE_FRAMERATE } from '../../../main'
-import { clearTimeoutSafe } from '../../../core/Util'
-import { EventKey } from '../../../event/EventKeyEnum'
+import { Button } from '../base/Button'
+import { InfoDockPanel } from './InfoDockPanel'
+import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
 
 export class InfoDockButton extends Button {
 

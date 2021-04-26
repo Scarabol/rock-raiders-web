@@ -1,7 +1,7 @@
 import { BaseConfig } from './BaseConfig'
+import { MenuCycleItemCfg } from './MenuCycleItemCfg'
 import { MenuLabelItemCfg } from './MenuLabelItemCfg'
 import { MenuSliderItemCfg } from './MenuSliderItemCfg'
-import { MenuCycleItemCfg } from './MenuCycleItemCfg'
 
 export class MenuEntryCfg extends BaseConfig {
 

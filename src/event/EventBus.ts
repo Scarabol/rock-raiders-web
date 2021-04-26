@@ -1,5 +1,5 @@
-import { GameEvent } from './GameEvent'
 import { EventKey } from './EventKeyEnum'
+import { GameEvent } from './GameEvent'
 
 export class EventBus {
 

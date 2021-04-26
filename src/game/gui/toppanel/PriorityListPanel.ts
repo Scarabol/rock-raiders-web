@@ -1,12 +1,12 @@
-import { Panel } from '../base/Panel'
 import { PanelCfg } from '../../../cfg/PanelsCfg'
-import { Button } from '../base/Button'
 import { GameState } from '../../model/GameState'
+import { PriorityIdentifier } from '../../model/job/PriorityIdentifier'
+import { PriorityEntry } from '../../model/job/PriorityList'
+import { Button } from '../base/Button'
+import { Panel } from '../base/Panel'
 import { ButtonPriorityListCfg } from './ButtonPriorityListCfg'
 import { PriorityButtonsConfig } from './PriorityButtonsConfig'
 import { PriorityPositionsEntry } from './PriorityPositionsEntry'
-import { PriorityIdentifier } from '../../model/job/PriorityIdentifier'
-import { PriorityEntry } from '../../model/job/PriorityList'
 
 export class PriorityListPanel extends Panel {
 

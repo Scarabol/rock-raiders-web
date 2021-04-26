@@ -1,14 +1,14 @@
-import { GameState } from '../../model/GameState'
-import { ResourceManager } from '../../../resource/ResourceManager'
-import { Panel } from '../base/Panel'
-import { EventBus } from '../../../event/EventBus'
-import { MaterialAmountChanged } from '../../../event/WorldEvents'
-import { CollectableType } from '../../../scene/model/collect/CollectableEntity'
-import { PanelCfg } from '../../../cfg/PanelsCfg'
 import { BaseConfig } from '../../../cfg/BaseConfig'
 import { ButtonCfg } from '../../../cfg/ButtonsCfg'
-import { SideBarLabel } from './SideBarLabel'
+import { PanelCfg } from '../../../cfg/PanelsCfg'
+import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { MaterialAmountChanged } from '../../../event/WorldEvents'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { CollectableType } from '../../../scene/model/collect/CollectableEntity'
+import { GameState } from '../../model/GameState'
+import { Panel } from '../base/Panel'
+import { SideBarLabel } from './SideBarLabel'
 
 export class PanelCrystalSideBar extends Panel {
 

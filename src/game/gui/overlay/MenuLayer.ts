@@ -1,10 +1,10 @@
 import { MenuEntryCfg } from '../../../cfg/MenuEntryCfg'
+import { BitmapFont } from '../../../core/BitmapFont'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BaseElement } from '../base/BaseElement'
 import { MenuCycleItem } from './MenuCycleItem'
-import { MenuSliderItem } from './MenuSliderItem'
 import { MenuLabelItem } from './MenuLabelItem'
-import { BitmapFont } from '../../../core/BitmapFont'
+import { MenuSliderItem } from './MenuSliderItem'
 
 export class MenuLayer extends BaseElement {
 

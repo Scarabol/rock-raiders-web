@@ -1,13 +1,13 @@
-import { IconSubPanel } from './IconSubPanel'
-import { Panel } from '../base/Panel'
-import { GameState } from '../../model/GameState'
-import { IconPanelButton } from './IconPanelButton'
-import { Building } from '../../model/entity/building/Building'
-import { GetToolJob } from '../../model/job/GetToolJob'
 import { EventBus } from '../../../event/EventBus'
 import { EntityDeselected } from '../../../event/LocalEvents'
-import { RaiderTool } from '../../../scene/model/RaiderTool'
 import { PathTarget } from '../../../scene/model/PathTarget'
+import { RaiderTool } from '../../../scene/model/RaiderTool'
+import { Building } from '../../model/entity/building/Building'
+import { GameState } from '../../model/GameState'
+import { GetToolJob } from '../../model/job/GetToolJob'
+import { Panel } from '../base/Panel'
+import { IconPanelButton } from './IconPanelButton'
+import { IconSubPanel } from './IconSubPanel'
 
 export class GetToolPanel extends IconSubPanel {
 

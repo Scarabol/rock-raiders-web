@@ -1,11 +1,11 @@
-import { Job } from './Job'
-import { RaiderSkill } from '../../../scene/model/RaiderSkill'
-import { JobType } from './JobType'
-import { PathTarget } from '../../../scene/model/PathTarget'
-import { Surface } from '../../../scene/model/map/Surface'
+import { Vector2 } from 'three'
 import { Area } from '../../../core/Area'
 import { JOB_ACTION_RANGE, TILESIZE } from '../../../main'
-import { Vector2 } from 'three'
+import { Surface } from '../../../scene/model/map/Surface'
+import { PathTarget } from '../../../scene/model/PathTarget'
+import { RaiderSkill } from '../../../scene/model/RaiderSkill'
+import { Job } from './Job'
+import { JobType } from './JobType'
 
 export class TrainJob extends Job {
 

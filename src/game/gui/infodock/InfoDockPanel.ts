@@ -1,12 +1,12 @@
+import { PanelCfg } from '../../../cfg/PanelsCfg'
+import { EventKey } from '../../../event/EventKeyEnum'
+import { LandslideEvent } from '../../../event/WorldLocationEvent'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
-import { PanelCfg } from '../../../cfg/PanelsCfg'
 import { ButtonInfoDockCfg } from './ButtonInfoDockCfg'
-import { InfoMessagesConfig } from './InfoMessagesConfig'
-import { LandslideEvent } from '../../../event/WorldLocationEvent'
 import { InfoDockButton } from './InfoDockButton'
+import { InfoMessagesConfig } from './InfoMessagesConfig'
 import { InformationPanel } from './InformationPanel'
-import { EventKey } from '../../../event/EventKeyEnum'
 
 export class InfoDockPanel extends Panel {
 

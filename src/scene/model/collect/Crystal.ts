@@ -1,10 +1,10 @@
+import { AdditiveBlending, Color, Material, MeshPhongMaterial } from 'three'
+import { Building } from '../../../game/model/entity/building/Building'
+import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
 import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { AdditiveBlending, Color, Material, MeshPhongMaterial } from 'three'
-import { CollectableEntity, CollectableType } from './CollectableEntity'
-import { Building } from '../../../game/model/entity/building/Building'
 import { SceneManager } from '../../SceneManager'
-import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
+import { CollectableEntity, CollectableType } from './CollectableEntity'
 
 export class Crystal extends CollectableEntity {
 

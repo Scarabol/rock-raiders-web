@@ -1,7 +1,7 @@
-import { Panel } from '../base/Panel'
 import { PanelCfg } from '../../../cfg/PanelsCfg'
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { BitmapFont } from '../../../core/BitmapFont'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { Panel } from '../base/Panel'
 
 export class InformationPanel extends Panel {
 

@@ -1,7 +1,7 @@
 import { Vector2 } from 'three'
+import { PathTarget } from '../../../scene/model/PathTarget'
 import { Job } from './Job'
 import { JobType } from './JobType'
-import { PathTarget } from '../../../scene/model/PathTarget'
 
 export class MoveJob extends Job {
 

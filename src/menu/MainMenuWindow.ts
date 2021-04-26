@@ -1,5 +1,5 @@
-import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { BitmapFont } from '../core/BitmapFont'
+import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class MainMenuWindow extends MainMenuBaseItem {
 

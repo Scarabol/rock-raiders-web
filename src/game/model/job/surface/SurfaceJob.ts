@@ -1,9 +1,9 @@
-import { PublicJob } from '../Job'
-import { RaiderTool } from '../../../../scene/model/RaiderTool'
-import { RaiderSkill } from '../../../../scene/model/RaiderSkill'
-import { JobType } from '../JobType'
 import { FulfillerEntity } from '../../../../scene/model/FulfillerEntity'
 import { Surface } from '../../../../scene/model/map/Surface'
+import { RaiderSkill } from '../../../../scene/model/RaiderSkill'
+import { RaiderTool } from '../../../../scene/model/RaiderTool'
+import { PublicJob } from '../Job'
+import { JobType } from '../JobType'
 
 export abstract class SurfaceJob extends PublicJob {
 

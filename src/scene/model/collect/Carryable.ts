@@ -1,7 +1,7 @@
 import { Group, Vector2 } from 'three'
-import { CollectableType } from './CollectableEntity'
 import { WorldManager } from '../../WorldManager'
 import { PathTarget } from '../PathTarget'
+import { CollectableType } from './CollectableEntity'
 
 export interface Carryable {
 

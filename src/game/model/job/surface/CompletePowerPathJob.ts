@@ -1,11 +1,11 @@
 import { CollectableEntity } from '../../../../scene/model/collect/CollectableEntity'
 import { Surface } from '../../../../scene/model/map/Surface'
 import { SurfaceType } from '../../../../scene/model/map/SurfaceType'
-import { PriorityIdentifier } from '../PriorityIdentifier'
-import { JobType } from '../JobType'
 import { PathTarget } from '../../../../scene/model/PathTarget'
-import { SurfaceJob } from './SurfaceJob'
 import { RaiderTool } from '../../../../scene/model/RaiderTool'
+import { JobType } from '../JobType'
+import { PriorityIdentifier } from '../PriorityIdentifier'
+import { SurfaceJob } from './SurfaceJob'
 
 export class CompletePowerPathJob extends SurfaceJob {
 

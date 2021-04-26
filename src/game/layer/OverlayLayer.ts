@@ -1,14 +1,14 @@
+import { BriefingPanelCfg } from '../../cfg/BriefingPanelCfg'
+import { MenuCfg } from '../../cfg/MenuCfg'
+import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
+import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { DEV_MODE } from '../../main'
+import { ResourceManager } from '../../resource/ResourceManager'
+import { Panel } from '../gui/base/Panel'
 import { BriefingPanel } from '../gui/briefing/BriefingPanel'
 import { OptionsPanel } from '../gui/overlay/OptionsPanel'
 import { PausePanel } from '../gui/overlay/PausePanel'
-import { ResourceManager } from '../../resource/ResourceManager'
-import { MenuCfg } from '../../cfg/MenuCfg'
-import { BriefingPanelCfg } from '../../cfg/BriefingPanelCfg'
-import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
-import { Panel } from '../gui/base/Panel'
 import { GuiBaseLayer } from './GuiBaseLayer'
-import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
-import { DEV_MODE } from '../../main'
 
 export class OverlayLayer extends GuiBaseLayer {
 

@@ -1,13 +1,13 @@
-import { AnimEntity } from './anim/AnimEntity'
 import { Vector2, Vector3 } from 'three'
-import { AnimationEntityType } from './anim/AnimationEntityType'
 import { MovableEntityStats } from '../../cfg/MovableEntityStats'
-import { EntityStep } from './EntityStep'
-import { MoveState } from './MoveState'
 import { JOB_ACTION_RANGE } from '../../main'
-import { TerrainPath } from './map/TerrainPath'
-import { PathTarget } from './PathTarget'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
+import { AnimationEntityType } from './anim/AnimationEntityType'
+import { AnimEntity } from './anim/AnimEntity'
+import { EntityStep } from './EntityStep'
+import { TerrainPath } from './map/TerrainPath'
+import { MoveState } from './MoveState'
+import { PathTarget } from './PathTarget'
 
 export abstract class MovableEntity extends AnimEntity {
 

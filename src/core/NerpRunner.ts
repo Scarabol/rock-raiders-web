@@ -5,8 +5,8 @@
  * https://kb.rockraidersunited.com/NERPs_documentation#Labels
  *
  */
-import { GameResultState, GameState } from '../game/model/GameState'
 import { Building } from '../game/model/entity/building/Building'
+import { GameResultState, GameState } from '../game/model/GameState'
 import { clearIntervalSafe } from './Util'
 
 export class NerpRunner {

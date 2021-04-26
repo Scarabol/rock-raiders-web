@@ -1,10 +1,10 @@
 import { Vector2 } from 'three'
-import { Surface } from './map/Surface'
-import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
 import { EventBus } from '../../event/EventBus'
 import { JobCreateEvent } from '../../event/WorldEvents'
-import { CompletePowerPathJob } from '../../game/model/job/surface/CompletePowerPathJob'
 import { GameState } from '../../game/model/GameState'
+import { CompletePowerPathJob } from '../../game/model/job/surface/CompletePowerPathJob'
+import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
+import { Surface } from './map/Surface'
 
 export class BuildingSite {
 

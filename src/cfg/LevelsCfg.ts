@@ -1,8 +1,8 @@
+import { iGet } from '../core/Util'
+import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseConfig } from './BaseConfig'
 import { ConfigColor } from './ConfigColor'
 import { ObjectiveImageCfg } from './ObjectiveImageCfg'
-import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
-import { iGet } from '../core/Util'
 
 export class LevelsCfg {
 

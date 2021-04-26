@@ -12,9 +12,9 @@
 
 import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, MeshPhongMaterial, Vector3 } from 'three'
 import { decodeFilepath, decodeString, getFilename } from '../core/Util'
-import { ResourceManager } from './ResourceManager'
 import { SEQUENCE_TEXTURE_FRAMERATE } from '../main'
 import { AnimatedMesh } from './AnimatedMesh'
+import { ResourceManager } from './ResourceManager'
 
 // HEADER SPEC //
 const LWO_MAGIC = 0x4C574F42 // "LWOB"

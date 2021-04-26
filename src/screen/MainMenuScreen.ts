@@ -1,8 +1,8 @@
-import { BaseScreen } from './BaseScreen'
-import { ResourceManager } from '../resource/ResourceManager'
 import { MenuCfg } from '../cfg/MenuCfg'
-import { MainMenuLayer } from '../menu/MainMenuLayer'
 import { LevelSelectLayer } from '../menu/LevelSelectLayer'
+import { MainMenuLayer } from '../menu/MainMenuLayer'
+import { ResourceManager } from '../resource/ResourceManager'
+import { BaseScreen } from './BaseScreen'
 
 export class MainMenuScreen extends BaseScreen {
 

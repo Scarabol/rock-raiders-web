@@ -1,5 +1,5 @@
-import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { createContext } from '../core/ImageHelper'
+import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class MainMenuPanel extends MainMenuBaseItem {
 

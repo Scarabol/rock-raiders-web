@@ -1,15 +1,15 @@
 import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
-import { AnimClip } from './AnimClip'
-import { clearTimeoutSafe, iGet } from '../../../core/Util'
-import { AnimationEntityType } from './AnimationEntityType'
-import { BaseEntity } from '../BaseEntity'
-import { AnimSubObj } from './AnimSubObj'
 import { createContext } from '../../../core/ImageHelper'
-import { BaseActivity } from '../activities/BaseActivity'
-import { NATIVE_FRAMERATE, TILESIZE } from '../../../main'
+import { clearTimeoutSafe, iGet } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { EntityDeselected } from '../../../event/LocalEvents'
+import { NATIVE_FRAMERATE, TILESIZE } from '../../../main'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
+import { BaseActivity } from '../activities/BaseActivity'
+import { BaseEntity } from '../BaseEntity'
+import { AnimationEntityType } from './AnimationEntityType'
+import { AnimClip } from './AnimClip'
+import { AnimSubObj } from './AnimSubObj'
 
 export abstract class AnimEntity extends BaseEntity {
 

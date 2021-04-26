@@ -1,12 +1,12 @@
-import { MainMenuLayer } from './MainMenuLayer'
 import { LevelEntryCfg, LevelsCfg } from '../cfg/LevelsCfg'
-import { ResourceManager } from '../resource/ResourceManager'
-import { MainMenuLevelButton } from './MainMenuLevelButton'
-import { MainMenuScreen } from '../screen/MainMenuScreen'
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { iGet } from '../core/Util'
-import { MainMenuPanel } from './MainMenuPanel'
+import { ResourceManager } from '../resource/ResourceManager'
+import { MainMenuScreen } from '../screen/MainMenuScreen'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
+import { MainMenuLayer } from './MainMenuLayer'
+import { MainMenuLevelButton } from './MainMenuLevelButton'
+import { MainMenuPanel } from './MainMenuPanel'
 import { MainMenuWindow } from './MainMenuWindow'
 
 export class LevelSelectLayer extends MainMenuLayer {

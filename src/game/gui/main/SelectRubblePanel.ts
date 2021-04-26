@@ -1,11 +1,11 @@
+import { EventBus } from '../../../event/EventBus'
+import { EventKey } from '../../../event/EventKeyEnum'
+import { EntityDeselected } from '../../../event/LocalEvents'
+import { JobCreateEvent } from '../../../event/WorldEvents'
+import { GameState } from '../../model/GameState'
+import { ClearRubbleJob } from '../../model/job/surface/ClearRubbleJob'
 import { Panel } from '../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
-import { GameState } from '../../model/GameState'
-import { EventBus } from '../../../event/EventBus'
-import { JobCreateEvent } from '../../../event/WorldEvents'
-import { EntityDeselected } from '../../../event/LocalEvents'
-import { EventKey } from '../../../event/EventKeyEnum'
-import { ClearRubbleJob } from '../../model/job/surface/ClearRubbleJob'
 
 export class SelectRubblePanel extends SelectBasePanel {
 

@@ -1,5 +1,5 @@
-import { BaseElement } from '../base/BaseElement'
 import { ButtonCfg } from '../../../cfg/ButtonsCfg'
+import { BaseElement } from '../base/BaseElement'
 
 export class SideBarLabel extends BaseElement {
 

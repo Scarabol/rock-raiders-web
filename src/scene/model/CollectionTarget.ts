@@ -1,14 +1,14 @@
 import { Vector2 } from 'three'
-import { RaiderActivity } from './activities/RaiderActivity'
-import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
-import { PathTarget } from './PathTarget'
-import { BuildingSite } from './BuildingSite'
-import { Building } from '../../game/model/entity/building/Building'
-import { BuildingEntity } from './BuildingEntity'
-import { BuildingActivity } from './activities/BuildingActivity'
-import { GameState } from '../../game/model/GameState'
 import { EventBus } from '../../event/EventBus'
 import { MaterialAmountChanged } from '../../event/WorldEvents'
+import { Building } from '../../game/model/entity/building/Building'
+import { GameState } from '../../game/model/GameState'
+import { BuildingActivity } from './activities/BuildingActivity'
+import { RaiderActivity } from './activities/RaiderActivity'
+import { BuildingEntity } from './BuildingEntity'
+import { BuildingSite } from './BuildingSite'
+import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
+import { PathTarget } from './PathTarget'
 
 export interface CollectionTarget {
 

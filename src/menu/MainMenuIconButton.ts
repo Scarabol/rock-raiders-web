@@ -1,7 +1,7 @@
-import { MainMenuLayer } from './MainMenuLayer'
-import { MainMenuBaseItem } from './MainMenuBaseItem'
-import { ResourceManager } from '../resource/ResourceManager'
 import { MenuLabelItemCfg } from '../cfg/MenuLabelItemCfg'
+import { ResourceManager } from '../resource/ResourceManager'
+import { MainMenuBaseItem } from './MainMenuBaseItem'
+import { MainMenuLayer } from './MainMenuLayer'
 
 export class MainMenuIconButton extends MainMenuBaseItem {
 

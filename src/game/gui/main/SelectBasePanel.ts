@@ -1,7 +1,7 @@
-import { IconSubPanel } from './IconSubPanel'
-import { Panel } from '../base/Panel'
 import { EventBus } from '../../../event/EventBus'
 import { EntityDeselected } from '../../../event/LocalEvents'
+import { Panel } from '../base/Panel'
+import { IconSubPanel } from './IconSubPanel'
 
 export class SelectBasePanel extends IconSubPanel {
 

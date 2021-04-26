@@ -1,8 +1,8 @@
-import { Job } from './Job'
 import { Vector2 } from 'three'
-import { RaiderTool } from '../../../scene/model/RaiderTool'
-import { JobType } from './JobType'
 import { PathTarget } from '../../../scene/model/PathTarget'
+import { RaiderTool } from '../../../scene/model/RaiderTool'
+import { Job } from './Job'
+import { JobType } from './JobType'
 
 export class GetToolJob extends Job {
 

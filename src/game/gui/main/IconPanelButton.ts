@@ -1,6 +1,6 @@
+import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
-import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
 
 export class IconPanelButton extends Button {
 

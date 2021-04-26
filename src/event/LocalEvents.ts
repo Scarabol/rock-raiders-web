@@ -1,9 +1,9 @@
-import { GameEvent } from './GameEvent'
 import { BuildingEntity } from '../scene/model/BuildingEntity'
 import { Surface } from '../scene/model/map/Surface'
 import { Raider } from '../scene/model/Raider'
 import { VehicleEntity } from '../scene/model/VehicleEntity'
 import { EventKey } from './EventKeyEnum'
+import { GameEvent } from './GameEvent'
 
 export class LocalEvent extends GameEvent {
 

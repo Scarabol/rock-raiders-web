@@ -1,9 +1,9 @@
-import { Panel } from '../base/Panel'
+import { BriefingPanelCfg } from '../../../cfg/BriefingPanelCfg'
+import { ObjectiveImageCfg } from '../../../cfg/ObjectiveImageCfg'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { Button } from '../base/Button'
-import { BriefingPanelCfg } from '../../../cfg/BriefingPanelCfg'
+import { Panel } from '../base/Panel'
 import { MessagePanel } from '../messagepanel/MessagePanel'
-import { ObjectiveImageCfg } from '../../../cfg/ObjectiveImageCfg'
 
 export class BriefingPanel extends Panel {
 

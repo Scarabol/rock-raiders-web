@@ -1,6 +1,6 @@
-import { MainMenuLayer } from './MainMenuLayer'
-import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MenuLabelItemCfg } from '../cfg/MenuLabelItemCfg'
+import { MainMenuBaseItem } from './MainMenuBaseItem'
+import { MainMenuLayer } from './MainMenuLayer'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {
 

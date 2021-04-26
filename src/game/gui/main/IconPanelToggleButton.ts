@@ -1,7 +1,7 @@
-import { BaseElement } from '../base/BaseElement'
 import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
-import { IconPanelButton } from './IconPanelButton'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { BaseElement } from '../base/BaseElement'
+import { IconPanelButton } from './IconPanelButton'
 
 export class IconPanelToggleButton extends IconPanelButton {
 

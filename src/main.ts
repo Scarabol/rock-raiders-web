@@ -1,10 +1,10 @@
+import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
+import { GameState } from './game/model/GameState'
 import { ResourceManager } from './resource/ResourceManager'
+import { GameScreen } from './screen/GameScreen'
 import { LoadingScreen } from './screen/LoadingScreen'
 import { MainMenuScreen } from './screen/MainMenuScreen'
-import { GameScreen } from './screen/GameScreen'
 import { RewardScreen } from './screen/RewardScreen'
-import { GameState } from './game/model/GameState'
-import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
 
 // define constants
 

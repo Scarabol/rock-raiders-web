@@ -1,12 +1,12 @@
+import { LevelEntryCfg, LevelsCfg } from '../../cfg/LevelsCfg'
+import { MenuCfg } from '../../cfg/MenuCfg'
+import { RewardCfg } from '../../cfg/RewardCfg'
+import { AlphaBitmapDecoder } from './AlphaBitmapDecoder'
 import { CfgFileParser } from './CfgFileParser'
+import { ObjectiveTextParser } from './ObjectiveTextParser'
+import { RonFile } from './RonFile'
 import { WadFile } from './WadFile'
 import { getFilename, getPath, iGet } from './WadUtil'
-import { RonFile } from './RonFile'
-import { AlphaBitmapDecoder } from './AlphaBitmapDecoder'
-import { MenuCfg } from '../../cfg/MenuCfg'
-import { LevelEntryCfg, LevelsCfg } from '../../cfg/LevelsCfg'
-import { RewardCfg } from '../../cfg/RewardCfg'
-import { ObjectiveTextParser } from './ObjectiveTextParser'
 
 export class WadLoader {
 

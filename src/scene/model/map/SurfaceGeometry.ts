@@ -1,6 +1,6 @@
 import { BufferGeometry, Vector2, Vector3 } from 'three'
-import { WALL_TYPE } from './Surface'
 import { BufferAttribute } from 'three/src/core/BufferAttribute'
+import { WALL_TYPE } from './Surface'
 
 export class SurfaceGeometry {
 

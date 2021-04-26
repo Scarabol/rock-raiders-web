@@ -1,10 +1,10 @@
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
+import { PathTarget } from '../../../scene/model/PathTarget'
 import { RaiderSkill } from '../../../scene/model/RaiderSkill'
 import { RaiderTool } from '../../../scene/model/RaiderTool'
-import { JobType } from './JobType'
 import { JobState } from './JobState'
+import { JobType } from './JobType'
 import { PriorityIdentifier } from './PriorityIdentifier'
-import { PathTarget } from '../../../scene/model/PathTarget'
 
 export abstract class Job {
 

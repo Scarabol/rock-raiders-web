@@ -1,9 +1,9 @@
-import { BaseConfig } from './BaseConfig'
+import { ButtonInfoDockCfg } from '../game/gui/infodock/ButtonInfoDockCfg'
 import { ButtonRadarCfg } from '../game/gui/radar/RadarPanel'
 import { ButtonCrystalSideBarCfg } from '../game/gui/sidebar/PanelCrystalSideBar'
-import { ButtonInfoDockCfg } from '../game/gui/infodock/ButtonInfoDockCfg'
 import { ButtonPriorityListCfg } from '../game/gui/toppanel/ButtonPriorityListCfg'
 import { ButtonTopCfg } from '../game/gui/toppanel/ButtonTopCfg'
+import { BaseConfig } from './BaseConfig'
 
 export class ButtonsCfg extends BaseConfig {
 

@@ -1,5 +1,5 @@
-import { BaseElement } from '../base/BaseElement'
 import { MenuCycleItemCfg } from '../../../cfg/MenuCycleItemCfg'
+import { BaseElement } from '../base/BaseElement'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuCycleItem extends BaseElement {

@@ -1,7 +1,7 @@
-import { Panel } from '../base/Panel'
-import { MenuLayer } from './MenuLayer'
 import { MenuCfg } from '../../../cfg/MenuCfg'
 import { ScaledLayer } from '../../../screen/ScreenLayer'
+import { Panel } from '../base/Panel'
+import { MenuLayer } from './MenuLayer'
 
 export class MenuBasePanel extends Panel {
 

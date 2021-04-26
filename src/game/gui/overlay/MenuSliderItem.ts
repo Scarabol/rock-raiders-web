@@ -1,8 +1,8 @@
-import { BaseElement } from '../base/BaseElement'
+import { BaseButtonCfg } from '../../../cfg/ButtonsCfg'
 import { MenuSliderItemCfg } from '../../../cfg/MenuSliderItemCfg'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
-import { BaseButtonCfg } from '../../../cfg/ButtonsCfg'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuSliderItem extends BaseElement {

@@ -1,6 +1,6 @@
+import { PanelCfg } from '../../../cfg/PanelsCfg'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
-import { PanelCfg } from '../../../cfg/PanelsCfg'
 import { ToggleButton } from '../base/ToggleButton'
 import { ButtonTopCfg } from './ButtonTopCfg'
 

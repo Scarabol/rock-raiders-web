@@ -6,13 +6,13 @@
  * File format description: http://www.martinreddy.net/gfx/3d/LWSC.txt
  */
 
-import { AnimClip } from '../scene/model/anim/AnimClip'
-import { AnimSubObj } from '../scene/model/anim/AnimSubObj'
 import { Group } from 'three'
 import { getFilename } from '../core/Util'
-import { ResourceManager } from './ResourceManager'
-import { LWOLoader } from './LWOLoader'
+import { AnimClip } from '../scene/model/anim/AnimClip'
+import { AnimSubObj } from '../scene/model/anim/AnimSubObj'
 import { SceneManager } from '../scene/SceneManager'
+import { LWOLoader } from './LWOLoader'
+import { ResourceManager } from './ResourceManager'
 
 export class LWSCLoader {
 

@@ -1,5 +1,5 @@
-import { NerpRunner } from './NerpRunner'
 import { ResourceManager } from '../resource/ResourceManager'
+import { NerpRunner } from './NerpRunner'
 
 export class NerpParser {
 

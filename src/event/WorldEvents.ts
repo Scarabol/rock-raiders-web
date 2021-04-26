@@ -1,12 +1,12 @@
 import { PublicJob } from '../game/model/job/Job'
-import { CollectableType } from '../scene/model/collect/CollectableEntity'
 import { AnimEntity } from '../scene/model/anim/AnimEntity'
-import { Surface } from '../scene/model/map/Surface'
 import { BuildingEntity } from '../scene/model/BuildingEntity'
+import { CollectableType } from '../scene/model/collect/CollectableEntity'
 import { FulfillerEntity } from '../scene/model/FulfillerEntity'
+import { Surface } from '../scene/model/map/Surface'
 import { RaiderSkill } from '../scene/model/RaiderSkill'
-import { GameEvent } from './GameEvent'
 import { EventKey } from './EventKeyEnum'
+import { GameEvent } from './GameEvent'
 
 export class WorldEvent extends GameEvent {
 

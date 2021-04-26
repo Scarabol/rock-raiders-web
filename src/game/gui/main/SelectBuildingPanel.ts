@@ -1,11 +1,11 @@
-import { Panel } from '../base/Panel'
-import { SelectBasePanel } from './SelectBasePanel'
-import { EventBus } from '../../../event/EventBus'
-import { GameState } from '../../model/GameState'
-import { EventKey } from '../../../event/EventKeyEnum'
 import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
+import { EventBus } from '../../../event/EventBus'
+import { EventKey } from '../../../event/EventKeyEnum'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { GameState } from '../../model/GameState'
+import { Panel } from '../base/Panel'
 import { IconPanelToggleButton } from './IconPanelToggleButton'
+import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectBuildingPanel extends SelectBasePanel {
 

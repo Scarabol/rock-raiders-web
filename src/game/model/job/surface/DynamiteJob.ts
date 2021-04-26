@@ -1,10 +1,10 @@
 import { Dynamite } from '../../../../scene/model/collect/Dynamite'
 import { Surface } from '../../../../scene/model/map/Surface'
 import { PathTarget } from '../../../../scene/model/PathTarget'
-import { SurfaceJob } from './SurfaceJob'
-import { JobType } from '../JobType'
 import { RaiderSkill } from '../../../../scene/model/RaiderSkill'
+import { JobType } from '../JobType'
 import { PriorityIdentifier } from '../PriorityIdentifier'
+import { SurfaceJob } from './SurfaceJob'
 
 export class DynamiteJob extends SurfaceJob {
 

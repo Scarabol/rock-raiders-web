@@ -1,15 +1,15 @@
-import { BaseScreen } from './BaseScreen'
-import { WorldManager } from '../scene/WorldManager'
-import { SelectionLayer } from '../game/layer/SelectionLayer'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { iGet } from '../core/Util'
 import { GameLayer } from '../game/layer/GameLayer'
 import { GuiMainLayer } from '../game/layer/GuiMainLayer'
-import { Supervisor } from '../game/Supervisor'
-import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { ResourceManager } from '../resource/ResourceManager'
-import { iGet } from '../core/Util'
-import { LevelObjectiveTextEntry } from '../resource/wadworker/ObjectiveTextParser'
 import { OverlayLayer } from '../game/layer/OverlayLayer'
+import { SelectionLayer } from '../game/layer/SelectionLayer'
 import { GameState } from '../game/model/GameState'
+import { Supervisor } from '../game/Supervisor'
+import { ResourceManager } from '../resource/ResourceManager'
+import { LevelObjectiveTextEntry } from '../resource/wadworker/ObjectiveTextParser'
+import { WorldManager } from '../scene/WorldManager'
+import { BaseScreen } from './BaseScreen'
 
 export class GameScreen extends BaseScreen {
 

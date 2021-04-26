@@ -1,10 +1,10 @@
 import { CollectableEntity, CollectableType } from '../../../scene/model/collect/CollectableEntity'
+import { ElectricFence } from '../../../scene/model/collect/ElectricFence'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
+import { PathTarget } from '../../../scene/model/PathTarget'
 import { PublicJob } from './Job'
 import { JobType } from './JobType'
 import { PriorityIdentifier } from './PriorityIdentifier'
-import { PathTarget } from '../../../scene/model/PathTarget'
-import { ElectricFence } from '../../../scene/model/collect/ElectricFence'
 
 export class CollectJob extends PublicJob {
 

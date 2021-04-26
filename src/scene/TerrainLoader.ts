@@ -1,11 +1,11 @@
-import { Surface } from './model/map/Surface'
-import { Terrain } from './model/map/Terrain'
-import { ResourceManager } from '../resource/ResourceManager'
-import { SurfaceType } from './model/map/SurfaceType'
-import { WorldManager } from './WorldManager'
-import { TILESIZE } from '../main'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { TILESIZE } from '../main'
+import { ResourceManager } from '../resource/ResourceManager'
 import { Graph } from './model/map/astar'
+import { Surface } from './model/map/Surface'
+import { SurfaceType } from './model/map/SurfaceType'
+import { Terrain } from './model/map/Terrain'
+import { WorldManager } from './WorldManager'
 
 export class TerrainLoader {
 

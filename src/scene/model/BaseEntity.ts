@@ -1,5 +1,5 @@
-import { WorldManager } from '../WorldManager'
 import { Group, Vector2 } from 'three'
+import { WorldManager } from '../WorldManager'
 import { Surface } from './map/Surface'
 
 export abstract class BaseEntity {

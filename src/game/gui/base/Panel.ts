@@ -1,8 +1,8 @@
-import { ResourceManager } from '../../../resource/ResourceManager'
-import { BaseElement } from './BaseElement'
-import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../../main'
 import { PanelCfg } from '../../../cfg/PanelsCfg'
 import { clearTimeoutSafe } from '../../../core/Util'
+import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../../main'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { BaseElement } from './BaseElement'
 
 export class Panel extends BaseElement {
 

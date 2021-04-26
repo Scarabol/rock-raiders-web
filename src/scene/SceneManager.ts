@@ -1,12 +1,12 @@
 import { AmbientLight, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector3, WebGLRenderer } from 'three'
-import { DebugHelper } from './DebugHelper'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
+import { clearIntervalSafe } from '../core/Util'
 import { GameState } from '../game/model/GameState'
 import { Selectable } from '../game/model/Selectable'
-import { Terrain } from './model/map/Terrain'
 import { TILESIZE } from '../main'
-import { clearIntervalSafe } from '../core/Util'
 import { AnimatedMesh } from '../resource/AnimatedMesh'
+import { DebugHelper } from './DebugHelper'
+import { Terrain } from './model/map/Terrain'
 
 export class SceneManager {
 

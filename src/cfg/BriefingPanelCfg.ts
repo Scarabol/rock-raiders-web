@@ -1,9 +1,9 @@
-import { PanelCfg } from './PanelsCfg'
-import { ResourceManager } from '../resource/ResourceManager'
 import { BitmapFont } from '../core/BitmapFont'
-import { DialogCfg } from './DialogCfg'
 import { Rect } from '../core/Rect'
+import { ResourceManager } from '../resource/ResourceManager'
 import { ButtonCfg } from './ButtonsCfg'
+import { DialogCfg } from './DialogCfg'
+import { PanelCfg } from './PanelsCfg'
 
 export class BriefingPanelCfg extends PanelCfg {
 

@@ -1,8 +1,8 @@
-import { Panel } from '../base/Panel'
-import { Button } from '../base/Button'
 import { IconPanelBackButtonCfg } from '../../../cfg/IconPanelBackButtonCfg'
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { Button } from '../base/Button'
+import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 
 export class IconSubPanel extends Panel {

@@ -1,7 +1,7 @@
-import { BaseElement } from '../base/BaseElement'
-import { GameState } from '../../model/GameState'
 import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { GameState } from '../../model/GameState'
+import { BaseElement } from '../base/BaseElement'
 
 export class IconPanelButtonLabel extends BaseElement {
 

@@ -1,10 +1,10 @@
+import { EventBus } from '../../../event/EventBus'
+import { EntityDeselected } from '../../../event/LocalEvents'
+import { GameState } from '../../model/GameState'
+import { EatJob } from '../../model/job/EatJob'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
-import { GameState } from '../../model/GameState'
-import { EatJob } from '../../model/job/EatJob'
-import { EventBus } from '../../../event/EventBus'
-import { EntityDeselected } from '../../../event/LocalEvents'
 
 export class SelectRaiderPanel extends SelectBasePanel {
 

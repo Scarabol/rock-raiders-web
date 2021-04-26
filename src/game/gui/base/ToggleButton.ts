@@ -1,5 +1,5 @@
-import { BaseElement } from './BaseElement'
 import { ButtonCfg } from '../../../cfg/ButtonsCfg'
+import { BaseElement } from './BaseElement'
 import { Button } from './Button'
 
 export class ToggleButton extends Button {

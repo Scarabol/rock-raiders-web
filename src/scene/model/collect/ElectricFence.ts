@@ -1,12 +1,12 @@
-import { CollectableEntity, CollectableType } from './CollectableEntity'
+import { Building } from '../../../game/model/entity/building/Building'
+import { GameState } from '../../../game/model/GameState'
 import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
+import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
-import { LWOLoader } from '../../../resource/LWOLoader'
 import { CollectPathTarget } from '../CollectionTarget'
-import { Building } from '../../../game/model/entity/building/Building'
 import { Surface } from '../map/Surface'
-import { GameState } from '../../../game/model/GameState'
+import { CollectableEntity, CollectableType } from './CollectableEntity'
 
 export class ElectricFence extends CollectableEntity {
 

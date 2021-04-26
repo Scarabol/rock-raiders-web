@@ -1,12 +1,12 @@
-import { BaseScreen } from './BaseScreen'
-import { ResourceManager } from '../resource/ResourceManager'
-import { ScaledLayer } from './ScreenLayer'
 import { RewardCfg } from '../cfg/RewardCfg'
-import { GameResultState, GameState } from '../game/model/GameState'
 import { BitmapFont } from '../core/BitmapFont'
-import { RewardScreenButton } from '../menu/RewardScreenButton'
-import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { clearTimeoutSafe } from '../core/Util'
+import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
+import { GameResultState, GameState } from '../game/model/GameState'
+import { RewardScreenButton } from '../menu/RewardScreenButton'
+import { ResourceManager } from '../resource/ResourceManager'
+import { BaseScreen } from './BaseScreen'
+import { ScaledLayer } from './ScreenLayer'
 
 export class RewardScreen extends BaseScreen {
 

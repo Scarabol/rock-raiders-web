@@ -1,13 +1,13 @@
-import { ResourceManager } from '../../../resource/ResourceManager'
-import { CollectableType } from './CollectableEntity'
 import { Building } from '../../../game/model/entity/building/Building'
-import { AnimEntity } from '../anim/AnimEntity'
-import { Carryable } from './Carryable'
-import { Surface } from '../map/Surface'
 import { GameState } from '../../../game/model/GameState'
-import { DynamiteActivity } from '../activities/DynamiteActivity'
+import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
+import { DynamiteActivity } from '../activities/DynamiteActivity'
+import { AnimEntity } from '../anim/AnimEntity'
+import { Surface } from '../map/Surface'
 import { PathTarget } from '../PathTarget'
+import { Carryable } from './Carryable'
+import { CollectableType } from './CollectableEntity'
 
 export class Dynamite extends AnimEntity implements Carryable {
 

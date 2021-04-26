@@ -1,6 +1,6 @@
-import { TextInfoMessageEntryConfig } from './TextInfoMessageEntryConfig'
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { BitmapFont } from '../../../core/BitmapFont'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { TextInfoMessageEntryConfig } from './TextInfoMessageEntryConfig'
 
 export class TextInfoMessage {
 

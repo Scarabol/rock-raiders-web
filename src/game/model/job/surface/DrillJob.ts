@@ -1,9 +1,9 @@
-import { SurfaceJob } from './SurfaceJob'
-import { JobType } from '../JobType'
 import { Surface } from '../../../../scene/model/map/Surface'
 import { PathTarget } from '../../../../scene/model/PathTarget'
 import { RaiderTool } from '../../../../scene/model/RaiderTool'
+import { JobType } from '../JobType'
 import { PriorityIdentifier } from '../PriorityIdentifier'
+import { SurfaceJob } from './SurfaceJob'
 
 export class DrillJob extends SurfaceJob {
 

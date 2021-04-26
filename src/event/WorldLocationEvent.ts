@@ -1,6 +1,6 @@
-import { WorldEvent } from './WorldEvents'
 import { Vector3 } from 'three'
 import { EventKey } from './EventKeyEnum'
+import { WorldEvent } from './WorldEvents'
 
 export class WorldLocationEvent extends WorldEvent {
 
