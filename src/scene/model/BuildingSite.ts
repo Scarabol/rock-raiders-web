@@ -7,8 +7,8 @@ import { CompletePowerPathJob } from '../../game/model/job/surface/CompletePower
 import { BarrierActivity } from './activities/BarrierActivity'
 import { BuildingActivity } from './activities/BuildingActivity'
 import { BuildingEntity } from './BuildingEntity'
-import { Barrier } from './collect/Barrier'
-import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
+import { CollectableEntity } from './collect/CollectableEntity'
+import { CollectableType } from './collect/CollectableType'
 import { Surface } from './map/Surface'
 
 export class BuildingSite {
@@ -74,8 +74,7 @@ export class BuildingSite {
             EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
         } else {
             this.onSiteByType.getOrUpdate(CollectableType.BARRIER, () => []).forEach((item) => {
-                const barrier = item as any as Barrier // FIXME refactor this
-                barrier.changeActivity(BarrierActivity.Teleport, () => barrier.removeFromScene())
+                item.changeActivity(BarrierActivity.Teleport, () => item.removeFromScene())
             })
             this.onSiteByType.getOrUpdate(CollectableType.CRYSTAL, () => []).forEach((item) => {
                 item.removeFromScene()

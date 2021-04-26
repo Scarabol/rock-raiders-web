@@ -1,6 +1,6 @@
 import { Mesh, MeshPhongMaterial, Vector3 } from 'three'
-import { WALL_TYPE } from './Surface'
 import { SurfaceGeometry } from './SurfaceGeometry'
+import { WALL_TYPE } from './WallType'
 
 export class BuildPlacementMarkerMesh extends Mesh {
 

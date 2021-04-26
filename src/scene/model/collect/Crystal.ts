@@ -4,12 +4,13 @@ import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
 import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
-import { CollectableEntity, CollectableType } from './CollectableEntity'
+import { CollectableEntity } from './CollectableEntity'
+import { CollectableType } from './CollectableType'
 
 export class Crystal extends CollectableEntity {
 
     constructor() {
-        super()
+        super(CollectableType.CRYSTAL)
         const resource2 = ResourceManager.getResource('MiscAnims/Crystal/vlp_greencrystal.lwo')
         const mesh2 = SceneManager.registerMesh(new LWOLoader('MiscAnims/Crystal/').parse(resource2));
         (mesh2.material as Material[]).forEach((mat: MeshPhongMaterial) => {
@@ -29,27 +30,12 @@ export class Crystal extends CollectableEntity {
             mat.transparent = mat.opacity < 1
         })
         this.group.add(mesh)
+        this.targetBuildingTypes = [Building.POWER_STATION, Building.TOOLSTATION]
+        this.priorityIdentifier = PriorityIdentifier.aiPriorityCrystal
     }
 
     get stats() {
         return ResourceManager.stats.PowerCrystal
-    }
-
-    getTargetBuildingTypes(): Building[] {
-        return [Building.POWER_STATION, Building.TOOLSTATION]
-    }
-
-    onDiscover() {
-        super.onDiscover()
-        console.log('An energy crystal has been discovered')
-    }
-
-    getCollectableType(): CollectableType {
-        return CollectableType.CRYSTAL
-    }
-
-    getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityCrystal
     }
 
 }

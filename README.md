@@ -4,8 +4,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 **Enjoy!**
 
-## Screenshots
-
 <a href="https://github.com/Scarabol/rock-raiders-web/blob/test/screenshots/2021-04-02%2001.png?raw=true">
 <img src="https://github.com/Scarabol/rock-raiders-web/blob/test/screenshots/2021-04-02%2001.png?raw=true" width="360" alt="Screenshot">
 </a>
@@ -21,6 +19,19 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 </a>
 
 ## Development Roadmap
+
+- BIG: Reorganize project, separate scene manager from worldMgr move threejs rendering into separate worker thread
+  communicate via messages sent from worldMgr to sceneMgr
+
+Fix barrier rotation, when placed down Fix too many barriers, for two building surfaces Fix raider move out of site
+after placing items Fix remove barriers before teleport in Fix building not powered after teleport in Fix building not
+selectable after placement
+
+Fix some icons not shown in select raider panel
+
+Adapt building placement marker to surface shape
+
+Check FIXME
 
 ### Near
 

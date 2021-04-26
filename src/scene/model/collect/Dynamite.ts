@@ -1,42 +1,34 @@
 import { Building } from '../../../game/model/entity/building/Building'
 import { GameState } from '../../../game/model/GameState'
-import { ResourceManager } from '../../../resource/ResourceManager'
+import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
-import { AnimEntity } from '../anim/AnimEntity'
+import { CollectPathTarget } from '../CollectPathTarget'
 import { Surface } from '../map/Surface'
-import { PathTarget } from '../PathTarget'
-import { Carryable } from './Carryable'
-import { CollectableType } from './CollectableEntity'
+import { CollectableEntity } from './CollectableEntity'
+import { CollectableType } from './CollectableType'
 
-export class Dynamite extends AnimEntity implements Carryable {
+export class Dynamite extends CollectableEntity {
 
     targetSurface: Surface
 
     constructor() {
-        super(ResourceManager.getAnimationEntityType('MiscAnims/Dynamite/Dynamite.ae'))
+        super(CollectableType.DYNAMITE, 'MiscAnims/Dynamite/Dynamite.ae')
         this.changeActivity()
-    }
-
-    get stats() {
-        return {}
+        this.priorityIdentifier = PriorityIdentifier.aiPriorityDestruction
     }
 
     hasTarget(): boolean {
         return this.targetSurface && this.targetSurface.isExplodable() || GameState.hasOneBuildingOf(Building.TOOLSTATION)
     }
 
-    getCarryTargets(): PathTarget[] {
+    getCarryTargets(): CollectPathTarget[] {
         if (this.targetSurface && this.targetSurface.isExplodable()) {
-            return this.targetSurface.getDigPositions().map((p) => new PathTarget(p))
+            return this.targetSurface.getDigPositions().map((p) => new CollectPathTarget(p, null, null))
         } else {
             return GameState.getBuildingsByType(Building.TOOLSTATION).map((b) => b.getDropPosition2D())
-                .map((p) => new PathTarget(p))
+                .map((p) => new CollectPathTarget(p, null, null))
         }
-    }
-
-    getCollectableType(): CollectableType {
-        return CollectableType.DYNAMITE
     }
 
     ignite() {

@@ -1,4 +1,5 @@
-import { CollectableEntity, CollectableType } from '../../../scene/model/collect/CollectableEntity'
+import { CollectableEntity } from '../../../scene/model/collect/CollectableEntity'
+import { CollectableType } from '../../../scene/model/collect/CollectableType'
 import { ElectricFence } from '../../../scene/model/collect/ElectricFence'
 import { FulfillerEntity } from '../../../scene/model/FulfillerEntity'
 import { PathTarget } from '../../../scene/model/PathTarget'

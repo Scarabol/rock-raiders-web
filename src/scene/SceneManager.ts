@@ -50,7 +50,6 @@ export class SceneManager {
         const raycaster = new Raycaster()
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
         let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere))
-        if (intersects.length < 1) intersects = raycaster.intersectObjects(GameState.vehicles.map((v) => v.pickSphere))
         if (intersects.length < 1) intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere))
         if (intersects.length < 1 && this.terrain) intersects = raycaster.intersectObjects(this.terrain.floorGroup.children)
         const selected = []
@@ -131,7 +130,6 @@ export class SceneManager {
         planes[5].normal.multiplyScalar(-1)
 
         let entities: Selectable[] = GameState.raiders.filter((r) => frustum.containsPoint(r.getSelectionCenter()))
-        entities.push(...(GameState.vehicles.filter((v) => frustum.containsPoint(v.getSelectionCenter()))))
         if (entities.length < 1) entities = GameState.buildings.filter((b) => frustum.containsPoint(b.getSelectionCenter()))
         GameState.selectEntities(entities)
     }

@@ -1,7 +1,7 @@
 import { Group, Vector2, Vector3 } from 'three'
 import { GameState } from '../../../game/model/GameState'
 import { TILESIZE } from '../../../main'
-import { BarrierLocation } from '../collect/Barrier'
+import { BarrierLocation } from '../collect/BarrierLocation'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'

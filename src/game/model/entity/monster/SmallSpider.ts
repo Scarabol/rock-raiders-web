@@ -2,6 +2,7 @@ import { Vector2 } from 'three'
 import { getRandom, getRandomInclusive } from '../../../../core/Util'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../../main'
 import { ResourceManager } from '../../../../resource/ResourceManager'
+import { Surface } from '../../../../scene/model/map/Surface'
 import { SurfaceType } from '../../../../scene/model/map/SurfaceType'
 import { MoveState } from '../../../../scene/model/MoveState'
 import { PathTarget } from '../../../../scene/model/PathTarget'
@@ -10,8 +11,10 @@ import { Monster } from './Monster'
 
 export class SmallSpider extends Monster {
 
+    currentSurface: Surface = null
+
     constructor() {
-        super(ResourceManager.getAnimationEntityType('Creatures/SpiderSB/SpiderSB.ae'))
+        super('Creatures/SpiderSB/SpiderSB.ae')
     }
 
     get stats() {
@@ -23,9 +26,9 @@ export class SmallSpider extends Monster {
     }
 
     private static onMove(spider: SmallSpider) {
-        const prevSurface = spider.getCurrentSurface()
+        const prevSurface = spider.currentSurface || spider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position)
         if (spider.target && spider.moveToClosestTarget([spider.target]) === MoveState.MOVED) {
-            const nextSurface = spider.getCurrentSurface()
+            const nextSurface = spider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position)
             if (prevSurface !== nextSurface) {
                 (GameState.spidersBySurface.get(prevSurface) || []).remove(spider)
                 GameState.spidersBySurface.getOrUpdate(nextSurface, () => []).push(spider)
@@ -61,8 +64,8 @@ export class SmallSpider extends Monster {
 
     onDeath() {
         this.onLevelEnd()
-        GameState.spiders.remove(this);
-        (GameState.spidersBySurface.get(this.getCurrentSurface()) || []).remove(this)
+        GameState.spiders.remove(this)
+        GameState.spidersBySurface.getOrUpdate(this.currentSurface, () => []).remove(this)
     }
 
 }

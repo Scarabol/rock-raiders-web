@@ -7,18 +7,11 @@ import { BuildingActivity } from './activities/BuildingActivity'
 import { RaiderActivity } from './activities/RaiderActivity'
 import { BuildingEntity } from './BuildingEntity'
 import { BuildingSite } from './BuildingSite'
-import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
+import { CollectableEntity } from './collect/CollectableEntity'
+import { CollectableType } from './collect/CollectableType'
 import { PathTarget } from './PathTarget'
 
-export interface CollectionTarget {
-
-    getDropAction(): RaiderActivity
-
-    gatherItem(item: CollectableEntity)
-
-}
-
-export class CollectPathTarget extends PathTarget implements CollectionTarget {
+export class CollectPathTarget extends PathTarget {
 
     site: BuildingSite
     building: BuildingEntity

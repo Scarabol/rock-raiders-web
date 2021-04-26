@@ -1,6 +1,5 @@
 import { Group, Vector2 } from 'three'
 import { WorldManager } from '../WorldManager'
-import { Surface } from './map/Surface'
 
 export abstract class BaseEntity {
 
@@ -24,10 +23,6 @@ export abstract class BaseEntity {
 
     onDiscover() {
         this.group.visible = true
-    }
-
-    getCurrentSurface(): Surface {
-        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position)
     }
 
     removeFromScene() {

@@ -1,7 +1,7 @@
 import { PublicJob } from '../game/model/job/Job'
-import { AnimEntity } from '../scene/model/anim/AnimEntity'
+import { BaseEntity } from '../scene/model/BaseEntity'
 import { BuildingEntity } from '../scene/model/BuildingEntity'
-import { CollectableType } from '../scene/model/collect/CollectableEntity'
+import { CollectableType } from '../scene/model/collect/CollectableType'
 import { FulfillerEntity } from '../scene/model/FulfillerEntity'
 import { Surface } from '../scene/model/map/Surface'
 import { RaiderSkill } from '../scene/model/RaiderSkill'
@@ -77,9 +77,9 @@ export class SpawnDynamiteEvent extends WorldEvent {
 export class EntityAddedEvent extends WorldEvent {
 
     type: EntityType
-    entity: AnimEntity
+    entity: BaseEntity
 
-    constructor(type: EntityType, entity: AnimEntity) {
+    constructor(type: EntityType, entity: BaseEntity) {
         super(EventKey.ENTITY_ADDED)
         this.type = type
         this.entity = entity
@@ -90,9 +90,9 @@ export class EntityAddedEvent extends WorldEvent {
 export class EntityRemovedEvent extends WorldEvent {
 
     type: EntityType
-    entity: AnimEntity
+    entity: BaseEntity
 
-    constructor(type: EntityType, entity: AnimEntity) {
+    constructor(type: EntityType, entity: BaseEntity) {
         super(EventKey.ENTITY_REMOVED)
         this.type = type
         this.entity = entity

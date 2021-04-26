@@ -11,7 +11,8 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
 import { BuildingActivity } from './activities/BuildingActivity'
 import { AnimEntity } from './anim/AnimEntity'
-import { CollectableEntity, CollectableType } from './collect/CollectableEntity'
+import { CollectableEntity } from './collect/CollectableEntity'
+import { CollectableType } from './collect/CollectableType'
 import { Crystal } from './collect/Crystal'
 import { Ore } from './collect/Ore'
 import { Surface } from './map/Surface'
@@ -30,7 +31,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     inBeam: boolean = false
 
     constructor(buildingType: Building) {
-        super(ResourceManager.getAnimationEntityType(buildingType.aeFile))
+        super(buildingType.aeFile)
         this.type = buildingType
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}

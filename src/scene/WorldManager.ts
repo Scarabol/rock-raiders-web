@@ -11,7 +11,6 @@ import { Building } from '../game/model/entity/building/Building'
 import { GameState } from '../game/model/GameState'
 import { CollectJob } from '../game/model/job/CollectJob'
 import { MoveJob } from '../game/model/job/MoveJob'
-import { PriorityList } from '../game/model/job/PriorityList'
 import { DynamiteJob } from '../game/model/job/surface/DynamiteJob'
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../main'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -61,7 +60,7 @@ export class WorldManager {
         GameState.levelFullName = levelConf.fullName
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         GameState.rewardConfig = levelConf.reward
-        GameState.priorityList = new PriorityList(levelConf.priorities)
+        GameState.priorityList.setList(levelConf.priorities)
         GameState.oxygenRate = levelConf.oxygenRate
 
         const ambientRgb = ResourceManager.cfg('Main', 'AmbientRGB') || [10, 10, 10]

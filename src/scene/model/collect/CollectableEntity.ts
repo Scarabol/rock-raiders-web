@@ -4,17 +4,30 @@ import { Building } from '../../../game/model/entity/building/Building'
 import { GameState } from '../../../game/model/GameState'
 import { CollectJob } from '../../../game/model/job/CollectJob'
 import { PriorityIdentifier } from '../../../game/model/job/PriorityIdentifier'
-import { BaseEntity } from '../BaseEntity'
+import { AnimEntityActivity } from '../activities/AnimEntityActivity'
+import { AnimEntity } from '../anim/AnimEntity'
 import { BuildingSite } from '../BuildingSite'
-import { CollectPathTarget } from '../CollectionTarget'
-import { Carryable } from './Carryable'
+import { CollectPathTarget } from '../CollectPathTarget'
+import { CollectableType } from './CollectableType'
 
-export abstract class CollectableEntity extends BaseEntity implements Carryable {
+export abstract class CollectableEntity extends AnimEntity {
 
+    collectableType: CollectableType
+    targetBuildingTypes: Building[] = []
+    priorityIdentifier: PriorityIdentifier = null
     targets: CollectPathTarget[] = []
     targetSite: BuildingSite = null
 
-    abstract getTargetBuildingTypes(): Building[];
+    protected constructor(collectableType: CollectableType, aeFilename: string = null) {
+        super(aeFilename)
+        this.collectableType = collectableType
+        this.targetBuildingTypes = [Building.TOOLSTATION]
+    }
+
+    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: any = null, durationTimeMs: number = null) {
+        if (this.entityType === null) return
+        return super.changeActivity(activity, onAnimationDone, durationTimeMs)
+    }
 
     hasTarget(): boolean {
         return this.updateTargets().length > 0
@@ -56,10 +69,6 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
         EventBus.publishEvent(new JobCreateEvent(new CollectJob(this)))
     }
 
-    abstract getCollectableType(): CollectableType
-
-    abstract getPriorityIdentifier(): PriorityIdentifier
-
     setTargetSite(site: BuildingSite) {
         if (this.targetSite === site) return
         this.targetSite?.unAssign(this)
@@ -67,15 +76,20 @@ export abstract class CollectableEntity extends BaseEntity implements Carryable 
         this.targetSite?.assign(this)
     }
 
-}
+    getCollectableType(): CollectableType {
+        return this.collectableType
+    }
 
-export enum CollectableType {
+    getPriorityIdentifier(): PriorityIdentifier {
+        return this.priorityIdentifier
+    }
 
-    DYNAMITE,
-    CRYSTAL,
-    ORE,
-    BRICK,
-    BARRIER,
-    ELECTRIC_FENCE,
+    getTargetBuildingTypes(): Building[] {
+        return this.targetBuildingTypes
+    }
+
+    get stats() {
+        return null
+    }
 
 }

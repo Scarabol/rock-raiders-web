@@ -6,8 +6,8 @@ import { CancelBuildMode, EntityDeselected } from '../../event/LocalEvents'
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { DEV_MODE } from '../../main'
 import { BuildingSite } from '../../scene/model/BuildingSite'
-import { Barrier, BarrierPathTarget } from '../../scene/model/collect/Barrier'
-import { CollectableEntity, CollectableType } from '../../scene/model/collect/CollectableEntity'
+import { BarrierPathTarget } from '../../scene/model/collect/BarrierPathTarget'
+import { CollectableType } from '../../scene/model/collect/CollectableType'
 import { FulfillerEntity } from '../../scene/model/FulfillerEntity'
 import { Surface } from '../../scene/model/map/Surface'
 import { SurfaceType } from '../../scene/model/map/SurfaceType'
@@ -71,10 +71,10 @@ export class GameLayer extends ScreenLayer {
                     const closestToolstation = GameState.getClosestBuildingByType(buildMarker.primarySurface.getCenterWorld(), Building.TOOLSTATION)
                     if (closestToolstation) {
                         closestToolstation.spawnMaterials(barrierLocations.map((t) => {
-                            const barrier = GameState.dropMaterial(CollectableType.BARRIER, 1)[0] as any as Barrier // FIXME refactor this
+                            const barrier = GameState.dropMaterial(CollectableType.BARRIER, 1)[0]
                             barrier.targets = [new BarrierPathTarget(t, site)]
                             return barrier
-                        }) as any[] as CollectableEntity[]) // FIXME refactor this
+                        }))
                         closestToolstation.spawnMaterials(GameState.dropMaterial(CollectableType.CRYSTAL, neededCrystals))
                         closestToolstation.spawnMaterials(GameState.dropMaterial(CollectableType.ORE, neededOre))
                     }

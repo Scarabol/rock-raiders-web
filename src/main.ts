@@ -34,19 +34,19 @@ export const NATIVE_FRAMERATE = 30
 // setup and link all components
 
 const loadingScreen = new LoadingScreen()
-const wadfileSelectModal = new WadFileSelectionModal('game-container')
+const wadFileSelectModal = new WadFileSelectionModal('game-container')
 
-wadfileSelectModal.onStart = (wad0Url, wad1Url) => {
+wadFileSelectModal.onStart = (wad0Url, wad1Url) => {
     ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
 }
 ResourceManager.onMessage = (msg: string) => {
     loadingScreen.setLoadingMessage(msg)
 }
 ResourceManager.onCacheMissed = () => {
-    wadfileSelectModal.show()
+    wadFileSelectModal.show()
 }
 ResourceManager.onInitialLoad = (totalResources: number) => {
-    wadfileSelectModal.hide()
+    wadFileSelectModal.hide()
     loadingScreen.enableGraphicMode(totalResources)
 }
 ResourceManager.onAssetLoaded = () => {

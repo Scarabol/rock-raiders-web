@@ -2,7 +2,6 @@ import { Vector2, Vector3 } from 'three'
 import { MovableEntityStats } from '../../cfg/MovableEntityStats'
 import { JOB_ACTION_RANGE } from '../../main'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
-import { AnimationEntityType } from './anim/AnimationEntityType'
 import { AnimEntity } from './anim/AnimEntity'
 import { EntityStep } from './EntityStep'
 import { TerrainPath } from './map/TerrainPath'
@@ -13,8 +12,8 @@ export abstract class MovableEntity extends AnimEntity {
 
     currentPath: TerrainPath = null
 
-    constructor(entityType: AnimationEntityType) {
-        super(entityType)
+    constructor(aeFilename: string) {
+        super(aeFilename)
     }
 
     abstract get stats(): MovableEntityStats

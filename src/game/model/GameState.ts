@@ -8,14 +8,14 @@ import { BaseEntity } from '../../scene/model/BaseEntity'
 import { BuildingEntity } from '../../scene/model/BuildingEntity'
 import { BuildingSite } from '../../scene/model/BuildingSite'
 import { Barrier } from '../../scene/model/collect/Barrier'
-import { CollectableEntity, CollectableType } from '../../scene/model/collect/CollectableEntity'
+import { CollectableEntity } from '../../scene/model/collect/CollectableEntity'
+import { CollectableType } from '../../scene/model/collect/CollectableType'
 import { Crystal } from '../../scene/model/collect/Crystal'
 import { Dynamite } from '../../scene/model/collect/Dynamite'
 import { Ore } from '../../scene/model/collect/Ore'
 import { Surface } from '../../scene/model/map/Surface'
 import { Raider } from '../../scene/model/Raider'
 import { RaiderSkill } from '../../scene/model/RaiderSkill'
-import { VehicleEntity } from '../../scene/model/VehicleEntity'
 import { Building } from './entity/building/Building'
 import { Bat } from './entity/monster/Bat'
 import { SmallSpider } from './entity/monster/SmallSpider'
@@ -47,8 +47,6 @@ export class GameState {
     static raiders: Raider[] = []
     static raidersUndiscovered: Raider[] = []
     static requestedRaiders: number = 0
-    static vehicles: VehicleEntity[] = []
-    static vehiclesUndiscovered: VehicleEntity[] = []
     static collectables: CollectableEntity[] = []
     static collectablesUndiscovered: CollectableEntity[] = []
     static buildingSites: BuildingSite[] = []
@@ -64,7 +62,7 @@ export class GameState {
     static levelStartTime: number = 0
     static levelStopTime: number = 0
     static rewardConfig: LevelRewardConfig = null
-    static priorityList: PriorityList = null
+    static priorityList: PriorityList = new PriorityList()
     static oxygenRate: number = 0
     static buildModeSelection: Building = null
 
@@ -84,8 +82,6 @@ export class GameState {
         this.raiders = []
         this.raidersUndiscovered = []
         this.requestedRaiders = 0
-        this.vehicles = []
-        this.vehiclesUndiscovered = []
         this.collectables = []
         this.collectablesUndiscovered = []
         this.buildingSites = []
@@ -101,7 +97,7 @@ export class GameState {
         this.levelStartTime = 0
         this.levelStopTime = 0
         this.rewardConfig = null
-        this.priorityList = null
+        this.priorityList = new PriorityList()
         this.oxygenRate = 0
         this.buildModeSelection = null
     }
@@ -179,7 +175,6 @@ export class GameState {
         const maxX = minX + TILESIZE, maxZ = minZ + TILESIZE
         this.discoverEntities(this.raidersUndiscovered, minX, maxX, minZ, maxZ)
         this.discoverEntities(this.buildingsUndiscovered, minX, maxX, minZ, maxZ)
-        this.discoverEntities(this.vehiclesUndiscovered, minX, maxX, minZ, maxZ)
         this.discoverEntities(this.collectablesUndiscovered, minX, maxX, minZ, maxZ)
     }
 

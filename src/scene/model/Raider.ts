@@ -18,7 +18,7 @@ import { BaseActivity } from './activities/BaseActivity'
 import { RaiderActivity } from './activities/RaiderActivity'
 import { Crystal } from './collect/Crystal'
 import { Ore } from './collect/Ore'
-import { CollectPathTarget } from './CollectionTarget'
+import { CollectPathTarget } from './CollectPathTarget'
 import { FulfillerEntity } from './FulfillerEntity'
 import { SurfaceType } from './map/SurfaceType'
 import { TerrainPath } from './map/TerrainPath'
@@ -201,6 +201,7 @@ export class Raider extends FulfillerEntity {
                         this.changeActivity(dropAction, () => {
                             this.completeJob()
                             collectPathTarget.gatherItem(collectJobItem)
+                            // TODO move to primary path surface
                         })
                     } else {
                         this.changeActivity()

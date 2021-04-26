@@ -17,8 +17,8 @@ export class BaseScreen {
         this.eventMgr = new EventManager(this)
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!'
         window.addEventListener('resize', () => this.onWindowResize())
-        this.cursorLayer = this.addLayer(new CursorLayer(), 1000)
         this.onWindowResize()
+        this.cursorLayer = this.addLayer(new CursorLayer(), 1000)
     }
 
     addLayer<T extends ScreenLayer>(layer: T, zIndex: number = 0): T {

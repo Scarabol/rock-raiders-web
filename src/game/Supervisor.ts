@@ -47,8 +47,6 @@ export class Supervisor {
         this.checkRubbleInterval = clearIntervalSafe(this.checkRubbleInterval)
         GameState.raiders.forEach((r) => r.resetWorkInterval())
         GameState.raidersUndiscovered.forEach((r) => r.resetWorkInterval())
-        GameState.vehicles.forEach((v) => v.resetWorkInterval())
-        GameState.vehiclesUndiscovered.forEach((v) => v.resetWorkInterval())
     }
 
     assignJobs() {

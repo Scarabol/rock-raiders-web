@@ -4,6 +4,7 @@ import { clearTimeoutSafe, iGet } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { EntityDeselected } from '../../../event/LocalEvents'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../main'
+import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BaseActivity } from '../activities/BaseActivity'
 import { BaseEntity } from '../BaseEntity'
@@ -26,9 +27,9 @@ export abstract class AnimEntity extends BaseEntity {
     activity: BaseActivity = null
     radiusSq: number = 0
 
-    protected constructor(entityType: AnimationEntityType) {
+    protected constructor(aeFilename: string) {
         super()
-        this.entityType = entityType
+        if (aeFilename) this.entityType = ResourceManager.getAnimationEntityType(aeFilename)
     }
 
     beamUp() {
@@ -50,7 +51,7 @@ export abstract class AnimEntity extends BaseEntity {
         }
     }
 
-    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone = null, durationTimeMs: number = null) {
+    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
         if (this.activity === activity) return
         this.activity = activity
         let lActivityKey = activity.activityKey.toLowerCase()
@@ -65,12 +66,8 @@ export abstract class AnimEntity extends BaseEntity {
             console.log(this.entityType.activities)
             return
         }
-        this.setAnimation(anim?.animation, onAnimationDone, durationTimeMs)
-    }
-
-    private setAnimation(animation: AnimClip, onAnimationDone = null, durationTimeMs = null) {
         if (onAnimationDone) onAnimationDone.bind(this)
-        this.animation = animation
+        this.animation = anim.animation
         this.animation.looping = true
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         this.group.remove(...this.poly)
@@ -111,7 +108,7 @@ export abstract class AnimEntity extends BaseEntity {
         this.animate(0, onAnimationDone, durationTimeMs)
     }
 
-    private animate(frameIndex, onAnimationDone, durationTimeMs) {
+    private animate(frameIndex: number, onAnimationDone: () => any, durationTimeMs: number) {
         if (this.poly.length !== this.animation.bodies.length) throw 'Cannot animate poly. Length differs from bodies length'
         this.animation.bodies.forEach((body: AnimSubObj, index) => {
             const p = this.poly[index]

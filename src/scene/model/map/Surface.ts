@@ -20,6 +20,7 @@ import { Ore } from '../collect/Ore'
 import { SurfaceGeometry } from './SurfaceGeometry'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
+import { WALL_TYPE } from './WallType'
 
 export class Surface implements Selectable {
 
@@ -590,11 +591,3 @@ export class Surface implements Selectable {
 
 }
 
-export enum WALL_TYPE {
-
-    CORNER = 1,
-    WALL = 2,
-    INVERTED_CORNER = 3,
-    WEIRD_CREVICE = 20,
-
-}

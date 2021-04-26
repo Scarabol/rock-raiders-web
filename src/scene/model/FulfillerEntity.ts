@@ -4,8 +4,7 @@ import { SelectionEvent } from '../../event/LocalEvents'
 import { Job } from '../../game/model/job/Job'
 import { Selectable, SelectionType } from '../../game/model/Selectable'
 import { NATIVE_FRAMERATE } from '../../main'
-import { ResourceManager } from '../../resource/ResourceManager'
-import { Carryable } from './collect/Carryable'
+import { CollectableEntity } from './collect/CollectableEntity'
 import { MovableEntity } from './MovableEntity'
 import { PathTarget } from './PathTarget'
 import { RaiderSkill } from './RaiderSkill'
@@ -18,11 +17,11 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     workInterval = null
     job: Job = null
     followUpJob: Job = null
-    carries: Carryable = null
+    carries: CollectableEntity = null
     jobWorkplaces: PathTarget[] = []
 
     protected constructor(selectionType: SelectionType, aeFilename: string) {
-        super(ResourceManager.getAnimationEntityType(aeFilename))
+        super(aeFilename)
         this.selectionType = selectionType
         this.group.userData = {'selectable': this}
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
@@ -44,7 +43,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.carries = null
     }
 
-    pickupItem(item: Carryable) {
+    pickupItem(item: CollectableEntity) {
         this.carries = item
         if (this.carryJoint) this.carryJoint.add(this.carries.group)
         this.carries.group.position.set(0, 0, 0)

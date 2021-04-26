@@ -1,7 +1,6 @@
 import { BuildingEntity } from '../scene/model/BuildingEntity'
 import { Surface } from '../scene/model/map/Surface'
 import { Raider } from '../scene/model/Raider'
-import { VehicleEntity } from '../scene/model/VehicleEntity'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
@@ -51,17 +50,6 @@ export class RaiderSelected extends SelectionEvent {
     constructor(raider: Raider) {
         super(EventKey.SELECTED_RAIDER)
         this.raider = raider
-    }
-
-}
-
-export class VehicleSelected extends SelectionEvent {
-
-    vehicle: VehicleEntity
-
-    constructor(vehicle: VehicleEntity) {
-        super(EventKey.SELECTED_VEHICLE)
-        this.vehicle = vehicle
     }
 
 }

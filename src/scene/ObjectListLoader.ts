@@ -97,7 +97,7 @@ export class ObjectListLoader {
                 spider.worldMgr = worldMgr
                 spider.changeActivity()
                 spider.group.position.set(worldX, terrainY, worldZ)
-                const currentSurface = spider.getCurrentSurface()
+                const currentSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position)
                 spider.group.visible = currentSurface.discovered
                 worldMgr.sceneManager.scene.add(spider.group)
                 GameState.spiders.push(spider)

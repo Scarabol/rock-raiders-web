@@ -10,7 +10,7 @@ import { Monster } from './Monster'
 export class Bat extends Monster {
 
     constructor() {
-        super(ResourceManager.getAnimationEntityType('Creatures/bat/bat.ae'))
+        super('Creatures/bat/bat.ae')
     }
 
     get stats() {
