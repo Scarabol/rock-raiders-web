@@ -1,7 +1,7 @@
-import { FulfillerEntity } from '../../../../scene/model/FulfillerEntity'
-import { Surface } from '../../../../scene/model/map/Surface'
-import { RaiderSkill } from '../../../../scene/model/RaiderSkill'
-import { RaiderTool } from '../../../../scene/model/RaiderTool'
+import { FulfillerEntity } from '../../FulfillerEntity'
+import { Surface } from '../../map/Surface'
+import { RaiderSkill } from '../../raider/RaiderSkill'
+import { RaiderTool } from '../../raider/RaiderTool'
 import { PublicJob } from '../Job'
 import { JobType } from '../JobType'
 

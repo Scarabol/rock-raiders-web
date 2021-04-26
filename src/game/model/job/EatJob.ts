@@ -1,4 +1,4 @@
-import { PathTarget } from '../../../scene/model/PathTarget'
+import { PathTarget } from '../PathTarget'
 import { Job } from './Job'
 import { JobType } from './JobType'
 

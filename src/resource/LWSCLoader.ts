@@ -8,9 +8,9 @@
 
 import { Group } from 'three'
 import { getFilename } from '../core/Util'
-import { AnimClip } from '../scene/model/anim/AnimClip'
-import { AnimSubObj } from '../scene/model/anim/AnimSubObj'
-import { SceneManager } from '../scene/SceneManager'
+import { AnimClip } from '../game/model/anim/AnimClip'
+import { AnimSubObj } from '../game/model/anim/AnimSubObj'
+import { SceneManager } from '../game/SceneManager'
 import { LWOLoader } from './LWOLoader'
 import { ResourceManager } from './ResourceManager'
 

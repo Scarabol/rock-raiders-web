@@ -1,6 +1,6 @@
-import { BuildingEntity } from '../scene/model/BuildingEntity'
-import { Surface } from '../scene/model/map/Surface'
-import { Raider } from '../scene/model/Raider'
+import { BuildingEntity } from '../game/model/BuildingEntity'
+import { Surface } from '../game/model/map/Surface'
+import { Raider } from '../game/model/raider/Raider'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 

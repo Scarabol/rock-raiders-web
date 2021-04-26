@@ -1,4 +1,4 @@
-import { Building } from '../game/model/entity/building/Building'
+import { Building } from '../game/model/building/Building'
 import { ResourceManager } from '../resource/ResourceManager'
 import { BaseConfig } from './BaseConfig'
 

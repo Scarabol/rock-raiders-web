@@ -1,6 +1,6 @@
 import { Vector2 } from 'three'
-import { PathTarget } from '../../../scene/model/PathTarget'
-import { RaiderTool } from '../../../scene/model/RaiderTool'
+import { PathTarget } from '../PathTarget'
+import { RaiderTool } from '../raider/RaiderTool'
 import { Job } from './Job'
 import { JobType } from './JobType'
 
