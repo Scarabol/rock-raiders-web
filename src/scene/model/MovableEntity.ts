@@ -58,16 +58,17 @@ export abstract class MovableEntity extends AnimEntity {
 
     determineStep(): EntityStep {
         const step = this.getEntityStep(this.currentPath.firstLocation)
-        const entitySpeed = this.getSpeed() // TODO use average speed between current and target position
         const stepLengthSq = step.vec.lengthSq()
-        if (stepLengthSq > entitySpeed * entitySpeed && stepLengthSq > JOB_ACTION_RANGE * JOB_ACTION_RANGE) {
-            step.vec.setLength(entitySpeed)
-        } else if (this.currentPath.locations.length > 1) {
-            this.currentPath.locations.shift()
-            return this.determineStep()
-        } else {
+        const entitySpeed = this.getSpeed() // TODO use average speed between current and target position
+        if (this.currentPath.locations.length > 1) {
+            if (stepLengthSq < entitySpeed * entitySpeed) {
+                this.currentPath.locations.shift()
+                return this.determineStep()
+            }
+        } else if (stepLengthSq < JOB_ACTION_RANGE * JOB_ACTION_RANGE) {
             step.targetReached = true
         }
+        step.vec.setLength(Math.min(entitySpeed, JOB_ACTION_RANGE))
         return step
     }
 
