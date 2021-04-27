@@ -1,6 +1,6 @@
 import { BaseConfig } from '../../cfg/BaseConfig'
-import { ButtonCfg } from '../../cfg/ButtonsCfg'
-import { PanelCfg } from '../../cfg/PanelsCfg'
+import { ButtonCfg } from '../../cfg/ButtonCfg'
+import { PanelCfg } from '../../cfg/PanelCfg'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 

@@ -1,6 +1,6 @@
 import { ResourceManager } from '../resource/ResourceManager'
 import { BaseScreen } from './BaseScreen'
-import { ScaledLayer } from './ScreenLayer'
+import { ScaledLayer } from './layer/ScreenLayer'
 
 export class LoadingScreen extends BaseScreen {
 

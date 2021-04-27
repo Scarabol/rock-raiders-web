@@ -1,5 +1,5 @@
 import { BaseScreen } from '../screen/BaseScreen'
-import { ScreenLayer } from '../screen/ScreenLayer'
+import { ScreenLayer } from '../screen/layer/ScreenLayer'
 import { KEY_EVENT, POINTER_EVENT } from './EventTypeEnum'
 
 export class EventManager {

@@ -1,7 +1,7 @@
 import { Vector3 } from 'three'
 import { clearIntervalSafe } from '../../core/Util'
 import { SelectionEvent } from '../../event/LocalEvents'
-import { NATIVE_FRAMERATE } from '../../main'
+import { NATIVE_FRAMERATE } from '../../params'
 import { CollectableEntity } from './collect/CollectableEntity'
 import { Job } from './job/Job'
 import { MovableEntity } from './MovableEntity'

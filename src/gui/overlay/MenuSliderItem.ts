@@ -1,4 +1,4 @@
-import { BaseButtonCfg } from '../../cfg/ButtonsCfg'
+import { BaseButtonCfg } from '../../cfg/BaseButtonCfg'
 import { MenuSliderItemCfg } from '../../cfg/MenuSliderItemCfg'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { BaseElement } from '../base/BaseElement'

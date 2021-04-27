@@ -1,7 +1,7 @@
 import { MathUtils, Vector2, Vector3 } from 'three'
 import { EventBus } from '../event/EventBus'
 import { EntityAddedEvent, EntityType } from '../event/WorldEvents'
-import { TILESIZE } from '../main'
+import { TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { Building } from './model/building/Building'
 import { BuildingEntity } from './model/BuildingEntity'

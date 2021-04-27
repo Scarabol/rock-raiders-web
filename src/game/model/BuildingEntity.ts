@@ -46,7 +46,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     get stats(): BuildingEntityStats {
-        return BuildingEntityStats.getByType(this.type)
+        return this.type.stats
     }
 
     getSelectionType(): SelectionType {

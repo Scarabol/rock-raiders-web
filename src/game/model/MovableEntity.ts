@@ -1,6 +1,6 @@
 import { Vector2, Vector3 } from 'three'
 import { MovableEntityStats } from '../../cfg/MovableEntityStats'
-import { JOB_ACTION_RANGE } from '../../main'
+import { JOB_ACTION_RANGE } from '../../params'
 import { AnimEntityActivity } from './activities/activities/AnimEntityActivity'
 import { AnimEntity } from './anim/AnimEntity'
 import { EntityStep } from './EntityStep'

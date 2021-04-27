@@ -1,6 +1,6 @@
 import { BaseConfig } from '../../cfg/BaseConfig'
-import { ButtonCfg } from '../../cfg/ButtonsCfg'
-import { PanelCfg } from '../../cfg/PanelsCfg'
+import { ButtonCfg } from '../../cfg/ButtonCfg'
+import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { MaterialAmountChanged } from '../../event/WorldEvents'

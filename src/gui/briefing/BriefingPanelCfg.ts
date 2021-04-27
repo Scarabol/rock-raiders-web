@@ -1,9 +1,9 @@
-import { BitmapFont } from '../core/BitmapFont'
-import { Rect } from '../core/Rect'
-import { ResourceManager } from '../resource/ResourceManager'
-import { ButtonCfg } from './ButtonsCfg'
-import { DialogCfg } from './DialogCfg'
-import { PanelCfg } from './PanelsCfg'
+import { ButtonCfg } from '../../cfg/ButtonCfg'
+import { DialogCfg } from '../../cfg/DialogCfg'
+import { PanelCfg } from '../../cfg/PanelCfg'
+import { BitmapFont } from '../../core/BitmapFont'
+import { Rect } from '../../core/Rect'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class BriefingPanelCfg extends PanelCfg {
 

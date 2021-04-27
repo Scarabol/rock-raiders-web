@@ -1,4 +1,4 @@
-import { PanelCfg } from '../../cfg/PanelsCfg'
+import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventKey } from '../../event/EventKeyEnum'
 import { LandslideEvent } from '../../event/WorldLocationEvent'
 import { Button } from '../base/Button'

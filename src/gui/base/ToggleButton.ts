@@ -1,4 +1,4 @@
-import { ButtonCfg } from '../../cfg/ButtonsCfg'
+import { ButtonCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from './BaseElement'
 import { Button } from './Button'
 

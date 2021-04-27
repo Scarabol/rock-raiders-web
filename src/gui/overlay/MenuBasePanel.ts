@@ -1,5 +1,5 @@
 import { MenuCfg } from '../../cfg/MenuCfg'
-import { ScaledLayer } from '../../screen/ScreenLayer'
+import { ScaledLayer } from '../../screen/layer/ScreenLayer'
 import { Panel } from '../base/Panel'
 import { MenuLayer } from './MenuLayer'
 

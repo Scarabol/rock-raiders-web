@@ -1,3 +1,4 @@
+import { GameStatsCfg } from '../../cfg/GameStatsCfg'
 import { WorkerMessageType } from './WorkerMessageType'
 
 export class WadWorkerMessage {
@@ -5,6 +6,7 @@ export class WadWorkerMessage {
     type: WorkerMessageType = null
     text?: string
     cfg?: any
+    stats?: any
     totalResources?: number
     assetName?: string
     assetObj?: any
@@ -19,7 +21,12 @@ export class WadWorkerMessage {
     }
 
     static createCfgLoaded(cfg: any, totalResources: number): WadWorkerMessage {
-        return {type: WorkerMessageType.CFG, cfg: cfg, totalResources: totalResources}
+        return {
+            type: WorkerMessageType.CFG,
+            cfg: cfg,
+            stats: new GameStatsCfg(cfg['Stats']),
+            totalResources: totalResources,
+        }
     }
 
     static createAssetLoaded(assetIndex: number, assetName: string, assetObj: any): WadWorkerMessage {

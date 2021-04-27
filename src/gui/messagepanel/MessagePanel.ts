@@ -1,4 +1,4 @@
-import { PanelCfg } from '../../cfg/PanelsCfg'
+import { PanelCfg } from '../../cfg/PanelCfg'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'

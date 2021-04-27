@@ -1,6 +1,6 @@
-import { PanelCfg } from '../../cfg/PanelsCfg'
+import { PanelCfg } from '../../cfg/PanelCfg'
 import { clearTimeoutSafe } from '../../core/Util'
-import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../main'
+import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { BaseElement } from './BaseElement'
 

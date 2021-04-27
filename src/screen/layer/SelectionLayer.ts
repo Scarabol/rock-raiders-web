@@ -1,7 +1,7 @@
 import { MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameState } from '../../game/model/GameState'
 import { WorldManager } from '../../game/WorldManager'
-import { ScreenLayer } from '../ScreenLayer'
+import { ScreenLayer } from './ScreenLayer'
 
 export class SelectionLayer extends ScreenLayer {
 

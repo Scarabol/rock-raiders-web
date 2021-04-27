@@ -1,9 +1,9 @@
-import { BriefingPanelCfg } from '../../cfg/BriefingPanelCfg'
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { MessagePanel } from '../messagepanel/MessagePanel'
+import { BriefingPanelCfg } from './BriefingPanelCfg'
 
 export class BriefingPanel extends Panel {
 
@@ -18,15 +18,15 @@ export class BriefingPanel extends Panel {
     imgParagraph: HTMLCanvasElement[] = []
     paragraph: number = 0
 
-    constructor(cfg: BriefingPanelCfg) {
+    constructor() {
         super()
-        this.cfg = cfg
-        this.imgTitle = cfg.titleFont.createTextImage(cfg.title)
-        this.titleRelX = cfg.titleWindow.x + (cfg.titleWindow.w - this.imgTitle.width) / 2
-        this.titleRelY = cfg.titleWindow.y
-        this.btnNext = this.addChild(new Button(this, cfg.nextButtonCfg))
+        this.cfg = new BriefingPanelCfg()
+        this.imgTitle = this.cfg.titleFont.createTextImage(this.cfg.title)
+        this.titleRelX = this.cfg.titleWindow.x + (this.cfg.titleWindow.w - this.imgTitle.width) / 2
+        this.titleRelY = this.cfg.titleWindow.y
+        this.btnNext = this.addChild(new Button(this, this.cfg.nextButtonCfg))
         this.btnNext.onClick = () => this.nextParagraph()
-        this.btnBack = this.addChild(new Button(this, cfg.backButtonCfg))
+        this.btnBack = this.addChild(new Button(this, this.cfg.backButtonCfg))
         this.btnBack.onClick = () => this.prevParagraph()
         this.hidden = true
     }

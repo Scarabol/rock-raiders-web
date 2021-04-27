@@ -1,6 +1,6 @@
-import { KEY_EVENT, POINTER_EVENT } from '../event/EventTypeEnum'
-import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../main'
-import { ResourceManager } from '../resource/ResourceManager'
+import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../../params'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class ScreenLayer {
 

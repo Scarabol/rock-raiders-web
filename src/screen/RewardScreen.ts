@@ -6,7 +6,7 @@ import { GameResultState, GameState } from '../game/model/GameState'
 import { RewardScreenButton } from '../menu/RewardScreenButton'
 import { ResourceManager } from '../resource/ResourceManager'
 import { BaseScreen } from './BaseScreen'
-import { ScaledLayer } from './ScreenLayer'
+import { ScaledLayer } from './layer/ScreenLayer'
 
 export class RewardScreen extends BaseScreen {
 

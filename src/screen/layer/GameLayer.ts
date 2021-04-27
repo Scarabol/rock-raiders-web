@@ -1,5 +1,4 @@
 import { Vector2 } from 'three'
-import { BuildingEntityStats } from '../../cfg/BuildingEntityStats'
 import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { CancelBuildMode, EntityDeselected } from '../../event/LocalEvents'
@@ -19,8 +18,8 @@ import { SurfaceType } from '../../game/model/map/SurfaceType'
 import { Raider } from '../../game/model/raider/Raider'
 import { SelectionType } from '../../game/model/Selectable'
 import { WorldManager } from '../../game/WorldManager'
-import { DEV_MODE } from '../../main'
-import { ScreenLayer } from '../ScreenLayer'
+import { DEV_MODE } from '../../params'
+import { ScreenLayer } from './ScreenLayer'
 
 export class GameLayer extends ScreenLayer {
 
@@ -59,7 +58,7 @@ export class GameLayer extends ScreenLayer {
                         s.neighbors.forEach((n) => n.updateTexture())
                     })
                     const barrierLocations = buildMarker.getBarrierLocations()
-                    const stats = BuildingEntityStats.getByType(GameState.buildModeSelection)
+                    const stats = GameState.buildModeSelection.stats
                     const neededCrystals = stats?.CostCrystal || 0
                     const neededOre = stats?.CostOre || 0
                     const site = new BuildingSite(buildMarker.primarySurface, buildMarker.secondarySurface, GameState.buildModeSelection)

@@ -1,5 +1,5 @@
 import { Group, Vector2, Vector3 } from 'three'
-import { TILESIZE } from '../../../main'
+import { TILESIZE } from '../../../params'
 import { BarrierLocation } from '../collect/BarrierLocation'
 import { GameState } from '../GameState'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'

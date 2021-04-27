@@ -1,4 +1,4 @@
-import { PanelCfg } from '../../cfg/PanelsCfg'
+import { PanelCfg } from '../../cfg/PanelCfg'
 import { BitmapFont } from '../../core/BitmapFont'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Panel } from '../base/Panel'

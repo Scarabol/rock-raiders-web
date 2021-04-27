@@ -1,4 +1,4 @@
-import { PanelCfg } from '../../cfg/PanelsCfg'
+import { PanelCfg } from '../../cfg/PanelCfg'
 import { GameState } from '../../game/model/GameState'
 import { PriorityIdentifier } from '../../game/model/job/PriorityIdentifier'
 import { PriorityEntry } from '../../game/model/job/PriorityList'

@@ -1,6 +1,6 @@
 import { Vector2 } from 'three'
 import { Area } from '../../../core/Area'
-import { JOB_ACTION_RANGE, TILESIZE } from '../../../main'
+import { JOB_ACTION_RANGE, TILESIZE } from '../../../params'
 import { Surface } from '../map/Surface'
 import { PathTarget } from '../PathTarget'
 import { RaiderSkill } from '../raider/RaiderSkill'

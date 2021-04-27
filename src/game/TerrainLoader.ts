@@ -1,5 +1,5 @@
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { TILESIZE } from '../main'
+import { TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { Graph } from './model/map/astar'
 import { Surface } from './model/map/Surface'
@@ -18,15 +18,15 @@ export class TerrainLoader {
         terrain.textureSet = ResourceManager.cfg('Textures', themeName)
         // console.log(terrain.textureSet);
 
-        const terrainMap = ResourceManager.getMap(levelConf.terrainMap)
+        const terrainMap = ResourceManager.getResource(levelConf.terrainMap)
         terrain.width = terrainMap.width
         terrain.height = terrainMap.height
-        const pathMap = ResourceManager.getMap(levelConf.pathMap)?.level
-        const surfaceMap = ResourceManager.getMap(levelConf.surfaceMap)?.level
-        const predugMap = ResourceManager.getMap(levelConf.predugMap)?.level
-        const cryOreMap = ResourceManager.getMap(levelConf.cryOreMap)?.level
-        const fallinMap = ResourceManager.getMap(levelConf.fallinMap)?.level
-        const erodeMap = ResourceManager.getMap(levelConf.erodeMap)?.level
+        const pathMap = ResourceManager.getResource(levelConf.pathMap)?.level
+        const surfaceMap = ResourceManager.getResource(levelConf.surfaceMap)?.level
+        const predugMap = ResourceManager.getResource(levelConf.predugMap)?.level
+        const cryOreMap = ResourceManager.getResource(levelConf.cryOreMap)?.level
+        const fallinMap = ResourceManager.getResource(levelConf.fallinMap)?.level
+        const erodeMap = ResourceManager.getResource(levelConf.erodeMap)?.level
 
         // maps parsed from WAD are row-wise saved, which means y (row) comes first and x (column) second
         for (let r = 0; r < terrainMap.level.length; r++) {

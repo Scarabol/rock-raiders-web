@@ -1,4 +1,4 @@
-import { ButtonCfg } from '../../cfg/ButtonsCfg'
+import { ButtonCfg } from '../../cfg/ButtonCfg'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { BaseElement } from './BaseElement'
 

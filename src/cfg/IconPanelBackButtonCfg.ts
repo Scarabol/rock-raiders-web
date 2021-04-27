@@ -1,4 +1,4 @@
-import { BaseButtonCfg } from './ButtonsCfg'
+import { BaseButtonCfg } from './BaseButtonCfg'
 
 export class IconPanelBackButtonCfg extends BaseButtonCfg {
 

@@ -5,7 +5,7 @@ import { EntityAddedEvent, EntityRemovedEvent, EntityType, RaiderRequested } fro
 import { Building } from '../../game/model/building/Building'
 import { GameState } from '../../game/model/GameState'
 import { Surface } from '../../game/model/map/Surface'
-import { MAX_RAIDER_REQUEST } from '../../main'
+import { MAX_RAIDER_REQUEST } from '../../params'
 import { Panel } from '../base/Panel'
 import { BuildingPanel } from './BuildingPanel'
 import { GetToolPanel } from './GetToolPanel'

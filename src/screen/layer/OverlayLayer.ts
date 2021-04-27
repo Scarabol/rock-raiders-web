@@ -1,4 +1,3 @@
-import { BriefingPanelCfg } from '../../cfg/BriefingPanelCfg'
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
 import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
@@ -6,7 +5,7 @@ import { Panel } from '../../gui/base/Panel'
 import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
 import { OptionsPanel } from '../../gui/overlay/OptionsPanel'
 import { PausePanel } from '../../gui/overlay/PausePanel'
-import { DEV_MODE } from '../../main'
+import { DEV_MODE } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { GuiBaseLayer } from './GuiBaseLayer'
 
@@ -20,7 +19,7 @@ export class OverlayLayer extends GuiBaseLayer {
         super()
         this.panelPause = this.addPanel(new PausePanel(this, ResourceManager.getResource('PausedMenu') as MenuCfg))
         this.panelOptions = this.addPanel(new OptionsPanel(this, ResourceManager.getResource('OptionsMenu') as MenuCfg))
-        this.panelBriefing = this.addPanel(new BriefingPanel(new BriefingPanelCfg()))
+        this.panelBriefing = this.addPanel(new BriefingPanel())
         // link items
         this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
         this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)

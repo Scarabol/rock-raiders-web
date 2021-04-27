@@ -12,7 +12,7 @@
 
 import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, MeshPhongMaterial, Vector3 } from 'three'
 import { decodeFilepath, decodeString, getFilename } from '../core/Util'
-import { SEQUENCE_TEXTURE_FRAMERATE } from '../main'
+import { SEQUENCE_TEXTURE_FRAMERATE } from '../params'
 import { AnimatedMesh } from './AnimatedMesh'
 import { ResourceManager } from './ResourceManager'
 

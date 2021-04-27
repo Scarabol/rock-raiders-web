@@ -1,6 +1,6 @@
 import { Vector2 } from 'three'
 import { getRandom, getRandomInclusive } from '../../../core/Util'
-import { NATIVE_FRAMERATE, TILESIZE } from '../../../main'
+import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { GameState } from '../GameState'
 import { Surface } from '../map/Surface'

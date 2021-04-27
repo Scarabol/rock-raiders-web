@@ -4,6 +4,8 @@ import { ButtonCrystalSideBarCfg } from '../gui/sidebar/PanelCrystalSideBar'
 import { ButtonPriorityListCfg } from '../gui/toppanel/ButtonPriorityListCfg'
 import { ButtonTopCfg } from '../gui/toppanel/ButtonTopCfg'
 import { BaseConfig } from './BaseConfig'
+import { ButtonCameraControlCfg } from './ButtonCameraControlCfg'
+import { ButtonInformationCfg } from './ButtonInformationCfg'
 
 export class ButtonsCfg extends BaseConfig {
 
@@ -43,81 +45,6 @@ export class ButtonsCfg extends BaseConfig {
         } else {
             return btnCfgValue
         }
-    }
-
-}
-
-export class ButtonInformationCfg extends BaseConfig {
-
-    panelButtonInformationToggle: ButtonCfg = null
-    panelButtonInformationFunction: ButtonCfg = null
-
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
-    }
-
-}
-
-export class ButtonCameraControlCfg extends BaseConfig {
-
-    panelButtonCameraControlZoomIn: ButtonCfg = null
-    panelButtonCameraControlZoomOut: ButtonCfg = null
-    panelButtonCameraControlCycleBuildings: ButtonCfg = null
-    panelButtonCameraControlRotate: ButtonCfg = null
-
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
-    }
-
-}
-
-export class BaseButtonCfg {
-
-    buttonType?: string = null
-    normalFile?: string = null
-    highlightFile?: string = null
-    pressedFile?: string = null
-    disabledFile?: string = null
-    relX?: number = 0
-    relY?: number = 0
-    width?: number = 0
-    height?: number = 0
-    tooltip?: string = null
-}
-
-export class ButtonCfg extends BaseButtonCfg {
-
-    constructor(cfgValue: any) {
-        super()
-        if (cfgValue.length === 9) {
-            [this.buttonType, this.normalFile, this.highlightFile, this.pressedFile, this.relX, this.relY, this.width, this.height, this.tooltip] = cfgValue
-        } else {
-            throw 'Invalid number of arguments (' + cfgValue.length + ') given for button configuration expected 9 or 5'
-        }
-    }
-
-}
-
-export class InfoButtonCfg extends BaseButtonCfg {
-
-    constructor(buttonImageFilename: string) {
-        super()
-        this.normalFile = buttonImageFilename
-        this.highlightFile = buttonImageFilename
-        this.pressedFile = buttonImageFilename
-        this.disabledFile = buttonImageFilename
-        this.relX = 0
-        this.relY = 0
     }
 
 }
