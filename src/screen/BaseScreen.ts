@@ -62,7 +62,7 @@ export class BaseScreen {
     isInRect(event: MouseEvent | WheelEvent) {
         if (this.layers.length < 1) return false
         const firstLayer = this.layers[0] // all layers have same state and size
-        if (!firstLayer.isActive() && !firstLayer.canvas) return false
+        if (!firstLayer.isActive() || !firstLayer.canvas) return false
         const rect = firstLayer.canvas.getBoundingClientRect()
         const clientX = event.clientX, clientY = event.clientY
         return clientX >= rect.left && clientX < rect.right && clientY >= rect.top && clientY < rect.bottom

@@ -38,7 +38,7 @@ export class OverlayLayer extends GuiBaseLayer {
 
     handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
         if (this.panels.every(p => p.hidden)) return false
-        return super.handlePointerEvent(eventEnum, event) || this.isActive() // catch em all
+        return super.handlePointerEvent(eventEnum, event) || true // catch em all
     }
 
     handleKeyEvent(eventEnum: KEY_EVENT, event: KeyboardEvent): boolean {
