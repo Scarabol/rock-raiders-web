@@ -79,31 +79,30 @@ export class ScreenLayer {
 
 export class ScaledLayer extends ScreenLayer {
 
-    fixedWidth: number
-    fixedHeight: number
+    fixedWidth: number = SPRITE_RESOLUTION_WIDTH
+    fixedHeight: number = SPRITE_RESOLUTION_HEIGHT
+    scaleX: number
+    scaleY: number
 
     constructor() {
         super(true)
-        this.fixedWidth = SPRITE_RESOLUTION_WIDTH
-        this.fixedHeight = SPRITE_RESOLUTION_HEIGHT
+        this.updateScale()
+    }
+
+    private updateScale() {
+        this.scaleX = this.canvas.width / this.fixedWidth
+        this.scaleY = this.canvas.height / this.fixedHeight
     }
 
     toScaledCoords(windowX: number, windowY: number) {
         const [cx, cy] = this.toCanvasCoords(windowX, windowY)
-        return [cx / this.scaleX(), cy / this.scaleY()]
+        return [cx / this.scaleX, cy / this.scaleY].map((c) => Math.round(c))
     }
 
     resize(width, height) {
         super.resize(width, height)
-        this.context.scale(this.scaleX(), this.scaleY())
-    }
-
-    scaleX() {
-        return this.canvas.width / this.fixedWidth
-    }
-
-    scaleY() {
-        return this.canvas.height / this.fixedHeight
+        this.updateScale()
+        this.context.scale(this.scaleX, this.scaleY)
     }
 
 }
