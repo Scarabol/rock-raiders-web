@@ -1,4 +1,6 @@
-import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
+import { GamePointerEvent } from '../../event/GamePointerEvent'
+import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 
@@ -63,15 +65,15 @@ export class ScreenLayer {
         return [windowX - clientRect.left, windowY - clientRect.top]
     }
 
-    handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
+    handlePointerEvent(event: GamePointerEvent): boolean {
         return false
     }
 
-    handleKeyEvent(eventEnum: KEY_EVENT, event: KeyboardEvent): boolean {
+    handleKeyEvent(event: GameKeyboardEvent): boolean {
         return false
     }
 
-    handleWheelEvent(event: WheelEvent): boolean {
+    handleWheelEvent(event: GameWheelEvent): boolean {
         return false
     }
 

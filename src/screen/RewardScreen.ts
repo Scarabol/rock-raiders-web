@@ -47,8 +47,8 @@ export class RewardScreen extends BaseScreen {
             this.texts.push(labelFont.createTextImage(txt.text))
         })
         this.resultsLayer = this.addLayer(new ScaledLayer())
-        this.resultsLayer.handlePointerEvent = ((eventType) => {
-            if (eventType === POINTER_EVENT.UP) {
+        this.resultsLayer.handlePointerEvent = ((event) => {
+            if (event.eventEnum === POINTER_EVENT.UP) {
                 this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
                 this.uncoverTimeout = null
                 this.resultIndex = this.resultLastIndex
@@ -64,17 +64,17 @@ export class RewardScreen extends BaseScreen {
         this.btnSave = new RewardScreenButton(this.cfg.saveButton)
         this.btnSave.disabled = true
         this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton)
-        this.btnLayer.handlePointerEvent = ((eventType, event) => {
-            if (eventType === POINTER_EVENT.MOVE) {
+        this.btnLayer.handlePointerEvent = ((event) => {
+            if (event.eventEnum === POINTER_EVENT.MOVE) {
                 const [sx, sy] = this.btnLayer.toScaledCoords(event.clientX, event.clientY)
                 this.btnSave.checkHover(sx, sy)
                 this.btnAdvance.checkHover(sx, sy)
-            } else if (eventType === POINTER_EVENT.DOWN) {
+            } else if (event.eventEnum === POINTER_EVENT.DOWN) {
                 if (event.button === MOUSE_BUTTON.MAIN) {
                     this.btnSave.checkSetPressed()
                     this.btnAdvance.checkSetPressed()
                 }
-            } else if (eventType === POINTER_EVENT.UP) {
+            } else if (event.eventEnum === POINTER_EVENT.UP) {
                 if (event.button === MOUSE_BUTTON.MAIN) {
                     if (this.btnSave.pressed) {
                         this.btnSave.setReleased()

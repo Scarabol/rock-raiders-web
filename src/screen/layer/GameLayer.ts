@@ -1,6 +1,9 @@
 import { Vector2 } from 'three'
 import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
+import { GamePointerEvent } from '../../event/GamePointerEvent'
+import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { CancelBuildMode, EntityDeselected } from '../../event/LocalEvents'
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { Building } from '../../game/model/building/Building'
@@ -39,9 +42,9 @@ export class GameLayer extends ScreenLayer {
         this.worldMgr = worldMgr
     }
 
-    handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
+    handlePointerEvent(event: GamePointerEvent): boolean {
         const buildMarker = this.worldMgr.sceneManager.buildMarker
-        if (eventEnum === POINTER_EVENT.MOVE) {
+        if (event.eventEnum === POINTER_EVENT.MOVE) {
             const intersectionPoint = this.getTerrainPositionFromEvent(event)
             if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint)
             if (buildMarker.updateAllMarker(this.worldMgr.sceneManager.terrain, intersectionPoint)) {
@@ -49,7 +52,7 @@ export class GameLayer extends ScreenLayer {
             } else {
                 buildMarker.markAsInvalid()
             }
-        } else if (eventEnum === POINTER_EVENT.UP) {
+        } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 if (GameState.buildModeSelection && buildMarker.lastCheck) {
                     buildMarker.visibleSurfaces.forEach((s) => {
@@ -81,7 +84,7 @@ export class GameLayer extends ScreenLayer {
                     EventBus.publishEvent(new CancelBuildMode())
                 }
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
-                const downUpDistance = Math.abs(event.x - this.rightDown.x) + Math.abs(event.y - this.rightDown.y)
+                const downUpDistance = Math.abs(event.clientX - this.rightDown.x) + Math.abs(event.clientY - this.rightDown.y)
                 if (downUpDistance < 3 && (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP)) {
                     // TODO check for collectable entity first
                     const intersectionPoint = this.getTerrainPositionFromEvent(event)
@@ -103,18 +106,18 @@ export class GameLayer extends ScreenLayer {
                     buildMarker.hideAllMarker()
                 }
             }
-        } else if (eventEnum === POINTER_EVENT.DOWN) {
+        } else if (event.eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.SECONDARY) {
-                this.rightDown.x = event.x
-                this.rightDown.y = event.y
+                this.rightDown.x = event.clientX
+                this.rightDown.y = event.clientY
             }
         }
-        this.canvas.dispatchEvent(event)
+        this.canvas.dispatchEvent(new PointerEvent(event.type, event))
         return true
     }
 
-    handleKeyEvent(eventEnum: KEY_EVENT, event: KeyboardEvent): boolean {
-        if (DEV_MODE && eventEnum === KEY_EVENT.UP) {
+    handleKeyEvent(event: GameKeyboardEvent): boolean {
+        if (DEV_MODE && event.eventEnum === KEY_EVENT.UP) {
             if (GameState.selectionType === SelectionType.SURFACE) {
                 GameState.selectedEntities.forEach((s: Surface) => {
                     if (event.key === 'c') {
@@ -152,8 +155,8 @@ export class GameLayer extends ScreenLayer {
         return intersectionPoint ? new Vector2(intersectionPoint.x, intersectionPoint.z) : null
     }
 
-    handleWheelEvent(event: WheelEvent): boolean {
-        this.canvas.dispatchEvent(event)
+    handleWheelEvent(event: GameWheelEvent): boolean {
+        this.canvas.dispatchEvent(new WheelEvent(event.type, event))
         return true
     }
 

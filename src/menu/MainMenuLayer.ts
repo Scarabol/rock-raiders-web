@@ -2,6 +2,8 @@ import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { clearIntervalSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
+import { GamePointerEvent } from '../event/GamePointerEvent'
+import { GameWheelEvent } from '../event/GameWheelEvent'
 import { NATIVE_FRAMERATE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { ScaledLayer } from '../screen/layer/ScreenLayer'
@@ -70,8 +72,8 @@ export class MainMenuLayer extends ScaledLayer {
         super.hide()
     }
 
-    handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
-        if (eventEnum === POINTER_EVENT.MOVE) {
+    handlePointerEvent(event: GamePointerEvent): boolean {
+        if (event.eventEnum === POINTER_EVENT.MOVE) {
             const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
             let hovered = false
             this.items.forEach((item) => {
@@ -94,11 +96,11 @@ export class MainMenuLayer extends ScaledLayer {
                     this.setScrollSpeedY(0)
                 }
             }
-        } else if (eventEnum === POINTER_EVENT.DOWN) {
+        } else if (event.eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 this.items.forEach((item) => item.checkSetPressed())
             }
-        } else if (eventEnum === POINTER_EVENT.UP) {
+        } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 this.items.forEach((item) => {
                     if (item.pressed) {
@@ -122,7 +124,7 @@ export class MainMenuLayer extends ScaledLayer {
         this.scrollSpeedY = Math.sign(deltaY) * Math.pow(Math.round(deltaY / 20), 2)
     }
 
-    handleWheelEvent(event: WheelEvent): boolean {
+    handleWheelEvent(event: GameWheelEvent): boolean {
         if (!this.cfg.canScroll) return false
         this.setScrollY(event.deltaY)
         return true

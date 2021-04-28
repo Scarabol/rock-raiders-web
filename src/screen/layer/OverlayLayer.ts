@@ -1,6 +1,8 @@
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
-import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { KEY_EVENT } from '../../event/EventTypeEnum'
+import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
+import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { Panel } from '../../gui/base/Panel'
 import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
 import { OptionsPanel } from '../../gui/overlay/OptionsPanel'
@@ -36,15 +38,15 @@ export class OverlayLayer extends GuiBaseLayer {
         if (!DEV_MODE) this.setActivePanel(this.panelBriefing)
     }
 
-    handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
+    handlePointerEvent(event: GamePointerEvent): boolean {
         if (this.panels.every(p => p.hidden)) return false
-        return super.handlePointerEvent(eventEnum, event) || true // catch em all
+        return super.handlePointerEvent(event) || true // catch em all
     }
 
-    handleKeyEvent(eventEnum: KEY_EVENT, event: KeyboardEvent): boolean {
+    handleKeyEvent(event: GameKeyboardEvent): boolean {
         let result = false
         const lEventKey = event.key.toLowerCase()
-        if (eventEnum === KEY_EVENT.UP) {
+        if (event.eventEnum === KEY_EVENT.UP) {
             if (lEventKey === 'escape') {
                 if (this.panelBriefing.hidden && this.panelOptions.hidden) {
                     if (this.panelPause.hidden) {

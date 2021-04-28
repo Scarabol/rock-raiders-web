@@ -1,4 +1,6 @@
 import { MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { GamePointerEvent } from '../../event/GamePointerEvent'
+import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { BaseElement } from '../../gui/base/BaseElement'
 import { Panel } from '../../gui/base/Panel'
 import { ScaledLayer } from './ScreenLayer'
@@ -28,26 +30,25 @@ export class GuiBaseLayer extends ScaledLayer {
         return panel
     }
 
-    handlePointerEvent(eventEnum: POINTER_EVENT, event: PointerEvent): boolean {
+    handlePointerEvent(event: GamePointerEvent): boolean {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
         const hit = this.context && this.context.getImageData(cx, cy, 1, 1).data[3] > 0
         if (hit) {
-            event.preventDefault()
-            if (eventEnum === POINTER_EVENT.MOVE) {
+            if (event.eventEnum === POINTER_EVENT.MOVE) {
                 this.rootElement.checkHover(sx, sy)
-            } else if (eventEnum === POINTER_EVENT.DOWN) {
+            } else if (event.eventEnum === POINTER_EVENT.DOWN) {
                 if (event.button === MOUSE_BUTTON.MAIN) this.rootElement.checkClick(sx, sy)
-            } else if (eventEnum === POINTER_EVENT.UP) {
+            } else if (event.eventEnum === POINTER_EVENT.UP) {
                 if (event.button === MOUSE_BUTTON.MAIN) this.rootElement.checkRelease(sx, sy)
             }
-        } else if (eventEnum === POINTER_EVENT.MOVE) {
+        } else if (event.eventEnum === POINTER_EVENT.MOVE) {
             this.rootElement.release()
         }
         return hit
     }
 
-    handleWheelEvent(event: WheelEvent): boolean {
+    handleWheelEvent(event: GameWheelEvent): boolean {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         return !this.context || this.context.getImageData(cx, cy, 1, 1).data[3] > 0
     }
