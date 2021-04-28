@@ -47,7 +47,7 @@ export class BuildPlacementMarker {
             return false
         }
         position.multiplyScalar(1 / TILESIZE)
-        // FIXME use surface height offsets, refactor terrain map/data handling before
+        // TODO use surface height offsets, refactor terrain map/data handling before
         const buildMode = GameState.buildModeSelection
         this.buildingMarkerPrimary.visible = true
         this.buildingMarkerPrimary.position.set(Math.floor(position.x), -5 / TILESIZE, Math.floor(position.y))

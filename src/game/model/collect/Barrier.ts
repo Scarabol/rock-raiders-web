@@ -13,7 +13,7 @@ export class Barrier extends CollectableEntity {
     }
 
     protected updateTargets(): CollectPathTarget[] {
-        return this.targets // FIXME check target site still requires barrier, otherwise choose toolstation
+        return this.targets // TODO check target site still requires barrier, otherwise choose toolstation
     }
 
     getDefaultActivity(): BarrierActivity {

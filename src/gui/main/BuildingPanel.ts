@@ -27,7 +27,7 @@ export class BuildingPanel extends IconSubPanel {
 
     addBuildMenuItem(menuItemGroup: string, itemKey: string, building: Building) {
         const item = this.addMenuItem(menuItemGroup, itemKey)
-        item.isDisabled = () => false // FIXME check Dependencies from config
+        item.isDisabled = () => false // TODO check Dependencies from config
         item.onClick = () => GameState.buildModeSelection = building
         return item
     }
