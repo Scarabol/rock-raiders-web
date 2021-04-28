@@ -1,52 +1,40 @@
 import { EventKey } from '../../event/EventKeyEnum'
-import { EntityDeselected } from '../../event/LocalEvents'
-import { BuildingSite } from '../../game/model/building/BuildingSite'
-import { EntityType } from '../../game/model/EntityType'
-import { GameState } from '../../game/model/GameState'
-import { Surface } from '../../game/model/map/Surface'
-import { SurfaceType } from '../../game/model/map/SurfaceType'
+import { CreatePowerPath, MakeRubble, PlaceFence } from '../../event/GuiCommand'
+import { SelectionChanged } from '../../event/LocalEvents'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectFloorPanel extends SelectBasePanel {
 
+    isGround: boolean = false
+    isPowerPath: boolean = false
+    canPlaceFence: boolean = false
+
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 3, onBackPanel)
         const pathItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_LayPath')
-        pathItem.onClick = () => {
-            const selectedSurface = GameState.selectedEntities[0] as Surface
-            selectedSurface.surfaceType = SurfaceType.POWER_PATH_SITE
-            selectedSurface.updateTexture()
-            GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnMaterials(EntityType.ORE, 2)
-            const site = new BuildingSite(selectedSurface)
-            site.neededByType.set(EntityType.ORE, 2)
-            GameState.buildingSites.push(site)
-            this.publishEvent(new EntityDeselected())
-        }
-        pathItem.isDisabled = () => GameState.selectedSurface?.surfaceType !== SurfaceType.GROUND
+        pathItem.onClick = () => this.publishEvent(new CreatePowerPath())
+        pathItem.isDisabled = () => !this.isGround
         const removeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_RemovePath')
-        removeItem.onClick = () => {
-            GameState.selectedSurface?.makeRubble(2)
-            this.publishEvent(new EntityDeselected())
-        }
-        removeItem.isDisabled = () => GameState.selectedSurface?.surfaceType !== SurfaceType.POWER_PATH
+        removeItem.onClick = () => this.publishEvent(new MakeRubble())
+        removeItem.isDisabled = () => !this.isPowerPath
         const placeFenceItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence')
-        placeFenceItem.isDisabled = () => {
-            return !GameState.hasOneBuildingOf(EntityType.POWER_STATION) || !GameState.selectedSurface?.canPlaceFence()
-        }
-        placeFenceItem.onClick = () => {
-            const selectedSurface = GameState.selectedSurface
-            if (selectedSurface) {
-                GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(selectedSurface)
-            }
-            this.publishEvent(new EntityDeselected())
-        }
-        this.registerEventListener(EventKey.SELECTED_SURFACE, () => {
-            pathItem.updateState()
-            removeItem.updateState()
-            placeFenceItem.updateState()
+        placeFenceItem.isDisabled = () => !this.canPlaceFence
+        placeFenceItem.onClick = () => this.publishEvent(new PlaceFence())
+        this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
+            this.isGround = event.isGround
+            this.isPowerPath = event.isPowerPath
+            this.canPlaceFence = event.canPlaceFence
+            this.updateAllButtonStates()
         })
+    }
+
+    reset() {
+        super.reset()
+        this.isGround = false
+        this.isPowerPath = false
+        this.canPlaceFence = false
     }
 
 }

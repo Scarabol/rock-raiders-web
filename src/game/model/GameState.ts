@@ -1,10 +1,8 @@
 import { Vector3 } from 'three'
 import { LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { EventBus } from '../../event/EventBus'
-import { EntityDeselected } from '../../event/LocalEvents'
+import { SelectionChanged } from '../../event/LocalEvents'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../params'
-import { SceneManager } from '../SceneManager'
-import { WorldManager } from '../WorldManager'
 import { BaseEntity } from './BaseEntity'
 import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
@@ -15,7 +13,7 @@ import { Surface } from './map/Surface'
 import { Bat } from './monster/Bat'
 import { SmallSpider } from './monster/SmallSpider'
 import { Raider } from './raider/Raider'
-import { RaiderTraining } from './raider/RaiderTraining'
+import { RaiderTraining, RaiderTrainingSites, RaiderTrainingStatsProperty } from './raider/RaiderTraining'
 import { Selectable, SelectionType } from './Selectable'
 
 export enum GameResultState {
@@ -60,7 +58,7 @@ export class GameState {
     static rewardConfig: LevelRewardConfig = null
     static priorityList: PriorityList = new PriorityList()
     static oxygenRate: number = 0
-    static buildModeSelection: (worldMgr: WorldManager, sceneMgr: SceneManager) => BuildingEntity = null
+    static buildModeSelection: BuildingEntity = null
     static objectiveShown: boolean = false
     static objectiveSwitch: boolean = false
 
@@ -120,21 +118,8 @@ export class GameState {
         return closest
     }
 
-    static hasOneBuildingOf(...buildings: EntityType[]): boolean {
-        return this.buildings.some((b) => buildings.some((type) => b.entityType === type) && b.isUsable())
-    }
-
-    static hasBuildingWithUpgrades(building: EntityType, upgrades: number = 0): boolean {
-        return this.buildings.some((b) => b.entityType === building && b.level >= upgrades && b.isUsable())
-    }
-
-    static getTrainingSites(position: Vector3, training: RaiderTraining): BuildingEntity[] {
-        if (training === RaiderTraining.DEMOLITION) {
-            return this.buildings.filter((b) => {
-                return b.isUsable() && b.stats.TrainDynamite && b.stats.TrainDynamite[b.level]
-            })
-        }
-        return []
+    static getTrainingSites(training: RaiderTraining): BuildingEntity[] {
+        return this.buildings.filter((b) => b.entityType === RaiderTrainingSites[training] && b.isUsable() && b.stats[RaiderTrainingStatsProperty[training]][b.level])
     }
 
     static selectEntities(entities: Selectable[]) {
@@ -144,12 +129,9 @@ export class GameState {
             return stillSelected
         })
         // add new entities that are selectable
-        const selectionEvents = []
         entities.forEach((freshlySelected) => {
-            const selectionEvent = freshlySelected.select()
-            if (selectionEvent) {
+            if (freshlySelected.select()) {
                 this.selectedEntities.push(freshlySelected)
-                selectionEvents.push(selectionEvent)
             }
         })
         // determine and set next selection type
@@ -159,11 +141,10 @@ export class GameState {
         } else if (len === 1) {
             this.selectionType = this.selectedEntities[0].getSelectionType()
         } else if (this.selectionType !== null) {
-            this.selectionType = null
-            EventBus.publishEvent(new EntityDeselected())
+            this.selectionType = SelectionType.NOTHING
         }
         // AFTER updating selected entities and selection type, publish all events
-        selectionEvents.forEach((event) => EventBus.publishEvent(event))
+        EventBus.publishEvent(new SelectionChanged(this.selectionType, this.selectedSurface, this.selectedBuilding, this.selectedRaiders))
     }
 
     static getMaxRaiders(): number {

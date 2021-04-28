@@ -2,83 +2,77 @@ import { Vector3 } from 'three'
 import { EventKey } from './EventKeyEnum'
 import { WorldEvent } from './WorldEvents'
 
-export interface LocationProvider {
-
-    getPosition(): Vector3
-
-}
-
 export class WorldLocationEvent extends WorldEvent {
 
-    locationProvider: LocationProvider
+    location: Vector3
 
-    constructor(entityKey: EventKey, locationProvider: LocationProvider) {
+    constructor(entityKey: EventKey, location: Vector3) {
         super(entityKey)
-        this.locationProvider = locationProvider
+        this.location = location
     }
 
 }
 
 export class GenericDeathEvent extends WorldLocationEvent {
 
-    constructor(locationProvider: LocationProvider) {
-        super(EventKey.LOCATION_DEATH, locationProvider)
+    constructor(location: Vector3) {
+        super(EventKey.LOCATION_DEATH, location)
     }
 
 }
 
 export class GenericMonsterEvent extends WorldLocationEvent {
 
-    constructor(locationProvider: LocationProvider) {
-        super(EventKey.LOCATION_MONSTER, locationProvider)
+    constructor(location: Vector3) {
+        super(EventKey.LOCATION_MONSTER, location)
     }
 
 }
 
 export class CrystalFoundEvent extends WorldLocationEvent {
 
-    constructor(locationProvider: LocationProvider) {
-        super(EventKey.LOCATION_CRYSTAL_FOUND, locationProvider)
+    constructor(location: Vector3) {
+        super(EventKey.LOCATION_CRYSTAL_FOUND, location)
     }
 
 }
 
 export class UnderAttackEvent extends WorldLocationEvent {
 
-    constructor(locationProvider: LocationProvider) {
-        super(EventKey.LOCATION_UNDER_ATTACK, locationProvider)
+    constructor(location: Vector3) {
+        super(EventKey.LOCATION_UNDER_ATTACK, location)
     }
 
 }
 
 export class LandslideEvent extends WorldLocationEvent {
 
-    constructor(locationProvider: LocationProvider) {
-        super(EventKey.LOCATION_LANDSLIDE, locationProvider)
+    constructor(location: Vector3) {
+        super(EventKey.LOCATION_LANDSLIDE, location)
     }
 
 }
 
 export class PowerDrainEvent extends WorldLocationEvent {
 
-    constructor(locationProvider: LocationProvider) {
-        super(EventKey.LOCATION_POWER_DRAIN, locationProvider)
+    constructor(location: Vector3) {
+        super(EventKey.LOCATION_POWER_DRAIN, location)
     }
 
 }
 
 export class SlugEmergeEvent extends WorldLocationEvent {
 
-    constructor(locationProvider: LocationProvider) {
-        super(EventKey.LOCATION_SLUG_EMERGE, locationProvider)
+    constructor(location: Vector3) {
+        super(EventKey.LOCATION_SLUG_EMERGE, location)
     }
 
 }
 
 export class RaiderDiscoveredEvent extends WorldLocationEvent {
 
-    constructor(locationProvider: LocationProvider) {
-        super(EventKey.LOCATION_RAIDER_DISCOVERED, locationProvider)
+    constructor(location: Vector3) {
+        super(EventKey.LOCATION_RAIDER_DISCOVERED, location)
     }
 
 }

@@ -3,7 +3,7 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class MainMenuPanel extends MainMenuBaseItem {
 
-    context: CanvasRenderingContext2D
+    context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
 
     constructor(imgData: ImageData, area: { x: number, y: number, w: number, h: number }) {
         super()
@@ -24,7 +24,7 @@ export class MainMenuPanel extends MainMenuBaseItem {
         return this.hover
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    draw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         super.draw(context)
         context.drawImage(this.context.canvas, this.x, this.y, this.width, this.height)
     }

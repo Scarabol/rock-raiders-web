@@ -1,6 +1,6 @@
 import { MenuItemCfg } from '../../cfg/MenuItemCfg'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { BaseElement } from '../base/BaseElement'
+import { GuiResourceCache } from '../GuiResourceCache'
 import { IconPanelButton } from './IconPanelButton'
 
 export class IconPanelToggleButton extends IconPanelButton {
@@ -13,10 +13,10 @@ export class IconPanelToggleButton extends IconPanelButton {
 
     constructor(parent: BaseElement, menuItemOffCfg: MenuItemCfg, menuItemOnCfg: MenuItemCfg, parentWidth: number, menuIndex: number) {
         super(parent, menuItemOffCfg, null, parentWidth, menuIndex)
-        this.imgOnNormal = ResourceManager.getImageOrNull(menuItemOnCfg.normalFile)
-        this.imgOnHover = ResourceManager.getImageOrNull(menuItemOnCfg.highlightFile)
-        this.imgOnPressed = ResourceManager.getImageOrNull(menuItemOnCfg.pressedFile)
-        this.imgOnDisabled = ResourceManager.getImageOrNull(menuItemOnCfg.disabledFile)
+        this.imgOnNormal = GuiResourceCache.getImageOrNull(menuItemOnCfg.normalFile)
+        this.imgOnHover = GuiResourceCache.getImageOrNull(menuItemOnCfg.highlightFile)
+        this.imgOnPressed = GuiResourceCache.getImageOrNull(menuItemOnCfg.pressedFile)
+        this.imgOnDisabled = GuiResourceCache.getImageOrNull(menuItemOnCfg.disabledFile)
     }
 
     onClick() {
@@ -27,7 +27,7 @@ export class IconPanelToggleButton extends IconPanelButton {
     onToggleStateChange() {
     }
 
-    onRedraw(context: CanvasRenderingContext2D) {
+    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         if (this.hidden) return
         let img = this.toggleState ? this.imgOnNormal : this.imgNormal
         if (this.disabled) {

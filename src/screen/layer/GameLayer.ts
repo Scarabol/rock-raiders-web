@@ -5,8 +5,9 @@ import { GameEvent } from '../../event/GameEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
+import { CancelBuildMode } from '../../event/GuiCommand'
 import { IEventHandler } from '../../event/IEventHandler'
-import { CancelBuildMode, ChangeCursor, EntityDeselected } from '../../event/LocalEvents'
+import { ChangeCursor, SelectionChanged } from '../../event/LocalEvents'
 import { BuildingSite } from '../../game/model/building/BuildingSite'
 import { EntityType } from '../../game/model/EntityType'
 import { FulfillerEntity } from '../../game/model/FulfillerEntity'
@@ -47,7 +48,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         this.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
     }
 
-    handlePointerEvent(event: GamePointerEvent): boolean {
+    handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
         const buildMarker = this.sceneMgr.buildMarker
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             const intersectionPoint = this.getTerrainPositionFromEvent(event)
@@ -57,17 +58,16 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 if (GameState.buildModeSelection && buildMarker.lastCheck) {
-                    const building = GameState.buildModeSelection(this.worldMgr, this.sceneMgr)
                     buildMarker.visibleSurfaces.forEach((s) => {
                         s.surfaceType = SurfaceType.POWER_PATH_BUILDING
                         s.updateTexture()
                         s.neighbors.forEach((n) => n.updateTexture())
                     })
                     const barrierLocations = buildMarker.getBarrierLocations()
-                    const stats = building.stats
+                    const stats = GameState.buildModeSelection.stats
                     const neededCrystals = stats?.CostCrystal || 0
                     const neededOre = stats?.CostOre || 0
-                    const site = new BuildingSite(buildMarker.primarySurface, buildMarker.secondarySurface, building)
+                    const site = new BuildingSite(buildMarker.primarySurface, buildMarker.secondarySurface, GameState.buildModeSelection)
                     site.heading = buildMarker.heading
                     site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
                     site.neededByType.set(EntityType.CRYSTAL, neededCrystals)
@@ -79,7 +79,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                         closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)
                         closestToolstation.spawnMaterials(EntityType.ORE, neededOre)
                     }
-                    this.publishEvent(new EntityDeselected())
+                    this.publishEvent(new SelectionChanged())
                     this.publishEvent(new CancelBuildMode())
                 }
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
@@ -96,7 +96,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                                 this.assignSurfaceJob(surface.createClearRubbleJob(), surface, intersectionPoint)
                             } else if (surface.isWalkable()) {
                                 GameState.selectedEntities.forEach((raider: Raider) => raider.setJob(new MoveJob(intersectionPoint)))
-                                if (GameState.selectedEntities.length > 0) this.publishEvent(new EntityDeselected())
+                                if (GameState.selectedEntities.length > 0) this.publishEvent(new SelectionChanged())
                             }
                         }
                     }
@@ -112,7 +112,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             }
         }
         this.canvas.dispatchEvent(new PointerEvent(event.type, event))
-        return true
+        return new Promise((resolve) => resolve(true))
     }
 
     updateCursor(event) {
@@ -152,7 +152,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         return Cursors.Pointer_Standard
     }
 
-    handleKeyEvent(event: GameKeyboardEvent): boolean {
+    handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
         if (DEV_MODE && event.eventEnum === KEY_EVENT.UP) {
             if (GameState.selectionType === SelectionType.SURFACE) {
                 GameState.selectedEntities.forEach((s: Surface) => {
@@ -163,11 +163,11 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                         if (!s.surfaceType.floor) s.createFallin(t[0], t[1])
                     }
                 })
-                this.publishEvent(new EntityDeselected())
-                return true
+                this.publishEvent(new SelectionChanged())
+                return new Promise((resolve) => resolve(true))
             }
         }
-        return false
+        return new Promise((resolve) => resolve(false))
     }
 
     assignSurfaceJob(job: Job, surface: Surface, intersectionPoint: Vector2) {
@@ -179,7 +179,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                 e.setJob(new MoveJob(intersectionPoint))
             }
         })
-        if (GameState.selectedEntities.length > 0) this.publishEvent(new EntityDeselected())
+        if (GameState.selectedEntities.length > 0) this.publishEvent(new SelectionChanged())
     }
 
     getTerrainPositionFromEvent(event): Vector2 {
@@ -189,9 +189,9 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         return this.sceneMgr.getTerrainIntersectionPoint(rx, ry)
     }
 
-    handleWheelEvent(event: GameWheelEvent): boolean {
+    handleWheelEvent(event: GameWheelEvent): Promise<boolean> {
         this.canvas.dispatchEvent(new WheelEvent(event.type, event))
-        return true
+        return new Promise((resolve) => resolve(true))
     }
 
     publishEvent(event: GameEvent): void {

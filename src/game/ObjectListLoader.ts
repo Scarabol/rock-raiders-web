@@ -1,6 +1,6 @@
 import { MathUtils, Vector2, Vector3 } from 'three'
 import { EventBus } from '../event/EventBus'
-import { EntityAddedEvent } from '../event/WorldEvents'
+import { RaidersChangedEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { Barracks } from './model/building/entities/Barracks'
@@ -47,7 +47,7 @@ export class ObjectListLoader {
                 raider.addToScene(worldPos, radHeading - Math.PI / 2)
                 if (raider.group.visible) {
                     GameState.raiders.push(raider)
-                    EventBus.publishEvent(new EntityAddedEvent(raider))
+                    EventBus.publishEvent(new RaidersChangedEvent())
                 } else {
                     GameState.raidersUndiscovered.push(raider)
                 }

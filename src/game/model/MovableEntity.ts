@@ -36,7 +36,7 @@ export abstract class MovableEntity extends AnimEntity {
             debugger
         }
         if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.target.targetLocation))) {
-            const paths = target.map((t) => this.findPathToTarget(t))
+            const paths = target.map((t) => this.findPathToTarget(t)).filter((p) => !!p)
                 .sort((l, r) => l.lengthSq - r.lengthSq)
             this.currentPath = paths.length > 0 ? paths[0] : null
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE

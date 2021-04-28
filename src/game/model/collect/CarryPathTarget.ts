@@ -92,13 +92,12 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
         switch (item.entityType) {
             case EntityType.CRYSTAL:
                 GameState.numCrystal++
-                EventBus.publishEvent(new MaterialAmountChanged(item.entityType))
                 break
             case EntityType.ORE:
                 GameState.numOre++
-                EventBus.publishEvent(new MaterialAmountChanged(item.entityType))
                 break
         }
+        EventBus.publishEvent(new MaterialAmountChanged())
     }
 
     getDropAction(): RaiderActivity {

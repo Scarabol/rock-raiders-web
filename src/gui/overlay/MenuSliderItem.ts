@@ -1,8 +1,8 @@
 import { BaseButtonCfg } from '../../cfg/BaseButtonCfg'
 import { MenuSliderItemCfg } from '../../cfg/MenuSliderItemCfg'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
+import { GuiResourceCache } from '../GuiResourceCache'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuSliderItem extends BaseElement {
@@ -24,13 +24,13 @@ export class MenuSliderItem extends BaseElement {
         this.relX = itemCfg.x
         this.relY = itemCfg.y
         this.sliderX = itemCfg.width
-        this.imgLeft = ResourceManager.getImage(itemCfg.imgLeft)
-        this.imgNormal = ResourceManager.getImage(itemCfg.imgOff)
-        this.imgHover = ResourceManager.getImage(itemCfg.imgOn)
-        this.imgRight = ResourceManager.getImage(itemCfg.imgRight)
+        this.imgLeft = GuiResourceCache.getImage(itemCfg.imgLeft)
+        this.imgNormal = GuiResourceCache.getImage(itemCfg.imgOff)
+        this.imgHover = GuiResourceCache.getImage(itemCfg.imgOn)
+        this.imgRight = GuiResourceCache.getImage(itemCfg.imgRight)
         const leftBtn = this.addChild(new Button(this, new BaseButtonCfg()))
-        leftBtn.imgNormal = ResourceManager.getImage(itemCfg.btnLeftNormal)
-        leftBtn.imgHover = ResourceManager.getImage(itemCfg.btnLeftHover)
+        leftBtn.imgNormal = GuiResourceCache.getImage(itemCfg.btnLeftNormal)
+        leftBtn.imgHover = GuiResourceCache.getImage(itemCfg.btnLeftHover)
         leftBtn.relX = this.sliderX - this.imgLeft.width - leftBtn.imgHover.width
         leftBtn.width = leftBtn.imgHover.width
         leftBtn.height = leftBtn.imgHover.height
@@ -42,8 +42,8 @@ export class MenuSliderItem extends BaseElement {
             }
         }
         const rightBtn = this.addChild(new Button(this, new BaseButtonCfg()))
-        rightBtn.imgNormal = ResourceManager.getImage(itemCfg.btnRightNormal)
-        rightBtn.imgHover = ResourceManager.getImage(itemCfg.btnRightHover)
+        rightBtn.imgNormal = GuiResourceCache.getImage(itemCfg.btnRightNormal)
+        rightBtn.imgHover = GuiResourceCache.getImage(itemCfg.btnRightHover)
         rightBtn.relX = this.sliderX + this.imgNormal.width + this.imgRight.width * 2
         rightBtn.width = rightBtn.imgHover.width
         rightBtn.height = rightBtn.imgHover.height
@@ -69,7 +69,7 @@ export class MenuSliderItem extends BaseElement {
         return stateChanged
     }
 
-    onRedraw(context: CanvasRenderingContext2D) {
+    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         if (this.hidden) return
         let img = this.imgTextNormal
         if (this.hover) {

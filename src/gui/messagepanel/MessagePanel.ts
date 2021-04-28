@@ -1,10 +1,10 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
-import { GameState } from '../../game/model/GameState'
-import { ResourceManager } from '../../resource/ResourceManager'
+import { AirLevelChanged, RaidersChangedEvent } from '../../event/LocalEvents'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
+import { GuiResourceCache } from '../GuiResourceCache'
 import { TextInfoMessage } from './TextInfoMessage'
 import { TextInfoMessageConfig } from './TextInfoMessageConfig'
 
@@ -21,13 +21,15 @@ export class MessagePanel extends Panel {
     msgManTrained: TextInfoMessage
     msgUnitUpgraded: TextInfoMessage
 
+    airLevel: number = 1
+
     constructor(parent: BaseElement, panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageConfig) {
         super(parent, panelCfg)
         this.relX = this.xOut = this.xIn = 42
         this.relY = this.yOut = this.yIn = 409
-        this.imgAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
+        this.imgAir = GuiResourceCache.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
 
-        const font = ResourceManager.getDefaultFont()
+        const font = GuiResourceCache.getDefaultFont()
         const crystalFound = new TextInfoMessage(font, textInfoMessageConfig.textCrystalFound, this.img.width)
         this.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(crystalFound))
         this.msgSpaceToContinue = new TextInfoMessage(font, textInfoMessageConfig.textSpaceToContinue, this.img.width)
@@ -39,9 +41,17 @@ export class MessagePanel extends Panel {
         this.msgAirSupplyRunningOut = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
         this.msgGameCompleted = new TextInfoMessage(font, textInfoMessageConfig.textGameCompleted, this.img.width)
         this.msgManTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
-        this.registerEventListener(EventKey.RAIDER_TRAINED, () => this.setMessage(this.msgManTrained))
+        this.registerEventListener(EventKey.RAIDERS_CHANGED, (event: RaidersChangedEvent) => event.training && this.setMessage(this.msgManTrained))
         this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
         this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, () => this.notifyRedraw())
+        this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, (event: AirLevelChanged) => {
+            this.airLevel = event.airLevel
+        })
+    }
+
+    reset() {
+        super.reset()
+        this.airLevel = 1
     }
 
     setMessage(textInfoMessage: TextInfoMessage, timeout: number = 3000) {
@@ -64,10 +74,10 @@ export class MessagePanel extends Panel {
         }
     }
 
-    onRedraw(context: CanvasRenderingContext2D) {
+    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         super.onRedraw(context)
-        if (GameState.airLevel > 0) {
-            const width = Math.round(236 * Math.min(1, GameState.airLevel))
+        if (this.airLevel > 0) {
+            const width = Math.round(236 * Math.min(1, this.airLevel))
             context.drawImage(this.imgAir, this.x + 85, this.y + 6, width, 8)
         }
         const textImage = this.currentMessage?.textImage

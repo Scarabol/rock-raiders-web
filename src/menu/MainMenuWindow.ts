@@ -24,7 +24,7 @@ export class MainMenuWindow extends MainMenuBaseItem {
         this.imgSecondLine = !!text ? this.font.createTextImage(text) : null
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    draw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         super.draw(context)
         const cx = this.x + this.width / 2, cy = this.y + this.height / 2
         if (this.imgFirstLine) context.drawImage(this.imgFirstLine, cx - this.imgFirstLine.width / 2, cy - this.imgFirstLine.height)

@@ -21,9 +21,9 @@ export class EventManager {
                 if (!screen.isInRect(event)) return
                 event.preventDefault()
                 const nonBubblingClone = new GamePointerEvent(eventEnum, event)
-                screen.layers.filter(l => l.isActive())
+                const activeLayers = screen.layers.filter(l => l.isActive())
                     .sort((a, b) => ScreenLayer.compareZ(a, b))
-                    .some(l => l.handlePointerEvent(nonBubblingClone))
+                EventManager.publishPointerEvent(activeLayers, nonBubblingClone)
             })
         })
         new Map<string, KEY_EVENT>([
@@ -33,17 +33,35 @@ export class EventManager {
             screen.gameCanvasContainer.addEventListener(eventType, (event: KeyboardEvent) => {
                 if (!DEV_MODE) event.preventDefault()
                 const nonBubblingClone = new GameKeyboardEvent(eventEnum, event)
-                screen.layers.filter(l => l.isActive())
+                const activeLayers = screen.layers.filter(l => l.isActive())
                     .sort((a, b) => ScreenLayer.compareZ(a, b))
-                    .some(l => l.handleKeyEvent(nonBubblingClone))
+                EventManager.publishKeyEvent(activeLayers, nonBubblingClone)
             })
         })
         screen.gameCanvasContainer.addEventListener('wheel', (event: WheelEvent) => {
             if (!screen.isInRect(event)) return
             const nonBubblingClone = new GameWheelEvent(event)
-            screen.layers.filter(l => l.isActive())
+            const activeLayers = screen.layers.filter(l => l.isActive())
                 .sort((a, b) => ScreenLayer.compareZ(a, b))
-                .some(l => l.handleWheelEvent(nonBubblingClone))
+            EventManager.publishWheelEvent(activeLayers, nonBubblingClone)
+        })
+    }
+
+    private static publishPointerEvent(activeLayers: ScreenLayer[], event: GamePointerEvent) {
+        activeLayers.shift()?.handlePointerEvent(event).then((consumed) => {
+            if (!consumed) this.publishPointerEvent(activeLayers, event)
+        })
+    }
+
+    private static publishKeyEvent(activeLayers: ScreenLayer[], event: GameKeyboardEvent) {
+        activeLayers.shift()?.handleKeyEvent(event).then((consumed) => {
+            if (!consumed) this.publishKeyEvent(activeLayers, event)
+        })
+    }
+
+    private static publishWheelEvent(activeLayers: ScreenLayer[], event: GameWheelEvent) {
+        activeLayers.shift()?.handleWheelEvent(event).then((consumed) => {
+            if (!consumed) this.publishWheelEvent(activeLayers, event)
         })
     }
 

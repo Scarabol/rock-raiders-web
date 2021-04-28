@@ -3,7 +3,9 @@ import { LevelObjectiveTextEntry } from '../cfg/LevelObjectiveTextEntry'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe, getRandom, iGet } from '../core/Util'
 import { EventKey } from '../event/EventKeyEnum'
-import { EntityAddedEvent, RaiderRequested } from '../event/WorldEvents'
+import { RaidersChangedEvent } from '../event/LocalEvents'
+import { RequestedRaidersChanged } from '../event/WorldEvents'
+import { GuiManager } from '../game/GuiManager'
 import { RaiderActivity } from '../game/model/activities/RaiderActivity'
 import { EntityType } from '../game/model/EntityType'
 import { GameState } from '../game/model/GameState'
@@ -31,6 +33,7 @@ export class GameScreen extends BaseScreen {
     overlayLayer: OverlayLayer
     worldMgr: WorldManager
     sceneMgr: SceneManager
+    guiMgr: GuiManager
     spawnRaiderInterval = null
     jobSupervisor: Supervisor
     levelName: string
@@ -40,20 +43,21 @@ export class GameScreen extends BaseScreen {
         super()
         this.gameLayer = this.addLayer(new GameLayer(this), 0)
         this.selectionLayer = this.addLayer(new SelectionLayer(), 10)
-        this.guiLayer = this.addLayer(new GuiMainLayer(this), 20)
-        this.overlayLayer = this.addLayer(new OverlayLayer(this), 30)
+        this.guiLayer = this.addLayer(new GuiMainLayer(), 20)
+        this.overlayLayer = this.addLayer(new OverlayLayer(), 30)
         this.worldMgr = new WorldManager()
         this.gameLayer.worldMgr = this.worldMgr
         this.sceneMgr = new SceneManager(this.gameLayer.canvas)
         this.gameLayer.sceneMgr = this.sceneMgr
         this.selectionLayer.sceneMgr = this.sceneMgr
         this.jobSupervisor = new Supervisor(this.worldMgr)
+        this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr)
         // link layer
-        this.guiLayer.onOptionsShow = () => this.overlayLayer.panelOptions.show()
-        this.overlayLayer.panelBriefing.messagePanel = this.guiLayer.panelMessages
-        this.overlayLayer.panelPause.onAbortGame = () => this.onLevelEnd()
-        this.overlayLayer.panelPause.onRestartGame = () => this.restartLevel()
-        this.registerEventListener(EventKey.RAIDER_REQUESTED, () => {
+        this.guiLayer.onOptionsShow = () => this.overlayLayer.showOptions()
+        this.overlayLayer.onSetSpaceToContinue = (state: boolean) => this.guiLayer.setSpaceToContinue(state)
+        this.overlayLayer.onAbortGame = () => this.onLevelEnd()
+        this.overlayLayer.onRestartGame = () => this.restartLevel()
+        this.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, () => {
             if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
                 this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER)
             }
@@ -77,13 +81,13 @@ export class GameScreen extends BaseScreen {
         console.log('Starting level ' + this.levelName + ' - ' + this.levelConf.fullName)
         this.worldMgr.setup(this.levelConf, () => this.onLevelEnd())
         this.sceneMgr.setupScene(this.levelConf, this.worldMgr)
-        // load in non-space objects next
-        const objectListConf = ResourceManager.getResource(this.levelConf.oListFile)
-        ObjectListLoader.loadObjectList(this.worldMgr, this.sceneMgr, objectListConf, this.levelConf.disableStartTeleport)
         // setup GUI
         const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(this.levelConf.objectiveText), this.levelName)
         this.guiLayer.reset()
         this.overlayLayer.setup(objectiveText.objective, this.levelConf.objectiveImage640x480)
+        // load in non-space objects next
+        const objectListConf = ResourceManager.getResource(this.levelConf.oListFile)
+        ObjectListLoader.loadObjectList(this.worldMgr, this.sceneMgr, objectListConf, this.levelConf.disableStartTeleport)
         this.show()
     }
 
@@ -118,7 +122,7 @@ export class GameScreen extends BaseScreen {
             const station = spawnBuildings[c]
             if (station.spawning) continue
             GameState.requestedRaiders--
-            this.publishEvent(new RaiderRequested())
+            this.publishEvent(new RequestedRaidersChanged(GameState.requestedRaiders))
             station.spawning = true
             const raider = new Raider(this.worldMgr, this.sceneMgr)
             const heading = station.getHeading()
@@ -130,7 +134,7 @@ export class GameScreen extends BaseScreen {
                     .rotateAround(new Vector2(0, 0), heading + degToRad(-10 + getRandom(20))))
                 raider.setJob(new MoveJob(walkOutPos))
                 GameState.raiders.push(raider)
-                this.publishEvent(new EntityAddedEvent(raider))
+                this.publishEvent(new RaidersChangedEvent())
             })
             raider.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), station.getHeading()).add(station.getPosition2D()), heading)
         }

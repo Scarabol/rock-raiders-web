@@ -1,8 +1,7 @@
 import { Vector3 } from 'three'
 import { getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
-import { RaiderSelected, SelectionEvent } from '../../../event/LocalEvents'
-import { EntityAddedEvent } from '../../../event/WorldEvents'
+import { RaidersChangedEvent } from '../../../event/LocalEvents'
 import { RaiderDiscoveredEvent } from '../../../event/WorldLocationEvent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
@@ -43,16 +42,16 @@ export class Raider extends FulfillerEntity {
         super.onDiscover()
         GameState.raidersUndiscovered.remove(this)
         GameState.raiders.push(this)
-        EventBus.publishEvent(new EntityAddedEvent(this))
-        EventBus.publishEvent(new RaiderDiscoveredEvent(this))
+        EventBus.publishEvent(new RaidersChangedEvent())
+        EventBus.publishEvent(new RaiderDiscoveredEvent(this.getPosition()))
     }
 
-    select(): SelectionEvent {
+    select(): boolean {
         this.selectionFrame.visible = !this.slipped
-        if (this.selected || this.slipped) return null
+        if (this.selected || this.slipped) return false
         this.selected = true
         this.changeActivity()
-        return new RaiderSelected(this)
+        return true
     }
 
     getSelectionCenter(): Vector3 {
@@ -157,6 +156,7 @@ export class Raider extends FulfillerEntity {
     beamUp() {
         this.stopJob()
         super.beamUp()
+        EventBus.publishEvent(new RaidersChangedEvent())
     }
 
     removeFromScene() {

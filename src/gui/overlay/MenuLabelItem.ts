@@ -43,7 +43,7 @@ export class MenuLabelItem extends BaseElement {
         return stateChanged
     }
 
-    onRedraw(context: CanvasRenderingContext2D) {
+    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         if (this.hidden) return
         if (this.hover) {
             context.drawImage(this.hiImg, this.x, this.y)

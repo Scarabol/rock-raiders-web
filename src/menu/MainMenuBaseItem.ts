@@ -41,7 +41,7 @@ export class MainMenuBaseItem {
         this.pressed = false
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    draw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         this.needsRedraw = false
     }
 

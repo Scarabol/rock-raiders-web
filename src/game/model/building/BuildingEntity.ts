@@ -2,8 +2,8 @@ import { Matrix4, Vector2, Vector3 } from 'three'
 import { BuildingEntityStats } from '../../../cfg/BuildingEntityStats'
 import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
-import { BuildingSelected, EntityDeselected, SelectionEvent } from '../../../event/LocalEvents'
-import { BuildingUpgraded, EntityAddedEvent, MaterialAmountChanged } from '../../../event/WorldEvents'
+import { BuildingsChangedEvent, SelectionChanged } from '../../../event/LocalEvents'
+import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
@@ -51,10 +51,8 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         this.group.userData = {'selectable': this}
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
-        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
-            if (event.entityType === EntityType.CRYSTAL && this.powerSwitch) {
-                this.turnOnPower()
-            }
+        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
+            if (this.powerSwitch) this.turnOnPower()
         })
     }
 
@@ -64,14 +62,11 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         return SelectionType.BUILDING
     }
 
-    select(): SelectionEvent {
-        if (this.inBeam) return null
+    select(): boolean {
+        if (this.selected || this.inBeam) return false
         this.selectionFrame.visible = true
-        if (!this.selected) {
-            this.selected = true
-            return new BuildingSelected(this)
-        }
-        return null
+        this.selected = true
+        return true
     }
 
     deselect() {
@@ -117,7 +112,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         super.onDiscover()
         GameState.buildingsUndiscovered.remove(this)
         GameState.buildings.push(this)
-        EventBus.publishEvent(new EntityAddedEvent(this))
+        EventBus.publishEvent(new BuildingsChangedEvent())
     }
 
     hasMaxLevel(): boolean {
@@ -128,14 +123,13 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         if (!this.canUpgrade()) return
         if (GameState.numBrick >= this.upgradeCostBrick) {
             GameState.numBrick -= this.upgradeCostBrick
-            EventBus.publishEvent(new MaterialAmountChanged(EntityType.BRICK))
         } else {
             GameState.numOre -= this.upgradeCostOre
-            EventBus.publishEvent(new MaterialAmountChanged(EntityType.ORE))
         }
+        EventBus.publishEvent(new MaterialAmountChanged())
         this.level++
-        EventBus.publishEvent(new EntityDeselected())
-        EventBus.publishEvent(new BuildingUpgraded(this))
+        EventBus.publishEvent(new SelectionChanged())
+        EventBus.publishEvent(new BuildingsChangedEvent())
         // TODO add sparkly upgrade animation
     }
 
@@ -160,6 +154,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             s.neighbors.forEach((n) => n.updateTexture())
         })
         super.beamUp()
+        EventBus.publishEvent(new BuildingsChangedEvent())
     }
 
     removeFromScene() {
@@ -186,7 +181,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         } else {
             console.error('Material drop not implemented for: ' + type)
         }
-        if (material.length > 0) EventBus.publishEvent(new MaterialAmountChanged(type))
+        if (material.length > 0) EventBus.publishEvent(new MaterialAmountChanged())
         material.forEach((m) => this.worldMgr.placeMaterial(m, this.getDropPosition2D()))
     }
 
@@ -204,6 +199,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         GameState.usedCrystals += this.crystalsInUse
         this.surfaces.forEach((s) => s.setHasPower(true, true))
         this.changeActivity()
+        EventBus.publishEvent(new BuildingsChangedEvent())
     }
 
     turnOffPower() {
@@ -212,6 +208,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         this.crystalsInUse = 0
         this.surfaces.forEach((s) => s.setHasPower(false, false))
         this.changeActivity()
+        EventBus.publishEvent(new BuildingsChangedEvent())
     }
 
     get surfaces(): Surface[] {
@@ -269,7 +266,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     private onPlaceDown() {
         this.changeActivity()
         this.turnOnPower()
-        EventBus.publishEvent(new EntityAddedEvent(this))
+        EventBus.publishEvent(new BuildingsChangedEvent())
     }
 
     getDropAction(): RaiderActivity {

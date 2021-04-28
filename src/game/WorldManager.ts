@@ -4,12 +4,13 @@ import { NerpParser } from '../core/NerpParser'
 import { NerpRunner } from '../core/NerpRunner'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { AirLevelChanged } from '../event/LocalEvents'
+import { AirLevelChanged, SelectionChanged, SetupPriorityList } from '../event/LocalEvents'
 import { JobCreateEvent } from '../event/WorldEvents'
 import { UPDATE_OXYGEN_TIMER } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MaterialEntity } from './model/collect/MaterialEntity'
 import { GameState } from './model/GameState'
+import { SelectionType } from './model/Selectable'
 
 export class WorldManager {
 
@@ -17,7 +18,9 @@ export class WorldManager {
     oxygenUpdateInterval = null
 
     constructor() {
-        EventBus.registerEventListener(EventKey.DESELECTED_ENTITY, () => GameState.selectEntities([]))
+        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
+            if (event.selectionType === SelectionType.NOTHING) GameState.selectEntities([])
+        })
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => {
             GameState.discoveredCaverns++
         })
@@ -29,6 +32,7 @@ export class WorldManager {
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         GameState.rewardConfig = levelConf.reward
         GameState.priorityList.setList(levelConf.priorities)
+        EventBus.publishEvent(new SetupPriorityList(GameState.priorityList.levelDefault))
         GameState.oxygenRate = levelConf.oxygenRate
 
         // load nerp script
@@ -67,9 +71,10 @@ export class WorldManager {
         const valuePerSecond = 1 / 25
         const msToSeconds = 0.001
         const diff = sum * GameState.oxygenRate * rateMultiplier * valuePerSecond * UPDATE_OXYGEN_TIMER * msToSeconds / 10
-        if (diff) {
-            GameState.airLevel = Math.min(1, Math.max(0, GameState.airLevel + diff))
-            EventBus.publishEvent(new AirLevelChanged())
+        const airLevel = Math.min(1, Math.max(0, GameState.airLevel + diff))
+        if (GameState.airLevel !== airLevel) {
+            GameState.airLevel = airLevel
+            EventBus.publishEvent(new AirLevelChanged(GameState.airLevel))
         }
     }
 

@@ -10,3 +10,14 @@ export enum RaiderTool {
     BIRDSCARER,
 
 }
+
+export const AllRaiderTools: RaiderTool[] = [
+    RaiderTool.DRILL,
+    RaiderTool.HAMMER,
+    RaiderTool.SHOVEL,
+    RaiderTool.SPANNER,
+    RaiderTool.FREEZERGUN,
+    RaiderTool.LASER,
+    RaiderTool.PUSHERGUN,
+    RaiderTool.BIRDSCARER,
+]

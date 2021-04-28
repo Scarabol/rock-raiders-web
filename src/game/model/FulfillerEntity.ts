@@ -1,6 +1,5 @@
 import { Vector2, Vector3 } from 'three'
 import { clearIntervalSafe } from '../../core/Util'
-import { SelectionEvent } from '../../event/LocalEvents'
 import { NATIVE_FRAMERATE } from '../../params'
 import { SceneManager } from '../SceneManager'
 import { WorldManager } from '../WorldManager'
@@ -86,7 +85,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.selected = false
     }
 
-    abstract select(): SelectionEvent
+    abstract select(): boolean
 
     abstract getSelectionCenter(): Vector3
 

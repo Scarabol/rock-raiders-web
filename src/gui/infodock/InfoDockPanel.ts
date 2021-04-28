@@ -40,7 +40,7 @@ export class InfoDockPanel extends Panel {
         const btn = this.stackButtons[0]
         if (btn.messages.length < 1) return
         const msg = btn.messages[0] as LandslideEvent
-        console.log('TODO force move camera to: ' + msg.locationProvider.getPosition().toArray()) // TODO force move camera
+        console.log('TODO force move camera to', msg.location) // TODO force move camera
     }
 
     private dropLatestMessage() {

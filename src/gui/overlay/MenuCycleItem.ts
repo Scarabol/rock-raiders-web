@@ -58,7 +58,7 @@ export class MenuCycleItem extends BaseElement {
         return stateChanged
     }
 
-    onRedraw(context: CanvasRenderingContext2D) {
+    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         if (this.hidden) return
         let img = this.imgTextNormal
         let imgLabel = this.state ? this.imgLabelOnNormal : this.imgLabelOffNormal

@@ -22,7 +22,7 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.height = this.imgNormal.height
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    draw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         super.draw(context)
         if (!this.visible) return
         let img = this.imgNormal

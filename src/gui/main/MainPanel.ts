@@ -1,10 +1,10 @@
 import { EventKey } from '../../event/EventKeyEnum'
-import { SurfaceChanged, SurfaceSelectedEvent } from '../../event/LocalEvents'
-import { EntityAddedEvent, EntityRemovedEvent, RaiderRequested } from '../../event/WorldEvents'
-import { EntitySuperType, EntityType } from '../../game/model/EntityType'
-import { GameState } from '../../game/model/GameState'
-import { Surface } from '../../game/model/map/Surface'
-import { MAX_RAIDER_REQUEST } from '../../params'
+import { ChangeRaiderSpawnRequest } from '../../event/GuiCommand'
+import { BuildingsChangedEvent, RaidersChangedEvent, SelectionChanged } from '../../event/LocalEvents'
+import { RequestedRaidersChanged } from '../../event/WorldEvents'
+import { EntityType } from '../../game/model/EntityType'
+import { SelectionType } from '../../game/model/Selectable'
+import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, MAX_RAIDER_REQUEST } from '../../params'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { BuildingPanel } from './BuildingPanel'
@@ -28,6 +28,12 @@ export class MainPanel extends Panel {
     selectWallPanel: SelectWallPanel
     selectFloorPanel: SelectFloorPanel
     selectRubblePanel: SelectRubblePanel
+
+    numRequestedRaiders: number = 0
+    numToolstations: number = 0
+    numTeleportPads: number = 0
+    numBarracks: number = 0
+    numRaiders: number = 0
 
     constructor(parent: BaseElement) {
         super(parent)
@@ -54,23 +60,15 @@ export class MainPanel extends Panel {
         selectRaiderPanel.getToolItem.onClick = () => selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
         const selectVehiclePanel = this.addSubPanel(new SelectVehiclePanel(this, this.mainPanel))
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
-        teleportRaider.isDisabled = () => GameState.raiders.length >= GameState.getMaxRaiders() || GameState.requestedRaiders >= MAX_RAIDER_REQUEST ||
-            !GameState.hasOneBuildingOf(EntityType.TOOLSTATION, EntityType.TELEPORT_PAD)
+        teleportRaider.isDisabled = () => this.numRaiders >= this.getMaxRaiders() || this.numRequestedRaiders >= MAX_RAIDER_REQUEST ||
+            (this.numToolstations < 1 && this.numTeleportPads < 1)
         teleportRaider.updateState()
-        teleportRaider.onClick = () => {
-            GameState.requestedRaiders++
-            this.publishEvent(new RaiderRequested())
-        }
+        teleportRaider.onClick = () => this.publishEvent(new ChangeRaiderSpawnRequest(true))
         // TODO add decrease requested raider spawn option (needs right click for gui elements)
         teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
-        this.registerEventListener(EventKey.RAIDER_REQUESTED, () => teleportRaider.updateState())
-        this.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {
-            // TODO add event inheritance by using event key prefix checking
-            if (event.superType === EntitySuperType.BUILDING || event.superType === EntitySuperType.RAIDER) teleportRaider.updateState()
-        })
-        this.registerEventListener(EventKey.ENTITY_REMOVED, (event: EntityRemovedEvent) => {
-            // TODO add event inheritance by using event key prefix checking
-            if (event.superType === EntitySuperType.BUILDING || event.superType === EntitySuperType.RAIDER) teleportRaider.updateState()
+        this.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
+            this.numRequestedRaiders = event.numRequestedRaiders
+            teleportRaider.updateState()
         })
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding')
         buildingItem.isDisabled = () => false
@@ -81,16 +79,27 @@ export class MainPanel extends Panel {
         const largeVehicleItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildLargeVehicle')
         largeVehicleItem.isDisabled = () => false
         largeVehicleItem.onClick = () => this.mainPanel.toggleState(() => largeVehiclePanel.toggleState())
-        this.registerEventListener(EventKey.SELECTED_SURFACE, (event: SurfaceSelectedEvent) => {
-            this.onSelectedSurfaceChange(event.surface)
+        this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
+            if (event.selectionType === SelectionType.NOTHING) this.selectSubPanel(this.mainPanel)
+            else if (event.selectionType === SelectionType.BUILDING) this.selectSubPanel(selectBuildingPanel)
+            else if (event.selectionType === SelectionType.RAIDER) this.selectSubPanel(selectRaiderPanel)
+            else if (event.selectionType === SelectionType.VEHICLE) this.selectSubPanel(selectVehiclePanel)
+            else if (event.selectionType === SelectionType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.hasRubble)
         })
-        this.registerEventListener(EventKey.SURFACE_CHANGED, (event: SurfaceChanged) => {
-            if (GameState.selectedSurface === event.surface) this.onSelectedSurfaceChange(event.surface)
+        this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
+            this.numToolstations = BuildingsChangedEvent.countUsable(event, EntityType.TOOLSTATION)
+            this.numTeleportPads = BuildingsChangedEvent.countUsable(event, EntityType.TELEPORT_PAD)
+            this.numBarracks = BuildingsChangedEvent.countUsable(event, EntityType.BARRACKS)
+            teleportRaider.updateState()
         })
-        this.registerEventListener(EventKey.DESELECTED_ENTITY, () => this.selectSubPanel(this.mainPanel))
-        this.registerEventListener(EventKey.SELECTED_BUILDING, () => this.selectSubPanel(selectBuildingPanel))
-        this.registerEventListener(EventKey.SELECTED_RAIDER, () => this.selectSubPanel(selectRaiderPanel))
-        this.registerEventListener(EventKey.SELECTED_VEHICLE, () => this.selectSubPanel(selectVehiclePanel))
+        this.registerEventListener(EventKey.RAIDERS_CHANGED, (event: RaidersChangedEvent) => {
+            this.numRaiders = event.numRaiders
+            teleportRaider.updateState()
+        })
+    }
+
+    getMaxRaiders(): number {
+        return MAX_RAIDER_BASE + this.numBarracks * ADDITIONAL_RAIDER_PER_SUPPORT
     }
 
     reset() {
@@ -103,6 +112,11 @@ export class MainPanel extends Panel {
         this.mainPanel.relY = this.mainPanel.yOut
         this.mainPanel.movedIn = false
         this.mainPanel.updatePosition()
+        this.numRequestedRaiders = 0
+        this.numToolstations = 0
+        this.numTeleportPads = 0
+        this.numBarracks = 0
+        this.numRaiders = 0
     }
 
     addSubPanel<T extends IconSubPanel>(childPanel: T): T {
@@ -116,9 +130,9 @@ export class MainPanel extends Panel {
         targetPanel.setMovedIn(false)
     }
 
-    onSelectedSurfaceChange(surface: Surface) {
-        if (surface.surfaceType.floor) {
-            if (surface.hasRubble()) {
+    onSelectedSurfaceChange(isFloor: boolean, hasRubble: boolean) {
+        if (isFloor) {
+            if (hasRubble) {
                 this.selectSubPanel(this.selectRubblePanel)
             } else {
                 this.selectSubPanel(this.selectFloorPanel)

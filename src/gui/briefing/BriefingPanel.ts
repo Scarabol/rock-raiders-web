@@ -1,15 +1,12 @@
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
-import { GameState } from '../../game/model/GameState'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
-import { MessagePanel } from '../messagepanel/MessagePanel'
+import { GuiResourceCache } from '../GuiResourceCache'
 import { BriefingPanelCfg } from './BriefingPanelCfg'
 
 export class BriefingPanel extends Panel {
 
-    messagePanel: MessagePanel
     cfg: BriefingPanelCfg = null
     imgTitle: HTMLCanvasElement = null
     titleRelX: number = 0
@@ -20,6 +17,7 @@ export class BriefingPanel extends Panel {
     imgParagraphList: HTMLCanvasElement[] = []
     paragraph: number = 0
     imgParagraph: HTMLCanvasElement = null
+    onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log('Message: press space to continue = ' + state)
 
     constructor(parent: BaseElement) {
         super(parent)
@@ -41,7 +39,7 @@ export class BriefingPanel extends Panel {
     }
 
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
-        this.imgBack = ResourceManager.getImageOrNull(objectiveBackImgCfg.filename)
+        this.imgBack = GuiResourceCache.getImageOrNull(objectiveBackImgCfg.filename)
         this.xIn = objectiveBackImgCfg.x
         this.yIn = objectiveBackImgCfg.y
         this.width = this.imgBack.width
@@ -73,22 +71,19 @@ export class BriefingPanel extends Panel {
     }
 
     show() {
-        GameState.objectiveShown = true
         super.show()
         this.setParagraph(0)
         this.btnNext.hidden = this.paragraph >= this.imgParagraphList.length - 1
         this.btnBack.hidden = this.paragraph < 1
-        this.messagePanel?.setMessage(this.messagePanel.msgSpaceToContinue, 0)
+        this.onSetSpaceToContinue(true)
     }
 
     hide() {
-        GameState.objectiveShown = false
-        GameState.objectiveSwitch = true
         super.hide()
-        this.messagePanel?.unsetMessage(this.messagePanel.msgSpaceToContinue)
+        this.onSetSpaceToContinue(false)
     }
 
-    onRedraw(context: CanvasRenderingContext2D) {
+    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         if (this.hidden) return
         if (this.imgBack) context.drawImage(this.imgBack, this.x, this.y)
         if (this.imgTitle) context.drawImage(this.imgTitle, this.x + this.titleRelX, this.y + this.titleRelY)

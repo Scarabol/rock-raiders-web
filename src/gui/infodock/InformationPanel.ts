@@ -1,8 +1,8 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { BitmapFont } from '../../core/BitmapFont'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
+import { GuiResourceCache } from '../GuiResourceCache'
 
 export class InformationPanel extends Panel {
 
@@ -11,7 +11,7 @@ export class InformationPanel extends Panel {
 
     constructor(parent: BaseElement, panelCfg: PanelCfg) {
         super(parent, panelCfg)
-        this.font = ResourceManager.getDefaultFont()
+        this.font = GuiResourceCache.getDefaultFont()
     }
 
     setText(text?: string) {
@@ -19,7 +19,7 @@ export class InformationPanel extends Panel {
         this.notifyRedraw()
     }
 
-    onRedraw(context: CanvasRenderingContext2D) {
+    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         super.onRedraw(context)
         if (this.textImage) context.drawImage(this.textImage, this.x + (this.img.width - this.textImage.width) / 2, this.y + 12)
     }

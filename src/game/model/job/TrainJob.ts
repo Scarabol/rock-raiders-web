@@ -1,5 +1,5 @@
 import { EventBus } from '../../../event/EventBus'
-import { EntityTrained } from '../../../event/WorldEvents'
+import { RaidersChangedEvent } from '../../../event/LocalEvents'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { FulfillerEntity } from '../FulfillerEntity'
@@ -29,7 +29,7 @@ export class TrainJob extends Job {
         super.onJobComplete()
         this.fulfiller.forEach((f) => {
             f.addTraining(this.training)
-            EventBus.publishEvent(new EntityTrained(f, this.training))
+            EventBus.publishEvent(new RaidersChangedEvent(this.training))
         })
     }
 

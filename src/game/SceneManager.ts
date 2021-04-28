@@ -44,8 +44,8 @@ export class SceneManager {
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
 
         this.buildMarker = new BuildPlacementMarker()
-        EventBus.registerEventListener(EventKey.CANCEL_BUILD_MODE, () => {
-            GameState.buildModeSelection = null
+        EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
+            GameState.buildModeSelection = null // TODO dispose build mode selection first
             this.buildMarker.hideAllMarker()
         })
     }

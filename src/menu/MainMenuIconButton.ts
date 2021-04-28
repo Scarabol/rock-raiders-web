@@ -24,7 +24,7 @@ export class MainMenuIconButton extends MainMenuBaseItem {
         if (this.actionName === 'Next') this.targetIndex = Number(cfg.target.substring('menu'.length)) - 1
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    draw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         super.draw(context)
         let img = this.imgNormal
         if (this.hover) img = this.imgHover

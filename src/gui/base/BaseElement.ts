@@ -1,8 +1,7 @@
 import { EventKey } from '../../event/EventKeyEnum'
-import { GameEvent } from '../../event/GameEvent'
-import { IEventHandler } from '../../event/IEventHandler'
+import { LocalEvent } from '../../event/LocalEvents'
 
-export class BaseElement implements IEventHandler {
+export class BaseElement {
 
     parent: BaseElement = null
     x: number = 0
@@ -16,6 +15,7 @@ export class BaseElement implements IEventHandler {
     disabled: boolean = false
     hover: boolean = false
     pressed: boolean = false
+    onPublishEvent: (event: LocalEvent) => any = (event) => console.log('TODO publish event: ' + EventKey[event.eventKey])
 
     constructor(parent: BaseElement) {
         this.parent = parent
@@ -36,17 +36,18 @@ export class BaseElement implements IEventHandler {
         return child
     }
 
-    onRedraw(context: CanvasRenderingContext2D) {
+    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         if (this.hidden) return
         this.children.forEach((child) => child.onRedraw(context))
         this.children.forEach((child) => child.drawHover(context))
         this.children.forEach((child) => child.drawTooltip(context))
     }
 
-    drawHover(context: CanvasRenderingContext2D) {
+    drawHover(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
     }
 
-    drawTooltip(context: CanvasRenderingContext2D) {
+    // noinspection JSUnusedLocalSymbols
+    drawTooltip(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
     }
 
     onClick() {
@@ -120,8 +121,9 @@ export class BaseElement implements IEventHandler {
         this.parent?.notifyRedraw()
     }
 
-    publishEvent(event: GameEvent) {
-        this.parent?.publishEvent(event)
+    publishEvent(event: LocalEvent) {
+        if (this.parent) this.parent.publishEvent(event)
+        else this.onPublishEvent(event)
     }
 
     registerEventListener(eventKey: EventKey, callback: (GameEvent) => any) {

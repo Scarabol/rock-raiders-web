@@ -12,6 +12,8 @@ export class GamePointerEvent implements PointerEventInit {
     ctrlKey: boolean
     metaKey: boolean
     shiftKey: boolean
+    canvasX: number
+    canvasY: number
 
     constructor(eventEnum: POINTER_EVENT, event: PointerEvent) {
         this.eventEnum = eventEnum

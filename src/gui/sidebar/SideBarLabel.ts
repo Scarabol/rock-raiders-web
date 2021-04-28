@@ -6,18 +6,23 @@ export class SideBarLabel extends BaseElement {
     tooltip: string
     label: string
 
-    constructor(parent: BaseElement, btnCfg: ButtonCfg, label: string) {
+    constructor(parent: BaseElement, btnCfg: ButtonCfg) {
         super(parent)
         this.relX = btnCfg.relX
         this.relY = btnCfg.relY
         this.width = btnCfg.width
         this.height = btnCfg.height
         this.tooltip = btnCfg.tooltip
-        this.label = label
+        this.label = '0'
         this.updatePosition()
     }
 
-    onRedraw(context: CanvasRenderingContext2D) {
+    reset() {
+        super.reset()
+        this.label = '0'
+    }
+
+    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         if (this.hidden) return
         context.textAlign = 'center'
         context.font = 'bold 10px Arial'

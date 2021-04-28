@@ -107,7 +107,7 @@ export class Supervisor {
                             }
                         }
                     } else {
-                        const trainingSite = GameState.getTrainingSites(raiderPosition, raiderTraining).sort((l, r) =>
+                        const trainingSite = GameState.getTrainingSites(raiderTraining).sort((l, r) =>
                             raider.findPathToTarget(new PathTarget(l.getPosition2D())).lengthSq - raider.findPathToTarget(new PathTarget(r.getPosition2D())).lengthSq)[0]
                         if (trainingSite) {
                             const dist = raider.findPathToTarget(new PathTarget(trainingSite.getPosition2D())).lengthSq

@@ -1,7 +1,7 @@
 import { Group, MathUtils, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three'
 import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
-import { SelectionEvent, SurfaceChanged, SurfaceSelectedEvent } from '../../../event/LocalEvents'
+import { SelectionChanged } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../params'
@@ -143,7 +143,7 @@ export class Surface implements Selectable {
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
                 const crystal = this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), vec)
-                EventBus.publishEvent(new CrystalFoundEvent(crystal))
+                EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
                 this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), vec)
                 EventBus.publishEvent(new OreFoundEvent())
@@ -170,7 +170,7 @@ export class Surface implements Selectable {
         this.dropContainedOre(this.containedOres - 4)
         for (let c = 0; c < this.containedCrystals; c++) {
             const crystal = this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), this.getRandomPosition())
-            EventBus.publishEvent(new CrystalFoundEvent(crystal))
+            EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
         }
         // check for unsupported neighbors
         for (let x = this.x - 1; x <= this.x + 1; x++) {
@@ -221,7 +221,7 @@ export class Surface implements Selectable {
         else if (this.surfaceType === SurfaceType.RUBBLE1) this.surfaceType = SurfaceType.GROUND
         this.dropContainedOre(this.containedOres - this.rubblePositions.length)
         this.updateTexture()
-        EventBus.publishEvent(new SurfaceChanged(this))
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(SelectionType.SURFACE, this))
     }
 
     isSupported(): boolean {
@@ -418,14 +418,14 @@ export class Surface implements Selectable {
         return SelectionType.SURFACE
     }
 
-    select(): SelectionEvent {
+    select(): boolean {
         if (this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered) {
             this.selected = true
             this.forEachMaterial((mat) => mat.color.setHex(0x6060a0))
             console.log('Surface selected at ' + this.x + '/' + this.y)
-            return new SurfaceSelectedEvent(this)
+            return true
         }
-        return null
+        return false
     }
 
     deselect(): any {
@@ -526,11 +526,7 @@ export class Surface implements Selectable {
 
     createFallin(targetX: number, targetY: number) {
         const fallinPosition = this.terrain.getSurface(targetX, targetY).getCenterWorld()
-        EventBus.publishEvent(new LandslideEvent({
-            getPosition(): Vector3 {
-                return fallinPosition
-            },
-        }))
+        EventBus.publishEvent(new LandslideEvent(fallinPosition))
 
         // TODO refactor mesh and animation handling
         const content = ResourceManager.getResource('MiscAnims/RockFall/Rock3Sides.lws')
@@ -639,7 +635,13 @@ export class Surface implements Selectable {
     }
 
     canPlaceFence(): boolean { // TODO performance this can be cached
-        return (this.surfaceType === SurfaceType.GROUND || this.isPath()) && !this.building && !this.fence &&
+        return (this.surfaceType === SurfaceType.GROUND
+            || this.surfaceType === SurfaceType.POWER_PATH_SITE
+            || this.surfaceType === SurfaceType.RUBBLE1
+            || this.surfaceType === SurfaceType.RUBBLE2
+            || this.surfaceType === SurfaceType.RUBBLE3
+            || this.surfaceType === SurfaceType.RUBBLE4
+            || this.isPath()) && !this.building && !this.fence &&
             [1, 2].some((n) => {
                 return !!this.terrain.getSurface(this.x - n, this.y).building ||
                     !!this.terrain.getSurface(this.x, this.y - n).building ||

@@ -31,7 +31,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
         this.unlocked = true // TODO don't unlock everything by default
     }
 
-    draw(context: CanvasRenderingContext2D) {
+    draw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         super.draw(context)
         let img = this.imgCross
         if (this.unlocked) img = this.hover ? this.imgActive : this.imgInactive

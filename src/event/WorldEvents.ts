@@ -1,9 +1,5 @@
-import { BaseEntity } from '../game/model/BaseEntity'
-import { BuildingEntity } from '../game/model/building/BuildingEntity'
-import { EntitySuperType, EntityType } from '../game/model/EntityType'
-import { FulfillerEntity } from '../game/model/FulfillerEntity'
+import { GameState } from '../game/model/GameState'
 import { PublicJob } from '../game/model/job/Job'
-import { RaiderTraining } from '../game/model/raider/RaiderTraining'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
@@ -22,6 +18,7 @@ export abstract class JobEvent extends WorldEvent {
 
     protected constructor(eventKey: EventKey, job: PublicJob) {
         super(eventKey)
+        this.guiForward = false
         this.job = job
     }
 
@@ -43,47 +40,30 @@ export class JobDeleteEvent extends JobEvent {
 
 }
 
-export class RaiderRequested extends WorldEvent {
+export class RequestedRaidersChanged extends WorldEvent {
 
-    constructor() {
-        super(EventKey.RAIDER_REQUESTED)
+    numRequestedRaiders: number
+
+    constructor(requestedRaiders: number) {
+        super(EventKey.REQUESTED_RAIDERS_CHANGED)
+        this.numRequestedRaiders = requestedRaiders
     }
 
 }
 
 export class MaterialAmountChanged extends WorldEvent {
 
-    entityType: EntityType
+    numCrystal: number
+    usedCrystal: number
+    neededCrystal: number
+    totalOre: number
 
-    constructor(entityType: EntityType) {
+    constructor() {
         super(EventKey.MATERIAL_AMOUNT_CHANGED)
-        this.entityType = entityType
-    }
-
-}
-
-export class EntityAddedEvent extends WorldEvent {
-
-    superType: EntitySuperType
-    entity: BaseEntity
-
-    constructor(entity: BaseEntity) {
-        super(EventKey.ENTITY_ADDED)
-        this.superType = entity.superType
-        this.entity = entity
-    }
-
-}
-
-export class EntityRemovedEvent extends WorldEvent {
-
-    superType: EntitySuperType
-    entity: BaseEntity
-
-    constructor(entity: BaseEntity) {
-        super(EventKey.ENTITY_REMOVED)
-        this.superType = entity.superType
-        this.entity = entity
+        this.numCrystal = GameState.numCrystal
+        this.usedCrystal = GameState.usedCrystals
+        this.neededCrystal = GameState.neededCrystals
+        this.totalOre = GameState.totalOre
     }
 
 }
@@ -100,30 +80,6 @@ export class OreFoundEvent extends WorldEvent {
 
     constructor() {
         super(EventKey.ORE_FOUND)
-    }
-
-}
-
-export class BuildingUpgraded extends WorldEvent {
-
-    building: BuildingEntity
-
-    constructor(building: BuildingEntity) {
-        super(EventKey.BUILDING_UPGRADED)
-        this.building = building
-    }
-
-}
-
-export class EntityTrained extends WorldEvent {
-
-    entity: FulfillerEntity
-    training: RaiderTraining
-
-    constructor(entity: FulfillerEntity, training: RaiderTraining) {
-        super(EventKey.RAIDER_TRAINED)
-        this.entity = entity
-        this.training = training
     }
 
 }

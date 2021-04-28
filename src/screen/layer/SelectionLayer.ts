@@ -10,7 +10,7 @@ export class SelectionLayer extends ScreenLayer {
     selectStart: { x: number, y: number } = null
 
     constructor() {
-        super(true)
+        super(true, true)
     }
 
     reset() {
@@ -18,17 +18,17 @@ export class SelectionLayer extends ScreenLayer {
         this.selectStart = null
     }
 
-    handlePointerEvent(event: GamePointerEvent): boolean {
-        if (GameState.buildModeSelection) return
+    handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
+        if (GameState.buildModeSelection) return new Promise((resolve) => resolve(false))
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         if (event.eventEnum === POINTER_EVENT.DOWN) {
-            if (event.button === MOUSE_BUTTON.MAIN) return this.startSelection(cx, cy)
+            if (event.button === MOUSE_BUTTON.MAIN) return new Promise((resolve) => resolve(this.startSelection(cx, cy)))
         } else if (event.eventEnum === POINTER_EVENT.MOVE) {
-            return this.changeSelection(cx, cy)
+            return new Promise((resolve) => resolve(this.changeSelection(cx, cy)))
         } else if (event.eventEnum === POINTER_EVENT.UP) {
-            if (event.button === MOUSE_BUTTON.MAIN) return this.selectEntities(cx, cy)
+            if (event.button === MOUSE_BUTTON.MAIN) return new Promise((resolve) => resolve(this.selectEntities(cx, cy)))
         }
-        return false
+        return new Promise((resolve) => resolve(false))
     }
 
     startSelection(screenX: number, screenY: number) {

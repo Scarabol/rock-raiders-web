@@ -7,10 +7,10 @@ export class ScreenLayer {
 
     canvas: HTMLCanvasElement
     context: CanvasRenderingContext2D
-    onRedraw: (context: CanvasRenderingContext2D) => any
+    onRedraw: (context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) => any
     active: boolean = true
 
-    constructor(alpha: boolean = false, withContext: boolean = true) {
+    constructor(alpha: boolean, withContext: boolean) {
         this.canvas = document.createElement('canvas')
         if (!alpha) this.canvas.style.background = '#f0f'
         if (withContext) this.context = this.canvas.getContext('2d', {alpha: alpha})
@@ -64,16 +64,16 @@ export class ScreenLayer {
         return [windowX - clientRect.left, windowY - clientRect.top]
     }
 
-    handlePointerEvent(event: GamePointerEvent): boolean {
-        return false
+    handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
+        return new Promise((resolve) => resolve(false))
     }
 
-    handleKeyEvent(event: GameKeyboardEvent): boolean {
-        return false
+    handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
+        return new Promise((resolve) => resolve(false))
     }
 
-    handleWheelEvent(event: GameWheelEvent): boolean {
-        return false
+    handleWheelEvent(event: GameWheelEvent): Promise<boolean> {
+        return new Promise((resolve) => resolve(false))
     }
 
 }
@@ -85,8 +85,8 @@ export class ScaledLayer extends ScreenLayer {
     scaleX: number
     scaleY: number
 
-    constructor() {
-        super(true)
+    constructor(alpha: boolean = true, withContext: boolean = true) {
+        super(alpha, withContext)
         this.updateScale()
     }
 

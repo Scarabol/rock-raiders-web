@@ -7,7 +7,7 @@ export class PriorityList {
     levelDefault: PriorityEntry[] = []
     current: PriorityEntry[] = []
 
-    setList(priorities: LevelPrioritiesEntryConfig[]) {
+    setList(priorities: PriorityEntry[]) {
         this.levelDefault = priorities
         this.reset()
     }

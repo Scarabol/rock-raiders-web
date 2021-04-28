@@ -1,7 +1,7 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { clearTimeoutSafe } from '../../core/Util'
 import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../params'
-import { ResourceManager } from '../../resource/ResourceManager'
+import { GuiResourceCache } from '../GuiResourceCache'
 import { BaseElement } from './BaseElement'
 
 export class Panel extends BaseElement {
@@ -17,7 +17,7 @@ export class Panel extends BaseElement {
     constructor(parent: BaseElement, panelCfg?: PanelCfg) {
         super(parent)
         if (panelCfg) {
-            this.img = ResourceManager.getImage(panelCfg.filename)
+            this.img = GuiResourceCache.getImage(panelCfg.filename)
             this.xOut = panelCfg.xOut
             this.yOut = panelCfg.yOut
             this.xIn = panelCfg.xIn
@@ -77,7 +77,7 @@ export class Panel extends BaseElement {
         this.notifyRedraw()
     }
 
-    onRedraw(context: CanvasRenderingContext2D) {
+    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         if (this.hidden) return
         if (this.img) context.drawImage(this.img, this.x, this.y)
         super.onRedraw(context)

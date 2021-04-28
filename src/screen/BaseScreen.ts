@@ -61,7 +61,14 @@ export class BaseScreen implements IEventHandler {
     resize(width: number, height: number) {
         this.width = width
         this.height = height
-        this.layers.forEach((layer) => layer.resize(width, height))
+        this.layers.forEach((layer) => {
+            const oldCanvas = layer.canvas
+            layer.resize(width, height)
+            if (oldCanvas !== layer.canvas) { // TODO refactor this
+                this.gameCanvasContainer.removeChild(oldCanvas)
+                this.gameCanvasContainer.appendChild(layer.canvas)
+            }
+        })
         this.redraw()
     }
 

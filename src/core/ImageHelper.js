@@ -9,9 +9,14 @@ export function createContext(width, height) {
         console.error('Can\'t create context with size ' + width + ' x ' + height);
         return createDummyContext(64, 64);
     }
-    const canvas = document.createElement('canvas');
-    canvas.setAttribute('width', width);
-    canvas.setAttribute('height', height);
+    let canvas
+    if (typeof document !== 'undefined') {
+        canvas = document.createElement('canvas')
+        canvas.setAttribute('width', width);
+        canvas.setAttribute('height', height);
+    } else {
+        canvas = new OffscreenCanvas(width, height)
+    }
     const context = canvas.getContext('2d');
     context.width = width;
     context.height = height;

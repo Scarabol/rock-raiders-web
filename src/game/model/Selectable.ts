@@ -1,11 +1,10 @@
 import { Vector3 } from 'three'
-import { SelectionEvent } from '../../event/LocalEvents'
 
 export interface Selectable {
 
     getSelectionType(): SelectionType
 
-    select(): SelectionEvent
+    select(): boolean
 
     deselect(): any
 
@@ -15,6 +14,7 @@ export interface Selectable {
 
 export enum SelectionType {
 
+    NOTHING,
     SURFACE,
     RAIDER,
     BUILDING,

@@ -40,7 +40,7 @@ export class IconPanelButton extends Button {
         return stateChanged
     }
 
-    drawHover(context: CanvasRenderingContext2D) {
+    drawHover(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
         super.drawHover(context)
         if (!this.disabled && this.hover) {
             context.strokeStyle = '#0f0'
