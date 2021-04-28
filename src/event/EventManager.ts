@@ -16,7 +16,7 @@ export class EventManager {
             screen.gameCanvasContainer.addEventListener(eventType, (event: PointerEvent) => {
                 if (!screen.isInRect(event)) return
                 event.preventDefault()
-                // all event attibutes used by controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
+                // all event attributes used by three.js controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
                 const nonBubblingClone = new PointerEvent(event.type, {
                     bubbles: false, // disable bubbling otherwise we'll trigger this same event handler again
                     clientX: event.clientX,
@@ -45,7 +45,7 @@ export class EventManager {
         })
         screen.gameCanvasContainer.addEventListener('wheel', (event: WheelEvent) => {
             if (!screen.isInRect(event)) return
-            // all event attibutes used by controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
+            // all event attributes used by three.js controls: clientX, clientY, deltaY, keyCode, touches, pointerType, button, ctrlKey, metaKey, shiftKey
             const nonBubblingClone = new WheelEvent(event.type, {
                 bubbles: false, // disable bubbling otherwise we'll trigger this same event handler again
                 clientX: event.clientX,
