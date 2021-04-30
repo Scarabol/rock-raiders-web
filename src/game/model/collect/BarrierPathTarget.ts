@@ -1,5 +1,5 @@
 import { Vector3 } from 'three'
-import { BarrierActivity } from '../activities/activities/BarrierActivity'
+import { BarrierActivity } from '../activities/BarrierActivity'
 import { CollectPathTarget } from '../CollectPathTarget'
 import { BarrierLocation } from './BarrierLocation'
 import { CollectableEntity } from './CollectableEntity'

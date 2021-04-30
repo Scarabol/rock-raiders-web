@@ -1,5 +1,5 @@
-import { AnimEntityActivity } from '../activities/activities/AnimEntityActivity'
-import { DynamiteActivity } from '../activities/activities/DynamiteActivity'
+import { AnimEntityActivity } from '../activities/AnimEntityActivity'
+import { DynamiteActivity } from '../activities/DynamiteActivity'
 import { Building } from '../building/Building'
 import { CollectPathTarget } from '../CollectPathTarget'
 import { GameState } from '../GameState'

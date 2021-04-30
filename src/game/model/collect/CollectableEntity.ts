@@ -1,6 +1,6 @@
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
-import { AnimEntityActivity } from '../activities/activities/AnimEntityActivity'
+import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { AnimEntity } from '../anim/AnimEntity'
 import { Building } from '../building/Building'
 import { BuildingSite } from '../building/BuildingSite'

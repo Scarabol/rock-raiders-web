@@ -10,7 +10,7 @@ import { EntityAddedEvent, EntityType, JobCreateEvent, RaiderRequested, SpawnDyn
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { GameScreen } from '../screen/GameScreen'
-import { RaiderActivity } from './model/activities/activities/RaiderActivity'
+import { RaiderActivity } from './model/activities/RaiderActivity'
 import { Building } from './model/building/Building'
 import { CollectableEntity } from './model/collect/CollectableEntity'
 import { Dynamite } from './model/collect/Dynamite'

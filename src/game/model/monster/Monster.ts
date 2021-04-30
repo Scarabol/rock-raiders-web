@@ -1,5 +1,5 @@
 import { clearTimeoutSafe } from '../../../core/Util'
-import { MonsterActivity } from '../activities/activities/MonsterActivity'
+import { MonsterActivity } from '../activities/MonsterActivity'
 import { MovableEntity } from '../MovableEntity'
 import { PathTarget } from '../PathTarget'
 

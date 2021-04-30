@@ -1,4 +1,4 @@
-import { BarrierActivity } from '../activities/activities/BarrierActivity'
+import { BarrierActivity } from '../activities/BarrierActivity'
 import { CollectPathTarget } from '../CollectPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { CollectableEntity } from './CollectableEntity'
