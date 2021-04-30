@@ -1,5 +1,5 @@
 import { BaseEntity } from '../game/model/BaseEntity'
-import { BuildingEntity } from '../game/model/BuildingEntity'
+import { BuildingEntity } from '../game/model/building/BuildingEntity'
 import { CollectableType } from '../game/model/collect/CollectableType'
 import { FulfillerEntity } from '../game/model/FulfillerEntity'
 import { PublicJob } from '../game/model/job/Job'

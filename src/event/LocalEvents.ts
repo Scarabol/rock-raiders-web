@@ -1,4 +1,4 @@
-import { BuildingEntity } from '../game/model/BuildingEntity'
+import { BuildingEntity } from '../game/model/building/BuildingEntity'
 import { Surface } from '../game/model/map/Surface'
 import { Raider } from '../game/model/raider/Raider'
 import { EventKey } from './EventKeyEnum'

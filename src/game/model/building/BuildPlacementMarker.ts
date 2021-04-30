@@ -2,10 +2,10 @@ import { Group, Vector2, Vector3 } from 'three'
 import { TILESIZE } from '../../../params'
 import { BarrierLocation } from '../collect/BarrierLocation'
 import { GameState } from '../GameState'
+import { Surface } from '../map/Surface'
+import { SurfaceType } from '../map/SurfaceType'
+import { Terrain } from '../map/Terrain'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
-import { Surface } from './Surface'
-import { SurfaceType } from './SurfaceType'
-import { Terrain } from './Terrain'
 
 export class BuildPlacementMarker {
 
