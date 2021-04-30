@@ -1,6 +1,7 @@
 import { BaseEntity } from '../game/model/BaseEntity'
 import { BuildingEntity } from '../game/model/building/BuildingEntity'
 import { CollectableType } from '../game/model/collect/CollectableType'
+import { EntityType } from '../game/model/EntityType'
 import { FulfillerEntity } from '../game/model/FulfillerEntity'
 import { PublicJob } from '../game/model/job/Job'
 import { Surface } from '../game/model/map/Surface'
@@ -97,14 +98,6 @@ export class EntityRemovedEvent extends WorldEvent {
         this.type = type
         this.entity = entity
     }
-
-}
-
-export enum EntityType {
-
-    RAIDER,
-    VEHICLE,
-    BUILDING,
 
 }
 
