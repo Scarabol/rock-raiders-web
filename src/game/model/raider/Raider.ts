@@ -39,7 +39,6 @@ export class Raider extends FulfillerEntity {
         super('mini-figures/pilot/pilot.ae', SelectionType.RAIDER)
         this.tools = [RaiderTool.DRILL]
         this.skills = []
-        this.pickSphereRadius = this.stats.PickSphere / 2
     }
 
     get stats() {

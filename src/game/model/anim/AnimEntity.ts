@@ -20,7 +20,6 @@ export abstract class AnimEntity extends BaseEntity {
     animationTimeout: NodeJS.Timeout = null
     selectionFrame: Sprite = null
     pickSphere: Mesh = null
-    pickSphereRadius: number = 10 / 2
     carryJoint: Object3D = null
     depositJoint: Object3D = null
     getToolJoint: Object3D = null
@@ -149,14 +148,16 @@ export abstract class AnimEntity extends BaseEntity {
 
     createPickSphere() {
         if (this.pickSphere) return
-        const pickSphereCenter = this.getPickSphereCenter()
-        const geometry = new SphereGeometry(this.pickSphereRadius, this.pickSphereRadius, this.pickSphereRadius)
+        const pickSphereDiameter = this.stats.PickSphere
+        const pickSphereRadius = pickSphereDiameter / 2
+        const geometry = new SphereGeometry(pickSphereRadius, pickSphereRadius, pickSphereRadius)
         const material = new MeshBasicMaterial({color: 0xffff00, visible: false}) // change visible to true for debugging
         this.pickSphere = new Mesh(geometry, material)
         this.pickSphere.userData = {selectable: this}
+        const pickSphereCenter = this.getPickSphereCenter()
         this.pickSphere.position.copy(pickSphereCenter)
         this.group.add(this.pickSphere)
-        this.createSelectionFrame(pickSphereCenter)
+        this.createSelectionFrame(pickSphereDiameter, pickSphereCenter)
     }
 
     getPickSphereCenter(): Vector3 {
@@ -171,11 +172,11 @@ export abstract class AnimEntity extends BaseEntity {
         return center
     }
 
-    private createSelectionFrame(pickSphereCenter: Vector3) {
+    private createSelectionFrame(pickSphereDiameter: number, pickSphereCenter: Vector3) {
         const selectionFrameTextureSize = 128
         const ctx = createContext(selectionFrameTextureSize, selectionFrameTextureSize)
         ctx.fillStyle = '#0f0'
-        const strength = Math.round(25 / this.pickSphereRadius)
+        const strength = Math.round(50 / pickSphereDiameter)
         const length = selectionFrameTextureSize / 6
         ctx.fillRect(0, 0, length, strength)
         ctx.fillRect(0, 0, strength, length)
@@ -189,7 +190,7 @@ export abstract class AnimEntity extends BaseEntity {
         const selectionMaterial = new SpriteMaterial({map: selectionFrameTexture, depthTest: false})
         this.selectionFrame = new Sprite(selectionMaterial)
         this.selectionFrame.position.copy(pickSphereCenter)
-        const selectionFrameSize = this.pickSphereRadius * 2
+        const selectionFrameSize = pickSphereDiameter
         this.selectionFrame.scale.set(selectionFrameSize, selectionFrameSize, selectionFrameSize)
         this.selectionFrame.visible = false
         this.group.add(this.selectionFrame)

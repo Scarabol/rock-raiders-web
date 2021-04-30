@@ -39,7 +39,6 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.type = buildingType
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
-        this.pickSphereRadius = this.stats.PickSphere / 2
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
@@ -76,9 +75,9 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null
     }
 
-    getPickSphereCenter() {
+    getPickSphereCenter(): Vector3 {
         const pickSphereCenter = this.getPosition()
-        pickSphereCenter.y += this.pickSphereRadius / 2
+        pickSphereCenter.y += this.stats.PickSphere / 4
         return pickSphereCenter
     }
 
