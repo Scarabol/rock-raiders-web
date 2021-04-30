@@ -1,11 +1,10 @@
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
-import { Building } from '../building/Building'
+import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { CollectableEntity } from './CollectableEntity'
-import { CollectableType } from './CollectableType'
 import { CollectPathTarget } from './CollectPathTarget'
 
 export class Dynamite extends CollectableEntity {
@@ -13,20 +12,20 @@ export class Dynamite extends CollectableEntity {
     targetSurface: Surface
 
     constructor() {
-        super(CollectableType.DYNAMITE, 'MiscAnims/Dynamite/Dynamite.ae')
+        super(EntityType.DYNAMITE, 'MiscAnims/Dynamite/Dynamite.ae')
         this.changeActivity()
         this.priorityIdentifier = PriorityIdentifier.aiPriorityDestruction
     }
 
     hasTarget(): boolean {
-        return this.targetSurface && this.targetSurface.isExplodable() || GameState.hasOneBuildingOf(Building.TOOLSTATION)
+        return this.targetSurface && this.targetSurface.isExplodable() || GameState.hasOneBuildingOf(EntityType.TOOLSTATION)
     }
 
     getCarryTargets(): CollectPathTarget[] {
         if (this.targetSurface && this.targetSurface.isExplodable()) {
             return this.targetSurface.getDigPositions().map((p) => new CollectPathTarget(p, null, null))
         } else {
-            return GameState.getBuildingsByType(Building.TOOLSTATION).map((b) => b.getDropPosition2D())
+            return GameState.getBuildingsByType(EntityType.TOOLSTATION).map((b) => b.getDropPosition2D())
                 .map((p) => new CollectPathTarget(p, null, null))
         }
     }

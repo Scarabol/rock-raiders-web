@@ -4,26 +4,24 @@ import { EntityAddedEvent, JobCreateEvent } from '../../../event/WorldEvents'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { CollectableEntity } from '../collect/CollectableEntity'
-import { CollectableType } from '../collect/CollectableType'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { CompletePowerPathJob } from '../job/surface/CompletePowerPathJob'
 import { Surface } from '../map/Surface'
-import { Building } from './Building'
 import { BuildingEntity } from './BuildingEntity'
 
 export class BuildingSite {
 
     primarySurface: Surface = null
     secondarySurface: Surface = null
-    building: Building
+    building: BuildingEntity
     heading: number = 0
-    neededByType: Map<CollectableType, number> = new Map()
-    assignedByType: Map<CollectableType, CollectableEntity[]> = new Map()
-    onSiteByType: Map<CollectableType, CollectableEntity[]> = new Map()
+    neededByType: Map<EntityType, number> = new Map()
+    assignedByType: Map<EntityType, CollectableEntity[]> = new Map()
+    onSiteByType: Map<EntityType, CollectableEntity[]> = new Map()
     complete: boolean = false
 
-    constructor(primarySurface: Surface, secondarySurface: Surface = null, building: Building = null) {
+    constructor(primarySurface: Surface, secondarySurface: Surface = null, building: BuildingEntity = null) {
         this.primarySurface = primarySurface
         this.secondarySurface = secondarySurface
         this.building = building
@@ -33,28 +31,25 @@ export class BuildingSite {
         return this.primarySurface.getRandomPosition()
     }
 
-    needs(collectableType: CollectableType): boolean {
-        const needed = this.neededByType.getOrUpdate(collectableType, () => 0)
-        const assigned = this.assignedByType.getOrUpdate(collectableType, () => []).length
+    needs(EntityType: EntityType): boolean {
+        const needed = this.neededByType.getOrUpdate(EntityType, () => 0)
+        const assigned = this.assignedByType.getOrUpdate(EntityType, () => []).length
         return needed > assigned
     }
 
     assign(item: CollectableEntity) {
-        const collectableType = item.getCollectableType()
-        this.assignedByType.getOrUpdate(collectableType, () => []).push(item)
+        this.assignedByType.getOrUpdate(item.entityType, () => []).push(item)
     }
 
     unAssign(item: CollectableEntity) {
-        const collectableType = item.getCollectableType()
-        this.assignedByType.getOrUpdate(collectableType, () => []).remove(item)
+        this.assignedByType.getOrUpdate(item.entityType, () => []).remove(item)
     }
 
     addItem(item: CollectableEntity) {
-        const collectableType = item.getCollectableType()
-        const needed = this.neededByType.getOrUpdate(collectableType, () => 0)
-        if (this.onSiteByType.getOrUpdate(collectableType, () => []).length < needed) {
+        const needed = this.neededByType.getOrUpdate(item.entityType, () => 0)
+        if (this.onSiteByType.getOrUpdate(item.entityType, () => []).length < needed) {
             item.worldMgr.sceneManager.scene.add(item.group)
-            this.onSiteByType.getOrUpdate(collectableType, () => []).push(item)
+            this.onSiteByType.getOrUpdate(item.entityType, () => []).push(item)
             this.checkComplete()
         } else {
             item.resetTarget()
@@ -74,22 +69,22 @@ export class BuildingSite {
             this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
             EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
         } else {
-            this.onSiteByType.getOrUpdate(CollectableType.BARRIER, () => []).forEach((item) => {
+            this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item) => {
                 item.changeActivity(BarrierActivity.Teleport, () => item.removeFromScene())
             })
-            this.onSiteByType.getOrUpdate(CollectableType.CRYSTAL, () => []).forEach((item) => {
+            this.onSiteByType.getOrUpdate(EntityType.CRYSTAL, () => []).forEach((item) => {
                 item.removeFromScene()
             })
-            this.onSiteByType.getOrUpdate(CollectableType.ORE, () => []).forEach((item) => {
+            this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item) => {
                 item.removeFromScene()
             })
-            const entity = new BuildingEntity(this.building)
+            const entity = this.building
             entity.worldMgr = this.primarySurface.terrain.worldMgr
             entity.changeActivity(BuildingActivity.Teleport, () => {
                 entity.createPickSphere()
                 GameState.buildings.push(entity)
                 entity.turnOnPower()
-                EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, entity))
+                EventBus.publishEvent(new EntityAddedEvent(entity))
             })
             entity.group.position.copy(entity.worldMgr.getFloorPosition(this.primarySurface.getCenterWorld2D()))
             entity.group.rotateOnAxis(new Vector3(0, 1, 0), -this.heading + Math.PI / 2)

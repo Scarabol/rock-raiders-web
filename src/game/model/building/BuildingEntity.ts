@@ -9,19 +9,22 @@ import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { AnimEntity } from '../anim/AnimEntity'
 import { CollectableEntity } from '../collect/CollectableEntity'
-import { CollectableType } from '../collect/CollectableType'
 import { Crystal } from '../collect/Crystal'
 import { Ore } from '../collect/Ore'
-import { EntityType } from '../EntityType'
+import { EntitySuperType, EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
 import { Selectable, SelectionType } from '../Selectable'
-import { Building } from './Building'
 
-export class BuildingEntity extends AnimEntity implements Selectable {
+export abstract class BuildingEntity extends AnimEntity implements Selectable {
 
-    type: Building
+    blocksPathSurface: boolean = true
+    secondaryBuildingPart: { x: number, y: number } = null
+    secondaryPowerPath: { x: number, y: number } = null
+    hasPrimaryPowerPath: boolean = true
+    waterPathSurface: { x: number, y: number } = null
+
     selected: boolean
     powerSwitch: boolean = true
     spawning: boolean = false
@@ -34,23 +37,20 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     crystalsInUse: number = 0
     inBeam: boolean = false
 
-    constructor(buildingType: Building) {
-        super(buildingType.aeFile)
-        this.type = buildingType
+    constructor(entityType: EntityType, aeFilename: string) {
+        super(EntitySuperType.BUILDING, entityType, aeFilename)
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
-            if (event.collectableType === CollectableType.CRYSTAL && this.powerSwitch && this.crystalsInUse < 1) {
+            if (event.entityType === EntityType.CRYSTAL && this.powerSwitch && this.crystalsInUse < 1) {
                 this.turnOnPower()
             }
         })
     }
 
-    get stats(): BuildingEntityStats {
-        return this.type.stats
-    }
+    abstract get stats(): BuildingEntityStats
 
     getSelectionType(): SelectionType {
         return SelectionType.BUILDING
@@ -107,7 +107,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         super.onDiscover()
         GameState.buildingsUndiscovered.remove(this)
         GameState.buildings.push(this)
-        EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, this))
+        EventBus.publishEvent(new EntityAddedEvent(this))
     }
 
     hasMaxLevel(): boolean {
@@ -118,10 +118,10 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         if (!this.canUpgrade()) return
         if (GameState.numBrick >= this.upgradeCostBrick) {
             GameState.numBrick -= this.upgradeCostBrick
-            EventBus.publishEvent(new MaterialAmountChanged(CollectableType.BRICK))
+            EventBus.publishEvent(new MaterialAmountChanged(EntityType.BRICK))
         } else {
             GameState.numOre -= this.upgradeCostOre
-            EventBus.publishEvent(new MaterialAmountChanged(CollectableType.ORE))
+            EventBus.publishEvent(new MaterialAmountChanged(EntityType.ORE))
         }
         this.level++
         EventBus.publishEvent(new EntityDeselected())
@@ -129,8 +129,8 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         // TODO add sparkly upgrade animation
     }
 
-    getDefaultActivity() {
-        return !this.isPowered() && this.type !== Building.GUNSTATION ? BuildingActivity.Unpowered : AnimEntityActivity.Stand
+    getDefaultActivity(): BuildingActivity {
+        return !this.isPowered() ? BuildingActivity.Unpowered : AnimEntityActivity.Stand
     }
 
     beamUp() {

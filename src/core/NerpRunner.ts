@@ -5,7 +5,7 @@
  * https://kb.rockraidersunited.com/NERPs_documentation#Labels
  *
  */
-import { Building } from '../game/model/building/Building'
+import { EntityType } from '../game/model/EntityType'
 import { GameResultState, GameState } from '../game/model/GameState'
 import { clearIntervalSafe } from './Util'
 
@@ -155,26 +155,26 @@ export class NerpRunner {
         this.messagePermit = !messagesAllowed
     }
 
-    setBuildingsUpgradeLevel(typeName: Building, level: number) {
+    setBuildingsUpgradeLevel(typeName: EntityType, level: number) {
         GameState.buildings.forEach(b => {
-            if (b.type === typeName) b.level = level
+            if (b.entityType === typeName) b.level = level
         })
     }
 
     setToolStoreLevel(level: number) {
-        this.setBuildingsUpgradeLevel(Building.TOOLSTATION, level)
+        this.setBuildingsUpgradeLevel(EntityType.TOOLSTATION, level)
     }
 
     setTeleportPadLevel(level: number) {
-        this.setBuildingsUpgradeLevel(Building.TELEPORT_PAD, level)
+        this.setBuildingsUpgradeLevel(EntityType.TELEPORT_PAD, level)
     }
 
     setPowerStationLevel(level: number) {
-        this.setBuildingsUpgradeLevel(Building.POWER_STATION, level)
+        this.setBuildingsUpgradeLevel(EntityType.POWER_STATION, level)
     }
 
     setBarracksLevel(level: number) {
-        this.setBuildingsUpgradeLevel(Building.BARRACKS, level)
+        this.setBuildingsUpgradeLevel(EntityType.BARRACKS, level)
     }
 
     /**
@@ -182,7 +182,7 @@ export class NerpRunner {
      * @return {number}
      */
     getToolStoresBuilt() {
-        return GameState.getBuildingsByType(Building.TOOLSTATION).length
+        return GameState.getBuildingsByType(EntityType.TOOLSTATION).length
     }
 
     /**
@@ -272,11 +272,11 @@ export class NerpRunner {
     }
 
     getPoweredPowerStationsBuilt() {
-        return GameState.getBuildingsByType(Building.POWER_STATION).length
+        return GameState.getBuildingsByType(EntityType.POWER_STATION).length
     }
 
     getPoweredBarracksBuilt() {
-        return GameState.getBuildingsByType(Building.BARRACKS).length
+        return GameState.getBuildingsByType(EntityType.BARRACKS).length
     }
 
     getRecordObjectAtTutorial() {

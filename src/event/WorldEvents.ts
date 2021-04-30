@@ -1,7 +1,6 @@
 import { BaseEntity } from '../game/model/BaseEntity'
 import { BuildingEntity } from '../game/model/building/BuildingEntity'
-import { CollectableType } from '../game/model/collect/CollectableType'
-import { EntityType } from '../game/model/EntityType'
+import { EntitySuperType, EntityType } from '../game/model/EntityType'
 import { FulfillerEntity } from '../game/model/FulfillerEntity'
 import { PublicJob } from '../game/model/job/Job'
 import { Surface } from '../game/model/map/Surface'
@@ -55,11 +54,11 @@ export class RaiderRequested extends WorldEvent {
 
 export class MaterialAmountChanged extends WorldEvent {
 
-    collectableType: CollectableType
+    entityType: EntityType
 
-    constructor(collectableType: CollectableType) {
+    constructor(entityType: EntityType) {
         super(EventKey.MATERIAL_AMOUNT_CHANGED)
-        this.collectableType = collectableType
+        this.entityType = entityType
     }
 
 }
@@ -77,12 +76,12 @@ export class SpawnDynamiteEvent extends WorldEvent {
 
 export class EntityAddedEvent extends WorldEvent {
 
-    type: EntityType
+    superType: EntitySuperType
     entity: BaseEntity
 
-    constructor(type: EntityType, entity: BaseEntity) {
+    constructor(entity: BaseEntity) {
         super(EventKey.ENTITY_ADDED)
-        this.type = type
+        this.superType = entity.superType
         this.entity = entity
     }
 
@@ -90,12 +89,12 @@ export class EntityAddedEvent extends WorldEvent {
 
 export class EntityRemovedEvent extends WorldEvent {
 
-    type: EntityType
+    superType: EntitySuperType
     entity: BaseEntity
 
-    constructor(type: EntityType, entity: BaseEntity) {
+    constructor(entity: BaseEntity) {
         super(EventKey.ENTITY_REMOVED)
-        this.type = type
+        this.superType = entity.superType
         this.entity = entity
     }
 

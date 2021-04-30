@@ -1,6 +1,16 @@
 import { EventBus } from '../../event/EventBus'
 import { CancelBuildMode } from '../../event/LocalEvents'
-import { Building } from '../../game/model/building/Building'
+import { BuildingEntity } from '../../game/model/building/BuildingEntity'
+import { Barracks } from '../../game/model/building/entities/Barracks'
+import { Docks } from '../../game/model/building/entities/Docks'
+import { Geodome } from '../../game/model/building/entities/Geodome'
+import { GunStation } from '../../game/model/building/entities/GunStation'
+import { OreRefinery } from '../../game/model/building/entities/OreRefinery'
+import { PowerStation } from '../../game/model/building/entities/PowerStation'
+import { TeleportBig } from '../../game/model/building/entities/TeleportBig'
+import { TeleportPad } from '../../game/model/building/entities/TeleportPad'
+import { Toolstation } from '../../game/model/building/entities/Toolstation'
+import { Upgrade } from '../../game/model/building/entities/Upgrade'
 import { GameState } from '../../game/model/GameState'
 import { Panel } from '../base/Panel'
 import { IconSubPanel } from './IconSubPanel'
@@ -13,23 +23,22 @@ export class BuildingPanel extends IconSubPanel {
             EventBus.publishEvent(new CancelBuildMode())
             this.toggleState(() => onBackPanel.toggleState())
         }
-        this.addBuildMenuItem('InterfaceBuildImages', 'Toolstation', Building.TOOLSTATION)
-        this.addBuildMenuItem('InterfaceBuildImages', 'TeleportPad', Building.TELEPORT_PAD)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Docks', Building.DOCKS)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Powerstation', Building.POWER_STATION)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Barracks', Building.BARRACKS)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Upgrade', Building.UPGRADE)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Geo-dome', Building.GEODOME)
-        this.addBuildMenuItem('InterfaceBuildImages', 'OreRefinery', Building.ORE_REFINERY)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Gunstation', Building.GUNSTATION)
-        this.addBuildMenuItem('InterfaceBuildImages', 'TeleportBIG', Building.TELEPORT_BIG)
+        this.addBuildMenuItem('InterfaceBuildImages', 'Toolstation', () => new Toolstation())
+        this.addBuildMenuItem('InterfaceBuildImages', 'TeleportPad', () => new TeleportPad())
+        this.addBuildMenuItem('InterfaceBuildImages', 'Docks', () => new Docks())
+        this.addBuildMenuItem('InterfaceBuildImages', 'Powerstation', () => new PowerStation())
+        this.addBuildMenuItem('InterfaceBuildImages', 'Barracks', () => new Barracks())
+        this.addBuildMenuItem('InterfaceBuildImages', 'Upgrade', () => new Upgrade())
+        this.addBuildMenuItem('InterfaceBuildImages', 'Geo-dome', () => new Geodome())
+        this.addBuildMenuItem('InterfaceBuildImages', 'OreRefinery', () => new OreRefinery())
+        this.addBuildMenuItem('InterfaceBuildImages', 'Gunstation', () => new GunStation())
+        this.addBuildMenuItem('InterfaceBuildImages', 'TeleportBIG', () => new TeleportBig())
     }
 
-    addBuildMenuItem(menuItemGroup: string, itemKey: string, building: Building) {
+    addBuildMenuItem(menuItemGroup: string, itemKey: string, factory: () => BuildingEntity) {
         const item = this.addMenuItem(menuItemGroup, itemKey)
         item.isDisabled = () => false // TODO check Dependencies from config
-        // TODO show dependencies tooltip, when disabled
-        item.onClick = () => GameState.buildModeSelection = building
+        item.onClick = () => GameState.buildModeSelection = factory()
         return item
     }
 

@@ -1,19 +1,18 @@
 import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
-import { Building } from '../building/Building'
+import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { CollectableEntity } from './CollectableEntity'
-import { CollectableType } from './CollectableType'
 
 export class Ore extends CollectableEntity {
 
     constructor() {
-        super(CollectableType.ORE)
+        super(EntityType.ORE)
         const resource = ResourceManager.getResource('MiscAnims/Ore/Ore1st.lwo')
         const mesh = SceneManager.registerMesh(new LWOLoader('MiscAnims/Ore/').parse(resource))
         this.group.add(mesh)
-        this.targetBuildingTypes = [Building.ORE_REFINERY, Building.TOOLSTATION]
+        this.targetBuildingTypes = [EntityType.ORE_REFINERY, EntityType.TOOLSTATION]
         this.priorityIdentifier = PriorityIdentifier.aiPriorityOre
     }
 

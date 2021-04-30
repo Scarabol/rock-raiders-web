@@ -4,6 +4,7 @@ import { JOB_ACTION_RANGE } from '../../params'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
 import { AnimEntity } from './anim/AnimEntity'
 import { EntityStep } from './EntityStep'
+import { EntitySuperType, EntityType } from './EntityType'
 import { TerrainPath } from './map/TerrainPath'
 import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
@@ -13,8 +14,8 @@ export abstract class MovableEntity extends AnimEntity {
     currentPath: TerrainPath = null
     floorOffset: number = 0
 
-    constructor(aeFilename: string) {
-        super(aeFilename)
+    constructor(superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
+        super(superType, entityType, aeFilename)
     }
 
     abstract get stats(): MovableEntityStats

@@ -3,8 +3,16 @@ import { EventBus } from '../event/EventBus'
 import { EntityAddedEvent } from '../event/WorldEvents'
 import { TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
-import { Building } from './model/building/Building'
-import { BuildingEntity } from './model/building/BuildingEntity'
+import { Barracks } from './model/building/entities/Barracks'
+import { Docks } from './model/building/entities/Docks'
+import { Geodome } from './model/building/entities/Geodome'
+import { GunStation } from './model/building/entities/GunStation'
+import { OreRefinery } from './model/building/entities/OreRefinery'
+import { PowerStation } from './model/building/entities/PowerStation'
+import { TeleportBig } from './model/building/entities/TeleportBig'
+import { TeleportPad } from './model/building/entities/TeleportPad'
+import { Toolstation } from './model/building/entities/Toolstation'
+import { Upgrade } from './model/building/entities/Upgrade'
 import { Crystal } from './model/collect/Crystal'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
@@ -43,14 +51,13 @@ export class ObjectListLoader {
                 raider.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(raider.group.position).discovered
                 if (raider.group.visible) {
                     GameState.raiders.push(raider)
-                    EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, raider))
+                    EventBus.publishEvent(new EntityAddedEvent(raider))
                 } else {
                     GameState.raidersUndiscovered.push(raider)
                 }
                 worldMgr.sceneManager.scene.add(raider.group)
             } else if (buildingType) {
-                const building = Building.getByName(buildingType)
-                const entity = new BuildingEntity(building)
+                const entity = this.createBuildingByName(buildingType)
                 entity.worldMgr = worldMgr
                 entity.changeActivity()
                 entity.createPickSphere()
@@ -59,7 +66,7 @@ export class ObjectListLoader {
                 entity.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered
                 if (entity.group.visible) {
                     GameState.buildings.push(entity)
-                    EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, entity))
+                    EventBus.publishEvent(new EntityAddedEvent(entity))
                 } else {
                     GameState.buildingsUndiscovered.push(entity)
                 }
@@ -70,8 +77,8 @@ export class ObjectListLoader {
                 primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                 primaryPathSurface.updateTexture()
                 entity.primarySurface = primaryPathSurface
-                if (building.secondaryBuildingPart) {
-                    const secondaryOffset = new Vector3(TILESIZE * building.secondaryBuildingPart.x, 0, TILESIZE * building.secondaryBuildingPart.y)
+                if (entity.secondaryBuildingPart) {
+                    const secondaryOffset = new Vector3(TILESIZE * entity.secondaryBuildingPart.x, 0, TILESIZE * entity.secondaryBuildingPart.y)
                         .applyAxisAngle(new Vector3(0, 1, 0), -radHeading).add(entity.group.position)
                     const secondarySurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(secondaryOffset)
                     secondarySurface.setBuilding(entity)
@@ -79,16 +86,16 @@ export class ObjectListLoader {
                     secondarySurface.updateTexture()
                     entity.secondarySurface = secondarySurface
                 }
-                if (building.hasPrimaryPowerPath) {
+                if (entity.hasPrimaryPowerPath) {
                     const pathOffset = new Vector3(0, 0, -TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading)
                     pathOffset.add(entity.group.position)
                     const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
-                    if (building === Building.GEODOME) pathSurface.building = entity
+                    if (entity.entityType === EntityType.GEODOME) pathSurface.building = entity
                     pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                     pathSurface.updateTexture()
                     entity.primaryPathSurface = pathSurface
                 }
-                if (building === Building.POWER_STATION || entity.surfaces.some((s) => s.neighbors.some((n) => n.hasPower))) {
+                if (entity.entityType === EntityType.POWER_STATION || entity.surfaces.some((s) => s.neighbors.some((n) => n.hasPower))) {
                     entity.turnOnPower()
                 }
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
@@ -120,6 +127,33 @@ export class ObjectListLoader {
         })
         // update path textures when all buildings are added
         GameState.buildings.forEach((b) => b.surfaces.forEach((s) => s.neighbors.forEach((n) => n.updateTexture())))
+    }
+
+    private static createBuildingByName(buildingType: string) {
+        const typename = buildingType.slice(buildingType.lastIndexOf('/') + 1).toLowerCase()
+        if (typename === 'toolstation') {
+            return new Toolstation()
+        } else if (typename === 'teleports') {
+            return new TeleportPad()
+        } else if (typename === 'docks') {
+            return new Docks()
+        } else if (typename === 'powerstation') {
+            return new PowerStation()
+        } else if (typename === 'barracks') {
+            return new Barracks()
+        } else if (typename === 'upgrade') {
+            return new Upgrade()
+        } else if (typename === 'geo-dome') {
+            return new Geodome()
+        } else if (typename === 'orerefinery') {
+            return new OreRefinery()
+        } else if (typename === 'gunstation') {
+            return new GunStation()
+        } else if (typename === 'teleportbig') {
+            return new TeleportBig()
+        } else {
+            throw 'Unknown building type: ' + typename
+        }
     }
 
 }

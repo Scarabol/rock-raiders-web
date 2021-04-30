@@ -1,6 +1,6 @@
 import { CollectableEntity } from '../collect/CollectableEntity'
-import { CollectableType } from '../collect/CollectableType'
 import { ElectricFence } from '../collect/ElectricFence'
+import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { PathTarget } from '../PathTarget'
 import { PublicJob } from './Job'
@@ -30,7 +30,7 @@ export class CollectJob extends PublicJob {
 
     onJobComplete() {
         super.onJobComplete()
-        if (this.item.getCollectableType() === CollectableType.ELECTRIC_FENCE) {
+        if (this.item.entityType === EntityType.ELECTRIC_FENCE) {
             const electricFence = this.item as ElectricFence
             if (electricFence.targetSurface.canPlaceFence()) {
                 this.item.worldMgr.sceneManager.scene.add(this.item.group)

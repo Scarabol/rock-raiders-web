@@ -4,7 +4,7 @@ import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { MaterialAmountChanged } from '../../event/WorldEvents'
-import { CollectableType } from '../../game/model/collect/CollectableType'
+import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Panel } from '../base/Panel'
@@ -28,12 +28,12 @@ export class PanelCrystalSideBar extends Panel {
         this.imgUsedCrystal = ResourceManager.getImage('Interface/RightPanel/UsedCrystal.bmp')
         this.imgOre = ResourceManager.getImage('Interface/RightPanel/CrystalSideBar_Ore.bmp')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
-            this.updateQuantities(event.collectableType)
+            this.updateQuantities(event.entityType)
         })
     }
 
-    updateQuantities(type: CollectableType) {
-        if (type === CollectableType.CRYSTAL || type === CollectableType.ORE || type === CollectableType.BRICK) {
+    updateQuantities(type: EntityType) {
+        if (type === EntityType.CRYSTAL || type === EntityType.ORE || type === EntityType.BRICK) {
             this.notifyRedraw()
         }
     }

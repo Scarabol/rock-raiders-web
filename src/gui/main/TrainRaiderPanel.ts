@@ -1,7 +1,7 @@
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { EntityDeselected } from '../../event/LocalEvents'
-import { Building } from '../../game/model/building/Building'
+import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { TrainJob } from '../../game/model/job/TrainJob'
 import { RaiderSkill } from '../../game/model/raider/RaiderSkill'
@@ -18,10 +18,10 @@ export class TrainRaiderPanel extends IconSubPanel {
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainPilot')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainSailor')
         const trainDynamite = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainDynamite')
-        trainDynamite.isDisabled = () => !GameState.getBuildingsByType(Building.TOOLSTATION).some((b) => b.stats.TrainDynamite[b.level]) ||
+        trainDynamite.isDisabled = () => !GameState.getBuildingsByType(EntityType.TOOLSTATION).some((b) => b.stats.TrainDynamite[b.level]) ||
             GameState.selectedRaiders.every((r) => r.hasSkill(RaiderSkill.DEMOLITION))
         trainDynamite.onClick = () => {
-            GameState.getBuildingsByType(Building.TOOLSTATION).some((b) => {
+            GameState.getBuildingsByType(EntityType.TOOLSTATION).some((b) => {
                 if (b.stats.TrainDynamite[b.level]) {
                     GameState.selectedRaiders.forEach((r) => !r.hasSkill(RaiderSkill.DEMOLITION) && r.setJob(new TrainJob(b.primarySurface, RaiderSkill.DEMOLITION)))
                     EventBus.publishEvent(new EntityDeselected())

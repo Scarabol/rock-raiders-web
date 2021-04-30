@@ -2,7 +2,7 @@ import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { JobCreateEvent, SpawnDynamiteEvent } from '../../event/WorldEvents'
-import { Building } from '../../game/model/building/Building'
+import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { JobType } from '../../game/model/job/JobType'
 import { DrillJob } from '../../game/model/job/surface/DrillJob'
@@ -24,7 +24,7 @@ export class SelectWallPanel extends SelectBasePanel {
         const itemReinforce = this.addWallMenuItem('Interface_MenuItem_Reinforce', JobType.REINFORCE, (s) => new ReinforceJob(s))
         itemReinforce.isDisabled = () => !(GameState.selectedSurface?.isReinforcable())
         const itemDynamite = this.addWallMenuItem('Interface_MenuItem_Dynamite', JobType.BLOW, null)
-        itemDynamite.isDisabled = () => !GameState.hasBuildingWithUpgrades(Building.TOOLSTATION, 2) &&
+        itemDynamite.isDisabled = () => !GameState.hasBuildingWithUpgrades(EntityType.TOOLSTATION, 2) &&
             !GameState.raiders.some((r) => r.hasSkill(RaiderSkill.DEMOLITION))
         const itemDeselect = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig')
         itemDeselect.isDisabled = () => false

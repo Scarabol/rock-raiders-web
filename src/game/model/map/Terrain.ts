@@ -4,7 +4,7 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { EntityAddedEvent } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
-import { EntityType } from '../EntityType'
+import { EntitySuperType } from '../EntityType'
 import { PathTarget } from '../PathTarget'
 import { astar, Graph } from './astar'
 import { Surface } from './Surface'
@@ -28,7 +28,7 @@ export class Terrain {
         this.floorGroup.scale.set(TILESIZE, TILESIZE, TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
         EventBus.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {
-            if (event.type !== EntityType.BUILDING) return
+            if (event.superType !== EntitySuperType.BUILDING) return
             event.entity.surfaces.forEach((s) => s.neighbors.forEach((n) => n.updateTexture()))
         })
     }

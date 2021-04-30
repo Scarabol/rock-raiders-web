@@ -8,6 +8,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BaseActivity } from '../activities/BaseActivity'
 import { BaseEntity } from '../BaseEntity'
+import { EntitySuperType, EntityType } from '../EntityType'
 import { AnimationEntityType } from './AnimationEntityType'
 import { AnimClip } from './AnimClip'
 import { AnimSubObj } from './AnimSubObj'
@@ -26,8 +27,8 @@ export abstract class AnimEntity extends BaseEntity {
     activity: BaseActivity = null
     radiusSq: number = 0
 
-    protected constructor(aeFilename: string) {
-        super()
+    protected constructor(superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
+        super(superType, entityType)
         if (aeFilename) this.animationEntityType = ResourceManager.getAnimationEntityType(aeFilename)
     }
 

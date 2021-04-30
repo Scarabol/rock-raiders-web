@@ -11,7 +11,6 @@ import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../para
 import { ResourceManager } from '../resource/ResourceManager'
 import { GameScreen } from '../screen/GameScreen'
 import { RaiderActivity } from './model/activities/RaiderActivity'
-import { Building } from './model/building/Building'
 import { CollectableEntity } from './model/collect/CollectableEntity'
 import { Dynamite } from './model/collect/Dynamite'
 import { EntityType } from './model/EntityType'
@@ -41,7 +40,7 @@ export class WorldManager {
             }
         })
         EventBus.registerEventListener(EventKey.SPAWN_DYNAMITE, (event: SpawnDynamiteEvent) => {
-            const targetBuilding = GameState.getClosestBuildingByType(event.surface.getCenterWorld(), Building.TOOLSTATION)
+            const targetBuilding = GameState.getClosestBuildingByType(event.surface.getCenterWorld(), EntityType.TOOLSTATION)
             if (!targetBuilding) throw 'Could not find toolstation to spawn dynamite'
             const dynamite = new Dynamite()
             dynamite.targetSurface = event.surface
@@ -162,7 +161,7 @@ export class WorldManager {
             return
         }
         if (GameState.raiders.length >= GameState.getMaxRaiders()) return
-        const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD)
+        const spawnBuildings = GameState.getBuildingsByType(EntityType.TOOLSTATION, EntityType.TELEPORT_PAD)
         for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
             const station = spawnBuildings[c]
             if (station.spawning) continue
@@ -179,7 +178,7 @@ export class WorldManager {
                     .rotateAround(new Vector2(0, 0), station.getHeading() + degToRad(-10 + getRandom(20))))
                 raider.setJob(new MoveJob(walkOutPos))
                 GameState.raiders.push(raider)
-                EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, raider))
+                EventBus.publishEvent(new EntityAddedEvent(raider))
             })
             raider.group.position.copy(station.group.position).add(new Vector3(0, 0, TILESIZE / 2).applyEuler(station.group.rotation))
             raider.group.rotation.copy(station.group.rotation)

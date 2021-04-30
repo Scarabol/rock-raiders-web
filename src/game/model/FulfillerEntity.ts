@@ -3,6 +3,7 @@ import { clearIntervalSafe } from '../../core/Util'
 import { SelectionEvent } from '../../event/LocalEvents'
 import { NATIVE_FRAMERATE } from '../../params'
 import { CollectableEntity } from './collect/CollectableEntity'
+import { EntitySuperType, EntityType } from './EntityType'
 import { Job } from './job/Job'
 import { MovableEntity } from './MovableEntity'
 import { PathTarget } from './PathTarget'
@@ -20,8 +21,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     carries: CollectableEntity = null
     jobWorkplaces: PathTarget[] = []
 
-    protected constructor(aeFilename: string, selectionType: SelectionType) {
-        super(aeFilename)
+    protected constructor(superType: EntitySuperType, entityType: EntityType, aeFilename: string, selectionType: SelectionType) {
+        super(superType, entityType, aeFilename)
         this.selectionType = selectionType
         this.group.userData = {'selectable': this}
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done

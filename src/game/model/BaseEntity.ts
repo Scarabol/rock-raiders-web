@@ -1,12 +1,21 @@
 import { Group, Vector2 } from 'three'
 import { WorldManager } from '../WorldManager'
+import { EntitySuperType, EntityType } from './EntityType'
 import { Surface } from './map/Surface'
 
 export abstract class BaseEntity {
 
     worldMgr: WorldManager
     group: Group = new Group()
+
+    superType: EntitySuperType = null
+    entityType: EntityType = null
     level: number = 0
+
+    protected constructor(superType: EntitySuperType, entityType: EntityType) {
+        this.superType = superType
+        this.entityType = entityType
+    }
 
     abstract get stats()
 

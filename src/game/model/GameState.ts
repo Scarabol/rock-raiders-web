@@ -5,15 +5,14 @@ import { EntityDeselected } from '../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../params'
 import { BaseEntity } from './BaseEntity'
-import { Building } from './building/Building'
 import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
 import { Barrier } from './collect/Barrier'
 import { CollectableEntity } from './collect/CollectableEntity'
-import { CollectableType } from './collect/CollectableType'
 import { Crystal } from './collect/Crystal'
 import { Dynamite } from './collect/Dynamite'
 import { Ore } from './collect/Ore'
+import { EntityType } from './EntityType'
 import { PriorityList } from './job/PriorityList'
 import { Surface } from './map/Surface'
 import { Bat } from './monster/Bat'
@@ -64,7 +63,7 @@ export class GameState {
     static rewardConfig: LevelRewardConfig = null
     static priorityList: PriorityList = new PriorityList()
     static oxygenRate: number = 0
-    static buildModeSelection: Building = null
+    static buildModeSelection: BuildingEntity = null
 
     static reset() {
         this.resultState = GameResultState.RUNNING
@@ -102,11 +101,11 @@ export class GameState {
         this.buildModeSelection = null
     }
 
-    static getBuildingsByType(...buildingTypes: Building[]): BuildingEntity[] {
-        return this.buildings.filter(b => b.isPowered() && buildingTypes.some(bt => b.type === bt))
+    static getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
+        return this.buildings.filter(b => b.isPowered() && buildingTypes.some(bt => b.entityType === bt))
     }
 
-    static getClosestBuildingByType(position: Vector3, ...buildingTypes: Building[]): BuildingEntity {
+    static getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity {
         const targetBuildings = GameState.getBuildingsByType(...buildingTypes)
         let closest = null, minDist = null
         targetBuildings.forEach((b) => {
@@ -120,12 +119,12 @@ export class GameState {
         return closest
     }
 
-    static hasOneBuildingOf(...buildings: Building[]): boolean {
-        return this.buildings.some((b) => buildings.some((type) => b.type === type) && b.isPowered())
+    static hasOneBuildingOf(...buildings: EntityType[]): boolean {
+        return this.buildings.some((b) => buildings.some((type) => b.entityType === type) && b.isPowered())
     }
 
-    static hasBuildingWithUpgrades(building: Building, upgrades: number = 0): boolean {
-        return this.buildings.some((b) => b.type === building && b.level >= upgrades && b.isPowered())
+    static hasBuildingWithUpgrades(building: EntityType, upgrades: number = 0): boolean {
+        return this.buildings.some((b) => b.entityType === building && b.level >= upgrades && b.isPowered())
     }
 
     static getTrainingSites(position: Vector3, training: RaiderSkill): BuildingEntity[] {
@@ -167,7 +166,7 @@ export class GameState {
     }
 
     static getMaxRaiders(): number {
-        return MAX_RAIDER_BASE + this.getBuildingsByType(Building.BARRACKS).length * ADDITIONAL_RAIDER_PER_SUPPORT
+        return MAX_RAIDER_BASE + this.getBuildingsByType(EntityType.BARRACKS).length * ADDITIONAL_RAIDER_PER_SUPPORT
     }
 
     static discoverSurface(surface: Surface) {
@@ -190,21 +189,21 @@ export class GameState {
         discovered.forEach((r) => undiscovered.remove(r))
     }
 
-    static dropMaterial(type: CollectableType, quantity: number): CollectableEntity[] {
+    static dropMaterial(type: EntityType, quantity: number): CollectableEntity[] {
         const result = []
-        if (type === CollectableType.DYNAMITE) {
+        if (type === EntityType.DYNAMITE) {
             for (let c = 0; c < quantity; c++) result.push(new Dynamite())
-        } else if (type === CollectableType.CRYSTAL) {
+        } else if (type === EntityType.CRYSTAL) {
             while (GameState.numCrystal > 0 && result.length < quantity) {
                 GameState.numCrystal--
                 result.push(new Crystal())
             }
-        } else if (type === CollectableType.ORE) {
+        } else if (type === EntityType.ORE) {
             while (GameState.numOre > 0 && result.length < quantity) {
                 GameState.numOre--
                 result.push(new Ore())
             }
-        } else if (type === CollectableType.BARRIER) {
+        } else if (type === EntityType.BARRIER) {
             for (let c = 0; c < quantity; c++) result.push(new Barrier())
         } else {
             console.error('Material drop not yet implemented: ' + type)

@@ -1,26 +1,23 @@
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { AnimEntity } from '../anim/AnimEntity'
-import { Building } from '../building/Building'
 import { BuildingSite } from '../building/BuildingSite'
+import { EntitySuperType, EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { CollectJob } from '../job/CollectJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
-import { CollectableType } from './CollectableType'
 import { CollectPathTarget } from './CollectPathTarget'
 
 export abstract class CollectableEntity extends AnimEntity {
 
-    collectableType: CollectableType
-    targetBuildingTypes: Building[] = []
+    targetBuildingTypes: EntityType[] = []
     priorityIdentifier: PriorityIdentifier = null
     targets: CollectPathTarget[] = []
     targetSite: BuildingSite = null
 
-    protected constructor(collectableType: CollectableType, aeFilename: string = null) {
-        super(aeFilename)
-        this.collectableType = collectableType
-        this.targetBuildingTypes = [Building.TOOLSTATION]
+    protected constructor(entityType: EntityType, aeFilename: string = null) {
+        super(EntitySuperType.MATERIAL, entityType, aeFilename)
+        this.targetBuildingTypes = [EntityType.TOOLSTATION]
     }
 
     hasTarget(): boolean {
@@ -39,7 +36,7 @@ export abstract class CollectableEntity extends AnimEntity {
 
     protected updateTargets(): CollectPathTarget[] {
         if (this.targets.length < 1) {
-            const sites = GameState.buildingSites.filter((b) => b.needs(this.getCollectableType()))
+            const sites = GameState.buildingSites.filter((b) => b.needs(this.entityType))
             if (sites.length > 0) {
                 this.targets = sites.map((s) => new CollectPathTarget(s.getRandomDropPosition(), s, null))
             } else {
@@ -70,15 +67,11 @@ export abstract class CollectableEntity extends AnimEntity {
         this.targetSite?.assign(this)
     }
 
-    getCollectableType(): CollectableType {
-        return this.collectableType
-    }
-
     getPriorityIdentifier(): PriorityIdentifier {
         return this.priorityIdentifier
     }
 
-    getTargetBuildingTypes(): Building[] {
+    getTargetBuildingTypes(): EntityType[] {
         return this.targetBuildingTypes
     }
 

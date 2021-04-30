@@ -394,7 +394,7 @@ export class Surface implements Selectable {
     }
 
     isWalkable(): boolean {
-        return this.surfaceType.floor && this.discovered && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER && !this.building?.type.blocksPathSurface
+        return this.surfaceType.floor && this.discovered && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER && !this.building?.blocksPathSurface
     }
 
     isDrillable(): boolean {

@@ -2,15 +2,14 @@ import { AdditiveBlending, Color, Material, MeshPhongMaterial } from 'three'
 import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
-import { Building } from '../building/Building'
+import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { CollectableEntity } from './CollectableEntity'
-import { CollectableType } from './CollectableType'
 
 export class Crystal extends CollectableEntity {
 
     constructor() {
-        super(CollectableType.CRYSTAL)
+        super(EntityType.CRYSTAL)
         const resource2 = ResourceManager.getResource('MiscAnims/Crystal/vlp_greencrystal.lwo')
         const mesh2 = SceneManager.registerMesh(new LWOLoader('MiscAnims/Crystal/').parse(resource2));
         (mesh2.material as Material[]).forEach((mat: MeshPhongMaterial) => {
@@ -30,7 +29,7 @@ export class Crystal extends CollectableEntity {
             mat.transparent = mat.opacity < 1
         })
         this.group.add(mesh)
-        this.targetBuildingTypes = [Building.POWER_STATION, Building.TOOLSTATION]
+        this.targetBuildingTypes = [EntityType.POWER_STATION, EntityType.TOOLSTATION]
         this.priorityIdentifier = PriorityIdentifier.aiPriorityCrystal
     }
 

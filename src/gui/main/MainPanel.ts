@@ -2,8 +2,7 @@ import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { SurfaceChanged, SurfaceSelectedEvent } from '../../event/LocalEvents'
 import { EntityAddedEvent, EntityRemovedEvent, RaiderRequested } from '../../event/WorldEvents'
-import { Building } from '../../game/model/building/Building'
-import { EntityType } from '../../game/model/EntityType'
+import { EntitySuperType, EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { Surface } from '../../game/model/map/Surface'
 import { MAX_RAIDER_REQUEST } from '../../params'
@@ -56,16 +55,16 @@ export class MainPanel extends Panel {
         const selectVehiclePanel = this.addSubPanel(new SelectVehiclePanel(this.mainPanel))
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
         teleportRaider.isDisabled = () => GameState.raiders.length >= GameState.getMaxRaiders() || GameState.requestedRaiders >= MAX_RAIDER_REQUEST ||
-            !GameState.hasOneBuildingOf(Building.TOOLSTATION, Building.TELEPORT_PAD)
+            !GameState.hasOneBuildingOf(EntityType.TOOLSTATION, EntityType.TELEPORT_PAD)
         teleportRaider.updateState()
         EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, () => teleportRaider.updateState())
         EventBus.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {
             // TODO add event inheritance by using event key prefix checking
-            if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) teleportRaider.updateState()
+            if (event.superType === EntitySuperType.BUILDING || event.superType === EntitySuperType.RAIDER) teleportRaider.updateState()
         })
         EventBus.registerEventListener(EventKey.ENTITY_REMOVED, (event: EntityRemovedEvent) => {
             // TODO add event inheritance by using event key prefix checking
-            if (event.type === EntityType.BUILDING || event.type === EntityType.RAIDER) teleportRaider.updateState()
+            if (event.superType === EntitySuperType.BUILDING || event.superType === EntitySuperType.RAIDER) teleportRaider.updateState()
         })
         teleportRaider.onClick = () => {
             GameState.requestedRaiders++

@@ -2,6 +2,7 @@ import { Vector2 } from 'three'
 import { getRandomInclusive } from '../../../core/Util'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
@@ -10,7 +11,7 @@ import { Monster } from './Monster'
 export class Bat extends Monster {
 
     constructor() {
-        super('Creatures/bat/bat.ae')
+        super(EntityType.BAT, 'Creatures/bat/bat.ae')
         this.floorOffset = TILESIZE / 2
     }
 

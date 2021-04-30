@@ -4,7 +4,7 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
 import { CHECK_CLEARRUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
-import { Building } from './model/building/Building'
+import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
 import { GetToolJob } from './model/job/GetToolJob'
 import { PublicJob } from './model/job/Job'
@@ -90,7 +90,7 @@ export class Supervisor {
                     const raiderPosition = raider.getPosition()
                     const neededTool = job.isQualifiedWithTool(raider)
                     if (neededTool) {
-                        const pathToToolstation = GameState.getBuildingsByType(Building.TOOLSTATION)
+                        const pathToToolstation = GameState.getBuildingsByType(EntityType.TOOLSTATION)
                             .map((b) => raider.findPathToTarget(new PathTarget(b.getPosition2D())))
                             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                         if (pathToToolstation) {
@@ -151,7 +151,7 @@ export class Supervisor {
                         } else {
                             const neededTool = surfJob.isQualifiedWithTool(raider)
                             if (neededTool) {
-                                const pathToToolstation = GameState.getBuildingsByType(Building.TOOLSTATION)
+                                const pathToToolstation = GameState.getBuildingsByType(EntityType.TOOLSTATION)
                                     .map((b) => raider.findPathToTarget(new PathTarget(b.getPosition2D())))
                                     .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                                 if (pathToToolstation) {

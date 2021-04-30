@@ -1,11 +1,11 @@
 import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
+import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { CollectableEntity } from './CollectableEntity'
-import { CollectableType } from './CollectableType'
 import { CollectPathTarget } from './CollectPathTarget'
 
 export class ElectricFence extends CollectableEntity {
@@ -13,7 +13,7 @@ export class ElectricFence extends CollectableEntity {
     targetSurface: Surface
 
     constructor(surface: Surface) {
-        super(CollectableType.ELECTRIC_FENCE)
+        super(EntityType.ELECTRIC_FENCE)
         const resource = ResourceManager.getResource('Buildings/E-Fence/E-Fence4.lwo')
         const mesh = SceneManager.registerMesh(new LWOLoader('Buildings/E-Fence/').parse(resource))
         this.group.add(mesh)

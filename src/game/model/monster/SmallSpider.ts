@@ -2,6 +2,7 @@ import { Vector2 } from 'three'
 import { getRandom, getRandomInclusive } from '../../../core/Util'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
@@ -14,7 +15,7 @@ export class SmallSpider extends Monster {
     currentSurface: Surface = null
 
     constructor() {
-        super('Creatures/SpiderSB/SpiderSB.ae')
+        super(EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae')
     }
 
     get stats() {

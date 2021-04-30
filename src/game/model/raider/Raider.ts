@@ -10,7 +10,7 @@ import { RaiderActivity } from '../activities/RaiderActivity'
 import { CollectPathTarget } from '../collect/CollectPathTarget'
 import { Crystal } from '../collect/Crystal'
 import { Ore } from '../collect/Ore'
-import { EntityType } from '../EntityType'
+import { EntitySuperType, EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { GameState } from '../GameState'
 import { CollectJob } from '../job/CollectJob'
@@ -36,7 +36,7 @@ export class Raider extends FulfillerEntity {
     slipped: boolean = false
 
     constructor() {
-        super('mini-figures/pilot/pilot.ae', SelectionType.RAIDER)
+        super(EntitySuperType.RAIDER, EntityType.PILOT, 'mini-figures/pilot/pilot.ae', SelectionType.RAIDER)
         this.tools = [RaiderTool.DRILL]
         this.skills = []
     }
@@ -53,7 +53,7 @@ export class Raider extends FulfillerEntity {
         super.onDiscover()
         GameState.raidersUndiscovered.remove(this)
         GameState.raiders.push(this)
-        EventBus.publishEvent(new EntityAddedEvent(EntityType.RAIDER, this))
+        EventBus.publishEvent(new EntityAddedEvent(this))
         EventBus.publishEvent(new RaiderDiscoveredEvent(this.getPosition()))
     }
 
