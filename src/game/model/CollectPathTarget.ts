@@ -23,7 +23,7 @@ export class CollectPathTarget extends PathTarget {
     }
 
     canGatherItem(): boolean {
-        if (this.building) {
+        if (this.building) { // FIXME better check building busy state
             return this.building.activity.activityKey === this.building.getDefaultActivity().activityKey
         }
         return true

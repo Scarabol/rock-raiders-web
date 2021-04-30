@@ -67,7 +67,7 @@ export class Terrain {
     }
 
     updateSurfaceMeshes(force: boolean = false) {
-        this.surfaces.forEach((r) => r.forEach((s) => s.updateMesh(force)))
+        this.forEachSurface((s) => s.updateMesh(force))
         this.floorGroup.updateWorldMatrix(true, true) // otherwise ray intersection is not working before rendering
         this.resetGraphWalk()
     }
@@ -139,6 +139,11 @@ export class Terrain {
     }
 
     dispose() {
-        this.surfaces.forEach(c => c.forEach(s => s.dispose()))
+        this.forEachSurface(s => s.dispose())
     }
+
+    forEachSurface(each: (surface: Surface) => any) {
+        this.surfaces?.forEach((r) => r.forEach((s) => each(s)))
+    }
+
 }

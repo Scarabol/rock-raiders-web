@@ -28,6 +28,7 @@ export class BuildingPanel extends IconSubPanel {
     addBuildMenuItem(menuItemGroup: string, itemKey: string, building: Building) {
         const item = this.addMenuItem(menuItemGroup, itemKey)
         item.isDisabled = () => false // TODO check Dependencies from config
+        // TODO show dependencies tooltip, when disabled
         item.onClick = () => GameState.buildModeSelection = building
         return item
     }

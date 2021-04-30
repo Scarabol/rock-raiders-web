@@ -20,7 +20,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     carries: CollectableEntity = null
     jobWorkplaces: PathTarget[] = []
 
-    protected constructor(selectionType: SelectionType, aeFilename: string) {
+    protected constructor(aeFilename: string, selectionType: SelectionType) {
         super(aeFilename)
         this.selectionType = selectionType
         this.group.userData = {'selectable': this}

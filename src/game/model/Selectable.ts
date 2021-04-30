@@ -16,7 +16,7 @@ export interface Selectable {
 export enum SelectionType {
 
     SURFACE,
-    PILOT,
+    RAIDER,
     BUILDING,
     VEHICLE,
     GROUP,

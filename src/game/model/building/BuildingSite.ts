@@ -84,7 +84,7 @@ export class BuildingSite {
                 item.removeFromScene()
             })
             const entity = new BuildingEntity(this.building)
-            entity.worldMgr = this.primarySurface.terrain.worldMgr // TODO refactor this
+            entity.worldMgr = this.primarySurface.terrain.worldMgr
             entity.changeActivity(BuildingActivity.Teleport, () => {
                 entity.createPickSphere()
                 GameState.buildings.push(entity)

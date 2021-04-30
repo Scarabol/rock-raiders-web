@@ -3,7 +3,6 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 
 export class Building {
 
-    // XXX dynamically read building types from cfg at BuildingTypes
     static readonly TOOLSTATION = new Building('Toolstation', 'Buildings/Toolstation', false)
     static readonly TELEPORT_PAD = new Building('TeleportPad', 'Buildings/Teleports')
     static readonly DOCKS = new Building('Docks', 'Buildings/Docks', true,

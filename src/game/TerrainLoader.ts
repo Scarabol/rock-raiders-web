@@ -71,7 +71,7 @@ export class TerrainLoader {
         }
 
         // exlpore predug surfaces
-        terrain.surfaces.forEach(c => c.forEach(s => {
+        terrain.forEachSurface((s) => {
             if (predugMap[s.y][s.x] === PredugMap.CAVERN_EXPOSED || predugMap[s.y][s.x] === PredugMap.SLUG_HOLE_EXPOSED) { // map are rows (y) first, columns (x) second
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
@@ -79,22 +79,22 @@ export class TerrainLoader {
                     }
                 }
             }
-        }))
+        })
 
         // create hidden caverns
-        terrain.surfaces.forEach(c => c.forEach(s => {
+        terrain.forEachSurface((s) => {
             const surface = terrain.getSurfaceOrNull(s.x, s.y)
             if (predugMap[s.y][s.x] === PredugMap.CAVERN_HIDDEN && !surface.discovered) {
                 surface.surfaceType = SurfaceType.GROUND
             }
-        }))
+        })
 
         terrain.graphWalk = new Graph(terrain.surfaces.map(c => c.map(s => s.getGraphWalkWeight())))
 
         // crumble unsupported walls
-        terrain.surfaces.forEach((c) => c.forEach((s) => {
+        terrain.forEachSurface((s) => {
             if (!s.isSupported()) s.collapse()
-        }))
+        })
 
         terrain.updateSurfaceMeshes(true)
 

@@ -84,11 +84,12 @@ export class WorldManager {
         this.nerpRunner.onLevelComplete = () => gameScreen.onLevelEnd()
 
         // gather level start details for game result score calculation
-        GameState.totalDiggables = this.sceneManager.terrain.surfaces.filter((r) => r.forEach((s) => s.isDigable())).length
+        GameState.totalDiggables = 0
+        this.sceneManager.terrain.forEachSurface((s) => GameState.totalDiggables += s.isDigable() ? 1 : 0)
         GameState.totalCrystals = 0
-        this.sceneManager.terrain.surfaces.forEach((r) => r.forEach((s) => GameState.totalCrystals += s.containedCrystals))
+        this.sceneManager.terrain.forEachSurface((s) => GameState.totalCrystals += s.containedCrystals)
         GameState.totalOres = 0
-        this.sceneManager.terrain.surfaces.forEach((r) => r.forEach((s) => GameState.totalOres += s.containedOres))
+        this.sceneManager.terrain.forEachSurface((s) => GameState.totalOres += s.containedOres)
     }
 
     start() {
@@ -104,7 +105,7 @@ export class WorldManager {
         GameState.spiders.forEach((m) => m.onLevelEnd())
         GameState.bats.forEach((b) => b.onLevelEnd())
         GameState.remainingDiggables = 0
-        this.sceneManager?.terrain?.surfaces?.forEach((r) => r.forEach((s) => GameState.remainingDiggables += s.isDigable() ? 1 : 0))
+        this.sceneManager?.terrain?.forEachSurface((s) => GameState.remainingDiggables += s.isDigable() ? 1 : 0)
         this.sceneManager.disposeScene()
     }
 
@@ -163,11 +164,12 @@ export class WorldManager {
             return
         }
         if (GameState.raiders.length >= GameState.getMaxRaiders()) return
-        const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD).filter((b) => !b.spawning)
+        const spawnBuildings = GameState.getBuildingsByType(Building.TOOLSTATION, Building.TELEPORT_PAD)
         for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
+            const station = spawnBuildings[c]
+            if (station.spawning) continue
             GameState.requestedRaiders--
             EventBus.publishEvent(new RaiderRequested())
-            const station = spawnBuildings[c]
             station.spawning = true
             const raider = new Raider()
             raider.worldMgr = this

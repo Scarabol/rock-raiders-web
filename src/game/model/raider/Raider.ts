@@ -36,7 +36,7 @@ export class Raider extends FulfillerEntity {
     slipped: boolean = false
 
     constructor() {
-        super(SelectionType.PILOT, 'mini-figures/pilot/pilot.ae')
+        super('mini-figures/pilot/pilot.ae', SelectionType.RAIDER)
         this.tools = [RaiderTool.DRILL]
         this.skills = []
         this.pickSphereRadius = this.stats.PickSphere / 2

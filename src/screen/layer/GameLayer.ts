@@ -85,7 +85,7 @@ export class GameLayer extends ScreenLayer {
                 }
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
                 const downUpDistance = Math.abs(event.clientX - this.rightDown.x) + Math.abs(event.clientY - this.rightDown.y)
-                if (downUpDistance < 3 && (GameState.selectionType === SelectionType.PILOT || GameState.selectionType === SelectionType.GROUP)) {
+                if (downUpDistance < 3 && (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.GROUP)) {
                     // TODO check for collectable entity first
                     const intersectionPoint = this.getTerrainPositionFromEvent(event)
                     if (intersectionPoint) {

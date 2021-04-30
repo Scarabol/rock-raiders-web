@@ -155,25 +155,25 @@ export class NerpRunner {
         this.messagePermit = !messagesAllowed
     }
 
-    setBuildingsUpgradeLevel(typeName, level) {
+    setBuildingsUpgradeLevel(typeName: Building, level: number) {
         GameState.buildings.forEach(b => {
             if (b.type === typeName) b.level = level
         })
     }
 
-    setToolStoreLevel(level) {
+    setToolStoreLevel(level: number) {
         this.setBuildingsUpgradeLevel(Building.TOOLSTATION, level)
     }
 
-    setTeleportPadLevel(level) {
+    setTeleportPadLevel(level: number) {
         this.setBuildingsUpgradeLevel(Building.TELEPORT_PAD, level)
     }
 
-    setPowerStationLevel(level) {
+    setPowerStationLevel(level: number) {
         this.setBuildingsUpgradeLevel(Building.POWER_STATION, level)
     }
 
-    setBarracksLevel(level) {
+    setBarracksLevel(level: number) {
         this.setBuildingsUpgradeLevel(Building.BARRACKS, level)
     }
 
@@ -206,6 +206,7 @@ export class NerpRunner {
         return 0
     }
 
+    // noinspection JSUnusedLocalSymbols
     setMessageTimerValues(arg1, arg2, arg3) {
         // TODO implement this
     }
@@ -218,6 +219,7 @@ export class NerpRunner {
         // TODO implement this
     }
 
+    // noinspection JSUnusedLocalSymbols
     setMessage(messageNumber, arrowDisabled) {
         if (!this.messagePermit) {
             return
@@ -228,20 +230,24 @@ export class NerpRunner {
         // msg.snd resides in sounds/streamed/ which is currently not loaded :(
     }
 
+    // noinspection JSUnusedLocalSymbols
     setCameraGotoTutorial(arg1) {
         // TODO implement this
     }
 
+    // noinspection JSUnusedLocalSymbols
     getTutorialBlockIsGround(arg1) {
         // TODO implement this
         return 0
     }
 
+    // noinspection JSUnusedLocalSymbols
     getTutorialBlockIsPath(arg1) {
         // TODO implement this
         return 0
     }
 
+    // noinspection JSUnusedLocalSymbols
     getUnitAtBlock(arg1) {
         // TODO implement this
         return 0

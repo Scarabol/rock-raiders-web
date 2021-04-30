@@ -239,7 +239,7 @@ export class GameState {
     }
 
     static get selectedRaiders(): Raider[] {
-        return (this.selectionType === SelectionType.PILOT || this.selectionType === SelectionType.GROUP) && this.selectedEntities.length > 0 ? this.selectedEntities as Raider[] : []
+        return (this.selectionType === SelectionType.RAIDER || this.selectionType === SelectionType.GROUP) && this.selectedEntities.length > 0 ? this.selectedEntities as Raider[] : []
     }
 
     static get totalOre(): number {
