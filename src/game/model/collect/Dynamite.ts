@@ -1,12 +1,12 @@
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
 import { Building } from '../building/Building'
-import { CollectPathTarget } from '../CollectPathTarget'
 import { GameState } from '../GameState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { CollectableEntity } from './CollectableEntity'
 import { CollectableType } from './CollectableType'
+import { CollectPathTarget } from './CollectPathTarget'
 
 export class Dynamite extends CollectableEntity {
 

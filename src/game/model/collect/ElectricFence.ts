@@ -1,12 +1,12 @@
 import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
-import { CollectPathTarget } from '../CollectPathTarget'
 import { GameState } from '../GameState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { CollectableEntity } from './CollectableEntity'
 import { CollectableType } from './CollectableType'
+import { CollectPathTarget } from './CollectPathTarget'
 
 export class ElectricFence extends CollectableEntity {
 

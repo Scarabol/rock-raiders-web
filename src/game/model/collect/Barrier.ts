@@ -1,8 +1,8 @@
 import { BarrierActivity } from '../activities/BarrierActivity'
-import { CollectPathTarget } from '../CollectPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { CollectableEntity } from './CollectableEntity'
 import { CollectableType } from './CollectableType'
+import { CollectPathTarget } from './CollectPathTarget'
 
 export class Barrier extends CollectableEntity {
 

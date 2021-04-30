@@ -3,11 +3,11 @@ import { JobCreateEvent } from '../../../event/WorldEvents'
 import { AnimEntity } from '../anim/AnimEntity'
 import { Building } from '../building/Building'
 import { BuildingSite } from '../building/BuildingSite'
-import { CollectPathTarget } from '../CollectPathTarget'
 import { GameState } from '../GameState'
 import { CollectJob } from '../job/CollectJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { CollectableType } from './CollectableType'
+import { CollectPathTarget } from './CollectPathTarget'
 
 export abstract class CollectableEntity extends AnimEntity {
 
