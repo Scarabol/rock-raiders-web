@@ -11,6 +11,7 @@ import { PathTarget } from './PathTarget'
 export abstract class MovableEntity extends AnimEntity {
 
     currentPath: TerrainPath = null
+    floorOffset: number = 0
 
     constructor(aeFilename: string) {
         super(aeFilename)
@@ -72,11 +73,9 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     getEntityStep(target: Vector2): EntityStep {
-        return new EntityStep(target.x - this.group.position.x, this.determinePosY(target.x, target.y) - this.determinePosY(this.group.position.x, this.group.position.z), target.y - this.group.position.z)
-    }
-
-    determinePosY(x: number, z: number) {
-        return this.worldMgr.getFloorHeight(x, z)
+        const targetWorld = this.worldMgr.getFloorPosition(target)
+        targetWorld.y += this.floorOffset
+        return new EntityStep(targetWorld.sub(this.group.position))
     }
 
     isOnRubble() {

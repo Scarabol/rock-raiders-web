@@ -54,7 +54,7 @@ export class ObjectListLoader {
                 entity.worldMgr = worldMgr
                 entity.changeActivity()
                 entity.createPickSphere()
-                entity.group.position.set(worldX, worldMgr.getFloorHeight(worldX, worldZ), worldZ)
+                entity.group.position.copy(worldMgr.getFloorPosition(new Vector2(worldX, worldZ)))
                 entity.group.rotateOnAxis(new Vector3(0, 1, 0), -radHeading - Math.PI)
                 entity.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered
                 if (entity.group.visible) {
@@ -108,7 +108,7 @@ export class ObjectListLoader {
                 const bat = new Bat()
                 bat.worldMgr = worldMgr
                 bat.changeActivity()
-                bat.group.position.set(worldX, bat.determinePosY(worldX, worldZ), worldZ)
+                bat.group.position.set(worldX, bat.floorOffset, worldZ)
                 bat.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(bat.group.position).discovered
                 worldMgr.sceneManager.scene.add(bat.group)
                 GameState.bats.push(bat)

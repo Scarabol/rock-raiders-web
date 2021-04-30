@@ -123,14 +123,13 @@ export class WorldManager {
 
     setTorchPosition(position: Vector2) {
         this.sceneManager.cursorTorchlight.position.x = position.x
-        this.sceneManager.cursorTorchlight.position.y = this.getFloorHeight(position.x, position.y) + 2 * TILESIZE
+        this.sceneManager.cursorTorchlight.position.y = this.sceneManager.terrain.getSurfaceFromWorldXZ(position.x, position.y).getFloorHeight(position.x, position.y) + 2 * TILESIZE
         this.sceneManager.cursorTorchlight.position.z = position.y
     }
 
-    getFloorHeight(worldX: number, worldZ: number): number {
-        const surface = this.sceneManager.terrain.getSurfaceFromWorldXZ(worldX, worldZ)
-        if (!surface) return 0
-        return surface.getFloorHeight(worldX, worldZ)
+    getFloorPosition(world: Vector2) {
+        const floorY = this.sceneManager.terrain.getSurfaceFromWorldXZ(world.x, world.y).getFloorHeight(world.x, world.y)
+        return new Vector3(world.x, floorY, world.y)
     }
 
     getTerrainHeight(worldX: number, worldZ: number): number {
@@ -146,7 +145,7 @@ export class WorldManager {
 
     addCollectable(collectable: CollectableEntity, world: Vector2) {
         collectable.worldMgr = this
-        collectable.group.position.set(world.x, this.getFloorHeight(world.x, world.y), world.y)
+        collectable.group.position.copy(this.getFloorPosition(world))
         collectable.group.visible = this.sceneManager.terrain.getSurfaceFromWorld(collectable.group.position).discovered
         this.sceneManager.scene.add(collectable.group)
         if (collectable.group.visible) {

@@ -94,8 +94,7 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     getDropPosition(): Vector3 {
-        const dropPos2D = this.getDropPosition2D()
-        return new Vector3(dropPos2D.x, this.worldMgr.getFloorHeight(dropPos2D.x, dropPos2D.y), dropPos2D.y)
+        return this.worldMgr.getFloorPosition(this.getDropPosition2D())
     }
 
     isPowered(): boolean {

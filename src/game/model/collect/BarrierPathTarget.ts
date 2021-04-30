@@ -1,4 +1,3 @@
-import { Vector3 } from 'three'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { BarrierLocation } from './BarrierLocation'
 import { CollectableEntity } from './CollectableEntity'
@@ -15,7 +14,7 @@ export class BarrierPathTarget extends CollectPathTarget {
 
     gatherItem(item: CollectableEntity) {
         item.targetSite.addItem(item)
-        item.group.position.copy(new Vector3(this.targetLocation.x, item.worldMgr.getFloorHeight(this.targetLocation.x, this.targetLocation.y), this.targetLocation.y))
+        item.group.position.copy(item.worldMgr.getFloorPosition(this.targetLocation))
         item.group.rotation.y = this.heading
         item.changeActivity(BarrierActivity.Expand, () => {
             item.changeActivity(BarrierActivity.Long)

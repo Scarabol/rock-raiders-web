@@ -5,8 +5,8 @@ export class EntityStep {
     vec: Vector3 = null
     targetReached: boolean = false
 
-    constructor(dx: number, dy: number, dz: number) {
-        this.vec = new Vector3(dx, dy, dz)
+    constructor(vec: Vector3) {
+        this.vec = vec
     }
 
 }

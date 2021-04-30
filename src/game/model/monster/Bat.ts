@@ -11,6 +11,7 @@ export class Bat extends Monster {
 
     constructor() {
         super('Creatures/bat/bat.ae')
+        this.floorOffset = TILESIZE / 2
     }
 
     get stats() {
@@ -26,10 +27,6 @@ export class Bat extends Monster {
             bat.target = bat.findTarget()
         }
         bat.moveTimeout = setTimeout(() => Bat.onMove(bat), 1000 / NATIVE_FRAMERATE)
-    }
-
-    determinePosY(x: number, z: number) {
-        return this.worldMgr.getFloorHeight(x, z) + TILESIZE / 2
     }
 
     private findTarget(): PathTarget { // TODO move to nearby drilling noise, explosions or sonic blasters

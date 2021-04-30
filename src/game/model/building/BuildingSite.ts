@@ -91,8 +91,7 @@ export class BuildingSite {
                 entity.turnOnPower()
                 EventBus.publishEvent(new EntityAddedEvent(EntityType.BUILDING, entity))
             })
-            const world = this.primarySurface.getCenterWorld()
-            entity.group.position.set(world.x, entity.worldMgr.getFloorHeight(world.x, world.z), world.z)
+            entity.group.position.copy(entity.worldMgr.getFloorPosition(this.primarySurface.getCenterWorld2D()))
             entity.group.rotateOnAxis(new Vector3(0, 1, 0), -this.heading + Math.PI / 2)
             entity.group.visible = entity.worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered
             entity.worldMgr.sceneManager.scene.add(entity.group)
