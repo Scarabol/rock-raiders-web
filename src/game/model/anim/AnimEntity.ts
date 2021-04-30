@@ -14,7 +14,7 @@ import { AnimSubObj } from './AnimSubObj'
 
 export abstract class AnimEntity extends BaseEntity {
 
-    entityType: AnimationEntityType = null
+    animationEntityType: AnimationEntityType = null
     poly: Object3D[] = []
     animation: AnimClip = null
     animationTimeout: NodeJS.Timeout = null
@@ -29,7 +29,7 @@ export abstract class AnimEntity extends BaseEntity {
 
     protected constructor(aeFilename: string) {
         super()
-        if (aeFilename) this.entityType = ResourceManager.getAnimationEntityType(aeFilename)
+        if (aeFilename) this.animationEntityType = ResourceManager.getAnimationEntityType(aeFilename)
     }
 
     beamUp() {
@@ -52,18 +52,18 @@ export abstract class AnimEntity extends BaseEntity {
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
-        if (this.activity === activity) return
+        if (this.activity === activity || this.animationEntityType === null) return
         this.activity = activity
         let lActivityKey = activity.activityKey.toLowerCase()
-        let anim = this.entityType.activities.get(lActivityKey)
+        let anim = this.animationEntityType.activities.get(lActivityKey)
         if (!anim) { // find by prefix
-            this.entityType.activities.forEach((a, key) => {
+            this.animationEntityType.activities.forEach((a, key) => {
                 if (!anim && lActivityKey.startsWith(key)) anim = a
             })
         }
         if (!anim?.animation) {
             console.warn('Activity ' + activity.activityKey + ' unknown or has no animation defined')
-            console.log(this.entityType.activities)
+            console.log(this.animationEntityType.activities)
             return
         }
         if (onAnimationDone) onAnimationDone.bind(this)
@@ -76,19 +76,19 @@ export abstract class AnimEntity extends BaseEntity {
         this.carryJoint = null
         // bodies are defined in animation and second in high/medium/low poly groups
         this.animation.bodies.forEach((body) => {
-            let model: Object3D = iGet(this.entityType.highPoly, body.name)
-            if (!model) model = iGet(this.entityType.mediumPoly, body.name)
+            let model: Object3D = iGet(this.animationEntityType.highPoly, body.name)
+            if (!model) model = iGet(this.animationEntityType.mediumPoly, body.name)
             if (!model) model = body.model
             const polyModel = model.clone(true)
             this.poly.push(polyModel)
             if (body.name) {
                 const lBodyName = body.name.toLowerCase()
-                if (lBodyName === this.entityType.carryNullName?.toLowerCase()) {
+                if (lBodyName === this.animationEntityType.carryNullName?.toLowerCase()) {
                     this.carryJoint = polyModel
                     if (carries.length > 0) this.carryJoint.add(...carries)
-                } else if (lBodyName === this.entityType.depositNullName?.toLowerCase()) {
+                } else if (lBodyName === this.animationEntityType.depositNullName?.toLowerCase()) {
                     this.depositJoint = polyModel
-                } else if (lBodyName === this.entityType.toolNullName?.toLowerCase()) {
+                } else if (lBodyName === this.animationEntityType.toolNullName?.toLowerCase()) {
                     this.getToolJoint = polyModel
                 }
             }

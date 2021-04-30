@@ -1,6 +1,5 @@
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
-import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { AnimEntity } from '../anim/AnimEntity'
 import { Building } from '../building/Building'
 import { BuildingSite } from '../building/BuildingSite'
@@ -22,11 +21,6 @@ export abstract class CollectableEntity extends AnimEntity {
         super(aeFilename)
         this.collectableType = collectableType
         this.targetBuildingTypes = [Building.TOOLSTATION]
-    }
-
-    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: any = null, durationTimeMs: number = null) {
-        if (this.entityType === null) return
-        return super.changeActivity(activity, onAnimationDone, durationTimeMs)
     }
 
     hasTarget(): boolean {
