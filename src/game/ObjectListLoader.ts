@@ -69,7 +69,7 @@ export class ObjectListLoader {
                 primaryPathSurface.setBuilding(entity)
                 primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                 primaryPathSurface.updateTexture()
-                entity.surfaces.push(primaryPathSurface)
+                entity.primarySurface = primaryPathSurface
                 if (building.secondaryBuildingPart) {
                     const secondaryOffset = new Vector3(TILESIZE * building.secondaryBuildingPart.x, 0, TILESIZE * building.secondaryBuildingPart.y)
                         .applyAxisAngle(new Vector3(0, 1, 0), -radHeading).add(entity.group.position)
@@ -77,7 +77,7 @@ export class ObjectListLoader {
                     secondarySurface.setBuilding(entity)
                     secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                     secondarySurface.updateTexture()
-                    entity.surfaces.push(secondarySurface)
+                    entity.secondarySurface = secondarySurface
                 }
                 if (building.hasPrimaryPowerPath) {
                     const pathOffset = new Vector3(0, 0, -TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading)
@@ -86,7 +86,7 @@ export class ObjectListLoader {
                     if (building === Building.GEODOME) pathSurface.building = entity
                     pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
                     pathSurface.updateTexture()
-                    entity.surfaces.push(pathSurface)
+                    entity.primaryPathSurface = pathSurface
                 }
                 if (building === Building.POWER_STATION || entity.surfaces.some((s) => s.neighbors.some((n) => n.hasPower))) {
                     entity.turnOnPower()
@@ -119,13 +119,7 @@ export class ObjectListLoader {
             }
         })
         // update path textures when all buildings are added
-        GameState.buildings.forEach((b) => b.surfaces.forEach((bSurf) => {
-            for (let x = -1; x <= 1; x++) {
-                for (let y = -1; y <= 1; y++) {
-                    worldMgr.sceneManager.terrain.getSurface(bSurf.x + x, bSurf.y + y).updateTexture()
-                }
-            }
-        }))
+        GameState.buildings.forEach((b) => b.surfaces.forEach((s) => s.neighbors.forEach((n) => n.updateTexture())))
     }
 
 }

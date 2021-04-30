@@ -1,5 +1,6 @@
 import { Group, Vector2 } from 'three'
 import { WorldManager } from '../WorldManager'
+import { Surface } from './map/Surface'
 
 export abstract class BaseEntity {
 
@@ -27,6 +28,10 @@ export abstract class BaseEntity {
 
     removeFromScene() {
         this.worldMgr.sceneManager.scene.remove(this.group)
+    }
+
+    get surfaces(): Surface[] {
+        return [this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position)]
     }
 
 }

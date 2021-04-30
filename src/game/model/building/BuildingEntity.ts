@@ -25,7 +25,10 @@ export class BuildingEntity extends AnimEntity implements Selectable {
     selected: boolean
     powerSwitch: boolean = true
     spawning: boolean = false
-    surfaces: Surface[] = []
+    primarySurface: Surface = null
+    secondarySurface: Surface = null
+    primaryPathSurface: Surface = null
+    secondaryPathSurface: Surface = null
     upgradeCostOre: number = 0
     upgradeCostBrick: number = 0
     crystalsInUse: number = 0
@@ -136,10 +139,10 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.crystalsInUse = 0
         this.inBeam = true
         for (let c = 0; c < this.stats.CostOre; c++) {
-            this.worldMgr.addCollectable(new Ore(), this.surfaces[0].getRandomPosition())
+            this.worldMgr.addCollectable(new Ore(), this.primarySurface.getRandomPosition())
         }
         for (let c = 0; c < this.stats.CostCrystal; c++) {
-            this.worldMgr.addCollectable(new Crystal(), this.surfaces[0].getRandomPosition())
+            this.worldMgr.addCollectable(new Crystal(), this.primarySurface.getRandomPosition())
         }
         this.surfaces.forEach((s) => {
             s.surfaceType = SurfaceType.GROUND
@@ -177,6 +180,15 @@ export class BuildingEntity extends AnimEntity implements Selectable {
         this.crystalsInUse = 0
         this.surfaces.forEach((s) => s.setHasPower(false, false))
         this.changeActivity()
+    }
+
+    get surfaces(): Surface[] {
+        const result = []
+        if (this.primarySurface) result.push(this.primarySurface)
+        if (this.secondarySurface) result.push(this.secondarySurface)
+        if (this.primaryPathSurface) result.push(this.primaryPathSurface)
+        if (this.secondaryPathSurface) result.push(this.secondaryPathSurface)
+        return result
     }
 
 }

@@ -43,11 +43,10 @@ export class WorldManager {
         EventBus.registerEventListener(EventKey.SPAWN_DYNAMITE, (event: SpawnDynamiteEvent) => {
             const targetBuilding = GameState.getClosestBuildingByType(event.surface.getCenterWorld(), Building.TOOLSTATION)
             if (!targetBuilding) throw 'Could not find toolstation to spawn dynamite'
-            const pos = targetBuilding.getDropPosition()
             const dynamite = new Dynamite()
             dynamite.targetSurface = event.surface
             dynamite.worldMgr = this
-            dynamite.group.position.copy(pos)
+            dynamite.group.position.copy(targetBuilding.getDropPosition())
             this.sceneManager.scene.add(dynamite.group)
             EventBus.publishEvent(new JobCreateEvent(new DynamiteJob(event.surface, dynamite)))
         })
