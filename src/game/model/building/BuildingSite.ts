@@ -1,8 +1,7 @@
-import { Vector2, Vector3 } from 'three'
+import { Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
-import { EntityAddedEvent, JobCreateEvent } from '../../../event/WorldEvents'
+import { JobCreateEvent } from '../../../event/WorldEvents'
 import { BarrierActivity } from '../activities/BarrierActivity'
-import { BuildingActivity } from '../activities/BuildingActivity'
 import { Barrier } from '../collect/Barrier'
 import { CollectableEntity } from '../collect/CollectableEntity'
 import { Crystal } from '../collect/Crystal'
@@ -81,18 +80,8 @@ export class BuildingSite {
             this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: Ore) => {
                 item.removeFromScene()
             })
-            const entity = this.building
-            entity.worldMgr = this.primarySurface.terrain.worldMgr
-            entity.changeActivity(BuildingActivity.Teleport, () => {
-                entity.createPickSphere()
-                GameState.buildings.push(entity)
-                entity.turnOnPower()
-                EventBus.publishEvent(new EntityAddedEvent(entity))
-            })
-            entity.group.position.copy(entity.worldMgr.getFloorPosition(this.primarySurface.getCenterWorld2D()))
-            entity.group.rotateOnAxis(new Vector3(0, 1, 0), -this.heading + Math.PI / 2)
-            entity.group.visible = entity.worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered
-            entity.worldMgr.sceneManager.scene.add(entity.group)
+            const world = this.primarySurface.getCenterWorld2D()
+            this.building.addToScene(this.primarySurface.terrain.worldMgr, world.x, world.y, this.heading + Math.PI / 2, false)
         }
     }
 

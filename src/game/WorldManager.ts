@@ -74,7 +74,7 @@ export class WorldManager {
 
         // load in non-space objects next
         const objectListConf = ResourceManager.getResource(levelConf.oListFile)
-        ObjectListLoader.loadObjectList(this, objectListConf)
+        ObjectListLoader.loadObjectList(this, objectListConf, levelConf.disableStartTeleport)
 
         // load nerp script
         this.nerpRunner = NerpParser.parse(ResourceManager.getResource(levelConf.nerpFile))

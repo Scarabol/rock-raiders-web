@@ -26,8 +26,8 @@ export class LevelEntryCfg extends BaseConfig {
     recallOLObjects: boolean = false
     generateSpiders: boolean = false
     video: string = ''
-    disableEndTeleport: any = ''
-    disableStartTeleport: any = ''
+    disableEndTeleport: boolean = false
+    disableStartTeleport: boolean = false
     emergeTimeOut: any = ''
     boulderAnimation: any = ''
     noMultiSelect: any = ''

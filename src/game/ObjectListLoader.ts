@@ -14,9 +14,7 @@ import { TeleportPad } from './model/building/entities/TeleportPad'
 import { Toolstation } from './model/building/entities/Toolstation'
 import { Upgrade } from './model/building/entities/Upgrade'
 import { Crystal } from './model/collect/Crystal'
-import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
-import { SurfaceType } from './model/map/SurfaceType'
 import { Bat } from './model/monster/Bat'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
@@ -25,7 +23,7 @@ import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
 
-    static loadObjectList(worldMgr: WorldManager, objectListConf) {
+    static loadObjectList(worldMgr: WorldManager, objectListConf, disableStartTeleport: boolean) {
         Object.values(objectListConf).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
@@ -58,46 +56,7 @@ export class ObjectListLoader {
                 worldMgr.sceneManager.scene.add(raider.group)
             } else if (buildingType) {
                 const entity = this.createBuildingByName(buildingType)
-                entity.worldMgr = worldMgr
-                entity.changeActivity()
-                entity.createPickSphere()
-                entity.group.position.copy(worldMgr.getFloorPosition(new Vector2(worldX, worldZ)))
-                entity.group.rotateOnAxis(new Vector3(0, 1, 0), -radHeading - Math.PI)
-                entity.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position).discovered
-                if (entity.group.visible) {
-                    GameState.buildings.push(entity)
-                    EventBus.publishEvent(new EntityAddedEvent(entity))
-                } else {
-                    GameState.buildingsUndiscovered.push(entity)
-                }
-                // TODO rotate building with normal vector of surface
-                worldMgr.sceneManager.scene.add(entity.group)
-                const primaryPathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(entity.group.position)
-                primaryPathSurface.setBuilding(entity)
-                primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
-                primaryPathSurface.updateTexture()
-                entity.primarySurface = primaryPathSurface
-                if (entity.secondaryBuildingPart) {
-                    const secondaryOffset = new Vector3(TILESIZE * entity.secondaryBuildingPart.x, 0, TILESIZE * entity.secondaryBuildingPart.y)
-                        .applyAxisAngle(new Vector3(0, 1, 0), -radHeading).add(entity.group.position)
-                    const secondarySurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(secondaryOffset)
-                    secondarySurface.setBuilding(entity)
-                    secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
-                    secondarySurface.updateTexture()
-                    entity.secondarySurface = secondarySurface
-                }
-                if (entity.hasPrimaryPowerPath) {
-                    const pathOffset = new Vector3(0, 0, -TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading)
-                    pathOffset.add(entity.group.position)
-                    const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
-                    if (entity.entityType === EntityType.GEODOME) pathSurface.building = entity
-                    pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
-                    pathSurface.updateTexture()
-                    entity.primaryPathSurface = pathSurface
-                }
-                if (entity.entityType === EntityType.POWER_STATION || entity.surfaces.some((s) => s.neighbors.some((n) => n.hasPower))) {
-                    entity.turnOnPower()
-                }
+                entity.addToScene(worldMgr, worldX, worldZ, radHeading, disableStartTeleport)
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 worldMgr.addCollectable(new Crystal(), new Vector2(worldX, worldZ))
             } else if (lTypeName === 'SmallSpider'.toLowerCase()) {
