@@ -14,8 +14,6 @@ export enum EventKey {
 
     MATERIAL_AMOUNT_CHANGED,
 
-    SPAWN_DYNAMITE,
-
     ENTITY_ADDED,
     ENTITY_REMOVED,
 

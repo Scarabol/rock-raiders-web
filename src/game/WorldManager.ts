@@ -6,18 +6,16 @@ import { clearIntervalSafe, getRandom } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { AirLevelChanged } from '../event/LocalEvents'
-import { EntityAddedEvent, JobCreateEvent, RaiderRequested, SpawnDynamiteEvent } from '../event/WorldEvents'
+import { EntityAddedEvent, JobCreateEvent, RaiderRequested } from '../event/WorldEvents'
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { GameScreen } from '../screen/GameScreen'
 import { RaiderActivity } from './model/activities/RaiderActivity'
-import { Dynamite } from './model/collect/Dynamite'
 import { MaterialEntity } from './model/collect/MaterialEntity'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
 import { CarryJob } from './model/job/CarryJob'
 import { MoveJob } from './model/job/MoveJob'
-import { DynamiteJob } from './model/job/surface/DynamiteJob'
 import { Raider } from './model/raider/Raider'
 import { ObjectListLoader } from './ObjectListLoader'
 import { SceneManager } from './SceneManager'
@@ -38,16 +36,6 @@ export class WorldManager {
             if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
                 this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER)
             }
-        })
-        EventBus.registerEventListener(EventKey.SPAWN_DYNAMITE, (event: SpawnDynamiteEvent) => {
-            const targetBuilding = GameState.getClosestBuildingByType(event.surface.getCenterWorld(), EntityType.TOOLSTATION)
-            if (!targetBuilding) throw 'Could not find toolstation to spawn dynamite'
-            const dynamite = new Dynamite()
-            dynamite.targetSurface = event.surface
-            dynamite.worldMgr = this
-            dynamite.group.position.copy(targetBuilding.getDropPosition())
-            this.sceneManager.scene.add(dynamite.group)
-            EventBus.publishEvent(new JobCreateEvent(new DynamiteJob(event.surface, dynamite)))
         })
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => {
             GameState.discoveredCaverns++
