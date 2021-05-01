@@ -7,8 +7,8 @@ import { EntitySuperType, EntityType } from './EntityType'
 import { Job } from './job/Job'
 import { MovableEntity } from './MovableEntity'
 import { PathTarget } from './PathTarget'
-import { RaiderSkill } from './raider/RaiderSkill'
 import { RaiderTool } from './raider/RaiderTool'
+import { RaiderTraining } from './raider/RaiderTraining'
 import { Selectable, SelectionType } from './Selectable'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
@@ -74,7 +74,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     abstract hasTool(tool: RaiderTool)
 
-    abstract hasSkill(skill: RaiderSkill)
+    abstract hasTraining(training: RaiderTraining)
 
     getSelectionType(): SelectionType {
         return this.selectionType

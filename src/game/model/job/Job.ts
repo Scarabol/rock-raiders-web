@@ -1,8 +1,8 @@
 import { MaterialEntity } from '../collect/MaterialEntity'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { PathTarget } from '../PathTarget'
-import { RaiderSkill } from '../raider/RaiderSkill'
 import { RaiderTool } from '../raider/RaiderTool'
+import { RaiderTraining } from '../raider/RaiderTraining'
 import { JobState } from './JobState'
 import { JobType } from './JobType'
 import { PriorityIdentifier } from './PriorityIdentifier'
@@ -40,7 +40,7 @@ export abstract class Job {
         return null
     }
 
-    getRequiredSkill(): RaiderSkill {
+    getRequiredTraining(): RaiderTraining {
         return null
     }
 

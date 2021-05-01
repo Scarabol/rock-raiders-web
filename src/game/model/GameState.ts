@@ -18,7 +18,7 @@ import { Surface } from './map/Surface'
 import { Bat } from './monster/Bat'
 import { SmallSpider } from './monster/SmallSpider'
 import { Raider } from './raider/Raider'
-import { RaiderSkill } from './raider/RaiderSkill'
+import { RaiderTraining } from './raider/RaiderTraining'
 import { Selectable, SelectionType } from './Selectable'
 
 export enum GameResultState {
@@ -127,8 +127,8 @@ export class GameState {
         return this.buildings.some((b) => b.entityType === building && b.level >= upgrades && b.isPowered())
     }
 
-    static getTrainingSites(position: Vector3, training: RaiderSkill): BuildingEntity[] {
-        if (training === RaiderSkill.DEMOLITION) {
+    static getTrainingSites(position: Vector3, training: RaiderTraining): BuildingEntity[] {
+        if (training === RaiderTraining.DEMOLITION) {
             return this.buildings.filter((b) => {
                 return b.stats.TrainDynamite && b.stats.TrainDynamite[b.level]
             })

@@ -1,5 +1,5 @@
 import { Dynamite } from '../../collect/Dynamite'
-import { RaiderSkill } from '../../raider/RaiderSkill'
+import { RaiderTraining } from '../../raider/RaiderTraining'
 import { CarryJob } from '../CarryJob'
 
 export class CarryDynamiteJob extends CarryJob<Dynamite> {
@@ -10,8 +10,8 @@ export class CarryDynamiteJob extends CarryJob<Dynamite> {
         super(dynamite)
     }
 
-    getRequiredSkill(): RaiderSkill {
-        return RaiderSkill.DEMOLITION
+    getRequiredTraining(): RaiderTraining {
+        return RaiderTraining.DEMOLITION
     }
 
     onJobComplete() {

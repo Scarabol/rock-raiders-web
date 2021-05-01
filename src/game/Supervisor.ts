@@ -13,8 +13,8 @@ import { TrainJob } from './model/job/TrainJob'
 import { Surface } from './model/map/Surface'
 import { PathTarget } from './model/PathTarget'
 import { Raider } from './model/raider/Raider'
-import { RaiderSkill } from './model/raider/RaiderSkill'
 import { RaiderTool } from './model/raider/RaiderTool'
+import { RaiderTraining } from './model/raider/RaiderTraining'
 import { WorldManager } from './WorldManager'
 
 export class Supervisor {
@@ -60,28 +60,28 @@ export class Supervisor {
         const unemployedRaider = GameState.raiders.filter((r) => !r.job)
         availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
                 let closestRaider: Raider = null
-                let closestRaiderIndex: number = null
-                let minDistance: number = null
-                let closestToolRaider: Raider = null
-                let closestToolRaiderIndex: number = null
-                let minToolDistance: number = null
-                let closestToolstationPosition: Vector2 = null
-                let closestNeededTool: RaiderTool = null
-                let closestTrainingRaider: Raider = null
-                let closestTrainingRaiderIndex: number = null
-                let minTrainingDistance: number = null
-                let closestTrainingArea: Surface = null
-                let closestNeededTraining: RaiderSkill = null
-                unemployedRaider.forEach((raider, index) => {
-                    const requiredTool = job.getRequiredTool()
-                    const hasRequiredTool = raider.hasTool(requiredTool)
-                    const requiredSkill = job.getRequiredSkill()
-                    const hasRequiredSkill = raider.hasSkill(requiredSkill)
-                    const raiderPosition = raider.getPosition()
-                    if (hasRequiredTool && hasRequiredSkill) {
-                        const pathToJob = job.getWorkplaces().map((b) => raider.findPathToTarget(b))
-                            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
-                        if (pathToJob) {
+            let closestRaiderIndex: number = null
+            let minDistance: number = null
+            let closestToolRaider: Raider = null
+            let closestToolRaiderIndex: number = null
+            let minToolDistance: number = null
+            let closestToolstationPosition: Vector2 = null
+            let closestNeededTool: RaiderTool = null
+            let closestTrainingRaider: Raider = null
+            let closestTrainingRaiderIndex: number = null
+            let minTrainingDistance: number = null
+            let closestTrainingArea: Surface = null
+            let closestNeededTraining: RaiderTraining = null
+            unemployedRaider.forEach((raider, index) => {
+                const requiredTool = job.getRequiredTool()
+                const hasRequiredTool = raider.hasTool(requiredTool)
+                const raiderTraining = job.getRequiredTraining()
+                const hasTraining = raider.hasTraining(raiderTraining)
+                const raiderPosition = raider.getPosition()
+                if (hasRequiredTool && hasTraining) {
+                    const pathToJob = job.getWorkplaces().map((b) => raider.findPathToTarget(b))
+                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                    if (pathToJob) {
                             const dist = pathToJob.lengthSq // TODO use precalculated path to job
                             if (minDistance === null || dist < minDistance) {
                                 closestRaider = raider
@@ -104,7 +104,7 @@ export class Supervisor {
                             }
                         }
                     } else {
-                        const pathToTraining = GameState.getTrainingSites(raiderPosition, requiredSkill)
+                        const pathToTraining = GameState.getTrainingSites(raiderPosition, raiderTraining)
                             .map((site) => raider.findPathToTarget(new PathTarget(site.getPosition2D())))
                             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                         if (pathToTraining) {
@@ -114,7 +114,7 @@ export class Supervisor {
                                 closestTrainingRaiderIndex = index
                                 minTrainingDistance = dist
                                 closestTrainingArea = raider.worldMgr.sceneManager.terrain.getSurfaceFromWorld2D(pathToTraining.targetPosition) // TODO use precalculated path to training
-                                closestNeededTraining = requiredSkill
+                                closestNeededTraining = raiderTraining
                             }
                         }
                     }

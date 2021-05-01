@@ -4,7 +4,7 @@ import { EntityDeselected } from '../../event/LocalEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { Surface } from '../../game/model/map/Surface'
-import { RaiderSkill } from '../../game/model/raider/RaiderSkill'
+import { RaiderTraining } from '../../game/model/raider/RaiderTraining'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
@@ -20,7 +20,7 @@ export class SelectWallPanel extends SelectBasePanel {
         itemReinforce.isDisabled = () => !(GameState.selectedSurface?.isReinforcable())
         const itemDynamite = this.addWallMenuItem('Interface_MenuItem_Dynamite', () => GameState.selectedSurface?.createDynamiteJob())
         itemDynamite.isDisabled = () => !GameState.hasBuildingWithUpgrades(EntityType.TOOLSTATION, 2) &&
-            !GameState.raiders.some((r) => r.hasSkill(RaiderSkill.DEMOLITION))
+            !GameState.raiders.some((r) => r.hasTraining(RaiderTraining.DEMOLITION))
         const itemDeselect = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig')
         itemDeselect.isDisabled = () => false
         itemDeselect.onClick = () => {

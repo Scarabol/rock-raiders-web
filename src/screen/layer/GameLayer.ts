@@ -175,7 +175,7 @@ export class GameLayer extends ScreenLayer {
     assignSurfaceJob(job: Job, surface: Surface, intersectionPoint: Vector2) {
         if (!job) return
         GameState.selectedEntities.forEach((e: FulfillerEntity) => {
-            if (e.hasTool(job.getRequiredTool()) && e.hasSkill(job.getRequiredSkill())) {
+            if (e.hasTool(job.getRequiredTool()) && e.hasTraining(job.getRequiredTraining())) {
                 e.setJob(job)
             } else if (surface.isWalkable()) {
                 e.setJob(new MoveJob(intersectionPoint))

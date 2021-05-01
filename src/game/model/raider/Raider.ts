@@ -2,7 +2,7 @@ import { MathUtils, Vector2, Vector3 } from 'three'
 import { getRandom, getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { RaiderSelected, SelectionEvent } from '../../../event/LocalEvents'
-import { EntityAddedEvent, OreFoundEvent, RaiderTrained } from '../../../event/WorldEvents'
+import { EntityAddedEvent, EntityTrained, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent, RaiderDiscoveredEvent } from '../../../event/WorldLocationEvent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BaseActivity } from '../activities/BaseActivity'
@@ -23,20 +23,20 @@ import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
 import { SelectionType } from '../Selectable'
-import { RaiderSkill } from './RaiderSkill'
 import { RaiderTool } from './RaiderTool'
+import { RaiderTraining } from './RaiderTraining'
 import degToRad = MathUtils.degToRad
 
 export class Raider extends FulfillerEntity {
 
     tools: RaiderTool[] = []
-    skills: RaiderSkill[] = []
+    trainings: RaiderTraining[] = []
     slipped: boolean = false
 
     constructor() {
         super(EntitySuperType.RAIDER, EntityType.PILOT, 'mini-figures/pilot/pilot.ae', SelectionType.RAIDER)
         this.tools = [RaiderTool.DRILL]
-        this.skills = []
+        this.trainings = []
     }
 
     get stats() {
@@ -188,9 +188,9 @@ export class Raider extends FulfillerEntity {
         } else if (this.job.type === JobType.TRAIN) {
             if (this.moveToClosestWorkplace()) {
                 this.changeActivity(RaiderActivity.Train, () => {
-                    const skill = (this.job as TrainJob).skill
-                    this.skills.push(skill)
-                    EventBus.publishEvent(new RaiderTrained(this, skill))
+                    const training = (this.job as TrainJob).training
+                    this.trainings.push(training)
+                    EventBus.publishEvent(new EntityTrained(this, training))
                     this.completeJob()
                 }, 10000) // XXX adjust training time
             }
@@ -257,8 +257,8 @@ export class Raider extends FulfillerEntity {
         return !tool || this.tools.indexOf(tool) !== -1
     }
 
-    hasSkill(skill: RaiderSkill) {
-        return !skill || this.skills.indexOf(skill) !== -1
+    hasTraining(training: RaiderTraining) {
+        return !training || this.trainings.indexOf(training) !== -1
     }
 
 }

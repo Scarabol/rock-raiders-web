@@ -3,19 +3,19 @@ import { Area } from '../../../core/Area'
 import { JOB_ACTION_RANGE, TILESIZE } from '../../../params'
 import { Surface } from '../map/Surface'
 import { PathTarget } from '../PathTarget'
-import { RaiderSkill } from '../raider/RaiderSkill'
+import { RaiderTraining } from '../raider/RaiderTraining'
 import { Job } from './Job'
 import { JobType } from './JobType'
 
 export class TrainJob extends Job {
 
     workplaces: TrainingPathTarget[]
-    skill: RaiderSkill
+    training: RaiderTraining
 
-    constructor(surface: Surface, skill: RaiderSkill) {
+    constructor(surface: Surface, training: RaiderTraining) {
         super(JobType.TRAIN)
         this.workplaces = [new TrainingPathTarget(surface)]
-        this.skill = skill
+        this.training = training
     }
 
     getWorkplaces(): TrainingPathTarget[] {
