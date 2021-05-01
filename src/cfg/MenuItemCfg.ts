@@ -11,7 +11,7 @@ export class MenuItemCfg extends BaseButtonCfg {
         super()
         if (cfgValue.length === 4) {
             [this.normalFile, this.disabledFile, this.pressedFile, this.hotkey] = cfgValue
-        } else if (cfgValue.length === 6) {
+        } else if (cfgValue.length === 6 || cfgValue.length === 7) { // XXX 7th element is boolean, but usage unknown
             let tooltip, tooltipDisabled
             [this.normalFile, this.disabledFile, this.pressedFile, tooltip, tooltipDisabled, this.hotkey] = cfgValue
             if (tooltip) {
@@ -28,6 +28,8 @@ export class MenuItemCfg extends BaseButtonCfg {
                     this.tooltipDisabled = tooltipDisabled
                 }
             }
+        } else {
+            console.error('Unexpected menu item cfg value length: ' + cfgValue.length)
         }
         this.tooltip?.replace(/_/g, ' ') // TODO refactor cfg handling
         this.tooltipDisabled?.replace(/_/g, ' ') // TODO refactor cfg handling
