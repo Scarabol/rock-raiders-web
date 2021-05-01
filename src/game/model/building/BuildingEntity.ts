@@ -4,7 +4,9 @@ import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { BuildingSelected, EntityDeselected, SelectionEvent } from '../../../event/LocalEvents'
 import { BuildingUpgraded, EntityAddedEvent, MaterialAmountChanged } from '../../../event/WorldEvents'
+import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { AnimEntity } from '../anim/AnimEntity'
@@ -76,9 +78,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     getPickSphereCenter(): Vector3 {
-        const pickSphereCenter = this.getPosition()
-        pickSphereCenter.y += this.stats.PickSphere / 4
-        return pickSphereCenter
+        return new Vector3(0, this.stats.PickSphere / 4, 0)
     }
 
     getDropPosition2D(): Vector2 {
@@ -188,6 +188,53 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         if (this.primaryPathSurface) result.push(this.primaryPathSurface)
         if (this.secondaryPathSurface) result.push(this.secondaryPathSurface)
         return result
+    }
+
+    addToScene(worldMgr: WorldManager, worldX: number, worldZ: number, radHeading: number, disableTeleportIn: boolean) {
+        this.worldMgr = worldMgr
+        this.group.position.copy(worldMgr.getFloorPosition(new Vector2(worldX, worldZ)))
+        this.group.rotateOnAxis(new Vector3(0, 1, 0), -radHeading - Math.PI) // TODO rotate building with normal vector of surface too
+        this.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).discovered
+        worldMgr.sceneManager.scene.add(this.group)
+        this.createPickSphere()
+        const primaryPathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position)
+        primaryPathSurface.setBuilding(this)
+        primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
+        primaryPathSurface.updateTexture()
+        this.primarySurface = primaryPathSurface
+        if (this.secondaryBuildingPart) {
+            const secondaryOffset = new Vector3(TILESIZE * this.secondaryBuildingPart.x, 0, TILESIZE * this.secondaryBuildingPart.y)
+                .applyAxisAngle(new Vector3(0, 1, 0), -radHeading).add(this.group.position)
+            const secondarySurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(secondaryOffset)
+            secondarySurface.setBuilding(this)
+            secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
+            secondarySurface.updateTexture()
+            this.secondarySurface = secondarySurface
+        }
+        if (this.hasPrimaryPowerPath) {
+            const pathOffset = new Vector3(0, 0, -TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading)
+            pathOffset.add(this.group.position)
+            const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
+            if (this.entityType === EntityType.GEODOME) pathSurface.building = this
+            pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
+            pathSurface.updateTexture()
+            this.primaryPathSurface = pathSurface
+        }
+        if (this.group.visible && !disableTeleportIn) {
+            this.changeActivity(BuildingActivity.Teleport, () => this.onAddToScene())
+        } else {
+            GameState.buildingsUndiscovered.push(this)
+            this.onAddToScene()
+        }
+    }
+
+    onAddToScene() {
+        this.changeActivity()
+        GameState.buildings.push(this)
+        EventBus.publishEvent(new EntityAddedEvent(this))
+        if (this.entityType === EntityType.POWER_STATION || this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower))) {
+            this.turnOnPower()
+        }
     }
 
 }
