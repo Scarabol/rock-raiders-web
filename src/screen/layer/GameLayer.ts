@@ -46,11 +46,8 @@ export class GameLayer extends ScreenLayer {
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             const intersectionPoint = this.getTerrainPositionFromEvent(event)
             if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint)
-            if (buildMarker.updateAllMarker(this.worldMgr.sceneManager.terrain, intersectionPoint)) {
-                buildMarker.resetColor()
-            } else {
-                buildMarker.markAsInvalid()
-            }
+            buildMarker.update(this.worldMgr.sceneManager.terrain, intersectionPoint)
+            this.updateCursor(event)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 if (GameState.buildModeSelection && buildMarker.lastCheck) {

@@ -14,6 +14,7 @@ export class BuildPlacementMarker {
     static readonly waterMarkerColor: number = 0x000050
 
     group: Group = new Group()
+    markers: BuildPlacementMarkerMesh[] = []
     buildingMarkerPrimary: BuildPlacementMarkerMesh = null
     buildingMarkerSecondary: BuildPlacementMarkerMesh = null
     powerPathMarkerPrimary: BuildPlacementMarkerMesh = null
@@ -34,19 +35,29 @@ export class BuildPlacementMarker {
         this.powerPathMarkerPrimary = new BuildPlacementMarkerMesh(BuildPlacementMarker.pathMarkerColor)
         this.powerPathMarkerSecondary = new BuildPlacementMarkerMesh(BuildPlacementMarker.pathMarkerColor)
         this.waterPathMarker = new BuildPlacementMarkerMesh(BuildPlacementMarker.waterMarkerColor)
-        this.group.add(this.buildingMarkerPrimary)
-        this.group.add(this.buildingMarkerSecondary)
-        this.group.add(this.powerPathMarkerPrimary)
-        this.group.add(this.powerPathMarkerSecondary)
-        this.group.add(this.waterPathMarker)
+        this.addMarker(this.buildingMarkerPrimary)
+        this.addMarker(this.buildingMarkerSecondary)
+        this.addMarker(this.powerPathMarkerPrimary)
+        this.addMarker(this.powerPathMarkerSecondary)
+        this.addMarker(this.waterPathMarker)
     }
 
-    updateAllMarker(terrain: Terrain, position: Vector2 = null): boolean {
+    private addMarker(marker: BuildPlacementMarkerMesh) {
+        this.group.add(marker)
+        this.markers.push(marker)
+    }
+
+    update(terrain: Terrain, position: Vector2) {
         if (!position || !GameState.buildModeSelection) {
             this.hideAllMarker()
-            return false
+        } else {
+            position.multiplyScalar(1 / TILESIZE)
+            const isValid = this.updateAllMarker(terrain, position)
+            this.markers.forEach((c) => c.markAsValid(isValid))
         }
-        position.multiplyScalar(1 / TILESIZE)
+    }
+
+    private updateAllMarker(terrain: Terrain, position: Vector2 = null): boolean {
         // TODO use surface height offsets, refactor terrain map/data handling before
         const buildMode = GameState.buildModeSelection
         this.buildingMarkerPrimary.visible = true
@@ -77,20 +88,8 @@ export class BuildPlacementMarker {
     }
 
     hideAllMarker() {
-        this.buildingMarkerPrimary.visible = false
-        this.buildingMarkerSecondary.visible = false
-        this.powerPathMarkerPrimary.visible = false
-        this.powerPathMarkerSecondary.visible = false
-        this.waterPathMarker.visible = false
+        this.markers.forEach((m) => m.visible = false)
         this.lastCheck = false
-    }
-
-    resetColor() {
-        this.group.children.forEach((c) => (c as BuildPlacementMarkerMesh).resetColor())
-    }
-
-    markAsInvalid() {
-        this.group.children.forEach((c) => (c as BuildPlacementMarkerMesh).markAsInvalid())
     }
 
     getBarrierLocations(): BarrierLocation[] {

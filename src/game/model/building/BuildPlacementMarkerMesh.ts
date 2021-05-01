@@ -31,12 +31,9 @@ export class BuildPlacementMarkerMesh extends Mesh {
         }
     }
 
-    resetColor() {
-        (this.material as MeshPhongMaterial).color.setHex(this.standardColor)
-    }
-
-    markAsInvalid() {
-        (this.material as MeshPhongMaterial).color.setHex(0x500000)
+    markAsValid(isValid: boolean) {
+        const color = isValid ? this.standardColor : 0x500000;
+        (this.material as MeshPhongMaterial).color.setHex(color)
     }
 
 }
