@@ -13,12 +13,10 @@ import { Ore } from '../collect/Ore'
 import { EntitySuperType, EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { GameState } from '../GameState'
-import { CarryJob } from '../job/CarryJob'
 import { GetToolJob } from '../job/GetToolJob'
 import { JobType } from '../job/JobType'
 import { ClearRubbleJob } from '../job/surface/ClearRubbleJob'
 import { DrillJob } from '../job/surface/DrillJob'
-import { DynamiteJob } from '../job/surface/DynamiteJob'
 import { TrainJob } from '../job/TrainJob'
 import { SurfaceType } from '../map/SurfaceType'
 import { TerrainPath } from '../map/TerrainPath'
@@ -83,6 +81,7 @@ export class Raider extends FulfillerEntity {
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
         const result = super.moveToClosestTarget(target)
+        this.job.setActualWorkplace(this.currentPath?.target)
         if (result === MoveState.MOVED) {
             GameState.getNearbySpiders(this).some((spider) => {
                 if (this.group.position.distanceToSquared(spider.group.position) < this.radiusSq + spider.radiusSq) {
@@ -156,33 +155,17 @@ export class Raider extends FulfillerEntity {
                     this.completeJob()
                 }, 2700)
             }
-        } else if (this.job.type === JobType.BLOW) {
-            const bj = this.job as DynamiteJob
-            if (this.carries !== bj.dynamite) {
-                this.dropItem()
-                if (this.moveToClosestWorkplace()) {
-                    this.changeActivity(RaiderActivity.Collect, () => {
-                        this.pickupItem(bj.dynamite)
-                    })
-                }
-            } else if (this.moveToClosestTarget(bj.surface.getDigPositions().map((p) => new PathTarget(p)))) {
-                this.changeActivity(RaiderActivity.Place, () => {
-                    this.completeJob()
-                })
-            }
         } else if (this.job.type === JobType.CARRY) {
-            const materialEntity = (this.job as CarryJob).item
+            const materialEntity = this.job.getCarryItem()
             if (this.carries !== materialEntity) {
                 this.dropItem()
-                if (this.moveToClosestWorkplace()) {
+                if (this.moveToClosestTarget([new PathTarget(materialEntity.getPosition2D())])) { // XXX cache item path target
                     this.changeActivity(RaiderActivity.Collect, () => {
                         this.pickupItem(materialEntity)
                     })
                 }
             } else {
-                const targetReached = this.moveToClosestTarget(materialEntity.getCarryTargets())
-                materialEntity.setTargetSite((this.currentPath?.target as CarryPathTarget)?.site)
-                if (targetReached) {
+                if (this.moveToClosestWorkplace()) {
                     const collectPathTarget = this.currentPath?.target as CarryPathTarget
                     if (collectPathTarget?.canGatherItem()) {
                         const dropAction = collectPathTarget.getDropAction()

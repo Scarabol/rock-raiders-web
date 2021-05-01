@@ -53,7 +53,7 @@ export abstract class MaterialEntity extends AnimEntity {
         super.onDiscover()
         GameState.materialsUndiscovered.remove(this)
         GameState.materials.push(this)
-        EventBus.publishEvent(new JobCreateEvent(new CarryJob(this)))
+        EventBus.publishEvent(new JobCreateEvent(this.createCarryJob()))
     }
 
     setTargetSite(site: BuildingSite) {
@@ -69,6 +69,10 @@ export abstract class MaterialEntity extends AnimEntity {
 
     getTargetBuildingTypes(): EntityType[] {
         return this.targetBuildingTypes
+    }
+
+    createCarryJob(): CarryJob<MaterialEntity> {
+        return new CarryJob(this)
     }
 
 }

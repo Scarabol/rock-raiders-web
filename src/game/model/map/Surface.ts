@@ -15,9 +15,9 @@ import { ElectricFence } from '../collect/ElectricFence'
 import { Ore } from '../collect/Ore'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
+import { CarryDynamiteJob } from '../job/surface/CarryDynamiteJob'
 import { ClearRubbleJob } from '../job/surface/ClearRubbleJob'
 import { DrillJob } from '../job/surface/DrillJob'
-import { DynamiteJob } from '../job/surface/DynamiteJob'
 import { ReinforceJob } from '../job/surface/ReinforceJob'
 import { Selectable, SelectionType } from '../Selectable'
 import { SurfaceGeometry } from './SurfaceGeometry'
@@ -39,7 +39,7 @@ export class Surface implements Selectable {
     reinforced: boolean = false
     drillJob: DrillJob = null
     reinforceJob: ReinforceJob = null
-    dynamiteJob: DynamiteJob = null
+    dynamiteJob: CarryDynamiteJob = null
     clearRubbleJob: ClearRubbleJob = null
     surfaceRotation: number = 0
     seamLevel: number = 0
@@ -148,7 +148,7 @@ export class Surface implements Selectable {
         this.updateJobColor()
     }
 
-    private static safeRemoveJob(job: DrillJob | ReinforceJob | DynamiteJob | ClearRubbleJob) {
+    private static safeRemoveJob(job: DrillJob | ReinforceJob | CarryDynamiteJob | ClearRubbleJob) {
         if (job) EventBus.publishEvent(new JobDeleteEvent(job))
         return null
     }
@@ -595,7 +595,7 @@ export class Surface implements Selectable {
         EventBus.publishEvent(new JobCreateEvent(this.reinforceJob))
     }
 
-    createDynamiteJob(): DynamiteJob {
+    createDynamiteJob(): CarryDynamiteJob {
         if (this.dynamiteJob) return this.dynamiteJob
         const targetBuilding = GameState.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
         if (!targetBuilding) throw 'Could not find toolstation to spawn dynamite'
@@ -604,7 +604,7 @@ export class Surface implements Selectable {
         dynamite.worldMgr = this.terrain.worldMgr
         dynamite.group.position.copy(targetBuilding.getDropPosition())
         dynamite.worldMgr.sceneManager.scene.add(dynamite.group)
-        this.dynamiteJob = new DynamiteJob(this, dynamite)
+        this.dynamiteJob = new CarryDynamiteJob(dynamite)
         this.updateJobColor()
         EventBus.publishEvent(new JobCreateEvent(this.dynamiteJob))
     }

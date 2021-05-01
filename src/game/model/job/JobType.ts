@@ -2,7 +2,6 @@ export enum JobType {
 
     DRILL,
     REINFORCE,
-    BLOW,
     CLEAR_RUBBLE,
     CARRY,
     MOVE,

@@ -1,3 +1,4 @@
+import { MaterialEntity } from '../collect/MaterialEntity'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { PathTarget } from '../PathTarget'
 import { RaiderSkill } from '../raider/RaiderSkill'
@@ -48,6 +49,13 @@ export abstract class Job {
     }
 
     abstract getWorkplaces(): PathTarget[];
+
+    setActualWorkplace(target: PathTarget) {
+    }
+
+    getCarryItem(): MaterialEntity {
+        return null
+    }
 
 }
 

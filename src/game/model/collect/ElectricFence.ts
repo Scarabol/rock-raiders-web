@@ -3,6 +3,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
+import { CarryFenceJob } from '../job/CarryFenceJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { CarryPathTarget } from './CarryPathTarget'
@@ -34,6 +35,10 @@ export class ElectricFence extends MaterialEntity {
                 .map((b) => new CarryPathTarget(b.getDropPosition2D(), null, b))
         }
         return this.targets
+    }
+
+    createCarryJob(): CarryFenceJob {
+        return new CarryFenceJob(this)
     }
 
 }

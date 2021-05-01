@@ -14,7 +14,6 @@ import { RaiderActivity } from './model/activities/RaiderActivity'
 import { MaterialEntity } from './model/collect/MaterialEntity'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
-import { CarryJob } from './model/job/CarryJob'
 import { MoveJob } from './model/job/MoveJob'
 import { Raider } from './model/raider/Raider'
 import { ObjectListLoader } from './ObjectListLoader'
@@ -136,7 +135,7 @@ export class WorldManager {
         this.sceneManager.scene.add(item.group)
         if (item.group.visible) {
             GameState.materials.push(item)
-            EventBus.publishEvent(new JobCreateEvent(new CarryJob(item)))
+            EventBus.publishEvent(new JobCreateEvent(item.createCarryJob()))
         } else {
             GameState.materialsUndiscovered.push(item)
         }

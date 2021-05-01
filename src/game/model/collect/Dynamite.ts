@@ -2,7 +2,9 @@ import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
+import { CarryJob } from '../job/CarryJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
+import { CarryDynamiteJob } from '../job/surface/CarryDynamiteJob'
 import { Surface } from '../map/Surface'
 import { CarryPathTarget } from './CarryPathTarget'
 import { MaterialEntity } from './MaterialEntity'
@@ -42,6 +44,10 @@ export class Dynamite extends MaterialEntity {
 
     getDefaultActivity(): AnimEntityActivity {
         return DynamiteActivity.Normal
+    }
+
+    createCarryJob(): CarryJob<Dynamite> {
+        return new CarryDynamiteJob(this)
     }
 
 }
