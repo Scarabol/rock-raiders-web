@@ -35,15 +35,11 @@ export abstract class Job {
         fulfiller.forEach((fulfiller) => fulfiller.stopJob())
     }
 
-    isQualified(fulfiller: FulfillerEntity): boolean {
-        return true
-    }
-
-    isQualifiedWithTool(fulfiller: FulfillerEntity): RaiderTool {
+    getRequiredTool(): RaiderTool {
         return null
     }
 
-    isQualifiedWithTraining(fulfiller: FulfillerEntity): RaiderSkill {
+    getRequiredSkill(): RaiderSkill {
         return null
     }
 

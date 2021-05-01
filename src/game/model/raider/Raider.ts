@@ -271,11 +271,11 @@ export class Raider extends FulfillerEntity {
     }
 
     hasTool(tool: RaiderTool) {
-        return this.tools.indexOf(tool) !== -1
+        return !tool || this.tools.indexOf(tool) !== -1
     }
 
     hasSkill(skill: RaiderSkill) {
-        return this.skills.indexOf(skill) !== -1
+        return !skill || this.skills.indexOf(skill) !== -1
     }
 
 }

@@ -1,17 +1,17 @@
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
-import { RaiderTool } from '../../raider/RaiderTool'
+import { PublicJob } from '../Job'
 import { JobType } from '../JobType'
 import { PriorityIdentifier } from '../PriorityIdentifier'
-import { SurfaceJob } from './SurfaceJob'
 
-export class ReinforceJob extends SurfaceJob {
+export class ReinforceJob extends PublicJob {
+
+    color: number = 0x60a060
+    surface: Surface
 
     constructor(surface: Surface) {
-        super(JobType.REINFORCE, surface)
-        this.color = 0x60a060
-        this.colorPriority = 1
-        this.requiredTool = RaiderTool.HAMMER
+        super(JobType.REINFORCE)
+        this.surface = surface
     }
 
     getWorkplaces(): PathTarget[] {

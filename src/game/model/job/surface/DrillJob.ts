@@ -1,17 +1,22 @@
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
+import { PublicJob } from '../Job'
 import { JobType } from '../JobType'
 import { PriorityIdentifier } from '../PriorityIdentifier'
-import { SurfaceJob } from './SurfaceJob'
 
-export class DrillJob extends SurfaceJob {
+export class DrillJob extends PublicJob {
+
+    color: number = 0xa0a0a0
+    surface: Surface
 
     constructor(surface: Surface) {
-        super(JobType.DRILL, surface)
-        this.color = 0xa0a0a0
-        this.requiredTool = RaiderTool.DRILL
+        super(JobType.DRILL)
         this.surface = surface
+    }
+
+    getRequiredTool(): RaiderTool {
+        return RaiderTool.DRILL
     }
 
     getWorkplaces(): PathTarget[] {

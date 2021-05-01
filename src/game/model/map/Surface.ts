@@ -1,7 +1,6 @@
 import { Group, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three'
 import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
-import { EventKey } from '../../../event/EventKeyEnum'
 import { SelectionEvent, SurfaceChanged, SurfaceSelectedEvent } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
@@ -11,11 +10,15 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimSubObj } from '../anim/AnimSubObj'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { Crystal } from '../collect/Crystal'
+import { Dynamite } from '../collect/Dynamite'
 import { ElectricFence } from '../collect/ElectricFence'
 import { Ore } from '../collect/Ore'
+import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
-import { JobType } from '../job/JobType'
-import { SurfaceJob } from '../job/surface/SurfaceJob'
+import { ClearRubbleJob } from '../job/surface/ClearRubbleJob'
+import { DrillJob } from '../job/surface/DrillJob'
+import { DynamiteJob } from '../job/surface/DynamiteJob'
+import { ReinforceJob } from '../job/surface/ReinforceJob'
 import { Selectable, SelectionType } from '../Selectable'
 import { SurfaceGeometry } from './SurfaceGeometry'
 import { SurfaceType } from './SurfaceType'
@@ -34,7 +37,10 @@ export class Surface implements Selectable {
     discovered: boolean = false
     selected: boolean = false
     reinforced: boolean = false
-    jobs: SurfaceJob[] = []
+    drillJob: DrillJob = null
+    reinforceJob: ReinforceJob = null
+    dynamiteJob: DynamiteJob = null
+    clearRubbleJob: ClearRubbleJob = null
     surfaceRotation: number = 0
     seamLevel: number = 0
     fallinTimeout = null
@@ -64,17 +70,6 @@ export class Surface implements Selectable {
         this.x = x
         this.y = y
         this.heightOffset = heightOffset
-        EventBus.registerEventListener(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
-            const jobType = event.job.type
-            if (jobType === JobType.DRILL || jobType === JobType.REINFORCE || jobType === JobType.BLOW || jobType === JobType.CLEAR_RUBBLE) {
-                const surfaceJob = event.job as SurfaceJob
-                if (surfaceJob.surface === this) this.jobs.push(surfaceJob)
-            }
-        })
-    }
-
-    hasJobType(type: JobType) {
-        return this.jobs.some((job) => job.type === type)
     }
 
     /**
@@ -146,10 +141,16 @@ export class Surface implements Selectable {
     }
 
     cancelJobs() {
-        const jobs = this.jobs // ensure consistency while processing
-        this.jobs = []
-        jobs.forEach((job) => EventBus.publishEvent(new JobDeleteEvent(job)))
+        this.drillJob = Surface.safeRemoveJob(this.drillJob)
+        this.reinforceJob = Surface.safeRemoveJob(this.reinforceJob)
+        this.dynamiteJob = Surface.safeRemoveJob(this.dynamiteJob)
+        this.clearRubbleJob = Surface.safeRemoveJob(this.clearRubbleJob)
         this.updateJobColor()
+    }
+
+    private static safeRemoveJob(job: DrillJob | ReinforceJob | DynamiteJob | ClearRubbleJob) {
+        if (job) EventBus.publishEvent(new JobDeleteEvent(job))
+        return null
     }
 
     reduceRubble() {
@@ -236,15 +237,7 @@ export class Surface implements Selectable {
     }
 
     cancelReinforceJobs() {
-        const otherJobs = []
-        this.jobs.forEach((job) => {
-            if (job.type === JobType.REINFORCE) {
-                EventBus.publishEvent(new JobDeleteEvent(job))
-            } else {
-                otherJobs.push(job)
-            }
-        })
-        this.jobs = otherJobs
+        this.reinforceJob = Surface.safeRemoveJob(this.reinforceJob)
         this.updateJobColor()
     }
 
@@ -380,8 +373,7 @@ export class Surface implements Selectable {
     }
 
     updateJobColor() {
-        const sortedJobs = this.jobs.sort((l, r) => -l.colorPriority + r.colorPriority)
-        const color = sortedJobs[0]?.color || 0xffffff
+        const color = this.dynamiteJob?.color || this.reinforceJob?.color || this.drillJob?.color || 0xffffff
         this.accessMaterials().forEach((mat) => mat.color.setHex(color))
     }
 
@@ -587,6 +579,41 @@ export class Surface implements Selectable {
                     !!this.terrain.getSurface(this.x + n, this.y).fence ||
                     !!this.terrain.getSurface(this.x, this.y + n).fence
             })
+    }
+
+    createDrillJob(): DrillJob {
+        if (this.drillJob) return this.drillJob
+        this.drillJob = new DrillJob(this)
+        this.updateJobColor()
+        EventBus.publishEvent(new JobCreateEvent(this.drillJob))
+    }
+
+    createReinforceJob(): ReinforceJob {
+        if (this.reinforceJob) return this.reinforceJob
+        this.reinforceJob = new ReinforceJob(this)
+        this.updateJobColor()
+        EventBus.publishEvent(new JobCreateEvent(this.reinforceJob))
+    }
+
+    createDynamiteJob(): DynamiteJob {
+        if (this.dynamiteJob) return this.dynamiteJob
+        const targetBuilding = GameState.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
+        if (!targetBuilding) throw 'Could not find toolstation to spawn dynamite'
+        const dynamite = new Dynamite()
+        dynamite.targetSurface = this
+        dynamite.worldMgr = this.terrain.worldMgr
+        dynamite.group.position.copy(targetBuilding.getDropPosition())
+        dynamite.worldMgr.sceneManager.scene.add(dynamite.group)
+        this.dynamiteJob = new DynamiteJob(this, dynamite)
+        this.updateJobColor()
+        EventBus.publishEvent(new JobCreateEvent(this.dynamiteJob))
+    }
+
+    createClearRubbleJob(): ClearRubbleJob {
+        if (this.clearRubbleJob) return this.clearRubbleJob
+        this.clearRubbleJob = new ClearRubbleJob(this)
+        this.updateJobColor()
+        EventBus.publishEvent(new JobCreateEvent(this.clearRubbleJob))
     }
 
 }

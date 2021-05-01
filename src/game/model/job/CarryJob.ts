@@ -1,7 +1,6 @@
 import { ElectricFence } from '../collect/ElectricFence'
 import { MaterialEntity } from '../collect/MaterialEntity'
 import { EntityType } from '../EntityType'
-import { FulfillerEntity } from '../FulfillerEntity'
 import { PathTarget } from '../PathTarget'
 import { PublicJob } from './Job'
 import { JobType } from './JobType'
@@ -18,10 +17,6 @@ export class CarryJob extends PublicJob {
 
     getWorkplaces(): PathTarget[] {
         return [new PathTarget(this.item.getPosition2D())]
-    }
-
-    isQualified(fulfiller: FulfillerEntity) {
-        return fulfiller.carries === null && this.item.hasTarget()
     }
 
     getPriorityIdentifier(): PriorityIdentifier {

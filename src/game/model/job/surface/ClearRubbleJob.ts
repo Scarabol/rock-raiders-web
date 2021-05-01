@@ -1,16 +1,21 @@
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
+import { PublicJob } from '../Job'
 import { JobType } from '../JobType'
 import { PriorityIdentifier } from '../PriorityIdentifier'
-import { SurfaceJob } from './SurfaceJob'
 
-export class ClearRubbleJob extends SurfaceJob {
+export class ClearRubbleJob extends PublicJob {
+
+    surface: Surface
 
     constructor(surface: Surface) {
-        super(JobType.CLEAR_RUBBLE, surface)
-        this.requiredTool = RaiderTool.SHOVEL
+        super(JobType.CLEAR_RUBBLE)
         this.surface = surface
+    }
+
+    getRequiredTool(): RaiderTool {
+        return RaiderTool.SHOVEL
     }
 
     getWorkplaces(): PathTarget[] {

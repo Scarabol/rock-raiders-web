@@ -5,16 +5,13 @@ import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { CancelBuildMode, ChangeCursor, EntityDeselected } from '../../event/LocalEvents'
-import { JobCreateEvent } from '../../event/WorldEvents'
 import { BuildingSite } from '../../game/model/building/BuildingSite'
 import { BarrierPathTarget } from '../../game/model/collect/BarrierPathTarget'
 import { EntityType } from '../../game/model/EntityType'
 import { FulfillerEntity } from '../../game/model/FulfillerEntity'
 import { GameState } from '../../game/model/GameState'
+import { Job } from '../../game/model/job/Job'
 import { MoveJob } from '../../game/model/job/MoveJob'
-import { ClearRubbleJob } from '../../game/model/job/surface/ClearRubbleJob'
-import { DrillJob } from '../../game/model/job/surface/DrillJob'
-import { SurfaceJob } from '../../game/model/job/surface/SurfaceJob'
 import { Surface } from '../../game/model/map/Surface'
 import { SurfaceType } from '../../game/model/map/SurfaceType'
 import { Raider } from '../../game/model/raider/Raider'
@@ -96,9 +93,9 @@ export class GameLayer extends ScreenLayer {
                         const surface = this.worldMgr.sceneManager.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
                         if (surface) {
                             if (surface.isDrillable()) {
-                                this.createSurfaceJob(new DrillJob(surface), surface, intersectionPoint)
+                                this.assignSurfaceJob(surface.createDrillJob(), surface, intersectionPoint)
                             } else if (surface.hasRubble()) {
-                                this.createSurfaceJob(new ClearRubbleJob(surface), surface, intersectionPoint)
+                                this.assignSurfaceJob(surface.createClearRubbleJob(), surface, intersectionPoint)
                             } else if (surface.isWalkable()) {
                                 GameState.selectedEntities.forEach((raider: Raider) => raider.setJob(new MoveJob(intersectionPoint)))
                                 if (GameState.selectedEntities.length > 0) EventBus.publishEvent(new EntityDeselected())
@@ -175,16 +172,15 @@ export class GameLayer extends ScreenLayer {
         return false
     }
 
-    createSurfaceJob(surfJob: SurfaceJob, surface: Surface, intersectionPoint: Vector2) {
+    assignSurfaceJob(job: Job, surface: Surface, intersectionPoint: Vector2) {
+        if (!job) return
         GameState.selectedEntities.forEach((e: FulfillerEntity) => {
-            if (surfJob.isQualified(e)) {
-                e.setJob(surfJob)
+            if (e.hasTool(job.getRequiredTool()) && e.hasSkill(job.getRequiredSkill())) {
+                e.setJob(job)
             } else if (surface.isWalkable()) {
                 e.setJob(new MoveJob(intersectionPoint))
             }
         })
-        EventBus.publishEvent(new JobCreateEvent(surfJob))
-        surface.updateJobColor()
         if (GameState.selectedEntities.length > 0) EventBus.publishEvent(new EntityDeselected())
     }
 
