@@ -25,7 +25,7 @@ export class Crystal extends MaterialEntity {
         (mesh.material as Material[]).forEach((mat: MeshPhongMaterial) => {
             mat.emissive = new Color(0, 8, 0) // XXX read from LWO file?
             mat.color = new Color(0, 0, 0) // XXX read from LWO file?
-            mat.opacity = 0.4 // XXX read from LWO file?
+            mat.opacity = 0.9 // XXX read from LWO file?
             mat.transparent = mat.opacity < 1
         })
         this.group.add(mesh)
