@@ -7,9 +7,7 @@ import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../
 import { BaseEntity } from './BaseEntity'
 import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
-import { Barrier } from './collect/Barrier'
 import { Crystal } from './collect/Crystal'
-import { Dynamite } from './collect/Dynamite'
 import { MaterialEntity } from './collect/MaterialEntity'
 import { Ore } from './collect/Ore'
 import { EntityType } from './EntityType'
@@ -191,9 +189,7 @@ export class GameState {
 
     static dropMaterial(type: EntityType, quantity: number): MaterialEntity[] {
         const result = []
-        if (type === EntityType.DYNAMITE) {
-            for (let c = 0; c < quantity; c++) result.push(new Dynamite())
-        } else if (type === EntityType.CRYSTAL) {
+        if (type === EntityType.CRYSTAL) {
             while (GameState.numCrystal > 0 && result.length < quantity) {
                 GameState.numCrystal--
                 result.push(new Crystal())
@@ -203,8 +199,6 @@ export class GameState {
                 GameState.numOre--
                 result.push(new Ore())
             }
-        } else if (type === EntityType.BARRIER) {
-            for (let c = 0; c < quantity; c++) result.push(new Barrier())
         } else {
             console.error('Material drop not implemented for: ' + type)
         }

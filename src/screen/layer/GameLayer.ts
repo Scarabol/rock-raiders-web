@@ -6,7 +6,7 @@ import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { CancelBuildMode, ChangeCursor, EntityDeselected } from '../../event/LocalEvents'
 import { BuildingSite } from '../../game/model/building/BuildingSite'
-import { BarrierPathTarget } from '../../game/model/collect/BarrierPathTarget'
+import { Barrier } from '../../game/model/collect/Barrier'
 import { EntityType } from '../../game/model/EntityType'
 import { FulfillerEntity } from '../../game/model/FulfillerEntity'
 import { GameState } from '../../game/model/GameState'
@@ -73,11 +73,7 @@ export class GameLayer extends ScreenLayer {
                     GameState.buildingSites.push(site)
                     const closestToolstation = GameState.getClosestBuildingByType(buildMarker.primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
                     if (closestToolstation) {
-                        closestToolstation.spawnMaterials(barrierLocations.map((t) => {
-                            const barrier = GameState.dropMaterial(EntityType.BARRIER, 1)[0]
-                            barrier.targets = [new BarrierPathTarget(t, site)]
-                            return barrier
-                        }))
+                        closestToolstation.spawnMaterials(barrierLocations.map((t) => new Barrier(t, site)))
                         closestToolstation.spawnMaterials(GameState.dropMaterial(EntityType.CRYSTAL, neededCrystals))
                         closestToolstation.spawnMaterials(GameState.dropMaterial(EntityType.ORE, neededOre))
                     }

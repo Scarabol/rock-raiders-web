@@ -13,10 +13,11 @@ export class Dynamite extends MaterialEntity {
 
     targetSurface: Surface
 
-    constructor() {
+    constructor(surface: Surface) {
         super(EntityType.DYNAMITE, 'MiscAnims/Dynamite/Dynamite.ae')
-        this.changeActivity()
+        this.targetSurface = surface
         this.priorityIdentifier = PriorityIdentifier.aiPriorityDestruction
+        this.changeActivity()
     }
 
     getCarryTargets(): CarryPathTarget[] {

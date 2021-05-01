@@ -1,15 +1,21 @@
 import { BarrierActivity } from '../activities/BarrierActivity'
+import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
+import { BarrierLocation } from './BarrierLocation'
 import { CarryPathTarget } from './CarryPathTarget'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Barrier extends MaterialEntity {
 
-    constructor() {
+    heading: number
+
+    constructor(location: BarrierLocation, site: BuildingSite) {
         super(EntityType.BARRIER, 'MiscAnims/Barrier/Barrier.ae')
+        this.heading = location.heading
         this.priorityIdentifier = PriorityIdentifier.aiPriorityConstruction
         this.changeActivity()
+        this.targets = [new CarryPathTarget(location.location, site, null)]
     }
 
     protected updateTargets(): CarryPathTarget[] {

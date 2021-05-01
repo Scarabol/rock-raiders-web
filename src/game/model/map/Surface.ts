@@ -603,8 +603,7 @@ export class Surface implements Selectable {
         if (!this.dynamiteJob) {
             const targetBuilding = GameState.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
             if (!targetBuilding) throw 'Could not find toolstation to spawn dynamite'
-            const dynamite = new Dynamite()
-            dynamite.targetSurface = this
+            const dynamite = new Dynamite(this)
             dynamite.worldMgr = this.terrain.worldMgr
             dynamite.group.position.copy(targetBuilding.getDropPosition())
             dynamite.worldMgr.sceneManager.scene.add(dynamite.group)
