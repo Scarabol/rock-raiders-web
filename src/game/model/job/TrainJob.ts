@@ -9,22 +9,22 @@ import { JobType } from './JobType'
 
 export class TrainJob extends Job {
 
-    workplaces: SurfacePathTarget[]
+    workplaces: TrainingPathTarget[]
     skill: RaiderSkill
 
     constructor(surface: Surface, skill: RaiderSkill) {
         super(JobType.TRAIN)
-        this.workplaces = [new SurfacePathTarget(surface)]
+        this.workplaces = [new TrainingPathTarget(surface)]
         this.skill = skill
     }
 
-    getWorkplaces(): SurfacePathTarget[] {
+    getWorkplaces(): TrainingPathTarget[] {
         return this.workplaces
     }
 
 }
 
-export class SurfacePathTarget extends PathTarget {
+export class TrainingPathTarget extends PathTarget {
 
     targetArea: Area
 

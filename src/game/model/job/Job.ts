@@ -14,7 +14,7 @@ export abstract class Job {
 
     protected constructor(type: JobType) {
         this.type = type
-        this.jobstate = JobState.OPEN
+        this.jobstate = JobState.INCOMPLETE
     }
 
     assign(fulfiller: FulfillerEntity) {

@@ -66,8 +66,8 @@ export class MessagePanel extends Panel {
 
     onRedraw(context: CanvasRenderingContext2D) {
         super.onRedraw(context)
-        if (GameState.airlevel > 0) {
-            const width = Math.round(236 * Math.min(1, GameState.airlevel))
+        if (GameState.airLevel > 0) {
+            const width = Math.round(236 * Math.min(1, GameState.airLevel))
             context.drawImage(this.imgAir, this.x + 85, this.y + 6, width, 8)
         }
         const textImage = this.currentMessage?.textImage

@@ -12,4 +12,9 @@ export class EatJob extends Job {
         return []
     }
 
+    onJobComplete() {
+        super.onJobComplete()
+        // TODO implement endurance, fill eat level here
+    }
+
 }

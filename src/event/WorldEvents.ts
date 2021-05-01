@@ -132,9 +132,9 @@ export class RaiderTrained extends WorldEvent {
     entity: FulfillerEntity
     skill: RaiderSkill
 
-    constructor(raider: FulfillerEntity, skill: RaiderSkill) {
+    constructor(entity: FulfillerEntity, skill: RaiderSkill) {
         super(EventKey.RAIDER_TRAINED)
-        this.entity = raider
+        this.entity = entity
         this.skill = skill
     }
 

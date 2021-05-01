@@ -14,7 +14,7 @@ export abstract class MovableEntity extends AnimEntity {
     currentPath: TerrainPath = null
     floorOffset: number = 0
 
-    constructor(superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
+    protected constructor(superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
         super(superType, entityType, aeFilename)
     }
 
@@ -33,6 +33,7 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
+        if (target.length < 1) console.warn('No targets given')
         if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.target.targetLocation))) {
             const paths = target.map((t) => this.findPathToTarget(t))
                 .sort((l, r) => l.lengthSq - r.lengthSq)

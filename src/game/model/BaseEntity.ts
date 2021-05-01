@@ -17,7 +17,9 @@ export abstract class BaseEntity {
         this.entityType = entityType
     }
 
-    abstract get stats()
+    get stats() {
+        return null
+    }
 
     getPosition() {
         return this.group.position.clone()

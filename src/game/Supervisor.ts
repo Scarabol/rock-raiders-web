@@ -52,7 +52,7 @@ export class Supervisor {
     assignJobs() {
         const availableJobs: PublicJob[] = []
         this.jobs = this.jobs.filter((j) => {
-            const result = j.jobstate === JobState.OPEN
+            const result = j.jobstate === JobState.INCOMPLETE
             if (result && j.fulfiller.length < 1) availableJobs.push(j)
             return result
         })

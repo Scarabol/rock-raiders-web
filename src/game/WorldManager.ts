@@ -194,7 +194,7 @@ export class WorldManager {
         const msToSeconds = 0.001
         const diff = sum * GameState.oxygenRate * rateMultiplier * valuePerSecond * UPDATE_OXYGEN_TIMER * msToSeconds / 10
         if (diff) {
-            GameState.airlevel = Math.min(1, Math.max(0, GameState.airlevel + diff))
+            GameState.airLevel = Math.min(1, Math.max(0, GameState.airLevel + diff))
             EventBus.publishEvent(new AirLevelChanged())
         }
     }

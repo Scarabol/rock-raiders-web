@@ -28,7 +28,7 @@ export class SmallSpider extends Monster {
 
     private static onMove(spider: SmallSpider) {
         const prevSurface = spider.currentSurface || spider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position)
-        if (spider.target && spider.moveToClosestTarget([spider.target]) === MoveState.MOVED) {
+        if (spider.target.length > 0 && spider.moveToClosestTarget(spider.target) === MoveState.MOVED) {
             const nextSurface = spider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position)
             if (prevSurface !== nextSurface) {
                 (GameState.spidersBySurface.get(prevSurface) || []).remove(spider)
@@ -42,7 +42,7 @@ export class SmallSpider extends Monster {
         } else {
             spider.changeActivity()
             spider.moveTimeout = setTimeout(() => {
-                spider.target = spider.findTarget()
+                spider.target = [spider.findTarget()]
                 SmallSpider.onMove(spider)
             }, 1000 + getRandom(9000))
         }
@@ -59,7 +59,7 @@ export class SmallSpider extends Monster {
                 return new PathTarget(new Vector2(targetX, targetZ))
             }
         }
-        console.warn('Could not find a solid target')
+        console.warn('Could not find a target')
         return null
     }
 

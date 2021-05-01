@@ -1,6 +1,6 @@
 export enum JobState {
 
-    OPEN,
+    INCOMPLETE,
     COMPLETE,
     CANCELED,
 

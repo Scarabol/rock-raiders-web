@@ -20,7 +20,7 @@ export class Crystal extends CollectableEntity {
         })
         mesh2.scale.set(1.75, 1.75, 1.75) // XXX derive from texture scale?
         this.group.add(mesh2)
-        const resource = ResourceManager.getResource('World/Shared/Crystal.lwo') // highpoly version
+        const resource = ResourceManager.getResource('World/Shared/Crystal.lwo') // high poly version
         const mesh = SceneManager.registerMesh(new LWOLoader('World/Shared/').parse(resource));
         (mesh.material as Material[]).forEach((mat: MeshPhongMaterial) => {
             mat.emissive = new Color(0, 8, 0) // XXX read from LWO file?

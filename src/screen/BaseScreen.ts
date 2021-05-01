@@ -1,14 +1,16 @@
 import { EventManager } from '../event/EventManager'
-import { CursorLayer, ScreenLayer } from './layer/ScreenLayer'
+import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../params'
+import { CursorLayer } from './layer/CursorLayer'
+import { ScreenLayer } from './layer/ScreenLayer'
 
 export class BaseScreen {
 
     gameCanvasContainer: HTMLElement
     eventMgr: EventManager
     layers: ScreenLayer[] = []
-    width: number = 800
-    height: number = 600
-    ratio: number = 800 / 600
+    width: number = SPRITE_RESOLUTION_WIDTH
+    height: number = SPRITE_RESOLUTION_HEIGHT
+    ratio: number = SPRITE_RESOLUTION_WIDTH / SPRITE_RESOLUTION_HEIGHT
     cursorLayer: CursorLayer
 
     constructor() {

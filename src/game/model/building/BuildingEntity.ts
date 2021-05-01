@@ -37,7 +37,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     crystalsInUse: number = 0
     inBeam: boolean = false
 
-    constructor(entityType: EntityType, aeFilename: string) {
+    protected constructor(entityType: EntityType, aeFilename: string) {
         super(EntitySuperType.BUILDING, entityType, aeFilename)
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}

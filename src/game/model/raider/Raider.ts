@@ -114,20 +114,9 @@ export class Raider extends FulfillerEntity {
     work() {
         if (!this.job || this.selected || this.slipped) return
         if (this.job.type === JobType.DRILL) {
-            const surfJob = this.job as DrillJob
             if (this.moveToClosestWorkplace()) {
-                let drillTimeMs = null
-                if (surfJob.surface.surfaceType === SurfaceType.HARD_ROCK) {
-                    drillTimeMs = this.stats.HardDrillTime[this.level] * 1000
-                } else if (surfJob.surface.surfaceType === SurfaceType.LOOSE_ROCK) {
-                    drillTimeMs = this.stats.LooseDrillTime[this.level] * 1000
-                } else if (surfJob.surface.surfaceType === SurfaceType.DIRT) {
-                    drillTimeMs = this.stats.SoilDrillTime[this.level] * 1000
-                } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM ||
-                    surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                    drillTimeMs = this.stats.SeamDrillTime[this.level] * 1000
-                }
-                if (drillTimeMs === 0) console.warn('According to cfg this entity cannot drill this material')
+                const surfJob = this.job as DrillJob
+                let drillTimeMs = this.getDrillTime(surfJob.surface.surfaceType)
                 const focusPoint = surfJob.surface.getCenterWorld()
                 focusPoint.y = this.group.position.y
                 this.group.lookAt(focusPoint)
@@ -152,13 +141,13 @@ export class Raider extends FulfillerEntity {
                 }, drillTimeMs)
             }
         } else if (this.job.type === JobType.CLEAR_RUBBLE) {
-            const surfJob = this.job as ClearRubbleJob
             if (this.moveToClosestWorkplace()) {
                 this.changeActivity(RaiderActivity.Clear, () => {
                     this.changeActivity()
                     this.job.onJobComplete()
                     this.jobWorkplaces = this.job.getWorkplaces()
-                    if (!surfJob.surface.hasRubble()) this.stopJob()
+                    const surface = (this.job as ClearRubbleJob).surface
+                    if (!surface.hasRubble()) this.stopJob()
                 })
             }
         } else if (this.job.type === JobType.REINFORCE) {
@@ -182,8 +171,7 @@ export class Raider extends FulfillerEntity {
                 })
             }
         } else if (this.job.type === JobType.COLLECT) {
-            const collectJob = this.job as CollectJob
-            const collectJobItem = collectJob.item
+            const collectJobItem = (this.job as CollectJob).item
             if (this.carries !== collectJobItem) {
                 this.dropItem()
                 if (this.moveToClosestWorkplace()) {
@@ -192,9 +180,9 @@ export class Raider extends FulfillerEntity {
                     })
                 }
             } else {
-                const moveResult = this.moveToClosestTarget(collectJobItem.getCarryTargets())
+                const targetReached = this.moveToClosestTarget(collectJobItem.getCarryTargets())
                 collectJobItem.setTargetSite((this.currentPath?.target as CollectPathTarget)?.site)
-                if (moveResult) {
+                if (targetReached) {
                     const collectPathTarget = this.currentPath?.target as CollectPathTarget
                     if (collectPathTarget?.canGatherItem()) {
                         const dropAction = collectPathTarget.getDropAction()
@@ -215,11 +203,11 @@ export class Raider extends FulfillerEntity {
                 })
             }
         } else if (this.job.type === JobType.TRAIN) {
-            const trainJob = this.job as TrainJob
             if (this.moveToClosestWorkplace()) {
                 this.changeActivity(RaiderActivity.Train, () => {
-                    this.skills.push(trainJob.skill)
-                    EventBus.publishEvent(new RaiderTrained(this, trainJob.skill))
+                    const skill = (this.job as TrainJob).skill
+                    this.skills.push(skill)
+                    EventBus.publishEvent(new RaiderTrained(this, skill))
                     this.completeJob()
                 }, 10000) // XXX adjust training time
             }
@@ -230,7 +218,6 @@ export class Raider extends FulfillerEntity {
             }
         } else if (this.job.type === JobType.EAT) {
             this.changeActivity(RaiderActivity.Eat, () => {
-                // TODO implement endurance fill eat level
                 this.completeJob()
             })
         } else if (this.job.type === JobType.COMPLETE_POWER_PATH) {
@@ -240,6 +227,23 @@ export class Raider extends FulfillerEntity {
                 })
             }
         }
+    }
+
+    private getDrillTime(surfaceType: SurfaceType) {
+        let drillTimeMs = null
+        if (surfaceType === SurfaceType.HARD_ROCK) {
+            drillTimeMs = this.stats.HardDrillTime[this.level] * 1000
+        } else if (surfaceType === SurfaceType.LOOSE_ROCK) {
+            drillTimeMs = this.stats.LooseDrillTime[this.level] * 1000
+        } else if (surfaceType === SurfaceType.DIRT) {
+            drillTimeMs = this.stats.SoilDrillTime[this.level] * 1000
+        } else if (surfaceType === SurfaceType.ORE_SEAM ||
+            surfaceType === SurfaceType.CRYSTAL_SEAM) {
+            drillTimeMs = this.stats.SeamDrillTime[this.level] * 1000
+        }
+        drillTimeMs = drillTimeMs || 0
+        if (!drillTimeMs) console.warn('According to cfg this entity cannot drill this material')
+        return drillTimeMs
     }
 
     private completeJob() {

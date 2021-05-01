@@ -3,7 +3,10 @@ import { EventBus } from '../../../event/EventBus'
 import { EntityAddedEvent, JobCreateEvent } from '../../../event/WorldEvents'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
+import { Barrier } from '../collect/Barrier'
 import { CollectableEntity } from '../collect/CollectableEntity'
+import { Crystal } from '../collect/Crystal'
+import { Ore } from '../collect/Ore'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { CompletePowerPathJob } from '../job/surface/CompletePowerPathJob'
@@ -60,7 +63,7 @@ export class BuildingSite {
         if (this.complete) return
         this.complete = true
         this.neededByType.forEach((needed, neededType) => {
-            this.complete = this.complete && this.onSiteByType.getOrUpdate(neededType, () => []).length >= this.neededByType.getOrUpdate(neededType, () => 0)
+            this.complete = this.complete && this.onSiteByType.getOrUpdate(neededType, () => []).length >= needed
         })
         if (!this.complete) return
         GameState.buildingSites.remove(this)
@@ -69,13 +72,13 @@ export class BuildingSite {
             this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
             EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
         } else {
-            this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item) => {
+            this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item: Barrier) => {
                 item.changeActivity(BarrierActivity.Teleport, () => item.removeFromScene())
             })
-            this.onSiteByType.getOrUpdate(EntityType.CRYSTAL, () => []).forEach((item) => {
+            this.onSiteByType.getOrUpdate(EntityType.CRYSTAL, () => []).forEach((item: Crystal) => {
                 item.removeFromScene()
             })
-            this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item) => {
+            this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: Ore) => {
                 item.removeFromScene()
             })
             const entity = this.building

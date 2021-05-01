@@ -38,7 +38,7 @@ export class GameState {
     static numBrick: number = 0
     static usedCrystals: number = 0
     static neededCrystals: number = 0
-    static airlevel: number = 1 // airlevel in percent from 0 to 1.0
+    static airLevel: number = 1 // air level in percent from 0 to 1.0
     static selectedEntities: Selectable[] = []
     static selectionType: SelectionType = null
     static buildings: BuildingEntity[] = []
@@ -73,7 +73,7 @@ export class GameState {
         this.numBrick = 0
         this.usedCrystals = 0
         this.neededCrystals = 0
-        this.airlevel = 1
+        this.airLevel = 1
         this.selectedEntities = []
         this.selectionType = null
         this.buildings = []
@@ -206,7 +206,7 @@ export class GameState {
         } else if (type === EntityType.BARRIER) {
             for (let c = 0; c < quantity; c++) result.push(new Barrier())
         } else {
-            console.error('Material drop not yet implemented: ' + type)
+            console.error('Material drop not implemented for: ' + type)
         }
         if (result.length > 0) EventBus.publishEvent(new MaterialAmountChanged(type))
         return result
@@ -224,7 +224,7 @@ export class GameState {
         const scoreTimer = GameState.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
         const scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
         const scoreConstructions = quota.constructions ? Math.min(1, GameState.buildings.length / quota.constructions * importance.constructions) : 0
-        const scoreOxygen = GameState.airlevel * importance.oxygen
+        const scoreOxygen = GameState.airLevel * importance.oxygen
         const scoreFigures = GameState.raiders.length >= MAX_RAIDER_BASE ? importance.figures : 0
         return Math.round(scoreCrystals + scoreTimer + scoreCaverns + scoreConstructions + scoreOxygen + scoreFigures) / 100
     }

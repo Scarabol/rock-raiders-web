@@ -24,8 +24,8 @@ export class Bat extends Monster {
     }
 
     private static onMove(bat: Bat) {
-        if (!bat.target || bat.moveToClosestTarget([bat.target]) === MoveState.TARGET_REACHED) {
-            bat.target = bat.findTarget()
+        if (bat.target.length < 1 || bat.moveToClosestTarget(bat.target) === MoveState.TARGET_REACHED) {
+            bat.target = [bat.findTarget()]
         }
         bat.moveTimeout = setTimeout(() => Bat.onMove(bat), 1000 / NATIVE_FRAMERATE)
     }
@@ -40,7 +40,7 @@ export class Bat extends Monster {
                 return new PathTarget(new Vector2(targetX, targetZ))
             }
         }
-        console.warn('Could not find a solid target')
+        console.warn('Could not find a target')
         return null
     }
 

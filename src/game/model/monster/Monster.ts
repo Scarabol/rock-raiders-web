@@ -7,7 +7,7 @@ import { PathTarget } from '../PathTarget'
 export abstract class Monster extends MovableEntity {
 
     moveTimeout: NodeJS.Timeout
-    target: PathTarget = null
+    target: PathTarget[] = []
 
     protected constructor(entityType: EntityType, aeFilename: string) {
         super(EntitySuperType.MONSTER, entityType, aeFilename)

@@ -20,10 +20,6 @@ export abstract class CollectableEntity extends AnimEntity {
         this.targetBuildingTypes = [EntityType.TOOLSTATION]
     }
 
-    hasTarget(): boolean {
-        return this.updateTargets().length > 0
-    }
-
     getCarryTargets(): CollectPathTarget[] {
         return this.updateTargets()
     }
@@ -73,10 +69,6 @@ export abstract class CollectableEntity extends AnimEntity {
 
     getTargetBuildingTypes(): EntityType[] {
         return this.targetBuildingTypes
-    }
-
-    get stats() {
-        return null
     }
 
 }

@@ -17,10 +17,6 @@ export class Dynamite extends CollectableEntity {
         this.priorityIdentifier = PriorityIdentifier.aiPriorityDestruction
     }
 
-    hasTarget(): boolean {
-        return this.targetSurface && this.targetSurface.isExplodable() || GameState.hasOneBuildingOf(EntityType.TOOLSTATION)
-    }
-
     getCarryTargets(): CollectPathTarget[] {
         if (this.targetSurface && this.targetSurface.isExplodable()) {
             return this.targetSurface.getDigPositions().map((p) => new CollectPathTarget(p, null, null))

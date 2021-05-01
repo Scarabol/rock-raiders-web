@@ -20,19 +20,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Development Roadmap
 
-- BIG: Reorganize project, separate scene manager from worldMgr move threejs rendering into separate worker thread
-  communicate via messages sent from worldMgr to sceneMgr
-
-Fix barrier rotation, when placed down Fix too many barriers, for two building surfaces Fix raider move out of site
-after placing items Fix remove barriers before teleport in Fix building not powered after teleport in Fix building not
-selectable after placement
-
-Fix some icons not shown in select raider panel
-
-Adapt building placement marker to surface shape
-
-Check FIXME
-
 ### Near
 
 - Building and all training options
@@ -60,27 +47,28 @@ Check FIXME
 ### Important
 
 - make game pausable and actually pause in escape screen (also fixes elapsed game time)
-- GunStation mesh not loaded correctly missing "head" part
+- GunStation mesh not loaded correctly missing turret part
 
 ### Nice to have
 
 - Requirements tooltip for buildings/vehicles not shown
 - When scene is disposed animation interval must be canceled
 - Camera can glitch through terrain and zoom in/out infinitely
-- Scene should be rendered in its own worker (thread)
 - Teleport In animation for buildings at level start missing
+- Raider move out of construction site after placing items
 
 ### Cosmetics
 
 - No tooltips
-- Cursor does not react on targeted object
-- Loading screen does not resize with window
-- Power paths not rotated correctly to nearby buildings
+- Cursor does not (always) react on targeted object
+- Adapt building placement marker to surface shape
+- Last construction barrier remains on site
 
 ## Technical Debt
 
-- refactor terrain height handling -- introduce methode to determine terrain height, without ray intersection -- provide
-  option to determine location "on" the terrain by x and z coordinate
+- separate scene manager (handles 3d scene) and worldMgr (handles game)
+- Epic: move threejs rendering to separate worker
+- Epic: move GUI rendering to separate worker
 
 ## Development
 
