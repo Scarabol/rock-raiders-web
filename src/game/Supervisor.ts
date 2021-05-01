@@ -141,8 +141,9 @@ export class Supervisor {
                 for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                     for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
                         const surface = raider.worldMgr.sceneManager.terrain.getSurfaceOrNull(x, y)
-                        if (!surface.discovered) continue
+                        if (!(surface?.hasRubble()) || !surface?.discovered) continue
                         const clearRubbleJob = surface.createClearRubbleJob()
+                        if (!clearRubbleJob) continue
                         const requiredTool = clearRubbleJob.getRequiredTool()
                         if (raider.hasTool(requiredTool)) {
                             raider.setJob(clearRubbleJob)
