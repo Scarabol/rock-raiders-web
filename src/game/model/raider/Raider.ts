@@ -13,7 +13,7 @@ import { Ore } from '../collect/Ore'
 import { EntitySuperType, EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { GameState } from '../GameState'
-import { CollectJob } from '../job/CollectJob'
+import { CarryJob } from '../job/CarryJob'
 import { GetToolJob } from '../job/GetToolJob'
 import { JobType } from '../job/JobType'
 import { ClearRubbleJob } from '../job/surface/ClearRubbleJob'
@@ -170,8 +170,8 @@ export class Raider extends FulfillerEntity {
                     this.completeJob()
                 })
             }
-        } else if (this.job.type === JobType.COLLECT) {
-            const materialEntity = (this.job as CollectJob).item
+        } else if (this.job.type === JobType.CARRY) {
+            const materialEntity = (this.job as CarryJob).item
             if (this.carries !== materialEntity) {
                 this.dropItem()
                 if (this.moveToClosestWorkplace()) {

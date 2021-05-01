@@ -4,7 +4,7 @@ import { AnimEntity } from '../anim/AnimEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntitySuperType, EntityType } from '../EntityType'
 import { GameState } from '../GameState'
-import { CollectJob } from '../job/CollectJob'
+import { CarryJob } from '../job/CarryJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { CarryPathTarget } from './CarryPathTarget'
 
@@ -53,7 +53,7 @@ export abstract class MaterialEntity extends AnimEntity {
         super.onDiscover()
         GameState.materialsUndiscovered.remove(this)
         GameState.materials.push(this)
-        EventBus.publishEvent(new JobCreateEvent(new CollectJob(this)))
+        EventBus.publishEvent(new JobCreateEvent(new CarryJob(this)))
     }
 
     setTargetSite(site: BuildingSite) {

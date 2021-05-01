@@ -15,7 +15,7 @@ import { Dynamite } from './model/collect/Dynamite'
 import { MaterialEntity } from './model/collect/MaterialEntity'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
-import { CollectJob } from './model/job/CollectJob'
+import { CarryJob } from './model/job/CarryJob'
 import { MoveJob } from './model/job/MoveJob'
 import { DynamiteJob } from './model/job/surface/DynamiteJob'
 import { Raider } from './model/raider/Raider'
@@ -148,7 +148,7 @@ export class WorldManager {
         this.sceneManager.scene.add(item.group)
         if (item.group.visible) {
             GameState.materials.push(item)
-            EventBus.publishEvent(new JobCreateEvent(new CollectJob(item)))
+            EventBus.publishEvent(new JobCreateEvent(new CarryJob(item)))
         } else {
             GameState.materialsUndiscovered.push(item)
         }

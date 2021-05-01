@@ -7,12 +7,12 @@ import { PublicJob } from './Job'
 import { JobType } from './JobType'
 import { PriorityIdentifier } from './PriorityIdentifier'
 
-export class CollectJob extends PublicJob {
+export class CarryJob extends PublicJob {
 
     item: MaterialEntity
 
     constructor(item: MaterialEntity) {
-        super(JobType.COLLECT)
+        super(JobType.CARRY)
         this.item = item
     }
 
