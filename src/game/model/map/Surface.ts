@@ -349,7 +349,7 @@ export class Surface implements Selectable {
         )
 
         this.mesh = new Mesh(geometry, new MeshPhongMaterial({shininess: 0}))
-        this.mesh.userData = {selectable: this}
+        this.mesh.userData = {selectable: this, surface: this}
 
         this.terrain.floorGroup.add(this.mesh)
         this.terrain.floorGroup.updateWorldMatrix(true, true) // otherwise ray intersection is not working before rendering

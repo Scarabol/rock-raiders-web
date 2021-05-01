@@ -1,10 +1,10 @@
-import { Vector2 } from 'three'
+import { Raycaster, Vector2 } from 'three'
 import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
-import { CancelBuildMode, EntityDeselected } from '../../event/LocalEvents'
+import { CancelBuildMode, ChangeCursor, EntityDeselected } from '../../event/LocalEvents'
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { BuildingSite } from '../../game/model/building/BuildingSite'
 import { BarrierPathTarget } from '../../game/model/collect/BarrierPathTarget'
@@ -21,12 +21,14 @@ import { Raider } from '../../game/model/raider/Raider'
 import { SelectionType } from '../../game/model/Selectable'
 import { WorldManager } from '../../game/WorldManager'
 import { DEV_MODE } from '../../params'
+import { Cursors } from '../Cursors'
 import { ScreenLayer } from './ScreenLayer'
 
 export class GameLayer extends ScreenLayer {
 
     private worldMgr: WorldManager
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
+    private lastCursor: Cursors = Cursors.Pointer_Standard
 
     constructor() {
         super(false, false)
@@ -35,6 +37,12 @@ export class GameLayer extends ScreenLayer {
     reset() {
         super.reset()
         this.rightDown = {x: 0, y: 0}
+        this.lastCursor = Cursors.Pointer_Standard
+    }
+
+    hide() {
+        super.hide()
+        EventBus.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
     }
 
     setWorldManager(worldMgr: WorldManager) {
@@ -110,6 +118,43 @@ export class GameLayer extends ScreenLayer {
         }
         this.canvas.dispatchEvent(new PointerEvent(event.type, event))
         return true
+    }
+
+    updateCursor(event) {
+        const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
+        const rx = (cx / this.canvas.width) * 2 - 1
+        const ry = -(cy / this.canvas.height) * 2 + 1
+        const raycaster = new Raycaster()
+        raycaster.setFromCamera({x: rx, y: ry}, this.worldMgr.sceneManager.camera)
+        const cursor = this.determineCursor(raycaster)
+        if (cursor !== this.lastCursor) {
+            this.lastCursor = cursor
+            EventBus.publishEvent(new ChangeCursor(cursor))
+        }
+    }
+
+    determineCursor(raycaster: Raycaster): Cursors {
+        let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere))
+        if (intersects.length > 0) {
+            return Cursors.Pointer_Selected
+        } else {
+            let intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere))
+            if (intersects.length > 0) {
+                return Cursors.Pointer_Selected
+            } else {
+                intersects = raycaster.intersectObjects(this.worldMgr.sceneManager.terrain.floorGroup.children)
+                if (intersects.length > 0) {
+                    const userData = intersects[0].object.userData
+                    if (userData && userData.hasOwnProperty('surface')) {
+                        const surface = userData['surface'] as Surface
+                        if (surface) {
+                            return surface.surfaceType.cursor
+                        }
+                    }
+                }
+            }
+        }
+        return Cursors.Pointer_Standard
     }
 
     handleKeyEvent(event: GameKeyboardEvent): boolean {

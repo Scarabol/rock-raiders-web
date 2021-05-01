@@ -1,6 +1,7 @@
 import { BuildingEntity } from '../game/model/building/BuildingEntity'
 import { Surface } from '../game/model/map/Surface'
 import { Raider } from '../game/model/raider/Raider'
+import { Cursors } from '../screen/Cursors'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
@@ -85,6 +86,17 @@ export class CancelBuildMode extends LocalEvent {
 
     constructor() {
         super(EventKey.CANCEL_BUILD_MODE)
+    }
+
+}
+
+export class ChangeCursor extends LocalEvent {
+
+    cursor: Cursors
+
+    constructor(cursor: Cursors) {
+        super(EventKey.CHANGE_CURSOR)
+        this.cursor = cursor
     }
 
 }

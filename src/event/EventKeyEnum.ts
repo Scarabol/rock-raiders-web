@@ -39,5 +39,6 @@ export enum EventKey {
     SURFACE_CHANGED,
     AIR_LEVEL_CHANGED,
     CANCEL_BUILD_MODE,
+    CHANGE_CURSOR,
 
 }

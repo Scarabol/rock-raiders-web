@@ -1,14 +1,17 @@
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
+import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
+import { ChangeCursor } from '../../event/LocalEvents'
 import { Panel } from '../../gui/base/Panel'
 import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
 import { OptionsPanel } from '../../gui/overlay/OptionsPanel'
 import { PausePanel } from '../../gui/overlay/PausePanel'
 import { DEV_MODE } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { Cursors } from '../Cursors'
 import { GuiBaseLayer } from './GuiBaseLayer'
 
 export class OverlayLayer extends GuiBaseLayer {
@@ -28,6 +31,7 @@ export class OverlayLayer extends GuiBaseLayer {
     }
 
     setActivePanel(panel: Panel) {
+        EventBus.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
         this.panels.forEach(p => p !== panel && p.hide())
         panel.show()
         this.redraw()

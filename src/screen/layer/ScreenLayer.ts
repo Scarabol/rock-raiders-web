@@ -2,7 +2,6 @@ import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../../params'
-import { ResourceManager } from '../../resource/ResourceManager'
 
 export class ScreenLayer {
 
@@ -105,40 +104,6 @@ export class ScaledLayer extends ScreenLayer {
         super.resize(width, height)
         this.updateScale()
         this.context.scale(this.scaleX, this.scaleY)
-    }
-
-}
-
-export class CursorLayer extends ScaledLayer {
-
-    curUrl
-    cursorName: string = 'Aclosed'
-
-    show() {
-        super.show()
-        this.createCursor()
-    }
-
-    hide() {
-        super.hide()
-        this.canvas.style.cursor = null
-    }
-
-    createCursor() {
-        if (this.curUrl) URL.revokeObjectURL(this.curUrl)
-        const curImg = ResourceManager.getImage('Interface/Pointers/' + this.cursorName + '.bmp')
-        this.curUrl = curImg.toDataURL()
-        // Chrome limits cursor size to 32x32 anyway...
-        // const context: CanvasRenderingContext2D = createContext(curImg.width * this.scaleX(), curImg.height * this.scaleY());
-        // context.scale(this.scaleX(), this.scaleY());
-        // context.drawImage(curImg, 0, 0);
-        // this.curUrl = context.canvas.toDataURL();
-        this.canvas.style.cursor = 'url(' + this.curUrl + '), auto'
-    }
-
-    resize(width, height) {
-        super.resize(width, height)
-        if (this.isActive()) this.createCursor()
     }
 
 }
