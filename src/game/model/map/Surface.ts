@@ -66,7 +66,7 @@ export class Surface implements Selectable {
         this.heightOffset = heightOffset
         EventBus.registerEventListener(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
             const jobType = event.job.type
-            if (jobType === JobType.DRILL || jobType === JobType.REINFORCE || jobType === JobType.BLOW) {
+            if (jobType === JobType.DRILL || jobType === JobType.REINFORCE || jobType === JobType.BLOW || jobType === JobType.CLEAR_RUBBLE) {
                 const surfaceJob = event.job as SurfaceJob
                 if (surfaceJob.surface === this) this.jobs.push(surfaceJob)
             }
