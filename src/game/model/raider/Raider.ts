@@ -7,7 +7,7 @@ import { CrystalFoundEvent, RaiderDiscoveredEvent } from '../../../event/WorldLo
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BaseActivity } from '../activities/BaseActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
-import { CollectPathTarget } from '../collect/CollectPathTarget'
+import { CarryPathTarget } from '../collect/CarryPathTarget'
 import { Crystal } from '../collect/Crystal'
 import { Ore } from '../collect/Ore'
 import { EntitySuperType, EntityType } from '../EntityType'
@@ -128,10 +128,10 @@ export class Raider extends FulfillerEntity {
                             .rotateAround(new Vector2(0, 0), degToRad(-10 + getRandom(20)))
                             .add(this.getPosition2D())
                         if (surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                            const crystal = this.worldMgr.addCollectable(new Crystal(), vec)
+                            const crystal = this.worldMgr.placeMaterial(new Crystal(), vec)
                             EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
                         } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM) {
-                            this.worldMgr.addCollectable(new Ore(), vec)
+                            this.worldMgr.placeMaterial(new Ore(), vec)
                             EventBus.publishEvent(new OreFoundEvent())
                         }
                         this.changeActivity()
@@ -171,24 +171,24 @@ export class Raider extends FulfillerEntity {
                 })
             }
         } else if (this.job.type === JobType.COLLECT) {
-            const collectJobItem = (this.job as CollectJob).item
-            if (this.carries !== collectJobItem) {
+            const materialEntity = (this.job as CollectJob).item
+            if (this.carries !== materialEntity) {
                 this.dropItem()
                 if (this.moveToClosestWorkplace()) {
                     this.changeActivity(RaiderActivity.Collect, () => {
-                        this.pickupItem(collectJobItem)
+                        this.pickupItem(materialEntity)
                     })
                 }
             } else {
-                const targetReached = this.moveToClosestTarget(collectJobItem.getCarryTargets())
-                collectJobItem.setTargetSite((this.currentPath?.target as CollectPathTarget)?.site)
+                const targetReached = this.moveToClosestTarget(materialEntity.getCarryTargets())
+                materialEntity.setTargetSite((this.currentPath?.target as CarryPathTarget)?.site)
                 if (targetReached) {
-                    const collectPathTarget = this.currentPath?.target as CollectPathTarget
+                    const collectPathTarget = this.currentPath?.target as CarryPathTarget
                     if (collectPathTarget?.canGatherItem()) {
                         const dropAction = collectPathTarget.getDropAction()
                         this.changeActivity(dropAction, () => {
                             this.completeJob()
-                            collectPathTarget.gatherItem(collectJobItem)
+                            collectPathTarget.gatherItem(materialEntity)
                             // TODO move to primary path surface
                         })
                     } else {

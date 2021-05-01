@@ -114,7 +114,7 @@ export class Surface implements Selectable {
         // drop contained ores and crystals
         this.dropContainedOre(this.containedOres - 4)
         for (let c = 0; c < this.containedCrystals; c++) {
-            const crystal = this.terrain.worldMgr.addCollectable(new Crystal(), this.getRandomPosition())
+            const crystal = this.terrain.worldMgr.placeMaterial(new Crystal(), this.getRandomPosition())
             EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
         }
         // check for unsupported neighbors
@@ -135,7 +135,7 @@ export class Surface implements Selectable {
     private dropContainedOre(dropAmount: number) {
         for (let c = 0; c < dropAmount && this.containedOres > 0; c++) {
             this.containedOres--
-            this.terrain.worldMgr.addCollectable(new Ore(), this.getRandomPosition())
+            this.terrain.worldMgr.placeMaterial(new Ore(), this.getRandomPosition())
             EventBus.publishEvent(new OreFoundEvent())
         }
     }

@@ -6,13 +6,13 @@ import { EntitySuperType, EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { CollectJob } from '../job/CollectJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
-import { CollectPathTarget } from './CollectPathTarget'
+import { CarryPathTarget } from './CarryPathTarget'
 
-export abstract class CollectableEntity extends AnimEntity {
+export abstract class MaterialEntity extends AnimEntity {
 
     targetBuildingTypes: EntityType[] = []
     priorityIdentifier: PriorityIdentifier = null
-    targets: CollectPathTarget[] = []
+    targets: CarryPathTarget[] = []
     targetSite: BuildingSite = null
 
     protected constructor(entityType: EntityType, aeFilename: string = null) {
@@ -20,7 +20,7 @@ export abstract class CollectableEntity extends AnimEntity {
         this.targetBuildingTypes = [EntityType.TOOLSTATION]
     }
 
-    getCarryTargets(): CollectPathTarget[] {
+    getCarryTargets(): CarryPathTarget[] {
         return this.updateTargets()
     }
 
@@ -30,15 +30,15 @@ export abstract class CollectableEntity extends AnimEntity {
         this.updateTargets()
     }
 
-    protected updateTargets(): CollectPathTarget[] {
+    protected updateTargets(): CarryPathTarget[] {
         if (this.targets.length < 1) {
             const sites = GameState.buildingSites.filter((b) => b.needs(this.entityType))
             if (sites.length > 0) {
-                this.targets = sites.map((s) => new CollectPathTarget(s.getRandomDropPosition(), s, null))
+                this.targets = sites.map((s) => new CarryPathTarget(s.getRandomDropPosition(), s, null))
             } else {
                 const buildings = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
                 if (buildings.length > 0) {
-                    this.targets = buildings.map((b) => new CollectPathTarget(b.getDropPosition2D(), null, b))
+                    this.targets = buildings.map((b) => new CarryPathTarget(b.getDropPosition2D(), null, b))
                 }
             }
         } else if (this.targets.some((t) => t.site && t.site.complete)) {
@@ -51,8 +51,8 @@ export abstract class CollectableEntity extends AnimEntity {
 
     onDiscover() {
         super.onDiscover()
-        GameState.collectablesUndiscovered.remove(this)
-        GameState.collectables.push(this)
+        GameState.materialsUndiscovered.remove(this)
+        GameState.materials.push(this)
         EventBus.publishEvent(new JobCreateEvent(new CollectJob(this)))
     }
 

@@ -4,9 +4,9 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
-import { CollectableEntity } from './CollectableEntity'
+import { MaterialEntity } from './MaterialEntity'
 
-export class Crystal extends CollectableEntity {
+export class Crystal extends MaterialEntity {
 
     constructor() {
         super(EntityType.CRYSTAL)

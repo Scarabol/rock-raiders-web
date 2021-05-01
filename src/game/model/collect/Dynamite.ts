@@ -4,10 +4,10 @@ import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
-import { CollectableEntity } from './CollectableEntity'
-import { CollectPathTarget } from './CollectPathTarget'
+import { CarryPathTarget } from './CarryPathTarget'
+import { MaterialEntity } from './MaterialEntity'
 
-export class Dynamite extends CollectableEntity {
+export class Dynamite extends MaterialEntity {
 
     targetSurface: Surface
 
@@ -17,12 +17,12 @@ export class Dynamite extends CollectableEntity {
         this.priorityIdentifier = PriorityIdentifier.aiPriorityDestruction
     }
 
-    getCarryTargets(): CollectPathTarget[] {
+    getCarryTargets(): CarryPathTarget[] {
         if (this.targetSurface && this.targetSurface.isExplodable()) {
-            return this.targetSurface.getDigPositions().map((p) => new CollectPathTarget(p, null, null))
+            return this.targetSurface.getDigPositions().map((p) => new CarryPathTarget(p, null, null))
         } else {
             return GameState.getBuildingsByType(EntityType.TOOLSTATION).map((b) => b.getDropPosition2D())
-                .map((p) => new CollectPathTarget(p, null, null))
+                .map((p) => new CarryPathTarget(p, null, null))
         }
     }
 

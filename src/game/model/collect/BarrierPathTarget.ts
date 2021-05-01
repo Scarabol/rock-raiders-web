@@ -1,9 +1,9 @@
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { BarrierLocation } from './BarrierLocation'
-import { CollectableEntity } from './CollectableEntity'
-import { CollectPathTarget } from './CollectPathTarget'
+import { CarryPathTarget } from './CarryPathTarget'
+import { MaterialEntity } from './MaterialEntity'
 
-export class BarrierPathTarget extends CollectPathTarget {
+export class BarrierPathTarget extends CarryPathTarget {
 
     heading: number
 
@@ -12,7 +12,7 @@ export class BarrierPathTarget extends CollectPathTarget {
         this.heading = location.heading
     }
 
-    gatherItem(item: CollectableEntity) {
+    gatherItem(item: MaterialEntity) {
         item.targetSite.addItem(item)
         item.group.position.copy(item.worldMgr.getFloorPosition(this.targetLocation))
         item.group.rotation.y = this.heading

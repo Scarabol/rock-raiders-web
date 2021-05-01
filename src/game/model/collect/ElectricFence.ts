@@ -5,10 +5,10 @@ import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
-import { CollectableEntity } from './CollectableEntity'
-import { CollectPathTarget } from './CollectPathTarget'
+import { CarryPathTarget } from './CarryPathTarget'
+import { MaterialEntity } from './MaterialEntity'
 
-export class ElectricFence extends CollectableEntity {
+export class ElectricFence extends MaterialEntity {
 
     targetSurface: Surface
 
@@ -21,17 +21,17 @@ export class ElectricFence extends CollectableEntity {
         this.priorityIdentifier = PriorityIdentifier.aiPriorityConstruction
     }
 
-    protected updateTargets(): CollectPathTarget[] {
+    protected updateTargets(): CarryPathTarget[] {
         if (this.targets.length < 1) {
             if (this.targetSurface.canPlaceFence()) {
-                this.targets = [new CollectPathTarget(this.targetSurface.getCenterWorld2D(), null, null)]
+                this.targets = [new CarryPathTarget(this.targetSurface.getCenterWorld2D(), null, null)]
             } else {
                 this.targets = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
-                    .map((b) => new CollectPathTarget(b.getDropPosition2D(), null, b))
+                    .map((b) => new CarryPathTarget(b.getDropPosition2D(), null, b))
             }
         } else if (!this.targetSurface.canPlaceFence() && !this.targets[0].building) {
             this.targets = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
-                .map((b) => new CollectPathTarget(b.getDropPosition2D(), null, b))
+                .map((b) => new CarryPathTarget(b.getDropPosition2D(), null, b))
         }
         return this.targets
     }

@@ -1,5 +1,5 @@
-import { CollectableEntity } from '../collect/CollectableEntity'
 import { ElectricFence } from '../collect/ElectricFence'
+import { MaterialEntity } from '../collect/MaterialEntity'
 import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { PathTarget } from '../PathTarget'
@@ -9,9 +9,9 @@ import { PriorityIdentifier } from './PriorityIdentifier'
 
 export class CollectJob extends PublicJob {
 
-    item: CollectableEntity
+    item: MaterialEntity
 
-    constructor(item: CollectableEntity) {
+    constructor(item: MaterialEntity) {
         super(JobType.COLLECT)
         this.item = item
     }

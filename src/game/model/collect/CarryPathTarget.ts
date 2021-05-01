@@ -8,9 +8,9 @@ import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { PathTarget } from '../PathTarget'
-import { CollectableEntity } from './CollectableEntity'
+import { MaterialEntity } from './MaterialEntity'
 
-export class CollectPathTarget extends PathTarget {
+export class CarryPathTarget extends PathTarget {
 
     site: BuildingSite
     building: BuildingEntity
@@ -28,7 +28,7 @@ export class CollectPathTarget extends PathTarget {
         return true
     }
 
-    gatherItem(item: CollectableEntity) {
+    gatherItem(item: MaterialEntity) {
         if (this.site) {
             this.site.addItem(item)
         } else if (this.building) {
@@ -40,18 +40,18 @@ export class CollectPathTarget extends PathTarget {
                 this.building.changeActivity(BuildingActivity.Deposit, () => {
                     this.building.changeActivity()
                     if (this.building.carryJoint) this.building.carryJoint.remove(item.group)
-                    CollectPathTarget.addItemToStorage(item)
+                    CarryPathTarget.addItemToStorage(item)
                     // TODO dispose item
                 })
             } else {
-                CollectPathTarget.addItemToStorage(item)
+                CarryPathTarget.addItemToStorage(item)
             }
         } else {
             item.worldMgr.sceneManager.scene.add(item.group)
         }
     }
 
-    private static addItemToStorage(item: CollectableEntity) {
+    private static addItemToStorage(item: MaterialEntity) {
         switch (item.entityType) {
             case EntityType.CRYSTAL:
                 GameState.numCrystal++

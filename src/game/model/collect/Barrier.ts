@@ -1,10 +1,10 @@
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
-import { CollectableEntity } from './CollectableEntity'
-import { CollectPathTarget } from './CollectPathTarget'
+import { CarryPathTarget } from './CarryPathTarget'
+import { MaterialEntity } from './MaterialEntity'
 
-export class Barrier extends CollectableEntity {
+export class Barrier extends MaterialEntity {
 
     constructor() {
         super(EntityType.BARRIER, 'MiscAnims/Barrier/Barrier.ae')
@@ -12,7 +12,7 @@ export class Barrier extends CollectableEntity {
         this.changeActivity()
     }
 
-    protected updateTargets(): CollectPathTarget[] {
+    protected updateTargets(): CarryPathTarget[] {
         return this.targets // TODO check target site still requires barrier, otherwise choose toolstation
     }
 

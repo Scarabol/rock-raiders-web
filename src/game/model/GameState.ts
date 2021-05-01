@@ -8,9 +8,9 @@ import { BaseEntity } from './BaseEntity'
 import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
 import { Barrier } from './collect/Barrier'
-import { CollectableEntity } from './collect/CollectableEntity'
 import { Crystal } from './collect/Crystal'
 import { Dynamite } from './collect/Dynamite'
+import { MaterialEntity } from './collect/MaterialEntity'
 import { Ore } from './collect/Ore'
 import { EntityType } from './EntityType'
 import { PriorityList } from './job/PriorityList'
@@ -46,8 +46,8 @@ export class GameState {
     static raiders: Raider[] = []
     static raidersUndiscovered: Raider[] = []
     static requestedRaiders: number = 0
-    static collectables: CollectableEntity[] = []
-    static collectablesUndiscovered: CollectableEntity[] = []
+    static materials: MaterialEntity[] = []
+    static materialsUndiscovered: MaterialEntity[] = []
     static buildingSites: BuildingSite[] = []
     static spiders: SmallSpider[] = []
     static spidersBySurface: Map<Surface, SmallSpider[]> = new Map()
@@ -81,8 +81,8 @@ export class GameState {
         this.raiders = []
         this.raidersUndiscovered = []
         this.requestedRaiders = 0
-        this.collectables = []
-        this.collectablesUndiscovered = []
+        this.materials = []
+        this.materialsUndiscovered = []
         this.buildingSites = []
         this.spiders = []
         this.spidersBySurface = new Map()
@@ -174,7 +174,7 @@ export class GameState {
         const maxX = minX + TILESIZE, maxZ = minZ + TILESIZE
         this.discoverEntities(this.raidersUndiscovered, minX, maxX, minZ, maxZ)
         this.discoverEntities(this.buildingsUndiscovered, minX, maxX, minZ, maxZ)
-        this.discoverEntities(this.collectablesUndiscovered, minX, maxX, minZ, maxZ)
+        this.discoverEntities(this.materialsUndiscovered, minX, maxX, minZ, maxZ)
     }
 
     static discoverEntities(undiscovered: BaseEntity[], minX, maxX, minZ, maxZ) {
@@ -189,7 +189,7 @@ export class GameState {
         discovered.forEach((r) => undiscovered.remove(r))
     }
 
-    static dropMaterial(type: EntityType, quantity: number): CollectableEntity[] {
+    static dropMaterial(type: EntityType, quantity: number): MaterialEntity[] {
         const result = []
         if (type === EntityType.DYNAMITE) {
             for (let c = 0; c < quantity; c++) result.push(new Dynamite())

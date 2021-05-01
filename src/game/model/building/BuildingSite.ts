@@ -3,8 +3,8 @@ import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { Barrier } from '../collect/Barrier'
-import { CollectableEntity } from '../collect/CollectableEntity'
 import { Crystal } from '../collect/Crystal'
+import { MaterialEntity } from '../collect/MaterialEntity'
 import { Ore } from '../collect/Ore'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
@@ -19,8 +19,8 @@ export class BuildingSite {
     building: BuildingEntity
     heading: number = 0
     neededByType: Map<EntityType, number> = new Map()
-    assignedByType: Map<EntityType, CollectableEntity[]> = new Map()
-    onSiteByType: Map<EntityType, CollectableEntity[]> = new Map()
+    assignedByType: Map<EntityType, MaterialEntity[]> = new Map()
+    onSiteByType: Map<EntityType, MaterialEntity[]> = new Map()
     complete: boolean = false
 
     constructor(primarySurface: Surface, secondarySurface: Surface = null, building: BuildingEntity = null) {
@@ -39,15 +39,15 @@ export class BuildingSite {
         return needed > assigned
     }
 
-    assign(item: CollectableEntity) {
+    assign(item: MaterialEntity) {
         this.assignedByType.getOrUpdate(item.entityType, () => []).push(item)
     }
 
-    unAssign(item: CollectableEntity) {
+    unAssign(item: MaterialEntity) {
         this.assignedByType.getOrUpdate(item.entityType, () => []).remove(item)
     }
 
-    addItem(item: CollectableEntity) {
+    addItem(item: MaterialEntity) {
         const needed = this.neededByType.getOrUpdate(item.entityType, () => 0)
         if (this.onSiteByType.getOrUpdate(item.entityType, () => []).length < needed) {
             item.worldMgr.sceneManager.scene.add(item.group)

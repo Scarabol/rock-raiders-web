@@ -10,8 +10,8 @@ import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { AnimEntity } from '../anim/AnimEntity'
-import { CollectableEntity } from '../collect/CollectableEntity'
 import { Crystal } from '../collect/Crystal'
+import { MaterialEntity } from '../collect/MaterialEntity'
 import { Ore } from '../collect/Ore'
 import { EntitySuperType, EntityType } from '../EntityType'
 import { GameState } from '../GameState'
@@ -138,10 +138,10 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         this.crystalsInUse = 0
         this.inBeam = true
         for (let c = 0; c < this.stats.CostOre; c++) {
-            this.worldMgr.addCollectable(new Ore(), this.primarySurface.getRandomPosition())
+            this.worldMgr.placeMaterial(new Ore(), this.primarySurface.getRandomPosition())
         }
         for (let c = 0; c < this.stats.CostCrystal; c++) {
-            this.worldMgr.addCollectable(new Crystal(), this.primarySurface.getRandomPosition())
+            this.worldMgr.placeMaterial(new Crystal(), this.primarySurface.getRandomPosition())
         }
         this.surfaces.forEach((s) => {
             s.surfaceType = SurfaceType.GROUND
@@ -161,8 +161,8 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         return !this.hasMaxLevel() && (GameState.numOre >= this.upgradeCostOre || GameState.numBrick >= this.upgradeCostBrick)
     }
 
-    spawnMaterials(materials: CollectableEntity[]) {
-        materials.forEach((m) => this.worldMgr.addCollectable(m, this.getDropPosition2D()))
+    spawnMaterials(materials: MaterialEntity[]) {
+        materials.forEach((m) => this.worldMgr.placeMaterial(m, this.getDropPosition2D()))
     }
 
     turnOnPower() {

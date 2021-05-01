@@ -58,7 +58,7 @@ export class ObjectListLoader {
                 const entity = this.createBuildingByName(buildingType)
                 entity.addToScene(worldMgr, worldX, worldZ, radHeading, disableStartTeleport)
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
-                worldMgr.addCollectable(new Crystal(), new Vector2(worldX, worldZ))
+                worldMgr.placeMaterial(new Crystal(), new Vector2(worldX, worldZ))
             } else if (lTypeName === 'SmallSpider'.toLowerCase()) {
                 const spider = new SmallSpider()
                 spider.worldMgr = worldMgr

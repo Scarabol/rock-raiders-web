@@ -11,8 +11,8 @@ import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../para
 import { ResourceManager } from '../resource/ResourceManager'
 import { GameScreen } from '../screen/GameScreen'
 import { RaiderActivity } from './model/activities/RaiderActivity'
-import { CollectableEntity } from './model/collect/CollectableEntity'
 import { Dynamite } from './model/collect/Dynamite'
+import { MaterialEntity } from './model/collect/MaterialEntity'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
 import { CollectJob } from './model/job/CollectJob'
@@ -141,18 +141,18 @@ export class WorldManager {
         }
     }
 
-    addCollectable(collectable: CollectableEntity, world: Vector2) {
-        collectable.worldMgr = this
-        collectable.group.position.copy(this.getFloorPosition(world))
-        collectable.group.visible = this.sceneManager.terrain.getSurfaceFromWorld(collectable.group.position).discovered
-        this.sceneManager.scene.add(collectable.group)
-        if (collectable.group.visible) {
-            GameState.collectables.push(collectable)
-            EventBus.publishEvent(new JobCreateEvent(new CollectJob(collectable)))
+    placeMaterial(item: MaterialEntity, world: Vector2) {
+        item.worldMgr = this
+        item.group.position.copy(this.getFloorPosition(world))
+        item.group.visible = this.sceneManager.terrain.getSurfaceFromWorld(item.group.position).discovered
+        this.sceneManager.scene.add(item.group)
+        if (item.group.visible) {
+            GameState.materials.push(item)
+            EventBus.publishEvent(new JobCreateEvent(new CollectJob(item)))
         } else {
-            GameState.collectablesUndiscovered.push(collectable)
+            GameState.materialsUndiscovered.push(item)
         }
-        return collectable
+        return item
     }
 
     checkSpawnRaiders() {

@@ -2,7 +2,7 @@ import { Vector3 } from 'three'
 import { clearIntervalSafe } from '../../core/Util'
 import { SelectionEvent } from '../../event/LocalEvents'
 import { NATIVE_FRAMERATE } from '../../params'
-import { CollectableEntity } from './collect/CollectableEntity'
+import { MaterialEntity } from './collect/MaterialEntity'
 import { EntitySuperType, EntityType } from './EntityType'
 import { Job } from './job/Job'
 import { MovableEntity } from './MovableEntity'
@@ -18,7 +18,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     workInterval = null
     job: Job = null
     followUpJob: Job = null
-    carries: CollectableEntity = null
+    carries: MaterialEntity = null
     jobWorkplaces: PathTarget[] = []
 
     protected constructor(superType: EntitySuperType, entityType: EntityType, aeFilename: string, selectionType: SelectionType) {
@@ -46,7 +46,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.carries = null
     }
 
-    pickupItem(item: CollectableEntity) {
+    pickupItem(item: MaterialEntity) {
         this.carries = item
         if (this.carryJoint) this.carryJoint.add(this.carries.group)
         this.carries.group.position.set(0, 0, 0)

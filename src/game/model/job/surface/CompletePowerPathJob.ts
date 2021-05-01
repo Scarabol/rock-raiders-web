@@ -1,4 +1,4 @@
-import { CollectableEntity } from '../../collect/CollectableEntity'
+import { MaterialEntity } from '../../collect/MaterialEntity'
 import { Surface } from '../../map/Surface'
 import { SurfaceType } from '../../map/SurfaceType'
 import { PathTarget } from '../../PathTarget'
@@ -9,10 +9,10 @@ import { SurfaceJob } from './SurfaceJob'
 
 export class CompletePowerPathJob extends SurfaceJob {
 
-    placedItems: CollectableEntity[]
+    placedItems: MaterialEntity[]
     workplaces: PathTarget[]
 
-    constructor(surface: Surface, placedItems: CollectableEntity[]) {
+    constructor(surface: Surface, placedItems: MaterialEntity[]) {
         super(JobType.COMPLETE_POWER_PATH, surface)
         this.requiredTool = RaiderTool.SHOVEL
         this.surface = surface
