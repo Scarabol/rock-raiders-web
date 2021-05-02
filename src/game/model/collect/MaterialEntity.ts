@@ -75,4 +75,8 @@ export abstract class MaterialEntity extends AnimEntity {
         return new CarryJob(this)
     }
 
+    onAddToSite() {
+        this.worldMgr.sceneManager.scene.add(this.group)
+    }
+
 }

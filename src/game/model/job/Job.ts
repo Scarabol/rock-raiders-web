@@ -1,3 +1,4 @@
+import { RaiderActivity } from '../activities/RaiderActivity'
 import { MaterialEntity } from '../collect/MaterialEntity'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { PathTarget } from '../PathTarget'
@@ -44,6 +45,10 @@ export abstract class Job {
         return null
     }
 
+    isReadyToComplete(): boolean {
+        return true
+    }
+
     onJobComplete() {
         this.jobstate = JobState.COMPLETE
     }
@@ -54,6 +59,14 @@ export abstract class Job {
     }
 
     getCarryItem(): MaterialEntity {
+        return null
+    }
+
+    getWorkActivity(): RaiderActivity {
+        return null
+    }
+
+    getWorkDuration(): number {
         return null
     }
 

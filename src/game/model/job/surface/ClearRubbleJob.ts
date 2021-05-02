@@ -1,3 +1,4 @@
+import { RaiderActivity } from '../../activities/RaiderActivity'
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
@@ -24,12 +25,20 @@ export class ClearRubbleJob extends PublicJob {
     }
 
     onJobComplete() {
-        super.onJobComplete()
+        this.fulfiller.forEach((f) => f.changeActivity())
         this.surface.reduceRubble()
+        this.fulfiller.forEach((f) => f.jobWorkplaces = this.getWorkplaces())
+        if (!this.surface.hasRubble()) {
+            super.onJobComplete()
+        }
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
         return PriorityIdentifier.aiPriorityClearing
+    }
+
+    getWorkActivity(): RaiderActivity {
+        return RaiderActivity.Clear
     }
 
 }

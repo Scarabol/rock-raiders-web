@@ -2,6 +2,7 @@ import { Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { BarrierActivity } from '../activities/BarrierActivity'
+import { RaiderActivity } from '../activities/RaiderActivity'
 import { Barrier } from '../collect/Barrier'
 import { Crystal } from '../collect/Crystal'
 import { MaterialEntity } from '../collect/MaterialEntity'
@@ -50,7 +51,7 @@ export class BuildingSite {
     addItem(item: MaterialEntity) {
         const needed = this.neededByType.getOrUpdate(item.entityType, () => 0)
         if (this.onSiteByType.getOrUpdate(item.entityType, () => []).length < needed) {
-            item.worldMgr.sceneManager.scene.add(item.group)
+            item.onAddToSite()
             this.onSiteByType.getOrUpdate(item.entityType, () => []).push(item)
             this.checkComplete()
         } else {
@@ -83,6 +84,10 @@ export class BuildingSite {
             const world = this.primarySurface.getCenterWorld2D()
             this.building.addToScene(this.primarySurface.terrain.worldMgr, world.x, world.y, this.heading + Math.PI / 2, false)
         }
+    }
+
+    getDropAction(): RaiderActivity {
+        return RaiderActivity.Place
     }
 
 }

@@ -44,6 +44,7 @@ export class CarryPathTarget extends PathTarget {
                     // TODO dispose item
                 })
             } else {
+                item.removeFromScene()
                 CarryPathTarget.addItemToStorage(item)
             }
         } else {
@@ -65,11 +66,7 @@ export class CarryPathTarget extends PathTarget {
     }
 
     getDropAction(): RaiderActivity {
-        if (this.building && (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY)) {
-            return RaiderActivity.Deposit
-        } else {
-            return RaiderActivity.Place
-        }
+        return (this.building || this.site).getDropAction()
     }
 
 }

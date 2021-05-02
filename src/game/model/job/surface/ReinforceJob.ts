@@ -1,3 +1,4 @@
+import { RaiderActivity } from '../../activities/RaiderActivity'
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { PublicJob } from '../Job'
@@ -25,6 +26,14 @@ export class ReinforceJob extends PublicJob {
 
     getPriorityIdentifier(): PriorityIdentifier {
         return PriorityIdentifier.aiPriorityReinforce
+    }
+
+    getWorkActivity(): RaiderActivity {
+        return RaiderActivity.Reinforce
+    }
+
+    getWorkDuration(): number {
+        return 2700
     }
 
 }

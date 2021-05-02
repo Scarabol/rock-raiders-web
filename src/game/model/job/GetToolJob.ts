@@ -19,4 +19,9 @@ export class GetToolJob extends Job {
         return this.target
     }
 
+    onJobComplete() {
+        super.onJobComplete()
+        this.fulfiller.forEach((f) => f.addTool(this.tool))
+    }
+
 }

@@ -9,6 +9,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
+import { RaiderActivity } from '../activities/RaiderActivity'
 import { AnimEntity } from '../anim/AnimEntity'
 import { Crystal } from '../collect/Crystal'
 import { MaterialEntity } from '../collect/MaterialEntity'
@@ -235,6 +236,10 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         if (this.entityType === EntityType.POWER_STATION || this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower))) {
             this.turnOnPower()
         }
+    }
+
+    getDropAction(): RaiderActivity {
+        return RaiderActivity.Place
     }
 
 }

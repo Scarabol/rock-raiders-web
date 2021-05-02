@@ -26,4 +26,10 @@ export class Barrier extends MaterialEntity {
         return BarrierActivity.Short
     }
 
+    onAddToSite() {
+        super.onAddToSite()
+        this.group.rotation.y = this.heading
+        this.changeActivity(BarrierActivity.Expand, () => this.changeActivity(BarrierActivity.Long))
+    }
+
 }

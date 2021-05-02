@@ -7,15 +7,13 @@ import { CrystalFoundEvent, RaiderDiscoveredEvent } from '../../../event/WorldLo
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BaseActivity } from '../activities/BaseActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
-import { CarryPathTarget } from '../collect/CarryPathTarget'
 import { Crystal } from '../collect/Crystal'
 import { Ore } from '../collect/Ore'
 import { EntitySuperType, EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { GameState } from '../GameState'
-import { GetToolJob } from '../job/GetToolJob'
+import { JobState } from '../job/JobState'
 import { JobType } from '../job/JobType'
-import { ClearRubbleJob } from '../job/surface/ClearRubbleJob'
 import { DrillJob } from '../job/surface/DrillJob'
 import { SurfaceType } from '../map/SurfaceType'
 import { TerrainPath } from '../map/TerrainPath'
@@ -137,73 +135,24 @@ export class Raider extends FulfillerEntity {
                     }
                 }, drillTimeMs)
             }
-        } else if (this.job.type === JobType.CLEAR_RUBBLE) {
-            if (this.moveToClosestWorkplace()) {
-                this.changeActivity(RaiderActivity.Clear, () => {
-                    this.changeActivity()
-                    this.job.onJobComplete()
-                    this.jobWorkplaces = this.job.getWorkplaces()
-                    const surface = (this.job as ClearRubbleJob).surface
-                    if (!surface.hasRubble()) this.stopJob()
-                })
-            }
-        } else if (this.job.type === JobType.REINFORCE) {
-            if (this.moveToClosestWorkplace()) {
-                this.changeActivity(RaiderActivity.Reinforce, () => {
-                    this.completeJob()
-                }, 2700)
-            }
-        } else if (this.job.type === JobType.CARRY) {
-            const materialEntity = this.job.getCarryItem()
-            if (this.carries !== materialEntity) {
+        } else {
+            const carryItem = this.job.getCarryItem()
+            if (carryItem && this.carries !== carryItem) {
                 this.dropItem()
-                if (this.moveToClosestTarget([new PathTarget(materialEntity.getPosition2D())])) { // XXX cache item path target
+                if (this.moveToClosestTarget([new PathTarget(carryItem.getPosition2D())])) { // XXX cache item path target
                     this.changeActivity(RaiderActivity.Collect, () => {
-                        this.pickupItem(materialEntity)
+                        this.pickupItem(carryItem)
                     })
                 }
-            } else {
-                if (this.moveToClosestWorkplace()) {
-                    const collectPathTarget = this.currentPath?.target as CarryPathTarget
-                    if (collectPathTarget?.canGatherItem()) {
-                        const dropAction = collectPathTarget.getDropAction()
-                        this.changeActivity(dropAction, () => {
-                            this.completeJob()
-                            collectPathTarget.gatherItem(materialEntity)
-                            // TODO move to primary path surface
-                        })
-                    } else {
-                        this.changeActivity()
-                    }
+            } else if (this.moveToClosestWorkplace()) {
+                if (this.job.isReadyToComplete()) {
+                    const workActivity = this.job.getWorkActivity() || this.getDefaultActivity()
+                    this.changeActivity(workActivity, () => {
+                        this.completeJob()
+                    }, this.job.getWorkDuration())
+                } else {
+                    this.changeActivity()
                 }
-            }
-        } else if (this.job.type === JobType.MOVE) {
-            if (this.moveToClosestWorkplace()) {
-                this.changeActivity(this.getDefaultActivity(), () => {
-                    this.completeJob()
-                })
-            }
-        } else if (this.job.type === JobType.TRAIN) {
-            if (this.moveToClosestWorkplace()) {
-                this.changeActivity(RaiderActivity.Train, () => {
-                    this.completeJob()
-                }, 10000) // XXX adjust training time
-            }
-        } else if (this.job.type === JobType.GET_TOOL) {
-            if (this.moveToClosestWorkplace()) {
-                const tool = (this.job as GetToolJob).tool
-                this.addTool(tool)
-                this.completeJob()
-            }
-        } else if (this.job.type === JobType.EAT) {
-            this.changeActivity(RaiderActivity.Eat, () => {
-                this.completeJob()
-            })
-        } else if (this.job.type === JobType.COMPLETE_POWER_PATH) {
-            if (this.moveToClosestWorkplace()) {
-                this.changeActivity(RaiderActivity.Clear, () => {
-                    this.completeJob()
-                })
             }
         }
     }
@@ -226,8 +175,8 @@ export class Raider extends FulfillerEntity {
     }
 
     private completeJob() {
-        this.dropItem()
-        this.job.onJobComplete()
+        this.job?.onJobComplete()
+        if (this.job?.jobstate === JobState.INCOMPLETE) return
         if (this.job) this.job.unassign(this)
         this.job = this.followUpJob
         this.followUpJob = null

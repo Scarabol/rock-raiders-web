@@ -3,6 +3,7 @@ import { Area } from '../../../core/Area'
 import { EventBus } from '../../../event/EventBus'
 import { EntityTrained } from '../../../event/WorldEvents'
 import { JOB_ACTION_RANGE, TILESIZE } from '../../../params'
+import { RaiderActivity } from '../activities/RaiderActivity'
 import { Surface } from '../map/Surface'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
@@ -30,6 +31,14 @@ export class TrainJob extends Job {
             f.addTraining(this.training)
             EventBus.publishEvent(new EntityTrained(f, this.training))
         })
+    }
+
+    getWorkActivity(): RaiderActivity {
+        return RaiderActivity.Train
+    }
+
+    getWorkDuration(): number {
+        return 10000 // XXX adjust training time
     }
 
 }

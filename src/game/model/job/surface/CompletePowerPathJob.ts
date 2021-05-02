@@ -1,3 +1,4 @@
+import { RaiderActivity } from '../../activities/RaiderActivity'
 import { MaterialEntity } from '../../collect/MaterialEntity'
 import { Surface } from '../../map/Surface'
 import { SurfaceType } from '../../map/SurfaceType'
@@ -20,10 +21,6 @@ export class CompletePowerPathJob extends PublicJob {
         this.workplaces = [new PathTarget(surface.getRandomPosition())]
     }
 
-    getRequiredTool(): RaiderTool {
-        return RaiderTool.SHOVEL
-    }
-
     onJobComplete() {
         super.onJobComplete()
         this.placedItems.forEach((placed) => placed.removeFromScene())
@@ -32,12 +29,20 @@ export class CompletePowerPathJob extends PublicJob {
         this.surface.neighbors.forEach((s) => s.updateTexture())
     }
 
+    getRequiredTool(): RaiderTool {
+        return RaiderTool.SHOVEL
+    }
+
     getPriorityIdentifier(): PriorityIdentifier {
         return PriorityIdentifier.aiPriorityConstruction
     }
 
     getWorkplaces(): PathTarget[] {
         return this.workplaces
+    }
+
+    getWorkActivity(): RaiderActivity {
+        return RaiderActivity.Clear
     }
 
 }
