@@ -520,8 +520,6 @@ export class LWOLoader {
                         const lTextureName = textureFilename.toLowerCase()
                         if (lTextureName === 'miscanims/barrier/a_side.bmp' // workaround (TODO actually never add unknown textures?)
                             || lTextureName === 'miscanims/barrier/a_top.bmp'
-                            || lTextureName === 'miscanims/barrier/a_bstripes.bmp'
-                            || lTextureName === 'buildings/geo-dome/a_walkie.bmp'
                             || lTextureName === 'world/shared/teofoilreflections.jpg'
                             || lTextureName === 'buildings/barracks/wingbase3.bmp') {
                             break

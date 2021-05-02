@@ -25,6 +25,8 @@ export class ResourceManager extends ResourceCache {
             const msg: WadWorkerMessage = event.data
             if (msg.type === WorkerMessageType.ASSET) {
                 this.resourceByName.set(msg.assetName.toLowerCase(), msg.assetObj)
+                const alphaIndexMatch = msg.assetName.toLowerCase().match(/(.*a)\d\d\d(_.+)/)
+                if (alphaIndexMatch) this.resourceByName.set(alphaIndexMatch[1] + alphaIndexMatch[2], msg.assetObj)
                 this.onAssetLoaded()
             } else if (msg.type === WorkerMessageType.MSG) {
                 this.onMessage(msg.text)
