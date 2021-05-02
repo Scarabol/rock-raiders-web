@@ -1,3 +1,4 @@
+import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../../cfg/BuildingEntityStats'
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { SceneManager } from '../../../SceneManager'
@@ -9,8 +10,8 @@ export class TeleportBig extends BuildingEntity {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.TELEPORT_BIG, 'Buildings/BIGTeleport/BIGTeleport.ae')
-        this.secondaryBuildingPart = {x: 1, y: 0}
-        this.secondaryPowerPath = {x: 1, y: 1}
+        this.secondaryBuildingPart = new Vector2(1, 0)
+        this.secondaryPowerPath = new Vector2(1, 1)
     }
 
     get stats(): BuildingEntityStats {

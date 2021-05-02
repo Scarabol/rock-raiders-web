@@ -27,10 +27,10 @@ import { BuildingSite } from './BuildingSite'
 export abstract class BuildingEntity extends AnimEntity implements Selectable {
 
     blocksPathSurface: boolean = true
-    secondaryBuildingPart: { x: number, y: number } = null
-    primaryPowerPath: { x: number, y: number } = {x: 0, y: 1}
-    secondaryPowerPath: { x: number, y: number } = null
-    waterPathSurface: { x: number, y: number } = null
+    secondaryBuildingPart: Vector2 = null
+    primaryPowerPath: Vector2 = new Vector2(0, 1)
+    secondaryPowerPath: Vector2 = null
+    waterPathSurface: Vector2 = null
 
     selected: boolean
     powerSwitch: boolean = true

@@ -1,3 +1,4 @@
+import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../../cfg/BuildingEntityStats'
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { SceneManager } from '../../../SceneManager'
@@ -10,8 +11,8 @@ export class OreRefinery extends BuildingEntity {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.ORE_REFINERY, 'Buildings/OreRefinery/OreRefinery.ae')
-        this.primaryPowerPath = {x: 0, y: 2}
-        this.secondaryBuildingPart = {x: 0, y: 1}
+        this.primaryPowerPath = new Vector2(0, 2)
+        this.secondaryBuildingPart = new Vector2(0, 1)
     }
 
     get stats(): BuildingEntityStats {

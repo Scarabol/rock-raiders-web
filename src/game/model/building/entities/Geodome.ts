@@ -1,3 +1,4 @@
+import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../../cfg/BuildingEntityStats'
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { SceneManager } from '../../../SceneManager'
@@ -10,7 +11,7 @@ export class Geodome extends BuildingEntity {
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.GEODOME, 'Buildings/Geo-dome/Geo-dome.ae')
         this.primaryPowerPath = null
-        this.secondaryBuildingPart = {x: 0, y: 1}
+        this.secondaryBuildingPart = new Vector2(0, 1)
     }
 
     get stats(): BuildingEntityStats {

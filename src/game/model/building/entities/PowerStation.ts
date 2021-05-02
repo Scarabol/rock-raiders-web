@@ -1,3 +1,4 @@
+import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../../cfg/BuildingEntityStats'
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { SceneManager } from '../../../SceneManager'
@@ -10,7 +11,7 @@ export class PowerStation extends BuildingEntity {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.POWER_STATION, 'Buildings/Powerstation/Powerstation.ae')
-        this.secondaryBuildingPart = {x: -1, y: 0}
+        this.secondaryBuildingPart = new Vector2(-1, 0)
     }
 
     get stats(): BuildingEntityStats {

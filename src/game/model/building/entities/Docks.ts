@@ -1,3 +1,4 @@
+import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../../cfg/BuildingEntityStats'
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { SceneManager } from '../../../SceneManager'
@@ -9,7 +10,7 @@ export class Docks extends BuildingEntity {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.DOCKS, 'Buildings/Docks/Docks.ae')
-        this.waterPathSurface = {x: 0, y: 1}
+        this.waterPathSurface = new Vector2(0, 1)
     }
 
     get stats(): BuildingEntityStats {
