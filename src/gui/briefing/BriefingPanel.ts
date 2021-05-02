@@ -39,8 +39,8 @@ export class BriefingPanel extends Panel {
 
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
         this.imgBack = ResourceManager.getImageOrNull(objectiveBackImgCfg.filename)
-        this.relX = objectiveBackImgCfg.x
-        this.relY = objectiveBackImgCfg.y
+        this.xIn = objectiveBackImgCfg.x
+        this.yIn = objectiveBackImgCfg.y
         this.width = this.imgBack.width
         this.height = this.imgBack.height
         this.updatePosition()
