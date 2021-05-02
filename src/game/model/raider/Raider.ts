@@ -2,7 +2,7 @@ import { MathUtils, Vector2, Vector3 } from 'three'
 import { getRandom, getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { RaiderSelected, SelectionEvent } from '../../../event/LocalEvents'
-import { EntityAddedEvent, EntityTrained, OreFoundEvent } from '../../../event/WorldEvents'
+import { EntityAddedEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent, RaiderDiscoveredEvent } from '../../../event/WorldLocationEvent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BaseActivity } from '../activities/BaseActivity'
@@ -17,7 +17,6 @@ import { GetToolJob } from '../job/GetToolJob'
 import { JobType } from '../job/JobType'
 import { ClearRubbleJob } from '../job/surface/ClearRubbleJob'
 import { DrillJob } from '../job/surface/DrillJob'
-import { TrainJob } from '../job/TrainJob'
 import { SurfaceType } from '../map/SurfaceType'
 import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
@@ -29,14 +28,13 @@ import degToRad = MathUtils.degToRad
 
 export class Raider extends FulfillerEntity {
 
-    tools: RaiderTool[] = []
-    trainings: RaiderTraining[] = []
+    tools: Map<RaiderTool, boolean> = new Map()
+    trainings: Map<RaiderTraining, boolean> = new Map()
     slipped: boolean = false
 
     constructor() {
         super(EntitySuperType.RAIDER, EntityType.PILOT, 'mini-figures/pilot/pilot.ae', SelectionType.RAIDER)
-        this.tools = [RaiderTool.DRILL]
-        this.trainings = []
+        this.tools.set(RaiderTool.DRILL, true)
     }
 
     get stats() {
@@ -188,15 +186,13 @@ export class Raider extends FulfillerEntity {
         } else if (this.job.type === JobType.TRAIN) {
             if (this.moveToClosestWorkplace()) {
                 this.changeActivity(RaiderActivity.Train, () => {
-                    const training = (this.job as TrainJob).training
-                    this.trainings.push(training)
-                    EventBus.publishEvent(new EntityTrained(this, training))
                     this.completeJob()
                 }, 10000) // XXX adjust training time
             }
         } else if (this.job.type === JobType.GET_TOOL) {
             if (this.moveToClosestWorkplace()) {
-                this.tools.push((this.job as GetToolJob).tool)
+                const tool = (this.job as GetToolJob).tool
+                this.addTool(tool)
                 this.completeJob()
             }
         } else if (this.job.type === JobType.EAT) {
@@ -254,11 +250,19 @@ export class Raider extends FulfillerEntity {
     }
 
     hasTool(tool: RaiderTool) {
-        return !tool || this.tools.indexOf(tool) !== -1
+        return !tool || this.tools.has(tool)
     }
 
     hasTraining(training: RaiderTraining) {
-        return !training || this.trainings.indexOf(training) !== -1
+        return !training || this.trainings.has(training)
+    }
+
+    addTool(tool: RaiderTool) {
+        this.tools.set(tool, true)
+    }
+
+    addTraining(training: RaiderTraining) {
+        this.trainings.set(training, true)
     }
 
 }

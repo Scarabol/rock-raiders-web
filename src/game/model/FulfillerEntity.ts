@@ -89,4 +89,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     abstract getSelectionCenter(): Vector3;
 
+    abstract addTool(tool: RaiderTool)
+
+    abstract addTraining(skill: RaiderTraining)
+
 }

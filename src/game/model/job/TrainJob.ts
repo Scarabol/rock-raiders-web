@@ -1,5 +1,7 @@
 import { Vector2 } from 'three'
 import { Area } from '../../../core/Area'
+import { EventBus } from '../../../event/EventBus'
+import { EntityTrained } from '../../../event/WorldEvents'
 import { JOB_ACTION_RANGE, TILESIZE } from '../../../params'
 import { Surface } from '../map/Surface'
 import { PathTarget } from '../PathTarget'
@@ -20,6 +22,14 @@ export class TrainJob extends Job {
 
     getWorkplaces(): TrainingPathTarget[] {
         return this.workplaces
+    }
+
+    onJobComplete() {
+        super.onJobComplete()
+        this.fulfiller.forEach((f) => {
+            f.addTraining(this.training)
+            EventBus.publishEvent(new EntityTrained(f, this.training))
+        })
     }
 
 }
