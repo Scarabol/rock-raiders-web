@@ -51,7 +51,7 @@ export function clearIntervalSafe(interval: NodeJS.Timeout) {
 declare global {
 
     interface Array<T> {
-        remove(element: T): T
+        remove(element: T): void
     }
 
     interface Map<K, V> {

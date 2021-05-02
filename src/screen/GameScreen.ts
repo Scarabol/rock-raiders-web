@@ -13,7 +13,7 @@ import { SelectionLayer } from './layer/SelectionLayer'
 
 export class GameScreen extends BaseScreen {
 
-    onLevelEnd: () => void
+    onLevelEnd: () => void = () => console.log('Level aborted')
     gameLayer: GameLayer
     selectionLayer: SelectionLayer
     guiLayer: GuiMainLayer
@@ -36,7 +36,7 @@ export class GameScreen extends BaseScreen {
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.panelOptions.show()
         this.overlayLayer.panelBriefing.messagePanel = this.guiLayer.panelMessages
-        this.overlayLayer.panelPause.onAbortGame = () => this.onLevelEnd && this.onLevelEnd()
+        this.overlayLayer.panelPause.onAbortGame = () => this.onLevelEnd()
         this.overlayLayer.panelPause.onRestartGame = () => this.restartLevel()
     }
 
