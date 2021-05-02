@@ -184,7 +184,7 @@ export class NerpRunner {
      * @return {number}
      */
     getToolStoresBuilt() {
-        return GameState.getBuildingsByType(EntityType.TOOLSTATION).length
+        return GameState.buildings.count((b) => b.entityType === EntityType.TOOLSTATION)
     }
 
     /**
