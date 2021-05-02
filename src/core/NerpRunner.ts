@@ -120,6 +120,7 @@ export class NerpRunner {
      * End the level successfully and show the score screen.
      */
     setLevelCompleted() {
+        console.log('Nerp runner marks level as complete')
         this.halted = true
         GameState.resultState = GameResultState.COMPLETE
         this.onLevelComplete()
@@ -129,6 +130,7 @@ export class NerpRunner {
      * End the level as failure and show the score screen.
      */
     setLevelFail() {
+        console.log('NerpRunner marks level as failed')
         this.halted = true
         GameState.resultState = GameResultState.FAILED
         this.onLevelComplete()
@@ -221,12 +223,10 @@ export class NerpRunner {
 
     // noinspection JSUnusedLocalSymbols
     setMessage(messageNumber, arrowDisabled) {
-        if (!this.messagePermit) {
-            return
-        }
+        if (!this.messagePermit) return
+        if (messageNumber === 0) return // TODO messages start at 1
         const msg = this.messages[messageNumber]
-        // TODO show message to user
-        console.log(msg.txt)
+        console.log(msg.txt) // TODO show message to user
         // msg.snd resides in sounds/streamed/ which is currently not loaded :(
     }
 
@@ -284,6 +284,11 @@ export class NerpRunner {
     }
 
     getHiddenObjectsFound() {
+        // TODO implement this
+        return 0
+    }
+
+    getLevel1PowerStationsBuilt() {
         // TODO implement this
         return 0
     }
