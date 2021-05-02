@@ -431,7 +431,7 @@ export class LWOLoader {
                         }
                         material.opacity = 1 - transparency
                         if (this.verbose) console.log('Opacity (TRAN/VTRN): ' + material.opacity)
-                        material.transparent = material.opacity < 1
+                        material.transparent = material.transparent || material.opacity < 1
                         break
                     case SURF_VLUM:
                         const vLuminosity = view.getFloat32(subchunkOffset + SUBCHUNK_HEADER_SIZE)

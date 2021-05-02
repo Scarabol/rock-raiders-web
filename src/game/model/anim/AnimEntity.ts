@@ -122,7 +122,7 @@ export abstract class AnimEntity extends BaseEntity {
                     const matArr = Array.isArray(material) ? material : [material]
                     matArr.forEach((mat: MeshPhongMaterial) => {
                         mat.opacity = opacity
-                        mat.transparent = mat.opacity < 1
+                        mat.transparent = mat.transparent || mat.opacity < 1
                     })
                 }
             }
