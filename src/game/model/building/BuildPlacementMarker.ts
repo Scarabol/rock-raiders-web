@@ -27,6 +27,7 @@ export class BuildPlacementMarker {
     visibleSurfaces: Surface[] = []
     primarySurface: Surface = null
     secondarySurface: Surface = null
+    waterSurface: Surface = null
 
     constructor() {
         this.group.scale.set(TILESIZE, TILESIZE, TILESIZE)
@@ -79,11 +80,13 @@ export class BuildPlacementMarker {
             .filter((c) => c.visible).map((c) => terrain.getSurface(c.position.x, c.position.z))
         this.primarySurface = this.visibleSurfaces[0]
         this.secondarySurface = this.buildingMarkerSecondary.visible ? this.visibleSurfaces[1] : null
+        this.waterSurface = this.waterPathMarker.visible ? terrain.getSurface(this.waterPathMarker.position.x, this.waterPathMarker.position.z) : null
         this.lastCheck = this.visibleSurfaces.every((s) => s.surfaceType === SurfaceType.GROUND)
             && ([this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
                     .some((c) => c.visible && terrain.getSurface(c.position.x, c.position.z).neighbors
                         .some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
                 !buildMode.hasPrimaryPowerPath && this.primarySurface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH))
+            && (!this.waterPathMarker.visible || this.waterSurface.surfaceType === SurfaceType.WATER)
         return this.lastCheck
     }
 
