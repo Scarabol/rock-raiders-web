@@ -100,7 +100,7 @@ export class GameState {
     }
 
     static getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
-        return this.buildings.filter(b => b.isPowered() && buildingTypes.some(bt => b.entityType === bt))
+        return this.buildings.filter(b => !b.inBeam && b.isPowered() && buildingTypes.some(bt => b.entityType === bt))
     }
 
     static getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity {
