@@ -47,7 +47,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
-            if (event.entityType === EntityType.CRYSTAL && this.powerSwitch && this.crystalsInUse < 1) {
+            if (event.entityType === EntityType.CRYSTAL && this.powerSwitch) {
                 this.turnOnPower()
             }
         })
@@ -167,7 +167,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     turnOnPower() {
-        if (this.crystalsInUse > 0 || GameState.usedCrystals >= GameState.numCrystal) return
+        if (this.crystalsInUse > 0 || GameState.usedCrystals >= GameState.numCrystal || (this.entityType !== EntityType.POWER_STATION && !this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower)))) return
         this.crystalsInUse = 1
         GameState.usedCrystals += this.crystalsInUse
         this.surfaces.forEach((s) => s.setHasPower(true, true))
@@ -235,9 +235,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         this.inBeam = false
         this.changeActivity()
         EventBus.publishEvent(new EntityAddedEvent(this))
-        if (this.entityType === EntityType.POWER_STATION || this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower))) {
-            this.turnOnPower()
-        }
+        this.turnOnPower()
     }
 
     getDropAction(): RaiderActivity {
