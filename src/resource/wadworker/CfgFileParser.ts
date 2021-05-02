@@ -92,6 +92,10 @@ export class CfgFileParser {
                 levelConf['PreDugMap'] = levelConf['PredugMap']
                 delete levelConf['PredugMap']
             }
+            const textureSet = levelConf['TextureSet']
+            if (Array.isArray(textureSet) && Array.isArray(textureSet[1])) {
+                levelConf['TextureSet'] = textureSet[1]
+            }
         })
 
         return result['Lego*']
