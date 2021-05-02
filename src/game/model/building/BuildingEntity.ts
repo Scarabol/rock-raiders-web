@@ -213,7 +213,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             this.secondarySurface = secondarySurface
         }
         if (this.hasPrimaryPowerPath) {
-            const pathOffset = new Vector3(0, 0, -TILESIZE).applyAxisAngle(new Vector3(0, 1, 0), radHeading)
+            const pathOffset = new Vector3(TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), -radHeading + Math.PI / 2)
             pathOffset.add(this.group.position)
             const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
             if (this.entityType === EntityType.GEODOME) pathSurface.building = this
