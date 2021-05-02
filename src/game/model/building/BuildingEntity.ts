@@ -221,12 +221,15 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             pathSurface.updateTexture()
             this.primaryPathSurface = pathSurface
         }
-        if (this.group.visible && !disableTeleportIn) {
-            this.inBeam = true
+        if (this.group.visible) {
             GameState.buildings.push(this)
-            this.changeActivity(BuildingActivity.Teleport, () => this.onAddToScene())
         } else {
             GameState.buildingsUndiscovered.push(this)
+        }
+        if (this.group.visible && !disableTeleportIn) {
+            this.inBeam = true
+            this.changeActivity(BuildingActivity.Teleport, () => this.onAddToScene())
+        } else {
             this.onAddToScene()
         }
         worldMgr.sceneManager.terrain.resetGraphWalk()
