@@ -1,12 +1,12 @@
 import { MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameState } from '../../game/model/GameState'
-import { WorldManager } from '../../game/WorldManager'
+import { SceneManager } from '../../game/SceneManager'
 import { ScreenLayer } from './ScreenLayer'
 
 export class SelectionLayer extends ScreenLayer {
 
-    worldManager: WorldManager
+    sceneMgr: SceneManager
     selectStart: { x: number, y: number } = null
 
     constructor() {
@@ -16,10 +16,6 @@ export class SelectionLayer extends ScreenLayer {
     reset() {
         super.reset()
         this.selectStart = null
-    }
-
-    setWorldManager(worldManager: WorldManager) {
-        this.worldManager = worldManager
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
@@ -59,9 +55,9 @@ export class SelectionLayer extends ScreenLayer {
         if (Math.abs(screenX - this.selectStart.x) < 5 && Math.abs(screenY - this.selectStart.y) < 5) {
             const x = (this.selectStart.x + screenX) / this.canvas.width - 1
             const y = -(this.selectStart.y + screenY) / this.canvas.height + 1
-            this.worldManager.sceneManager.selectEntitiesByRay(x, y)
+            this.sceneMgr.selectEntitiesByRay(x, y)
         } else {
-            this.worldManager.sceneManager.selectEntitiesInFrustum(r1x, r1y, r2x, r2y)
+            this.sceneMgr.selectEntitiesInFrustum(r1x, r1y, r2x, r2y)
         }
         this.selectStart = null
         return true

@@ -1,4 +1,4 @@
-// noinspection JSUnusedLocalSymbols
+// noinspection JSUnusedLocalSymbols,JSBitwiseOperatorUsage
 
 /**
  * @author Marcus-Bizal https://github.com/marcbizal

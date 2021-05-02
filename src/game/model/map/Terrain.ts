@@ -92,7 +92,7 @@ export class Terrain {
     private searchPath(gridStartX: number, gridStartY: number, gridEndX: number, gridEndY: number, target: PathTarget, cacheIdentifier: string): TerrainPath {
         const startNode = this.graphWalk.grid[gridStartX][gridStartY]
         const endNode = this.graphWalk.grid[gridEndX][gridEndY]
-        const worldPath = astar.search(this.graphWalk, startNode, endNode).map((n) => this.gridNodeToWorldPos(n))
+        const worldPath = astar.search(this.graphWalk, startNode, endNode).map((n) => Terrain.gridNodeToWorldPos(n))
         if (worldPath.length < 1) return null // no path found
         // replace last surface center with actual target position
         worldPath.pop()
@@ -101,7 +101,7 @@ export class Terrain {
         return new TerrainPath(target, worldPath)
     }
 
-    gridNodeToWorldPos(gridNode) {
+    private static gridNodeToWorldPos(gridNode) {
         return new Vector2((gridNode.x + 0.25 + Math.random() / 2) * TILESIZE / 3, (gridNode.y + 0.25 + Math.random() / 2) * TILESIZE / 3)
     }
 

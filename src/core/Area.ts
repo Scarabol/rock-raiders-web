@@ -16,8 +16,4 @@ export class Area {
         this.center = new Vector2((this.x0 + this.x1) / 2, (this.y0 + this.y1) / 2)
     }
 
-    getCenter(): Vector2 {
-        return this.center.clone()
-    }
-
 }

@@ -66,7 +66,7 @@ export class WorldManager {
         // load nerp script
         this.nerpRunner = NerpParser.parse(ResourceManager.getResource(levelConf.nerpFile))
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
-        this.nerpRunner.onLevelComplete = () => gameScreen.onLevelEnd()
+        this.nerpRunner.onLevelEnd = () => gameScreen.onLevelEnd()
 
         // gather level start details for game result score calculation
         GameState.totalDiggables = 0
@@ -95,7 +95,7 @@ export class WorldManager {
     }
 
     resize(width: number, height: number) {
-        if (this.sceneManager) this.sceneManager.renderer.setSize(width, height)
+        this.sceneManager?.renderer.setSize(width, height)
     }
 
     getTerrainIntersectionPoint(rx: number, ry: number): Vector3 {

@@ -12,7 +12,7 @@ import { clearIntervalSafe } from './Util'
 export class NerpRunner {
 
     debug = false
-    onLevelComplete: () => any = null
+    onLevelEnd: () => any = null
     nerpInterval: NodeJS.Timeout = null
 
     registers = new Array(8).fill(0)
@@ -123,7 +123,7 @@ export class NerpRunner {
         console.log('Nerp runner marks level as complete')
         this.halted = true
         GameState.resultState = GameResultState.COMPLETE
-        this.onLevelComplete()
+        this.onLevelEnd()
     }
 
     /**
@@ -133,7 +133,7 @@ export class NerpRunner {
         console.log('NerpRunner marks level as failed')
         this.halted = true
         GameState.resultState = GameResultState.FAILED
-        this.onLevelComplete()
+        this.onLevelEnd()
     }
 
     /**

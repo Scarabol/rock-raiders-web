@@ -28,14 +28,10 @@ export class PanelCrystalSideBar extends Panel {
         this.imgUsedCrystal = ResourceManager.getImage('Interface/RightPanel/UsedCrystal.bmp')
         this.imgOre = ResourceManager.getImage('Interface/RightPanel/CrystalSideBar_Ore.bmp')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
-            this.updateQuantities(event.entityType)
+            if (event.entityType === EntityType.CRYSTAL || event.entityType === EntityType.ORE || event.entityType === EntityType.BRICK) {
+                this.notifyRedraw()
+            }
         })
-    }
-
-    updateQuantities(type: EntityType) {
-        if (type === EntityType.CRYSTAL || type === EntityType.ORE || type === EntityType.BRICK) {
-            this.notifyRedraw()
-        }
     }
 
     onRedraw(context: CanvasRenderingContext2D) {

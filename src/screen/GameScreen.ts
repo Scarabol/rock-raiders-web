@@ -18,7 +18,7 @@ export class GameScreen extends BaseScreen {
     selectionLayer: SelectionLayer
     guiLayer: GuiMainLayer
     overlayLayer: OverlayLayer
-    worldManager: WorldManager
+    worldMgr: WorldManager
     jobSupervisor: Supervisor
     levelName: string
     levelConf: LevelEntryCfg
@@ -29,10 +29,11 @@ export class GameScreen extends BaseScreen {
         this.selectionLayer = this.addLayer(new SelectionLayer(), 10)
         this.guiLayer = this.addLayer(new GuiMainLayer(), 20)
         this.overlayLayer = this.addLayer(new OverlayLayer(), 30)
-        this.worldManager = new WorldManager(this.gameLayer.canvas)
-        this.gameLayer.setWorldManager(this.worldManager)
-        this.selectionLayer.setWorldManager(this.worldManager)
-        this.jobSupervisor = new Supervisor(this.worldManager)
+        this.worldMgr = new WorldManager(this.gameLayer.canvas)
+        this.gameLayer.worldMgr = this.worldMgr
+        this.gameLayer.sceneMgr = this.worldMgr.sceneManager
+        this.selectionLayer.sceneMgr = this.worldMgr.sceneManager
+        this.jobSupervisor = new Supervisor(this.worldMgr)
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.panelOptions.show()
         this.overlayLayer.panelBriefing.messagePanel = this.guiLayer.panelMessages
@@ -55,7 +56,7 @@ export class GameScreen extends BaseScreen {
 
     private setupAndStartLevel() {
         console.log('Starting level ' + this.levelName + ' - ' + this.levelConf.fullName)
-        this.worldManager.setup(this.levelConf, this)
+        this.worldMgr.setup(this.levelConf, this)
         const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(this.levelConf.objectiveText), this.levelName)
         this.guiLayer.reset()
         this.overlayLayer.setup(objectiveText.objective, this.levelConf.objectiveImage640x480)
@@ -64,19 +65,19 @@ export class GameScreen extends BaseScreen {
 
     show() {
         super.show()
-        this.worldManager.start()
+        this.worldMgr.start()
         this.jobSupervisor.start()
     }
 
     hide() {
-        this.worldManager.stop()
+        this.worldMgr.stop()
         this.jobSupervisor.stop()
         super.hide()
     }
 
     resize(width: number, height: number) {
         super.resize(width, height)
-        if (this.worldManager) this.worldManager.resize(width, height)
+        this.worldMgr?.resize(width, height)
     }
 
 }
