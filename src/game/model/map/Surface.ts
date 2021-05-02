@@ -522,6 +522,7 @@ export class Surface implements Selectable {
     }
 
     dispose() {
+        this.fallinTimeout = clearTimeoutSafe(this.fallinTimeout)
         this.accessMaterials().forEach(m => m.dispose())
         this.mesh?.geometry?.dispose()
     }
