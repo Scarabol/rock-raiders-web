@@ -52,6 +52,8 @@ declare global {
 
     interface Array<T> {
         remove(element: T): void
+
+        count(callback: (element: T) => boolean): number
     }
 
     interface Map<K, V> {
@@ -63,6 +65,12 @@ declare global {
 Array.prototype.remove = function <T>(element: T): void {
     const index = this.indexOf(element)
     if (index !== -1) this.splice(index, 1)
+}
+
+Array.prototype.count = function <T>(callback: (element: T) => boolean): number {
+    let counter = 0
+    this.forEach((e) => callback(e) && counter++)
+    return counter
 }
 
 // noinspection JSUnusedGlobalSymbols

@@ -272,11 +272,11 @@ export class NerpRunner {
     }
 
     getPoweredPowerStationsBuilt() {
-        return GameState.getBuildingsByType(EntityType.POWER_STATION).length
+        return GameState.buildings.count((b) => b.isPowered() && b.entityType === EntityType.POWER_STATION)
     }
 
     getPoweredBarracksBuilt() {
-        return GameState.getBuildingsByType(EntityType.BARRACKS).length
+        return GameState.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS)
     }
 
     getRecordObjectAtTutorial() {

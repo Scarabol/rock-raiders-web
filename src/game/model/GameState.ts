@@ -164,7 +164,7 @@ export class GameState {
     }
 
     static getMaxRaiders(): number {
-        return MAX_RAIDER_BASE + this.getBuildingsByType(EntityType.BARRACKS).length * ADDITIONAL_RAIDER_PER_SUPPORT
+        return MAX_RAIDER_BASE + GameState.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT
     }
 
     static discoverSurface(surface: Surface) {
