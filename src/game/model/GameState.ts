@@ -2,14 +2,11 @@ import { Vector3 } from 'three'
 import { LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { EventBus } from '../../event/EventBus'
 import { EntityDeselected } from '../../event/LocalEvents'
-import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../params'
 import { BaseEntity } from './BaseEntity'
 import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
-import { Crystal } from './collect/Crystal'
 import { MaterialEntity } from './collect/MaterialEntity'
-import { Ore } from './collect/Ore'
 import { EntityType } from './EntityType'
 import { PriorityList } from './job/PriorityList'
 import { Surface } from './map/Surface'
@@ -185,25 +182,6 @@ export class GameState {
             }
         })
         discovered.forEach((r) => undiscovered.remove(r))
-    }
-
-    static dropMaterial(type: EntityType, quantity: number): MaterialEntity[] {
-        const result = []
-        if (type === EntityType.CRYSTAL) {
-            while (GameState.numCrystal > 0 && result.length < quantity) {
-                GameState.numCrystal--
-                result.push(new Crystal())
-            }
-        } else if (type === EntityType.ORE) {
-            while (GameState.numOre > 0 && result.length < quantity) {
-                GameState.numOre--
-                result.push(new Ore())
-            }
-        } else {
-            console.error('Material drop not implemented for: ' + type)
-        }
-        if (result.length > 0) EventBus.publishEvent(new MaterialAmountChanged(type))
-        return result
     }
 
     static get gameTimeSeconds() {

@@ -2,7 +2,6 @@ import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { BuildingSite } from '../../game/model/building/BuildingSite'
-import { ElectricFence } from '../../game/model/collect/ElectricFence'
 import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { Surface } from '../../game/model/map/Surface'
@@ -19,8 +18,7 @@ export class SelectFloorPanel extends SelectBasePanel {
             const selectedSurface = GameState.selectedEntities[0] as Surface
             selectedSurface.surfaceType = SurfaceType.POWER_PATH_SITE
             selectedSurface.updateTexture()
-            const targetBuilding = GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)
-            if (targetBuilding) targetBuilding.spawnMaterials(GameState.dropMaterial(EntityType.ORE, 2))
+            GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnMaterials(EntityType.ORE, 2)
             const site = new BuildingSite(selectedSurface)
             site.neededByType.set(EntityType.ORE, 2)
             GameState.buildingSites.push(site)
@@ -40,10 +38,7 @@ export class SelectFloorPanel extends SelectBasePanel {
         placeFenceItem.onClick = () => {
             const selectedSurface = GameState.selectedSurface
             if (selectedSurface) {
-                const toolstation = GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)
-                if (toolstation) {
-                    toolstation?.spawnMaterials([new ElectricFence(selectedSurface)])
-                }
+                GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(selectedSurface)
             }
             EventBus.publishEvent(new EntityDeselected())
         }

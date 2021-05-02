@@ -11,14 +11,17 @@ import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { AnimEntity } from '../anim/AnimEntity'
+import { Barrier } from '../collect/Barrier'
+import { BarrierLocation } from '../collect/BarrierLocation'
 import { Crystal } from '../collect/Crystal'
-import { MaterialEntity } from '../collect/MaterialEntity'
+import { ElectricFence } from '../collect/ElectricFence'
 import { Ore } from '../collect/Ore'
 import { EntitySuperType, EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
 import { Selectable, SelectionType } from '../Selectable'
+import { BuildingSite } from './BuildingSite'
 
 export abstract class BuildingEntity extends AnimEntity implements Selectable {
 
@@ -162,8 +165,31 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         return !this.hasMaxLevel() && (GameState.numOre >= this.upgradeCostOre || GameState.numBrick >= this.upgradeCostBrick)
     }
 
-    spawnMaterials(materials: MaterialEntity[]) {
-        materials.forEach((m) => this.worldMgr.placeMaterial(m, this.getDropPosition2D()))
+    spawnMaterials(type: EntityType, quantity: number) {
+        const material = []
+        if (type === EntityType.CRYSTAL) {
+            while (GameState.numCrystal > 0 && material.length < quantity) {
+                GameState.numCrystal--
+                material.push(new Crystal())
+            }
+        } else if (type === EntityType.ORE) {
+            while (GameState.numOre > 0 && material.length < quantity) {
+                GameState.numOre--
+                material.push(new Ore())
+            }
+        } else {
+            console.error('Material drop not implemented for: ' + type)
+        }
+        if (material.length > 0) EventBus.publishEvent(new MaterialAmountChanged(type))
+        material.forEach((m) => this.worldMgr.placeMaterial(m, this.getDropPosition2D()))
+    }
+
+    spawnBarriers(barrierLocations: BarrierLocation[], site: BuildingSite) {
+        barrierLocations.map((l) => new Barrier(l, site)).forEach((b) => this.worldMgr.placeMaterial(b, this.getDropPosition2D()))
+    }
+
+    spawnFence(targetSurface: Surface) {
+        this.worldMgr.placeMaterial(new ElectricFence(targetSurface), this.getDropPosition2D())
     }
 
     turnOnPower() {
