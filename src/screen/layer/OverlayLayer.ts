@@ -30,16 +30,13 @@ export class OverlayLayer extends GuiBaseLayer {
         this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
     }
 
-    setActivePanel(panel: Panel) {
-        EventBus.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
-        this.panels.forEach(p => p !== panel && p.hide())
-        panel.show()
-        this.redraw()
+    reset() {
+        super.reset()
+        if (!DEV_MODE) this.setActivePanel(this.panelBriefing)
     }
 
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
         this.panelBriefing.setup(objectiveText, objectiveBackImgCfg)
-        if (!DEV_MODE) this.setActivePanel(this.panelBriefing)
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
@@ -70,6 +67,13 @@ export class OverlayLayer extends GuiBaseLayer {
             }
         }
         return result
+    }
+
+    setActivePanel(panel: Panel) {
+        EventBus.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
+        this.panels.forEach(p => p !== panel && p.hide())
+        panel.show()
+        this.redraw()
     }
 
 }
