@@ -1,11 +1,13 @@
 import { Mesh, MeshPhongMaterial, Vector3 } from 'three'
+import { TILESIZE } from '../../../params'
 import { SurfaceGeometry } from '../map/SurfaceGeometry'
 import { WALL_TYPE } from '../map/WallType'
 
 export class BuildPlacementMarkerMesh extends Mesh {
 
-    static readonly geometry = SurfaceGeometry.create(WALL_TYPE.WALL, new Vector3(0, 0, 0), new Vector3(1, 0, 1),
-        new Vector3(1, 0, 0), new Vector3(0, 0, 1),
+    static readonly geometry = SurfaceGeometry.create(WALL_TYPE.WALL,
+        new Vector3(0, 0, 0), new Vector3(TILESIZE, 0, TILESIZE),
+        new Vector3(TILESIZE, 0, 0), new Vector3(0, 0, TILESIZE),
         1, 1, 1, 1,
     )
 
@@ -25,7 +27,7 @@ export class BuildPlacementMarkerMesh extends Mesh {
     updateState(position: { x: number, y: number }, heading: number, primaryPosition: Vector3) {
         this.visible = !!position
         if (position) {
-            this.position.set(position.x, 0, position.y)
+            this.position.set(position.x, 0, position.y).multiplyScalar(TILESIZE)
                 .applyAxisAngle(new Vector3(0, 1, 0), -heading - Math.PI / 2)
                 .add(primaryPosition)
         }

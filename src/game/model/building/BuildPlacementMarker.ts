@@ -30,7 +30,6 @@ export class BuildPlacementMarker {
     waterSurface: Surface = null
 
     constructor() {
-        this.group.scale.set(TILESIZE, TILESIZE, TILESIZE)
         this.buildingMarkerPrimary = new BuildPlacementMarkerMesh(BuildPlacementMarker.buildingMarkerColor)
         this.buildingMarkerSecondary = new BuildPlacementMarkerMesh(BuildPlacementMarker.buildingMarkerColor)
         this.powerPathMarkerPrimary = new BuildPlacementMarkerMesh(BuildPlacementMarker.pathMarkerColor)
@@ -48,23 +47,22 @@ export class BuildPlacementMarker {
         this.markers.push(marker)
     }
 
-    update(terrain: Terrain, position: Vector2) {
-        if (!position || !GameState.buildModeSelection) {
+    update(terrain: Terrain, worldPosition: Vector2) {
+        if (!worldPosition || !GameState.buildModeSelection) {
             this.hideAllMarker()
         } else {
-            position.multiplyScalar(1 / TILESIZE)
-            const isValid = this.updateAllMarker(terrain, position)
+            const isValid = this.updateAllMarker(terrain, worldPosition)
             this.markers.forEach((c) => c.markAsValid(isValid))
         }
     }
 
-    private updateAllMarker(terrain: Terrain, position: Vector2 = null): boolean {
+    private updateAllMarker(terrain: Terrain, worldPosition: Vector2 = null): boolean {
         // TODO use surface height offsets, refactor terrain map/data handling before
         const buildMode = GameState.buildModeSelection
         this.buildingMarkerPrimary.visible = true
-        this.buildingMarkerPrimary.position.set(Math.floor(position.x), -5 / TILESIZE, Math.floor(position.y))
-        const sdxv = position.x - this.buildingMarkerPrimary.position.x - 0.5
-        const sdzv = position.y - this.buildingMarkerPrimary.position.z - 0.5
+        this.buildingMarkerPrimary.position.copy(terrain.worldMgr.getFloorPosition(new Vector2(Math.floor(worldPosition.x / TILESIZE) * TILESIZE, Math.floor(worldPosition.y / TILESIZE) * TILESIZE)))
+        const sdxv = worldPosition.x - this.buildingMarkerPrimary.position.x - TILESIZE / 2
+        const sdzv = worldPosition.y - this.buildingMarkerPrimary.position.z - TILESIZE / 2
         const sdx = Math.abs(sdxv) > Math.abs(sdzv) ? Math.sign(sdxv) : 0
         const sdz = Math.abs(sdzv) > Math.abs(sdxv) ? Math.sign(sdzv) : 0
         if (this.sdx === sdx && this.sdz === sdz) return this.lastCheck
@@ -73,17 +71,17 @@ export class BuildPlacementMarker {
         this.heading = Math.atan2(sdz, sdx)
         this.buildingMarkerSecondary.updateState(buildMode.secondaryBuildingPart, this.heading, this.buildingMarkerPrimary.position)
         this.powerPathMarkerPrimary.visible = buildMode.hasPrimaryPowerPath
-        this.powerPathMarkerPrimary.position.copy(this.buildingMarkerPrimary.position).add(new Vector3(sdx, 0, sdz))
+        this.powerPathMarkerPrimary.position.copy(this.buildingMarkerPrimary.position).add(new Vector3(sdx, 0, sdz).multiplyScalar(TILESIZE))
         this.powerPathMarkerSecondary.updateState(buildMode.secondaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
         this.waterPathMarker.updateState(buildMode.waterPathSurface, this.heading, this.buildingMarkerPrimary.position)
         this.visibleSurfaces = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
-            .filter((c) => c.visible).map((c) => terrain.getSurface(c.position.x, c.position.z))
+            .filter((c) => c.visible).map((c) => terrain.getSurfaceFromWorld(c.position))
         this.primarySurface = this.visibleSurfaces[0]
         this.secondarySurface = this.buildingMarkerSecondary.visible ? this.visibleSurfaces[1] : null
-        this.waterSurface = this.waterPathMarker.visible ? terrain.getSurface(this.waterPathMarker.position.x, this.waterPathMarker.position.z) : null
+        this.waterSurface = this.waterPathMarker.visible ? terrain.getSurfaceFromWorld(this.waterPathMarker.position) : null
         this.lastCheck = this.visibleSurfaces.every((s) => s.surfaceType === SurfaceType.GROUND)
             && ([this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
-                    .some((c) => c.visible && terrain.getSurface(c.position.x, c.position.z).neighbors
+                    .some((c) => c.visible && terrain.getSurfaceFromWorld(c.position).neighbors
                         .some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
                 !buildMode.hasPrimaryPowerPath && this.primarySurface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH))
             && (!this.waterPathMarker.visible || this.waterSurface.surfaceType === SurfaceType.WATER)
