@@ -8,6 +8,7 @@ export class OreRefinery extends BuildingEntity {
 
     constructor() {
         super(EntityType.ORE_REFINERY, 'Buildings/OreRefinery/OreRefinery.ae')
+        this.primaryPowerPath = {x: 0, y: 2}
         this.secondaryBuildingPart = {x: 0, y: 1}
     }
 

@@ -28,7 +28,7 @@ export class BuildPlacementMarkerMesh extends Mesh {
         this.visible = !!position
         if (position) {
             this.position.set(position.x, 0, position.y).multiplyScalar(TILESIZE)
-                .applyAxisAngle(new Vector3(0, 1, 0), -heading - Math.PI / 2)
+                .applyAxisAngle(new Vector3(0, 1, 0), -heading + Math.PI / 2)
                 .add(primaryPosition)
         }
     }

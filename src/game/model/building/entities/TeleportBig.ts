@@ -7,8 +7,8 @@ export class TeleportBig extends BuildingEntity {
 
     constructor() {
         super(EntityType.TELEPORT_BIG, 'Buildings/BIGTeleport/BIGTeleport.ae')
-        this.secondaryBuildingPart = {x: -1, y: 0}
-        this.secondaryPowerPath = {x: -1, y: -1}
+        this.secondaryBuildingPart = {x: 1, y: 0}
+        this.secondaryPowerPath = {x: 1, y: 1}
     }
 
     get stats(): BuildingEntityStats {

@@ -8,7 +8,7 @@ export class GunStation extends BuildingEntity {
 
     constructor() {
         super(EntityType.GUNSTATION, 'Buildings/gunstation/gunstation.ae')
-        this.hasPrimaryPowerPath = false
+        this.primaryPowerPath = null
     }
 
     getDefaultActivity(): BuildingActivity {

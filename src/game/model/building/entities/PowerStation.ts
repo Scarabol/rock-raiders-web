@@ -8,7 +8,7 @@ export class PowerStation extends BuildingEntity {
 
     constructor() {
         super(EntityType.POWER_STATION, 'Buildings/Powerstation/Powerstation.ae')
-        this.secondaryBuildingPart = {x: 1, y: 0}
+        this.secondaryBuildingPart = {x: -1, y: 0}
     }
 
     get stats(): BuildingEntityStats {

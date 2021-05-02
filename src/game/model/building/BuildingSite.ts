@@ -82,7 +82,7 @@ export class BuildingSite {
                 item.removeFromScene()
             })
             const world = this.primarySurface.getCenterWorld2D()
-            this.building.addToScene(this.primarySurface.terrain.worldMgr, world.x, world.y, this.heading + Math.PI / 2, false)
+            this.building.addToScene(this.primarySurface.terrain.worldMgr, world.x, world.y, -this.heading + Math.PI / 2, false)
         }
     }
 

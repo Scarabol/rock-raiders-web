@@ -56,7 +56,7 @@ export class ObjectListLoader {
                 worldMgr.sceneManager.scene.add(raider.group)
             } else if (buildingType) {
                 const entity = this.createBuildingByName(buildingType)
-                entity.addToScene(worldMgr, worldX, worldZ, radHeading, disableStartTeleport)
+                entity.addToScene(worldMgr, worldX, worldZ, -radHeading - Math.PI, disableStartTeleport)
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
                 worldMgr.placeMaterial(new Crystal(), new Vector2(worldX, worldZ))
             } else if (lTypeName === 'SmallSpider'.toLowerCase()) {

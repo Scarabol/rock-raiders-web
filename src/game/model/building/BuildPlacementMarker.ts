@@ -1,4 +1,4 @@
-import { Group, Vector2, Vector3 } from 'three'
+import { Group, Vector2 } from 'three'
 import { TILESIZE } from '../../../params'
 import { BarrierLocation } from '../collect/BarrierLocation'
 import { GameState } from '../GameState'
@@ -70,8 +70,7 @@ export class BuildPlacementMarker {
         this.sdz = sdz
         this.heading = Math.atan2(sdz, sdx)
         this.buildingMarkerSecondary.updateState(buildMode.secondaryBuildingPart, this.heading, this.buildingMarkerPrimary.position)
-        this.powerPathMarkerPrimary.visible = buildMode.hasPrimaryPowerPath
-        this.powerPathMarkerPrimary.position.copy(this.buildingMarkerPrimary.position).add(new Vector3(sdx, 0, sdz).multiplyScalar(TILESIZE))
+        this.powerPathMarkerPrimary.updateState(buildMode.primaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
         this.powerPathMarkerSecondary.updateState(buildMode.secondaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
         this.waterPathMarker.updateState(buildMode.waterPathSurface, this.heading, this.buildingMarkerPrimary.position)
         this.visibleSurfaces = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
@@ -83,7 +82,7 @@ export class BuildPlacementMarker {
             && ([this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
                     .some((c) => c.visible && terrain.getSurfaceFromWorld(c.position).neighbors
                         .some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
-                !buildMode.hasPrimaryPowerPath && this.primarySurface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH))
+                !buildMode.primaryPowerPath && this.primarySurface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH))
             && (!this.waterPathMarker.visible || this.waterSurface.surfaceType === SurfaceType.WATER)
         return this.lastCheck
     }

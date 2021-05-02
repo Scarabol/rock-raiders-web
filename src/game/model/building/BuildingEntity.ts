@@ -24,8 +24,8 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
 
     blocksPathSurface: boolean = true
     secondaryBuildingPart: { x: number, y: number } = null
+    primaryPowerPath: { x: number, y: number } = {x: 0, y: 1}
     secondaryPowerPath: { x: number, y: number } = null
-    hasPrimaryPowerPath: boolean = true
     waterPathSurface: { x: number, y: number } = null
 
     selected: boolean
@@ -194,7 +194,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     addToScene(worldMgr: WorldManager, worldX: number, worldZ: number, radHeading: number, disableTeleportIn: boolean) {
         this.worldMgr = worldMgr
         this.group.position.copy(worldMgr.getFloorPosition(new Vector2(worldX, worldZ)))
-        this.group.rotateOnAxis(new Vector3(0, 1, 0), -radHeading - Math.PI) // TODO rotate building with normal vector of surface too
+        this.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading) // TODO rotate building with normal vector of surface too
         this.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).discovered
         worldMgr.sceneManager.scene.add(this.group)
         this.createPickSphere()
@@ -205,16 +205,16 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         this.primarySurface = primaryPathSurface
         if (this.secondaryBuildingPart) {
             const secondaryOffset = new Vector3(TILESIZE * this.secondaryBuildingPart.x, 0, TILESIZE * this.secondaryBuildingPart.y)
-                .applyAxisAngle(new Vector3(0, 1, 0), -radHeading).add(this.group.position)
+                .applyAxisAngle(new Vector3(0, 1, 0), radHeading).add(this.group.position)
             const secondarySurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(secondaryOffset)
             secondarySurface.setBuilding(this)
             secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
             secondarySurface.updateTexture()
             this.secondarySurface = secondarySurface
         }
-        if (this.hasPrimaryPowerPath) {
-            const pathOffset = new Vector3(TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), -radHeading + Math.PI / 2)
-            pathOffset.add(this.group.position)
+        if (this.primaryPowerPath) {
+            const pathOffset = new Vector3(this.primaryPowerPath.x, 0, this.primaryPowerPath.y).multiplyScalar(TILESIZE)
+                .applyAxisAngle(new Vector3(0, 1, 0), radHeading).add(this.group.position)
             const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
             if (this.entityType === EntityType.GEODOME) pathSurface.building = this
             pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
