@@ -233,7 +233,16 @@ export class Surface implements Selectable {
 
         this.updateTexture()
         this.updateJobColor()
-        this.terrain.graphWalk.grid[this.x][this.y].weight = this.getGraphWalkWeight()
+        this.updateGraphWalk()
+    }
+
+    private updateGraphWalk() {
+        const weight = this.getGraphWalkWeight()
+        for (let x = 0; x < 3; x++) {
+            for (let y = 0; y < 3; y++) {
+                this.terrain.graphWalk.grid[this.x * 3 + x][this.y * 3 + y].weight = weight
+            }
+        }
     }
 
     cancelReinforceJobs() {
@@ -553,8 +562,7 @@ export class Surface implements Selectable {
 
     setBuilding(building: BuildingEntity) {
         this.building = building
-        this.terrain.graphWalk.grid[this.x][this.y].weight = this.getGraphWalkWeight()
-        this.terrain.resetGraphWalk()
+        this.updateGraphWalk()
     }
 
     getGraphWalkWeight(): number {

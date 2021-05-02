@@ -89,7 +89,16 @@ export class TerrainLoader {
             }
         })
 
-        terrain.graphWalk = new Graph(terrain.surfaces.map(c => c.map(s => s.getGraphWalkWeight())))
+        const weights: number[][] = []
+        for (let x = 0; x < terrain.width; x++) {
+            const col: number[] = []
+            for (let y = 0; y < terrain.height; y++) {
+                const w = terrain.getSurfaceOrNull(x, y).getGraphWalkWeight()
+                col.push(w, w, w)
+            }
+            weights.push(col, col, col)
+        }
+        terrain.graphWalk = new Graph(weights)
 
         // crumble unsupported walls
         terrain.forEachSurface((s) => {

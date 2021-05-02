@@ -229,6 +229,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             GameState.buildingsUndiscovered.push(this)
             this.onAddToScene()
         }
+        worldMgr.sceneManager.terrain.resetGraphWalk()
     }
 
     private onAddToScene() {
