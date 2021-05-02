@@ -1,4 +1,4 @@
-export const encodeChar = []
+export const encodeChar: number[] = []
 
 for (let c = 0; c < 256; c++) {
     encodeChar[c] = c

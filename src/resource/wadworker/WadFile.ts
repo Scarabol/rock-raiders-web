@@ -83,7 +83,9 @@ export class WadFile {
      * @returns {string} Returns the content as String
      */
     getEntryText(entryName): string {
-        return new TextDecoder().decode(this.getEntryBuffer(entryName).map(c => encodeChar[c]))
+        let result = ''
+        this.getEntryData(entryName).forEach((c) => result += String.fromCharCode(encodeChar[c]))
+        return result
     }
 
     /**

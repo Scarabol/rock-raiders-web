@@ -97,10 +97,10 @@ export class WadLoader {
 
     parseNerpMsgFile(wadFile: WadFile, name: string) {
         const result = []
-        const lines = wadFile.getEntryText(name).split('\n')
+        const lines = wadFile.getEntryText(name).split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l)
         for (let c = 0; c < lines.length; c++) {
-            const line = lines[c].trim()
-            if (line.length < 1 || line === '-') {
+            const line = lines[c]
+            if (line === '-') {
                 continue
             }
             // line formatting differs between wad0 and wad1 files!
