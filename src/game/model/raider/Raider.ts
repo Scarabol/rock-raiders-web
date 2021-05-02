@@ -108,6 +108,10 @@ export class Raider extends FulfillerEntity {
 
     work() {
         if (!this.job || this.selected || this.slipped) return
+        if (this.job.jobstate !== JobState.INCOMPLETE) {
+            this.stopJob()
+            return
+        }
         if (this.job.type === JobType.DRILL) {
             if (this.moveToClosestWorkplace()) {
                 const surfJob = this.job as DrillJob
