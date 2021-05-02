@@ -129,7 +129,7 @@ export class LWSCLoader {
             } else if (key === 'ParentObject') {
                 subObj.parentObjInd = Number(value) - 1 // index is 1 based
                 if (this.verbose) console.log('parent obj ind is: ' + subObj.parentObjInd)
-            } else if (key === 'ShowObject ' || key === 'LockedChannels') {
+            } else if (key === 'ShowObject' || key === 'LockedChannels') {
                 // only used in editor
             } else if (key === 'ShadowOptions') { // TODO implement shadow options (bitwise)
                 // 0 - Self Shadow
@@ -157,7 +157,7 @@ export class LWSCLoader {
                     subObj.setOpacityAndFollowing(0, this.animationClip.lastFrame, opacity)
                 }
             } else {
-                // console.log('Unhandled line in object block: ' + line); // TODO analyze unhandled lines
+                // console.warn('Unhandled line in object block: ' + line + '; key: ' + key + '; value: ' + value) // TODO analyze unhandled lines
             }
         }
         console.error('Parsing block reached content end')
