@@ -222,6 +222,8 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             this.primaryPathSurface = pathSurface
         }
         if (this.group.visible && !disableTeleportIn) {
+            this.inBeam = true
+            GameState.buildings.push(this)
             this.changeActivity(BuildingActivity.Teleport, () => this.onAddToScene())
         } else {
             GameState.buildingsUndiscovered.push(this)
@@ -229,9 +231,9 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         }
     }
 
-    onAddToScene() {
+    private onAddToScene() {
+        this.inBeam = false
         this.changeActivity()
-        GameState.buildings.push(this)
         EventBus.publishEvent(new EntityAddedEvent(this))
         if (this.entityType === EntityType.POWER_STATION || this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower))) {
             this.turnOnPower()
