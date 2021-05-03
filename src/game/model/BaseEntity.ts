@@ -45,7 +45,7 @@ export abstract class BaseEntity {
 
     addToScene(worldPosition: Vector2, radHeading: number) {
         if (worldPosition) {
-            this.group.position.copy(this.worldMgr.getFloorPosition(worldPosition))
+            this.group.position.copy(this.sceneMgr.getFloorPosition(worldPosition))
             this.group.position.y += this.floorOffset
         }
         if (radHeading !== undefined && radHeading !== null) {

@@ -446,7 +446,7 @@ export class Surface implements Selectable {
 
     getCenterWorld(): Vector3 {
         const center = this.getCenterWorld2D()
-        return new Vector3(center.x, this.worldMgr.getTerrainHeight(center.x, center.y), center.y)
+        return new Vector3(center.x, this.sceneMgr.getTerrainHeight(center.x, center.y), center.y)
     }
 
     setFallinLevel(fallinLevel: number) {

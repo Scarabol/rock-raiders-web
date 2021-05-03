@@ -76,7 +76,7 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     getEntityStep(target: Vector2): EntityStep {
-        const targetWorld = this.worldMgr.getFloorPosition(target)
+        const targetWorld = this.sceneMgr.getFloorPosition(target)
         targetWorld.y += this.floorOffset
         return new EntityStep(targetWorld.sub(this.group.position))
     }

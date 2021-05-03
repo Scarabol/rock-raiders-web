@@ -47,7 +47,7 @@ export class GameLayer extends ScreenLayer {
         const buildMarker = this.sceneMgr.buildMarker
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             const intersectionPoint = this.getTerrainPositionFromEvent(event)
-            if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint)
+            if (intersectionPoint) this.sceneMgr.setTorchPosition(intersectionPoint)
             buildMarker.update(this.sceneMgr.terrain, intersectionPoint)
             this.updateCursor(event)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
@@ -182,8 +182,7 @@ export class GameLayer extends ScreenLayer {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         const rx = (cx / this.canvas.width) * 2 - 1
         const ry = -(cy / this.canvas.height) * 2 + 1
-        const intersectionPoint = this.worldMgr.getTerrainIntersectionPoint(rx, ry)
-        return intersectionPoint ? new Vector2(intersectionPoint.x, intersectionPoint.z) : null
+        return this.sceneMgr.getTerrainIntersectionPoint(rx, ry)
     }
 
     handleWheelEvent(event: GameWheelEvent): boolean {

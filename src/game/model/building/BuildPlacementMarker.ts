@@ -60,7 +60,7 @@ export class BuildPlacementMarker {
         // TODO use surface height offsets, refactor terrain map/data handling before
         const building = GameState.buildModeSelection(terrain.worldMgr, terrain.sceneMgr)
         this.buildingMarkerPrimary.visible = true
-        this.buildingMarkerPrimary.position.copy(terrain.worldMgr.getFloorPosition(new Vector2(Math.floor(worldPosition.x / TILESIZE) * TILESIZE, Math.floor(worldPosition.y / TILESIZE) * TILESIZE)))
+        this.buildingMarkerPrimary.position.copy(terrain.sceneMgr.getFloorPosition(new Vector2(Math.floor(worldPosition.x / TILESIZE) * TILESIZE, Math.floor(worldPosition.y / TILESIZE) * TILESIZE)))
         const sdxv = worldPosition.x - this.buildingMarkerPrimary.position.x - TILESIZE / 2
         const sdzv = worldPosition.y - this.buildingMarkerPrimary.position.z - TILESIZE / 2
         const sdx = Math.abs(sdxv) > Math.abs(sdzv) ? Math.sign(sdxv) : 0

@@ -148,4 +148,22 @@ export class Terrain {
         this.surfaces?.forEach((r) => r.forEach((s) => each(s)))
     }
 
+    countDiggables(): number {
+        let totalDiggables = 0
+        this.forEachSurface((s) => totalDiggables += s.isDigable() ? 1 : 0)
+        return totalDiggables
+    }
+
+    countCrystals(): number {
+        let totalCrystals = 0
+        this.forEachSurface((s) => totalCrystals += s.containedCrystals)
+        return totalCrystals
+    }
+
+    countOres(): number {
+        let totalOres = 0
+        this.forEachSurface((s) => totalOres += s.containedOres)
+        return totalOres
+    }
+
 }

@@ -32,14 +32,14 @@ export class ObjectListLoader {
             const buildingType: string = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
             if (lTypeName === 'TVCamera'.toLowerCase()) {
-                const terrainY = worldMgr.getTerrainHeight(worldPos.x, worldPos.y)
+                const terrainY = sceneMgr.getTerrainHeight(worldPos.x, worldPos.y)
                 const loc = new Vector3(worldPos.x, terrainY, worldPos.y - TILESIZE / 2)
                 const offset = new Vector3(5 * TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(loc)
                 sceneMgr.camera.position.copy(offset)
                 sceneMgr.camera.position.y = 4.5 * TILESIZE
                 sceneMgr.controls.target.copy(loc)
                 sceneMgr.controls.update()
-                worldMgr.setTorchPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
+                sceneMgr.setTorchPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
                 const raider = new Raider(worldMgr, sceneMgr)
                 raider.changeActivity()

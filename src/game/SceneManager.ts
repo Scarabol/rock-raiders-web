@@ -1,15 +1,19 @@
-import { AmbientLight, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { TILESIZE } from '../params'
 import { AnimatedMesh } from '../resource/AnimatedMesh'
+import { ResourceManager } from '../resource/ResourceManager'
 import { DebugHelper } from '../screen/DebugHelper'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
 import { GameState } from './model/GameState'
 import { Terrain } from './model/map/Terrain'
 import { Selectable } from './model/Selectable'
+import { TerrainLoader } from './TerrainLoader'
+import { WorldManager } from './WorldManager'
 
 export class SceneManager {
 
@@ -134,7 +138,12 @@ export class SceneManager {
         GameState.selectEntities(entities)
     }
 
-    setupScene(ambientColor: Color) {
+    setupScene(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
+        const ambientRgb = ResourceManager.cfg('Main', 'AmbientRGB') || [10, 10, 10]
+        const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
+        const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
+        const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])
+
         this.scene = new Scene()
 
         this.ambientLight = new AmbientLight(ambientColor, 0.4)
@@ -145,6 +154,15 @@ export class SceneManager {
         this.scene.add(this.cursorTorchlight)
 
         this.scene.add(this.buildMarker.group)
+
+        // create terrain mesh and add it to the scene
+        this.terrain = TerrainLoader.loadTerrain(levelConf, worldMgr, this)
+        this.scene.add(this.terrain.floorGroup)
+
+        // gather level start details for game result score calculation
+        GameState.totalDiggables = this.terrain.countDiggables()
+        GameState.totalCrystals = this.terrain.countCrystals()
+        GameState.totalOres = this.terrain.countOres()
     }
 
     startScene() {
@@ -165,6 +183,7 @@ export class SceneManager {
             cancelAnimationFrame(this.animRequest)
             this.animRequest = null
         }
+        GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null
         SceneManager.meshRegistry.forEach(mesh => mesh.dispose())
@@ -174,6 +193,40 @@ export class SceneManager {
     static registerMesh(animatedMesh: AnimatedMesh): Mesh {
         this.meshRegistry.push(animatedMesh)
         return animatedMesh.mesh
+    }
+
+    resize(width: number, height: number) {
+        this.renderer.setSize(width, height)
+    }
+
+    getTerrainIntersectionPoint(rx: number, ry: number): Vector2 {
+        if (!this.terrain) return null
+        const raycaster = new Raycaster()
+        raycaster.setFromCamera({x: rx, y: ry}, this.camera)
+        const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children)
+        return intersects.length > 0 ? new Vector2(intersects[0].point.x, intersects[0].point.z) : null
+    }
+
+    setTorchPosition(position: Vector2) {
+        this.cursorTorchlight.position.x = position.x
+        this.cursorTorchlight.position.y = this.terrain.getSurfaceFromWorldXZ(position.x, position.y).getFloorHeight(position.x, position.y) + 2 * TILESIZE
+        this.cursorTorchlight.position.z = position.y
+    }
+
+    getFloorPosition(world: Vector2) {
+        const floorY = this.terrain.getSurfaceFromWorldXZ(world.x, world.y).getFloorHeight(world.x, world.y)
+        return new Vector3(world.x, floorY, world.y)
+    }
+
+    getTerrainHeight(worldX: number, worldZ: number): number {
+        const raycaster = new Raycaster(new Vector3(Number(worldX), 3 * TILESIZE, Number(worldZ)), new Vector3(0, -1, 0))
+        const intersect = raycaster.intersectObject(this.terrain.floorGroup, true)
+        if (intersect.length > 0) {
+            return intersect[0].point.y
+        } else {
+            console.warn('could not determine terrain height for ' + worldX + '/' + worldZ)
+            return 0
+        }
     }
 
 }
