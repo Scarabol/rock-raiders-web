@@ -1,4 +1,5 @@
 import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
+import { getRandomInclusive } from './core/Util'
 import { GameState } from './game/model/GameState'
 import { DEV_MODE } from './params'
 import { ResourceManager } from './resource/ResourceManager'
@@ -63,6 +64,7 @@ ResourceManager.onLoadDone = () => {
         GameState.numCrystal = Number(params.get('numCrystal')) || 0
         if (entry === 'level') mainMenuScreen.showLevelSelection()
         else if (entry === 'reward') rewardScreen.show()
+        else if (entry === 'random') mainMenuScreen.selectLevel('Level' + (('00' + getRandomInclusive(1, 25)).substr(-2)))
         else if (entry) mainMenuScreen.selectLevel(entry)
     } else {
         mainMenuScreen.showMainMenu()
