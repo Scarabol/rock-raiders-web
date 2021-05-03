@@ -506,14 +506,14 @@ export class LWOLoader {
                         const textureFilename = this.path + filename
                         if (sequenceTexture) {
                             const match = textureFilename.match(/(.+\D)0+(\d+)\..+/)
-                            const sequenceNames = ResourceManager.filterTextureSequenceNames(match[1])
-                            if (sequenceNames) {
+                            const textures = ResourceManager.filterTextureSequenceNames(match[1])
+                                .map((name) => ResourceManager.getTexture(name))
+                            if (textures) {
                                 let seqNum = 0
+                                material.color = null // no need for color, when color map (texture) in use
                                 this.sequenceIntervals.push(setInterval(() => {
-                                    material.map = ResourceManager.getTexture(sequenceNames[seqNum])
-                                    material.color = null // no need for color, when color map (texture) in use
-                                    seqNum++
-                                    if (seqNum >= sequenceNames.length) seqNum = 0
+                                    material.map = textures[seqNum++]
+                                    if (seqNum >= textures.length) seqNum = 0
                                 }, 1000 / SEQUENCE_TEXTURE_FRAMERATE))
                             }
                         }
