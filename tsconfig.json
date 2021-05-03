@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "target": "es5",
-    "module": "esnext",
+    "target": "ES6",
+    "module": "ESNext",
     "sourceMap": true,
     "allowJs": true,
     "moduleResolution": "Node"
