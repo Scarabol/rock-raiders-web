@@ -6,7 +6,6 @@ import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
-import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
@@ -14,10 +13,9 @@ import { Monster } from './Monster'
 
 export class SmallSpider extends Monster {
 
-    currentSurface: Surface = null
-
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae')
+        this.floorOffset = 1
     }
 
     get stats() {
@@ -29,13 +27,9 @@ export class SmallSpider extends Monster {
     }
 
     private static onMove(spider: SmallSpider) {
-        const prevSurface = spider.currentSurface || spider.sceneMgr.terrain.getSurfaceFromWorld(spider.group.position)
+        spider.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).remove(spider))
         if (spider.target.length > 0 && spider.moveToClosestTarget(spider.target) === MoveState.MOVED) {
-            const nextSurface = spider.sceneMgr.terrain.getSurfaceFromWorld(spider.group.position)
-            if (prevSurface !== nextSurface) {
-                (GameState.spidersBySurface.get(prevSurface) || []).remove(spider)
-                GameState.spidersBySurface.getOrUpdate(nextSurface, () => []).push(spider)
-            }
+            spider.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).push(spider))
             if (!spider.sceneMgr.terrain.getSurfaceFromWorld(spider.getPosition()).surfaceType.floor) {
                 spider.onDeath()
             } else {
@@ -68,7 +62,7 @@ export class SmallSpider extends Monster {
     onDeath() {
         this.onLevelEnd()
         GameState.spiders.remove(this)
-        GameState.spidersBySurface.getOrUpdate(this.currentSurface, () => []).remove(this)
+        this.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).remove(this))
     }
 
 }
