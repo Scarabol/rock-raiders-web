@@ -5,6 +5,8 @@ import { EventBus } from '../../../event/EventBus'
 import { EntityDeselected } from '../../../event/LocalEvents'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BaseActivity } from '../activities/BaseActivity'
 import { BaseEntity } from '../BaseEntity'
@@ -27,8 +29,8 @@ export abstract class AnimEntity extends BaseEntity {
     activity: BaseActivity = null
     radiusSq: number = 0
 
-    protected constructor(superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
-        super(superType, entityType)
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
+        super(worldMgr, sceneMgr, superType, entityType)
         if (aeFilename) this.animationEntityType = ResourceManager.getAnimationEntityType(aeFilename)
     }
 

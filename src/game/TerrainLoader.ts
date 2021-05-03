@@ -5,14 +5,15 @@ import { Graph } from './model/map/astar'
 import { Surface } from './model/map/Surface'
 import { SurfaceType } from './model/map/SurfaceType'
 import { Terrain } from './model/map/Terrain'
+import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
 
 export class TerrainLoader {
 
-    static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager): Terrain {
+    static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager, sceneMgr: SceneManager): Terrain {
         const tileSize = levelConf.blockSize
         if (tileSize !== TILESIZE) console.error('Unexpected tile size in level configuration: ' + tileSize)
-        const terrain = new Terrain(worldMgr)
+        const terrain = new Terrain(worldMgr, sceneMgr)
 
         const themeName = levelConf.textureSet[1]
         terrain.textureSet = ResourceManager.cfg('Textures', themeName)

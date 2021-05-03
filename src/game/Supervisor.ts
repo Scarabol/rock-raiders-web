@@ -113,7 +113,7 @@ export class Supervisor {
                                 closestTrainingRaider = raider
                                 closestTrainingRaiderIndex = index
                                 minTrainingDistance = dist
-                                closestTrainingArea = raider.worldMgr.sceneManager.terrain.getSurfaceFromWorld2D(pathToTraining.targetPosition) // TODO use precalculated path to training
+                                closestTrainingArea = raider.sceneMgr.terrain.getSurfaceFromWorld2D(pathToTraining.targetPosition) // TODO use precalculated path to training
                                 closestNeededTraining = raiderTraining
                             }
                         }
@@ -136,11 +136,11 @@ export class Supervisor {
     checkUnclearedRubble() {
         GameState.raiders.forEach((raider) => {
             if (raider.job) return
-            const startSurface = raider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(raider.getPosition())
+            const startSurface = raider.sceneMgr.terrain.getSurfaceFromWorld(raider.getPosition())
             for (let rad = 0; rad < 10; rad++) {
                 for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                     for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
-                        const surface = raider.worldMgr.sceneManager.terrain.getSurfaceOrNull(x, y)
+                        const surface = raider.sceneMgr.terrain.getSurfaceOrNull(x, y)
                         if (!(surface?.hasRubble()) || !surface?.discovered) continue
                         const clearRubbleJob = surface.createClearRubbleJob()
                         if (!clearRubbleJob) continue

@@ -7,6 +7,8 @@ import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationE
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../params'
 import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { AnimSubObj } from '../anim/AnimSubObj'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { Crystal } from '../collect/Crystal'
@@ -28,6 +30,8 @@ import { WALL_TYPE } from './WallType'
 export class Surface implements Selectable {
 
     terrain: Terrain
+    worldMgr: WorldManager
+    sceneMgr: SceneManager
     surfaceType: SurfaceType
     x: number
     y: number
@@ -65,6 +69,8 @@ export class Surface implements Selectable {
 
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain
+        this.worldMgr = this.terrain.worldMgr
+        this.sceneMgr = this.terrain.sceneMgr
         this.surfaceType = surfaceType
         if (surfaceType === SurfaceType.CRYSTAL_SEAM || surfaceType === SurfaceType.ORE_SEAM) this.seamLevel = 4
         this.x = x
@@ -109,7 +115,7 @@ export class Surface implements Selectable {
         // drop contained ores and crystals
         this.dropContainedOre(this.containedOres - 4)
         for (let c = 0; c < this.containedCrystals; c++) {
-            const crystal = this.terrain.worldMgr.placeMaterial(new Crystal(), this.getRandomPosition())
+            const crystal = this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), this.getRandomPosition())
             EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
         }
         // check for unsupported neighbors
@@ -130,7 +136,7 @@ export class Surface implements Selectable {
     private dropContainedOre(dropAmount: number) {
         for (let c = 0; c < dropAmount && this.containedOres > 0; c++) {
             this.containedOres--
-            this.terrain.worldMgr.placeMaterial(new Ore(), this.getRandomPosition())
+            this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), this.getRandomPosition())
             EventBus.publishEvent(new OreFoundEvent())
         }
     }
@@ -440,7 +446,7 @@ export class Surface implements Selectable {
 
     getCenterWorld(): Vector3 {
         const center = this.getCenterWorld2D()
-        return new Vector3(center.x, this.terrain.worldMgr.getTerrainHeight(center.x, center.y), center.y)
+        return new Vector3(center.x, this.worldMgr.getTerrainHeight(center.x, center.y), center.y)
     }
 
     setFallinLevel(fallinLevel: number) {
@@ -477,7 +483,7 @@ export class Surface implements Selectable {
         this.fallinGrp.position.copy(fallinPosition)
         const dx = this.x - targetX, dy = targetY - this.y
         this.fallinGrp.rotateOnAxis(new Vector3(0, 1, 0), Math.atan2(dy, dx) + Math.PI / 2)
-        this.terrain.worldMgr.sceneManager.scene.add(this.fallinGrp)
+        this.sceneMgr.scene.add(this.fallinGrp)
         const poly = []
         animation.bodies.forEach((body) => {
             const polyModel = body.model.clone(true)
@@ -525,7 +531,7 @@ export class Surface implements Selectable {
             const that = this
             this.animationTimeout = setTimeout(() => that.animate(poly, animation, nextFrame), 1000 / animation.framesPerSecond * animation.transcoef)
         } else {
-            this.terrain.worldMgr.sceneManager.scene.remove(this.fallinGrp)
+            this.sceneMgr.scene.remove(this.fallinGrp)
             this.fallinGrp = null
         }
     }
@@ -612,10 +618,8 @@ export class Surface implements Selectable {
         if (!this.dynamiteJob) {
             const targetBuilding = GameState.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
             if (!targetBuilding) throw 'Could not find toolstation to spawn dynamite'
-            const dynamite = new Dynamite(this)
-            dynamite.worldMgr = this.terrain.worldMgr
-            dynamite.group.position.copy(targetBuilding.getDropPosition())
-            dynamite.worldMgr.sceneManager.scene.add(dynamite.group)
+            const dynamite = new Dynamite(this.worldMgr, this.sceneMgr, this)
+            dynamite.addToScene(targetBuilding.getDropPosition2D(), targetBuilding.getHeading())
             this.dynamiteJob = new CarryDynamiteJob(dynamite)
             this.updateJobColor()
             EventBus.publishEvent(new JobCreateEvent(this.dynamiteJob))
@@ -633,4 +637,3 @@ export class Surface implements Selectable {
     }
 
 }
-

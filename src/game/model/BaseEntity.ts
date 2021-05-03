@@ -1,4 +1,5 @@
-import { Group, Vector2 } from 'three'
+import { Group, Vector2, Vector3 } from 'three'
+import { SceneManager } from '../SceneManager'
 import { WorldManager } from '../WorldManager'
 import { EntitySuperType, EntityType } from './EntityType'
 import { Surface } from './map/Surface'
@@ -6,13 +7,18 @@ import { Surface } from './map/Surface'
 export abstract class BaseEntity {
 
     worldMgr: WorldManager
+    sceneMgr: SceneManager
+
     group: Group = new Group()
 
     superType: EntitySuperType = null
     entityType: EntityType = null
     level: number = 0
+    floorOffset: number = 0
 
-    protected constructor(superType: EntitySuperType, entityType: EntityType) {
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType) {
+        this.worldMgr = worldMgr
+        this.sceneMgr = sceneMgr
         this.superType = superType
         this.entityType = entityType
     }
@@ -37,12 +43,24 @@ export abstract class BaseEntity {
         this.group.visible = true
     }
 
+    addToScene(worldPosition: Vector2, radHeading: number) {
+        if (worldPosition) {
+            this.group.position.copy(this.worldMgr.getFloorPosition(worldPosition))
+            this.group.position.y += this.floorOffset
+        }
+        if (radHeading !== undefined && radHeading !== null) {
+            this.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading)
+        }
+        this.group.visible = this.surfaces.every((s) => s.discovered)
+        this.sceneMgr.scene.add(this.group)
+    }
+
     removeFromScene() {
-        this.worldMgr.sceneManager.scene.remove(this.group)
+        this.sceneMgr.scene.remove(this.group)
     }
 
     get surfaces(): Surface[] {
-        return [this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position)]
+        return [this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position)]
     }
 
 }

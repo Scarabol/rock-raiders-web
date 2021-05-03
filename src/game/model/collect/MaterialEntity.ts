@@ -1,5 +1,7 @@
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
+import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { AnimEntity } from '../anim/AnimEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntitySuperType, EntityType } from '../EntityType'
@@ -15,8 +17,8 @@ export abstract class MaterialEntity extends AnimEntity {
     targets: CarryPathTarget[] = []
     targetSite: BuildingSite = null
 
-    protected constructor(entityType: EntityType, aeFilename: string = null) {
-        super(EntitySuperType.MATERIAL, entityType, aeFilename)
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string = null) {
+        super(worldMgr, sceneMgr, EntitySuperType.MATERIAL, entityType, aeFilename)
         this.targetBuildingTypes = [EntityType.TOOLSTATION]
     }
 
@@ -76,7 +78,7 @@ export abstract class MaterialEntity extends AnimEntity {
     }
 
     onAddToSite() {
-        this.worldMgr.sceneManager.scene.add(this.group)
+        this.addToScene(null, null)
     }
 
 }

@@ -1,6 +1,8 @@
 import { Vector2, Vector3 } from 'three'
 import { MovableEntityStats } from '../../cfg/MovableEntityStats'
 import { JOB_ACTION_RANGE } from '../../params'
+import { SceneManager } from '../SceneManager'
+import { WorldManager } from '../WorldManager'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
 import { AnimEntity } from './anim/AnimEntity'
 import { EntityStep } from './EntityStep'
@@ -12,10 +14,9 @@ import { PathTarget } from './PathTarget'
 export abstract class MovableEntity extends AnimEntity {
 
     currentPath: TerrainPath = null
-    floorOffset: number = 0
 
-    protected constructor(superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
-        super(superType, entityType, aeFilename)
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
+        super(worldMgr, sceneMgr, superType, entityType, aeFilename)
     }
 
     abstract get stats(): MovableEntityStats
@@ -81,11 +82,11 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     isOnRubble() {
-        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).hasRubble()
+        return this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position).hasRubble()
     }
 
     isOnPath(): boolean {
-        return this.worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).isPath()
+        return this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position).isPath()
     }
 
 }

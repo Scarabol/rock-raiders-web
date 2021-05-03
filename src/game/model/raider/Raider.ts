@@ -5,6 +5,8 @@ import { RaiderSelected, SelectionEvent } from '../../../event/LocalEvents'
 import { EntityAddedEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent, RaiderDiscoveredEvent } from '../../../event/WorldLocationEvent'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { BaseActivity } from '../activities/BaseActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { Crystal } from '../collect/Crystal'
@@ -30,8 +32,8 @@ export class Raider extends FulfillerEntity {
     trainings: Map<RaiderTraining, boolean> = new Map()
     slipped: boolean = false
 
-    constructor() {
-        super(EntitySuperType.RAIDER, EntityType.PILOT, 'mini-figures/pilot/pilot.ae', SelectionType.RAIDER)
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
+        super(worldMgr, sceneMgr, EntitySuperType.RAIDER, EntityType.PILOT, 'mini-figures/pilot/pilot.ae', SelectionType.RAIDER)
         this.tools.set(RaiderTool.DRILL, true)
     }
 
@@ -40,7 +42,7 @@ export class Raider extends FulfillerEntity {
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {
-        return this.worldMgr.sceneManager.terrain.findPath(this.getPosition2D(), target)
+        return this.sceneMgr.terrain.findPath(this.getPosition2D(), target)
     }
 
     onDiscover() {
@@ -127,10 +129,10 @@ export class Raider extends FulfillerEntity {
                             .rotateAround(new Vector2(0, 0), degToRad(-10 + getRandom(20)))
                             .add(this.getPosition2D())
                         if (surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                            const crystal = this.worldMgr.placeMaterial(new Crystal(), vec)
+                            const crystal = this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), vec)
                             EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
                         } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM) {
-                            this.worldMgr.placeMaterial(new Ore(), vec)
+                            this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), vec)
                             EventBus.publishEvent(new OreFoundEvent())
                         }
                         this.changeActivity()

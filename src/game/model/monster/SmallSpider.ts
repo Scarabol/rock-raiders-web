@@ -2,6 +2,8 @@ import { Vector2 } from 'three'
 import { getRandom, getRandomInclusive } from '../../../core/Util'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../map/Surface'
@@ -14,8 +16,8 @@ export class SmallSpider extends Monster {
 
     currentSurface: Surface = null
 
-    constructor() {
-        super(EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae')
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
+        super(worldMgr, sceneMgr, EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae')
     }
 
     get stats() {
@@ -27,14 +29,14 @@ export class SmallSpider extends Monster {
     }
 
     private static onMove(spider: SmallSpider) {
-        const prevSurface = spider.currentSurface || spider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position)
+        const prevSurface = spider.currentSurface || spider.sceneMgr.terrain.getSurfaceFromWorld(spider.group.position)
         if (spider.target.length > 0 && spider.moveToClosestTarget(spider.target) === MoveState.MOVED) {
-            const nextSurface = spider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position)
+            const nextSurface = spider.sceneMgr.terrain.getSurfaceFromWorld(spider.group.position)
             if (prevSurface !== nextSurface) {
                 (GameState.spidersBySurface.get(prevSurface) || []).remove(spider)
                 GameState.spidersBySurface.getOrUpdate(nextSurface, () => []).push(spider)
             }
-            if (!spider.worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.getPosition()).surfaceType.floor) {
+            if (!spider.sceneMgr.terrain.getSurfaceFromWorld(spider.getPosition()).surfaceType.floor) {
                 spider.onDeath()
             } else {
                 spider.moveTimeout = setTimeout(() => SmallSpider.onMove(spider), 1000 / NATIVE_FRAMERATE)
@@ -49,7 +51,7 @@ export class SmallSpider extends Monster {
     }
 
     private findTarget(): PathTarget {
-        const terrain = this.worldMgr.sceneManager.terrain
+        const terrain = this.sceneMgr.terrain
         const currentCenter = terrain.getSurfaceFromWorld(this.getPosition()).getCenterWorld()
         for (let c = 0; c < 20; c++) {
             const targetX = getRandomInclusive(currentCenter.x - (TILESIZE + TILESIZE / 2), currentCenter.x + TILESIZE + TILESIZE / 2)

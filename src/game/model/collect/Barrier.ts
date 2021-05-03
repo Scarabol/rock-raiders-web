@@ -1,3 +1,5 @@
+import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
@@ -10,8 +12,8 @@ export class Barrier extends MaterialEntity {
 
     heading: number
 
-    constructor(location: BarrierLocation, site: BuildingSite) {
-        super(EntityType.BARRIER, 'MiscAnims/Barrier/Barrier.ae')
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, location: BarrierLocation, site: BuildingSite) {
+        super(worldMgr, sceneMgr, EntityType.BARRIER, 'MiscAnims/Barrier/Barrier.ae')
         this.heading = location.heading
         this.priorityIdentifier = PriorityIdentifier.aiPriorityConstruction
         this.changeActivity()

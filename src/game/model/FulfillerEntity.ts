@@ -1,7 +1,9 @@
-import { Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { clearIntervalSafe } from '../../core/Util'
 import { SelectionEvent } from '../../event/LocalEvents'
 import { NATIVE_FRAMERATE } from '../../params'
+import { SceneManager } from '../SceneManager'
+import { WorldManager } from '../WorldManager'
 import { MaterialEntity } from './collect/MaterialEntity'
 import { EntitySuperType, EntityType } from './EntityType'
 import { Job } from './job/Job'
@@ -21,8 +23,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     carries: MaterialEntity = null
     jobWorkplaces: PathTarget[] = []
 
-    protected constructor(superType: EntitySuperType, entityType: EntityType, aeFilename: string, selectionType: SelectionType) {
-        super(superType, entityType, aeFilename)
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string, selectionType: SelectionType) {
+        super(worldMgr, sceneMgr, superType, entityType, aeFilename)
         this.selectionType = selectionType
         this.group.userData = {'selectable': this}
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
@@ -36,13 +38,12 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     dropItem() {
         if (!this.carries) return
+        const position = this.getPosition()
         if (this.carryJoint) {
             this.carryJoint.remove(this.carries.group)
-            this.carryJoint.getWorldPosition(this.carries.group.position)
-        } else {
-            this.carries.group.position.copy(this.worldMgr.getFloorPosition(this.getPosition2D()))
+            this.carryJoint.getWorldPosition(position)
         }
-        this.carries.worldMgr.sceneManager.scene.add(this.carries.group)
+        this.carries.addToScene(new Vector2(position.x, position.z), null)
         this.carries = null
     }
 

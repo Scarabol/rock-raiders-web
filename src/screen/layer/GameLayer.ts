@@ -15,6 +15,7 @@ import { Surface } from '../../game/model/map/Surface'
 import { SurfaceType } from '../../game/model/map/SurfaceType'
 import { Raider } from '../../game/model/raider/Raider'
 import { SelectionType } from '../../game/model/Selectable'
+import { SceneManager } from '../../game/SceneManager'
 import { WorldManager } from '../../game/WorldManager'
 import { DEV_MODE } from '../../params'
 import { Cursors } from '../Cursors'
@@ -22,7 +23,8 @@ import { ScreenLayer } from './ScreenLayer'
 
 export class GameLayer extends ScreenLayer {
 
-    private worldMgr: WorldManager
+    worldMgr: WorldManager
+    sceneMgr: SceneManager
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
     private lastCursor: Cursors = Cursors.Pointer_Standard
 
@@ -41,30 +43,27 @@ export class GameLayer extends ScreenLayer {
         EventBus.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
     }
 
-    setWorldManager(worldMgr: WorldManager) {
-        this.worldMgr = worldMgr
-    }
-
     handlePointerEvent(event: GamePointerEvent): boolean {
-        const buildMarker = this.worldMgr.sceneManager.buildMarker
+        const buildMarker = this.sceneMgr.buildMarker
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             const intersectionPoint = this.getTerrainPositionFromEvent(event)
             if (intersectionPoint) this.worldMgr.setTorchPosition(intersectionPoint)
-            buildMarker.update(this.worldMgr.sceneManager.terrain, intersectionPoint)
+            buildMarker.update(this.sceneMgr.terrain, intersectionPoint)
             this.updateCursor(event)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 if (GameState.buildModeSelection && buildMarker.lastCheck) {
+                    const building = GameState.buildModeSelection(this.worldMgr, this.sceneMgr)
                     buildMarker.visibleSurfaces.forEach((s) => {
                         s.surfaceType = SurfaceType.POWER_PATH_BUILDING
                         s.updateTexture()
                         s.neighbors.forEach((n) => n.updateTexture())
                     })
                     const barrierLocations = buildMarker.getBarrierLocations()
-                    const stats = GameState.buildModeSelection.stats
+                    const stats = building.stats
                     const neededCrystals = stats?.CostCrystal || 0
                     const neededOre = stats?.CostOre || 0
-                    const site = new BuildingSite(buildMarker.primarySurface, buildMarker.secondarySurface, GameState.buildModeSelection)
+                    const site = new BuildingSite(buildMarker.primarySurface, buildMarker.secondarySurface, building)
                     site.heading = buildMarker.heading
                     site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
                     site.neededByType.set(EntityType.CRYSTAL, neededCrystals)
@@ -85,7 +84,7 @@ export class GameLayer extends ScreenLayer {
                     // TODO check for collectable entity first
                     const intersectionPoint = this.getTerrainPositionFromEvent(event)
                     if (intersectionPoint) {
-                        const surface = this.worldMgr.sceneManager.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
+                        const surface = this.sceneMgr.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
                         if (surface) {
                             if (surface.isDrillable()) {
                                 this.assignSurfaceJob(surface.createDrillJob(), surface, intersectionPoint)
@@ -117,7 +116,7 @@ export class GameLayer extends ScreenLayer {
         const rx = (cx / this.canvas.width) * 2 - 1
         const ry = -(cy / this.canvas.height) * 2 + 1
         const raycaster = new Raycaster()
-        raycaster.setFromCamera({x: rx, y: ry}, this.worldMgr.sceneManager.camera)
+        raycaster.setFromCamera({x: rx, y: ry}, this.sceneMgr.camera)
         const cursor = this.determineCursor(raycaster)
         if (cursor !== this.lastCursor) {
             this.lastCursor = cursor
@@ -134,7 +133,7 @@ export class GameLayer extends ScreenLayer {
             if (intersects.length > 0) {
                 return Cursors.Pointer_Selected
             } else {
-                intersects = raycaster.intersectObjects(this.worldMgr.sceneManager.terrain.floorGroup.children)
+                intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
                 if (intersects.length > 0) {
                     const userData = intersects[0].object.userData
                     if (userData && userData.hasOwnProperty('surface')) {

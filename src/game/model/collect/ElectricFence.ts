@@ -1,6 +1,7 @@
 import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { CarryFenceJob } from '../job/CarryFenceJob'
@@ -13,8 +14,8 @@ export class ElectricFence extends MaterialEntity {
 
     targetSurface: Surface
 
-    constructor(surface: Surface) {
-        super(EntityType.ELECTRIC_FENCE)
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, surface: Surface) {
+        super(worldMgr, sceneMgr, EntityType.ELECTRIC_FENCE)
         const resource = ResourceManager.getResource('Buildings/E-Fence/E-Fence4.lwo')
         const mesh = SceneManager.registerMesh(new LWOLoader('Buildings/E-Fence/').parse(resource))
         this.group.add(mesh)

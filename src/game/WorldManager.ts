@@ -23,13 +23,13 @@ import degToRad = MathUtils.degToRad
 
 export class WorldManager {
 
-    sceneManager: SceneManager = null
+    sceneMgr: SceneManager = null
     spawnRaiderInterval = null
     nerpRunner: NerpRunner = null
     oxygenUpdateInterval = null
 
     constructor(canvas: HTMLCanvasElement) {
-        this.sceneManager = new SceneManager(canvas)
+        this.sceneMgr = new SceneManager(canvas)
         EventBus.registerEventListener(EventKey.DESELECTED_ENTITY, () => GameState.selectEntities([]))
         EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, () => {
             if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
@@ -53,15 +53,15 @@ export class WorldManager {
         const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
         const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
         const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])
-        this.sceneManager.setupScene(ambientColor)
+        this.sceneMgr.setupScene(ambientColor)
 
         // create terrain mesh and add it to the scene
-        this.sceneManager.terrain = TerrainLoader.loadTerrain(levelConf, this)
-        this.sceneManager.scene.add(this.sceneManager.terrain.floorGroup)
+        this.sceneMgr.terrain = TerrainLoader.loadTerrain(levelConf, this, this.sceneMgr)
+        this.sceneMgr.scene.add(this.sceneMgr.terrain.floorGroup)
 
         // load in non-space objects next
         const objectListConf = ResourceManager.getResource(levelConf.oListFile)
-        ObjectListLoader.loadObjectList(this, objectListConf, levelConf.disableStartTeleport)
+        ObjectListLoader.loadObjectList(this, this.sceneMgr, objectListConf, levelConf.disableStartTeleport)
 
         // load nerp script
         this.nerpRunner = NerpParser.parse(ResourceManager.getResource(levelConf.nerpFile))
@@ -70,15 +70,15 @@ export class WorldManager {
 
         // gather level start details for game result score calculation
         GameState.totalDiggables = 0
-        this.sceneManager.terrain.forEachSurface((s) => GameState.totalDiggables += s.isDigable() ? 1 : 0)
+        this.sceneMgr.terrain.forEachSurface((s) => GameState.totalDiggables += s.isDigable() ? 1 : 0)
         GameState.totalCrystals = 0
-        this.sceneManager.terrain.forEachSurface((s) => GameState.totalCrystals += s.containedCrystals)
+        this.sceneMgr.terrain.forEachSurface((s) => GameState.totalCrystals += s.containedCrystals)
         GameState.totalOres = 0
-        this.sceneManager.terrain.forEachSurface((s) => GameState.totalOres += s.containedOres)
+        this.sceneMgr.terrain.forEachSurface((s) => GameState.totalOres += s.containedOres)
     }
 
     start() {
-        this.sceneManager.startScene()
+        this.sceneMgr.startScene()
         this.nerpRunner?.startExecution()
         GameState.levelStartTime = Date.now()
     }
@@ -90,36 +90,36 @@ export class WorldManager {
         GameState.spiders.forEach((m) => m.onLevelEnd())
         GameState.bats.forEach((b) => b.onLevelEnd())
         GameState.remainingDiggables = 0
-        this.sceneManager?.terrain?.forEachSurface((s) => GameState.remainingDiggables += s.isDigable() ? 1 : 0)
-        this.sceneManager.disposeScene()
+        this.sceneMgr?.terrain?.forEachSurface((s) => GameState.remainingDiggables += s.isDigable() ? 1 : 0)
+        this.sceneMgr.disposeScene()
     }
 
     resize(width: number, height: number) {
-        this.sceneManager?.renderer.setSize(width, height)
+        this.sceneMgr?.renderer.setSize(width, height)
     }
 
     getTerrainIntersectionPoint(rx: number, ry: number): Vector3 {
-        if (!this.sceneManager.terrain) return null
+        if (!this.sceneMgr.terrain) return null
         const raycaster = new Raycaster()
-        raycaster.setFromCamera({x: rx, y: ry}, this.sceneManager.camera)
-        const intersects = raycaster.intersectObjects(this.sceneManager.terrain.floorGroup.children)
+        raycaster.setFromCamera({x: rx, y: ry}, this.sceneMgr.camera)
+        const intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
         return intersects.length > 0 ? intersects[0].point : null
     }
 
     setTorchPosition(position: Vector2) {
-        this.sceneManager.cursorTorchlight.position.x = position.x
-        this.sceneManager.cursorTorchlight.position.y = this.sceneManager.terrain.getSurfaceFromWorldXZ(position.x, position.y).getFloorHeight(position.x, position.y) + 2 * TILESIZE
-        this.sceneManager.cursorTorchlight.position.z = position.y
+        this.sceneMgr.cursorTorchlight.position.x = position.x
+        this.sceneMgr.cursorTorchlight.position.y = this.sceneMgr.terrain.getSurfaceFromWorldXZ(position.x, position.y).getFloorHeight(position.x, position.y) + 2 * TILESIZE
+        this.sceneMgr.cursorTorchlight.position.z = position.y
     }
 
     getFloorPosition(world: Vector2) {
-        const floorY = this.sceneManager.terrain.getSurfaceFromWorldXZ(world.x, world.y).getFloorHeight(world.x, world.y)
+        const floorY = this.sceneMgr.terrain.getSurfaceFromWorldXZ(world.x, world.y).getFloorHeight(world.x, world.y)
         return new Vector3(world.x, floorY, world.y)
     }
 
     getTerrainHeight(worldX: number, worldZ: number): number {
         const raycaster = new Raycaster(new Vector3(Number(worldX), 3 * TILESIZE, Number(worldZ)), new Vector3(0, -1, 0))
-        const intersect = raycaster.intersectObject(this.sceneManager.terrain.floorGroup, true)
+        const intersect = raycaster.intersectObject(this.sceneMgr.terrain.floorGroup, true)
         if (intersect.length > 0) {
             return intersect[0].point.y
         } else {
@@ -128,11 +128,8 @@ export class WorldManager {
         }
     }
 
-    placeMaterial(item: MaterialEntity, world: Vector2) {
-        item.worldMgr = this
-        item.group.position.copy(this.getFloorPosition(world))
-        item.group.visible = this.sceneManager.terrain.getSurfaceFromWorld(item.group.position).discovered
-        this.sceneManager.scene.add(item.group)
+    placeMaterial(item: MaterialEntity, worldPosition: Vector2) {
+        item.addToScene(worldPosition, 0)
         if (item.group.visible) {
             GameState.materials.push(item)
             EventBus.publishEvent(new JobCreateEvent(item.createCarryJob()))
@@ -155,21 +152,19 @@ export class WorldManager {
             GameState.requestedRaiders--
             EventBus.publishEvent(new RaiderRequested())
             station.spawning = true
-            const raider = new Raider()
-            raider.worldMgr = this
+            const raider = new Raider(this, this.sceneMgr)
+            const heading = station.getHeading()
             raider.changeActivity(RaiderActivity.TeleportIn, () => {
                 station.spawning = false
                 raider.changeActivity()
                 raider.createPickSphere()
                 const walkOutPos = station.getPosition2D().add(new Vector2(0, TILESIZE * 3 / 4 + getRandom(TILESIZE / 2))
-                    .rotateAround(new Vector2(0, 0), station.getHeading() + degToRad(-10 + getRandom(20))))
+                    .rotateAround(new Vector2(0, 0), heading + degToRad(-10 + getRandom(20))))
                 raider.setJob(new MoveJob(walkOutPos))
                 GameState.raiders.push(raider)
                 EventBus.publishEvent(new EntityAddedEvent(raider))
             })
-            raider.group.position.copy(station.group.position).add(new Vector3(0, 0, TILESIZE / 2).applyEuler(station.group.rotation))
-            raider.group.rotation.copy(station.group.rotation)
-            this.sceneManager.scene.add(raider.group)
+            raider.addToScene(station.primarySurface.getCenterWorld2D(), heading)
         }
     }
 

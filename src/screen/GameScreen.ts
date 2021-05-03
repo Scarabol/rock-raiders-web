@@ -31,8 +31,8 @@ export class GameScreen extends BaseScreen {
         this.overlayLayer = this.addLayer(new OverlayLayer(), 30)
         this.worldMgr = new WorldManager(this.gameLayer.canvas)
         this.gameLayer.worldMgr = this.worldMgr
-        this.gameLayer.sceneMgr = this.worldMgr.sceneManager
-        this.selectionLayer.sceneMgr = this.worldMgr.sceneManager
+        this.gameLayer.sceneMgr = this.worldMgr.sceneMgr
+        this.selectionLayer.sceneMgr = this.worldMgr.sceneMgr
         this.jobSupervisor = new Supervisor(this.worldMgr)
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.panelOptions.show()

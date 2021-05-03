@@ -2,6 +2,8 @@ import { Vector2 } from 'three'
 import { getRandomInclusive } from '../../../core/Util'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { MoveState } from '../MoveState'
@@ -10,8 +12,8 @@ import { Monster } from './Monster'
 
 export class Bat extends Monster {
 
-    constructor() {
-        super(EntityType.BAT, 'Creatures/bat/bat.ae')
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
+        super(worldMgr, sceneMgr, EntityType.BAT, 'Creatures/bat/bat.ae')
         this.floorOffset = TILESIZE / 2
     }
 
@@ -31,7 +33,7 @@ export class Bat extends Monster {
     }
 
     private findTarget(): PathTarget { // TODO move to nearby drilling noise, explosions or sonic blasters
-        const terrain = this.worldMgr.sceneManager.terrain
+        const terrain = this.sceneMgr.terrain
         const currentCenter = terrain.getSurfaceFromWorld(this.getPosition()).getCenterWorld()
         for (let c = 0; c < 20; c++) {
             const targetX = getRandomInclusive(currentCenter.x - (TILESIZE + TILESIZE / 2), currentCenter.x + TILESIZE + TILESIZE / 2)

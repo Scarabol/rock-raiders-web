@@ -18,65 +18,55 @@ import { GameState } from './model/GameState'
 import { Bat } from './model/monster/Bat'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
+import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
 
-    static loadObjectList(worldMgr: WorldManager, objectListConf, disableStartTeleport: boolean) {
+    static loadObjectList(worldMgr: WorldManager, sceneMgr: SceneManager, objectListConf, disableStartTeleport: boolean) {
         Object.values(objectListConf).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type
             // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
-            const worldX = (olObject.xPos - 1) * TILESIZE
-            const worldZ = (olObject.yPos - 1) * TILESIZE
-            const terrainY = worldMgr.getTerrainHeight(worldX, worldZ)
+            const worldPos = new Vector2(olObject.xPos, olObject.yPos).addScalar(-1).multiplyScalar(TILESIZE)
             const buildingType: string = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
             if (lTypeName === 'TVCamera'.toLowerCase()) {
-                const offset = new Vector3(5 * TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(new Vector3(worldX, terrainY, worldZ - TILESIZE / 2))
-                worldMgr.sceneManager.camera.position.copy(offset)
-                worldMgr.sceneManager.camera.position.y = 4.5 * TILESIZE
-                worldMgr.sceneManager.controls.target.copy(new Vector3(worldX, terrainY, worldZ - TILESIZE / 2))
-                worldMgr.sceneManager.controls.update()
-                worldMgr.setTorchPosition(new Vector2(worldX, worldZ - TILESIZE / 2))
+                const terrainY = worldMgr.getTerrainHeight(worldPos.x, worldPos.y)
+                const loc = new Vector3(worldPos.x, terrainY, worldPos.y - TILESIZE / 2)
+                const offset = new Vector3(5 * TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(loc)
+                sceneMgr.camera.position.copy(offset)
+                sceneMgr.camera.position.y = 4.5 * TILESIZE
+                sceneMgr.controls.target.copy(loc)
+                sceneMgr.controls.update()
+                worldMgr.setTorchPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
-                const raider = new Raider()
-                raider.worldMgr = worldMgr
+                const raider = new Raider(worldMgr, sceneMgr)
                 raider.changeActivity()
                 raider.createPickSphere()
-                raider.group.position.set(worldX, terrainY, worldZ)
-                raider.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading - Math.PI / 2)
-                raider.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(raider.group.position).discovered
+                raider.addToScene(worldPos, radHeading - Math.PI / 2)
                 if (raider.group.visible) {
                     GameState.raiders.push(raider)
                     EventBus.publishEvent(new EntityAddedEvent(raider))
                 } else {
                     GameState.raidersUndiscovered.push(raider)
                 }
-                worldMgr.sceneManager.scene.add(raider.group)
             } else if (buildingType) {
-                const entity = this.createBuildingByName(buildingType)
-                entity.addToScene(worldMgr, worldX, worldZ, -radHeading - Math.PI, disableStartTeleport)
+                const entity = this.createBuildingByName(buildingType, worldMgr, sceneMgr)
+                entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
-                worldMgr.placeMaterial(new Crystal(), new Vector2(worldX, worldZ))
+                worldMgr.placeMaterial(new Crystal(worldMgr, sceneMgr), worldPos)
             } else if (lTypeName === 'SmallSpider'.toLowerCase()) {
-                const spider = new SmallSpider()
-                spider.worldMgr = worldMgr
+                const spider = new SmallSpider(worldMgr, sceneMgr)
                 spider.changeActivity()
-                spider.group.position.set(worldX, terrainY, worldZ)
-                const currentSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(spider.group.position)
-                spider.group.visible = currentSurface.discovered
-                worldMgr.sceneManager.scene.add(spider.group)
+                spider.addToScene(worldPos, radHeading)
                 GameState.spiders.push(spider)
-                GameState.spidersBySurface.getOrUpdate(currentSurface, () => []).push(spider)
+                spider.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).push(spider))
                 spider.startMoving()
             } else if (lTypeName === 'Bat'.toLowerCase()) {
-                const bat = new Bat()
-                bat.worldMgr = worldMgr
+                const bat = new Bat(worldMgr, sceneMgr)
                 bat.changeActivity()
-                bat.group.position.set(worldX, bat.floorOffset, worldZ)
-                bat.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(bat.group.position).discovered
-                worldMgr.sceneManager.scene.add(bat.group)
+                bat.addToScene(worldPos, radHeading)
                 GameState.bats.push(bat)
                 bat.startRandomMove()
             } else {
@@ -88,28 +78,28 @@ export class ObjectListLoader {
         GameState.buildings.forEach((b) => b.surfaces.forEach((s) => s.neighbors.forEach((n) => n.updateTexture())))
     }
 
-    private static createBuildingByName(buildingType: string) {
+    private static createBuildingByName(buildingType: string, worldMgr: WorldManager, sceneMgr: SceneManager) {
         const typename = buildingType.slice(buildingType.lastIndexOf('/') + 1).toLowerCase()
         if (typename === 'toolstation') {
-            return new Toolstation()
+            return new Toolstation(worldMgr, sceneMgr)
         } else if (typename === 'teleports') {
-            return new TeleportPad()
+            return new TeleportPad(worldMgr, sceneMgr)
         } else if (typename === 'docks') {
-            return new Docks()
+            return new Docks(worldMgr, sceneMgr)
         } else if (typename === 'powerstation') {
-            return new PowerStation()
+            return new PowerStation(worldMgr, sceneMgr)
         } else if (typename === 'barracks') {
-            return new Barracks()
+            return new Barracks(worldMgr, sceneMgr)
         } else if (typename === 'upgrade') {
-            return new Upgrade()
+            return new Upgrade(worldMgr, sceneMgr)
         } else if (typename === 'geo-dome') {
-            return new Geodome()
+            return new Geodome(worldMgr, sceneMgr)
         } else if (typename === 'orerefinery') {
-            return new OreRefinery()
+            return new OreRefinery(worldMgr, sceneMgr)
         } else if (typename === 'gunstation') {
-            return new GunStation()
+            return new GunStation(worldMgr, sceneMgr)
         } else if (typename === 'teleportbig') {
-            return new TeleportBig()
+            return new TeleportBig(worldMgr, sceneMgr)
         } else {
             throw 'Unknown building type: ' + typename
         }

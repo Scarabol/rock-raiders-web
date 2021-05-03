@@ -3,6 +3,8 @@ import { LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { EventBus } from '../../event/EventBus'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../params'
+import { SceneManager } from '../SceneManager'
+import { WorldManager } from '../WorldManager'
 import { BaseEntity } from './BaseEntity'
 import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
@@ -58,7 +60,7 @@ export class GameState {
     static rewardConfig: LevelRewardConfig = null
     static priorityList: PriorityList = new PriorityList()
     static oxygenRate: number = 0
-    static buildModeSelection: BuildingEntity = null
+    static buildModeSelection: (worldMgr: WorldManager, sceneMgr: SceneManager) => BuildingEntity = null
 
     static reset() {
         this.resultState = GameResultState.RUNNING
@@ -218,7 +220,7 @@ export class GameState {
     }
 
     static getNearbySpiders(entity: BaseEntity): SmallSpider[] {
-        const terrain = entity.worldMgr.sceneManager.terrain
+        const terrain = entity.sceneMgr.terrain
         const currentSurface = terrain.getSurfaceFromWorld(entity.getPosition())
         const nearbySpiders: SmallSpider[] = []
         for (let x = currentSurface.x; x <= currentSurface.x + 1; x++) {

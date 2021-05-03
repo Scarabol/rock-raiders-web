@@ -3,6 +3,7 @@ import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { EntityAddedEvent } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
+import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { EntitySuperType } from '../EntityType'
 import { PathTarget } from '../PathTarget'
@@ -14,6 +15,7 @@ import { TerrainPath } from './TerrainPath'
 export class Terrain {
 
     worldMgr: WorldManager
+    sceneMgr: SceneManager
     textureSet: any = {}
     width: number = 0
     height: number = 0
@@ -23,8 +25,9 @@ export class Terrain {
     graphWalk: Graph = null
     cachedPaths = new Map<string, TerrainPath>()
 
-    constructor(worldMgr: WorldManager) {
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         this.worldMgr = worldMgr
+        this.sceneMgr = sceneMgr
         this.floorGroup.scale.set(TILESIZE, TILESIZE, TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
         EventBus.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {

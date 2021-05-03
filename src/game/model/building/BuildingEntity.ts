@@ -6,6 +6,7 @@ import { BuildingSelected, EntityDeselected, SelectionEvent } from '../../../eve
 import { BuildingUpgraded, EntityAddedEvent, MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
@@ -43,8 +44,8 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     crystalsInUse: number = 0
     inBeam: boolean = false
 
-    protected constructor(entityType: EntityType, aeFilename: string) {
-        super(EntitySuperType.BUILDING, entityType, aeFilename)
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
+        super(worldMgr, sceneMgr, EntitySuperType.BUILDING, entityType, aeFilename)
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
@@ -142,10 +143,10 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         this.crystalsInUse = 0
         this.inBeam = true
         for (let c = 0; c < this.stats.CostOre; c++) {
-            this.worldMgr.placeMaterial(new Ore(), this.primarySurface.getRandomPosition())
+            this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), this.primarySurface.getRandomPosition())
         }
         for (let c = 0; c < this.stats.CostCrystal; c++) {
-            this.worldMgr.placeMaterial(new Crystal(), this.primarySurface.getRandomPosition())
+            this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), this.primarySurface.getRandomPosition())
         }
         this.surfaces.forEach((s) => {
             s.surfaceType = SurfaceType.GROUND
@@ -170,12 +171,12 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         if (type === EntityType.CRYSTAL) {
             while (GameState.numCrystal > 0 && material.length < quantity) {
                 GameState.numCrystal--
-                material.push(new Crystal())
+                material.push(new Crystal(this.worldMgr, this.sceneMgr))
             }
         } else if (type === EntityType.ORE) {
             while (GameState.numOre > 0 && material.length < quantity) {
                 GameState.numOre--
-                material.push(new Ore())
+                material.push(new Ore(this.worldMgr, this.sceneMgr))
             }
         } else {
             console.error('Material drop not implemented for: ' + type)
@@ -185,11 +186,11 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     spawnBarriers(barrierLocations: BarrierLocation[], site: BuildingSite) {
-        barrierLocations.map((l) => new Barrier(l, site)).forEach((b) => this.worldMgr.placeMaterial(b, this.getDropPosition2D()))
+        barrierLocations.map((l) => new Barrier(this.worldMgr, this.sceneMgr, l, site)).forEach((b) => this.worldMgr.placeMaterial(b, this.getDropPosition2D()))
     }
 
     spawnFence(targetSurface: Surface) {
-        this.worldMgr.placeMaterial(new ElectricFence(targetSurface), this.getDropPosition2D())
+        this.worldMgr.placeMaterial(new ElectricFence(this.worldMgr, this.sceneMgr, targetSurface), this.getDropPosition2D())
     }
 
     turnOnPower() {
@@ -217,14 +218,10 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         return result
     }
 
-    addToScene(worldMgr: WorldManager, worldX: number, worldZ: number, radHeading: number, disableTeleportIn: boolean) {
-        this.worldMgr = worldMgr
-        this.group.position.copy(worldMgr.getFloorPosition(new Vector2(worldX, worldZ)))
-        this.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading) // TODO rotate building with normal vector of surface too
-        this.group.visible = worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position).discovered
-        worldMgr.sceneManager.scene.add(this.group)
+    placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
+        this.addToScene(worldPosition, radHeading)
         this.createPickSphere()
-        const primaryPathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(this.group.position)
+        const primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position)
         primaryPathSurface.setBuilding(this)
         primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
         primaryPathSurface.updateTexture()
@@ -232,7 +229,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         if (this.secondaryBuildingPart) {
             const secondaryOffset = new Vector3(TILESIZE * this.secondaryBuildingPart.x, 0, TILESIZE * this.secondaryBuildingPart.y)
                 .applyAxisAngle(new Vector3(0, 1, 0), radHeading).add(this.group.position)
-            const secondarySurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(secondaryOffset)
+            const secondarySurface = this.sceneMgr.terrain.getSurfaceFromWorld(secondaryOffset)
             secondarySurface.setBuilding(this)
             secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
             secondarySurface.updateTexture()
@@ -241,7 +238,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         if (this.primaryPowerPath) {
             const pathOffset = new Vector3(this.primaryPowerPath.x, 0, this.primaryPowerPath.y).multiplyScalar(TILESIZE)
                 .applyAxisAngle(new Vector3(0, 1, 0), radHeading).add(this.group.position)
-            const pathSurface = worldMgr.sceneManager.terrain.getSurfaceFromWorld(pathOffset)
+            const pathSurface = this.sceneMgr.terrain.getSurfaceFromWorld(pathOffset)
             if (this.entityType === EntityType.GEODOME) pathSurface.building = this
             pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
             pathSurface.updateTexture()
@@ -254,18 +251,20 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         }
         if (this.group.visible && !disableTeleportIn) {
             this.inBeam = true
-            this.changeActivity(BuildingActivity.Teleport, () => this.onAddToScene())
+            this.changeActivity(BuildingActivity.Teleport, () => {
+                this.inBeam = false
+                this.onPlaceDown()
+            })
         } else {
-            this.onAddToScene()
+            this.onPlaceDown()
         }
-        worldMgr.sceneManager.terrain.resetGraphWalk()
+        this.sceneMgr.terrain.resetGraphWalk()
     }
 
-    private onAddToScene() {
-        this.inBeam = false
+    private onPlaceDown() {
         this.changeActivity()
-        EventBus.publishEvent(new EntityAddedEvent(this))
         this.turnOnPower()
+        EventBus.publishEvent(new EntityAddedEvent(this))
     }
 
     getDropAction(): RaiderActivity {

@@ -48,7 +48,7 @@ export class CarryPathTarget extends PathTarget {
                 CarryPathTarget.addItemToStorage(item)
             }
         } else {
-            item.worldMgr.sceneManager.scene.add(item.group)
+            item.addToScene(null, null)
         }
     }
 

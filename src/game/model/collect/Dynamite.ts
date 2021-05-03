@@ -1,3 +1,5 @@
+import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
 import { EntityType } from '../EntityType'
@@ -13,8 +15,8 @@ export class Dynamite extends MaterialEntity {
 
     targetSurface: Surface
 
-    constructor(surface: Surface) {
-        super(EntityType.DYNAMITE, 'MiscAnims/Dynamite/Dynamite.ae')
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, surface: Surface) {
+        super(worldMgr, sceneMgr, EntityType.DYNAMITE, 'MiscAnims/Dynamite/Dynamite.ae')
         this.targetSurface = surface
         this.priorityIdentifier = PriorityIdentifier.aiPriorityDestruction
         this.changeActivity()
@@ -31,7 +33,6 @@ export class Dynamite extends MaterialEntity {
 
     ignite() {
         // TODO add as explosive and scare em all!
-        this.worldMgr.sceneManager.scene.add(this.group)
         const center = this.targetSurface.getCenterWorld()
         center.y = this.group.position.y
         this.group.lookAt(center)

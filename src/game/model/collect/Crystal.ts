@@ -2,14 +2,15 @@ import { AdditiveBlending, Color, Material, MeshPhongMaterial } from 'three'
 import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Crystal extends MaterialEntity {
 
-    constructor() {
-        super(EntityType.CRYSTAL)
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
+        super(worldMgr, sceneMgr, EntityType.CRYSTAL)
         const resource2 = ResourceManager.getResource('MiscAnims/Crystal/vlp_greencrystal.lwo')
         const mesh2 = SceneManager.registerMesh(new LWOLoader('MiscAnims/Crystal/').parse(resource2));
         (mesh2.material as Material[]).forEach((mat: MeshPhongMaterial) => {
