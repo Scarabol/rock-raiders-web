@@ -7,7 +7,7 @@
  */
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState, GameState } from '../game/model/GameState'
-import { clearIntervalSafe } from './Util'
+import { clearIntervalSafe, getRandom } from './Util'
 
 export class NerpRunner {
 
@@ -291,6 +291,20 @@ export class NerpRunner {
     getLevel1PowerStationsBuilt() {
         // TODO implement this
         return 0
+    }
+
+    getRandom100(): number {
+        return getRandom(100)
+    }
+
+    getSlugsOnLevel(): number {
+        // TODO implement slugs
+        return 0
+    }
+
+    generateSlug() {
+        console.warn('Slugs not yet implemented')
+        // TODO implement slugs
     }
 
     callMethod(methodName, methodArgs) {
