@@ -322,14 +322,8 @@ export class NerpRunner {
             return this.getTimer(getTimerMatch[1])
         }
         const lMethodName = methodName.toLowerCase()
-        for (const memberName in this) {
-            // noinspection JSUnfilteredForInLoop
-            if (memberName.toLowerCase() === lMethodName) {
-                // @ts-ignore
-                // noinspection JSUnfilteredForInLoop
-                return this[memberName].apply(this, methodArgs)
-            }
-        }
+        const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.toLowerCase() === lMethodName)
+        if (memberName) return this[memberName].apply(this, methodArgs)
         throw new Error('Undefined method: ' + methodName)
     }
 
@@ -407,7 +401,6 @@ export class NerpRunner {
             console.error(e)
             console.error('FATAL ERROR! Script execution failed! You can NOT win anymore!')
             this.halted = true
-            debugger;
         }
     }
 
