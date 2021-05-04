@@ -1,4 +1,5 @@
 import { RaiderActivity } from '../../activities/RaiderActivity'
+import { FulfillerEntity } from '../../FulfillerEntity'
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { PublicJob } from '../Job'
@@ -32,7 +33,7 @@ export class ReinforceJob extends PublicJob {
         return RaiderActivity.Reinforce
     }
 
-    getWorkDuration(): number {
+    getWorkDuration(fulfiller: FulfillerEntity): number {
         return 2700
     }
 

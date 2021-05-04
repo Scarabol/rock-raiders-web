@@ -66,7 +66,7 @@ export abstract class Job {
         return null
     }
 
-    getWorkDuration(): number {
+    getWorkDuration(fulfiller: FulfillerEntity): number {
         return null
     }
 

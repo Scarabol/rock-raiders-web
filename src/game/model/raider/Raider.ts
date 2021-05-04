@@ -1,30 +1,24 @@
-import { MathUtils, Vector2, Vector3 } from 'three'
-import { getRandom, getRandomInclusive } from '../../../core/Util'
+import { Vector3 } from 'three'
+import { getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { RaiderSelected, SelectionEvent } from '../../../event/LocalEvents'
-import { EntityAddedEvent, OreFoundEvent } from '../../../event/WorldEvents'
-import { CrystalFoundEvent, RaiderDiscoveredEvent } from '../../../event/WorldLocationEvent'
+import { EntityAddedEvent } from '../../../event/WorldEvents'
+import { RaiderDiscoveredEvent } from '../../../event/WorldLocationEvent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { BaseActivity } from '../activities/BaseActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
-import { Crystal } from '../collect/Crystal'
-import { Ore } from '../collect/Ore'
 import { EntitySuperType, EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { GameState } from '../GameState'
 import { JobState } from '../job/JobState'
-import { JobType } from '../job/JobType'
-import { DrillJob } from '../job/surface/DrillJob'
-import { SurfaceType } from '../map/SurfaceType'
 import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
 import { SelectionType } from '../Selectable'
 import { RaiderTool } from './RaiderTool'
 import { RaiderTraining } from './RaiderTraining'
-import degToRad = MathUtils.degToRad
 
 export class Raider extends FulfillerEntity {
 
@@ -112,35 +106,6 @@ export class Raider extends FulfillerEntity {
         if (!this.job || this.selected || this.slipped) return
         if (this.job.jobstate !== JobState.INCOMPLETE) {
             this.stopJob()
-            return
-        }
-        if (this.job.type === JobType.DRILL) {
-            if (this.moveToClosestWorkplace()) {
-                const surfJob = this.job as DrillJob
-                let drillTimeMs = this.getDrillTime(surfJob.surface.surfaceType)
-                const focusPoint = surfJob.surface.getCenterWorld()
-                focusPoint.y = this.group.position.y
-                this.group.lookAt(focusPoint)
-                this.changeActivity(RaiderActivity.Drill, () => {
-                    if (surfJob.surface.seamLevel > 0) {
-                        surfJob.surface.seamLevel--
-                        const vec = new Vector2().copy(this.getPosition2D()).sub(surfJob.surface.getCenterWorld2D())
-                            .multiplyScalar(0.3 + getRandom(3) / 10)
-                            .rotateAround(new Vector2(0, 0), degToRad(-10 + getRandom(20)))
-                            .add(this.getPosition2D())
-                        if (surfJob.surface.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                            const crystal = this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), vec)
-                            EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
-                        } else if (surfJob.surface.surfaceType === SurfaceType.ORE_SEAM) {
-                            this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), vec)
-                            EventBus.publishEvent(new OreFoundEvent())
-                        }
-                        this.changeActivity()
-                    } else {
-                        this.completeJob()
-                    }
-                }, drillTimeMs)
-            }
         } else {
             const carryItem = this.job.getCarryItem()
             if (carryItem && this.carries !== carryItem) {
@@ -155,29 +120,12 @@ export class Raider extends FulfillerEntity {
                     const workActivity = this.job.getWorkActivity() || this.getDefaultActivity()
                     this.changeActivity(workActivity, () => {
                         this.completeJob()
-                    }, this.job.getWorkDuration())
+                    }, this.job.getWorkDuration(this))
                 } else {
                     this.changeActivity()
                 }
             }
         }
-    }
-
-    private getDrillTime(surfaceType: SurfaceType) {
-        let drillTimeMs = null
-        if (surfaceType === SurfaceType.HARD_ROCK) {
-            drillTimeMs = this.stats.HardDrillTime[this.level] * 1000
-        } else if (surfaceType === SurfaceType.LOOSE_ROCK) {
-            drillTimeMs = this.stats.LooseDrillTime[this.level] * 1000
-        } else if (surfaceType === SurfaceType.DIRT) {
-            drillTimeMs = this.stats.SoilDrillTime[this.level] * 1000
-        } else if (surfaceType === SurfaceType.ORE_SEAM ||
-            surfaceType === SurfaceType.CRYSTAL_SEAM) {
-            drillTimeMs = this.stats.SeamDrillTime[this.level] * 1000
-        }
-        drillTimeMs = drillTimeMs || 0
-        if (!drillTimeMs) console.warn('According to cfg this entity cannot drill this material')
-        return drillTimeMs
     }
 
     private completeJob() {

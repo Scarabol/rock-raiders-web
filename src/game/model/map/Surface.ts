@@ -1,4 +1,4 @@
-import { Group, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three'
+import { Group, MathUtils, Mesh, MeshPhongMaterial, Vector2, Vector3 } from 'three'
 import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionEvent, SurfaceChanged, SurfaceSelectedEvent } from '../../../event/LocalEvents'
@@ -26,6 +26,7 @@ import { SurfaceGeometry } from './SurfaceGeometry'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
 import { WALL_TYPE } from './WallType'
+import degToRad = MathUtils.degToRad
 
 export class Surface implements Selectable {
 
@@ -128,6 +129,29 @@ export class Surface implements Selectable {
         })
         console.log('surface discover handled ' + counter + ' floors and ' + others.length + ' others')
         return caveFound
+    }
+
+    onDrillComplete(drillPosition: Vector2): boolean {
+        if (this.seamLevel > 0) {
+            this.seamLevel--
+            const vec = new Vector2().copy(drillPosition).sub(this.getCenterWorld2D())
+                .multiplyScalar(0.3 + getRandom(3) / 10)
+                .rotateAround(new Vector2(0, 0), degToRad(-10 + getRandom(20)))
+                .add(drillPosition)
+            if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
+                const crystal = this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), vec)
+                EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
+            } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
+                this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), vec)
+                EventBus.publishEvent(new OreFoundEvent())
+            }
+        }
+        if (this.seamLevel > 0) {
+            return false
+        } else {
+            this.collapse()
+            return true
+        }
     }
 
     collapse() {

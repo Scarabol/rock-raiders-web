@@ -12,6 +12,7 @@ export class SurfaceType {
     explodable: boolean = false
     reinforcable: boolean = false
     cursor: Cursors = Cursors.Pointer_Standard
+    statsDrillName: string = null
 
     constructor(options: Partial<SurfaceType> = {}) {
         Object.assign(this, options)
@@ -33,6 +34,7 @@ export class SurfaceType {
         explodable: true,
         reinforcable: true,
         cursor: Cursors.Pointer_SurfaceType_Hard,
+        statsDrillName: 'HardDrillTime',
     })
     static readonly LOOSE_ROCK = new SurfaceType({
         name: 'loose rock',
@@ -44,6 +46,7 @@ export class SurfaceType {
         explodable: true,
         reinforcable: true,
         cursor: Cursors.Pointer_SurfaceType_Medium,
+        statsDrillName: 'LooseDrillTime',
     })
     static readonly DIRT = new SurfaceType({
         name: 'dirt',
@@ -55,6 +58,7 @@ export class SurfaceType {
         explodable: true,
         reinforcable: true,
         cursor: Cursors.Pointer_SurfaceType_Loose,
+        statsDrillName: 'SoilDrillTime',
     })
     static readonly SLUG_HOLE = new SurfaceType({name: 'slug hole', floor: true, matIndex: '30'})
     static readonly LAVA = new SurfaceType({name: 'lava', floor: true, matIndex: '46'})
@@ -67,6 +71,7 @@ export class SurfaceType {
         explodable: true,
         reinforcable: true,
         cursor: Cursors.Pointer_SurfaceType_OreSeam,
+        statsDrillName: 'SeamDrillTime',
     })
     static readonly WATER = new SurfaceType({name: 'water', floor: true, matIndex: '45'})
     static readonly CRYSTAL_SEAM = new SurfaceType({
@@ -78,6 +83,7 @@ export class SurfaceType {
         explodable: true,
         reinforcable: true,
         cursor: Cursors.Pointer_SurfaceType_CrystalSeam,
+        statsDrillName: 'SeamDrillTime',
     })
     static readonly RECHARGE_SEAM = new SurfaceType({
         name: 'recharge seam',

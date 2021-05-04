@@ -4,6 +4,7 @@ import { EventBus } from '../../../event/EventBus'
 import { EntityTrained } from '../../../event/WorldEvents'
 import { JOB_ACTION_RANGE, TILESIZE } from '../../../params'
 import { RaiderActivity } from '../activities/RaiderActivity'
+import { FulfillerEntity } from '../FulfillerEntity'
 import { Surface } from '../map/Surface'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
@@ -37,7 +38,7 @@ export class TrainJob extends Job {
         return RaiderActivity.Train
     }
 
-    getWorkDuration(): number {
+    getWorkDuration(fulfiller: FulfillerEntity): number {
         return 10000 // XXX adjust training time
     }
 
