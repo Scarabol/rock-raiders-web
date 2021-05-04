@@ -9,6 +9,7 @@ import { GameState } from './model/GameState'
 import { GetToolJob } from './model/job/GetToolJob'
 import { PublicJob } from './model/job/Job'
 import { JobState } from './model/job/JobState'
+import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { TrainJob } from './model/job/TrainJob'
 import { Surface } from './model/map/Surface'
 import { PathTarget } from './model/PathTarget'
@@ -51,7 +52,7 @@ export class Supervisor {
         const availableJobs: PublicJob[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobstate === JobState.INCOMPLETE
-            if (result && j.fulfiller.length < 1) availableJobs.push(j)
+            if (result && j.fulfiller.length < 1 && GameState.priorityList.isEnabled(j.getPriorityIdentifier())) availableJobs.push(j)
             return result
         })
         availableJobs.sort((left, right) => {
@@ -135,6 +136,7 @@ export class Supervisor {
     }
 
     checkUnclearedRubble() {
+        if (!GameState.priorityList.isEnabled(PriorityIdentifier.aiPriorityClearing)) return
         GameState.raiders.forEach((raider) => {
             if (raider.job) return
             const startSurface = raider.sceneMgr.terrain.getSurfaceFromWorld(raider.getPosition())

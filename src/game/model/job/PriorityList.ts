@@ -45,6 +45,9 @@ export class PriorityList {
         return priority
     }
 
+    isEnabled(priorityIdentifier: PriorityIdentifier): boolean {
+        return this.current.find((entry) => entry.key === priorityIdentifier)?.enabled || false
+    }
 }
 
 export class PriorityEntry {
