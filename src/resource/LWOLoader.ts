@@ -275,7 +275,7 @@ export class LWOLoader {
         for (let i = 0; i < surfaceNames.length; i++) {
             const new_material = new MeshPhongMaterial()
             new_material.name = surfaceNames[i]
-            new_material.side = DoubleSide
+            new_material.alphaToCoverage = true
 
             this.materials.push(new_material)
         }
