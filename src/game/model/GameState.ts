@@ -99,7 +99,7 @@ export class GameState {
     }
 
     static getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
-        return this.buildings.filter(b => !b.inBeam && b.isPowered() && buildingTypes.some(bt => b.entityType === bt))
+        return this.buildings.filter(b => !b.inBeam && b.isPowered() && !b.inBeam && buildingTypes.some(bt => b.entityType === bt))
     }
 
     static getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity {
@@ -117,11 +117,11 @@ export class GameState {
     }
 
     static hasOneBuildingOf(...buildings: EntityType[]): boolean {
-        return this.buildings.some((b) => buildings.some((type) => b.entityType === type) && b.isPowered())
+        return this.buildings.some((b) => buildings.some((type) => b.entityType === type) && b.isPowered() && !b.inBeam)
     }
 
     static hasBuildingWithUpgrades(building: EntityType, upgrades: number = 0): boolean {
-        return this.buildings.some((b) => b.entityType === building && b.level >= upgrades && b.isPowered())
+        return this.buildings.some((b) => b.entityType === building && b.level >= upgrades && b.isPowered() && !b.inBeam)
     }
 
     static getTrainingSites(position: Vector3, training: RaiderTraining): BuildingEntity[] {
