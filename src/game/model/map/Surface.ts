@@ -81,23 +81,53 @@ export class Surface implements Selectable {
     /**
      * @return {boolean} Returns true, if a new cave has been discovered
      */
-    discover(): boolean {
+    discover(): boolean { // TODO improve performance then test with level 20
         if (!this.discovered) GameState.discoverSurface(this)
         this.discovered = true
         this.needsMeshUpdate = true
-        let foundCave = false
-        if (this.surfaceType.floor) {
+        if (!this.surfaceType.floor) return false
+        const floors: Surface[] = []
+        const others: Surface[] = []
+        for (let x = -1; x <= 1; x++) {
+            for (let y = -1; y <= 1; y++) {
+                if (x === 0 && y === 0) continue
+                const n = this.terrain.getSurface(this.x + x, this.y + y)
+                if ((x === 0 || y === 0) && n.surfaceType.floor) {
+                    floors.push(n)
+                } else {
+                    others.push(n)
+                }
+            }
+        }
+        let caveFound = false
+        let counter = 0
+        while (floors.length > 0) {
+            counter++
+            const neighbor = floors.shift()
+            neighbor.discovered = true
+            neighbor.needsMeshUpdate = true
             for (let x = -1; x <= 1; x++) {
-                for (let y = -1; y <= +1; y++) {
+                for (let y = -1; y <= 1; y++) {
                     if (x === 0 && y === 0) continue
-                    const surf = this.terrain.getSurfaceOrNull(this.x + x, this.y + y)
-                    if (surf && !surf.discovered) {
-                        foundCave = surf.discover() || surf.surfaceType.floor
+                    const n = neighbor.terrain.getSurface(neighbor.x + x, neighbor.y + y)
+                    if ((x === 0 || y === 0) && n.surfaceType.floor && !n.discovered) {
+                        floors.push(n)
+                        caveFound = true
+                    } else {
+                        others.push(n)
                     }
                 }
             }
         }
-        return foundCave
+        others.forEach((o) => {
+            o.discovered = true
+            o.needsMeshUpdate = true
+            if (!o.isSupported()) {
+                o.collapse()
+            }
+        })
+        console.log('surface discover handled ' + counter + ' floors and ' + others.length + ' others')
+        return caveFound
     }
 
     collapse() {
@@ -217,7 +247,7 @@ export class Surface implements Selectable {
             topRightVertex.y = 1
             bottomRightVertex.y = 1
             bottomLeftVertex.y = 1
-        } else if (!this.surfaceType.floor) {
+        } else if (!this.surfaceType.floor || !this.neighbors.some((n) => n.surfaceType.floor && n.discovered)) {
             if (isHighGround(surfLeft, surfTopLeft, surfTop)) topLeftVertex.y = 1
             if (isHighGround(surfTop, surfTopRight, surfRight)) topRightVertex.y = 1
             if (isHighGround(surfRight, surfBottomRight, surfBottom)) bottomRightVertex.y = 1
@@ -259,7 +289,7 @@ export class Surface implements Selectable {
             textureName += '70'
         } else if (this.surfaceType === SurfaceType.POWER_PATH) {
             textureName += this.updatePowerPathTexture()
-        } else if (!this.surfaceType.shaping) {
+        } else if (!this.surfaceType.shaping && this.neighbors.some((n) => n.discovered && n.surfaceType.floor)) {
             if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.hasPower) {
                 textureName += '66'
             } else {
@@ -277,7 +307,7 @@ export class Surface implements Selectable {
             } else {
                 textureName += '0'
             }
-            textureName += this.surfaceType.matIndex
+            textureName += this.surfaceType.shaping ? this.surfaceType.matIndex : SurfaceType.SOLID_ROCK.matIndex
         }
         textureName += '.bmp'
 
@@ -368,6 +398,7 @@ export class Surface implements Selectable {
         if (this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered) {
             this.selected = true
             this.accessMaterials().forEach((mat) => mat.color.setHex(0x6060a0))
+            console.log('Surface selected at ' + this.x + '/' + this.y)
             return new SurfaceSelectedEvent(this)
         }
         return null
