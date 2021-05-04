@@ -101,6 +101,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
 export class FulfillerStats extends MovableEntityStats {
 
+    Levels: number
     HardDrillTime: number[]
     LooseDrillTime: number[]
     SoilDrillTime: number[]
