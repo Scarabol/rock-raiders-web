@@ -99,7 +99,7 @@ export class TerrainLoader {
             }
             weights.push(col, col, col)
         }
-        terrain.graphWalk = new Graph(weights)
+        terrain.graphWalk = new Graph(weights, {diagonal: true})
 
         // crumble unsupported walls
         terrain.forEachSurface((s) => {
