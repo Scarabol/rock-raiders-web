@@ -1,6 +1,7 @@
 import { LevelEntryCfg, LevelsCfg } from '../../cfg/LevelsCfg'
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { RewardCfg } from '../../cfg/RewardCfg'
+import { WAD_CACHE_DB_NAME } from '../../params'
 import { AlphaBitmapDecoder } from './AlphaBitmapDecoder'
 import { CfgFileParser } from './CfgFileParser'
 import { ObjectiveTextParser } from './ObjectiveTextParser'
@@ -564,7 +565,7 @@ export class WadLoader {
     }
 
     openLocalCache(onopen: (IDBObjectStore) => void) {
-        const request: IDBOpenDBRequest = indexedDB.open('RockRaidersWeb')
+        const request: IDBOpenDBRequest = indexedDB.open(WAD_CACHE_DB_NAME)
         request.onupgradeneeded = function () {
             const db = request.result
             if (db.objectStoreNames.contains('wadfiles')) {

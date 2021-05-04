@@ -1,3 +1,4 @@
+import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
 import { GithubBox } from '../site/github/github-box'
 import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
 import { getRandomInclusive } from './core/Util'
@@ -16,6 +17,7 @@ if (DEV_MODE) console.warn('DEV MODE ACTIVE')
 const loadingScreen = new LoadingScreen()
 const wadFileSelectModal = new WadFileSelectionModal('game-container')
 const githubBox = new GithubBox('game-container')
+const clearCacheButton = new ClearCacheButton('game-container')
 
 wadFileSelectModal.onStart = (wad0Url, wad1Url) => {
     ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
@@ -60,6 +62,7 @@ ResourceManager.onLoadDone = () => {
     // setup complete
     loadingScreen.hide()
     githubBox.hide()
+    clearCacheButton.hide()
     const params = new URLSearchParams(window.location.search)
     const entry = params.get('entry')
     if (DEV_MODE && entry) {
