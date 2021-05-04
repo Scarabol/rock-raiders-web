@@ -139,13 +139,12 @@ export class SceneManager {
     }
 
     setupScene(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
+        this.scene = new Scene()
+
         const ambientRgb = ResourceManager.cfg('Main', 'AmbientRGB') || [10, 10, 10]
         const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
         const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
         const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])
-
-        this.scene = new Scene()
-
         this.ambientLight = new AmbientLight(ambientColor, 0.4)
         this.scene.add(this.ambientLight)
 
@@ -208,9 +207,8 @@ export class SceneManager {
     }
 
     setTorchPosition(position: Vector2) {
-        this.cursorTorchlight.position.x = position.x
-        this.cursorTorchlight.position.y = this.terrain.getSurfaceFromWorldXZ(position.x, position.y).getFloorHeight(position.x, position.y) + 2 * TILESIZE
-        this.cursorTorchlight.position.z = position.y
+        this.cursorTorchlight.position.copy(this.getFloorPosition(position))
+        this.cursorTorchlight.position.y += 2 * TILESIZE
     }
 
     getFloorPosition(world: Vector2) {

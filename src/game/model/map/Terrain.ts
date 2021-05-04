@@ -28,7 +28,8 @@ export class Terrain {
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         this.worldMgr = worldMgr
         this.sceneMgr = sceneMgr
-        this.floorGroup.scale.set(TILESIZE, TILESIZE, TILESIZE)
+        this.floorGroup.scale.setScalar(TILESIZE)
+        this.roofGroup.scale.setScalar(TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
         EventBus.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {
             if (event.superType !== EntitySuperType.BUILDING) return
@@ -105,7 +106,7 @@ export class Terrain {
     }
 
     private static gridNodeToWorldPos(gridNode) {
-        return new Vector2((gridNode.x + 0.25 + Math.random() / 2) * TILESIZE / 3, (gridNode.y + 0.25 + Math.random() / 2) * TILESIZE / 3)
+        return new Vector2(Math.random(), Math.random()).divideScalar(2).add(gridNode).multiplyScalar(TILESIZE / 3)
     }
 
     findFallInOrigin(x: number, y: number): [number, number] {

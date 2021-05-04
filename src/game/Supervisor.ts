@@ -131,6 +131,7 @@ export class Supervisor {
                 }
             },
         )
+        // TODO move unemployed raider out of building sites
     }
 
     checkUnclearedRubble() {

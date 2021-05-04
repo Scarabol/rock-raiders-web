@@ -81,20 +81,18 @@ export class Surface implements Selectable {
     /**
      * @return {boolean} Returns true, if a new cave has been discovered
      */
-    discoverNeighbors(): boolean {
+    discover(): boolean {
         if (!this.discovered) GameState.discoverSurface(this)
         this.discovered = true
         this.needsMeshUpdate = true
         let foundCave = false
         if (this.surfaceType.floor) {
-            for (let x = this.x - 1; x <= this.x + 1; x++) {
-                for (let y = this.y - 1; y <= this.y + 1; y++) {
-                    if (x !== this.x || y !== this.y) {
-                        const surf = this.terrain.getSurfaceOrNull(x, y)
-                        if (surf && !surf.discovered) {
-                            foundCave = surf.discoverNeighbors() || surf.surfaceType.floor
-                            surf.needsMeshUpdate = true
-                        }
+            for (let x = -1; x <= 1; x++) {
+                for (let y = -1; y <= +1; y++) {
+                    if (x === 0 && y === 0) continue
+                    const surf = this.terrain.getSurfaceOrNull(this.x + x, this.y + y)
+                    if (surf && !surf.discovered) {
+                        foundCave = surf.discover() || surf.surfaceType.floor
                     }
                 }
             }
@@ -109,8 +107,7 @@ export class Surface implements Selectable {
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += 4
         this.needsMeshUpdate = true
-        // discover surface and all neighbors
-        const foundCave = this.discoverNeighbors()
+        const foundCave = this.discover()
         if (foundCave) EventBus.publishEvent(new CavernDiscovered())
         // drop contained ores and crystals
         this.dropContainedOre(this.containedOres - 4)
@@ -441,7 +438,7 @@ export class Surface implements Selectable {
     }
 
     getCenterWorld2D(): Vector2 {
-        return new Vector2(this.x * TILESIZE + TILESIZE / 2, this.y * TILESIZE + TILESIZE / 2)
+        return new Vector2(this.x, this.y).addScalar(0.5).multiplyScalar(TILESIZE)
     }
 
     getCenterWorld(): Vector3 {
