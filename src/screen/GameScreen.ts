@@ -133,7 +133,7 @@ export class GameScreen extends BaseScreen {
                 GameState.raiders.push(raider)
                 EventBus.publishEvent(new EntityAddedEvent(raider))
             })
-            raider.addToScene(station.primarySurface.getCenterWorld2D(), heading)
+            raider.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), station.getHeading()).add(station.getPosition2D()), heading)
         }
     }
 
