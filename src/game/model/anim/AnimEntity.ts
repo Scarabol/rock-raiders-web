@@ -3,6 +3,7 @@ import { createContext } from '../../../core/ImageHelper'
 import { clearTimeoutSafe, iGet } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { EntityDeselected } from '../../../event/LocalEvents'
+import { EntityRemovedEvent } from '../../../event/WorldEvents'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
@@ -38,6 +39,7 @@ export abstract class AnimEntity extends BaseEntity {
         // TODO avoid all further state changes and mark as unavailable here
         // TODO publish event: check jobs with this target, update power state...
         EventBus.publishEvent(new EntityDeselected())
+        EventBus.publishEvent(new EntityRemovedEvent(this))
         this.changeActivity()
         // TODO insert beam animation
         AnimEntity.moveUp(this, 6 * TILESIZE)
