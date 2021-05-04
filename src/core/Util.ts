@@ -53,7 +53,11 @@ declare global {
     interface Array<T> {
         remove(element: T): void
 
+        last(): T
+
         count(callback: (element: T) => boolean): number
+
+        partition(filter: (element: T) => boolean): [T[], T[]]
     }
 
     interface Map<K, V> {
@@ -67,10 +71,20 @@ Array.prototype.remove = function <T>(element: T): void {
     if (index !== -1) this.splice(index, 1)
 }
 
+Array.prototype.last = function <T>(): T {
+    return this.length > 0 ? this[this.length - 1] : undefined
+}
+
 Array.prototype.count = function <T>(callback: (element: T) => boolean): number {
     let counter = 0
     this.forEach((e) => callback(e) && counter++)
     return counter
+}
+
+Array.prototype.partition = function <T>(filter: (element: T) => boolean): [T[], T[]] {
+    const left: T[] = [], right: T[] = []
+    this.forEach((a) => filter(a) ? left.push(a) : right.push(a))
+    return [left, right]
 }
 
 // noinspection JSUnusedGlobalSymbols
