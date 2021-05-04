@@ -365,7 +365,7 @@ export class Surface implements Selectable {
     }
 
     select(): SelectionEvent {
-        if (this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected) {
+        if (this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered) {
             this.selected = true
             this.accessMaterials().forEach((mat) => mat.color.setHex(0x6060a0))
             return new SurfaceSelectedEvent(this)
