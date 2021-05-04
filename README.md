@@ -22,16 +22,16 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near
 
-- Bricks and brick refinery
-- Damage, show health bar and teleport at bad health
 - Vehicles (Land, Air, Sea)
+- Sounds and music
+- Radar map and geologists
 
 ### Mid
 
-- Radar map and geologists
 - Alarm mode and shooting
 - Rock-Monsters and Slugs
-- Sounds and music
+- Damage, show health bar and teleport at bad health
+- Bricks and brick refinery
 
 ### Far
 
@@ -52,19 +52,20 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Requirements tooltip for buildings/vehicles not shown
 - When scene is disposed animation interval must be canceled
 - Camera can glitch through terrain and zoom in/out infinitely
-- Teleport In animation for buildings at level start missing
-- Raider move out of construction site after placing items
+- Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in
+- Fix barriers placed outside of building site
+- Fix camera position and angle on level start
 
 ### Cosmetics
 
 - No tooltips
 - Cursor does not (always) react on targeted object
 - Adapt building placement marker to surface shape
-- Last construction barrier remains on site
+- Fix blueish teleport in frame not shown on surface
+- Add water and lava animation
 
 ## Technical Debt
 
-- separate scene manager (handles 3d scene) and worldMgr (handles game)
 - Epic: move threejs rendering to separate worker
 - Epic: move GUI rendering to separate worker
 
