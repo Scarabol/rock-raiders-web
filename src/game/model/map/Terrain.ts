@@ -96,7 +96,8 @@ export class Terrain {
     private searchPath(gridStartX: number, gridStartY: number, gridEndX: number, gridEndY: number, target: PathTarget, cacheIdentifier: string): TerrainPath {
         const startNode = this.graphWalk.grid[gridStartX][gridStartY]
         const endNode = this.graphWalk.grid[gridEndX][gridEndY]
-        const worldPath = astar.search(this.graphWalk, startNode, endNode).map((n) => Terrain.gridNodeToWorldPos(n))
+        const worldPath = astar.search(this.graphWalk, startNode, endNode, {closest: true}) // option closest used by training jobs
+            .map((n) => Terrain.gridNodeToWorldPos(n))
         if (worldPath.length < 1) return null // no path found
         // replace last surface center with actual target position
         worldPath.pop()

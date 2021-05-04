@@ -12,24 +12,34 @@ export class TrainRaiderPanel extends IconSubPanel {
 
     constructor(onBackPanel: Panel) {
         super(6, onBackPanel)
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainDriver')
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainEngineer')
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainGeologist')
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainPilot')
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainSailor')
-        const trainDynamite = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainDynamite')
-        trainDynamite.isDisabled = () => !GameState.getBuildingsByType(EntityType.TOOLSTATION).some((b) => b.stats.TrainDynamite[b.level]) ||
-            GameState.selectedRaiders.every((r) => r.hasTraining(RaiderTraining.DEMOLITION))
-        trainDynamite.onClick = () => {
-            GameState.getBuildingsByType(EntityType.TOOLSTATION).some((b) => {
-                if (b.stats.TrainDynamite[b.level]) {
-                    GameState.selectedRaiders.forEach((r) => !r.hasTraining(RaiderTraining.DEMOLITION) && r.setJob(new TrainJob(b.primarySurface, RaiderTraining.DEMOLITION)))
+        this.addTrainingItem('Interface_MenuItem_TrainDriver', RaiderTraining.DRIVER, EntityType.BARRACKS, 'TrainDriver')
+        this.addTrainingItem('Interface_MenuItem_TrainEngineer', RaiderTraining.ENGINEER, EntityType.UPGRADE, 'TrainRepair')
+        this.addTrainingItem('Interface_MenuItem_TrainGeologist', RaiderTraining.GEOLOGIST, EntityType.GEODOME, 'TrainScanner')
+        this.addTrainingItem('Interface_MenuItem_TrainPilot', RaiderTraining.PILOT, EntityType.TELEPORT_PAD, 'TrainPilot')
+        this.addTrainingItem('Interface_MenuItem_TrainSailor', RaiderTraining.SAILOR, EntityType.DOCKS, 'TrainSailor')
+        this.addTrainingItem('Interface_MenuItem_TrainDynamite', RaiderTraining.DEMOLITION, EntityType.TOOLSTATION, 'TrainDynamite')
+        EventBus.registerEventListener(EventKey.ENTITY_ADDED, () => this.updateAllItems())
+        EventBus.registerEventListener(EventKey.ENTITY_REMOVED, () => this.updateAllItems())
+        EventBus.registerEventListener(EventKey.BUILDING_UPGRADED, () => this.updateAllItems())
+    }
+
+    updateAllItems() {
+        this.iconPanelButtons.forEach((b) => b.updateState())
+    }
+
+    private addTrainingItem(itemKey: string, training: RaiderTraining, building: EntityType, statsProperty: string) {
+        const trainingItem = this.addMenuItem('InterfaceImages', itemKey)
+        trainingItem.isDisabled = () => !GameState.getBuildingsByType(building).some((b) => b.stats[statsProperty][b.level]) ||
+            GameState.selectedRaiders.every((r) => r.hasTraining(training))
+        trainingItem.onClick = () => {
+            GameState.getBuildingsByType(building).some((b) => {
+                if (b.stats[statsProperty][b.level]) {
+                    GameState.selectedRaiders.forEach((r) => !r.hasTraining(training) && r.setJob(new TrainJob(b.primarySurface, training)))
                     EventBus.publishEvent(new EntityDeselected())
                     return true
                 }
             })
         }
-        EventBus.registerEventListener(EventKey.BUILDING_UPGRADED, () => trainDynamite.updateState())
     }
 
 }

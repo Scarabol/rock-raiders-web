@@ -22,7 +22,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near
 
-- Building and all training options
 - Bricks and brick refinery
 - Damage, show health bar and teleport at bad health
 - Vehicles (Land, Air, Sea)
