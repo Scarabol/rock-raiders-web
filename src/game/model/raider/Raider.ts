@@ -145,7 +145,7 @@ export class Raider extends FulfillerEntity {
             const carryItem = this.job.getCarryItem()
             if (carryItem && this.carries !== carryItem) {
                 this.dropItem()
-                if (this.moveToClosestTarget([new PathTarget(carryItem.getPosition2D())])) { // XXX cache item path target
+                if (this.moveToClosestTarget(carryItem.getPositionPathTarget())) {
                     this.changeActivity(RaiderActivity.Collect, () => {
                         this.pickupItem(carryItem)
                     })

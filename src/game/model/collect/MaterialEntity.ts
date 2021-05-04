@@ -8,6 +8,7 @@ import { EntitySuperType, EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { CarryJob } from '../job/CarryJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
+import { PathTarget } from '../PathTarget'
 import { CarryPathTarget } from './CarryPathTarget'
 
 export abstract class MaterialEntity extends AnimEntity {
@@ -16,6 +17,7 @@ export abstract class MaterialEntity extends AnimEntity {
     priorityIdentifier: PriorityIdentifier = null
     targets: CarryPathTarget[] = []
     targetSite: BuildingSite = null
+    positionPathTarget: PathTarget[] = null
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string = null) {
         super(worldMgr, sceneMgr, EntitySuperType.MATERIAL, entityType, aeFilename)
@@ -79,6 +81,14 @@ export abstract class MaterialEntity extends AnimEntity {
 
     onAddToSite() {
         this.addToScene(null, null)
+    }
+
+    getPositionPathTarget(): PathTarget[] {
+        const position = this.getPosition2D()
+        if (!this.positionPathTarget || !this.positionPathTarget[0].targetLocation.equals(position)) {
+            this.positionPathTarget = [new PathTarget(position)]
+        }
+        return this.positionPathTarget
     }
 
 }
