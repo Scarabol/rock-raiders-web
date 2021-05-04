@@ -34,7 +34,10 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
-        if (target.length < 1) console.warn('No targets given')
+        if (!target?.length) {
+            console.warn('No targets given')
+            debugger
+        }
         if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.target.targetLocation))) {
             const paths = target.map((t) => this.findPathToTarget(t))
                 .sort((l, r) => l.lengthSq - r.lengthSq)
