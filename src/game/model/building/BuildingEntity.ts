@@ -219,8 +219,6 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
-        this.addToScene(worldPosition, radHeading)
-        this.createPickSphere()
         const primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position)
         primaryPathSurface.setBuilding(this)
         primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
@@ -244,6 +242,8 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             pathSurface.updateTexture()
             this.primaryPathSurface = pathSurface
         }
+        this.addToScene(worldPosition, radHeading)
+        this.createPickSphere()
         if (this.group.visible) {
             GameState.buildings.push(this)
         } else {
