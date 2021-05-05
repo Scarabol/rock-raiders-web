@@ -249,7 +249,7 @@ export class WadLoader {
                 lwoContent = this.wad0File.getEntryBuffer('world/shared/' + getFilename(lwoFilepath))
             } catch (e) {
                 console.error('Could not load LWO file ' + lwoFilepath + '; Error: ' + e)
-                return
+                lwoContent = {}
             }
         }
         callback(lwoContent.buffer)
