@@ -83,8 +83,7 @@ export class Surface implements Selectable {
      * @return {boolean} Returns true, if a new cave has been discovered
      */
     discover(): boolean { // TODO improve performance then test with level 20
-        if (!this.discovered) GameState.discoverSurface(this)
-        this.discovered = true
+        this.setDiscovered()
         this.needsMeshUpdate = true
         if (!this.surfaceType.floor) return false
         const floors: Surface[] = []
@@ -105,8 +104,7 @@ export class Surface implements Selectable {
         while (floors.length > 0) {
             counter++
             const neighbor = floors.shift()
-            neighbor.discovered = true
-            neighbor.needsMeshUpdate = true
+            neighbor.setDiscovered()
             for (let x = -1; x <= 1; x++) {
                 for (let y = -1; y <= 1; y++) {
                     if (x === 0 && y === 0) continue
@@ -121,14 +119,19 @@ export class Surface implements Selectable {
             }
         }
         others.forEach((o) => {
-            o.discovered = true
-            o.needsMeshUpdate = true
+            o.setDiscovered()
             if (!o.isSupported()) {
                 o.collapse()
             }
         })
         console.log('surface discover handled ' + counter + ' floors and ' + others.length + ' others')
         return caveFound
+    }
+
+    private setDiscovered() {
+        if (!this.discovered) GameState.discoverSurface(this)
+        this.discovered = true
+        this.needsMeshUpdate = true
     }
 
     onDrillComplete(drillPosition: Vector2): boolean {
