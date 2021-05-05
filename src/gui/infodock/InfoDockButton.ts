@@ -38,7 +38,6 @@ export class InfoDockButton extends Button {
     reset() {
         super.reset()
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
-        this.text = null
         this.hidden = true
         this.messages = []
     }
