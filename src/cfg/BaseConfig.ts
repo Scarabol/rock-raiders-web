@@ -10,7 +10,7 @@ export class BaseConfig {
                 return config.assignValue(objKey, lCfgKeyName, cfgObj[cfgKey])
             })
             if (!found) {
-                console.warn('cfg key does not exist: ' + cfgKey)
+                console.warn('cfg key: ' + cfgKey + ' does not exist in cfg: ' + config?.constructor?.name)
             }
         })
         return config

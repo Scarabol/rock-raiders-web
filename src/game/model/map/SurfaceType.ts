@@ -102,7 +102,11 @@ export class SurfaceType {
         matIndex: '61',
         selectable: true,
     })
-    static readonly POWER_PATH_BUILDING = new SurfaceType({name: 'power path', floor: true, matIndex: '76'})
+    static readonly POWER_PATH_BUILDING = new SurfaceType({
+        name: 'power path building',
+        floor: true,
+        matIndex: '76',
+    })
     static readonly RUBBLE1 = new SurfaceType({
         name: 'rubble 1',
         floor: true,

@@ -84,6 +84,7 @@ export class WadLoader {
         const result = this.parseNerpMsgFile(this.wad0File, name)
         const msg1 = this.parseNerpMsgFile(this.wad1File, name)
         for (let c = 0; c < msg1.length; c++) {
+            result[c] = result[c] || {}
             const m1 = msg1[c]
             if (!m1) continue
             if (m1.txt) {
@@ -135,6 +136,7 @@ export class WadLoader {
         const specials = {
             ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
             sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19,
+            eightteen: 18, // typo seen in the wild
         }
         const tens = {twenty: 20, thirty: 30, forty: 40}
         let number = specials[name] || digits[name]

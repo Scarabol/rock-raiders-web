@@ -45,8 +45,18 @@ class LevelTextCfg {
         const panelCfg = iGet(cfg, 'Panel')
         this.panelImgData = ResourceManager.getImageData(panelCfg[0])
         this.panelPos = {x: panelCfg[1], y: panelCfg[2], w: panelCfg[3], h: panelCfg[4]}
-        this.level = iGet(cfg, 'Level').join(',').replace(/_/g, ' ') // TODO improve cfg handling, remove join
-        this.tutorial = iGet(cfg, 'Tutorial').join(',').replace(/_/g, ' ') // TODO improve cfg handling, remove join
+        this.level = LevelTextCfg.parseLabel(iGet(cfg, 'Level'))
+        this.tutorial = LevelTextCfg.parseLabel(iGet(cfg, 'Tutorial'))
+    }
+
+    private static parseLabel(cfg: any) { // TODO improve cfg handling instead
+        if (!cfg) {
+            return ''
+        } else if (Array.isArray(cfg)) {
+            return cfg.join(',').replace(/_/g, ' ')
+        } else {
+            return cfg.replace(/_/g, ' ')
+        }
     }
 
 }
