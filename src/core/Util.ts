@@ -64,6 +64,10 @@ declare global {
         getOrUpdate(key: K, updateCallback: () => V): V
     }
 
+    interface String {
+        equalsIgnoreCase(other: string): boolean
+    }
+
 }
 
 Array.prototype.remove = function <T>(element: T): void {
@@ -95,4 +99,8 @@ Map.prototype.getOrUpdate = function <K, V>(key: K, updateCallback: () => V): V 
         this.set(key, value)
     }
     return value
+}
+
+String.prototype.equalsIgnoreCase = function (other: string): boolean {
+    return this.toLowerCase() === other?.toLowerCase()
 }

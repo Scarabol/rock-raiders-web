@@ -86,13 +86,12 @@ export abstract class AnimEntity extends BaseEntity {
             const polyModel = model.clone(true)
             this.poly.push(polyModel)
             if (body.name) {
-                const lBodyName = body.name.toLowerCase()
-                if (lBodyName === this.animationEntityType.carryNullName?.toLowerCase()) {
+                if (body.name.equalsIgnoreCase(this.animationEntityType.carryNullName)) {
                     this.carryJoint = polyModel
                     if (carries.length > 0) this.carryJoint.add(...carries)
-                } else if (lBodyName === this.animationEntityType.depositNullName?.toLowerCase()) {
+                } else if (body.name.equalsIgnoreCase(this.animationEntityType.depositNullName)) {
                     this.depositJoint = polyModel
-                } else if (lBodyName === this.animationEntityType.toolNullName?.toLowerCase()) {
+                } else if (body.name.equalsIgnoreCase(this.animationEntityType.toolNullName)) {
                     this.getToolJoint = polyModel
                 }
             }
