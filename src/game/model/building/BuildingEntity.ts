@@ -219,24 +219,24 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
-        const primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position)
+        const primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(worldPosition)
         primaryPathSurface.setBuilding(this)
         primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
         primaryPathSurface.updateTexture()
         this.primarySurface = primaryPathSurface
         if (this.secondaryBuildingPart) {
-            const secondaryOffset = new Vector3(TILESIZE * this.secondaryBuildingPart.x, 0, TILESIZE * this.secondaryBuildingPart.y)
-                .applyAxisAngle(new Vector3(0, 1, 0), radHeading).add(this.group.position)
-            const secondarySurface = this.sceneMgr.terrain.getSurfaceFromWorld(secondaryOffset)
+            const secondaryOffset = new Vector2(TILESIZE * this.secondaryBuildingPart.x, TILESIZE * this.secondaryBuildingPart.y)
+                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
+            const secondarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(secondaryOffset)
             secondarySurface.setBuilding(this)
             secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
             secondarySurface.updateTexture()
             this.secondarySurface = secondarySurface
         }
         if (this.primaryPowerPath) {
-            const pathOffset = new Vector3(this.primaryPowerPath.x, 0, this.primaryPowerPath.y).multiplyScalar(TILESIZE)
-                .applyAxisAngle(new Vector3(0, 1, 0), radHeading).add(this.group.position)
-            const pathSurface = this.sceneMgr.terrain.getSurfaceFromWorld(pathOffset)
+            const pathOffset = new Vector2(this.primaryPowerPath.x, this.primaryPowerPath.y).multiplyScalar(TILESIZE)
+                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
+            const pathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             if (this.entityType === EntityType.GEODOME) pathSurface.building = this
             pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
             pathSurface.updateTexture()
