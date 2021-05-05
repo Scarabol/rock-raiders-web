@@ -44,7 +44,7 @@ export class Raider extends FulfillerEntity {
         GameState.raidersUndiscovered.remove(this)
         GameState.raiders.push(this)
         EventBus.publishEvent(new EntityAddedEvent(this))
-        EventBus.publishEvent(new RaiderDiscoveredEvent(this.getPosition()))
+        EventBus.publishEvent(new RaiderDiscoveredEvent(this))
     }
 
     select(): SelectionEvent {

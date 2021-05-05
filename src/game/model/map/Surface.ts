@@ -140,7 +140,7 @@ export class Surface implements Selectable {
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
                 const crystal = this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), vec)
-                EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
+                EventBus.publishEvent(new CrystalFoundEvent(crystal))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
                 this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), vec)
                 EventBus.publishEvent(new OreFoundEvent())
@@ -167,7 +167,7 @@ export class Surface implements Selectable {
         this.dropContainedOre(this.containedOres - 4)
         for (let c = 0; c < this.containedCrystals; c++) {
             const crystal = this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), this.getRandomPosition())
-            EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
+            EventBus.publishEvent(new CrystalFoundEvent(crystal))
         }
         // check for unsupported neighbors
         for (let x = this.x - 1; x <= this.x + 1; x++) {
@@ -526,7 +526,11 @@ export class Surface implements Selectable {
 
     createFallin(targetX: number, targetY: number) {
         const fallinPosition = this.terrain.getSurface(targetX, targetY).getCenterWorld()
-        EventBus.publishEvent(new LandslideEvent(fallinPosition))
+        EventBus.publishEvent(new LandslideEvent({
+            getPosition(): Vector3 {
+                return fallinPosition
+            },
+        }))
 
         // TODO refactor mesh and animation handling
         const content = ResourceManager.getResource('MiscAnims/RockFall/Rock3Sides.lws')
