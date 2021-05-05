@@ -25,6 +25,7 @@ export class BriefingPanelCfg extends PanelCfg {
         this.titleWindow = dialogCfg.titleWindow
         this.textFont = ResourceManager.getBitmapFont('Interface/Fonts/MbriefFont.bmp')
         this.textWindow = dialogCfg.textWindow
+        this.textWindow.y -= 10
         this.nextButtonCfg = {
             buttonType: 'Next briefing paragraph',
             relX: 394,

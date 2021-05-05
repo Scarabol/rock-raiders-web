@@ -15,8 +15,9 @@ export class BriefingPanel extends Panel {
     btnNext: Button = null
     btnBack: Button = null
     imgBack: HTMLCanvasElement = null
-    imgParagraph: HTMLCanvasElement[] = []
+    imgParagraphList: HTMLCanvasElement[] = []
     paragraph: number = 0
+    imgParagraph: HTMLCanvasElement = null
 
     constructor() {
         super()
@@ -44,18 +45,19 @@ export class BriefingPanel extends Panel {
         this.width = this.imgBack.width
         this.height = this.imgBack.height
         this.updatePosition()
-        this.imgParagraph = objectiveText.split('\\a').map(txt => this.cfg.textFont.createTextImage(txt, this.cfg.textWindow.w, false))
+        this.imgParagraphList = objectiveText.split('\\a').map(txt => this.cfg.textFont.createTextImage(txt, this.cfg.textWindow.w, false))
     }
 
     setParagraph(paragraph: number) {
         if (paragraph < 0) return
-        if (paragraph > this.imgParagraph.length - 1) {
+        if (paragraph > this.imgParagraphList.length - 1) {
             this.hide()
             this.notifyRedraw()
             return
         }
         this.paragraph = paragraph
-        this.btnNext.hidden = this.paragraph >= this.imgParagraph.length - 1
+        this.imgParagraph = this.imgParagraphList[this.paragraph]
+        this.btnNext.hidden = this.paragraph >= this.imgParagraphList.length - 1
         this.btnBack.hidden = this.paragraph < 1
         this.notifyRedraw()
     }
@@ -71,7 +73,7 @@ export class BriefingPanel extends Panel {
     show() {
         super.show()
         this.setParagraph(0)
-        this.btnNext.hidden = this.paragraph >= this.imgParagraph.length - 1
+        this.btnNext.hidden = this.paragraph >= this.imgParagraphList.length - 1
         this.btnBack.hidden = this.paragraph < 1
         this.messagePanel?.setMessage(this.messagePanel.msgSpaceToContinue, 0)
     }
@@ -85,7 +87,7 @@ export class BriefingPanel extends Panel {
         if (this.hidden) return
         if (this.imgBack) context.drawImage(this.imgBack, this.x, this.y)
         if (this.imgTitle) context.drawImage(this.imgTitle, this.x + this.titleRelX, this.y + this.titleRelY)
-        if (this.imgParagraph && this.imgParagraph[this.paragraph]) context.drawImage(this.imgParagraph[this.paragraph], this.x + this.cfg.textWindow.x, this.y + this.cfg.textWindow.y)
+        if (this.imgParagraph) context.drawImage(this.imgParagraph, this.x + this.cfg.textWindow.x, this.y + this.cfg.textWindow.y)
         super.onRedraw(context)
     }
 
