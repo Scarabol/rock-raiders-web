@@ -1,5 +1,4 @@
 import { Vector2, Vector3 } from 'three'
-import { MovableEntityStats } from '../../cfg/MovableEntityStats'
 import { clearIntervalSafe } from '../../core/Util'
 import { SelectionEvent } from '../../event/LocalEvents'
 import { NATIVE_FRAMERATE } from '../../params'
@@ -99,7 +98,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
 }
 
-export class FulfillerStats extends MovableEntityStats {
+export class FulfillerStats {
 
     Levels: number
     HardDrillTime: number[]

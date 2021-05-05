@@ -28,7 +28,7 @@ export class ObjectListLoader {
         Object.values(objectListConf).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type
             // all object positions are off by one tile, because they start at 1 not 0
-            const worldPos = new Vector2(olObject.xPos, olObject.yPos).addScalar(-1).multiplyScalar(TILESIZE)
+            const worldPos = new Vector2(olObject.xPos, olObject.yPos).addScalar(-1).multiplyScalar(TILESIZE) // TODO assert that world pos is over terrain otherwise drop item
             const buildingType: string = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
             if (lTypeName === 'TVCamera'.toLowerCase()) {

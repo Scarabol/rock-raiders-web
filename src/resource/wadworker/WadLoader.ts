@@ -75,7 +75,7 @@ export class WadLoader {
     }
 
     loadNerpAsset(name: string, callback: (obj: string) => any) {
-        name = name.replace(/.npl$/, '.nrn')
+        name = name.replace(/\.npl$/, '.nrn')
         const script = this.wad0File.getEntryText(name)
         callback(script)
     }

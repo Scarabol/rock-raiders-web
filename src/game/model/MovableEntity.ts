@@ -1,5 +1,4 @@
 import { Vector2, Vector3 } from 'three'
-import { MovableEntityStats } from '../../cfg/MovableEntityStats'
 import { JOB_ACTION_RANGE } from '../../params'
 import { SceneManager } from '../SceneManager'
 import { WorldManager } from '../WorldManager'
@@ -19,8 +18,6 @@ export abstract class MovableEntity extends AnimEntity {
         super(worldMgr, sceneMgr, superType, entityType, aeFilename)
     }
 
-    abstract get stats(): MovableEntityStats
-
     getPosition(): Vector3 {
         return new Vector3(this.group.position.x, this.group.position.y, this.group.position.z)
     }
@@ -30,7 +27,7 @@ export abstract class MovableEntity extends AnimEntity {
     }
 
     getSpeed(): number {
-        return this.stats.RouteSpeed[this.level] * (this.animation?.transcoef || 1) * (this.isOnPath() ? this.stats.PathCoef : 1)
+        return this.animation?.transcoef || 1
     }
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
@@ -82,14 +79,6 @@ export abstract class MovableEntity extends AnimEntity {
         const targetWorld = this.sceneMgr.getFloorPosition(target)
         targetWorld.y += this.floorOffset
         return new EntityStep(targetWorld.sub(this.group.position))
-    }
-
-    isOnRubble() {
-        return this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position).hasRubble()
-    }
-
-    isOnPath(): boolean {
-        return this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position).isPath()
     }
 
 }

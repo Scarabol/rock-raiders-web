@@ -156,8 +156,8 @@ export class LWSCLoader {
                     const opacity = 1 - Number(value)
                     subObj.setOpacityAndFollowing(0, this.animationClip.lastFrame, opacity)
                 }
-            } else {
-                // console.warn('Unhandled line in object block: ' + line + '; key: ' + key + '; value: ' + value) // TODO analyze unhandled lines
+            } else if (this.verbose) {
+                console.warn('Unhandled line in object block: ' + line + '; key: ' + key + '; value: ' + value) // TODO analyze unhandled lines
             }
         }
         console.error('Parsing block reached content end')

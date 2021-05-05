@@ -15,7 +15,7 @@ export class ResourceCache {
     }
 
     static getResource(resourceName: string): any {
-        const lName = resourceName ? resourceName.toString().toLowerCase() : null
+        const lName = resourceName?.toString()?.toLowerCase() || null
         return this.resourceByName.get(lName) || null
     }
 

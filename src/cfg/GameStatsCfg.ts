@@ -2,7 +2,6 @@
 
 import { BaseConfig } from './BaseConfig'
 import { BuildingEntityStats } from './BuildingEntityStats'
-import { MovableEntityStats } from './MovableEntityStats'
 
 export class GameStatsCfg extends BaseConfig {
 
@@ -83,7 +82,7 @@ export class GameStatsCfg extends BaseConfig {
         ShowHealthBar: boolean = true
     }
 
-    SmallSpider = new class SmallSpiderStats extends MovableEntityStats {
+    SmallSpider = new class SmallSpiderStats extends BaseConfig {
         Levels: number = 1
         RouteSpeed: number[] = [2.0]
         TrackDist: number = 10.0
@@ -101,7 +100,7 @@ export class GameStatsCfg extends BaseConfig {
         ScaredByBigBangs: boolean = true
     }
 
-    Bat = new class BatStats extends MovableEntityStats {
+    Bat = new class BatStats extends BaseConfig {
         Levels: number = 1
         RouteSpeed: number[] = [1.0]
         TrackDist: number = 10.0
