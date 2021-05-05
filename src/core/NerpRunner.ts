@@ -130,7 +130,7 @@ export class NerpRunner {
      * End the level as failure and show the score screen.
      */
     setLevelFail() {
-        console.log('NerpRunner marks level as failed')
+        console.log('NerpRunner marks level as failed; at line: ' + this.scriptLines[this.programCounter])
         this.halted = true
         GameState.resultState = GameResultState.FAILED
         this.onLevelEnd()
