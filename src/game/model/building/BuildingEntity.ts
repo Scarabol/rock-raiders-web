@@ -105,7 +105,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     isPowered(): boolean {
-        return this.powerSwitch && (this.stats.SelfPowered || this.stats.PowerBuilding || this.crystalsInUse > 0)
+        return !this.inBeam && this.powerSwitch && (this.stats.SelfPowered || this.stats.PowerBuilding || this.crystalsInUse > 0)
     }
 
     onDiscover() {
