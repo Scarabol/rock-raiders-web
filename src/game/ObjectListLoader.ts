@@ -27,7 +27,7 @@ export class ObjectListLoader {
     static loadObjectList(worldMgr: WorldManager, sceneMgr: SceneManager, objectListConf, disableStartTeleport: boolean) {
         Object.values(objectListConf).forEach((olObject: any) => {
             const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type
-            // all object positions are off by half a tile, because 0/0 is the top left corner of first tile
+            // all object positions are off by one tile, because they start at 1 not 0
             const worldPos = new Vector2(olObject.xPos, olObject.yPos).addScalar(-1).multiplyScalar(TILESIZE)
             const buildingType: string = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
@@ -74,8 +74,6 @@ export class ObjectListLoader {
                 console.warn('Object type ' + olObject.type + ' not yet implemented')
             }
         })
-        // update path textures when all buildings are added
-        GameState.buildings.forEach((b) => b.surfaces.forEach((s) => s.neighbors.forEach((n) => n.updateTexture())))
     }
 
     private static createBuildingByName(buildingType: string, worldMgr: WorldManager, sceneMgr: SceneManager) {

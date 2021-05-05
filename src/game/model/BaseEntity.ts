@@ -51,7 +51,7 @@ export abstract class BaseEntity {
         if (radHeading !== undefined && radHeading !== null) {
             this.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading)
         }
-        this.group.visible = this.surfaces.every((s) => s.discovered)
+        this.group.visible = this.surfaces.some((s) => s.discovered)
         this.sceneMgr.scene.add(this.group)
     }
 

@@ -52,7 +52,9 @@ export class Supervisor {
         const availableJobs: PublicJob[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobstate === JobState.INCOMPLETE
-            if (result && j.fulfiller.length < 1 && GameState.priorityList.isEnabled(j.getPriorityIdentifier())) availableJobs.push(j)
+            if (result && j.fulfiller.length < 1 && GameState.priorityList.isEnabled(j.getPriorityIdentifier())) { // TODO don't assign jobs on hidden surfaces
+                availableJobs.push(j)
+            }
             return result
         })
         availableJobs.sort((left, right) => {
