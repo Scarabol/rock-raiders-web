@@ -622,18 +622,40 @@ class BmpDecoder implements IBitmapImage {
     }
 }
 
-export class AlphaBitmapDecoder {
+export class BitmapWithPalette extends ImageData {
 
-    static parse(buffer: Uint8Array, alphaIndex: number = null): ImageData {
-        const decoder = new BmpDecoder(buffer, {toRGBA: true})
-        const data = new Uint8ClampedArray(decoder.data)
+    readonly palette: IColor[]
+
+    static decode(buffer: Uint8Array): BitmapWithPalette {
+        return new BitmapWithPalette(new BmpDecoder(buffer, {toRGBA: true}))
+    }
+
+    constructor(decoder: BmpDecoder) {
+        super(new Uint8ClampedArray(decoder.data), decoder.width, decoder.height)
+        this.palette = decoder.palette
+    }
+
+    applyAlphaByIndex(alphaIndex: number): BitmapWithPalette {
         if (alphaIndex || alphaIndex === 0) {
-            const alphaColor = decoder.palette?.[alphaIndex] // XXX fails for a102_bigtyre.bmp
-            for (let c = 0; c < decoder.data.length; c += 4) {
-                data[c + 3] = alphaColor?.red === data[c] && alphaColor?.green === data[c + 1] && alphaColor?.blue === data[c + 2] ? 0 : 255
+            const alphaColor = this.palette?.[alphaIndex] // XXX fails for a102_bigtyre.bmp
+            if (alphaColor) {
+                const data = this.data
+                for (let c = 0; c < data.length; c += 4) {
+                    data[c + 3] = alphaColor.red === data[c] && alphaColor.green === data[c + 1] && alphaColor.blue === data[c + 2] ? 0 : 255
+                }
             }
         }
-        return new ImageData(data, decoder.width, decoder.height)
+        return this
+    }
+
+    applyAlpha(): BitmapWithPalette {
+        const data = this.data
+        for (let n = 0; n < data.length; n += 4) {
+            if (data[n] <= 2 && data[n + 1] <= 2 && data[n + 2] <= 2) { // Interface/Reward/RSoxygen.bmp uses 2/2/2 as "black" alpha background
+                data[n + 3] = 0
+            }
+        }
+        return this
     }
 
 }

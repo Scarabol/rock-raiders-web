@@ -1,10 +1,10 @@
+import { getPath, iGet } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimClip } from '../game/model/anim/AnimClip'
 import { SceneManager } from '../game/SceneManager'
 import { LWOLoader } from './LWOLoader'
 import { LWSCLoader } from './LWSCLoader'
 import { ResourceManager } from './ResourceManager'
-import { getPath, iGet } from './wadworker/WadUtil'
 
 export class AnimEntityLoader {
 

@@ -1,3 +1,4 @@
+import { LevelObjectiveTextEntry } from '../../../cfg/LevelObjectiveTextEntry'
 import { encodeChar } from './EncodingHelper'
 
 export class ObjectiveTextParser {
@@ -100,12 +101,3 @@ enum PARSING_STATE {
 
 }
 
-export class LevelObjectiveTextEntry {
-
-    key: string
-    objective: string
-    failure: string
-    completion: string
-    crystalFailure: string
-
-}

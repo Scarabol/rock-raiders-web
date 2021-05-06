@@ -338,7 +338,7 @@ export class Surface implements Selectable {
         }
         textureName += '.bmp'
 
-        const texture = ResourceManager.getTexture(textureName)
+        const texture = ResourceManager.getTexture(textureName) // FIXME precache textures, replace matIndex with actual texture
         texture.center.set(0.5, 0.5)
         texture.rotation = this.surfaceRotation
 

@@ -1,19 +1,13 @@
-import { LevelEntryCfg, LevelsCfg } from '../../cfg/LevelsCfg'
-import { MenuCfg } from '../../cfg/MenuCfg'
-import { RewardCfg } from '../../cfg/RewardCfg'
+import { getFilename, iGet } from '../../core/Util'
 import { WAD_CACHE_DB_NAME } from '../../params'
-import { AlphaBitmapDecoder } from './AlphaBitmapDecoder'
-import { CfgFileParser } from './CfgFileParser'
-import { ObjectiveTextParser } from './ObjectiveTextParser'
-import { RonFile } from './RonFile'
+import { BitmapWithPalette } from './parser/BitmapWithPalette'
+import { CfgFileParser } from './parser/CfgFileParser'
+import { NerpMsgParser } from './parser/NerpMsgParser'
+import { ObjectiveTextParser } from './parser/ObjectiveTextParser'
+import { WadParser } from './parser/WadParser'
+import { WadAssetRegistry } from './WadAssetRegistry'
 import { WadFile } from './WadFile'
-import { getFilename, getPath, iGet } from './WadUtil'
-
-interface WadAsset {
-    method: ((name: string, callback: (assetName: string[], assetData: any) => void) => void)
-    assetPath: string
-    optional: boolean
-}
+import { grayscaleToGreen } from './WadUtil'
 
 export class WadLoader {
 
@@ -22,7 +16,7 @@ export class WadLoader {
     startTime: Date
     assetIndex: number = 0
     totalResources: number = 0
-    assetsFromCfgByName: Map<string, WadAsset> = new Map()
+    assetRegistry: WadAssetRegistry = new WadAssetRegistry(this)
 
     onMessage: (msg: string) => any = (msg: string) => {
         console.log(msg)
@@ -38,48 +32,39 @@ export class WadLoader {
 
     loadWadImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
-        const imgData = AlphaBitmapDecoder.parse(data)
+        const imgData = BitmapWithPalette.decode(data)
         callback([name], imgData)
     }
 
     loadWadTexture(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
-        const alphaIndexMatch = getFilename(name).match(/^a(\d+).+/i)
-        const alphaIndex = alphaIndexMatch ? parseInt(alphaIndexMatch[1]) : null
-        const imgData = AlphaBitmapDecoder.parse(data, alphaIndex)
+        const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
+        let alphaIndex = null
+        const assetNames = [name]
+        if (alphaIndexMatch) {
+            assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[3])
+            alphaIndex = parseInt(alphaIndexMatch[2])
+        }
+        const imgData = BitmapWithPalette.decode(data).applyAlphaByIndex(alphaIndex)
         if (name.toLowerCase().startsWith('miscanims/crystal')) { // XXX fix crystal lwo loading
-            callback([name], WadLoader.grayscaleToGreen(imgData))
+            callback(assetNames, grayscaleToGreen(imgData))
         } else {
-            callback([name], imgData)
+            callback(assetNames, imgData)
         }
-    }
-
-    private static grayscaleToGreen(imgData: ImageData): ImageData {
-        const arr = imgData.data
-        for (let c = 0; c < arr.length; c += 4) {
-            arr[c] = 0
-            arr[c + 2] = 0
-        }
-        return imgData
     }
 
     loadAlphaImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
-        const imgData = AlphaBitmapDecoder.parse(data)
-        for (let n = 0; n < imgData.data.length; n += 4) {
-            if (imgData.data[n] <= 2 && imgData.data[n + 1] <= 2 && imgData.data[n + 2] <= 2) { // Interface/Reward/RSoxygen.bmp uses 2/2/2 as "black" alpha background
-                imgData.data[n + 3] = 0
-            }
-        }
+        const imgData = BitmapWithPalette.decode(data).applyAlpha()
         const assetNames = [name]
-        const alphaIndexMatch = name.toLowerCase().match(/(.*a)\d\d\d(_.+)/)
-        if (alphaIndexMatch) assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[2])
+        const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
+        if (alphaIndexMatch) assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[3])
         callback(assetNames, imgData)
     }
 
     loadFontImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
-        const imgData = AlphaBitmapDecoder.parse(data)
+        const imgData = BitmapWithPalette.decode(data)
         callback([name], imgData)
     }
 
@@ -90,77 +75,10 @@ export class WadLoader {
     }
 
     loadNerpMsg(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const result = this.parseNerpMsgFile(this.wad0File, name)
-        const msg1 = this.parseNerpMsgFile(this.wad1File, name)
-        for (let c = 0; c < msg1.length; c++) {
-            result[c] = result[c] || {}
-            const m1 = msg1[c]
-            if (!m1) continue
-            if (m1.txt) {
-                result[c].txt = m1.txt
-            }
-            if (m1.snd) {
-                result[c].snd = m1.snd
-            }
-        }
+        const wad0Data = this.wad0File.getEntryText(name)
+        const wad1Data = this.wad1File.getEntryText(name)
+        const result = NerpMsgParser.parseNerpMessages(wad0Data, wad1Data)
         callback([name], result)
-    }
-
-    parseNerpMsgFile(wadFile: WadFile, name: string) {
-        const result = []
-        const lines = wadFile.getEntryText(name).split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l)
-        for (let c = 0; c < lines.length; c++) {
-            const line = lines[c]
-            if (line === '-') {
-                continue
-            }
-            // line formatting differs between wad0 and wad1 files!
-            const txt0Match = line.match(/\\\[([^\\]+)\\](\s*#([^#]+)#)?/)
-            const txt1Match = line.match(/^([^$][^#]+)(\s*#([^#]+)#)?/)
-            const sndMatch = line.match(/\$([^\s]+)\s*([^\s]+)/)
-            if (wadFile === this.wad0File && txt0Match) {
-                const index = txt0Match[3] !== undefined ? this.numericNameToNumber(txt0Match[3]) : c // THIS IS MADNESS! #number# at the end of line is OPTIONAL
-                result[index] = result[index] || {}
-                result[index].txt = txt0Match[1]
-            } else if (wadFile === this.wad1File && txt1Match) {
-                const index = txt1Match[3] !== undefined ? this.numericNameToNumber(txt1Match[3]) : c // THIS IS MADNESS! #number# at the end of line is OPTIONAL
-                result[index] = result[index] || {}
-                result[index].txt = txt1Match[1].replace(/_/g, ' ').trim()
-            } else if (sndMatch && sndMatch.length === 3) {
-                const index = this.numericNameToNumber(sndMatch[1])
-                result[index] = result[index] || {}
-                result[index].snd = sndMatch[2].replace(/\\/g, '/')
-            } else {
-                throw 'Line in nerps message file did not match anything'
-            }
-        }
-        return result
-    }
-
-    numericNameToNumber(name: string) {
-        if (name === undefined) {
-            throw 'Numeric name must not be undefined'
-        }
-        const digits = {one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9}
-        const specials = {
-            ten: 10, eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15,
-            sixteen: 16, seventeen: 17, eighteen: 18, nineteen: 19,
-            eightteen: 18, // typo seen in the wild
-        }
-        const tens = {twenty: 20, thirty: 30, forty: 40}
-        let number = specials[name] || digits[name]
-        if (number === undefined) {
-            Object.keys(tens).forEach(ten => {
-                if (name.startsWith(ten)) {
-                    const digitName = name.replace(ten, '')
-                    number = tens[ten] + (digitName ? digits[digitName] : 0)
-                }
-            })
-        }
-        if (number === undefined) {
-            throw 'Found unexpected numeric name ' + name
-        }
-        return number
     }
 
     loadObjectiveTexts(name: string, callback: (assetNames: string[], obj: any) => any) {
@@ -172,53 +90,16 @@ export class WadLoader {
     loadMapAsset(name: string, callback: (assetNames: string[], obj: any) => any) {
         const buffer = this.wad0File.getEntryData(name)
         if (buffer.length < 13 || String.fromCharCode.apply(String, buffer.slice(0, 3)) !== 'MAP') {
-            console.log('Invalid map data provided')
+            console.error('Invalid map data provided for: ' + name)
             return
         }
-        const map = {width: buffer[8], height: buffer[12], level: []}
-        let row = []
-        for (let seek = 16; seek < buffer.length; seek += 2) {
-            row.push(buffer[seek])
-            if (row.length >= map.width) {
-                map.level.push(row)
-                row = []
-            }
-        }
+        const map = WadParser.parseMap(buffer)
         callback([name], map)
     }
 
     loadObjectListAsset(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const lines = this.wad0File.getEntryText(name).split('\n')
-        const objectList = []
-        let currentObject = null
-        for (let c = 0; c < lines.length; c++) {
-            const line = lines[c].trim()
-            const objectStartMatch = line.match(/(.+)\s+{/)
-            const drivingMatch = line.match(/driving\s+(.+)/)
-            if (line.length < 1 || line.startsWith(';') || line.startsWith('Lego*')) {
-                // ignore empty lines, comments and the root object
-            } else if (objectStartMatch) {
-                currentObject = {}
-                objectList[objectStartMatch[1]] = currentObject
-            } else if (line === '}') {
-                currentObject = null
-            } else if (drivingMatch) {
-                currentObject.driving = drivingMatch[1]
-            } else {
-                const split = line.split(/\s+/)
-                if (split.length !== 2 || currentObject === null) {
-                    throw 'Unexpected key value entry: ' + line
-                }
-                const key = split[0]
-                let val: any = split[1]
-                if (key === 'xPos' || key === 'yPos' || key === 'heading') {
-                    val = parseFloat(val)
-                } else if (key !== 'type') {
-                    throw 'Unexpected key value entry: ' + line
-                }
-                currentObject[key] = val
-            }
-        }
+        const data = this.wad0File.getEntryText(name)
+        const objectList = WadParser.parseObjectList(data)
         callback([name], objectList)
     }
 
@@ -257,231 +138,25 @@ export class WadLoader {
             try {
                 lwoContent = this.wad0File.getEntryBuffer('world/shared/' + getFilename(lwoFilepath))
             } catch (e) {
-                console.error('Could not load LWO file ' + lwoFilepath + '; Error: ' + e)
+                if (!lwoFilepath.equalsIgnoreCase('Vehicles/BullDozer/VLBD_light.lwo') // ignore known issues
+                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_bucket.lwo')
+                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_main.lwo')
+                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_C_Pit.lwo')
+                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_Light01.lwo')
+                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/digbodlight.lwo')
+                    && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_PipeL.lwo')) {
+                    console.error('Could not load LWO file ' + lwoFilepath + '; Error: ' + e)
+                }
                 lwoContent = {}
             }
         }
         callback([lwoFilepath], lwoContent.buffer)
     }
 
-    registerAllAssets(mainConf: any) { // dynamically register all assets from config
-        // add fonts and cursors
-        this.addAssetFolder(this.loadFontImageAsset, 'Interface/Fonts/')
-        this.addAssetFolder(this.loadAlphaImageAsset, 'Interface/Pointers/')
-        // add menu assets
-        this.addMenuWithAssets(mainConf, 'MainMenuFull', false)
-        this.addMenuWithAssets(mainConf, 'PausedMenu')
-        this.addMenuWithAssets(mainConf, 'OptionsMenu')
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/BriefingPanel/BriefingPanel.bmp')
-        this.addAsset(this.loadObjectiveTexts, 'Languages/ObjectiveText.txt')
-        // add in-game assets
-        this.addAlphaImageFolder('Interface/TopPanel/') // top panel
-        this.addAlphaImageFolder('Interface/RightPanel/') // crystal side bar
-        this.addAlphaImageFolder('Interface/RadarPanel/')
-        this.addAlphaImageFolder('Interface/MessagePanel/')
-        this.addAsset(this.loadWadImageAsset, 'Interface/Airmeter/msgpanel_air_juice.bmp')
-        this.addAlphaImageFolder('Interface/InfoPanel/')
-        this.addAlphaImageFolder('Interface/PriorityPanel/')
-        this.addAlphaImageFolder('Interface/Priorities')
-        this.addAlphaImageFolder('Interface/CameraControl/')
-        this.addAlphaImageFolder('Interface/MessageTabs/')
-        this.addAlphaImageFolder('Interface/IconPanel/')
-        this.addAlphaImageFolder('Interface/Icons/')
-        this.addAlphaImageFolder('Interface/Menus/')
-        this.addAlphaImageFolder('Interface/Buttons/')
-        this.addAlphaImageFolder('Interface/InfoImages/')
-        this.addAssetFolder(this.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_')
-        this.addAssetFolder(this.loadWadImageAsset, 'Interface/FrontEnd/lp_')
-        this.addAsset(this.loadAlphaImageAsset, 'Interface/FrontEnd/LowerPanel.bmp')
-        // level files
-        this.addAsset(this.loadNerpAsset, 'Levels/nerpnrn.h')
-        const levelsCfg = new LevelsCfg(iGet(mainConf, 'Levels'))
-        this.onAssetLoaded(0, ['Levels'], levelsCfg)
-        Object.values(levelsCfg.levelsByName).forEach((level: LevelEntryCfg) => {
-            level.menuBMP.forEach((bmpName) => {
-                this.addAsset(this.loadAlphaImageAsset, bmpName)
-            })
-            this.addAsset(this.loadMapAsset, level.surfaceMap)
-            this.addAsset(this.loadMapAsset, level.predugMap)
-            this.addAsset(this.loadMapAsset, level.terrainMap)
-            this.addAsset(this.loadMapAsset, level.blockPointersMap, true)
-            this.addAsset(this.loadMapAsset, level.cryOreMap)
-            this.addAsset(this.loadMapAsset, level.pathMap, true)
-            if (level.fallinMap) this.addAsset(this.loadMapAsset, level.fallinMap)
-            if (level.erodeMap) this.addAsset(this.loadMapAsset, level.erodeMap)
-            this.addAsset(this.loadObjectListAsset, level.oListFile)
-            this.addAsset(this.loadNerpAsset, level.nerpFile)
-            this.addAsset(this.loadNerpMsg, level.nerpMessageFile)
-        })
-        // load all shared textures
-        this.addTextureFolder('World/Shared/')
-        // load all building types
-        const buildingTypes = mainConf['BuildingTypes']
-        Object.values(buildingTypes).forEach((bType: string) => {
-            const bName = bType.split('/')[1]
-            const aeFile = bType + '/' + bName + '.ae'
-            this.addAnimatedEntity(aeFile)
-        })
-        this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
-        // load monsters
-        this.addAnimatedEntity('Creatures/SpiderSB/SpiderSB.ae')
-        this.addAnimatedEntity('Creatures/bat/bat.ae')
-        // load vehicles
-        const vehicleTypes = mainConf['VehicleTypes']
-        Object.values(vehicleTypes).map((v) => Array.isArray(v) ? v : [v]).forEach((vParts: string[]) => {
-            vParts.forEach((vType) => {
-                const vName = vType.split('/')[1]
-                const aeFile = vType + '/' + vName + '.ae'
-                this.addAnimatedEntity(aeFile)
-            })
-        })
-        // load misc objects
-        this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Dynamite') + '/Dynamite.ae')
-        this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae')
-        this.addAsset(this.loadLWOFile, 'World/Shared/Crystal.lwo') // highpoly version, but unused?
-        this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'Crystal') + '.lwo')
-        this.addTextureFolder('MiscAnims/Crystal/')
-        this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'Ore') + '.lwo')
-        this.addAsset(this.loadWadTexture, 'MiscAnims/Ore/Ore.bmp')
-        this.addAsset(this.loadLWOFile, 'World/Shared/Brick.lwo')
-        this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ProcessedOre') + '.lwo')
-        this.addAsset(this.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ElectricFence') + '.lwo')
-        this.addTextureFolder('Buildings/E-Fence/')
-        this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae')
-        this.addAnimatedEntity('MiscAnims/Dynamite/Dynamite.ae')
-        this.addLWSFile('MiscAnims/RockFall/Rock3Sides.lws')
-        this.addTextureFolder('MiscAnims/RockFall/')
-        // spaces
-        this.addTextureFolder('World/WorldTextures/IceSplit/Ice')
-        this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')
-        this.addTextureFolder('World/WorldTextures/RockSplit/Rock')
-        // reward screen
-        const rewardCfg = new RewardCfg(iGet(mainConf, 'Reward'))
-        this.onAssetLoaded(0, ['Reward'], rewardCfg)
-        this.addAsset(this.loadWadImageAsset, rewardCfg.wallpaper)
-        this.addAsset(this.loadFontImageAsset, rewardCfg.backFont)
-        Object.values(rewardCfg.fonts).forEach(imgPath => this.addAsset(this.loadFontImageAsset, imgPath))
-        rewardCfg.images.forEach(img => this.addAsset(this.loadAlphaImageAsset, img.filePath))
-        rewardCfg.boxImages.forEach(img => this.addAsset(this.loadWadImageAsset, img.filePath))
-        rewardCfg.saveButton.splice(0, 4).forEach(img => this.addAsset(this.loadWadImageAsset, img))
-        rewardCfg.advanceButton.splice(0, 4).forEach(img => this.addAsset(this.loadWadImageAsset, img))
-        // // sounds
-        // const samplesConf = mainConf['Samples'];
-        // Object.keys(samplesConf).forEach(sndKey => {
-        //     let sndPath = samplesConf[sndKey] + '.wav';
-        //     if (sndKey.startsWith('!')) { // TODO no clue what this means... loop? duplicate?!
-        //         sndKey = sndKey.slice(1);
-        //     }
-        //     if (sndPath.startsWith('*')) { // TODO no clue what this means... don't loop, see telportup
-        //         sndPath = sndPath.slice(1);
-        //     } else if (sndPath.startsWith('@')) {
-        //         // sndPath = sndPath.slice(1);
-        //         // console.warn('Sound ' + sndPath + ' must be loaded from program files folder. Not yet implemented!');
-        //         return;
-        //     }
-        //     sndPath.split(',').forEach(sndPath => {
-        //         this.addAsset(this.loadWavAsset, sndPath, false, sndKey);
-        //     });
-        // });
-    }
-
-    addAnimatedEntity(aeFile: string) {
-        const content = this.wad0File.getEntryText(aeFile)
-        const cfgRoot = iGet(RonFile.parse(content), 'Lego*')
-        this.onAssetLoaded(0, [aeFile], cfgRoot)
-        const path = getPath(aeFile);
-        ['HighPoly', 'MediumPoly', 'LowPoly'].forEach((polyType) => { // TODO add 'FPPoly' (contains two cameras)
-            const cfgPoly = iGet(cfgRoot, polyType)
-            if (cfgPoly) {
-                Object.keys(cfgPoly).forEach((key) => {
-                    this.addAsset(this.loadLWOFile, path + cfgPoly[key] + '.lwo')
-                })
-            }
-        })
-        const activities = iGet(cfgRoot, 'Activities')
-        if (activities) {
-            Object.keys(activities).forEach((activity) => {
-                try {
-                    let keyname = iGet(activities, activity)
-                    const act = iGet(cfgRoot, keyname)
-                    const file = iGet(act, 'FILE')
-                    const isLws = iGet(act, 'LWSFILE') === true
-                    if (isLws) {
-                        this.addLWSFile(path + file + '.lws')
-                    } else {
-                        console.error('Found activity which is not an LWS file')
-                    }
-                } catch (e) {
-                    console.error(e)
-                    console.log(cfgRoot)
-                    console.log(activities)
-                    console.log(activity)
-                }
-            })
-        }
-        // load all textures for this type
-        this.addTextureFolder(getPath(aeFile))
-    }
-
-    addLWSFile(lwsFilepath: string) {
-        const content = this.wad0File.getEntryText(lwsFilepath)
-        this.onAssetLoaded(0, [lwsFilepath], content)
-        const lwoFiles: string[] = this.extractLwoFiles(getPath(lwsFilepath), content)
-        lwoFiles.forEach((lwoFile) => this.addAsset(this.loadLWOFile, lwoFile))
-    }
-
-    extractLwoFiles(path: string, content: string): string[] {
-        const lines: string[] = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
-            .replace(/\t/g, ' ') // tabs to spaces
-            .split('\n')
-            .map((l) => l.trim())
-
-        if (lines[0] !== 'LWSC') {
-            throw 'Invalid start of file! Expected \'LWSC\' in first line'
-        }
-
-        return lines.filter((line) => line.toLowerCase().startsWith('LoadObject '.toLowerCase()))
-            .map((objLine) => path + getFilename(objLine.substring('LoadObject '.length)).toLowerCase())
-    }
-
-    addAlphaImageFolder(folderPath: string) {
-        this.addAssetFolder(this.loadAlphaImageAsset, folderPath)
-    }
-
-    addTextureFolder(folderPath: string) {
-        this.addAssetFolder(this.loadWadTexture, folderPath)
-    }
-
-    addAssetFolder(callback: (name: string, callback: (assetNames: string[], obj: any) => any) => void, folderPath) {
-        this.wad0File.filterEntryNames(folderPath + '.+\\.bmp').forEach((assetPath) => {
-            this.addAsset(callback, assetPath)
-        })
-    }
-
-    addMenuWithAssets(mainConf, name: string, menuImageAlpha: boolean = true) {
-        const menuCfg = new MenuCfg(iGet(mainConf, 'Menu', name))
-        this.onAssetLoaded(0, [name], menuCfg)
-        menuCfg.menus.forEach((menuCfg) => {
-            const method = menuImageAlpha ? this.loadAlphaImageAsset : this.loadWadImageAsset
-            const menuImage = Array.isArray(menuCfg.menuImage) ? menuCfg.menuImage[0] : menuCfg.menuImage
-            this.addAsset(method, menuImage)
-            this.addAsset(this.loadFontImageAsset, menuCfg.menuFont)
-            this.addAsset(this.loadFontImageAsset, menuCfg.loFont)
-            this.addAsset(this.loadFontImageAsset, menuCfg.hiFont)
-        })
-    }
-
-    addAsset(method: (name: string, callback: (assetNames: string[], assetData: any) => void) => void, assetPath, optional = false) {
-        if (!assetPath || this.assetsFromCfgByName.hasOwnProperty(assetPath) || assetPath === 'NULL') {
-            return // do not load assets twice
-        }
-        this.assetsFromCfgByName.set(assetPath, {method: method.bind(this), assetPath: assetPath, optional: optional})
-    }
-
     loadAssetsParallel() {
         const promises = []
         const that = this
-        this.assetsFromCfgByName.forEach((asset) => {
+        this.assetRegistry.forEach((asset) => {
             promises.push(new Promise<void>((resolve) => {
                 try {
                     asset.method(asset.assetPath, (assetNames, assetObj) => {
@@ -606,10 +281,10 @@ export class WadLoader {
      */
     startLoadingProcess() {
         this.startTime = new Date()
-        this.assetsFromCfgByName = new Map()
         this.onMessage('Loading configuration...')
         const cfg = CfgFileParser.parse(this.wad1File.getEntryData('Lego.cfg'))
-        this.registerAllAssets(cfg)
+        // dynamically register all assets from config
+        this.assetRegistry.registerAllAssets(cfg)
         this.onMessage('Loading initial assets...')
         Promise.all([
             new Promise<void>((resolve) => {
@@ -642,7 +317,7 @@ export class WadLoader {
             }),
         ]).then(() => {
             this.onMessage('Start loading assets...')
-            this.totalResources = this.assetsFromCfgByName.size
+            this.totalResources = this.assetRegistry.size
             this.onInitialLoad(this.totalResources, cfg)
             this.assetIndex = 0
             this.loadAssetsParallel()

@@ -1,7 +1,7 @@
 import { GameStatsCfg } from '../cfg/GameStatsCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { createContext, createDummyImgData } from '../core/ImageHelper'
-import { iGet } from './wadworker/WadUtil'
+import { iGet } from '../core/Util'
 
 export class ResourceCache {
 

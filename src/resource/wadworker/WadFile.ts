@@ -1,4 +1,4 @@
-import { encodeChar } from './EncodingHelper'
+import { encodeChar } from './parser/EncodingHelper'
 
 /**
  * Handles the extraction of single files from a bigger WAD data blob
