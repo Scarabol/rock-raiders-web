@@ -19,7 +19,13 @@ export class Terrain {
     floorGroup: Group = new Group()
     roofGroup: Group = new Group()
     graphWalk: Graph = null
+    graphDrive: Graph = null
+    graphFly: Graph = null
+    graphSwim: Graph = null
     cachedWalkPaths = new Map<string, Vector2[]>()
+    cachedDrivePaths = new Map<string, Vector2[]>()
+    cachedFlyPaths = new Map<string, Vector2[]>()
+    cachedSwimPaths = new Map<string, Vector2[]>()
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         this.worldMgr = worldMgr
@@ -64,29 +70,48 @@ export class Terrain {
 
     resetGraphWalk() {
         this.graphWalk.init()
+        this.graphDrive.init()
+        this.graphFly.init()
+        this.graphSwim.init()
         this.cachedWalkPaths.clear()
+        this.cachedDrivePaths.clear()
+        this.cachedFlyPaths.clear()
+        this.cachedSwimPaths.clear()
         console.log('Cached paths cleared')
     }
 
     findWalkPath(start: Vector2, target: PathTarget): TerrainPath {
-        const gridStart = start.clone().multiplyScalar(3 / TILESIZE).floor()
-        const gridEnd = target.targetLocation.clone().multiplyScalar(3 / TILESIZE).floor()
+        return Terrain.findPath(start, target, this.cachedWalkPaths, this.graphWalk, 3 / TILESIZE, 0.5)
+    }
+
+    findDrivePath(start: Vector2, target: PathTarget): TerrainPath {
+        return Terrain.findPath(start, target, this.cachedDrivePaths, this.graphDrive, 1 / TILESIZE, 0)
+    }
+
+    findFlyPath(start: Vector2, target: PathTarget): TerrainPath {
+        return Terrain.findPath(start, target, this.cachedFlyPaths, this.graphFly, 1 / TILESIZE, 0)
+    }
+
+    findSwimPath(start: Vector2, target: PathTarget): TerrainPath {
+        return Terrain.findPath(start, target, this.cachedSwimPaths, this.graphSwim, 1 / TILESIZE, 0)
+    }
+
+    private static findPath(start: Vector2, target: PathTarget, cachedPaths: Map<string, Vector2[]>, graph: Graph, gridScale: number, maxRandomOffset: number): TerrainPath {
+        const gridStart = start.clone().multiplyScalar(gridScale).floor()
+        const gridEnd = target.targetLocation.clone().multiplyScalar(gridScale).floor()
         if (gridStart.x === gridEnd.x && gridStart.y === gridEnd.y) return new TerrainPath(target, target.targetLocation)
         const cacheIdentifier = gridStart.x + '/' + gridStart.y + ' -> ' + gridEnd.x + '/' + gridEnd.y
-        const walkPath = this.cachedWalkPaths.getOrUpdate(cacheIdentifier, () => {
-            const startNode = this.graphWalk.grid[gridStart.x][gridStart.y]
-            const endNode = this.graphWalk.grid[gridEnd.x][gridEnd.y]
-            const path = astar.search(this.graphWalk, startNode, endNode).map((n) => Terrain.gridNodeToWorldPos(n))
+        const walkPath = cachedPaths.getOrUpdate(cacheIdentifier, () => {
+            const startNode = graph.grid[gridStart.x][gridStart.y]
+            const endNode = graph.grid[gridEnd.x][gridEnd.y]
+            const path = astar.search(graph, startNode, endNode).map((n) =>
+                new Vector2(n.x + 0.5, n.y + 0.5).add(new Vector2().random().multiplyScalar(maxRandomOffset)).divideScalar(gridScale))
             if (path.length < 1) return null // no path found
             path.pop() // last node is replaced with actual target position
             return path
         })
         if (!walkPath) return null
         return new TerrainPath(target, [...walkPath, target.targetLocation]) // return shallow copy to avoid interference
-    }
-
-    private static gridNodeToWorldPos(gridNode) {
-        return new Vector2(Math.random(), Math.random()).divideScalar(2).add(gridNode).multiplyScalar(TILESIZE / 3)
     }
 
     findFallInOrigin(x: number, y: number): [number, number] {

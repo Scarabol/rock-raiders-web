@@ -93,16 +93,32 @@ export class TerrainLoader {
         })
 
         // generate path finding weights
-        const weights: number[][] = []
+        const weightsWalk: number[][] = []
+        const weightsDrive: number[][] = []
+        const weightsFly: number[][] = []
+        const weightsSwim: number[][] = []
         for (let x = 0; x < terrain.width; x++) {
-            const col: number[] = []
+            const colWalk: number[] = []
+            const colDrive: number[] = []
+            const colFly: number[] = []
+            const colSwim: number[] = []
             for (let y = 0; y < terrain.height; y++) {
-                const w = terrain.getSurfaceOrNull(x, y).getGraphWalkWeight()
-                col.push(w, w, w)
+                const surface = terrain.getSurfaceOrNull(x, y)
+                const w = surface.getPathfindingWalkWeight()
+                colWalk.push(w, w, w)
+                colDrive.push(surface.getPathfindingDriveWeight())
+                colFly.push(surface.getPathFindingFlyWeight())
+                colSwim.push(surface.getPathFindingSwimWeight())
             }
-            weights.push(col, col, col)
+            weightsWalk.push(colWalk, colWalk, colWalk)
+            weightsDrive.push(colDrive)
+            weightsFly.push(colFly)
+            weightsSwim.push(colSwim)
         }
-        terrain.graphWalk = new Graph(weights, {diagonal: true})
+        terrain.graphWalk = new Graph(weightsWalk, {diagonal: true})
+        terrain.graphDrive = new Graph(weightsDrive, {diagonal: true})
+        terrain.graphFly = new Graph(weightsFly, {diagonal: true})
+        terrain.graphSwim = new Graph(weightsSwim, {diagonal: true})
 
         // crumble unsupported walls
         terrain.forEachSurface((s) => {

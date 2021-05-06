@@ -165,7 +165,11 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.wadLoader.onAssetLoaded(0, [aeFile], cfgRoot)
         const path = getPath(aeFile)
         // load all textures for this type
-        this.addTextureFolder(path);
+        this.addTextureFolder(path)
+        const wheelMeshName = iGet(cfgRoot, 'WheelMesh')
+        if (wheelMeshName && !'NULL_OBJECT'.equalsIgnoreCase(wheelMeshName)) {
+            this.addAsset(this.wadLoader.loadLWOFile, path + wheelMeshName + '.lwo')
+        }
         ['HighPoly', 'MediumPoly', 'LowPoly'].forEach((polyType) => { // TODO add 'FPPoly' (contains two cameras)
             const cfgPoly = iGet(cfgRoot, polyType)
             if (cfgPoly) {

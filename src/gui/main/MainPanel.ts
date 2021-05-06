@@ -17,7 +17,8 @@ import { SelectFloorPanel } from './SelectFloorPanel'
 import { SelectRaiderPanel } from './SelectRaiderPanel'
 import { SelectRubblePanel } from './SelectRubblePanel'
 import { SelectSitePanel } from './SelectSitePanel'
-import { SelectVehiclePanel } from './SelectVehiclePanel'
+import { SelectVehicleEmptyPanel } from './SelectVehicleEmptyPanel'
+import { SelectVehicleManedPanel } from './SelectVehicleManedPanel'
 import { SelectWallPanel } from './SelectWallPanel'
 import { SmallVehiclePanel } from './SmallVehiclePanel'
 import { TrainRaiderPanel } from './TrainRaiderPanel'
@@ -61,7 +62,8 @@ export class MainPanel extends Panel {
         selectRaiderPanel.trainItem.onClick = () => selectRaiderPanel.toggleState(() => trainRaiderPanel.toggleState())
         const getToolPanel = this.addSubPanel(new GetToolPanel(this, selectRaiderPanel))
         selectRaiderPanel.getToolItem.onClick = () => selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
-        const selectVehiclePanel = this.addSubPanel(new SelectVehiclePanel(this, this.mainPanel))
+        const selectVehicleEmptyPanel = this.addSubPanel(new SelectVehicleEmptyPanel(this, this.mainPanel))
+        const selectVehicleManedPanel = this.addSubPanel(new SelectVehicleManedPanel(this, this.mainPanel))
 
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
         teleportRaider.isDisabled = () => this.numRaiders >= this.getMaxRaiders() || this.numRequestedRaiders >= MAX_RAIDER_REQUEST ||
@@ -88,7 +90,8 @@ export class MainPanel extends Panel {
             if (event.selectionType === SelectionType.NOTHING) this.selectSubPanel(this.mainPanel)
             else if (event.selectionType === SelectionType.BUILDING) this.selectSubPanel(selectBuildingPanel)
             else if (event.selectionType === SelectionType.RAIDER || event.selectionType === SelectionType.GROUP) this.selectSubPanel(selectRaiderPanel)
-            else if (event.selectionType === SelectionType.VEHICLE) this.selectSubPanel(selectVehiclePanel)
+            else if (event.selectionType === SelectionType.VEHICLE_EMPTY) this.selectSubPanel(selectVehicleEmptyPanel)
+            else if (event.selectionType === SelectionType.VEHICLE_MANED) this.selectSubPanel(selectVehicleManedPanel)
             else if (event.selectionType === SelectionType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.isSite, event.hasRubble)
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {

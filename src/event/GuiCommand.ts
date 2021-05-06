@@ -201,3 +201,38 @@ export class CancelBuilding extends GuiCommand {
     }
 
 }
+
+export class RequestVehicleSpawn extends GuiCommand {
+
+    vehicle: EntityType
+
+    constructor(vehicle: EntityType) {
+        super(EventKey.COMMAND_REQUEST_VEHICLE_SPAWN)
+        this.vehicle = vehicle
+    }
+
+}
+
+export class VehicleCallMan extends GuiCommand {
+
+    constructor() {
+        super(EventKey.COMMAND_VEHICLE_GET_MAN)
+    }
+
+}
+
+export class VehicleBeamUp extends GuiCommand {
+
+    constructor() {
+        super(EventKey.COMMAND_VEHICLE_BEAMUP)
+    }
+
+}
+
+export class VehicleDriverGetOut extends GuiCommand {
+
+    constructor() {
+        super(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT)
+    }
+
+}

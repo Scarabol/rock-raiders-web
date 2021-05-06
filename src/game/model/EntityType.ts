@@ -27,6 +27,19 @@ export enum EntityType {
     BRICK,
     BARRIER,
 
+    // VEHICLE
+    HOVERBOARD,
+    SMALL_DIGGER,
+    SMALL_TRUCK,
+    SMALL_CAT,
+    SMALL_MLP,
+    SMALL_HELI,
+    BULLDOZER,
+    WALKER_DIGGER,
+    LARGE_MLP,
+    LARGE_DIGGER,
+    LARGE_CAT,
+
 }
 
 export enum EntitySuperType {
@@ -35,5 +48,6 @@ export enum EntitySuperType {
     BUILDING,
     MONSTER,
     MATERIAL,
+    VEHICLE,
 
 }

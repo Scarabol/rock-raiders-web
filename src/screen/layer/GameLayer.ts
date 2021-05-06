@@ -49,8 +49,8 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
                 const downUpDistance = Math.abs(event.clientX - this.rightDown.x) + Math.abs(event.clientY - this.rightDown.y)
                 if (downUpDistance < 3) {
-                    if (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.GROUP) {
-                        // TODO check for collectable entity first
+                    if (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.GROUP || GameState.selectionType === SelectionType.VEHICLE_MANED) {
+                        // TODO check for vehicles and collectables entity first
                         const intersectionPoint = this.getTerrainPositionFromEvent(event)
                         if (intersectionPoint) {
                             const surface = this.sceneMgr.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)

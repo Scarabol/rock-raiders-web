@@ -18,6 +18,7 @@ import { GameState } from './model/GameState'
 import { Bat } from './model/monster/Bat'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
+import { SmallDigger } from './model/vehicle/entities/SmallDigger'
 import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
 import degToRad = MathUtils.degToRad
@@ -71,6 +72,16 @@ export class ObjectListLoader {
                 bat.addToScene(worldPos, radHeading)
                 GameState.bats.push(bat)
                 bat.startRandomMove()
+            } else if (lTypeName === 'SmallDigger'.toLowerCase()) {
+                const smallDigger = new SmallDigger(worldMgr, sceneMgr)
+                smallDigger.changeActivity()
+                smallDigger.createPickSphere()
+                smallDigger.addToScene(worldPos, radHeading + Math.PI)
+                if (smallDigger.group.visible) {
+                    GameState.vehicles.push(smallDigger)
+                } else {
+                    GameState.vehiclesUndiscovered.push(smallDigger)
+                }
             } else {
                 // TODO implement remaining object types
                 console.warn('Object type ' + olObject.type + ' not yet implemented')

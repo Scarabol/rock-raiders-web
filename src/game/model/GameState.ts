@@ -15,6 +15,7 @@ import { SmallSpider } from './monster/SmallSpider'
 import { Raider } from './raider/Raider'
 import { RaiderTraining, RaiderTrainingSites, RaiderTrainingStatsProperty } from './raider/RaiderTraining'
 import { Selectable, SelectionType } from './Selectable'
+import { VehicleEntity } from './vehicle/VehicleEntity'
 
 export enum GameResultState {
 
@@ -46,6 +47,8 @@ export class GameState {
     static spiders: SmallSpider[] = []
     static spidersBySurface: Map<Surface, SmallSpider[]> = new Map()
     static bats: Bat[] = []
+    static vehicles: VehicleEntity[] = []
+    static vehiclesUndiscovered: VehicleEntity[] = []
     static totalCrystals: number = 0
     static totalOres: number = 0
     static totalDiggables: number = 0
@@ -178,6 +181,10 @@ export class GameState {
 
     static get selectedRaiders(): Raider[] {
         return (this.selectionType === SelectionType.RAIDER || this.selectionType === SelectionType.GROUP) && this.selectedEntities.length > 0 ? this.selectedEntities as Raider[] : []
+    }
+
+    static get selectedVehicle(): VehicleEntity {
+        return (this.selectionType === SelectionType.VEHICLE_MANED || this.selectionType === SelectionType.VEHICLE_EMPTY) && this.selectedEntities.length > 0 ? this.selectedEntities[0] as VehicleEntity : null
     }
 
     static get totalOre(): number {

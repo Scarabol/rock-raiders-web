@@ -22,7 +22,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near
 
-- Vehicles (Land, Air, Sea)
 - Radar map and geologists
 - Camera controls panel
 - Alarm mode and shooting

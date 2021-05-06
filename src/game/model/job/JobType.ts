@@ -9,5 +9,6 @@ export enum JobType {
     GET_TOOL,
     EAT,
     COMPLETE_POWER_PATH,
+    MAN_VEHICLE,
 
 }

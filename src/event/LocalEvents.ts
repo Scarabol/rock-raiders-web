@@ -40,6 +40,8 @@ export class SelectionChanged extends LocalEvent {
     everyHasTool: Map<RaiderTool, boolean> = new Map()
     buildingCanUpgrade: boolean
     buildingCanSwitchPower: boolean
+    vehicleHasCallManJob: boolean
+    vehicleIsManed: boolean
 
     constructor(selectionType: SelectionType = SelectionType.NOTHING, selectedSurface: Surface = null, selectedBuilding: BuildingEntity = null, selectedRaiders: Raider[] = null) {
         super(EventKey.SELECTION_CHANGED)
@@ -59,6 +61,8 @@ export class SelectionChanged extends LocalEvent {
         AllRaiderTools.forEach((tool) => this.everyHasTool.set(tool, !!selectedRaiders?.every((r) => r.hasTool(tool))))
         this.buildingCanUpgrade = selectedBuilding?.canUpgrade()
         this.buildingCanSwitchPower = !selectedBuilding?.stats.SelfPowered && !selectedBuilding?.stats.PowerBuilding
+        this.vehicleHasCallManJob = !!GameState.selectedVehicle?.callManJob
+        this.vehicleIsManed = !!GameState.selectedVehicle?.driver
     }
 
 }
@@ -131,6 +135,14 @@ export class RaidersChangedEvent extends LocalEvent {
         super(EventKey.RAIDERS_CHANGED)
         this.numRaiders = GameState.raiders.length
         this.training = training
+    }
+
+}
+
+export class VehiclesChangedEvent extends LocalEvent {
+
+    constructor() {
+        super(EventKey.VEHICLES_CHANGED)
     }
 
 }

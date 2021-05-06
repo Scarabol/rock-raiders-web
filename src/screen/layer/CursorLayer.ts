@@ -8,6 +8,7 @@ import { ChangeCursor } from '../../event/LocalEvents'
 import { GameState } from '../../game/model/GameState'
 import { Surface } from '../../game/model/map/Surface'
 import { SelectionType } from '../../game/model/Selectable'
+import { VehicleEntity } from '../../game/model/vehicle/VehicleEntity'
 import { SceneManager } from '../../game/SceneManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedCursor } from '../AnimatedCursor'
@@ -61,6 +62,17 @@ export class CursorLayer extends ScreenLayer {
         }
         let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere))
         if (intersects.length > 0) return Cursor.Pointer_Selected
+        intersects = raycaster.intersectObjects(GameState.vehicles.map((v) => v.pickSphere))
+        if (intersects.length > 0) {
+            const userData = intersects[0].object.userData
+            if (userData && userData.hasOwnProperty('selectable')) {
+                const vehicle = userData['selectable'] as VehicleEntity
+                if (!vehicle?.driver && GameState.selectedRaiders.length > 0) {
+                    return Cursor.Pointer_GetIn
+                }
+            }
+            return Cursor.Pointer_Selected
+        }
         intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere))
         if (intersects.length > 0) return Cursor.Pointer_Selected
         intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
@@ -69,7 +81,7 @@ export class CursorLayer extends ScreenLayer {
             if (userData && userData.hasOwnProperty('surface')) {
                 const surface = userData['surface'] as Surface
                 if (surface) {
-                    if (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.VEHICLE || GameState.selectionType === SelectionType.GROUP) {
+                    if (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.VEHICLE_MANED || GameState.selectionType === SelectionType.GROUP) {
                         if (surface.isDrillable()) {
                             return Cursor.Pointer_Drill // TODO check if selected entities can drill and return Pointer_CDrill otherwise
                         } else {

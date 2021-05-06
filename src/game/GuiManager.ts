@@ -1,8 +1,8 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { ChangeBuildingPowerState, ChangeRaiderSpawnRequest, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
+import { ChangeBuildingPowerState, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
 import { SelectionChanged } from '../event/LocalEvents'
-import { RequestedRaidersChanged } from '../event/WorldEvents'
+import { JobCreateEvent, RequestedRaidersChanged } from '../event/WorldEvents'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { Barracks } from './model/building/entities/Barracks'
 import { Docks } from './model/building/entities/Docks'
@@ -21,6 +21,20 @@ import { EatJob } from './model/job/EatJob'
 import { GetToolJob } from './model/job/GetToolJob'
 import { TrainJob } from './model/job/TrainJob'
 import { UpgradeJob } from './model/job/UpgradeJob'
+import { VehicleCallManJob } from './model/job/VehicleCallManJob'
+import { BullDozer } from './model/vehicle/entities/BullDozer'
+import { Hoverboard } from './model/vehicle/entities/Hoverboard'
+import { LargeCat } from './model/vehicle/entities/LargeCat'
+import { LargeDigger } from './model/vehicle/entities/LargeDigger'
+import { LargeMlp } from './model/vehicle/entities/LargeMlp'
+import { SmallCat } from './model/vehicle/entities/SmallCat'
+import { SmallDigger } from './model/vehicle/entities/SmallDigger'
+import { SmallHeli } from './model/vehicle/entities/SmallHeli'
+import { SmallMlp } from './model/vehicle/entities/SmallMlp'
+import { SmallTruck } from './model/vehicle/entities/SmallTruck'
+import { WalkerDigger } from './model/vehicle/entities/WalkerDigger'
+import { VehicleActivity } from './model/vehicle/VehicleActivity'
+import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
 
@@ -125,6 +139,38 @@ export class GuiManager {
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
             GameState.selectedSurface.site?.cancelSite()
         })
+        EventBus.registerEventListener(EventKey.COMMAND_REQUEST_VEHICLE_SPAWN, (event: RequestVehicleSpawn) => {
+            console.log('Vehicle spawn requested for: ' + EntityType[event.vehicle])
+            const pads = GameState.getBuildingsByType(EntityType.TELEPORT_PAD).filter((b) => !b.spawning) // TODO check for "correct" teleport station
+            if (pads.length > 0) {
+                const teleportPad = pads.random()
+                const vehicle = GuiManager.vehicleFromType(event.vehicle, worldMgr, sceneMgr)
+                vehicle.addToScene(teleportPad.primaryPathSurface.getCenterWorld2D(), teleportPad.getHeading())
+                vehicle.changeActivity(VehicleActivity.TeleportIn, () => {
+                    vehicle.changeActivity()
+                    vehicle.createPickSphere()
+                    GameState.vehicles.push(vehicle)
+                })
+            }
+            // TODO check for crystals amount and reduce it
+            // TODO otherwise start a check interval?
+            EventBus.publishEvent(new SelectionChanged())
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_GET_MAN, () => {
+            const selectedVehicle = GameState.selectedVehicle
+            if (selectedVehicle) {
+                EventBus.publishEvent(new JobCreateEvent(new VehicleCallManJob(selectedVehicle)))
+                EventBus.publishEvent(new SelectionChanged())
+            }
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
+            GameState.selectedVehicle?.beamUp()
+            EventBus.publishEvent(new SelectionChanged())
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT, () => {
+            GameState.selectedVehicle?.dropDriver()
+            EventBus.publishEvent(new SelectionChanged())
+        })
     }
 
     static buildingFromType(entityType: EntityType, worldMgr: WorldManager, sceneMgr: SceneManager): BuildingEntity {
@@ -151,6 +197,35 @@ export class GuiManager {
                 return new TeleportBig(worldMgr, sceneMgr)
             default:
                 throw 'Unexpected building type: ' + EntityType[entityType]
+        }
+    }
+
+    static vehicleFromType(entityType: EntityType, worldMgr: WorldManager, sceneMgr: SceneManager): VehicleEntity {
+        switch (entityType) {
+            case EntityType.HOVERBOARD:
+                return new Hoverboard(worldMgr, sceneMgr)
+            case EntityType.SMALL_DIGGER:
+                return new SmallDigger(worldMgr, sceneMgr)
+            case EntityType.SMALL_TRUCK:
+                return new SmallTruck(worldMgr, sceneMgr)
+            case EntityType.SMALL_CAT:
+                return new SmallCat(worldMgr, sceneMgr)
+            case EntityType.SMALL_MLP:
+                return new SmallMlp(worldMgr, sceneMgr)
+            case EntityType.SMALL_HELI:
+                return new SmallHeli(worldMgr, sceneMgr)
+            case EntityType.BULLDOZER:
+                return new BullDozer(worldMgr, sceneMgr)
+            case EntityType.WALKER_DIGGER:
+                return new WalkerDigger(worldMgr, sceneMgr)
+            case EntityType.LARGE_MLP:
+                return new LargeMlp(worldMgr, sceneMgr)
+            case EntityType.LARGE_DIGGER:
+                return new LargeDigger(worldMgr, sceneMgr)
+            case EntityType.LARGE_CAT:
+                return new LargeCat(worldMgr, sceneMgr)
+            default:
+                throw 'Unexpected vehicle type: ' + EntityType[entityType]
         }
     }
 

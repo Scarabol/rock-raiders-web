@@ -18,7 +18,8 @@ export enum SelectionType {
     SURFACE,
     RAIDER,
     BUILDING,
-    VEHICLE,
+    VEHICLE_EMPTY,
+    VEHICLE_MANED,
     GROUP,
 
 }
