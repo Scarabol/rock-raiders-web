@@ -338,11 +338,12 @@ export class Surface implements Selectable {
         }
         textureName += '.bmp'
 
-        const texture = ResourceManager.getTexture(textureName) // FIXME precache textures, replace matIndex with actual texture
+        this.forEachMaterial((mat) => mat.map?.dispose())
+        const texture = ResourceManager.getTexture(textureName)
         texture.center.set(0.5, 0.5)
         texture.rotation = this.surfaceRotation
 
-        this.accessMaterials().forEach((mat) => mat.map = texture)
+        this.forEachMaterial((mat) => mat.map = texture)
     }
 
     private updatePowerPathTexture(): string {
@@ -377,13 +378,9 @@ export class Surface implements Selectable {
         }
     }
 
-    accessMaterials(): MeshPhongMaterial[] {
-        if (!this.mesh || !this.mesh.material) return []
-        if (Array.isArray(this.mesh.material)) {
-            return this.mesh.material as MeshPhongMaterial[]
-        } else {
-            return [this.mesh.material as MeshPhongMaterial]
-        }
+    forEachMaterial(callback: (mat: MeshPhongMaterial) => void): void {
+        if (!this.mesh?.material) return;
+        (Array.isArray(this.mesh.material) ? this.mesh.material : [this.mesh.material]).forEach((m) => callback(m as MeshPhongMaterial))
     }
 
     updateGeometry(topLeftVertex: Vector3, bottomRightVertex: Vector3, topRightVertex: Vector3, bottomLeftVertex: Vector3, surfTopLeft: Surface, surfTop: Surface, surfLeft: Surface, surfTopRight: Surface, surfRight: Surface, surfBottomRight: Surface, surfBottom: Surface, surfBottomLeft: Surface) {
@@ -424,7 +421,7 @@ export class Surface implements Selectable {
     select(): SelectionEvent {
         if (this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered) {
             this.selected = true
-            this.accessMaterials().forEach((mat) => mat.color.setHex(0x6060a0))
+            this.forEachMaterial((mat) => mat.color.setHex(0x6060a0))
             console.log('Surface selected at ' + this.x + '/' + this.y)
             return new SurfaceSelectedEvent(this)
         }
@@ -444,7 +441,7 @@ export class Surface implements Selectable {
 
     updateJobColor() {
         const color = this.dynamiteJob?.color || this.reinforceJob?.color || this.drillJob?.color || 0xffffff
-        this.accessMaterials().forEach((mat) => mat.color.setHex(color))
+        this.forEachMaterial((mat) => mat.color.setHex(color))
     }
 
     hasRubble(): boolean {
@@ -597,7 +594,7 @@ export class Surface implements Selectable {
 
     dispose() {
         this.fallinTimeout = clearTimeoutSafe(this.fallinTimeout)
-        this.accessMaterials().forEach(m => m.dispose())
+        this.forEachMaterial(m => m.dispose())
         this.mesh?.geometry?.dispose()
     }
 
