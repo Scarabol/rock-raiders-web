@@ -1,4 +1,5 @@
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
+import { GameState } from '../../game/model/GameState'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
@@ -71,6 +72,7 @@ export class BriefingPanel extends Panel {
     }
 
     show() {
+        GameState.objectiveShown = true
         super.show()
         this.setParagraph(0)
         this.btnNext.hidden = this.paragraph >= this.imgParagraphList.length - 1
@@ -79,6 +81,8 @@ export class BriefingPanel extends Panel {
     }
 
     hide() {
+        GameState.objectiveShown = false
+        GameState.objectiveSwitch = true
         super.hide()
         this.messagePanel?.unsetMessage(this.messagePanel.msgSpaceToContinue)
     }

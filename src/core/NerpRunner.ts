@@ -9,6 +9,7 @@ import { EntityType } from '../game/model/EntityType'
 import { GameResultState, GameState } from '../game/model/GameState'
 import { clearIntervalSafe, getRandom } from './Util'
 
+// noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
 
     debug = false
@@ -141,12 +142,14 @@ export class NerpRunner {
      * @param value a bitmask to set flags with
      */
     setTutorialFlags(value) {
-        // TODO implement tutorial flags
         // seems like value must be interpreted bitwise and sets a certain flag on each bit
         // seen so far:
         // 0 = 0x00 allow any click anywhere anytime
         // 3 = 0x11 disallow invalid clicks
         // 4095 = 0x111111111111 set all flags? (seen in Tutorial01 level)
+        if (value !== 0) { // holds for all known levels
+            console.warn('NERP: setTutorialFlags not yet implemented', value)
+        }
     }
 
     /**
@@ -188,7 +191,7 @@ export class NerpRunner {
     }
 
     /**
-     * Gets the number of minifigures on the level. TODO it is NOT tested if this ignores minifigures in hidden caverns
+     * Gets the number of minifigures on the level. XXX it is NOT tested if this ignores minifigures in hidden caverns
      * @return {number}
      */
     getMinifiguresOnLevel() {
@@ -204,11 +207,9 @@ export class NerpRunner {
     }
 
     getObjectiveSwitch() {
-        // TODO implement this
-        return 0
+        return GameState.objectiveSwitch
     }
 
-    // noinspection JSUnusedLocalSymbols
     setMessageTimerValues(arg1, arg2, arg3) {
         // TODO implement this
     }
@@ -221,7 +222,6 @@ export class NerpRunner {
         // TODO implement this
     }
 
-    // noinspection JSUnusedLocalSymbols
     setMessage(messageNumber, arrowDisabled) {
         if (!this.messagePermit) return
         if (messageNumber === 0) return // TODO messages start at 1
@@ -230,37 +230,28 @@ export class NerpRunner {
         // msg.snd resides in sounds/streamed/ which is currently not loaded :(
     }
 
-    // noinspection JSUnusedLocalSymbols
     setCameraGotoTutorial(arg1) {
         // TODO implement this
     }
 
-    // noinspection JSUnusedLocalSymbols
-    getTutorialBlockIsGround(arg1) {
-        // TODO implement this
-        return 0
+    getTutorialBlockIsGround(blockNum) {
+        return 0 // TODO return true if given block is ground
     }
 
-    // noinspection JSUnusedLocalSymbols
-    getTutorialBlockIsPath(arg1) {
-        // TODO implement this
-        return 0
+    getTutorialBlockIsPath(blockNum) {
+        return 0 // TODO return true if given block is a path
     }
 
-    // noinspection JSUnusedLocalSymbols
-    getUnitAtBlock(arg1) {
-        // TODO implement this
-        return 0
+    getUnitAtBlock(blockNum) {
+        return 0 // TODO return number of units on given block
     }
 
     getOxygenLevel() {
-        // TODO implement this
-        return 100
+        return GameState.airLevel * 100
     }
 
     getObjectiveShowing() {
-        // TODO implement this
-        return false
+        return GameState.objectiveShown
     }
 
     addPoweredCrystals() {
@@ -289,8 +280,7 @@ export class NerpRunner {
     }
 
     getLevel1PowerStationsBuilt() {
-        // TODO implement this
-        return 0
+        return GameState.buildings.count((b) => b.entityType === EntityType.POWER_STATION && b.level >= 1)
     }
 
     getRandom100(): number {
@@ -298,13 +288,11 @@ export class NerpRunner {
     }
 
     getSlugsOnLevel(): number {
-        // TODO implement slugs
-        return 0
+        return 0 // TODO implement slugs
     }
 
     generateSlug() {
-        console.warn('Slugs not yet implemented')
-        // TODO implement slugs
+        console.warn('Slugs not yet implemented') // TODO implement slugs
     }
 
     callMethod(methodName, methodArgs) {

@@ -61,6 +61,8 @@ export class GameState {
     static priorityList: PriorityList = new PriorityList()
     static oxygenRate: number = 0
     static buildModeSelection: (worldMgr: WorldManager, sceneMgr: SceneManager) => BuildingEntity = null
+    static objectiveShown: boolean = false
+    static objectiveSwitch: boolean = false
 
     static reset() {
         this.resultState = GameResultState.RUNNING
@@ -96,6 +98,8 @@ export class GameState {
         this.priorityList = new PriorityList()
         this.oxygenRate = 0
         this.buildModeSelection = null
+        this.objectiveShown = false
+        this.objectiveSwitch = false
     }
 
     static getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
