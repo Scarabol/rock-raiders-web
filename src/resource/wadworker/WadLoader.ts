@@ -1,10 +1,11 @@
-import { getFilename, iGet } from '../../core/Util'
+import { getFilename, getPath, iGet } from '../../core/Util'
 import { WAD_CACHE_DB_NAME } from '../../params'
 import { FlhParser } from '../FlhParser'
 import { BitmapWithPalette } from './parser/BitmapWithPalette'
 import { CfgFileParser } from './parser/CfgFileParser'
 import { NerpMsgParser } from './parser/NerpMsgParser'
 import { ObjectiveTextParser } from './parser/ObjectiveTextParser'
+import { RonFileParser } from './parser/RonFileParser'
 import { WadParser } from './parser/WadParser'
 import { WadAssetRegistry } from './WadAssetRegistry'
 import { WadFile } from './WadFile'
@@ -117,6 +118,69 @@ export class WadLoader {
             buffer = this.wad0File.getEntryBuffer(path)
         }
         callback([path], buffer)
+    }
+
+    loadMeshObject(filepath: string, callback: (assetNames: string[], obj: any) => any) {
+        const aeFilename = filepath + '/' + filepath.split('/').last() + '.ae'
+        const sharedAeFilename = 'world/shared/' + filepath.split('/').last() + '.ae'
+        const possibleAeFilenames = [aeFilename, sharedAeFilename]
+        const lwoFilename = filepath + '.lwo'
+        const sharedLwoFilename = 'world/shared/' + filepath.split('/').last() + '.lwo'
+        const possibleLwoFilenames = [lwoFilename, sharedLwoFilename]
+        let result
+        if (!possibleAeFilenames.some((aeFile) => {
+            try {
+                const content = this.wad0File.getEntryText(aeFile)
+                if (!content) return false
+                const cfgRoot = iGet(RonFileParser.parse(content), 'Lego*')
+                this.onAssetLoaded(0, [aeFile], cfgRoot)
+                const path = getPath(aeFile)
+                // load all textures for this type
+                this.assetRegistry.addTextureFolder(path);
+                ['HighPoly', 'MediumPoly', 'LowPoly'].forEach((polyType) => { // TODO add 'FPPoly' (contains two cameras)
+                    const cfgPoly = iGet(cfgRoot, polyType)
+                    if (cfgPoly) {
+                        Object.keys(cfgPoly).forEach((key) => {
+                            this.assetRegistry.addAsset(this.loadLWOFile, path + cfgPoly[key] + '.lwo')
+                        })
+                    }
+                })
+                const activities = iGet(cfgRoot, 'Activities')
+                if (activities) {
+                    Object.keys(activities).forEach((activity) => {
+                        try {
+                            let keyname = iGet(activities, activity)
+                            const act = iGet(cfgRoot, keyname)
+                            const file = iGet(act, 'FILE')
+                            const isLws = iGet(act, 'LWSFILE') === true
+                            if (isLws) {
+                                this.assetRegistry.addLWSFile(path + file + '.lws')
+                            } else {
+                                console.error('Found activity which is not an LWS file')
+                            }
+                        } catch (e) {
+                            console.error(e)
+                            console.log(cfgRoot)
+                            console.log(activities)
+                            console.log(activity)
+                        }
+                    })
+                }
+                return true
+            } catch (e) {
+                return false
+            }
+        }) && !possibleLwoFilenames.some((filename) => {
+            try {
+                result = this.wad0File.getEntryBuffer(filename)
+            } catch (e) {
+            }
+            return !!result
+        })) {
+            console.error('Could not load mesh object for path: ' + filepath)
+            result = {}
+        }
+        callback(possibleLwoFilenames, result)
     }
 
     loadLWOFile(lwoFilepath: string, callback: (assetNames: string[], obj: any) => any) {

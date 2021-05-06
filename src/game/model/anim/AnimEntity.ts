@@ -6,6 +6,7 @@ import { clearTimeoutSafe } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
+import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
@@ -25,9 +26,13 @@ export abstract class AnimEntity extends BaseEntity {
     animationTimeout: NodeJS.Timeout = null
     selectionFrame: Sprite = null
     pickSphere: Mesh = null
+    nullJoints: Map<string, Object3D[]> = new Map()
     carryJoint: Object3D = null
     depositJoint: Object3D = null
     getToolJoint: Object3D = null
+    wheelJoints: Object3D[] = []
+    drillJoint: Object3D = null
+    driverJoint: Object3D = null
     activity: BaseActivity = null
     radiusSq: number = 0
 
@@ -76,6 +81,7 @@ export abstract class AnimEntity extends BaseEntity {
         this.poly = []
         const carries = (this.carryJoint && this.carryJoint.children) || []
         this.carryJoint = null
+        this.nullJoints = new Map()
         // bodies are defined in animation and second in high/medium/low poly groups
         this.animation.bodies.forEach((body) => { // TODO this can be prepared before animation.bodies and joints are part of animationEntityType
             let model: Object3D = this.animationEntityType.highPolyBodies.get(body.lowerName)
@@ -91,9 +97,40 @@ export abstract class AnimEntity extends BaseEntity {
                     this.depositJoint = polyModel
                 } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.toolNullName)) {
                     this.getToolJoint = polyModel
+                } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.wheelNullName)) {
+                    this.wheelJoints.push(polyModel)
+                } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.drillNullName)) {
+                    this.drillJoint = polyModel
+                } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.driverNullName)) {
+                    this.driverJoint = polyModel
+                } else if (body.isNull) {
+                    this.nullJoints.getOrUpdate(body.lowerName.toLowerCase(), () => []).push(polyModel)
                 }
             }
         })
+        if (this.animationEntityType.wheelMesh) {
+            this.wheelJoints.forEach((joint) => {
+                joint.add(this.animationEntityType.wheelMesh.clone(true))
+            })
+        }
+        const upgrades0000 = this.animationEntityType.upgradesByLevel.get('0000')
+        if (upgrades0000) { // TODO check for other upgrade levels
+            upgrades0000.forEach((upgrade) => {
+                const joint = this.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
+                if (joint) {
+                    const lwoBuffer = ResourceManager.getResource(upgrade.upgradeFilepath + '.lwo')
+                    if (lwoBuffer) {
+                        if (lwoBuffer) {
+                            const upgradeMesh = SceneManager.registerMesh(new LWOLoader(upgrade.upgradeFilepath).parse(lwoBuffer))
+                            joint.add(upgradeMesh.clone(true))
+                        }
+                    } else {
+                        const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae')
+                        upgradeModels.animations.get('activity_stand')?.bodies.forEach((b) => joint.add(b.model.clone(true)))
+                    }
+                }
+            })
+        }
         this.animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
             const polyPart = this.poly[index]
             const parentInd = body.parentObjInd

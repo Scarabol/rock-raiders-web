@@ -84,11 +84,15 @@ export class ResourceManager extends ResourceCache { // TODO rename to WadResour
             throw 'textureName must not be undefined, null or empty - was ' + textureName
         }
         const lTextureName = textureName.toLowerCase()
+        const lTextureFilename = getFilename(lTextureName)
         const imgData = this.resourceByName.getOrUpdate(lTextureName, () => {
-            const lSharedTextureName = 'world/shared/' + getFilename(lTextureName)
+            const lSharedTextureName = 'world/shared/' + lTextureFilename
             return this.resourceByName.getOrUpdate(lSharedTextureName, () => {
-                console.warn('Texture \'' + textureName + '\' (' + lTextureName + ', ' + lSharedTextureName + ') unknown! Using placeholder texture instead')
-                return createDummyImgData(64, 64)
+                const lSharedUGTextureName = 'vehicles/sharedug/' + lTextureFilename
+                return this.resourceByName.getOrUpdate(lSharedUGTextureName, () => {
+                    console.warn('Texture \'' + textureName + '\' (' + lTextureName + ', ' + lSharedTextureName + ') unknown! Using placeholder texture instead')
+                    return createDummyImgData(64, 64)
+                })
             })
         })
         // without repeat wrapping some entities are not fully textured

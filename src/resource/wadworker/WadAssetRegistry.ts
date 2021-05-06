@@ -76,8 +76,13 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         // load all shared textures
         this.addTextureFolder('World/Shared/')
         this.addTextureFolder('Vehicles/SharedUG/')
+        // load all entity upgrades
+        const upgradeTypes = iGet(mainConf, 'UpgradeTypes')
+        Object.values(upgradeTypes).forEach((uType: string) => {
+            this.addAsset(this.wadLoader.loadMeshObject, uType)
+        })
         // load all building types
-        const buildingTypes = mainConf['BuildingTypes']
+        const buildingTypes = iGet(mainConf, 'BuildingTypes')
         Object.values(buildingTypes).forEach((bType: string) => {
             const bName = bType.split('/')[1]
             const aeFile = bType + '/' + bName + '.ae'

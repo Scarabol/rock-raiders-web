@@ -1,5 +1,6 @@
 import { getPath, iGet } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
+import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
 import { SceneManager } from '../game/SceneManager'
 import { LWOLoader } from './LWOLoader'
@@ -13,14 +14,38 @@ export class AnimEntityLoader {
         const entityType = new AnimationEntityType()
         Object.keys(cfgRoot).forEach((rootKey: string) => {
             const value = cfgRoot[rootKey]
-            if (rootKey.equalsIgnoreCase('CarryNullName')) {
+            if (rootKey.equalsIgnoreCase('Scale')) {
+                entityType.scale = Number(value)
+                if (entityType.scale !== 1) console.warn('Model scale not yet implemented: ' + entityType.scale)
+            } else if (rootKey.equalsIgnoreCase('CarryNullName')) {
                 entityType.carryNullName = value
+            } else if (rootKey.equalsIgnoreCase('CarryNullFrames')) {
+                entityType.carryNullFrames = Number(value)
             } else if (rootKey.equalsIgnoreCase('Shape')) {
                 if (verbose) console.warn('TODO Derive buildings shape from this value') // XXX derive buildings surfaces shape from this value
             } else if (rootKey.equalsIgnoreCase('DepositNullName')) {
                 entityType.depositNullName = value
             } else if (rootKey.equalsIgnoreCase('ToolNullName')) {
                 entityType.toolNullName = value
+            } else if (rootKey.equalsIgnoreCase('WheelMesh')) {
+                if (!'NULL_OBJECT'.equalsIgnoreCase(value)) {
+                    const lwoFilename = path + value + '.lwo'
+                    const lwoBuffer = ResourceManager.getResource(lwoFilename)
+                    if (!lwoBuffer) console.error('Could not load wheel mesh from: ' + lwoFilename)
+                    else entityType.wheelMesh = SceneManager.registerMesh(new LWOLoader(path, verbose).parse(lwoBuffer))
+                }
+            } else if (rootKey.equalsIgnoreCase('WheelRadius')) {
+                entityType.wheelRadius = Number(value)
+            } else if (rootKey.equalsIgnoreCase('WheelNullName')) {
+                entityType.wheelNullName = value
+            } else if (rootKey.equalsIgnoreCase('DrillNullName')) {
+                entityType.drillNullName = value
+            } else if (rootKey.equalsIgnoreCase('DriverNullName')) {
+                entityType.driverNullName = value
+            } else if (rootKey.equalsIgnoreCase('CameraNullName')) {
+                entityType.cameraNullName = value
+            } else if (rootKey.equalsIgnoreCase('CameraNullFrames')) {
+                entityType.cameraNullFrames = Number(value)
             } else if (rootKey.equalsIgnoreCase('CameraFlipDir')) {
                 // XXX what is this? flip upside down when hanging from rm?
             } else if (rootKey.equalsIgnoreCase('HighPoly')) {
@@ -37,6 +62,8 @@ export class AnimEntityLoader {
                 // TODO implement first person poly parsing
             } else if (rootKey.equalsIgnoreCase('Activities')) {
                 entityType.animations = this.parseAnimations(value, cfgRoot, path, verbose)
+            } else if (rootKey.equalsIgnoreCase('Upgrades')) {
+                entityType.upgradesByLevel = this.parseUpgrades(value)
             } else if (rootKey.match(/level\d\d\d\d/i)) {
                 // TODO geo dome has upgrade defined at root level without Upgrades group
             } else if (verbose && !value['lwsfile']) {
@@ -74,6 +101,25 @@ export class AnimEntityLoader {
             }
         })
         return animations
+    }
+
+    private static parseUpgrades(value) {
+        const upgrades = new Map<string, AnimationEntityUpgrade[]>()
+        Object.keys(value).forEach((levelKey: string) => {
+            const match = levelKey.match(/level(\d\d\d\d)/i) // [carry] [scan] [speed] [drill]
+            if (match) {
+                const upgradeValue = value[levelKey]
+                upgrades.set(match[1], Object.keys(upgradeValue).map((upgradeName: string) => {
+                    const upgradeFilepath = ResourceManager.cfg('UpgradeTypes', upgradeName)
+                    const upgradeNullName = upgradeValue[upgradeName][0][0]
+                    const upgradeNullIndex = Number(upgradeValue[upgradeName][1][0]) - 1
+                    return new AnimationEntityUpgrade(upgradeFilepath, upgradeNullName, upgradeNullIndex)
+                }))
+            } else {
+                console.warn('Unexpected upgrade level key: ' + levelKey)
+            }
+        })
+        return upgrades
     }
 
 }
