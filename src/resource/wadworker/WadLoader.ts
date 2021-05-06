@@ -9,6 +9,12 @@ import { RonFile } from './RonFile'
 import { WadFile } from './WadFile'
 import { getFilename, getPath, iGet } from './WadUtil'
 
+interface WadAsset {
+    method: ((name: string, callback: (assetName: string[], assetData: any) => void) => void)
+    assetPath: string
+    optional: boolean
+}
+
 export class WadLoader {
 
     wad0File: WadFile = null
@@ -16,7 +22,7 @@ export class WadLoader {
     startTime: Date
     assetIndex: number = 0
     totalResources: number = 0
-    assetsFromCfgByName: Map<string, { method: ((name: string, callback: (any) => void) => void), assetPath: string, optional: boolean }> = new Map()
+    assetsFromCfgByName: Map<string, WadAsset> = new Map()
 
     onMessage: (msg: string) => any = (msg: string) => {
         console.log(msg)
@@ -24,27 +30,27 @@ export class WadLoader {
     onInitialLoad: (totalResources: number, cfg: any) => any = () => {
         console.log('Initial loading done.')
     }
-    onAssetLoaded: (assetIndex: number, assetName: string, assetObj: any) => any = () => {
+    onAssetLoaded: (assetIndex: number, assetNames: string[], assetObj: any) => any = () => {
     }
     onLoadDone: (totalResources: number, loadingTimeSeconds: string) => any = (totalResources: number, loadingTimeSeconds: string) => {
         console.log('Loading of about ' + totalResources + ' assets complete! Total load time: ' + loadingTimeSeconds + ' seconds.')
     }
 
-    loadWadImageAsset(name: string, callback: (obj: ImageData) => any) {
+    loadWadImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
         const imgData = AlphaBitmapDecoder.parse(data)
-        callback(imgData)
+        callback([name], imgData)
     }
 
-    loadWadTexture(name: string, callback: (obj: ImageData) => any) {
+    loadWadTexture(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
         const alphaIndexMatch = getFilename(name).match(/^a(\d+).+/i)
         const alphaIndex = alphaIndexMatch ? parseInt(alphaIndexMatch[1]) : null
         const imgData = AlphaBitmapDecoder.parse(data, alphaIndex)
         if (name.toLowerCase().startsWith('miscanims/crystal')) { // XXX fix crystal lwo loading
-            callback(WadLoader.grayscaleToGreen(imgData))
+            callback([name], WadLoader.grayscaleToGreen(imgData))
         } else {
-            callback(imgData)
+            callback([name], imgData)
         }
     }
 
@@ -57,7 +63,7 @@ export class WadLoader {
         return imgData
     }
 
-    loadAlphaImageAsset(name: string, callback: (obj: ImageData) => any) {
+    loadAlphaImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
         const imgData = AlphaBitmapDecoder.parse(data)
         for (let n = 0; n < imgData.data.length; n += 4) {
@@ -65,22 +71,25 @@ export class WadLoader {
                 imgData.data[n + 3] = 0
             }
         }
-        callback(imgData)
+        const assetNames = [name]
+        const alphaIndexMatch = name.toLowerCase().match(/(.*a)\d\d\d(_.+)/)
+        if (alphaIndexMatch) assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[2])
+        callback(assetNames, imgData)
     }
 
-    loadFontImageAsset(name: string, callback: (obj: ImageData) => any) {
+    loadFontImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
         const imgData = AlphaBitmapDecoder.parse(data)
-        callback(imgData)
+        callback([name], imgData)
     }
 
-    loadNerpAsset(name: string, callback: (obj: string) => any) {
-        name = name.replace(/\.npl$/, '.nrn')
-        const script = this.wad0File.getEntryText(name)
-        callback(script)
+    loadNerpAsset(name: string, callback: (assetNames: string[], obj: string) => any) {
+        const nrnName = name.replace(/\.npl$/, '.nrn')
+        const script = this.wad0File.getEntryText(nrnName)
+        callback([name, nrnName], script)
     }
 
-    loadNerpMsg(name: string, callback: (obj: any) => any) {
+    loadNerpMsg(name: string, callback: (assetNames: string[], obj: any) => any) {
         const result = this.parseNerpMsgFile(this.wad0File, name)
         const msg1 = this.parseNerpMsgFile(this.wad1File, name)
         for (let c = 0; c < msg1.length; c++) {
@@ -94,7 +103,7 @@ export class WadLoader {
                 result[c].snd = m1.snd
             }
         }
-        callback(result)
+        callback([name], result)
     }
 
     parseNerpMsgFile(wadFile: WadFile, name: string) {
@@ -154,13 +163,13 @@ export class WadLoader {
         return number
     }
 
-    loadObjectiveTexts(name: string, callback: (obj: any) => any) {
+    loadObjectiveTexts(name: string, callback: (assetNames: string[], obj: any) => any) {
         const txtContent = this.wad1File.getEntryData(name)
         const result = new ObjectiveTextParser().parseObjectiveTextFile(txtContent)
-        callback(result)
+        callback([name], result)
     }
 
-    loadMapAsset(name: string, callback: (obj: any) => any) {
+    loadMapAsset(name: string, callback: (assetNames: string[], obj: any) => any) {
         const buffer = this.wad0File.getEntryData(name)
         if (buffer.length < 13 || String.fromCharCode.apply(String, buffer.slice(0, 3)) !== 'MAP') {
             console.log('Invalid map data provided')
@@ -175,10 +184,10 @@ export class WadLoader {
                 row = []
             }
         }
-        callback(map)
+        callback([name], map)
     }
 
-    loadObjectListAsset(name: string, callback: (obj: any) => any) {
+    loadObjectListAsset(name: string, callback: (assetNames: string[], obj: any) => any) {
         const lines = this.wad0File.getEntryText(name).split('\n')
         const objectList = []
         let currentObject = null
@@ -210,7 +219,7 @@ export class WadLoader {
                 currentObject[key] = val
             }
         }
-        callback(objectList)
+        callback([name], objectList)
     }
 
     /**
@@ -240,7 +249,7 @@ export class WadLoader {
         // }
     }
 
-    loadLWOFile(lwoFilepath: string, callback: (obj: any) => any) {
+    loadLWOFile(lwoFilepath: string, callback: (assetNames: string[], obj: any) => any) {
         let lwoContent
         try {
             lwoContent = this.wad0File.getEntryBuffer(lwoFilepath)
@@ -252,7 +261,7 @@ export class WadLoader {
                 lwoContent = {}
             }
         }
-        callback(lwoContent.buffer)
+        callback([lwoFilepath], lwoContent.buffer)
     }
 
     registerAllAssets(mainConf: any) { // dynamically register all assets from config
@@ -287,7 +296,7 @@ export class WadLoader {
         // level files
         this.addAsset(this.loadNerpAsset, 'Levels/nerpnrn.h')
         const levelsCfg = new LevelsCfg(iGet(mainConf, 'Levels'))
-        this.onAssetLoaded(0, 'Levels', levelsCfg)
+        this.onAssetLoaded(0, ['Levels'], levelsCfg)
         Object.values(levelsCfg.levelsByName).forEach((level: LevelEntryCfg) => {
             level.menuBMP.forEach((bmpName) => {
                 this.addAsset(this.loadAlphaImageAsset, bmpName)
@@ -317,6 +326,15 @@ export class WadLoader {
         // load monsters
         this.addAnimatedEntity('Creatures/SpiderSB/SpiderSB.ae')
         this.addAnimatedEntity('Creatures/bat/bat.ae')
+        // load vehicles
+        const vehicleTypes = mainConf['VehicleTypes']
+        Object.values(vehicleTypes).map((v) => Array.isArray(v) ? v : [v]).forEach((vParts: string[]) => {
+            vParts.forEach((vType) => {
+                const vName = vType.split('/')[1]
+                const aeFile = vType + '/' + vName + '.ae'
+                this.addAnimatedEntity(aeFile)
+            })
+        })
         // load misc objects
         this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Dynamite') + '/Dynamite.ae')
         this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae')
@@ -339,7 +357,7 @@ export class WadLoader {
         this.addTextureFolder('World/WorldTextures/RockSplit/Rock')
         // reward screen
         const rewardCfg = new RewardCfg(iGet(mainConf, 'Reward'))
-        this.onAssetLoaded(0, 'Reward', rewardCfg)
+        this.onAssetLoaded(0, ['Reward'], rewardCfg)
         this.addAsset(this.loadWadImageAsset, rewardCfg.wallpaper)
         this.addAsset(this.loadFontImageAsset, rewardCfg.backFont)
         Object.values(rewardCfg.fonts).forEach(imgPath => this.addAsset(this.loadFontImageAsset, imgPath))
@@ -370,7 +388,7 @@ export class WadLoader {
     addAnimatedEntity(aeFile: string) {
         const content = this.wad0File.getEntryText(aeFile)
         const cfgRoot = iGet(RonFile.parse(content), 'Lego*')
-        this.onAssetLoaded(0, aeFile, cfgRoot)
+        this.onAssetLoaded(0, [aeFile], cfgRoot)
         const path = getPath(aeFile);
         ['HighPoly', 'MediumPoly', 'LowPoly'].forEach((polyType) => { // TODO add 'FPPoly' (contains two cameras)
             const cfgPoly = iGet(cfgRoot, polyType)
@@ -407,7 +425,7 @@ export class WadLoader {
 
     addLWSFile(lwsFilepath: string) {
         const content = this.wad0File.getEntryText(lwsFilepath)
-        this.onAssetLoaded(0, lwsFilepath, content)
+        this.onAssetLoaded(0, [lwsFilepath], content)
         const lwoFiles: string[] = this.extractLwoFiles(getPath(lwsFilepath), content)
         lwoFiles.forEach((lwoFile) => this.addAsset(this.loadLWOFile, lwoFile))
     }
@@ -434,7 +452,7 @@ export class WadLoader {
         this.addAssetFolder(this.loadWadTexture, folderPath)
     }
 
-    addAssetFolder(callback: (name: string, callback: (obj: any) => any) => void, folderPath) {
+    addAssetFolder(callback: (name: string, callback: (assetNames: string[], obj: any) => any) => void, folderPath) {
         this.wad0File.filterEntryNames(folderPath + '.+\\.bmp').forEach((assetPath) => {
             this.addAsset(callback, assetPath)
         })
@@ -442,7 +460,7 @@ export class WadLoader {
 
     addMenuWithAssets(mainConf, name: string, menuImageAlpha: boolean = true) {
         const menuCfg = new MenuCfg(iGet(mainConf, 'Menu', name))
-        this.onAssetLoaded(0, name, menuCfg)
+        this.onAssetLoaded(0, [name], menuCfg)
         menuCfg.menus.forEach((menuCfg) => {
             const method = menuImageAlpha ? this.loadAlphaImageAsset : this.loadWadImageAsset
             const menuImage = Array.isArray(menuCfg.menuImage) ? menuCfg.menuImage[0] : menuCfg.menuImage
@@ -453,7 +471,7 @@ export class WadLoader {
         })
     }
 
-    addAsset(method: (name: string, callback: (obj: any) => any) => void, assetPath, optional = false) {
+    addAsset(method: (name: string, callback: (assetNames: string[], assetData: any) => void) => void, assetPath, optional = false) {
         if (!assetPath || this.assetsFromCfgByName.hasOwnProperty(assetPath) || assetPath === 'NULL') {
             return // do not load assets twice
         }
@@ -466,15 +484,15 @@ export class WadLoader {
         this.assetsFromCfgByName.forEach((asset) => {
             promises.push(new Promise<void>((resolve) => {
                 try {
-                    asset.method(asset.assetPath, (assetObj) => {
+                    asset.method(asset.assetPath, (assetNames, assetObj) => {
                         this.assetIndex++
-                        that.onAssetLoaded(this.assetIndex, asset.assetPath, assetObj)
+                        that.onAssetLoaded(this.assetIndex, assetNames, assetObj)
                         resolve()
                     })
                 } catch (e) {
                     if (!asset.optional) throw e
                     this.assetIndex++
-                    that.onAssetLoaded(this.assetIndex, asset.assetPath, null)
+                    that.onAssetLoaded(this.assetIndex, [asset.assetPath], null)
                     resolve()
                 }
             }))
@@ -596,29 +614,29 @@ export class WadLoader {
         Promise.all([
             new Promise<void>((resolve) => {
                 const name = iGet(cfg, 'Main', 'LoadScreen') // loading screen image
-                this.loadWadImageAsset(name, (imgData) => {
-                    this.onAssetLoaded(0, name, imgData)
+                this.loadWadImageAsset(name, (assetNames: string[], imgData) => {
+                    this.onAssetLoaded(0, assetNames, imgData)
                     resolve()
                 })
             }),
             new Promise<void>((resolve) => {
                 const name = iGet(cfg, 'Main', 'ProgressBar') // loading bar container image
-                this.loadWadImageAsset(name, (imgData) => {
-                    this.onAssetLoaded(0, name, imgData)
+                this.loadWadImageAsset(name, (assetNames: string[], imgData) => {
+                    this.onAssetLoaded(0, assetNames, imgData)
                     resolve()
                 })
             }),
             new Promise<void>((resolve) => {
                 const name = iGet(cfg, 'Pointers', 'Pointer_Standard')
-                this.loadAlphaImageAsset(name, (imgData) => {
-                    this.onAssetLoaded(0, name, imgData)
+                this.loadAlphaImageAsset(name, (assetNames: string[], imgData) => {
+                    this.onAssetLoaded(0, assetNames, imgData)
                     resolve()
                 })
             }),
             new Promise<void>((resolve) => {
                 const name = 'Interface/Fonts/Font5_Hi.bmp'
-                this.loadFontImageAsset(name, (imgData) => {
-                    this.onAssetLoaded(0, name, imgData)
+                this.loadFontImageAsset(name, (assetNames: string[], imgData) => {
+                    this.onAssetLoaded(0, assetNames, imgData)
                     resolve()
                 })
             }),
