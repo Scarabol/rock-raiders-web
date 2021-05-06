@@ -9,7 +9,7 @@ import { GameState } from '../GameState'
 import { CarryJob } from '../job/CarryJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
-import { CarryPathTarget } from './CarryPathTarget'
+import { BuildingCarryPathTarget, CarryPathTarget, SiteCarryPathTarget } from './CarryPathTarget'
 
 export abstract class MaterialEntity extends AnimEntity {
 
@@ -38,16 +38,14 @@ export abstract class MaterialEntity extends AnimEntity {
         if (this.targets.length < 1) {
             const sites = GameState.buildingSites.filter((b) => b.needs(this.entityType))
             if (sites.length > 0) {
-                this.targets = sites.map((s) => new CarryPathTarget(s.getRandomDropPosition(), s, null))
+                this.targets = sites.map((s) => new SiteCarryPathTarget(s.getRandomDropPosition(), s))
             } else {
                 const buildings = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
                 if (buildings.length > 0) {
-                    this.targets = buildings.map((b) => new CarryPathTarget(b.getDropPosition2D(), null, b))
+                    this.targets = buildings.map((b) => new BuildingCarryPathTarget(b.getDropPosition2D(), b))
                 }
             }
-        } else if (this.targets.some((t) => t.site && t.site.complete)) {
-            this.resetTarget()
-        } else if (this.targets.some((t) => t.building && !t.building.isPowered())) {
+        } else if (this.targets.some((t) => t.isInvalid())) {
             this.resetTarget()
         }
         return this.targets

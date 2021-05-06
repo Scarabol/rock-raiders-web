@@ -7,7 +7,7 @@ import { GameState } from '../GameState'
 import { CarryFenceJob } from '../job/CarryFenceJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
-import { CarryPathTarget } from './CarryPathTarget'
+import { BuildingCarryPathTarget, CarryPathTarget } from './CarryPathTarget'
 import { MaterialEntity } from './MaterialEntity'
 
 export class ElectricFence extends MaterialEntity {
@@ -26,14 +26,14 @@ export class ElectricFence extends MaterialEntity {
     protected updateTargets(): CarryPathTarget[] {
         if (this.targets.length < 1) {
             if (this.targetSurface.canPlaceFence()) {
-                this.targets = [new CarryPathTarget(this.targetSurface.getCenterWorld2D(), null, null)]
+                this.targets = [new CarryPathTarget(this.targetSurface.getCenterWorld2D())]
             } else {
                 this.targets = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
-                    .map((b) => new CarryPathTarget(b.getDropPosition2D(), null, b))
+                    .map((b) => new BuildingCarryPathTarget(b.getDropPosition2D(), b))
             }
-        } else if (!this.targetSurface.canPlaceFence() && !this.targets[0].building) {
+        } else if (!this.targetSurface.canPlaceFence() && !(this.targets[0] as BuildingCarryPathTarget).building) {
             this.targets = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
-                .map((b) => new CarryPathTarget(b.getDropPosition2D(), null, b))
+                .map((b) => new BuildingCarryPathTarget(b.getDropPosition2D(), b))
         }
         return this.targets
     }

@@ -1,6 +1,6 @@
 import { Vector3 } from 'three'
 import { RaiderActivity } from '../activities/RaiderActivity'
-import { CarryPathTarget } from '../collect/CarryPathTarget'
+import { CarryPathTarget, SiteCarryPathTarget } from '../collect/CarryPathTarget'
 import { MaterialEntity } from '../collect/MaterialEntity'
 import { PublicJob } from './Job'
 import { JobType } from './JobType'
@@ -25,7 +25,7 @@ export class CarryJob<I extends MaterialEntity> extends PublicJob {
     }
 
     setActualWorkplace(target: CarryPathTarget) {
-        this.item.setTargetSite(target.site)
+        this.item.setTargetSite((target as SiteCarryPathTarget)?.site)
         this.actualTarget = target
     }
 

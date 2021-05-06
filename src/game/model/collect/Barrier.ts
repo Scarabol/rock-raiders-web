@@ -5,7 +5,7 @@ import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { BarrierLocation } from './BarrierLocation'
-import { CarryPathTarget } from './CarryPathTarget'
+import { CarryPathTarget, SiteCarryPathTarget } from './CarryPathTarget'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Barrier extends MaterialEntity {
@@ -17,7 +17,7 @@ export class Barrier extends MaterialEntity {
         this.heading = location.heading
         this.priorityIdentifier = PriorityIdentifier.aiPriorityConstruction
         this.changeActivity()
-        this.targets = [new CarryPathTarget(location.location, site, null)]
+        this.targets = [new SiteCarryPathTarget(location.location, site)]
     }
 
     protected updateTargets(): CarryPathTarget[] {
