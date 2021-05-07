@@ -51,7 +51,7 @@ export class SurfaceType {
     static readonly DIRT = new SurfaceType({
         name: 'dirt',
         shaping: true,
-        matIndex: '1',
+        matIndex: '2',
         selectable: true,
         drillable: true,
         drillableHard: true,
