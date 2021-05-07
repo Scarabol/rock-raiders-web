@@ -1,9 +1,11 @@
 import { Raycaster, Vector2 } from 'three'
-import { EventBus } from '../../event/EventBus'
+import { EventKey } from '../../event/EventKeyEnum'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { GameEvent } from '../../event/GameEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
+import { IEventHandler } from '../../event/IEventHandler'
 import { CancelBuildMode, ChangeCursor, EntityDeselected } from '../../event/LocalEvents'
 import { BuildingSite } from '../../game/model/building/BuildingSite'
 import { EntityType } from '../../game/model/EntityType'
@@ -21,15 +23,17 @@ import { DEV_MODE } from '../../params'
 import { Cursors } from '../Cursors'
 import { ScreenLayer } from './ScreenLayer'
 
-export class GameLayer extends ScreenLayer {
+export class GameLayer extends ScreenLayer implements IEventHandler {
 
+    parent: IEventHandler
     worldMgr: WorldManager
     sceneMgr: SceneManager
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
     private lastCursor: Cursors = Cursors.Pointer_Standard
 
-    constructor() {
+    constructor(parent: IEventHandler) {
         super(false, false)
+        this.parent = parent
     }
 
     reset() {
@@ -40,7 +44,7 @@ export class GameLayer extends ScreenLayer {
 
     hide() {
         super.hide()
-        EventBus.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
+        this.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
@@ -75,8 +79,8 @@ export class GameLayer extends ScreenLayer {
                         closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)
                         closestToolstation.spawnMaterials(EntityType.ORE, neededOre)
                     }
-                    EventBus.publishEvent(new EntityDeselected())
-                    EventBus.publishEvent(new CancelBuildMode())
+                    this.publishEvent(new EntityDeselected())
+                    this.publishEvent(new CancelBuildMode())
                 }
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
                 const downUpDistance = Math.abs(event.clientX - this.rightDown.x) + Math.abs(event.clientY - this.rightDown.y)
@@ -92,7 +96,7 @@ export class GameLayer extends ScreenLayer {
                                 this.assignSurfaceJob(surface.createClearRubbleJob(), surface, intersectionPoint)
                             } else if (surface.isWalkable()) {
                                 GameState.selectedEntities.forEach((raider: Raider) => raider.setJob(new MoveJob(intersectionPoint)))
-                                if (GameState.selectedEntities.length > 0) EventBus.publishEvent(new EntityDeselected())
+                                if (GameState.selectedEntities.length > 0) this.publishEvent(new EntityDeselected())
                             }
                         }
                     }
@@ -120,7 +124,7 @@ export class GameLayer extends ScreenLayer {
         const cursor = this.determineCursor(raycaster)
         if (cursor !== this.lastCursor) {
             this.lastCursor = cursor
-            EventBus.publishEvent(new ChangeCursor(cursor))
+            this.publishEvent(new ChangeCursor(cursor))
         }
     }
 
@@ -159,7 +163,7 @@ export class GameLayer extends ScreenLayer {
                         if (!s.surfaceType.floor) s.createFallin(t[0], t[1])
                     }
                 })
-                EventBus.publishEvent(new EntityDeselected())
+                this.publishEvent(new EntityDeselected())
                 return true
             }
         }
@@ -175,7 +179,7 @@ export class GameLayer extends ScreenLayer {
                 e.setJob(new MoveJob(intersectionPoint))
             }
         })
-        if (GameState.selectedEntities.length > 0) EventBus.publishEvent(new EntityDeselected())
+        if (GameState.selectedEntities.length > 0) this.publishEvent(new EntityDeselected())
     }
 
     getTerrainPositionFromEvent(event): Vector2 {
@@ -188,6 +192,14 @@ export class GameLayer extends ScreenLayer {
     handleWheelEvent(event: GameWheelEvent): boolean {
         this.canvas.dispatchEvent(new WheelEvent(event.type, event))
         return true
+    }
+
+    publishEvent(event: GameEvent): void {
+        this.parent?.publishEvent(event)
+    }
+
+    registerEventListener(eventKey: EventKey, callback: (GameEvent) => any): void {
+        this.parent.registerEventListener(eventKey, callback)
     }
 
 }

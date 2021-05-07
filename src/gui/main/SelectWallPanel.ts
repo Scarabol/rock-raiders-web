@@ -1,4 +1,3 @@
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { EntityType } from '../../game/model/EntityType'
@@ -27,9 +26,9 @@ export class SelectWallPanel extends SelectBasePanel {
         itemDeselect.onClick = () => {
             const selectedSurface = GameState.selectedEntities[0] as Surface
             selectedSurface.cancelJobs()
-            EventBus.publishEvent(new EntityDeselected())
+            this.publishEvent(new EntityDeselected())
         }
-        EventBus.registerEventListener(EventKey.SELECTED_SURFACE, () => {
+        this.registerEventListener(EventKey.SELECTED_SURFACE, () => {
             itemDrill.updateState(false)
             itemReinforce.updateState(false)
             itemDynamite.updateState(false)
@@ -41,7 +40,7 @@ export class SelectWallPanel extends SelectBasePanel {
         const item = this.addMenuItem('InterfaceImages', itemKey)
         item.onClick = () => {
             callback()
-            EventBus.publishEvent(new EntityDeselected())
+            this.publishEvent(new EntityDeselected())
         }
         return item
     }

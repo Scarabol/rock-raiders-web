@@ -1,4 +1,8 @@
-export class BaseElement {
+import { EventKey } from '../../event/EventKeyEnum'
+import { GameEvent } from '../../event/GameEvent'
+import { IEventHandler } from '../../event/IEventHandler'
+
+export class BaseElement implements IEventHandler {
 
     parent: BaseElement = null
     x: number = 0
@@ -114,6 +118,14 @@ export class BaseElement {
 
     notifyRedraw() {
         this.parent?.notifyRedraw()
+    }
+
+    publishEvent(event: GameEvent) {
+        this.parent?.publishEvent(event)
+    }
+
+    registerEventListener(eventKey: EventKey, callback: (GameEvent) => any) {
+        this.parent.registerEventListener(eventKey, callback)
     }
 
 }

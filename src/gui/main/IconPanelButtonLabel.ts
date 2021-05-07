@@ -1,4 +1,3 @@
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameState } from '../../game/model/GameState'
 import { BaseElement } from '../base/BaseElement'
@@ -9,7 +8,7 @@ export class IconPanelButtonLabel extends BaseElement {
         super(parent)
         this.relX = 4
         this.relY = 11
-        EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, () => this.notifyRedraw())
+        this.registerEventListener(EventKey.RAIDER_REQUESTED, () => this.notifyRedraw())
     }
 
     onRedraw(context: CanvasRenderingContext2D) {

@@ -1,6 +1,5 @@
 import { InfoButtonCfg } from '../../cfg/InfoButtonCfg'
 import { clearTimeoutSafe } from '../../core/Util'
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { WorldEvent } from '../../event/WorldEvents'
 import { WorldLocationEvent } from '../../event/WorldLocationEvent'
@@ -27,7 +26,7 @@ export class InfoDockButton extends Button {
             parent.buttonClicked(this)
         }
 
-        EventBus.registerEventListener(eventKey, (event: WorldLocationEvent) => {
+        this.registerEventListener(eventKey, (event: WorldLocationEvent) => {
             this.hidden = false
             while (this.messages.length >= 9) this.messages.pop()
             this.messages.unshift(event)

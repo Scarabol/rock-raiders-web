@@ -1,4 +1,3 @@
-import { EventBus } from '../../event/EventBus'
 import { CancelBuildMode } from '../../event/LocalEvents'
 import { BuildingEntity } from '../../game/model/building/BuildingEntity'
 import { Barracks } from '../../game/model/building/entities/Barracks'
@@ -23,7 +22,7 @@ export class BuildingPanel extends IconSubPanel {
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 10, onBackPanel)
         this.backBtn.onClick = () => {
-            EventBus.publishEvent(new CancelBuildMode())
+            this.publishEvent(new CancelBuildMode())
             this.toggleState(() => onBackPanel.toggleState())
         }
         this.addBuildMenuItem('InterfaceBuildImages', 'Toolstation', (worldMgr: WorldManager, sceneMgr: SceneManager) => new Toolstation(worldMgr, sceneMgr))

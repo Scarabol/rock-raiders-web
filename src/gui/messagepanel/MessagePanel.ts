@@ -1,6 +1,5 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { clearTimeoutSafe } from '../../core/Util'
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameState } from '../../game/model/GameState'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -30,19 +29,19 @@ export class MessagePanel extends Panel {
 
         const font = ResourceManager.getDefaultFont()
         const crystalFound = new TextInfoMessage(font, textInfoMessageConfig.textCrystalFound, this.img.width)
-        EventBus.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(crystalFound))
+        this.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(crystalFound))
         this.msgSpaceToContinue = new TextInfoMessage(font, textInfoMessageConfig.textSpaceToContinue, this.img.width)
         const cavernDiscovered = new TextInfoMessage(font, textInfoMessageConfig.textCavernDiscovered, this.img.width)
-        EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => this.setMessage(cavernDiscovered))
+        this.registerEventListener(EventKey.CAVERN_DISCOVERED, () => this.setMessage(cavernDiscovered))
         const oreFound = new TextInfoMessage(font, textInfoMessageConfig.textOreFound, this.img.width)
-        EventBus.registerEventListener(EventKey.ORE_FOUND, () => this.setMessage(oreFound))
+        this.registerEventListener(EventKey.ORE_FOUND, () => this.setMessage(oreFound))
         this.msgAirSupplyLow = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyLow, this.img.width)
         this.msgAirSupplyRunningOut = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
         this.msgGameCompleted = new TextInfoMessage(font, textInfoMessageConfig.textGameCompleted, this.img.width)
         this.msgManTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
-        EventBus.registerEventListener(EventKey.RAIDER_TRAINED, () => this.setMessage(this.msgManTrained))
+        this.registerEventListener(EventKey.RAIDER_TRAINED, () => this.setMessage(this.msgManTrained))
         this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
-        EventBus.registerEventListener(EventKey.AIR_LEVEL_CHANGED, () => this.notifyRedraw())
+        this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, () => this.notifyRedraw())
     }
 
     setMessage(textInfoMessage: TextInfoMessage, timeout: number = 3000) {

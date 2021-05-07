@@ -1,6 +1,6 @@
 import { iGet } from '../../core/Util'
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
+import { IEventHandler } from '../../event/IEventHandler'
 import { ChangeCursor } from '../../event/LocalEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Cursors } from '../Cursors'
@@ -11,9 +11,9 @@ export class CursorLayer extends ScreenLayer {
     pointersCfg
     curUrl
 
-    constructor() {
+    constructor(parent: IEventHandler) {
         super(true, false)
-        EventBus.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
+        parent.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
             this.changeCursor(event.cursor)
         })
     }

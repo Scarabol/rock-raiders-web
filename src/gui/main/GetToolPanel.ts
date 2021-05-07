@@ -1,4 +1,3 @@
-import { EventBus } from '../../event/EventBus'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
@@ -39,7 +38,7 @@ export class GetToolPanel extends IconSubPanel {
                     }
                 }
             })
-            EventBus.publishEvent(new EntityDeselected())
+            this.publishEvent(new EntityDeselected())
         }
         return menuItem
     }

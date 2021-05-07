@@ -1,9 +1,13 @@
+import { EventBus } from '../event/EventBus'
+import { EventKey } from '../event/EventKeyEnum'
 import { EventManager } from '../event/EventManager'
+import { GameEvent } from '../event/GameEvent'
+import { IEventHandler } from '../event/IEventHandler'
 import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../params'
 import { CursorLayer } from './layer/CursorLayer'
 import { ScreenLayer } from './layer/ScreenLayer'
 
-export class BaseScreen {
+export class BaseScreen implements IEventHandler {
 
     gameCanvasContainer: HTMLElement
     eventMgr: EventManager
@@ -20,7 +24,7 @@ export class BaseScreen {
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!'
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
-        this.cursorLayer = this.addLayer(new CursorLayer(), 1000)
+        this.cursorLayer = this.addLayer(new CursorLayer(this), 1000)
     }
 
     addLayer<T extends ScreenLayer>(layer: T, zIndex: number = 0): T {
@@ -68,6 +72,14 @@ export class BaseScreen {
         const rect = firstLayer.canvas.getBoundingClientRect()
         const clientX = event.clientX, clientY = event.clientY
         return clientX >= rect.left && clientX < rect.right && clientY >= rect.top && clientY < rect.bottom
+    }
+
+    publishEvent(event: GameEvent): void {
+        EventBus.publishEvent(event)
+    }
+
+    registerEventListener(eventKey: EventKey, callback: (GameEvent) => any): void {
+        EventBus.registerEventListener(eventKey, callback)
     }
 
 }

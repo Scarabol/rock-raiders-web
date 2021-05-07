@@ -1,9 +1,9 @@
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
-import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
+import { IEventHandler } from '../../event/IEventHandler'
 import { ChangeCursor } from '../../event/LocalEvents'
 import { Panel } from '../../gui/base/Panel'
 import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
@@ -20,8 +20,8 @@ export class OverlayLayer extends GuiBaseLayer {
     panelOptions: OptionsPanel
     panelPause: PausePanel
 
-    constructor() {
-        super()
+    constructor(parent: IEventHandler) {
+        super(parent)
         this.panelPause = this.addPanel(new PausePanel(this.rootElement, this.fixedWidth, this.fixedHeight, ResourceManager.getResource('PausedMenu') as MenuCfg))
         this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, this.fixedWidth, this.fixedHeight, ResourceManager.getResource('OptionsMenu') as MenuCfg))
         this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
@@ -70,7 +70,7 @@ export class OverlayLayer extends GuiBaseLayer {
     }
 
     setActivePanel(panel: Panel) {
-        EventBus.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
+        this.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
         this.panels.forEach(p => p !== panel && p.hide())
         panel.show()
         this.redraw()

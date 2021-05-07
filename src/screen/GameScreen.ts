@@ -2,7 +2,6 @@ import { MathUtils, Vector2 } from 'three'
 import { LevelObjectiveTextEntry } from '../cfg/LevelObjectiveTextEntry'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe, getRandom, iGet } from '../core/Util'
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { EntityAddedEvent, RaiderRequested } from '../event/WorldEvents'
 import { RaiderActivity } from '../game/model/activities/RaiderActivity'
@@ -39,10 +38,10 @@ export class GameScreen extends BaseScreen {
 
     constructor() {
         super()
-        this.gameLayer = this.addLayer(new GameLayer(), 0)
+        this.gameLayer = this.addLayer(new GameLayer(this), 0)
         this.selectionLayer = this.addLayer(new SelectionLayer(), 10)
-        this.guiLayer = this.addLayer(new GuiMainLayer(), 20)
-        this.overlayLayer = this.addLayer(new OverlayLayer(), 30)
+        this.guiLayer = this.addLayer(new GuiMainLayer(this), 20)
+        this.overlayLayer = this.addLayer(new OverlayLayer(this), 30)
         this.worldMgr = new WorldManager()
         this.gameLayer.worldMgr = this.worldMgr
         this.sceneMgr = new SceneManager(this.gameLayer.canvas)
@@ -54,7 +53,7 @@ export class GameScreen extends BaseScreen {
         this.overlayLayer.panelBriefing.messagePanel = this.guiLayer.panelMessages
         this.overlayLayer.panelPause.onAbortGame = () => this.onLevelEnd()
         this.overlayLayer.panelPause.onRestartGame = () => this.restartLevel()
-        EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, () => {
+        this.registerEventListener(EventKey.RAIDER_REQUESTED, () => {
             if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
                 this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER)
             }
@@ -119,7 +118,7 @@ export class GameScreen extends BaseScreen {
             const station = spawnBuildings[c]
             if (station.spawning) continue
             GameState.requestedRaiders--
-            EventBus.publishEvent(new RaiderRequested())
+            this.publishEvent(new RaiderRequested())
             station.spawning = true
             const raider = new Raider(this.worldMgr, this.sceneMgr)
             const heading = station.getHeading()
@@ -131,7 +130,7 @@ export class GameScreen extends BaseScreen {
                     .rotateAround(new Vector2(0, 0), heading + degToRad(-10 + getRandom(20))))
                 raider.setJob(new MoveJob(walkOutPos))
                 GameState.raiders.push(raider)
-                EventBus.publishEvent(new EntityAddedEvent(raider))
+                this.publishEvent(new EntityAddedEvent(raider))
             })
             raider.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), station.getHeading()).add(station.getPosition2D()), heading)
         }

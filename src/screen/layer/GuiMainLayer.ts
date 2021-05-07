@@ -1,5 +1,6 @@
 import { ButtonsCfg } from '../../cfg/ButtonsCfg'
 import { PanelsCfg } from '../../cfg/PanelsCfg'
+import { IEventHandler } from '../../event/IEventHandler'
 import { Panel } from '../../gui/base/Panel'
 import { InfoDockPanel } from '../../gui/infodock/InfoDockPanel'
 import { InfoMessagesConfig } from '../../gui/infodock/InfoMessagesConfig'
@@ -31,8 +32,8 @@ export class GuiMainLayer extends GuiBaseLayer {
     panelEncyclopedia: Panel
     onOptionsShow: () => any = () => console.log('show options triggered')
 
-    constructor() {
-        super()
+    constructor(parent: IEventHandler) {
+        super(parent)
         const panelsCfg = new PanelsCfg(ResourceManager.cfg('Panels640x480'))
         const buttonsCfg = new ButtonsCfg(ResourceManager.cfg('Buttons640x480'))
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels

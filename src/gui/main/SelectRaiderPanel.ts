@@ -1,4 +1,3 @@
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { EntityType } from '../../game/model/EntityType'
@@ -21,7 +20,7 @@ export class SelectRaiderPanel extends SelectBasePanel {
         feedItem.isDisabled = () => false
         feedItem.onClick = () => {
             GameState.selectedRaiders.forEach((r) => !r.isDriving() && r.setJob(new EatJob()))
-            EventBus.publishEvent(new EntityDeselected())
+            this.publishEvent(new EntityDeselected())
         }
         const unloadItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UnLoadMinifigure')
         unloadItem.isDisabled = () => !GameState.selectedRaiders?.some((r) => r.carries !== null)
@@ -39,7 +38,7 @@ export class SelectRaiderPanel extends SelectBasePanel {
                     r.setJob(new UpgradeJob(closestToolstation))
                 }
             })
-            EventBus.publishEvent(new EntityDeselected())
+            this.publishEvent(new EntityDeselected())
         }
         this.trainItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainSkill')
         this.trainItem.isDisabled = () => false
@@ -48,9 +47,9 @@ export class SelectRaiderPanel extends SelectBasePanel {
         const deleteRaiderItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteMan')
         deleteRaiderItem.isDisabled = () => false
         deleteRaiderItem.onClick = () => GameState.selectedRaiders.forEach((r) => r.beamUp())
-        EventBus.registerEventListener(EventKey.ENTITY_ADDED, () => this.iconPanelButtons.forEach((b) => b.updateState()))
-        EventBus.registerEventListener(EventKey.SELECTED_RAIDER, () => this.iconPanelButtons.forEach((b) => b.updateState()))
-        EventBus.registerEventListener(EventKey.DESELECTED_ENTITY, () => this.iconPanelButtons.forEach((b) => b.updateState()))
+        this.registerEventListener(EventKey.ENTITY_ADDED, () => this.iconPanelButtons.forEach((b) => b.updateState()))
+        this.registerEventListener(EventKey.SELECTED_RAIDER, () => this.iconPanelButtons.forEach((b) => b.updateState()))
+        this.registerEventListener(EventKey.DESELECTED_ENTITY, () => this.iconPanelButtons.forEach((b) => b.updateState()))
     }
 
 }

@@ -1,4 +1,3 @@
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { EntityType } from '../../game/model/EntityType'
@@ -19,9 +18,9 @@ export class TrainRaiderPanel extends IconSubPanel {
         this.addTrainingItem('Interface_MenuItem_TrainPilot', RaiderTraining.PILOT, EntityType.TELEPORT_PAD, 'TrainPilot')
         this.addTrainingItem('Interface_MenuItem_TrainSailor', RaiderTraining.SAILOR, EntityType.DOCKS, 'TrainSailor')
         this.addTrainingItem('Interface_MenuItem_TrainDynamite', RaiderTraining.DEMOLITION, EntityType.TOOLSTATION, 'TrainDynamite')
-        EventBus.registerEventListener(EventKey.ENTITY_ADDED, () => this.updateAllItems())
-        EventBus.registerEventListener(EventKey.ENTITY_REMOVED, () => this.updateAllItems())
-        EventBus.registerEventListener(EventKey.BUILDING_UPGRADED, () => this.updateAllItems())
+        this.registerEventListener(EventKey.ENTITY_ADDED, () => this.updateAllItems())
+        this.registerEventListener(EventKey.ENTITY_REMOVED, () => this.updateAllItems())
+        this.registerEventListener(EventKey.BUILDING_UPGRADED, () => this.updateAllItems())
     }
 
     updateAllItems() {
@@ -36,7 +35,7 @@ export class TrainRaiderPanel extends IconSubPanel {
             GameState.getBuildingsByType(building).some((b) => {
                 if (b.stats[statsProperty][b.level]) {
                     GameState.selectedRaiders.forEach((r) => !r.hasTraining(training) && r.setJob(new TrainJob(b, training)))
-                    EventBus.publishEvent(new EntityDeselected())
+                    this.publishEvent(new EntityDeselected())
                     return true
                 }
             })

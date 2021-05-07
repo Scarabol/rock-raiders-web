@@ -1,4 +1,3 @@
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { EntityDeselected } from '../../event/LocalEvents'
 import { BuildingSite } from '../../game/model/building/BuildingSite'
@@ -23,13 +22,13 @@ export class SelectFloorPanel extends SelectBasePanel {
             const site = new BuildingSite(selectedSurface)
             site.neededByType.set(EntityType.ORE, 2)
             GameState.buildingSites.push(site)
-            EventBus.publishEvent(new EntityDeselected())
+            this.publishEvent(new EntityDeselected())
         }
         pathItem.isDisabled = () => GameState.selectedSurface?.surfaceType !== SurfaceType.GROUND
         const removeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_RemovePath')
         removeItem.onClick = () => {
             GameState.selectedSurface?.makeRubble(2)
-            EventBus.publishEvent(new EntityDeselected())
+            this.publishEvent(new EntityDeselected())
         }
         removeItem.isDisabled = () => GameState.selectedSurface?.surfaceType !== SurfaceType.POWER_PATH
         const placeFenceItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence')
@@ -41,9 +40,9 @@ export class SelectFloorPanel extends SelectBasePanel {
             if (selectedSurface) {
                 GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(selectedSurface)
             }
-            EventBus.publishEvent(new EntityDeselected())
+            this.publishEvent(new EntityDeselected())
         }
-        EventBus.registerEventListener(EventKey.SELECTED_SURFACE, () => {
+        this.registerEventListener(EventKey.SELECTED_SURFACE, () => {
             pathItem.updateState()
             removeItem.updateState()
             placeFenceItem.updateState()

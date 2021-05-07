@@ -1,5 +1,4 @@
 import { MenuItemCfg } from '../../cfg/MenuItemCfg'
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameState } from '../../game/model/GameState'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -32,11 +31,11 @@ export class SelectBuildingPanel extends SelectBasePanel {
         const deleteBuildingItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteBuilding')
         deleteBuildingItem.isDisabled = () => false
         deleteBuildingItem.onClick = () => GameState.selectedBuilding?.beamUp()
-        EventBus.registerEventListener(EventKey.SELECTED_BUILDING, () => {
+        this.registerEventListener(EventKey.SELECTED_BUILDING, () => {
             powerSwitchItem.updateState()
             upgradeItem.updateState()
         })
-        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
+        this.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
             powerSwitchItem.updateState()
             upgradeItem.updateState()
         })

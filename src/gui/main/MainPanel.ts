@@ -1,4 +1,3 @@
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { SurfaceChanged, SurfaceSelectedEvent } from '../../event/LocalEvents'
 import { EntityAddedEvent, EntityRemovedEvent, RaiderRequested } from '../../event/WorldEvents'
@@ -64,12 +63,12 @@ export class MainPanel extends Panel {
         }
         // TODO add decrease requested raider spawn option (needs right click for gui elements)
         teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
-        EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, () => teleportRaider.updateState())
-        EventBus.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {
+        this.registerEventListener(EventKey.RAIDER_REQUESTED, () => teleportRaider.updateState())
+        this.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {
             // TODO add event inheritance by using event key prefix checking
             if (event.superType === EntitySuperType.BUILDING || event.superType === EntitySuperType.RAIDER) teleportRaider.updateState()
         })
-        EventBus.registerEventListener(EventKey.ENTITY_REMOVED, (event: EntityRemovedEvent) => {
+        this.registerEventListener(EventKey.ENTITY_REMOVED, (event: EntityRemovedEvent) => {
             // TODO add event inheritance by using event key prefix checking
             if (event.superType === EntitySuperType.BUILDING || event.superType === EntitySuperType.RAIDER) teleportRaider.updateState()
         })
@@ -82,16 +81,16 @@ export class MainPanel extends Panel {
         const largeVehicleItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildLargeVehicle')
         largeVehicleItem.isDisabled = () => false
         largeVehicleItem.onClick = () => this.mainPanel.toggleState(() => largeVehiclePanel.toggleState())
-        EventBus.registerEventListener(EventKey.SELECTED_SURFACE, (event: SurfaceSelectedEvent) => {
+        this.registerEventListener(EventKey.SELECTED_SURFACE, (event: SurfaceSelectedEvent) => {
             this.onSelectedSurfaceChange(event.surface)
         })
-        EventBus.registerEventListener(EventKey.SURFACE_CHANGED, (event: SurfaceChanged) => {
+        this.registerEventListener(EventKey.SURFACE_CHANGED, (event: SurfaceChanged) => {
             if (GameState.selectedSurface === event.surface) this.onSelectedSurfaceChange(event.surface)
         })
-        EventBus.registerEventListener(EventKey.DESELECTED_ENTITY, () => this.selectSubPanel(this.mainPanel))
-        EventBus.registerEventListener(EventKey.SELECTED_BUILDING, () => this.selectSubPanel(selectBuildingPanel))
-        EventBus.registerEventListener(EventKey.SELECTED_RAIDER, () => this.selectSubPanel(selectRaiderPanel))
-        EventBus.registerEventListener(EventKey.SELECTED_VEHICLE, () => this.selectSubPanel(selectVehiclePanel))
+        this.registerEventListener(EventKey.DESELECTED_ENTITY, () => this.selectSubPanel(this.mainPanel))
+        this.registerEventListener(EventKey.SELECTED_BUILDING, () => this.selectSubPanel(selectBuildingPanel))
+        this.registerEventListener(EventKey.SELECTED_RAIDER, () => this.selectSubPanel(selectRaiderPanel))
+        this.registerEventListener(EventKey.SELECTED_VEHICLE, () => this.selectSubPanel(selectVehiclePanel))
     }
 
     reset() {
