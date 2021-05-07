@@ -6,13 +6,14 @@ import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { Surface } from '../../game/model/map/Surface'
 import { SurfaceType } from '../../game/model/map/SurfaceType'
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectFloorPanel extends SelectBasePanel {
 
-    constructor(onBackPanel: Panel) {
-        super(3, onBackPanel)
+    constructor(parent: BaseElement, onBackPanel: Panel) {
+        super(parent, 3, onBackPanel)
         const pathItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_LayPath')
         pathItem.onClick = () => {
             const selectedSurface = GameState.selectedEntities[0] as Surface

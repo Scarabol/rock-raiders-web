@@ -3,14 +3,15 @@ import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameState } from '../../game/model/GameState'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconPanelToggleButton } from './IconPanelToggleButton'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectBuildingPanel extends SelectBasePanel {
 
-    constructor(onBackPanel: Panel) {
-        super(4, onBackPanel)
+    constructor(parent: BaseElement, onBackPanel: Panel) {
+        super(parent, 4, onBackPanel)
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Repair')
 
         const menuItemOffCfg = new MenuItemCfg(ResourceManager.cfg('InterfaceImages', 'Interface_MenuItem_PowerOff'))

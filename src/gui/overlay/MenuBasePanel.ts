@@ -1,5 +1,5 @@
 import { MenuCfg } from '../../cfg/MenuCfg'
-import { ScaledLayer } from '../../screen/layer/ScreenLayer'
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { MenuLayer } from './MenuLayer'
 
@@ -7,10 +7,10 @@ export class MenuBasePanel extends Panel {
 
     layersByKey: Map<string, MenuLayer> = new Map()
 
-    constructor(layer: ScaledLayer, cfg: MenuCfg) {
-        super()
-        this.width = layer.fixedWidth
-        this.height = layer.fixedHeight
+    constructor(parent: BaseElement, width: number, height: number, cfg: MenuCfg) {
+        super(parent)
+        this.width = width
+        this.height = height
         this.hidden = true
         cfg.menus.forEach((menuCfg, index) => this.layersByKey.set('menu' + (index + 1), this.addChild(new MenuLayer(this, menuCfg))))
         const pausePanel = this

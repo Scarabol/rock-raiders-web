@@ -7,6 +7,7 @@ import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { SideBarLabel } from './SideBarLabel'
 
@@ -19,8 +20,8 @@ export class PanelCrystalSideBar extends Panel {
     imgUsedCrystal: HTMLCanvasElement
     imgOre: HTMLCanvasElement
 
-    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonCrystalSideBarCfg) {
-        super(panelCfg)
+    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonCrystalSideBarCfg) {
+        super(parent, panelCfg)
         this.labelOre = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarOre, GameState.totalOre.toString()))
         this.labelCrystal = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarCrystals, GameState.numCrystal.toString()))
         this.imgNoCrystal = ResourceManager.getImage('Interface/RightPanel/NoSmallCrystal.bmp')

@@ -1,10 +1,11 @@
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconSubPanel } from './IconSubPanel'
 
 export class SmallVehiclePanel extends IconSubPanel {
 
-    constructor(onBackPanel: Panel) {
-        super(6, onBackPanel)
+    constructor(parent: BaseElement, onBackPanel: Panel) {
+        super(parent, 6, onBackPanel)
         this.addMenuItem('InterfaceBuildImages', 'Hoverboard')
         this.addMenuItem('InterfaceBuildImages', 'SmallDigger')
         this.addMenuItem('InterfaceBuildImages', 'SmallTruck')

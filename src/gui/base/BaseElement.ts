@@ -13,7 +13,7 @@ export class BaseElement {
     hover: boolean = false
     pressed: boolean = false
 
-    constructor(parent: BaseElement = null) {
+    constructor(parent: BaseElement) {
         this.parent = parent
     }
 

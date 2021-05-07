@@ -4,6 +4,7 @@ import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameState } from '../../game/model/GameState'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { TextInfoMessage } from './TextInfoMessage'
 import { TextInfoMessageConfig } from './TextInfoMessageConfig'
@@ -21,8 +22,8 @@ export class MessagePanel extends Panel {
     msgManTrained: TextInfoMessage
     msgUnitUpgraded: TextInfoMessage
 
-    constructor(panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageConfig) {
-        super(panelCfg)
+    constructor(parent: BaseElement, panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageConfig) {
+        super(parent, panelCfg)
         this.relX = this.xOut = this.xIn = 42
         this.relY = this.yOut = this.yIn = 409
         this.imgAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')

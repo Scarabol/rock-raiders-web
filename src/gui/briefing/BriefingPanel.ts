@@ -1,6 +1,7 @@
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
 import { GameState } from '../../game/model/GameState'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { MessagePanel } from '../messagepanel/MessagePanel'
@@ -20,8 +21,8 @@ export class BriefingPanel extends Panel {
     paragraph: number = 0
     imgParagraph: HTMLCanvasElement = null
 
-    constructor() {
-        super()
+    constructor(parent: BaseElement) {
+        super(parent)
         this.cfg = new BriefingPanelCfg()
         this.imgTitle = this.cfg.titleFont.createTextImage(this.cfg.title)
         this.titleRelX = this.cfg.titleWindow.x + (this.cfg.titleWindow.w - this.imgTitle.width) / 2

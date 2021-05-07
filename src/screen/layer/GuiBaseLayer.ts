@@ -7,7 +7,7 @@ import { ScaledLayer } from './ScreenLayer'
 
 export class GuiBaseLayer extends ScaledLayer {
 
-    rootElement: BaseElement = new BaseElement()
+    rootElement: BaseElement = new BaseElement(null)
     panels: Panel[] = []
 
     constructor() {

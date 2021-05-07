@@ -1,6 +1,7 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { BitmapFont } from '../../core/BitmapFont'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 
 export class InformationPanel extends Panel {
@@ -8,8 +9,8 @@ export class InformationPanel extends Panel {
     font: BitmapFont = null
     textImage = null
 
-    constructor(panelCfg: PanelCfg) {
-        super(panelCfg)
+    constructor(parent: BaseElement, panelCfg: PanelCfg) {
+        super(parent, panelCfg)
         this.font = ResourceManager.getDefaultFont()
     }
 

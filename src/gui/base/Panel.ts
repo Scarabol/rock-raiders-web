@@ -14,8 +14,8 @@ export class Panel extends BaseElement {
     animationTimeout = null
     movedIn: boolean = true // xIn, yIn is the collapsed position out of screen
 
-    constructor(panelCfg?: PanelCfg) {
-        super()
+    constructor(parent: BaseElement, panelCfg?: PanelCfg) {
+        super(parent)
         if (panelCfg) {
             this.img = ResourceManager.getImage(panelCfg.filename)
             this.xOut = panelCfg.xOut

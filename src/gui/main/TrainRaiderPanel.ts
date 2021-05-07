@@ -5,13 +5,14 @@ import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { TrainJob } from '../../game/model/job/TrainJob'
 import { RaiderTraining } from '../../game/model/raider/RaiderTraining'
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconSubPanel } from './IconSubPanel'
 
 export class TrainRaiderPanel extends IconSubPanel {
 
-    constructor(onBackPanel: Panel) {
-        super(6, onBackPanel)
+    constructor(parent: BaseElement, onBackPanel: Panel) {
+        super(parent, 6, onBackPanel)
         this.addTrainingItem('Interface_MenuItem_TrainDriver', RaiderTraining.DRIVER, EntityType.BARRACKS, 'TrainDriver')
         this.addTrainingItem('Interface_MenuItem_TrainEngineer', RaiderTraining.ENGINEER, EntityType.UPGRADE, 'TrainRepair')
         this.addTrainingItem('Interface_MenuItem_TrainGeologist', RaiderTraining.GEOLOGIST, EntityType.GEODOME, 'TrainScanner')

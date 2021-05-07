@@ -2,6 +2,7 @@ import { PanelCfg } from '../../cfg/PanelCfg'
 import { GameState } from '../../game/model/GameState'
 import { PriorityIdentifier } from '../../game/model/job/PriorityIdentifier'
 import { PriorityEntry } from '../../game/model/job/PriorityList'
+import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { ButtonPriorityListCfg } from './ButtonPriorityListCfg'
@@ -13,8 +14,8 @@ export class PriorityListPanel extends Panel {
     prioPositions: PriorityPositionsEntry[] = []
     prioByName: Map<PriorityIdentifier, Button> = new Map()
 
-    constructor(panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, pos: PriorityPositionsEntry[], cfg: PriorityButtonsConfig) {
-        super(panelCfg)
+    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, pos: PriorityPositionsEntry[], cfg: PriorityButtonsConfig) {
+        super(parent, panelCfg)
         buttonsCfg.panelButtonPriorityListDisable.forEach((buttonCfg, index) => {
             this.addChild(new Button(this, buttonCfg)).onClick = () => {
                 GameState.priorityList.toggle(index)

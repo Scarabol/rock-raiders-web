@@ -5,14 +5,15 @@ import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { Surface } from '../../game/model/map/Surface'
 import { RaiderTraining } from '../../game/model/raider/RaiderTraining'
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectWallPanel extends SelectBasePanel {
 
-    constructor(onBackPanel: Panel) {
-        super(4, onBackPanel)
+    constructor(parent: BaseElement, onBackPanel: Panel) {
+        super(parent, 4, onBackPanel)
         const itemDrill = this.addWallMenuItem('Interface_MenuItem_Dig', () => GameState.selectedSurface?.createDrillJob())
         itemDrill.isDisabled = () => !(GameState.selectedSurface?.isDrillable()) &&
             !(GameState.selectedSurface?.isDrillableHard()) // TODO implement vehicle check for drill hard skill

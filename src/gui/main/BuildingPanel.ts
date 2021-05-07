@@ -14,13 +14,14 @@ import { Upgrade } from '../../game/model/building/entities/Upgrade'
 import { GameState } from '../../game/model/GameState'
 import { SceneManager } from '../../game/SceneManager'
 import { WorldManager } from '../../game/WorldManager'
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconSubPanel } from './IconSubPanel'
 
 export class BuildingPanel extends IconSubPanel {
 
-    constructor(onBackPanel: Panel) {
-        super(10, onBackPanel)
+    constructor(parent: BaseElement, onBackPanel: Panel) {
+        super(parent, 10, onBackPanel)
         this.backBtn.onClick = () => {
             EventBus.publishEvent(new CancelBuildMode())
             this.toggleState(() => onBackPanel.toggleState())

@@ -5,6 +5,7 @@ import { EntityType } from '../../game/model/EntityType'
 import { GameState } from '../../game/model/GameState'
 import { EatJob } from '../../game/model/job/EatJob'
 import { UpgradeJob } from '../../game/model/job/UpgradeJob'
+import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
@@ -14,8 +15,8 @@ export class SelectRaiderPanel extends SelectBasePanel {
     getToolItem: IconPanelButton
     trainItem: IconPanelButton
 
-    constructor(onBackPanel: Panel) {
-        super(10, onBackPanel)
+    constructor(parent: BaseElement, onBackPanel: Panel) {
+        super(parent, 10, onBackPanel)
         const feedItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GoFeed')
         feedItem.isDisabled = () => false
         feedItem.onClick = () => {

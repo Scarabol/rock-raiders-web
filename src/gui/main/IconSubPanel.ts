@@ -1,6 +1,7 @@
 import { IconPanelBackButtonCfg } from '../../cfg/IconPanelBackButtonCfg'
 import { MenuItemCfg } from '../../cfg/MenuItemCfg'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
@@ -10,8 +11,8 @@ export class IconSubPanel extends Panel {
     backBtn: Button = null
     iconPanelButtons: IconPanelButton[] = []
 
-    constructor(numOfItems, onBackPanel: Panel = null) {
-        super()
+    constructor(parent: BaseElement, numOfItems, onBackPanel: Panel = null) {
+        super(parent)
         if (onBackPanel) {
             const backBtnCfg = new IconPanelBackButtonCfg(ResourceManager.cfg('InterfaceBackButton'))
             this.backBtn = this.addChild(new Button(this, backBtnCfg))
