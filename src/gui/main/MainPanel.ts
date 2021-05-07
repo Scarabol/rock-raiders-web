@@ -57,6 +57,12 @@ export class MainPanel extends Panel {
         teleportRaider.isDisabled = () => GameState.raiders.length >= GameState.getMaxRaiders() || GameState.requestedRaiders >= MAX_RAIDER_REQUEST ||
             !GameState.hasOneBuildingOf(EntityType.TOOLSTATION, EntityType.TELEPORT_PAD)
         teleportRaider.updateState()
+        teleportRaider.onClick = () => {
+            GameState.requestedRaiders++
+            this.publishEvent(new RaiderRequested())
+        }
+        // TODO add decrease requested raider spawn option (needs right click for gui elements)
+        teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
         EventBus.registerEventListener(EventKey.RAIDER_REQUESTED, () => teleportRaider.updateState())
         EventBus.registerEventListener(EventKey.ENTITY_ADDED, (event: EntityAddedEvent) => {
             // TODO add event inheritance by using event key prefix checking
@@ -66,12 +72,6 @@ export class MainPanel extends Panel {
             // TODO add event inheritance by using event key prefix checking
             if (event.superType === EntitySuperType.BUILDING || event.superType === EntitySuperType.RAIDER) teleportRaider.updateState()
         })
-        teleportRaider.onClick = () => {
-            GameState.requestedRaiders++
-            EventBus.publishEvent(new RaiderRequested())
-        }
-        // TODO add decrease requested raider spawn option (needs right click for gui elements)
-        teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding')
         buildingItem.isDisabled = () => false
         buildingItem.onClick = () => this.mainPanel.toggleState(() => buildingPanel.toggleState())

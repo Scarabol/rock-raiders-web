@@ -72,9 +72,9 @@ export class Supervisor {
                 let closestNeededTool: RaiderTool = null
                 let closestTrainingRaider: Raider = null
                 let closestTrainingRaiderIndex: number = null
-            let minTrainingDistance: number = null
-            let closestTrainingArea: BuildingEntity = null
-            let closestNeededTraining: RaiderTraining = null
+                let minTrainingDistance: number = null
+                let closestTrainingArea: BuildingEntity = null
+                let closestNeededTraining: RaiderTraining = null
                 unemployedRaider.forEach((raider, index) => {
                     const requiredTool = job.getRequiredTool()
                     const hasRequiredTool = raider.hasTool(requiredTool)

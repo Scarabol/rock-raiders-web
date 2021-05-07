@@ -27,8 +27,7 @@ export class MainMenuScreen extends BaseScreen {
     }
 
     showMainMenu(index: number = 0) {
-        this.hide()
-        this.menus[index].show()
+        this.menus.forEach((menu, i) => i === index ? menu.show() : menu.hide())
         this.cursorLayer.show()
     }
 

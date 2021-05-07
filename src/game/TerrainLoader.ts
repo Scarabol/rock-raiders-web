@@ -28,6 +28,7 @@ export class TerrainLoader {
         const cryOreMap = ResourceManager.getResource(levelConf.cryOreMap)?.level
         const fallinMap = ResourceManager.getResource(levelConf.fallinMap)?.level
         const erodeMap = ResourceManager.getResource(levelConf.erodeMap)?.level
+        const blockMap = ResourceManager.getResource(levelConf.blockPointersMap)?.level
 
         // maps parsed from WAD are row-wise saved, which means y (row) comes first and x (column) second
         for (let r = 0; r < terrainMap.level.length; r++) {
@@ -91,6 +92,7 @@ export class TerrainLoader {
             }
         })
 
+        // generate path finding weights
         const weights: number[][] = []
         for (let x = 0; x < terrain.width; x++) {
             const col: number[] = []
@@ -119,6 +121,10 @@ export class TerrainLoader {
 
         if (erodeMap) { // TODO implement lava erosion
             console.warn('Lucky you! Lava erosion not yet implemented')
+        }
+
+        if (blockMap) { // TODO implement tutorial blocks map
+            // console.log(blockMap)
         }
 
         return terrain

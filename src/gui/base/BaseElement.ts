@@ -113,7 +113,7 @@ export class BaseElement {
     }
 
     notifyRedraw() {
-        if (this.parent) this.parent.notifyRedraw()
+        this.parent?.notifyRedraw()
     }
 
 }
