@@ -34,7 +34,7 @@ export class TrainRaiderPanel extends IconSubPanel {
         trainingItem.onClick = () => {
             GameState.getBuildingsByType(building).some((b) => {
                 if (b.stats[statsProperty][b.level]) {
-                    GameState.selectedRaiders.forEach((r) => !r.hasTraining(training) && r.setJob(new TrainJob(b.primarySurface, training)))
+                    GameState.selectedRaiders.forEach((r) => !r.hasTraining(training) && r.setJob(new TrainJob(b, training)))
                     EventBus.publishEvent(new EntityDeselected())
                     return true
                 }

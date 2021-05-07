@@ -4,6 +4,7 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
 import { CHECK_CLEARRUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
+import { BuildingEntity } from './model/building/BuildingEntity'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
 import { GetToolJob } from './model/job/GetToolJob'
@@ -11,7 +12,6 @@ import { PublicJob } from './model/job/Job'
 import { JobState } from './model/job/JobState'
 import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { TrainJob } from './model/job/TrainJob'
-import { Surface } from './model/map/Surface'
 import { PathTarget } from './model/PathTarget'
 import { Raider } from './model/raider/Raider'
 import { RaiderTool } from './model/raider/RaiderTool'
@@ -72,9 +72,9 @@ export class Supervisor {
                 let closestNeededTool: RaiderTool = null
                 let closestTrainingRaider: Raider = null
                 let closestTrainingRaiderIndex: number = null
-                let minTrainingDistance: number = null
-                let closestTrainingArea: Surface = null
-                let closestNeededTraining: RaiderTraining = null
+            let minTrainingDistance: number = null
+            let closestTrainingArea: BuildingEntity = null
+            let closestNeededTraining: RaiderTraining = null
                 unemployedRaider.forEach((raider, index) => {
                     const requiredTool = job.getRequiredTool()
                     const hasRequiredTool = raider.hasTool(requiredTool)
@@ -102,21 +102,20 @@ export class Supervisor {
                                 closestToolRaider = raider
                                 closestToolRaiderIndex = index
                                 minToolDistance = dist
-                                closestToolstationPosition = pathToToolstation.targetPosition // TODO use precalculated path to toolstation
+                                closestToolstationPosition = pathToToolstation.targetPosition
                                 closestNeededTool = requiredTool
                             }
                         }
                     } else {
-                        const pathToTraining = GameState.getTrainingSites(raiderPosition, raiderTraining)
-                            .map((site) => raider.findPathToTarget(new PathTarget(site.getPosition2D())))
-                            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
-                        if (pathToTraining) {
-                            const dist = pathToTraining.lengthSq
+                        const trainingSite = GameState.getTrainingSites(raiderPosition, raiderTraining).sort((l, r) =>
+                            raider.findPathToTarget(new PathTarget(l.getPosition2D())).lengthSq - raider.findPathToTarget(new PathTarget(r.getPosition2D())).lengthSq)[0]
+                        if (trainingSite) {
+                            const dist = raider.findPathToTarget(new PathTarget(trainingSite.getPosition2D())).lengthSq
                             if (minTrainingDistance === null || dist < minTrainingDistance) {
                                 closestTrainingRaider = raider
                                 closestTrainingRaiderIndex = index
                                 minTrainingDistance = dist
-                                closestTrainingArea = raider.sceneMgr.terrain.getSurfaceFromWorld2D(pathToTraining.targetPosition) // TODO use precalculated path to training
+                                closestTrainingArea = trainingSite
                                 closestNeededTraining = raiderTraining
                             }
                         }

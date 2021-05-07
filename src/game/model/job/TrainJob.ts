@@ -1,26 +1,28 @@
 import { EventBus } from '../../../event/EventBus'
 import { EntityTrained } from '../../../event/WorldEvents'
 import { RaiderActivity } from '../activities/RaiderActivity'
+import { BuildingEntity } from '../building/BuildingEntity'
 import { FulfillerEntity } from '../FulfillerEntity'
-import { Surface } from '../map/Surface'
+import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { Job } from './Job'
 import { JobType } from './JobType'
-import { TrainingPathTarget } from './TrainingPathTarget'
 
 export class TrainJob extends Job {
 
-    workplaces: TrainingPathTarget[]
+    building: BuildingEntity
+    workplaces: PathTarget[]
     training: RaiderTraining
 
-    constructor(surface: Surface, training: RaiderTraining) {
+    constructor(building: BuildingEntity, training: RaiderTraining) {
         super(JobType.TRAIN)
-        this.workplaces = [new TrainingPathTarget(surface)]
+        this.building = building
+        this.workplaces = building.getTrainingTargets()
         this.training = training
     }
 
-    getWorkplaces(): TrainingPathTarget[] {
-        return this.workplaces
+    getWorkplaces(): PathTarget[] {
+        return this.building.isPowered() ? this.workplaces : []
     }
 
     onJobComplete() {

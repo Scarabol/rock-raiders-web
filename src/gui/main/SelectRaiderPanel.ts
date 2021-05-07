@@ -35,7 +35,7 @@ export class SelectRaiderPanel extends SelectBasePanel {
             GameState.selectedRaiders.forEach((r) => {
                 const closestToolstation = GameState.getClosestBuildingByType(r.getPosition(), EntityType.TOOLSTATION)
                 if (closestToolstation && r.level < r.stats.Levels) {
-                    r.setJob(new UpgradeJob(closestToolstation.primarySurface))
+                    r.setJob(new UpgradeJob(closestToolstation))
                 }
             })
             EventBus.publishEvent(new EntityDeselected())

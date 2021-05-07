@@ -1,21 +1,23 @@
 import { RaiderActivity } from '../activities/RaiderActivity'
+import { BuildingEntity } from '../building/BuildingEntity'
 import { FulfillerEntity } from '../FulfillerEntity'
-import { Surface } from '../map/Surface'
+import { PathTarget } from '../PathTarget'
 import { Job } from './Job'
 import { JobType } from './JobType'
-import { TrainingPathTarget } from './TrainingPathTarget'
 
 export class UpgradeJob extends Job {
 
-    workplaces: TrainingPathTarget[]
+    building: BuildingEntity
+    workplaces: PathTarget[]
 
-    constructor(surface: Surface) {
+    constructor(building: BuildingEntity) {
         super(JobType.TRAIN)
-        this.workplaces = [new TrainingPathTarget(surface)]
+        this.building = building
+        this.workplaces = building.getTrainingTargets()
     }
 
-    getWorkplaces(): TrainingPathTarget[] {
-        return this.workplaces
+    getWorkplaces(): PathTarget[] {
+        return this.building.isPowered() ? this.workplaces : []
     }
 
     onJobComplete() {

@@ -21,6 +21,7 @@ import { EntitySuperType, EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
+import { PathTarget } from '../PathTarget'
 import { Selectable, SelectionType } from '../Selectable'
 import { BuildingSite } from './BuildingSite'
 
@@ -271,4 +272,8 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         return RaiderActivity.Place
     }
 
+    getTrainingTargets() {
+        return [new Vector2(-1, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(0, -1)]
+            .map((v) => new PathTarget(v.multiplyScalar(TILESIZE / 2).add(this.primarySurface.getCenterWorld2D())))
+    }
 }
