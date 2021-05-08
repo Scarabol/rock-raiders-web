@@ -13,12 +13,18 @@ export class SurfaceType {
     reinforcable: boolean = false
     cursor: Cursors = Cursors.Pointer_Standard
     statsDrillName: string = null
+    canCarryFence: boolean = false
 
     constructor(options: Partial<SurfaceType> = {}) {
         Object.assign(this, options)
     }
 
-    static readonly GROUND = new SurfaceType({name: 'ground', floor: true, selectable: true})
+    static readonly GROUND = new SurfaceType({
+        name: 'ground',
+        floor: true,
+        selectable: true,
+        canCarryFence: true,
+    })
     static readonly SOLID_ROCK = new SurfaceType({
         name: 'solid rock',
         shaping: true,
@@ -95,12 +101,14 @@ export class SurfaceType {
         floor: true,
         matIndex: '60',
         selectable: true,
+        canCarryFence: true,
     })
     static readonly POWER_PATH_SITE = new SurfaceType({
         name: 'power path site',
         floor: true,
         matIndex: '61',
         selectable: true,
+        canCarryFence: true,
     })
     static readonly POWER_PATH_BUILDING = new SurfaceType({
         name: 'power path building',
@@ -112,24 +120,28 @@ export class SurfaceType {
         floor: true,
         matIndex: '13',
         selectable: true,
+        canCarryFence: true,
     })
     static readonly RUBBLE2 = new SurfaceType({
         name: 'rubble 2',
         floor: true,
         matIndex: '12',
         selectable: true,
+        canCarryFence: true,
     })
     static readonly RUBBLE3 = new SurfaceType({
         name: 'rubble 3',
         floor: true,
         matIndex: '11',
         selectable: true,
+        canCarryFence: true,
     })
     static readonly RUBBLE4 = new SurfaceType({
         name: 'rubble 4',
         floor: true,
         matIndex: '10',
         selectable: true,
+        canCarryFence: true,
     })
 
     static getByNum(typeNum: number) {

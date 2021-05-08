@@ -635,13 +635,7 @@ export class Surface implements Selectable {
     }
 
     canPlaceFence(): boolean { // TODO performance this can be cached
-        return (this.surfaceType === SurfaceType.GROUND
-            || this.surfaceType === SurfaceType.POWER_PATH_SITE
-            || this.surfaceType === SurfaceType.RUBBLE1
-            || this.surfaceType === SurfaceType.RUBBLE2
-            || this.surfaceType === SurfaceType.RUBBLE3
-            || this.surfaceType === SurfaceType.RUBBLE4
-            || this.isPath()) && !this.building && !this.fence &&
+        return this.surfaceType.canCarryFence && !this.building && !this.fence &&
             [1, 2].some((n) => {
                 return !!this.terrain.getSurface(this.x - n, this.y).building ||
                     !!this.terrain.getSurface(this.x, this.y - n).building ||
