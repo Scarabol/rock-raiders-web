@@ -225,6 +225,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         primaryPathSurface.setBuilding(this)
         primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
         primaryPathSurface.updateTexture()
+        primaryPathSurface.neighbors.forEach((n) => n.updateTexture())
         this.primarySurface = primaryPathSurface
         if (this.secondaryBuildingPart) {
             const secondaryOffset = new Vector2(TILESIZE * this.secondaryBuildingPart.x, TILESIZE * this.secondaryBuildingPart.y)
@@ -233,6 +234,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             secondarySurface.setBuilding(this)
             secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
             secondarySurface.updateTexture()
+            secondarySurface.neighbors.forEach((n) => n.updateTexture())
             this.secondarySurface = secondarySurface
         }
         if (this.primaryPowerPath) {
@@ -242,6 +244,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             if (this.entityType === EntityType.GEODOME) pathSurface.building = this
             pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
             pathSurface.updateTexture()
+            pathSurface.neighbors.forEach((n) => n.updateTexture())
             this.primaryPathSurface = pathSurface
         }
         this.addToScene(worldPosition, radHeading)
