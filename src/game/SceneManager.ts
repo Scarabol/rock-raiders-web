@@ -42,6 +42,8 @@ export class SceneManager {
         this.controls = new MapControls(this.camera, this.renderer.domElement)
         this.controls.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
+        this.controls.listenToKeyEvents(this.renderer.domElement)
+        this.controls.keyPanSpeed = this.controls.keyPanSpeed * 20
 
         this.buildMarker = new BuildPlacementMarker()
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {

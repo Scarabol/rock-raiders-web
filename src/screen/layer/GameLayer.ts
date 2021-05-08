@@ -155,19 +155,24 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
     handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
         if (DEV_MODE && event.eventEnum === KEY_EVENT.UP) {
             if (GameState.selectionType === SelectionType.SURFACE) {
-                GameState.selectedEntities.forEach((s: Surface) => {
-                    if (event.key === 'c') {
+                if (event.code === 'KeyC') {
+                    GameState.selectedEntities.forEach((s: Surface) => {
                         if (!s.surfaceType.floor) s.collapse()
-                    } else if (event.key === 'f') {
+                    })
+                    this.publishEvent(new SelectionChanged())
+                    return new Promise((resolve) => resolve(true))
+                } else if (event.code === 'KeyF') {
+                    GameState.selectedEntities.forEach((s: Surface) => {
                         const t = s.terrain.findFallInTarget(s.x, s.y)
                         if (!s.surfaceType.floor) s.createFallin(t[0], t[1])
-                    }
-                })
-                this.publishEvent(new SelectionChanged())
-                return new Promise((resolve) => resolve(true))
+                    })
+                    this.publishEvent(new SelectionChanged())
+                    return new Promise((resolve) => resolve(true))
+                }
             }
         }
-        return new Promise((resolve) => resolve(false))
+        this.canvas.dispatchEvent(new KeyboardEvent(event.type, event))
+        return new Promise((resolve) => resolve(true))
     }
 
     assignSurfaceJob(job: Job, surface: Surface, intersectionPoint: Vector2) {
