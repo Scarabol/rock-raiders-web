@@ -22,8 +22,8 @@ export class OverlayLayer extends GuiBaseLayer {
 
     constructor(parent: IEventHandler) {
         super(parent)
-        this.panelPause = this.addPanel(new PausePanel(this.rootElement, this.fixedWidth, this.fixedHeight, ResourceManager.getResource('PausedMenu') as MenuCfg))
-        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, this.fixedWidth, this.fixedHeight, ResourceManager.getResource('OptionsMenu') as MenuCfg))
+        this.panelPause = this.addPanel(new PausePanel(this.rootElement, ResourceManager.getResource('PausedMenu') as MenuCfg))
+        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, ResourceManager.getResource('OptionsMenu') as MenuCfg))
         this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
         // link items
         this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)

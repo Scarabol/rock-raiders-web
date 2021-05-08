@@ -7,14 +7,11 @@ export class MenuBasePanel extends Panel {
 
     layersByKey: Map<string, MenuLayer> = new Map()
 
-    constructor(parent: BaseElement, width: number, height: number, cfg: MenuCfg) {
+    constructor(parent: BaseElement, cfg: MenuCfg) {
         super(parent)
-        this.width = width
-        this.height = height
         this.hidden = true
         cfg.menus.forEach((menuCfg, index) => this.layersByKey.set('menu' + (index + 1), this.addChild(new MenuLayer(this, menuCfg))))
-        const pausePanel = this
-        this.layersByKey.forEach((layer) => layer.itemsNext.forEach((item) => item.onClick = () => pausePanel.selectLayer(item.target)))
+        this.layersByKey.forEach((layer) => layer.itemsNext.forEach((item) => item.onClick = () => this.selectLayer(item.target)))
     }
 
     reset() {

@@ -8,13 +8,12 @@ export class PausePanel extends MenuBasePanel {
     onAbortGame: () => any = () => console.log('abort mission')
     onRestartGame: () => any = () => console.log('restart mission')
 
-    constructor(parent: BaseElement, width: number, height: number, cfg: MenuCfg) {
-        super(parent, width, height, cfg)
-        const pausePanel = this
-        this.layersByKey.get('menu1').itemsTrigger[0].onClick = () => pausePanel.hide() // Pause
-        this.layersByKey.get('menu2').itemsTrigger[0].onClick = () => pausePanel.onRepeatBriefing() // Options
-        this.layersByKey.get('menu3').itemsTrigger[0].onClick = () => pausePanel.onAbortGame() // Quit
-        this.layersByKey.get('menu4').itemsTrigger[0].onClick = () => pausePanel.onRestartGame() // Restart
+    constructor(parent: BaseElement, cfg: MenuCfg) {
+        super(parent, cfg)
+        this.layersByKey.get('menu1').itemsTrigger[0].onClick = () => this.hide() // Pause
+        this.layersByKey.get('menu2').itemsTrigger[0].onClick = () => this.onRepeatBriefing() // Options
+        this.layersByKey.get('menu3').itemsTrigger[0].onClick = () => this.onAbortGame() // Quit
+        this.layersByKey.get('menu4').itemsTrigger[0].onClick = () => this.onRestartGame() // Restart
     }
 
 }
