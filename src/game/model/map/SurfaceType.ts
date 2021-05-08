@@ -2,7 +2,7 @@ import { Cursors } from '../../../screen/Cursors'
 
 export class SurfaceType {
 
-    name: string // humand readable, maybe used as label lateron
+    name: string // human readable, maybe used as label later on
     shaping: boolean = false
     matIndex: string = '00'
     floor: boolean = false

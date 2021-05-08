@@ -17,7 +17,7 @@ export class UpgradeJob extends Job {
     }
 
     getWorkplaces(): PathTarget[] {
-        return this.building.isPowered() ? this.workplaces : []
+        return this.building.isUsable() ? this.workplaces : []
     }
 
     onJobComplete() {

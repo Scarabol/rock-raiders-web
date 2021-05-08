@@ -103,7 +103,7 @@ export class GameState {
     }
 
     static getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
-        return this.buildings.filter(b => b.isPowered() && buildingTypes.some(bt => b.entityType === bt))
+        return this.buildings.filter(b => b.isUsable() && buildingTypes.some(bt => b.entityType === bt))
     }
 
     static getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity {
@@ -121,17 +121,17 @@ export class GameState {
     }
 
     static hasOneBuildingOf(...buildings: EntityType[]): boolean {
-        return this.buildings.some((b) => buildings.some((type) => b.entityType === type) && b.isPowered())
+        return this.buildings.some((b) => buildings.some((type) => b.entityType === type) && b.isUsable())
     }
 
     static hasBuildingWithUpgrades(building: EntityType, upgrades: number = 0): boolean {
-        return this.buildings.some((b) => b.entityType === building && b.level >= upgrades && b.isPowered())
+        return this.buildings.some((b) => b.entityType === building && b.level >= upgrades && b.isUsable())
     }
 
     static getTrainingSites(position: Vector3, training: RaiderTraining): BuildingEntity[] {
         if (training === RaiderTraining.DEMOLITION) {
             return this.buildings.filter((b) => {
-                return b.isPowered() && b.stats.TrainDynamite && b.stats.TrainDynamite[b.level]
+                return b.isUsable() && b.stats.TrainDynamite && b.stats.TrainDynamite[b.level]
             })
         }
         return []
@@ -167,7 +167,7 @@ export class GameState {
     }
 
     static getMaxRaiders(): number {
-        return MAX_RAIDER_BASE + GameState.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT
+        return MAX_RAIDER_BASE + GameState.buildings.count((b) => b.isUsable() && b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT
     }
 
     static discoverSurface(surface: Surface) {

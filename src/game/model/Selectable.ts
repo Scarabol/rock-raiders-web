@@ -3,13 +3,13 @@ import { SelectionEvent } from '../../event/LocalEvents'
 
 export interface Selectable {
 
-    getSelectionType(): SelectionType;
+    getSelectionType(): SelectionType
 
-    select(): SelectionEvent;
+    select(): SelectionEvent
 
-    deselect(): any;
+    deselect(): any
 
-    getSelectionCenter(): Vector3;
+    getSelectionCenter(): Vector3
 
 }
 

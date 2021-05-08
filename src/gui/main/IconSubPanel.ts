@@ -34,7 +34,11 @@ export class IconSubPanel extends Panel {
 
     toggleState(onDone: () => any = null) {
         super.toggleState(onDone)
-        if (!this.movedIn) this.iconPanelButtons.forEach((button) => button.updateState())
+        if (!this.movedIn) this.updateAllButtonStates()
+    }
+
+    updateAllButtonStates() {
+        this.iconPanelButtons.forEach((button) => button.updateState())
     }
 
 }

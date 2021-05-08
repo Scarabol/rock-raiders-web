@@ -11,12 +11,12 @@ import { PriorityIdentifier } from './PriorityIdentifier'
 export abstract class Job {
 
     type: JobType
-    jobstate: JobState
+    jobState: JobState
     fulfiller: FulfillerEntity[] = []
 
     protected constructor(type: JobType) {
         this.type = type
-        this.jobstate = JobState.INCOMPLETE
+        this.jobState = JobState.INCOMPLETE
     }
 
     assign(fulfiller: FulfillerEntity) {
@@ -31,7 +31,7 @@ export abstract class Job {
     }
 
     cancel() {
-        this.jobstate = JobState.CANCELED
+        this.jobState = JobState.CANCELED
         const fulfiller = this.fulfiller // ensure consistency while processing
         this.fulfiller = []
         fulfiller.forEach((fulfiller) => fulfiller.stopJob())
@@ -50,7 +50,7 @@ export abstract class Job {
     }
 
     onJobComplete() {
-        this.jobstate = JobState.COMPLETE
+        this.jobState = JobState.COMPLETE
     }
 
     abstract getWorkplaces(): PathTarget[];

@@ -14,9 +14,9 @@ export class LocalEvent extends GameEvent {
 
 }
 
-export class SelectionEvent extends LocalEvent {
+export abstract class SelectionEvent extends LocalEvent {
 
-    constructor(eventKey: EventKey) {
+    protected constructor(eventKey: EventKey) {
         super(eventKey)
     }
 

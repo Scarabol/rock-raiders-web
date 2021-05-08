@@ -62,7 +62,7 @@ export class WorldManager {
 
     updateOxygen() {
         const sum = GameState.raiders.map((r) => r.stats.OxygenCoef).reduce((l, r) => l + r, 0) +
-            GameState.buildings.map((b) => b.isPowered() ? b.stats.OxygenCoef : 0).reduce((l, r) => l + r, 0)
+            GameState.buildings.map((b) => b.isUsable() ? b.stats.OxygenCoef : 0).reduce((l, r) => l + r, 0)
         const rateMultiplier = 0.001
         const valuePerSecond = 1 / 25
         const msToSeconds = 0.001

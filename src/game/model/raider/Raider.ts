@@ -116,7 +116,7 @@ export class Raider extends FulfillerEntity {
 
     work() {
         if (!this.job || this.selected || this.slipped) return
-        if (this.job.jobstate !== JobState.INCOMPLETE) {
+        if (this.job.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
         } else {
             const carryItem = this.job.getCarryItem()
@@ -142,7 +142,7 @@ export class Raider extends FulfillerEntity {
 
     private completeJob() {
         this.job?.onJobComplete()
-        if (this.job?.jobstate === JobState.INCOMPLETE) return
+        if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unassign(this)
         this.job = this.followUpJob
         this.followUpJob = null

@@ -18,13 +18,9 @@ export class TrainRaiderPanel extends IconSubPanel {
         this.addTrainingItem('Interface_MenuItem_TrainPilot', RaiderTraining.PILOT, EntityType.TELEPORT_PAD, 'TrainPilot')
         this.addTrainingItem('Interface_MenuItem_TrainSailor', RaiderTraining.SAILOR, EntityType.DOCKS, 'TrainSailor')
         this.addTrainingItem('Interface_MenuItem_TrainDynamite', RaiderTraining.DEMOLITION, EntityType.TOOLSTATION, 'TrainDynamite')
-        this.registerEventListener(EventKey.ENTITY_ADDED, () => this.updateAllItems())
-        this.registerEventListener(EventKey.ENTITY_REMOVED, () => this.updateAllItems())
-        this.registerEventListener(EventKey.BUILDING_UPGRADED, () => this.updateAllItems())
-    }
-
-    updateAllItems() {
-        this.iconPanelButtons.forEach((b) => b.updateState())
+        this.registerEventListener(EventKey.ENTITY_ADDED, () => this.updateAllButtonStates())
+        this.registerEventListener(EventKey.ENTITY_REMOVED, () => this.updateAllButtonStates())
+        this.registerEventListener(EventKey.BUILDING_UPGRADED, () => this.updateAllButtonStates())
     }
 
     private addTrainingItem(itemKey: string, training: RaiderTraining, building: EntityType, statsProperty: string) {

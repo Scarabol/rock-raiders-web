@@ -51,7 +51,7 @@ export class Supervisor {
     assignJobs() {
         const availableJobs: PublicJob[] = []
         this.jobs = this.jobs.filter((j) => {
-            const result = j.jobstate === JobState.INCOMPLETE
+            const result = j.jobState === JobState.INCOMPLETE
             if (result && j.fulfiller.length < 1 && GameState.priorityList.isEnabled(j.getPriorityIdentifier())) { // TODO don't assign jobs on hidden surfaces
                 availableJobs.push(j)
             }

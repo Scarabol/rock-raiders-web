@@ -16,11 +16,11 @@ export class WorldEvent extends GameEvent {
 
 }
 
-export class JobEvent extends WorldEvent {
+export abstract class JobEvent extends WorldEvent {
 
     job: PublicJob
 
-    constructor(eventKey: EventKey, job: PublicJob) {
+    protected constructor(eventKey: EventKey, job: PublicJob) {
         super(eventKey)
         this.job = job
     }

@@ -105,8 +105,12 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         return this.sceneMgr.getFloorPosition(this.getDropPosition2D())
     }
 
+    isUsable(): boolean {
+        return !this.inBeam && this.powerSwitch && (this.isPowered() || this.stats.PowerBuilding)
+    }
+
     isPowered(): boolean {
-        return !this.inBeam && this.powerSwitch && (this.stats.SelfPowered || this.stats.PowerBuilding || this.crystalsInUse > 0)
+        return this.stats.SelfPowered || this.crystalsInUse > 0
     }
 
     onDiscover() {

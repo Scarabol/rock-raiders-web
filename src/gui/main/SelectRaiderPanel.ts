@@ -47,9 +47,9 @@ export class SelectRaiderPanel extends SelectBasePanel {
         const deleteRaiderItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteMan')
         deleteRaiderItem.isDisabled = () => false
         deleteRaiderItem.onClick = () => GameState.selectedRaiders.forEach((r) => r.beamUp())
-        this.registerEventListener(EventKey.ENTITY_ADDED, () => this.iconPanelButtons.forEach((b) => b.updateState()))
-        this.registerEventListener(EventKey.SELECTED_RAIDER, () => this.iconPanelButtons.forEach((b) => b.updateState()))
-        this.registerEventListener(EventKey.DESELECTED_ENTITY, () => this.iconPanelButtons.forEach((b) => b.updateState()))
+        this.registerEventListener(EventKey.ENTITY_ADDED, () => this.updateAllButtonStates())
+        this.registerEventListener(EventKey.SELECTED_RAIDER, () => this.updateAllButtonStates())
+        this.registerEventListener(EventKey.DESELECTED_ENTITY, () => this.updateAllButtonStates())
     }
 
 }
