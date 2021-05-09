@@ -113,7 +113,7 @@ export abstract class AnimEntity extends BaseEntity {
         if (this.poly.length !== this.animation.bodies.length) throw 'Cannot animate poly. Length differs from bodies length'
         this.animation.bodies.forEach((body: AnimSubObj, index) => {
             const p = this.poly[index]
-            p.position.copy(body.relPos[frameIndex])
+            p.position.copy(body.relPos[frameIndex]).sub(body.pivot)
             p.rotation.copy(body.relRot[frameIndex])
             p.scale.copy(body.relScale[frameIndex])
             if (p.hasOwnProperty('material')) {

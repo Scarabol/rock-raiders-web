@@ -5,6 +5,7 @@ export class AnimSubObj {
 
     name: string = ''
     filename: string = ''
+    pivot: Vector3 = new Vector3(0, 0, 0)
     relPos: Vector3[] = []
     relRot: Euler[] = []
     relScale: Vector3[] = []

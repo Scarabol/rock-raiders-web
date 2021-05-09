@@ -6,7 +6,7 @@
  * File format description: http://www.martinreddy.net/gfx/3d/LWSC.txt
  */
 
-import { Group } from 'three'
+import { Group, Vector3 } from 'three'
 import { getFilename } from '../core/Util'
 import { AnimClip } from '../game/model/anim/AnimClip'
 import { AnimSubObj } from '../game/model/anim/AnimSubObj'
@@ -64,7 +64,10 @@ export class LWSCLoader {
     }
 
     parseLine(line: string): string[] {
-        return line.split(' ').filter((l: string) => l !== '')
+        const lineParts = line.split(' ').filter((l: string) => l !== '')
+        const key = lineParts.shift()
+        const value = lineParts.join(' ')
+        return [key, value]
     }
 
     parseFrameBlock() {
@@ -156,6 +159,8 @@ export class LWSCLoader {
                     const opacity = 1 - Number(value)
                     subObj.setOpacityAndFollowing(0, this.animationClip.lastFrame, opacity)
                 }
+            } else if (key === 'PivotPoint') {
+                subObj.pivot = new Vector3().fromArray(value.split(' ').map((n) => Number(n)))
             } else if (this.verbose) {
                 console.warn('Unhandled line in object block: ' + line + '; key: ' + key + '; value: ' + value) // TODO analyze unhandled lines
             }
