@@ -147,12 +147,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         for (let c = 0; c < this.stats.CostCrystal; c++) {
             this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), this.primarySurface.getRandomPosition())
         }
-        this.surfaces.forEach((s) => {
-            s.surfaceType = SurfaceType.GROUND
-            s.setBuilding(null)
-            s.updateTexture()
-            s.neighbors.forEach((n) => n.updateTexture())
-        })
+        this.surfaces.forEach((s) => s.setBuilding(null))
         super.beamUp()
         EventBus.publishEvent(new BuildingsChangedEvent())
     }
@@ -211,7 +206,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         EventBus.publishEvent(new BuildingsChangedEvent())
     }
 
-    get surfaces(): Surface[] {
+    get surfaces(): Surface[] { // TODO performance cache this in member variable
         const result = []
         if (this.primarySurface) result.push(this.primarySurface)
         if (this.secondarySurface) result.push(this.secondarySurface)
@@ -221,31 +216,19 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
-        const primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(worldPosition)
-        primaryPathSurface.setBuilding(this)
-        primaryPathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
-        primaryPathSurface.updateTexture()
-        primaryPathSurface.neighbors.forEach((n) => n.updateTexture())
-        this.primarySurface = primaryPathSurface
+        this.primarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(worldPosition)
+        this.primarySurface.setBuilding(this)
         if (this.secondaryBuildingPart) {
             const secondaryOffset = new Vector2(TILESIZE * this.secondaryBuildingPart.x, TILESIZE * this.secondaryBuildingPart.y)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
-            const secondarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(secondaryOffset)
-            secondarySurface.setBuilding(this)
-            secondarySurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
-            secondarySurface.updateTexture()
-            secondarySurface.neighbors.forEach((n) => n.updateTexture())
-            this.secondarySurface = secondarySurface
+            this.secondarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(secondaryOffset)
+            this.secondarySurface.setBuilding(this)
         }
         if (this.primaryPowerPath) {
             const pathOffset = new Vector2(this.primaryPowerPath.x, this.primaryPowerPath.y).multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
-            const pathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
-            if (this.entityType === EntityType.GEODOME) pathSurface.building = this
-            pathSurface.surfaceType = SurfaceType.POWER_PATH_BUILDING
-            pathSurface.updateTexture()
-            pathSurface.neighbors.forEach((n) => n.updateTexture())
-            this.primaryPathSurface = pathSurface
+            this.primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
+            this.primaryPathSurface.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
         }
         this.addToScene(worldPosition, radHeading)
         this.createPickSphere()

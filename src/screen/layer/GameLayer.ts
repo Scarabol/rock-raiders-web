@@ -5,17 +5,13 @@ import { GameEvent } from '../../event/GameEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
-import { CancelBuildMode } from '../../event/GuiCommand'
 import { IEventHandler } from '../../event/IEventHandler'
 import { ChangeCursor, SelectionChanged } from '../../event/LocalEvents'
-import { BuildingSite } from '../../game/model/building/BuildingSite'
-import { EntityType } from '../../game/model/EntityType'
 import { FulfillerEntity } from '../../game/model/FulfillerEntity'
 import { GameState } from '../../game/model/GameState'
 import { Job } from '../../game/model/job/Job'
 import { MoveJob } from '../../game/model/job/MoveJob'
 import { Surface } from '../../game/model/map/Surface'
-import { SurfaceType } from '../../game/model/map/SurfaceType'
 import { Raider } from '../../game/model/raider/Raider'
 import { SelectionType } from '../../game/model/Selectable'
 import { SceneManager } from '../../game/SceneManager'
@@ -53,34 +49,12 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             const intersectionPoint = this.getTerrainPositionFromEvent(event)
             if (intersectionPoint) this.sceneMgr.setTorchPosition(intersectionPoint)
-            buildMarker.update(this.sceneMgr.terrain, intersectionPoint)
+            buildMarker.update(intersectionPoint)
             this.updateCursor(event)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 if (GameState.buildModeSelection && buildMarker.lastCheck) {
-                    buildMarker.visibleSurfaces.forEach((s) => {
-                        s.surfaceType = SurfaceType.POWER_PATH_BUILDING
-                        s.updateTexture()
-                        s.neighbors.forEach((n) => n.updateTexture())
-                    })
-                    const barrierLocations = buildMarker.getBarrierLocations()
-                    const stats = GameState.buildModeSelection.stats
-                    const neededCrystals = stats?.CostCrystal || 0
-                    const neededOre = stats?.CostOre || 0
-                    const site = new BuildingSite(buildMarker.primarySurface, buildMarker.secondarySurface, GameState.buildModeSelection)
-                    site.heading = buildMarker.heading
-                    site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
-                    site.neededByType.set(EntityType.CRYSTAL, neededCrystals)
-                    site.neededByType.set(EntityType.ORE, neededOre)
-                    GameState.buildingSites.push(site)
-                    const closestToolstation = GameState.getClosestBuildingByType(buildMarker.primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
-                    if (closestToolstation) {
-                        closestToolstation.spawnBarriers(barrierLocations, site)
-                        closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)
-                        closestToolstation.spawnMaterials(EntityType.ORE, neededOre)
-                    }
-                    this.publishEvent(new SelectionChanged())
-                    this.publishEvent(new CancelBuildMode())
+                    buildMarker.createBuildingSite()
                 }
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
                 const downUpDistance = Math.abs(event.clientX - this.rightDown.x) + Math.abs(event.clientY - this.rightDown.y)

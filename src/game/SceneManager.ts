@@ -45,7 +45,7 @@ export class SceneManager {
         this.controls.listenToKeyEvents(this.renderer.domElement)
         this.controls.keyPanSpeed = this.controls.keyPanSpeed * 20
 
-        this.buildMarker = new BuildPlacementMarker()
+        this.buildMarker = new BuildPlacementMarker(this)
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
             GameState.buildModeSelection = null // TODO dispose build mode selection first
             this.buildMarker.hideAllMarker()

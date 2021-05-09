@@ -11,12 +11,15 @@ import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { CompletePowerPathJob } from '../job/surface/CompletePowerPathJob'
 import { Surface } from '../map/Surface'
+import { SurfaceType } from '../map/SurfaceType'
 import { BuildingEntity } from './BuildingEntity'
 
 export class BuildingSite {
 
     primarySurface: Surface = null
     secondarySurface: Surface = null
+    primaryPathSurface: Surface = null
+    secondaryPathSurface: Surface = null
     building: BuildingEntity
     heading: number = 0
     neededByType: Map<EntityType, number> = new Map()
@@ -24,9 +27,15 @@ export class BuildingSite {
     onSiteByType: Map<EntityType, MaterialEntity[]> = new Map()
     complete: boolean = false
 
-    constructor(primarySurface: Surface, secondarySurface: Surface = null, building: BuildingEntity = null) {
+    constructor(primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, building: BuildingEntity) {
         this.primarySurface = primarySurface
+        this.primarySurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_CONSTRUCTION)
         this.secondarySurface = secondarySurface
+        this.secondaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_CONSTRUCTION)
+        this.primaryPathSurface = primaryPathSurface
+        this.primaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
+        this.secondaryPathSurface = secondaryPathSurface
+        this.secondaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
         this.building = building
     }
 

@@ -4,7 +4,6 @@ import { ChangeBuildingPowerState, ChangeRaiderSpawnRequest, SelectBuildMode, Se
 import { SelectionChanged } from '../event/LocalEvents'
 import { RequestedRaidersChanged } from '../event/WorldEvents'
 import { BuildingEntity } from './model/building/BuildingEntity'
-import { BuildingSite } from './model/building/BuildingSite'
 import { Barracks } from './model/building/entities/Barracks'
 import { Docks } from './model/building/entities/Docks'
 import { Geodome } from './model/building/entities/Geodome'
@@ -15,13 +14,13 @@ import { TeleportBig } from './model/building/entities/TeleportBig'
 import { TeleportPad } from './model/building/entities/TeleportPad'
 import { Toolstation } from './model/building/entities/Toolstation'
 import { Upgrade } from './model/building/entities/Upgrade'
+import { PowerPathBuildingSite } from './model/building/PowerPathBuildingSite'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
 import { EatJob } from './model/job/EatJob'
 import { GetToolJob } from './model/job/GetToolJob'
 import { TrainJob } from './model/job/TrainJob'
 import { UpgradeJob } from './model/job/UpgradeJob'
-import { SurfaceType } from './model/map/SurfaceType'
 import { PathTarget } from './model/PathTarget'
 import { RaiderTrainingSites, RaiderTrainingStatsProperty } from './model/raider/RaiderTraining'
 import { SceneManager } from './SceneManager'
@@ -44,14 +43,7 @@ export class GuiManager {
             EventBus.publishEvent(new SelectionChanged())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_POWER_PATH, () => {
-            const selectedSurface = GameState.selectedSurface
-            selectedSurface.surfaceType = SurfaceType.POWER_PATH_SITE
-            selectedSurface.updateTexture()
-            GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnMaterials(EntityType.ORE, 2)
-            const site = new BuildingSite(selectedSurface)
-            site.neededByType.set(EntityType.ORE, 2)
-            GameState.buildingSites.push(site)
-            EventBus.publishEvent(new SelectionChanged())
+            new PowerPathBuildingSite(GameState.selectedSurface)
         })
         EventBus.registerEventListener(EventKey.COMMAND_MAKE_RUBBLE, () => {
             GameState.selectedSurface?.makeRubble(2)

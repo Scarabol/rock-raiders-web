@@ -1,10 +1,14 @@
 import { Group, Vector2 } from 'three'
+import { EventBus } from '../../../event/EventBus'
+import { CancelBuildMode } from '../../../event/GuiCommand'
+import { SelectionChanged } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
+import { SceneManager } from '../../SceneManager'
 import { BarrierLocation } from '../collect/BarrierLocation'
+import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
-import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
-import { Terrain } from '../map/Terrain'
+import { BuildingSite } from './BuildingSite'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
 
 export class BuildPlacementMarker {
@@ -13,6 +17,7 @@ export class BuildPlacementMarker {
     static readonly pathMarkerColor: number = 0x505000
     static readonly waterMarkerColor: number = 0x000050
 
+    sceneMgr: SceneManager
     group: Group = new Group()
     markers: BuildPlacementMarkerMesh[] = []
     buildingMarkerPrimary: BuildPlacementMarkerMesh = null
@@ -24,17 +29,14 @@ export class BuildPlacementMarker {
     sdx: number = 0
     sdz: number = 0
     lastCheck: boolean = false
-    visibleSurfaces: Surface[] = []
-    primarySurface: Surface = null
-    secondarySurface: Surface = null
-    waterSurface: Surface = null
 
-    constructor() {
-        this.buildingMarkerPrimary = new BuildPlacementMarkerMesh(BuildPlacementMarker.buildingMarkerColor)
-        this.buildingMarkerSecondary = new BuildPlacementMarkerMesh(BuildPlacementMarker.buildingMarkerColor)
-        this.powerPathMarkerPrimary = new BuildPlacementMarkerMesh(BuildPlacementMarker.pathMarkerColor)
-        this.powerPathMarkerSecondary = new BuildPlacementMarkerMesh(BuildPlacementMarker.pathMarkerColor)
-        this.waterPathMarker = new BuildPlacementMarkerMesh(BuildPlacementMarker.waterMarkerColor)
+    constructor(sceneMgr: SceneManager) {
+        this.sceneMgr = sceneMgr
+        this.buildingMarkerPrimary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
+        this.buildingMarkerSecondary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
+        this.powerPathMarkerPrimary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.pathMarkerColor)
+        this.powerPathMarkerSecondary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.pathMarkerColor)
+        this.waterPathMarker = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.waterMarkerColor)
         this.addMarker(this.buildingMarkerPrimary)
         this.addMarker(this.buildingMarkerSecondary)
         this.addMarker(this.powerPathMarkerPrimary)
@@ -47,19 +49,19 @@ export class BuildPlacementMarker {
         this.markers.push(marker)
     }
 
-    update(terrain: Terrain, worldPosition: Vector2) {
+    update(worldPosition: Vector2) {
         if (!worldPosition || !GameState.buildModeSelection) {
             this.hideAllMarker()
         } else {
-            const isValid = this.updateAllMarker(terrain, worldPosition)
+            const isValid = this.updateAllMarker(worldPosition)
             this.markers.forEach((c) => c.markAsValid(isValid))
         }
     }
 
-    private updateAllMarker(terrain: Terrain, worldPosition: Vector2 = null): boolean {
+    private updateAllMarker(worldPosition: Vector2 = null): boolean {
         // TODO use surface height offsets, refactor terrain map/data handling before
         this.buildingMarkerPrimary.visible = true
-        this.buildingMarkerPrimary.position.copy(terrain.sceneMgr.getFloorPosition(new Vector2(Math.floor(worldPosition.x / TILESIZE) * TILESIZE, Math.floor(worldPosition.y / TILESIZE) * TILESIZE)))
+        this.buildingMarkerPrimary.position.copy(this.sceneMgr.getFloorPosition(new Vector2(Math.floor(worldPosition.x / TILESIZE) * TILESIZE, Math.floor(worldPosition.y / TILESIZE) * TILESIZE)))
         const sdxv = worldPosition.x - this.buildingMarkerPrimary.position.x - TILESIZE / 2
         const sdzv = worldPosition.y - this.buildingMarkerPrimary.position.z - TILESIZE / 2
         const sdx = Math.abs(sdxv) > Math.abs(sdzv) ? Math.sign(sdxv) : 0
@@ -72,17 +74,12 @@ export class BuildPlacementMarker {
         this.powerPathMarkerPrimary.updateState(GameState.buildModeSelection.primaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
         this.powerPathMarkerSecondary.updateState(GameState.buildModeSelection.secondaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
         this.waterPathMarker.updateState(GameState.buildModeSelection.waterPathSurface, this.heading, this.buildingMarkerPrimary.position)
-        this.visibleSurfaces = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
-            .filter((c) => c.visible).map((c) => terrain.getSurfaceFromWorld(c.position))
-        this.primarySurface = this.visibleSurfaces[0]
-        this.secondarySurface = this.buildingMarkerSecondary.visible ? this.visibleSurfaces[1] : null
-        this.waterSurface = this.waterPathMarker.visible ? terrain.getSurfaceFromWorld(this.waterPathMarker.position) : null
-        this.lastCheck = this.visibleSurfaces.every((s) => s.surfaceType === SurfaceType.GROUND)
-            && ([this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
-                    .some((c) => c.visible && terrain.getSurfaceFromWorld(c.position).neighbors
-                        .some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
-                !GameState.buildModeSelection.primaryPowerPath && this.primarySurface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH))
-            && (!this.waterPathMarker.visible || this.waterSurface.surfaceType === SurfaceType.WATER)
+        const allSurfacesAreGround = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
+            .filter((c) => c.visible).map((c) => this.sceneMgr.terrain.getSurfaceFromWorld(c.position)).every((s) => s.surfaceType === SurfaceType.GROUND)
+        this.lastCheck = allSurfacesAreGround && (
+            [this.powerPathMarkerPrimary, this.powerPathMarkerSecondary].some((c) => c.visible && c.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
+            !GameState.buildModeSelection.primaryPowerPath && this.buildingMarkerPrimary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)
+        ) && (!this.waterPathMarker.visible || this.waterPathMarker.surface.surfaceType === SurfaceType.WATER)
         return this.lastCheck
     }
 
@@ -91,12 +88,34 @@ export class BuildPlacementMarker {
         this.lastCheck = false
     }
 
+    createBuildingSite() {
+        const barrierLocations = this.getBarrierLocations()
+        const stats = GameState.buildModeSelection.stats
+        const neededCrystals = stats?.CostCrystal || 0
+        const neededOre = stats?.CostOre || 0
+        const primarySurface = this.buildingMarkerPrimary.surface
+        const site = new BuildingSite(primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, GameState.buildModeSelection)
+        site.heading = this.heading
+        site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
+        site.neededByType.set(EntityType.CRYSTAL, neededCrystals)
+        site.neededByType.set(EntityType.ORE, neededOre)
+        GameState.buildingSites.push(site)
+        const closestToolstation = GameState.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
+        if (closestToolstation) {
+            closestToolstation.spawnBarriers(barrierLocations, site)
+            closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)
+            closestToolstation.spawnMaterials(EntityType.ORE, neededOre)
+        }
+        EventBus.publishEvent(new SelectionChanged())
+        EventBus.publishEvent(new CancelBuildMode())
+    }
+
     getBarrierLocations(): BarrierLocation[] {
         const barrierLocations: BarrierLocation[] = []
-        const center = this.primarySurface.getCenterWorld2D()
+        const center = this.buildingMarkerPrimary.surface.getCenterWorld2D()
         const barrierOffset = TILESIZE * 9 / 20
-        if (this.secondarySurface) {
-            const secondary = this.secondarySurface.getCenterWorld2D()
+        if (this.buildingMarkerSecondary.visible) {
+            const secondary = this.buildingMarkerSecondary.surface.getCenterWorld2D()
             const dx = Math.sign(secondary.x - center.x)
             const dy = Math.sign(secondary.y - center.y)
             if (dx !== 0) {

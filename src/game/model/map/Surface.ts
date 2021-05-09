@@ -614,13 +614,19 @@ export class Surface implements Selectable {
     makeRubble(containedOre: number = 0) {
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += containedOre
-        this.surfaceType = SurfaceType.RUBBLE4
-        this.updateTexture()
+        this.setSurfaceTypeAndUpdateNeighbors(SurfaceType.RUBBLE4)
     }
 
     setBuilding(building: BuildingEntity) {
         this.building = building
         this.updateGraphWalk()
+        this.setSurfaceTypeAndUpdateNeighbors(this.building ? SurfaceType.POWER_PATH_BUILDING : SurfaceType.GROUND)
+    }
+
+    setSurfaceTypeAndUpdateNeighbors(surfaceType: SurfaceType) {
+        this.surfaceType = surfaceType
+        this.updateTexture()
+        this.neighbors.forEach((n) => n.updateTexture())
     }
 
     getGraphWalkWeight(): number {

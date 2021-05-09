@@ -1,5 +1,7 @@
 import { Mesh, MeshPhongMaterial, Vector3 } from 'three'
 import { TILESIZE } from '../../../params'
+import { SceneManager } from '../../SceneManager'
+import { Surface } from '../map/Surface'
 import { SurfaceGeometry } from '../map/SurfaceGeometry'
 import { WALL_TYPE } from '../map/WallType'
 
@@ -11,15 +13,17 @@ export class BuildPlacementMarkerMesh extends Mesh {
         1, 1, 1, 1,
     )
 
+    sceneMgr: SceneManager
     standardColor: number
 
-    constructor(standardColor: number) {
+    constructor(sceneMgr: SceneManager, standardColor: number) {
         super(BuildPlacementMarkerMesh.geometry, new MeshPhongMaterial({
             shininess: 0,
             transparent: true,
             opacity: 0.4,
             color: standardColor,
         }))
+        this.sceneMgr = sceneMgr
         this.standardColor = standardColor
         this.visible = false
     }
@@ -36,6 +40,10 @@ export class BuildPlacementMarkerMesh extends Mesh {
     markAsValid(isValid: boolean) {
         const color = isValid ? this.standardColor : 0x500000;
         (this.material as MeshPhongMaterial).color.setHex(color)
+    }
+
+    get surface(): Surface {
+        return this.visible ? this.sceneMgr.terrain.getSurfaceFromWorld(this.position) : null
     }
 
 }
