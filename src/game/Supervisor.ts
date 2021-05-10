@@ -10,6 +10,7 @@ import { GameState } from './model/GameState'
 import { GetToolJob } from './model/job/GetToolJob'
 import { PublicJob } from './model/job/Job'
 import { JobState } from './model/job/JobState'
+import { MoveJob } from './model/job/MoveJob'
 import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { TrainJob } from './model/job/TrainJob'
 import { Raider } from './model/raider/Raider'
@@ -129,8 +130,10 @@ export class Supervisor {
                 }
             },
         )
-        // TODO move unemployed raider out of building sites
-
+        unemployedRaider.forEach((raider) => {
+            const sites = raider.surfaces.map((s) => s.site).filter(s => !!s)
+            if (sites.length > 0) raider.setJob(new MoveJob(sites[0].getWalkOutSurface().getRandomPosition()))
+        })
     }
 
     checkUnclearedRubble() {

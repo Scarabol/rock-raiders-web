@@ -18,6 +18,8 @@ import { BuildingEntity } from './BuildingEntity'
 export class BuildingSite {
 
     primarySurface: Surface = null
+    secondarySurface: Surface = null
+    primaryPathSurface: Surface = null
     surfaces: Surface[] = []
     building: BuildingEntity
     heading: number = 0
@@ -31,10 +33,12 @@ export class BuildingSite {
         this.primarySurface = primarySurface
         this.primarySurface.setSite(this)
         this.surfaces.push(this.primarySurface)
-        secondarySurface?.setSite(this)
-        this.surfaces.push(secondarySurface)
-        primaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
-        this.surfaces.push(primaryPathSurface)
+        this.secondarySurface = secondarySurface
+        this.secondarySurface?.setSite(this)
+        this.surfaces.push(this.secondarySurface)
+        this.primaryPathSurface = primaryPathSurface
+        this.primaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
+        this.surfaces.push(this.primaryPathSurface)
         secondaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
         this.surfaces.push(secondaryPathSurface)
         this.building = building
@@ -112,6 +116,11 @@ export class BuildingSite {
             item.resetTarget()
         }))
         EventBus.publishEvent(new SelectionChanged())
+    }
+
+    getWalkOutSurface(): Surface {
+        return this.primaryPathSurface || this.primarySurface.neighbors.find((n) => !n.site && n.isWalkable()) ||
+            this.secondarySurface?.neighbors.find((n) => !n.site && n.isWalkable())
     }
 
 }
