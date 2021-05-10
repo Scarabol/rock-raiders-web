@@ -16,6 +16,7 @@ import { SelectBuildingPanel } from './SelectBuildingPanel'
 import { SelectFloorPanel } from './SelectFloorPanel'
 import { SelectRaiderPanel } from './SelectRaiderPanel'
 import { SelectRubblePanel } from './SelectRubblePanel'
+import { SelectSitePanel } from './SelectSitePanel'
 import { SelectVehiclePanel } from './SelectVehiclePanel'
 import { SelectWallPanel } from './SelectWallPanel'
 import { SmallVehiclePanel } from './SmallVehiclePanel'
@@ -28,6 +29,7 @@ export class MainPanel extends Panel {
     selectWallPanel: SelectWallPanel
     selectFloorPanel: SelectFloorPanel
     selectRubblePanel: SelectRubblePanel
+    selectSitePanel: SelectSitePanel
 
     numRequestedRaiders: number = 0
     numToolstations: number = 0
@@ -52,6 +54,7 @@ export class MainPanel extends Panel {
         this.selectWallPanel = this.addSubPanel(new SelectWallPanel(this, this.mainPanel))
         this.selectFloorPanel = this.addSubPanel(new SelectFloorPanel(this, this.mainPanel))
         this.selectRubblePanel = this.addSubPanel(new SelectRubblePanel(this, this.mainPanel))
+        this.selectSitePanel = this.addSubPanel(new SelectSitePanel(this, this.mainPanel))
         const selectBuildingPanel = this.addSubPanel(new SelectBuildingPanel(this, this.mainPanel))
         const selectRaiderPanel = this.addSubPanel(new SelectRaiderPanel(this, this.mainPanel))
         const trainRaiderPanel = this.addSubPanel(new TrainRaiderPanel(this, selectRaiderPanel))
@@ -84,7 +87,7 @@ export class MainPanel extends Panel {
             else if (event.selectionType === SelectionType.BUILDING) this.selectSubPanel(selectBuildingPanel)
             else if (event.selectionType === SelectionType.RAIDER) this.selectSubPanel(selectRaiderPanel)
             else if (event.selectionType === SelectionType.VEHICLE) this.selectSubPanel(selectVehiclePanel)
-            else if (event.selectionType === SelectionType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.hasRubble)
+            else if (event.selectionType === SelectionType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.isSite, event.hasRubble)
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
             this.numToolstations = BuildingsChangedEvent.countUsable(event, EntityType.TOOLSTATION)
@@ -130,10 +133,12 @@ export class MainPanel extends Panel {
         targetPanel.setMovedIn(false)
     }
 
-    onSelectedSurfaceChange(isFloor: boolean, hasRubble: boolean) {
+    onSelectedSurfaceChange(isFloor: boolean, isSite: boolean, hasRubble: boolean) {
         if (isFloor) {
             if (hasRubble) {
                 this.selectSubPanel(this.selectRubblePanel)
+            } else if (isSite) {
+                this.selectSubPanel(this.selectSitePanel)
             } else {
                 this.selectSubPanel(this.selectFloorPanel)
             }

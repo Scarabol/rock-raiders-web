@@ -132,6 +132,9 @@ export class GuiManager {
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
             GameState.buildModeSelection = null // TODO dispose build mode selection first
         })
+        EventBus.registerEventListener(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
+            GameState.selectedSurface.site?.cancelSite()
+        })
     }
 
     static buildingFromType(entityType: EntityType, worldMgr: WorldManager, sceneMgr: SceneManager): BuildingEntity {

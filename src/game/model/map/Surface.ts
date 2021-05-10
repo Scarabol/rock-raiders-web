@@ -11,6 +11,7 @@ import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimSubObj } from '../anim/AnimSubObj'
 import { BuildingEntity } from '../building/BuildingEntity'
+import { BuildingSite } from '../building/BuildingSite'
 import { Crystal } from '../collect/Crystal'
 import { Dynamite } from '../collect/Dynamite'
 import { ElectricFence } from '../collect/ElectricFence'
@@ -65,6 +66,7 @@ export class Surface implements Selectable {
     rubblePositions: Vector2[] = []
 
     building: BuildingEntity = null
+    site: BuildingSite = null
     fence: ElectricFence = null
     hasPower: boolean = false
 
@@ -692,6 +694,11 @@ export class Surface implements Selectable {
             EventBus.publishEvent(new JobCreateEvent(this.clearRubbleJob))
         }
         return this.clearRubbleJob
+    }
+
+    setSite(site: BuildingSite) {
+        this.site = site
+        this.setSurfaceTypeAndUpdateNeighbors(this.site ? SurfaceType.POWER_PATH_CONSTRUCTION : SurfaceType.GROUND)
     }
 
 }

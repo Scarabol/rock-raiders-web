@@ -193,3 +193,11 @@ export class TrainRaider extends GuiCommand {
     }
 
 }
+
+export class CancelBuilding extends GuiCommand {
+
+    constructor() {
+        super(EventKey.COMMAND_CANCEL_CONSTRUCTION)
+    }
+
+}

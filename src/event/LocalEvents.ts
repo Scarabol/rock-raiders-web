@@ -28,6 +28,7 @@ export class SelectionChanged extends LocalEvent {
     isPowerPath: boolean
     canPlaceFence: boolean
     isFloor: boolean
+    isSite: boolean
     hasRubble: boolean
     isDrillable: boolean
     isDrillableHard: boolean
@@ -45,6 +46,7 @@ export class SelectionChanged extends LocalEvent {
         this.isGround = selectedSurface?.surfaceType === SurfaceType.GROUND
         this.isPowerPath = selectedSurface?.surfaceType === SurfaceType.POWER_PATH
         this.isFloor = selectedSurface?.surfaceType.floor
+        this.isSite = selectedSurface?.surfaceType === SurfaceType.POWER_PATH_CONSTRUCTION || selectedSurface?.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE
         this.hasRubble = selectedSurface?.hasRubble()
         this.isDrillable = selectedSurface?.isDrillable()
         this.isDrillableHard = selectedSurface?.isDrillableHard()

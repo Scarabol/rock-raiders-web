@@ -52,7 +52,7 @@ export class SiteCarryPathTarget extends CarryPathTarget {
     }
 
     isInvalid(): boolean {
-        return this.site.complete
+        return this.site.complete || this.site.canceled
     }
 
 }

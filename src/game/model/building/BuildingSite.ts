@@ -1,5 +1,6 @@
 import { Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
+import { SelectionChanged } from '../../../event/LocalEvents'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
@@ -17,25 +18,25 @@ import { BuildingEntity } from './BuildingEntity'
 export class BuildingSite {
 
     primarySurface: Surface = null
-    secondarySurface: Surface = null
-    primaryPathSurface: Surface = null
-    secondaryPathSurface: Surface = null
+    surfaces: Surface[] = []
     building: BuildingEntity
     heading: number = 0
     neededByType: Map<EntityType, number> = new Map()
     assignedByType: Map<EntityType, MaterialEntity[]> = new Map()
     onSiteByType: Map<EntityType, MaterialEntity[]> = new Map()
     complete: boolean = false
+    canceled: boolean = false
 
     constructor(primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, building: BuildingEntity) {
         this.primarySurface = primarySurface
-        this.primarySurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_CONSTRUCTION)
-        this.secondarySurface = secondarySurface
-        this.secondaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_CONSTRUCTION)
-        this.primaryPathSurface = primaryPathSurface
-        this.primaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
-        this.secondaryPathSurface = secondaryPathSurface
-        this.secondaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
+        this.primarySurface.setSite(this)
+        this.surfaces.push(this.primarySurface)
+        secondarySurface?.setSite(this)
+        this.surfaces.push(secondarySurface)
+        primaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
+        this.surfaces.push(primaryPathSurface)
+        secondaryPathSurface?.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
+        this.surfaces.push(secondaryPathSurface)
         this.building = building
     }
 
@@ -69,7 +70,7 @@ export class BuildingSite {
     }
 
     checkComplete() {
-        if (this.complete) return
+        if (this.complete || this.canceled) return
         this.complete = true
         this.neededByType.forEach((needed, neededType) => {
             this.complete = this.complete && this.onSiteByType.getOrUpdate(neededType, () => []).length >= needed
@@ -97,6 +98,20 @@ export class BuildingSite {
 
     getDropAction(): RaiderActivity {
         return RaiderActivity.Place
+    }
+
+    cancelSite() {
+        GameState.buildingSites.remove(this)
+        this.canceled = true
+        this.surfaces.forEach((s) => s?.setSite(null))
+        this.onSiteByType.forEach((materials) => materials.forEach((item) => {
+            item.worldMgr.placeMaterial(item, item.getPosition2D())
+        }))
+        this.onSiteByType.clear()
+        this.assignedByType.forEach((materials) => materials.forEach((item) => {
+            item.resetTarget()
+        }))
+        EventBus.publishEvent(new SelectionChanged())
     }
 
 }
