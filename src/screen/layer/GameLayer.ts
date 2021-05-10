@@ -55,28 +55,31 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 if (GameState.buildModeSelection && buildMarker.lastCheck) {
                     buildMarker.createBuildingSite()
+                    return new Promise<boolean>((resolve) => resolve(true))
                 }
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
                 const downUpDistance = Math.abs(event.clientX - this.rightDown.x) + Math.abs(event.clientY - this.rightDown.y)
-                if (downUpDistance < 3 && (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.GROUP)) {
-                    // TODO check for collectable entity first
-                    const intersectionPoint = this.getTerrainPositionFromEvent(event)
-                    if (intersectionPoint) {
-                        const surface = this.sceneMgr.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
-                        if (surface) {
-                            if (surface.isDrillable()) {
-                                this.assignSurfaceJob(surface.createDrillJob(), surface, intersectionPoint)
-                            } else if (surface.hasRubble()) {
-                                this.assignSurfaceJob(surface.createClearRubbleJob(), surface, intersectionPoint)
-                            } else if (surface.isWalkable()) {
-                                GameState.selectedEntities.forEach((raider: Raider) => raider.setJob(new MoveJob(intersectionPoint)))
-                                if (GameState.selectedEntities.length > 0) this.publishEvent(new SelectionChanged())
+                if (downUpDistance < 3) {
+                    if (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.GROUP) {
+                        // TODO check for collectable entity first
+                        const intersectionPoint = this.getTerrainPositionFromEvent(event)
+                        if (intersectionPoint) {
+                            const surface = this.sceneMgr.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
+                            if (surface) {
+                                if (surface.isDrillable()) {
+                                    this.assignSurfaceJob(surface.createDrillJob(), surface, intersectionPoint)
+                                } else if (surface.hasRubble()) {
+                                    this.assignSurfaceJob(surface.createClearRubbleJob(), surface, intersectionPoint)
+                                } else if (surface.isWalkable()) {
+                                    GameState.selectedEntities.forEach((raider: Raider) => raider.setJob(new MoveJob(intersectionPoint)))
+                                    if (GameState.selectedEntities.length > 0) this.publishEvent(new SelectionChanged())
+                                }
                             }
                         }
+                    } else if (GameState.buildModeSelection) {
+                        GameState.buildModeSelection = null
+                        buildMarker.hideAllMarker()
                     }
-                } else {
-                    GameState.buildModeSelection = null
-                    buildMarker.hideAllMarker()
                 }
             }
         } else if (event.eventEnum === POINTER_EVENT.DOWN) {
