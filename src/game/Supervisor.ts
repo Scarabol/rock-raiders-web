@@ -14,8 +14,6 @@ import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { TrainJob } from './model/job/TrainJob'
 import { PathTarget } from './model/PathTarget'
 import { Raider } from './model/raider/Raider'
-import { RaiderTool } from './model/raider/RaiderTool'
-import { RaiderTraining } from './model/raider/RaiderTraining'
 import { WorldManager } from './WorldManager'
 
 export class Supervisor {
@@ -69,18 +67,15 @@ export class Supervisor {
                 let closestToolRaiderIndex: number = null
                 let minToolDistance: number = null
                 let closestToolstationPosition: Vector2 = null
-                let closestNeededTool: RaiderTool = null
+                const requiredTool = job.getRequiredTool()
                 let closestTrainingRaider: Raider = null
                 let closestTrainingRaiderIndex: number = null
                 let minTrainingDistance: number = null
                 let closestTrainingArea: BuildingEntity = null
-                let closestNeededTraining: RaiderTraining = null
+                const requiredTraining = job.getRequiredTraining()
                 unemployedRaider.forEach((raider, index) => {
-                    const requiredTool = job.getRequiredTool()
                     const hasRequiredTool = raider.hasTool(requiredTool)
-                    const raiderTraining = job.getRequiredTraining()
-                    const hasTraining = raider.hasTraining(raiderTraining)
-                    const raiderPosition = raider.getPosition()
+                    const hasTraining = raider.hasTraining(requiredTraining)
                     if (hasRequiredTool && hasTraining) {
                         const pathToJob = job.getWorkplaces().map((b) => raider.findPathToTarget(b))
                             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
@@ -103,11 +98,10 @@ export class Supervisor {
                                 closestToolRaiderIndex = index
                                 minToolDistance = dist
                                 closestToolstationPosition = pathToToolstation.targetPosition
-                                closestNeededTool = requiredTool
                             }
                         }
                     } else {
-                        const trainingSite = GameState.getTrainingSites(raiderTraining).sort((l, r) =>
+                        const trainingSite = GameState.getTrainingSites(requiredTraining).sort((l, r) =>
                             raider.findPathToTarget(new PathTarget(l.getPosition2D())).lengthSq - raider.findPathToTarget(new PathTarget(r.getPosition2D())).lengthSq)[0]
                         if (trainingSite) {
                             const dist = raider.findPathToTarget(new PathTarget(trainingSite.getPosition2D())).lengthSq
@@ -116,7 +110,6 @@ export class Supervisor {
                                 closestTrainingRaiderIndex = index
                                 minTrainingDistance = dist
                                 closestTrainingArea = trainingSite
-                                closestNeededTraining = raiderTraining
                             }
                         }
                     }
@@ -125,10 +118,10 @@ export class Supervisor {
                     closestRaider.setJob(job)
                     unemployedRaider.splice(closestRaiderIndex, 1)
                 } else if (closestToolRaider) {
-                    closestToolRaider.setJob(new GetToolJob(closestToolstationPosition, closestNeededTool), job)
+                    closestToolRaider.setJob(new GetToolJob(closestToolstationPosition, requiredTool), job)
                     unemployedRaider.splice(closestToolRaiderIndex, 1)
                 } else if (closestTrainingRaider) {
-                    closestTrainingRaider.setJob(new TrainJob(closestTrainingArea, closestNeededTraining), job)
+                    closestTrainingRaider.setJob(new TrainJob(closestTrainingArea, requiredTraining), job)
                     unemployedRaider.splice(closestTrainingRaiderIndex, 1)
                 }
             },

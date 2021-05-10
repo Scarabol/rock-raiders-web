@@ -29,11 +29,11 @@ export class ElectricFence extends MaterialEntity {
                 this.targets = [new CarryPathTarget(this.targetSurface.getCenterWorld2D())]
             } else {
                 this.targets = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
-                    .map((b) => new BuildingCarryPathTarget(b.getDropPosition2D(), b))
+                    .map((b) => new BuildingCarryPathTarget(b))
             }
         } else if (!this.targetSurface.canPlaceFence() && !(this.targets[0] as BuildingCarryPathTarget).building) {
             this.targets = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
-                .map((b) => new BuildingCarryPathTarget(b.getDropPosition2D(), b))
+                .map((b) => new BuildingCarryPathTarget(b))
         }
         return this.targets
     }

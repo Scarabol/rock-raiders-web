@@ -61,8 +61,8 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
 
     building: BuildingEntity
 
-    constructor(location: Vector2, building: BuildingEntity) {
-        super(location)
+    constructor(building: BuildingEntity) {
+        super(building.getDropPosition2D())
         this.building = building
     }
 

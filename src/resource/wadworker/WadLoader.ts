@@ -150,7 +150,7 @@ export class WadLoader {
                 lwoContent = {}
             }
         }
-        callback([lwoFilepath], lwoContent.buffer)
+        callback([lwoFilepath], lwoContent)
     }
 
     loadAssetsParallel() {

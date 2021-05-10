@@ -42,7 +42,7 @@ export abstract class MaterialEntity extends AnimEntity {
             } else {
                 const buildings = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
                 if (buildings.length > 0) {
-                    this.targets = buildings.map((b) => new BuildingCarryPathTarget(b.getDropPosition2D(), b))
+                    this.targets = buildings.map((b) => new BuildingCarryPathTarget(b))
                 }
             }
         } else if (this.targets.some((t) => t.isInvalid())) {

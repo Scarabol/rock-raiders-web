@@ -44,7 +44,7 @@ export abstract class MovableEntity extends AnimEntity {
         const nextLocation = this.currentPath.firstLocation
         this.group.lookAt(new Vector3(nextLocation.x, this.group.position.y, nextLocation.y))
         const step = this.determineStep()
-        if (step.targetReached || this.currentPath.target.isInArea(this.getPosition2D())) {
+        if (step.targetReached) {
             return MoveState.TARGET_REACHED
         } else {
             this.group.position.add(step.vec)

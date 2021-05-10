@@ -91,14 +91,14 @@ export class WadFile {
     /**
      * Returns the entries content by name extracted from the managed WAD file
      * @param entryName Entry name to be extracted
-     * @returns {Int8Array} Returns the content as buffer slice
+     * @returns {ArrayBufferLike} Returns the content as buffer slice
      */
-    getEntryBuffer(entryName): Int8Array {
+    getEntryBuffer(entryName): ArrayBufferLike {
         const index = this.entryIndexByName.get(entryName.toLowerCase())
         if (index === undefined || index === null) {
             throw 'Entry \'' + entryName + '\' not found in WAD file'
         }
-        return this.buffer.slice(this.fStart[index], this.fStart[index] + this.fLength[index])
+        return this.buffer.slice(this.fStart[index], this.fStart[index] + this.fLength[index]).buffer
     }
 
     filterEntryNames(regexStr) {

@@ -10,10 +10,6 @@ export class PathTarget {
         this.targetLocation = location
     }
 
-    isInArea(position: Vector2): boolean {
-        return false
-    }
-
     canGatherItem(): boolean {
         return false
     }
