@@ -1,22 +1,27 @@
-import { Vector2 } from 'three'
-import { PathTarget } from '../PathTarget'
+import { BuildingEntity } from '../building/BuildingEntity'
+import { BuildingPathTarget } from '../BuildingPathTarget'
+import { EntityType } from '../EntityType'
+import { GameState } from '../GameState'
 import { RaiderTool } from '../raider/RaiderTool'
 import { Job } from './Job'
 import { JobType } from './JobType'
 
 export class GetToolJob extends Job {
 
-    target: PathTarget[]
     tool: RaiderTool
+    workplaces: BuildingPathTarget[]
 
-    constructor(target: Vector2, tool: RaiderTool) {
+    constructor(tool: RaiderTool, toolstation: BuildingEntity) {
         super(JobType.GET_TOOL)
-        this.target = [new PathTarget(target)]
         this.tool = tool
+        this.workplaces = toolstation ? [toolstation.getPathTarget()] : GameState.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new BuildingPathTarget(b))
     }
 
-    getWorkplaces(): PathTarget[] {
-        return this.target
+    getWorkplaces(): BuildingPathTarget[] {
+        if (this.workplaces.some((b) => !b.building.isUsable())) {
+            this.workplaces = GameState.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new BuildingPathTarget(b))
+        }
+        return this.workplaces
     }
 
     onJobComplete() {

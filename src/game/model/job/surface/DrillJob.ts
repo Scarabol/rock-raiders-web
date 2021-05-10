@@ -12,18 +12,25 @@ export class DrillJob extends PublicJob {
 
     color: number = 0xa0a0a0
     surface: Surface
+    digPositions: PathTarget[]
 
     constructor(surface: Surface) {
         super(JobType.DRILL)
         this.surface = surface
+        this.digPositions = this.surface.getDigPositions().map((p) => new PathTarget(p))
     }
 
     getRequiredTool(): RaiderTool {
         return RaiderTool.DRILL
     }
 
-    getWorkplaces(): PathTarget[] {
-        return this.surface.getDigPositions().map((p) => new PathTarget(p))
+    getWorkplaces(): PathTarget[] { // TODO optimize performance and code duplication
+        const surfaceDigPositions = this.surface.getDigPositions()
+        if (!this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
+            !surfaceDigPositions.every((p) => this.digPositions.some((d) => p.equals(d.targetLocation)))) {
+            this.digPositions = surfaceDigPositions.map((p) => new PathTarget(p))
+        }
+        return this.digPositions
     }
 
     onJobComplete() {

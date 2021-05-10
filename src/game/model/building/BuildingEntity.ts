@@ -12,6 +12,7 @@ import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { AnimEntity } from '../anim/AnimEntity'
+import { BuildingPathTarget } from '../BuildingPathTarget'
 import { Barrier } from '../collect/Barrier'
 import { BarrierLocation } from '../collect/BarrierLocation'
 import { Crystal } from '../collect/Crystal'
@@ -44,6 +45,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     upgradeCostBrick: number = 0
     crystalsInUse: number = 0
     inBeam: boolean = false
+    pathTarget: BuildingPathTarget = null
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, EntitySuperType.BUILDING, entityType, aeFilename)
@@ -148,6 +150,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), this.primarySurface.getRandomPosition())
         }
         this.surfaces.forEach((s) => s.setBuilding(null))
+        this.pathTarget = null
         super.beamUp()
         EventBus.publishEvent(new BuildingsChangedEvent())
     }
@@ -263,4 +266,14 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         return [new Vector2(-1, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(0, -1)]
             .map((v) => new PathTarget(v.multiplyScalar(TILESIZE / 2).add(this.primarySurface.getCenterWorld2D())))
     }
+
+    addToScene(worldPosition: Vector2, radHeading: number) {
+        super.addToScene(worldPosition, radHeading)
+        this.pathTarget = new BuildingPathTarget(this)
+    }
+
+    getPathTarget(): BuildingPathTarget {
+        return this.pathTarget
+    }
+
 }

@@ -21,8 +21,6 @@ import { EatJob } from './model/job/EatJob'
 import { GetToolJob } from './model/job/GetToolJob'
 import { TrainJob } from './model/job/TrainJob'
 import { UpgradeJob } from './model/job/UpgradeJob'
-import { PathTarget } from './model/PathTarget'
-import { RaiderTrainingSites, RaiderTrainingStatsProperty } from './model/raider/RaiderTraining'
 import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
 
@@ -32,12 +30,7 @@ export class GuiManager {
         EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: SelectedRaiderPickTool) => {
             GameState.selectedRaiders.forEach((r) => {
                 if (!r.hasTool(event.tool)) {
-                    const pathToToolstation = GameState.getBuildingsByType(EntityType.TOOLSTATION)
-                        .map((b) => r.findPathToTarget(new PathTarget(b.getPosition2D())))
-                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
-                    if (pathToToolstation) {
-                        r.setJob(new GetToolJob(pathToToolstation.targetPosition, event.tool)) // TODO use precalculated path to toolstation
-                    }
+                    r.setJob(new GetToolJob(event.tool, null))
                 }
             })
             EventBus.publishEvent(new SelectionChanged())
@@ -114,13 +107,9 @@ export class GuiManager {
             GameState.selectedRaiders.forEach((r) => r.beamUp())
         })
         EventBus.registerEventListener(EventKey.COMMAND_TRAIN_RAIDER, (event: TrainRaider) => {
-            GameState.getBuildingsByType(RaiderTrainingSites[event.training]).some((b) => {
-                if (b.stats[RaiderTrainingStatsProperty[event.training]][b.level]) {
-                    GameState.selectedRaiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainJob(b, event.training)))
-                    EventBus.publishEvent(new SelectionChanged())
-                    return true
-                }
-            })
+            GameState.selectedRaiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainJob(event.training, null)))
+            EventBus.publishEvent(new SelectionChanged())
+            return true
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_DROP, () => {
             GameState.selectedRaiders?.forEach((r) => r.dropItem())

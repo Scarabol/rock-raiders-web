@@ -1,10 +1,10 @@
-import { Vector2 } from 'three'
 import { clearIntervalSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
 import { CHECK_CLEARRUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
+import { BuildingPathTarget } from './model/BuildingPathTarget'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
 import { GetToolJob } from './model/job/GetToolJob'
@@ -12,7 +12,6 @@ import { PublicJob } from './model/job/Job'
 import { JobState } from './model/job/JobState'
 import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { TrainJob } from './model/job/TrainJob'
-import { PathTarget } from './model/PathTarget'
 import { Raider } from './model/raider/Raider'
 import { WorldManager } from './WorldManager'
 
@@ -66,7 +65,7 @@ export class Supervisor {
                 let closestToolRaider: Raider = null
                 let closestToolRaiderIndex: number = null
                 let minToolDistance: number = null
-                let closestToolstationPosition: Vector2 = null
+                let closestToolstation: BuildingEntity = null
                 const requiredTool = job.getRequiredTool()
                 let closestTrainingRaider: Raider = null
                 let closestTrainingRaiderIndex: number = null
@@ -78,6 +77,7 @@ export class Supervisor {
                     const hasTraining = raider.hasTraining(requiredTraining)
                     if (hasRequiredTool && hasTraining) {
                         const pathToJob = job.getWorkplaces().map((b) => raider.findPathToTarget(b))
+                            .filter((t) => !!t)
                             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                         if (pathToJob) {
                             const dist = pathToJob.lengthSq // TODO use precalculated path to job
@@ -89,7 +89,8 @@ export class Supervisor {
                         }
                     } else if (!hasRequiredTool) {
                         const pathToToolstation = GameState.getBuildingsByType(EntityType.TOOLSTATION)
-                            .map((b) => raider.findPathToTarget(new PathTarget(b.getPosition2D())))
+                            .map((b) => raider.findPathToTarget(b.getPathTarget()))
+                            .filter((p) => !!p)
                             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                         if (pathToToolstation) {
                             const dist = pathToToolstation.lengthSq
@@ -97,19 +98,21 @@ export class Supervisor {
                                 closestToolRaider = raider
                                 closestToolRaiderIndex = index
                                 minToolDistance = dist
-                                closestToolstationPosition = pathToToolstation.targetPosition
+                                closestToolstation = (pathToToolstation.target as BuildingPathTarget).building
                             }
                         }
                     } else {
-                        const trainingSite = GameState.getTrainingSites(requiredTraining).sort((l, r) =>
-                            raider.findPathToTarget(new PathTarget(l.getPosition2D())).lengthSq - raider.findPathToTarget(new PathTarget(r.getPosition2D())).lengthSq)[0]
-                        if (trainingSite) {
-                            const dist = raider.findPathToTarget(new PathTarget(trainingSite.getPosition2D())).lengthSq
+                        const pathToTrainingSite = GameState.getTrainingSites(requiredTraining)
+                            .map((b) => raider.findPathToTarget(b.getPathTarget()))
+                            .filter((p) => !!p)
+                            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                        if (pathToTrainingSite) {
+                            const dist = pathToTrainingSite.lengthSq
                             if (minTrainingDistance === null || dist < minTrainingDistance) {
                                 closestTrainingRaider = raider
                                 closestTrainingRaiderIndex = index
                                 minTrainingDistance = dist
-                                closestTrainingArea = trainingSite
+                                closestTrainingArea = (pathToTrainingSite.target as BuildingPathTarget).building
                             }
                         }
                     }
@@ -118,15 +121,16 @@ export class Supervisor {
                     closestRaider.setJob(job)
                     unemployedRaider.splice(closestRaiderIndex, 1)
                 } else if (closestToolRaider) {
-                    closestToolRaider.setJob(new GetToolJob(closestToolstationPosition, requiredTool), job)
+                    closestToolRaider.setJob(new GetToolJob(requiredTool, closestToolstation), job)
                     unemployedRaider.splice(closestToolRaiderIndex, 1)
                 } else if (closestTrainingRaider) {
-                    closestTrainingRaider.setJob(new TrainJob(closestTrainingArea, requiredTraining), job)
+                    closestTrainingRaider.setJob(new TrainJob(requiredTraining, closestTrainingArea), job)
                     unemployedRaider.splice(closestTrainingRaiderIndex, 1)
                 }
             },
         )
         // TODO move unemployed raider out of building sites
+
     }
 
     checkUnclearedRubble() {
@@ -146,10 +150,11 @@ export class Supervisor {
                             raider.setJob(clearRubbleJob)
                         } else {
                             const pathToToolstation = GameState.getBuildingsByType(EntityType.TOOLSTATION)
-                                .map((b) => raider.findPathToTarget(new PathTarget(b.getPosition2D())))
+                                .map((b) => raider.findPathToTarget(b.getPathTarget()))
+                                .filter((p) => !!p)
                                 .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                             if (pathToToolstation) {
-                                raider.setJob(new GetToolJob(pathToToolstation.targetPosition, requiredTool), clearRubbleJob) // TODO use precalculated path to toolstation
+                                raider.setJob(new GetToolJob(requiredTool, (pathToToolstation.target as BuildingPathTarget).building), clearRubbleJob)
                             }
                         }
                     }

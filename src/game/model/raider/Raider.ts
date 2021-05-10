@@ -122,7 +122,7 @@ export class Raider extends FulfillerEntity {
                         this.pickupItem(carryItem)
                     })
                 }
-            } else if (this.moveToClosestTarget(this.jobWorkplaces) === MoveState.TARGET_REACHED) {
+            } else if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                 if (this.job.isReadyToComplete()) {
                     const workActivity = this.job.getWorkActivity() || this.getDefaultActivity()
                     this.changeActivity(workActivity, () => {
@@ -141,7 +141,6 @@ export class Raider extends FulfillerEntity {
         if (this.job) this.job.unassign(this)
         this.job = this.followUpJob
         this.followUpJob = null
-        this.jobWorkplaces = this.job?.getWorkplaces() || []
         this.changeActivity()
     }
 

@@ -9,25 +9,30 @@ import { PriorityIdentifier } from '../PriorityIdentifier'
 export class ClearRubbleJob extends PublicJob {
 
     surface: Surface
+    lastRubblePositions: PathTarget[]
 
     constructor(surface: Surface) {
         super(JobType.CLEAR_RUBBLE)
         this.surface = surface
+        this.lastRubblePositions = this.surface.rubblePositions.map((p) => new PathTarget(p))
     }
 
     getRequiredTool(): RaiderTool {
         return RaiderTool.SHOVEL
     }
 
-    getWorkplaces(): PathTarget[] {
-        const rubblePositions = this.surface.rubblePositions
-        return rubblePositions.length > 0 ? [new PathTarget(rubblePositions[0])] : [] // use first (no need to optimize)
+    getWorkplaces(): PathTarget[] { // TODO optimize performance and code duplication
+        const surfaceRubblePositions = this.surface.rubblePositions
+        if (!this.lastRubblePositions.every((d) => surfaceRubblePositions.some((p) => p.equals(d.targetLocation))) ||
+            !surfaceRubblePositions.every((p) => this.lastRubblePositions.some((d) => p.equals(d.targetLocation)))) {
+            this.lastRubblePositions = surfaceRubblePositions.map((p) => new PathTarget(p))
+        }
+        return this.lastRubblePositions
     }
 
     onJobComplete() {
         this.fulfiller.forEach((f) => f.changeActivity())
         this.surface.reduceRubble()
-        this.fulfiller.forEach((f) => f.jobWorkplaces = this.getWorkplaces())
         if (!this.surface.hasRubble()) {
             super.onJobComplete()
         }

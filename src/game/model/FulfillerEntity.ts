@@ -7,7 +7,6 @@ import { MaterialEntity } from './collect/MaterialEntity'
 import { EntitySuperType, EntityType } from './EntityType'
 import { Job } from './job/Job'
 import { MovableEntity } from './MovableEntity'
-import { PathTarget } from './PathTarget'
 import { RaiderTool } from './raider/RaiderTool'
 import { RaiderTraining } from './raider/RaiderTraining'
 import { Selectable, SelectionType } from './Selectable'
@@ -20,7 +19,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     job: Job = null
     followUpJob: Job = null
     carries: MaterialEntity = null
-    jobWorkplaces: PathTarget[] = []
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string, selectionType: SelectionType) {
         super(worldMgr, sceneMgr, superType, entityType, aeFilename)
@@ -58,7 +56,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (this.job) this.job.assign(this)
         this.followUpJob = followUpJob
         if (this.followUpJob) this.followUpJob.assign(this)
-        this.jobWorkplaces = this.job.getWorkplaces()
     }
 
     stopJob() {
@@ -68,7 +65,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (this.followUpJob) this.followUpJob.unassign(this)
         this.job = null
         this.followUpJob = null
-        this.jobWorkplaces = []
         this.changeActivity()
     }
 
