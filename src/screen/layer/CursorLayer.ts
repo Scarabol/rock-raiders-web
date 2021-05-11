@@ -70,7 +70,15 @@ export class CursorLayer extends ScreenLayer {
                     if (userData && userData.hasOwnProperty('surface')) {
                         const surface = userData['surface'] as Surface
                         if (surface) {
-                            return (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.VEHICLE || GameState.selectionType === SelectionType.GROUP) ? surface.surfaceType.cursorFulfiller : surface.surfaceType.cursor
+                            if (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.VEHICLE || GameState.selectionType === SelectionType.GROUP) {
+                                if (surface.isDrillable()) {
+                                    return Cursor.Pointer_Drill // TODO check if selected entities can drill and return Pointer_CDrill otherwise
+                                } else {
+                                    return surface.surfaceType.cursorFulfiller
+                                }
+                            } else {
+                                return surface.surfaceType.cursor
+                            }
                         }
                     }
                 }
