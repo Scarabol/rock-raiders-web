@@ -136,7 +136,10 @@ export class SceneManager {
         planes[5].normal.multiplyScalar(-1)
 
         let entities: Selectable[] = GameState.raiders.filter((r) => frustum.containsPoint(r.getSelectionCenter()))
-        if (entities.length < 1) entities = GameState.buildings.filter((b) => frustum.containsPoint(b.getSelectionCenter()))
+        if (entities.length < 1) {
+            const firstBuilding = GameState.buildings.find((b) => frustum.containsPoint(b.getSelectionCenter()))
+            entities = firstBuilding ? [firstBuilding] : []
+        }
         GameState.selectEntities(entities)
     }
 
