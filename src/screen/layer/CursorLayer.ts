@@ -1,27 +1,27 @@
-import { iGet } from '../../core/Util'
+import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
 import { IEventHandler } from '../../event/IEventHandler'
 import { ChangeCursor } from '../../event/LocalEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { Cursors } from '../Cursors'
+import { Cursor } from '../Cursor'
 import { ScreenLayer } from './ScreenLayer'
 
 export class CursorLayer extends ScreenLayer {
 
-    pointersCfg
-    curUrl
+    currentCursor: Cursor = null
+    timedCursor: Cursor = null
+    cursorTimeout = null
 
     constructor(parent: IEventHandler) {
         super(true, false)
         parent.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
-            this.changeCursor(event.cursor)
+            this.changeCursor(event.cursor, event.timeout)
         })
     }
 
     show() {
         super.show()
-        this.pointersCfg = ResourceManager.cfg('Pointers')
-        this.changeCursor(Cursors.Pointer_Standard)
+        this.changeCursor(Cursor.Pointer_Standard)
     }
 
     hide() {
@@ -29,14 +29,24 @@ export class CursorLayer extends ScreenLayer {
         this.canvas.style.cursor = null
     }
 
-    private changeCursor(cursor: Cursors) {
-        if (this.curUrl) URL.revokeObjectURL(this.curUrl)
-        if (!this.pointersCfg) return
-        const cursorFilename = iGet(this.pointersCfg, Cursors[cursor])
-        const curImg = ResourceManager.getImage(cursorFilename)
-        this.curUrl = curImg.toDataURL()
-        // no resized possible; Chrome limits cursor size to 32x32 anyway
-        this.canvas.style.cursor = 'url(' + this.curUrl + '), auto'
+    private changeCursor(cursor: Cursor, timeout: number = null) {
+        if (timeout) {
+            this.cursorTimeout = clearTimeoutSafe(this.cursorTimeout)
+            if (this.timedCursor !== cursor) this.setCursor(cursor)
+            const that = this
+            this.cursorTimeout = setTimeout(() => {
+                that.cursorTimeout = null
+                that.setCursor(that.currentCursor)
+            }, timeout)
+        } else if (this.currentCursor !== cursor) {
+            this.currentCursor = cursor
+            if (this.cursorTimeout) return
+            this.setCursor(cursor)
+        }
+    }
+
+    private setCursor(cursor: Cursor) {
+        this.canvas.style.cursor = ResourceManager.getCursorUrl(cursor)
     }
 
 }

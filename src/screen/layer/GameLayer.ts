@@ -1,4 +1,5 @@
 import { Raycaster, Vector2 } from 'three'
+import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameEvent } from '../../event/GameEvent'
@@ -17,7 +18,7 @@ import { SelectionType } from '../../game/model/Selectable'
 import { SceneManager } from '../../game/SceneManager'
 import { WorldManager } from '../../game/WorldManager'
 import { DEV_MODE } from '../../params'
-import { Cursors } from '../Cursors'
+import { Cursor } from '../Cursor'
 import { ScreenLayer } from './ScreenLayer'
 
 export class GameLayer extends ScreenLayer implements IEventHandler {
@@ -26,22 +27,25 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
     worldMgr: WorldManager
     sceneMgr: SceneManager
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
-    private lastCursor: Cursors = Cursors.Pointer_Standard
+    private lastCursor: Cursor = Cursor.Pointer_Standard
 
     constructor(parent: IEventHandler) {
         super(false, false)
         this.parent = parent
+        EventBus.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
+            this.lastCursor = event.cursor
+        })
     }
 
     reset() {
         super.reset()
         this.rightDown = {x: 0, y: 0}
-        this.lastCursor = Cursors.Pointer_Standard
+        this.lastCursor = Cursor.Pointer_Standard
     }
 
     hide() {
         super.hide()
-        this.publishEvent(new ChangeCursor(Cursors.Pointer_Standard))
+        this.publishEvent(new ChangeCursor(Cursor.Pointer_Standard))
     }
 
     handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
@@ -100,19 +104,18 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         raycaster.setFromCamera({x: rx, y: ry}, this.sceneMgr.camera)
         const cursor = this.determineCursor(raycaster)
         if (cursor !== this.lastCursor) {
-            this.lastCursor = cursor
             this.publishEvent(new ChangeCursor(cursor))
         }
     }
 
-    determineCursor(raycaster: Raycaster): Cursors {
+    determineCursor(raycaster: Raycaster): Cursor {
         let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere))
         if (intersects.length > 0) {
-            return Cursors.Pointer_Selected
+            return Cursor.Pointer_Selected
         } else {
             let intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere))
             if (intersects.length > 0) {
-                return Cursors.Pointer_Selected
+                return Cursor.Pointer_Selected
             } else {
                 intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
                 if (intersects.length > 0) {
@@ -126,7 +129,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                 }
             }
         }
-        return Cursors.Pointer_Standard
+        return Cursor.Pointer_Standard
     }
 
     handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {

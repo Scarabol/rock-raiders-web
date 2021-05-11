@@ -1,5 +1,6 @@
 import { EventKey } from '../../event/EventKeyEnum'
-import { LocalEvent } from '../../event/LocalEvents'
+import { ChangeCursor, LocalEvent } from '../../event/LocalEvents'
+import { Cursor } from '../../screen/Cursor'
 
 export class BaseElement {
 
@@ -101,7 +102,10 @@ export class BaseElement {
     checkRelease(cx, cy): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
-        if (inRect && this.pressed) this.onClick()
+        if (inRect && this.pressed) {
+            this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
+            this.onClick()
+        }
         let stateChanged = false
         this.children.forEach((child) => stateChanged = child.checkRelease(cx, cy) || stateChanged)
         stateChanged = this.pressed || stateChanged

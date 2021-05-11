@@ -2,6 +2,7 @@ import { GameStatsCfg } from '../cfg/GameStatsCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { createContext, createDummyImgData } from '../core/ImageHelper'
 import { iGet } from '../core/Util'
+import { allCursor, Cursor } from '../screen/Cursor'
 
 export class ResourceCache {
 
@@ -9,6 +10,7 @@ export class ResourceCache {
     static resourceByName: Map<string, any> = new Map()
     static fontCache: Map<string, BitmapFont> = new Map()
     static stats: GameStatsCfg
+    static cursorToUrl: Map<Cursor, string> = new Map()
 
     static cfg(...keys: string[]): any {
         return iGet(this.configuration, ...keys)
@@ -48,6 +50,29 @@ export class ResourceCache {
 
     static getDefaultFont() {
         return this.getBitmapFont('Interface/Fonts/Font5_Hi.bmp')
+    }
+
+    static loadDefaultCursor() {
+        const pointersCfg = this.cfg('Pointers')
+        const cursorImage = this.getImage(iGet(pointersCfg, Cursor[Cursor.Pointer_Standard]))
+        this.cursorToUrl.set(Cursor.Pointer_Standard, 'url(' + cursorImage.toDataURL() + '), auto')
+    }
+
+    static loadAllCursor() {
+        const pointersCfg = this.cfg('Pointers')
+        allCursor.forEach((cursor) => {
+            const cursorCfg = iGet(pointersCfg, Cursor[cursor])
+            if (Array.isArray(cursorCfg)) {
+                // console.log('FIXME Implement flh cursor loading: ' + cursorCfg)
+            } else {
+                const cursorImage = this.getImage(cursorCfg)
+                this.cursorToUrl.set(cursor, 'url(' + cursorImage.toDataURL() + '), auto')
+            }
+        })
+    }
+
+    static getCursorUrl(cursor: Cursor): string {
+        return this.cursorToUrl.get(cursor)
     }
 
 }

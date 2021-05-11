@@ -2,10 +2,11 @@ import { EventKey } from '../event/EventKeyEnum'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
-import { LocalEvent } from '../event/LocalEvents'
+import { ChangeCursor, LocalEvent } from '../event/LocalEvents'
 import { BaseElement } from '../gui/base/BaseElement'
 import { Panel } from '../gui/base/Panel'
 import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../params'
+import { Cursor } from '../screen/Cursor'
 import { OffscreenWorker } from './OffscreenWorker'
 
 export abstract class GuiWorker extends OffscreenWorker {
@@ -46,6 +47,7 @@ export abstract class GuiWorker extends OffscreenWorker {
             .map((c) => Math.round(c))
         const hit = this.context && this.context.getImageData(cx, cy, 1, 1).data[3] > 0
         if (hit) {
+            this.publishEvent(new ChangeCursor(Cursor.Pointer_Standard))
             if (event.eventEnum === POINTER_EVENT.MOVE) {
                 this.rootElement.checkHover(sx, sy)
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {

@@ -8,7 +8,7 @@ import { Raider } from '../game/model/raider/Raider'
 import { AllRaiderTools, RaiderTool } from '../game/model/raider/RaiderTool'
 import { AllRaiderTrainings, RaiderTraining } from '../game/model/raider/RaiderTraining'
 import { SelectionType } from '../game/model/Selectable'
-import { Cursors } from '../screen/Cursors'
+import { Cursor } from '../screen/Cursor'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
@@ -75,11 +75,13 @@ export class AirLevelChanged extends LocalEvent {
 
 export class ChangeCursor extends LocalEvent {
 
-    cursor: Cursors
+    cursor: Cursor
+    timeout: number
 
-    constructor(cursor: Cursors) {
+    constructor(cursor: Cursor, timeout: number = null) {
         super(EventKey.CHANGE_CURSOR)
         this.cursor = cursor
+        this.timeout = timeout
     }
 
 }

@@ -31,10 +31,12 @@ export class ResourceManager extends ResourceCache { // TODO rename to WadResour
             } else if (msg.type === WorkerMessageType.CFG) {
                 this.configuration = msg.cfg
                 this.stats = msg.stats
+                this.loadDefaultCursor()
                 this.onInitialLoad(msg.totalResources)
             } else if (msg.type === WorkerMessageType.CACHE_MISS) {
                 this.onCacheMissed()
             } else if (msg.type === WorkerMessageType.DONE) {
+                this.loadAllCursor()
                 console.log('Loading of about ' + msg.totalResources + ' assets complete! Total load time: ' + msg.loadingTimeSeconds + ' seconds.')
                 this.onLoadDone()
             }
