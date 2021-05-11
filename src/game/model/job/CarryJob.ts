@@ -47,6 +47,7 @@ export class CarryJob<I extends MaterialEntity> extends PublicJob {
         this.fulfiller.forEach((f) => {
             f.group.lookAt(new Vector3(targetLocation.x, f.group.position.y, targetLocation.y))
             f.dropItem()
+            this.item.group.position.copy(this.item.sceneMgr.getFloorPosition(targetLocation))
         })
         this.actualTarget.gatherItem(this.item)
     }
