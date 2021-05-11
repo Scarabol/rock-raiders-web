@@ -1,5 +1,4 @@
-import { Raycaster, Vector2 } from 'three'
-import { EventBus } from '../../event/EventBus'
+import { Vector2 } from 'three'
 import { EventKey } from '../../event/EventKeyEnum'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameEvent } from '../../event/GameEvent'
@@ -7,7 +6,7 @@ import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { IEventHandler } from '../../event/IEventHandler'
-import { ChangeCursor, SelectionChanged } from '../../event/LocalEvents'
+import { SelectionChanged } from '../../event/LocalEvents'
 import { FulfillerEntity } from '../../game/model/FulfillerEntity'
 import { GameState } from '../../game/model/GameState'
 import { Job } from '../../game/model/job/Job'
@@ -18,7 +17,6 @@ import { SelectionType } from '../../game/model/Selectable'
 import { SceneManager } from '../../game/SceneManager'
 import { WorldManager } from '../../game/WorldManager'
 import { DEV_MODE } from '../../params'
-import { Cursor } from '../Cursor'
 import { ScreenLayer } from './ScreenLayer'
 
 export class GameLayer extends ScreenLayer implements IEventHandler {
@@ -27,25 +25,15 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
     worldMgr: WorldManager
     sceneMgr: SceneManager
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
-    private lastCursor: Cursor = Cursor.Pointer_Standard
 
     constructor(parent: IEventHandler) {
         super(false, false)
         this.parent = parent
-        EventBus.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
-            this.lastCursor = event.cursor
-        })
     }
 
     reset() {
         super.reset()
         this.rightDown = {x: 0, y: 0}
-        this.lastCursor = Cursor.Pointer_Standard
-    }
-
-    hide() {
-        super.hide()
-        this.publishEvent(new ChangeCursor(Cursor.Pointer_Standard))
     }
 
     handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
@@ -54,7 +42,6 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             const intersectionPoint = this.getTerrainPositionFromEvent(event)
             if (intersectionPoint) this.sceneMgr.setTorchPosition(intersectionPoint)
             buildMarker.update(intersectionPoint)
-            this.updateCursor(event)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 if (GameState.buildModeSelection && buildMarker.lastCheck) {
@@ -94,42 +81,6 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         }
         this.canvas.dispatchEvent(new PointerEvent(event.type, event))
         return new Promise((resolve) => resolve(true))
-    }
-
-    updateCursor(event) {
-        const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
-        const rx = (cx / this.canvas.width) * 2 - 1
-        const ry = -(cy / this.canvas.height) * 2 + 1
-        const raycaster = new Raycaster()
-        raycaster.setFromCamera({x: rx, y: ry}, this.sceneMgr.camera)
-        const cursor = this.determineCursor(raycaster)
-        if (cursor !== this.lastCursor) {
-            this.publishEvent(new ChangeCursor(cursor))
-        }
-    }
-
-    determineCursor(raycaster: Raycaster): Cursor {
-        let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere))
-        if (intersects.length > 0) {
-            return Cursor.Pointer_Selected
-        } else {
-            let intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere))
-            if (intersects.length > 0) {
-                return Cursor.Pointer_Selected
-            } else {
-                intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
-                if (intersects.length > 0) {
-                    const userData = intersects[0].object.userData
-                    if (userData && userData.hasOwnProperty('surface')) {
-                        const surface = userData['surface'] as Surface
-                        if (surface) {
-                            return (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.VEHICLE || GameState.selectionType === SelectionType.GROUP) ? surface.surfaceType.cursorFulfiller : surface.surfaceType.cursor
-                        }
-                    }
-                }
-            }
-        }
-        return Cursor.Pointer_Standard
     }
 
     handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {

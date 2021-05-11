@@ -1,7 +1,14 @@
+import { Raycaster } from 'three'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
+import { POINTER_EVENT } from '../../event/EventTypeEnum'
+import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { IEventHandler } from '../../event/IEventHandler'
 import { ChangeCursor } from '../../event/LocalEvents'
+import { GameState } from '../../game/model/GameState'
+import { Surface } from '../../game/model/map/Surface'
+import { SelectionType } from '../../game/model/Selectable'
+import { SceneManager } from '../../game/SceneManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedCursor } from '../AnimatedCursor'
 import { Cursor } from '../Cursor'
@@ -9,6 +16,7 @@ import { ScreenLayer } from './ScreenLayer'
 
 export class CursorLayer extends ScreenLayer {
 
+    sceneMgr: SceneManager
     currentCursor: Cursor = null
     timedCursor: Cursor = null
     cursorTimeout = null
@@ -21,8 +29,7 @@ export class CursorLayer extends ScreenLayer {
         })
     }
 
-    show() {
-        super.show()
+    reset() {
         this.changeCursor(Cursor.Pointer_Standard)
     }
 
@@ -34,6 +41,42 @@ export class CursorLayer extends ScreenLayer {
         this.cursorTimeout = clearTimeoutSafe(this.cursorTimeout)
         this.activeCursor?.disableAnimation()
         this.activeCursor = null
+    }
+
+    handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
+        if (event.eventEnum === POINTER_EVENT.MOVE && this.sceneMgr) {
+            const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
+            const rx = (cx / this.canvas.width) * 2 - 1
+            const ry = -(cy / this.canvas.height) * 2 + 1
+            const raycaster = new Raycaster()
+            raycaster.setFromCamera({x: rx, y: ry}, this.sceneMgr.camera)
+            this.changeCursor(this.determineCursor(raycaster))
+        }
+        return super.handlePointerEvent(event)
+    }
+
+    determineCursor(raycaster: Raycaster): Cursor {
+        let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere))
+        if (intersects.length > 0) {
+            return Cursor.Pointer_Selected
+        } else {
+            let intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere))
+            if (intersects.length > 0) {
+                return Cursor.Pointer_Selected
+            } else {
+                intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
+                if (intersects.length > 0) {
+                    const userData = intersects[0].object.userData
+                    if (userData && userData.hasOwnProperty('surface')) {
+                        const surface = userData['surface'] as Surface
+                        if (surface) {
+                            return (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.VEHICLE || GameState.selectionType === SelectionType.GROUP) ? surface.surfaceType.cursorFulfiller : surface.surfaceType.cursor
+                        }
+                    }
+                }
+            }
+        }
+        return Cursor.Pointer_Standard
     }
 
     private changeCursor(cursor: Cursor, timeout: number = null) {
