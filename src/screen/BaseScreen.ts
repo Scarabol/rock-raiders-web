@@ -24,7 +24,7 @@ export class BaseScreen implements IEventHandler {
         if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!'
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
-        this.cursorLayer = this.addLayer(new CursorLayer(this), 1000)
+        this.cursorLayer = this.addLayer(new CursorLayer(this), 1000) // TODO turn cursor layer into singleton?
     }
 
     addLayer<T extends ScreenLayer>(layer: T, zIndex: number = 0): T {

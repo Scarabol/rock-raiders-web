@@ -123,7 +123,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                     if (userData && userData.hasOwnProperty('surface')) {
                         const surface = userData['surface'] as Surface
                         if (surface) {
-                            return surface.surfaceType.cursor
+                            return (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.VEHICLE || GameState.selectionType === SelectionType.GROUP) ? surface.surfaceType.cursorFulfiller : surface.surfaceType.cursor
                         }
                     }
                 }

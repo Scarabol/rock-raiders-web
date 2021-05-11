@@ -47,7 +47,7 @@ export abstract class GuiWorker extends OffscreenWorker {
             .map((c) => Math.round(c))
         const hit = this.context && this.context.getImageData(cx, cy, 1, 1).data[3] > 0
         if (hit) {
-            this.publishEvent(new ChangeCursor(Cursor.Pointer_Standard))
+            this.publishEvent(new ChangeCursor(Cursor.Pointer_Standard)) // TODO don't spam so many events?!
             if (event.eventEnum === POINTER_EVENT.MOVE) {
                 this.rootElement.checkHover(sx, sy)
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {

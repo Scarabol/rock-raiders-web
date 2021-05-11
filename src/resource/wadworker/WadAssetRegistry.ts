@@ -24,6 +24,9 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         // add fonts and cursors
         this.addAssetFolder(this.wadLoader.loadFontImageAsset, 'Interface/Fonts/')
         this.addAssetFolder(this.wadLoader.loadAlphaImageAsset, 'Interface/Pointers/')
+        this.wadLoader.wad0File.filterEntryNames('Interface/Pointers/' + '.+\\.flh').forEach((assetPath) => {
+            this.addAsset(this.wadLoader.loadFlhAsset, assetPath)
+        })
         // add menu assets
         this.addMenuWithAssets(mainConf, 'MainMenuFull', false)
         this.addMenuWithAssets(mainConf, 'PausedMenu')

@@ -12,6 +12,7 @@ export class SurfaceType {
     explodable: boolean = false
     reinforcable: boolean = false
     cursor: Cursor = Cursor.Pointer_Standard
+    cursorFulfiller: Cursor = Cursor.Pointer_Standard
     statsDrillName: string = null
     canCarryFence: boolean = false
 
@@ -119,7 +120,7 @@ export class SurfaceType {
         name: 'power path construction',
         floor: true,
         matIndex: '76',
-        selectable: true
+        selectable: true,
     })
     static readonly RUBBLE1 = new SurfaceType({
         name: 'rubble 1',
@@ -127,6 +128,7 @@ export class SurfaceType {
         matIndex: '13',
         selectable: true,
         canCarryFence: true,
+        cursorFulfiller: Cursor.Pointer_Clear,
     })
     static readonly RUBBLE2 = new SurfaceType({
         name: 'rubble 2',
@@ -134,6 +136,7 @@ export class SurfaceType {
         matIndex: '12',
         selectable: true,
         canCarryFence: true,
+        cursorFulfiller: Cursor.Pointer_Clear,
     })
     static readonly RUBBLE3 = new SurfaceType({
         name: 'rubble 3',
@@ -141,6 +144,7 @@ export class SurfaceType {
         matIndex: '11',
         selectable: true,
         canCarryFence: true,
+        cursorFulfiller: Cursor.Pointer_Clear,
     })
     static readonly RUBBLE4 = new SurfaceType({
         name: 'rubble 4',
@@ -148,6 +152,7 @@ export class SurfaceType {
         matIndex: '10',
         selectable: true,
         canCarryFence: true,
+        cursorFulfiller: Cursor.Pointer_Clear,
     })
 
     static getByNum(typeNum: number) {

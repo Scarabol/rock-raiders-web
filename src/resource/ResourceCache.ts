@@ -2,6 +2,7 @@ import { GameStatsCfg } from '../cfg/GameStatsCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { createContext, createDummyImgData } from '../core/ImageHelper'
 import { iGet } from '../core/Util'
+import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { allCursor, Cursor } from '../screen/Cursor'
 
 export class ResourceCache {
@@ -10,7 +11,7 @@ export class ResourceCache {
     static resourceByName: Map<string, any> = new Map()
     static fontCache: Map<string, BitmapFont> = new Map()
     static stats: GameStatsCfg
-    static cursorToUrl: Map<Cursor, string> = new Map()
+    static cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
 
     static cfg(...keys: string[]): any {
         return iGet(this.configuration, ...keys)
@@ -55,23 +56,33 @@ export class ResourceCache {
     static loadDefaultCursor() {
         const pointersCfg = this.cfg('Pointers')
         const cursorImage = this.getImage(iGet(pointersCfg, Cursor[Cursor.Pointer_Standard]))
-        this.cursorToUrl.set(Cursor.Pointer_Standard, 'url(' + cursorImage.toDataURL() + '), auto')
+        this.cursorToUrl.set(Cursor.Pointer_Standard, new AnimatedCursor(cursorImage))
     }
 
     static loadAllCursor() {
         const pointersCfg = this.cfg('Pointers')
+        const blankPointerFilename = iGet(pointersCfg, Cursor[Cursor.Pointer_Blank])
+        const blankPointerImageData = this.getImageData(blankPointerFilename)
         allCursor.forEach((cursor) => {
             const cursorCfg = iGet(pointersCfg, Cursor[cursor])
             if (Array.isArray(cursorCfg)) {
-                // console.log('FIXME Implement flh cursor loading: ' + cursorCfg)
+                const cursorImages = (this.getResource(cursorCfg[0]) as ImageData[]).map((imgData) => {
+                    const context: CanvasRenderingContext2D = createContext(blankPointerImageData.width, blankPointerImageData.height)
+                    context.putImageData(blankPointerImageData, 0, 0)
+                    const animContext: CanvasRenderingContext2D = createContext(imgData.width, imgData.height)
+                    animContext.putImageData(imgData, 0, 0)
+                    context.drawImage(animContext.canvas, Math.round((blankPointerImageData.width - imgData.width) / 2), Math.round((blankPointerImageData.height - imgData.height) / 2))
+                    return context.canvas
+                })
+                this.cursorToUrl.set(cursor, new AnimatedCursor(cursorImages))
             } else {
                 const cursorImage = this.getImage(cursorCfg)
-                this.cursorToUrl.set(cursor, 'url(' + cursorImage.toDataURL() + '), auto')
+                this.cursorToUrl.set(cursor, new AnimatedCursor(cursorImage))
             }
         })
     }
 
-    static getCursorUrl(cursor: Cursor): string {
+    static getCursor(cursor: Cursor): AnimatedCursor {
         return this.cursorToUrl.get(cursor)
     }
 

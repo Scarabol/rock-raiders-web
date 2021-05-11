@@ -1,5 +1,6 @@
 import { getFilename, iGet } from '../../core/Util'
 import { WAD_CACHE_DB_NAME } from '../../params'
+import { FlhParser } from '../FlhParser'
 import { BitmapWithPalette } from './parser/BitmapWithPalette'
 import { CfgFileParser } from './parser/CfgFileParser'
 import { NerpMsgParser } from './parser/NerpMsgParser'
@@ -151,6 +152,12 @@ export class WadLoader {
             }
         }
         callback([lwoFilepath], lwoContent)
+    }
+
+    loadFlhAsset(filename: string, callback: (assetNames: string[], obj: any) => any) {
+        const flhContent = this.wad0File.getEntryBuffer(filename)
+        const flhFrames = new FlhParser().parse(flhContent)
+        callback([filename], flhFrames)
     }
 
     loadAssetsParallel() {
