@@ -25,7 +25,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Vehicles (Land, Air, Sea)
 - Sounds and music
 - Radar map and geologists
-- Camera controls (keyboard, panel)
+- Camera controls panel
 
 ### Mid
 
@@ -51,28 +51,22 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Teleport up for docks turning water into land (test with level 11)
 - Power path of docks is showing on water surface in level 11
 - ObjectListLoader throwing errors in Level 11
-- Teleport in buildings only when the area is clear
+- Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in
 
 ### Nice to have
 
 - Requirements tooltip for buildings/vehicles not shown
 - When scene is disposed animation interval must be canceled
 - Camera can glitch through terrain and zoom in/out infinitely
-- Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in
-- Fix barriers placed outside of building site
 - Fix camera position and angle on level start
-- Raider sometimes get stuck with the materials, when a building site is canceled
-- Raider sometimes get stuck when placing down items at the toolstation
 
 ### Cosmetics
 
 - No tooltips
 - Cursor does not (always) react on targeted object
 - Adapt building placement marker to surface shape
-- Fix blueish teleport in frame not shown on surface
 - Add water and lava animation
 - Selection layer has bad performance and behaves funny when GUI is hovered
-- Buildings and walk out positions sometimes not rotated correctly
 
 ## Technical Debt
 

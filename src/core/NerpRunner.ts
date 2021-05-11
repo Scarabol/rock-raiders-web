@@ -207,7 +207,8 @@ export class NerpRunner {
     }
 
     getObjectiveSwitch() {
-        return GameState.objectiveSwitch
+        // TODO implement this
+        return false
     }
 
     setMessageTimerValues(arg1, arg2, arg3) {
@@ -251,7 +252,8 @@ export class NerpRunner {
     }
 
     getObjectiveShowing() {
-        return GameState.objectiveShown
+        // TODO implement this
+        return false
     }
 
     addPoweredCrystals() {

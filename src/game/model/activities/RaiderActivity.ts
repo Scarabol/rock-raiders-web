@@ -1,5 +1,6 @@
 import { AnimEntityActivity } from './AnimEntityActivity'
 
+// noinspection JSUnusedGlobalSymbols
 export class RaiderActivity extends AnimEntityActivity {
 
     static Route = new RaiderActivity('Activity_Route')

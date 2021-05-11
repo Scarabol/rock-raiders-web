@@ -1,5 +1,4 @@
 import { GameStatsCfg } from '../../cfg/GameStatsCfg'
-import { WorldEvent } from '../../event/WorldEvents'
 import { WorkerMessageType } from './WorkerMessageType'
 
 export class WadWorkerMessage {
@@ -14,7 +13,6 @@ export class WadWorkerMessage {
     assetObj?: any
     loadingTimeSeconds?: string
     messageState?: boolean
-    worldEvent?: WorldEvent
 
     constructor(type: WorkerMessageType) {
         this.type = type

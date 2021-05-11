@@ -84,4 +84,3 @@ export class Panel extends BaseElement {
     }
 
 }
-
