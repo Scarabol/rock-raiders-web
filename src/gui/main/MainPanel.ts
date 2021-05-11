@@ -85,7 +85,7 @@ export class MainPanel extends Panel {
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             if (event.selectionType === SelectionType.NOTHING) this.selectSubPanel(this.mainPanel)
             else if (event.selectionType === SelectionType.BUILDING) this.selectSubPanel(selectBuildingPanel)
-            else if (event.selectionType === SelectionType.RAIDER) this.selectSubPanel(selectRaiderPanel)
+            else if (event.selectionType === SelectionType.RAIDER || event.selectionType === SelectionType.GROUP) this.selectSubPanel(selectRaiderPanel)
             else if (event.selectionType === SelectionType.VEHICLE) this.selectSubPanel(selectVehiclePanel)
             else if (event.selectionType === SelectionType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.isSite, event.hasRubble)
         })
