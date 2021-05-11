@@ -79,6 +79,9 @@ export class Surface implements Selectable {
         this.x = x
         this.y = y
         this.heightOffset = heightOffset
+        if (surfaceType === SurfaceType.RUBBLE4 || surfaceType === SurfaceType.RUBBLE3 || surfaceType === SurfaceType.RUBBLE2 || surfaceType === SurfaceType.RUBBLE1) {
+            this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
+        }
     }
 
     /**
