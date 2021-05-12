@@ -24,7 +24,7 @@ export class SelectBuildingPanel extends SelectBasePanel {
         const powerSwitchItem = this.addChild(new IconPanelToggleButton(this, menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(powerSwitchItem)
         powerSwitchItem.isDisabled = () => this.usedCrystal >= this.numCrystal || !this.buildingCanSwitchPower
-        powerSwitchItem.onToggleStateChange = () => this.publishEvent(new ChangeBuildingPowerState(!powerSwitchItem.toggleState))
+        powerSwitchItem.onClick = () => this.publishEvent(new ChangeBuildingPowerState(!powerSwitchItem.toggleState))
         const upgradeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeBuilding')
         upgradeItem.isDisabled = () => !this.buildingCanUpgrade
         upgradeItem.onClick = () => this.publishEvent(new UpgradeBuilding())

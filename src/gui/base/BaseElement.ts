@@ -16,6 +16,7 @@ export class BaseElement {
     disabled: boolean = false
     hover: boolean = false
     pressed: boolean = false
+    onClick: () => any = null
     onPublishEvent: (event: LocalEvent) => any = (event) => console.log('TODO publish event: ' + EventKey[event.eventKey])
 
     constructor(parent: BaseElement) {
@@ -49,9 +50,6 @@ export class BaseElement {
 
     // noinspection JSUnusedLocalSymbols
     drawTooltip(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
-    }
-
-    onClick() {
     }
 
     isInactive(): boolean {
@@ -102,15 +100,17 @@ export class BaseElement {
     checkRelease(cx, cy): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
-        if (inRect && this.pressed) {
-            this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
-            this.onClick()
-        }
+        if (inRect && this.pressed && this.onClick) this.clicked()
         let stateChanged = false
         this.children.forEach((child) => stateChanged = child.checkRelease(cx, cy) || stateChanged)
         stateChanged = this.pressed || stateChanged
         this.pressed = false
         return stateChanged
+    }
+
+    clicked() {
+        this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
+        this.onClick()
     }
 
     release(): boolean {

@@ -24,10 +24,7 @@ export class Button extends BaseElement {
         this.height = btnCfg.height || this.imgNormal?.height || this.imgPressed?.height
         this.tooltip = btnCfg.tooltip?.replace(/_/g, ' ') // TODO refactor cfg handling
         this.updatePosition()
-    }
-
-    onClick() {
-        console.log('button pressed: ' + this.buttonType)
+        this.onClick = () => console.log('button pressed: ' + this.buttonType)
     }
 
     checkHover(cx, cy): boolean {

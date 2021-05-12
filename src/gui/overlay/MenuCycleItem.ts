@@ -27,11 +27,10 @@ export class MenuCycleItem extends BaseElement {
         this.imgLabelOnHover = parent.hiFont.createTextImage(itemCfg.labelOn)
         this.width = itemCfg.width + Math.max(this.imgLabelOnHover.width, this.imgLabelOffHover.width)
         this.height = this.imgTextNormal.height
-    }
-
-    onClick() {
-        this.state = !this.state
-        console.log('TODO: cycle item clicked; state: ' + this.state)
+        this.onClick = () => {
+            this.state = !this.state
+            console.log('TODO: cycle item clicked; state: ' + this.state)
+        }
     }
 
     checkHover(cx, cy): boolean {
