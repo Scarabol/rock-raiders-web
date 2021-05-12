@@ -172,7 +172,7 @@ export class WadLoader {
                         resolve()
                     })
                 } catch (e) {
-                    if (!asset.optional) throw e
+                    if (!asset.optional) console.error(e)
                     this.assetIndex++
                     that.onAssetLoaded(this.assetIndex, [asset.assetPath], null)
                     resolve()
