@@ -57,7 +57,7 @@ export class SelectionChanged extends LocalEvent {
         AllRaiderTrainings.forEach((training) => this.canDoTraining.set(training, GameState.getTrainingSites(training).length > 0 && selectedRaiders?.some((r) => !r.hasTraining(training))))
         AllRaiderTools.forEach((tool) => this.everyHasTool.set(tool, !!selectedRaiders?.every((r) => r.hasTool(tool))))
         this.buildingCanUpgrade = selectedBuilding?.canUpgrade()
-        this.buildingCanSwitchPower = selectedBuilding?.stats.SelfPowered || selectedBuilding?.stats.PowerBuilding
+        this.buildingCanSwitchPower = !selectedBuilding?.stats.SelfPowered && !selectedBuilding?.stats.PowerBuilding
     }
 
 }
