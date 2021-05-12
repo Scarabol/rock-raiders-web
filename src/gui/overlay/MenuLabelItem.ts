@@ -5,8 +5,8 @@ import { MenuLayer } from './MenuLayer'
 export class MenuLabelItem extends BaseElement {
 
     target: string
-    loImg: HTMLCanvasElement
-    hiImg: HTMLCanvasElement
+    loImg: SpriteImage
+    hiImg: SpriteImage
 
     constructor(parent: MenuLayer, itemCfg: MenuLabelItemCfg, autoCenter: boolean) {
         super(parent)
@@ -43,7 +43,7 @@ export class MenuLabelItem extends BaseElement {
         return stateChanged
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         if (this.hover) {
             context.drawImage(this.hiImg, this.x, this.y)

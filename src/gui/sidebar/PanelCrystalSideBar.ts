@@ -12,10 +12,10 @@ export class PanelCrystalSideBar extends Panel {
 
     labelOre: SideBarLabel
     labelCrystal: SideBarLabel
-    imgNoCrystal: HTMLCanvasElement
-    imgSmallCrystal: HTMLCanvasElement
-    imgUsedCrystal: HTMLCanvasElement
-    imgOre: HTMLCanvasElement
+    imgNoCrystal: SpriteImage
+    imgSmallCrystal: SpriteImage
+    imgUsedCrystal: SpriteImage
+    imgOre: SpriteImage
 
     numCrystal: number = 0
     usedCrystals: number = 0
@@ -49,7 +49,7 @@ export class PanelCrystalSideBar extends Panel {
         this.totalOre = 0
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         // draw crystals
         let curX = this.x + this.img.width - 8

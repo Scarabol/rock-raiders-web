@@ -10,7 +10,7 @@ import { TextInfoMessageConfig } from './TextInfoMessageConfig'
 
 export class MessagePanel extends Panel {
 
-    imgAir: HTMLCanvasElement = null
+    imgAir: SpriteImage = null
     currentMessage: TextInfoMessage = null
     messageTimeout = null
 
@@ -75,7 +75,7 @@ export class MessagePanel extends Panel {
         }
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         if (this.airLevel > 0) {
             const width = Math.round(236 * Math.min(1, this.airLevel))

@@ -9,8 +9,8 @@ import { MenuSliderItem } from './MenuSliderItem'
 
 export class MenuLayer extends BaseElement {
 
-    menuImage: HTMLCanvasElement
-    titleImage: HTMLCanvasElement
+    menuImage: SpriteImage
+    titleImage: SpriteImage
     loFont: BitmapFont
     hiFont: BitmapFont
     itemsTrigger: MenuLabelItem[] = []
@@ -42,7 +42,7 @@ export class MenuLayer extends BaseElement {
         this.hidden = true
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         context.drawImage(this.menuImage, (SPRITE_RESOLUTION_WIDTH - this.menuImage.width) / 2, (SPRITE_RESOLUTION_HEIGHT - this.menuImage.height) / 2)
         context.drawImage(this.titleImage, (SPRITE_RESOLUTION_WIDTH - this.titleImage.width) / 2, this.y)

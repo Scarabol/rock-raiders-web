@@ -31,14 +31,14 @@ export class ResourceCache {
         })
     }
 
-    static getImage(imageName: string): HTMLCanvasElement {
+    static getImage(imageName: string): SpriteImage {
         const imgData = this.getImageData(imageName)
-        const context: CanvasRenderingContext2D = createContext(imgData.width, imgData.height)
+        const context = createContext(imgData.width, imgData.height)
         context.putImageData(imgData, 0, 0)
         return context.canvas
     }
 
-    static getImageOrNull(imageName: string): HTMLCanvasElement | null {
+    static getImageOrNull(imageName: string): SpriteImage | null {
         return imageName ? this.getImage(imageName) : null
     }
 
@@ -50,13 +50,13 @@ export class ResourceCache {
         })
     }
 
-    static getDefaultFont() {
+    static getDefaultFont(): BitmapFont {
         return this.getBitmapFont('Interface/Fonts/Font5_Hi.bmp')
     }
 
     static loadDefaultCursor() {
-        const pointersCfg = this.cfg('Pointers')
-        const cursorImage = this.getImage(iGet(pointersCfg, Cursor[Cursor.Pointer_Standard]))
+        const imageName = iGet(this.cfg('Pointers'), Cursor[Cursor.Pointer_Standard])
+        const cursorImage = this.getCursorImage(imageName)
         this.cursorToUrl.set(Cursor.Pointer_Standard, new AnimatedCursor(cursorImage))
     }
 
@@ -68,19 +68,31 @@ export class ResourceCache {
             const cursorCfg = iGet(pointersCfg, Cursor[cursor])
             if (Array.isArray(cursorCfg)) {
                 const cursorImages = (this.getResource(cursorCfg[0]) as ImageData[]).map((imgData) => {
-                    const context: CanvasRenderingContext2D = createContext(blankPointerImageData.width, blankPointerImageData.height)
+                    const canvas = document.createElement('canvas')
+                    canvas.setAttribute('width', blankPointerImageData.width.toString())
+                    canvas.setAttribute('height', blankPointerImageData.height.toString())
+                    const context = canvas.getContext('2d')
                     context.putImageData(blankPointerImageData, 0, 0)
-                    const animContext: CanvasRenderingContext2D = createContext(imgData.width, imgData.height)
+                    const animContext = createContext(imgData.width, imgData.height)
                     animContext.putImageData(imgData, 0, 0)
                     context.drawImage(animContext.canvas, Math.round((blankPointerImageData.width - imgData.width) / 2), Math.round((blankPointerImageData.height - imgData.height) / 2))
                     return context.canvas
                 })
                 this.cursorToUrl.set(cursor, new AnimatedCursor(cursorImages))
             } else {
-                const cursorImage = this.getImage(cursorCfg)
+                const cursorImage = this.getCursorImage(cursorCfg)
                 this.cursorToUrl.set(cursor, new AnimatedCursor(cursorImage))
             }
         })
+    }
+
+    static getCursorImage(imageName: string): HTMLCanvasElement {
+        const imgData = this.getImageData(imageName)
+        const canvas = document.createElement('canvas')
+        canvas.setAttribute('width', imgData.width.toString())
+        canvas.setAttribute('height', imgData.height.toString())
+        canvas.getContext('2d').putImageData(imgData, 0, 0)
+        return canvas
     }
 
     static getCursor(cursor: Cursor): AnimatedCursor {

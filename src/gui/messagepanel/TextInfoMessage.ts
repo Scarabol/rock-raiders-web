@@ -5,8 +5,8 @@ import { TextInfoMessageEntryConfig } from './TextInfoMessageEntryConfig'
 
 export class TextInfoMessage {
 
-    infoImage: HTMLCanvasElement
-    textImage: HTMLCanvasElement
+    infoImage: SpriteImage
+    textImage: SpriteImage
     sfxSample: Sample
 
     constructor(font: BitmapFont, infoMessageEntryConfig: TextInfoMessageEntryConfig, maxWidth: number) {

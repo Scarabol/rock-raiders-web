@@ -8,15 +8,15 @@ import { BriefingPanelCfg } from './BriefingPanelCfg'
 export class BriefingPanel extends Panel {
 
     cfg: BriefingPanelCfg = null
-    imgTitle: HTMLCanvasElement = null
+    imgTitle: SpriteImage = null
     titleRelX: number = 0
     titleRelY: number = 0
     btnNext: Button = null
     btnBack: Button = null
-    imgBack: HTMLCanvasElement = null
-    imgParagraphList: HTMLCanvasElement[] = []
+    imgBack: SpriteImage = null
+    imgParagraphList: SpriteImage[] = []
     paragraph: number = 0
-    imgParagraph: HTMLCanvasElement = null
+    imgParagraph: SpriteImage = null
     onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log('Message: press space to continue = ' + state)
 
     constructor(parent: BaseElement) {
@@ -83,7 +83,7 @@ export class BriefingPanel extends Panel {
         this.onSetSpaceToContinue(false)
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         if (this.imgBack) context.drawImage(this.imgBack, this.x, this.y)
         if (this.imgTitle) context.drawImage(this.imgTitle, this.x + this.titleRelX, this.y + this.titleRelY)

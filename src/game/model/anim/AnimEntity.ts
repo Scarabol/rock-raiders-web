@@ -191,7 +191,7 @@ export abstract class AnimEntity extends BaseEntity {
         ctx.fillRect(selectionFrameTextureSize - length, selectionFrameTextureSize - strength, length, strength)
         ctx.fillRect(0, selectionFrameTextureSize - strength, length, strength)
         ctx.fillRect(0, selectionFrameTextureSize - length, strength, length)
-        const selectionFrameTexture = new CanvasTexture(ctx.canvas)
+        const selectionFrameTexture = new CanvasTexture(ctx.canvas as HTMLCanvasElement)
         const selectionMaterial = new SpriteMaterial({map: selectionFrameTexture, depthTest: false})
         this.selectionFrame = new Sprite(selectionMaterial)
         this.selectionFrame.position.copy(pickSphereCenter)

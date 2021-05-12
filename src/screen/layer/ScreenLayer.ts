@@ -7,7 +7,7 @@ export class ScreenLayer {
 
     canvas: HTMLCanvasElement
     context: CanvasRenderingContext2D
-    onRedraw: (context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) => any
+    onRedraw: (context: SpriteContext) => any
     active: boolean = true
 
     constructor(alpha: boolean, withContext: boolean) {

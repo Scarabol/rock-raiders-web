@@ -7,12 +7,12 @@ import { MenuLayer } from './MenuLayer'
 
 export class MenuSliderItem extends BaseElement {
 
-    imgTextNormal: HTMLCanvasElement
-    imgTextHover: HTMLCanvasElement
-    imgLeft: HTMLCanvasElement
-    imgNormal: HTMLCanvasElement
-    imgHover: HTMLCanvasElement
-    imgRight: HTMLCanvasElement
+    imgTextNormal: SpriteImage
+    imgTextHover: SpriteImage
+    imgLeft: SpriteImage
+    imgNormal: SpriteImage
+    imgHover: SpriteImage
+    imgRight: SpriteImage
     sliderX: number = 0
     min: number = 0
     max: number = 1
@@ -69,7 +69,7 @@ export class MenuSliderItem extends BaseElement {
         return stateChanged
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         let img = this.imgTextNormal
         if (this.hover) {

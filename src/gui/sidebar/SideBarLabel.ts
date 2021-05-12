@@ -22,7 +22,7 @@ export class SideBarLabel extends BaseElement {
         this.label = '0'
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         context.textAlign = 'center'
         context.font = 'bold 10px Arial'

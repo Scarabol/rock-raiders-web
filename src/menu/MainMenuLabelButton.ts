@@ -19,7 +19,7 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
         if (this.actionName === 'Next') this.targetIndex = Number(cfg.target.substring('menu'.length)) - 1
     }
 
-    draw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    draw(context: SpriteContext) {
         super.draw(context)
         const img = this.hover && !this.pressed ? this.labelImgHi : this.labelImgLo
         context.drawImage(img, this.x, this.y)

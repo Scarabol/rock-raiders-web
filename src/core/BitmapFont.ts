@@ -72,7 +72,7 @@ export class BitmapFont {
         return result
     }
 
-    createTextImage(text: string, maxWidth?: number, autoCenter: boolean = true): HTMLCanvasElement {
+    createTextImage(text: string, maxWidth?: number, autoCenter: boolean = true): SpriteImage {
         if (text === undefined || text === null || text.length < 1) {
             // empty text requested, context with width 0 is not allowed, but 1 with alpha is close enough
             return createContext(1, 1).canvas
@@ -98,7 +98,7 @@ export class BitmapFont {
                 } // missing letter issue already reported above
             }
         })
-        const img: CanvasRenderingContext2D = createContext(result.width, result.height)
+        const img = createContext(result.width, result.height)
         img.putImageData(result, 0, 0)
         return img.canvas
     }

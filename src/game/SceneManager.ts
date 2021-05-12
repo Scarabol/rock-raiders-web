@@ -34,7 +34,7 @@ export class SceneManager {
     cursorTorchlight: PointLight
     buildMarker: BuildPlacementMarker
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: SpriteImage) {
         this.renderer = new WebGLRenderer({antialias: true, canvas: canvas})
         this.renderer.setClearColor(0x000000)
 

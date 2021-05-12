@@ -4,12 +4,12 @@ import { MenuLayer } from './MenuLayer'
 
 export class MenuCycleItem extends BaseElement {
 
-    imgTextNormal: HTMLCanvasElement
-    imgTextHover: HTMLCanvasElement
-    imgLabelOnNormal: HTMLCanvasElement // TODO only toggle state with clicks on label
-    imgLabelOffNormal: HTMLCanvasElement // TODO use button?
-    imgLabelOnHover: HTMLCanvasElement
-    imgLabelOffHover: HTMLCanvasElement
+    imgTextNormal: SpriteImage
+    imgTextHover: SpriteImage
+    imgLabelOnNormal: SpriteImage // TODO only toggle state with clicks on label
+    imgLabelOffNormal: SpriteImage // TODO use button?
+    imgLabelOnHover: SpriteImage
+    imgLabelOffHover: SpriteImage
 
     labelX: number = 0
     state: boolean = false
@@ -57,7 +57,7 @@ export class MenuCycleItem extends BaseElement {
         return stateChanged
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         let img = this.imgTextNormal
         let imgLabel = this.state ? this.imgLabelOnNormal : this.imgLabelOffNormal

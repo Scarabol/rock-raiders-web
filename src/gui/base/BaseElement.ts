@@ -40,18 +40,18 @@ export class BaseElement {
         return child
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         this.children.forEach((child) => child.onRedraw(context))
         this.children.forEach((child) => child.drawHover(context))
         this.children.forEach((child) => child.drawTooltip(context))
     }
 
-    drawHover(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    drawHover(context: SpriteContext) {
     }
 
     // noinspection JSUnusedLocalSymbols
-    drawTooltip(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    drawTooltip(context: SpriteContext) {
     }
 
     isInactive(): boolean {

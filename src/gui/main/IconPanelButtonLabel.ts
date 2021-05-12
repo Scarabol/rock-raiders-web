@@ -21,7 +21,7 @@ export class IconPanelButtonLabel extends BaseElement {
         this.numRequestedRaiders = ''
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         context.textAlign = 'left'
         context.font = 'bold 10px Arial'

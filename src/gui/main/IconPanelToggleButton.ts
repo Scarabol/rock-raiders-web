@@ -6,10 +6,10 @@ import { IconPanelButton } from './IconPanelButton'
 export class IconPanelToggleButton extends IconPanelButton {
 
     toggleState: boolean = false
-    imgOnNormal: HTMLCanvasElement
-    imgOnHover: HTMLCanvasElement
-    imgOnPressed: HTMLCanvasElement
-    imgOnDisabled: HTMLCanvasElement
+    imgOnNormal: SpriteImage
+    imgOnHover: SpriteImage
+    imgOnPressed: SpriteImage
+    imgOnDisabled: SpriteImage
 
     constructor(parent: BaseElement, menuItemOffCfg: MenuItemCfg, menuItemOnCfg: MenuItemCfg, parentWidth: number, menuIndex: number) {
         super(parent, menuItemOffCfg, null, parentWidth, menuIndex)
@@ -24,7 +24,7 @@ export class IconPanelToggleButton extends IconPanelButton {
         super.clicked()
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         let img = this.toggleState ? this.imgOnNormal : this.imgNormal
         if (this.disabled) {

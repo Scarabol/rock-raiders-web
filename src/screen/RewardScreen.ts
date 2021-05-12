@@ -18,10 +18,10 @@ export class RewardScreen extends BaseScreen {
     btnLayer: ScaledLayer
     resultIndex: number = 0
     resultLastIndex: number = 0
-    images: { img: HTMLCanvasElement, x: number, y: number }[] = []
-    boxes: { img: HTMLCanvasElement, x: number, y: number }[] = []
+    images: { img: SpriteImage, x: number, y: number }[] = []
+    boxes: { img: SpriteImage, x: number, y: number }[] = []
     fonts = {}
-    texts: HTMLCanvasElement[] = []
+    texts: SpriteImage[] = []
     uncoverTimeout = null
     btnSave: RewardScreenButton
     btnAdvance: RewardScreenButton

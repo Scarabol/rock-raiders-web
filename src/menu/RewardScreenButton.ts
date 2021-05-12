@@ -3,10 +3,10 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class RewardScreenButton extends MainMenuBaseItem {
 
-    imgNormal: HTMLCanvasElement
-    imgHover: HTMLCanvasElement
-    imgPressed: HTMLCanvasElement
-    imgDisabled: HTMLCanvasElement
+    imgNormal: SpriteImage
+    imgHover: SpriteImage
+    imgPressed: SpriteImage
+    imgDisabled: SpriteImage
     disabled: boolean = false
     visible: boolean = true
 
@@ -22,7 +22,7 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.height = this.imgNormal.height
     }
 
-    draw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    draw(context: SpriteContext) {
         super.draw(context)
         if (!this.visible) return
         let img = this.imgNormal

@@ -19,7 +19,7 @@ export class InformationPanel extends Panel {
         this.notifyRedraw()
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         if (this.textImage) context.drawImage(this.textImage, this.x + (this.img.width - this.textImage.width) / 2, this.y + 12)
     }

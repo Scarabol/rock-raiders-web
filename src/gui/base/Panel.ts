@@ -6,7 +6,7 @@ import { BaseElement } from './BaseElement'
 
 export class Panel extends BaseElement {
 
-    img: HTMLCanvasElement = null
+    img: SpriteImage = null
     xOut: number = 0
     yOut: number = 0
     xIn: number = 0
@@ -77,7 +77,7 @@ export class Panel extends BaseElement {
         this.notifyRedraw()
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         if (this.img) context.drawImage(this.img, this.x, this.y)
         super.onRedraw(context)

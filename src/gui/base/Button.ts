@@ -7,10 +7,10 @@ export class Button extends BaseElement {
 
     buttonType: string = null
     sfxName: string = null
-    imgNormal: HTMLCanvasElement = null
-    imgHover: HTMLCanvasElement = null
-    imgPressed: HTMLCanvasElement = null
-    imgDisabled: HTMLCanvasElement = null
+    imgNormal: SpriteImage = null
+    imgHover: SpriteImage = null
+    imgPressed: SpriteImage = null
+    imgDisabled: SpriteImage = null
     tooltip: string = null
     sfxTooltip: string = null
 
@@ -69,7 +69,7 @@ export class Button extends BaseElement {
         return stateChanged
     }
 
-    onRedraw(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D) {
+    onRedraw(context: SpriteContext) {
         if (this.hidden) return
         let img = this.imgNormal
         if (this.disabled) {

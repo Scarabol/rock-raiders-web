@@ -19,8 +19,8 @@ export class MainMenuLayer extends ScaledLayer {
     cfg: MenuEntryCfg
     loFont: BitmapFont
     hiFont: BitmapFont
-    menuImage: HTMLCanvasElement
-    titleImage: HTMLCanvasElement
+    menuImage: SpriteImage
+    titleImage: SpriteImage
     items: MainMenuBaseItem[] = []
     scrollY: number = 0
     scrollSpeedY: number = 0
