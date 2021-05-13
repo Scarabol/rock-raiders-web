@@ -10,6 +10,7 @@ export class Docks extends BuildingEntity {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.DOCKS, 'Buildings/Docks/Docks.ae')
+        this.primaryPowerPath = new Vector2(0, -1)
         this.waterPathSurface = new Vector2(0, 1)
     }
 
