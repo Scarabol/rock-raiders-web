@@ -32,6 +32,8 @@ export class ObjectListLoader {
             const buildingType: string = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
             if (lTypeName === 'TVCamera'.toLowerCase()) {
+                console.log('Camera heading: ' + Math.round(olObject.heading % 360))
+                console.log('Camera target: ' + (olObject.xPos - 1) + '/' + (olObject.yPos - 1))
                 const terrainY = sceneMgr.getTerrainHeight(worldPos.x, worldPos.y)
                 const loc = new Vector3(worldPos.x, terrainY, worldPos.y - TILESIZE / 2)
                 const offset = new Vector3(5 * TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(loc)
@@ -52,6 +54,7 @@ export class ObjectListLoader {
                     GameState.raidersUndiscovered.push(raider)
                 }
             } else if (buildingType) {
+                console.log(olObject.type + ' heading: ' + Math.round(olObject.heading % 360))
                 const entity = this.createBuildingByName(buildingType, worldMgr, sceneMgr)
                 entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
             } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {

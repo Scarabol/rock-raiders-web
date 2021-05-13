@@ -1,5 +1,5 @@
-import { Group, Vector2, Vector3 } from 'three'
-import { TILESIZE } from '../../../params'
+import { AxesHelper, Group, Vector2, Vector3 } from 'three'
+import { DEV_MODE, TILESIZE } from '../../../params'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { PathTarget } from '../PathTarget'
@@ -27,6 +27,7 @@ export class Terrain {
         this.floorGroup.scale.setScalar(TILESIZE)
         this.roofGroup.scale.setScalar(TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
+        if (DEV_MODE) this.floorGroup.add(new AxesHelper())
     }
 
     getSurfaceFromWorld(worldPosition: Vector3): Surface | null {
