@@ -60,10 +60,10 @@ export class Surface implements Selectable {
     mesh: Mesh = null
     needsMeshUpdate: boolean = false
 
-    topLeftHeightOffset: number = 0
-    topRightHeightOffset: number = 0
-    bottomLeftHeightOffset: number = 0
-    bottomRightHeightOffset: number = 0
+    topLeftVertex: Vector3 = null
+    topRightVertex: Vector3 = null
+    bottomLeftVertex: Vector3 = null
+    bottomRightVertex: Vector3 = null
 
     rubblePositions: Vector2[] = []
 
@@ -295,7 +295,26 @@ export class Surface implements Selectable {
 
         if (this.wallType !== wallType) {
             this.wallType = wallType
-            this.updateGeometry(topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex, surfTopLeft, surfTop, surfLeft, surfTopRight, surfRight, surfBottomRight, surfBottom, surfBottomLeft)
+
+            function avgHeight(...args: Surface[]) {
+                let sum = 0, cnt = 0
+                args.map(s => s.heightOffset).filter(Boolean).forEach(h => {
+                    sum += h
+                    cnt++
+                })
+                return sum / cnt
+            }
+
+            this.topLeftVertex = topLeftVertex.clone()
+            this.topRightVertex = topRightVertex.clone()
+            this.bottomLeftVertex = bottomLeftVertex.clone()
+            this.bottomRightVertex = bottomRightVertex.clone()
+            this.topLeftVertex.y += avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER
+            this.topRightVertex.y += avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER
+            this.bottomRightVertex.y += avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER
+            this.bottomLeftVertex.y += avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER
+
+            this.updateGeometry(topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex)
             if (this.wallType !== WALL_TYPE.WALL) this.cancelReinforceJobs()
         }
 
@@ -391,29 +410,12 @@ export class Surface implements Selectable {
         (Array.isArray(this.mesh.material) ? this.mesh.material : [this.mesh.material]).forEach((m) => callback(m as MeshPhongMaterial))
     }
 
-    updateGeometry(topLeftVertex: Vector3, bottomRightVertex: Vector3, topRightVertex: Vector3, bottomLeftVertex: Vector3, surfTopLeft: Surface, surfTop: Surface, surfLeft: Surface, surfTopRight: Surface, surfRight: Surface, surfBottomRight: Surface, surfBottom: Surface, surfBottomLeft: Surface) {
+    updateGeometry(topLeftVertex: Vector3, bottomRightVertex: Vector3, topRightVertex: Vector3, bottomLeftVertex: Vector3) {
         if (this.mesh) this.terrain.floorGroup.remove(this.mesh)
         this.mesh?.geometry?.dispose()
 
-        function avgHeight(...args: Surface[]) {
-            let sum = 0, cnt = 0
-            args.map(s => s.heightOffset).filter(Boolean).forEach(h => {
-                sum += h
-                cnt++
-            })
-            return sum / cnt
-        }
-
-        this.topLeftHeightOffset = avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER
-        this.topRightHeightOffset = avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER
-        this.bottomRightHeightOffset = avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER
-        this.bottomLeftHeightOffset = avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER
         const geometry = SurfaceGeometry.create(this.wallType, topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex,
-            topLeftVertex.y + this.topLeftHeightOffset,
-            topRightVertex.y + this.topRightHeightOffset,
-            bottomRightVertex.y + this.bottomRightHeightOffset,
-            bottomLeftVertex.y + this.bottomLeftHeightOffset,
-        )
+            this.topLeftVertex.y, this.topRightVertex.y, this.bottomRightVertex.y, this.bottomLeftVertex.y)
 
         this.mesh = new Mesh(geometry, new MeshPhongMaterial({shininess: 0}))
         this.mesh.userData = {selectable: this, surface: this}
@@ -608,8 +610,8 @@ export class Surface implements Selectable {
     getFloorHeight(worldX: number, worldZ: number) {
         const sx = worldX / TILESIZE - this.x
         const sy = worldZ / TILESIZE - this.y
-        const dy0 = Surface.interpolate(this.topLeftHeightOffset, this.topRightHeightOffset, sx)
-        const dy1 = Surface.interpolate(this.bottomLeftHeightOffset, this.bottomRightHeightOffset, sx)
+        const dy0 = Surface.interpolate(this.topLeftVertex.y, this.topRightVertex.y, sx)
+        const dy1 = Surface.interpolate(this.bottomLeftVertex.y, this.bottomRightVertex.y, sx)
         return Surface.interpolate(dy0, dy1, sy) * TILESIZE
     }
 
