@@ -297,12 +297,8 @@ export class Surface implements Selectable {
             this.wallType = wallType
 
             function avgHeight(...args: Surface[]) {
-                let sum = 0, cnt = 0
-                args.map(s => s.heightOffset).filter(Boolean).forEach(h => {
-                    sum += h
-                    cnt++
-                })
-                return sum / cnt
+                return args.map((s) => s.heightOffset)
+                    .reduce((l, r) => (l || 0) + (r || 0), 0) / (args.length || 1)
             }
 
             this.topLeftVertex = topLeftVertex.clone()
