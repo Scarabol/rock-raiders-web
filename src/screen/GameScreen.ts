@@ -66,10 +66,9 @@ export class GameScreen extends BaseScreen {
         })
     }
 
-    startLevel(levelName) {
+    startLevel(levelName: string, levelConf: LevelEntryCfg) {
         this.levelName = levelName
-        this.levelConf = ResourceManager.getResource('Levels').levelsByName[this.levelName]
-        if (!this.levelConf) throw 'Could not find level configuration for "' + this.levelName + '"'
+        this.levelConf = levelConf
         this.setupAndStartLevel()
     }
 

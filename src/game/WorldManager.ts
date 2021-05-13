@@ -28,7 +28,6 @@ export class WorldManager {
     }
 
     setup(levelConf: LevelEntryCfg, onLevelEnd: () => any) {
-        GameState.levelFullName = levelConf.fullName
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         GameState.rewardConfig = levelConf.reward
         GameState.priorityList.setList(levelConf.priorities)

@@ -25,6 +25,7 @@ export class RewardScreen extends BaseScreen {
     uncoverTimeout = null
     btnSave: RewardScreenButton
     btnAdvance: RewardScreenButton
+    levelFullNameImg: SpriteImage
 
     constructor() {
         super()
@@ -100,7 +101,6 @@ export class RewardScreen extends BaseScreen {
         this.btnSave.visible = false
         this.btnAdvance.visible = false
         this.uncoverResult()
-        const levelFullNameImg = this.titleFont.createTextImage(GameState.levelFullName)
         let resultText = this.cfg.quitText
         this.resultLastIndex = this.images.length - 2
         if (GameState.resultState === GameResultState.COMPLETE) {
@@ -136,8 +136,8 @@ export class RewardScreen extends BaseScreen {
                 const text = resultValues[c]
                 if (text) context.drawImage(text, txt.x - text.width / 2, txt.y)
             }
-            context.drawImage(levelFullNameImg, this.resultsLayer.fixedWidth / 2 - levelFullNameImg.width / 2, this.cfg.vertSpacing - levelFullNameImg.height / 2)
-            context.drawImage(gameResultTextImg, this.resultsLayer.fixedWidth / 2 - gameResultTextImg.width / 2, this.cfg.vertSpacing + levelFullNameImg.height / 2)
+            context.drawImage(this.levelFullNameImg, this.resultsLayer.fixedWidth / 2 - this.levelFullNameImg.width / 2, this.cfg.vertSpacing - this.levelFullNameImg.height / 2)
+            context.drawImage(gameResultTextImg, this.resultsLayer.fixedWidth / 2 - gameResultTextImg.width / 2, this.cfg.vertSpacing + this.levelFullNameImg.height / 2)
         }
         this.descriptionTextLayer.onRedraw = (context) => {
             const descriptionTextImg = this.texts[this.resultIndex]
@@ -181,6 +181,10 @@ export class RewardScreen extends BaseScreen {
             }
             this.redraw()
         }, this.cfg.timer * 1000)
+    }
+
+    setLevelFullName(levelFullName: string) {
+        this.levelFullNameImg = this.titleFont.createTextImage(levelFullName)
     }
 
 }

@@ -27,7 +27,6 @@ export enum GameResultState {
 export class GameState {
 
     static resultState: GameResultState = GameResultState.RUNNING
-    static levelFullName: string = ''
     static numCrystal: number = 0
     static numOre: number = 0
     static numBrick: number = 0
@@ -62,7 +61,6 @@ export class GameState {
 
     static reset() {
         this.resultState = GameResultState.RUNNING
-        this.levelFullName = ''
         this.numCrystal = 0
         this.numOre = 0
         this.numBrick = 0
