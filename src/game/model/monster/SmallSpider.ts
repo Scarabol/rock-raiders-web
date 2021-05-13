@@ -60,7 +60,7 @@ export class SmallSpider extends Monster {
     }
 
     onDeath() {
-        this.onLevelEnd()
+        this.removeFromScene()
         GameState.spiders.remove(this)
         this.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).remove(this))
     }

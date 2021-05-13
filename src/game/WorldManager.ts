@@ -49,8 +49,14 @@ export class WorldManager {
     stop() {
         GameState.levelStopTime = Date.now()
         this.nerpRunner?.pauseExecution()
-        GameState.spiders.forEach((m) => m.onLevelEnd())
-        GameState.bats.forEach((b) => b.onLevelEnd())
+        GameState.buildings.forEach((b) => b.removeFromScene())
+        GameState.buildingsUndiscovered.forEach((b) => b.removeFromScene())
+        GameState.raiders.forEach((r) => r.removeFromScene())
+        GameState.raidersUndiscovered.forEach((r) => r.removeFromScene())
+        GameState.materials.forEach((m) => m.removeFromScene())
+        GameState.materialsUndiscovered.forEach((m) => m.removeFromScene())
+        GameState.spiders.forEach((m) => m.removeFromScene())
+        GameState.bats.forEach((b) => b.removeFromScene())
     }
 
     placeMaterial(item: MaterialEntity, worldPosition: Vector2) {

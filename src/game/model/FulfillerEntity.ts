@@ -91,6 +91,11 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     abstract get stats(): FulfillerStats
 
+    removeFromScene() {
+        super.removeFromScene()
+        this.workInterval = clearIntervalSafe(this.workInterval)
+    }
+
 }
 
 export class FulfillerStats {

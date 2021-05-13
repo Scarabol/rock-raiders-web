@@ -47,7 +47,7 @@ export class Bat extends Monster {
     }
 
     onDeath() {
-        this.onLevelEnd()
+        this.removeFromScene()
         GameState.bats.remove(this)
     }
 

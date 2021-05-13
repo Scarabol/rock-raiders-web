@@ -15,9 +15,9 @@ export abstract class Monster extends MovableEntity {
         super(worldMgr, sceneMgr, EntitySuperType.MONSTER, entityType, aeFilename)
     }
 
-    onLevelEnd() {
+    removeFromScene() {
+        super.removeFromScene()
         this.moveTimeout = clearTimeoutSafe(this.moveTimeout)
-        this.removeFromScene()
     }
 
     getRouteActivity(): MonsterActivity {

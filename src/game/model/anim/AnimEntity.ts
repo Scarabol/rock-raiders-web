@@ -225,4 +225,9 @@ export abstract class AnimEntity extends BaseEntity {
         return audio
     }
 
+    removeFromScene() {
+        super.removeFromScene()
+        this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
+    }
+
 }
