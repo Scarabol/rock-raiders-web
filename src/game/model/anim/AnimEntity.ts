@@ -189,7 +189,7 @@ export abstract class AnimEntity extends BaseEntity {
         const selectionMaterial = new SpriteMaterial({map: selectionFrameTexture, depthTest: false})
         this.selectionFrame = new Sprite(selectionMaterial)
         this.selectionFrame.position.copy(pickSphereCenter)
-        const selectionFrameSize = pickSphereDiameter
+        const selectionFrameSize = pickSphereDiameter * 3 / 4
         this.selectionFrame.scale.set(selectionFrameSize, selectionFrameSize, selectionFrameSize)
         this.selectionFrame.visible = false
         this.group.add(this.selectionFrame)
