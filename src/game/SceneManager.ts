@@ -4,9 +4,9 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { TILESIZE } from '../params'
-import { AnimatedMesh } from '../resource/AnimatedMesh'
+import { KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
+import { SceneMesh } from '../scene/SceneMesh'
 import { DebugHelper } from '../screen/DebugHelper'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
 import { GameState } from './model/GameState'
@@ -17,7 +17,7 @@ import { WorldManager } from './WorldManager'
 
 export class SceneManager {
 
-    static meshRegistry: AnimatedMesh[] = []
+    static meshRegistry: SceneMesh[] = []
 
     maxFps: number = 30 // most animations use 25 fps so this should be enough
     renderer: WebGLRenderer
@@ -47,11 +47,12 @@ export class SceneManager {
         this.controls.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
         this.controls.listenToKeyEvents(this.renderer.domElement)
-        this.controls.keyPanSpeed = this.controls.keyPanSpeed * 20
+        this.controls.keyPanSpeed = this.controls.keyPanSpeed * KEY_PAN_SPEED
 
         this.buildMarker = new BuildPlacementMarker(this)
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
-            GameState.buildModeSelection = null // TODO dispose build mode selection first
+            GameState.buildModeSelection?.removeFromScene()
+            GameState.buildModeSelection = null
             this.buildMarker.hideAllMarker()
         })
     }
@@ -198,7 +199,7 @@ export class SceneManager {
         SceneManager.meshRegistry = []
     }
 
-    static registerMesh(animatedMesh: AnimatedMesh): Mesh {
+    static registerMesh(animatedMesh: SceneMesh): Mesh {
         this.meshRegistry.push(animatedMesh)
         return animatedMesh.mesh
     }

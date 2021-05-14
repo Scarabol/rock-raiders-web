@@ -62,6 +62,7 @@ export class MainPanel extends Panel {
         const getToolPanel = this.addSubPanel(new GetToolPanel(this, selectRaiderPanel))
         selectRaiderPanel.getToolItem.onClick = () => selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
         const selectVehiclePanel = this.addSubPanel(new SelectVehiclePanel(this, this.mainPanel))
+
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
         teleportRaider.isDisabled = () => this.numRaiders >= this.getMaxRaiders() || this.numRequestedRaiders >= MAX_RAIDER_REQUEST ||
             (this.numToolstations < 1 && this.numTeleportPads < 1)
@@ -82,6 +83,7 @@ export class MainPanel extends Panel {
         const largeVehicleItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildLargeVehicle')
         largeVehicleItem.isDisabled = () => false
         largeVehicleItem.onClick = () => this.mainPanel.toggleState(() => largeVehiclePanel.toggleState())
+
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             if (event.selectionType === SelectionType.NOTHING) this.selectSubPanel(this.mainPanel)
             else if (event.selectionType === SelectionType.BUILDING) this.selectSubPanel(selectBuildingPanel)

@@ -23,22 +23,22 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Near
 
 - Vehicles (Land, Air, Sea)
-- Sounds and music
 - Radar map and geologists
 - Camera controls panel
+- Alarm mode and shooting
 
 ### Mid
 
-- Alarm mode and shooting
 - Rock-Monsters and Slugs
 - Damage, show health bar and teleport at bad health
 - Bricks and brick refinery
+- Level score shown and level unlocking
 
 ### Far
 
-- Level score shown and level unlocking
 - Save and load
 - First-Person and shoulder camera
+- Background music and soundtrack
 - Tutorial levels
 
 ## Known Bugs
@@ -52,12 +52,11 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Nice to have
 
-- Requirements tooltip for buildings/vehicles not shown
+- Dependency tooltips for buildings/vehicles not shown
 - Camera can glitch through terrain and zoom in/out infinitely
 
 ### Cosmetics
 
-- No tooltips
 - Cursor does not (always) react on targeted object
 - Adapt building placement marker to surface shape
 - Add water and lava animation
@@ -65,7 +64,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Technical Debt
 
-- Epic: move threejs rendering to separate worker
+- Move threejs rendering to separate worker
 
 ## Development
 

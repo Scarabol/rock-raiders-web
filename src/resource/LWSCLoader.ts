@@ -50,8 +50,8 @@ export class LWSCLoader {
             if (key === 'FirstFrame') {
                 this.parseFrameBlock()
             } else if (key === 'AddNullObject' || key === 'LoadObject') {
-                this.parseObjectBlock()
-                if (this.verbose) console.log(this.animationClip.bodies[this.animationClip.bodies.length - 1])
+                const subObj = this.parseObjectBlock()
+                if (this.verbose) console.log(subObj)
             } else if (line.startsWith('PreviewFirstFrame ') || line.startsWith('PreviewLastFrame ') || line.startsWith('PreviewFrameStep ')) {
                 // only used in editor
             } else {
@@ -98,7 +98,7 @@ export class LWSCLoader {
         this.animationClip.bodies.push(subObj)
         for (; this.lineIndex < this.lines.length; this.lineIndex++) {
             let line = this.lines[this.lineIndex]
-            if (!line) return
+            if (!line) return subObj
             const [key, value] = this.parseLine(line)
             if (key === 'AddNullObject' || key === 'LoadObject') {
                 if (key === 'LoadObject') {

@@ -37,8 +37,6 @@ export abstract class AnimEntity extends BaseEntity {
     }
 
     beamUp() {
-        // TODO avoid all further state changes and mark as unavailable here
-        // TODO publish event: check jobs with this target, update power state...
         EventBus.publishEvent(new SelectionChanged())
         this.changeActivity()
         // TODO insert beam animation
@@ -151,7 +149,7 @@ export abstract class AnimEntity extends BaseEntity {
         return AnimEntityActivity.Stand
     }
 
-    createPickSphere() {
+    createPickSphere() { // TODO move trigger into changeActivity?
         if (this.pickSphere) return
         const pickSphereDiameter = this.stats.PickSphere
         const pickSphereRadius = pickSphereDiameter / 2
@@ -166,10 +164,6 @@ export abstract class AnimEntity extends BaseEntity {
     }
 
     getPickSphereCenter(): Vector3 {
-        return this.getBoundingBoxCenter()
-    }
-
-    getBoundingBoxCenter() {
         const center = new Vector3()
         new Box3().setFromObject(this.group).getCenter(center)
         center.sub(this.group.position)

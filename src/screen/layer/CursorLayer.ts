@@ -60,29 +60,23 @@ export class CursorLayer extends ScreenLayer {
             return this.sceneMgr.buildMarker.lastCheck ? Cursor.Pointer_CanBuild : Cursor.Pointer_CannotBuild
         }
         let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere))
+        if (intersects.length > 0) return Cursor.Pointer_Selected
+        intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere))
+        if (intersects.length > 0) return Cursor.Pointer_Selected
+        intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
         if (intersects.length > 0) {
-            return Cursor.Pointer_Selected
-        } else {
-            let intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere))
-            if (intersects.length > 0) {
-                return Cursor.Pointer_Selected
-            } else {
-                intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
-                if (intersects.length > 0) {
-                    const userData = intersects[0].object.userData
-                    if (userData && userData.hasOwnProperty('surface')) {
-                        const surface = userData['surface'] as Surface
-                        if (surface) {
-                            if (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.VEHICLE || GameState.selectionType === SelectionType.GROUP) {
-                                if (surface.isDrillable()) {
-                                    return Cursor.Pointer_Drill // TODO check if selected entities can drill and return Pointer_CDrill otherwise
-                                } else {
-                                    return surface.surfaceType.cursorFulfiller
-                                }
-                            } else {
-                                return surface.surfaceType.cursor
-                            }
+            const userData = intersects[0].object.userData
+            if (userData && userData.hasOwnProperty('surface')) {
+                const surface = userData['surface'] as Surface
+                if (surface) {
+                    if (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.VEHICLE || GameState.selectionType === SelectionType.GROUP) {
+                        if (surface.isDrillable()) {
+                            return Cursor.Pointer_Drill // TODO check if selected entities can drill and return Pointer_CDrill otherwise
+                        } else {
+                            return surface.surfaceType.cursorFulfiller
                         }
+                    } else {
+                        return surface.surfaceType.cursor
                     }
                 }
             }

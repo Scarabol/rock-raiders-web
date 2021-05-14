@@ -1,7 +1,7 @@
 import { Mesh } from 'three'
 import { clearIntervalSafe } from '../core/Util'
 
-export class AnimatedMesh {
+export class SceneMesh {
 
     mesh: Mesh = null
     textureSequences = []

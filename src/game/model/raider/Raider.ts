@@ -1,4 +1,4 @@
-import { PositionalAudio, Vector3 } from 'three'
+import { PositionalAudio } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
@@ -54,10 +54,6 @@ export class Raider extends FulfillerEntity {
         this.selected = true
         this.changeActivity()
         return true
-    }
-
-    getSelectionCenter(): Vector3 {
-        return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null
     }
 
     isDriving(): boolean {

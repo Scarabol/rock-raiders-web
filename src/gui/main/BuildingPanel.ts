@@ -12,20 +12,20 @@ export class BuildingPanel extends IconSubPanel {
             this.publishEvent(new CancelBuildMode())
             this.toggleState(() => onBackPanel.toggleState())
         }
-        this.addBuildMenuItem('InterfaceBuildImages', 'Toolstation', EntityType.TOOLSTATION)
-        this.addBuildMenuItem('InterfaceBuildImages', 'TeleportPad', EntityType.TELEPORT_PAD)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Docks', EntityType.DOCKS)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Powerstation', EntityType.POWER_STATION)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Barracks', EntityType.BARRACKS)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Upgrade', EntityType.UPGRADE)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Geo-dome', EntityType.GEODOME)
-        this.addBuildMenuItem('InterfaceBuildImages', 'OreRefinery', EntityType.ORE_REFINERY)
-        this.addBuildMenuItem('InterfaceBuildImages', 'Gunstation', EntityType.GUNSTATION)
-        this.addBuildMenuItem('InterfaceBuildImages', 'TeleportBIG', EntityType.TELEPORT_BIG)
+        this.addBuildMenuItem('Toolstation', EntityType.TOOLSTATION)
+        this.addBuildMenuItem('TeleportPad', EntityType.TELEPORT_PAD)
+        this.addBuildMenuItem('Docks', EntityType.DOCKS)
+        this.addBuildMenuItem('Powerstation', EntityType.POWER_STATION)
+        this.addBuildMenuItem('Barracks', EntityType.BARRACKS)
+        this.addBuildMenuItem('Upgrade', EntityType.UPGRADE)
+        this.addBuildMenuItem('Geo-dome', EntityType.GEODOME)
+        this.addBuildMenuItem('OreRefinery', EntityType.ORE_REFINERY)
+        this.addBuildMenuItem('Gunstation', EntityType.GUNSTATION)
+        this.addBuildMenuItem('TeleportBIG', EntityType.TELEPORT_BIG)
     }
 
-    addBuildMenuItem(menuItemGroup: string, itemKey: string, entityType: EntityType) {
-        const item = this.addMenuItem(menuItemGroup, itemKey)
+    addBuildMenuItem(itemKey: string, entityType: EntityType) {
+        const item = this.addMenuItem('InterfaceBuildImages', itemKey)
         item.isDisabled = () => false // TODO check Dependencies from config
         item.onClick = () => this.publishEvent(new SelectBuildMode(entityType))
         return item

@@ -31,7 +31,6 @@ export class ClearRubbleJob extends PublicJob {
     }
 
     onJobComplete() {
-        this.fulfiller.forEach((f) => f.changeActivity())
         this.surface.reduceRubble()
         if (!this.surface.hasRubble()) {
             super.onJobComplete()

@@ -15,7 +15,7 @@ export class SmallSpider extends Monster {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae')
-        this.floorOffset = 1
+        this.floorOffset = 1 // TODO rotate spider according to surface normal vector
     }
 
     get stats() {

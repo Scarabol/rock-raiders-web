@@ -11,6 +11,7 @@ export const UPDATE_OXYGEN_TIMER = 5000 // milliseconds
 export const PANEL_ANIMATION_MULTIPLIER = 3
 export const HEIGHT_MULTIPLER = 0.1
 export const SEQUENCE_TEXTURE_FRAMERATE = 5
+export const KEY_PAN_SPEED = 20
 
 // native constants (do not change)
 

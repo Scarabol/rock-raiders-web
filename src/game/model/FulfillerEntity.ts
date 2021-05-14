@@ -83,27 +83,19 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     abstract select(): boolean
 
-    abstract getSelectionCenter(): Vector3
+    getSelectionCenter(): Vector3 {
+        return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null
+    }
 
     abstract addTool(tool: RaiderTool)
 
     abstract addTraining(skill: RaiderTraining)
 
-    abstract get stats(): FulfillerStats
+    abstract get stats()
 
     removeFromScene() {
         super.removeFromScene()
         this.workInterval = clearIntervalSafe(this.workInterval)
     }
-
-}
-
-export class FulfillerStats {
-
-    Levels: number
-    HardDrillTime: number[]
-    LooseDrillTime: number[]
-    SoilDrillTime: number[]
-    SeamDrillTime: number[]
 
 }

@@ -91,8 +91,9 @@ export class ResourceManager extends ResourceCache { // TODO rename to WadResour
                 return createDummyImgData(64, 64)
             })
         })
+        // without repeat wrapping some entities are not fully textured
         const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
-        texture.needsUpdate = true
+        texture.needsUpdate = true // without everything is just dark
         return texture
     }
 
