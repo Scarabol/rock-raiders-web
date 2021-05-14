@@ -1,9 +1,11 @@
+import { LevelRewardConfig } from '../cfg/LevelsCfg'
 import { RewardCfg } from '../cfg/RewardCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { clearTimeoutSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GameResultState, GameState } from '../game/model/GameState'
 import { RewardScreenButton } from '../menu/RewardScreenButton'
+import { MAX_RAIDER_BASE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { BaseScreen } from './BaseScreen'
 import { ScaledLayer } from './layer/ScreenLayer'
@@ -26,6 +28,7 @@ export class RewardScreen extends BaseScreen {
     btnSave: RewardScreenButton
     btnAdvance: RewardScreenButton
     levelFullNameImg: SpriteImage
+    rewardConfig: LevelRewardConfig
 
     constructor() {
         super()
@@ -119,7 +122,7 @@ export class RewardScreen extends BaseScreen {
         resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(0))) // TODO show defence report, is either 0% or 100%
         resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(GameState.airLevel)))
         resultValues.push(this.fonts['timer'].createTextImage(this.timeString(GameState.gameTimeSeconds)))
-        resultValues.push(this.fonts['score'].createTextImage(this.percentString(GameState.score)))
+        resultValues.push(this.fonts['score'].createTextImage(this.percentString(this.score)))
         const gameResultTextImg = this.titleFont.createTextImage(resultText)
         this.resultsLayer.onRedraw = (context) => {
             context.clearRect(0, 0, this.resultsLayer.fixedWidth, this.resultsLayer.fixedHeight)
@@ -147,6 +150,19 @@ export class RewardScreen extends BaseScreen {
             context.drawImage(descriptionTextImg, tx - descriptionTextImg.width / 2, ty)
         }
         super.show()
+    }
+
+    score(): number {
+        if (!this.rewardConfig) return 0
+        let quota = this.rewardConfig.quota
+        let importance = this.rewardConfig.importance
+        const scoreCrystals = GameState.numCrystal >= (quota.crystals || Infinity) ? importance.crystals : 0
+        const scoreTimer = GameState.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
+        const scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
+        const scoreConstructions = quota.constructions ? Math.min(1, GameState.buildings.length / quota.constructions * importance.constructions) : 0
+        const scoreOxygen = GameState.airLevel * importance.oxygen
+        const scoreFigures = GameState.raiders.length >= MAX_RAIDER_BASE ? importance.figures : 0
+        return Math.max(0, Math.min(100, Math.round(scoreCrystals + scoreTimer + scoreCaverns + scoreConstructions + scoreOxygen + scoreFigures) / 100))
     }
 
     percentString(actual, max = 1, lessIsMore: boolean = false) {
@@ -183,8 +199,9 @@ export class RewardScreen extends BaseScreen {
         }, this.cfg.timer * 1000)
     }
 
-    setLevelFullName(levelFullName: string) {
+    setup(levelFullName: string, rewardConfig: LevelRewardConfig) {
         this.levelFullNameImg = this.titleFont.createTextImage(levelFullName)
+        this.rewardConfig = rewardConfig
     }
 
 }

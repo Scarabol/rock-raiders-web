@@ -31,7 +31,6 @@ export class WorldManager {
 
     setup(levelConf: LevelEntryCfg, onLevelEnd: () => any) {
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
-        GameState.rewardConfig = levelConf.reward
         this.priorityList.setList(levelConf.priorities)
         EventBus.publishEvent(new SetupPriorityList(this.priorityList.levelDefault))
         GameState.oxygenRate = levelConf.oxygenRate

@@ -46,7 +46,7 @@ ResourceManager.onLoadDone = () => {
         try {
             const levelConf: LevelEntryCfg = ResourceManager.getResource('Levels').levelsByName[levelName]
             if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"' // TODO this could be nicer
-            rewardScreen.setLevelFullName(levelConf.fullName)
+            rewardScreen.setup(levelConf.fullName, levelConf.reward)
             gameScreen.startLevel(levelName, levelConf)
         } catch (e) {
             console.error('Could not load level: ' + levelName, e)
