@@ -68,6 +68,8 @@ declare global {
         count(callback: (element: T) => boolean): number
 
         partition(filter: (element: T) => boolean): [T[], T[]]
+
+        random(): T
     }
 
     interface Map<K, V> {
@@ -99,6 +101,11 @@ Array.prototype.partition = function <T>(filter: (element: T) => boolean): [T[],
     const left: T[] = [], right: T[] = []
     this.forEach((a) => filter(a) ? left.push(a) : right.push(a))
     return [left, right]
+}
+
+Array.prototype.random = function <T>(): T {
+    if (!this.length) return undefined
+    return this[getRandom(this.length - 1)]
 }
 
 // noinspection JSUnusedGlobalSymbols
