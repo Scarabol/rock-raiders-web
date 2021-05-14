@@ -54,7 +54,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Requirements tooltip for buildings/vehicles not shown
 - Camera can glitch through terrain and zoom in/out infinitely
-- Fix camera position and angle on level start
 
 ### Cosmetics
 

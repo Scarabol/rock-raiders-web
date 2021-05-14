@@ -1,4 +1,4 @@
-import { MathUtils, Vector2, Vector3 } from 'three'
+import { MathUtils, Vector2 } from 'three'
 import { EventBus } from '../event/EventBus'
 import { RaidersChangedEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
@@ -34,12 +34,11 @@ export class ObjectListLoader {
             if (lTypeName === 'TVCamera'.toLowerCase()) {
                 console.log('Camera heading: ' + Math.round(olObject.heading % 360))
                 console.log('Camera target: ' + (olObject.xPos - 1) + '/' + (olObject.yPos - 1))
-                const terrainY = sceneMgr.getTerrainHeight(worldPos.x, worldPos.y)
-                const loc = new Vector3(worldPos.x, terrainY, worldPos.y - TILESIZE / 2)
-                const offset = new Vector3(5 * TILESIZE, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), radHeading - Math.PI / 16).add(loc)
-                sceneMgr.camera.position.copy(offset)
-                sceneMgr.camera.position.y = 4.5 * TILESIZE
-                sceneMgr.controls.target.copy(loc)
+                const cameraOffset = new Vector2(6, 0).rotateAround(new Vector2(0, 0), radHeading + Math.PI / 2)
+                const cameraPos = sceneMgr.getFloorPosition(cameraOffset.multiplyScalar(TILESIZE).add(worldPos))
+                cameraPos.y += 4 * TILESIZE
+                sceneMgr.camera.position.copy(cameraPos)
+                sceneMgr.controls.target.copy(sceneMgr.getFloorPosition(worldPos))
                 sceneMgr.controls.update()
                 sceneMgr.setTorchPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
             } else if (lTypeName === 'Pilot'.toLowerCase()) {
