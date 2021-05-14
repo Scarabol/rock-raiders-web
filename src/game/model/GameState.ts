@@ -8,7 +8,6 @@ import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
 import { MaterialEntity } from './collect/MaterialEntity'
 import { EntityType } from './EntityType'
-import { PriorityList } from './job/PriorityList'
 import { Surface } from './map/Surface'
 import { Bat } from './monster/Bat'
 import { SmallSpider } from './monster/SmallSpider'
@@ -55,7 +54,6 @@ export class GameState {
     static levelStartTime: number = 0
     static levelStopTime: number = 0
     static rewardConfig: LevelRewardConfig = null
-    static priorityList: PriorityList = new PriorityList()
     static oxygenRate: number = 0
     static buildModeSelection: BuildingEntity = null
 
@@ -89,7 +87,6 @@ export class GameState {
         this.levelStartTime = 0
         this.levelStopTime = 0
         this.rewardConfig = null
-        this.priorityList = new PriorityList()
         this.oxygenRate = 0
         this.buildModeSelection = null
     }

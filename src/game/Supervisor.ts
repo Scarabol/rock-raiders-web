@@ -50,13 +50,13 @@ export class Supervisor {
         const availableJobs: PublicJob[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobState === JobState.INCOMPLETE
-            if (result && j.fulfiller.length < 1 && GameState.priorityList.isEnabled(j.getPriorityIdentifier())) { // TODO don't assign jobs on hidden surfaces
+            if (result && j.fulfiller.length < 1 && this.worldMgr.priorityList.isEnabled(j.getPriorityIdentifier())) { // TODO don't assign jobs on hidden surfaces
                 availableJobs.push(j)
             }
             return result
         })
         availableJobs.sort((left, right) => {
-            return Math.sign(GameState.priorityList.getPriority(left) - GameState.priorityList.getPriority(right))
+            return Math.sign(this.worldMgr.priorityList.getPriority(left) - this.worldMgr.priorityList.getPriority(right))
         })
         const unemployedRaider = GameState.raiders.filter((r) => !r.job)
         availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
@@ -137,7 +137,7 @@ export class Supervisor {
     }
 
     checkUnclearedRubble() {
-        if (!GameState.priorityList.isEnabled(PriorityIdentifier.aiPriorityClearing)) return
+        if (!this.worldMgr.priorityList.isEnabled(PriorityIdentifier.aiPriorityClearing)) return
         GameState.raiders.forEach((raider) => {
             if (raider.job) return
             const startSurface = raider.sceneMgr.terrain.getSurfaceFromWorld(raider.getPosition())
