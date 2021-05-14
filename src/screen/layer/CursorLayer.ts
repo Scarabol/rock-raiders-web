@@ -56,6 +56,9 @@ export class CursorLayer extends ScreenLayer {
     }
 
     determineCursor(raycaster: Raycaster): Cursor {
+        if (GameState.buildModeSelection) {
+            return this.sceneMgr.buildMarker.lastCheck ? Cursor.Pointer_CanBuild : Cursor.Pointer_CannotBuild
+        }
         let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere))
         if (intersects.length > 0) {
             return Cursor.Pointer_Selected
