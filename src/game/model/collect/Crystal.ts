@@ -1,6 +1,6 @@
-import { AdditiveBlending, Color, Material, MeshPhongMaterial } from 'three'
-import { LWOLoader } from '../../../resource/LWOLoader'
+import { AdditiveBlending, Color } from 'three'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
@@ -11,23 +11,19 @@ export class Crystal extends MaterialEntity {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.CRYSTAL)
-        const resource2 = ResourceManager.getResource('MiscAnims/Crystal/vlp_greencrystal.lwo')
-        const mesh2 = SceneManager.registerMesh(new LWOLoader('MiscAnims/Crystal/').parse(resource2));
-        (mesh2.material as Material[]).forEach((mat: MeshPhongMaterial) => {
+        const mesh2 = ResourceManager.getLwoModel('MiscAnims/Crystal/vlp_greencrystal.lwo')
+        mesh2.getMaterials().forEach((mat: SequenceTextureMaterial) => {
             mat.blending = AdditiveBlending
             mat.depthWrite = false // otherwise transparent parts "carve out" objects behind
-            mat.opacity = 0.5 // XXX read from LWO file?
-            mat.transparent = mat.opacity < 1
+            mat.setOpacity(0.5) // XXX read from LWO file?
         })
         mesh2.scale.set(1.75, 1.75, 1.75) // XXX derive from texture scale?
         this.group.add(mesh2)
-        const resource = ResourceManager.getResource('World/Shared/Crystal.lwo') // high poly version
-        const mesh = SceneManager.registerMesh(new LWOLoader('World/Shared/').parse(resource));
-        (mesh.material as Material[]).forEach((mat: MeshPhongMaterial) => {
+        const mesh = ResourceManager.getLwoModel('World/Shared/Crystal.lwo') // high poly version
+        mesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
             mat.emissive = new Color(0, 8, 0) // XXX read from LWO file?
             mat.color = new Color(0, 0, 0) // XXX read from LWO file?
-            mat.opacity = 0.9 // XXX read from LWO file?
-            mat.transparent = mat.opacity < 1
+            mat.setOpacity(0.9) // XXX read from LWO file?
         })
         this.group.add(mesh)
         this.targetBuildingTypes = [EntityType.POWER_STATION, EntityType.TOOLSTATION]

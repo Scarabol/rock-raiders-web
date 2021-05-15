@@ -1,4 +1,4 @@
-import { AmbientLight, AudioListener, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe } from '../core/Util'
@@ -199,9 +199,9 @@ export class SceneManager {
         SceneManager.meshRegistry = []
     }
 
-    static registerMesh(animatedMesh: SceneMesh): Mesh {
-        this.meshRegistry.push(animatedMesh)
-        return animatedMesh.mesh
+    static registerMesh(mesh: SceneMesh): SceneMesh {
+        this.meshRegistry.push(mesh)
+        return mesh
     }
 
     resize(width: number, height: number) {

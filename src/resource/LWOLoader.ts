@@ -10,10 +10,10 @@
  *  -
  */
 
-import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, DoubleSide, Mesh, MeshPhongMaterial, Vector3 } from 'three'
+import { AdditiveBlending, BufferAttribute, BufferGeometry, Color, DoubleSide, Texture, Vector3 } from 'three'
 import { decodeFilepath, decodeString, getFilename } from '../core/Util'
-import { SEQUENCE_TEXTURE_FRAMERATE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
+import { SequenceTextureMaterial } from '../scene/SequenceTextureMaterial'
 import { ResourceManager } from './ResourceManager'
 
 // HEADER SPEC //
@@ -232,19 +232,19 @@ export class LWOLoader {
 
     COUNTER_CLOCKWISE: false
 
-    path: string = ''
+    meshPath: string
+    entityPath: string
     verbose: boolean = false
-    materials: MeshPhongMaterial[] = []
+    materials: SequenceTextureMaterial[] = []
     geometry: BufferGeometry = new BufferGeometry()
     vertices: Float32Array = null
     indices: Uint16Array = null
     uvs: Float32Array = null
-    sequenceIntervals = []
 
-    constructor(path: string, verbose: boolean = false) {
-        this.path = path
+    constructor(meshPath: string, entityPath: string = null, verbose: boolean = false) {
         this.verbose = verbose
-        if (this.verbose) console.log('LWO path: ' + this.path)
+        this.meshPath = meshPath
+        this.entityPath = entityPath
     }
 
     parsePoints(view, chunkOffset, chunkSize) {
@@ -268,9 +268,7 @@ export class LWOLoader {
 
     parseSurfaceNames(buffer, chunkOffset, chunkSize) {
         let textChunk = new TextDecoder().decode(new Uint8Array(buffer, chunkOffset, chunkSize))
-        this.materials = textChunk.split('\0').filter((s) => !!s).map((name) =>
-            new MeshPhongMaterial({name: name, side: DoubleSide, alphaToCoverage: true, shininess: 0}),
-        )
+        this.materials = textChunk.split('\0').filter((s) => !!s).map((name) => new SequenceTextureMaterial(name))
         if (this.verbose) console.log('LWO contains ' + this.materials.length + ' materials with following names: ' + this.materials.map((m) => m.name))
     }
 
@@ -324,7 +322,7 @@ export class LWOLoader {
         let materialName = decodeString(new Uint8Array(buffer, chunkOffset, offset))
         if (this.verbose) console.log('Parsing surface: ' + materialName)
         let materialIndex = -1
-        let material: MeshPhongMaterial = null
+        let material: SequenceTextureMaterial = null
         for (let i = 0; i < this.materials.length; i++) {
             if (this.materials[i].name === materialName) {
                 materialIndex = i
@@ -417,9 +415,8 @@ export class LWOLoader {
                         } else {
                             transparency = view.getInt16(subChunkOffset + SUBCHUNK_HEADER_SIZE) / 256
                         }
-                        material.opacity = 1 - transparency
+                        material.setOpacity(1 - transparency)
                         if (this.verbose) console.log('Opacity (TRAN/VTRN): ' + material.opacity)
-                        material.transparent = material.transparent || material.opacity < 1
                         break
                     case SURF_VLUM:
                         const vLuminosity = view.getFloat32(subChunkOffset + SUBCHUNK_HEADER_SIZE)
@@ -481,42 +478,25 @@ export class LWOLoader {
                         if (this.verbose) console.log('Texture color (TCLR): ' + textureColorArray.join(' '))
                         break
                     case SURF_TIMG:
-                        let textureFilepath = decodeFilepath(new Uint8Array(buffer, subChunkOffset + SUBCHUNK_HEADER_SIZE, subChunkSize))
+                        const textureFilepath = decodeFilepath(new Uint8Array(buffer, subChunkOffset + SUBCHUNK_HEADER_SIZE, subChunkSize))
                         if (this.verbose) console.log('Texture filepath (TIMG): ' + textureFilepath)
-                        if (textureFilepath === '(none)') break
-                        let sequenceTexture = false
-                        if (textureFilepath.endsWith(' (sequence)')) {
-                            sequenceTexture = true
-                            textureFilepath = textureFilepath.substring(0, textureFilepath.length - ' (sequence)'.length)
+                        const lTextureFilename = getFilename(textureFilepath)?.toLowerCase()
+                        if (!lTextureFilename || lTextureFilename === '(none)') break
+                        material.transparent = material.transparent || !!lTextureFilename.match(/a\d\d\d\D.*bmp/i)
+                        const hasSequence = lTextureFilename.endsWith('(sequence)')
+                        const sequenceBaseFilepath = lTextureFilename.substring(0, lTextureFilename.length - '(sequence)'.length).trim()
+                        let textures: Texture[] = []
+                        if (hasSequence) {
+                            const match = sequenceBaseFilepath.match(/(.+\D)0+(\d+)\..+/i)
+                            textures = ResourceManager.getTexturesBySequenceName(this.meshPath + match[1])
+                        } else {
+                            const texture = ResourceManager.getMeshTexture(lTextureFilename, this.meshPath, this.entityPath)
+                            textures = texture ? [texture] : []
                         }
-                        let filename = getFilename(textureFilepath)
-                        material.transparent = material.transparent || !!filename.match(/^a\d+.+.bmp/i)
-                        const textureFilename = this.path + filename
-                        if (sequenceTexture) {
-                            const match = textureFilename.match(/(.+\D)0+(\d+)\..+/)
-                            const textures = ResourceManager.filterTextureSequenceNames(match[1])
-                                .map((name) => ResourceManager.getTexture(name))
-                            if (textures) {
-                                let seqNum = 0
-                                material.color = null // no need for color, when color map (texture) in use
-                                this.sequenceIntervals.push(setInterval(() => {
-                                    material.map = textures[seqNum++]
-                                    if (seqNum >= textures.length) seqNum = 0
-                                }, 1000 / SEQUENCE_TEXTURE_FRAMERATE))
-                            }
-                        }
-                        const lTextureName = textureFilename.toLowerCase()
-                        if (lTextureName === 'miscanims/barrier/a_side.bmp' // workaround (TODO actually never add unknown textures?)
-                            || lTextureName === 'miscanims/barrier/a_top.bmp'
-                            || lTextureName === 'world/shared/teofoilreflections.jpg'
-                            || lTextureName === 'buildings/barracks/wingbase3.bmp') {
-                            break
-                        }
-                        material.map = ResourceManager.getTexture(textureFilename)
-                        material.color = null // no need for color, when color map (texture) in use
+                        material.setTextures(textures)
                         break
                     default: // TODO implement all LWO features
-                        if (this.verbose) console.warn('Found unrecognised SURF subchunk type ' + new TextDecoder().decode(new Uint8Array(buffer, subChunkOffset, ID4_SIZE)) + ' at ' + subChunkOffset + '; length ' + subChunkSize)
+                        if (this.verbose) console.warn('Found unrecognised SURF sub-chunk type ' + new TextDecoder().decode(new Uint8Array(buffer, subChunkOffset, ID4_SIZE)) + ' at ' + subChunkOffset + '; length ' + subChunkSize)
                         break
                 }
 
@@ -585,6 +565,6 @@ export class LWOLoader {
         this.geometry.setIndex(new BufferAttribute(this.indices, 1))
         this.geometry.computeVertexNormals()
 
-        return new SceneMesh(new Mesh(this.geometry, this.materials), this.sequenceIntervals)
+        return new SceneMesh(this.geometry, this.materials)
     }
 }

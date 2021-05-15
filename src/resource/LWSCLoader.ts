@@ -10,8 +10,6 @@ import { Group, Vector3 } from 'three'
 import { getFilename } from '../core/Util'
 import { AnimClip } from '../game/model/anim/AnimClip'
 import { AnimSubObj } from '../game/model/anim/AnimSubObj'
-import { SceneManager } from '../game/SceneManager'
-import { LWOLoader } from './LWOLoader'
 import { ResourceManager } from './ResourceManager'
 
 export class LWSCLoader {
@@ -105,8 +103,7 @@ export class LWSCLoader {
                     const filename = getFilename(value)
                     subObj.lowerName = filename.slice(0, filename.length - '.lwo'.length).toLowerCase()
                     subObj.filename = this.path + filename
-                    const lwoBuffer = ResourceManager.getResource(subObj.filename)
-                    subObj.model = SceneManager.registerMesh(new LWOLoader(this.path).parse(lwoBuffer))
+                    subObj.model = ResourceManager.getLwoModel(subObj.filename)
                 } else if (key === 'AddNullObject') {
                     subObj.lowerName = value.toLowerCase()
                     subObj.model = new Group()

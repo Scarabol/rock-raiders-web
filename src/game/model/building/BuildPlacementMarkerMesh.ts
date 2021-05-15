@@ -1,5 +1,6 @@
 import { Mesh, MeshPhongMaterial, Vector3 } from 'three'
 import { TILESIZE } from '../../../params'
+import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
 import { SceneManager } from '../../SceneManager'
 import { Surface } from '../map/Surface'
 import { SurfaceGeometry } from '../map/SurfaceGeometry'
@@ -39,7 +40,7 @@ export class BuildPlacementMarkerMesh extends Mesh {
 
     markAsValid(isValid: boolean) {
         const color = isValid ? this.standardColor : 0x500000;
-        (this.material as MeshPhongMaterial).color.setHex(color)
+        (this.material as SequenceTextureMaterial).color.setHex(color)
     }
 
     get surface(): Surface {

@@ -1,20 +1,30 @@
-import { Mesh } from 'three'
-import { clearIntervalSafe } from '../core/Util'
+import { BufferGeometry, Material, Mesh } from 'three'
+import { SceneManager } from '../game/SceneManager'
+import { SequenceTextureMaterial } from './SequenceTextureMaterial'
 
-export class SceneMesh {
+export class SceneMesh extends Mesh {
 
-    mesh: Mesh = null
-    textureSequences = []
+    constructor(geometry: BufferGeometry, material: Material | Material[]) {
+        super(geometry, material)
+        SceneManager.registerMesh(this)
+    }
 
-    constructor(mesh: Mesh, textureSequences: any[]) {
-        this.mesh = mesh
-        this.textureSequences = textureSequences
+    clone(): this {
+        const clone = super.clone(true)
+        clone.material = this.getMaterials().map((m) => m.clone())
+        return clone
     }
 
     dispose() {
-        this.textureSequences.forEach((s) => clearIntervalSafe(s))
-        this.mesh.geometry.dispose()
-        Array.isArray(this.mesh.material) ? this.mesh.material.forEach(mat => mat.dispose()) : this.mesh.material?.dispose()
+        this.geometry.dispose()
+        this.getMaterials().forEach((m) => m.dispose())
+        this.material = null
+    }
+
+    getMaterials(): SequenceTextureMaterial[] {
+        const mat = this.material
+        if (!mat) return []
+        return (Array.isArray(mat) ? mat : [mat]) as SequenceTextureMaterial[]
     }
 
 }

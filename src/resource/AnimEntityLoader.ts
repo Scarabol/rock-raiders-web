@@ -2,8 +2,6 @@ import { getPath, iGet } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
-import { SceneManager } from '../game/SceneManager'
-import { LWOLoader } from './LWOLoader'
 import { LWSCLoader } from './LWSCLoader'
 import { ResourceManager } from './ResourceManager'
 
@@ -30,9 +28,8 @@ export class AnimEntityLoader {
             } else if (rootKey.equalsIgnoreCase('WheelMesh')) {
                 if (!'NULL_OBJECT'.equalsIgnoreCase(value)) {
                     const lwoFilename = path + value + '.lwo'
-                    const lwoBuffer = ResourceManager.getResource(lwoFilename)
-                    if (!lwoBuffer) console.error('Could not load wheel mesh from: ' + lwoFilename)
-                    else entityType.wheelMesh = SceneManager.registerMesh(new LWOLoader(path, verbose).parse(lwoBuffer))
+                    entityType.wheelMesh = ResourceManager.getLwoModel(lwoFilename)
+                    if (!entityType.wheelMesh) console.error('Could not load wheel mesh from: ' + lwoFilename)
                 }
             } else if (rootKey.equalsIgnoreCase('WheelRadius')) {
                 entityType.wheelRadius = Number(value)
@@ -51,8 +48,8 @@ export class AnimEntityLoader {
             } else if (rootKey.equalsIgnoreCase('HighPoly')) {
                 Object.keys(value).forEach((key) => {
                     const polyKey = key.startsWith('!') ? key.slice(1) : key
-                    const lwoBuffer = ResourceManager.getResource(path + value[key] + '.lwo')
-                    entityType.highPolyBodies.set(polyKey.toLowerCase(), SceneManager.registerMesh(new LWOLoader(path, verbose).parse(lwoBuffer)))
+                    const mesh = ResourceManager.getLwoModel(path + value[key] + '.lwo')
+                    entityType.highPolyBodies.set(polyKey.toLowerCase(), mesh)
                 })
             } else if (rootKey.equalsIgnoreCase('MediumPoly')) {
                 // TODO implement medium poly parsing

@@ -1,4 +1,4 @@
-import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, MeshPhongMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
+import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
 import { createContext } from '../../../core/ImageHelper'
@@ -6,8 +6,8 @@ import { clearTimeoutSafe } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
-import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
@@ -118,12 +118,9 @@ export abstract class AnimEntity extends BaseEntity {
             upgrades0000.forEach((upgrade) => {
                 const joint = this.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
                 if (joint) {
-                    const lwoBuffer = ResourceManager.getResource(upgrade.upgradeFilepath + '.lwo')
-                    if (lwoBuffer) {
-                        if (lwoBuffer) {
-                            const upgradeMesh = SceneManager.registerMesh(new LWOLoader(upgrade.upgradeFilepath).parse(lwoBuffer))
-                            joint.add(upgradeMesh.clone(true))
-                        }
+                    const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath + '.lwo')
+                    if (lwoModel) {
+                        joint.add(lwoModel)
                     } else {
                         const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae')
                         upgradeModels.animations.get('activity_stand')?.bodies.forEach((b) => joint.add(b.model.clone(true)))
@@ -158,10 +155,7 @@ export abstract class AnimEntity extends BaseEntity {
                 const opacity = body.opacity[frameIndex]
                 if (material && opacity !== undefined) {
                     const matArr = Array.isArray(material) ? material : [material]
-                    matArr.forEach((mat: MeshPhongMaterial) => {
-                        mat.opacity = opacity
-                        mat.transparent = mat.transparent || mat.opacity < 1
-                    })
+                    matArr.forEach((mat: SequenceTextureMaterial) => mat.setOpacity(opacity))
                 }
             }
         })

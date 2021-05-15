@@ -9,6 +9,7 @@ import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationE
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../params'
 import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimSubObj } from '../anim/AnimSubObj'
@@ -409,6 +410,7 @@ export class Surface implements Selectable {
     updateGeometry(topLeftVertex: Vector3, bottomRightVertex: Vector3, topRightVertex: Vector3, bottomLeftVertex: Vector3) {
         if (this.mesh) this.terrain.floorGroup.remove(this.mesh)
         this.mesh?.geometry?.dispose()
+        this.forEachMaterial((m) => m.dispose())
 
         const geometry = SurfaceGeometry.create(this.wallType, topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex,
             this.topLeftVertex.y, this.topRightVertex.y, this.bottomRightVertex.y, this.bottomLeftVertex.y)
@@ -576,10 +578,7 @@ export class Surface implements Selectable {
                 const opacity = body.opacity[frameIndex]
                 if (material && opacity !== undefined) {
                     const matArr = Array.isArray(material) ? material : [material]
-                    matArr.forEach((mat: MeshPhongMaterial) => {
-                        mat.opacity = opacity
-                        mat.transparent = mat.transparent || mat.opacity < 1
-                    })
+                    matArr.forEach((mat: SequenceTextureMaterial) => mat.setOpacity(opacity))
                 }
             }
         })

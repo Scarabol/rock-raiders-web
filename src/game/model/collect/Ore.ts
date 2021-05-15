@@ -1,4 +1,3 @@
-import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
@@ -10,9 +9,7 @@ export class Ore extends MaterialEntity {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.ORE)
-        const resource = ResourceManager.getResource('MiscAnims/Ore/Ore1st.lwo')
-        const mesh = SceneManager.registerMesh(new LWOLoader('MiscAnims/Ore/').parse(resource))
-        this.group.add(mesh)
+        this.group.add(ResourceManager.getLwoModel('MiscAnims/Ore/Ore1st.lwo'))
         this.targetBuildingTypes = [EntityType.ORE_REFINERY, EntityType.TOOLSTATION]
         this.priorityIdentifier = PriorityIdentifier.aiPriorityOre
     }

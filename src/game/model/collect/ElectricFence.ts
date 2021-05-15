@@ -1,4 +1,3 @@
-import { LWOLoader } from '../../../resource/LWOLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
@@ -16,8 +15,7 @@ export class ElectricFence extends MaterialEntity {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager, surface: Surface) {
         super(worldMgr, sceneMgr, EntityType.ELECTRIC_FENCE)
-        const resource = ResourceManager.getResource('Buildings/E-Fence/E-Fence4.lwo')
-        const mesh = SceneManager.registerMesh(new LWOLoader('Buildings/E-Fence/').parse(resource))
+        const mesh = ResourceManager.getLwoModel('Buildings/E-Fence/E-Fence4.lwo')
         this.group.add(mesh)
         this.targetSurface = surface
         this.priorityIdentifier = PriorityIdentifier.aiPriorityConstruction
