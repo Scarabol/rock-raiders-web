@@ -14,7 +14,7 @@ export abstract class BaseEntity {
     superType: EntitySuperType = null
     entityType: EntityType = null
     level: number = 0
-    floorOffset: number = 0
+    floorOffset: number = 0.1
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType) {
         this.worldMgr = worldMgr
