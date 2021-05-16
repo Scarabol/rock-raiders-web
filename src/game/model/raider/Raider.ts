@@ -34,7 +34,7 @@ export class Raider extends FulfillerEntity {
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {
-        return this.sceneMgr.terrain.findPath(this.getPosition2D(), target)
+        return this.sceneMgr.terrain.findWalkPath(this.getPosition2D(), target)
     }
 
     onDiscover() {

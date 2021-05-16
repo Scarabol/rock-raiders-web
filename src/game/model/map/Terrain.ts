@@ -19,7 +19,7 @@ export class Terrain {
     floorGroup: Group = new Group()
     roofGroup: Group = new Group()
     graphWalk: Graph = null
-    cachedPaths = new Map<string, TerrainPath>()
+    cachedWalkPaths = new Map<string, Vector2[]>()
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         this.worldMgr = worldMgr
@@ -64,39 +64,25 @@ export class Terrain {
 
     resetGraphWalk() {
         this.graphWalk.init()
-        this.cachedPaths.clear()
+        this.cachedWalkPaths.clear()
         console.log('Cached paths cleared')
     }
 
-    findPath(start: Vector2, target: PathTarget): TerrainPath {
-        const end = target.targetLocation
-        const gridStartX = Math.floor(start.x * 3 / TILESIZE)
-        const gridStartY = Math.floor(start.y * 3 / TILESIZE)
-        const gridEndX = Math.floor(end.x * 3 / TILESIZE)
-        const gridEndY = Math.floor(end.y * 3 / TILESIZE)
-        if (gridStartX === gridEndX && gridStartY === gridEndY) {
-            return new TerrainPath(target, end)
-        }
-        const cacheIdentifier = gridStartX + '/' + gridStartY + ' -> ' + gridEndX + '/' + gridEndY
-        const cachedPath = this.cachedPaths.get(cacheIdentifier)
-        if (cachedPath) {
-            return cachedPath.addLocation(end)
-        } else {
-            return this.searchPath(gridStartX, gridStartY, gridEndX, gridEndY, target, cacheIdentifier)
-        }
-    }
-
-    private searchPath(gridStartX: number, gridStartY: number, gridEndX: number, gridEndY: number, target: PathTarget, cacheIdentifier: string): TerrainPath {
-        const startNode = this.graphWalk.grid[gridStartX][gridStartY]
-        const endNode = this.graphWalk.grid[gridEndX][gridEndY]
-        const worldPath = astar.search(this.graphWalk, startNode, endNode)
-            .map((n) => Terrain.gridNodeToWorldPos(n))
-        if (worldPath.length < 1) return null // no path found
-        // replace last surface center with actual target position
-        worldPath.pop()
-        worldPath.push(target.targetLocation)
-        this.cachedPaths.set(cacheIdentifier, new TerrainPath(target, worldPath.slice(0, -1))) // cache shallow copy to avoid interference
-        return new TerrainPath(target, worldPath)
+    findWalkPath(start: Vector2, target: PathTarget): TerrainPath {
+        const gridStart = start.clone().multiplyScalar(3 / TILESIZE).floor()
+        const gridEnd = target.targetLocation.clone().multiplyScalar(3 / TILESIZE).floor()
+        if (gridStart.x === gridEnd.x && gridStart.y === gridEnd.y) return new TerrainPath(target, target.targetLocation)
+        const cacheIdentifier = gridStart.x + '/' + gridStart.y + ' -> ' + gridEnd.x + '/' + gridEnd.y
+        const walkPath = this.cachedWalkPaths.getOrUpdate(cacheIdentifier, () => {
+            const startNode = this.graphWalk.grid[gridStart.x][gridStart.y]
+            const endNode = this.graphWalk.grid[gridEnd.x][gridEnd.y]
+            const path = astar.search(this.graphWalk, startNode, endNode).map((n) => Terrain.gridNodeToWorldPos(n))
+            if (path.length < 1) return null // no path found
+            path.pop() // last node is replaced with actual target position
+            return path
+        })
+        if (!walkPath) return null
+        return new TerrainPath(target, [...walkPath, target.targetLocation]) // return shallow copy to avoid interference
     }
 
     private static gridNodeToWorldPos(gridNode) {
