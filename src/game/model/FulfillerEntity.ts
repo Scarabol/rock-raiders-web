@@ -1,12 +1,17 @@
-import { Vector2, Vector3 } from 'three'
+import { PositionalAudio, Vector2, Vector3 } from 'three'
+import { Sample } from '../../audio/Sample'
 import { clearIntervalSafe } from '../../core/Util'
 import { NATIVE_FRAMERATE } from '../../params'
 import { SceneManager } from '../SceneManager'
 import { WorldManager } from '../WorldManager'
+import { RaiderActivity } from './activities/RaiderActivity'
 import { MaterialEntity } from './collect/MaterialEntity'
 import { EntitySuperType, EntityType } from './EntityType'
 import { Job } from './job/Job'
+import { JobState } from './job/JobState'
 import { MovableEntity } from './MovableEntity'
+import { MoveState } from './MoveState'
+import { PathTarget } from './PathTarget'
 import { RaiderTool } from './raider/RaiderTool'
 import { RaiderTraining } from './raider/RaiderTraining'
 import { Selectable, SelectionType } from './Selectable'
@@ -19,6 +24,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     followUpJob: Job = null
     carries: MaterialEntity = null
     inBeam: boolean = false
+    workAudio: PositionalAudio
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, superType, entityType, aeFilename)
@@ -29,8 +35,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     resetWorkInterval() {
         this.workInterval = clearIntervalSafe(this.workInterval)
     }
-
-    abstract work()
 
     dropItem() {
         if (!this.carries) return
@@ -104,6 +108,56 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     beamUp() {
         super.beamUp()
         this.inBeam = true
+    }
+
+    moveToClosestTarget(target: PathTarget[]): MoveState {
+        const result = super.moveToClosestTarget(target)
+        this.job.setActualWorkplace(this.currentPath?.target)
+        if (result === MoveState.TARGET_UNREACHABLE) {
+            console.log('Entity could not move to job target, stopping job')
+            this.stopJob()
+        }
+        return result
+    }
+
+    work() {
+        if (!this.job || this.selected) return
+        if (this.job.jobState !== JobState.INCOMPLETE) {
+            this.stopJob()
+        } else {
+            const carryItem = this.job.getCarryItem()
+            if (carryItem && this.carries !== carryItem) {
+                this.dropItem()
+                if (this.moveToClosestTarget(carryItem.getPositionPathTarget())) {
+                    this.changeActivity(RaiderActivity.Collect, () => {
+                        this.pickupItem(carryItem)
+                    })
+                }
+            } else if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
+                if (this.job.isReadyToComplete()) {
+                    const workActivity = this.job.getWorkActivity() || this.getDefaultActivity()
+                    if (!this.workAudio && workActivity === RaiderActivity.Drill) {
+                        this.workAudio = this.playPositionalSample(Sample.SFX_Drill, true)
+                    }
+                    this.changeActivity(workActivity, () => {
+                        this.workAudio?.stop()
+                        this.workAudio = null
+                        this.completeJob()
+                    }, this.job.getWorkDuration(this))
+                } else {
+                    this.changeActivity()
+                }
+            }
+        }
+    }
+
+    private completeJob() {
+        this.job?.onJobComplete()
+        if (this.job?.jobState === JobState.INCOMPLETE) return
+        if (this.job) this.job.unassign(this)
+        this.job = this.followUpJob
+        this.followUpJob = null
+        this.changeActivity()
     }
 
 }

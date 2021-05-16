@@ -1,4 +1,3 @@
-import { PositionalAudio } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
@@ -12,7 +11,6 @@ import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntitySuperType, EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { GameState } from '../GameState'
-import { JobState } from '../job/JobState'
 import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
@@ -25,7 +23,6 @@ export class Raider extends FulfillerEntity {
     tools: Map<RaiderTool, boolean> = new Map()
     trainings: Map<RaiderTraining, boolean> = new Map()
     slipped: boolean = false
-    workAudio: PositionalAudio
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntitySuperType.RAIDER, EntityType.PILOT, 'mini-figures/pilot/pilot.ae')
@@ -83,7 +80,6 @@ export class Raider extends FulfillerEntity {
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
         const result = super.moveToClosestTarget(target)
-        this.job.setActualWorkplace(this.currentPath?.target)
         if (result === MoveState.MOVED) {
             GameState.getNearbySpiders(this).some((spider) => {
                 if (this.group.position.distanceToSquared(spider.group.position) < this.radiusSq + spider.radiusSq) {
@@ -92,9 +88,6 @@ export class Raider extends FulfillerEntity {
                     return true
                 }
             })
-        } else if (result === MoveState.TARGET_UNREACHABLE) {
-            console.log('Entity could not move to job target, stopping job')
-            this.stopJob()
         }
         return result
     }
@@ -110,43 +103,8 @@ export class Raider extends FulfillerEntity {
     }
 
     work() {
-        if (!this.job || this.selected || this.slipped) return
-        if (this.job.jobState !== JobState.INCOMPLETE) {
-            this.stopJob()
-        } else {
-            const carryItem = this.job.getCarryItem()
-            if (carryItem && this.carries !== carryItem) {
-                this.dropItem()
-                if (this.moveToClosestTarget(carryItem.getPositionPathTarget())) {
-                    this.changeActivity(RaiderActivity.Collect, () => {
-                        this.pickupItem(carryItem)
-                    })
-                }
-            } else if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
-                if (this.job.isReadyToComplete()) {
-                    const workActivity = this.job.getWorkActivity() || this.getDefaultActivity()
-                    if (!this.workAudio && workActivity === RaiderActivity.Drill) {
-                        this.workAudio = this.playPositionalSample(Sample.SFX_Drill, true)
-                    }
-                    this.changeActivity(workActivity, () => {
-                        this.workAudio?.stop()
-                        this.workAudio = null
-                        this.completeJob()
-                    }, this.job.getWorkDuration(this))
-                } else {
-                    this.changeActivity()
-                }
-            }
-        }
-    }
-
-    private completeJob() {
-        this.job?.onJobComplete()
-        if (this.job?.jobState === JobState.INCOMPLETE) return
-        if (this.job) this.job.unassign(this)
-        this.job = this.followUpJob
-        this.followUpJob = null
-        this.changeActivity()
+        if (this.slipped) return
+        super.work()
     }
 
     getDefaultActivity(): BaseActivity {
