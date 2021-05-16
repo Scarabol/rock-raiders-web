@@ -28,7 +28,7 @@ export class Raider extends FulfillerEntity {
     workAudio: PositionalAudio
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
-        super(worldMgr, sceneMgr, EntitySuperType.RAIDER, EntityType.PILOT, 'mini-figures/pilot/pilot.ae', SelectionType.RAIDER)
+        super(worldMgr, sceneMgr, EntitySuperType.RAIDER, EntityType.PILOT, 'mini-figures/pilot/pilot.ae')
         this.tools.set(RaiderTool.DRILL, true)
     }
 
@@ -51,6 +51,10 @@ export class Raider extends FulfillerEntity {
     select(): boolean {
         if (this.slipped) return false
         return super.select()
+    }
+
+    getSelectionType(): SelectionType {
+        return SelectionType.RAIDER
     }
 
     isDriving(): boolean {

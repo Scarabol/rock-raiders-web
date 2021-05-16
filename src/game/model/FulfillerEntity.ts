@@ -13,7 +13,6 @@ import { Selectable, SelectionType } from './Selectable'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
-    selectionType: SelectionType
     selected: boolean
     workInterval = null
     job: Job = null
@@ -21,9 +20,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     carries: MaterialEntity = null
     inBeam: boolean = false
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string, selectionType: SelectionType) {
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, superType, entityType, aeFilename)
-        this.selectionType = selectionType
         this.group.userData = {'selectable': this}
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
@@ -73,9 +71,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     abstract hasTraining(training: RaiderTraining)
 
-    getSelectionType(): SelectionType {
-        return this.selectionType
-    }
+    abstract getSelectionType(): SelectionType
 
     deselect() {
         this.selectionFrame.visible = false
