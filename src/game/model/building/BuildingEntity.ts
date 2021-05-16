@@ -1,6 +1,4 @@
 import { Matrix4, PositionalAudio, Vector2, Vector3 } from 'three'
-import { Sample } from '../../../audio/Sample'
-import { SoundManager } from '../../../audio/SoundManager'
 import { BuildingEntityStats } from '../../../cfg/BuildingEntityStats'
 import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
@@ -71,7 +69,6 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         if (this.selected || this.inBeam) return false
         this.selectionFrame.visible = true
         this.selected = true
-        SoundManager.playSample(Sample.SFX_Okay)
         return true
     }
 

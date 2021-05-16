@@ -105,7 +105,10 @@ export class LWSCLoader {
                     subObj.filename = this.path + filename
                     subObj.model = ResourceManager.getLwoModel(subObj.filename)
                 } else if (key === 'AddNullObject') {
-                    subObj.lowerName = value.toLowerCase()
+                    const nameParts = value.split(',')
+                    subObj.lowerName = nameParts[0].toLowerCase()
+                    subObj.sfxName = nameParts[1] || null
+                    subObj.sfxValue = Number(nameParts[2]) || null
                     subObj.model = new Group()
                     subObj.isNull = true
                 } else {

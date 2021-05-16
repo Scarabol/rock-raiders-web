@@ -1,4 +1,6 @@
 import { Vector3 } from 'three'
+import { Sample } from '../../audio/Sample'
+import { SoundManager } from '../../audio/SoundManager'
 import { EventBus } from '../../event/EventBus'
 import { SelectionChanged } from '../../event/LocalEvents'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../params'
@@ -117,11 +119,14 @@ export class GameState {
             return stillSelected
         })
         // add new entities that are selectable
+        let addedSelected = false
         entities.forEach((freshlySelected) => {
             if (freshlySelected.select()) {
+                addedSelected = true
                 this.selectedEntities.push(freshlySelected)
             }
         })
+        if (addedSelected) SoundManager.playSample(Sample.SFX_Okay)
         // determine and set next selection type
         const len = this.selectedEntities.length
         if (len > 1) {

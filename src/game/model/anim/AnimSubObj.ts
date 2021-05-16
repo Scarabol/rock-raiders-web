@@ -13,6 +13,8 @@ export class AnimSubObj {
     parentObjInd: number = null
     model: Object3D = null
     isNull: boolean = false
+    sfxName: string = null
+    sfxValue: number = null
 
     radVec(degX: number, degY: number, degZ: number) {
         return new Euler(degToRad(degY), degToRad(degX), degToRad(degZ), 'YXZ')

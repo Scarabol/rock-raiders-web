@@ -238,6 +238,7 @@ export abstract class AnimEntity extends BaseEntity {
     }
 
     playPositionalSfxName(sfxName: string, loop: boolean = false): PositionalAudio { // TODO duplicate code (see above)
+        if (!sfxName) return null
         const audio = new PositionalAudio(this.sceneMgr.listener)
         audio.setRefDistance(TILESIZE * 2)
         audio.loop = loop // TODO retry playing sound for looped ones, when audio context fails
