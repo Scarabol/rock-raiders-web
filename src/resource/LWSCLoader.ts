@@ -103,13 +103,14 @@ export class LWSCLoader {
             if (key === 'AddNullObject' || key === 'LoadObject') {
                 if (key === 'LoadObject') {
                     const filename = getFilename(value)
-                    subObj.name = filename.slice(0, filename.length - '.lwo'.length)
+                    subObj.lowerName = filename.slice(0, filename.length - '.lwo'.length).toLowerCase()
                     subObj.filename = this.path + filename
                     const lwoBuffer = ResourceManager.getResource(subObj.filename)
                     subObj.model = SceneManager.registerMesh(new LWOLoader(this.path).parse(lwoBuffer))
                 } else if (key === 'AddNullObject') {
-                    subObj.name = value
+                    subObj.lowerName = value.toLowerCase()
                     subObj.model = new Group()
+                    subObj.isNull = true
                 } else {
                     throw 'Unexpected line: ' + line
                 }

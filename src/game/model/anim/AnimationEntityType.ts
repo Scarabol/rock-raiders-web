@@ -1,3 +1,4 @@
+import { Object3D } from 'three'
 import { AnimClip } from './AnimClip'
 
 export class AnimationEntityType {
@@ -5,9 +6,9 @@ export class AnimationEntityType {
     carryNullName: string = ''
     depositNullName: string = ''
     toolNullName: string = ''
-    mediumPoly: {} = {}
-    highPoly: {} = {}
-    fPPoly: {} = {}
-    activities: Map<string, { file: string, transcoef: number, lwsfile: boolean, animation: AnimClip }> = new Map()
+    mediumPolyBodies: Map<string, Object3D> = new Map()
+    highPolyBodies: Map<string, Object3D> = new Map()
+    fPPolyBodies: Map<string, Object3D> = new Map()
+    animations: Map<string, AnimClip> = new Map()
 
 }

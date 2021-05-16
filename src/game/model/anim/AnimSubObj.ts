@@ -3,7 +3,7 @@ import degToRad = MathUtils.degToRad
 
 export class AnimSubObj {
 
-    name: string = ''
+    lowerName: string = ''
     filename: string = ''
     pivot: Vector3 = new Vector3(0, 0, 0)
     relPos: Vector3[] = []
@@ -12,6 +12,7 @@ export class AnimSubObj {
     opacity: number[] = []
     parentObjInd: number = null
     model: Object3D = null
+    isNull: boolean = false
 
     radVec(degX: number, degY: number, degZ: number) {
         return new Euler(degToRad(degY), degToRad(degX), degToRad(degZ), 'YXZ')

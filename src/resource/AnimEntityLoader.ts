@@ -8,94 +8,72 @@ import { ResourceManager } from './ResourceManager'
 
 export class AnimEntityLoader {
 
-    static loadModels(url, root): AnimationEntityType {
-        const path = getPath(url)
-
+    static loadModels(aeFilename: string, cfgRoot: any, verbose: boolean = false): AnimationEntityType {
+        const path = getPath(aeFilename)
         const entityType = new AnimationEntityType()
-
-        entityType.carryNullName = iGet(root, 'CarryNullName')
-        entityType.depositNullName = iGet(root, 'DepositNullName')
-        entityType.toolNullName = iGet(root, 'ToolNullName')
-
-        // TODO load other poly quality models (if available)
-        // let mediumPoly = iGet(root, 'MediumPoly');
-        // if (mediumPoly) {
-        //     Object.keys(mediumPoly).forEach((key) => {
-        //         const polyname = mediumPoly[key];
-        //         const polykey = key.startsWith('!') ? key.slice(1) : key;
-        //         const polyfile = path + polyname + '.lwo';
-        //         console.log('polyfile');
-        //         console.log(polyfile);
-        //         // new LWOLoader().load(polyfile, (model) => {
-        //         //     mediumPoly[polykey] = {polyname: polyname, polyfile: polyfile, model: model};
-        //         // }, undefined, () => {
-        //         //     console.error('Could not load poly ' + polyname + ' from ' + polyfile);
-        //         // });
-        //     });
-        //     Object.keys(mediumPoly).filter((polykey) => polykey.startsWith('!')).forEach((polykey) => delete mediumPoly[polykey]);
-        // }
-
-        const highPoly = iGet(root, 'highpoly')
-        if (highPoly) {
-            entityType.highPoly = {}
-            Object.keys(highPoly).forEach((key) => {
-                const polyname = highPoly[key] + '.lwo'
-                const polykey = key.startsWith('!') ? key.slice(1) : key
-                const lwoBuffer = ResourceManager.getResource(path + polyname)
-                entityType.highPoly[polykey] = SceneManager.registerMesh(new LWOLoader(path).parse(lwoBuffer))
-            })
-        }
-
-        // let fPoly = (root)['fppoly'];
-        // if (fPoly) {
-        //     Object.keys(fPoly).forEach((camera) => {
-        //         Object.keys(fPoly[camera]).forEach((key) => {
-        //             const polyname = fPoly[camera][key];
-        //             const polykey = key.startsWith('!') ? key.slice(1) : key;
-        //             if (polyname !== 'null') {
-        //                 const polyfile = path + polyname + '.lwo';
-        //                 new LWOLoader().load(polyfile, (model) => {
-        //                     fPoly[camera][polykey] = {polyname: polyname, polyfile: polyfile, model: model};
-        //                 }, undefined, () => {
-        //                     console.error('Could not load poly ' + polyname + ' from ' + polyfile);
-        //                 });
-        //             } else {
-        //                 fPoly[camera][key] = {polyname: polyname, polyfile: null, model: new Group()};
-        //             }
-        //         });
-        //         Object.keys(fPoly[camera]).filter((polykey) => polykey.startsWith('!')).forEach((polykey) => delete fPoly[polykey][camera]);
-        //     });
-        // }
-
-        const activities = iGet(root, 'Activities')
-        if (activities) {
-            Object.keys(activities).forEach((activity) => {
-                try {
-                    let keyname = iGet(activities, activity)
-                    const act: { file: string, transcoef: number, lwsfile: boolean, animation: AnimClip } = iGet(root, keyname)
-                    const file = iGet(act, 'FILE')
-                    const isLws = iGet(act, 'LWSFILE') === true
-                    const transcoef = iGet(act, 'TRANSCOEF')
-                    const looping = iGet(act, 'LOOPING') === true
-                    if (isLws) {
-                        const content = ResourceManager.getResource(path + file + '.lws')
-                        act.animation = new LWSCLoader(path).parse(content)
-                        act.animation.looping = looping
-                        act.animation.transcoef = transcoef ? Number(transcoef) : 1
-                        entityType.activities.set(activity.toLowerCase(), act)
-                    } else {
-                        console.error('Found activity which is not an LWS file')
-                    }
-                } catch (e) {
-                    console.error(e)
-                    console.log(root)
-                    console.log(activities)
-                    console.log(activity)
-                }
-            })
-        }
-
+        Object.keys(cfgRoot).forEach((rootKey: string) => {
+            const value = cfgRoot[rootKey]
+            if (rootKey.equalsIgnoreCase('CarryNullName')) {
+                entityType.carryNullName = value
+            } else if (rootKey.equalsIgnoreCase('Shape')) {
+                if (verbose) console.warn('TODO Derive buildings shape from this value') // XXX derive buildings surfaces shape from this value
+            } else if (rootKey.equalsIgnoreCase('DepositNullName')) {
+                entityType.depositNullName = value
+            } else if (rootKey.equalsIgnoreCase('ToolNullName')) {
+                entityType.toolNullName = value
+            } else if (rootKey.equalsIgnoreCase('CameraFlipDir')) {
+                // XXX what is this? flip upside down when hanging from rm?
+            } else if (rootKey.equalsIgnoreCase('HighPoly')) {
+                Object.keys(value).forEach((key) => {
+                    const polyKey = key.startsWith('!') ? key.slice(1) : key
+                    const lwoBuffer = ResourceManager.getResource(path + value[key] + '.lwo')
+                    entityType.highPolyBodies.set(polyKey.toLowerCase(), SceneManager.registerMesh(new LWOLoader(path, verbose).parse(lwoBuffer)))
+                })
+            } else if (rootKey.equalsIgnoreCase('MediumPoly')) {
+                // TODO implement medium poly parsing
+            } else if (rootKey.equalsIgnoreCase('LowPoly')) {
+                // TODO implement low poly parsing
+            } else if (rootKey.equalsIgnoreCase('FPPoly')) {
+                // TODO implement first person poly parsing
+            } else if (rootKey.equalsIgnoreCase('Activities')) {
+                entityType.animations = this.parseAnimations(value, cfgRoot, path, verbose)
+            } else if (rootKey.match(/level\d\d\d\d/i)) {
+                // TODO geo dome has upgrade defined at root level without Upgrades group
+            } else if (verbose && !value['lwsfile']) {
+                console.warn('Unhandled animated entity key found: ' + rootKey, value)
+            }
+        })
+        // TODO for each animation clip find the given names above and map to a poly body part
         return entityType
+    }
+
+    private static parseAnimations(value, root, path: string, verbose: boolean): Map<string, AnimClip> {
+        const animations = new Map<string, AnimClip>()
+        Object.keys(value).forEach((activity) => {
+            try {
+                let keyname = iGet(value, activity)
+                const act: { file: string, transcoef: number, lwsfile: boolean, animation: AnimClip, keyname: string } = iGet(root, keyname)
+                const file = iGet(act, 'FILE')
+                const isLws = iGet(act, 'LWSFILE') === true
+                const transcoef = iGet(act, 'TRANSCOEF')
+                const looping = iGet(act, 'LOOPING') === true
+                if (isLws) {
+                    const content = ResourceManager.getResource(path + file + '.lws')
+                    const animation = new LWSCLoader(path, verbose).parse(content)
+                    animation.looping = looping
+                    animation.transcoef = transcoef ? Number(transcoef) : 1
+                    animations.set(activity.toLowerCase(), animation)
+                } else {
+                    console.error('Found activity which is not an LWS file')
+                }
+            } catch (e) {
+                console.error(e)
+                console.log(root)
+                console.log(value)
+                console.log(activity)
+            }
+        })
+        return animations
     }
 
 }

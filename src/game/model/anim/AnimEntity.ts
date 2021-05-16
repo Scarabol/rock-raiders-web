@@ -2,7 +2,7 @@ import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, MeshPhongMateria
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
 import { createContext } from '../../../core/ImageHelper'
-import { clearTimeoutSafe, iGet } from '../../../core/Util'
+import { clearTimeoutSafe } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
@@ -57,40 +57,39 @@ export abstract class AnimEntity extends BaseEntity {
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
         if (this.activity === activity || this.animationEntityType === null) return
         this.activity = activity
-        let lActivityKey = activity.activityKey.toLowerCase()
-        let anim = this.animationEntityType.activities.get(lActivityKey)
-        if (!anim) { // find by prefix
-            this.animationEntityType.activities.forEach((a, key) => {
-                if (!anim && lActivityKey.startsWith(key)) anim = a
+        const lActivityKey = activity.activityKey.toLowerCase()
+        let animation = this.animationEntityType.animations.get(lActivityKey)
+        if (!animation) { // find by prefix
+            this.animationEntityType.animations.forEach((a, key) => {
+                if (!animation && lActivityKey.startsWith(key)) animation = a
             })
         }
-        if (!anim?.animation) {
+        if (!animation) {
             console.warn('Activity ' + activity.activityKey + ' unknown or has no animation defined')
-            console.log(this.animationEntityType.activities)
+            console.log(this.animationEntityType.animations)
             return
         }
         if (onAnimationDone) onAnimationDone.bind(this)
-        this.animation = anim.animation
-        this.animation.looping = true
+        this.animation = animation
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         this.group.remove(...this.poly)
         this.poly = []
         const carries = (this.carryJoint && this.carryJoint.children) || []
         this.carryJoint = null
         // bodies are defined in animation and second in high/medium/low poly groups
-        this.animation.bodies.forEach((body) => {
-            let model: Object3D = iGet(this.animationEntityType.highPoly, body.name)
-            if (!model) model = iGet(this.animationEntityType.mediumPoly, body.name)
+        this.animation.bodies.forEach((body) => { // TODO this can be prepared before animation.bodies and joints are part of animationEntityType
+            let model: Object3D = this.animationEntityType.highPolyBodies.get(body.lowerName)
+            if (!model) model = this.animationEntityType.mediumPolyBodies.get(body.lowerName)
             if (!model) model = body.model
             const polyModel = model.clone(true)
             this.poly.push(polyModel)
-            if (body.name) {
-                if (body.name.equalsIgnoreCase(this.animationEntityType.carryNullName)) {
+            if (body.lowerName) {
+                if (body.lowerName.equalsIgnoreCase(this.animationEntityType.carryNullName)) {
                     this.carryJoint = polyModel
                     if (carries.length > 0) this.carryJoint.add(...carries)
-                } else if (body.name.equalsIgnoreCase(this.animationEntityType.depositNullName)) {
+                } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.depositNullName)) {
                     this.depositJoint = polyModel
-                } else if (body.name.equalsIgnoreCase(this.animationEntityType.toolNullName)) {
+                } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.toolNullName)) {
                     this.getToolJoint = polyModel
                 }
             }
