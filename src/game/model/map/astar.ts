@@ -218,22 +218,34 @@ export class Graph {
 
         if (this.diagonal) {
             // Southwest
-            if (grid[x - 1] && grid[x - 1][y - 1]) {
+            if (grid[x - 1] && grid[x - 1][y - 1]
+                && grid[x] && grid[x][y - 1]?.weight // South
+                && grid[x - 1] && grid[x - 1][y]?.weight // West
+            ) {
                 ret.push(grid[x - 1][y - 1])
             }
 
             // Southeast
-            if (grid[x + 1] && grid[x + 1][y - 1]) {
+            if (grid[x + 1] && grid[x + 1][y - 1]
+                && grid[x] && grid[x][y - 1]?.weight // South
+                && grid[x + 1] && grid[x + 1][y]?.weight // East
+            ) {
                 ret.push(grid[x + 1][y - 1])
             }
 
             // Northwest
-            if (grid[x - 1] && grid[x - 1][y + 1]) {
+            if (grid[x - 1] && grid[x - 1][y + 1]
+                && grid[x] && grid[x][y + 1]?.weight // North
+                && grid[x - 1] && grid[x - 1][y]?.weight // West
+            ) {
                 ret.push(grid[x - 1][y + 1])
             }
 
             // Northeast
-            if (grid[x + 1] && grid[x + 1][y + 1]) {
+            if (grid[x + 1] && grid[x + 1][y + 1]
+                && grid[x] && grid[x][y + 1]?.weight // North
+                && grid[x + 1] && grid[x + 1][y]?.weight // East
+            ) {
                 ret.push(grid[x + 1][y + 1])
             }
         }
