@@ -19,6 +19,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     job: Job = null
     followUpJob: Job = null
     carries: MaterialEntity = null
+    inBeam: boolean = false
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string, selectionType: SelectionType) {
         super(worldMgr, sceneMgr, superType, entityType, aeFilename)
@@ -81,7 +82,13 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.selected = false
     }
 
-    abstract select(): boolean
+    select(): boolean {
+        if (this.selected || this.inBeam) return false
+        this.selectionFrame.visible = true
+        this.selected = true
+        this.changeActivity()
+        return true
+    }
 
     getSelectionCenter(): Vector3 {
         return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null
@@ -96,6 +103,11 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     removeFromScene() {
         super.removeFromScene()
         this.workInterval = clearIntervalSafe(this.workInterval)
+    }
+
+    beamUp() {
+        super.beamUp()
+        this.inBeam = true
     }
 
 }

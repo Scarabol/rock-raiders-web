@@ -49,11 +49,8 @@ export class Raider extends FulfillerEntity {
     }
 
     select(): boolean {
-        this.selectionFrame.visible = !this.slipped
-        if (this.selected || this.slipped) return false
-        this.selected = true
-        this.changeActivity()
-        return true
+        if (this.slipped) return false
+        return super.select()
     }
 
     isDriving(): boolean {
