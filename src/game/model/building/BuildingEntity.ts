@@ -86,13 +86,13 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     getDropPosition2D(): Vector2 {
-        if (this.getToolJoint) {
+        if (this.animation?.getToolJoint) {
             const worldPos = new Vector3()
-            this.getToolJoint.getWorldPosition(worldPos)
+            this.animation.getToolJoint.getWorldPosition(worldPos)
             return new Vector2(worldPos.x, worldPos.z)
-        } else if (this.depositJoint) {
+        } else if (this.animation?.depositJoint) {
             const worldPos = new Vector3()
-            this.depositJoint.getWorldPosition(worldPos)
+            this.animation.depositJoint.getWorldPosition(worldPos)
             return new Vector2(worldPos.x, worldPos.z)
         } else {
             return this.getPosition2D()

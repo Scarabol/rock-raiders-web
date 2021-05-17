@@ -39,9 +39,9 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     dropItem() {
         if (!this.carries) return
         const position = this.getPosition()
-        if (this.carryJoint) {
-            this.carryJoint.remove(this.carries.group)
-            this.carryJoint.getWorldPosition(position)
+        if (this.animation?.carryJoint) {
+            this.animation.carryJoint.remove(this.carries.group)
+            this.animation.carryJoint.getWorldPosition(position)
         }
         this.carries.addToScene(new Vector2(position.x, position.z), null)
         this.carries = null
@@ -49,7 +49,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     pickupItem(item: MaterialEntity) {
         this.carries = item
-        if (this.carryJoint) this.carryJoint.add(this.carries.group)
+        if (this.animation?.carryJoint) this.animation.carryJoint.add(this.carries.group)
         this.carries.group.position.set(0, 0, 0)
     }
 

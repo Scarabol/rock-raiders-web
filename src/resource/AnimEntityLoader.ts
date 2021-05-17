@@ -1,3 +1,4 @@
+import { Object3D } from 'three'
 import { getPath, iGet } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
@@ -67,7 +68,66 @@ export class AnimEntityLoader {
                 console.warn('Unhandled animated entity key found: ' + rootKey, value)
             }
         })
-        // TODO for each animation clip find the given names above and map to a poly body part
+
+        entityType.animations.forEach((animation) => {
+            animation.bodies.forEach((body) => {
+                let model: Object3D = entityType.highPolyBodies.get(body.lowerName)
+                if (!model) model = entityType.mediumPolyBodies.get(body.lowerName)
+                if (!model) model = body.model
+                const polyModel = model.clone(true)
+                animation.polyList.push(polyModel)
+                if (body.lowerName) {
+                    if (body.lowerName.equalsIgnoreCase(entityType.carryNullName)) {
+                        animation.carryJoint = polyModel
+                    } else if (body.lowerName.equalsIgnoreCase(entityType.depositNullName)) {
+                        animation.depositJoint = polyModel
+                    } else if (body.lowerName.equalsIgnoreCase(entityType.toolNullName)) {
+                        animation.getToolJoint = polyModel
+                    } else if (body.lowerName.equalsIgnoreCase(entityType.wheelNullName)) {
+                        animation.wheelJoints.push(polyModel)
+                    } else if (body.lowerName.equalsIgnoreCase(entityType.drillNullName)) {
+                        animation.drillJoint = polyModel
+                    } else if (body.lowerName.equalsIgnoreCase(entityType.driverNullName)) {
+                        animation.driverJoint = polyModel
+                    } else if (body.isNull) {
+                        animation.nullJoints.getOrUpdate(body.lowerName.toLowerCase(), () => []).push(polyModel)
+                    }
+                }
+            })
+
+            if (entityType.wheelMesh) {
+                animation.wheelJoints.forEach((joint) => {
+                    joint.add(entityType.wheelMesh.clone(true))
+                })
+            }
+
+            const upgrades0000 = entityType.upgradesByLevel.get('0000')
+            if (upgrades0000) { // TODO check for other upgrade levels
+                upgrades0000.forEach((upgrade) => {
+                    const joint = animation.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
+                    if (joint) {
+                        const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath + '.lwo')
+                        if (lwoModel) {
+                            joint.add(lwoModel)
+                        } else {
+                            const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae')
+                            upgradeModels.animations.get('activity_stand')?.bodies.forEach((b) => joint.add(b.model.clone(true)))
+                        }
+                    }
+                })
+            }
+
+            animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
+                const polyPart = animation.polyList[index]
+                const parentInd = body.parentObjInd
+                if (parentInd !== undefined && parentInd !== null) { // can be 0
+                    animation.polyList[parentInd].add(polyPart)
+                } else {
+                    animation.polyModel.add(polyPart)
+                }
+            })
+        })
+
         return entityType
     }
 

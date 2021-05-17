@@ -1,13 +1,11 @@
-import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
+import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, PositionalAudio, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
 import { createContext } from '../../../core/ImageHelper'
-import { clearTimeoutSafe } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
@@ -16,24 +14,15 @@ import { BaseEntity } from '../BaseEntity'
 import { EntitySuperType, EntityType } from '../EntityType'
 import { AnimationEntityType } from './AnimationEntityType'
 import { AnimClip } from './AnimClip'
-import { AnimSubObj } from './AnimSubObj'
 
 export abstract class AnimEntity extends BaseEntity {
 
     animationEntityType: AnimationEntityType = null
-    poly: Object3D[] = []
     animation: AnimClip = null
-    animationTimeout: NodeJS.Timeout = null
     selectionFrame: Sprite = null
     pickSphere: Mesh = null
-    nullJoints: Map<string, Object3D[]> = new Map()
-    carryJoint: Object3D = null
-    depositJoint: Object3D = null
-    getToolJoint: Object3D = null
-    wheelJoints: Object3D[] = []
-    drillJoint: Object3D = null
-    driverJoint: Object3D = null
     activity: BaseActivity = null
+    boundingSphere: Sphere = new Sphere()
     radiusSq: number = 0
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
@@ -75,104 +64,16 @@ export abstract class AnimEntity extends BaseEntity {
             return
         }
         if (onAnimationDone) onAnimationDone.bind(this)
+        if (this.animation) this.group.remove(this.animation.polyModel)
+        const carriedChildren = this.animation?.carryJoint?.children
+        if (carriedChildren && carriedChildren.length > 0 && animation.carryJoint) {
+            animation.carryJoint.add(...carriedChildren) // keep carried children
+        }
         this.animation = animation
-        this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
-        this.group.remove(...this.poly)
-        this.poly = []
-        const carries = (this.carryJoint && this.carryJoint.children) || []
-        this.carryJoint = null
-        this.nullJoints = new Map()
-        // bodies are defined in animation and second in high/medium/low poly groups
-        this.animation.bodies.forEach((body) => { // TODO this can be prepared before animation.bodies and joints are part of animationEntityType
-            let model: Object3D = this.animationEntityType.highPolyBodies.get(body.lowerName)
-            if (!model) model = this.animationEntityType.mediumPolyBodies.get(body.lowerName)
-            if (!model) model = body.model
-            const polyModel = model.clone(true)
-            this.poly.push(polyModel)
-            if (body.lowerName) {
-                if (body.lowerName.equalsIgnoreCase(this.animationEntityType.carryNullName)) {
-                    this.carryJoint = polyModel
-                    if (carries.length > 0) this.carryJoint.add(...carries)
-                } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.depositNullName)) {
-                    this.depositJoint = polyModel
-                } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.toolNullName)) {
-                    this.getToolJoint = polyModel
-                } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.wheelNullName)) {
-                    this.wheelJoints.push(polyModel)
-                } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.drillNullName)) {
-                    this.drillJoint = polyModel
-                } else if (body.lowerName.equalsIgnoreCase(this.animationEntityType.driverNullName)) {
-                    this.driverJoint = polyModel
-                } else if (body.isNull) {
-                    this.nullJoints.getOrUpdate(body.lowerName.toLowerCase(), () => []).push(polyModel)
-                }
-            }
-        })
-        if (this.animationEntityType.wheelMesh) {
-            this.wheelJoints.forEach((joint) => {
-                joint.add(this.animationEntityType.wheelMesh.clone(true))
-            })
-        }
-        const upgrades0000 = this.animationEntityType.upgradesByLevel.get('0000')
-        if (upgrades0000) { // TODO check for other upgrade levels
-            upgrades0000.forEach((upgrade) => {
-                const joint = this.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
-                if (joint) {
-                    const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath + '.lwo')
-                    if (lwoModel) {
-                        joint.add(lwoModel)
-                    } else {
-                        const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae')
-                        upgradeModels.animations.get('activity_stand')?.bodies.forEach((b) => joint.add(b.model.clone(true)))
-                    }
-                }
-            })
-        }
-        this.animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
-            const polyPart = this.poly[index]
-            const parentInd = body.parentObjInd
-            if (parentInd !== undefined && parentInd !== null) { // can be 0
-                this.poly[parentInd].add(polyPart)
-            } else {
-                this.group.add(polyPart)
-            }
-        })
-        const sphere = new Sphere()
-        new Box3().setFromObject(this.group).getBoundingSphere(sphere)
-        this.radiusSq = sphere.radius * sphere.radius
-        this.animate(0, onAnimationDone, durationTimeMs)
-    }
-
-    private animate(frameIndex: number, onAnimationDone: () => any, durationTimeMs: number) {
-        if (this.poly.length !== this.animation.bodies.length) throw 'Cannot animate poly. Length differs from bodies length'
-        this.animation.bodies.forEach((body: AnimSubObj, index) => {
-            const p = this.poly[index]
-            p.position.copy(body.relPos[frameIndex]).sub(body.pivot)
-            p.rotation.copy(body.relRot[frameIndex])
-            p.scale.copy(body.relScale[frameIndex])
-            if (p.hasOwnProperty('material')) {
-                const material = p['material']
-                const opacity = body.opacity[frameIndex]
-                if (material && opacity !== undefined) {
-                    const matArr = Array.isArray(material) ? material : [material]
-                    matArr.forEach((mat: SequenceTextureMaterial) => mat.setOpacity(opacity))
-                }
-            }
-        })
-        this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
-        let nextFrame = frameIndex + 1
-        if (nextFrame <= this.animation.lastFrame || !onAnimationDone || (durationTimeMs !== null && durationTimeMs > 0)) {
-            if (nextFrame > this.animation.lastFrame) {
-                nextFrame = this.animation.firstFrame
-            }
-            const standardDurationTimeMs = 1000 / this.animation.framesPerSecond * this.animation.transcoef
-            if (durationTimeMs !== null) durationTimeMs -= standardDurationTimeMs
-            const that = this
-            const timeoutTimeMs = durationTimeMs !== null ? Math.max(0, Math.min(durationTimeMs, standardDurationTimeMs)) : standardDurationTimeMs
-            this.animationTimeout = setTimeout(() => that.animate(nextFrame, onAnimationDone, durationTimeMs), timeoutTimeMs) // TODO get this in sync with threejs
-        } else if (onAnimationDone) {
-            onAnimationDone()
-        }
+        this.group.add(this.animation.polyModel)
+        new Box3().setFromObject(this.group).getBoundingSphere(this.boundingSphere)
+        this.radiusSq = this.boundingSphere.radius * this.boundingSphere.radius
+        this.animation.animate(0, onAnimationDone, durationTimeMs)
     }
 
     getDefaultActivity(): AnimEntityActivity {
@@ -252,7 +153,7 @@ export abstract class AnimEntity extends BaseEntity {
 
     removeFromScene() {
         super.removeFromScene()
-        this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
+        this.animation?.stop()
     }
 
 }
