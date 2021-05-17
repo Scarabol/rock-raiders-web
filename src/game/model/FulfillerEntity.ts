@@ -108,6 +108,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     beamUp() {
         super.beamUp()
         this.inBeam = true
+        this.stopJob()
     }
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
