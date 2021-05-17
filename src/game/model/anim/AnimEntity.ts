@@ -1,4 +1,4 @@
-import { Box3, CanvasTexture, Matrix4, Mesh, MeshBasicMaterial, PositionalAudio, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
+import { Box3, CanvasTexture, Mesh, MeshBasicMaterial, PositionalAudio, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
 import { createContext } from '../../../core/ImageHelper'
@@ -88,18 +88,15 @@ export abstract class AnimEntity extends BaseEntity {
         const material = new MeshBasicMaterial({color: 0xffff00, visible: false}) // change visible to true for debugging
         this.pickSphere = new Mesh(geometry, material)
         this.pickSphere.userData = {selectable: this}
-        const pickSphereCenter = this.getPickSphereCenter()
-        this.pickSphere.position.copy(pickSphereCenter)
+        this.pickSphere.position.y = this.getPickSphereHeightOffset()
         this.group.add(this.pickSphere)
-        this.createSelectionFrame(pickSphereDiameter, pickSphereCenter)
+        this.createSelectionFrame(pickSphereDiameter, this.pickSphere.position)
     }
 
-    getPickSphereCenter(): Vector3 {
+    getPickSphereHeightOffset(): number {
         const center = new Vector3()
         new Box3().setFromObject(this.group).getCenter(center)
-        center.sub(this.group.position)
-        center.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
-        return center
+        return center.y - this.group.position.y
     }
 
     private createSelectionFrame(pickSphereDiameter: number, pickSphereCenter: Vector3) {

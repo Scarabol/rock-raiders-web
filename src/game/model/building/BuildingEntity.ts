@@ -81,8 +81,8 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null
     }
 
-    getPickSphereCenter(): Vector3 {
-        return new Vector3(0, this.stats.PickSphere / 4, 0)
+    getPickSphereHeightOffset(): number {
+        return this.stats.PickSphere / 4
     }
 
     getDropPosition2D(): Vector2 {
