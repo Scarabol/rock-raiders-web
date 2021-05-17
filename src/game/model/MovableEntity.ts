@@ -71,7 +71,7 @@ export abstract class MovableEntity extends AnimEntity {
         } else if (stepLengthSq < JOB_ACTION_RANGE * JOB_ACTION_RANGE) {
             step.targetReached = true
         }
-        step.vec.setLength(Math.min(entitySpeed, JOB_ACTION_RANGE))
+        step.vec.clampLength(0, Math.min(entitySpeed, JOB_ACTION_RANGE))
         return step
     }
 
