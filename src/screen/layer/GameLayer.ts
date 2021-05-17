@@ -78,6 +78,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             }
         }
         this.canvas.dispatchEvent(new PointerEvent(event.type, event))
+        this.canvas.ownerDocument.dispatchEvent(new PointerEvent(event.type, event))
         return new Promise((resolve) => resolve(true))
     }
 
