@@ -81,7 +81,7 @@ export class Terrain {
     }
 
     findWalkPath(start: Vector2, target: PathTarget): TerrainPath {
-        return Terrain.findPath(start, target, this.cachedWalkPaths, this.graphWalk, 3 / TILESIZE, 0.5)
+        return Terrain.findPath(start, target, this.cachedWalkPaths, this.graphWalk, 3 / TILESIZE, 0.25)
     }
 
     findDrivePath(start: Vector2, target: PathTarget): TerrainPath {
@@ -101,17 +101,17 @@ export class Terrain {
         const gridEnd = target.targetLocation.clone().multiplyScalar(gridScale).floor()
         if (gridStart.x === gridEnd.x && gridStart.y === gridEnd.y) return new TerrainPath(target, target.targetLocation)
         const cacheIdentifier = gridStart.x + '/' + gridStart.y + ' -> ' + gridEnd.x + '/' + gridEnd.y
-        const walkPath = cachedPaths.getOrUpdate(cacheIdentifier, () => {
+        const resultPath = cachedPaths.getOrUpdate(cacheIdentifier, () => {
             const startNode = graph.grid[gridStart.x][gridStart.y]
             const endNode = graph.grid[gridEnd.x][gridEnd.y]
-            const path = astar.search(graph, startNode, endNode).map((n) =>
+            const freshPath = astar.search(graph, startNode, endNode).map((n) =>
                 new Vector2(n.x + 0.5, n.y + 0.5).add(new Vector2().random().multiplyScalar(maxRandomOffset)).divideScalar(gridScale))
-            if (path.length < 1) return null // no path found
-            path.pop() // last node is replaced with actual target position
-            return path
+            if (freshPath.length < 1) return null // no path found
+            freshPath.pop() // last node is replaced with actual target position
+            return freshPath
         })
-        if (!walkPath) return null
-        return new TerrainPath(target, [...walkPath, target.targetLocation]) // return shallow copy to avoid interference
+        if (!resultPath) return null
+        return new TerrainPath(target, [...resultPath, target.targetLocation]) // return shallow copy to avoid interference
     }
 
     findFallInOrigin(x: number, y: number): [number, number] {
