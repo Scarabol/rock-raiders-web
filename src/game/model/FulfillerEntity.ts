@@ -137,7 +137,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             } else if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                 if (this.job.isReadyToComplete()) {
                     const workActivity = this.job.getWorkActivity() || this.getDefaultActivity()
-                    if (!this.workAudio && workActivity === RaiderActivity.Drill) {
+                    if (!this.workAudio && workActivity === RaiderActivity.Drill) { // FIXME implement work audio
                         this.workAudio = this.playPositionalSample(Sample.SFX_Drill, true)
                     }
                     this.changeActivity(workActivity, () => {

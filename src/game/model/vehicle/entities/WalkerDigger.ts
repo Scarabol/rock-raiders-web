@@ -13,7 +13,7 @@ export class WalkerDigger extends VehicleEntity {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.WALKER_DIGGER, 'Vehicles/WalkerBody/WalkerBody.ae')
-        this.walkerLegs = ResourceManager.getAnimationEntityType('Vehicles/WalkerLegs/WalkerLegs.ae')
+        this.walkerLegs = ResourceManager.getAnimationEntityType('Vehicles/WalkerLegs/WalkerLegs.ae', sceneMgr.listener)
     }
 
     get stats() {

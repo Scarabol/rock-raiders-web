@@ -1,14 +1,16 @@
-import { Object3D } from 'three'
+import { AudioListener, Object3D, PositionalAudio } from 'three'
+import { SoundManager } from '../audio/SoundManager'
 import { getPath, iGet } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
+import { TILESIZE } from '../params'
 import { LWSCLoader } from './LWSCLoader'
 import { ResourceManager } from './ResourceManager'
 
 export class AnimEntityLoader {
 
-    static loadModels(aeFilename: string, cfgRoot: any, verbose: boolean = false): AnimationEntityType {
+    static loadModels(aeFilename: string, cfgRoot: any, audioListener: AudioListener, verbose: boolean = false): AnimationEntityType {
         const path = getPath(aeFilename)
         const entityType = new AnimationEntityType()
         Object.keys(cfgRoot).forEach((rootKey: string) => {
@@ -93,6 +95,16 @@ export class AnimEntityLoader {
                         animation.nullJoints.getOrUpdate(body.lowerName.toLowerCase(), () => []).push(polyModel)
                     }
                 }
+                if (body.sfxName) {
+                    const audio = new PositionalAudio(audioListener)
+                    audio.setRefDistance(TILESIZE * 6) // TODO optimize ref distance for SFX sounds
+                    audio.loop = false
+                    polyModel.add(audio)
+                    SoundManager.getSound(body.sfxName).then((audioBuffer) => {
+                        audio.setBuffer(audioBuffer)
+                    })
+                    body.sfxFrames.forEach((frame) => animation.sfxAudioByFrame.getOrUpdate(frame, () => []).push(audio))
+                }
             })
 
             if (entityType.wheelMesh) {
@@ -110,7 +122,7 @@ export class AnimEntityLoader {
                         if (lwoModel) {
                             joint.add(lwoModel)
                         } else {
-                            const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae')
+                            const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae', audioListener)
                             upgradeModels.animations.get('activity_stand')?.bodies.forEach((b) => joint.add(b.model.clone(true)))
                         }
                     }

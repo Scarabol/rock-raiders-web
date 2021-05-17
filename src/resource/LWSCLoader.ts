@@ -107,8 +107,10 @@ export class LWSCLoader {
                 } else if (key === 'AddNullObject') {
                     const nameParts = value.split(',')
                     subObj.lowerName = nameParts[0].toLowerCase()
-                    subObj.sfxName = nameParts[1] || null
-                    subObj.sfxValue = Number(nameParts[2]) || null
+                    if (subObj.lowerName.equalsIgnoreCase('sfx')) {
+                        subObj.sfxName = nameParts[1] || null
+                        subObj.sfxFrames = nameParts.slice(2).map((n) => Number(n))
+                    }
                     subObj.model = new Group()
                     subObj.isNull = true
                 } else {

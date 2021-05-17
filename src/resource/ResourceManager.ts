@@ -1,4 +1,4 @@
-import { RepeatWrapping, Texture } from 'three'
+import { AudioListener, RepeatWrapping, Texture } from 'three'
 import { createDummyImgData } from '../core/ImageHelper'
 import { getFilename, getPath } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
@@ -128,10 +128,10 @@ export class ResourceManager extends ResourceCache { // TODO rename to WadResour
         return texture
     }
 
-    static getAnimationEntityType(aeFilename: string): AnimationEntityType {
+    static getAnimationEntityType(aeFilename: string, audioListener: AudioListener): AnimationEntityType {
         let cfgRoot = this.getResource(aeFilename)
         if (!cfgRoot) throw 'Could not get animation entity type for: ' + aeFilename
-        return AnimEntityLoader.loadModels(aeFilename, cfgRoot)
+        return AnimEntityLoader.loadModels(aeFilename, cfgRoot, audioListener)
     }
 
     static getLwoModel(lwoFilepath: string, entityPath: string = null): SceneMesh {

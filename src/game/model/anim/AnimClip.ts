@@ -1,4 +1,4 @@
-import { Group, Object3D } from 'three'
+import { Group, Object3D, PositionalAudio } from 'three'
 import { clearTimeoutSafe } from '../../../core/Util'
 import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
 import { AnimSubObj } from './AnimSubObj'
@@ -21,6 +21,7 @@ export class AnimClip {
     nullJoints: Map<string, Object3D[]> = new Map()
     polyModel: Group = new Group()
     animationTimeout = null
+    sfxAudioByFrame: Map<number, PositionalAudio[]> = new Map()
 
     animate(frameIndex: number, onAnimationDone: () => any, durationTimeMs: number) {
         if (this.polyList.length !== this.bodies.length) throw 'Cannot animate poly. Length differs from bodies length'
@@ -38,6 +39,7 @@ export class AnimClip {
                 }
             }
         })
+        this.sfxAudioByFrame.getOrUpdate(frameIndex, () => []).forEach((a) => a.play())
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         let nextFrame = frameIndex + 1
         if (nextFrame <= this.lastFrame || !onAnimationDone || (durationTimeMs !== null && durationTimeMs > 0)) {
@@ -50,12 +52,14 @@ export class AnimClip {
             const timeoutTimeMs = durationTimeMs !== null ? Math.max(0, Math.min(durationTimeMs, standardDurationTimeMs)) : standardDurationTimeMs
             this.animationTimeout = setTimeout(() => that.animate(nextFrame, onAnimationDone, durationTimeMs), timeoutTimeMs)
         } else if (onAnimationDone) {
+            this.sfxAudioByFrame.forEach((f) => f.forEach((a) => a.stop()))
             onAnimationDone()
         }
     }
 
     stop() {
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
+        this.sfxAudioByFrame.forEach((f) => f.forEach((a) => a.stop()))
     }
 
 }

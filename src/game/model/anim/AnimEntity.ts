@@ -27,7 +27,7 @@ export abstract class AnimEntity extends BaseEntity {
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, superType, entityType)
-        if (aeFilename) this.animationEntityType = ResourceManager.getAnimationEntityType(aeFilename)
+        if (aeFilename) this.animationEntityType = ResourceManager.getAnimationEntityType(aeFilename, sceneMgr.listener)
     }
 
     beamUp() {
@@ -64,7 +64,10 @@ export abstract class AnimEntity extends BaseEntity {
             return
         }
         if (onAnimationDone) onAnimationDone.bind(this)
-        if (this.animation) this.group.remove(this.animation.polyModel)
+        if (this.animation) {
+            this.group.remove(this.animation.polyModel)
+            this.animation.stop()
+        }
         const carriedChildren = this.animation?.carryJoint?.children
         if (carriedChildren && carriedChildren.length > 0 && animation.carryJoint) {
             animation.carryJoint.add(...carriedChildren) // keep carried children
