@@ -63,8 +63,12 @@ export class Surface implements Selectable {
 
     topLeftVertex: Vector3 = null
     topRightVertex: Vector3 = null
-    bottomLeftVertex: Vector3 = null
     bottomRightVertex: Vector3 = null
+    bottomLeftVertex: Vector3 = null
+    topLeftHeightOffset: number = null
+    topRightHeightOffset: number = null
+    bottomRightHeightOffset: number = null
+    bottomLeftHeightOffset: number = null
 
     rubblePositions: Vector2[] = []
 
@@ -259,11 +263,6 @@ export class Surface implements Selectable {
         if (!force && !this.needsMeshUpdate) return
         this.needsMeshUpdate = false
 
-        const topLeftVertex = new Vector3(this.x, 0, this.y)
-        const topRightVertex = new Vector3(this.x + 1, 0, this.y)
-        const bottomLeftVertex = new Vector3(this.x, 0, this.y + 1)
-        const bottomRightVertex = new Vector3(this.x + 1, 0, this.y + 1)
-
         const surfLeft = this.terrain.getSurface(this.x - 1, this.y)
         const surfTopLeft = this.terrain.getSurface(this.x - 1, this.y - 1)
         const surfTop = this.terrain.getSurface(this.x, this.y - 1)
@@ -273,22 +272,22 @@ export class Surface implements Selectable {
         const surfBottom = this.terrain.getSurface(this.x, this.y + 1)
         const surfBottomLeft = this.terrain.getSurface(this.x - 1, this.y + 1)
 
-        function isHighGround(surf1: Surface, surf2: Surface, surf3: Surface) {
-            return !surf1.discovered || !surf2.discovered || !surf3.discovered ||
-                (!surf1.surfaceType.floor && !surf2.surfaceType.floor && !surf3.surfaceType.floor)
+        function isHighGround(surf0: Surface, surf1: Surface, surf2: Surface, surf3: Surface) {
+            return !surf0.discovered || (
+                (!surf0.surfaceType.floor || !surf0.neighbors.some((n) => n.surfaceType.floor && n.discovered)) &&
+                (!surf1.discovered || !surf2.discovered || !surf3.discovered || (!surf1.surfaceType.floor && !surf2.surfaceType.floor && !surf3.surfaceType.floor))
+            )
         }
 
-        if (!this.discovered) {
-            topLeftVertex.y = 1
-            topRightVertex.y = 1
-            bottomRightVertex.y = 1
-            bottomLeftVertex.y = 1
-        } else if (!this.surfaceType.floor || !this.neighbors.some((n) => n.surfaceType.floor && n.discovered)) {
-            if (isHighGround(surfLeft, surfTopLeft, surfTop)) topLeftVertex.y = 1
-            if (isHighGround(surfTop, surfTopRight, surfRight)) topRightVertex.y = 1
-            if (isHighGround(surfRight, surfBottomRight, surfBottom)) bottomRightVertex.y = 1
-            if (isHighGround(surfBottom, surfBottomLeft, surfLeft)) bottomLeftVertex.y = 1
-        }
+        const topLeftVertex = new Vector3(this.x, 0, this.y)
+        const topRightVertex = new Vector3(this.x + 1, 0, this.y)
+        const bottomLeftVertex = new Vector3(this.x, 0, this.y + 1)
+        const bottomRightVertex = new Vector3(this.x + 1, 0, this.y + 1)
+
+        if (isHighGround(this, surfLeft, surfTopLeft, surfTop)) topLeftVertex.y = 1
+        if (isHighGround(this, surfTop, surfTopRight, surfRight)) topRightVertex.y = 1
+        if (isHighGround(this, surfRight, surfBottomRight, surfBottom)) bottomRightVertex.y = 1
+        if (isHighGround(this, surfBottom, surfBottomLeft, surfLeft)) bottomLeftVertex.y = 1
 
         // update mesh (geometry), if wall type changed
         let wallType = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y
@@ -304,14 +303,18 @@ export class Surface implements Selectable {
 
             this.topLeftVertex = topLeftVertex.clone()
             this.topRightVertex = topRightVertex.clone()
-            this.bottomLeftVertex = bottomLeftVertex.clone()
             this.bottomRightVertex = bottomRightVertex.clone()
-            this.topLeftVertex.y += avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER
-            this.topRightVertex.y += avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER
-            this.bottomRightVertex.y += avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER
-            this.bottomLeftVertex.y += avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER
+            this.bottomLeftVertex = bottomLeftVertex.clone()
+            this.topLeftHeightOffset = avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER
+            this.topRightHeightOffset = avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER
+            this.bottomRightHeightOffset = avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER
+            this.bottomLeftHeightOffset = avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER
+            this.topLeftVertex.y += this.topLeftHeightOffset
+            this.topRightVertex.y += this.topRightHeightOffset
+            this.bottomRightVertex.y += this.bottomRightHeightOffset
+            this.bottomLeftVertex.y += this.bottomLeftHeightOffset
 
-            this.updateGeometry(topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex)
+            this.updateGeometry(topLeftVertex, topRightVertex, bottomRightVertex, bottomLeftVertex)
             if (this.wallType !== WALL_TYPE.WALL) this.cancelReinforceJobs()
         }
 
@@ -410,12 +413,12 @@ export class Surface implements Selectable {
         (Array.isArray(this.mesh.material) ? this.mesh.material : [this.mesh.material]).forEach((m) => callback(m as MeshPhongMaterial))
     }
 
-    updateGeometry(topLeftVertex: Vector3, bottomRightVertex: Vector3, topRightVertex: Vector3, bottomLeftVertex: Vector3) {
+    updateGeometry(topLeftVertex: Vector3, topRightVertex: Vector3, bottomRightVertex: Vector3, bottomLeftVertex: Vector3) {
         if (this.mesh) this.terrain.floorGroup.remove(this.mesh)
         this.mesh?.geometry?.dispose()
         this.forEachMaterial((m) => m.dispose())
 
-        const geometry = SurfaceGeometry.create(this.wallType, topLeftVertex, bottomRightVertex, topRightVertex, bottomLeftVertex,
+        const geometry = SurfaceGeometry.create(this.wallType, topLeftVertex, topRightVertex, bottomRightVertex, bottomLeftVertex,
             this.topLeftVertex.y, this.topRightVertex.y, this.bottomRightVertex.y, this.bottomLeftVertex.y)
 
         this.mesh = new Mesh(geometry, new MeshPhongMaterial({shininess: 0}))
@@ -608,8 +611,8 @@ export class Surface implements Selectable {
     getFloorHeight(worldX: number, worldZ: number) {
         const sx = worldX / TILESIZE - this.x
         const sy = worldZ / TILESIZE - this.y
-        const dy0 = Surface.interpolate(this.topLeftVertex.y, this.topRightVertex.y, sx)
-        const dy1 = Surface.interpolate(this.bottomLeftVertex.y, this.bottomRightVertex.y, sx)
+        const dy0 = Surface.interpolate(this.topLeftHeightOffset, this.topRightHeightOffset, sx)
+        const dy1 = Surface.interpolate(this.bottomLeftHeightOffset, this.bottomRightHeightOffset, sx)
         return Surface.interpolate(dy0, dy1, sy) * TILESIZE
     }
 
