@@ -48,11 +48,16 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - GunStation mesh not loaded correctly missing turret part (test with level 18)
 - Surface discovery has very bad performance
 - Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in
+- Clear rubble job not working as expected
+- Raiders not spawned in Level 01 when restarted from Level 03
 
 ### Nice to have
 
 - Dependency tooltips for buildings/vehicles not shown
 - Camera can glitch through terrain and zoom in/out infinitely
+- GUI not shown when game start paused by debugger
+- Provide resources explicit to workers with messaging
+- Least prioritized task is shown outside of panel on level start
 
 ### Cosmetics
 
@@ -60,6 +65,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Adapt building placement marker to surface shape
 - Add water and lava animation
 - Selection layer has bad performance and behaves funny when GUI is hovered
+- Shovel and drilling cursor shown even if selected entities cannot do the job
 
 ## Technical Debt
 
