@@ -152,7 +152,7 @@ export class RewardScreen extends BaseScreen {
         super.show()
     }
 
-    score(): number {
+    get score(): number {
         if (!this.rewardConfig) return 0
         let quota = this.rewardConfig.quota
         let importance = this.rewardConfig.importance
