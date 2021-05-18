@@ -4,20 +4,18 @@ import { NerpParser } from '../core/NerpParser'
 import { NerpRunner } from '../core/NerpRunner'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { AirLevelChanged, SelectionChanged, SetupPriorityList } from '../event/LocalEvents'
+import { AirLevelChanged, SelectionChanged } from '../event/LocalEvents'
 import { JobCreateEvent } from '../event/WorldEvents'
 import { UPDATE_OXYGEN_TIMER } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MaterialEntity } from './model/collect/MaterialEntity'
 import { GameState } from './model/GameState'
-import { PriorityList } from './model/job/PriorityList'
 import { SelectionType } from './model/Selectable'
 
 export class WorldManager {
 
     nerpRunner: NerpRunner = null
     oxygenUpdateInterval = null
-    priorityList: PriorityList = new PriorityList()
 
     constructor() {
         EventBus.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
@@ -31,8 +29,6 @@ export class WorldManager {
 
     setup(levelConf: LevelEntryCfg, onLevelEnd: () => any) {
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
-        this.priorityList.setList(levelConf.priorities)
-        EventBus.publishEvent(new SetupPriorityList(this.priorityList.levelDefault))
         GameState.oxygenRate = levelConf.oxygenRate
 
         // load nerp script

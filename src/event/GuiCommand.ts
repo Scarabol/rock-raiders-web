@@ -1,5 +1,5 @@
 import { EntityType } from '../game/model/EntityType'
-import { PriorityEntry } from '../game/model/job/PriorityList'
+import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { RaiderTool } from '../game/model/raider/RaiderTool'
 import { RaiderTraining } from '../game/model/raider/RaiderTraining'
 import { EventKey } from './EventKeyEnum'
@@ -102,7 +102,7 @@ export class ChangePriorityList extends GuiCommand {
     priorityList: PriorityEntry[]
 
     constructor(priorityList: PriorityEntry[]) {
-        super(EventKey.CHANGE_PRIORITY_LIST)
+        super(EventKey.COMMAND_CHANGE_PRIORITY_LIST)
         this.priorityList = priorityList
     }
 

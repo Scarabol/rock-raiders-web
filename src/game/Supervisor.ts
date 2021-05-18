@@ -11,6 +11,7 @@ import { GetToolJob } from './model/job/GetToolJob'
 import { PublicJob } from './model/job/Job'
 import { JobState } from './model/job/JobState'
 import { MoveJob } from './model/job/MoveJob'
+import { PriorityEntry } from './model/job/PriorityEntry'
 import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { TrainJob } from './model/job/TrainJob'
 import { Raider } from './model/raider/Raider'
@@ -22,6 +23,8 @@ export class Supervisor {
     jobs: PublicJob[] = []
     assignInterval = null
     checkRubbleInterval = null
+    priorityIndexList: PriorityIdentifier[] = []
+    priorityList: PriorityEntry[] = []
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
@@ -50,13 +53,13 @@ export class Supervisor {
         const availableJobs: PublicJob[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobState === JobState.INCOMPLETE
-            if (result && j.fulfiller.length < 1 && this.worldMgr.priorityList.isEnabled(j.getPriorityIdentifier())) { // TODO don't assign jobs on hidden surfaces
+            if (result && j.fulfiller.length < 1 && this.isEnabled(j.getPriorityIdentifier())) { // TODO don't assign jobs on hidden surfaces
                 availableJobs.push(j)
             }
             return result
         })
         availableJobs.sort((left, right) => {
-            return Math.sign(this.worldMgr.priorityList.getPriority(left) - this.worldMgr.priorityList.getPriority(right))
+            return Math.sign(this.getPriority(left) - this.getPriority(right))
         })
         const unemployedRaider = GameState.raiders.filter((r) => !r.job && !r.inBeam)
         availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
@@ -137,7 +140,7 @@ export class Supervisor {
     }
 
     checkUnclearedRubble() {
-        if (!this.worldMgr.priorityList.isEnabled(PriorityIdentifier.aiPriorityClearing)) return
+        if (!this.isEnabled(PriorityIdentifier.aiPriorityClearing)) return
         GameState.raiders.forEach((raider) => {
             if (raider.job) return
             const startSurface = raider.sceneMgr.terrain.getSurfaceFromWorld(raider.getPosition())
@@ -164,6 +167,19 @@ export class Supervisor {
                 }
             }
         })
+    }
+
+    getPriority(job: PublicJob) {
+        return this.priorityIndexList.indexOf(job.getPriorityIdentifier())
+    }
+
+    isEnabled(priorityIdentifier: PriorityIdentifier): boolean {
+        return !!this.priorityList.find((p) => p.key === priorityIdentifier)?.enabled
+    }
+
+    updatePriorities(priorityList: PriorityEntry[]) {
+        this.priorityList = [...priorityList]
+        this.priorityIndexList = this.priorityList.map((p) => p.key)
     }
 
 }

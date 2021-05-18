@@ -3,8 +3,9 @@ import { Sample } from '../audio/Sample'
 import { LevelObjectiveTextEntry } from '../cfg/LevelObjectiveTextEntry'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe, getRandom, iGet } from '../core/Util'
+import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { RaidersChangedEvent } from '../event/LocalEvents'
+import { RaidersChangedEvent, SetupPriorityList } from '../event/LocalEvents'
 import { RequestedRaidersChanged } from '../event/WorldEvents'
 import { GuiManager } from '../game/GuiManager'
 import { RaiderActivity } from '../game/model/activities/RaiderActivity'
@@ -53,7 +54,7 @@ export class GameScreen extends BaseScreen {
         this.gameLayer.sceneMgr = this.sceneMgr
         this.selectionLayer.sceneMgr = this.sceneMgr
         this.jobSupervisor = new Supervisor(this.worldMgr)
-        this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr)
+        this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr, this.jobSupervisor)
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.showOptions()
         this.overlayLayer.onSetSpaceToContinue = (state: boolean) => this.guiLayer.setSpaceToContinue(state)
@@ -86,6 +87,7 @@ export class GameScreen extends BaseScreen {
         const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(this.levelConf.objectiveText), this.levelName)
         this.guiLayer.reset()
         this.overlayLayer.setup(objectiveText.objective, this.levelConf.objectiveImage640x480)
+        EventBus.publishEvent(new SetupPriorityList(this.levelConf.priorities))
         // load in non-space objects next
         const objectListConf = ResourceManager.getResource(this.levelConf.oListFile)
         ObjectListLoader.loadObjectList(this.worldMgr, this.sceneMgr, objectListConf, this.levelConf.disableStartTeleport)

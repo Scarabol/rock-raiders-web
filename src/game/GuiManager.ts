@@ -1,6 +1,6 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { ChangeBuildingPowerState, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
+import { ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
 import { SelectionChanged } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged } from '../event/WorldEvents'
 import { BuildingEntity } from './model/building/BuildingEntity'
@@ -36,11 +36,12 @@ import { WalkerDigger } from './model/vehicle/entities/WalkerDigger'
 import { VehicleActivity } from './model/vehicle/VehicleActivity'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { SceneManager } from './SceneManager'
+import { Supervisor } from './Supervisor'
 import { WorldManager } from './WorldManager'
 
 export class GuiManager {
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, jobSupervisor: Supervisor) {
         EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: SelectedRaiderPickTool) => {
             GameState.selectedRaiders.forEach((r) => {
                 if (!r.hasTool(event.tool)) {
@@ -170,6 +171,9 @@ export class GuiManager {
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT, () => {
             GameState.selectedVehicle?.dropDriver()
             EventBus.publishEvent(new SelectionChanged())
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {
+            jobSupervisor.updatePriorities(event.priorityList)
         })
     }
 
