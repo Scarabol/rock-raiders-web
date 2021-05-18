@@ -25,6 +25,7 @@ export class SurfaceType {
         floor: true,
         selectable: true,
         canCarryFence: true,
+        cursorFulfiller: Cursor.Pointer_LegoManGo
     })
     static readonly SOLID_ROCK = new SurfaceType({
         name: 'solid rock',
