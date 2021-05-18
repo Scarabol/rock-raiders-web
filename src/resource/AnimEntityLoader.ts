@@ -17,7 +17,6 @@ export class AnimEntityLoader {
             const value = cfgRoot[rootKey]
             if (rootKey.equalsIgnoreCase('Scale')) {
                 entityType.scale = Number(value)
-                if (entityType.scale !== 1) console.warn('Model scale not yet implemented: ' + entityType.scale)
             } else if (rootKey.equalsIgnoreCase('CarryNullName')) {
                 entityType.carryNullName = value
             } else if (rootKey.equalsIgnoreCase('CarryNullFrames')) {
@@ -129,6 +128,7 @@ export class AnimEntityLoader {
                 })
             }
 
+            animation.polyModel.scale.setScalar(entityType.scale)
             animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
                 const polyPart = animation.polyList[index]
                 const parentInd = body.parentObjInd
