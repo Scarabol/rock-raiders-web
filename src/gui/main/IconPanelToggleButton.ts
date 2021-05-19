@@ -19,9 +19,9 @@ export class IconPanelToggleButton extends IconPanelButton {
         this.imgOnDisabled = GuiResourceCache.getImageOrNull(menuItemOnCfg.disabledFile)
     }
 
-    clicked() {
+    clicked(cx: number, cy: number) {
         this.toggleState = !this.toggleState
-        super.clicked()
+        super.clicked(cx, cy)
     }
 
     onRedraw(context: SpriteContext) {

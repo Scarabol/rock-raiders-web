@@ -37,7 +37,7 @@ export class ToggleButton extends Button {
         const inRect = this.isInRect(cx, cy)
         let updated = inRect && this.pressed
         if (updated) {
-            this.clicked()
+            this.clicked(cx, cy)
             this.pressed = updated && this.toggleState
             this.hover = inRect
         }
@@ -46,9 +46,9 @@ export class ToggleButton extends Button {
         return updated
     }
 
-    clicked() {
+    clicked(cx: number, cy: number) {
         this.toggleState = !this.toggleState
-        super.clicked()
+        super.clicked(cx, cy)
     }
 
     release(): boolean {

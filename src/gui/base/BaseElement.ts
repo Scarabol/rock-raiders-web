@@ -17,7 +17,7 @@ export class BaseElement {
     disabled: boolean = false
     hover: boolean = false
     pressed: boolean = false
-    onClick: () => any = null
+    onClick: (cx?: number, cy?: number) => any = null
     onPublishEvent: (event: LocalEvent) => any = (event) => console.log('TODO publish event: ' + EventKey[event.eventKey])
     tooltipTimeout = null
 
@@ -110,7 +110,9 @@ export class BaseElement {
     checkRelease(cx, cy): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
-        if (inRect && this.pressed && this.onClick) this.clicked()
+        if (inRect && this.pressed && this.onClick) {
+            this.clicked(cx, cy)
+        }
         let stateChanged = false
         this.children.forEach((child) => stateChanged = child.checkRelease(cx, cy) || stateChanged)
         stateChanged = this.pressed || stateChanged
@@ -118,10 +120,10 @@ export class BaseElement {
         return stateChanged
     }
 
-    clicked() {
+    clicked(cx: number, cy: number) {
         this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
         this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
-        this.onClick()
+        this.onClick(cx, cy)
     }
 
     release(): boolean {
