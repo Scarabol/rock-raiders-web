@@ -18,6 +18,9 @@ export enum EntityType {
     // MONSTER
     BAT,
     SMALL_SPIDER,
+    ROCK_MONSTER,
+    ICE_MONSTER,
+    LAVA_MONSTER,
 
     // MATERIAL
     DYNAMITE,

@@ -11,6 +11,7 @@ import { MaterialEntity } from './collect/MaterialEntity'
 import { EntityType } from './EntityType'
 import { Surface } from './map/Surface'
 import { Bat } from './monster/Bat'
+import { RockMonster } from './monster/RockMonster'
 import { SmallSpider } from './monster/SmallSpider'
 import { Raider } from './raider/Raider'
 import { RaiderTraining, RaiderTrainingSites, RaiderTrainingStatsProperty } from './raider/RaiderTraining'
@@ -47,6 +48,7 @@ export class GameState {
     static spiders: SmallSpider[] = []
     static spidersBySurface: Map<Surface, SmallSpider[]> = new Map()
     static bats: Bat[] = []
+    static rockMonsters: RockMonster[] = []
     static vehicles: VehicleEntity[] = []
     static vehiclesUndiscovered: VehicleEntity[] = []
     static totalCrystals: number = 0

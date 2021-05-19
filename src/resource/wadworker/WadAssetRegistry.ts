@@ -92,6 +92,9 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         // load monsters
         this.addAnimatedEntity('Creatures/SpiderSB/SpiderSB.ae')
         this.addAnimatedEntity('Creatures/bat/bat.ae')
+        this.addAnimatedEntity('Creatures/IceMonster/IceMonster.ae')
+        this.addAnimatedEntity('Creatures/LavaMonster/LavaMonster.ae')
+        this.addAnimatedEntity('Creatures/RMonster/RMonster.ae')
         // load vehicles
         const vehicleTypes = mainConf['VehicleTypes']
         Object.values(vehicleTypes).map((v) => Array.isArray(v) ? v : [v]).forEach((vParts: string[]) => {

@@ -3,6 +3,7 @@ import { EventBus } from '../event/EventBus'
 import { RaidersChangedEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
+import { RockMonsterActivity } from './model/activities/RockMonsterActivity'
 import { Barracks } from './model/building/entities/Barracks'
 import { Docks } from './model/building/entities/Docks'
 import { Geodome } from './model/building/entities/Geodome'
@@ -16,6 +17,9 @@ import { Upgrade } from './model/building/entities/Upgrade'
 import { Crystal } from './model/collect/Crystal'
 import { GameState } from './model/GameState'
 import { Bat } from './model/monster/Bat'
+import { IceMonster } from './model/monster/IceMonster'
+import { LavaMonster } from './model/monster/LavaMonster'
+import { RockMonster } from './model/monster/RockMonster'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
 import { SmallDigger } from './model/vehicle/entities/SmallDigger'
@@ -79,6 +83,21 @@ export class ObjectListLoader {
                 } else {
                     GameState.vehiclesUndiscovered.push(smallDigger)
                 }
+            } else if (lTypeName.equalsIgnoreCase('IceMonster')) {
+                const rockMonster = new IceMonster(worldMgr, sceneMgr)
+                rockMonster.changeActivity(RockMonsterActivity.Unpowered)
+                rockMonster.addToScene(worldPos, radHeading - Math.PI / 2)
+                GameState.rockMonsters.push(rockMonster)
+            } else if (lTypeName.equalsIgnoreCase('LavaMonster')) {
+                const rockMonster = new LavaMonster(worldMgr, sceneMgr)
+                rockMonster.changeActivity(RockMonsterActivity.Unpowered)
+                rockMonster.addToScene(worldPos, radHeading - Math.PI / 2)
+                GameState.rockMonsters.push(rockMonster)
+            } else if (lTypeName.equalsIgnoreCase('RockMonster')) {
+                const rockMonster = new RockMonster(worldMgr, sceneMgr)
+                rockMonster.changeActivity(RockMonsterActivity.Unpowered)
+                rockMonster.addToScene(worldPos, radHeading - Math.PI / 2)
+                GameState.rockMonsters.push(rockMonster)
             } else {
                 // TODO implement remaining object types
                 console.warn('Object type ' + olObject.type + ' not yet implemented')
