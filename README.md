@@ -22,22 +22,23 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near
 
-- Geologists and scanner
 - Camera controls panel
 - Alarm mode and shooting
+- Rock-Monsters and Slugs
+- Damage, show health bar and teleport at bad health
 
 ### Mid
 
-- Rock-Monsters and Slugs
-- Damage, show health bar and teleport at bad health
 - Bricks and brick refinery
 - Level score shown and level unlocking
+- Save and load
+- First-Person and shoulder camera
 
 ### Far
 
-- Save and load
-- First-Person and shoulder camera
 - Background music and soundtrack
+- Show moving entities in radar panel (raider, monster, vehicles, collectables)
+- Geologists and scanner
 - Tutorial levels
 
 ## Known Bugs
@@ -46,10 +47,11 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - make game pausable and actually pause in escape screen (also fixes elapsed game time)
 - GunStation mesh not loaded correctly missing turret part (test with level 18)
-- Surface discovery has very bad performance
+- Surface discovery has very bad performance (test with level 20 and level 17)
 - Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in
-- Clear rubble job not working as expected
+- Clear rubble job not working as expected (test with Level03)
 - Raiders not spawned in Level 01 when restarted from Level 03
+- Level24 cannot be loaded, because collapsing surface needs terrain, which is not yet initialized
 
 ### Nice to have
 
