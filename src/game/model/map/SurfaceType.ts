@@ -15,6 +15,7 @@ export class SurfaceType {
     cursorFulfiller: Cursor = Cursor.Pointer_Standard
     statsDrillName: string = null
     canCarryFence: boolean = false
+    connectsPath: boolean = false
 
     constructor(options: Partial<SurfaceType> = {}) {
         Object.assign(this, options)
@@ -104,6 +105,7 @@ export class SurfaceType {
         matIndex: '60',
         selectable: true,
         canCarryFence: true,
+        connectsPath: true,
     })
     static readonly POWER_PATH_BUILDING_SITE = new SurfaceType({
         name: 'power path building site',
@@ -116,12 +118,14 @@ export class SurfaceType {
         name: 'power path building',
         floor: true,
         matIndex: '76',
+        connectsPath: true,
     })
     static readonly POWER_PATH_CONSTRUCTION = new SurfaceType({
         name: 'power path construction',
         floor: true,
         matIndex: '76',
         selectable: true,
+        connectsPath: true,
     })
     static readonly RUBBLE1 = new SurfaceType({
         name: 'rubble 1',

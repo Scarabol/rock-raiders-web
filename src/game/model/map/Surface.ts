@@ -628,19 +628,22 @@ export class Surface implements Selectable {
     makeRubble(containedOre: number = 0) {
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += containedOre
-        this.setSurfaceTypeAndUpdateNeighbors(SurfaceType.RUBBLE4)
+        this.setSurfaceType(SurfaceType.RUBBLE4)
     }
 
     setBuilding(building: BuildingEntity) {
         this.building = building
         this.updatePathfinding()
-        this.setSurfaceTypeAndUpdateNeighbors(this.building ? SurfaceType.POWER_PATH_BUILDING : SurfaceType.GROUND)
+        this.setSurfaceType(this.building ? SurfaceType.POWER_PATH_BUILDING : SurfaceType.GROUND)
     }
 
-    setSurfaceTypeAndUpdateNeighbors(surfaceType: SurfaceType) {
+    setSurfaceType(surfaceType: SurfaceType) {
+        if (surfaceType === this.surfaceType) return
+        const oldSurfaceType = this.surfaceType
         this.surfaceType = surfaceType
         this.updateTexture()
-        this.neighbors.forEach((n) => n.updateTexture())
+        if (oldSurfaceType.connectsPath || this.surfaceType.connectsPath) this.neighbors.forEach((n) => n.updateTexture())
+        EventBus.publishEvent(new UpdateRadarSurface(this))
     }
 
     getPathfindingWalkWeight(): number {
@@ -722,7 +725,7 @@ export class Surface implements Selectable {
 
     setSite(site: BuildingSite) {
         this.site = site
-        this.setSurfaceTypeAndUpdateNeighbors(this.site ? SurfaceType.POWER_PATH_CONSTRUCTION : SurfaceType.GROUND)
+        this.setSurfaceType(this.site ? SurfaceType.POWER_PATH_CONSTRUCTION : SurfaceType.GROUND)
     }
 
     playPositionalSample(sample: Sample): PositionalAudio { // TODO merge with AnimEntity code (at least in SceneEntity maybe)

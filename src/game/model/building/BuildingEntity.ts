@@ -235,7 +235,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             const pathOffset = new Vector2(this.primaryPowerPath.x, this.primaryPowerPath.y).multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
-            this.primaryPathSurface.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH_BUILDING)
+            this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         }
         this.addToScene(worldPosition, radHeading)
         this.createPickSphere()

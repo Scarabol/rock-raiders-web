@@ -24,7 +24,7 @@ export class CompletePowerPathJob extends PublicJob {
     onJobComplete() {
         super.onJobComplete()
         this.placedItems.forEach((placed) => placed.removeFromScene())
-        this.surface.setSurfaceTypeAndUpdateNeighbors(SurfaceType.POWER_PATH)
+        this.surface.setSurfaceType(SurfaceType.POWER_PATH)
     }
 
     getRequiredTool(): RaiderTool {
