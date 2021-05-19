@@ -27,8 +27,8 @@ export class Button extends BaseElement {
         this.imgDisabled = GuiResourceCache.getImageOrNull(btnCfg.disabledFile)
         this.relX = btnCfg.relX
         this.relY = btnCfg.relY
-        this.width = btnCfg.width || this.imgNormal?.width || this.imgPressed?.width
-        this.height = btnCfg.height || this.imgNormal?.height || this.imgPressed?.height
+        this.width = btnCfg.width || this.imgNormal?.width || this.imgPressed?.width || this.imgHover?.width
+        this.height = btnCfg.height || this.imgNormal?.height || this.imgPressed?.height || this.imgHover?.height
         if (Array.isArray(btnCfg.tooltip)) {
             [this.tooltip, this.sfxTooltip] = btnCfg.tooltip
         } else {
