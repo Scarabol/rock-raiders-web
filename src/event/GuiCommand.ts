@@ -239,15 +239,15 @@ export class VehicleDriverGetOut extends GuiCommand {
 
 export class CameraControl extends GuiCommand {
 
-    zoomIn: boolean
-    zoomOut: boolean
+    zoom: number
     cycleBuilding: boolean
+    rotationIndex: number
 
-    constructor(zoomIn: boolean, zoomOut: boolean, cycleBuilding: boolean) {
+    constructor(zoom: number, cycleBuilding: boolean, rotationIndex: number) {
         super(EventKey.COMMAND_CAMERA_CONTROL)
-        this.zoomIn = zoomIn
-        this.zoomOut = zoomOut
+        this.zoom = zoom
         this.cycleBuilding = cycleBuilding
+        this.rotationIndex = rotationIndex
     }
 
 }

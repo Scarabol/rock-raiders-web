@@ -41,7 +41,7 @@ export class GuiMainWorker extends GuiWorker {
         this.panelEncyclopedia = this.addPanel(new Panel(this.rootElement, panelsCfg.panelEncyclopedia))
         this.panelInformation = this.addPanel(new InformationPanel(this.rootElement, panelsCfg.panelInformation))
         this.panelInfoDock = this.addPanel(new InfoDockPanel(this.rootElement, panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, new InfoMessagesConfig(GuiResourceCache.cfg('InfoMessages')), this.panelInformation))
-        this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl))
+        this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, GuiResourceCache.cfg('PanelRotationControl')))
         const priorityPositionsConfig = Object.values(GuiResourceCache.cfg('PrioritiesImagePositions')).map(cfgValue => new PriorityPositionsEntry(cfgValue))
         const priorityButtonsConfig = new PriorityButtonsConfig(GuiResourceCache.cfg('PriorityImages'))
         this.panelPriorityList = this.addPanel(new PriorityListPanel(this.rootElement, panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, priorityPositionsConfig, priorityButtonsConfig))

@@ -7,17 +7,27 @@ import { Panel } from '../base/Panel'
 
 export class CameraControlPanel extends Panel {
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonCameraControlCfg) {
+    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonCameraControlCfg, panelRotationControlCfg: any) {
         super(parent, panelCfg)
         this.addChild(new Button(this, buttonsCfg.panelButtonCameraControlZoomIn)).onClick = () => {
-            this.publishEvent(new CameraControl(true, false, false))
+            this.publishEvent(new CameraControl(-1, false, -1))
         }
         this.addChild(new Button(this, buttonsCfg.panelButtonCameraControlZoomOut)).onClick = () => {
-            this.publishEvent(new CameraControl(false, true, false))
+            this.publishEvent(new CameraControl(1, false, -1))
         }
         this.addChild(new Button(this, buttonsCfg.panelButtonCameraControlCycleBuildings)).onClick = () => {
-            this.publishEvent(new CameraControl(false, false, true))
+            this.publishEvent(new CameraControl(0, true, -1))
         }
+        ['LeftImage', 'UpImage', 'RightImage', 'DownImage'].forEach((name, index) => {
+            const cfg = panelRotationControlCfg[name]
+            this.addChild(new Button(this, {
+                highlightFile: cfg[0],
+                relX: cfg[1] - this.relX,
+                relY: cfg[2] - this.relY,
+            })).onClick = () => {
+                this.publishEvent(new CameraControl(0, false, index))
+            }
+        })
     }
 
 }

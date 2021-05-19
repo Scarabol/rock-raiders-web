@@ -178,15 +178,10 @@ export class GuiManager {
             jobSupervisor.updatePriorities(event.priorityList)
         })
         EventBus.registerEventListener(EventKey.COMMAND_CAMERA_CONTROL, (event: CameraControl) => {
-            if (event.zoomIn) { // TODO implement custom camera controls, that is better remotely controllable
-                const zoomInEvent = new WheelEvent('wheel', {deltaY: -5})
+            if (event.zoom) { // TODO implement custom camera controls, that is better remotely controllable
+                const zoomInEvent = new WheelEvent('wheel', {deltaY: 5 * event.zoom})
                 gameLayerCanvas.dispatchEvent(zoomInEvent)
                 gameLayerCanvas.ownerDocument.dispatchEvent(zoomInEvent)
-            }
-            if (event.zoomOut) { // TODO implement custom camera controls, that is better remotely controllable
-                const zoomOutEvent = new WheelEvent('wheel', {deltaY: 5})
-                gameLayerCanvas.dispatchEvent(zoomOutEvent)
-                gameLayerCanvas.ownerDocument.dispatchEvent(zoomOutEvent)
             }
             if (event.cycleBuilding) {
                 this.buildingCycleIndex = (this.buildingCycleIndex + 1) % GameState.buildings.length
@@ -195,6 +190,9 @@ export class GuiManager {
                 sceneMgr.camera.position.copy(target.clone().add(offsetTargetToCamera))
                 sceneMgr.controls.target.copy(target)
                 sceneMgr.controls.update()
+            }
+            if (event.rotationIndex >= 0) { // TODO implement custom camera controls, that is better remotely controllable
+                console.log('TODO implement rotate camera: ' + (['left', 'up', 'right', 'down'][event.rotationIndex]))
             }
         })
     }

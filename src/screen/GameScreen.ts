@@ -84,6 +84,7 @@ export class GameScreen extends BaseScreen {
         this.worldMgr.setup(this.levelConf, () => this.onLevelEnd())
         this.sceneMgr.setupScene(this.levelConf, this.worldMgr)
         // setup GUI
+        this.guiMgr.buildingCycleIndex = 0
         const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(this.levelConf.objectiveText), this.levelName)
         this.guiLayer.reset()
         this.overlayLayer.setup(objectiveText.objective, this.levelConf.objectiveImage640x480)
