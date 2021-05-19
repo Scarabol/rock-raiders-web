@@ -2,6 +2,7 @@ import { RaiderActivity } from '../../activities/RaiderActivity'
 import { FulfillerEntity } from '../../FulfillerEntity'
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
+import { RaiderTool } from '../../raider/RaiderTool'
 import { PublicJob } from '../Job'
 import { JobType } from '../JobType'
 import { PriorityIdentifier } from '../PriorityIdentifier'
@@ -42,6 +43,10 @@ export class ReinforceJob extends PublicJob {
 
     getWorkDuration(fulfiller: FulfillerEntity): number {
         return 2700
+    }
+
+    getRequiredTool(): RaiderTool {
+        return RaiderTool.HAMMER
     }
 
 }
