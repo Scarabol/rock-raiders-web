@@ -6,7 +6,6 @@ import { GameWheelEvent } from '../event/GameWheelEvent'
 import { IEventHandler } from '../event/IEventHandler'
 import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../params'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
-import { GuiWorkerMessage } from './GuiWorkerMessage'
 import { OffscreenWorkerMessage } from './OffscreenWorkerMessage'
 import { WorkerEventResponse } from './WorkerEventResponse'
 import { WorkerPublishEvent } from './WorkerPublishEvent'
@@ -59,7 +58,7 @@ export abstract class OffscreenWorker implements IEventHandler {
         this.sendResponse(response)
     }
 
-    processMessage(msg: GuiWorkerMessage) {
+    processMessage(msg: OffscreenWorkerMessage) {
         if (msg.type === WorkerMessageType.CANVAS) {
             this.setCanvas(msg.canvas)
         } else if (msg.type === WorkerMessageType.EVENT_POINTER) {

@@ -5,7 +5,6 @@ export class WadWorkerMessage {
 
     type: WorkerMessageType = null
     text?: string
-    resourceByName?: Map<string, any>
     cfg?: any
     stats?: any
     totalResources?: number
@@ -13,7 +12,6 @@ export class WadWorkerMessage {
     assetObj?: any
     sfxKeys?: string[]
     loadingTimeSeconds?: string
-    messageState?: boolean
 
     constructor(type: WorkerMessageType) {
         this.type = type

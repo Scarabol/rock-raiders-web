@@ -1,4 +1,5 @@
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
+import { GuiWorkerMessage } from '../../gui/GuiWorkerMessage'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
@@ -10,7 +11,7 @@ export class OverlayLayer extends OffscreenLayer {
     onRestartGame: () => any = () => console.log('pause the game')
 
     constructor() {
-        super(new Worker(new URL('../../worker/OverlayWorker', import.meta.url))) // webpack does not allow to extract the URL
+        super(new Worker(new URL('../../gui/OverlayWorker', import.meta.url))) // webpack does not allow to extract the URL
     }
 
     onMessage(msg: WorkerResponse): boolean {
@@ -32,6 +33,10 @@ export class OverlayLayer extends OffscreenLayer {
             objectiveText: objectiveText,
             objectiveBackImgCfg: objectiveBackImgCfg,
         })
+    }
+
+    protected sendMessage(message: GuiWorkerMessage, transfer?: Transferable[]) {
+        super.sendMessage(message, transfer)
     }
 
     showOptions() {

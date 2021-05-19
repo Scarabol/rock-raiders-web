@@ -3,11 +3,11 @@ import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { ChangeCursor, LocalEvent } from '../event/LocalEvents'
-import { BaseElement } from '../gui/base/BaseElement'
-import { Panel } from '../gui/base/Panel'
 import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../params'
 import { Cursor } from '../screen/Cursor'
-import { OffscreenWorker } from './OffscreenWorker'
+import { OffscreenWorker } from '../worker/OffscreenWorker'
+import { BaseElement } from './base/BaseElement'
+import { Panel } from './base/Panel'
 
 export abstract class GuiWorker extends OffscreenWorker {
 

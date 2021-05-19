@@ -10,7 +10,7 @@ import { BuildingsChangedEvent, PlaySoundEvent, RaidersChangedEvent } from '../.
 import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
-import { GuiWorkerMessage } from '../../worker/GuiWorkerMessage'
+import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
 import { WorkerEventResponse } from '../../worker/WorkerEventResponse'
 import { WorkerPublishEvent } from '../../worker/WorkerPublishEvent'
 import { WorkerResponse } from '../../worker/WorkerResponse'
@@ -60,7 +60,7 @@ export abstract class OffscreenLayer extends ScreenLayer {
 
     abstract onMessage(msg): boolean
 
-    protected sendMessage(message: GuiWorkerMessage, transfer?: Transferable[]) {
+    protected sendMessage(message: OffscreenWorkerMessage, transfer?: Transferable[]) {
         this.worker.postMessage(message, transfer)
     }
 
