@@ -4,7 +4,7 @@ import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntity } from '../anim/AnimEntity'
 import { BuildingSite } from '../building/BuildingSite'
-import { EntitySuperType, EntityType } from '../EntityType'
+import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { CarryJob } from '../job/CarryJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
@@ -20,7 +20,7 @@ export abstract class MaterialEntity extends AnimEntity {
     positionPathTarget: PathTarget[] = null
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string = null) {
-        super(worldMgr, sceneMgr, EntitySuperType.MATERIAL, entityType, aeFilename)
+        super(worldMgr, sceneMgr, entityType, aeFilename)
         this.targetBuildingTypes = [EntityType.TOOLSTATION]
     }
 

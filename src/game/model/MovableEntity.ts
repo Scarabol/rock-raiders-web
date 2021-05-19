@@ -1,11 +1,11 @@
-import { Vector2, Vector3 } from 'three'
+import { Vector3 } from 'three'
 import { JOB_ACTION_RANGE } from '../../params'
 import { SceneManager } from '../SceneManager'
 import { WorldManager } from '../WorldManager'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
 import { AnimEntity } from './anim/AnimEntity'
 import { EntityStep } from './EntityStep'
-import { EntitySuperType, EntityType } from './EntityType'
+import { EntityType } from './EntityType'
 import { TerrainPath } from './map/TerrainPath'
 import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
@@ -14,20 +14,8 @@ export abstract class MovableEntity extends AnimEntity {
 
     currentPath: TerrainPath = null
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, superType, entityType, aeFilename)
-    }
-
-    getPosition(): Vector3 {
-        return new Vector3(this.group.position.x, this.group.position.y, this.group.position.z)
-    }
-
-    getPosition2D(): Vector2 {
-        return new Vector2(this.group.position.x, this.group.position.z)
-    }
-
-    getSpeed(): number {
-        return this.animation?.transcoef || 1
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
+        super(worldMgr, sceneMgr, entityType, aeFilename)
     }
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
@@ -53,14 +41,14 @@ export abstract class MovableEntity extends AnimEntity {
         }
     }
 
-    abstract getRouteActivity(): AnimEntityActivity
-
     findPathToTarget(target: PathTarget): TerrainPath {
         return new TerrainPath(target, target.targetLocation)
     }
 
     determineStep(): EntityStep {
-        const step = this.getEntityStep(this.currentPath.firstLocation)
+        const targetWorld = this.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
+        targetWorld.y += this.floorOffset
+        const step = new EntityStep(targetWorld.sub(this.group.position))
         const stepLengthSq = step.vec.lengthSq()
         const entitySpeed = this.getSpeed() // TODO use average speed between current and target position
         if (this.currentPath.locations.length > 1) {
@@ -71,14 +59,10 @@ export abstract class MovableEntity extends AnimEntity {
         } else if (stepLengthSq < JOB_ACTION_RANGE * JOB_ACTION_RANGE) {
             step.targetReached = true
         }
-        step.vec.clampLength(0, Math.min(entitySpeed, JOB_ACTION_RANGE))
+        step.vec.clampLength(0, entitySpeed)
         return step
     }
 
-    getEntityStep(target: Vector2): EntityStep {
-        const targetWorld = this.sceneMgr.getFloorPosition(target)
-        targetWorld.y += this.floorOffset
-        return new EntityStep(targetWorld.sub(this.group.position))
-    }
+    abstract getRouteActivity(): AnimEntityActivity
 
 }

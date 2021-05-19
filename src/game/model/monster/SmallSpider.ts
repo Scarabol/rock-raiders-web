@@ -4,6 +4,7 @@ import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
+import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { SurfaceType } from '../map/SurfaceType'
@@ -12,6 +13,8 @@ import { PathTarget } from '../PathTarget'
 import { Monster } from './Monster'
 
 export class SmallSpider extends Monster {
+
+    radiusSq: number = 0
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae')
@@ -63,6 +66,11 @@ export class SmallSpider extends Monster {
         this.removeFromScene()
         GameState.spiders.remove(this)
         this.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).remove(this))
+    }
+
+    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
+        super.changeActivity(activity, onAnimationDone, durationTimeMs)
+        this.radiusSq = this.sceneEntity.getRadiusSquare()
     }
 
 }

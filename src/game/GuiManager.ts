@@ -133,11 +133,12 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
             GameState.buildModeSelection?.removeFromScene()
-            GameState.buildModeSelection = GuiManager.buildingFromType(event.entityType, worldMgr, sceneMgr)
+            GameState.buildModeSelection = GuiManager.createBuildingFromType(event.entityType, worldMgr, sceneMgr)
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
             GameState.buildModeSelection?.removeFromScene()
             GameState.buildModeSelection = null
+            sceneMgr.buildMarker?.hideAllMarker()
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
             GameState.selectedSurface.site?.cancelSite()
@@ -147,11 +148,11 @@ export class GuiManager {
             const pads = GameState.getBuildingsByType(EntityType.TELEPORT_PAD).filter((b) => !b.spawning) // TODO check for "correct" teleport station
             if (pads.length > 0) {
                 const teleportPad = pads.random()
-                const vehicle = GuiManager.vehicleFromType(event.vehicle, worldMgr, sceneMgr)
+                const vehicle = GuiManager.createVehicleFromType(event.vehicle, worldMgr, sceneMgr)
                 vehicle.addToScene(teleportPad.primaryPathSurface.getCenterWorld2D(), teleportPad.getHeading())
                 vehicle.changeActivity(VehicleActivity.TeleportIn, () => {
                     vehicle.changeActivity()
-                    vehicle.createPickSphere()
+                    vehicle.createPickSphere(vehicle.stats.PickSphere)
                     GameState.vehicles.push(vehicle)
                 })
             }
@@ -197,7 +198,7 @@ export class GuiManager {
         })
     }
 
-    static buildingFromType(entityType: EntityType, worldMgr: WorldManager, sceneMgr: SceneManager): BuildingEntity {
+    static createBuildingFromType(entityType: EntityType, worldMgr: WorldManager, sceneMgr: SceneManager): BuildingEntity {
         switch (entityType) {
             case EntityType.TOOLSTATION:
                 return new Toolstation(worldMgr, sceneMgr)
@@ -224,7 +225,7 @@ export class GuiManager {
         }
     }
 
-    static vehicleFromType(entityType: EntityType, worldMgr: WorldManager, sceneMgr: SceneManager): VehicleEntity {
+    static createVehicleFromType(entityType: EntityType, worldMgr: WorldManager, sceneMgr: SceneManager): VehicleEntity {
         switch (entityType) {
             case EntityType.HOVERBOARD:
                 return new Hoverboard(worldMgr, sceneMgr)

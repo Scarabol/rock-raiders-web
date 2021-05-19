@@ -1,9 +1,7 @@
-import { AmbientLight, AudioListener, Color, Frustum, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe } from '../core/Util'
-import { EventBus } from '../event/EventBus'
-import { EventKey } from '../event/EventKeyEnum'
 import { KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from '../scene/SceneMesh'
@@ -50,11 +48,6 @@ export class SceneManager {
         this.controls.keyPanSpeed = this.controls.keyPanSpeed * KEY_PAN_SPEED
 
         this.buildMarker = new BuildPlacementMarker(this)
-        EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
-            GameState.buildModeSelection?.removeFromScene()
-            GameState.buildModeSelection = null
-            this.buildMarker.hideAllMarker()
-        })
     }
 
     selectEntitiesByRay(rx: number, ry: number) {
@@ -141,13 +134,20 @@ export class SceneManager {
         planes[5].setFromCoplanarPoints(vectemp3, vectemp2, vectemp1)
         planes[5].normal.multiplyScalar(-1)
 
-        let entities: Selectable[] = GameState.raiders.filter((r) => frustum.containsPoint(r.getSelectionCenter()))
-        entities.push(...GameState.vehicles.filter((v) => frustum.containsPoint(v.getSelectionCenter())))
+        let entities: Selectable[] = GameState.raiders.filter((r) => SceneManager.isInFrustum(r.pickSphere, frustum))
+        entities.push(...GameState.vehicles.filter((v) => SceneManager.isInFrustum(v.pickSphere, frustum)))
         if (entities.length < 1) {
-            const firstBuilding = GameState.buildings.find((b) => frustum.containsPoint(b.getSelectionCenter()))
+            const firstBuilding = GameState.buildings.find((b) => SceneManager.isInFrustum(b.pickSphere, frustum))
             entities = firstBuilding ? [firstBuilding] : []
         }
         GameState.selectEntities(entities)
+    }
+
+    private static isInFrustum(pickSphere: Mesh, frustum: Frustum) {
+        if (!pickSphere) return false
+        const selectionCenter = new Vector3()
+        pickSphere.getWorldPosition(selectionCenter)
+        return frustum.containsPoint(selectionCenter)
     }
 
     setupScene(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
@@ -226,17 +226,6 @@ export class SceneManager {
     getFloorPosition(world: Vector2) {
         const floorY = this.terrain.getSurfaceFromWorldXZ(world.x, world.y).getFloorHeight(world.x, world.y)
         return new Vector3(world.x, floorY, world.y)
-    }
-
-    getTerrainHeight(worldX: number, worldZ: number): number {
-        const raycaster = new Raycaster(new Vector3(Number(worldX), 3 * TILESIZE, Number(worldZ)), new Vector3(0, -1, 0))
-        const intersect = raycaster.intersectObject(this.terrain.floorGroup, true)
-        if (intersect.length > 0) {
-            return intersect[0].point.y
-        } else {
-            console.warn('could not determine terrain height for ' + worldX + '/' + worldZ)
-            return 0
-        }
     }
 
 }

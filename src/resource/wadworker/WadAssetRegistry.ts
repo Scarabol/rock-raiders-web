@@ -142,7 +142,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
             } else if (sndKey.startsWith('!')) { // TODO no clue what this means... loop? duplicate?!
                 sndKey = sndKey.slice(1)
             }
-            const sndFilePaths = Array.isArray(value) ? value : [value] // TODO improve config parsing
+            const sndFilePaths = Array.isArray(value) ? value : [value]
             sndFilePaths.forEach(sndPath => {
                 if (sndPath.startsWith('*')) { // TODO no clue what this means... don't loop maybe, see telportup
                     sndPath = sndPath.slice(1)

@@ -1,4 +1,4 @@
-import { Group, MathUtils, Mesh, MeshPhongMaterial, PositionalAudio, Vector2, Vector3 } from 'three'
+import { Group, MathUtils, Mesh, MeshPhongMaterial, PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
 import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
@@ -454,10 +454,6 @@ export class Surface implements Selectable {
         }
     }
 
-    getSelectionCenter(): Vector3 {
-        return null // not used
-    }
-
     updateJobColor() {
         const color = this.dynamiteJob?.color || this.reinforceJob?.color || this.drillJob?.color || 0xffffff
         this.forEachMaterial((mat) => mat.color.setHex(color))
@@ -518,7 +514,11 @@ export class Surface implements Selectable {
 
     getCenterWorld(): Vector3 {
         const center = this.getCenterWorld2D()
-        return new Vector3(center.x, this.sceneMgr.getTerrainHeight(center.x, center.y), center.y)
+        const raycaster = new Raycaster(new Vector3(center.x, 3 * TILESIZE, center.y), new Vector3(0, -1, 0))
+        const intersect = raycaster.intersectObject(this.mesh, true)
+        if (intersect.length < 1) console.warn('could not determine terrain height for ' + center.x + '/' + center.y)
+        const terrainHeight = intersect[0]?.point?.y || 0
+        return new Vector3(center.x, terrainHeight, center.y)
     }
 
     setFallinLevel(fallinLevel: number) {
@@ -557,11 +557,7 @@ export class Surface implements Selectable {
         const dx = this.x - targetX, dy = targetY - this.y
         this.fallinGrp.rotateOnAxis(new Vector3(0, 1, 0), Math.atan2(dy, dx) + Math.PI / 2)
         this.sceneMgr.scene.add(this.fallinGrp)
-        const poly = []
-        animation.bodies.forEach((body) => {
-            const polyModel = body.model.clone(true)
-            poly.push(polyModel)
-        })
+        const poly = animation.bodies.map((b) => b.model.clone(true))
         animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
             const polyPart = poly[index]
             const parentInd = body.parentObjInd

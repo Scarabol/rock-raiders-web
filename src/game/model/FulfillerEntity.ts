@@ -1,4 +1,4 @@
-import { PositionalAudio, Vector2, Vector3 } from 'three'
+import { PositionalAudio, Vector2 } from 'three'
 import { Sample } from '../../audio/Sample'
 import { clearIntervalSafe } from '../../core/Util'
 import { NATIVE_FRAMERATE } from '../../params'
@@ -6,7 +6,7 @@ import { SceneManager } from '../SceneManager'
 import { WorldManager } from '../WorldManager'
 import { RaiderActivity } from './activities/RaiderActivity'
 import { MaterialEntity } from './collect/MaterialEntity'
-import { EntitySuperType, EntityType } from './EntityType'
+import { EntityType } from './EntityType'
 import { Job } from './job/Job'
 import { JobState } from './job/JobState'
 import { MovableEntity } from './MovableEntity'
@@ -26,8 +26,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     inBeam: boolean = false
     workAudio: PositionalAudio
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, superType, entityType, aeFilename)
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
+        super(worldMgr, sceneMgr, entityType, aeFilename)
         this.group.userData = {'selectable': this}
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
@@ -64,8 +64,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     stopJob() {
         this.dropItem()
         if (!this.job) return
-        this.job.unassign(this)
-        if (this.followUpJob) this.followUpJob.unassign(this)
+        this.job.unAssign(this)
+        if (this.followUpJob) this.followUpJob.unAssign(this)
         this.job = null
         this.followUpJob = null
         this.changeActivity()
@@ -88,10 +88,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.selected = true
         this.changeActivity()
         return true
-    }
-
-    getSelectionCenter(): Vector3 {
-        return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null
     }
 
     abstract addTool(tool: RaiderTool)
@@ -137,7 +133,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             } else if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
                 if (this.job.isReadyToComplete()) {
                     const workActivity = this.job.getWorkActivity() || this.getDefaultActivity()
-                    if (!this.workAudio && workActivity === RaiderActivity.Drill) { // FIXME implement work audio
+                    if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
                         this.workAudio = this.playPositionalSample(Sample.SFX_Drill, true)
                     }
                     this.changeActivity(workActivity, () => {
@@ -155,7 +151,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     private completeJob() {
         this.job?.onJobComplete()
         if (this.job?.jobState === JobState.INCOMPLETE) return
-        if (this.job) this.job.unassign(this)
+        if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
         this.followUpJob = null
         this.changeActivity()

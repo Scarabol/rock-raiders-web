@@ -10,7 +10,7 @@ import { InitLoadingMessage } from './wadworker/InitLoadingMessage'
 import { WadWorkerMessage } from './wadworker/WadWorkerMessage'
 import { WorkerMessageType } from './wadworker/WorkerMessageType'
 
-export class ResourceManager extends ResourceCache { // TODO rename to WadResourceManager
+export class ResourceManager extends ResourceCache {
 
     static worker: Worker = new Worker(new URL('./wadworker/WadWorker', import.meta.url))
 

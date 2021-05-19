@@ -7,7 +7,7 @@ import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { Crystal } from '../collect/Crystal'
 import { Ore } from '../collect/Ore'
-import { EntitySuperType, EntityType } from '../EntityType'
+import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
 import { VehicleCallManJob } from '../job/VehicleCallManJob'
@@ -26,10 +26,9 @@ export abstract class VehicleEntity extends FulfillerEntity {
     engineSound: PositionalAudio
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, EntitySuperType.VEHICLE, entityType, aeFilename)
+        super(worldMgr, sceneMgr, entityType, aeFilename)
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
-        // TODO add positional audio node with engine sound (if maned)
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {

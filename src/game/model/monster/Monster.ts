@@ -2,7 +2,7 @@ import { clearTimeoutSafe } from '../../../core/Util'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { MonsterActivity } from '../activities/MonsterActivity'
-import { EntitySuperType, EntityType } from '../EntityType'
+import { EntityType } from '../EntityType'
 import { MovableEntity } from '../MovableEntity'
 import { PathTarget } from '../PathTarget'
 
@@ -12,7 +12,7 @@ export abstract class Monster extends MovableEntity {
     target: PathTarget[] = []
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, EntitySuperType.MONSTER, entityType, aeFilename)
+        super(worldMgr, sceneMgr, entityType, aeFilename)
     }
 
     removeFromScene() {

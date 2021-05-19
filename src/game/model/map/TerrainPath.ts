@@ -17,18 +17,6 @@ export class TerrainPath {
         }
     }
 
-    addLocation(location: Vector2): TerrainPath {
-        this.locations.push(location)
-        if (this.locations.length > 1) {
-            this.lengthSq += this.locations[this.locations.length - 2].distanceToSquared(location)
-        }
-        return this
-    }
-
-    get targetPosition(): Vector2 {
-        return this.locations[this.locations.length - 1] || null
-    }
-
     get firstLocation(): Vector2 {
         return this.locations[0] || null
     }

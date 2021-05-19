@@ -32,9 +32,7 @@ export class ObjectListLoader {
             const worldPos = new Vector2(olObject.xPos, olObject.yPos).addScalar(-1).multiplyScalar(TILESIZE) // TODO assert that world pos is over terrain otherwise drop item
             const buildingType: string = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
-            if (lTypeName === 'TVCamera'.toLowerCase()) {
-                console.log('Camera heading: ' + Math.round(olObject.heading % 360))
-                console.log('Camera target: ' + (olObject.xPos - 1) + '/' + (olObject.yPos - 1))
+            if (lTypeName.equalsIgnoreCase('TVCamera')) {
                 const cameraOffset = new Vector2(6, 0).rotateAround(new Vector2(0, 0), radHeading + Math.PI / 2)
                 const cameraPos = sceneMgr.getFloorPosition(cameraOffset.multiplyScalar(TILESIZE).add(worldPos))
                 cameraPos.y += 4 * TILESIZE
@@ -42,10 +40,10 @@ export class ObjectListLoader {
                 sceneMgr.controls.target.copy(sceneMgr.getFloorPosition(worldPos))
                 sceneMgr.controls.update()
                 sceneMgr.setTorchPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
-            } else if (lTypeName === 'Pilot'.toLowerCase()) {
+            } else if (lTypeName.equalsIgnoreCase('Pilot')) {
                 const raider = new Raider(worldMgr, sceneMgr)
                 raider.changeActivity()
-                raider.createPickSphere()
+                raider.createPickSphere(raider.stats.PickSphere)
                 raider.addToScene(worldPos, radHeading - Math.PI / 2)
                 if (raider.group.visible) {
                     GameState.raiders.push(raider)
@@ -54,28 +52,27 @@ export class ObjectListLoader {
                     GameState.raidersUndiscovered.push(raider)
                 }
             } else if (buildingType) {
-                console.log(olObject.type + ' heading: ' + Math.round(olObject.heading % 360))
                 const entity = this.createBuildingByName(buildingType, worldMgr, sceneMgr)
                 entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
-            } else if (lTypeName === 'PowerCrystal'.toLowerCase()) {
+            } else if (lTypeName.equalsIgnoreCase('PowerCrystal')) {
                 worldMgr.placeMaterial(new Crystal(worldMgr, sceneMgr), worldPos)
-            } else if (lTypeName === 'SmallSpider'.toLowerCase()) {
+            } else if (lTypeName.equalsIgnoreCase('SmallSpider')) {
                 const spider = new SmallSpider(worldMgr, sceneMgr)
                 spider.changeActivity()
                 spider.addToScene(worldPos, radHeading)
                 GameState.spiders.push(spider)
                 spider.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).push(spider))
                 spider.startMoving()
-            } else if (lTypeName === 'Bat'.toLowerCase()) {
+            } else if (lTypeName.equalsIgnoreCase('Bat')) {
                 const bat = new Bat(worldMgr, sceneMgr)
                 bat.changeActivity()
                 bat.addToScene(worldPos, radHeading)
                 GameState.bats.push(bat)
                 bat.startRandomMove()
-            } else if (lTypeName === 'SmallDigger'.toLowerCase()) {
+            } else if (lTypeName.equalsIgnoreCase('SmallDigger')) {
                 const smallDigger = new SmallDigger(worldMgr, sceneMgr)
                 smallDigger.changeActivity()
-                smallDigger.createPickSphere()
+                smallDigger.createPickSphere(smallDigger.stats.PickSphere)
                 smallDigger.addToScene(worldPos, radHeading + Math.PI)
                 if (smallDigger.group.visible) {
                     GameState.vehicles.push(smallDigger)

@@ -41,13 +41,3 @@ export enum EntityType {
     LARGE_CAT,
 
 }
-
-export enum EntitySuperType {
-
-    RAIDER,
-    BUILDING,
-    MONSTER,
-    MATERIAL,
-    VEHICLE,
-
-}

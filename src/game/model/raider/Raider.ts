@@ -5,9 +5,10 @@ import { RaiderDiscoveredEvent } from '../../../event/WorldLocationEvent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
+import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BaseActivity } from '../activities/BaseActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
-import { EntitySuperType, EntityType } from '../EntityType'
+import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { GameState } from '../GameState'
 import { TerrainPath } from '../map/TerrainPath'
@@ -22,9 +23,10 @@ export class Raider extends FulfillerEntity {
     tools: Map<RaiderTool, boolean> = new Map()
     trainings: Map<RaiderTraining, boolean> = new Map()
     slipped: boolean = false
+    radiusSq: number = 0
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
-        super(worldMgr, sceneMgr, EntitySuperType.RAIDER, EntityType.PILOT, 'mini-figures/pilot/pilot.ae')
+        super(worldMgr, sceneMgr, EntityType.PILOT, 'mini-figures/pilot/pilot.ae')
         this.tools.set(RaiderTool.DRILL, true)
     }
 
@@ -134,6 +136,11 @@ export class Raider extends FulfillerEntity {
 
     addTraining(training: RaiderTraining) {
         this.trainings.set(training, true)
+    }
+
+    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
+        super.changeActivity(activity, onAnimationDone, durationTimeMs)
+        this.radiusSq = this.sceneEntity.getRadiusSquare()
     }
 
 }

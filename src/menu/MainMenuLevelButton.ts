@@ -28,7 +28,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
         this.width = Math.max(this.imgActive.width, this.imgInactive.width, this.imgCross.width)
         this.height = Math.max(this.imgActive.height, this.imgInactive.height, this.imgCross.height)
         this.unlocked = levelCfg.frontEndOpen
-        this.unlocked = true // TODO don't unlock everything by default
+        this.unlocked = true // XXX don't unlock all levels by default
     }
 
     draw(context: SpriteContext) {

@@ -1,5 +1,3 @@
-import { Vector3 } from 'three'
-
 export interface Selectable {
 
     getSelectionType(): SelectionType
@@ -7,8 +5,6 @@ export interface Selectable {
     select(): boolean
 
     deselect(): any
-
-    getSelectionCenter(): Vector3
 
 }
 

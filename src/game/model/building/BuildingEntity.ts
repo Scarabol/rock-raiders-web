@@ -18,7 +18,7 @@ import { BarrierLocation } from '../collect/BarrierLocation'
 import { Crystal } from '../collect/Crystal'
 import { ElectricFence } from '../collect/ElectricFence'
 import { Ore } from '../collect/Ore'
-import { EntitySuperType, EntityType } from '../EntityType'
+import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
@@ -49,7 +49,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     engineSound: PositionalAudio
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, EntitySuperType.BUILDING, entityType, aeFilename)
+        super(worldMgr, sceneMgr, entityType, aeFilename)
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
         this.group.userData = {'selectable': this}
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
@@ -75,10 +75,6 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     deselect() {
         this.selectionFrame.visible = false
         this.selected = false
-    }
-
-    getSelectionCenter(): Vector3 {
-        return this.pickSphere ? new Vector3().copy(this.pickSphere.position).applyMatrix4(this.group.matrixWorld) : null
     }
 
     getPickSphereHeightOffset(): number {
@@ -238,7 +234,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         }
         this.addToScene(worldPosition, radHeading)
-        this.createPickSphere()
+        this.createPickSphere(this.stats.PickSphere)
         if (this.group.visible) {
             GameState.buildings.push(this)
         } else {

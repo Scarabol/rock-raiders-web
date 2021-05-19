@@ -11,7 +11,7 @@ import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BaseActivity } from '../activities/BaseActivity'
 import { BaseEntity } from '../BaseEntity'
-import { EntitySuperType, EntityType } from '../EntityType'
+import { EntityType } from '../EntityType'
 import { AnimationEntityType } from './AnimationEntityType'
 import { AnimClip } from './AnimClip'
 
@@ -23,10 +23,9 @@ export abstract class AnimEntity extends BaseEntity {
     pickSphere: Mesh = null
     activity: BaseActivity = null
     boundingSphere: Sphere = new Sphere()
-    radiusSq: number = 0
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, superType, entityType)
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
+        super(worldMgr, sceneMgr, entityType)
         if (aeFilename) this.animationEntityType = ResourceManager.getAnimationEntityType(aeFilename, sceneMgr.listener)
     }
 
@@ -73,9 +72,7 @@ export abstract class AnimEntity extends BaseEntity {
             animation.carryJoint.add(...carriedChildren) // keep carried children
         }
         this.animation = animation
-        this.group.add(this.animation.polyModel)
-        new Box3().setFromObject(this.group).getBoundingSphere(this.boundingSphere)
-        this.radiusSq = this.boundingSphere.radius * this.boundingSphere.radius
+        this.sceneEntity.add(this.animation.polyModel)
         this.animation.animate(0, onAnimationDone, durationTimeMs)
     }
 
@@ -83,9 +80,8 @@ export abstract class AnimEntity extends BaseEntity {
         return AnimEntityActivity.Stand
     }
 
-    createPickSphere() { // TODO move trigger into changeActivity?
+    createPickSphere(pickSphereDiameter: number) { // TODO Refactor this is always triggered after changeActivity is called for the first time
         if (this.pickSphere) return
-        const pickSphereDiameter = this.stats.PickSphere
         const pickSphereRadius = pickSphereDiameter / 2
         const geometry = new SphereGeometry(pickSphereRadius, pickSphereRadius, pickSphereRadius)
         const material = new MeshBasicMaterial({color: 0xffff00, visible: false}) // change visible to true for debugging
@@ -154,6 +150,10 @@ export abstract class AnimEntity extends BaseEntity {
     removeFromScene() {
         super.removeFromScene()
         this.animation?.stop()
+    }
+
+    getSpeed(): number {
+        return this.animation?.transcoef || 1
     }
 
 }

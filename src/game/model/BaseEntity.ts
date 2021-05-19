@@ -1,7 +1,7 @@
 import { Group, Vector2, Vector3 } from 'three'
 import { SceneManager } from '../SceneManager'
 import { WorldManager } from '../WorldManager'
-import { EntitySuperType, EntityType } from './EntityType'
+import { EntityType } from './EntityType'
 import { Surface } from './map/Surface'
 
 export abstract class BaseEntity {
@@ -11,20 +11,14 @@ export abstract class BaseEntity {
 
     group: Group = new Group()
 
-    superType: EntitySuperType = null
     entityType: EntityType = null
     level: number = 0
     floorOffset: number = 0.1
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, superType: EntitySuperType, entityType: EntityType) {
+    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType) {
         this.worldMgr = worldMgr
         this.sceneMgr = sceneMgr
-        this.superType = superType
         this.entityType = entityType
-    }
-
-    get stats() {
-        return null
     }
 
     getPosition() {

@@ -26,7 +26,7 @@ export abstract class Job {
         }
     }
 
-    unassign(fulfiller: FulfillerEntity) {
+    unAssign(fulfiller: FulfillerEntity) {
         this.fulfiller.remove(fulfiller)
     }
 

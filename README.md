@@ -67,6 +67,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add water and lava animation
 - Selection layer has bad performance and behaves funny when GUI is hovered
 - Shovel and drilling cursor shown even if selected entities cannot do the job
+- Use given wheel radius to rotate wheels while moving vehicles
+- ElectricFenceStud missing between fences and fence and building
 
 ## Technical Debt
 
