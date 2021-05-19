@@ -54,7 +54,7 @@ export class GameScreen extends BaseScreen {
         this.gameLayer.sceneMgr = this.sceneMgr
         this.selectionLayer.sceneMgr = this.sceneMgr
         this.jobSupervisor = new Supervisor(this.worldMgr)
-        this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr, this.jobSupervisor)
+        this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr, this.jobSupervisor, this.gameLayer.canvas)
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.showOptions()
         this.overlayLayer.onSetSpaceToContinue = (state: boolean) => this.guiLayer.setSpaceToContinue(state)

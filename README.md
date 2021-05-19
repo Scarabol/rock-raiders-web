@@ -22,7 +22,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near
 
-- Camera controls panel
 - Alarm mode and shooting
 - Rock-Monsters and Slugs
 - Damage, show health bar and teleport at bad health

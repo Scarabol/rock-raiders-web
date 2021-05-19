@@ -1,6 +1,6 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
+import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
 import { SelectionChanged } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged } from '../event/WorldEvents'
 import { BuildingEntity } from './model/building/BuildingEntity'
@@ -41,7 +41,9 @@ import { WorldManager } from './WorldManager'
 
 export class GuiManager {
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, jobSupervisor: Supervisor) {
+    buildingCycleIndex: number = 0
+
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, jobSupervisor: Supervisor, gameLayerCanvas: HTMLCanvasElement) {
         EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: SelectedRaiderPickTool) => {
             GameState.selectedRaiders.forEach((r) => {
                 if (!r.hasTool(event.tool)) {
@@ -174,6 +176,26 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {
             jobSupervisor.updatePriorities(event.priorityList)
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_CAMERA_CONTROL, (event: CameraControl) => {
+            if (event.zoomIn) { // TODO implement custom camera controls, that is better remotely controllable
+                const zoomInEvent = new WheelEvent('wheel', {deltaY: -5})
+                gameLayerCanvas.dispatchEvent(zoomInEvent)
+                gameLayerCanvas.ownerDocument.dispatchEvent(zoomInEvent)
+            }
+            if (event.zoomOut) { // TODO implement custom camera controls, that is better remotely controllable
+                const zoomOutEvent = new WheelEvent('wheel', {deltaY: 5})
+                gameLayerCanvas.dispatchEvent(zoomOutEvent)
+                gameLayerCanvas.ownerDocument.dispatchEvent(zoomOutEvent)
+            }
+            if (event.cycleBuilding) {
+                this.buildingCycleIndex = (this.buildingCycleIndex + 1) % GameState.buildings.length
+                const target = GameState.buildings[this.buildingCycleIndex].primarySurface.getCenterWorld()
+                const offsetTargetToCamera = sceneMgr.camera.position.clone().sub(sceneMgr.controls.target)
+                sceneMgr.camera.position.copy(target.clone().add(offsetTargetToCamera))
+                sceneMgr.controls.target.copy(target)
+                sceneMgr.controls.update()
+            }
         })
     }
 

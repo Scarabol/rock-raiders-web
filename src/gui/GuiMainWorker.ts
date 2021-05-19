@@ -2,6 +2,7 @@ import { ButtonsCfg } from '../cfg/ButtonsCfg'
 import { PanelsCfg } from '../cfg/PanelsCfg'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { Panel } from './base/Panel'
+import { CameraControlPanel } from './cameracontrol/CameraControlPanel'
 import { GuiResourceCache } from './GuiResourceCache'
 import { GuiWorker } from './GuiWorker'
 import { GuiWorkerMessage } from './GuiWorkerMessage'
@@ -40,7 +41,7 @@ export class GuiMainWorker extends GuiWorker {
         this.panelEncyclopedia = this.addPanel(new Panel(this.rootElement, panelsCfg.panelEncyclopedia))
         this.panelInformation = this.addPanel(new InformationPanel(this.rootElement, panelsCfg.panelInformation))
         this.panelInfoDock = this.addPanel(new InfoDockPanel(this.rootElement, panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, new InfoMessagesConfig(GuiResourceCache.cfg('InfoMessages')), this.panelInformation))
-        this.panelCameraControl = this.addPanel(new Panel(this.rootElement, panelsCfg.panelCameraControl))
+        this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl))
         const priorityPositionsConfig = Object.values(GuiResourceCache.cfg('PrioritiesImagePositions')).map(cfgValue => new PriorityPositionsEntry(cfgValue))
         const priorityButtonsConfig = new PriorityButtonsConfig(GuiResourceCache.cfg('PriorityImages'))
         this.panelPriorityList = this.addPanel(new PriorityListPanel(this.rootElement, panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, priorityPositionsConfig, priorityButtonsConfig))
