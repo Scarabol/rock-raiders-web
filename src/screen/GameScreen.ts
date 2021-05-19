@@ -1,30 +1,20 @@
-import { MathUtils, Vector2 } from 'three'
-import { Sample } from '../audio/Sample'
 import { LevelObjectiveTextEntry } from '../cfg/LevelObjectiveTextEntry'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { clearIntervalSafe, getRandom, iGet } from '../core/Util'
+import { iGet } from '../core/Util'
 import { EventBus } from '../event/EventBus'
-import { EventKey } from '../event/EventKeyEnum'
-import { RaidersChangedEvent, SetupPriorityList, UpdateRadarTerrain } from '../event/LocalEvents'
-import { RequestedRaidersChanged } from '../event/WorldEvents'
+import { SetupPriorityList, UpdateRadarTerrain } from '../event/LocalEvents'
 import { GuiManager } from '../game/GuiManager'
-import { RaiderActivity } from '../game/model/activities/RaiderActivity'
-import { EntityType } from '../game/model/EntityType'
 import { GameState } from '../game/model/GameState'
-import { MoveJob } from '../game/model/job/MoveJob'
-import { Raider } from '../game/model/raider/Raider'
 import { ObjectListLoader } from '../game/ObjectListLoader'
 import { SceneManager } from '../game/SceneManager'
 import { Supervisor } from '../game/Supervisor'
 import { WorldManager } from '../game/WorldManager'
-import { CHECK_SPANW_RAIDER_TIMER, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { BaseScreen } from './BaseScreen'
 import { GameLayer } from './layer/GameLayer'
 import { GuiMainLayer } from './layer/GuiMainLayer'
 import { OverlayLayer } from './layer/OverlayLayer'
 import { SelectionLayer } from './layer/SelectionLayer'
-import degToRad = MathUtils.degToRad
 
 export class GameScreen extends BaseScreen {
 
@@ -36,7 +26,6 @@ export class GameScreen extends BaseScreen {
     worldMgr: WorldManager
     sceneMgr: SceneManager
     guiMgr: GuiManager
-    spawnRaiderInterval = null
     jobSupervisor: Supervisor
     levelName: string
     levelConf: LevelEntryCfg
@@ -50,6 +39,7 @@ export class GameScreen extends BaseScreen {
         this.worldMgr = new WorldManager()
         this.gameLayer.worldMgr = this.worldMgr
         this.sceneMgr = new SceneManager(this.gameLayer.canvas)
+        this.worldMgr.sceneMgr = this.sceneMgr
         this.cursorLayer.sceneMgr = this.sceneMgr
         this.gameLayer.sceneMgr = this.sceneMgr
         this.selectionLayer.sceneMgr = this.sceneMgr
@@ -60,11 +50,6 @@ export class GameScreen extends BaseScreen {
         this.overlayLayer.onSetSpaceToContinue = (state: boolean) => this.guiLayer.setSpaceToContinue(state)
         this.overlayLayer.onAbortGame = () => this.onLevelEnd()
         this.overlayLayer.onRestartGame = () => this.restartLevel()
-        this.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, () => {
-            if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
-                this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER)
-            }
-        })
     }
 
     startLevel(levelName: string, levelConf: LevelEntryCfg) {
@@ -105,7 +90,6 @@ export class GameScreen extends BaseScreen {
     }
 
     hide() {
-        this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
         this.jobSupervisor.stop()
         this.worldMgr.stop()
         this.sceneMgr.disposeScene()
@@ -115,36 +99,6 @@ export class GameScreen extends BaseScreen {
     resize(width: number, height: number) {
         super.resize(width, height)
         this.sceneMgr?.resize(width, height)
-    }
-
-    checkSpawnRaiders() {
-        if (GameState.requestedRaiders < 1) {
-            this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
-            return
-        }
-        if (GameState.raiders.length >= GameState.getMaxRaiders()) return
-        const spawnBuildings = GameState.getBuildingsByType(EntityType.TOOLSTATION, EntityType.TELEPORT_PAD)
-        for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
-            const station = spawnBuildings[c]
-            if (station.spawning) continue
-            GameState.requestedRaiders--
-            this.publishEvent(new RequestedRaidersChanged(GameState.requestedRaiders))
-            station.spawning = true
-            const raider = new Raider(this.worldMgr, this.sceneMgr)
-            const heading = station.getHeading()
-            raider.playPositionalSample(Sample.SND_teleport)
-            raider.changeActivity(RaiderActivity.TeleportIn, () => {
-                station.spawning = false
-                raider.changeActivity()
-                raider.createPickSphere()
-                const walkOutPos = station.getPosition2D().add(new Vector2(0, TILESIZE * 3 / 4 + getRandom(TILESIZE / 2))
-                    .rotateAround(new Vector2(0, 0), heading + degToRad(-10 + getRandom(20))))
-                raider.setJob(new MoveJob(walkOutPos))
-                GameState.raiders.push(raider)
-                this.publishEvent(new RaidersChangedEvent())
-            })
-            raider.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), station.getHeading()).add(station.getPosition2D()), heading)
-        }
     }
 
 }

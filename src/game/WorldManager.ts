@@ -1,21 +1,31 @@
-import { Vector2 } from 'three'
+import { MathUtils, Vector2 } from 'three'
+import { Sample } from '../audio/Sample'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { NerpParser } from '../core/NerpParser'
 import { NerpRunner } from '../core/NerpRunner'
+import { clearIntervalSafe, getRandom } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { AirLevelChanged, SelectionChanged } from '../event/LocalEvents'
-import { JobCreateEvent } from '../event/WorldEvents'
-import { UPDATE_OXYGEN_TIMER } from '../params'
+import { AirLevelChanged, RaidersChangedEvent, SelectionChanged } from '../event/LocalEvents'
+import { JobCreateEvent, RequestedRaidersChanged } from '../event/WorldEvents'
+import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
+import { RaiderActivity } from './model/activities/RaiderActivity'
 import { MaterialEntity } from './model/collect/MaterialEntity'
+import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
+import { MoveJob } from './model/job/MoveJob'
+import { Raider } from './model/raider/Raider'
 import { SelectionType } from './model/Selectable'
+import { SceneManager } from './SceneManager'
+import degToRad = MathUtils.degToRad
 
 export class WorldManager {
 
+    sceneMgr: SceneManager = null // TODO can be removed, when entities are decoupled from their scene mesh/entity
     nerpRunner: NerpRunner = null
     oxygenUpdateInterval = null
+    spawnRaiderInterval = null
 
     constructor() {
         EventBus.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
@@ -25,6 +35,11 @@ export class WorldManager {
             GameState.discoveredCaverns++
         })
         this.oxygenUpdateInterval = setInterval(this.updateOxygen.bind(this), UPDATE_OXYGEN_TIMER)
+        EventBus.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, () => {
+            if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
+                this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER)
+            }
+        })
     }
 
     setup(levelConf: LevelEntryCfg, onLevelEnd: () => any) {
@@ -43,6 +58,7 @@ export class WorldManager {
     }
 
     stop() {
+        this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
         GameState.levelStopTime = Date.now()
         this.nerpRunner?.pauseExecution()
         GameState.buildings.forEach((b) => b.removeFromScene())
@@ -77,6 +93,36 @@ export class WorldManager {
         if (GameState.airLevel !== airLevel) {
             GameState.airLevel = airLevel
             EventBus.publishEvent(new AirLevelChanged(GameState.airLevel))
+        }
+    }
+
+    checkSpawnRaiders() {
+        if (GameState.requestedRaiders < 1) {
+            this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
+            return
+        }
+        if (GameState.raiders.length >= GameState.getMaxRaiders()) return
+        const spawnBuildings = GameState.getBuildingsByType(EntityType.TOOLSTATION, EntityType.TELEPORT_PAD)
+        for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
+            const station = spawnBuildings[c]
+            if (station.spawning) continue
+            GameState.requestedRaiders--
+            EventBus.publishEvent(new RequestedRaidersChanged(GameState.requestedRaiders))
+            station.spawning = true
+            const raider = new Raider(this, this.sceneMgr)
+            const heading = station.getHeading()
+            raider.playPositionalSample(Sample.SND_teleport)
+            raider.changeActivity(RaiderActivity.TeleportIn, () => {
+                station.spawning = false
+                raider.changeActivity()
+                raider.createPickSphere()
+                const walkOutPos = station.getPosition2D().add(new Vector2(0, TILESIZE * 3 / 4 + getRandom(TILESIZE / 2))
+                    .rotateAround(new Vector2(0, 0), heading + degToRad(-10 + getRandom(20))))
+                raider.setJob(new MoveJob(walkOutPos))
+                GameState.raiders.push(raider)
+                EventBus.publishEvent(new RaidersChangedEvent())
+            })
+            raider.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), station.getHeading()).add(station.getPosition2D()), heading)
         }
     }
 
