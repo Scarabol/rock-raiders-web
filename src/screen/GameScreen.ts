@@ -5,7 +5,7 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe, getRandom, iGet } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { RaidersChangedEvent, SetupPriorityList } from '../event/LocalEvents'
+import { RaidersChangedEvent, SetupPriorityList, UpdateRadarTerrain } from '../event/LocalEvents'
 import { RequestedRaidersChanged } from '../event/WorldEvents'
 import { GuiManager } from '../game/GuiManager'
 import { RaiderActivity } from '../game/model/activities/RaiderActivity'
@@ -91,6 +91,8 @@ export class GameScreen extends BaseScreen {
         // load in non-space objects next
         const objectListConf = ResourceManager.getResource(this.levelConf.oListFile)
         ObjectListLoader.loadObjectList(this.worldMgr, this.sceneMgr, objectListConf, this.levelConf.disableStartTeleport)
+        // finally generate initial radar panel map
+        EventBus.publishEvent(new UpdateRadarTerrain(this.sceneMgr.terrain, this.sceneMgr.controls.target.clone()))
         this.show()
     }
 

@@ -16,6 +16,7 @@ export class SurfaceType {
     statsDrillName: string = null
     canCarryFence: boolean = false
     connectsPath: boolean = false
+    mapSurfaceColor: string = '#00FFFF'
 
     constructor(options: Partial<SurfaceType> = {}) {
         Object.assign(this, options)
@@ -26,13 +27,15 @@ export class SurfaceType {
         floor: true,
         selectable: true,
         canCarryFence: true,
-        cursorFulfiller: Cursor.Pointer_LegoManGo
+        cursorFulfiller: Cursor.Pointer_LegoManGo,
+        mapSurfaceColor: '#280048',
     })
     static readonly SOLID_ROCK = new SurfaceType({
         name: 'solid rock',
         shaping: true,
         matIndex: '5',
         cursor: Cursor.Pointer_SurfaceType_Immovable,
+        mapSurfaceColor: '#500090',
     })
     static readonly HARD_ROCK = new SurfaceType({
         name: 'hard rock',
@@ -44,6 +47,7 @@ export class SurfaceType {
         reinforcable: true,
         cursor: Cursor.Pointer_SurfaceType_Hard,
         statsDrillName: 'HardDrillTime',
+        mapSurfaceColor: '#7000B0',
     })
     static readonly LOOSE_ROCK = new SurfaceType({
         name: 'loose rock',
@@ -56,6 +60,7 @@ export class SurfaceType {
         reinforcable: true,
         cursor: Cursor.Pointer_SurfaceType_Medium,
         statsDrillName: 'LooseDrillTime',
+        mapSurfaceColor: '#9000D0',
     })
     static readonly DIRT = new SurfaceType({
         name: 'dirt',
@@ -68,8 +73,14 @@ export class SurfaceType {
         reinforcable: true,
         cursor: Cursor.Pointer_SurfaceType_Loose,
         statsDrillName: 'SoilDrillTime',
+        mapSurfaceColor: '#B000F0',
     })
-    static readonly SLUG_HOLE = new SurfaceType({name: 'slug hole', floor: true, matIndex: '30'})
+    static readonly SLUG_HOLE = new SurfaceType({
+        name: 'slug hole',
+        floor: true,
+        matIndex: '30',
+        mapSurfaceColor: '#280048',
+    })
     static readonly LAVA = new SurfaceType({name: 'lava', floor: true, matIndex: '46'})
     static readonly ORE_SEAM = new SurfaceType({
         name: 'ore seam',
@@ -82,7 +93,7 @@ export class SurfaceType {
         cursor: Cursor.Pointer_SurfaceType_OreSeam,
         statsDrillName: 'SeamDrillTime',
     })
-    static readonly WATER = new SurfaceType({name: 'water', floor: true, matIndex: '45'})
+    static readonly WATER = new SurfaceType({name: 'water', floor: true, matIndex: '45', mapSurfaceColor: '#000080'})
     static readonly CRYSTAL_SEAM = new SurfaceType({
         name: 'energy crystal seam',
         matIndex: '20',
@@ -106,6 +117,7 @@ export class SurfaceType {
         selectable: true,
         canCarryFence: true,
         connectsPath: true,
+        mapSurfaceColor: '#FFFF00',
     })
     static readonly POWER_PATH_BUILDING_SITE = new SurfaceType({
         name: 'power path building site',
@@ -119,6 +131,7 @@ export class SurfaceType {
         floor: true,
         matIndex: '76',
         connectsPath: true,
+        mapSurfaceColor: '#B8BBB8',
     })
     static readonly POWER_PATH_CONSTRUCTION = new SurfaceType({
         name: 'power path construction',
@@ -126,6 +139,7 @@ export class SurfaceType {
         matIndex: '76',
         selectable: true,
         connectsPath: true,
+        mapSurfaceColor: '#B8BBB8',
     })
     static readonly RUBBLE1 = new SurfaceType({
         name: 'rubble 1',
@@ -134,6 +148,7 @@ export class SurfaceType {
         selectable: true,
         canCarryFence: true,
         cursorFulfiller: Cursor.Pointer_Clear,
+        mapSurfaceColor: '#280048',
     })
     static readonly RUBBLE2 = new SurfaceType({
         name: 'rubble 2',
@@ -142,6 +157,7 @@ export class SurfaceType {
         selectable: true,
         canCarryFence: true,
         cursorFulfiller: Cursor.Pointer_Clear,
+        mapSurfaceColor: '#280048',
     })
     static readonly RUBBLE3 = new SurfaceType({
         name: 'rubble 3',
@@ -150,6 +166,7 @@ export class SurfaceType {
         selectable: true,
         canCarryFence: true,
         cursorFulfiller: Cursor.Pointer_Clear,
+        mapSurfaceColor: '#280048',
     })
     static readonly RUBBLE4 = new SurfaceType({
         name: 'rubble 4',
@@ -158,6 +175,7 @@ export class SurfaceType {
         selectable: true,
         canCarryFence: true,
         cursorFulfiller: Cursor.Pointer_Clear,
+        mapSurfaceColor: '#280048',
     })
 
     static getByNum(typeNum: number) {

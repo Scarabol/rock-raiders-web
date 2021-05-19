@@ -22,7 +22,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near
 
-- Radar map and geologists
+- Geologists and scanner
 - Camera controls panel
 - Alarm mode and shooting
 

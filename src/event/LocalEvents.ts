@@ -1,3 +1,4 @@
+import { Vector3 } from 'three'
 import { Sample } from '../audio/Sample'
 import { BuildingEntity } from '../game/model/building/BuildingEntity'
 import { EntityType } from '../game/model/EntityType'
@@ -5,10 +6,13 @@ import { GameState } from '../game/model/GameState'
 import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/model/map/Surface'
 import { SurfaceType } from '../game/model/map/SurfaceType'
+import { Terrain } from '../game/model/map/Terrain'
 import { Raider } from '../game/model/raider/Raider'
 import { AllRaiderTools, RaiderTool } from '../game/model/raider/RaiderTool'
 import { AllRaiderTrainings, RaiderTraining } from '../game/model/raider/RaiderTraining'
 import { SelectionType } from '../game/model/Selectable'
+import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
+import { TILESIZE } from '../params'
 import { Cursor } from '../screen/Cursor'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
@@ -154,6 +158,36 @@ export class PlaySoundEvent extends LocalEvent {
     constructor(sample: Sample) {
         super(EventKey.PLAY_SOUND)
         this.sample = sample
+    }
+
+}
+
+export class UpdateRadarTerrain extends LocalEvent {
+
+    surfaces: MapSurfaceRect[] = []
+    tileX: number
+    tileY: number
+
+    constructor(terrain: Terrain, mapFocus: Vector3) {
+        super(EventKey.UPDATE_RADAR_TERRAIN)
+        terrain.forEachSurface((s) => {
+            if (s.discovered) {
+                this.surfaces.push(new MapSurfaceRect(s))
+            }
+        })
+        this.tileX = Math.floor(mapFocus.x / TILESIZE)
+        this.tileY = Math.floor(mapFocus.z / TILESIZE)
+    }
+
+}
+
+export class UpdateRadarSurface extends LocalEvent {
+
+    surfaceRect: MapSurfaceRect
+
+    constructor(surface: Surface) {
+        super(EventKey.UPDATE_RADAR_SURFACE)
+        this.surfaceRect = new MapSurfaceRect(surface)
     }
 
 }

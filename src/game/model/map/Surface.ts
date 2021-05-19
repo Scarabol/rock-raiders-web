@@ -3,7 +3,7 @@ import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
 import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
-import { SelectionChanged } from '../../../event/LocalEvents'
+import { SelectionChanged, UpdateRadarSurface } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../params'
@@ -144,6 +144,7 @@ export class Surface implements Selectable {
         if (!this.discovered) GameState.discoverSurface(this)
         this.discovered = true
         this.needsMeshUpdate = true
+        EventBus.publishEvent(new UpdateRadarSurface(this))
     }
 
     onDrillComplete(drillPosition: Vector2): boolean {
@@ -173,6 +174,7 @@ export class Surface implements Selectable {
         this.cancelJobs()
         this.fallinTimeout = clearTimeoutSafe(this.fallinTimeout)
         this.surfaceType = SurfaceType.RUBBLE4
+        EventBus.publishEvent(new UpdateRadarSurface(this))
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += 4
         this.needsMeshUpdate = true
@@ -232,6 +234,7 @@ export class Surface implements Selectable {
         else if (this.surfaceType === SurfaceType.RUBBLE3) this.surfaceType = SurfaceType.RUBBLE2
         else if (this.surfaceType === SurfaceType.RUBBLE2) this.surfaceType = SurfaceType.RUBBLE1
         else if (this.surfaceType === SurfaceType.RUBBLE1) this.surfaceType = SurfaceType.GROUND
+        EventBus.publishEvent(new UpdateRadarSurface(this))
         this.dropContainedOre(this.containedOres - this.rubblePositions.length)
         this.updateTexture()
         if (this.selected) EventBus.publishEvent(new SelectionChanged(SelectionType.SURFACE, this))
@@ -506,6 +509,7 @@ export class Surface implements Selectable {
         this.cancelReinforceJobs()
         this.fallinTimeout = clearTimeoutSafe(this.fallinTimeout)
         this.updateTexture()
+        EventBus.publishEvent(new UpdateRadarSurface(this))
     }
 
     getCenterWorld2D(): Vector2 {
