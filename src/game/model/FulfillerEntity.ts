@@ -29,7 +29,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, entityType, aeFilename)
-        this.group.userData = {'selectable': this}
+        this.sceneEntity.setSelectable(this)
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
 
@@ -41,7 +41,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (!this.carries) return
         const position = this.getPosition()
         if (this.animation?.carryJoint) {
-            this.animation.carryJoint.remove(this.carries.group)
+            this.animation.carryJoint.remove(this.carries.sceneEntity.group)
             this.animation.carryJoint.getWorldPosition(position)
         }
         this.carries.addToScene(new Vector2(position.x, position.z), null)
@@ -50,8 +50,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     pickupItem(item: MaterialEntity) {
         this.carries = item
-        if (this.animation?.carryJoint) this.animation.carryJoint.add(this.carries.group)
-        this.carries.group.position.set(0, 0, 0)
+        if (this.animation?.carryJoint) this.animation.carryJoint.add(this.carries.sceneEntity.group)
+        this.carries.sceneEntity.position.set(0, 0, 0)
     }
 
     setJob(job: Job, followUpJob: Job = null) {
@@ -79,13 +79,13 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     abstract getSelectionType(): SelectionType
 
     deselect() {
-        this.selectionFrame.visible = false
+        this.sceneEntity.selectionFrame.visible = false
         this.selected = false
     }
 
     select(): boolean {
         if (this.selected || this.inBeam) return false
-        this.selectionFrame.visible = true
+        this.sceneEntity.selectionFrame.visible = true
         this.selected = true
         this.changeActivity()
         return true

@@ -73,12 +73,12 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
     gatherItem(item: MaterialEntity) {
         if (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY) {
             if (this.building.animation?.carryJoint) {
-                this.building.animation.carryJoint.add(item.group)
-                item.group.position.set(0, 0, 0)
+                this.building.animation.carryJoint.add(item.sceneEntity.group)
+                item.sceneEntity.position.set(0, 0, 0)
             }
             this.building.changeActivity(BuildingActivity.Deposit, () => {
                 this.building.changeActivity()
-                if (this.building.animation?.carryJoint) this.building.animation.carryJoint.remove(item.group)
+                if (this.building.animation?.carryJoint) this.building.animation.carryJoint.remove(item.sceneEntity.group)
                 BuildingCarryPathTarget.addItemToStorage(item)
                 // TODO dispose item
             })

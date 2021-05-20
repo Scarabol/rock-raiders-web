@@ -1,4 +1,5 @@
-import { Group, Vector2, Vector3 } from 'three'
+import { Vector2 } from 'three'
+import { SceneEntity } from '../../scene/SceneEntity'
 import { SceneManager } from '../SceneManager'
 import { WorldManager } from '../WorldManager'
 import { EntityType } from './EntityType'
@@ -9,7 +10,7 @@ export abstract class BaseEntity {
     worldMgr: WorldManager
     sceneMgr: SceneManager
 
-    group: Group = new Group()
+    sceneEntity: SceneEntity = new SceneEntity()
 
     entityType: EntityType = null
     floorOffset: number = 0.1
@@ -21,39 +22,39 @@ export abstract class BaseEntity {
     }
 
     getPosition() {
-        return this.group.position.clone()
+        return this.sceneEntity.position.clone()
     }
 
     getPosition2D() {
-        return new Vector2(this.group.position.x, this.group.position.z)
+        return new Vector2(this.sceneEntity.position.x, this.sceneEntity.position.z)
     }
 
     getHeading(): number {
-        return this.group.rotation.y
+        return this.sceneEntity.getHeading()
     }
 
     onDiscover() {
-        this.group.visible = true
+        this.sceneEntity.visible = true
     }
 
     addToScene(worldPosition: Vector2, radHeading: number) {
         if (worldPosition) {
-            this.group.position.copy(this.sceneMgr.getFloorPosition(worldPosition))
-            this.group.position.y += this.floorOffset
+            this.sceneEntity.position.copy(this.sceneMgr.getFloorPosition(worldPosition))
+            this.sceneEntity.position.y += this.floorOffset
         }
         if (radHeading !== undefined && radHeading !== null) {
-            this.group.rotateOnAxis(new Vector3(0, 1, 0), radHeading)
+            this.sceneEntity.setHeading(radHeading)
         }
-        this.group.visible = this.surfaces.some((s) => s.discovered)
-        this.sceneMgr.scene.add(this.group)
+        this.sceneEntity.visible = this.surfaces.some((s) => s.discovered)
+        this.sceneMgr.scene.add(this.sceneEntity.group)
     }
 
     removeFromScene() {
-        this.sceneMgr.scene.remove(this.group)
+        this.sceneMgr.scene.remove(this.sceneEntity.group)
     }
 
     get surfaces(): Surface[] {
-        return [this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position)]
+        return [this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)]
     }
 
 }

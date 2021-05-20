@@ -30,12 +30,12 @@ export abstract class MovableEntity extends AnimEntity {
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
         const nextLocation = this.currentPath.firstLocation
-        this.group.lookAt(new Vector3(nextLocation.x, this.group.position.y, nextLocation.y))
+        this.sceneEntity.lookAt(new Vector3(nextLocation.x, this.sceneEntity.position.y, nextLocation.y))
         const step = this.determineStep()
         if (step.targetReached) {
             return MoveState.TARGET_REACHED
         } else {
-            this.group.position.add(step.vec)
+            this.sceneEntity.position.add(step.vec)
             this.changeActivity(this.getRouteActivity()) // only change when actually moving
             return MoveState.MOVED
         }
@@ -48,7 +48,7 @@ export abstract class MovableEntity extends AnimEntity {
     determineStep(): EntityStep {
         const targetWorld = this.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
         targetWorld.y += this.floorOffset
-        const step = new EntityStep(targetWorld.sub(this.group.position))
+        const step = new EntityStep(targetWorld.sub(this.sceneEntity.position))
         const stepLengthSq = step.vec.lengthSq()
         const entitySpeed = this.getSpeed() // TODO use average speed between current and target position
         if (this.currentPath.locations.length > 1) {

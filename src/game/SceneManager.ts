@@ -53,9 +53,9 @@ export class SceneManager {
     selectEntitiesByRay(rx: number, ry: number) {
         const raycaster = new Raycaster()
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
-        let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere))
-        if (intersects.length < 1) intersects = raycaster.intersectObjects(GameState.vehicles.map((v) => v.pickSphere))
-        if (intersects.length < 1) intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere))
+        let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.sceneEntity.pickSphere))
+        if (intersects.length < 1) intersects = raycaster.intersectObjects(GameState.vehicles.map((v) => v.sceneEntity.pickSphere))
+        if (intersects.length < 1) intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.sceneEntity.pickSphere))
         if (intersects.length < 1 && this.terrain) intersects = raycaster.intersectObjects(this.terrain.floorGroup.children)
         const selected = []
         if (intersects.length > 0) {
@@ -134,10 +134,10 @@ export class SceneManager {
         planes[5].setFromCoplanarPoints(vectemp3, vectemp2, vectemp1)
         planes[5].normal.multiplyScalar(-1)
 
-        let entities: Selectable[] = GameState.raiders.filter((r) => SceneManager.isInFrustum(r.pickSphere, frustum))
-        entities.push(...GameState.vehicles.filter((v) => SceneManager.isInFrustum(v.pickSphere, frustum)))
+        let entities: Selectable[] = GameState.raiders.filter((r) => SceneManager.isInFrustum(r.sceneEntity.pickSphere, frustum))
+        entities.push(...GameState.vehicles.filter((v) => SceneManager.isInFrustum(v.sceneEntity.pickSphere, frustum)))
         if (entities.length < 1) {
-            const firstBuilding = GameState.buildings.find((b) => SceneManager.isInFrustum(b.pickSphere, frustum))
+            const firstBuilding = GameState.buildings.find((b) => SceneManager.isInFrustum(b.sceneEntity.pickSphere, frustum))
             entities = firstBuilding ? [firstBuilding] : []
         }
         GameState.selectEntities(entities)

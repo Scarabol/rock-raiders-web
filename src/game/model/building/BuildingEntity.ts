@@ -1,4 +1,4 @@
-import { Matrix4, PositionalAudio, Vector2, Vector3 } from 'three'
+import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { BuildingEntityStats } from '../../../cfg/BuildingEntityStats'
 import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
@@ -51,8 +51,8 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, entityType, aeFilename)
-        this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
-        this.group.userData = {'selectable': this}
+        this.sceneEntity.flipXAxis()
+        this.sceneEntity.setSelectable(this)
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
@@ -68,18 +68,14 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
 
     select(): boolean {
         if (this.selected || this.inBeam) return false
-        this.selectionFrame.visible = true
+        this.sceneEntity.selectionFrame.visible = true
         this.selected = true
         return true
     }
 
     deselect() {
-        this.selectionFrame.visible = false
+        this.sceneEntity.selectionFrame.visible = false
         this.selected = false
-    }
-
-    getPickSphereHeightOffset(): number {
-        return this.stats.PickSphere / 4
     }
 
     getDropPosition2D(): Vector2 {
@@ -235,13 +231,13 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         }
         this.addToScene(worldPosition, radHeading)
-        this.createPickSphere(this.stats.PickSphere)
-        if (this.group.visible) {
+        this.sceneEntity.createPickSphere(this.stats.PickSphere, this.stats.PickSphere / 4)
+        if (this.sceneEntity.visible) {
             GameState.buildings.push(this)
         } else {
             GameState.buildingsUndiscovered.push(this)
         }
-        if (this.group.visible && !disableTeleportIn) {
+        if (this.sceneEntity.visible && !disableTeleportIn) {
             this.inBeam = true
             this.changeActivity(BuildingActivity.Teleport, () => {
                 this.inBeam = false

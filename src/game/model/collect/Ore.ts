@@ -9,7 +9,7 @@ export class Ore extends MaterialEntity {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
         super(worldMgr, sceneMgr, EntityType.ORE)
-        this.group.add(ResourceManager.getLwoModel('MiscAnims/Ore/Ore1st.lwo'))
+        this.sceneEntity.add(ResourceManager.getLwoModel('MiscAnims/Ore/Ore1st.lwo'))
         this.targetBuildingTypes = [EntityType.ORE_REFINERY, EntityType.TOOLSTATION]
         this.priorityIdentifier = PriorityIdentifier.aiPriorityOre
     }

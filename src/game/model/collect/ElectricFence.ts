@@ -16,7 +16,7 @@ export class ElectricFence extends MaterialEntity {
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager, surface: Surface) {
         super(worldMgr, sceneMgr, EntityType.ELECTRIC_FENCE)
         const mesh = ResourceManager.getLwoModel('Buildings/E-Fence/E-Fence4.lwo')
-        this.group.add(mesh)
+        this.sceneEntity.add(mesh)
         this.targetSurface = surface
         this.priorityIdentifier = PriorityIdentifier.aiPriorityConstruction
     }

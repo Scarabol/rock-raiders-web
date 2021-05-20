@@ -60,9 +60,9 @@ export class CursorLayer extends ScreenLayer {
         if (GameState.buildModeSelection) {
             return this.sceneMgr.buildMarker.lastCheck ? Cursor.Pointer_CanBuild : Cursor.Pointer_CannotBuild
         }
-        let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.pickSphere))
+        let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.sceneEntity.pickSphere))
         if (intersects.length > 0) return Cursor.Pointer_Selected
-        intersects = raycaster.intersectObjects(GameState.vehicles.map((v) => v.pickSphere))
+        intersects = raycaster.intersectObjects(GameState.vehicles.map((v) => v.sceneEntity.pickSphere))
         if (intersects.length > 0) {
             const userData = intersects[0].object.userData
             if (userData && userData.hasOwnProperty('selectable')) {
@@ -73,7 +73,7 @@ export class CursorLayer extends ScreenLayer {
             }
             return Cursor.Pointer_Selected
         }
-        intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.pickSphere))
+        intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.sceneEntity.pickSphere))
         if (intersects.length > 0) return Cursor.Pointer_Selected
         intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
         if (intersects.length > 0) {

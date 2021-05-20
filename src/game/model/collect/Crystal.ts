@@ -18,14 +18,14 @@ export class Crystal extends MaterialEntity {
             mat.setOpacity(0.5) // XXX read from LWO file?
         })
         mesh2.scale.set(1.75, 1.75, 1.75) // XXX derive from texture scale?
-        this.group.add(mesh2)
+        this.sceneEntity.add(mesh2)
         const mesh = ResourceManager.getLwoModel('World/Shared/Crystal.lwo') // high poly version
         mesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
             mat.emissive = new Color(0, 8, 0) // XXX read from LWO file?
             mat.color = new Color(0, 0, 0) // XXX read from LWO file?
             mat.setOpacity(0.9) // XXX read from LWO file?
         })
-        this.group.add(mesh)
+        this.sceneEntity.add(mesh)
         this.targetBuildingTypes = [EntityType.POWER_STATION, EntityType.TOOLSTATION]
         this.priorityIdentifier = PriorityIdentifier.aiPriorityCrystal
     }

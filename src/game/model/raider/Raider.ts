@@ -64,11 +64,11 @@ export class Raider extends FulfillerEntity {
     }
 
     isOnPath(): boolean {
-        return this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position).isPath()
+        return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).isPath()
     }
 
     isOnRubble() {
-        return this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position).hasRubble()
+        return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).hasRubble()
     }
 
     getRouteActivity(): BaseActivity {
@@ -83,7 +83,7 @@ export class Raider extends FulfillerEntity {
         const result = super.moveToClosestTarget(target)
         if (result === MoveState.MOVED) {
             GameState.getNearbySpiders(this).some((spider) => {
-                if (this.group.position.distanceToSquared(spider.group.position) < this.radiusSq + spider.radiusSq) {
+                if (this.sceneEntity.position.distanceToSquared(spider.sceneEntity.position) < this.radiusSq + spider.radiusSq) {
                     this.slip()
                     spider.onDeath()
                     return true

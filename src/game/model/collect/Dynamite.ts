@@ -34,8 +34,8 @@ export class Dynamite extends MaterialEntity {
     ignite() {
         // TODO add as explosive and scare em all!
         const center = this.targetSurface.getCenterWorld()
-        center.y = this.group.position.y
-        this.group.lookAt(center)
+        center.y = this.sceneEntity.position.y
+        this.sceneEntity.lookAt(center)
         this.changeActivity(DynamiteActivity.TickDown, () => {
             this.removeFromScene()
             this.targetSurface.collapse()

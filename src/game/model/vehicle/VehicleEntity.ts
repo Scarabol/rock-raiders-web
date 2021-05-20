@@ -1,4 +1,4 @@
-import { Matrix4, PositionalAudio, Vector2 } from 'three'
+import { PositionalAudio, Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
 import { VehiclesChangedEvent } from '../../../event/LocalEvents'
 import { SceneManager } from '../../SceneManager'
@@ -27,8 +27,8 @@ export abstract class VehicleEntity extends FulfillerEntity {
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, entityType, aeFilename)
-        this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
-        this.group.userData = {'selectable': this}
+        this.sceneEntity.flipXAxis()
+        this.sceneEntity.setSelectable(this)
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {
@@ -60,17 +60,17 @@ export abstract class VehicleEntity extends FulfillerEntity {
     addDriver(driver: Raider) {
         this.driver = driver
         this.driver.changeActivity(this.getDriverActivity())
-        this.group.add(this.driver.group) // TODO add driver to driver joint
+        this.sceneEntity.add(this.driver.sceneEntity.group) // TODO add driver to driver joint
         if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.playPositionalSfxName(this.stats.EngineSound, true)
     }
 
     dropDriver() {
         this.stopJob()
         if (!this.driver) return
-        this.group.remove(this.driver.group) // TODO remove driver from driver joint
-        this.driver.group.position.copy(this.group.position)
-        this.driver.group.rotation.copy(this.group.rotation)
-        this.driver.sceneMgr.scene.add(this.driver.group)
+        this.sceneEntity.remove(this.driver.sceneEntity.group) // TODO remove driver from driver joint
+        this.driver.sceneEntity.position.copy(this.sceneEntity.position)
+        this.driver.sceneEntity.setHeading(this.sceneEntity.getHeading())
+        this.driver.sceneMgr.scene.add(this.driver.sceneEntity.group)
         this.driver.changeActivity()
         this.driver = null
         this.engineSound?.stop()

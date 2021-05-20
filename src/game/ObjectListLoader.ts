@@ -47,9 +47,9 @@ export class ObjectListLoader {
             } else if (lTypeName.equalsIgnoreCase('Pilot')) {
                 const raider = new Raider(worldMgr, sceneMgr)
                 raider.changeActivity()
-                raider.createPickSphere(raider.stats.PickSphere)
+                raider.sceneEntity.createPickSphere(raider.stats.PickSphere)
                 raider.addToScene(worldPos, radHeading - Math.PI / 2)
-                if (raider.group.visible) {
+                if (raider.sceneEntity.visible) {
                     GameState.raiders.push(raider)
                     EventBus.publishEvent(new RaidersChangedEvent())
                 } else {
@@ -76,9 +76,9 @@ export class ObjectListLoader {
             } else if (lTypeName.equalsIgnoreCase('SmallDigger')) {
                 const smallDigger = new SmallDigger(worldMgr, sceneMgr)
                 smallDigger.changeActivity()
-                smallDigger.createPickSphere(smallDigger.stats.PickSphere)
+                smallDigger.sceneEntity.createPickSphere(smallDigger.stats.PickSphere)
                 smallDigger.addToScene(worldPos, radHeading + Math.PI)
-                if (smallDigger.group.visible) {
+                if (smallDigger.sceneEntity.visible) {
                     GameState.vehicles.push(smallDigger)
                 } else {
                     GameState.vehiclesUndiscovered.push(smallDigger)
