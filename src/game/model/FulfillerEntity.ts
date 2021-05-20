@@ -18,6 +18,7 @@ import { Selectable, SelectionType } from './Selectable'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
+    level: number = 0
     selected: boolean
     workInterval = null
     job: Job = null

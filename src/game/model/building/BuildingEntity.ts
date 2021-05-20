@@ -34,6 +34,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     secondaryPowerPath: Vector2 = null
     waterPathSurface: Vector2 = null
 
+    level: number = 0
     selected: boolean
     powerSwitch: boolean = true
     spawning: boolean = false
