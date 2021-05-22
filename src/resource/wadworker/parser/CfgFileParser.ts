@@ -1,5 +1,14 @@
 import { encodeChar } from './EncodingHelper'
 
+const enum PARSING_STATE {
+
+    LOOKING_FOR_KEY,
+    INSIDE_KEY,
+    LOOKING_FOR_VALUE,
+    INSIDE_VALUE,
+
+}
+
 export class CfgFileParser {
 
     static parse(buffer): any {
@@ -7,7 +16,7 @@ export class CfgFileParser {
         const ancestry = []
         let activeObject = result
         let isComment = false
-        let keyVal = 0 // 0 = looking for key, 1 = inside key, 1 = looking for value, 2 = inside value
+        let parsingState: PARSING_STATE = PARSING_STATE.LOOKING_FOR_KEY
         let key = ''
         let value = ''
         // debug output is a bad idea here, buffer size is about 232.611 characters and has 6781 lines
@@ -24,39 +33,39 @@ export class CfgFileParser {
             }
             if (!isComment) {
                 if (charCode > 32) { // not a whitespace
-                    if (keyVal === 0) { // looking for key
+                    if (parsingState === PARSING_STATE.LOOKING_FOR_KEY) {
                         if (charStr === '}') {
                             activeObject = ancestry.pop()
                         } else {
-                            keyVal++
                             key = charStr
+                            parsingState = PARSING_STATE.INSIDE_KEY
                         }
-                    } else if (keyVal === 1) { // inside key
+                    } else if (parsingState === PARSING_STATE.INSIDE_KEY) {
                         key += charStr
-                    } else if (keyVal === 2) { // looking for value
+                    } else if (parsingState === PARSING_STATE.LOOKING_FOR_VALUE) {
                         if (charStr === '{') { // start of a new object key is identifier
                             ancestry.push(activeObject)
                             activeObject = {}
                             ancestry[ancestry.length - 1][key] = activeObject
-                            keyVal = 0 // start looking for a key again
+                            parsingState = PARSING_STATE.LOOKING_FOR_KEY
                         } else {
-                            keyVal++
                             value = charStr
+                            parsingState = PARSING_STATE.INSIDE_VALUE
                         }
-                    } else if (keyVal === 3) { // inside value
+                    } else if (parsingState === PARSING_STATE.INSIDE_VALUE) {
                         value += charStr
                     }
                 } else { // some whitespace
-                    if (keyVal === 1) {
-                        keyVal++
-                    } else if (keyVal === 3) {
-                        keyVal = 0
+                    if (parsingState === PARSING_STATE.INSIDE_KEY) {
+                        parsingState = PARSING_STATE.LOOKING_FOR_VALUE
+                    } else if (parsingState === PARSING_STATE.INSIDE_VALUE) {
                         const parsed = CfgFileParser.parseValue(value)
                         if (activeObject.hasOwnProperty(key)) {
                             activeObject[key].push(parsed)
                         } else {
                             activeObject[key] = [parsed]
                         }
+                        parsingState = PARSING_STATE.LOOKING_FOR_KEY
                     }
                 }
             }
@@ -118,7 +127,7 @@ export class CfgFileParser {
             if (lVal === 'true') return true
             if (lVal === 'false') return false
             if (lVal === 'null') return ''
-            if (val.includes(':')) {
+            if (val.includes(':')) { // XXX Dependencies uses separator , over : however icon panel entries use : over ,
                 splitShrink.call(this, ':')
             } else if (val.includes(',')) {
                 splitShrink.call(this, ',')
