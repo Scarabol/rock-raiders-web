@@ -34,13 +34,17 @@ export class BuildingSite {
         this.primarySurface.setSite(this)
         this.surfaces.push(this.primarySurface)
         this.secondarySurface = secondarySurface
-        this.secondarySurface?.setSite(this)
-        this.surfaces.push(this.secondarySurface)
+        if (this.secondarySurface) {
+            this.secondarySurface.setSite(this)
+            this.surfaces.push(this.secondarySurface)
+        }
         this.primaryPathSurface = primaryPathSurface
         this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         this.surfaces.push(this.primaryPathSurface)
-        secondaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
-        this.surfaces.push(secondaryPathSurface)
+        if (secondaryPathSurface) {
+            secondaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
+            this.surfaces.push(secondaryPathSurface)
+        }
         this.building = building
     }
 
