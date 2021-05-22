@@ -108,10 +108,12 @@ export class ResourceManager extends ResourceCache {
         return this.resourceByName.getOrUpdate(ugSharedFilename, () => {
             const worldSharedFilename = 'world/shared/' + lTextureFilename
             return this.resourceByName.getOrUpdate(worldSharedFilename, () => {
-                if (lTextureFilename !== 'teofoilreflections.jpg') {
+                if (lTextureFilename !== 'teofoilreflections.jpg' && lTextureFilename !== 'wingbase3.bmp' &&
+                    lTextureFilename !== 'a_side.bmp' && lTextureFilename !== 'a_top.bmp') {
                     console.warn('Texture \'' + textureFilename + '\' (' + lMeshFilepath + ', ' + lEntityFilepath + ', ' + worldSharedFilename + ') unknown! Using placeholder texture instead')
+                    return createDummyImgData(64, 64)
                 }
-                return createDummyImgData(64, 64)
+                return null
             })
         })
     }
