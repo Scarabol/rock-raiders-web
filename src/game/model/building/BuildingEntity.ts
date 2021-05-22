@@ -186,13 +186,13 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     }
 
     turnOnPower() {
-        if (this.crystalsInUse > 0 || GameState.usedCrystals >= GameState.numCrystal || (this.entityType !== EntityType.POWER_STATION && !this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower)))) return
+        if (this.crystalsInUse > 0 || this.stats.SelfPowered || GameState.usedCrystals >= GameState.numCrystal || (this.entityType !== EntityType.POWER_STATION && !this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower)))) return
         this.crystalsInUse = 1
         GameState.usedCrystals += this.crystalsInUse
         this.surfaces.forEach((s) => s.setHasPower(true, true))
         this.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent())
-        this.engineSound = this.playPositionalAudio(this.stats.EngineSound, true)
+        if (this.stats.EngineSound) this.engineSound = this.playPositionalAudio(this.stats.EngineSound, true)
     }
 
     turnOffPower() {
