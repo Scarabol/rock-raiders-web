@@ -15,6 +15,7 @@ import { TeleportPad } from './model/building/entities/TeleportPad'
 import { Toolstation } from './model/building/entities/Toolstation'
 import { Upgrade } from './model/building/entities/Upgrade'
 import { Crystal } from './model/collect/Crystal'
+import { EntityType, getEntityTypeByName } from './model/EntityType'
 import { GameState } from './model/GameState'
 import { Bat } from './model/monster/Bat'
 import { IceMonster } from './model/monster/IceMonster'
@@ -31,12 +32,12 @@ export class ObjectListLoader {
 
     static loadObjectList(worldMgr: WorldManager, sceneMgr: SceneManager, objectListConf, disableStartTeleport: boolean) {
         Object.values(objectListConf).forEach((olObject: any) => {
-            const lTypeName = olObject.type ? olObject.type.toLowerCase() : olObject.type
+            const entityType = getEntityTypeByName(olObject.type ? olObject.type.toLowerCase() : olObject.type)
             // all object positions are off by one tile, because they start at 1 not 0
             const worldPos = new Vector2(olObject.xPos, olObject.yPos).addScalar(-1).multiplyScalar(TILESIZE) // TODO assert that world pos is over terrain otherwise drop item
             const buildingType: string = ResourceManager.cfg('BuildingTypes', olObject.type)
             const radHeading = degToRad(olObject.heading)
-            if (lTypeName.equalsIgnoreCase('TVCamera')) {
+            if (entityType === EntityType.TV_CAMERA) {
                 const cameraOffset = new Vector2(6, 0).rotateAround(new Vector2(0, 0), radHeading + Math.PI / 2)
                 const cameraPos = sceneMgr.getFloorPosition(cameraOffset.multiplyScalar(TILESIZE).add(worldPos))
                 cameraPos.y += 4 * TILESIZE
@@ -44,7 +45,7 @@ export class ObjectListLoader {
                 sceneMgr.controls.target.copy(sceneMgr.getFloorPosition(worldPos))
                 sceneMgr.controls.update()
                 sceneMgr.setTorchPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
-            } else if (lTypeName.equalsIgnoreCase('Pilot')) {
+            } else if (entityType === EntityType.PILOT) {
                 const raider = new Raider(worldMgr, sceneMgr)
                 raider.changeActivity()
                 raider.sceneEntity.createPickSphere(raider.stats.PickSphere)
@@ -58,22 +59,22 @@ export class ObjectListLoader {
             } else if (buildingType) {
                 const entity = this.createBuildingByName(buildingType, worldMgr, sceneMgr)
                 entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
-            } else if (lTypeName.equalsIgnoreCase('PowerCrystal')) {
+            } else if (entityType === EntityType.CRYSTAL) {
                 worldMgr.placeMaterial(new Crystal(worldMgr, sceneMgr), worldPos)
-            } else if (lTypeName.equalsIgnoreCase('SmallSpider')) {
+            } else if (entityType === EntityType.SMALL_SPIDER) {
                 const spider = new SmallSpider(worldMgr, sceneMgr)
                 spider.changeActivity()
                 spider.addToScene(worldPos, radHeading)
                 GameState.spiders.push(spider)
                 spider.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).push(spider))
                 spider.startMoving()
-            } else if (lTypeName.equalsIgnoreCase('Bat')) {
+            } else if (entityType === EntityType.BAT) {
                 const bat = new Bat(worldMgr, sceneMgr)
                 bat.changeActivity()
                 bat.addToScene(worldPos, radHeading)
                 GameState.bats.push(bat)
                 bat.startRandomMove()
-            } else if (lTypeName.equalsIgnoreCase('SmallDigger')) {
+            } else if (entityType === EntityType.SMALL_DIGGER) {
                 const smallDigger = new SmallDigger(worldMgr, sceneMgr)
                 smallDigger.changeActivity()
                 smallDigger.sceneEntity.createPickSphere(smallDigger.stats.PickSphere)
@@ -83,17 +84,17 @@ export class ObjectListLoader {
                 } else {
                     GameState.vehiclesUndiscovered.push(smallDigger)
                 }
-            } else if (lTypeName.equalsIgnoreCase('IceMonster')) {
+            } else if (entityType === EntityType.ICE_MONSTER) {
                 const rockMonster = new IceMonster(worldMgr, sceneMgr)
                 rockMonster.changeActivity(RockMonsterActivity.Unpowered)
                 rockMonster.addToScene(worldPos, radHeading - Math.PI / 2)
                 GameState.rockMonsters.push(rockMonster)
-            } else if (lTypeName.equalsIgnoreCase('LavaMonster')) {
+            } else if (entityType === EntityType.LAVA_MONSTER) {
                 const rockMonster = new LavaMonster(worldMgr, sceneMgr)
                 rockMonster.changeActivity(RockMonsterActivity.Unpowered)
                 rockMonster.addToScene(worldPos, radHeading - Math.PI / 2)
                 GameState.rockMonsters.push(rockMonster)
-            } else if (lTypeName.equalsIgnoreCase('RockMonster')) {
+            } else if (entityType === EntityType.ROCK_MONSTER) {
                 const rockMonster = new RockMonster(worldMgr, sceneMgr)
                 rockMonster.changeActivity(RockMonsterActivity.Unpowered)
                 rockMonster.addToScene(worldPos, radHeading - Math.PI / 2)
