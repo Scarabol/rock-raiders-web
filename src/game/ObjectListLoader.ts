@@ -48,7 +48,7 @@ export class ObjectListLoader {
             } else if (entityType === EntityType.PILOT) {
                 const raider = new Raider(worldMgr, sceneMgr)
                 raider.changeActivity()
-                raider.sceneEntity.createPickSphere(raider.stats.PickSphere)
+                raider.sceneEntity.createPickSphere(raider.stats.PickSphere, raider)
                 raider.addToScene(worldPos, radHeading - Math.PI / 2)
                 if (raider.sceneEntity.visible) {
                     GameState.raiders.push(raider)
@@ -77,7 +77,7 @@ export class ObjectListLoader {
             } else if (entityType === EntityType.SMALL_DIGGER) {
                 const smallDigger = new SmallDigger(worldMgr, sceneMgr)
                 smallDigger.changeActivity()
-                smallDigger.sceneEntity.createPickSphere(smallDigger.stats.PickSphere)
+                smallDigger.sceneEntity.createPickSphere(smallDigger.stats.PickSphere, smallDigger)
                 smallDigger.addToScene(worldPos, radHeading + Math.PI)
                 if (smallDigger.sceneEntity.visible) {
                     GameState.vehicles.push(smallDigger)

@@ -1,7 +1,6 @@
 import { Box3, CanvasTexture, Group, Matrix4, Mesh, MeshBasicMaterial, Object3D, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
 import { createContext } from '../core/ImageHelper'
 import { Selectable } from '../game/model/Selectable'
-import { SceneEntityUserData } from './SceneEntityUserData'
 
 export class SceneEntity {
 
@@ -52,22 +51,17 @@ export class SceneEntity {
         this.group.lookAt(target)
     }
 
-    setSelectable(selectable: Selectable) {
-        this.group.userData = this.group.userData || new SceneEntityUserData();
-        (this.group.userData as SceneEntityUserData).selectable = selectable
-    }
-
     flipXAxis() {
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
     }
 
-    createPickSphere(pickSphereDiameter: number, pickSphereHeightOffset: number = this.getBoundingSphereCenter().y - this.position.y) { // TODO Refactor this is always triggered after changeActivity is called for the first time
+    createPickSphere(pickSphereDiameter: number, selectable: Selectable, pickSphereHeightOffset: number = this.getBoundingSphereCenter().y - this.position.y) {
         if (this.pickSphere) return
         const pickSphereRadius = pickSphereDiameter / 2
         const geometry = new SphereGeometry(pickSphereRadius, pickSphereRadius, pickSphereRadius)
         const material = new MeshBasicMaterial({color: 0xffff00, visible: false}) // change visible to true for debugging
         this.pickSphere = new Mesh(geometry, material)
-        this.pickSphere.userData = {selectable: this}
+        this.pickSphere.userData = {selectable: selectable}
         this.pickSphere.position.y = pickSphereHeightOffset
         this.add(this.pickSphere)
         this.createSelectionFrame(pickSphereDiameter, this.pickSphere.position)

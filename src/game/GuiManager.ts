@@ -152,7 +152,7 @@ export class GuiManager {
                 vehicle.addToScene(teleportPad.primaryPathSurface.getCenterWorld2D(), teleportPad.getHeading())
                 vehicle.changeActivity(VehicleActivity.TeleportIn, () => {
                     vehicle.changeActivity()
-                    vehicle.sceneEntity.createPickSphere(vehicle.stats.PickSphere)
+                    vehicle.sceneEntity.createPickSphere(vehicle.stats.PickSphere, vehicle)
                     GameState.vehicles.push(vehicle)
                 })
             }

@@ -52,7 +52,6 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, entityType, aeFilename)
         this.sceneEntity.flipXAxis()
-        this.sceneEntity.setSelectable(this)
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
@@ -236,7 +235,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
             this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         }
         this.addToScene(worldPosition, radHeading)
-        this.sceneEntity.createPickSphere(this.stats.PickSphere, this.stats.PickSphere / 4)
+        this.sceneEntity.createPickSphere(this.stats.PickSphere, this, this.stats.PickSphere / 4)
         if (this.sceneEntity.visible) {
             GameState.buildings.push(this)
         } else {

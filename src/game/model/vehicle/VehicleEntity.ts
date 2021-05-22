@@ -28,7 +28,6 @@ export abstract class VehicleEntity extends FulfillerEntity {
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, entityType, aeFilename)
         this.sceneEntity.flipXAxis()
-        this.sceneEntity.setSelectable(this)
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {

@@ -29,7 +29,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
         super(worldMgr, sceneMgr, entityType, aeFilename)
-        this.sceneEntity.setSelectable(this)
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
 
