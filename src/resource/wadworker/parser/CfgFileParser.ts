@@ -106,6 +106,22 @@ export class CfgFileParser {
                 levelConf['TextureSet'] = textureSet[1]
             }
         })
+        const dependencies = result['Lego*']['Dependencies']
+        Object.keys(dependencies).forEach((key) => {
+            const flatDeps = []
+            dependencies[key].forEach((d) => {
+                if (Array.isArray(d)) {
+                    flatDeps.push(...d)
+                } else {
+                    flatDeps.push(d)
+                }
+            })
+            dependencies[key] = flatDeps.reduce((result, value, index, array) => {
+                if (index % 2 === 0)
+                    result.push(array.slice(index, index + 2))
+                return result
+            }, [])
+        })
 
         return result['Lego*']
     }

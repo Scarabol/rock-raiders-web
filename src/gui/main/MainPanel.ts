@@ -11,7 +11,6 @@ import { BuildingPanel } from './BuildingPanel'
 import { GetToolPanel } from './GetToolPanel'
 import { IconPanelButtonLabel } from './IconPanelButtonLabel'
 import { IconSubPanel } from './IconSubPanel'
-import { LargeVehiclePanel } from './LargeVehiclePanel'
 import { SelectBuildingPanel } from './SelectBuildingPanel'
 import { SelectFloorPanel } from './SelectFloorPanel'
 import { SelectRaiderPanel } from './SelectRaiderPanel'
@@ -20,8 +19,8 @@ import { SelectSitePanel } from './SelectSitePanel'
 import { SelectVehicleEmptyPanel } from './SelectVehicleEmptyPanel'
 import { SelectVehicleManedPanel } from './SelectVehicleManedPanel'
 import { SelectWallPanel } from './SelectWallPanel'
-import { SmallVehiclePanel } from './SmallVehiclePanel'
 import { TrainRaiderPanel } from './TrainRaiderPanel'
+import { LargeVehiclePanel, SmallVehiclePanel } from './VehiclePanel'
 
 export class MainPanel extends Panel {
 
