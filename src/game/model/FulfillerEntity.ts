@@ -135,7 +135,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 if (this.job.isReadyToComplete()) {
                     const workActivity = this.job.getWorkActivity() || this.getDefaultActivity()
                     if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
-                        this.workAudio = this.playPositionalSample(Sample.SFX_Drill, true)
+                        this.workAudio = this.playPositionalAudio(Sample[Sample.SFX_Drill], true)
                     }
                     this.changeActivity(workActivity, () => {
                         this.workAudio?.stop()

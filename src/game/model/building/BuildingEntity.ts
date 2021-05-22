@@ -192,7 +192,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         this.surfaces.forEach((s) => s.setHasPower(true, true))
         this.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent())
-        this.engineSound = this.playPositionalSfxName(this.stats.EngineSound, true)
+        this.engineSound = this.playPositionalAudio(this.stats.EngineSound, true)
     }
 
     turnOffPower() {

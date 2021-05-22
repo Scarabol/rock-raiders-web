@@ -61,7 +61,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
         this.driver = driver
         this.driver.changeActivity(this.getDriverActivity())
         this.sceneEntity.add(this.driver.sceneEntity.group) // TODO add driver to driver joint
-        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.playPositionalSfxName(this.stats.EngineSound, true)
+        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.playPositionalAudio(this.stats.EngineSound, true)
     }
 
     dropDriver() {

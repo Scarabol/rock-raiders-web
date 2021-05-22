@@ -12,7 +12,7 @@ export class SoundManager {
 
     static playSound(sfxName: string) {
         try {
-            this.getSound(sfxName).then((audioBuffer) => {
+            this.getSoundBuffer(sfxName).then((audioBuffer) => {
                 try {
                     const source = SoundManager.audioContext.createBufferSource()
                     source.buffer = audioBuffer
@@ -27,11 +27,7 @@ export class SoundManager {
         }
     }
 
-    static getSampleBuffer(sample: Sample): Promise<AudioBuffer> {
-        return this.getSound(Sample[sample])
-    }
-
-    static getSound(sfxName: string): Promise<AudioBuffer> {
+    static getSoundBuffer(sfxName: string): Promise<AudioBuffer> {
         sfxName = sfxName.toLowerCase()
         const cachedSound = SoundManager.audioBufferCache.get(sfxName)
         if (cachedSound) return new Promise<AudioBuffer>((resolve) => resolve(cachedSound))

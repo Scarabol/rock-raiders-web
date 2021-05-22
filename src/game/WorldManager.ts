@@ -111,7 +111,7 @@ export class WorldManager {
             station.spawning = true
             const raider = new Raider(this, this.sceneMgr)
             const heading = station.getHeading()
-            raider.playPositionalSample(Sample.SND_teleport)
+            raider.playPositionalAudio(Sample[Sample.SND_teleport], false)
             raider.changeActivity(RaiderActivity.TeleportIn, () => {
                 station.spawning = false
                 raider.changeActivity()

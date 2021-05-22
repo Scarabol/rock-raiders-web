@@ -30,7 +30,7 @@ export abstract class AnimEntity extends BaseEntity {
         this.changeActivity()
         // TODO insert beam animation
         AnimEntity.moveUp(this, 6 * TILESIZE)
-        this.playPositionalSample(Sample.SND_TeleUp)
+        this.playPositionalAudio(Sample[Sample.SND_TeleUp], false)
     }
 
     private static moveUp(entity: AnimEntity, counter: number) {
@@ -76,27 +76,16 @@ export abstract class AnimEntity extends BaseEntity {
         return AnimEntityActivity.Stand
     }
 
-    playPositionalSample(sample: Sample, loop: boolean = false): PositionalAudio { // TODO duplicate code (see below)
+    playPositionalAudio(sfxName: string, loop: boolean): PositionalAudio {
         const audio = new PositionalAudio(this.sceneMgr.listener)
         audio.setRefDistance(TILESIZE * 2)
-        audio.loop = loop // TODO retry playing sound for looped ones, when audio context fails
+        audio.loop = loop
         this.sceneEntity.add(audio)
-        SoundManager.getSampleBuffer(sample).then((audioBuffer) => {
-            audio.setBuffer(audioBuffer).play()
-            // TODO if (!loop) remove audio node from group, when done
-        })
-        return audio
-    }
-
-    playPositionalSfxName(sfxName: string, loop: boolean = false): PositionalAudio { // TODO duplicate code (see above)
-        if (!sfxName) return null
-        const audio = new PositionalAudio(this.sceneMgr.listener)
-        audio.setRefDistance(TILESIZE * 2)
-        audio.loop = loop // TODO retry playing sound for looped ones, when audio context fails
-        this.sceneEntity.add(audio)
-        SoundManager.getSound(sfxName).then((audioBuffer) => {
-            audio.setBuffer(audioBuffer).play()
-            // TODO if (!loop) remove audio node from group, when done
+        SoundManager.getSoundBuffer(sfxName).then((audioBuffer) => {
+            audio.setBuffer(audioBuffer).play() // TODO retry playing sound for looped ones, when audio context fails
+            if (!audio.loop) audio.onEnded = () => this.sceneEntity.remove(audio)
+        }).catch(() => {
+            this.sceneEntity.remove(audio)
         })
         return audio
     }

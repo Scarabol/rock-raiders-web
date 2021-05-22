@@ -732,7 +732,7 @@ export class Surface implements Selectable {
         const audio = new PositionalAudio(this.sceneMgr.listener)
         audio.setRefDistance(TILESIZE * 6)
         this.mesh.add(audio)
-        SoundManager.getSampleBuffer(sample).then((audioBuffer) => {
+        SoundManager.getSoundBuffer(Sample[sample]).then((audioBuffer) => {
             audio.setBuffer(audioBuffer)
             audio.play()
         })

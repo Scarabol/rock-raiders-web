@@ -99,7 +99,7 @@ export class AnimEntityLoader {
                     audio.setRefDistance(TILESIZE * 6) // TODO optimize ref distance for SFX sounds
                     audio.loop = false
                     polyModel.add(audio)
-                    SoundManager.getSound(body.sfxName).then((audioBuffer) => {
+                    SoundManager.getSoundBuffer(body.sfxName).then((audioBuffer) => {
                         audio.setBuffer(audioBuffer)
                     })
                     body.sfxFrames.forEach((frame) => animation.sfxAudioByFrame.getOrUpdate(frame, () => []).push(audio))
