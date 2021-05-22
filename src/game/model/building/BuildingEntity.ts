@@ -129,6 +129,11 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         // TODO add sparkly upgrade animation
     }
 
+    setLevel(level: number) {
+        this.level = level
+        EventBus.publishEvent(new BuildingsChangedEvent())
+    }
+
     getDefaultActivity(): BuildingActivity {
         return !this.isPowered() ? BuildingActivity.Unpowered : AnimEntityActivity.Stand
     }

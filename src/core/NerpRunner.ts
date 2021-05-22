@@ -162,7 +162,7 @@ export class NerpRunner {
 
     setBuildingsUpgradeLevel(typeName: EntityType, level: number) {
         GameState.buildings.forEach(b => {
-            if (b.entityType === typeName) b.level = level
+            if (b.entityType === typeName) b.setLevel(level)
         })
     }
 
