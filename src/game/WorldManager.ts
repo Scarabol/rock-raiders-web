@@ -25,12 +25,12 @@ export class WorldManager {
     nerpRunner: NerpRunner = null
     oxygenUpdateInterval = null
     spawnRaiderInterval = null
+    oxygenRate: number = 0
 
     constructor() {
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => {
             GameState.discoveredCaverns++
         })
-        this.oxygenUpdateInterval = setInterval(this.updateOxygen.bind(this), UPDATE_OXYGEN_TIMER)
         EventBus.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, () => {
             if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
                 this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER)
@@ -40,8 +40,7 @@ export class WorldManager {
 
     setup(levelConf: LevelEntryCfg, onLevelEnd: () => any) {
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
-        GameState.oxygenRate = levelConf.oxygenRate
-
+        this.oxygenRate = levelConf.oxygenRate
         // load nerp script
         this.nerpRunner = NerpParser.parse(ResourceManager.getResource(levelConf.nerpFile))
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
@@ -50,12 +49,14 @@ export class WorldManager {
 
     start() {
         this.nerpRunner?.startExecution()
+        this.oxygenUpdateInterval = setInterval(this.updateOxygen.bind(this), UPDATE_OXYGEN_TIMER)
         GameState.levelStartTime = Date.now()
     }
 
     stop() {
-        this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
         GameState.levelStopTime = Date.now()
+        this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
+        this.oxygenUpdateInterval = clearIntervalSafe(this.oxygenUpdateInterval)
         this.nerpRunner?.pauseExecution()
         GameState.buildings.forEach((b) => b.removeFromScene())
         GameState.buildingsUndiscovered.forEach((b) => b.removeFromScene())
@@ -84,7 +85,7 @@ export class WorldManager {
         const rateMultiplier = 0.001
         const valuePerSecond = 1 / 25
         const msToSeconds = 0.001
-        const diff = sum * GameState.oxygenRate * rateMultiplier * valuePerSecond * UPDATE_OXYGEN_TIMER * msToSeconds / 10
+        const diff = sum * this.oxygenRate * rateMultiplier * valuePerSecond * UPDATE_OXYGEN_TIMER * msToSeconds / 10
         const airLevel = Math.min(1, Math.max(0, GameState.airLevel + diff))
         if (GameState.airLevel !== airLevel) {
             GameState.airLevel = airLevel
