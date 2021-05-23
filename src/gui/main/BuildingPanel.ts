@@ -2,9 +2,9 @@ import { CancelBuildMode, SelectBuildMode } from '../../event/GuiCommand'
 import { EntityType } from '../../game/model/EntityType'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
-import { IconSubPanel } from './IconSubPanel'
+import { DependencyCheckPanel } from './DependencyCheckPanel'
 
-export class BuildingPanel extends IconSubPanel {
+export class BuildingPanel extends DependencyCheckPanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 10, onBackPanel)
@@ -25,10 +25,7 @@ export class BuildingPanel extends IconSubPanel {
     }
 
     addBuildMenuItem(itemKey: string, entityType: EntityType) {
-        const item = this.addMenuItem('InterfaceBuildImages', itemKey)
-        item.isDisabled = () => false // TODO check Dependencies from config
-        item.onClick = () => this.publishEvent(new SelectBuildMode(entityType))
-        return item
+        this.addDependencyMenuItem(itemKey, entityType, (entityType) => this.publishEvent(new SelectBuildMode(entityType)))
     }
 
 }
