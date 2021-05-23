@@ -1,6 +1,6 @@
 import { Vector2 } from 'three'
 import { RaiderActivity } from './activities/RaiderActivity'
-import { MaterialEntity } from './collect/MaterialEntity'
+import { MaterialEntity } from './material/MaterialEntity'
 
 export class PathTarget {
 

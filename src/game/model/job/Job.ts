@@ -1,6 +1,6 @@
 import { RaiderActivity } from '../activities/RaiderActivity'
-import { MaterialEntity } from '../collect/MaterialEntity'
 import { FulfillerEntity } from '../FulfillerEntity'
+import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
 import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'

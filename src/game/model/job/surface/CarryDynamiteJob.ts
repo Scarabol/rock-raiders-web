@@ -1,4 +1,4 @@
-import { Dynamite } from '../../collect/Dynamite'
+import { Dynamite } from '../../material/Dynamite'
 import { RaiderTraining } from '../../raider/RaiderTraining'
 import { CarryJob } from '../CarryJob'
 

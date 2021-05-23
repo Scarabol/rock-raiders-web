@@ -12,10 +12,10 @@ import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../para
 import { ResourceManager } from '../resource/ResourceManager'
 import { RaiderActivity } from './model/activities/RaiderActivity'
 import { BuildingEntity } from './model/building/BuildingEntity'
-import { MaterialEntity } from './model/collect/MaterialEntity'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
 import { MoveJob } from './model/job/MoveJob'
+import { MaterialEntity } from './model/material/MaterialEntity'
 import { Raider } from './model/raider/Raider'
 import { SceneManager } from './SceneManager'
 import degToRad = MathUtils.degToRad
