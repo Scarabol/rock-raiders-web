@@ -1,8 +1,8 @@
-import { EventKey } from '../../event/EventKeyEnum'
-import { VehicleBeamUp, VehicleDriverGetOut } from '../../event/GuiCommand'
-import { SelectionChanged } from '../../event/LocalEvents'
-import { BaseElement } from '../base/BaseElement'
-import { Panel } from '../base/Panel'
+import { EventKey } from '../../../event/EventKeyEnum'
+import { VehicleBeamUp, VehicleDriverGetOut } from '../../../event/GuiCommand'
+import { SelectionChanged } from '../../../event/LocalEvents'
+import { BaseElement } from '../../base/BaseElement'
+import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectVehicleManedPanel extends SelectBasePanel {

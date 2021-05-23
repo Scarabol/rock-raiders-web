@@ -1,5 +1,6 @@
-import { Group, Object3D, PositionalAudio } from 'three'
+import { Group, PositionalAudio } from 'three'
 import { clearTimeoutSafe } from '../../../core/Util'
+import { SceneMesh } from '../../../scene/SceneMesh'
 import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
 import { AnimSubObj } from './AnimSubObj'
 
@@ -11,14 +12,14 @@ export class AnimClip {
     lastFrame: number = null
     framesPerSecond: number = null
     bodies: AnimSubObj[] = []
-    polyList: Object3D[] = []
-    carryJoint: Object3D = null
-    depositJoint: Object3D = null
-    getToolJoint: Object3D = null
-    wheelJoints: Object3D[] = []
-    drillJoint: Object3D = null
-    driverJoint: Object3D = null
-    nullJoints: Map<string, Object3D[]> = new Map()
+    polyList: SceneMesh[] = []
+    carryJoint: SceneMesh = null
+    depositJoint: SceneMesh = null
+    getToolJoint: SceneMesh = null
+    wheelJoints: SceneMesh[] = []
+    drillJoint: SceneMesh = null
+    driverJoint: SceneMesh = null
+    nullJoints: Map<string, SceneMesh[]> = new Map()
     polyModel: Group = new Group()
     animationTimeout = null
     sfxAudioByFrame: Map<number, PositionalAudio[]> = new Map()

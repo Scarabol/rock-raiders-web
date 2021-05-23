@@ -5,7 +5,7 @@ import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
 import { CHECK_CLEARRUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
 import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
-import { BuildingPathTarget } from './model/BuildingPathTarget'
+import { BuildingPathTarget } from './model/building/BuildingPathTarget'
 import { EntityType } from './model/EntityType'
 import { GetToolJob } from './model/job/GetToolJob'
 import { PublicJob } from './model/job/Job'
@@ -47,8 +47,6 @@ export class Supervisor {
     stop() {
         this.assignInterval = clearIntervalSafe(this.assignInterval)
         this.checkRubbleInterval = clearIntervalSafe(this.checkRubbleInterval)
-        this.entityMgr.raiders.forEach((r) => r.resetWorkInterval())
-        this.entityMgr.raidersUndiscovered.forEach((r) => r.resetWorkInterval())
     }
 
     assignJobs() {

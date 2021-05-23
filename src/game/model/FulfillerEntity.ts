@@ -32,10 +32,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
 
-    resetWorkInterval() {
-        this.workInterval = clearIntervalSafe(this.workInterval)
-    }
-
     dropItem() {
         if (!this.carries) return
         const position = this.getPosition()

@@ -1,6 +1,6 @@
 import { EntityManager } from '../../EntityManager'
 import { BuildingEntity } from '../building/BuildingEntity'
-import { BuildingPathTarget } from '../BuildingPathTarget'
+import { BuildingPathTarget } from '../building/BuildingPathTarget'
 import { EntityType } from '../EntityType'
 import { RaiderTool } from '../raider/RaiderTool'
 import { Job } from './Job'

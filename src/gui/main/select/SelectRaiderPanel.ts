@@ -1,10 +1,10 @@
-import { EventKey } from '../../event/EventKeyEnum'
-import { RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade } from '../../event/GuiCommand'
-import { BuildingsChangedEvent, SelectionChanged } from '../../event/LocalEvents'
-import { EntityType } from '../../game/model/EntityType'
-import { BaseElement } from '../base/BaseElement'
-import { Panel } from '../base/Panel'
-import { IconPanelButton } from './IconPanelButton'
+import { EventKey } from '../../../event/EventKeyEnum'
+import { RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade } from '../../../event/GuiCommand'
+import { BuildingsChangedEvent, SelectionChanged } from '../../../event/LocalEvents'
+import { EntityType } from '../../../game/model/EntityType'
+import { BaseElement } from '../../base/BaseElement'
+import { Panel } from '../../base/Panel'
+import { IconPanelButton } from '../IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectRaiderPanel extends SelectBasePanel {

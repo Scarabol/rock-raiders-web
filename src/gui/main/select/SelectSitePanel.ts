@@ -1,6 +1,6 @@
-import { CancelBuilding } from '../../event/GuiCommand'
-import { BaseElement } from '../base/BaseElement'
-import { Panel } from '../base/Panel'
+import { CancelBuilding } from '../../../event/GuiCommand'
+import { BaseElement } from '../../base/BaseElement'
+import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectSitePanel extends SelectBasePanel {

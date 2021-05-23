@@ -8,7 +8,7 @@ export class OverlayLayer extends OffscreenLayer {
 
     onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log('set space to continue: ' + state)
     onAbortGame: () => any = () => console.log('abort the game')
-    onRestartGame: () => any = () => console.log('pause the game')
+    onRestartGame: () => any = () => console.log('restart the game')
 
     constructor() {
         super(new Worker(new URL('../../gui/OverlayWorker', import.meta.url))) // webpack does not allow to extract the URL

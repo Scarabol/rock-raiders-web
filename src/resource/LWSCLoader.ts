@@ -6,10 +6,11 @@
  * File format description: http://www.martinreddy.net/gfx/3d/LWSC.txt
  */
 
-import { Group, Vector3 } from 'three'
+import { Vector3 } from 'three'
 import { getFilename } from '../core/Util'
 import { AnimClip } from '../game/model/anim/AnimClip'
 import { AnimSubObj } from '../game/model/anim/AnimSubObj'
+import { SceneMesh } from '../scene/SceneMesh'
 import { ResourceManager } from './ResourceManager'
 
 export class LWSCLoader {
@@ -111,7 +112,7 @@ export class LWSCLoader {
                         subObj.sfxName = nameParts[1] || null
                         subObj.sfxFrames = nameParts.slice(2).map((n) => Number(n))
                     }
-                    subObj.model = new Group()
+                    subObj.model = new SceneMesh()
                     subObj.isNull = true
                 } else {
                     throw 'Unexpected line: ' + line

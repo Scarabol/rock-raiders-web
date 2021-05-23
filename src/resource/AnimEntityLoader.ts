@@ -1,4 +1,4 @@
-import { AudioListener, Object3D, PositionalAudio } from 'three'
+import { AudioListener, PositionalAudio } from 'three'
 import { SoundManager } from '../audio/SoundManager'
 import { getPath, iGet } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
@@ -72,10 +72,10 @@ export class AnimEntityLoader {
 
         entityType.animations.forEach((animation) => {
             animation.bodies.forEach((body) => {
-                let model: Object3D = entityType.highPolyBodies.get(body.lowerName)
+                let model = entityType.highPolyBodies.get(body.lowerName)
                 if (!model) model = entityType.mediumPolyBodies.get(body.lowerName)
                 if (!model) model = body.model
-                const polyModel = model.clone(true)
+                const polyModel = model.clone()
                 animation.polyList.push(polyModel)
                 if (body.lowerName) {
                     if (body.lowerName.equalsIgnoreCase(entityType.carryNullName)) {
@@ -122,7 +122,7 @@ export class AnimEntityLoader {
                             joint.add(lwoModel)
                         } else {
                             const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae', audioListener)
-                            upgradeModels.animations.get('activity_stand')?.bodies.forEach((b) => joint.add(b.model.clone(true)))
+                            upgradeModels.animations.get('activity_stand')?.bodies.forEach((b) => joint.add(b.model.clone()))
                         }
                     }
                 })

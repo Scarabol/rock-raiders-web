@@ -556,7 +556,7 @@ export class Surface implements Selectable {
         const dx = this.x - targetX, dy = targetY - this.y
         this.fallinGrp.rotateOnAxis(new Vector3(0, 1, 0), Math.atan2(dy, dx) + Math.PI / 2)
         this.sceneMgr.scene.add(this.fallinGrp)
-        const poly = animation.bodies.map((b) => b.model.clone(true))
+        const poly = animation.bodies.map((b) => b.model.clone())
         animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
             const polyPart = poly[index]
             const parentInd = body.parentObjInd

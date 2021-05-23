@@ -1,4 +1,5 @@
-import { Euler, MathUtils, Object3D, Vector3 } from 'three'
+import { Euler, MathUtils, Vector3 } from 'three'
+import { SceneMesh } from '../../../scene/SceneMesh'
 import degToRad = MathUtils.degToRad
 
 export class AnimSubObj {
@@ -11,7 +12,7 @@ export class AnimSubObj {
     relScale: Vector3[] = []
     opacity: number[] = []
     parentObjInd: number = null
-    model: Object3D = null
+    model: SceneMesh = null
     isNull: boolean = false
     sfxName: string = null
     sfxFrames: number[] = []

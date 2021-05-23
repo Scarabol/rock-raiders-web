@@ -1,5 +1,5 @@
-import { BuildingEntity } from './building/BuildingEntity'
-import { PathTarget } from './PathTarget'
+import { PathTarget } from '../PathTarget'
+import { BuildingEntity } from './BuildingEntity'
 
 export class BuildingPathTarget extends PathTarget {
 

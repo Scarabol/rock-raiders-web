@@ -106,7 +106,6 @@ export abstract class BaseEntity {
             console.log(this.animationEntityType.animations)
             return
         }
-        if (onAnimationDone) onAnimationDone.bind(this)
         if (this.animation) {
             this.sceneEntity.remove(this.animation.polyModel)
             this.animation.stop()

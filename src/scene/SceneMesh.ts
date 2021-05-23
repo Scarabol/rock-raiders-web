@@ -1,11 +1,11 @@
-import { BufferGeometry, Material, Mesh } from 'three'
+import { BufferGeometry, Mesh } from 'three'
 import { SceneManager } from '../game/SceneManager'
 import { SequenceTextureMaterial } from './SequenceTextureMaterial'
 
 export class SceneMesh extends Mesh {
 
-    constructor(geometry: BufferGeometry, material: Material | Material[]) {
-        super(geometry, material)
+    constructor(geometry?: BufferGeometry, materials?: SequenceTextureMaterial[]) {
+        super(geometry, materials)
         SceneManager.registerMesh(this)
     }
 
@@ -16,7 +16,7 @@ export class SceneMesh extends Mesh {
     }
 
     dispose() {
-        this.geometry.dispose()
+        this.geometry?.dispose()
         this.getMaterials().forEach((m) => m.dispose())
         this.material = null
     }
