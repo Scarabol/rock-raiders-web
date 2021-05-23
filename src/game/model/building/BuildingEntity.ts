@@ -11,7 +11,7 @@ import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
-import { AnimEntity } from '../anim/AnimEntity'
+import { BaseEntity } from '../BaseEntity'
 import { BuildingPathTarget } from '../BuildingPathTarget'
 import { Barrier } from '../collect/Barrier'
 import { BarrierLocation } from '../collect/BarrierLocation'
@@ -26,7 +26,7 @@ import { PathTarget } from '../PathTarget'
 import { Selectable, SelectionType } from '../Selectable'
 import { BuildingSite } from './BuildingSite'
 
-export abstract class BuildingEntity extends AnimEntity implements Selectable {
+export abstract class BuildingEntity extends BaseEntity implements Selectable {
 
     blocksPathSurface: boolean = true
     secondaryBuildingPart: Vector2 = null

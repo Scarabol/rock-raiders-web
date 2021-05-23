@@ -2,7 +2,7 @@ import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
-import { AnimEntity } from '../anim/AnimEntity'
+import { BaseEntity } from '../BaseEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
@@ -11,7 +11,7 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 import { BuildingCarryPathTarget, CarryPathTarget, SiteCarryPathTarget } from './CarryPathTarget'
 
-export abstract class MaterialEntity extends AnimEntity {
+export abstract class MaterialEntity extends BaseEntity {
 
     targetBuildingTypes: EntityType[] = []
     priorityIdentifier: PriorityIdentifier = null

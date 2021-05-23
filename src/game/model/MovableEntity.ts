@@ -3,14 +3,14 @@ import { JOB_ACTION_RANGE } from '../../params'
 import { SceneManager } from '../SceneManager'
 import { WorldManager } from '../WorldManager'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
-import { AnimEntity } from './anim/AnimEntity'
+import { BaseEntity } from './BaseEntity'
 import { EntityStep } from './EntityStep'
 import { EntityType } from './EntityType'
 import { TerrainPath } from './map/TerrainPath'
 import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
 
-export abstract class MovableEntity extends AnimEntity {
+export abstract class MovableEntity extends BaseEntity {
 
     currentPath: TerrainPath = null
 
