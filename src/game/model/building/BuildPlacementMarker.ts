@@ -4,6 +4,7 @@ import { CancelBuildMode } from '../../../event/GuiCommand'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
 import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { BarrierLocation } from '../collect/BarrierLocation'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
@@ -17,6 +18,7 @@ export class BuildPlacementMarker {
     static readonly pathMarkerColor: number = 0x505000
     static readonly waterMarkerColor: number = 0x000050
 
+    worldMgr: WorldManager
     sceneMgr: SceneManager
     group: Group = new Group()
     markers: BuildPlacementMarkerMesh[] = []
@@ -30,7 +32,8 @@ export class BuildPlacementMarker {
     sdz: number = 0
     lastCheck: boolean = false
 
-    constructor(sceneMgr: SceneManager) {
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
+        this.worldMgr = worldMgr
         this.sceneMgr = sceneMgr
         this.buildingMarkerPrimary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
         this.buildingMarkerSecondary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
@@ -50,7 +53,7 @@ export class BuildPlacementMarker {
     }
 
     update(worldPosition: Vector2) {
-        if (!worldPosition || !GameState.buildModeSelection) {
+        if (!worldPosition || !this.worldMgr.buildModeSelection) {
             this.hideAllMarker()
         } else {
             const isValid = this.updateAllMarker(worldPosition)
@@ -70,15 +73,15 @@ export class BuildPlacementMarker {
         this.sdx = sdx
         this.sdz = sdz
         this.heading = Math.atan2(sdz, sdx)
-        this.buildingMarkerSecondary.updateState(GameState.buildModeSelection.secondaryBuildingPart, this.heading, this.buildingMarkerPrimary.position)
-        this.powerPathMarkerPrimary.updateState(GameState.buildModeSelection.primaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
-        this.powerPathMarkerSecondary.updateState(GameState.buildModeSelection.secondaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
-        this.waterPathMarker.updateState(GameState.buildModeSelection.waterPathSurface, this.heading, this.buildingMarkerPrimary.position)
+        this.buildingMarkerSecondary.updateState(this.worldMgr.buildModeSelection.secondaryBuildingPart, this.heading, this.buildingMarkerPrimary.position)
+        this.powerPathMarkerPrimary.updateState(this.worldMgr.buildModeSelection.primaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
+        this.powerPathMarkerSecondary.updateState(this.worldMgr.buildModeSelection.secondaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
+        this.waterPathMarker.updateState(this.worldMgr.buildModeSelection.waterPathSurface, this.heading, this.buildingMarkerPrimary.position)
         const allSurfacesAreGround = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
             .filter((c) => c.visible).map((c) => this.sceneMgr.terrain.getSurfaceFromWorld(c.position)).every((s) => s.surfaceType === SurfaceType.GROUND)
         this.lastCheck = allSurfacesAreGround && (
             [this.powerPathMarkerPrimary, this.powerPathMarkerSecondary].some((c) => c.visible && c.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
-            (!GameState.buildModeSelection.primaryPowerPath && (this.buildingMarkerPrimary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH ||
+            (!this.worldMgr.buildModeSelection.primaryPowerPath && (this.buildingMarkerPrimary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH ||
                 (this.buildingMarkerSecondary.visible && this.buildingMarkerSecondary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)))))
         ) && (!this.waterPathMarker.visible || this.waterPathMarker.surface.surfaceType === SurfaceType.WATER)
         return this.lastCheck
@@ -91,11 +94,11 @@ export class BuildPlacementMarker {
 
     createBuildingSite() {
         const barrierLocations = this.getBarrierLocations()
-        const stats = GameState.buildModeSelection.stats
+        const stats = this.worldMgr.buildModeSelection.stats
         const neededCrystals = stats?.CostCrystal || 0
         const neededOre = stats?.CostOre || 0
         const primarySurface = this.buildingMarkerPrimary.surface
-        const site = new BuildingSite(primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, GameState.buildModeSelection)
+        const site = new BuildingSite(primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, this.worldMgr.buildModeSelection)
         site.heading = this.heading
         site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
         site.neededByType.set(EntityType.CRYSTAL, neededCrystals)

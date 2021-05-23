@@ -10,6 +10,7 @@ import { Surface } from '../../game/model/map/Surface'
 import { SelectionType } from '../../game/model/Selectable'
 import { VehicleEntity } from '../../game/model/vehicle/VehicleEntity'
 import { SceneManager } from '../../game/SceneManager'
+import { WorldManager } from '../../game/WorldManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedCursor } from '../AnimatedCursor'
 import { Cursor } from '../Cursor'
@@ -17,6 +18,7 @@ import { ScreenLayer } from './ScreenLayer'
 
 export class CursorLayer extends ScreenLayer {
 
+    worldMgr: WorldManager
     sceneMgr: SceneManager
     currentCursor: Cursor = null
     timedCursor: Cursor = null
@@ -57,7 +59,7 @@ export class CursorLayer extends ScreenLayer {
     }
 
     determineCursor(raycaster: Raycaster): Cursor {
-        if (GameState.buildModeSelection) {
+        if (this.worldMgr.buildModeSelection) {
             return this.sceneMgr.buildMarker.lastCheck ? Cursor.Pointer_CanBuild : Cursor.Pointer_CannotBuild
         }
         let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.sceneEntity.pickSphere))

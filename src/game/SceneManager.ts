@@ -52,8 +52,6 @@ export class SceneManager {
         this.controls.listenToKeyEvents(this.renderer.domElement)
         this.controls.keyPanSpeed = this.controls.keyPanSpeed * KEY_PAN_SPEED
 
-        this.buildMarker = new BuildPlacementMarker(this)
-
         EventBus.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             if (event.selectionType === SelectionType.NOTHING) this.selectEntities([])
         })
@@ -201,6 +199,7 @@ export class SceneManager {
         this.cursorTorchlight.distance *= TILESIZE
         this.scene.add(this.cursorTorchlight)
 
+        this.buildMarker = new BuildPlacementMarker(worldMgr, this)
         this.scene.add(this.buildMarker.group)
 
         // create terrain mesh and add it to the scene

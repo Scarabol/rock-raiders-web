@@ -1,11 +1,12 @@
 import { MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { GameState } from '../../game/model/GameState'
 import { SceneManager } from '../../game/SceneManager'
+import { WorldManager } from '../../game/WorldManager'
 import { ScreenLayer } from './ScreenLayer'
 
 export class SelectionLayer extends ScreenLayer {
 
+    worldMgr: WorldManager
     sceneMgr: SceneManager
     selectStart: { x: number, y: number } = null
 
@@ -19,7 +20,7 @@ export class SelectionLayer extends ScreenLayer {
     }
 
     handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
-        if (GameState.buildModeSelection) return new Promise((resolve) => resolve(false))
+        if (this.worldMgr.buildModeSelection) return new Promise((resolve) => resolve(false))
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         if (event.eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.MAIN) return new Promise((resolve) => resolve(this.startSelection(cx, cy)))

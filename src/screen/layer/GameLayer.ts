@@ -43,7 +43,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             buildMarker.update(intersectionPoint)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
-                if (GameState.buildModeSelection && buildMarker.lastCheck) {
+                if (this.worldMgr.buildModeSelection && buildMarker.lastCheck) {
                     buildMarker.createBuildingSite()
                 }
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
@@ -65,8 +65,8 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                                 }
                             }
                         }
-                    } else if (GameState.buildModeSelection) {
-                        GameState.buildModeSelection = null
+                    } else if (this.worldMgr.buildModeSelection) {
+                        this.worldMgr.setBuildModeSelection(null)
                         buildMarker.hideAllMarker()
                     }
                 }

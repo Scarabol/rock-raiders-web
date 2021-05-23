@@ -55,7 +55,6 @@ export class GameState {
     static discoveredCaverns: number = 0
     static levelStartTime: number = 0
     static levelStopTime: number = 0
-    static buildModeSelection: BuildingEntity = null
 
     static reset() {
         this.resultState = GameResultState.RUNNING
@@ -86,7 +85,6 @@ export class GameState {
         this.discoveredCaverns = 0
         this.levelStartTime = 0
         this.levelStopTime = 0
-        this.buildModeSelection = null
     }
 
     static getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {

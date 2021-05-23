@@ -40,8 +40,10 @@ export class GameScreen extends BaseScreen {
         this.gameLayer.worldMgr = this.worldMgr
         this.sceneMgr = new SceneManager(this.gameLayer.canvas)
         this.worldMgr.sceneMgr = this.sceneMgr
+        this.cursorLayer.worldMgr = this.worldMgr
         this.cursorLayer.sceneMgr = this.sceneMgr
         this.gameLayer.sceneMgr = this.sceneMgr
+        this.selectionLayer.worldMgr = this.worldMgr
         this.selectionLayer.sceneMgr = this.sceneMgr
         this.jobSupervisor = new Supervisor(this.worldMgr)
         this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr, this.jobSupervisor, this.gameLayer.canvas)
