@@ -61,6 +61,8 @@ export function clearIntervalSafe(interval: NodeJS.Timeout) {
 declare global {
 
     interface Array<T> {
+        add(element: T): void
+
         remove(element: T): void
 
         last(): T
@@ -80,6 +82,11 @@ declare global {
         equalsIgnoreCase(other: string): boolean
     }
 
+}
+
+Array.prototype.add = function <T>(element: T): void {
+    const index = this.indexOf(element)
+    if (index === -1) this.push(element)
 }
 
 Array.prototype.remove = function <T>(element: T): void {
