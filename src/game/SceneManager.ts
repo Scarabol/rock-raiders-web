@@ -11,6 +11,7 @@ import { KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from '../scene/SceneMesh'
 import { DebugHelper } from '../screen/DebugHelper'
+import { EntityManager } from './EntityManager'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
 import { GameState } from './model/GameState'
 import { Terrain } from './model/map/Terrain'
@@ -22,6 +23,8 @@ export class SceneManager {
 
     static meshRegistry: SceneMesh[] = []
 
+    worldMgr: WorldManager
+    entityMgr: EntityManager
     maxFps: number = 30 // most animations use 25 fps so this should be enough
     renderer: WebGLRenderer
     debugHelper: DebugHelper = new DebugHelper()
@@ -60,9 +63,9 @@ export class SceneManager {
     selectEntitiesByRay(rx: number, ry: number) {
         const raycaster = new Raycaster()
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
-        let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.sceneEntity.pickSphere))
-        if (intersects.length < 1) intersects = raycaster.intersectObjects(GameState.vehicles.map((v) => v.sceneEntity.pickSphere))
-        if (intersects.length < 1) intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.sceneEntity.pickSphere))
+        let intersects = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
+        if (intersects.length < 1) intersects = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
+        if (intersects.length < 1) intersects = raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere))
         if (intersects.length < 1 && this.terrain) intersects = raycaster.intersectObjects(this.terrain.floorGroup.children)
         const selected = []
         if (intersects.length > 0) {
@@ -141,10 +144,10 @@ export class SceneManager {
         planes[5].setFromCoplanarPoints(vectemp3, vectemp2, vectemp1)
         planes[5].normal.multiplyScalar(-1)
 
-        let entities: Selectable[] = GameState.raiders.filter((r) => SceneManager.isInFrustum(r.sceneEntity.pickSphere, frustum))
-        entities.push(...GameState.vehicles.filter((v) => SceneManager.isInFrustum(v.sceneEntity.pickSphere, frustum)))
+        let entities: Selectable[] = this.entityMgr.raiders.filter((r) => SceneManager.isInFrustum(r.sceneEntity.pickSphere, frustum))
+        entities.push(...this.entityMgr.vehicles.filter((v) => SceneManager.isInFrustum(v.sceneEntity.pickSphere, frustum)))
         if (entities.length < 1) {
-            const firstBuilding = GameState.buildings.find((b) => SceneManager.isInFrustum(b.sceneEntity.pickSphere, frustum))
+            const firstBuilding = this.entityMgr.buildings.find((b) => SceneManager.isInFrustum(b.sceneEntity.pickSphere, frustum))
             entities = firstBuilding ? [firstBuilding] : []
         }
         this.selectEntities(entities)
@@ -158,7 +161,7 @@ export class SceneManager {
     }
 
     selectEntities(entities: Selectable[]) {
-        GameState.selectedEntities = GameState.selectedEntities.filter((previouslySelected) => {
+        this.entityMgr.selectedEntities = this.entityMgr.selectedEntities.filter((previouslySelected) => {
             const stillSelected = entities.indexOf(previouslySelected) !== -1
             if (!stillSelected) previouslySelected.deselect()
             return stillSelected
@@ -168,24 +171,24 @@ export class SceneManager {
         entities.forEach((freshlySelected) => {
             if (freshlySelected.select()) {
                 addedSelected = true
-                GameState.selectedEntities.push(freshlySelected)
+                this.entityMgr.selectedEntities.push(freshlySelected)
             }
         })
         if (addedSelected) SoundManager.playSample(Sample.SFX_Okay)
         // determine and set next selection type
-        const len = GameState.selectedEntities.length
+        const len = this.entityMgr.selectedEntities.length
         if (len > 1) {
-            GameState.selectionType = SelectionType.GROUP
+            this.entityMgr.selectionType = SelectionType.GROUP
         } else if (len === 1) {
-            GameState.selectionType = GameState.selectedEntities[0].getSelectionType()
-        } else if (GameState.selectionType !== null) {
-            GameState.selectionType = SelectionType.NOTHING
+            this.entityMgr.selectionType = this.entityMgr.selectedEntities[0].getSelectionType()
+        } else if (this.entityMgr.selectionType !== null) {
+            this.entityMgr.selectionType = SelectionType.NOTHING
         }
         // AFTER updating selected entities and selection type, publish all events
-        EventBus.publishEvent(new SelectionChanged(GameState.selectionType, GameState.selectedSurface, GameState.selectedBuilding, GameState.selectedRaiders))
+        EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
-    setupScene(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
+    setupScene(levelConf: LevelEntryCfg) {
         this.scene = new Scene()
 
         const ambientRgb = ResourceManager.cfg('Main', 'AmbientRGB') || [10, 10, 10]
@@ -199,11 +202,11 @@ export class SceneManager {
         this.cursorTorchlight.distance *= TILESIZE
         this.scene.add(this.cursorTorchlight)
 
-        this.buildMarker = new BuildPlacementMarker(worldMgr, this)
+        this.buildMarker = new BuildPlacementMarker(this.worldMgr, this, this.entityMgr)
         this.scene.add(this.buildMarker.group)
 
         // create terrain mesh and add it to the scene
-        this.terrain = TerrainLoader.loadTerrain(levelConf, worldMgr, this)
+        this.terrain = TerrainLoader.loadTerrain(levelConf, this, this.entityMgr)
         this.scene.add(this.terrain.floorGroup)
 
         // gather level start details for game result score calculation

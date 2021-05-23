@@ -2,10 +2,10 @@ import { Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { JobCreateEvent } from '../../../event/WorldEvents'
+import { EntityManager } from '../../EntityManager'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
-import { GameState } from '../GameState'
 import { CompletePowerPathJob } from '../job/surface/CompletePowerPathJob'
 import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
@@ -17,6 +17,7 @@ import { BuildingEntity } from './BuildingEntity'
 
 export class BuildingSite {
 
+    entityMgr: EntityManager
     primarySurface: Surface = null
     secondarySurface: Surface = null
     primaryPathSurface: Surface = null
@@ -29,7 +30,8 @@ export class BuildingSite {
     complete: boolean = false
     canceled: boolean = false
 
-    constructor(primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, building: BuildingEntity) {
+    constructor(entityMgr: EntityManager, primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, building: BuildingEntity) {
+        this.entityMgr = entityMgr
         this.primarySurface = primarySurface
         this.primarySurface.setSite(this)
         this.surfaces.push(this.primarySurface)
@@ -84,7 +86,7 @@ export class BuildingSite {
             this.complete = this.complete && this.onSiteByType.getOrUpdate(neededType, () => []).length >= needed
         })
         if (!this.complete) return
-        GameState.buildingSites.remove(this)
+        this.entityMgr.buildingSites.remove(this)
         if (!this.building) {
             const items = []
             this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
@@ -109,11 +111,11 @@ export class BuildingSite {
     }
 
     cancelSite() {
-        GameState.buildingSites.remove(this)
+        this.entityMgr.buildingSites.remove(this)
         this.canceled = true
         this.surfaces.forEach((s) => s?.setSite(null))
         this.onSiteByType.forEach((materials) => materials.forEach((item) => {
-            item.worldMgr.placeMaterial(item, item.getPosition2D())
+            this.entityMgr.placeMaterial(item, item.getPosition2D())
         }))
         this.onSiteByType.clear()
         this.assignedByType.forEach((materials) => materials.forEach((item) => {

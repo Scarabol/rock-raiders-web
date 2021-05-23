@@ -2,11 +2,10 @@ import { Vector2 } from 'three'
 import { getRandom, getRandomInclusive } from '../../../core/Util'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { EntityType } from '../EntityType'
-import { GameState } from '../GameState'
 import { SurfaceType } from '../map/SurfaceType'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
@@ -16,8 +15,8 @@ export class SmallSpider extends Monster {
 
     radiusSq: number = 0
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
-        super(worldMgr, sceneMgr, EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae')
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
+        super(sceneMgr, entityMgr, EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae')
         this.floorOffset = 1 // TODO rotate spider according to surface normal vector
     }
 
@@ -30,9 +29,7 @@ export class SmallSpider extends Monster {
     }
 
     private static onMove(spider: SmallSpider) {
-        spider.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).remove(spider))
         if (spider.target.length > 0 && spider.moveToClosestTarget(spider.target) === MoveState.MOVED) {
-            spider.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).push(spider))
             if (!spider.sceneMgr.terrain.getSurfaceFromWorld(spider.getPosition()).surfaceType.floor) {
                 spider.onDeath()
             } else {
@@ -64,8 +61,7 @@ export class SmallSpider extends Monster {
 
     onDeath() {
         this.removeFromScene()
-        GameState.spiders.remove(this)
-        this.surfaces.forEach((s) => GameState.spidersBySurface.getOrUpdate(s, () => []).remove(this))
+        this.entityMgr.spiders.remove(this)
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {

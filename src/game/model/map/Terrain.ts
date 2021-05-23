@@ -1,7 +1,7 @@
 import { AxesHelper, Group, Vector2, Vector3 } from 'three'
 import { DEV_MODE, TILESIZE } from '../../../params'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { PathTarget } from '../PathTarget'
 import { astar, Graph } from './astar'
 import { Surface } from './Surface'
@@ -10,8 +10,8 @@ import { TerrainPath } from './TerrainPath'
 
 export class Terrain {
 
-    worldMgr: WorldManager
     sceneMgr: SceneManager
+    entityMgr: EntityManager
     textureSet: any = {}
     width: number = 0
     height: number = 0
@@ -27,9 +27,9 @@ export class Terrain {
     cachedFlyPaths = new Map<string, Vector2[]>()
     cachedSwimPaths = new Map<string, Vector2[]>()
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
-        this.worldMgr = worldMgr
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         this.sceneMgr = sceneMgr
+        this.entityMgr = entityMgr
         this.floorGroup.scale.setScalar(TILESIZE)
         this.roofGroup.scale.setScalar(TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera

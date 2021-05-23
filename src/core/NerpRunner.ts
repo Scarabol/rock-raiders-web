@@ -5,15 +5,18 @@
  * https://kb.rockraidersunited.com/NERPs_documentation#Labels
  *
  */
+import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
-import { GameResultState, GameState } from '../game/model/GameState'
+import { GameResultState } from '../game/model/GameResult'
+import { GameState } from '../game/model/GameState'
 import { clearIntervalSafe, getRandom } from './Util'
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
 
+    entityMgr: EntityManager
     debug = false
-    onLevelEnd: () => any = null
+    onLevelEnd: (state: GameResultState) => any = null
     nerpInterval: NodeJS.Timeout = null
 
     registers = new Array(8).fill(0)
@@ -28,7 +31,8 @@ export class NerpRunner {
     // more state variables and switches
     messagePermit = null
 
-    constructor(debug = false) {
+    constructor(entityMgr: EntityManager, debug = false) {
+        this.entityMgr = entityMgr
         this.debug = debug
     }
 
@@ -123,8 +127,7 @@ export class NerpRunner {
     setLevelCompleted() {
         console.log('Nerp runner marks level as complete')
         this.halted = true
-        GameState.resultState = GameResultState.COMPLETE
-        this.onLevelEnd()
+        this.onLevelEnd(GameResultState.COMPLETE)
     }
 
     /**
@@ -133,8 +136,7 @@ export class NerpRunner {
     setLevelFail() {
         console.log('NerpRunner marks level as failed; at line: ' + this.scriptLines[this.programCounter])
         this.halted = true
-        GameState.resultState = GameResultState.FAILED
-        this.onLevelEnd()
+        this.onLevelEnd(GameResultState.FAILED)
     }
 
     /**
@@ -161,7 +163,7 @@ export class NerpRunner {
     }
 
     setBuildingsUpgradeLevel(typeName: EntityType, level: number) {
-        GameState.buildings.forEach(b => {
+        this.entityMgr.buildings.forEach(b => {
             if (b.entityType === typeName) b.setLevel(level)
         })
     }
@@ -187,7 +189,7 @@ export class NerpRunner {
      * @return {number}
      */
     getToolStoresBuilt() {
-        return GameState.buildings.count((b) => b.entityType === EntityType.TOOLSTATION)
+        return this.entityMgr.buildings.count((b) => b.entityType === EntityType.TOOLSTATION)
     }
 
     /**
@@ -195,7 +197,7 @@ export class NerpRunner {
      * @return {number}
      */
     getMinifiguresOnLevel() {
-        return GameState.raiders.length
+        return this.entityMgr.raiders.length
     }
 
     /**
@@ -265,11 +267,11 @@ export class NerpRunner {
     }
 
     getPoweredPowerStationsBuilt() {
-        return GameState.buildings.count((b) => b.isUsable() && b.entityType === EntityType.POWER_STATION)
+        return this.entityMgr.buildings.count((b) => b.isUsable() && b.entityType === EntityType.POWER_STATION)
     }
 
     getPoweredBarracksBuilt() {
-        return GameState.buildings.count((b) => b.isUsable() && b.entityType === EntityType.BARRACKS)
+        return this.entityMgr.buildings.count((b) => b.isUsable() && b.entityType === EntityType.BARRACKS)
     }
 
     getRecordObjectAtTutorial() {
@@ -282,7 +284,7 @@ export class NerpRunner {
     }
 
     getLevel1PowerStationsBuilt() {
-        return GameState.buildings.count((b) => b.entityType === EntityType.POWER_STATION && b.level >= 1)
+        return this.entityMgr.buildings.count((b) => b.entityType === EntityType.POWER_STATION && b.level >= 1)
     }
 
     getRandom100(): number {

@@ -1,9 +1,8 @@
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
 import { EntityType } from '../EntityType'
-import { GameState } from '../GameState'
 import { CarryJob } from '../job/CarryJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { CarryDynamiteJob } from '../job/surface/CarryDynamiteJob'
@@ -15,8 +14,8 @@ export class Dynamite extends MaterialEntity {
 
     targetSurface: Surface
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, surface: Surface) {
-        super(worldMgr, sceneMgr, EntityType.DYNAMITE, 'MiscAnims/Dynamite/Dynamite.ae')
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, surface: Surface) {
+        super(sceneMgr, entityMgr, EntityType.DYNAMITE, 'MiscAnims/Dynamite/Dynamite.ae')
         this.targetSurface = surface
         this.priorityIdentifier = PriorityIdentifier.aiPriorityDestruction
         this.changeActivity()
@@ -26,7 +25,7 @@ export class Dynamite extends MaterialEntity {
         if (this.targetSurface && this.targetSurface.isExplodable()) {
             return this.targetSurface.getDigPositions().map((p) => new CarryPathTarget(p))
         } else {
-            return GameState.getBuildingsByType(EntityType.TOOLSTATION).map((b) => b.getDropPosition2D())
+            return this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION).map((b) => b.getDropPosition2D())
                 .map((p) => new CarryPathTarget(p))
         }
     }

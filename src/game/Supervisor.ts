@@ -3,10 +3,10 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
 import { CHECK_CLEARRUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
+import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingPathTarget } from './model/BuildingPathTarget'
 import { EntityType } from './model/EntityType'
-import { GameState } from './model/GameState'
 import { GetToolJob } from './model/job/GetToolJob'
 import { PublicJob } from './model/job/Job'
 import { JobState } from './model/job/JobState'
@@ -15,19 +15,21 @@ import { PriorityEntry } from './model/job/PriorityEntry'
 import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { TrainJob } from './model/job/TrainJob'
 import { Raider } from './model/raider/Raider'
-import { WorldManager } from './WorldManager'
+import { SceneManager } from './SceneManager'
 
 export class Supervisor {
 
-    worldMgr: WorldManager
+    sceneMgr: SceneManager
+    entityMgr: EntityManager
     jobs: PublicJob[] = []
     assignInterval = null
     checkRubbleInterval = null
     priorityIndexList: PriorityIdentifier[] = []
     priorityList: PriorityEntry[] = []
 
-    constructor(worldMgr: WorldManager) {
-        this.worldMgr = worldMgr
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
+        this.sceneMgr = sceneMgr
+        this.entityMgr = entityMgr
         EventBus.registerEventListener(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
             this.jobs.push(event.job)
         })
@@ -45,8 +47,8 @@ export class Supervisor {
     stop() {
         this.assignInterval = clearIntervalSafe(this.assignInterval)
         this.checkRubbleInterval = clearIntervalSafe(this.checkRubbleInterval)
-        GameState.raiders.forEach((r) => r.resetWorkInterval())
-        GameState.raidersUndiscovered.forEach((r) => r.resetWorkInterval())
+        this.entityMgr.raiders.forEach((r) => r.resetWorkInterval())
+        this.entityMgr.raidersUndiscovered.forEach((r) => r.resetWorkInterval())
     }
 
     assignJobs() {
@@ -61,7 +63,7 @@ export class Supervisor {
         availableJobs.sort((left, right) => {
             return Math.sign(this.getPriority(left) - this.getPriority(right))
         })
-        const unemployedRaider = GameState.raiders.filter((r) => !r.job && !r.inBeam)
+        const unemployedRaider = this.entityMgr.raiders.filter((r) => !r.job && !r.inBeam)
         availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
                 let closestRaider: Raider = null
                 let closestRaiderIndex: number = null
@@ -92,7 +94,7 @@ export class Supervisor {
                             }
                         }
                     } else if (!hasRequiredTool) {
-                        const pathToToolstation = GameState.getBuildingsByType(EntityType.TOOLSTATION)
+                        const pathToToolstation = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)
                             .map((b) => raider.findPathToTarget(b.getPathTarget()))
                             .filter((p) => !!p)
                             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
@@ -106,7 +108,7 @@ export class Supervisor {
                             }
                         }
                     } else {
-                        const pathToTrainingSite = GameState.getTrainingSites(requiredTraining)
+                        const pathToTrainingSite = this.entityMgr.getTrainingSites(requiredTraining)
                             .map((b) => raider.findPathToTarget(b.getPathTarget()))
                             .filter((p) => !!p)
                             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
@@ -125,10 +127,10 @@ export class Supervisor {
                     closestRaider.setJob(job)
                     unemployedRaider.splice(closestRaiderIndex, 1)
                 } else if (closestToolRaider) {
-                    closestToolRaider.setJob(new GetToolJob(requiredTool, closestToolstation), job)
+                    closestToolRaider.setJob(new GetToolJob(this.entityMgr, requiredTool, closestToolstation), job)
                     unemployedRaider.splice(closestToolRaiderIndex, 1)
                 } else if (closestTrainingRaider) {
-                    closestTrainingRaider.setJob(new TrainJob(requiredTraining, closestTrainingArea), job)
+                    closestTrainingRaider.setJob(new TrainJob(this.entityMgr, requiredTraining, closestTrainingArea), job)
                     unemployedRaider.splice(closestTrainingRaiderIndex, 1)
                 }
             },
@@ -141,13 +143,13 @@ export class Supervisor {
 
     checkUnclearedRubble() {
         if (!this.isEnabled(PriorityIdentifier.aiPriorityClearing)) return
-        GameState.raiders.forEach((raider) => {
+        this.entityMgr.raiders.forEach((raider) => {
             if (raider.job) return
-            const startSurface = raider.sceneMgr.terrain.getSurfaceFromWorld(raider.getPosition())
+            const startSurface = raider.surfaces[0]
             for (let rad = 0; rad < 10; rad++) {
                 for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                     for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
-                        const surface = raider.sceneMgr.terrain.getSurfaceOrNull(x, y)
+                        const surface = this.sceneMgr.terrain.getSurfaceOrNull(x, y)
                         if (!(surface?.hasRubble()) || !surface?.discovered) continue
                         const clearRubbleJob = surface.createClearRubbleJob()
                         if (!clearRubbleJob) continue
@@ -155,12 +157,12 @@ export class Supervisor {
                         if (raider.hasTool(requiredTool)) {
                             raider.setJob(clearRubbleJob)
                         } else {
-                            const pathToToolstation = GameState.getBuildingsByType(EntityType.TOOLSTATION)
+                            const pathToToolstation = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)
                                 .map((b) => raider.findPathToTarget(b.getPathTarget()))
                                 .filter((p) => !!p)
                                 .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                             if (pathToToolstation) {
-                                raider.setJob(new GetToolJob(requiredTool, (pathToToolstation.target as BuildingPathTarget).building), clearRubbleJob)
+                                raider.setJob(new GetToolJob(this.entityMgr, requiredTool, (pathToToolstation.target as BuildingPathTarget).building), clearRubbleJob)
                             }
                         }
                     }

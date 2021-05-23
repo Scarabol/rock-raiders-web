@@ -1,16 +1,16 @@
 import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../../cfg/BuildingEntityStats'
 import { ResourceManager } from '../../../../resource/ResourceManager'
+import { EntityManager } from '../../../EntityManager'
 import { SceneManager } from '../../../SceneManager'
-import { WorldManager } from '../../../WorldManager'
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { EntityType } from '../../EntityType'
 import { BuildingEntity } from '../BuildingEntity'
 
 export class PowerStation extends BuildingEntity {
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
-        super(worldMgr, sceneMgr, EntityType.POWER_STATION, 'Buildings/Powerstation/Powerstation.ae')
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
+        super(sceneMgr, entityMgr, EntityType.POWER_STATION, 'Buildings/Powerstation/Powerstation.ae')
         this.secondaryBuildingPart = new Vector2(-1, 0)
     }
 

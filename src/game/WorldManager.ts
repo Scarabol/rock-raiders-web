@@ -7,22 +7,24 @@ import { clearIntervalSafe, getRandom } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { AirLevelChanged, RaidersChangedEvent } from '../event/LocalEvents'
-import { JobCreateEvent, RequestedRaidersChanged } from '../event/WorldEvents'
+import { RequestedRaidersChanged } from '../event/WorldEvents'
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
+import { EntityManager } from './EntityManager'
 import { RaiderActivity } from './model/activities/RaiderActivity'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { EntityType } from './model/EntityType'
+import { GameResultState } from './model/GameResult'
 import { GameState } from './model/GameState'
 import { MoveJob } from './model/job/MoveJob'
-import { MaterialEntity } from './model/material/MaterialEntity'
 import { Raider } from './model/raider/Raider'
 import { SceneManager } from './SceneManager'
 import degToRad = MathUtils.degToRad
 
 export class WorldManager {
 
-    sceneMgr: SceneManager = null // TODO can be removed, when entities are decoupled from their scene mesh/entity
+    sceneMgr: SceneManager // TODO can be removed, when entities are decoupled from their scene mesh/entity
+    entityMgr: EntityManager
     nerpRunner: NerpRunner = null
     oxygenUpdateInterval = null
     spawnRaiderInterval = null
@@ -40,12 +42,12 @@ export class WorldManager {
         })
     }
 
-    setup(levelConf: LevelEntryCfg, onLevelEnd: () => any) {
+    setup(levelConf: LevelEntryCfg, onLevelEnd: (state: GameResultState) => any) {
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         this.oxygenRate = levelConf.oxygenRate
         this.setBuildModeSelection(null)
         // load nerp script
-        this.nerpRunner = NerpParser.parse(ResourceManager.getResource(levelConf.nerpFile))
+        this.nerpRunner = NerpParser.parse(this.entityMgr, ResourceManager.getResource(levelConf.nerpFile))
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
         this.nerpRunner.onLevelEnd = onLevelEnd
     }
@@ -61,30 +63,10 @@ export class WorldManager {
         this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
         this.oxygenUpdateInterval = clearIntervalSafe(this.oxygenUpdateInterval)
         this.nerpRunner?.pauseExecution()
-        GameState.buildings.forEach((b) => b.removeFromScene())
-        GameState.buildingsUndiscovered.forEach((b) => b.removeFromScene())
-        GameState.raiders.forEach((r) => r.removeFromScene())
-        GameState.raidersUndiscovered.forEach((r) => r.removeFromScene())
-        GameState.materials.forEach((m) => m.removeFromScene())
-        GameState.materialsUndiscovered.forEach((m) => m.removeFromScene())
-        GameState.spiders.forEach((m) => m.removeFromScene())
-        GameState.bats.forEach((b) => b.removeFromScene())
-    }
-
-    placeMaterial(item: MaterialEntity, worldPosition: Vector2) {
-        item.addToScene(worldPosition, 0)
-        if (item.sceneEntity.visible) {
-            GameState.materials.push(item)
-            EventBus.publishEvent(new JobCreateEvent(item.createCarryJob()))
-        } else {
-            GameState.materialsUndiscovered.push(item)
-        }
-        return item
     }
 
     updateOxygen() {
-        const sum = GameState.raiders.map((r) => r.stats.OxygenCoef).reduce((l, r) => l + r, 0) +
-            GameState.buildings.map((b) => b.isUsable() ? b.stats.OxygenCoef : 0).reduce((l, r) => l + r, 0)
+        const sum = this.entityMgr.getOxygenSum()
         const rateMultiplier = 0.001
         const valuePerSecond = 1 / 25
         const msToSeconds = 0.001
@@ -101,15 +83,15 @@ export class WorldManager {
             this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
             return
         }
-        if (GameState.raiders.length >= GameState.getMaxRaiders()) return
-        const spawnBuildings = GameState.getBuildingsByType(EntityType.TOOLSTATION, EntityType.TELEPORT_PAD)
+        if (this.entityMgr.hasMaxRaiders()) return
+        const spawnBuildings = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION, EntityType.TELEPORT_PAD)
         for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
             const station = spawnBuildings[c]
             if (station.spawning) continue
             GameState.requestedRaiders--
             EventBus.publishEvent(new RequestedRaidersChanged(GameState.requestedRaiders))
             station.spawning = true
-            const raider = new Raider(this, this.sceneMgr)
+            const raider = new Raider(this.sceneMgr, this.entityMgr)
             const heading = station.getHeading()
             raider.playPositionalAudio(Sample[Sample.SND_teleport], false)
             raider.changeActivity(RaiderActivity.TeleportIn, () => {
@@ -119,8 +101,8 @@ export class WorldManager {
                 const walkOutPos = station.getPosition2D().add(new Vector2(0, TILESIZE * 3 / 4 + getRandom(TILESIZE / 2))
                     .rotateAround(new Vector2(0, 0), heading + degToRad(-10 + getRandom(20))))
                 raider.setJob(new MoveJob(walkOutPos))
-                GameState.raiders.push(raider)
-                EventBus.publishEvent(new RaidersChangedEvent())
+                this.entityMgr.raiders.push(raider)
+                EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
             })
             raider.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), station.getHeading()).add(station.getPosition2D()), heading)
         }

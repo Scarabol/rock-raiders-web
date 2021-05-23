@@ -3,7 +3,8 @@ import { RewardCfg } from '../cfg/RewardCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { clearTimeoutSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
-import { GameResultState, GameState } from '../game/model/GameState'
+import { GameResult, GameResultState } from '../game/model/GameResult'
+import { GameState } from '../game/model/GameState'
 import { RewardScreenButton } from '../menu/RewardScreenButton'
 import { MAX_RAIDER_BASE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -29,6 +30,8 @@ export class RewardScreen extends BaseScreen {
     btnAdvance: RewardScreenButton
     levelFullNameImg: SpriteImage
     rewardConfig: LevelRewardConfig
+    resultText: string
+    resultValues: SpriteImage[] = []
 
     constructor() {
         super()
@@ -99,31 +102,47 @@ export class RewardScreen extends BaseScreen {
         }
     }
 
+    setGameResult(result: GameResult) {
+        this.resultText = this.cfg.quitText
+        this.resultLastIndex = this.images.length - 2
+        if (result.state === GameResultState.COMPLETE) {
+            this.resultText = this.cfg.completeText
+            this.resultLastIndex = this.images.length - 1
+        } else if (result.state === GameResultState.FAILED) {
+            this.resultText = this.cfg.failedText
+        }
+        this.resultValues = []
+        this.resultValues.push(this.fonts['crystals'].createTextImage(this.percentString(GameState.numCrystal, GameState.neededCrystals)))
+        this.resultValues.push(this.fonts['ore'].createTextImage(this.percentString(GameState.numOre, GameState.totalOres)))
+        this.resultValues.push(this.fonts['diggable'].createTextImage(this.percentString(GameState.remainingDiggables, GameState.totalDiggables, true)))
+        this.resultValues.push(this.fonts['constructions'].createTextImage(result.numBuildings.toString()))
+        this.resultValues.push(this.fonts['caverns'].createTextImage(this.percentString(GameState.discoveredCaverns, GameState.totalCaverns)))
+        this.resultValues.push(this.fonts['figures'].createTextImage(this.percentString(result.numRaiders, result.numMaxRaiders)))
+        this.resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(0))) // TODO show defence report, is either 0% or 100%
+        this.resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(GameState.airLevel)))
+        this.resultValues.push(this.fonts['timer'].createTextImage(this.timeString(GameState.gameTimeSeconds)))
+        this.resultValues.push(this.fonts['score'].createTextImage(this.percentString(this.calcScore(result))))
+    }
+
+    calcScore(result: GameResult): number {
+        if (!this.rewardConfig) return 0
+        let quota = this.rewardConfig.quota
+        let importance = this.rewardConfig.importance
+        const scoreCrystals = GameState.numCrystal >= (quota.crystals || Infinity) ? importance.crystals : 0
+        const scoreTimer = GameState.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
+        const scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
+        const scoreConstructions = quota.constructions ? Math.min(1, result.numBuildings / quota.constructions * importance.constructions) : 0
+        const scoreOxygen = GameState.airLevel * importance.oxygen
+        const scoreFigures = result.numRaiders >= MAX_RAIDER_BASE ? importance.figures : 0
+        return Math.max(0, Math.min(100, Math.round(scoreCrystals + scoreTimer + scoreCaverns + scoreConstructions + scoreOxygen + scoreFigures) / 100))
+    }
+
     show() {
         this.resultIndex = 0
         this.btnSave.visible = false
         this.btnAdvance.visible = false
         this.uncoverResult()
-        let resultText = this.cfg.quitText
-        this.resultLastIndex = this.images.length - 2
-        if (GameState.resultState === GameResultState.COMPLETE) {
-            resultText = this.cfg.completeText
-            this.resultLastIndex = this.images.length - 1
-        } else if (GameState.resultState === GameResultState.FAILED) {
-            resultText = this.cfg.failedText
-        }
-        const resultValues = []
-        resultValues.push(this.fonts['crystals'].createTextImage(this.percentString(GameState.numCrystal, GameState.neededCrystals)))
-        resultValues.push(this.fonts['ore'].createTextImage(this.percentString(GameState.numOre, GameState.totalOres)))
-        resultValues.push(this.fonts['diggable'].createTextImage(this.percentString(GameState.remainingDiggables, GameState.totalDiggables, true)))
-        resultValues.push(this.fonts['constructions'].createTextImage(GameState.buildings.length.toString()))
-        resultValues.push(this.fonts['caverns'].createTextImage(this.percentString(GameState.discoveredCaverns, GameState.totalCaverns)))
-        resultValues.push(this.fonts['figures'].createTextImage(this.percentString(GameState.raiders.length, GameState.getMaxRaiders())))
-        resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(0))) // TODO show defence report, is either 0% or 100%
-        resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(GameState.airLevel)))
-        resultValues.push(this.fonts['timer'].createTextImage(this.timeString(GameState.gameTimeSeconds)))
-        resultValues.push(this.fonts['score'].createTextImage(this.percentString(this.score)))
-        const gameResultTextImg = this.titleFont.createTextImage(resultText)
+        const gameResultTextImg = this.titleFont.createTextImage(this.resultText)
         this.resultsLayer.onRedraw = (context) => {
             context.clearRect(0, 0, this.resultsLayer.fixedWidth, this.resultsLayer.fixedHeight)
             for (let c = 0; c <= this.resultIndex; c++) {
@@ -136,7 +155,7 @@ export class RewardScreen extends BaseScreen {
             }
             for (let c = 0; c <= this.resultIndex; c++) {
                 const txt = this.cfg.texts[c]
-                const text = resultValues[c]
+                const text = this.resultValues[c]
                 if (text) context.drawImage(text, txt.x - text.width / 2, txt.y)
             }
             context.drawImage(this.levelFullNameImg, this.resultsLayer.fixedWidth / 2 - this.levelFullNameImg.width / 2, this.cfg.vertSpacing - this.levelFullNameImg.height / 2)
@@ -150,19 +169,6 @@ export class RewardScreen extends BaseScreen {
             context.drawImage(descriptionTextImg, tx - descriptionTextImg.width / 2, ty)
         }
         super.show()
-    }
-
-    get score(): number {
-        if (!this.rewardConfig) return 0
-        let quota = this.rewardConfig.quota
-        let importance = this.rewardConfig.importance
-        const scoreCrystals = GameState.numCrystal >= (quota.crystals || Infinity) ? importance.crystals : 0
-        const scoreTimer = GameState.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
-        const scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
-        const scoreConstructions = quota.constructions ? Math.min(1, GameState.buildings.length / quota.constructions * importance.constructions) : 0
-        const scoreOxygen = GameState.airLevel * importance.oxygen
-        const scoreFigures = GameState.raiders.length >= MAX_RAIDER_BASE ? importance.figures : 0
-        return Math.max(0, Math.min(100, Math.round(scoreCrystals + scoreTimer + scoreCaverns + scoreConstructions + scoreOxygen + scoreFigures) / 100))
     }
 
     percentString(actual, max = 1, lessIsMore: boolean = false) {

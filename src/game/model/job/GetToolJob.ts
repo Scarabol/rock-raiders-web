@@ -1,25 +1,27 @@
+import { EntityManager } from '../../EntityManager'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { BuildingPathTarget } from '../BuildingPathTarget'
 import { EntityType } from '../EntityType'
-import { GameState } from '../GameState'
 import { RaiderTool } from '../raider/RaiderTool'
 import { Job } from './Job'
 import { JobType } from './JobType'
 
 export class GetToolJob extends Job {
 
+    entityMgr: EntityManager
     tool: RaiderTool
     workplaces: BuildingPathTarget[]
 
-    constructor(tool: RaiderTool, toolstation: BuildingEntity) {
+    constructor(entityMgr: EntityManager, tool: RaiderTool, toolstation: BuildingEntity) {
         super(JobType.GET_TOOL)
+        this.entityMgr = entityMgr
         this.tool = tool
-        this.workplaces = toolstation ? [toolstation.getPathTarget()] : GameState.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new BuildingPathTarget(b))
+        this.workplaces = toolstation ? [toolstation.getPathTarget()] : this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new BuildingPathTarget(b))
     }
 
     getWorkplaces(): BuildingPathTarget[] {
         if (this.workplaces.some((b) => !b.building.isUsable())) {
-            this.workplaces = GameState.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new BuildingPathTarget(b))
+            this.workplaces = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new BuildingPathTarget(b))
         }
         return this.workplaces
     }

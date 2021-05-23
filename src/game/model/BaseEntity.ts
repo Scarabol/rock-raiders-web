@@ -6,8 +6,8 @@ import { DeselectAll } from '../../event/LocalEvents'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SceneEntity } from '../../scene/SceneEntity'
+import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
-import { WorldManager } from '../WorldManager'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
 import { BaseActivity } from './activities/BaseActivity'
 import { AnimationEntityType } from './anim/AnimationEntityType'
@@ -17,8 +17,8 @@ import { Surface } from './map/Surface'
 
 export abstract class BaseEntity {
 
-    worldMgr: WorldManager
     sceneMgr: SceneManager
+    entityMgr: EntityManager
 
     sceneEntity: SceneEntity = new SceneEntity()
 
@@ -29,11 +29,11 @@ export abstract class BaseEntity {
     animation: AnimClip = null
     activity: BaseActivity = null
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
-        this.worldMgr = worldMgr
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
         this.sceneMgr = sceneMgr
+        this.entityMgr = entityMgr
         this.entityType = entityType
-        if (aeFilename) this.animationEntityType = ResourceManager.getAnimationEntityType(aeFilename, sceneMgr.listener)
+        if (aeFilename) this.animationEntityType = ResourceManager.getAnimationEntityType(aeFilename, this.sceneMgr.listener)
     }
 
     getPosition() {

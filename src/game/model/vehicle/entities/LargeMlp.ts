@@ -1,13 +1,13 @@
 import { ResourceManager } from '../../../../resource/ResourceManager'
+import { EntityManager } from '../../../EntityManager'
 import { SceneManager } from '../../../SceneManager'
-import { WorldManager } from '../../../WorldManager'
 import { EntityType } from '../../EntityType'
 import { VehicleEntity } from '../VehicleEntity'
 
 export class LargeMlp extends VehicleEntity {
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
-        super(worldMgr, sceneMgr, EntityType.LARGE_MLP, 'Vehicles/LMLP/LMLP.ae')
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
+        super(sceneMgr, entityMgr, EntityType.LARGE_MLP, 'Vehicles/LMLP/LMLP.ae')
     }
 
     get stats() {

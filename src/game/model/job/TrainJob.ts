@@ -1,9 +1,9 @@
 import { EventBus } from '../../../event/EventBus'
 import { RaidersChangedEvent } from '../../../event/LocalEvents'
+import { EntityManager } from '../../EntityManager'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { FulfillerEntity } from '../FulfillerEntity'
-import { GameState } from '../GameState'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { Job } from './Job'
@@ -11,12 +11,14 @@ import { JobType } from './JobType'
 
 export class TrainJob extends Job {
 
+    entityMgr: EntityManager
     training: RaiderTraining
     building: BuildingEntity
     workplaces: PathTarget[]
 
-    constructor(training: RaiderTraining, building: BuildingEntity) {
+    constructor(entityMgr: EntityManager, training: RaiderTraining, building: BuildingEntity) {
         super(JobType.TRAIN)
+        this.entityMgr = entityMgr
         this.training = training
         this.building = building
         this.workplaces = this.getWorkplaces()
@@ -25,7 +27,7 @@ export class TrainJob extends Job {
     getWorkplaces(): PathTarget[] {
         if (!this.building?.isUsable()) {
             this.workplaces = []
-            GameState.getTrainingSites(this.training).map((s) => s.getTrainingTargets().forEach((t) => this.workplaces.push(t)))
+            this.entityMgr.getTrainingSites(this.training).map((s) => s.getTrainingTargets().forEach((t) => this.workplaces.push(t)))
         }
         return this.workplaces
     }
@@ -34,7 +36,7 @@ export class TrainJob extends Job {
         super.onJobComplete()
         this.fulfiller.forEach((f) => {
             f.addTraining(this.training)
-            EventBus.publishEvent(new RaidersChangedEvent(this.training))
+            EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr, this.training))
         })
     }
 

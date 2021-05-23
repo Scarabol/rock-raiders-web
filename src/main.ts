@@ -60,8 +60,9 @@ ResourceManager.onLoadDone = () => {
             }
         }
     }
-    gameScreen.onLevelEnd = () => {
+    gameScreen.onLevelEnd = (result) => {
         gameScreen.hide()
+        rewardScreen.setGameResult(result)
         rewardScreen.show()
     }
     rewardScreen.onAdvance = () => {

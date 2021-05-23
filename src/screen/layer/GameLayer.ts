@@ -7,8 +7,8 @@ import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { IEventHandler } from '../../event/IEventHandler'
 import { DeselectAll } from '../../event/LocalEvents'
+import { EntityManager } from '../../game/EntityManager'
 import { FulfillerEntity } from '../../game/model/FulfillerEntity'
-import { GameState } from '../../game/model/GameState'
 import { Job } from '../../game/model/job/Job'
 import { MoveJob } from '../../game/model/job/MoveJob'
 import { Surface } from '../../game/model/map/Surface'
@@ -23,6 +23,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
     parent: IEventHandler
     worldMgr: WorldManager
     sceneMgr: SceneManager
+    entityMgr: EntityManager
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
 
     constructor(parent: IEventHandler) {
@@ -49,19 +50,19 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
                 const downUpDistance = Math.abs(event.clientX - this.rightDown.x) + Math.abs(event.clientY - this.rightDown.y)
                 if (downUpDistance < 3) {
-                    if (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.GROUP || GameState.selectionType === SelectionType.VEHICLE_MANED) {
+                    if (this.entityMgr.selectionType === SelectionType.RAIDER || this.entityMgr.selectionType === SelectionType.GROUP || this.entityMgr.selectionType === SelectionType.VEHICLE_MANED) {
                         // TODO check for vehicles and collectables entity first
                         const intersectionPoint = this.getTerrainPositionFromEvent(event)
                         if (intersectionPoint) {
-                            const surface = this.sceneMgr.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
+                            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
                             if (surface) {
                                 if (surface.isDrillable()) {
                                     this.assignSurfaceJob(surface.createDrillJob(), surface, intersectionPoint)
                                 } else if (surface.hasRubble()) {
                                     this.assignSurfaceJob(surface.createClearRubbleJob(), surface, intersectionPoint)
                                 } else if (surface.isWalkable()) {
-                                    GameState.selectedEntities.forEach((f: FulfillerEntity) => f.setJob(new MoveJob(intersectionPoint)))
-                                    if (GameState.selectedEntities.length > 0) this.publishEvent(new DeselectAll())
+                                    this.entityMgr.selectedEntities.forEach((f: FulfillerEntity) => f.setJob(new MoveJob(intersectionPoint)))
+                                    if (this.entityMgr.selectedEntities.length > 0) this.publishEvent(new DeselectAll())
                                 }
                             }
                         }
@@ -84,12 +85,12 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
 
     handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
         if (DEV_MODE && event.eventEnum === KEY_EVENT.UP) {
-            if (GameState.selectionType === SelectionType.SURFACE) {
+            if (this.entityMgr.selectionType === SelectionType.SURFACE) {
                 if (event.code === 'KeyC') {
-                    GameState.selectedSurface?.collapse()
+                    this.entityMgr.selectedSurface?.collapse()
                     this.publishEvent(new DeselectAll())
                 } else if (event.code === 'KeyF') {
-                    const s = GameState.selectedSurface
+                    const s = this.entityMgr.selectedSurface
                     if (s) {
                         const t = s.terrain.findFallInTarget(s.x, s.y)
                         if (!s.surfaceType.floor) s.createFallin(t[0], t[1])
@@ -104,14 +105,14 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
 
     assignSurfaceJob(job: Job, surface: Surface, intersectionPoint: Vector2) {
         if (!job) return
-        GameState.selectedEntities.forEach((f: FulfillerEntity) => {
+        this.entityMgr.selectedEntities.forEach((f: FulfillerEntity) => {
             if (f.hasTool(job.getRequiredTool()) && f.hasTraining(job.getRequiredTraining())) {
                 f.setJob(job)
             } else if (surface.isWalkable()) {
                 f.setJob(new MoveJob(intersectionPoint))
             }
         })
-        if (GameState.selectedEntities.length > 0) this.publishEvent(new DeselectAll())
+        if (this.entityMgr.selectedEntities.length > 0) this.publishEvent(new DeselectAll())
     }
 
     getTerrainPositionFromEvent(event): Vector2 {

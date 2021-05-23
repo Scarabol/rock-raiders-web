@@ -1,6 +1,6 @@
 import { clearTimeoutSafe } from '../../../core/Util'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { MonsterActivity } from '../activities/MonsterActivity'
 import { EntityType } from '../EntityType'
 import { MovableEntity } from '../MovableEntity'
@@ -11,8 +11,8 @@ export abstract class Monster extends MovableEntity {
     moveTimeout: NodeJS.Timeout
     target: PathTarget[] = []
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, entityType, aeFilename)
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
+        super(sceneMgr, entityMgr, entityType, aeFilename)
     }
 
     removeFromScene() {

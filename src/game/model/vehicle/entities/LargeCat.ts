@@ -1,6 +1,6 @@
 import { ResourceManager } from '../../../../resource/ResourceManager'
+import { EntityManager } from '../../../EntityManager'
 import { SceneManager } from '../../../SceneManager'
-import { WorldManager } from '../../../WorldManager'
 import { EntityType } from '../../EntityType'
 import { TerrainPath } from '../../map/TerrainPath'
 import { PathTarget } from '../../PathTarget'
@@ -9,8 +9,8 @@ import { VehicleEntity } from '../VehicleEntity'
 
 export class LargeCat extends VehicleEntity {
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
-        super(worldMgr, sceneMgr, EntityType.LARGE_CAT, 'Vehicles/LargeCat/LargeCat.ae')
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
+        super(sceneMgr, entityMgr, EntityType.LARGE_CAT, 'Vehicles/LargeCat/LargeCat.ae')
     }
 
     get stats() {

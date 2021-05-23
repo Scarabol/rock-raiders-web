@@ -1,11 +1,10 @@
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { BaseEntity } from '../BaseEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
-import { GameState } from '../GameState'
 import { CarryJob } from '../job/CarryJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
@@ -19,8 +18,8 @@ export abstract class MaterialEntity extends BaseEntity {
     targetSite: BuildingSite = null
     positionPathTarget: PathTarget[] = null
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string = null) {
-        super(worldMgr, sceneMgr, entityType, aeFilename)
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string = null) {
+        super(sceneMgr, entityMgr, entityType, aeFilename)
         this.targetBuildingTypes = [EntityType.TOOLSTATION]
     }
 
@@ -36,11 +35,11 @@ export abstract class MaterialEntity extends BaseEntity {
 
     protected updateTargets(): CarryPathTarget[] {
         if (this.targets.length < 1) {
-            const sites = GameState.buildingSites.filter((b) => b.needs(this.entityType))
+            const sites = this.entityMgr.buildingSites.filter((b) => b.needs(this.entityType))
             if (sites.length > 0) {
                 this.targets = sites.map((s) => new SiteCarryPathTarget(s.getRandomDropPosition(), s))
             } else {
-                const buildings = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
+                const buildings = this.entityMgr.getBuildingsByType(...this.getTargetBuildingTypes())
                 if (buildings.length > 0) {
                     this.targets = buildings.map((b) => new BuildingCarryPathTarget(b))
                 }
@@ -53,8 +52,8 @@ export abstract class MaterialEntity extends BaseEntity {
 
     onDiscover() {
         super.onDiscover()
-        GameState.materialsUndiscovered.remove(this)
-        GameState.materials.push(this)
+        this.entityMgr.materialsUndiscovered.remove(this)
+        this.entityMgr.materials.push(this)
         EventBus.publishEvent(new JobCreateEvent(this.createCarryJob()))
     }
 

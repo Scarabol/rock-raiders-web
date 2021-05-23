@@ -5,7 +5,7 @@ import { POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { IEventHandler } from '../../event/IEventHandler'
 import { ChangeCursor } from '../../event/LocalEvents'
-import { GameState } from '../../game/model/GameState'
+import { EntityManager } from '../../game/EntityManager'
 import { Surface } from '../../game/model/map/Surface'
 import { SelectionType } from '../../game/model/Selectable'
 import { VehicleEntity } from '../../game/model/vehicle/VehicleEntity'
@@ -20,6 +20,7 @@ export class CursorLayer extends ScreenLayer {
 
     worldMgr: WorldManager
     sceneMgr: SceneManager
+    entityMgr: EntityManager
     currentCursor: Cursor = null
     timedCursor: Cursor = null
     cursorTimeout = null
@@ -62,20 +63,20 @@ export class CursorLayer extends ScreenLayer {
         if (this.worldMgr.buildModeSelection) {
             return this.sceneMgr.buildMarker.lastCheck ? Cursor.Pointer_CanBuild : Cursor.Pointer_CannotBuild
         }
-        let intersects = raycaster.intersectObjects(GameState.raiders.map((r) => r.sceneEntity.pickSphere))
+        let intersects = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
         if (intersects.length > 0) return Cursor.Pointer_Selected
-        intersects = raycaster.intersectObjects(GameState.vehicles.map((v) => v.sceneEntity.pickSphere))
+        intersects = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
         if (intersects.length > 0) {
             const userData = intersects[0].object.userData
             if (userData && userData.hasOwnProperty('selectable')) {
                 const vehicle = userData['selectable'] as VehicleEntity
-                if (!vehicle?.driver && GameState.selectedRaiders.length > 0) {
+                if (!vehicle?.driver && this.entityMgr.selectedRaiders.length > 0) {
                     return Cursor.Pointer_GetIn
                 }
             }
             return Cursor.Pointer_Selected
         }
-        intersects = raycaster.intersectObjects(GameState.buildings.map((b) => b.sceneEntity.pickSphere))
+        intersects = raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere))
         if (intersects.length > 0) return Cursor.Pointer_Selected
         intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
         if (intersects.length > 0) {
@@ -83,7 +84,7 @@ export class CursorLayer extends ScreenLayer {
             if (userData && userData.hasOwnProperty('surface')) {
                 const surface = userData['surface'] as Surface
                 if (surface) {
-                    if (GameState.selectionType === SelectionType.RAIDER || GameState.selectionType === SelectionType.VEHICLE_MANED || GameState.selectionType === SelectionType.GROUP) {
+                    if (this.entityMgr.selectionType === SelectionType.RAIDER || this.entityMgr.selectionType === SelectionType.VEHICLE_MANED || this.entityMgr.selectionType === SelectionType.GROUP) {
                         if (surface.isDrillable()) {
                             return Cursor.Pointer_Drill // TODO check if selected entities can drill and return Pointer_CDrill otherwise
                         } else {

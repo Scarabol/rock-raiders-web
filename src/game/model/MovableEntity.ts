@@ -1,7 +1,7 @@
 import { Vector3 } from 'three'
 import { JOB_ACTION_RANGE } from '../../params'
+import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
-import { WorldManager } from '../WorldManager'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
 import { BaseEntity } from './BaseEntity'
 import { EntityStep } from './EntityStep'
@@ -14,8 +14,8 @@ export abstract class MovableEntity extends BaseEntity {
 
     currentPath: TerrainPath = null
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, entityType, aeFilename)
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
+        super(sceneMgr, entityMgr, entityType, aeFilename)
     }
 
     moveToClosestTarget(target: PathTarget[]): MoveState {

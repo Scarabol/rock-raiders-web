@@ -6,8 +6,8 @@ import { BuildingsChangedEvent, DeselectAll } from '../../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
@@ -49,8 +49,8 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     pathTarget: BuildingPathTarget = null
     engineSound: PositionalAudio
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, entityType, aeFilename)
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
+        super(sceneMgr, entityMgr, entityType, aeFilename)
         this.sceneEntity.flipXAxis()
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
@@ -105,9 +105,9 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
 
     onDiscover() {
         super.onDiscover()
-        GameState.buildingsUndiscovered.remove(this)
-        GameState.buildings.push(this)
-        EventBus.publishEvent(new BuildingsChangedEvent())
+        this.entityMgr.buildingsUndiscovered.remove(this)
+        this.entityMgr.buildings.push(this)
+        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
 
     hasMaxLevel(): boolean {
@@ -124,13 +124,13 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         EventBus.publishEvent(new MaterialAmountChanged())
         this.level++
         EventBus.publishEvent(new DeselectAll())
-        EventBus.publishEvent(new BuildingsChangedEvent())
+        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
         // TODO add sparkly upgrade animation
     }
 
     setLevel(level: number) {
         this.level = level
-        EventBus.publishEvent(new BuildingsChangedEvent())
+        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
 
     getDefaultActivity(): BuildingActivity {
@@ -142,20 +142,20 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         this.crystalsInUse = 0
         this.inBeam = true
         for (let c = 0; c < this.stats.CostOre; c++) {
-            this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), this.primarySurface.getRandomPosition())
+            this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), this.primarySurface.getRandomPosition())
         }
         for (let c = 0; c < this.stats.CostCrystal; c++) {
-            this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), this.primarySurface.getRandomPosition())
+            this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), this.primarySurface.getRandomPosition())
         }
         this.surfaces.forEach((s) => s.setBuilding(null))
         this.pathTarget = null
         super.beamUp()
-        EventBus.publishEvent(new BuildingsChangedEvent())
+        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
 
     removeFromScene() {
         super.removeFromScene()
-        GameState.buildings.remove(this)
+        this.entityMgr.buildings.remove(this)
     }
 
     canUpgrade() {
@@ -167,26 +167,26 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         if (type === EntityType.CRYSTAL) {
             while (GameState.numCrystal > 0 && material.length < quantity) {
                 GameState.numCrystal--
-                material.push(new Crystal(this.worldMgr, this.sceneMgr))
+                material.push(new Crystal(this.sceneMgr, this.entityMgr))
             }
         } else if (type === EntityType.ORE) {
             while (GameState.numOre > 0 && material.length < quantity) {
                 GameState.numOre--
-                material.push(new Ore(this.worldMgr, this.sceneMgr))
+                material.push(new Ore(this.sceneMgr, this.entityMgr))
             }
         } else {
             console.error('Material drop not implemented for: ' + type)
         }
         if (material.length > 0) EventBus.publishEvent(new MaterialAmountChanged())
-        material.forEach((m) => this.worldMgr.placeMaterial(m, this.getDropPosition2D()))
+        material.forEach((m) => this.entityMgr.placeMaterial(m, this.getDropPosition2D()))
     }
 
     spawnBarriers(barrierLocations: BarrierLocation[], site: BuildingSite) {
-        barrierLocations.map((l) => new Barrier(this.worldMgr, this.sceneMgr, l, site)).forEach((b) => this.worldMgr.placeMaterial(b, this.getDropPosition2D()))
+        barrierLocations.map((l) => new Barrier(this.sceneMgr, this.entityMgr, l, site)).forEach((b) => this.entityMgr.placeMaterial(b, this.getDropPosition2D()))
     }
 
     spawnFence(targetSurface: Surface) {
-        this.worldMgr.placeMaterial(new ElectricFence(this.worldMgr, this.sceneMgr, targetSurface), this.getDropPosition2D())
+        this.entityMgr.placeMaterial(new ElectricFence(this.sceneMgr, this.entityMgr, targetSurface), this.getDropPosition2D())
     }
 
     turnOnPower() {
@@ -195,7 +195,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         GameState.usedCrystals += this.crystalsInUse
         this.surfaces.forEach((s) => s.setHasPower(true, true))
         this.changeActivity()
-        EventBus.publishEvent(new BuildingsChangedEvent())
+        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
         if (this.stats.EngineSound) this.engineSound = this.playPositionalAudio(this.stats.EngineSound, true)
     }
 
@@ -205,7 +205,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         this.crystalsInUse = 0
         this.surfaces.forEach((s) => s.setHasPower(false, false))
         this.changeActivity()
-        EventBus.publishEvent(new BuildingsChangedEvent())
+        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
         this.engineSound?.stop()
         this.engineSound = null
     }
@@ -237,9 +237,9 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         this.addToScene(worldPosition, radHeading)
         this.sceneEntity.createPickSphere(this.stats.PickSphere, this, this.stats.PickSphere / 4)
         if (this.sceneEntity.visible) {
-            GameState.buildings.push(this)
+            this.entityMgr.buildings.push(this)
         } else {
-            GameState.buildingsUndiscovered.push(this)
+            this.entityMgr.buildingsUndiscovered.push(this)
         }
         if (this.sceneEntity.visible && !disableTeleportIn) {
             this.inBeam = true
@@ -256,7 +256,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     private onPlaceDown() {
         this.changeActivity()
         this.turnOnPower()
-        EventBus.publishEvent(new BuildingsChangedEvent())
+        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
 
     getDropAction(): RaiderActivity {

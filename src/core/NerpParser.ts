@@ -1,10 +1,11 @@
+import { EntityManager } from '../game/EntityManager'
 import { ResourceManager } from '../resource/ResourceManager'
 import { NerpRunner } from './NerpRunner'
 
 export class NerpParser {
 
-    static parse(nerpScript: string): NerpRunner {
-        const nerpRunner = new NerpRunner()
+    static parse(entityMgr: EntityManager, nerpScript: string): NerpRunner {
+        const nerpRunner = new NerpRunner(entityMgr)
         const lines = nerpScript.split('\n').map(l => l
             .split('//')[0].trim() // before comment starts
             .split(';')[0].trim() // before preprocessor comment starts
@@ -24,7 +25,7 @@ export class NerpParser {
                     // see https://github.com/jgrip/legorr/blob/master/nerpdef.h
                     continue
                 }
-                const includedRunner = NerpParser.parse(ResourceManager.getResource('Levels/' + includeName))
+                const includedRunner = NerpParser.parse(entityMgr, ResourceManager.getResource('Levels/' + includeName))
                 if (!includedRunner || !includedRunner.scriptLines || includedRunner.scriptLines.length < 1) {
                     throw 'Can\'t include unknown nerp script: ' + line
                 }

@@ -3,10 +3,10 @@ import { EventBus } from '../../../event/EventBus'
 import { CancelBuildMode } from '../../../event/GuiCommand'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
-import { GameState } from '../GameState'
 import { SurfaceType } from '../map/SurfaceType'
 import { BarrierLocation } from '../material/BarrierLocation'
 import { BuildingSite } from './BuildingSite'
@@ -20,6 +20,7 @@ export class BuildPlacementMarker {
 
     worldMgr: WorldManager
     sceneMgr: SceneManager
+    entityMgr: EntityManager
     group: Group = new Group()
     markers: BuildPlacementMarkerMesh[] = []
     buildingMarkerPrimary: BuildPlacementMarkerMesh = null
@@ -32,9 +33,10 @@ export class BuildPlacementMarker {
     sdz: number = 0
     lastCheck: boolean = false
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityMgr: EntityManager) {
         this.worldMgr = worldMgr
         this.sceneMgr = sceneMgr
+        this.entityMgr = entityMgr
         this.buildingMarkerPrimary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
         this.buildingMarkerSecondary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
         this.powerPathMarkerPrimary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.pathMarkerColor)
@@ -98,13 +100,13 @@ export class BuildPlacementMarker {
         const neededCrystals = stats?.CostCrystal || 0
         const neededOre = stats?.CostOre || 0
         const primarySurface = this.buildingMarkerPrimary.surface
-        const site = new BuildingSite(primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, this.worldMgr.buildModeSelection)
+        const site = new BuildingSite(this.entityMgr, primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, this.worldMgr.buildModeSelection)
         site.heading = this.heading
         site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
         site.neededByType.set(EntityType.CRYSTAL, neededCrystals)
         site.neededByType.set(EntityType.ORE, neededOre)
-        GameState.buildingSites.push(site)
-        const closestToolstation = GameState.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
+        this.entityMgr.buildingSites.push(site)
+        const closestToolstation = this.entityMgr.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
         if (closestToolstation) {
             closestToolstation.spawnBarriers(barrierLocations, site)
             closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)

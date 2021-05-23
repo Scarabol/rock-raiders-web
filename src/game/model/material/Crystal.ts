@@ -1,16 +1,16 @@
 import { AdditiveBlending, Color } from 'three'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Crystal extends MaterialEntity {
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
-        super(worldMgr, sceneMgr, EntityType.CRYSTAL)
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
+        super(sceneMgr, entityMgr, EntityType.CRYSTAL)
         const mesh2 = ResourceManager.getLwoModel('MiscAnims/Crystal/vlp_greencrystal.lwo')
         mesh2.getMaterials().forEach((mat: SequenceTextureMaterial) => {
             mat.blending = AdditiveBlending

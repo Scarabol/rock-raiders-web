@@ -3,6 +3,7 @@ import { EventKey } from '../event/EventKeyEnum'
 import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
 import { DeselectAll } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged } from '../event/WorldEvents'
+import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { Barracks } from './model/building/entities/Barracks'
 import { Docks } from './model/building/entities/Docks'
@@ -43,26 +44,26 @@ export class GuiManager {
 
     buildingCycleIndex: number = 0
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, jobSupervisor: Supervisor, gameLayerCanvas: HTMLCanvasElement) {
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityMgr: EntityManager, jobSupervisor: Supervisor, gameLayerCanvas: HTMLCanvasElement) {
         EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: SelectedRaiderPickTool) => {
-            GameState.selectedRaiders.forEach((r) => {
+            entityMgr.selectedRaiders.forEach((r) => {
                 if (!r.hasTool(event.tool)) {
-                    r.setJob(new GetToolJob(event.tool, null))
+                    r.setJob(new GetToolJob(entityMgr, event.tool, null))
                 }
             })
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_POWER_PATH, () => {
-            new PowerPathBuildingSite(GameState.selectedSurface)
+            new PowerPathBuildingSite(entityMgr, entityMgr.selectedSurface)
         })
         EventBus.registerEventListener(EventKey.COMMAND_MAKE_RUBBLE, () => {
-            GameState.selectedSurface?.makeRubble(2)
+            entityMgr.selectedSurface?.makeRubble(2)
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_PLACE_FENCE, () => {
-            const selectedSurface = GameState.selectedSurface
+            const selectedSurface = entityMgr.selectedSurface
             if (selectedSurface) {
-                GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(selectedSurface)
+                entityMgr.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(selectedSurface)
             }
             EventBus.publishEvent(new DeselectAll())
         })
@@ -75,45 +76,45 @@ export class GuiManager {
             EventBus.publishEvent(new RequestedRaidersChanged(GameState.requestedRaiders))
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_DRILL_JOB, () => {
-            GameState.selectedSurface?.createDrillJob()
+            entityMgr.selectedSurface?.createDrillJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_REINFORCE_JOB, () => {
-            GameState.selectedSurface?.createReinforceJob()
+            entityMgr.selectedSurface?.createReinforceJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_DYNAMITE_JOB, () => {
-            GameState.selectedSurface?.createDynamiteJob()
+            entityMgr.selectedSurface?.createDynamiteJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_SURFACE_JOBS, () => {
-            GameState.selectedSurface?.cancelJobs()
+            entityMgr.selectedSurface?.cancelJobs()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_CLEAR_RUBBLE_JOB, () => {
-            GameState.selectedSurface?.createClearRubbleJob()
+            entityMgr.selectedSurface?.createClearRubbleJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_BUILDING, () => {
-            GameState.selectedBuilding?.upgrade()
+            entityMgr.selectedBuilding?.upgrade()
         })
         EventBus.registerEventListener(EventKey.COMMAND_BUILDING_BEAMUP, () => {
-            GameState.selectedBuilding?.beamUp()
+            entityMgr.selectedBuilding?.beamUp()
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_BUILDING_POWER_STATE, (event: ChangeBuildingPowerState) => {
             if (!event.state) {
-                GameState.selectedBuilding?.turnOffPower()
+                entityMgr.selectedBuilding?.turnOffPower()
             } else {
-                GameState.selectedBuilding?.turnOnPower()
+                entityMgr.selectedBuilding?.turnOnPower()
             }
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_EAT, () => {
-            GameState.selectedRaiders.forEach((r) => !r.isDriving() && r.setJob(new EatJob()))
+            entityMgr.selectedRaiders.forEach((r) => !r.isDriving() && r.setJob(new EatJob()))
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_UPGRADE, () => {
-            GameState.selectedRaiders.forEach((r) => {
-                const closestToolstation = GameState.getClosestBuildingByType(r.getPosition(), EntityType.TOOLSTATION)
+            entityMgr.selectedRaiders.forEach((r) => {
+                const closestToolstation = entityMgr.getClosestBuildingByType(r.getPosition(), EntityType.TOOLSTATION)
                 if (closestToolstation && r.level < r.stats.Levels) {
                     r.setJob(new UpgradeJob(closestToolstation))
                 }
@@ -121,37 +122,37 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_BEAMUP, () => {
-            GameState.selectedRaiders.forEach((r) => r.beamUp())
+            entityMgr.selectedRaiders.forEach((r) => r.beamUp())
         })
         EventBus.registerEventListener(EventKey.COMMAND_TRAIN_RAIDER, (event: TrainRaider) => {
-            GameState.selectedRaiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainJob(event.training, null)))
+            entityMgr.selectedRaiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainJob(entityMgr, event.training, null)))
             EventBus.publishEvent(new DeselectAll())
             return true
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_DROP, () => {
-            GameState.selectedRaiders?.forEach((r) => r.dropItem())
+            entityMgr.selectedRaiders?.forEach((r) => r.dropItem())
         })
         EventBus.registerEventListener(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
-            worldMgr.setBuildModeSelection(GuiManager.createBuildingFromType(event.entityType, worldMgr, sceneMgr))
+            worldMgr.setBuildModeSelection(GuiManager.createBuildingFromType(event.entityType, sceneMgr, entityMgr))
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
             worldMgr.setBuildModeSelection(null)
             sceneMgr.buildMarker?.hideAllMarker()
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
-            GameState.selectedSurface.site?.cancelSite()
+            entityMgr.selectedSurface.site?.cancelSite()
         })
         EventBus.registerEventListener(EventKey.COMMAND_REQUEST_VEHICLE_SPAWN, (event: RequestVehicleSpawn) => {
             console.log('Vehicle spawn requested for: ' + EntityType[event.vehicle])
-            const pads = GameState.getBuildingsByType(EntityType.TELEPORT_PAD).filter((b) => !b.spawning) // TODO check for "correct" teleport station
+            const pads = entityMgr.getBuildingsByType(EntityType.TELEPORT_PAD).filter((b) => !b.spawning) // TODO check for "correct" teleport station
             if (pads.length > 0) {
                 const teleportPad = pads.random()
-                const vehicle = GuiManager.createVehicleFromType(event.vehicle, worldMgr, sceneMgr)
+                const vehicle = GuiManager.createVehicleFromType(event.vehicle, sceneMgr, entityMgr)
                 vehicle.addToScene(teleportPad.primaryPathSurface.getCenterWorld2D(), teleportPad.getHeading())
                 vehicle.changeActivity(VehicleActivity.TeleportIn, () => {
                     vehicle.changeActivity()
                     vehicle.sceneEntity.createPickSphere(vehicle.stats.PickSphere, vehicle)
-                    GameState.vehicles.push(vehicle)
+                    entityMgr.vehicles.push(vehicle)
                 })
             }
             // TODO check for crystals amount and reduce it
@@ -159,18 +160,18 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_GET_MAN, () => {
-            const selectedVehicle = GameState.selectedVehicle
+            const selectedVehicle = entityMgr.selectedVehicle
             if (selectedVehicle) {
                 EventBus.publishEvent(new JobCreateEvent(new VehicleCallManJob(selectedVehicle)))
                 EventBus.publishEvent(new DeselectAll())
             }
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
-            GameState.selectedVehicle?.beamUp()
+            entityMgr.selectedVehicle?.beamUp()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT, () => {
-            GameState.selectedVehicle?.dropDriver()
+            entityMgr.selectedVehicle?.dropDriver()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {
@@ -183,8 +184,8 @@ export class GuiManager {
                 gameLayerCanvas.ownerDocument.dispatchEvent(zoomInEvent)
             }
             if (event.cycleBuilding) {
-                this.buildingCycleIndex = (this.buildingCycleIndex + 1) % GameState.buildings.length
-                const target = GameState.buildings[this.buildingCycleIndex].primarySurface.getCenterWorld()
+                this.buildingCycleIndex = (this.buildingCycleIndex + 1) % entityMgr.buildings.length
+                const target = entityMgr.buildings[this.buildingCycleIndex].primarySurface.getCenterWorld()
                 const offsetTargetToCamera = sceneMgr.camera.position.clone().sub(sceneMgr.controls.target)
                 sceneMgr.camera.position.copy(target.clone().add(offsetTargetToCamera))
                 sceneMgr.controls.target.copy(target)
@@ -196,57 +197,57 @@ export class GuiManager {
         })
     }
 
-    static createBuildingFromType(entityType: EntityType, worldMgr: WorldManager, sceneMgr: SceneManager): BuildingEntity {
+    static createBuildingFromType(entityType: EntityType, sceneMgr: SceneManager, entityMgr: EntityManager): BuildingEntity {
         switch (entityType) {
             case EntityType.TOOLSTATION:
-                return new Toolstation(worldMgr, sceneMgr)
+                return new Toolstation(sceneMgr, entityMgr)
             case EntityType.TELEPORT_PAD:
-                return new TeleportPad(worldMgr, sceneMgr)
+                return new TeleportPad(sceneMgr, entityMgr)
             case EntityType.DOCKS:
-                return new Docks(worldMgr, sceneMgr)
+                return new Docks(sceneMgr, entityMgr)
             case EntityType.POWER_STATION:
-                return new PowerStation(worldMgr, sceneMgr)
+                return new PowerStation(sceneMgr, entityMgr)
             case EntityType.BARRACKS:
-                return new Barracks(worldMgr, sceneMgr)
+                return new Barracks(sceneMgr, entityMgr)
             case EntityType.UPGRADE:
-                return new Upgrade(worldMgr, sceneMgr)
+                return new Upgrade(sceneMgr, entityMgr)
             case EntityType.GEODOME:
-                return new Geodome(worldMgr, sceneMgr)
+                return new Geodome(sceneMgr, entityMgr)
             case EntityType.ORE_REFINERY:
-                return new OreRefinery(worldMgr, sceneMgr)
+                return new OreRefinery(sceneMgr, entityMgr)
             case EntityType.GUNSTATION:
-                return new GunStation(worldMgr, sceneMgr)
+                return new GunStation(sceneMgr, entityMgr)
             case EntityType.TELEPORT_BIG:
-                return new TeleportBig(worldMgr, sceneMgr)
+                return new TeleportBig(sceneMgr, entityMgr)
             default:
                 throw 'Unexpected building type: ' + EntityType[entityType]
         }
     }
 
-    static createVehicleFromType(entityType: EntityType, worldMgr: WorldManager, sceneMgr: SceneManager): VehicleEntity {
+    static createVehicleFromType(entityType: EntityType, sceneMgr: SceneManager, entityMgr: EntityManager): VehicleEntity {
         switch (entityType) {
             case EntityType.HOVERBOARD:
-                return new Hoverboard(worldMgr, sceneMgr)
+                return new Hoverboard(sceneMgr, entityMgr)
             case EntityType.SMALL_DIGGER:
-                return new SmallDigger(worldMgr, sceneMgr)
+                return new SmallDigger(sceneMgr, entityMgr)
             case EntityType.SMALL_TRUCK:
-                return new SmallTruck(worldMgr, sceneMgr)
+                return new SmallTruck(sceneMgr, entityMgr)
             case EntityType.SMALL_CAT:
-                return new SmallCat(worldMgr, sceneMgr)
+                return new SmallCat(sceneMgr, entityMgr)
             case EntityType.SMALL_MLP:
-                return new SmallMlp(worldMgr, sceneMgr)
+                return new SmallMlp(sceneMgr, entityMgr)
             case EntityType.SMALL_HELI:
-                return new SmallHeli(worldMgr, sceneMgr)
+                return new SmallHeli(sceneMgr, entityMgr)
             case EntityType.BULLDOZER:
-                return new BullDozer(worldMgr, sceneMgr)
+                return new BullDozer(sceneMgr, entityMgr)
             case EntityType.WALKER_DIGGER:
-                return new WalkerDigger(worldMgr, sceneMgr)
+                return new WalkerDigger(sceneMgr, entityMgr)
             case EntityType.LARGE_MLP:
-                return new LargeMlp(worldMgr, sceneMgr)
+                return new LargeMlp(sceneMgr, entityMgr)
             case EntityType.LARGE_DIGGER:
-                return new LargeDigger(worldMgr, sceneMgr)
+                return new LargeDigger(sceneMgr, entityMgr)
             case EntityType.LARGE_CAT:
-                return new LargeCat(worldMgr, sceneMgr)
+                return new LargeCat(sceneMgr, entityMgr)
             default:
                 throw 'Unexpected vehicle type: ' + EntityType[entityType]
         }

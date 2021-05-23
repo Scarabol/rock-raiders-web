@@ -2,8 +2,8 @@ import { PositionalAudio, Vector2 } from 'three'
 import { Sample } from '../../audio/Sample'
 import { clearIntervalSafe } from '../../core/Util'
 import { NATIVE_FRAMERATE } from '../../params'
+import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
-import { WorldManager } from '../WorldManager'
 import { RaiderActivity } from './activities/RaiderActivity'
 import { EntityType } from './EntityType'
 import { Job } from './job/Job'
@@ -27,8 +27,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     inBeam: boolean = false
     workAudio: PositionalAudio
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, entityType, aeFilename)
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
+        super(sceneMgr, entityMgr, entityType, aeFilename)
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
 

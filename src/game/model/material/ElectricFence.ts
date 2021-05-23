@@ -1,8 +1,7 @@
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
-import { GameState } from '../GameState'
 import { CarryFenceJob } from '../job/CarryFenceJob'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
@@ -13,8 +12,8 @@ export class ElectricFence extends MaterialEntity {
 
     targetSurface: Surface
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, surface: Surface) {
-        super(worldMgr, sceneMgr, EntityType.ELECTRIC_FENCE)
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, surface: Surface) {
+        super(sceneMgr, entityMgr, EntityType.ELECTRIC_FENCE)
         const mesh = ResourceManager.getLwoModel('Buildings/E-Fence/E-Fence4.lwo')
         this.sceneEntity.add(mesh)
         this.targetSurface = surface
@@ -26,11 +25,11 @@ export class ElectricFence extends MaterialEntity {
             if (this.targetSurface.canPlaceFence()) {
                 this.targets = [new CarryPathTarget(this.targetSurface.getCenterWorld2D())]
             } else {
-                this.targets = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
+                this.targets = this.entityMgr.getBuildingsByType(...this.getTargetBuildingTypes())
                     .map((b) => new BuildingCarryPathTarget(b))
             }
         } else if (!this.targetSurface.canPlaceFence() && !(this.targets[0] as BuildingCarryPathTarget).building) {
-            this.targets = GameState.getBuildingsByType(...this.getTargetBuildingTypes())
+            this.targets = this.entityMgr.getBuildingsByType(...this.getTargetBuildingTypes())
                 .map((b) => new BuildingCarryPathTarget(b))
         }
         return this.targets

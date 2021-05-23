@@ -1,6 +1,6 @@
 import { ResourceManager } from '../../../../resource/ResourceManager'
+import { EntityManager } from '../../../EntityManager'
 import { SceneManager } from '../../../SceneManager'
-import { WorldManager } from '../../../WorldManager'
 import { AnimEntityActivity } from '../../activities/AnimEntityActivity'
 import { AnimationEntityType } from '../../anim/AnimationEntityType'
 import { EntityType } from '../../EntityType'
@@ -11,8 +11,8 @@ export class WalkerDigger extends VehicleEntity {
 
     walkerLegs: AnimationEntityType
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
-        super(worldMgr, sceneMgr, EntityType.WALKER_DIGGER, 'Vehicles/WalkerBody/WalkerBody.ae')
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
+        super(sceneMgr, entityMgr, EntityType.WALKER_DIGGER, 'Vehicles/WalkerBody/WalkerBody.ae')
         this.walkerLegs = ResourceManager.getAnimationEntityType('Vehicles/WalkerLegs/WalkerLegs.ae', sceneMgr.listener)
     }
 

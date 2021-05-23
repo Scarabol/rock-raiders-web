@@ -3,7 +3,9 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { iGet } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { SetupPriorityList, UpdateRadarTerrain } from '../event/LocalEvents'
+import { EntityManager } from '../game/EntityManager'
 import { GuiManager } from '../game/GuiManager'
+import { GameResult, GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { ObjectListLoader } from '../game/ObjectListLoader'
 import { SceneManager } from '../game/SceneManager'
@@ -18,13 +20,14 @@ import { SelectionLayer } from './layer/SelectionLayer'
 
 export class GameScreen extends BaseScreen {
 
-    onLevelEnd: () => void = () => console.log('Level aborted')
+    onLevelEnd: (result: GameResult) => any = () => console.log('Level aborted')
     gameLayer: GameLayer
     selectionLayer: SelectionLayer
     guiLayer: GuiMainLayer
     overlayLayer: OverlayLayer
     worldMgr: WorldManager
     sceneMgr: SceneManager
+    entityMgr: EntityManager
     guiMgr: GuiManager
     jobSupervisor: Supervisor
     levelName: string
@@ -36,21 +39,29 @@ export class GameScreen extends BaseScreen {
         this.selectionLayer = this.addLayer(new SelectionLayer(), 10)
         this.guiLayer = this.addLayer(new GuiMainLayer(), 20)
         this.overlayLayer = this.addLayer(new OverlayLayer(), 30)
+        this.entityMgr = new EntityManager()
         this.worldMgr = new WorldManager()
-        this.gameLayer.worldMgr = this.worldMgr
         this.sceneMgr = new SceneManager(this.gameLayer.canvas)
+        this.sceneMgr.worldMgr = this.worldMgr
+        this.sceneMgr.entityMgr = this.entityMgr
         this.worldMgr.sceneMgr = this.sceneMgr
+        this.worldMgr.entityMgr = this.entityMgr
         this.cursorLayer.worldMgr = this.worldMgr
         this.cursorLayer.sceneMgr = this.sceneMgr
+        this.cursorLayer.entityMgr = this.entityMgr
+        this.gameLayer.worldMgr = this.worldMgr
         this.gameLayer.sceneMgr = this.sceneMgr
+        this.gameLayer.entityMgr = this.entityMgr
         this.selectionLayer.worldMgr = this.worldMgr
         this.selectionLayer.sceneMgr = this.sceneMgr
-        this.jobSupervisor = new Supervisor(this.worldMgr)
-        this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr, this.jobSupervisor, this.gameLayer.canvas)
+        this.guiLayer.entityMgr = this.entityMgr
+        this.overlayLayer.entityMgr = this.entityMgr
+        this.jobSupervisor = new Supervisor(this.sceneMgr, this.entityMgr)
+        this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr, this.entityMgr, this.jobSupervisor, this.gameLayer.canvas)
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.showOptions()
         this.overlayLayer.onSetSpaceToContinue = (state: boolean) => this.guiLayer.setSpaceToContinue(state)
-        this.overlayLayer.onAbortGame = () => this.onLevelEnd()
+        this.overlayLayer.onAbortGame = () => this.onLevelEnd(new GameResult(GameResultState.QUIT, this.entityMgr))
         this.overlayLayer.onRestartGame = () => this.restartLevel()
     }
 
@@ -68,8 +79,8 @@ export class GameScreen extends BaseScreen {
 
     private setupAndStartLevel() {
         console.log('Starting level ' + this.levelName + ' - ' + this.levelConf.fullName)
-        this.worldMgr.setup(this.levelConf, () => this.onLevelEnd())
-        this.sceneMgr.setupScene(this.levelConf, this.worldMgr)
+        this.worldMgr.setup(this.levelConf, (state) => this.onLevelEnd(new GameResult(state, this.entityMgr)))
+        this.sceneMgr.setupScene(this.levelConf)
         // setup GUI
         this.guiMgr.buildingCycleIndex = 0
         const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(this.levelConf.objectiveText), this.levelName)
@@ -77,8 +88,7 @@ export class GameScreen extends BaseScreen {
         this.overlayLayer.setup(objectiveText.objective, this.levelConf.objectiveImage640x480)
         EventBus.publishEvent(new SetupPriorityList(this.levelConf.priorities))
         // load in non-space objects next
-        const objectListConf = ResourceManager.getResource(this.levelConf.oListFile)
-        ObjectListLoader.loadObjectList(this.worldMgr, this.sceneMgr, objectListConf, this.levelConf.disableStartTeleport)
+        ObjectListLoader.loadObjectList(this.levelConf, this.worldMgr, this.sceneMgr, this.entityMgr)
         // finally generate initial radar panel map
         EventBus.publishEvent(new UpdateRadarTerrain(this.sceneMgr.terrain, this.sceneMgr.controls.target.clone()))
         this.show()
@@ -88,11 +98,13 @@ export class GameScreen extends BaseScreen {
         super.show()
         this.sceneMgr.startScene()
         this.worldMgr.start()
+        this.entityMgr.start()
         this.jobSupervisor.start()
     }
 
     hide() {
         this.jobSupervisor.stop()
+        this.entityMgr.stop()
         this.worldMgr.stop()
         this.sceneMgr.disposeScene()
         super.hide()

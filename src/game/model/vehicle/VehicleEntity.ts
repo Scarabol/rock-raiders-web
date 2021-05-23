@@ -1,8 +1,8 @@
 import { PositionalAudio, Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
 import { VehiclesChangedEvent } from '../../../event/LocalEvents'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
@@ -25,8 +25,8 @@ export abstract class VehicleEntity extends FulfillerEntity {
     callManJob: VehicleCallManJob = null
     engineSound: PositionalAudio
 
-    protected constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityType: EntityType, aeFilename: string) {
-        super(worldMgr, sceneMgr, entityType, aeFilename)
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
+        super(sceneMgr, entityMgr, entityType, aeFilename)
         this.sceneEntity.flipXAxis()
     }
 
@@ -43,10 +43,10 @@ export abstract class VehicleEntity extends FulfillerEntity {
         super.beamUp()
         const surface = this.surfaces[0]
         for (let c = 0; c < this.stats.CostOre; c++) {
-            this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), surface.getRandomPosition())
+            this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), surface.getRandomPosition())
         }
         for (let c = 0; c < this.stats.CostCrystal; c++) {
-            this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), surface.getRandomPosition())
+            this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), surface.getRandomPosition())
         }
         EventBus.publishEvent(new VehiclesChangedEvent())
     }

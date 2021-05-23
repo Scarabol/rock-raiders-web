@@ -3,14 +3,13 @@ import { EventBus } from '../../../event/EventBus'
 import { RaidersChangedEvent } from '../../../event/LocalEvents'
 import { RaiderDiscoveredEvent } from '../../../event/WorldLocationEvent'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BaseActivity } from '../activities/BaseActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
-import { GameState } from '../GameState'
 import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
@@ -25,8 +24,8 @@ export class Raider extends FulfillerEntity {
     slipped: boolean = false
     radiusSq: number = 0
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager) {
-        super(worldMgr, sceneMgr, EntityType.PILOT, 'mini-figures/pilot/pilot.ae')
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
+        super(sceneMgr, entityMgr, EntityType.PILOT, 'mini-figures/pilot/pilot.ae')
         this.tools.set(RaiderTool.DRILL, true)
     }
 
@@ -40,9 +39,9 @@ export class Raider extends FulfillerEntity {
 
     onDiscover() {
         super.onDiscover()
-        GameState.raidersUndiscovered.remove(this)
-        GameState.raiders.push(this)
-        EventBus.publishEvent(new RaidersChangedEvent())
+        this.entityMgr.raidersUndiscovered.remove(this)
+        this.entityMgr.raiders.push(this)
+        EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
         EventBus.publishEvent(new RaiderDiscoveredEvent(this.getPosition()))
     }
 
@@ -82,7 +81,7 @@ export class Raider extends FulfillerEntity {
     moveToClosestTarget(target: PathTarget[]): MoveState {
         const result = super.moveToClosestTarget(target)
         if (result === MoveState.MOVED) {
-            GameState.getNearbySpiders(this).some((spider) => {
+            this.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
                 if (this.sceneEntity.position.distanceToSquared(spider.sceneEntity.position) < this.radiusSq + spider.radiusSq) {
                     this.slip()
                     spider.onDeath()
@@ -114,12 +113,12 @@ export class Raider extends FulfillerEntity {
     beamUp() {
         this.stopJob()
         super.beamUp()
-        EventBus.publishEvent(new RaidersChangedEvent())
+        EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
     }
 
     removeFromScene() {
         super.removeFromScene()
-        GameState.raiders.remove(this)
+        this.entityMgr.raiders.remove(this)
     }
 
     hasTool(tool: RaiderTool) {

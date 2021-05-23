@@ -1,13 +1,11 @@
 import { Vector3 } from 'three'
 import { Sample } from '../audio/Sample'
-import { BuildingEntity } from '../game/model/building/BuildingEntity'
+import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
-import { GameState } from '../game/model/GameState'
 import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/model/map/Surface'
 import { SurfaceType } from '../game/model/map/SurfaceType'
 import { Terrain } from '../game/model/map/Terrain'
-import { Raider } from '../game/model/raider/Raider'
 import { AllRaiderTools, RaiderTool } from '../game/model/raider/RaiderTool'
 import { AllRaiderTrainings, RaiderTraining } from '../game/model/raider/RaiderTraining'
 import { SelectionType } from '../game/model/Selectable'
@@ -28,7 +26,7 @@ export class LocalEvent extends GameEvent {
 
 export class SelectionChanged extends LocalEvent {
 
-    selectionType: SelectionType
+    selectionType: SelectionType = SelectionType.NOTHING
     isGround: boolean
     isPowerPath: boolean
     canPlaceFence: boolean
@@ -47,26 +45,28 @@ export class SelectionChanged extends LocalEvent {
     vehicleHasCallManJob: boolean
     vehicleIsManed: boolean
 
-    constructor(selectionType: SelectionType, selectedSurface: Surface, selectedBuilding: BuildingEntity, selectedRaiders: Raider[]) {
+    constructor(entityMgr: EntityManager) {
         super(EventKey.SELECTION_CHANGED)
-        this.selectionType = selectionType
-        this.isGround = selectedSurface?.surfaceType === SurfaceType.GROUND
-        this.isPowerPath = selectedSurface?.surfaceType === SurfaceType.POWER_PATH
-        this.isFloor = selectedSurface?.surfaceType.floor
-        this.isSite = selectedSurface?.surfaceType === SurfaceType.POWER_PATH_CONSTRUCTION || selectedSurface?.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE
-        this.hasRubble = selectedSurface?.hasRubble()
-        this.isDrillable = selectedSurface?.isDrillable()
-        this.isDrillableHard = selectedSurface?.isDrillableHard()
-        this.isReinforcable = selectedSurface?.isReinforcable()
-        this.canPlaceFence = selectedSurface?.canPlaceFence() && GameState.buildings.some((b) => b.entityType === EntityType.POWER_STATION && b.isUsable())
-        this.someCarries = !!selectedRaiders?.some((r) => !!r.carries)
-        this.everyHasMaxLevel = !!selectedRaiders?.every((r) => r.level >= r.stats.Levels)
-        AllRaiderTrainings.forEach((training) => this.canDoTraining.set(training, GameState.getTrainingSites(training).length > 0 && selectedRaiders?.some((r) => !r.hasTraining(training))))
-        AllRaiderTools.forEach((tool) => this.everyHasTool.set(tool, !!selectedRaiders?.every((r) => r.hasTool(tool))))
-        this.buildingCanUpgrade = selectedBuilding?.canUpgrade()
-        this.buildingCanSwitchPower = !selectedBuilding?.stats.SelfPowered && !selectedBuilding?.stats.PowerBuilding
-        this.vehicleHasCallManJob = !!GameState.selectedVehicle?.callManJob
-        this.vehicleIsManed = !!GameState.selectedVehicle?.driver
+        if (entityMgr) {
+            this.selectionType = entityMgr.selectionType
+            this.isGround = entityMgr.selectedSurface?.surfaceType === SurfaceType.GROUND
+            this.isPowerPath = entityMgr.selectedSurface?.surfaceType === SurfaceType.POWER_PATH
+            this.isFloor = entityMgr.selectedSurface?.surfaceType.floor
+            this.isSite = entityMgr.selectedSurface?.surfaceType === SurfaceType.POWER_PATH_CONSTRUCTION || entityMgr.selectedSurface?.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE
+            this.hasRubble = entityMgr.selectedSurface?.hasRubble()
+            this.isDrillable = entityMgr.selectedSurface?.isDrillable()
+            this.isDrillableHard = entityMgr.selectedSurface?.isDrillableHard()
+            this.isReinforcable = entityMgr.selectedSurface?.isReinforcable()
+            this.canPlaceFence = entityMgr.selectedSurface?.canPlaceFence() && entityMgr && entityMgr.buildings.some((b) => b.entityType === EntityType.POWER_STATION && b.isUsable())
+            this.someCarries = !!entityMgr.selectedRaiders?.some((r) => !!r.carries)
+            this.everyHasMaxLevel = !!entityMgr.selectedRaiders?.every((r) => r.level >= r.stats.Levels)
+            AllRaiderTrainings.forEach((training) => this.canDoTraining.set(training, entityMgr && entityMgr.getTrainingSites(training).length > 0 && entityMgr.selectedRaiders?.some((r) => !r.hasTraining(training))))
+            AllRaiderTools.forEach((tool) => this.everyHasTool.set(tool, !!entityMgr.selectedRaiders?.every((r) => r.hasTool(tool))))
+            this.buildingCanUpgrade = entityMgr.selectedBuilding?.canUpgrade()
+            this.buildingCanSwitchPower = !entityMgr.selectedBuilding?.stats.SelfPowered && !entityMgr.selectedBuilding?.stats.PowerBuilding
+            this.vehicleHasCallManJob = !!entityMgr?.selectedVehicle?.callManJob
+            this.vehicleIsManed = !!entityMgr?.selectedVehicle?.driver
+        }
     }
 
 }
@@ -74,7 +74,7 @@ export class SelectionChanged extends LocalEvent {
 export class DeselectAll extends SelectionChanged {
 
     constructor() {
-        super(SelectionType.NOTHING, null, null, null)
+        super(null)
     }
 
 }
@@ -118,9 +118,9 @@ export class BuildingsChangedEvent extends LocalEvent {
 
     usableBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
 
-    constructor() {
+    constructor(entityMgr: EntityManager) {
         super(EventKey.BUILDINGS_CHANGED)
-        GameState.buildings.forEach((b) => {
+        entityMgr.buildings.forEach((b) => {
             if (b.isUsable()) {
                 const perLevel = this.usableBuildingsByTypeAndLevel.getOrUpdate(b.entityType, () => new Map())
                 perLevel.set(b.level, perLevel.getOrUpdate(b.level, () => 0) + 1)
@@ -143,9 +143,9 @@ export class RaidersChangedEvent extends LocalEvent {
     numRaiders: number
     training: RaiderTraining
 
-    constructor(training: RaiderTraining = null) {
+    constructor(entityMgr: EntityManager, training: RaiderTraining = null) {
         super(EventKey.RAIDERS_CHANGED)
-        this.numRaiders = GameState.raiders.length
+        this.numRaiders = entityMgr.raiders.length
         this.training = training
     }
 

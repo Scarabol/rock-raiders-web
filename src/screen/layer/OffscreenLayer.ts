@@ -8,6 +8,7 @@ import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { BuildingsChangedEvent, PlaySoundEvent, RaidersChangedEvent } from '../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../event/WorldEvents'
+import { EntityManager } from '../../game/EntityManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
@@ -20,6 +21,7 @@ import generateUUID = MathUtils.generateUUID
 export abstract class OffscreenLayer extends ScreenLayer {
 
     private worker: Worker
+    entityMgr: EntityManager
     resolveCallbackByEventId: Map<string, ((consumed: boolean) => any)> = new Map()
 
     protected constructor(worker: Worker) {
@@ -66,8 +68,8 @@ export abstract class OffscreenLayer extends ScreenLayer {
 
     reset() {
         this.sendMessage({type: WorkerMessageType.RESET})
-        this.sendMessage({type: WorkerMessageType.GAME_EVENT, gameEvent: new BuildingsChangedEvent()})
-        this.sendMessage({type: WorkerMessageType.GAME_EVENT, gameEvent: new RaidersChangedEvent()})
+        this.sendMessage({type: WorkerMessageType.GAME_EVENT, gameEvent: new BuildingsChangedEvent(this.entityMgr)})
+        this.sendMessage({type: WorkerMessageType.GAME_EVENT, gameEvent: new RaidersChangedEvent(this.entityMgr)})
         this.sendMessage({type: WorkerMessageType.GAME_EVENT, gameEvent: new MaterialAmountChanged()})
     }
 

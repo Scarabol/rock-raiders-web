@@ -10,13 +10,12 @@ import { HEIGHT_MULTIPLER, TILESIZE } from '../../../params'
 import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
+import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { AnimSubObj } from '../anim/AnimSubObj'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
-import { GameState } from '../GameState'
 import { CarryDynamiteJob } from '../job/surface/CarryDynamiteJob'
 import { ClearRubbleJob } from '../job/surface/ClearRubbleJob'
 import { DrillJob } from '../job/surface/DrillJob'
@@ -35,8 +34,8 @@ import degToRad = MathUtils.degToRad
 export class Surface implements Selectable {
 
     terrain: Terrain
-    worldMgr: WorldManager
     sceneMgr: SceneManager
+    entityMgr: EntityManager
     surfaceType: SurfaceType
     x: number
     y: number
@@ -79,8 +78,8 @@ export class Surface implements Selectable {
 
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain
-        this.worldMgr = this.terrain.worldMgr
         this.sceneMgr = this.terrain.sceneMgr
+        this.entityMgr = this.terrain.entityMgr
         this.surfaceType = surfaceType
         if (surfaceType === SurfaceType.CRYSTAL_SEAM || surfaceType === SurfaceType.ORE_SEAM) this.seamLevel = 4
         this.x = x
@@ -141,7 +140,7 @@ export class Surface implements Selectable {
     }
 
     private setDiscovered() {
-        if (!this.discovered) GameState.discoverSurface(this)
+        if (!this.discovered) this.entityMgr.discoverSurface(this)
         this.discovered = true
         this.needsMeshUpdate = true
         EventBus.publishEvent(new UpdateRadarSurface(this))
@@ -155,10 +154,10 @@ export class Surface implements Selectable {
                 .rotateAround(new Vector2(0, 0), degToRad(-10 + getRandom(20)))
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                const crystal = this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), vec)
+                const crystal = this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), vec)
                 EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
-                this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), vec)
+                this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), vec)
                 EventBus.publishEvent(new OreFoundEvent())
             }
         }
@@ -183,7 +182,7 @@ export class Surface implements Selectable {
         // drop contained ores and crystals
         this.dropContainedOre(this.containedOres - 4)
         for (let c = 0; c < this.containedCrystals; c++) {
-            const crystal = this.worldMgr.placeMaterial(new Crystal(this.worldMgr, this.sceneMgr), this.getRandomPosition())
+            const crystal = this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), this.getRandomPosition())
             EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
         }
         // check for unsupported neighbors
@@ -205,7 +204,7 @@ export class Surface implements Selectable {
     private dropContainedOre(dropAmount: number) {
         for (let c = 0; c < dropAmount && this.containedOres > 0; c++) {
             this.containedOres--
-            this.worldMgr.placeMaterial(new Ore(this.worldMgr, this.sceneMgr), this.getRandomPosition())
+            this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), this.getRandomPosition())
             EventBus.publishEvent(new OreFoundEvent())
         }
     }
@@ -237,7 +236,7 @@ export class Surface implements Selectable {
         EventBus.publishEvent(new UpdateRadarSurface(this))
         this.dropContainedOre(this.containedOres - this.rubblePositions.length)
         this.updateTexture()
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(SelectionType.SURFACE, this, null, null))
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
     isSupported(): boolean {
@@ -703,9 +702,9 @@ export class Surface implements Selectable {
 
     createDynamiteJob(): CarryDynamiteJob {
         if (!this.dynamiteJob) {
-            const targetBuilding = GameState.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
+            const targetBuilding = this.entityMgr.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
             if (!targetBuilding) throw 'Could not find toolstation to spawn dynamite'
-            const dynamite = new Dynamite(this.worldMgr, this.sceneMgr, this)
+            const dynamite = new Dynamite(this.sceneMgr, this.entityMgr, this)
             dynamite.addToScene(targetBuilding.getDropPosition2D(), targetBuilding.getHeading())
             this.dynamiteJob = new CarryDynamiteJob(dynamite)
             this.updateJobColor()
