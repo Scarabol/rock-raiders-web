@@ -1,8 +1,4 @@
 import { Vector3 } from 'three'
-import { Sample } from '../../audio/Sample'
-import { SoundManager } from '../../audio/SoundManager'
-import { EventBus } from '../../event/EventBus'
-import { SelectionChanged } from '../../event/LocalEvents'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../../params'
 import { BaseEntity } from './BaseEntity'
 import { BuildingEntity } from './building/BuildingEntity'
@@ -115,34 +111,6 @@ export class GameState {
 
     static getTrainingSites(training: RaiderTraining): BuildingEntity[] {
         return this.buildings.filter((b) => b.entityType === RaiderTrainingSites[training] && b.isUsable() && b.stats[RaiderTrainingStatsProperty[training]][b.level])
-    }
-
-    static selectEntities(entities: Selectable[]) {
-        this.selectedEntities = this.selectedEntities.filter((previouslySelected) => {
-            const stillSelected = entities.indexOf(previouslySelected) !== -1
-            if (!stillSelected) previouslySelected.deselect()
-            return stillSelected
-        })
-        // add new entities that are selectable
-        let addedSelected = false
-        entities.forEach((freshlySelected) => {
-            if (freshlySelected.select()) {
-                addedSelected = true
-                this.selectedEntities.push(freshlySelected)
-            }
-        })
-        if (addedSelected) SoundManager.playSample(Sample.SFX_Okay)
-        // determine and set next selection type
-        const len = this.selectedEntities.length
-        if (len > 1) {
-            this.selectionType = SelectionType.GROUP
-        } else if (len === 1) {
-            this.selectionType = this.selectedEntities[0].getSelectionType()
-        } else if (this.selectionType !== null) {
-            this.selectionType = SelectionType.NOTHING
-        }
-        // AFTER updating selected entities and selection type, publish all events
-        EventBus.publishEvent(new SelectionChanged(this.selectionType, this.selectedSurface, this.selectedBuilding, this.selectedRaiders))
     }
 
     static getMaxRaiders(): number {

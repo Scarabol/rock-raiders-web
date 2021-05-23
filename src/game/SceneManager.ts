@@ -1,7 +1,12 @@
 import { AmbientLight, AudioListener, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
+import { Sample } from '../audio/Sample'
+import { SoundManager } from '../audio/SoundManager'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe } from '../core/Util'
+import { EventBus } from '../event/EventBus'
+import { EventKey } from '../event/EventKeyEnum'
+import { SelectionChanged } from '../event/LocalEvents'
 import { KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from '../scene/SceneMesh'
@@ -9,7 +14,7 @@ import { DebugHelper } from '../screen/DebugHelper'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
 import { GameState } from './model/GameState'
 import { Terrain } from './model/map/Terrain'
-import { Selectable } from './model/Selectable'
+import { Selectable, SelectionType } from './model/Selectable'
 import { TerrainLoader } from './TerrainLoader'
 import { WorldManager } from './WorldManager'
 
@@ -48,6 +53,10 @@ export class SceneManager {
         this.controls.keyPanSpeed = this.controls.keyPanSpeed * KEY_PAN_SPEED
 
         this.buildMarker = new BuildPlacementMarker(this)
+
+        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
+            if (event.selectionType === SelectionType.NOTHING) this.selectEntities([])
+        })
     }
 
     selectEntitiesByRay(rx: number, ry: number) {
@@ -65,7 +74,7 @@ export class SceneManager {
                 if (selectable) selected.push(selectable)
             }
         }
-        GameState.selectEntities(selected)
+        this.selectEntities(selected)
     }
 
     selectEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number) {
@@ -140,7 +149,7 @@ export class SceneManager {
             const firstBuilding = GameState.buildings.find((b) => SceneManager.isInFrustum(b.sceneEntity.pickSphere, frustum))
             entities = firstBuilding ? [firstBuilding] : []
         }
-        GameState.selectEntities(entities)
+        this.selectEntities(entities)
     }
 
     private static isInFrustum(pickSphere: Mesh, frustum: Frustum) {
@@ -148,6 +157,34 @@ export class SceneManager {
         const selectionCenter = new Vector3()
         pickSphere.getWorldPosition(selectionCenter)
         return frustum.containsPoint(selectionCenter)
+    }
+
+    selectEntities(entities: Selectable[]) {
+        GameState.selectedEntities = GameState.selectedEntities.filter((previouslySelected) => {
+            const stillSelected = entities.indexOf(previouslySelected) !== -1
+            if (!stillSelected) previouslySelected.deselect()
+            return stillSelected
+        })
+        // add new entities that are selectable
+        let addedSelected = false
+        entities.forEach((freshlySelected) => {
+            if (freshlySelected.select()) {
+                addedSelected = true
+                GameState.selectedEntities.push(freshlySelected)
+            }
+        })
+        if (addedSelected) SoundManager.playSample(Sample.SFX_Okay)
+        // determine and set next selection type
+        const len = GameState.selectedEntities.length
+        if (len > 1) {
+            GameState.selectionType = SelectionType.GROUP
+        } else if (len === 1) {
+            GameState.selectionType = GameState.selectedEntities[0].getSelectionType()
+        } else if (GameState.selectionType !== null) {
+            GameState.selectionType = SelectionType.NOTHING
+        }
+        // AFTER updating selected entities and selection type, publish all events
+        EventBus.publishEvent(new SelectionChanged(GameState.selectionType, GameState.selectedSurface, GameState.selectedBuilding, GameState.selectedRaiders))
     }
 
     setupScene(levelConf: LevelEntryCfg, worldMgr: WorldManager) {

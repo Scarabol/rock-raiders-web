@@ -6,7 +6,7 @@ import { NerpRunner } from '../core/NerpRunner'
 import { clearIntervalSafe, getRandom } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { AirLevelChanged, RaidersChangedEvent, SelectionChanged } from '../event/LocalEvents'
+import { AirLevelChanged, RaidersChangedEvent } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged } from '../event/WorldEvents'
 import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -16,7 +16,6 @@ import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
 import { MoveJob } from './model/job/MoveJob'
 import { Raider } from './model/raider/Raider'
-import { SelectionType } from './model/Selectable'
 import { SceneManager } from './SceneManager'
 import degToRad = MathUtils.degToRad
 
@@ -28,9 +27,6 @@ export class WorldManager {
     spawnRaiderInterval = null
 
     constructor() {
-        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
-            if (event.selectionType === SelectionType.NOTHING) GameState.selectEntities([])
-        })
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => {
             GameState.discoveredCaverns++
         })
