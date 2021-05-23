@@ -119,6 +119,7 @@ export class BuildingSite {
         this.assignedByType.forEach((materials) => materials.forEach((item) => {
             item.resetTarget()
         }))
+        this.assignedByType.clear()
         EventBus.publishEvent(new DeselectAll())
     }
 
