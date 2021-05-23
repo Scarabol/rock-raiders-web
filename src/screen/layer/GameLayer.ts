@@ -6,7 +6,7 @@ import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { IEventHandler } from '../../event/IEventHandler'
-import { SelectionChanged } from '../../event/LocalEvents'
+import { DeselectAll } from '../../event/LocalEvents'
 import { FulfillerEntity } from '../../game/model/FulfillerEntity'
 import { GameState } from '../../game/model/GameState'
 import { Job } from '../../game/model/job/Job'
@@ -61,7 +61,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                                     this.assignSurfaceJob(surface.createClearRubbleJob(), surface, intersectionPoint)
                                 } else if (surface.isWalkable()) {
                                     GameState.selectedEntities.forEach((f: FulfillerEntity) => f.setJob(new MoveJob(intersectionPoint)))
-                                    if (GameState.selectedEntities.length > 0) this.publishEvent(new SelectionChanged())
+                                    if (GameState.selectedEntities.length > 0) this.publishEvent(new DeselectAll())
                                 }
                             }
                         }
@@ -87,13 +87,13 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             if (GameState.selectionType === SelectionType.SURFACE) {
                 if (event.code === 'KeyC') {
                     GameState.selectedSurface?.collapse()
-                    this.publishEvent(new SelectionChanged())
+                    this.publishEvent(new DeselectAll())
                 } else if (event.code === 'KeyF') {
                     const s = GameState.selectedSurface
                     if (s) {
                         const t = s.terrain.findFallInTarget(s.x, s.y)
                         if (!s.surfaceType.floor) s.createFallin(t[0], t[1])
-                        this.publishEvent(new SelectionChanged())
+                        this.publishEvent(new DeselectAll())
                     }
                 }
             }
@@ -111,7 +111,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                 f.setJob(new MoveJob(intersectionPoint))
             }
         })
-        if (GameState.selectedEntities.length > 0) this.publishEvent(new SelectionChanged())
+        if (GameState.selectedEntities.length > 0) this.publishEvent(new DeselectAll())
     }
 
     getTerrainPositionFromEvent(event): Vector2 {

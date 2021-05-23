@@ -1,7 +1,7 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
-import { SelectionChanged } from '../event/LocalEvents'
+import { DeselectAll } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged } from '../event/WorldEvents'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { Barracks } from './model/building/entities/Barracks'
@@ -50,21 +50,21 @@ export class GuiManager {
                     r.setJob(new GetToolJob(event.tool, null))
                 }
             })
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_POWER_PATH, () => {
             new PowerPathBuildingSite(GameState.selectedSurface)
         })
         EventBus.registerEventListener(EventKey.COMMAND_MAKE_RUBBLE, () => {
             GameState.selectedSurface?.makeRubble(2)
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_PLACE_FENCE, () => {
             const selectedSurface = GameState.selectedSurface
             if (selectedSurface) {
                 GameState.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(selectedSurface)
             }
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_RAIDER_SPAWN_REQUEST, (event: ChangeRaiderSpawnRequest) => {
             if (event.increase) {
@@ -76,23 +76,23 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_DRILL_JOB, () => {
             GameState.selectedSurface?.createDrillJob()
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_REINFORCE_JOB, () => {
             GameState.selectedSurface?.createReinforceJob()
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_DYNAMITE_JOB, () => {
             GameState.selectedSurface?.createDynamiteJob()
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_SURFACE_JOBS, () => {
             GameState.selectedSurface?.cancelJobs()
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_CLEAR_RUBBLE_JOB, () => {
             GameState.selectedSurface?.createClearRubbleJob()
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_BUILDING, () => {
             GameState.selectedBuilding?.upgrade()
@@ -109,7 +109,7 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_EAT, () => {
             GameState.selectedRaiders.forEach((r) => !r.isDriving() && r.setJob(new EatJob()))
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_UPGRADE, () => {
             GameState.selectedRaiders.forEach((r) => {
@@ -118,14 +118,14 @@ export class GuiManager {
                     r.setJob(new UpgradeJob(closestToolstation))
                 }
             })
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_BEAMUP, () => {
             GameState.selectedRaiders.forEach((r) => r.beamUp())
         })
         EventBus.registerEventListener(EventKey.COMMAND_TRAIN_RAIDER, (event: TrainRaider) => {
             GameState.selectedRaiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainJob(event.training, null)))
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
             return true
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_DROP, () => {
@@ -158,22 +158,22 @@ export class GuiManager {
             }
             // TODO check for crystals amount and reduce it
             // TODO otherwise start a check interval?
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_GET_MAN, () => {
             const selectedVehicle = GameState.selectedVehicle
             if (selectedVehicle) {
                 EventBus.publishEvent(new JobCreateEvent(new VehicleCallManJob(selectedVehicle)))
-                EventBus.publishEvent(new SelectionChanged())
+                EventBus.publishEvent(new DeselectAll())
             }
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
             GameState.selectedVehicle?.beamUp()
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT, () => {
             GameState.selectedVehicle?.dropDriver()
-            EventBus.publishEvent(new SelectionChanged())
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {
             jobSupervisor.updatePriorities(event.priorityList)

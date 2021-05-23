@@ -2,7 +2,7 @@ import { PositionalAudio } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
 import { EventBus } from '../../../event/EventBus'
-import { SelectionChanged } from '../../../event/LocalEvents'
+import { DeselectAll } from '../../../event/LocalEvents'
 import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneManager } from '../../SceneManager'
@@ -26,7 +26,7 @@ export abstract class AnimEntity extends BaseEntity {
     }
 
     beamUp() {
-        EventBus.publishEvent(new SelectionChanged())
+        EventBus.publishEvent(new DeselectAll())
         this.changeActivity()
         // TODO insert beam animation
         AnimEntity.moveUp(this, 6 * TILESIZE)

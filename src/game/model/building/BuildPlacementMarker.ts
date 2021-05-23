@@ -1,7 +1,7 @@
 import { Group, Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
 import { CancelBuildMode } from '../../../event/GuiCommand'
-import { SelectionChanged } from '../../../event/LocalEvents'
+import { DeselectAll } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
 import { SceneManager } from '../../SceneManager'
 import { BarrierLocation } from '../collect/BarrierLocation'
@@ -107,7 +107,7 @@ export class BuildPlacementMarker {
             closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)
             closestToolstation.spawnMaterials(EntityType.ORE, neededOre)
         }
-        EventBus.publishEvent(new SelectionChanged())
+        EventBus.publishEvent(new DeselectAll())
         EventBus.publishEvent(new CancelBuildMode())
     }
 

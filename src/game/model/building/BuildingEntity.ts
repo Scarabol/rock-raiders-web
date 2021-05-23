@@ -2,7 +2,7 @@ import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { BuildingEntityStats } from '../../../cfg/BuildingEntityStats'
 import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
-import { BuildingsChangedEvent, SelectionChanged } from '../../../event/LocalEvents'
+import { BuildingsChangedEvent, DeselectAll } from '../../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -123,7 +123,7 @@ export abstract class BuildingEntity extends AnimEntity implements Selectable {
         }
         EventBus.publishEvent(new MaterialAmountChanged())
         this.level++
-        EventBus.publishEvent(new SelectionChanged())
+        EventBus.publishEvent(new DeselectAll())
         EventBus.publishEvent(new BuildingsChangedEvent())
         // TODO add sparkly upgrade animation
     }

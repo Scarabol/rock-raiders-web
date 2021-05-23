@@ -1,6 +1,6 @@
 import { Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
-import { SelectionChanged } from '../../../event/LocalEvents'
+import { DeselectAll } from '../../../event/LocalEvents'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
@@ -119,7 +119,7 @@ export class BuildingSite {
         this.assignedByType.forEach((materials) => materials.forEach((item) => {
             item.resetTarget()
         }))
-        EventBus.publishEvent(new SelectionChanged())
+        EventBus.publishEvent(new DeselectAll())
     }
 
     getWalkOutSurface(): Surface {

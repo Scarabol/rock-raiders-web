@@ -47,7 +47,7 @@ export class SelectionChanged extends LocalEvent {
     vehicleHasCallManJob: boolean
     vehicleIsManed: boolean
 
-    constructor(selectionType: SelectionType = SelectionType.NOTHING, selectedSurface: Surface = null, selectedBuilding: BuildingEntity = null, selectedRaiders: Raider[] = null) {
+    constructor(selectionType: SelectionType, selectedSurface: Surface, selectedBuilding: BuildingEntity, selectedRaiders: Raider[]) {
         super(EventKey.SELECTION_CHANGED)
         this.selectionType = selectionType
         this.isGround = selectedSurface?.surfaceType === SurfaceType.GROUND
@@ -67,6 +67,14 @@ export class SelectionChanged extends LocalEvent {
         this.buildingCanSwitchPower = !selectedBuilding?.stats.SelfPowered && !selectedBuilding?.stats.PowerBuilding
         this.vehicleHasCallManJob = !!GameState.selectedVehicle?.callManJob
         this.vehicleIsManed = !!GameState.selectedVehicle?.driver
+    }
+
+}
+
+export class DeselectAll extends SelectionChanged {
+
+    constructor() {
+        super(SelectionType.NOTHING, null, null, null)
     }
 
 }

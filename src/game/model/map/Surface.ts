@@ -237,7 +237,7 @@ export class Surface implements Selectable {
         EventBus.publishEvent(new UpdateRadarSurface(this))
         this.dropContainedOre(this.containedOres - this.rubblePositions.length)
         this.updateTexture()
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(SelectionType.SURFACE, this))
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(SelectionType.SURFACE, this, null, null))
     }
 
     isSupported(): boolean {
