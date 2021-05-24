@@ -6,6 +6,7 @@ import { BuildingsChangedEvent, DeselectAll } from '../../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { BeamUpAnimator } from '../../BeamUpAnimator'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
@@ -47,6 +48,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     upgradeCostBrick: number = 0
     crystalsInUse: number = 0
     inBeam: boolean = false
+    beamUpAnimator: BeamUpAnimator = null
     pathTarget: BuildingPathTarget = null
     engineSound: PositionalAudio
 
@@ -150,7 +152,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         }
         this.surfaces.forEach((s) => s.setBuilding(null))
         this.pathTarget = null
-        super.beamUp()
+        this.beamUpAnimator = new BeamUpAnimator(this)
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
 

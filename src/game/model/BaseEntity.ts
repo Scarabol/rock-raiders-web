@@ -1,9 +1,6 @@
 import { PositionalAudio, Vector2 } from 'three'
-import { Sample } from '../../audio/Sample'
 import { SoundManager } from '../../audio/SoundManager'
-import { EventBus } from '../../event/EventBus'
-import { DeselectAll } from '../../event/LocalEvents'
-import { NATIVE_FRAMERATE, TILESIZE } from '../../params'
+import { TILESIZE } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SceneEntity } from '../../scene/SceneEntity'
 import { EntityManager } from '../EntityManager'
@@ -71,24 +68,6 @@ export abstract class BaseEntity {
 
     get surfaces(): Surface[] {
         return [this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)]
-    }
-
-    beamUp() {
-        EventBus.publishEvent(new DeselectAll())
-        this.changeActivity()
-        // TODO insert beam animation
-        BaseEntity.moveUp(this, 6 * TILESIZE)
-        this.playPositionalAudio(Sample[Sample.SND_TeleUp], false)
-    }
-
-    private static moveUp(entity: BaseEntity, counter: number) {
-        if (counter > 0) {
-            counter--
-            entity.sceneEntity.position.y += (TILESIZE / NATIVE_FRAMERATE) / 2
-            setTimeout(() => BaseEntity.moveUp(entity, counter), 1000 / NATIVE_FRAMERATE)
-        } else {
-            entity.removeFromScene()
-        }
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {

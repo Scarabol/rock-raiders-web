@@ -113,7 +113,6 @@ export class Raider extends FulfillerEntity {
     }
 
     beamUp() {
-        this.stopJob()
         super.beamUp()
         EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
     }

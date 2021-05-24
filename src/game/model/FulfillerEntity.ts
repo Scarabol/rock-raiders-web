@@ -2,6 +2,7 @@ import { PositionalAudio, Vector2 } from 'three'
 import { Sample } from '../../audio/Sample'
 import { clearIntervalSafe } from '../../core/Util'
 import { NATIVE_FRAMERATE } from '../../params'
+import { BeamUpAnimator } from '../BeamUpAnimator'
 import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
 import { RaiderActivity } from './activities/RaiderActivity'
@@ -23,6 +24,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     followUpJob: Job = null
     carries: MaterialEntity = null
     inBeam: boolean = false
+    beamUpAnimator: BeamUpAnimator = null
     workAudio: PositionalAudio
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
@@ -92,9 +94,9 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     beamUp() {
-        super.beamUp()
-        this.inBeam = true
         this.stopJob()
+        this.inBeam = true
+        this.beamUpAnimator = new BeamUpAnimator(this)
     }
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
