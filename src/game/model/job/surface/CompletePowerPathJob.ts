@@ -4,18 +4,17 @@ import { SurfaceType } from '../../map/SurfaceType'
 import { MaterialEntity } from '../../material/MaterialEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
-import { PublicJob } from '../Job'
-import { JobType } from '../JobType'
 import { PriorityIdentifier } from '../PriorityIdentifier'
+import { ShareableJob } from '../ShareableJob'
 
-export class CompletePowerPathJob extends PublicJob {
+export class CompletePowerPathJob extends ShareableJob {
 
     surface: Surface
     placedItems: MaterialEntity[]
     workplaces: PathTarget[]
 
     constructor(surface: Surface, placedItems: MaterialEntity[]) {
-        super(JobType.COMPLETE_POWER_PATH)
+        super()
         this.surface = surface
         this.placedItems = placedItems
         this.workplaces = [new PathTarget(surface.getRandomPosition())]

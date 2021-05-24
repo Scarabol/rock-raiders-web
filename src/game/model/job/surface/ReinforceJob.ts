@@ -3,18 +3,17 @@ import { FulfillerEntity } from '../../FulfillerEntity'
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
-import { PublicJob } from '../Job'
-import { JobType } from '../JobType'
 import { PriorityIdentifier } from '../PriorityIdentifier'
+import { ShareableJob } from '../ShareableJob'
 
-export class ReinforceJob extends PublicJob {
+export class ReinforceJob extends ShareableJob {
 
     color: number = 0x60a060
     surface: Surface
     digPositions: PathTarget[]
 
     constructor(surface: Surface) {
-        super(JobType.REINFORCE)
+        super()
         this.surface = surface
         this.digPositions = this.surface.getDigPositions().map((p) => new PathTarget(p))
     }

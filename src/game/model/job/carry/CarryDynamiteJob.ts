@@ -1,6 +1,6 @@
 import { Dynamite } from '../../material/Dynamite'
 import { RaiderTraining } from '../../raider/RaiderTraining'
-import { CarryJob } from '../CarryJob'
+import { CarryJob } from './CarryJob'
 
 export class CarryDynamiteJob extends CarryJob<Dynamite> {
 

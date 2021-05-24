@@ -10,7 +10,7 @@ import { DeselectAll } from '../../event/LocalEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { FulfillerEntity } from '../../game/model/FulfillerEntity'
 import { Job } from '../../game/model/job/Job'
-import { MoveJob } from '../../game/model/job/MoveJob'
+import { MoveJob } from '../../game/model/job/raider/MoveJob'
 import { Surface } from '../../game/model/map/Surface'
 import { SelectionType } from '../../game/model/Selectable'
 import { SceneManager } from '../../game/SceneManager'
@@ -106,7 +106,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
     assignSurfaceJob(job: Job, surface: Surface, intersectionPoint: Vector2) {
         if (!job) return
         this.entityMgr.selectedEntities.forEach((f: FulfillerEntity) => {
-            if (f.hasTool(job.getRequiredTool()) && f.hasTraining(job.getRequiredTraining())) {
+            if (f.isPrepared(job)) {
                 f.setJob(job)
             } else if (surface.isWalkable()) {
                 f.setJob(new MoveJob(intersectionPoint))

@@ -7,13 +7,13 @@ import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingPathTarget } from './model/building/BuildingPathTarget'
 import { EntityType } from './model/EntityType'
-import { GetToolJob } from './model/job/GetToolJob'
-import { PublicJob } from './model/job/Job'
 import { JobState } from './model/job/JobState'
-import { MoveJob } from './model/job/MoveJob'
 import { PriorityEntry } from './model/job/PriorityEntry'
 import { PriorityIdentifier } from './model/job/PriorityIdentifier'
-import { TrainJob } from './model/job/TrainJob'
+import { GetToolJob } from './model/job/raider/GetToolJob'
+import { MoveJob } from './model/job/raider/MoveJob'
+import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
+import { ShareableJob } from './model/job/ShareableJob'
 import { Raider } from './model/raider/Raider'
 import { SceneManager } from './SceneManager'
 
@@ -21,7 +21,7 @@ export class Supervisor {
 
     sceneMgr: SceneManager
     entityMgr: EntityManager
-    jobs: PublicJob[] = []
+    jobs: ShareableJob[] = []
     assignInterval = null
     checkRubbleInterval = null
     priorityIndexList: PriorityIdentifier[] = []
@@ -50,7 +50,7 @@ export class Supervisor {
     }
 
     assignJobs() {
-        const availableJobs: PublicJob[] = []
+        const availableJobs: ShareableJob[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobState === JobState.INCOMPLETE
             if (result && j.fulfiller.length < 1 && this.isEnabled(j.getPriorityIdentifier())) { // TODO don't assign jobs on hidden surfaces
@@ -128,7 +128,7 @@ export class Supervisor {
                     closestToolRaider.setJob(new GetToolJob(this.entityMgr, requiredTool, closestToolstation), job)
                     unemployedRaider.splice(closestToolRaiderIndex, 1)
                 } else if (closestTrainingRaider) {
-                    closestTrainingRaider.setJob(new TrainJob(this.entityMgr, requiredTraining, closestTrainingArea), job)
+                    closestTrainingRaider.setJob(new TrainRaiderJob(this.entityMgr, requiredTraining, closestTrainingArea), job)
                     unemployedRaider.splice(closestTrainingRaiderIndex, 1)
                 }
             },
@@ -169,7 +169,7 @@ export class Supervisor {
         })
     }
 
-    getPriority(job: PublicJob) {
+    getPriority(job: ShareableJob) {
         return this.priorityIndexList.indexOf(job.getPriorityIdentifier())
     }
 

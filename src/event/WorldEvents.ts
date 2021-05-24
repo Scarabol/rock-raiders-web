@@ -1,5 +1,5 @@
 import { GameState } from '../game/model/GameState'
-import { PublicJob } from '../game/model/job/Job'
+import { ShareableJob } from '../game/model/job/ShareableJob'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
@@ -14,9 +14,9 @@ export class WorldEvent extends GameEvent {
 
 export abstract class JobEvent extends WorldEvent {
 
-    job: PublicJob
+    job: ShareableJob
 
-    protected constructor(eventKey: EventKey, job: PublicJob) {
+    protected constructor(eventKey: EventKey, job: ShareableJob) {
         super(eventKey)
         this.guiForward = false
         this.job = job
@@ -26,7 +26,7 @@ export abstract class JobEvent extends WorldEvent {
 
 export class JobCreateEvent extends JobEvent {
 
-    constructor(job: PublicJob) {
+    constructor(job: ShareableJob) {
         super(EventKey.JOB_CREATE, job)
     }
 
@@ -34,7 +34,7 @@ export class JobCreateEvent extends JobEvent {
 
 export class JobDeleteEvent extends JobEvent {
 
-    constructor(job: PublicJob) {
+    constructor(job: ShareableJob) {
         super(EventKey.JOB_DELETE, job)
     }
 

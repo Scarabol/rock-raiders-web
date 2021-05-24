@@ -22,6 +22,7 @@ import { Crystal } from '../material/Crystal'
 import { ElectricFence } from '../material/ElectricFence'
 import { Ore } from '../material/Ore'
 import { PathTarget } from '../PathTarget'
+import { RaiderTraining, RaiderTrainingSites, RaiderTrainingStatsProperty } from '../raider/RaiderTraining'
 import { Selectable, SelectionType } from '../Selectable'
 import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
@@ -275,6 +276,10 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
 
     getPathTarget(): BuildingPathTarget {
         return this.pathTarget
+    }
+
+    isTrainingSite(training: RaiderTraining): boolean {
+        return this.entityType === RaiderTrainingSites[training] && this.isUsable() && this.stats[RaiderTrainingStatsProperty[training]][this.level]
     }
 
 }

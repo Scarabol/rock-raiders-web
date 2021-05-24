@@ -2,17 +2,16 @@ import { RaiderActivity } from '../../activities/RaiderActivity'
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
-import { PublicJob } from '../Job'
-import { JobType } from '../JobType'
 import { PriorityIdentifier } from '../PriorityIdentifier'
+import { ShareableJob } from '../ShareableJob'
 
-export class ClearRubbleJob extends PublicJob {
+export class ClearRubbleJob extends ShareableJob {
 
     surface: Surface
     lastRubblePositions: PathTarget[]
 
     constructor(surface: Surface) {
-        super(JobType.CLEAR_RUBBLE)
+        super()
         this.surface = surface
         this.lastRubblePositions = this.surface.rubblePositions.map((p) => new PathTarget(p))
     }

@@ -18,10 +18,10 @@ import { Upgrade } from './model/building/entities/Upgrade'
 import { PowerPathBuildingSite } from './model/building/PowerPathBuildingSite'
 import { EntityType } from './model/EntityType'
 import { GameState } from './model/GameState'
-import { EatJob } from './model/job/EatJob'
-import { GetToolJob } from './model/job/GetToolJob'
-import { TrainJob } from './model/job/TrainJob'
-import { UpgradeJob } from './model/job/UpgradeJob'
+import { EatJob } from './model/job/raider/EatJob'
+import { GetToolJob } from './model/job/raider/GetToolJob'
+import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
+import { UpgradeRaiderJob } from './model/job/raider/UpgradeRaiderJob'
 import { VehicleCallManJob } from './model/job/VehicleCallManJob'
 import { BullDozer } from './model/vehicle/entities/BullDozer'
 import { Hoverboard } from './model/vehicle/entities/Hoverboard'
@@ -116,7 +116,7 @@ export class GuiManager {
             entityMgr.selectedRaiders.forEach((r) => {
                 const closestToolstation = entityMgr.getClosestBuildingByType(r.getPosition(), EntityType.TOOLSTATION)
                 if (closestToolstation && r.level < r.stats.Levels) {
-                    r.setJob(new UpgradeJob(closestToolstation))
+                    r.setJob(new UpgradeRaiderJob(closestToolstation))
                 }
             })
             EventBus.publishEvent(new DeselectAll())
@@ -125,7 +125,7 @@ export class GuiManager {
             entityMgr.selectedRaiders.forEach((r) => r.beamUp())
         })
         EventBus.registerEventListener(EventKey.COMMAND_TRAIN_RAIDER, (event: TrainRaider) => {
-            entityMgr.selectedRaiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainJob(entityMgr, event.training, null)))
+            entityMgr.selectedRaiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainRaiderJob(entityMgr, event.training, null)))
             EventBus.publishEvent(new DeselectAll())
             return true
         })

@@ -12,8 +12,6 @@ import { MaterialEntity } from './material/MaterialEntity'
 import { MovableEntity } from './MovableEntity'
 import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
-import { RaiderTool } from './raider/RaiderTool'
-import { RaiderTraining } from './raider/RaiderTraining'
 import { Selectable, SelectionType } from './Selectable'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
@@ -31,6 +29,10 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         super(sceneMgr, entityMgr, entityType, aeFilename)
         this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
+
+    abstract get stats()
+
+    abstract isPrepared(job: Job): boolean
 
     dropItem() {
         if (!this.carries) return
@@ -69,10 +71,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.changeActivity()
     }
 
-    abstract hasTool(tool: RaiderTool)
-
-    abstract hasTraining(training: RaiderTraining)
-
     abstract getSelectionType(): SelectionType
 
     deselect() {
@@ -87,12 +85,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.changeActivity()
         return true
     }
-
-    abstract addTool(tool: RaiderTool)
-
-    abstract addTraining(skill: RaiderTraining)
-
-    abstract get stats()
 
     removeFromScene() {
         super.removeFromScene()

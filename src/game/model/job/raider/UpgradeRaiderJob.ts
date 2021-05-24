@@ -1,17 +1,16 @@
-import { RaiderActivity } from '../activities/RaiderActivity'
-import { BuildingEntity } from '../building/BuildingEntity'
-import { FulfillerEntity } from '../FulfillerEntity'
-import { PathTarget } from '../PathTarget'
-import { Job } from './Job'
-import { JobType } from './JobType'
+import { RaiderActivity } from '../../activities/RaiderActivity'
+import { BuildingEntity } from '../../building/BuildingEntity'
+import { FulfillerEntity } from '../../FulfillerEntity'
+import { PathTarget } from '../../PathTarget'
+import { RaiderJob } from './RaiderJob'
 
-export class UpgradeJob extends Job {
+export class UpgradeRaiderJob extends RaiderJob {
 
     building: BuildingEntity
     workplaces: PathTarget[]
 
     constructor(building: BuildingEntity) {
-        super(JobType.TRAIN)
+        super()
         this.building = building
         this.workplaces = building.getTrainingTargets()
     }
@@ -22,9 +21,7 @@ export class UpgradeJob extends Job {
 
     onJobComplete() {
         super.onJobComplete()
-        this.fulfiller.forEach((f) => {
-            if (f.level < f.stats.Levels) f.level++
-        })
+        if (this.raider.level < this.raider.stats.Levels) this.raider.level++
     }
 
     getWorkActivity(): RaiderActivity {

@@ -12,7 +12,7 @@ import { Bat } from './model/monster/Bat'
 import { RockMonster } from './model/monster/RockMonster'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
-import { RaiderTraining, RaiderTrainingSites, RaiderTrainingStatsProperty } from './model/raider/RaiderTraining'
+import { RaiderTraining } from './model/raider/RaiderTraining'
 import { Selectable, SelectionType } from './model/Selectable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 
@@ -65,6 +65,10 @@ export class EntityManager {
         this.bats.forEach((b) => b.removeFromScene())
     }
 
+    hasBuildingWithType(buildingType: EntityType): boolean {
+        return this.buildings.some((b) => b.entityType === buildingType && b.isUsable())
+    }
+
     getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
         return this.buildings.filter(b => b.isUsable() && buildingTypes.some(bt => b.entityType === bt))
     }
@@ -83,8 +87,12 @@ export class EntityManager {
         return closest
     }
 
+    hasTrainingSite(training: RaiderTraining): boolean {
+        return this.buildings.some((b) => b.isTrainingSite(training))
+    }
+
     getTrainingSites(training: RaiderTraining): BuildingEntity[] {
-        return this.buildings.filter((b) => b.entityType === RaiderTrainingSites[training] && b.isUsable() && b.stats[RaiderTrainingStatsProperty[training]][b.level])
+        return this.buildings.filter((b) => b.isTrainingSite(training))
     }
 
     getMaxRaiders(): number {

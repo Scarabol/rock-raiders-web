@@ -1,18 +1,17 @@
 import { Vector3 } from 'three'
-import { RaiderActivity } from '../activities/RaiderActivity'
-import { CarryPathTarget, SiteCarryPathTarget } from '../material/CarryPathTarget'
-import { MaterialEntity } from '../material/MaterialEntity'
-import { PublicJob } from './Job'
-import { JobType } from './JobType'
-import { PriorityIdentifier } from './PriorityIdentifier'
+import { RaiderActivity } from '../../activities/RaiderActivity'
+import { CarryPathTarget, SiteCarryPathTarget } from '../../material/CarryPathTarget'
+import { MaterialEntity } from '../../material/MaterialEntity'
+import { PriorityIdentifier } from '../PriorityIdentifier'
+import { ShareableJob } from '../ShareableJob'
 
-export class CarryJob<I extends MaterialEntity> extends PublicJob {
+export class CarryJob<I extends MaterialEntity> extends ShareableJob {
 
     item: I
     actualTarget: CarryPathTarget = null
 
     constructor(item: I) {
-        super(JobType.CARRY)
+        super()
         this.item = item
     }
 

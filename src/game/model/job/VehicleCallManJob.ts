@@ -2,12 +2,11 @@ import { PathTarget } from '../PathTarget'
 import { Raider } from '../raider/Raider'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
-import { PublicJob } from './Job'
 import { JobState } from './JobState'
-import { JobType } from './JobType'
 import { PriorityIdentifier } from './PriorityIdentifier'
+import { ShareableJob } from './ShareableJob'
 
-export class VehicleCallManJob extends PublicJob {
+export class VehicleCallManJob extends ShareableJob {
 
     // TODO add range check, which places raider in vehicle when nearby
 
@@ -15,7 +14,7 @@ export class VehicleCallManJob extends PublicJob {
     workplaces: PathTarget[]
 
     constructor(vehicle: VehicleEntity) {
-        super(JobType.MAN_VEHICLE)
+        super()
         this.vehicle = vehicle
         this.vehicle.callManJob = this
         this.workplaces = [new PathTarget(this.vehicle.getPosition2D())]

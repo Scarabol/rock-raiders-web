@@ -10,6 +10,7 @@ import { BaseActivity } from '../activities/BaseActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
+import { Job } from '../job/Job'
 import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
@@ -23,6 +24,7 @@ export class Raider extends FulfillerEntity {
     trainings: Map<RaiderTraining, boolean> = new Map()
     slipped: boolean = false
     radiusSq: number = 0
+    hungerLevel: number = 1
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.PILOT, 'mini-figures/pilot/pilot.ae')
@@ -135,6 +137,10 @@ export class Raider extends FulfillerEntity {
 
     addTraining(training: RaiderTraining) {
         this.trainings.set(training, true)
+    }
+
+    isPrepared(job: Job): boolean {
+        return this.hasTool(job.getRequiredTool()) && this.hasTraining(job.getRequiredTraining())
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {

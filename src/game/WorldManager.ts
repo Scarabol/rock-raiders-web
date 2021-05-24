@@ -16,7 +16,7 @@ import { BuildingEntity } from './model/building/BuildingEntity'
 import { EntityType } from './model/EntityType'
 import { GameResultState } from './model/GameResult'
 import { GameState } from './model/GameState'
-import { MoveJob } from './model/job/MoveJob'
+import { MoveJob } from './model/job/raider/MoveJob'
 import { Raider } from './model/raider/Raider'
 import { SceneManager } from './SceneManager'
 import degToRad = MathUtils.degToRad

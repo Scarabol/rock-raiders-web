@@ -14,7 +14,6 @@ import { Crystal } from '../material/Crystal'
 import { Ore } from '../material/Ore'
 import { PathTarget } from '../PathTarget'
 import { Raider } from '../raider/Raider'
-import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { SelectionType } from '../Selectable'
 import { VehicleActivity } from './VehicleActivity'
@@ -88,20 +87,12 @@ export abstract class VehicleEntity extends FulfillerEntity {
         super.addToScene(worldPosition, radHeading)
     }
 
-    addTool(tool: RaiderTool) { // TODO refactor this
-    }
-
-    addTraining(skill: RaiderTraining) { // TODO refactor this
-    }
-
     getRouteActivity(): VehicleActivity {
         return AnimEntityActivity.Stand
     }
 
-    hasTool(tool: RaiderTool) { // TODO refactor this
-    }
-
-    hasTraining(training: RaiderTraining) { // TODO refactor this
+    isPrepared(job: Job): boolean {
+        return false
     }
 
     canDrillHard(): boolean {

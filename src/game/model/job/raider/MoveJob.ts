@@ -1,14 +1,13 @@
 import { Vector2 } from 'three'
-import { PathTarget } from '../PathTarget'
-import { Job } from './Job'
-import { JobType } from './JobType'
+import { PathTarget } from '../../PathTarget'
+import { RaiderJob } from './RaiderJob'
 
-export class MoveJob extends Job {
+export class MoveJob extends RaiderJob {
 
     target: PathTarget[]
 
     constructor(target: Vector2) {
-        super(JobType.MOVE)
+        super()
         this.target = [new PathTarget(target)]
     }
 

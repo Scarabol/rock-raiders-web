@@ -5,37 +5,20 @@ import { PathTarget } from '../PathTarget'
 import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { JobState } from './JobState'
-import { JobType } from './JobType'
-import { PriorityIdentifier } from './PriorityIdentifier'
 
 export abstract class Job {
 
-    type: JobType
     jobState: JobState
-    fulfiller: FulfillerEntity[] = []
 
-    protected constructor(type: JobType) {
-        this.type = type
+    constructor() {
         this.jobState = JobState.INCOMPLETE
     }
 
-    assign(fulfiller: FulfillerEntity) {
-        const index = this.fulfiller.indexOf(fulfiller)
-        if (fulfiller && index === -1) {
-            this.fulfiller.push(fulfiller)
-        }
-    }
+    abstract assign(fulfiller: FulfillerEntity)
 
-    unAssign(fulfiller: FulfillerEntity) {
-        this.fulfiller.remove(fulfiller)
-    }
+    abstract unAssign(fulfiller: FulfillerEntity)
 
-    cancel() {
-        this.jobState = JobState.CANCELED
-        const fulfiller = this.fulfiller // ensure consistency while processing
-        this.fulfiller = []
-        fulfiller.forEach((fulfiller) => fulfiller.stopJob())
-    }
+    abstract cancel()
 
     getRequiredTool(): RaiderTool {
         return null
@@ -72,8 +55,3 @@ export abstract class Job {
 
 }
 
-export abstract class PublicJob extends Job {
-
-    abstract getPriorityIdentifier(): PriorityIdentifier
-
-}
