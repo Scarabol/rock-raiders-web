@@ -58,6 +58,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     stopJob() {
+        this.workAudio?.stop()
+        this.workAudio = null
         this.dropItem()
         if (!this.job) return
         this.job.unAssign(this)
@@ -133,8 +135,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                         this.workAudio = this.playPositionalAudio(Sample[Sample.SFX_Drill], true)
                     }
                     this.changeActivity(workActivity, () => {
-                        this.workAudio?.stop()
-                        this.workAudio = null
                         this.completeJob()
                     }, this.job.getWorkDuration(this))
                 } else {
@@ -145,6 +145,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     private completeJob() {
+        this.workAudio?.stop()
+        this.workAudio = null
         this.job?.onJobComplete()
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
