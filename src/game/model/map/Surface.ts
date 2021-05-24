@@ -474,10 +474,6 @@ export class Surface implements Selectable {
         return this.surfaceType.drillable && this.discovered && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER)
     }
 
-    isDrillableHard(): boolean {
-        return this.surfaceType.drillableHard && this.discovered && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER)
-    }
-
     isReinforcable(): boolean {
         return this.surfaceType.reinforcable && this.discovered && this.wallType === WALL_TYPE.WALL && !this.reinforced
     }

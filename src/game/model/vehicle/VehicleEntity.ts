@@ -104,4 +104,8 @@ export abstract class VehicleEntity extends FulfillerEntity {
     hasTraining(training: RaiderTraining) { // TODO refactor this
     }
 
+    canDrillHard(): boolean {
+        return (this.stats.HardDrillTime?.[this.level] || 0) > 0
+    }
+
 }
