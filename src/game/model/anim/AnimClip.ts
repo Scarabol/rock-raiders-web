@@ -40,7 +40,7 @@ export class AnimClip {
                 }
             }
         })
-        this.sfxAudioByFrame.getOrUpdate(frameIndex, () => []).forEach((a) => a.play())
+        this.playAudio(frameIndex)
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
         let nextFrame = frameIndex + 1
         if (nextFrame <= this.lastFrame || !onAnimationDone || (durationTimeMs !== null && durationTimeMs > 0)) {
@@ -53,14 +53,25 @@ export class AnimClip {
             const timeoutTimeMs = durationTimeMs !== null ? Math.max(0, Math.min(durationTimeMs, standardDurationTimeMs)) : standardDurationTimeMs
             this.animationTimeout = setTimeout(() => that.animate(nextFrame, onAnimationDone, durationTimeMs), timeoutTimeMs)
         } else if (onAnimationDone) {
-            this.sfxAudioByFrame.forEach((f) => f.forEach((a) => a.stop()))
+            this.stopAudio()
             onAnimationDone()
         }
     }
 
     stop() {
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
-        this.sfxAudioByFrame.forEach((f) => f.forEach((a) => a.stop()))
+        this.stopAudio()
+    }
+
+    private playAudio(frameIndex: number) {
+        this.sfxAudioByFrame.getOrUpdate(frameIndex, () => []).forEach((a) => {
+            if (a.isPlaying) a.stop()
+            a.play()
+        })
+    }
+
+    private stopAudio() {
+        this.sfxAudioByFrame.forEach((f) => f.forEach((a) => a.isPlaying && a.stop()))
     }
 
 }
