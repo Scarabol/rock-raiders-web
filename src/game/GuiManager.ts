@@ -102,11 +102,7 @@ export class GuiManager {
             entityMgr.selectedBuilding?.beamUp()
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_BUILDING_POWER_STATE, (event: ChangeBuildingPowerState) => {
-            if (!event.state) {
-                entityMgr.selectedBuilding?.turnOffPower()
-            } else {
-                entityMgr.selectedBuilding?.turnOnPower()
-            }
+            entityMgr.selectedBuilding?.setPowerSwitch(event.state)
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_EAT, () => {
             entityMgr.selectedRaiders.forEach((r) => !r.isDriving() && r.setJob(new EatJob()))

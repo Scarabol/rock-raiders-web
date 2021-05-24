@@ -56,7 +56,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
-            if (this.powerSwitch) this.turnOnPower()
+            this.updatePowerState()
         })
     }
 
@@ -190,7 +190,20 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         this.entityMgr.placeMaterial(new ElectricFence(this.sceneMgr, this.entityMgr, targetSurface), this.getDropPosition2D())
     }
 
-    turnOnPower() {
+    setPowerSwitch(state: boolean) {
+        this.powerSwitch = state
+        this.updatePowerState()
+    }
+
+    updatePowerState() {
+        if (this.powerSwitch) {
+            this.turnPowerOn()
+        } else {
+            this.turnPowerOff()
+        }
+    }
+
+    turnPowerOn() {
         if (this.crystalsInUse > 0 || this.stats.SelfPowered || GameState.usedCrystals >= GameState.numCrystal || (this.entityType !== EntityType.POWER_STATION && !this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower)))) return
         this.crystalsInUse = 1
         GameState.usedCrystals += this.crystalsInUse
@@ -200,7 +213,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         if (this.stats.EngineSound) this.engineSound = this.playPositionalAudio(this.stats.EngineSound, true)
     }
 
-    turnOffPower() {
+    turnPowerOff() {
         if (this.crystalsInUse < 1) return
         GameState.usedCrystals -= this.crystalsInUse
         this.crystalsInUse = 0
@@ -256,7 +269,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
 
     private onPlaceDown() {
         this.changeActivity()
-        this.turnOnPower()
+        this.updatePowerState()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
 
