@@ -28,6 +28,7 @@ export class LWSCLoader {
     }
 
     parse(content): AnimClip {
+        if (!content) throw 'Cannot parse LWS, no content given'
         this.lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
             .split('\n')

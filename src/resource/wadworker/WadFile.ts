@@ -110,4 +110,9 @@ export class WadFile {
         return result
     }
 
+    hasEntry(entryName: string): boolean {
+        const index = this.entryIndexByName.get(entryName.toLowerCase())
+        return index !== undefined && index !== null
+    }
+
 }

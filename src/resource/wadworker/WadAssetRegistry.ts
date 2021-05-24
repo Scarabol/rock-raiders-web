@@ -79,47 +79,36 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         // load all entity upgrades
         const upgradeTypes = iGet(mainConf, 'UpgradeTypes')
         Object.values(upgradeTypes).forEach((uType: string) => {
-            this.addAsset(this.wadLoader.loadMeshObject, uType)
+            this.addMeshObjects(uType)
         })
         // load all building types
         const buildingTypes = iGet(mainConf, 'BuildingTypes')
         Object.values(buildingTypes).forEach((bType: string) => {
-            const bName = bType.split('/')[1]
-            const aeFile = bType + '/' + bName + '.ae'
-            this.addAnimatedEntity(aeFile)
+            this.addMeshObjects(bType)
         })
         this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
         // load monsters
-        this.addAnimatedEntity('Creatures/SpiderSB/SpiderSB.ae')
-        this.addAnimatedEntity('Creatures/bat/bat.ae')
-        this.addAnimatedEntity('Creatures/IceMonster/IceMonster.ae')
-        this.addAnimatedEntity('Creatures/LavaMonster/LavaMonster.ae')
-        this.addAnimatedEntity('Creatures/RMonster/RMonster.ae')
+        const rockMonsterTypes = iGet(mainConf, 'RockMonsterTypes')
+        Object.values(rockMonsterTypes).forEach((mType: string) => {
+            this.addMeshObjects(mType)
+        })
         // load vehicles
         const vehicleTypes = mainConf['VehicleTypes']
-        Object.values(vehicleTypes).map((v) => Array.isArray(v) ? v : [v]).forEach((vParts: string[]) => {
-            vParts.forEach((vType) => {
-                const vName = vType.split('/')[1]
-                const aeFile = vType + '/' + vName + '.ae'
-                this.addAnimatedEntity(aeFile)
+        Object.values(vehicleTypes).forEach((v) => {
+            (Array.isArray(v) ? v : [v]).forEach((vType: string) => {
+                this.addMeshObjects(vType)
             })
         })
         // load misc objects
-        this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Dynamite') + '/Dynamite.ae')
-        this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae')
         this.addTextureFolder('MiscAnims/Crystal/')
-        this.addAsset(this.wadLoader.loadLWOFile, 'World/Shared/Crystal.lwo') // highpoly version, but unused?
-        this.addAsset(this.wadLoader.loadLWOFile, iGet(mainConf, 'MiscObjects', 'Crystal') + '.lwo')
+        this.addAsset(this.wadLoader.loadLWOFile, 'World/Shared/Crystal.lwo') // high-poly version
         this.addAsset(this.wadLoader.loadWadTexture, 'MiscAnims/Ore/Ore.bmp')
-        this.addAsset(this.wadLoader.loadLWOFile, iGet(mainConf, 'MiscObjects', 'Ore') + '.lwo')
-        this.addAsset(this.wadLoader.loadLWOFile, 'World/Shared/Brick.lwo')
-        this.addAsset(this.wadLoader.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ProcessedOre') + '.lwo')
-        this.addTextureFolder('Buildings/E-Fence/')
-        this.addAsset(this.wadLoader.loadLWOFile, iGet(mainConf, 'MiscObjects', 'ElectricFence') + '.lwo')
-        this.addAnimatedEntity(iGet(mainConf, 'MiscObjects', 'Barrier') + '/Barrier.ae')
-        this.addAnimatedEntity('MiscAnims/Dynamite/Dynamite.ae')
         this.addTextureFolder('MiscAnims/RockFall/')
         this.addLWSFile('MiscAnims/RockFall/Rock3Sides.lws')
+        const miscObjects = mainConf['MiscObjects']
+        Object.values(miscObjects).forEach((mType: string) => {
+            this.addMeshObjects(mType)
+        })
         // spaces
         this.addTextureFolder('World/WorldTextures/IceSplit/Ice')
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')
@@ -160,6 +149,21 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         sndPathToKeys.forEach((sndKeys, sndPath) => {
             this.addAsset(this.wadLoader.loadWavAsset, sndPath, false, sndKeys)
         })
+    }
+
+    addMeshObjects(basePath: string) {
+        const aeFilepath = basePath + '/' + basePath.split('/').last() + '.ae'
+        if (this.wadLoader.wad0File.hasEntry(aeFilepath)) this.addAnimatedEntity(aeFilepath)
+        const aeSharedFilepath = 'world/shared/' + basePath.split('/').last() + '.ae'
+        if (this.wadLoader.wad0File.hasEntry(aeSharedFilepath)) this.addAnimatedEntity(aeSharedFilepath)
+        const lwsFilepath = basePath + '.lws'
+        if (this.wadLoader.wad0File.hasEntry(lwsFilepath)) this.addLWSFile(lwsFilepath)
+        const lwsSharedFilepath = 'world/shared/' + basePath.split('/').last() + '.lws'
+        if (this.wadLoader.wad0File.hasEntry(lwsSharedFilepath)) this.addLWSFile(lwsSharedFilepath)
+        const lwoFilepath = basePath + '.lwo'
+        if (this.wadLoader.wad0File.hasEntry(lwoFilepath)) this.addAsset(this.wadLoader.loadLWOFile, lwoFilepath)
+        const lwoSharedFilepath = 'world/shared/' + basePath.split('/').last() + '.lwo'
+        if (this.wadLoader.wad0File.hasEntry(lwoSharedFilepath)) this.addAsset(this.wadLoader.loadLWOFile, lwoSharedFilepath)
     }
 
     addAnimatedEntity(aeFile: string) {
