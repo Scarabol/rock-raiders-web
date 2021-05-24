@@ -108,7 +108,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     work() {
-        if (!this.job || this.selected) return
+        if (!this.job || this.selected || this.inBeam) return
         if (this.job.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
         } else {
