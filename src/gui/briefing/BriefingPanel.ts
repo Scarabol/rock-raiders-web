@@ -18,6 +18,7 @@ export class BriefingPanel extends Panel {
     paragraph: number = 0
     imgParagraph: SpriteImage = null
     onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log('Message: press space to continue = ' + state)
+    onStartMission: () => any = () => console.log('Start mission')
 
     constructor(parent: BaseElement) {
         super(parent)
@@ -51,8 +52,7 @@ export class BriefingPanel extends Panel {
     setParagraph(paragraph: number) {
         if (paragraph < 0) return
         if (paragraph > this.imgParagraphList.length - 1) {
-            this.hide()
-            this.notifyRedraw()
+            this.onStartMission()
             return
         }
         this.paragraph = paragraph

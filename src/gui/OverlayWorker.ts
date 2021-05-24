@@ -25,14 +25,17 @@ export class OverlayWorker extends GuiWorker {
         this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, GuiResourceCache.getResource('OptionsMenu') as MenuCfg))
         this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
         // link items
+        this.panelPause.onContinueGame = () => this.setActivePanel(null)
         this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
+        this.panelPause.onAbortGame = () => this.sendResponse({type: WorkerMessageType.GAME_ABORT})
+        this.panelPause.onRestartGame = () => this.sendResponse({type: WorkerMessageType.GAME_RESTART})
         this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
+        this.panelOptions.onContinueMission = () => this.setActivePanel(null)
         this.panelBriefing.onSetSpaceToContinue = (state: boolean) => this.sendResponse({
             type: WorkerMessageType.SPACE_TO_CONINUE,
             messageState: state,
         })
-        this.panelPause.onAbortGame = () => this.sendResponse({type: WorkerMessageType.GAME_ABORT})
-        this.panelPause.onRestartGame = () => this.sendResponse({type: WorkerMessageType.GAME_RESTART})
+        this.panelBriefing.onStartMission = () => this.setActivePanel(null)
     }
 
     setCanvas(canvas: OffscreenCanvas) {
@@ -47,7 +50,7 @@ export class OverlayWorker extends GuiWorker {
         if (msg.type === WorkerMessageType.OVERLAY_SETUP) {
             this.setup(msg.objectiveText, msg.objectiveBackImgCfg)
         } else if (msg.type === WorkerMessageType.SHOW_OPTIONS) {
-            this.panelOptions.show()
+            this.setActivePanel(this.panelOptions)
         } else {
             return false
         }
@@ -56,7 +59,7 @@ export class OverlayWorker extends GuiWorker {
 
     setActivePanel(panel: Panel) {
         this.panels.forEach(p => p !== panel && p.hide())
-        panel.show()
+        panel?.show()
         this.redraw()
     }
 
@@ -76,13 +79,7 @@ export class OverlayWorker extends GuiWorker {
         if (event.eventEnum === KEY_EVENT.UP) {
             if (lEventKey === 'escape') {
                 if (this.panelBriefing.hidden && this.panelOptions.hidden) {
-                    if (this.panelPause.hidden) {
-                        // TODO actually pause the game
-                        this.setActivePanel(this.panelPause)
-                    } else {
-                        // TODO actually unpause the game
-                        this.panelPause.hide()
-                    }
+                    this.setActivePanel(this.panelPause.hidden ? this.panelPause : null)
                     result = true
                 }
             } else if (lEventKey === ' ') { // space
