@@ -7,6 +7,7 @@
  */
 
 import { Vector3 } from 'three'
+import { Sample } from '../audio/Sample'
 import { getFilename } from '../core/Util'
 import { AnimClip } from '../game/model/anim/AnimClip'
 import { AnimSubObj } from '../game/model/anim/AnimSubObj'
@@ -109,8 +110,11 @@ export class LWSCLoader {
                 } else if (key === 'AddNullObject') {
                     const nameParts = value.split(',')
                     subObj.lowerName = nameParts[0].toLowerCase()
-                    if (subObj.lowerName.equalsIgnoreCase('sfx')) {
+                    if (subObj.lowerName === 'sfx') {
                         subObj.sfxName = nameParts[1] || null
+                        subObj.sfxFrames = nameParts.slice(2).map((n) => Number(n))
+                    } else if (subObj.lowerName === 'snd' && nameParts[1].equalsIgnoreCase('SFX_LANDSLIDE')) {
+                        subObj.sfxName = Sample[Sample.SFX_FallIn]
                         subObj.sfxFrames = nameParts.slice(2).map((n) => Number(n))
                     }
                     subObj.model = new SceneMesh()

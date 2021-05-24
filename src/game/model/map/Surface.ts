@@ -1,4 +1,4 @@
-import { Group, MathUtils, Mesh, MeshPhongMaterial, PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
+import { MathUtils, Mesh, MeshPhongMaterial, PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
 import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
@@ -7,12 +7,10 @@ import { SelectionChanged, UpdateRadarSurface } from '../../../event/LocalEvents
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
 import { HEIGHT_MULTIPLER, TILESIZE } from '../../../params'
-import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { AnimSubObj } from '../anim/AnimSubObj'
+import { AnimationGroup } from '../anim/AnimationGroup'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
@@ -53,8 +51,7 @@ export class Surface implements Selectable {
     seamLevel: number = 0
     fallinTimeout = null
 
-    fallinGrp: Group = null
-    animationTimeout = null
+    fallinGrp: AnimationGroup = null
 
     wallType: WALL_TYPE = null
     mesh: Mesh = null
@@ -542,59 +539,16 @@ export class Surface implements Selectable {
     createFallin(targetX: number, targetY: number) {
         const fallinPosition = this.terrain.getSurface(targetX, targetY).getCenterWorld()
         EventBus.publishEvent(new LandslideEvent(fallinPosition))
-        this.playPositionalSample(Sample.SFX_FallIn)
-
-        // TODO refactor mesh and animation handling
-        const content = ResourceManager.getResource('MiscAnims/RockFall/Rock3Sides.lws')
-        const animation = new LWSCLoader('MiscAnims/RockFall/').parse(content)
-        this.fallinGrp = new Group()
+        this.fallinGrp = new AnimationGroup('MiscAnims/RockFall/Rock3Sides.lws', this.sceneMgr.listener)
         this.fallinGrp.position.copy(fallinPosition)
         const dx = this.x - targetX, dy = targetY - this.y
         this.fallinGrp.rotateOnAxis(new Vector3(0, 1, 0), Math.atan2(dy, dx) + Math.PI / 2)
         this.sceneMgr.scene.add(this.fallinGrp)
-        const poly = animation.bodies.map((b) => b.model.clone())
-        animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
-            const polyPart = poly[index]
-            const parentInd = body.parentObjInd
-            if (parentInd !== undefined && parentInd !== null) { // can be 0
-                poly[parentInd].add(polyPart)
-            } else {
-                this.fallinGrp.add(polyPart)
-            }
-        })
-        this.animate(poly, animation, 0)
-
-        this.terrain.getSurface(targetX, targetY).makeRubble()
-    }
-
-    animate(poly, animation, frameIndex) {
-        if (poly.length !== animation.bodies.length) throw 'Cannot animate poly. Length differs from bodies length'
-        animation.bodies.forEach((body: AnimSubObj, index) => {
-            const p = poly[index]
-            p.position.copy(body.relPos[frameIndex])
-            p.rotation.copy(body.relRot[frameIndex])
-            p.scale.copy(body.relScale[frameIndex])
-            if (p.hasOwnProperty('material')) {
-                const material = p['material']
-                const opacity = body.opacity[frameIndex]
-                if (material && opacity !== undefined) {
-                    const matArr = Array.isArray(material) ? material : [material]
-                    matArr.forEach((mat: SequenceTextureMaterial) => mat.setOpacity(opacity))
-                }
-            }
-        })
-        this.animationTimeout = null
-        if (!(frameIndex + 1 > animation.lastFrame) || animation.looping) {
-            let nextFrame = frameIndex + 1
-            if (nextFrame > animation.lastFrame) {
-                nextFrame = animation.firstFrame
-            }
-            const that = this
-            this.animationTimeout = setTimeout(() => that.animate(poly, animation, nextFrame), 1000 / animation.framesPerSecond * animation.transcoef)
-        } else {
+        this.fallinGrp.startAnimation(() => {
             this.sceneMgr.scene.remove(this.fallinGrp)
             this.fallinGrp = null
-        }
+        })
+        this.terrain.getSurface(targetX, targetY).makeRubble()
     }
 
     dispose() {
