@@ -96,7 +96,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     }
 
     isUsable(): boolean {
-        return !this.inBeam && this.powerSwitch && (this.isPowered() || this.stats.PowerBuilding)
+        return !this.inBeam && this.powerSwitch && (this.isPowered() || this.stats.PowerBuilding) && this.sceneEntity.visible
     }
 
     isPowered(): boolean {
