@@ -38,8 +38,4 @@ export class GameState {
         return Math.round((GameState.levelStopTime - GameState.levelStartTime) / 1000)
     }
 
-    static get totalOre(): number {
-        return this.numOre + this.numBrick * 5
-    }
-
 }

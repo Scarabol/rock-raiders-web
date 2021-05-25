@@ -65,10 +65,6 @@ export class EntityManager {
         this.bats.forEach((b) => b.removeFromScene())
     }
 
-    hasBuildingWithType(buildingType: EntityType): boolean {
-        return this.buildings.some((b) => b.entityType === buildingType && b.isUsable())
-    }
-
     getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
         return this.buildings.filter(b => b.isUsable() && buildingTypes.some(bt => b.entityType === bt))
     }
@@ -85,10 +81,6 @@ export class EntityManager {
             }
         })
         return closest
-    }
-
-    hasTrainingSite(training: RaiderTraining): boolean {
-        return this.buildings.some((b) => b.isTrainingSite(training))
     }
 
     getTrainingSites(training: RaiderTraining): BuildingEntity[] {

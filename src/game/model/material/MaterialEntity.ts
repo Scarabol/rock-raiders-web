@@ -18,7 +18,7 @@ export abstract class MaterialEntity extends BaseEntity {
     targetSite: BuildingSite = null
     positionPathTarget: PathTarget[] = null
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string = null) {
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string = null) {
         super(sceneMgr, entityMgr, entityType, aeFilename)
         this.targetBuildingTypes = [EntityType.TOOLSTATION]
     }

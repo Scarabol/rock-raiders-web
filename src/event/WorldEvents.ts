@@ -63,7 +63,7 @@ export class MaterialAmountChanged extends WorldEvent {
         this.numCrystal = GameState.numCrystal
         this.usedCrystal = GameState.usedCrystals
         this.neededCrystal = GameState.neededCrystals
-        this.totalOre = GameState.totalOre
+        this.totalOre = GameState.numOre + GameState.numBrick * 5
     }
 
 }

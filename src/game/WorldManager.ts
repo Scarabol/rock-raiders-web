@@ -93,6 +93,7 @@ export class WorldManager {
             station.spawning = true
             const raider = new Raider(this.sceneMgr, this.entityMgr)
             const heading = station.getHeading()
+            raider.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), station.getHeading()).add(station.getPosition2D()), heading)
             raider.playPositionalAudio(Sample[Sample.SND_teleport], false)
             raider.changeActivity(RaiderActivity.TeleportIn, () => {
                 station.spawning = false
@@ -104,7 +105,6 @@ export class WorldManager {
                 this.entityMgr.raiders.push(raider)
                 EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
             })
-            raider.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), station.getHeading()).add(station.getPosition2D()), heading)
         }
     }
 
