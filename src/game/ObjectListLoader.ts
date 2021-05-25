@@ -59,6 +59,7 @@ export class ObjectListLoader {
                     entityMgr.raidersUndiscovered.push(raider)
                 }
             } else if (buildingType) {
+                console.log(olObject.type + ' heading: ' + Math.round(olObject.heading % 360))
                 const entity = this.createBuildingByName(buildingType, sceneMgr, entityMgr)
                 entity.placeDown(worldPos, -radHeading - Math.PI, levelConf.disableStartTeleport)
             } else if (entityType === EntityType.CRYSTAL) {
