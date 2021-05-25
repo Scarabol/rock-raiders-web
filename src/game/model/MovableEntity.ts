@@ -1,5 +1,4 @@
 import { Vector3 } from 'three'
-import { JOB_ACTION_RANGE } from '../../params'
 import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
@@ -51,12 +50,13 @@ export abstract class MovableEntity extends BaseEntity {
         const step = new EntityStep(targetWorld.sub(this.sceneEntity.position))
         const stepLengthSq = step.vec.lengthSq()
         const entitySpeed = this.getSpeed() // TODO use average speed between current and target position
+        const entitySpeedSq = entitySpeed * entitySpeed
         if (this.currentPath.locations.length > 1) {
-            if (stepLengthSq < entitySpeed * entitySpeed) {
+            if (stepLengthSq <= entitySpeedSq) {
                 this.currentPath.locations.shift()
                 return this.determineStep()
             }
-        } else if (stepLengthSq < JOB_ACTION_RANGE * JOB_ACTION_RANGE) {
+        } else if (stepLengthSq <= entitySpeedSq) {
             step.targetReached = true
         }
         step.vec.clampLength(0, entitySpeed)
