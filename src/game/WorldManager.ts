@@ -8,7 +8,7 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { AirLevelChanged, RaidersChangedEvent } from '../event/LocalEvents'
 import { RequestedRaidersChanged } from '../event/WorldEvents'
-import { CHECK_SPANW_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../params'
+import { CHECK_SPAWN_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
 import { RaiderActivity } from './model/activities/RaiderActivity'
@@ -37,7 +37,7 @@ export class WorldManager {
         })
         EventBus.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, () => {
             if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
-                this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPANW_RAIDER_TIMER)
+                this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPAWN_RAIDER_TIMER)
             }
         })
     }

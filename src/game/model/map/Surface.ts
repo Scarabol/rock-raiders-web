@@ -6,7 +6,7 @@ import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarSurface } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
-import { HEIGHT_MULTIPLER, TILESIZE } from '../../../params'
+import { HEIGHT_MULTIPLIER, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
@@ -304,10 +304,10 @@ export class Surface implements Selectable {
             this.topRightVertex = topRightVertex.clone()
             this.bottomRightVertex = bottomRightVertex.clone()
             this.bottomLeftVertex = bottomLeftVertex.clone()
-            this.topLeftHeightOffset = avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLER
-            this.topRightHeightOffset = avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLER
-            this.bottomRightHeightOffset = avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLER
-            this.bottomLeftHeightOffset = avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLER
+            this.topLeftHeightOffset = avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLIER
+            this.topRightHeightOffset = avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLIER
+            this.bottomRightHeightOffset = avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLIER
+            this.bottomLeftHeightOffset = avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLIER
             this.topLeftVertex.y += this.topLeftHeightOffset
             this.topRightVertex.y += this.topRightHeightOffset
             this.bottomRightVertex.y += this.bottomRightHeightOffset

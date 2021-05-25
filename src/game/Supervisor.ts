@@ -2,7 +2,7 @@ import { clearIntervalSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
-import { CHECK_CLEARRUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
+import { CHECK_CLEAR_RUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
 import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingPathTarget } from './model/building/BuildingPathTarget'
@@ -41,7 +41,7 @@ export class Supervisor {
     start() {
         stop()
         this.assignInterval = setInterval(this.assignJobs.bind(this), JOB_SCHEDULE_INTERVAL)
-        this.checkRubbleInterval = setInterval(this.checkUnclearedRubble.bind(this), CHECK_CLEARRUBBLE_INTERVAL)
+        this.checkRubbleInterval = setInterval(this.checkUnclearedRubble.bind(this), CHECK_CLEAR_RUBBLE_INTERVAL)
     }
 
     stop() {
