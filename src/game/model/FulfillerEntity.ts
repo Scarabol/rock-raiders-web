@@ -142,11 +142,11 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.workAudio?.stop()
         this.workAudio = null
         this.job?.onJobComplete()
+        this.changeActivity()
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
         this.followUpJob = null
-        this.changeActivity()
     }
 
 }

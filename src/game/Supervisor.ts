@@ -149,10 +149,11 @@ export class Supervisor {
                         const surface = this.sceneMgr.terrain.getSurfaceOrNull(x, y)
                         if (!(surface?.hasRubble()) || !surface?.discovered) continue
                         const clearRubbleJob = surface.createClearRubbleJob()
-                        if (!clearRubbleJob) continue
+                        if (!clearRubbleJob || clearRubbleJob.fulfiller.length > 0) continue
                         const requiredTool = clearRubbleJob.getRequiredTool()
                         if (raider.hasTool(requiredTool)) {
                             raider.setJob(clearRubbleJob)
+                            return
                         } else {
                             const pathToToolstation = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)
                                 .map((b) => raider.findPathToTarget(b.getPathTarget()))
@@ -160,6 +161,7 @@ export class Supervisor {
                                 .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                             if (pathToToolstation) {
                                 raider.setJob(new GetToolJob(this.entityMgr, requiredTool, (pathToToolstation.target as BuildingPathTarget).building), clearRubbleJob)
+                                return
                             }
                         }
                     }

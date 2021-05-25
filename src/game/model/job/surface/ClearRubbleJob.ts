@@ -32,6 +32,7 @@ export class ClearRubbleJob extends ShareableJob {
     onJobComplete() {
         this.surface.reduceRubble()
         if (!this.surface.hasRubble()) {
+            this.surface.clearRubbleJob = null
             super.onJobComplete()
         }
     }
