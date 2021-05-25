@@ -15,6 +15,7 @@ import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
 import { SelectionType } from '../Selectable'
+import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { RaiderTool } from './RaiderTool'
 import { RaiderTraining } from './RaiderTraining'
 
@@ -25,6 +26,7 @@ export class Raider extends FulfillerEntity {
     slipped: boolean = false
     radiusSq: number = 0
     hungerLevel: number = 1
+    vehicle: VehicleEntity = null
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.PILOT, 'mini-figures/pilot/pilot.ae')
@@ -57,7 +59,7 @@ export class Raider extends FulfillerEntity {
     }
 
     isDriving(): boolean {
-        return false // TODO implement vehicles
+        return !!this.vehicle
     }
 
     getSpeed(): number {

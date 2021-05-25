@@ -57,15 +57,19 @@ export abstract class VehicleEntity extends FulfillerEntity {
 
     addDriver(driver: Raider) {
         this.driver = driver
-        this.driver.changeActivity(this.getDriverActivity())
-        this.sceneEntity.add(this.driver.sceneEntity.group) // TODO add driver to driver joint
+        this.driver.vehicle = this
+        this.driver.sceneEntity.position.set(0, 0, 0)
+        this.driver.sceneEntity.setHeading(0)
+        this.driver.changeActivity(this.getDriverActivity());
+        (this.animation.driverJoint || this.sceneEntity.group).add(this.driver.sceneEntity.group)
         if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.playPositionalAudio(this.stats.EngineSound, true)
     }
 
     dropDriver() {
         this.stopJob()
         if (!this.driver) return
-        this.sceneEntity.remove(this.driver.sceneEntity.group) // TODO remove driver from driver joint
+        (this.animation.driverJoint || this.sceneEntity.group).remove(this.driver.sceneEntity.group)
+        this.driver.vehicle = null
         this.driver.sceneEntity.position.copy(this.sceneEntity.position)
         this.driver.sceneEntity.setHeading(this.sceneEntity.getHeading())
         this.driver.sceneMgr.scene.add(this.driver.sceneEntity.group)
