@@ -7,8 +7,7 @@ export class SurfaceType {
     matIndex: string = '00'
     floor: boolean = false
     selectable: boolean = false
-    drillable: boolean = false
-    explodable: boolean = false
+    digable: boolean = false
     reinforcable: boolean = false
     cursor: Cursor = Cursor.Pointer_Standard
     cursorFulfiller: Cursor = Cursor.Pointer_Standard
@@ -41,7 +40,7 @@ export class SurfaceType {
         shaping: true,
         matIndex: '4',
         selectable: true,
-        explodable: true,
+        digable: true,
         reinforcable: true,
         cursor: Cursor.Pointer_SurfaceType_Hard,
         statsDrillName: 'HardDrillTime',
@@ -52,8 +51,7 @@ export class SurfaceType {
         shaping: true,
         matIndex: '3',
         selectable: true,
-        drillable: true,
-        explodable: true,
+        digable: true,
         reinforcable: true,
         cursor: Cursor.Pointer_SurfaceType_Medium,
         statsDrillName: 'LooseDrillTime',
@@ -64,8 +62,7 @@ export class SurfaceType {
         shaping: true,
         matIndex: '2',
         selectable: true,
-        drillable: true,
-        explodable: true,
+        digable: true,
         reinforcable: true,
         cursor: Cursor.Pointer_SurfaceType_Loose,
         statsDrillName: 'SoilDrillTime',
@@ -82,8 +79,7 @@ export class SurfaceType {
         name: 'ore seam',
         matIndex: '40',
         selectable: true,
-        drillable: true,
-        explodable: true,
+        digable: true,
         reinforcable: true,
         cursor: Cursor.Pointer_SurfaceType_OreSeam,
         statsDrillName: 'SeamDrillTime',
@@ -93,8 +89,7 @@ export class SurfaceType {
         name: 'energy crystal seam',
         matIndex: '20',
         selectable: true,
-        drillable: true,
-        explodable: true,
+        digable: true,
         reinforcable: true,
         cursor: Cursor.Pointer_SurfaceType_CrystalSeam,
         statsDrillName: 'SeamDrillTime',

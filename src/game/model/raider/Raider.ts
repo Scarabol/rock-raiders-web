@@ -11,6 +11,7 @@ import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
+import { Surface } from '../map/Surface'
 import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
@@ -146,6 +147,10 @@ export class Raider extends FulfillerEntity {
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
         super.changeActivity(activity, onAnimationDone, durationTimeMs)
         this.radiusSq = this.sceneEntity.getRadiusSquare()
+    }
+
+    canDrill(surface: Surface): boolean {
+        return super.canDrill(surface) && this.hasTool(RaiderTool.DRILL)
     }
 
 }

@@ -99,8 +99,4 @@ export abstract class VehicleEntity extends FulfillerEntity {
         return false
     }
 
-    canDrillHard(): boolean {
-        return (this.stats.HardDrillTime?.[this.level] || 0) > 0
-    }
-
 }

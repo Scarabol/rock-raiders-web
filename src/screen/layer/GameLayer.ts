@@ -55,7 +55,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                         if (terrainIntersectionPoint) {
                             const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorldXZ(terrainIntersectionPoint.x, terrainIntersectionPoint.y)
                             if (surface) {
-                                if (surface.isDrillable()) {
+                                if (surface.isDigable()) {
                                     this.assignSurfaceJob(surface.createDrillJob(), surface, terrainIntersectionPoint)
                                 } else if (surface.hasRubble()) {
                                     this.assignSurfaceJob(surface.createClearRubbleJob(), surface, terrainIntersectionPoint)

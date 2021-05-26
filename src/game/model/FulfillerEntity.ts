@@ -9,6 +9,7 @@ import { RaiderActivity } from './activities/RaiderActivity'
 import { EntityType } from './EntityType'
 import { Job } from './job/Job'
 import { JobState } from './job/JobState'
+import { Surface } from './map/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
 import { MovableEntity } from './MovableEntity'
 import { MoveState } from './MoveState'
@@ -151,6 +152,10 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
         this.followUpJob = null
+    }
+
+    canDrill(surface: Surface): boolean {
+        return (this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0) > 0
     }
 
 }

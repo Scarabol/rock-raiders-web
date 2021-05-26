@@ -34,7 +34,6 @@ export class SelectionChanged extends LocalEvent {
     isSite: boolean
     hasRubble: boolean
     isDrillable: boolean
-    isDrillableHard: boolean
     isReinforcable: boolean
     someCarries: boolean
     everyHasMaxLevel: boolean
@@ -54,8 +53,7 @@ export class SelectionChanged extends LocalEvent {
             this.isFloor = entityMgr.selectedSurface?.surfaceType.floor
             this.isSite = entityMgr.selectedSurface?.surfaceType === SurfaceType.POWER_PATH_CONSTRUCTION || entityMgr.selectedSurface?.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE
             this.hasRubble = entityMgr.selectedSurface?.hasRubble()
-            this.isDrillable = entityMgr.selectedSurface?.isDrillable()
-            this.isDrillableHard = entityMgr.selectedSurface?.isExplodable() && entityMgr?.vehicles.some((v) => v.canDrillHard())
+            this.isDrillable = entityMgr?.raiders.some((v) => v.canDrill(entityMgr.selectedSurface)) || entityMgr?.vehicles.some((v) => v.canDrill(entityMgr.selectedSurface))
             this.isReinforcable = entityMgr.selectedSurface?.isReinforcable()
             this.canPlaceFence = entityMgr.selectedSurface?.canPlaceFence() && entityMgr && entityMgr.buildings.some((b) => b.entityType === EntityType.POWER_STATION && b.isUsable())
             this.someCarries = !!entityMgr.selectedRaiders?.some((r) => !!r.carries)

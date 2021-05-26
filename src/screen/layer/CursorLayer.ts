@@ -85,7 +85,7 @@ export class CursorLayer extends ScreenLayer {
                 const surface = userData['surface'] as Surface
                 if (surface) {
                     if (this.entityMgr.selectionType === SelectionType.RAIDER || this.entityMgr.selectionType === SelectionType.VEHICLE_MANED || this.entityMgr.selectionType === SelectionType.GROUP) {
-                        if (surface.isDrillable()) {
+                        if (surface.isDigable()) {
                             return Cursor.Pointer_Drill // TODO check if selected entities can drill and return Pointer_CDrill otherwise
                         } else {
                             return surface.surfaceType.cursorFulfiller

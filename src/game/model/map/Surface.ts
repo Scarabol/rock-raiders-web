@@ -469,20 +469,12 @@ export class Surface implements Selectable {
         return this.surfaceType.floor && this.discovered && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER && !this.building?.blocksPathSurface
     }
 
-    isDrillable(): boolean {
-        return this.surfaceType.drillable && this.discovered && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER)
+    isDigable(): boolean {
+        return this.surfaceType.digable && this.discovered && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER)
     }
 
     isReinforcable(): boolean {
         return this.surfaceType.reinforcable && this.discovered && this.wallType === WALL_TYPE.WALL && !this.reinforced
-    }
-
-    isExplodable(): boolean {
-        return this.surfaceType.explodable && this.discovered && (this.wallType === WALL_TYPE.WALL || this.wallType === WALL_TYPE.CORNER)
-    }
-
-    isDigable(): boolean {
-        return this.isDrillable() || this.isExplodable()
     }
 
     getDigPositions(): Vector2[] {

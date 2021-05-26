@@ -22,7 +22,7 @@ export class Dynamite extends MaterialEntity {
     }
 
     getCarryTargets(): CarryPathTarget[] {
-        if (this.targetSurface && this.targetSurface.isExplodable()) {
+        if (this.targetSurface && this.targetSurface.isDigable()) {
             return this.targetSurface.getDigPositions().map((p) => new CarryPathTarget(p))
         } else {
             return this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION).map((b) => b.getDropPosition2D())

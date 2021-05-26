@@ -9,14 +9,13 @@ import { SelectBasePanel } from './SelectBasePanel'
 export class SelectWallPanel extends SelectBasePanel {
 
     isDrillable: boolean = false
-    isHardDrillable: boolean = false
     isReinforcable: boolean = false
     numToolstationsLevel2: number = 0
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 4, onBackPanel)
         const itemDrill = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Dig')
-        itemDrill.isDisabled = () => !this.isDrillable && !this.isHardDrillable // TODO implement vehicle check for drill hard skill
+        itemDrill.isDisabled = () => !this.isDrillable
         itemDrill.onClick = () => this.publishEvent(new CreateDrillJob())
         const itemReinforce = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Reinforce')
         itemReinforce.isDisabled = () => !this.isReinforcable
@@ -29,7 +28,6 @@ export class SelectWallPanel extends SelectBasePanel {
         itemDeselect.onClick = () => this.publishEvent(new CancelSurfaceJobs())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             this.isDrillable = event.isDrillable
-            this.isHardDrillable = event.isDrillableHard
             this.isReinforcable = event.isReinforcable
             this.updateAllButtonStates()
         })
@@ -41,7 +39,6 @@ export class SelectWallPanel extends SelectBasePanel {
     reset() {
         super.reset()
         this.isDrillable = false
-        this.isHardDrillable = false
         this.isReinforcable = false
         this.numToolstationsLevel2 = 0
     }
