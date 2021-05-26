@@ -20,6 +20,7 @@ export class TrainRaiderPanel extends IconSubPanel {
         this.addTrainingItem('Interface_MenuItem_TrainDynamite', RaiderTraining.DEMOLITION)
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             this.canDoTraining = event.canDoTraining
+            this.updateAllButtonStates()
         })
     }
 

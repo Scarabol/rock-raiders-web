@@ -1,9 +1,8 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeRaiderSpawnRequest } from '../../event/GuiCommand'
-import { BuildingsChangedEvent, RaidersChangedEvent, SelectionChanged } from '../../event/LocalEvents'
+import { BuildingsChangedEvent, RaidersChangedEvent, SelectionChanged, SelectPanelType } from '../../event/LocalEvents'
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
 import { EntityType } from '../../game/model/EntityType'
-import { SelectionType } from '../../game/model/Selectable'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, MAX_RAIDER_REQUEST } from '../../params'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
@@ -86,12 +85,11 @@ export class MainPanel extends Panel {
         largeVehicleItem.onClick = () => this.mainPanel.toggleState(() => largeVehiclePanel.toggleState())
 
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
-            if (event.selectionType === SelectionType.NOTHING) this.selectSubPanel(this.mainPanel)
-            else if (event.selectionType === SelectionType.BUILDING) this.selectSubPanel(selectBuildingPanel)
-            else if (event.selectionType === SelectionType.RAIDER || event.selectionType === SelectionType.GROUP) this.selectSubPanel(selectRaiderPanel)
-            else if (event.selectionType === SelectionType.VEHICLE_EMPTY) this.selectSubPanel(selectVehicleEmptyPanel)
-            else if (event.selectionType === SelectionType.VEHICLE_MANED) this.selectSubPanel(selectVehicleManedPanel)
-            else if (event.selectionType === SelectionType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.isSite, event.hasRubble)
+            if (event.selectPanelType === SelectPanelType.RAIDER) this.selectSubPanel(selectRaiderPanel)
+            else if (event.selectPanelType === SelectPanelType.VEHICLE) this.selectSubPanel(event.allVehicleEmpty ? selectVehicleEmptyPanel : selectVehicleManedPanel)
+            else if (event.selectPanelType === SelectPanelType.BUILDING) this.selectSubPanel(selectBuildingPanel)
+            else if (event.selectPanelType === SelectPanelType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.isSite, event.hasRubble)
+            else this.selectSubPanel(this.mainPanel)
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
             this.numToolstations = BuildingsChangedEvent.countUsable(event, EntityType.TOOLSTATION)

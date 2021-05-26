@@ -46,7 +46,7 @@ export class GuiManager {
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityMgr: EntityManager, jobSupervisor: Supervisor, gameLayerCanvas: HTMLCanvasElement) {
         EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: SelectedRaiderPickTool) => {
-            entityMgr.selectedRaiders.forEach((r) => {
+            entityMgr.selection.raiders.forEach((r) => {
                 if (!r.hasTool(event.tool)) {
                     r.setJob(new GetToolJob(entityMgr, event.tool, null))
                 }
@@ -54,17 +54,15 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_POWER_PATH, () => {
-            new PowerPathBuildingSite(entityMgr, entityMgr.selectedSurface)
+            new PowerPathBuildingSite(entityMgr, entityMgr.selection.surface)
         })
         EventBus.registerEventListener(EventKey.COMMAND_MAKE_RUBBLE, () => {
-            entityMgr.selectedSurface?.makeRubble(2)
+            entityMgr.selection.surface?.makeRubble(2)
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_PLACE_FENCE, () => {
-            const selectedSurface = entityMgr.selectedSurface
-            if (selectedSurface) {
-                entityMgr.getClosestBuildingByType(selectedSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(selectedSurface)
-            }
+            const s = entityMgr.selection.surface
+            if (s) entityMgr.getClosestBuildingByType(s.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(s)
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_RAIDER_SPAWN_REQUEST, (event: ChangeRaiderSpawnRequest) => {
@@ -76,40 +74,40 @@ export class GuiManager {
             EventBus.publishEvent(new RequestedRaidersChanged(GameState.requestedRaiders))
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_DRILL_JOB, () => {
-            entityMgr.selectedSurface?.createDrillJob()
+            entityMgr.selection.surface?.createDrillJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_REINFORCE_JOB, () => {
-            entityMgr.selectedSurface?.createReinforceJob()
+            entityMgr.selection.surface?.createReinforceJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_DYNAMITE_JOB, () => {
-            entityMgr.selectedSurface?.createDynamiteJob()
+            entityMgr.selection.surface?.createDynamiteJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_SURFACE_JOBS, () => {
-            entityMgr.selectedSurface?.cancelJobs()
+            entityMgr.selection.surface?.cancelJobs()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_CLEAR_RUBBLE_JOB, () => {
-            entityMgr.selectedSurface?.createClearRubbleJob()
+            entityMgr.selection.surface?.createClearRubbleJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_BUILDING, () => {
-            entityMgr.selectedBuilding?.upgrade()
+            entityMgr.selection.building?.upgrade()
         })
         EventBus.registerEventListener(EventKey.COMMAND_BUILDING_BEAMUP, () => {
-            entityMgr.selectedBuilding?.beamUp()
+            entityMgr.selection.building?.beamUp()
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_BUILDING_POWER_STATE, (event: ChangeBuildingPowerState) => {
-            entityMgr.selectedBuilding?.setPowerSwitch(event.state)
+            entityMgr.selection.building?.setPowerSwitch(event.state)
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_EAT, () => {
-            entityMgr.selectedRaiders.forEach((r) => !r.isDriving() && r.setJob(new EatJob()))
+            entityMgr.selection.raiders.forEach((r) => !r.isDriving() && r.setJob(new EatJob()))
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_UPGRADE, () => {
-            entityMgr.selectedRaiders.forEach((r) => {
+            entityMgr.selection.raiders.forEach((r) => {
                 const closestToolstation = entityMgr.getClosestBuildingByType(r.getPosition(), EntityType.TOOLSTATION)
                 if (closestToolstation && r.level < r.stats.Levels) {
                     r.setJob(new UpgradeRaiderJob(closestToolstation))
@@ -118,15 +116,15 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_BEAMUP, () => {
-            entityMgr.selectedRaiders.forEach((r) => r.beamUp())
+            entityMgr.selection.raiders.forEach((r) => r.beamUp())
         })
         EventBus.registerEventListener(EventKey.COMMAND_TRAIN_RAIDER, (event: TrainRaider) => {
-            entityMgr.selectedRaiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainRaiderJob(entityMgr, event.training, null)))
+            entityMgr.selection.raiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainRaiderJob(entityMgr, event.training, null)))
             EventBus.publishEvent(new DeselectAll())
             return true
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_DROP, () => {
-            entityMgr.selectedRaiders?.forEach((r) => r.dropItem())
+            entityMgr.selection.raiders.forEach((r) => r.dropItem())
         })
         EventBus.registerEventListener(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
             sceneMgr.setBuildModeSelection(GuiManager.createBuildingFromType(event.entityType, sceneMgr, entityMgr))
@@ -135,7 +133,7 @@ export class GuiManager {
             sceneMgr.setBuildModeSelection(null)
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
-            entityMgr.selectedSurface.site?.cancelSite()
+            entityMgr.selection.surface.site?.cancelSite()
         })
         EventBus.registerEventListener(EventKey.COMMAND_REQUEST_VEHICLE_SPAWN, (event: RequestVehicleSpawn) => {
             console.log('Vehicle spawn requested for: ' + EntityType[event.vehicle])
@@ -155,18 +153,17 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_GET_MAN, () => {
-            const selectedVehicle = entityMgr.selectedVehicle
-            if (selectedVehicle) {
-                EventBus.publishEvent(new JobCreateEvent(new VehicleCallManJob(selectedVehicle)))
-                EventBus.publishEvent(new DeselectAll())
-            }
+            entityMgr.selection.vehicles.forEach((v) => {
+                if (!v.callManJob && !v.driver) EventBus.publishEvent(new JobCreateEvent(new VehicleCallManJob(v)))
+            })
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
-            entityMgr.selectedVehicle?.beamUp()
+            entityMgr.selection.vehicles.forEach((v) => v.beamUp())
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT, () => {
-            entityMgr.selectedVehicle?.dropDriver()
+            entityMgr.selection.vehicles.forEach((v) => v.dropDriver())
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {

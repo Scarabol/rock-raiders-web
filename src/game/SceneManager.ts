@@ -1,12 +1,7 @@
 import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
-import { Sample } from '../audio/Sample'
-import { SoundManager } from '../audio/SoundManager'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe } from '../core/Util'
-import { EventBus } from '../event/EventBus'
-import { EventKey } from '../event/EventKeyEnum'
-import { SelectionChanged } from '../event/LocalEvents'
 import { KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from '../scene/SceneMesh'
@@ -14,9 +9,13 @@ import { DebugHelper } from '../screen/DebugHelper'
 import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
+import { GameSelection } from './model/GameSelection'
 import { GameState } from './model/GameState'
+import { Surface } from './model/map/Surface'
 import { Terrain } from './model/map/Terrain'
-import { Selectable, SelectionType } from './model/Selectable'
+import { MaterialEntity } from './model/material/MaterialEntity'
+import { Selectable } from './model/Selectable'
+import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { TerrainLoader } from './TerrainLoader'
 import { WorldManager } from './WorldManager'
 
@@ -55,36 +54,50 @@ export class SceneManager {
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
         this.controls.listenToKeyEvents(this.renderer.domElement)
         this.controls.keyPanSpeed = this.controls.keyPanSpeed * KEY_PAN_SPEED
-
-        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
-            if (event.selectionType === SelectionType.NOTHING) this.selectEntities([])
-        })
     }
 
-    getSelectionByRay(rx: number, ry: number): Selectable[] {
+    getSelectionByRay(rx: number, ry: number): GameSelection {
         const raycaster = new Raycaster()
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
-        let selection = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere)))
-        if (selection.length < 1) selection = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
-        if (selection.length < 1) selection = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere)))
-        if (selection.length < 1 && this.terrain) selection = SceneManager.getSelection(raycaster.intersectObjects(this.terrain.floorGroup.children))
+        const selection = new GameSelection()
+        selection.raiders.push(...SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))))
+        if (selection.isEmpty()) selection.vehicles.push(...SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))))
+        if (selection.isEmpty()) selection.building = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere)))[0]
+        if (selection.isEmpty() && this.terrain) selection.surface = SceneManager.getSelection(raycaster.intersectObjects(this.terrain.floorGroup.children))[0]
         return selection
     }
 
-    private static getSelection(intersects: Intersection[]): Selectable[] {
+    private static getSelection(intersects: Intersection[]): any[] {
         if (intersects.length < 1) return []
-        const selected = []
-        if (intersects.length > 0) {
-            const userData = intersects[0].object.userData
-            if (userData && userData.hasOwnProperty('selectable')) {
-                const selectable = userData['selectable'] as Selectable
-                if (selectable?.isSelectable() || selectable?.selected) selected.push(selectable)
-            }
+        const selection = []
+        const userData = intersects[0].object.userData
+        if (userData && userData.hasOwnProperty('selectable')) {
+            const selectable = userData['selectable'] as Selectable
+            if (selectable?.isInSelection()) selection.push(selectable)
         }
-        return selected
+        return selection
     }
 
-    selectEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number) {
+    getFirstByRay(rx: number, ry: number): { vehicle?: VehicleEntity, material?: MaterialEntity, surface?: Surface } {
+        const raycaster = new Raycaster()
+        raycaster.setFromCamera({x: rx, y: ry}, this.camera)
+        const vehicle = SceneManager.getEntity(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
+        if (vehicle) return {vehicle: vehicle}
+        // FIXME materials don't have pick spheres yet
+        // const material = SceneManager.getEntity(raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere)))
+        // if (material) return {material: material}
+        if (this.terrain) {
+            const surface = SceneManager.getEntity(raycaster.intersectObjects(this.terrain.floorGroup.children))
+            if (surface) return {surface: surface}
+        }
+        return null
+    }
+
+    private static getEntity(intersects: Intersection[]) {
+        return (intersects[0]?.object?.userData?.['selectable']) || null
+    }
+
+    getEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number): GameSelection {
         const startPoint = new Vector3(r1x, r1y, 0.5)
         const endPoint = new Vector3(r2x, r2y, 0.5)
         // Avoid invalid frustum
@@ -150,13 +163,11 @@ export class SceneManager {
         planes[5].setFromCoplanarPoints(vectemp3, vectemp2, vectemp1)
         planes[5].normal.multiplyScalar(-1)
 
-        let entities: Selectable[] = this.entityMgr.raiders.filter((r) => SceneManager.isInFrustum(r.sceneEntity.pickSphere, frustum))
-        entities.push(...this.entityMgr.vehicles.filter((v) => SceneManager.isInFrustum(v.sceneEntity.pickSphere, frustum)))
-        if (entities.length < 1) {
-            const firstBuilding = this.entityMgr.buildings.find((b) => SceneManager.isInFrustum(b.sceneEntity.pickSphere, frustum))
-            entities = firstBuilding ? [firstBuilding] : []
-        }
-        this.selectEntities(entities)
+        const selection = new GameSelection()
+        selection.raiders.push(...this.entityMgr.raiders.filter((r) => r.isInSelection() && SceneManager.isInFrustum(r.sceneEntity.pickSphere, frustum)))
+        selection.vehicles.push(...this.entityMgr.vehicles.filter((v) => v.isInSelection() && SceneManager.isInFrustum(v.sceneEntity.pickSphere, frustum)))
+        if (selection.isEmpty()) selection.building = this.entityMgr.buildings.find((b) => SceneManager.isInFrustum(b.sceneEntity.pickSphere, frustum))
+        return selection
     }
 
     private static isInFrustum(pickSphere: Mesh, frustum: Frustum) {
@@ -164,34 +175,6 @@ export class SceneManager {
         const selectionCenter = new Vector3()
         pickSphere.getWorldPosition(selectionCenter)
         return frustum.containsPoint(selectionCenter)
-    }
-
-    selectEntities(entities: Selectable[]) {
-        this.entityMgr.selectedEntities = this.entityMgr.selectedEntities.filter((previouslySelected) => {
-            const stillSelected = entities.indexOf(previouslySelected) !== -1
-            if (!stillSelected) previouslySelected.deselect()
-            return stillSelected
-        })
-        // add new entities that are selectable
-        let addedSelected = false
-        entities.forEach((freshlySelected) => {
-            if (freshlySelected.select()) {
-                addedSelected = true
-                this.entityMgr.selectedEntities.push(freshlySelected)
-            }
-        })
-        if (addedSelected) SoundManager.playSample(Sample.SFX_Okay)
-        // determine and set next selection type
-        const len = this.entityMgr.selectedEntities.length
-        if (len > 1) {
-            this.entityMgr.selectionType = SelectionType.GROUP
-        } else if (len === 1) {
-            this.entityMgr.selectionType = this.entityMgr.selectedEntities[0].getSelectionType()
-        } else if (this.entityMgr.selectionType !== null) {
-            this.entityMgr.selectionType = SelectionType.NOTHING
-        }
-        // AFTER updating selected entities and selection type, publish all events
-        EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
     setupScene(levelConf: LevelEntryCfg) {

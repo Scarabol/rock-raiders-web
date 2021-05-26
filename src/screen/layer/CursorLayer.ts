@@ -7,7 +7,6 @@ import { IEventHandler } from '../../event/IEventHandler'
 import { ChangeCursor } from '../../event/LocalEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { Surface } from '../../game/model/map/Surface'
-import { SelectionType } from '../../game/model/Selectable'
 import { VehicleEntity } from '../../game/model/vehicle/VehicleEntity'
 import { SceneManager } from '../../game/SceneManager'
 import { WorldManager } from '../../game/WorldManager'
@@ -70,7 +69,7 @@ export class CursorLayer extends ScreenLayer {
             const userData = intersects[0].object.userData
             if (userData && userData.hasOwnProperty('selectable')) {
                 const vehicle = userData['selectable'] as VehicleEntity
-                if (!vehicle?.driver && this.entityMgr.selectedRaiders.length > 0) {
+                if (!vehicle?.driver && this.entityMgr.selection.raiders.length > 0) {
                     return Cursor.Pointer_GetIn
                 }
             }
@@ -84,12 +83,8 @@ export class CursorLayer extends ScreenLayer {
             if (userData && userData.hasOwnProperty('surface')) {
                 const surface = userData['surface'] as Surface
                 if (surface) {
-                    if (this.entityMgr.selectionType === SelectionType.RAIDER || this.entityMgr.selectionType === SelectionType.VEHICLE_MANED || this.entityMgr.selectionType === SelectionType.GROUP) {
-                        if (surface.isDigable()) {
-                            return Cursor.Pointer_Drill // TODO check if selected entities can drill and return Pointer_CDrill otherwise
-                        } else {
-                            return surface.surfaceType.cursorFulfiller
-                        }
+                    if (this.entityMgr.selection.raiders.some((r) => r.canDrill(surface)) || this.entityMgr.selection.vehicles.some((v) => v.canDrill(surface))) {
+                        return surface.surfaceType.cursorFulfiller
                     } else {
                         return surface.surfaceType.cursor
                     }

@@ -24,7 +24,7 @@ import { ElectricFence } from '../material/ElectricFence'
 import { Ore } from '../material/Ore'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining, RaiderTrainingSites, RaiderTrainingStatsProperty } from '../raider/RaiderTraining'
-import { Selectable, SelectionType } from '../Selectable'
+import { Selectable } from '../Selectable'
 import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
 
@@ -64,12 +64,12 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
 
     abstract get stats(): BuildingEntityStats
 
-    getSelectionType(): SelectionType {
-        return SelectionType.BUILDING
-    }
-
     isSelectable(): boolean {
         return !this.selected && !this.inBeam
+    }
+
+    isInSelection(): boolean {
+        return this.isSelectable() || this.selected
     }
 
     select(): boolean {
@@ -96,10 +96,6 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         } else {
             return this.getPosition2D()
         }
-    }
-
-    getDropPosition(): Vector3 {
-        return this.sceneMgr.getFloorPosition(this.getDropPosition2D())
     }
 
     isUsable(): boolean {

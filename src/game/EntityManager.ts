@@ -1,11 +1,14 @@
 import { Vector2, Vector3 } from 'three'
 import { EventBus } from '../event/EventBus'
+import { EventKey } from '../event/EventKeyEnum'
+import { SelectionChanged, SelectPanelType } from '../event/LocalEvents'
 import { JobCreateEvent } from '../event/WorldEvents'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
 import { BaseEntity } from './model/BaseEntity'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingSite } from './model/building/BuildingSite'
 import { EntityType } from './model/EntityType'
+import { GameSelection } from './model/GameSelection'
 import { Surface } from './model/map/Surface'
 import { MaterialEntity } from './model/material/MaterialEntity'
 import { Bat } from './model/monster/Bat'
@@ -13,13 +16,11 @@ import { RockMonster } from './model/monster/RockMonster'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
 import { RaiderTraining } from './model/raider/RaiderTraining'
-import { Selectable, SelectionType } from './model/Selectable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 
 export class EntityManager {
 
-    selectedEntities: Selectable[] = []
-    selectionType: SelectionType = null
+    selection: GameSelection = new GameSelection()
     buildings: BuildingEntity[] = []
     buildingsUndiscovered: BuildingEntity[] = []
     raiders: Raider[] = []
@@ -33,9 +34,15 @@ export class EntityManager {
     vehicles: VehicleEntity[] = []
     vehiclesUndiscovered: VehicleEntity[] = []
 
+    constructor() {
+        // event handler must be placed here, because only this class knows the "actual" selection instance
+        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
+            if (event.selectPanelType === SelectPanelType.NONE) this.selection.deselectAll()
+        })
+    }
+
     reset() {
-        this.selectedEntities = []
-        this.selectionType = null
+        this.selection = new GameSelection()
         this.buildings = []
         this.buildingsUndiscovered = []
         this.raiders = []
@@ -51,7 +58,6 @@ export class EntityManager {
     }
 
     start() {
-
     }
 
     stop() {
@@ -70,21 +76,28 @@ export class EntityManager {
     }
 
     getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity {
-        const targetBuildings = this.getBuildingsByType(...buildingTypes)
+        return EntityManager.getClosestBuilding(this.getBuildingsByType(...buildingTypes), position)
+    }
+
+    getTrainingSites(training: RaiderTraining): BuildingEntity[] {
+        return this.buildings.filter((b) => b.isTrainingSite(training))
+    }
+
+    getClosestTrainingSite(position: Vector3, training: RaiderTraining) {
+        return EntityManager.getClosestBuilding(this.getTrainingSites(training), position)
+    }
+
+    private static getClosestBuilding(buildings: BuildingEntity[], position: Vector3) {
         let closest = null, minDist = null
-        targetBuildings.forEach((b) => {
-            const bPos = b.getDropPosition()
+        buildings.forEach((b) => {
+            const bPos = b.getPosition()
             const dist = position.distanceToSquared(bPos) // TODO better use pathfinding
             if (closest === null || dist < minDist) {
                 closest = b
                 minDist = dist
             }
         })
-        return closest
-    }
-
-    getTrainingSites(training: RaiderTraining): BuildingEntity[] {
-        return this.buildings.filter((b) => b.isTrainingSite(training))
+        return closest // TODO when using path finding, return path instead
     }
 
     getMaxRaiders(): number {
@@ -109,22 +122,6 @@ export class EntityManager {
             }
         })
         discovered.forEach((r) => undiscovered.remove(r))
-    }
-
-    get selectedSurface(): Surface {
-        return this.selectionType === SelectionType.SURFACE && this.selectedEntities.length > 0 ? this.selectedEntities[0] as Surface : null
-    }
-
-    get selectedBuilding(): BuildingEntity {
-        return this.selectionType === SelectionType.BUILDING && this.selectedEntities.length > 0 ? this.selectedEntities[0] as BuildingEntity : null
-    }
-
-    get selectedRaiders(): Raider[] {
-        return (this.selectionType === SelectionType.RAIDER || this.selectionType === SelectionType.GROUP) && this.selectedEntities.length > 0 ? this.selectedEntities as Raider[] : []
-    }
-
-    get selectedVehicle(): VehicleEntity {
-        return (this.selectionType === SelectionType.VEHICLE_MANED || this.selectionType === SelectionType.VEHICLE_EMPTY) && this.selectedEntities.length > 0 ? this.selectedEntities[0] as VehicleEntity : null
     }
 
     placeMaterial(item: MaterialEntity, worldPosition: Vector2) {

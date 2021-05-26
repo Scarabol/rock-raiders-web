@@ -14,7 +14,7 @@ import { MaterialEntity } from './material/MaterialEntity'
 import { MovableEntity } from './MovableEntity'
 import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
-import { Selectable, SelectionType } from './Selectable'
+import { Selectable } from './Selectable'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
@@ -74,8 +74,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.changeActivity()
     }
 
-    abstract getSelectionType(): SelectionType
-
     deselect() {
         this.sceneEntity.selectionFrame.visible = false
         this.selected = false
@@ -83,6 +81,10 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     isSelectable(): boolean {
         return !this.selected && !this.inBeam
+    }
+
+    isInSelection(): boolean {
+        return this.isSelectable() || this.selected
     }
 
     select(): boolean {

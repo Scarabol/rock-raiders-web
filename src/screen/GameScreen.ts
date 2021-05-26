@@ -54,6 +54,7 @@ export class GameScreen extends BaseScreen {
         this.gameLayer.entityMgr = this.entityMgr
         this.selectionLayer.worldMgr = this.worldMgr
         this.selectionLayer.sceneMgr = this.sceneMgr
+        this.selectionLayer.entityMgr = this.entityMgr
         this.guiLayer.entityMgr = this.entityMgr
         this.overlayLayer.entityMgr = this.entityMgr
         this.jobSupervisor = new Supervisor(this.sceneMgr, this.entityMgr)

@@ -8,7 +8,6 @@ import { SurfaceType } from '../game/model/map/SurfaceType'
 import { Terrain } from '../game/model/map/Terrain'
 import { AllRaiderTools, RaiderTool } from '../game/model/raider/RaiderTool'
 import { AllRaiderTrainings, RaiderTraining } from '../game/model/raider/RaiderTraining'
-import { SelectionType } from '../game/model/Selectable'
 import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { TILESIZE } from '../params'
 import { Cursor } from '../screen/Cursor'
@@ -24,9 +23,19 @@ export class LocalEvent extends GameEvent {
 
 }
 
+export enum SelectPanelType {
+
+    NONE,
+    RAIDER,
+    VEHICLE,
+    BUILDING,
+    SURFACE,
+
+}
+
 export class SelectionChanged extends LocalEvent {
 
-    selectionType: SelectionType = SelectionType.NOTHING
+    selectPanelType: SelectPanelType = SelectPanelType.NONE
     isGround: boolean
     isPowerPath: boolean
     canPlaceFence: boolean
@@ -42,29 +51,28 @@ export class SelectionChanged extends LocalEvent {
     buildingCanUpgrade: boolean
     buildingCanSwitchPower: boolean
     vehicleHasCallManJob: boolean
-    vehicleIsManed: boolean
+    allVehicleEmpty: boolean
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.SELECTION_CHANGED)
-        if (entityMgr) {
-            this.selectionType = entityMgr.selectionType
-            this.isGround = entityMgr.selectedSurface?.surfaceType === SurfaceType.GROUND
-            this.isPowerPath = entityMgr.selectedSurface?.surfaceType === SurfaceType.POWER_PATH
-            this.isFloor = entityMgr.selectedSurface?.surfaceType.floor
-            this.isSite = entityMgr.selectedSurface?.surfaceType === SurfaceType.POWER_PATH_CONSTRUCTION || entityMgr.selectedSurface?.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE
-            this.hasRubble = entityMgr.selectedSurface?.hasRubble()
-            this.isDrillable = entityMgr?.raiders.some((v) => v.canDrill(entityMgr.selectedSurface)) || entityMgr?.vehicles.some((v) => v.canDrill(entityMgr.selectedSurface))
-            this.isReinforcable = entityMgr.selectedSurface?.isReinforcable()
-            this.canPlaceFence = entityMgr.selectedSurface?.canPlaceFence() && entityMgr && entityMgr.buildings.some((b) => b.entityType === EntityType.POWER_STATION && b.isUsable())
-            this.someCarries = !!entityMgr.selectedRaiders?.some((r) => !!r.carries)
-            this.everyHasMaxLevel = !!entityMgr.selectedRaiders?.every((r) => r.level >= r.stats.Levels)
-            AllRaiderTrainings.forEach((training) => this.canDoTraining.set(training, entityMgr && entityMgr.getTrainingSites(training).length > 0 && entityMgr.selectedRaiders?.some((r) => !r.hasTraining(training))))
-            AllRaiderTools.forEach((tool) => this.everyHasTool.set(tool, !!entityMgr.selectedRaiders?.every((r) => r.hasTool(tool))))
-            this.buildingCanUpgrade = entityMgr.selectedBuilding?.canUpgrade()
-            this.buildingCanSwitchPower = !entityMgr.selectedBuilding?.stats.SelfPowered && !entityMgr.selectedBuilding?.stats.PowerBuilding
-            this.vehicleHasCallManJob = !!entityMgr?.selectedVehicle?.callManJob
-            this.vehicleIsManed = !!entityMgr?.selectedVehicle?.driver
-        }
+        if (!entityMgr) return
+        this.selectPanelType = entityMgr.selection.getSelectPanelType()
+        this.isGround = entityMgr.selection.surface?.surfaceType === SurfaceType.GROUND
+        this.isPowerPath = entityMgr.selection.surface?.surfaceType === SurfaceType.POWER_PATH
+        this.isFloor = entityMgr.selection.surface?.surfaceType.floor
+        this.isSite = entityMgr.selection.surface?.surfaceType === SurfaceType.POWER_PATH_CONSTRUCTION || entityMgr.selection.surface?.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE
+        this.hasRubble = entityMgr.selection.surface?.hasRubble()
+        this.isDrillable = entityMgr.selection.surface?.isDigable()
+        this.isReinforcable = entityMgr.selection.surface?.isReinforcable()
+        this.canPlaceFence = entityMgr.selection.surface?.canPlaceFence() && entityMgr && entityMgr.buildings.some((b) => b.entityType === EntityType.POWER_STATION && b.isUsable())
+        this.someCarries = !!entityMgr.selection.raiders.some((r) => !!r.carries)
+        this.everyHasMaxLevel = !!entityMgr.selection.raiders.every((r) => r.level >= r.stats.Levels)
+        AllRaiderTrainings.forEach((training) => this.canDoTraining.set(training, entityMgr && entityMgr.getTrainingSites(training).length > 0 && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
+        AllRaiderTools.forEach((tool) => this.everyHasTool.set(tool, !!entityMgr.selection.raiders.every((r) => r.hasTool(tool))))
+        this.buildingCanUpgrade = entityMgr.selection.building?.canUpgrade()
+        this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.SelfPowered && !entityMgr.selection.building?.stats.PowerBuilding
+        this.vehicleHasCallManJob = entityMgr.selection.vehicles.every((v) => !!v.callManJob)
+        this.allVehicleEmpty = entityMgr.selection.vehicles.every((v) => !v.driver)
     }
 
 }

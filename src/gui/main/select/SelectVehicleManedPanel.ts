@@ -7,7 +7,7 @@ import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectVehicleManedPanel extends SelectBasePanel {
 
-    vehicleIsManed: boolean = false
+    allVehicleEmpty: boolean = false
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 7, onBackPanel)
@@ -15,7 +15,7 @@ export class SelectVehicleManedPanel extends SelectBasePanel {
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_VehiclePickUp')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeVehicle')
         const leaveVehicleItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GetOut')
-        leaveVehicleItem.isDisabled = () => !this.vehicleIsManed
+        leaveVehicleItem.isDisabled = () => this.allVehicleEmpty
         leaveVehicleItem.onClick = () => this.publishEvent(new VehicleDriverGetOut())
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GotoFirstPerson')
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GotoSecondPerson')
@@ -23,7 +23,7 @@ export class SelectVehicleManedPanel extends SelectBasePanel {
         deleteVehicleItem.isDisabled = () => false
         deleteVehicleItem.onClick = () => this.publishEvent(new VehicleBeamUp())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
-            this.vehicleIsManed = event.vehicleIsManed
+            this.allVehicleEmpty = event.allVehicleEmpty
             leaveVehicleItem.updateState()
         })
     }

@@ -1,6 +1,6 @@
 import { PositionalAudio, Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
-import { VehiclesChangedEvent } from '../../../event/LocalEvents'
+import { SelectionChanged, VehiclesChangedEvent } from '../../../event/LocalEvents'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
@@ -15,7 +15,6 @@ import { Ore } from '../material/Ore'
 import { PathTarget } from '../PathTarget'
 import { Raider } from '../raider/Raider'
 import { RaiderTraining } from '../raider/RaiderTraining'
-import { SelectionType } from '../Selectable'
 import { VehicleActivity } from './VehicleActivity'
 
 export abstract class VehicleEntity extends FulfillerEntity {
@@ -31,10 +30,6 @@ export abstract class VehicleEntity extends FulfillerEntity {
 
     findPathToTarget(target: PathTarget): TerrainPath {
         return this.sceneMgr.terrain.findDrivePath(this.getPosition2D(), target)
-    }
-
-    getSelectionType(): SelectionType {
-        return this.driver ? SelectionType.VEHICLE_MANED : SelectionType.VEHICLE_EMPTY
     }
 
     beamUp() {
@@ -63,6 +58,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
         this.driver.changeActivity(this.getDriverActivity());
         (this.animation.driverJoint || this.sceneEntity.group).add(this.driver.sceneEntity.group)
         if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.playPositionalAudio(this.stats.EngineSound, true)
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
     dropDriver() {
@@ -77,6 +73,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
         this.driver = null
         this.engineSound?.stop()
         this.engineSound = null
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
     getRequiredTraining(): RaiderTraining {

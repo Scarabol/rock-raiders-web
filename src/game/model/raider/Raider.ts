@@ -15,7 +15,6 @@ import { Surface } from '../map/Surface'
 import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
-import { SelectionType } from '../Selectable'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { RaiderTool } from './RaiderTool'
 import { RaiderTraining } from './RaiderTraining'
@@ -52,10 +51,6 @@ export class Raider extends FulfillerEntity {
 
     isSelectable(): boolean {
         return super.isSelectable() && !this.slipped && !this.vehicle
-    }
-
-    getSelectionType(): SelectionType {
-        return SelectionType.RAIDER
     }
 
     isDriving(): boolean {

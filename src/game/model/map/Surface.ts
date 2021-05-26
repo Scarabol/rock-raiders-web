@@ -22,7 +22,7 @@ import { Crystal } from '../material/Crystal'
 import { Dynamite } from '../material/Dynamite'
 import { ElectricFence } from '../material/ElectricFence'
 import { Ore } from '../material/Ore'
-import { Selectable, SelectionType } from '../Selectable'
+import { Selectable } from '../Selectable'
 import { SurfaceGeometry } from './SurfaceGeometry'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
@@ -427,12 +427,12 @@ export class Surface implements Selectable {
         this.terrain.floorGroup.updateWorldMatrix(true, true) // otherwise ray intersection is not working before rendering
     }
 
-    getSelectionType(): SelectionType {
-        return SelectionType.SURFACE
-    }
-
     isSelectable(): boolean {
         return this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered
+    }
+
+    isInSelection(): boolean {
+        return this.isSelectable() || this.selected
     }
 
     select(): boolean {
@@ -627,6 +627,7 @@ export class Surface implements Selectable {
     }
 
     createDrillJob(): DrillJob {
+        if (!this.isDigable()) return null
         if (!this.drillJob) {
             this.drillJob = new DrillJob(this)
             this.updateJobColor()
@@ -636,6 +637,7 @@ export class Surface implements Selectable {
     }
 
     createReinforceJob(): ReinforceJob {
+        if (!this.isReinforcable()) return null
         if (!this.reinforceJob) {
             this.reinforceJob = new ReinforceJob(this)
             this.updateJobColor()
@@ -645,6 +647,7 @@ export class Surface implements Selectable {
     }
 
     createDynamiteJob(): CarryDynamiteJob {
+        if (!this.isDigable()) return null
         if (!this.dynamiteJob) {
             const targetBuilding = this.entityMgr.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
             if (!targetBuilding) throw 'Could not find toolstation to spawn dynamite'
@@ -658,6 +661,7 @@ export class Surface implements Selectable {
     }
 
     createClearRubbleJob(): ClearRubbleJob {
+        if (!this.hasRubble()) return null
         if (!this.clearRubbleJob) {
             this.clearRubbleJob = new ClearRubbleJob(this)
             this.updateJobColor()
