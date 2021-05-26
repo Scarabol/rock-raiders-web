@@ -80,8 +80,12 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.selected = false
     }
 
+    isSelectable(): boolean {
+        return !this.selected && !this.inBeam
+    }
+
     select(): boolean {
-        if (this.selected || this.inBeam) return false
+        if (!this.isSelectable()) return false
         this.sceneEntity.selectionFrame.visible = true
         this.selected = true
         this.changeActivity()
@@ -141,8 +145,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     private completeJob() {
         this.workAudio?.stop()
         this.workAudio = null
-        this.job?.onJobComplete()
         this.changeActivity()
+        this.job?.onJobComplete()
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob

@@ -1,6 +1,10 @@
 export interface Selectable {
 
+    selected: boolean
+
     getSelectionType(): SelectionType
+
+    isSelectable(): boolean
 
     select(): boolean
 

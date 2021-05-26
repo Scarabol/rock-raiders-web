@@ -68,8 +68,12 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         return SelectionType.BUILDING
     }
 
+    isSelectable(): boolean {
+        return !this.selected && !this.inBeam
+    }
+
     select(): boolean {
-        if (this.selected || this.inBeam) return false
+        if (!this.isSelectable()) return false
         this.sceneEntity.selectionFrame.visible = true
         this.selected = true
         return true

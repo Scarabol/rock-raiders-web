@@ -56,7 +56,7 @@ export class SelectionLayer extends ScreenLayer {
         if (Math.abs(screenX - this.selectStart.x) < 5 && Math.abs(screenY - this.selectStart.y) < 5) {
             const x = (this.selectStart.x + screenX) / this.canvas.width - 1
             const y = -(this.selectStart.y + screenY) / this.canvas.height + 1
-            this.sceneMgr.selectEntitiesByRay(x, y)
+            this.sceneMgr.selectEntities(this.sceneMgr.getSelectionByRay(x, y))
         } else {
             this.sceneMgr.selectEntitiesInFrustum(r1x, r1y, r2x, r2y)
         }

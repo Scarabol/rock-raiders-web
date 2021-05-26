@@ -1,4 +1,4 @@
-import { AmbientLight, AudioListener, Color, Frustum, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { Sample } from '../audio/Sample'
 import { SoundManager } from '../audio/SoundManager'
@@ -60,22 +60,27 @@ export class SceneManager {
         })
     }
 
-    selectEntitiesByRay(rx: number, ry: number) {
+    getSelectionByRay(rx: number, ry: number): Selectable[] {
         const raycaster = new Raycaster()
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
-        let intersects = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
-        if (intersects.length < 1) intersects = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
-        if (intersects.length < 1) intersects = raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere))
-        if (intersects.length < 1 && this.terrain) intersects = raycaster.intersectObjects(this.terrain.floorGroup.children)
+        let selection = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere)))
+        if (selection.length < 1) selection = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
+        if (selection.length < 1) selection = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere)))
+        if (selection.length < 1 && this.terrain) selection = SceneManager.getSelection(raycaster.intersectObjects(this.terrain.floorGroup.children))
+        return selection
+    }
+
+    private static getSelection(intersects: Intersection[]): Selectable[] {
+        if (intersects.length < 1) return []
         const selected = []
         if (intersects.length > 0) {
             const userData = intersects[0].object.userData
             if (userData && userData.hasOwnProperty('selectable')) {
-                const selectable = userData['selectable']
-                if (selectable) selected.push(selectable)
+                const selectable = userData['selectable'] as Selectable
+                if (selectable?.isSelectable() || selectable?.selected) selected.push(selectable)
             }
         }
-        this.selectEntities(selected)
+        return selected
     }
 
     selectEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number) {

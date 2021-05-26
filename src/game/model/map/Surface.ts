@@ -431,16 +431,18 @@ export class Surface implements Selectable {
         return SelectionType.SURFACE
     }
 
+    isSelectable(): boolean {
+        return this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered
+    }
+
     select(): boolean {
-        if (this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered) {
-            this.selected = true
-            this.forEachMaterial((mat) => mat.color.setHex(0x6060a0))
-            if (this.surfaceType.floor) SoundManager.playSample(Sample.SFX_Floor)
-            if (this.surfaceType.shaping) SoundManager.playSample(Sample.SFX_Wall)
-            console.log('Surface selected at ' + this.x + '/' + this.y)
-            return true
-        }
-        return false
+        if (!this.isSelectable()) return false
+        this.selected = true
+        this.forEachMaterial((mat) => mat.color.setHex(0x6060a0))
+        if (this.surfaceType.floor) SoundManager.playSample(Sample.SFX_Floor)
+        if (this.surfaceType.shaping) SoundManager.playSample(Sample.SFX_Wall)
+        console.log('Surface selected at ' + this.x + '/' + this.y)
+        return true
     }
 
     deselect(): any {

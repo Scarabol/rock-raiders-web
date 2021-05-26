@@ -49,9 +49,8 @@ export class Raider extends FulfillerEntity {
         EventBus.publishEvent(new RaiderDiscoveredEvent(this.getPosition()))
     }
 
-    select(): boolean {
-        if (this.slipped) return false
-        return super.select()
+    isSelectable(): boolean {
+        return super.isSelectable() && !this.slipped && !this.vehicle
     }
 
     getSelectionType(): SelectionType {
