@@ -12,7 +12,6 @@ import { CHECK_SPAWN_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../para
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
 import { RaiderActivity } from './model/activities/RaiderActivity'
-import { BuildingEntity } from './model/building/BuildingEntity'
 import { EntityType } from './model/EntityType'
 import { GameResultState } from './model/GameResult'
 import { GameState } from './model/GameState'
@@ -28,7 +27,6 @@ export class WorldManager {
     oxygenUpdateInterval = null
     spawnRaiderInterval = null
     oxygenRate: number = 0
-    buildModeSelection: BuildingEntity = null
 
     constructor() {
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => {
@@ -44,7 +42,6 @@ export class WorldManager {
     setup(levelConf: LevelEntryCfg, onLevelEnd: (state: GameResultState) => any) {
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         this.oxygenRate = levelConf.oxygenRate
-        this.setBuildModeSelection(null)
         // load nerp script
         this.nerpRunner = NerpParser.parse(this.entityMgr, ResourceManager.getResource(levelConf.nerpFile))
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
@@ -104,11 +101,6 @@ export class WorldManager {
                 EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
             })
         }
-    }
-
-    setBuildModeSelection(building: BuildingEntity) {
-        this.buildModeSelection?.removeFromScene()
-        this.buildModeSelection = building
     }
 
 }

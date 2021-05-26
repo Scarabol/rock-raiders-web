@@ -37,38 +37,34 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
     }
 
     handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
+        const terrainIntersectionPoint = this.getTerrainPositionFromEvent(event)
         const buildMarker = this.sceneMgr.buildMarker
         if (event.eventEnum === POINTER_EVENT.MOVE) {
-            const intersectionPoint = this.getTerrainPositionFromEvent(event)
-            if (intersectionPoint) this.sceneMgr.setTorchPosition(intersectionPoint)
-            buildMarker.update(intersectionPoint)
+            if (terrainIntersectionPoint) this.sceneMgr.setTorchPosition(terrainIntersectionPoint)
+            buildMarker.update(terrainIntersectionPoint)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
-                if (this.worldMgr.buildModeSelection && buildMarker.lastCheck) {
-                    buildMarker.createBuildingSite()
-                }
+                buildMarker.createBuildingSite()
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
                 const downUpDistance = Math.abs(event.clientX - this.rightDown.x) + Math.abs(event.clientY - this.rightDown.y)
                 if (downUpDistance < 3) {
-                    if (this.entityMgr.selectionType === SelectionType.RAIDER || this.entityMgr.selectionType === SelectionType.GROUP || this.entityMgr.selectionType === SelectionType.VEHICLE_MANED) {
+                    if (this.sceneMgr.hasBuildModeSelection()) {
+                        this.sceneMgr.setBuildModeSelection(null)
+                    } else if (this.entityMgr.selectionType === SelectionType.RAIDER || this.entityMgr.selectionType === SelectionType.GROUP || this.entityMgr.selectionType === SelectionType.VEHICLE_MANED) {
                         // TODO check for vehicles and collectables entity first
-                        const intersectionPoint = this.getTerrainPositionFromEvent(event)
-                        if (intersectionPoint) {
-                            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorldXZ(intersectionPoint.x, intersectionPoint.y)
+                        if (terrainIntersectionPoint) {
+                            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorldXZ(terrainIntersectionPoint.x, terrainIntersectionPoint.y)
                             if (surface) {
                                 if (surface.isDrillable()) {
-                                    this.assignSurfaceJob(surface.createDrillJob(), surface, intersectionPoint)
+                                    this.assignSurfaceJob(surface.createDrillJob(), surface, terrainIntersectionPoint)
                                 } else if (surface.hasRubble()) {
-                                    this.assignSurfaceJob(surface.createClearRubbleJob(), surface, intersectionPoint)
+                                    this.assignSurfaceJob(surface.createClearRubbleJob(), surface, terrainIntersectionPoint)
                                 } else if (surface.isWalkable()) {
-                                    this.entityMgr.selectedEntities.forEach((f: FulfillerEntity) => f.setJob(new MoveJob(intersectionPoint)))
+                                    this.entityMgr.selectedEntities.forEach((f: FulfillerEntity) => f.setJob(new MoveJob(terrainIntersectionPoint)))
                                     if (this.entityMgr.selectedEntities.length > 0) this.publishEvent(new DeselectAll())
                                 }
                             }
                         }
-                    } else if (this.worldMgr.buildModeSelection) {
-                        this.worldMgr.setBuildModeSelection(null)
-                        buildMarker.hideAllMarker()
                     }
                 }
             }

@@ -129,11 +129,10 @@ export class GuiManager {
             entityMgr.selectedRaiders?.forEach((r) => r.dropItem())
         })
         EventBus.registerEventListener(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
-            worldMgr.setBuildModeSelection(GuiManager.createBuildingFromType(event.entityType, sceneMgr, entityMgr))
+            sceneMgr.setBuildModeSelection(GuiManager.createBuildingFromType(event.entityType, sceneMgr, entityMgr))
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
-            worldMgr.setBuildModeSelection(null)
-            sceneMgr.buildMarker?.hideAllMarker()
+            sceneMgr.setBuildModeSelection(null)
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
             entityMgr.selectedSurface.site?.cancelSite()

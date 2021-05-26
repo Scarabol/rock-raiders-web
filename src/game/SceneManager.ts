@@ -12,6 +12,7 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from '../scene/SceneMesh'
 import { DebugHelper } from '../screen/DebugHelper'
 import { EntityManager } from './EntityManager'
+import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
 import { GameState } from './model/GameState'
 import { Terrain } from './model/map/Terrain'
@@ -209,6 +210,7 @@ export class SceneManager {
 
         this.buildMarker = new BuildPlacementMarker(this.worldMgr, this, this.entityMgr)
         this.scene.add(this.buildMarker.group)
+        this.setBuildModeSelection(null)
 
         // create terrain mesh and add it to the scene
         this.terrain = TerrainLoader.loadTerrain(levelConf, this, this.entityMgr)
@@ -270,6 +272,16 @@ export class SceneManager {
     getFloorPosition(world: Vector2) {
         const floorY = this.terrain.getSurfaceFromWorldXZ(world.x, world.y).getFloorHeight(world.x, world.y)
         return new Vector3(world.x, floorY, world.y)
+    }
+
+    hasBuildModeSelection(): boolean {
+        return !!this.buildMarker?.buildModeSelection
+    }
+
+    setBuildModeSelection(building: BuildingEntity) {
+        this.buildMarker.buildModeSelection?.removeFromScene()
+        this.buildMarker.buildModeSelection = building
+        if (!building) this.buildMarker.hideAllMarker()
     }
 
 }

@@ -20,7 +20,7 @@ export class SelectionLayer extends ScreenLayer {
     }
 
     handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
-        if (this.worldMgr.buildModeSelection) return new Promise((resolve) => resolve(false))
+        if (this.sceneMgr.hasBuildModeSelection()) return new Promise((resolve) => resolve(false))
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         if (event.eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.MAIN) return new Promise((resolve) => resolve(this.startSelection(cx, cy)))
