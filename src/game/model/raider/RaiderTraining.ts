@@ -1,6 +1,7 @@
 import { EntityType } from '../EntityType'
 
 export enum RaiderTraining {
+    NONE,
     DRIVER,
     ENGINEER,
     GEOLOGIST,

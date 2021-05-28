@@ -1,5 +1,5 @@
 export enum RaiderTool {
-
+    NONE,
     DRILL,
     HAMMER,
     SHOVEL,
@@ -8,7 +8,6 @@ export enum RaiderTool {
     LASER,
     PUSHERGUN,
     BIRDSCARER,
-
 }
 
 export const AllRaiderTools: RaiderTool[] = [
