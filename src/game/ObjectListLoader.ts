@@ -6,16 +6,7 @@ import { TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
 import { RockMonsterActivity } from './model/activities/RockMonsterActivity'
-import { Barracks } from './model/building/entities/Barracks'
-import { Docks } from './model/building/entities/Docks'
-import { Geodome } from './model/building/entities/Geodome'
-import { GunStation } from './model/building/entities/GunStation'
-import { OreRefinery } from './model/building/entities/OreRefinery'
-import { PowerStation } from './model/building/entities/PowerStation'
-import { TeleportBig } from './model/building/entities/TeleportBig'
-import { TeleportPad } from './model/building/entities/TeleportPad'
-import { Toolstation } from './model/building/entities/Toolstation'
-import { Upgrade } from './model/building/entities/Upgrade'
+import { BuildingFactory } from './model/building/BuildingFactory'
 import { EntityType, getEntityTypeByName } from './model/EntityType'
 import { Crystal } from './model/material/Crystal'
 import { Bat } from './model/monster/Bat'
@@ -25,6 +16,7 @@ import { RockMonster } from './model/monster/RockMonster'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
 import { SmallDigger } from './model/vehicle/entities/SmallDigger'
+import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
 import degToRad = MathUtils.degToRad
@@ -60,7 +52,7 @@ export class ObjectListLoader {
                 }
             } else if (buildingType) {
                 console.log(olObject.type + ' heading: ' + Math.round(olObject.heading % 360))
-                const entity = this.createBuildingByName(buildingType, sceneMgr, entityMgr)
+                const entity = BuildingFactory.createBuildingFromType(entityType, sceneMgr, entityMgr)
                 entity.placeDown(worldPos, -radHeading - Math.PI, levelConf.disableStartTeleport)
             } else if (entityType === EntityType.CRYSTAL) {
                 entityMgr.placeMaterial(new Crystal(sceneMgr, entityMgr), worldPos)
@@ -106,33 +98,6 @@ export class ObjectListLoader {
                 console.warn('Object type ' + olObject.type + ' not yet implemented')
             }
         })
-    }
-
-    private static createBuildingByName(buildingType: string, sceneMgr: SceneManager, entityMgr: EntityManager) {
-        const typename = buildingType.slice(buildingType.lastIndexOf('/') + 1).toLowerCase()
-        if (typename === 'toolstation') {
-            return new Toolstation(sceneMgr, entityMgr)
-        } else if (typename === 'teleports') {
-            return new TeleportPad(sceneMgr, entityMgr)
-        } else if (typename === 'docks') {
-            return new Docks(sceneMgr, entityMgr)
-        } else if (typename === 'powerstation') {
-            return new PowerStation(sceneMgr, entityMgr)
-        } else if (typename === 'barracks') {
-            return new Barracks(sceneMgr, entityMgr)
-        } else if (typename === 'upgrade') {
-            return new Upgrade(sceneMgr, entityMgr)
-        } else if (typename === 'geo-dome') {
-            return new Geodome(sceneMgr, entityMgr)
-        } else if (typename === 'orerefinery') {
-            return new OreRefinery(sceneMgr, entityMgr)
-        } else if (typename === 'gunstation') {
-            return new GunStation(sceneMgr, entityMgr)
-        } else if (typename === 'teleportbig') {
-            return new TeleportBig(sceneMgr, entityMgr)
-        } else {
-            throw 'Unknown building type: ' + typename
-        }
     }
 
 }
