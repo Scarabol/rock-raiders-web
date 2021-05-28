@@ -3,14 +3,17 @@ import { EventBus } from '../event/EventBus'
 import { DeselectAll } from '../event/LocalEvents'
 import { NATIVE_FRAMERATE, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { AnimationGroup } from './model/anim/AnimationGroup'
-import { BaseEntity } from './model/BaseEntity'
+import { BuildingEntity } from './model/building/BuildingEntity'
+import { FulfillerEntity } from './model/FulfillerEntity'
+
+type BeamUpEntity = BuildingEntity | FulfillerEntity
 
 export class BeamUpAnimator {
 
-    entity: BaseEntity
+    entity: BeamUpEntity
     counter: number
 
-    constructor(entity: BaseEntity) {
+    constructor(entity: BeamUpEntity) {
         this.entity = entity
         this.counter = 6 * TILESIZE
         EventBus.publishEvent(new DeselectAll())
