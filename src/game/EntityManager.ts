@@ -1,10 +1,10 @@
 import { Vector2, Vector3 } from 'three'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { SelectionChanged, SelectPanelType } from '../event/LocalEvents'
+import { BuildingsChangedEvent, RaidersChangedEvent, SelectionChanged, SelectPanelType } from '../event/LocalEvents'
 import { JobCreateEvent } from '../event/WorldEvents'
+import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
-import { BaseEntity } from './model/BaseEntity'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingSite } from './model/building/BuildingSite'
 import { EntityType } from './model/EntityType'
@@ -107,21 +107,31 @@ export class EntityManager {
     discoverSurface(surface: Surface) {
         const minX = surface.x * TILESIZE, minZ = surface.y * TILESIZE
         const maxX = minX + TILESIZE, maxZ = minZ + TILESIZE
-        this.discoverEntities(this.raidersUndiscovered, minX, maxX, minZ, maxZ)
-        this.discoverEntities(this.buildingsUndiscovered, minX, maxX, minZ, maxZ)
-        this.discoverEntities(this.materialsUndiscovered, minX, maxX, minZ, maxZ)
+        const numRaidersUndiscovered = this.raidersUndiscovered.length
+        this.raidersUndiscovered = EntityManager.removeInRect(this.raidersUndiscovered, minX, maxX, minZ, maxZ, (r) => {
+            r.entityMgr.raiders.push(r)
+            EventBus.publishEvent(new RaiderDiscoveredEvent(r.getPosition()))
+        })
+        if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBus.publishEvent(new RaidersChangedEvent(this))
+        this.buildingsUndiscovered = EntityManager.removeInRect(this.buildingsUndiscovered, minX, maxX, minZ, maxZ, (b) => {
+            b.entityMgr.buildings.push(b)
+            EventBus.publishEvent(new BuildingsChangedEvent(b.entityMgr))
+        })
+        this.materialsUndiscovered = EntityManager.removeInRect(this.materialsUndiscovered, minX, maxX, minZ, maxZ, (m) => {
+            m.entityMgr.materials.push(m)
+            EventBus.publishEvent(new JobCreateEvent(m.createCarryJob()))
+        })
     }
 
-    discoverEntities(undiscovered: BaseEntity[], minX, maxX, minZ, maxZ) {
-        const discovered = []
-        undiscovered.forEach((e) => {
-            const pos = e.getPosition()
-            if (pos.x >= minX && pos.x < maxX && pos.z >= minZ && pos.z < maxZ) {
-                e.onDiscover()
-                discovered.push(e)
+    private static removeInRect<T extends Raider | BuildingEntity | MaterialEntity>(listing: T[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: T) => any) {
+        return listing.filter((e) => {
+            const pos = e.getPosition2D()
+            const discovered = pos.x >= minX && pos.x < maxX && pos.y >= minZ && pos.y < maxZ
+            if (discovered) {
+                e.sceneEntity.visible = true
+                onRemove(e)
             }
         })
-        discovered.forEach((r) => undiscovered.remove(r))
     }
 
     placeMaterial(item: MaterialEntity, worldPosition: Vector2) {

@@ -1,7 +1,6 @@
 import { getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { RaidersChangedEvent } from '../../../event/LocalEvents'
-import { RaiderDiscoveredEvent } from '../../../event/WorldLocationEvent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
@@ -39,14 +38,6 @@ export class Raider extends FulfillerEntity {
 
     findPathToTarget(target: PathTarget): TerrainPath {
         return this.sceneMgr.terrain.findWalkPath(this.getPosition2D(), target)
-    }
-
-    onDiscover() {
-        super.onDiscover()
-        this.entityMgr.raidersUndiscovered.remove(this)
-        this.entityMgr.raiders.push(this)
-        EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
-        EventBus.publishEvent(new RaiderDiscoveredEvent(this.getPosition()))
     }
 
     isSelectable(): boolean {

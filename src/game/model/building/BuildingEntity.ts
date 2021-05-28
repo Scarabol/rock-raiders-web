@@ -107,13 +107,6 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         return this.stats.SelfPowered || this.crystalsInUse > 0
     }
 
-    onDiscover() {
-        super.onDiscover()
-        this.entityMgr.buildingsUndiscovered.remove(this)
-        this.entityMgr.buildings.push(this)
-        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
-    }
-
     hasMaxLevel(): boolean {
         return this.level >= this.stats.Levels - 1
     }

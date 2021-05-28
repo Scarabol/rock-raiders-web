@@ -45,10 +45,6 @@ export abstract class BaseEntity {
         return this.sceneEntity.getHeading()
     }
 
-    onDiscover() {
-        this.sceneEntity.visible = true
-    }
-
     addToScene(worldPosition: Vector2, radHeading: number) {
         if (worldPosition) {
             this.sceneEntity.position.copy(this.sceneMgr.getFloorPosition(worldPosition))

@@ -1,5 +1,3 @@
-import { EventBus } from '../../../event/EventBus'
-import { JobCreateEvent } from '../../../event/WorldEvents'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { BaseEntity } from '../BaseEntity'
@@ -48,13 +46,6 @@ export abstract class MaterialEntity extends BaseEntity {
             this.resetTarget()
         }
         return this.targets
-    }
-
-    onDiscover() {
-        super.onDiscover()
-        this.entityMgr.materialsUndiscovered.remove(this)
-        this.entityMgr.materials.push(this)
-        EventBus.publishEvent(new JobCreateEvent(this.createCarryJob()))
     }
 
     setTargetSite(site: BuildingSite) {
