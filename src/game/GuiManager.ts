@@ -137,6 +137,7 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_REQUEST_VEHICLE_SPAWN, (event: RequestVehicleSpawn) => {
             console.log('Vehicle spawn requested for: ' + EntityType[event.vehicle])
+            // FIXME manage amount of requested vehicles per type in entity manager
             const pads = entityMgr.getBuildingsByType(EntityType.TELEPORT_PAD).filter((b) => !b.spawning) // TODO check for "correct" teleport station
             if (pads.length > 0) {
                 const teleportPad = pads.random()

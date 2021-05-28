@@ -20,7 +20,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Development Roadmap
 
-### Vehicles Milestone
+### Vehicles Milestone (v0.5.0)
 
 - Introduce waiting lists for vehicles
 - Add pricing for vehicles
@@ -30,20 +30,20 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Make raider unselectable as driver
 - Implement beam up for vehicles
 
-### Near
+### Near (v0.6.0)
 
 - Alarm mode and shooting
 - Rock-Monsters and Slugs
 - Damage, show health bar and teleport at bad health
 
-### Mid
+### Mid (v0.7.0)
 
 - Bricks and brick refinery
 - Level score shown and level unlocking
 - Save and load
 - First-Person and shoulder camera
 
-### Far
+### Far (v0.8.0)
 
 - Background music and soundtrack
 - Show moving entities in radar panel (raider, monster, vehicles, collectables)

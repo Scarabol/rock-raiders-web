@@ -93,7 +93,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
     }
 
     isPrepared(job: Job): boolean {
-        return false
+        return false // FIXME get vehicles to work
     }
 
 }
