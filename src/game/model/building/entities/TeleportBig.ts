@@ -5,6 +5,7 @@ import { EntityManager } from '../../../EntityManager'
 import { SceneManager } from '../../../SceneManager'
 import { EntityType } from '../../EntityType'
 import { BuildingEntity } from '../BuildingEntity'
+import { SuperTeleport } from '../Teleport'
 
 export class TeleportBig extends BuildingEntity {
 
@@ -12,6 +13,7 @@ export class TeleportBig extends BuildingEntity {
         super(sceneMgr, entityMgr, EntityType.TELEPORT_BIG, 'Buildings/BIGTeleport/BIGTeleport.ae')
         this.secondaryBuildingPart = new Vector2(1, 0)
         this.secondaryPowerPath = new Vector2(1, 1)
+        this.teleport = new SuperTeleport(this)
     }
 
     get stats(): BuildingEntityStats {

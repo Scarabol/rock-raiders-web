@@ -27,6 +27,7 @@ import { RaiderTraining, RaiderTrainingSites, RaiderTrainingStatsProperty } from
 import { Selectable } from '../Selectable'
 import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
+import { Teleport } from './Teleport'
 
 export abstract class BuildingEntity extends BaseEntity implements Selectable {
 
@@ -35,11 +36,11 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     primaryPowerPath: Vector2 = new Vector2(0, 1)
     secondaryPowerPath: Vector2 = null
     waterPathSurface: Vector2 = null
+    teleport: Teleport = null
 
     level: number = 0
     selected: boolean
     powerSwitch: boolean = true
-    spawning: boolean = false
     primarySurface: Surface = null
     secondarySurface: Surface = null
     primaryPathSurface: Surface = null
@@ -203,6 +204,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         } else {
             this.turnPowerOff()
         }
+        if (this.teleport) this.teleport.powered = this.isPowered()
     }
 
     turnPowerOn() {
@@ -295,6 +297,10 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
 
     isTrainingSite(training: RaiderTraining): boolean {
         return this.entityType === RaiderTrainingSites[training] && this.isUsable() && this.stats[RaiderTrainingStatsProperty[training]][this.level]
+    }
+
+    canTeleportIn(entityType: EntityType): boolean {
+        return this.teleport?.canTeleportIn(entityType)
     }
 
 }

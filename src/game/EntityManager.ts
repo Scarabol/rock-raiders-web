@@ -144,4 +144,8 @@ export class EntityManager {
         return this.raiders.length >= this.getMaxRaiders()
     }
 
+    findTeleportBuilding(entityType: EntityType): BuildingEntity {
+        return this.buildings.find((b) => b.canTeleportIn(entityType))
+    }
+
 }

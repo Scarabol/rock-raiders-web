@@ -1,21 +1,17 @@
-import { Vector2 } from 'three'
-import { Sample } from '../audio/Sample'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { NerpParser } from '../core/NerpParser'
 import { NerpRunner } from '../core/NerpRunner'
 import { clearIntervalSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { AirLevelChanged, RaidersChangedEvent } from '../event/LocalEvents'
+import { AirLevelChanged } from '../event/LocalEvents'
 import { RequestedRaidersChanged } from '../event/WorldEvents'
-import { CHECK_SPAWN_RAIDER_TIMER, TILESIZE, UPDATE_OXYGEN_TIMER } from '../params'
+import { CHECK_SPAWN_RAIDER_TIMER, UPDATE_OXYGEN_TIMER } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
-import { RaiderActivity } from './model/activities/RaiderActivity'
 import { EntityType } from './model/EntityType'
 import { GameResultState } from './model/GameResult'
 import { GameState } from './model/GameState'
-import { MoveJob } from './model/job/raider/MoveJob'
 import { Raider } from './model/raider/Raider'
 import { SceneManager } from './SceneManager'
 
@@ -82,27 +78,11 @@ export class WorldManager {
             return
         }
         if (this.entityMgr.hasMaxRaiders()) return
-        const spawnBuildings = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION, EntityType.TELEPORT_PAD)
-        for (let c = 0; c < spawnBuildings.length && this.requestedRaiders > 0; c++) {
-            const station = spawnBuildings[c]
-            if (station.spawning) continue
-            this.requestedRaiders--
-            EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
-            station.spawning = true
-            const raider = new Raider(this.sceneMgr, this.entityMgr)
-            const heading = station.getHeading()
-            raider.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(station.getPosition2D()), heading)
-            raider.playPositionalAudio(Sample[Sample.SND_teleport], false)
-            raider.changeActivity(RaiderActivity.TeleportIn, () => {
-                station.spawning = false
-                raider.changeActivity()
-                raider.sceneEntity.createPickSphere(raider.stats.PickSphere, raider)
-                const walkOutPos = station.primaryPathSurface.getRandomPosition()
-                raider.setJob(new MoveJob(walkOutPos))
-                this.entityMgr.raiders.push(raider)
-                EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
-            })
-        }
+        const teleportBuilding = this.entityMgr.findTeleportBuilding(EntityType.PILOT)
+        if (!teleportBuilding) return
+        this.requestedRaiders--
+        EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
+        teleportBuilding.teleport.teleportIn(new Raider(this.sceneMgr, this.entityMgr), this.entityMgr.raiders)
     }
 
 }
