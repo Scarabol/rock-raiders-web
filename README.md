@@ -29,6 +29,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Auto train raider to man vehicles
 - Make raider unselectable as driver
 - Implement beam up for vehicles
+- Raider sometimes sitting wrong way around in vehicles
+- Walker digger not loaded correctly or at least the upgrades
 
 ### Near (v0.6.0)
 
@@ -49,6 +51,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Show moving entities in radar panel (raider, monster, vehicles, collectables)
 - Geologists and scanner
 - Tutorial levels
+
+### Polishing (v0.9.0)
+
+- Fix all remaining bugs
 
 ## Known Bugs
 
