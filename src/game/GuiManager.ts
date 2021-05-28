@@ -7,7 +7,6 @@ import { EntityManager } from './EntityManager'
 import { BuildingFactory } from './model/building/BuildingFactory'
 import { PowerPathBuildingSite } from './model/building/PowerPathBuildingSite'
 import { EntityType } from './model/EntityType'
-import { GameState } from './model/GameState'
 import { EatJob } from './model/job/raider/EatJob'
 import { GetToolJob } from './model/job/raider/GetToolJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
@@ -46,11 +45,11 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_RAIDER_SPAWN_REQUEST, (event: ChangeRaiderSpawnRequest) => {
             if (event.increase) {
-                GameState.requestedRaiders++
+                worldMgr.requestedRaiders++
             } else {
-                GameState.requestedRaiders--
+                worldMgr.requestedRaiders--
             }
-            EventBus.publishEvent(new RequestedRaidersChanged(GameState.requestedRaiders))
+            EventBus.publishEvent(new RequestedRaidersChanged(worldMgr.requestedRaiders))
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_DRILL_JOB, () => {
             entityMgr.selection.surface?.createDrillJob()

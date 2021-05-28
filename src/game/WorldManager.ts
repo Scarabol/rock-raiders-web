@@ -27,13 +27,14 @@ export class WorldManager {
     oxygenUpdateInterval = null
     spawnRaiderInterval = null
     oxygenRate: number = 0
+    requestedRaiders: number = 0
 
     constructor() {
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => {
             GameState.discoveredCaverns++
         })
         EventBus.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, () => {
-            if (GameState.requestedRaiders > 0 && !this.spawnRaiderInterval) {
+            if (this.requestedRaiders > 0 && !this.spawnRaiderInterval) {
                 this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPAWN_RAIDER_TIMER)
             }
         })
@@ -42,6 +43,7 @@ export class WorldManager {
     setup(levelConf: LevelEntryCfg, onLevelEnd: (state: GameResultState) => any) {
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         this.oxygenRate = levelConf.oxygenRate
+        this.requestedRaiders = 0
         // load nerp script
         this.nerpRunner = NerpParser.parse(this.entityMgr, ResourceManager.getResource(levelConf.nerpFile))
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
@@ -75,17 +77,17 @@ export class WorldManager {
     }
 
     checkSpawnRaiders() {
-        if (GameState.requestedRaiders < 1) {
+        if (this.requestedRaiders < 1) {
             this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
             return
         }
         if (this.entityMgr.hasMaxRaiders()) return
         const spawnBuildings = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION, EntityType.TELEPORT_PAD)
-        for (let c = 0; c < spawnBuildings.length && GameState.requestedRaiders > 0; c++) {
+        for (let c = 0; c < spawnBuildings.length && this.requestedRaiders > 0; c++) {
             const station = spawnBuildings[c]
             if (station.spawning) continue
-            GameState.requestedRaiders--
-            EventBus.publishEvent(new RequestedRaidersChanged(GameState.requestedRaiders))
+            this.requestedRaiders--
+            EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
             station.spawning = true
             const raider = new Raider(this.sceneMgr, this.entityMgr)
             const heading = station.getHeading()
