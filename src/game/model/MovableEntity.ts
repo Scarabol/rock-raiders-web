@@ -1,4 +1,3 @@
-import { Vector3 } from 'three'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
@@ -35,8 +34,7 @@ export abstract class MovableEntity {
             this.currentPath = paths.length > 0 ? paths[0] : null
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
-        const nextLocation = this.currentPath.firstLocation
-        this.sceneEntity.lookAt(new Vector3(nextLocation.x, this.sceneEntity.position.y, nextLocation.y))
+        this.sceneEntity.headTowards(this.currentPath.firstLocation)
         const step = this.determineStep()
         if (step.targetReached) {
             return MoveState.TARGET_REACHED

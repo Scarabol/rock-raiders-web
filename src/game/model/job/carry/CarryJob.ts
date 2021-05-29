@@ -1,4 +1,3 @@
-import { Vector3 } from 'three'
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { CarryPathTarget, SiteCarryPathTarget } from '../../material/CarryPathTarget'
 import { MaterialEntity } from '../../material/MaterialEntity'
@@ -42,11 +41,10 @@ export class CarryJob<I extends MaterialEntity> extends ShareableJob {
 
     onJobComplete() {
         super.onJobComplete()
-        const targetLocation = this.actualTarget.targetLocation
         this.fulfiller.forEach((f) => {
-            f.sceneEntity.lookAt(new Vector3(targetLocation.x, f.sceneEntity.position.y, targetLocation.y))
+            f.sceneEntity.headTowards(this.actualTarget.targetLocation)
             f.dropItem()
-            this.item.sceneEntity.position.copy(this.item.sceneMgr.getFloorPosition(targetLocation))
+            this.item.sceneEntity.position.copy(this.item.sceneMgr.getFloorPosition(this.actualTarget.targetLocation))
         })
         this.actualTarget.gatherItem(this.item)
     }

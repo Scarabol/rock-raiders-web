@@ -153,4 +153,8 @@ export class SceneEntity {
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
     }
 
+    headTowards(location: Vector2) {
+        this.lookAt(new Vector3(location.x, this.group.position.y, location.y))
+    }
+
 }
