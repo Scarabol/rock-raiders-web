@@ -24,10 +24,7 @@ export abstract class MovableEntity {
     abstract get sceneEntity(): AnimatedSceneEntity
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
-        if (!target?.length) {
-            console.warn('No targets given')
-            debugger
-        }
+        if (!target || target.length < 1) return MoveState.TARGET_UNREACHABLE
         if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.target.targetLocation))) {
             const paths = target.map((t) => this.findPathToTarget(t)).filter((p) => !!p)
                 .sort((l, r) => l.lengthSq - r.lengthSq)
