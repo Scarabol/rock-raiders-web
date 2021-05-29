@@ -152,7 +152,7 @@ export class Surface implements Selectable {
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
                 const crystal = this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), vec)
-                EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
+                EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
                 this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), vec)
                 EventBus.publishEvent(new OreFoundEvent())
@@ -180,7 +180,7 @@ export class Surface implements Selectable {
         this.dropContainedOre(this.containedOres - 4)
         for (let c = 0; c < this.containedCrystals; c++) {
             const crystal = this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), this.getRandomPosition())
-            EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
+            EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
         }
         // check for unsupported neighbors
         for (let x = this.x - 1; x <= this.x + 1; x++) {
@@ -652,7 +652,7 @@ export class Surface implements Selectable {
             const targetBuilding = this.entityMgr.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
             if (!targetBuilding) throw 'Could not find toolstation to spawn dynamite'
             const dynamite = new Dynamite(this.sceneMgr, this.entityMgr, this)
-            dynamite.addToScene(targetBuilding.getDropPosition2D(), targetBuilding.getHeading())
+            dynamite.sceneEntity.addToScene(targetBuilding.getDropPosition2D(), targetBuilding.sceneEntity.getHeading())
             this.dynamiteJob = new CarryDynamiteJob(dynamite)
             this.updateJobColor()
             EventBus.publishEvent(new JobCreateEvent(this.dynamiteJob))

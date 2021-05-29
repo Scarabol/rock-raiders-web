@@ -90,7 +90,7 @@ export class EntityManager {
     private static getClosestBuilding(buildings: BuildingEntity[], position: Vector3) {
         let closest = null, minDist = null
         buildings.forEach((b) => {
-            const bPos = b.getPosition()
+            const bPos = b.sceneEntity.position.clone()
             const dist = position.distanceToSquared(bPos) // TODO better use pathfinding
             if (closest === null || dist < minDist) {
                 closest = b
@@ -110,7 +110,7 @@ export class EntityManager {
         const numRaidersUndiscovered = this.raidersUndiscovered.length
         this.raidersUndiscovered = EntityManager.removeInRect(this.raidersUndiscovered, minX, maxX, minZ, maxZ, (r) => {
             r.entityMgr.raiders.push(r)
-            EventBus.publishEvent(new RaiderDiscoveredEvent(r.getPosition()))
+            EventBus.publishEvent(new RaiderDiscoveredEvent(r.sceneEntity.position.clone()))
         })
         if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBus.publishEvent(new RaidersChangedEvent(this))
         this.buildingsUndiscovered = EntityManager.removeInRect(this.buildingsUndiscovered, minX, maxX, minZ, maxZ, (b) => {
@@ -125,7 +125,7 @@ export class EntityManager {
 
     private static removeInRect<T extends Raider | BuildingEntity | MaterialEntity>(listing: T[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: T) => any) {
         return listing.filter((e) => {
-            const pos = e.getPosition2D()
+            const pos = e.sceneEntity.position2D.clone()
             const discovered = pos.x >= minX && pos.x < maxX && pos.y >= minZ && pos.y < maxZ
             if (discovered) {
                 e.sceneEntity.visible = true
@@ -135,7 +135,7 @@ export class EntityManager {
     }
 
     placeMaterial(item: MaterialEntity, worldPosition: Vector2) {
-        item.addToScene(worldPosition, 0)
+        item.sceneEntity.addToScene(worldPosition, 0)
         if (item.sceneEntity.visible) {
             this.materials.push(item)
             EventBus.publishEvent(new JobCreateEvent(item.createCarryJob()))

@@ -133,7 +133,7 @@ export class Supervisor {
             }
         })
         unemployedRaider.forEach((raider) => {
-            const sites = raider.surfaces.map((s) => s.site).filter(s => !!s)
+            const sites = raider.sceneEntity.surfaces.map((s) => s.site).filter(s => !!s)
             if (sites.length > 0) raider.setJob(new MoveJob(sites[0].getWalkOutSurface().getRandomPosition()))
         })
     }
@@ -142,7 +142,7 @@ export class Supervisor {
         if (!this.isEnabled(PriorityIdentifier.aiPriorityClearing)) return
         this.entityMgr.raiders.forEach((raider) => {
             if (raider.job) return
-            const startSurface = raider.surfaces[0]
+            const startSurface = raider.sceneEntity.surfaces[0]
             for (let rad = 0; rad < 10; rad++) {
                 for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                     for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {

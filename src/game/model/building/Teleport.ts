@@ -25,12 +25,12 @@ export abstract class Teleport {
 
     teleportIn<T extends FulfillerEntity>(entity: T, listing: T[]) {
         this.operating = true
-        const heading = this.building.getHeading()
-        entity.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(this.building.getPosition2D()), heading)
-        entity.playPositionalAudio(Sample[Sample.SND_teleport], false)
-        entity.changeActivity(RaiderActivity.TeleportIn, () => {
+        const heading = this.building.sceneEntity.getHeading()
+        entity.sceneEntity.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(this.building.sceneEntity.position2D.clone()), heading)
+        entity.sceneEntity.playPositionalAudio(Sample[Sample.SND_teleport], false)
+        entity.sceneEntity.changeActivity(RaiderActivity.TeleportIn, () => {
             this.operating = false
-            entity.changeActivity() // FIXME move all lines into onAddScene for entities
+            entity.sceneEntity.changeActivity() // FIXME move all lines into onAddScene for entities
             entity.sceneEntity.createPickSphere(entity.stats.PickSphere, entity)
             const walkOutPos = this.building.primaryPathSurface.getRandomPosition()
             entity.setJob(new MoveJob(walkOutPos))

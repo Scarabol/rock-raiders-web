@@ -6,7 +6,7 @@ export class BuildingPathTarget extends PathTarget {
     building: BuildingEntity
 
     constructor(building: BuildingEntity) {
-        super(building.getPosition2D())
+        super(building.sceneEntity.position2D.clone())
         this.building = building
     }
 

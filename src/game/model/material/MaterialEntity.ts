@@ -1,6 +1,6 @@
+import { SceneEntity } from '../../../scene/SceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { BaseEntity } from '../BaseEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
 import { CarryJob } from '../job/carry/CarryJob'
@@ -8,17 +8,20 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 import { BuildingCarryPathTarget, CarryPathTarget, SiteCarryPathTarget } from './CarryPathTarget'
 
-export abstract class MaterialEntity extends BaseEntity {
+export abstract class MaterialEntity {
 
-    targetBuildingTypes: EntityType[] = []
-    priorityIdentifier: PriorityIdentifier = null
+    sceneMgr: SceneManager
+    entityMgr: EntityManager
+    entityType: EntityType = null
+    sceneEntity: SceneEntity
     targets: CarryPathTarget[] = []
     targetSite: BuildingSite = null
     positionPathTarget: PathTarget[] = null
 
-    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string = null) {
-        super(sceneMgr, entityMgr, entityType, aeFilename)
-        this.targetBuildingTypes = [EntityType.TOOLSTATION]
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
+        this.sceneMgr = sceneMgr
+        this.entityMgr = entityMgr
+        this.entityType = entityType
     }
 
     getCarryTargets(): CarryPathTarget[] {
@@ -55,28 +58,26 @@ export abstract class MaterialEntity extends BaseEntity {
         this.targetSite?.assign(this)
     }
 
-    getPriorityIdentifier(): PriorityIdentifier {
-        return this.priorityIdentifier
-    }
+    abstract getPriorityIdentifier(): PriorityIdentifier
 
     getTargetBuildingTypes(): EntityType[] {
-        return this.targetBuildingTypes
+        return [EntityType.TOOLSTATION]
     }
 
     createCarryJob(): CarryJob<MaterialEntity> {
         return new CarryJob(this)
     }
 
-    onAddToSite() {
-        this.addToScene(null, null)
-    }
-
     getPositionPathTarget(): PathTarget[] {
-        const position = this.getPosition2D()
+        const position = this.sceneEntity.position2D.clone()
         if (!this.positionPathTarget || !this.positionPathTarget[0].targetLocation.equals(position)) {
             this.positionPathTarget = [new PathTarget(position)]
         }
         return this.positionPathTarget
+    }
+
+    removeFromScene() {
+        this.sceneEntity.removeFromScene()
     }
 
 }

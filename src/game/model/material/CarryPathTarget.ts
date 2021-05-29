@@ -21,7 +21,7 @@ export class CarryPathTarget extends PathTarget {
     }
 
     gatherItem(item: MaterialEntity) {
-        item.addToScene(null, null)
+        item.sceneEntity.addToScene(null, null)
     }
 
     getDropAction(): RaiderActivity {
@@ -67,18 +67,18 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
     }
 
     canGatherItem(): boolean {
-        return this.building.activity.activityKey === this.building.getDefaultActivity().activityKey
+        return this.building.sceneEntity.activity.activityKey === this.building.getDefaultActivity().activityKey
     }
 
     gatherItem(item: MaterialEntity) {
         if (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY) {
-            if (this.building.animation?.carryJoint) {
-                this.building.animation.carryJoint.add(item.sceneEntity.group)
+            if (this.building.sceneEntity.animation?.carryJoint) {
+                this.building.sceneEntity.animation.carryJoint.add(item.sceneEntity.group)
                 item.sceneEntity.position.set(0, 0, 0)
             }
-            this.building.changeActivity(BuildingActivity.Deposit, () => {
-                this.building.changeActivity()
-                if (this.building.animation?.carryJoint) this.building.animation.carryJoint.remove(item.sceneEntity.group)
+            this.building.sceneEntity.changeActivity(BuildingActivity.Deposit, () => {
+                this.building.sceneEntity.changeActivity()
+                if (this.building.sceneEntity.animation?.carryJoint) this.building.sceneEntity.animation.carryJoint.remove(item.sceneEntity.group)
                 BuildingCarryPathTarget.addItemToStorage(item)
             })
         } else {
@@ -96,7 +96,7 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
                 break
         }
         EventBus.publishEvent(new MaterialAmountChanged())
-        item.removeFromScene()
+        item.sceneEntity.removeFromScene()
     }
 
     getDropAction(): RaiderActivity {

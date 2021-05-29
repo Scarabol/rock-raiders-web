@@ -71,7 +71,10 @@ export class BuildingSite {
     addItem(item: MaterialEntity) {
         const needed = this.neededByType.getOrUpdate(item.entityType, () => 0)
         if (this.onSiteByType.getOrUpdate(item.entityType, () => []).length < needed) {
-            item.onAddToSite()
+            item.sceneEntity.addToScene(null, null)
+            if (item.entityType === EntityType.BARRIER) {
+                item.sceneEntity.changeActivity(BarrierActivity.Expand, () => item.sceneEntity.changeActivity(BarrierActivity.Long))
+            }
             this.onSiteByType.getOrUpdate(item.entityType, () => []).push(item)
             this.checkComplete()
         } else {
@@ -93,13 +96,13 @@ export class BuildingSite {
             EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
         } else {
             this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item: Barrier) => {
-                item.changeActivity(BarrierActivity.Teleport, () => item.removeFromScene())
+                item.sceneEntity.changeActivity(BarrierActivity.Teleport, () => item.sceneEntity.removeFromScene())
             })
             this.onSiteByType.getOrUpdate(EntityType.CRYSTAL, () => []).forEach((item: Crystal) => {
-                item.removeFromScene()
+                item.sceneEntity.removeFromScene()
             })
             this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: Ore) => {
-                item.removeFromScene()
+                item.sceneEntity.removeFromScene()
             })
             const world = this.primarySurface.getCenterWorld2D()
             this.building.placeDown(world, -this.heading + Math.PI / 2, false)
@@ -115,7 +118,7 @@ export class BuildingSite {
         this.canceled = true
         this.surfaces.forEach((s) => s?.setSite(null))
         this.onSiteByType.forEach((materials) => materials.forEach((item) => {
-            this.entityMgr.placeMaterial(item, item.getPosition2D())
+            this.entityMgr.placeMaterial(item, item.sceneEntity.position2D.clone())
         }))
         this.onSiteByType.clear()
         this.assignedByType.forEach((materials) => materials.forEach((item) => {

@@ -1,14 +1,25 @@
-import { Box3, CanvasTexture, Group, Matrix4, Mesh, MeshBasicMaterial, Object3D, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector3 } from 'three'
+import { Box3, CanvasTexture, Group, Matrix4, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector2, Vector3 } from 'three'
+import { SoundManager } from '../audio/SoundManager'
 import { createContext } from '../core/ImageHelper'
+import { AnimEntityActivity } from '../game/model/activities/AnimEntityActivity'
+import { Surface } from '../game/model/map/Surface'
 import { Selectable } from '../game/model/Selectable'
+import { SceneManager } from '../game/SceneManager'
+import { TILESIZE } from '../params'
 
 export class SceneEntity {
 
-    group: Group = new Group()
+    floorOffset: number = 0.1
 
+    sceneMgr: SceneManager
+    group: Group = new Group()
     pickSphere: Mesh = null
     selectionFrame: Sprite = null
     boundingSphere: Sphere = new Sphere()
+
+    constructor(sceneMgr: SceneManager) {
+        this.sceneMgr = sceneMgr
+    }
 
     set visible(state: boolean) {
         this.group.visible = state
@@ -24,6 +35,10 @@ export class SceneEntity {
 
     set position(position: Vector3) {
         this.group.position.copy(position)
+    }
+
+    get position2D(): Vector2 {
+        return new Vector2(this.group.position.x, this.group.position.z)
     }
 
     add(other: Object3D) {
@@ -95,6 +110,47 @@ export class SceneEntity {
         this.selectionFrame.scale.set(selectionFrameSize, selectionFrameSize, selectionFrameSize)
         this.selectionFrame.visible = false
         this.add(this.selectionFrame)
+    }
+
+    get surfaces(): Surface[] {
+        return [this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position)]
+    }
+
+    playPositionalAudio(sfxName: string, loop: boolean): PositionalAudio {
+        const audio = new PositionalAudio(this.sceneMgr.listener)
+        audio.setRefDistance(TILESIZE * 2)
+        audio.loop = loop
+        this.add(audio)
+        SoundManager.getSoundBuffer(sfxName).then((audioBuffer) => {
+            audio.setBuffer(audioBuffer).play() // TODO retry playing sound for looped ones, when audio context fails
+            if (!audio.loop) audio.onEnded = () => this.remove(audio)
+        }).catch(() => {
+            this.remove(audio)
+        })
+        return audio
+    }
+
+    addToScene(worldPosition: Vector2, radHeading: number) {
+        if (worldPosition) {
+            this.position.copy(this.sceneMgr.getFloorPosition(worldPosition))
+            this.position.y += this.floorOffset
+        }
+        if (radHeading !== undefined && radHeading !== null) {
+            this.setHeading(radHeading)
+        }
+        this.visible = this.surfaces.some((s) => s.discovered)
+        this.sceneMgr.scene.add(this.group)
+    }
+
+    removeFromScene() {
+        this.sceneMgr.scene.remove(this.group)
+    }
+
+    getDefaultActivity(): AnimEntityActivity {
+        return AnimEntityActivity.Stand
+    }
+
+    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
     }
 
 }

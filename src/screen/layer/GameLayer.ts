@@ -79,7 +79,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                         r.setJob(manVehicleJob)
                     } else {
                         const requiredTraining = manVehicleJob.getRequiredTraining()
-                        const closestTrainingSite = r.entityMgr.getClosestTrainingSite(r.getPosition(), requiredTraining)
+                        const closestTrainingSite = r.entityMgr.getClosestTrainingSite(r.sceneEntity.position.clone(), requiredTraining)
                         if (!closestTrainingSite) return false
                         r.setJob(new TrainRaiderJob(r.entityMgr, requiredTraining, closestTrainingSite), manVehicleJob)
                     }

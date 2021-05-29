@@ -1,4 +1,5 @@
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { OreSceneEntity } from '../../../scene/entities/OreSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
@@ -9,13 +10,19 @@ export class Ore extends MaterialEntity {
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.ORE)
-        this.sceneEntity.add(ResourceManager.getLwoModel('MiscAnims/Ore/Ore1st.lwo'))
-        this.targetBuildingTypes = [EntityType.ORE_REFINERY, EntityType.TOOLSTATION]
-        this.priorityIdentifier = PriorityIdentifier.aiPriorityOre
+        this.sceneEntity = new OreSceneEntity(sceneMgr)
     }
 
     get stats() {
         return ResourceManager.stats.Ore
+    }
+
+    getPriorityIdentifier(): PriorityIdentifier {
+        return PriorityIdentifier.aiPriorityOre
+    }
+
+    getTargetBuildingTypes(): EntityType[] {
+        return [EntityType.ORE_REFINERY, EntityType.TOOLSTATION]
     }
 
 }

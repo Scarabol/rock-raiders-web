@@ -21,7 +21,7 @@ export class WalkerDigger extends VehicleEntity {
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
-        super.changeActivity(activity, onAnimationDone, durationTimeMs)
+        this.sceneEntity.changeActivity(activity, onAnimationDone, durationTimeMs)
         // TODO set animation for legs too
         // TODO legs have activity stand which is not listed in the activities list
     }

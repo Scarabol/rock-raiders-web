@@ -17,7 +17,7 @@ export class VehicleCallManJob extends ShareableJob {
         super()
         this.vehicle = vehicle
         this.vehicle.callManJob = this
-        this.workplaces = [new PathTarget(this.vehicle.getPosition2D())]
+        this.workplaces = [new PathTarget(this.vehicle.sceneEntity.position2D.clone())]
     }
 
     getWorkplaces(): PathTarget[] {

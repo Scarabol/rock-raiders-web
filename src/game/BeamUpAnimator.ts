@@ -18,8 +18,8 @@ export class BeamUpAnimator {
         this.counter = 6 * TILESIZE
         EventBus.publishEvent(new DeselectAll())
         const animGroup = new AnimationGroup('Mini-Figures/Pilot/VLP_TelepUp.lws', this.entity.sceneMgr.listener)
-        animGroup.position.copy(this.entity.getPosition())
-        animGroup.rotateOnAxis(new Vector3(0, 1, 0), this.entity.getHeading())
+        animGroup.position.copy(this.entity.sceneEntity.position.clone())
+        animGroup.rotateOnAxis(new Vector3(0, 1, 0), this.entity.sceneEntity.getHeading())
         this.entity.sceneMgr.scene.add(animGroup)
         animGroup.startAnimation(() => {
             this.entity.removeFromScene()

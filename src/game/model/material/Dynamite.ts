@@ -1,6 +1,6 @@
+import { DynamiteSceneEntity } from '../../../scene/entities/DynamiteSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
 import { EntityType } from '../EntityType'
 import { CarryDynamiteJob } from '../job/carry/CarryDynamiteJob'
@@ -15,10 +15,9 @@ export class Dynamite extends MaterialEntity {
     targetSurface: Surface
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager, surface: Surface) {
-        super(sceneMgr, entityMgr, EntityType.DYNAMITE, 'MiscAnims/Dynamite/Dynamite.ae')
+        super(sceneMgr, entityMgr, EntityType.DYNAMITE)
+        this.sceneEntity = new DynamiteSceneEntity(sceneMgr)
         this.targetSurface = surface
-        this.priorityIdentifier = PriorityIdentifier.aiPriorityDestruction
-        this.changeActivity()
     }
 
     getCarryTargets(): CarryPathTarget[] {
@@ -35,20 +34,20 @@ export class Dynamite extends MaterialEntity {
         const center = this.targetSurface.getCenterWorld()
         center.y = this.sceneEntity.position.y
         this.sceneEntity.lookAt(center)
-        this.changeActivity(DynamiteActivity.TickDown, () => {
-            this.removeFromScene()
+        this.sceneEntity.changeActivity(DynamiteActivity.TickDown, () => {
+            this.sceneEntity.removeFromScene()
             this.targetSurface.collapse()
             // TODO add explosion animation
             // TODO damage raider, vehicle, buildings
         })
     }
 
-    getDefaultActivity(): AnimEntityActivity {
-        return DynamiteActivity.Normal
-    }
-
     createCarryJob(): CarryJob<Dynamite> {
         return new CarryDynamiteJob(this)
+    }
+
+    getPriorityIdentifier(): PriorityIdentifier {
+        return PriorityIdentifier.aiPriorityDestruction
     }
 
 }

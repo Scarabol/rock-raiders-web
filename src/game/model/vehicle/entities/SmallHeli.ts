@@ -27,7 +27,7 @@ export class SmallHeli extends VehicleEntity {
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {
-        return this.sceneMgr.terrain.findFlyPath(this.getPosition2D(), target)
+        return this.sceneMgr.terrain.findFlyPath(this.sceneEntity.position2D.clone(), target)
     }
 
 }

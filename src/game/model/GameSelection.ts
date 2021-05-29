@@ -85,7 +85,7 @@ export class GameSelection {
             if (r.isPrepared(job)) {
                 r.setJob(job)
             } else {
-                r.setJob(new GetToolJob(r.entityMgr, job.getRequiredTool(), r.entityMgr.getClosestBuildingByType(r.getPosition(), EntityType.TOOLSTATION)), job)
+                r.setJob(new GetToolJob(r.entityMgr, job.getRequiredTool(), r.entityMgr.getClosestBuildingByType(r.sceneEntity.position.clone(), EntityType.TOOLSTATION)), job)
             }
         })
         this.vehicles.forEach((v) => {

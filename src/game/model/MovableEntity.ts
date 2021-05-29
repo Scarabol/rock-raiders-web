@@ -1,21 +1,28 @@
 import { Vector3 } from 'three'
+import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
-import { BaseEntity } from './BaseEntity'
 import { EntityStep } from './EntityStep'
 import { EntityType } from './EntityType'
 import { TerrainPath } from './map/TerrainPath'
 import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
 
-export abstract class MovableEntity extends BaseEntity {
+export abstract class MovableEntity {
 
+    sceneMgr: SceneManager
+    entityMgr: EntityManager
+    entityType: EntityType = null
     currentPath: TerrainPath = null
 
-    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
-        super(sceneMgr, entityMgr, entityType, aeFilename)
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
+        this.sceneMgr = sceneMgr
+        this.entityMgr = entityMgr
+        this.entityType = entityType
     }
+
+    abstract get sceneEntity(): AnimatedSceneEntity
 
     moveToClosestTarget(target: PathTarget[]): MoveState {
         if (!target?.length) {
@@ -35,7 +42,7 @@ export abstract class MovableEntity extends BaseEntity {
             return MoveState.TARGET_REACHED
         } else {
             this.sceneEntity.position.add(step.vec)
-            this.changeActivity(this.getRouteActivity()) // only change when actually moving
+            this.sceneEntity.changeActivity(this.getRouteActivity()) // only change when actually moving
             return MoveState.MOVED
         }
     }
@@ -46,7 +53,7 @@ export abstract class MovableEntity extends BaseEntity {
 
     determineStep(): EntityStep {
         const targetWorld = this.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
-        targetWorld.y += this.floorOffset
+        targetWorld.y += this.sceneEntity.floorOffset
         const step = new EntityStep(targetWorld.sub(this.sceneEntity.position))
         const stepLengthSq = step.vec.lengthSq()
         const entitySpeed = this.getSpeed() // TODO use average speed between current and target position
@@ -64,5 +71,9 @@ export abstract class MovableEntity extends BaseEntity {
     }
 
     abstract getRouteActivity(): AnimEntityActivity
+
+    getSpeed(): number {
+        return this.sceneEntity.animation?.transcoef || 1
+    }
 
 }

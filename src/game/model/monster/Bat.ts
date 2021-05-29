@@ -13,7 +13,7 @@ export class Bat extends Monster {
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.BAT, 'Creatures/bat/bat.ae')
-        this.floorOffset = TILESIZE / 2
+        this.sceneEntity.floorOffset = TILESIZE / 2
     }
 
     get stats() {
@@ -33,7 +33,7 @@ export class Bat extends Monster {
 
     private findTarget(): PathTarget { // TODO move to nearby drilling noise, explosions or sonic blasters
         const terrain = this.sceneMgr.terrain
-        const currentCenter = terrain.getSurfaceFromWorld(this.getPosition()).getCenterWorld()
+        const currentCenter = terrain.getSurfaceFromWorld(this.sceneEntity.position.clone()).getCenterWorld()
         for (let c = 0; c < 20; c++) {
             const targetX = getRandomInclusive(currentCenter.x - (TILESIZE + TILESIZE / 2), currentCenter.x + TILESIZE + TILESIZE / 2)
             const targetZ = getRandomInclusive(currentCenter.z - TILESIZE / 2, currentCenter.z + TILESIZE / 2)

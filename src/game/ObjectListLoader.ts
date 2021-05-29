@@ -16,7 +16,6 @@ import { RockMonster } from './model/monster/RockMonster'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
 import { SmallDigger } from './model/vehicle/entities/SmallDigger'
-import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
 import degToRad = MathUtils.degToRad
@@ -41,9 +40,9 @@ export class ObjectListLoader {
                 sceneMgr.setTorchPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
             } else if (entityType === EntityType.PILOT) {
                 const raider = new Raider(sceneMgr, entityMgr)
-                raider.changeActivity()
+                raider.sceneEntity.changeActivity()
                 raider.sceneEntity.createPickSphere(raider.stats.PickSphere, raider)
-                raider.addToScene(worldPos, radHeading - Math.PI / 2)
+                raider.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
                 if (raider.sceneEntity.visible) {
                     entityMgr.raiders.push(raider)
                     EventBus.publishEvent(new RaidersChangedEvent(entityMgr))
@@ -58,21 +57,21 @@ export class ObjectListLoader {
                 entityMgr.placeMaterial(new Crystal(sceneMgr, entityMgr), worldPos)
             } else if (entityType === EntityType.SMALL_SPIDER) {
                 const spider = new SmallSpider(sceneMgr, entityMgr)
-                spider.changeActivity()
-                spider.addToScene(worldPos, radHeading)
+                spider.sceneEntity.changeActivity()
+                spider.sceneEntity.addToScene(worldPos, radHeading)
                 entityMgr.spiders.push(spider)
                 spider.startMoving()
             } else if (entityType === EntityType.BAT) {
                 const bat = new Bat(sceneMgr, entityMgr)
-                bat.changeActivity()
-                bat.addToScene(worldPos, radHeading)
+                bat.sceneEntity.changeActivity()
+                bat.sceneEntity.addToScene(worldPos, radHeading)
                 entityMgr.bats.push(bat)
                 bat.startRandomMove()
             } else if (entityType === EntityType.SMALL_DIGGER) {
                 const smallDigger = new SmallDigger(sceneMgr, entityMgr)
-                smallDigger.changeActivity()
+                smallDigger.sceneEntity.changeActivity()
                 smallDigger.sceneEntity.createPickSphere(smallDigger.stats.PickSphere, smallDigger)
-                smallDigger.addToScene(worldPos, radHeading + Math.PI)
+                smallDigger.sceneEntity.addToScene(worldPos, radHeading + Math.PI)
                 if (smallDigger.sceneEntity.visible) {
                     entityMgr.vehicles.push(smallDigger)
                 } else {
@@ -80,18 +79,18 @@ export class ObjectListLoader {
                 }
             } else if (entityType === EntityType.ICE_MONSTER) {
                 const rockMonster = new IceMonster(sceneMgr, entityMgr)
-                rockMonster.changeActivity(RockMonsterActivity.Unpowered)
-                rockMonster.addToScene(worldPos, radHeading - Math.PI / 2)
+                rockMonster.sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
+                rockMonster.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
                 entityMgr.rockMonsters.push(rockMonster)
             } else if (entityType === EntityType.LAVA_MONSTER) {
                 const rockMonster = new LavaMonster(sceneMgr, entityMgr)
-                rockMonster.changeActivity(RockMonsterActivity.Unpowered)
-                rockMonster.addToScene(worldPos, radHeading - Math.PI / 2)
+                rockMonster.sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
+                rockMonster.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
                 entityMgr.rockMonsters.push(rockMonster)
             } else if (entityType === EntityType.ROCK_MONSTER) {
                 const rockMonster = new RockMonster(sceneMgr, entityMgr)
-                rockMonster.changeActivity(RockMonsterActivity.Unpowered)
-                rockMonster.addToScene(worldPos, radHeading - Math.PI / 2)
+                rockMonster.sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
+                rockMonster.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
                 entityMgr.rockMonsters.push(rockMonster)
             } else {
                 // TODO implement remaining object types

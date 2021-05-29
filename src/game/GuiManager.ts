@@ -86,7 +86,7 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_UPGRADE, () => {
             entityMgr.selection.raiders.forEach((r) => {
-                const closestToolstation = entityMgr.getClosestBuildingByType(r.getPosition(), EntityType.TOOLSTATION)
+                const closestToolstation = entityMgr.getClosestBuildingByType(r.sceneEntity.position.clone(), EntityType.TOOLSTATION)
                 if (closestToolstation && r.level < r.stats.Levels) {
                     r.setJob(new UpgradeRaiderJob(closestToolstation))
                 }
@@ -120,9 +120,9 @@ export class GuiManager {
             if (pads.length > 0) {
                 const teleportPad = pads.random()
                 const vehicle = VehicleFactory.createVehicleFromType(event.vehicle, sceneMgr, entityMgr)
-                vehicle.addToScene(teleportPad.primaryPathSurface.getCenterWorld2D(), teleportPad.getHeading())
-                vehicle.changeActivity(VehicleActivity.TeleportIn, () => {
-                    vehicle.changeActivity()
+                vehicle.sceneEntity.addToScene(teleportPad.primaryPathSurface.getCenterWorld2D(), teleportPad.sceneEntity.getHeading())
+                vehicle.sceneEntity.changeActivity(VehicleActivity.TeleportIn, () => {
+                    vehicle.sceneEntity.changeActivity()
                     vehicle.sceneEntity.createPickSphere(vehicle.stats.PickSphere, vehicle)
                     entityMgr.vehicles.push(vehicle)
                 })

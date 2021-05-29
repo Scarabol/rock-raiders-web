@@ -22,7 +22,7 @@ export class SmallCat extends VehicleEntity {
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {
-        return this.sceneMgr.terrain.findSwimPath(this.getPosition2D(), target)
+        return this.sceneMgr.terrain.findSwimPath(this.sceneEntity.position2D.clone(), target)
     }
 
 }

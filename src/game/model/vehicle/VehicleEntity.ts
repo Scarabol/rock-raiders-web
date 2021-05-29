@@ -1,6 +1,7 @@
-import { PositionalAudio, Vector2 } from 'three'
+import { PositionalAudio } from 'three'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, VehiclesChangedEvent } from '../../../event/LocalEvents'
+import { FulfillerSceneEntity } from '../../../scene/entities/FulfillerSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
@@ -24,18 +25,19 @@ export abstract class VehicleEntity extends FulfillerEntity {
     engineSound: PositionalAudio
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
-        super(sceneMgr, entityMgr, entityType, aeFilename)
+        super(sceneMgr, entityMgr, entityType)
+        this.sceneEntity = new FulfillerSceneEntity(sceneMgr, aeFilename)
         this.sceneEntity.flipXAxis()
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {
-        return this.sceneMgr.terrain.findDrivePath(this.getPosition2D(), target)
+        return this.sceneMgr.terrain.findDrivePath(this.sceneEntity.position2D.clone(), target)
     }
 
     beamUp() {
         this.dropDriver()
         super.beamUp()
-        const surface = this.surfaces[0]
+        const surface = this.sceneEntity.surfaces[0]
         for (let c = 0; c < this.stats.CostOre; c++) {
             this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), surface.getRandomPosition())
         }
@@ -55,21 +57,21 @@ export abstract class VehicleEntity extends FulfillerEntity {
         this.driver.vehicle = this
         this.driver.sceneEntity.position.set(0, 0, 0)
         this.driver.sceneEntity.setHeading(0)
-        this.driver.changeActivity(this.getDriverActivity());
-        (this.animation.driverJoint || this.sceneEntity.group).add(this.driver.sceneEntity.group)
-        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.playPositionalAudio(this.stats.EngineSound, true)
+        this.driver.sceneEntity.changeActivity(this.getDriverActivity());
+        (this.sceneEntity.animation.driverJoint || this.sceneEntity.group).add(this.driver.sceneEntity.group)
+        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
     dropDriver() {
         this.stopJob()
         if (!this.driver) return
-        (this.animation.driverJoint || this.sceneEntity.group).remove(this.driver.sceneEntity.group)
+        (this.sceneEntity.animation.driverJoint || this.sceneEntity.group).remove(this.driver.sceneEntity.group)
         this.driver.vehicle = null
         this.driver.sceneEntity.position.copy(this.sceneEntity.position)
         this.driver.sceneEntity.setHeading(this.sceneEntity.getHeading())
         this.driver.sceneMgr.scene.add(this.driver.sceneEntity.group)
-        this.driver.changeActivity()
+        this.driver.sceneEntity.changeActivity()
         this.driver = null
         this.engineSound?.stop()
         this.engineSound = null
@@ -82,10 +84,6 @@ export abstract class VehicleEntity extends FulfillerEntity {
 
     getDriverActivity(): RaiderActivity {
         return RaiderActivity.Stand
-    }
-
-    addToScene(worldPosition: Vector2, radHeading: number) {
-        super.addToScene(worldPosition, radHeading)
     }
 
     getRouteActivity(): VehicleActivity {

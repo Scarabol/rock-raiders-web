@@ -6,13 +6,13 @@ import { BuildingsChangedEvent, DeselectAll } from '../../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { BeamUpAnimator } from '../../BeamUpAnimator'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
-import { BaseEntity } from '../BaseEntity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../map/Surface'
@@ -29,7 +29,7 @@ import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
 import { Teleport } from './Teleport'
 
-export abstract class BuildingEntity extends BaseEntity implements Selectable {
+export abstract class BuildingEntity implements Selectable {
 
     blocksPathSurface: boolean = true
     secondaryBuildingPart: Vector2 = null
@@ -38,6 +38,10 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     waterPathSurface: Vector2 = null
     teleport: Teleport = null
 
+    sceneMgr: SceneManager
+    entityMgr: EntityManager
+    entityType: EntityType = null
+    sceneEntity: AnimatedSceneEntity
     level: number = 0
     selected: boolean
     powerSwitch: boolean = true
@@ -54,7 +58,10 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     engineSound: PositionalAudio
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
-        super(sceneMgr, entityMgr, entityType, aeFilename)
+        this.sceneMgr = sceneMgr
+        this.entityMgr = entityMgr
+        this.entityType = entityType
+        this.sceneEntity = new AnimatedSceneEntity(this.sceneMgr, aeFilename)
         this.sceneEntity.flipXAxis()
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
@@ -86,16 +93,16 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     }
 
     getDropPosition2D(): Vector2 {
-        if (this.animation?.getToolJoint) {
+        if (this.sceneEntity.animation?.getToolJoint) {
             const worldPos = new Vector3()
-            this.animation.getToolJoint.getWorldPosition(worldPos)
+            this.sceneEntity.animation.getToolJoint.getWorldPosition(worldPos)
             return new Vector2(worldPos.x, worldPos.z)
-        } else if (this.animation?.depositJoint) {
+        } else if (this.sceneEntity.animation?.depositJoint) {
             const worldPos = new Vector3()
-            this.animation.depositJoint.getWorldPosition(worldPos)
+            this.sceneEntity.animation.depositJoint.getWorldPosition(worldPos)
             return new Vector2(worldPos.x, worldPos.z)
         } else {
-            return this.getPosition2D()
+            return this.sceneEntity.position2D.clone()
         }
     }
 
@@ -151,7 +158,6 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     }
 
     removeFromScene() {
-        super.removeFromScene()
         this.entityMgr.buildings.remove(this)
     }
 
@@ -205,9 +211,9 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         this.crystalsInUse = 1
         GameState.usedCrystals += this.crystalsInUse
         this.surfaces.forEach((s) => s.setHasPower(true, true))
-        this.changeActivity()
+        this.sceneEntity.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
-        if (this.stats.EngineSound) this.engineSound = this.playPositionalAudio(this.stats.EngineSound, true)
+        if (this.stats.EngineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
     }
 
     turnPowerOff() {
@@ -215,7 +221,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         GameState.usedCrystals -= this.crystalsInUse
         this.crystalsInUse = 0
         this.surfaces.forEach((s) => s.setHasPower(false, false))
-        this.changeActivity()
+        this.sceneEntity.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
         this.engineSound?.stop()
         this.engineSound = null
@@ -254,7 +260,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
         }
         if (this.sceneEntity.visible && !disableTeleportIn) {
             this.inBeam = true
-            this.changeActivity(BuildingActivity.Teleport, () => {
+            this.sceneEntity.changeActivity(BuildingActivity.Teleport, () => {
                 this.inBeam = false
                 this.onPlaceDown()
             })
@@ -265,7 +271,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     }
 
     private onPlaceDown() {
-        this.changeActivity()
+        this.sceneEntity.changeActivity()
         this.updatePowerState()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
@@ -280,7 +286,7 @@ export abstract class BuildingEntity extends BaseEntity implements Selectable {
     }
 
     addToScene(worldPosition: Vector2, radHeading: number) {
-        super.addToScene(worldPosition, radHeading)
+        this.sceneEntity.addToScene(worldPosition, radHeading)
         this.pathTarget = new BuildingPathTarget(this)
     }
 

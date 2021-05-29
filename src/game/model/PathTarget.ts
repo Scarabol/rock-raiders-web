@@ -15,7 +15,7 @@ export class PathTarget {
     }
 
     gatherItem(item: MaterialEntity) {
-        item.addToScene(null, null)
+        item.sceneEntity.addToScene(null, null)
     }
 
     getDropAction(): RaiderActivity {

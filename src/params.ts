@@ -11,6 +11,7 @@ export const PANEL_ANIMATION_MULTIPLIER = 3
 export const HEIGHT_MULTIPLIER = 0.1
 export const SEQUENCE_TEXTURE_FRAMERATE = 5
 export const KEY_PAN_SPEED = 20
+export const SPIDER_SLIP_RANGE_SQ = 49
 
 // native constants (do not change)
 

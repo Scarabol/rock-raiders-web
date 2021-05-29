@@ -1,6 +1,5 @@
-import { AdditiveBlending, Color } from 'three'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
+import { CrystalSceneEntity } from '../../../scene/entities/CrystalSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
@@ -11,27 +10,19 @@ export class Crystal extends MaterialEntity {
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.CRYSTAL)
-        const mesh2 = ResourceManager.getLwoModel('MiscAnims/Crystal/vlp_greencrystal.lwo')
-        mesh2.getMaterials().forEach((mat: SequenceTextureMaterial) => {
-            mat.blending = AdditiveBlending
-            mat.depthWrite = false // otherwise transparent parts "carve out" objects behind
-            mat.setOpacity(0.5) // XXX read from LWO file?
-        })
-        mesh2.scale.set(1.75, 1.75, 1.75) // XXX derive from texture scale?
-        this.sceneEntity.add(mesh2)
-        const mesh = ResourceManager.getLwoModel('World/Shared/Crystal.lwo') // high poly version
-        mesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
-            mat.emissive = new Color(0, 8, 0) // XXX read from LWO file?
-            mat.color = new Color(0, 0, 0) // XXX read from LWO file?
-            mat.setOpacity(0.9) // XXX read from LWO file?
-        })
-        this.sceneEntity.add(mesh)
-        this.targetBuildingTypes = [EntityType.POWER_STATION, EntityType.TOOLSTATION]
-        this.priorityIdentifier = PriorityIdentifier.aiPriorityCrystal
+        this.sceneEntity = new CrystalSceneEntity(sceneMgr)
     }
 
     get stats() {
         return ResourceManager.stats.PowerCrystal
+    }
+
+    getPriorityIdentifier(): PriorityIdentifier {
+        return PriorityIdentifier.aiPriorityCrystal
+    }
+
+    getTargetBuildingTypes(): EntityType[] {
+        return [EntityType.POWER_STATION, EntityType.TOOLSTATION]
     }
 
 }
