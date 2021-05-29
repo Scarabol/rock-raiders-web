@@ -5,9 +5,15 @@ import { MaterialEntity } from './material/MaterialEntity'
 export class PathTarget {
 
     targetLocation: Vector2
+    radiusSq: number
 
-    constructor(location: Vector2) {
+    constructor(location: Vector2, radiusSq: number = 0) {
         this.targetLocation = location
+        this.radiusSq = radiusSq
+    }
+
+    getFocusPoint(): Vector2 {
+        return this.targetLocation
     }
 
     canGatherItem(): boolean {
@@ -20,6 +26,10 @@ export class PathTarget {
 
     getDropAction(): RaiderActivity {
         return RaiderActivity.Place
+    }
+
+    isInvalid(): boolean {
+        return false
     }
 
 }

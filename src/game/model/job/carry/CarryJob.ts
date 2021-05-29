@@ -7,6 +7,7 @@ import { ShareableJob } from '../ShareableJob'
 export class CarryJob<I extends MaterialEntity> extends ShareableJob {
 
     item: I
+    targets: CarryPathTarget[] = []
     actualTarget: CarryPathTarget = null
 
     constructor(item: I) {
@@ -15,7 +16,10 @@ export class CarryJob<I extends MaterialEntity> extends ShareableJob {
     }
 
     getWorkplaces(): CarryPathTarget[] {
-        return this.item.getCarryTargets()
+        if (this.targets.length < 1 || this.actualTarget?.isInvalid()) {
+            this.targets = this.item.findCarryTargets()
+        }
+        return this.targets
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
@@ -23,8 +27,10 @@ export class CarryJob<I extends MaterialEntity> extends ShareableJob {
     }
 
     setActualWorkplace(target: CarryPathTarget) {
-        this.item.setTargetSite((target as SiteCarryPathTarget)?.site)
-        this.actualTarget = target
+        if (this.actualTarget === target) return
+        (this.actualTarget as SiteCarryPathTarget)?.site?.unAssign(this.item)
+        this.actualTarget = target;
+        (this.actualTarget as SiteCarryPathTarget)?.site?.assign(this.item)
     }
 
     getCarryItem(): I {

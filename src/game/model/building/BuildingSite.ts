@@ -69,17 +69,11 @@ export class BuildingSite {
     }
 
     addItem(item: MaterialEntity) {
-        const needed = this.neededByType.getOrUpdate(item.entityType, () => 0)
-        if (this.onSiteByType.getOrUpdate(item.entityType, () => []).length < needed) {
-            item.sceneEntity.addToScene(null, null)
-            if (item.entityType === EntityType.BARRIER) {
-                item.sceneEntity.changeActivity(BarrierActivity.Expand, () => item.sceneEntity.changeActivity(BarrierActivity.Long))
-            }
-            this.onSiteByType.getOrUpdate(item.entityType, () => []).push(item)
-            this.checkComplete()
-        } else {
-            item.resetTarget()
+        if (item.entityType === EntityType.BARRIER) {
+            item.sceneEntity.changeActivity(BarrierActivity.Expand, () => item.sceneEntity.changeActivity(BarrierActivity.Long))
         }
+        this.onSiteByType.getOrUpdate(item.entityType, () => []).push(item)
+        this.checkComplete()
     }
 
     checkComplete() {
@@ -121,9 +115,6 @@ export class BuildingSite {
             this.entityMgr.placeMaterial(item, item.sceneEntity.position2D.clone())
         }))
         this.onSiteByType.clear()
-        this.assignedByType.forEach((materials) => materials.forEach((item) => {
-            item.resetTarget()
-        }))
         this.assignedByType.clear()
         EventBus.publishEvent(new DeselectAll())
     }

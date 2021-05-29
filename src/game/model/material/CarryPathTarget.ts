@@ -1,6 +1,7 @@
 import { Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
+import { ITEM_ACTION_RANGE_SQ } from '../../../params'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { BuildingEntity } from '../building/BuildingEntity'
@@ -12,8 +13,8 @@ import { MaterialEntity } from './MaterialEntity'
 
 export class CarryPathTarget extends PathTarget {
 
-    constructor(location: Vector2) {
-        super(location)
+    constructor(location: Vector2, radiusSq: number = 0) {
+        super(location, radiusSq)
     }
 
     canGatherItem(): boolean {
@@ -28,10 +29,6 @@ export class CarryPathTarget extends PathTarget {
         return RaiderActivity.Place
     }
 
-    isInvalid(): boolean {
-        return false
-    }
-
 }
 
 export class SiteCarryPathTarget extends CarryPathTarget {
@@ -39,11 +36,12 @@ export class SiteCarryPathTarget extends CarryPathTarget {
     site: BuildingSite
 
     constructor(location: Vector2, site: BuildingSite) {
-        super(location)
+        super(location, ITEM_ACTION_RANGE_SQ)
         this.site = site
     }
 
     gatherItem(item: MaterialEntity) {
+        super.gatherItem(item)
         this.site.addItem(item)
     }
 
@@ -64,6 +62,10 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
     constructor(building: BuildingEntity) {
         super(building.getDropPosition2D())
         this.building = building
+    }
+
+    getFocusPoint(): Vector2 {
+        return this.building.sceneEntity.position2D
     }
 
     canGatherItem(): boolean {

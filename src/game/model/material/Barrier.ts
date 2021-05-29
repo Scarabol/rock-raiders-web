@@ -12,6 +12,7 @@ export class Barrier extends MaterialEntity {
 
     site: BuildingSite
     onSiteHeading: number
+    targets: SiteCarryPathTarget[] = []
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager, location: BarrierLocation, site: BuildingSite) {
         super(sceneMgr, entityMgr, EntityType.BARRIER)
@@ -21,13 +22,12 @@ export class Barrier extends MaterialEntity {
         this.targets = [new SiteCarryPathTarget(location.position, this.site)]
     }
 
-    protected updateTargets(): CarryPathTarget[] {
-        if (this.site?.canceled) {
-            this.site = null
-            const closestToolstation = this.entityMgr.getClosestBuildingByType(this.sceneEntity.position.clone(), EntityType.TOOLSTATION)
-            this.targets = [new BuildingCarryPathTarget(closestToolstation)]
+    findCarryTargets(): CarryPathTarget[] {
+        if (this.targets.every((t) => t.isInvalid())) {
+            return this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new BuildingCarryPathTarget(b))
+        } else {
+            return this.targets
         }
-        return this.targets
     }
 
     getPriorityIdentifier(): PriorityIdentifier {

@@ -11,26 +11,26 @@ import { MaterialEntity } from './MaterialEntity'
 export class ElectricFence extends MaterialEntity {
 
     targetSurface: Surface
+    target: CarryPathTarget[] = []
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, surface: Surface) {
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, targetSurface: Surface) {
         super(sceneMgr, entityMgr, EntityType.ELECTRIC_FENCE)
         this.sceneEntity = new ElectricFenceSceneEntity(sceneMgr)
-        this.targetSurface = surface
+        this.targetSurface = targetSurface
+        this.target = [new CarryPathTarget(targetSurface.getCenterWorld2D())]
     }
 
-    protected updateTargets(): CarryPathTarget[] {
-        if (this.targets.length < 1) {
-            if (this.targetSurface.canPlaceFence()) {
-                this.targets = [new CarryPathTarget(this.targetSurface.getCenterWorld2D())]
-            } else {
-                this.targets = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)
-                    .map((b) => new BuildingCarryPathTarget(b))
-            }
-        } else if (!this.targetSurface.canPlaceFence() && !(this.targets[0] as BuildingCarryPathTarget).building) {
-            this.targets = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)
-                .map((b) => new BuildingCarryPathTarget(b))
+    findCarryTargets(): CarryPathTarget[] {
+        if (this.target.every((t) => t.isInvalid())) {
+            return this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new BuildingCarryPathTarget(b))
+        } else {
+            return this.target
         }
-        return this.targets
+    }
+
+    placeDown() {
+        this.sceneEntity.addToScene(null, null)
+        this.targetSurface.fence = this
     }
 
     createCarryJob(): CarryFenceJob {

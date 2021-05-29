@@ -31,11 +31,12 @@ export abstract class MovableEntity {
             this.currentPath = paths.length > 0 ? paths[0] : null
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
-        this.sceneEntity.headTowards(this.currentPath.firstLocation)
         const step = this.determineStep()
         if (step.targetReached) {
+            this.sceneEntity.headTowards(this.currentPath.target.getFocusPoint())
             return MoveState.TARGET_REACHED
         } else {
+            this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.sceneEntity.position.add(step.vec)
             this.sceneEntity.changeActivity(this.getRouteActivity()) // only change when actually moving
             return MoveState.MOVED
@@ -58,7 +59,7 @@ export abstract class MovableEntity {
                 this.currentPath.locations.shift()
                 return this.determineStep()
             }
-        } else if (stepLengthSq <= entitySpeedSq) {
+        } else if (stepLengthSq <= entitySpeedSq + this.currentPath.target.radiusSq) {
             step.targetReached = true
         }
         step.vec.clampLength(0, entitySpeed)
