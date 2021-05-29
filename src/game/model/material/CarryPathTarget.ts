@@ -80,10 +80,8 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
                 this.building.changeActivity()
                 if (this.building.animation?.carryJoint) this.building.animation.carryJoint.remove(item.sceneEntity.group)
                 BuildingCarryPathTarget.addItemToStorage(item)
-                // TODO dispose item
             })
         } else {
-            item.removeFromScene()
             BuildingCarryPathTarget.addItemToStorage(item)
         }
     }
@@ -98,6 +96,7 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
                 break
         }
         EventBus.publishEvent(new MaterialAmountChanged())
+        item.removeFromScene()
     }
 
     getDropAction(): RaiderActivity {
