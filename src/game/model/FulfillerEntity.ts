@@ -120,7 +120,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             const carryItem = this.job.getCarryItem()
             if (carryItem && this.carries !== carryItem) {
                 this.dropItem()
-                if (this.moveToClosestTarget(carryItem.getPositionPathTarget())) {
+                if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets())) {
                     this.sceneEntity.changeActivity(RaiderActivity.Collect, () => {
                         this.pickupItem(carryItem)
                     })

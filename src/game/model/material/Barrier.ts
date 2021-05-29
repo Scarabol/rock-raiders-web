@@ -18,7 +18,7 @@ export class Barrier extends MaterialEntity {
         this.sceneEntity = new BarrierSceneEntity(sceneMgr)
         this.site = site
         this.onSiteHeading = location.heading
-        this.targets = [new SiteCarryPathTarget(location.location, this.site)]
+        this.targets = [new SiteCarryPathTarget(location.position, this.site)]
     }
 
     protected updateTargets(): CarryPathTarget[] {

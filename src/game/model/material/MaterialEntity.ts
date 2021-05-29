@@ -16,7 +16,7 @@ export abstract class MaterialEntity {
     sceneEntity: SceneEntity
     targets: CarryPathTarget[] = []
     targetSite: BuildingSite = null
-    positionPathTarget: PathTarget[] = null
+    positionAsPathTargets: PathTarget[] = []
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
         this.sceneMgr = sceneMgr
@@ -68,12 +68,12 @@ export abstract class MaterialEntity {
         return new CarryJob(this)
     }
 
-    getPositionPathTarget(): PathTarget[] {
-        const position = this.sceneEntity.position2D.clone()
-        if (!this.positionPathTarget || !this.positionPathTarget[0].targetLocation.equals(position)) {
-            this.positionPathTarget = [new PathTarget(position)]
+    getPositionAsPathTargets(): PathTarget[] {
+        const position = this.sceneEntity.position2D
+        if (this.positionAsPathTargets.length < 1 || !this.positionAsPathTargets[0].targetLocation.equals(position)) {
+            this.positionAsPathTargets = [new PathTarget(position)] // XXX becomes obsolete when using setter to change position
         }
-        return this.positionPathTarget
+        return this.positionAsPathTargets
     }
 
     removeFromScene() {
