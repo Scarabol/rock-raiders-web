@@ -10,48 +10,62 @@ import { ResourceManager } from './ResourceManager'
 
 export class AnimEntityLoader {
 
-    static loadModels(aeFilename: string, cfgRoot: any, audioListener: AudioListener, verbose: boolean = false): AnimationEntityType {
-        const path = getPath(aeFilename)
-        const entityType = new AnimationEntityType()
-        Object.keys(cfgRoot).forEach((rootKey: string) => {
-            const value = cfgRoot[rootKey]
+    aeFilename: string
+    path: string
+    cfgRoot: any
+    audioListener: AudioListener
+    verbose: boolean
+    entityType: AnimationEntityType = new AnimationEntityType()
+    knownAnimations: string[] = []
+
+    constructor(aeFilename: string, cfgRoot: any, audioListener: AudioListener, verbose: boolean = false) {
+        this.aeFilename = aeFilename
+        this.path = getPath(aeFilename)
+        this.cfgRoot = cfgRoot
+        this.audioListener = audioListener
+        this.verbose = verbose
+    }
+
+    loadModels(): AnimationEntityType {
+        Object.keys(this.cfgRoot).forEach((rootKey: string) => {
+            const value = this.cfgRoot[rootKey]
             if (rootKey.equalsIgnoreCase('Scale')) {
-                entityType.scale = Number(value)
+                this.entityType.scale = Number(value)
             } else if (rootKey.equalsIgnoreCase('CarryNullName')) {
-                entityType.carryNullName = value
+                this.entityType.carryNullName = value
             } else if (rootKey.equalsIgnoreCase('CarryNullFrames')) {
-                entityType.carryNullFrames = Number(value)
+                this.entityType.carryNullFrames = Number(value)
             } else if (rootKey.equalsIgnoreCase('Shape')) {
-                if (verbose) console.warn('TODO Derive buildings shape from this value') // XXX derive buildings surfaces shape from this value
+                if (this.verbose) console.warn('TODO Derive buildings shape from this value') // XXX derive buildings surfaces shape from this value
             } else if (rootKey.equalsIgnoreCase('DepositNullName')) {
-                entityType.depositNullName = value
+                this.entityType.depositNullName = value
             } else if (rootKey.equalsIgnoreCase('ToolNullName')) {
-                entityType.toolNullName = value
+                this.entityType.toolNullName = value
             } else if (rootKey.equalsIgnoreCase('WheelMesh')) {
                 if (!'NULL_OBJECT'.equalsIgnoreCase(value)) {
-                    const lwoFilename = path + value + '.lwo'
-                    entityType.wheelMesh = ResourceManager.getLwoModel(lwoFilename)
-                    if (!entityType.wheelMesh) console.error('Could not load wheel mesh from: ' + lwoFilename)
+                    const lwoFilename = this.path + value + '.lwo'
+                    this.entityType.wheelMesh = ResourceManager.getLwoModel(lwoFilename)
+                    if (!this.entityType.wheelMesh) console.error('Could not load wheel mesh from: ' + lwoFilename)
                 }
             } else if (rootKey.equalsIgnoreCase('WheelRadius')) {
-                entityType.wheelRadius = Number(value)
+                this.entityType.wheelRadius = Number(value)
             } else if (rootKey.equalsIgnoreCase('WheelNullName')) {
-                entityType.wheelNullName = value
+                this.entityType.wheelNullName = value
             } else if (rootKey.equalsIgnoreCase('DrillNullName')) {
-                entityType.drillNullName = value
+                this.entityType.drillNullName = value
             } else if (rootKey.equalsIgnoreCase('DriverNullName')) {
-                entityType.driverNullName = value
+                this.entityType.driverNullName = value
             } else if (rootKey.equalsIgnoreCase('CameraNullName')) {
-                entityType.cameraNullName = value
+                this.entityType.cameraNullName = value
             } else if (rootKey.equalsIgnoreCase('CameraNullFrames')) {
-                entityType.cameraNullFrames = Number(value)
+                this.entityType.cameraNullFrames = Number(value)
             } else if (rootKey.equalsIgnoreCase('CameraFlipDir')) {
                 // XXX what is this? flip upside down when hanging from rm?
             } else if (rootKey.equalsIgnoreCase('HighPoly')) {
                 Object.keys(value).forEach((key) => {
                     const polyKey = key.startsWith('!') ? key.slice(1) : key
-                    const mesh = ResourceManager.getLwoModel(path + value[key] + '.lwo')
-                    entityType.highPolyBodies.set(polyKey.toLowerCase(), mesh)
+                    const mesh = ResourceManager.getLwoModel(this.path + value[key] + '.lwo')
+                    this.entityType.highPolyBodies.set(polyKey.toLowerCase(), mesh)
                 })
             } else if (rootKey.equalsIgnoreCase('MediumPoly')) {
                 // TODO implement medium poly parsing
@@ -60,75 +74,91 @@ export class AnimEntityLoader {
             } else if (rootKey.equalsIgnoreCase('FPPoly')) {
                 // TODO implement first person poly parsing
             } else if (rootKey.equalsIgnoreCase('Activities')) {
-                entityType.animations = this.parseAnimations(value, cfgRoot, path, verbose)
+                this.parseAnimations(value)
             } else if (rootKey.equalsIgnoreCase('Upgrades')) {
-                entityType.upgradesByLevel = this.parseUpgrades(value)
+                this.parseUpgrades(value)
             } else if (rootKey.match(/level\d\d\d\d/i)) {
                 // TODO geo dome has upgrade defined at root level without Upgrades group
-            } else if (verbose && !value['lwsfile']) {
+            } else if (value['lwsfile'] && !this.knownAnimations.includes(rootKey)) {
+                // some activities are not listed in the Activities section... try parse them anyway
+                try {
+                    this.parseActivity(value, 'activity_' + rootKey)
+                } catch (e) {
+                    if (this.verbose) console.warn('Could not parse unlisted activity: ' + rootKey, value, e)
+                }
+            } else if (this.verbose) {
                 console.warn('Unhandled animated entity key found: ' + rootKey, value)
             }
         })
 
-        entityType.animations.forEach((animation) => {
-            animation.bodies.forEach((body) => {
-                let model = entityType.highPolyBodies.get(body.lowerName)
-                if (!model) model = entityType.mediumPolyBodies.get(body.lowerName)
-                if (!model) model = body.model
-                const polyModel = model.clone()
-                animation.polyList.push(polyModel)
-                if (body.lowerName) {
-                    if (body.lowerName.equalsIgnoreCase(entityType.carryNullName)) {
-                        animation.carryJoint = polyModel
-                    } else if (body.lowerName.equalsIgnoreCase(entityType.depositNullName)) {
-                        animation.depositJoint = polyModel
-                    } else if (body.lowerName.equalsIgnoreCase(entityType.toolNullName)) {
-                        animation.getToolJoint = polyModel
-                    } else if (body.lowerName.equalsIgnoreCase(entityType.wheelNullName)) {
-                        animation.wheelJoints.push(polyModel)
-                    } else if (body.lowerName.equalsIgnoreCase(entityType.drillNullName)) {
-                        animation.drillJoint = polyModel
-                    } else if (body.lowerName.equalsIgnoreCase(entityType.driverNullName)) {
-                        animation.driverJoint = polyModel
-                    } else if (body.isNull) {
-                        animation.nullJoints.getOrUpdate(body.lowerName.toLowerCase(), () => []).push(polyModel)
-                    }
-                }
-                if (body.sfxName) {
-                    const audio = new PositionalAudio(audioListener)
-                    audio.setRefDistance(TILESIZE * 6) // TODO optimize ref distance for SFX sounds
-                    audio.loop = false
-                    polyModel.add(audio)
-                    SoundManager.getSoundBuffer(body.sfxName).then((audioBuffer) => {
-                        audio.setBuffer(audioBuffer)
-                    })
-                    body.sfxFrames.forEach((frame) => animation.sfxAudioByFrame.getOrUpdate(frame, () => []).push(audio))
-                }
-            })
+        this.finalizeAnimations()
 
-            if (entityType.wheelMesh) {
+        return this.entityType
+    }
+
+    private parseAnimations(value) {
+        Object.keys(value).forEach((activityName) => {
+            try {
+                let keyName = iGet(value, activityName)
+                this.knownAnimations.push(keyName.toLowerCase())
+                const act = iGet(this.cfgRoot, keyName)
+                this.parseActivity(act, activityName.toLowerCase())
+            } catch (e) {
+                console.error(e)
+                console.log(this.cfgRoot)
+                console.log(value)
+                console.log(activityName)
+            }
+        })
+    }
+
+    private parseActivity(act: any, lActivityName: string) {
+        const file = iGet(act, 'FILE')
+        const isLws = iGet(act, 'LWSFILE') === true
+        const transcoef = iGet(act, 'TRANSCOEF')
+        const looping = iGet(act, 'LOOPING') === true
+        if (isLws) {
+            const content = ResourceManager.getResource(this.path + file + '.lws')
+            const animation = new LWSCLoader(this.path, this.verbose).parse(content)
+            animation.looping = looping
+            animation.transcoef = transcoef ? Number(transcoef) : 1
+            if (lActivityName.startsWith('!')) lActivityName = lActivityName.substr(1) // XXX Whats the meaning of leading ! for activities???
+            this.entityType.animations.set(lActivityName, animation)
+        } else {
+            console.error('Found activity which is not an LWS file')
+        }
+    }
+
+    private parseUpgrades(value) {
+        Object.keys(value).forEach((levelKey: string) => {
+            const match = levelKey.match(/level(\d\d\d\d)/i) // [carry] [scan] [speed] [drill]
+            if (match) {
+                const upgradeValue = value[levelKey]
+                this.entityType.upgradesByLevel.set(match[1], Object.keys(upgradeValue).map((upgradeName: string) => {
+                    const upgradeFilepath = ResourceManager.cfg('UpgradeTypes', upgradeName)
+                    const upgradeNullName = upgradeValue[upgradeName][0][0]
+                    const upgradeNullIndex = Number(upgradeValue[upgradeName][1][0]) - 1
+                    return new AnimationEntityUpgrade(upgradeFilepath, upgradeNullName, upgradeNullIndex)
+                }))
+            } else {
+                console.warn('Unexpected upgrade level key: ' + levelKey)
+            }
+        })
+    }
+
+    private finalizeAnimations() {
+        this.entityType.animations.forEach((animation) => {
+            this.resolveAnimationBodies(animation)
+
+            if (this.entityType.wheelMesh) {
                 animation.wheelJoints.forEach((joint) => {
-                    joint.add(entityType.wheelMesh.clone(true))
+                    joint.add(this.entityType.wheelMesh.clone(true))
                 })
             }
 
-            const upgrades0000 = entityType.upgradesByLevel.get('0000')
-            if (upgrades0000) { // TODO check for other upgrade levels
-                upgrades0000.forEach((upgrade) => {
-                    const joint = animation.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
-                    if (joint) {
-                        const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath + '.lwo')
-                        if (lwoModel) {
-                            joint.add(lwoModel)
-                        } else {
-                            const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae', audioListener)
-                            upgradeModels.animations.get('activity_stand')?.bodies.forEach((b) => joint.add(b.model.clone()))
-                        }
-                    }
-                })
-            }
+            this.applyDefaultUpgrades(animation)
 
-            animation.polyModel.scale.setScalar(entityType.scale)
+            animation.polyModel.scale.setScalar(this.entityType.scale)
             animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
                 const polyPart = animation.polyList[index]
                 const parentInd = body.parentObjInd
@@ -139,56 +169,63 @@ export class AnimEntityLoader {
                 }
             })
         })
-
-        return entityType
     }
 
-    private static parseAnimations(value, root, path: string, verbose: boolean): Map<string, AnimClip> {
-        const animations = new Map<string, AnimClip>()
-        Object.keys(value).forEach((activity) => {
-            try {
-                let keyname = iGet(value, activity)
-                const act: { file: string, transcoef: number, lwsfile: boolean, animation: AnimClip, keyname: string } = iGet(root, keyname)
-                const file = iGet(act, 'FILE')
-                const isLws = iGet(act, 'LWSFILE') === true
-                const transcoef = iGet(act, 'TRANSCOEF')
-                const looping = iGet(act, 'LOOPING') === true
-                if (isLws) {
-                    const content = ResourceManager.getResource(path + file + '.lws')
-                    const animation = new LWSCLoader(path, verbose).parse(content)
-                    animation.looping = looping
-                    animation.transcoef = transcoef ? Number(transcoef) : 1
-                    animations.set(activity.toLowerCase(), animation)
-                } else {
-                    console.error('Found activity which is not an LWS file')
+    private resolveAnimationBodies(animation: AnimClip) {
+        animation.bodies.forEach((body) => {
+            let model = this.entityType.highPolyBodies.get(body.lowerName)
+            if (!model) model = this.entityType.mediumPolyBodies.get(body.lowerName)
+            if (!model) model = body.model
+            const polyModel = model.clone()
+            animation.polyList.push(polyModel)
+            if (body.lowerName) {
+                if (body.lowerName.equalsIgnoreCase(this.entityType.carryNullName)) {
+                    animation.carryJoint = polyModel
+                } else if (body.lowerName.equalsIgnoreCase(this.entityType.depositNullName)) {
+                    animation.depositJoint = polyModel
+                } else if (body.lowerName.equalsIgnoreCase(this.entityType.toolNullName)) {
+                    animation.getToolJoint = polyModel
+                } else if (body.lowerName.equalsIgnoreCase(this.entityType.wheelNullName)) {
+                    animation.wheelJoints.push(polyModel)
+                } else if (body.lowerName.equalsIgnoreCase(this.entityType.drillNullName)) {
+                    animation.drillJoint = polyModel
+                } else if (body.lowerName.equalsIgnoreCase(this.entityType.driverNullName)) {
+                    animation.driverJoint = polyModel
+                } else if (body.isNull) {
+                    animation.nullJoints.getOrUpdate(body.lowerName.toLowerCase(), () => []).push(polyModel)
                 }
-            } catch (e) {
-                console.error(e)
-                console.log(root)
-                console.log(value)
-                console.log(activity)
+            }
+            if (body.sfxName) {
+                const audio = new PositionalAudio(this.audioListener)
+                audio.setRefDistance(TILESIZE * 6) // TODO optimize ref distance for SFX sounds
+                audio.loop = false
+                polyModel.add(audio)
+                if (!body.sfxName.equalsIgnoreCase('snd_music')) {
+                    SoundManager.getSoundBuffer(body.sfxName)?.then((audioBuffer) => {
+                        audio.setBuffer(audioBuffer)
+                    })
+                    body.sfxFrames.forEach((frame) => animation.sfxAudioByFrame.getOrUpdate(frame, () => []).push(audio))
+                }
             }
         })
-        return animations
     }
 
-    private static parseUpgrades(value) {
-        const upgrades = new Map<string, AnimationEntityUpgrade[]>()
-        Object.keys(value).forEach((levelKey: string) => {
-            const match = levelKey.match(/level(\d\d\d\d)/i) // [carry] [scan] [speed] [drill]
-            if (match) {
-                const upgradeValue = value[levelKey]
-                upgrades.set(match[1], Object.keys(upgradeValue).map((upgradeName: string) => {
-                    const upgradeFilepath = ResourceManager.cfg('UpgradeTypes', upgradeName)
-                    const upgradeNullName = upgradeValue[upgradeName][0][0]
-                    const upgradeNullIndex = Number(upgradeValue[upgradeName][1][0]) - 1
-                    return new AnimationEntityUpgrade(upgradeFilepath, upgradeNullName, upgradeNullIndex)
-                }))
-            } else {
-                console.warn('Unexpected upgrade level key: ' + levelKey)
-            }
-        })
-        return upgrades
+    private applyDefaultUpgrades(animation: AnimClip) {
+        const upgrades0000 = this.entityType.upgradesByLevel.get('0000')
+        if (upgrades0000) { // TODO check for other upgrade levels
+            upgrades0000.forEach((upgrade) => {
+                const joint = animation.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
+                if (joint) {
+                    const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath + '.lwo')
+                    if (lwoModel) {
+                        joint.add(lwoModel)
+                    } else {
+                        const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae', this.audioListener)
+                        upgradeModels.animations.get('activity_stand')?.bodies.forEach((b) => joint.add(b.model.clone()))
+                    }
+                }
+            })
+        }
     }
 
 }

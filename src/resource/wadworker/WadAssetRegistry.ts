@@ -185,27 +185,18 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
                 })
             }
         })
-        const activities = iGet(cfgRoot, 'Activities')
-        if (activities) {
-            Object.keys(activities).forEach((activity) => {
-                try {
-                    let keyname = iGet(activities, activity)
-                    const act = iGet(cfgRoot, keyname)
-                    const file = iGet(act, 'FILE')
-                    const isLws = iGet(act, 'LWSFILE') === true
-                    if (isLws) {
-                        this.addLWSFile(path + file + '.lws')
-                    } else {
-                        console.error('Found activity which is not an LWS file')
-                    }
-                } catch (e) {
-                    console.error(e)
-                    console.log(cfgRoot)
-                    console.log(activities)
-                    console.log(activity)
+        Object.keys(cfgRoot).forEach((cfgKey) => {
+            try {
+                const value = cfgRoot[cfgKey]
+                const isLws = iGet(value, 'LWSFILE') === true
+                if (isLws) {
+                    const file = iGet(value, 'FILE')
+                    this.addLWSFile(path + file + '.lws')
                 }
-            })
-        }
+            } catch (e) {
+                // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/...
+            }
+        })
     }
 
     addLWSFile(lwsFilepath: string) {

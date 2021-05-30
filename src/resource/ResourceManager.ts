@@ -133,7 +133,7 @@ export class ResourceManager extends ResourceCache {
     static getAnimationEntityType(aeFilename: string, audioListener: AudioListener): AnimationEntityType {
         let cfgRoot = this.getResource(aeFilename)
         if (!cfgRoot) throw 'Could not get animation entity type for: ' + aeFilename
-        return AnimEntityLoader.loadModels(aeFilename, cfgRoot, audioListener)
+        return new AnimEntityLoader(aeFilename, cfgRoot, audioListener).loadModels()
     }
 
     static getLwoModel(lwoFilepath: string, entityPath: string = null): SceneMesh {
