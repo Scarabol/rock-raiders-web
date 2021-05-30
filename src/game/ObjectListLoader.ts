@@ -14,6 +14,7 @@ import { LavaMonster } from './model/monster/LavaMonster'
 import { RockMonster } from './model/monster/RockMonster'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
+import { RaiderTrainings } from './model/raider/RaiderTraining'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
@@ -64,6 +65,30 @@ export class ObjectListLoader {
                 case EntityType.TELEPORT_BIG:
                     const entity = BuildingFactory.createBuildingFromType(entityType, sceneMgr, entityMgr)
                     entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
+                    if (entityType === EntityType.TOOLSTATION) {
+                        for (let c = 0; c < 0; c++) {
+                            const raider = new Raider(sceneMgr, entityMgr)
+                            raider.sceneEntity.changeActivity()
+                            raider.sceneEntity.makeSelectable(raider)
+                            raider.sceneEntity.addToScene(entity.primaryPathSurface.getRandomPosition(), radHeading - Math.PI / 2)
+                            entityMgr.raiders.push(raider)
+                            RaiderTrainings.values.forEach((t) => raider.addTraining(t))
+                        }
+                        EventBus.publishEvent(new RaidersChangedEvent(entityMgr))
+                    } else if (entityType === EntityType.POWER_STATION) {
+                        const smallTruck = VehicleFactory.createVehicleFromType(EntityType.SMALL_TRUCK, sceneMgr, entityMgr)
+                        smallTruck.sceneEntity.changeActivity()
+                        smallTruck.sceneEntity.makeSelectable(smallTruck)
+                        smallTruck.sceneEntity.addToScene(entity.primaryPathSurface.getCenterWorld2D(), radHeading + Math.PI)
+                        entityMgr.vehicles.push(smallTruck)
+                        const raider = new Raider(sceneMgr, entityMgr)
+                        raider.sceneEntity.changeActivity()
+                        raider.sceneEntity.makeSelectable(raider)
+                        raider.sceneEntity.addToScene(entity.primaryPathSurface.getRandomPosition(), radHeading - Math.PI / 2)
+                        entityMgr.raiders.push(raider)
+                        RaiderTrainings.values.forEach((t) => raider.addTraining(t))
+                        smallTruck.addDriver(raider)
+                    }
                     break
                 case EntityType.CRYSTAL:
                     entityMgr.placeMaterial(new Crystal(sceneMgr, entityMgr), worldPos)
@@ -134,6 +159,10 @@ export class ObjectListLoader {
             driver.addTraining(vehicle.getRequiredTraining())
             vehicle.addDriver(driver)
         })
+        const teleportBig = BuildingFactory.createBuildingFromType(EntityType.TELEPORT_BIG, sceneMgr, entityMgr)
+        teleportBig.placeDown(new Vector2(24.5, 48.5).multiplyScalar(TILESIZE), Math.PI, disableStartTeleport)
+        const barracks = BuildingFactory.createBuildingFromType(EntityType.BARRACKS, sceneMgr, entityMgr)
+        barracks.placeDown(new Vector2(25.5, 49.5).multiplyScalar(TILESIZE), Math.PI / 2, disableStartTeleport)
     }
 
 }
