@@ -28,11 +28,6 @@ export class ElectricFence extends MaterialEntity {
         }
     }
 
-    placeDown() {
-        this.sceneEntity.addToScene(null, null)
-        this.targetSurface.fence = this
-    }
-
     createCarryJob(): CarryFenceJob {
         return new CarryFenceJob(this)
     }

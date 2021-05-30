@@ -5,7 +5,8 @@ export class CarryFenceJob extends CarryJob<ElectricFence> {
 
     onJobComplete() {
         super.onJobComplete()
-        this.item.placeDown()
+        this.item.sceneEntity.addToScene(null, null)
+        this.item.targetSurface.fence = this.item
     }
 
 }
