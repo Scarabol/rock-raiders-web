@@ -65,6 +65,8 @@ declare global {
 
         remove(element: T): void
 
+        removeLast(element: T): void
+
         last(): T
 
         count(callback: (element: T) => boolean): number
@@ -92,6 +94,11 @@ Array.prototype.add = function <T>(element: T): void {
 Array.prototype.remove = function <T>(element: T): void {
     const index = this.indexOf(element)
     if (index !== -1) this.splice(index, 1)
+}
+
+Array.prototype.removeLast = function <T>(element: T): void {
+    const lastIndex = this.indexOf(element)
+    if (lastIndex !== -1) this.splice(lastIndex, 1)
 }
 
 Array.prototype.last = function <T>(): T {
