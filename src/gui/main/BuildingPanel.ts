@@ -25,7 +25,8 @@ export class BuildingPanel extends DependencyCheckPanel {
     }
 
     addBuildMenuItem(itemKey: string, entityType: EntityType) {
-        this.addDependencyMenuItem(itemKey, entityType, (entityType) => this.publishEvent(new SelectBuildMode(entityType)))
+        const item = this.addDependencyMenuItem(itemKey)
+        item.onClick = () => this.publishEvent(new SelectBuildMode(entityType))
     }
 
 }

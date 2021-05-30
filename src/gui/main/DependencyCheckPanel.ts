@@ -29,12 +29,11 @@ export abstract class DependencyCheckPanel extends IconSubPanel {
         this.usableBuildingsByTypeAndLevel = new Map()
     }
 
-    protected addDependencyMenuItem(itemKey: string, entityType: EntityType, onClick: (entityType: EntityType) => any) {
+    protected addDependencyMenuItem(itemKey: string) {
         const item = super.addMenuItem('InterfaceBuildImages', itemKey)
         // TODO when update state also update tooltip icons showing missing dependencies
         const dependencies: [string, number][] = GuiResourceCache.cfg('Dependencies', 'AlwaysCheck:' + itemKey)
         item.isDisabled = () => dependencies.some((d) => !this.checkDependency(d))
-        item.onClick = () => onClick(entityType)
         return item
     }
 

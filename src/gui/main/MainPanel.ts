@@ -71,9 +71,12 @@ export class MainPanel extends Panel {
         teleportRaider.onClickSecondary = () => {
             if (this.numRequestedRaiders > 0) this.publishEvent(new ChangeRaiderSpawnRequest(false))
         }
-        teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
+        const requestedRaiderLabel = teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
+        requestedRaiderLabel.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
+            requestedRaiderLabel.setLabel(event.numRequested)
+        })
         this.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
-            this.numRequestedRaiders = event.numRequestedRaiders
+            this.numRequestedRaiders = event.numRequested
             teleportRaider.updateState()
         })
         const buildingItem = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_BuildBuilding')

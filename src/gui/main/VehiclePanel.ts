@@ -7,7 +7,8 @@ import { DependencyCheckPanel } from './DependencyCheckPanel'
 abstract class VehiclePanel extends DependencyCheckPanel {
 
     addVehicleMenuItem(itemKey: string, entityType: EntityType) {
-        this.addDependencyMenuItem(itemKey, entityType, (entityType) => this.publishEvent(new RequestVehicleSpawn(entityType)))
+        const item = this.addDependencyMenuItem(itemKey)
+        item.onClick = () => this.publishEvent(new RequestVehicleSpawn(entityType))
     }
 
 }

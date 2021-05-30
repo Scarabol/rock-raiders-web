@@ -1,24 +1,22 @@
-import { EventKey } from '../../event/EventKeyEnum'
-import { RequestedRaidersChanged } from '../../event/WorldEvents'
 import { BaseElement } from '../base/BaseElement'
 
 export class IconPanelButtonLabel extends BaseElement {
 
-    numRequestedRaiders: string = ''
+    label: string = ''
 
     constructor(parent: BaseElement) {
         super(parent)
         this.relX = 4
         this.relY = 11
-        this.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
-            this.numRequestedRaiders = (event.numRequestedRaiders || '').toString()
-            this.notifyRedraw()
-        })
+    }
+
+    setLabel(label: number) {
+        this.label = (label || '').toString()
     }
 
     reset() {
         super.reset()
-        this.numRequestedRaiders = ''
+        this.label = ''
     }
 
     onRedraw(context: SpriteContext) {
@@ -26,7 +24,7 @@ export class IconPanelButtonLabel extends BaseElement {
         context.textAlign = 'left'
         context.font = 'bold 10px Arial'
         context.fillStyle = this.disabled || (this.parent && this.parent.disabled) ? '#444' : '#fff'
-        context.fillText(this.numRequestedRaiders, this.x, this.y)
+        context.fillText(this.label, this.x, this.y)
         super.onRedraw(context)
     }
 

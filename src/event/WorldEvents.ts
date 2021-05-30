@@ -42,11 +42,11 @@ export class JobDeleteEvent extends JobEvent {
 
 export class RequestedRaidersChanged extends WorldEvent {
 
-    numRequestedRaiders: number
+    numRequested: number
 
-    constructor(requestedRaiders: number) {
+    constructor(numRequested: number) {
         super(EventKey.REQUESTED_RAIDERS_CHANGED)
-        this.numRequestedRaiders = requestedRaiders
+        this.numRequested = numRequested
     }
 
 }
