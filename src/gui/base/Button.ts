@@ -1,5 +1,6 @@
 import { SoundManager } from '../../audio/SoundManager'
 import { ButtonCfg } from '../../cfg/ButtonCfg'
+import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { GuiResourceCache } from '../GuiResourceCache'
 import { BaseElement } from './BaseElement'
 
@@ -51,14 +52,14 @@ export class Button extends BaseElement {
         return stateChanged
     }
 
-    checkClick(cx, cy): boolean {
-        const stateChanged = super.checkClick(cx, cy)
+    checkClick(cx, cy, button: MOUSE_BUTTON): boolean {
+        const stateChanged = super.checkClick(cx, cy, button)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    checkRelease(cx, cy): boolean {
-        const stateChanged = super.checkRelease(cx, cy)
+    checkRelease(cx, cy, button: MOUSE_BUTTON): boolean {
+        const stateChanged = super.checkRelease(cx, cy, button)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
@@ -74,7 +75,7 @@ export class Button extends BaseElement {
         let img = this.imgNormal
         if (this.disabled) {
             img = this.imgDisabled || this.imgPressed || this.imgNormal
-        } else if (this.pressed) {
+        } else if (this.pressedByButton !== null) {
             img = this.imgPressed || this.imgNormal
         } else if (this.hover) {
             img = this.imgHover || this.imgNormal

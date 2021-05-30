@@ -1,5 +1,6 @@
 import { Sample } from '../../audio/Sample'
 import { EventKey } from '../../event/EventKeyEnum'
+import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { ChangeCursor, LocalEvent, PlaySoundEvent } from '../../event/LocalEvents'
 import { Cursor } from '../../screen/Cursor'
 
@@ -16,8 +17,9 @@ export class BaseElement {
     hidden: boolean = false
     disabled: boolean = false
     hover: boolean = false
-    pressed: boolean = false
+    pressedByButton: MOUSE_BUTTON = null
     onClick: (cx?: number, cy?: number) => any = null
+    onClickSecondary: (cx?: number, cy?: number) => any = null
     onPublishEvent: (event: LocalEvent) => any = (event) => console.log('TODO publish event: ' + EventKey[event.eventKey])
     tooltipTimeout = null
 
@@ -29,7 +31,7 @@ export class BaseElement {
         this.hidden = false
         this.disabled = false
         this.hover = false
-        this.pressed = false
+        this.pressedByButton = null
         this.children.forEach((c) => c.reset())
     }
 
@@ -90,7 +92,7 @@ export class BaseElement {
             clearTimeout(this.tooltipTimeout)
             this.tooltipTimeout = null
         }
-        this.pressed = this.pressed && this.hover
+        if (!this.hover) this.pressedByButton = null
         this.children.forEach((child) => stateChanged = child.checkHover(cx, cy) || stateChanged)
         return stateChanged
     }
@@ -98,37 +100,54 @@ export class BaseElement {
     showTooltip() {
     }
 
-    checkClick(cx, cy): boolean {
+    checkClick(cx, cy, button: MOUSE_BUTTON): boolean {
         if (this.isInactive()) return false
-        const inRect = this.isInRect(cx, cy)
-        let stateChanged = this.pressed !== inRect
-        this.pressed = inRect
-        this.children.forEach((child) => stateChanged = child.checkClick(cx, cy) || stateChanged)
+        const oldState = this.pressedByButton
+        if (this.isInRect(cx, cy)) {
+            if (this.pressedByButton === null && ((button === MOUSE_BUTTON.MAIN && this.onClick) ||
+                (button === MOUSE_BUTTON.SECONDARY && this.onClickSecondary))) {
+                this.pressedByButton = button
+            }
+        } else {
+            this.pressedByButton = null
+        }
+        let stateChanged = this.pressedByButton !== oldState
+        this.children.forEach((child) => stateChanged = child.checkClick(cx, cy, button) || stateChanged)
         return stateChanged
     }
 
-    checkRelease(cx, cy): boolean {
+    checkRelease(cx, cy, button: MOUSE_BUTTON): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
-        if (inRect && this.pressed && this.onClick) {
-            this.clicked(cx, cy)
+        if (inRect && this.pressedByButton !== null) {
+            this.clicked(cx, cy, button)
         }
         let stateChanged = false
-        this.children.forEach((child) => stateChanged = child.checkRelease(cx, cy) || stateChanged)
-        stateChanged = this.pressed || stateChanged
-        this.pressed = false
+        this.children.forEach((child) => stateChanged = child.checkRelease(cx, cy, button) || stateChanged)
+        stateChanged = this.pressedByButton !== null || stateChanged
+        this.pressedByButton = null
         return stateChanged
     }
 
-    clicked(cx: number, cy: number) {
-        this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
-        this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
-        this.onClick(cx, cy)
+    clicked(cx: number, cy: number, button: MOUSE_BUTTON) {
+        if (button === MOUSE_BUTTON.MAIN) {
+            if (this.onClick) {
+                this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
+                this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
+                this.onClick(cx, cy)
+            }
+        } else if (button === MOUSE_BUTTON.SECONDARY) {
+            if (this.onClickSecondary) {
+                this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
+                this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
+                this.onClickSecondary(cx, cy)
+            }
+        }
     }
 
     release(): boolean {
-        let stateChanged = this.pressed || this.hover
-        this.pressed = false
+        let stateChanged = this.pressedByButton !== null || this.hover
+        this.pressedByButton = null
         this.hover = false
         this.children.forEach((child) => stateChanged = child.release() || stateChanged)
         return stateChanged

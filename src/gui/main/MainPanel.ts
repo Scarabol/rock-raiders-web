@@ -68,7 +68,9 @@ export class MainPanel extends Panel {
             (this.numToolstations < 1 && this.numTeleportPads < 1)
         teleportRaider.updateState()
         teleportRaider.onClick = () => this.publishEvent(new ChangeRaiderSpawnRequest(true))
-        // TODO add decrease requested raider spawn option (needs right click for gui elements)
+        teleportRaider.onClickSecondary = () => {
+            if (this.numRequestedRaiders > 0) this.publishEvent(new ChangeRaiderSpawnRequest(false))
+        }
         teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
         this.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
             this.numRequestedRaiders = event.numRequestedRaiders

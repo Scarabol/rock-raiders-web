@@ -1,4 +1,5 @@
 import { MenuItemCfg } from '../../cfg/MenuItemCfg'
+import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { BaseElement } from '../base/BaseElement'
 import { GuiResourceCache } from '../GuiResourceCache'
 import { IconPanelButton } from './IconPanelButton'
@@ -19,9 +20,9 @@ export class IconPanelToggleButton extends IconPanelButton {
         this.imgOnDisabled = GuiResourceCache.getImageOrNull(menuItemOnCfg.disabledFile)
     }
 
-    clicked(cx: number, cy: number) {
+    clicked(cx: number, cy: number, button: MOUSE_BUTTON) {
         this.toggleState = !this.toggleState
-        super.clicked(cx, cy)
+        super.clicked(cx, cy, button)
     }
 
     onRedraw(context: SpriteContext) {
@@ -33,7 +34,7 @@ export class IconPanelToggleButton extends IconPanelButton {
             } else {
                 img = this.imgDisabled || this.imgPressed || this.imgNormal
             }
-        } else if (this.pressed) {
+        } else if (this.pressedByButton !== null) {
             if (this.toggleState) {
                 img = this.imgOnPressed || this.imgOnNormal
             } else {

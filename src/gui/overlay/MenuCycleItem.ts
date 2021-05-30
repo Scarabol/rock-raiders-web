@@ -1,4 +1,5 @@
 import { MenuCycleItemCfg } from '../../cfg/MenuCycleItemCfg'
+import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { BaseElement } from '../base/BaseElement'
 import { MenuLayer } from './MenuLayer'
 
@@ -39,14 +40,14 @@ export class MenuCycleItem extends BaseElement {
         return stateChanged
     }
 
-    checkClick(cx, cy): boolean {
-        const stateChanged = super.checkClick(cx, cy)
+    checkClick(cx, cy, button: MOUSE_BUTTON): boolean {
+        const stateChanged = super.checkClick(cx, cy, button)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    checkRelease(cx, cy): boolean {
-        const stateChanged = super.checkRelease(cx, cy)
+    checkRelease(cx, cy, button: MOUSE_BUTTON): boolean {
+        const stateChanged = super.checkRelease(cx, cy, button)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }

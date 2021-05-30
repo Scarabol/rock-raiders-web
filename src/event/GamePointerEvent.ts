@@ -1,4 +1,4 @@
-import { POINTER_EVENT } from './EventTypeEnum'
+import { MOUSE_BUTTON, POINTER_EVENT } from './EventTypeEnum'
 
 export class GamePointerEvent implements PointerEventInit {
 
@@ -8,7 +8,7 @@ export class GamePointerEvent implements PointerEventInit {
     clientX: number
     clientY: number
     pointerType: string
-    button: number
+    button: MOUSE_BUTTON
     ctrlKey: boolean
     metaKey: boolean
     shiftKey: boolean

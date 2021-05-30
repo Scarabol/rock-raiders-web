@@ -1,5 +1,5 @@
 import { EventKey } from '../event/EventKeyEnum'
-import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
+import { POINTER_EVENT } from '../event/EventTypeEnum'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { ChangeCursor, LocalEvent } from '../event/LocalEvents'
@@ -51,9 +51,9 @@ export abstract class GuiWorker extends OffscreenWorker {
             if (event.eventEnum === POINTER_EVENT.MOVE) {
                 this.rootElement.checkHover(sx, sy)
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {
-                if (event.button === MOUSE_BUTTON.MAIN) this.rootElement.checkClick(sx, sy)
+                this.rootElement.checkClick(sx, sy, event.button)
             } else if (event.eventEnum === POINTER_EVENT.UP) {
-                if (event.button === MOUSE_BUTTON.MAIN) this.rootElement.checkRelease(sx, sy)
+                this.rootElement.checkRelease(sx, sy, event.button)
             }
         } else if (event.eventEnum === POINTER_EVENT.MOVE) {
             this.rootElement.release()
