@@ -8,8 +8,6 @@ import { ShareableJob } from './ShareableJob'
 
 export class VehicleCallManJob extends ShareableJob {
 
-    // TODO vehicles: add range check, which places raider in vehicle when nearby
-
     vehicle: VehicleEntity
     workplaces: PathTarget[]
 
@@ -17,7 +15,7 @@ export class VehicleCallManJob extends ShareableJob {
         super()
         this.vehicle = vehicle
         this.vehicle.callManJob = this
-        this.workplaces = [new PathTarget(this.vehicle.sceneEntity.position2D.clone())]
+        this.workplaces = [new PathTarget(this.vehicle.sceneEntity.position2D.clone(), this.vehicle.sceneEntity.getRadiusSquare())]
     }
 
     getWorkplaces(): PathTarget[] {
