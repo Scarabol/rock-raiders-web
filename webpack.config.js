@@ -4,15 +4,15 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = (env, argv) => {
     return {
-        mode: "production",
-        entry: './index.ts',
+        mode: 'production',
+        entry: './site/index.ts',
         output: {
             filename: 'index.js',
             path: path.resolve(__dirname, 'dist'),
             clean: true,
         },
         plugins: [
-            new HtmlWebpackPlugin({template: 'index.html', favicon: "favicon-32x32.png",}),
+            new HtmlWebpackPlugin({template: './site/index.html', favicon: './site/favicon-32x32.png',}),
             new webpack.DefinePlugin({'process.env.WEBPACK_MODE': JSON.stringify(argv.mode)}),
         ],
         module: {
