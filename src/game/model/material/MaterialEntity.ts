@@ -27,7 +27,7 @@ export abstract class MaterialEntity {
     abstract getPriorityIdentifier(): PriorityIdentifier
 
     createCarryJob(): CarryJob<MaterialEntity> {
-        return new CarryJob(this)
+        return new CarryJob(this) // TODO better create only one job per item?
     }
 
     getPositionAsPathTargets(): PathTarget[] {

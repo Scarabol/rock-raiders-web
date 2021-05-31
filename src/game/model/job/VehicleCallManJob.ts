@@ -8,7 +8,7 @@ import { ShareableJob } from './ShareableJob'
 
 export class VehicleCallManJob extends ShareableJob {
 
-    // FIXME add range check, which places raider in vehicle when nearby
+    // TODO vehicles: add range check, which places raider in vehicle when nearby
 
     vehicle: VehicleEntity
     workplaces: PathTarget[]
@@ -32,7 +32,7 @@ export class VehicleCallManJob extends ShareableJob {
     }
 
     onJobComplete() {
-        this.vehicle.addDriver(this.fulfiller[0] as Raider) // FIXME this should only consider the one near the vehicle
+        this.vehicle.addDriver(this.fulfiller[0] as Raider) // TODO vehicles: this should only consider the one near the vehicle
         this.vehicle.callManJob = null
         super.onJobComplete()
     }

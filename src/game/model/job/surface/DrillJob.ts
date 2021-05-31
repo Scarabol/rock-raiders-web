@@ -44,7 +44,7 @@ export class DrillJob extends ShareableJob {
         return RaiderActivity.Drill
     }
 
-    getWorkDuration(fulfiller: FulfillerEntity): number {
+    getWorkDuration(fulfiller: FulfillerEntity): number { // TODO refactor this with surface "health" or "stability", which is reduced by drilling
         const drillTimeInMsPerType: Map<EntityType, { drillTime: number, count: number }> = new Map()
         this.fulfiller.forEach((f) => {
             drillTimeInMsPerType.getOrUpdate(f.entityType, () => {

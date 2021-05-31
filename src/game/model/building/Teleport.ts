@@ -11,7 +11,7 @@ import { BuildingEntity } from './BuildingEntity'
 
 export abstract class Teleport {
 
-    building: BuildingEntity // FIXME instead hook in setter for position and heading
+    building: BuildingEntity // TODO instead hook in setter for position and heading
     operating: boolean
     powered: boolean
 
@@ -30,7 +30,7 @@ export abstract class Teleport {
         entity.sceneEntity.playPositionalAudio(Sample[Sample.SND_teleport], false)
         entity.sceneEntity.changeActivity(RaiderActivity.TeleportIn, () => {
             this.operating = false
-            entity.sceneEntity.changeActivity() // FIXME move all lines into onAddScene for entities
+            entity.sceneEntity.changeActivity()
             entity.sceneEntity.createPickSphere(entity.stats.PickSphere, entity)
             const walkOutPos = this.building.primaryPathSurface.getRandomPosition()
             entity.setJob(new MoveJob(walkOutPos))
@@ -52,11 +52,10 @@ export class RaiderOnlyTeleport extends Teleport {
 export class SmallTeleport extends Teleport {
 
     canTeleportIn(entityType: EntityType): boolean {
-        // FIXME check if primary surface is occupied
         return super.canTeleportIn(entityType) && SmallTeleport.isSmall(entityType)
     }
 
-    private static isSmall(entityType: EntityType) { // FIXME refactor this re-introduce SuperEntityType or add flags to entity types in general
+    private static isSmall(entityType: EntityType) { // TODO evaluate stats UseSmallTeleporter
         return entityType === EntityType.PILOT ||
             entityType === EntityType.HOVERBOARD ||
             entityType === EntityType.SMALL_TRUCK ||

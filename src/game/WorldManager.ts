@@ -17,7 +17,7 @@ import { SceneManager } from './SceneManager'
 
 export class WorldManager {
 
-    sceneMgr: SceneManager // TODO can be removed, when entities are decoupled from their scene mesh/entity
+    sceneMgr: SceneManager
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
     oxygenUpdateInterval = null
@@ -80,6 +80,7 @@ export class WorldManager {
         if (this.entityMgr.hasMaxRaiders()) return
         const teleportBuilding = this.entityMgr.findTeleportBuilding(EntityType.PILOT)
         if (!teleportBuilding) return
+        // TODO only spawn in, when primary surface is free
         this.requestedRaiders--
         EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
         teleportBuilding.teleport.teleportIn(new Raider(this.sceneMgr, this.entityMgr), this.entityMgr.raiders)

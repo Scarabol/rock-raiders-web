@@ -83,7 +83,7 @@ export class SceneManager {
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
         const vehicle = SceneManager.getEntity(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
         if (vehicle) return {vehicle: vehicle}
-        // FIXME materials don't have pick spheres yet
+        // TODO materials don't have pick spheres yet
         // const material = SceneManager.getEntity(raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere)))
         // if (material) return {material: material}
         if (this.terrain) {
