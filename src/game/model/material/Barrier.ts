@@ -10,16 +10,12 @@ import { MaterialEntity } from './MaterialEntity'
 
 export class Barrier extends MaterialEntity {
 
-    site: BuildingSite
-    onSiteHeading: number
     targets: SiteCarryPathTarget[] = []
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager, location: BarrierLocation, site: BuildingSite) {
         super(sceneMgr, entityMgr, EntityType.BARRIER)
         this.sceneEntity = new BarrierSceneEntity(sceneMgr)
-        this.site = site
-        this.onSiteHeading = location.heading
-        this.targets = [new SiteCarryPathTarget(location.position, this.site)]
+        this.targets = [new SiteCarryPathTarget(site, location.position, location.heading)]
     }
 
     findCarryTargets(): CarryPathTarget[] {

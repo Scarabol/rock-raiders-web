@@ -69,9 +69,6 @@ export class BuildingSite {
     }
 
     addItem(item: MaterialEntity) {
-        if (item.entityType === EntityType.BARRIER) {
-            item.sceneEntity.changeActivity(BarrierActivity.Expand, () => item.sceneEntity.changeActivity(BarrierActivity.Long))
-        }
         this.onSiteByType.getOrUpdate(item.entityType, () => []).push(item)
         this.checkComplete()
     }

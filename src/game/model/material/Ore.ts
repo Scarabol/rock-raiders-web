@@ -16,7 +16,7 @@ export class Ore extends MaterialEntity {
 
     findCarryTargets(): CarryPathTarget[] {
         const sites = this.entityMgr.buildingSites.filter((b) => b.needs(this.entityType))
-        if (sites.length > 0) return sites.map((s) => new SiteCarryPathTarget(s.getRandomDropPosition(), s))
+        if (sites.length > 0) return sites.map((s) => new SiteCarryPathTarget(s, s.getRandomDropPosition()))
         const oreRefineries = this.entityMgr.getBuildingsByType(EntityType.ORE_REFINERY)
         if (oreRefineries.length > 0) return oreRefineries.map((b) => new BuildingCarryPathTarget(b))
         const toolStations = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)

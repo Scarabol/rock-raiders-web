@@ -16,7 +16,7 @@ export class Crystal extends MaterialEntity {
 
     findCarryTargets(): CarryPathTarget[] {
         const sites = this.entityMgr.buildingSites.filter((b) => b.needs(this.entityType))
-        if (sites.length > 0) return sites.map((s) => new SiteCarryPathTarget(s.getRandomDropPosition(), s))
+        if (sites.length > 0) return sites.map((s) => new SiteCarryPathTarget(s, s.getRandomDropPosition()))
         const powerStations = this.entityMgr.getBuildingsByType(EntityType.POWER_STATION)
         if (powerStations.length > 0) return powerStations.map((b) => new BuildingCarryPathTarget(b))
         const toolStations = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)
