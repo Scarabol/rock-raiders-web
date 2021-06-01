@@ -25,7 +25,6 @@ export class BeamUpAnimator {
             this.entity.removeFromScene()
             this.entity.sceneMgr.scene.remove(animGroup)
         })
-        setInterval(() => this.update(NATIVE_UPDATE_INTERVAL), NATIVE_UPDATE_INTERVAL)
     }
 
     update(elapsedMs: number) {

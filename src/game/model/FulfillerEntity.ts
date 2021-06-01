@@ -1,7 +1,5 @@
 import { PositionalAudio } from 'three'
 import { Sample } from '../../audio/Sample'
-import { clearIntervalSafe } from '../../core/Util'
-import { NATIVE_FRAMERATE } from '../../params'
 import { FulfillerSceneEntity } from '../../scene/entities/FulfillerSceneEntity'
 import { BeamUpAnimator } from '../BeamUpAnimator'
 import { EntityManager } from '../EntityManager'
@@ -22,7 +20,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     sceneEntity: FulfillerSceneEntity
     level: number = 0
     selected: boolean
-    workInterval = null
     job: Job = null
     followUpJob: Job = null
     carries: MaterialEntity = null
@@ -32,7 +29,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
         super(sceneMgr, entityMgr, entityType)
-        this.workInterval = setInterval(this.work.bind(this), 1000 / NATIVE_FRAMERATE) // TODO do not use interval, make work trigger itself (with timeout/interval) until work is done
     }
 
     abstract get stats()
@@ -93,7 +89,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     removeFromScene() {
         this.sceneEntity.removeFromScene()
-        this.workInterval = clearIntervalSafe(this.workInterval)
     }
 
     beamUp() {
@@ -102,8 +97,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.beamUpAnimator = new BeamUpAnimator(this)
     }
 
-    moveToClosestTarget(target: PathTarget[]): MoveState {
-        const result = super.moveToClosestTarget(target)
+    moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
+        const result = super.moveToClosestTarget(target, elapsedMs)
         this.job.setActualWorkplace(this.currentPath?.target)
         if (result === MoveState.TARGET_UNREACHABLE) {
             console.log('Entity could not move to job target, stopping job')
@@ -112,7 +107,13 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         return result
     }
 
-    work() {
+    update(elapsedMs: number) {
+        this.work(elapsedMs)
+        this.sceneEntity.update(elapsedMs)
+        this.beamUpAnimator?.update(elapsedMs)
+    }
+
+    work(elapsedMs: number) {
         if (!this.job || this.selected || this.inBeam) return
         if (this.job.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
@@ -120,12 +121,12 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             const carryItem = this.job.getCarryItem()
             if (carryItem && this.carries !== carryItem) {
                 this.dropItem()
-                if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets())) {
+                if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets(), elapsedMs)) {
                     this.sceneEntity.changeActivity(RaiderActivity.Collect, () => {
                         this.pickupItem(carryItem)
                     })
                 }
-            } else if (this.moveToClosestTarget(this.job.getWorkplaces()) === MoveState.TARGET_REACHED) {
+            } else if (this.moveToClosestTarget(this.job.getWorkplaces(), elapsedMs) === MoveState.TARGET_REACHED) {
                 if (this.job.isReadyToComplete()) {
                     const workActivity = this.job.getWorkActivity() || this.sceneEntity.getDefaultActivity()
                     if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio

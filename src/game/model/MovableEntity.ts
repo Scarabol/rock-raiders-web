@@ -1,3 +1,4 @@
+import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
@@ -23,7 +24,7 @@ export abstract class MovableEntity {
 
     abstract get sceneEntity(): AnimatedSceneEntity
 
-    moveToClosestTarget(target: PathTarget[]): MoveState {
+    moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
         if (!target || target.length < 1) return MoveState.TARGET_UNREACHABLE
         if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.target.targetLocation))) {
             const paths = target.map((t) => this.findPathToTarget(t)).filter((p) => !!p)
@@ -31,7 +32,7 @@ export abstract class MovableEntity {
             this.currentPath = paths.length > 0 ? paths[0] : null
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
-        const step = this.determineStep()
+        const step = this.determineStep(elapsedMs)
         if (step.targetReached) {
             this.sceneEntity.headTowards(this.currentPath.target.getFocusPoint())
             return MoveState.TARGET_REACHED
@@ -47,17 +48,17 @@ export abstract class MovableEntity {
         return new TerrainPath(target, target.targetLocation)
     }
 
-    determineStep(): EntityStep {
+    private determineStep(elapsedMs: number): EntityStep {
         const targetWorld = this.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
         targetWorld.y += this.sceneEntity.floorOffset
         const step = new EntityStep(targetWorld.sub(this.sceneEntity.position))
         const stepLengthSq = step.vec.lengthSq()
-        const entitySpeed = this.getSpeed() // TODO use average speed between current and target position
+        const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // TODO use average speed between current and target position
         const entitySpeedSq = entitySpeed * entitySpeed
         if (this.currentPath.locations.length > 1) {
             if (stepLengthSq <= entitySpeedSq) {
                 this.currentPath.locations.shift()
-                return this.determineStep()
+                return this.determineStep(elapsedMs)
             }
         } else if (stepLengthSq <= entitySpeedSq + this.currentPath.target.radiusSq) {
             step.targetReached = true

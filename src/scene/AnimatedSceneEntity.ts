@@ -47,7 +47,11 @@ export class AnimatedSceneEntity extends SceneEntity {
         }
         this.animation = animation
         this.add(this.animation.polyModel)
-        this.animation.animate(0, onAnimationDone, durationTimeMs)
+        this.animation.start(onAnimationDone, durationTimeMs)
+    }
+
+    update(elapsedMs: number) {
+        this.animation?.update(elapsedMs)
     }
 
 }

@@ -16,6 +16,7 @@ import { RockMonster } from './model/monster/RockMonster'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
 import { RaiderTraining } from './model/raider/RaiderTraining'
+import { updateSafe } from './model/Updateable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 
 export class EntityManager {
@@ -25,6 +26,7 @@ export class EntityManager {
     buildingsUndiscovered: BuildingEntity[] = []
     raiders: Raider[] = []
     raidersUndiscovered: Raider[] = []
+    raidersInBeam: Raider[] = []
     materials: MaterialEntity[] = []
     materialsUndiscovered: MaterialEntity[] = []
     buildingSites: BuildingSite[] = []
@@ -47,6 +49,7 @@ export class EntityManager {
         this.buildingsUndiscovered = []
         this.raiders = []
         this.raidersUndiscovered = []
+        this.raidersInBeam = []
         this.materials = []
         this.materialsUndiscovered = []
         this.buildingSites = []
@@ -58,6 +61,15 @@ export class EntityManager {
     }
 
     start() {
+    }
+
+    update(elapsedMs: number) {
+        this.raiders.forEach((r) => updateSafe(r, elapsedMs))
+        this.raidersInBeam.forEach((r) => updateSafe(r, elapsedMs))
+        this.buildings.forEach((b) => updateSafe(b, elapsedMs))
+        this.raiders.forEach((r) => updateSafe(r, elapsedMs))
+        this.spiders.forEach((s) => updateSafe(s, elapsedMs))
+        this.bats.forEach((b) => updateSafe(b, elapsedMs))
     }
 
     stop() {

@@ -60,7 +60,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Important
 
-- make game pausable and actually pause in escape screen (also fixes elapsed game time)
 - GunStation mesh not loaded correctly missing turret part (test with level 18)
 - Surface discovery has very bad performance (test with level 20 and level 17)
 - Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in

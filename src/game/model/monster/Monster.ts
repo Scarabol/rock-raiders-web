@@ -1,4 +1,3 @@
-import { clearTimeoutSafe } from '../../../core/Util'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
@@ -10,7 +9,6 @@ import { PathTarget } from '../PathTarget'
 export abstract class Monster extends MovableEntity {
 
     sceneEntity: AnimatedSceneEntity
-    moveTimeout: NodeJS.Timeout
     target: PathTarget[] = []
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
@@ -20,7 +18,6 @@ export abstract class Monster extends MovableEntity {
 
     removeFromScene() {
         this.sceneEntity.removeFromScene()
-        this.moveTimeout = clearTimeoutSafe(this.moveTimeout)
     }
 
     getRouteActivity(): MonsterActivity {

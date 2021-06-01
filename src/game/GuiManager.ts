@@ -1,7 +1,7 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
-import { DeselectAll } from '../event/LocalEvents'
+import { DeselectAll, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged } from '../event/WorldEvents'
 import { EntityManager } from './EntityManager'
 import { BuildingFactory } from './model/building/BuildingFactory'
@@ -15,14 +15,13 @@ import { VehicleCallManJob } from './model/job/VehicleCallManJob'
 import { VehicleActivity } from './model/vehicle/VehicleActivity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
-import { Supervisor } from './Supervisor'
 import { WorldManager } from './WorldManager'
 
 export class GuiManager {
 
     buildingCycleIndex: number = 0
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityMgr: EntityManager, jobSupervisor: Supervisor, gameLayerCanvas: HTMLCanvasElement) {
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityMgr: EntityManager, gameLayerCanvas: HTMLCanvasElement) {
         EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: SelectedRaiderPickTool) => {
             entityMgr.selection.raiders.forEach((r) => {
                 if (!r.hasTool(event.tool)) {
@@ -146,7 +145,7 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {
-            jobSupervisor.updatePriorities(event.priorityList)
+            EventBus.publishEvent(new UpdatePriorities(event.priorityList))
         })
         EventBus.registerEventListener(EventKey.COMMAND_CAMERA_CONTROL, (event: CameraControl) => {
             if (event.zoom) { // TODO implement custom camera controls, that is better remotely controllable

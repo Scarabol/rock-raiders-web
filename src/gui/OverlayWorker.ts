@@ -1,8 +1,10 @@
 import { MenuCfg } from '../cfg/MenuCfg'
 import { ObjectiveImageCfg } from '../cfg/ObjectiveImageCfg'
+import { EventKey } from '../event/EventKeyEnum'
 import { KEY_EVENT } from '../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
+import { LocalEvent } from '../event/LocalEvents'
 import { DEV_MODE } from '../params'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { Panel } from './base/Panel'
@@ -60,6 +62,7 @@ export class OverlayWorker extends GuiWorker {
     setActivePanel(panel: Panel) {
         this.panels.forEach(p => p !== panel && p.hide())
         panel?.show()
+        this.publishEvent(new LocalEvent(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
         this.redraw()
     }
 

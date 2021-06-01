@@ -305,4 +305,9 @@ export abstract class BuildingEntity implements Selectable {
         return this.teleport?.canTeleportIn(entityType)
     }
 
+    update(elapsedMs: number) {
+        this.sceneEntity.update(elapsedMs)
+        this.beamUpAnimator?.update(elapsedMs)
+    }
+
 }

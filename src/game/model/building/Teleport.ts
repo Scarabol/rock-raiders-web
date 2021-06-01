@@ -23,7 +23,7 @@ export abstract class Teleport {
         return this.powered && !this.operating
     }
 
-    teleportIn<T extends FulfillerEntity>(entity: T, listing: T[]) {
+    teleportIn<T extends FulfillerEntity>(entity: T, listing: T[], beamListing: T[]) {
         this.operating = true
         const heading = this.building.sceneEntity.getHeading()
         entity.sceneEntity.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(this.building.sceneEntity.position2D.clone()), heading)
@@ -34,6 +34,7 @@ export abstract class Teleport {
             entity.sceneEntity.createPickSphere(entity.stats.PickSphere, entity)
             const walkOutPos = this.building.primaryPathSurface.getRandomPosition()
             entity.setJob(new MoveJob(walkOutPos))
+            beamListing.remove(entity)
             listing.push(entity)
             EventBus.publishEvent(new RaidersChangedEvent(entity.entityMgr))
         })

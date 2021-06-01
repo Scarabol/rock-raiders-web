@@ -46,7 +46,11 @@ export class AnimationGroup extends Group {
     }
 
     startAnimation(onAnimationDone) {
-        this.animation.animate(0, onAnimationDone, null)
+        this.animation.start(onAnimationDone, null)
+    }
+
+    update(elapsedMs: number) {
+        this.animation.update(elapsedMs)
     }
 
 }

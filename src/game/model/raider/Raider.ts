@@ -69,8 +69,8 @@ export class Raider extends FulfillerEntity {
         }
     }
 
-    moveToClosestTarget(target: PathTarget[]): MoveState {
-        const result = super.moveToClosestTarget(target)
+    moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
+        const result = super.moveToClosestTarget(target, elapsedMs)
         if (result === MoveState.MOVED) {
             this.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
                 if (this.sceneEntity.position.distanceToSquared(spider.sceneEntity.position) < SPIDER_SLIP_RANGE_SQ) {
@@ -92,9 +92,9 @@ export class Raider extends FulfillerEntity {
         })
     }
 
-    work() {
+    work(elapsedMs: number) {
         if (this.slipped) return
-        super.work()
+        super.work(elapsedMs)
     }
 
     beamUp() {

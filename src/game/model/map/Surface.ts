@@ -5,12 +5,11 @@ import { getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarSurface } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
-import { CrystalFoundEvent, LandslideEvent } from '../../../event/WorldLocationEvent'
+import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
 import { HEIGHT_MULTIPLIER, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { AnimationGroup } from '../anim/AnimationGroup'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
@@ -49,8 +48,6 @@ export class Surface implements Selectable {
     clearRubbleJob: ClearRubbleJob = null
     surfaceRotation: number = 0
     seamLevel: number = 0
-
-    fallinGrp: AnimationGroup = null
 
     wallType: WALL_TYPE = null
     mesh: Mesh = null
@@ -504,21 +501,6 @@ export class Surface implements Selectable {
         if (intersect.length < 1) console.warn('could not determine terrain height for ' + center.x + '/' + center.y)
         const terrainHeight = intersect[0]?.point?.y || 0
         return new Vector3(center.x, terrainHeight, center.y)
-    }
-
-    createFallin(target: Surface) {
-        const fallinPosition = target.getCenterWorld()
-        EventBus.publishEvent(new LandslideEvent(fallinPosition))
-        this.fallinGrp = new AnimationGroup('MiscAnims/RockFall/Rock3Sides.lws', this.sceneMgr.listener)
-        this.fallinGrp.position.copy(fallinPosition)
-        const dx = this.x - target.x, dy = target.y - this.y
-        this.fallinGrp.rotateOnAxis(new Vector3(0, 1, 0), Math.atan2(dy, dx) + Math.PI / 2)
-        this.sceneMgr.scene.add(this.fallinGrp)
-        this.fallinGrp.startAnimation(() => {
-            this.sceneMgr.scene.remove(this.fallinGrp)
-            this.fallinGrp = null
-        })
-        target.makeRubble()
     }
 
     dispose() {

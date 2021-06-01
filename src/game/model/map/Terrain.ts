@@ -1,9 +1,12 @@
 import { AxesHelper, Group, Vector2, Vector3 } from 'three'
-import { clearIntervalSafe } from '../../../core/Util'
+import { EventBus } from '../../../event/EventBus'
+import { LandslideEvent } from '../../../event/WorldLocationEvent'
 import { DEV_MODE, TILESIZE } from '../../../params'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
+import { AnimationGroup } from '../anim/AnimationGroup'
 import { PathTarget } from '../PathTarget'
+import { updateSafe } from '../Updateable'
 import { astar, Graph } from './astar'
 import { FallIn } from './FallIn'
 import { Surface } from './Surface'
@@ -29,7 +32,7 @@ export class Terrain {
     cachedFlyPaths = new Map<string, Vector2[]>()
     cachedSwimPaths = new Map<string, Vector2[]>()
     fallIns: FallIn[] = []
-    updateInterval = null
+    fallInGroups: AnimationGroup[] = []
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         this.sceneMgr = sceneMgr
@@ -38,9 +41,6 @@ export class Terrain {
         this.roofGroup.scale.setScalar(TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
         if (DEV_MODE) this.floorGroup.add(new AxesHelper())
-        this.updateInterval = setInterval(() => {
-            this.update(500)
-        }, 500)
     }
 
     getSurfaceFromWorld(worldPosition: Vector3): Surface | null {
@@ -122,7 +122,6 @@ export class Terrain {
     }
 
     dispose() {
-        this.updateInterval = clearIntervalSafe(this.updateInterval)
         this.forEachSurface(s => s.dispose())
     }
 
@@ -161,7 +160,7 @@ export class Terrain {
             targetPos = this.findFallInTarget(surface)
         }
         if (originPos && targetPos) {
-            this.fallIns.push(new FallIn(originPos, targetPos))
+            this.fallIns.push(new FallIn(this, originPos, targetPos))
         }
     }
 
@@ -177,12 +176,29 @@ export class Terrain {
         return s
     }
 
+    createFallIn(source: Surface, target: Surface) {
+        const fallinPosition = target.getCenterWorld()
+        EventBus.publishEvent(new LandslideEvent(fallinPosition))
+        const fallinGrp = new AnimationGroup('MiscAnims/RockFall/Rock3Sides.lws', this.sceneMgr.listener)
+        this.fallInGroups.push(fallinGrp)
+        fallinGrp.position.copy(fallinPosition)
+        const dx = source.x - target.x, dy = target.y - source.y
+        fallinGrp.rotateOnAxis(new Vector3(0, 1, 0), Math.atan2(dy, dx) + Math.PI / 2)
+        this.sceneMgr.scene.add(fallinGrp)
+        fallinGrp.startAnimation(() => {
+            this.sceneMgr.scene.remove(fallinGrp)
+            this.fallInGroups.remove(fallinGrp)
+        })
+        target.makeRubble() // TODO do not turn building power paths into rubble
+    }
+
     removeFallInOrigin(surface: Surface) {
         this.fallIns = this.fallIns.filter((f) => f.source !== surface)
     }
 
     update(elapsedMs: number) {
-        this.fallIns.forEach((f) => f.update(elapsedMs))
+        this.fallIns.forEach((f) => updateSafe(f, elapsedMs))
+        this.fallInGroups.forEach((g) => updateSafe(g, elapsedMs))
     }
 
 }

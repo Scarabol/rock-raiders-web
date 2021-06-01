@@ -1,11 +1,11 @@
 import { DoubleSide, MeshPhongMaterial, Texture } from 'three'
-import { clearIntervalSafe } from '../core/Util'
-import { SEQUENCE_TEXTURE_FRAMERATE } from '../params'
+import { SEQUENCE_TEXTURE_INTERVAL_MS } from '../params'
 
 export class SequenceTextureMaterial extends MeshPhongMaterial {
 
     textures: Texture[] = []
-    sequenceInterval = null
+    timer: number = 0
+    seqNum: number = 0
 
     constructor(name: string) {
         super({
@@ -22,24 +22,20 @@ export class SequenceTextureMaterial extends MeshPhongMaterial {
         return clone
     }
 
-    dispose() {
-        super.dispose()
-        this.sequenceInterval = clearIntervalSafe(this.sequenceInterval)
-    }
-
     setTextures(textures: Texture[]) {
         this.textures = textures
-        this.sequenceInterval = clearIntervalSafe(this.sequenceInterval)
-        if (textures.length < 1) return
-        if (textures.length > 1) {
-            let seqNum = 0
-            this.sequenceInterval = setInterval(() => {
-                this.map = textures[seqNum++]
-                if (seqNum >= textures.length) seqNum = 0
-            }, 1000 / SEQUENCE_TEXTURE_FRAMERATE)
-        }
-        this.map = textures[0]
+        if (this.textures.length < 1) return
+        this.map = this.textures[0]
         this.color.set(0xFFFFFF) // overwrite color, when color map (texture) in use
+    }
+
+    update(elapsedMs: number) {
+        if (this.textures.length < 1) return
+        this.timer += elapsedMs
+        const addedSeqNum = Math.floor(this.timer / SEQUENCE_TEXTURE_INTERVAL_MS)
+        this.timer -= addedSeqNum * SEQUENCE_TEXTURE_INTERVAL_MS
+        this.seqNum = (this.seqNum + addedSeqNum) % this.textures.length
+        this.map = this.textures[this.seqNum]
     }
 
     setOpacity(opacity: number) {

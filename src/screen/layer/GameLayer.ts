@@ -111,7 +111,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                 } else if (event.code === 'KeyF') {
                     const surface = this.entityMgr.selection.surface
                     if (!surface.surfaceType.floor) {
-                        surface.createFallin(surface.terrain.findFallInTarget(surface))
+                        this.sceneMgr.terrain.createFallIn(surface, this.sceneMgr.terrain.findFallInTarget(surface))
                     }
                     this.publishEvent(new DeselectAll())
                 }

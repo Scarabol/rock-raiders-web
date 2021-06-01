@@ -27,4 +27,8 @@ export class SceneMesh extends Mesh {
         return (Array.isArray(mat) ? mat : [mat]) as SequenceTextureMaterial[]
     }
 
+    update(elapsedMs: number) {
+        this.getMaterials().forEach((m) => m.type === 'MeshPhongMaterial' && m.update(elapsedMs)) // TODO why is there a MeshBasicMaterial in this list???
+    }
+
 }

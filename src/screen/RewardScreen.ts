@@ -120,7 +120,7 @@ export class RewardScreen extends BaseScreen {
         this.resultValues.push(this.fonts['figures'].createTextImage(this.percentString(result.numRaiders, result.numMaxRaiders)))
         this.resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(0))) // TODO show defence report, is either 0% or 100%
         this.resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(GameState.airLevel)))
-        this.resultValues.push(this.fonts['timer'].createTextImage(this.timeString(GameState.gameTimeSeconds)))
+        this.resultValues.push(this.fonts['timer'].createTextImage(this.timeString(result.gameTimeSeconds)))
         this.resultValues.push(this.fonts['score'].createTextImage(this.percentString(this.calcScore(result))))
     }
 
@@ -129,7 +129,7 @@ export class RewardScreen extends BaseScreen {
         let quota = this.rewardConfig.quota
         let importance = this.rewardConfig.importance
         const scoreCrystals = GameState.numCrystal >= (quota.crystals || Infinity) ? importance.crystals : 0
-        const scoreTimer = GameState.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
+        const scoreTimer = result.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
         const scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
         const scoreConstructions = quota.constructions ? Math.min(1, result.numBuildings / quota.constructions * importance.constructions) : 0
         const scoreOxygen = GameState.airLevel * importance.oxygen

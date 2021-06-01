@@ -1,6 +1,6 @@
-import { clearIntervalSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
+import { UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
 import { CHECK_CLEAR_RUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
 import { EntityManager } from './EntityManager'
@@ -22,10 +22,10 @@ export class Supervisor {
     sceneMgr: SceneManager
     entityMgr: EntityManager
     jobs: ShareableJob[] = []
-    assignInterval = null
-    checkRubbleInterval = null
     priorityIndexList: PriorityIdentifier[] = []
     priorityList: PriorityEntry[] = []
+    assignJobsTimer: number = 0
+    checkClearRubbleTimer: number = 0
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         this.sceneMgr = sceneMgr
@@ -36,20 +36,21 @@ export class Supervisor {
         EventBus.registerEventListener(EventKey.JOB_DELETE, (event: JobDeleteEvent) => {
             event.job.cancel()
         })
+        EventBus.registerEventListener(EventKey.UPDATE_PRIORITIES, (event: UpdatePriorities) => {
+            this.priorityList = [...event.priorityList]
+            this.priorityIndexList = this.priorityList.map((p) => p.key)
+        })
     }
 
-    start() {
-        stop()
-        this.assignInterval = setInterval(this.assignJobs.bind(this), JOB_SCHEDULE_INTERVAL)
-        this.checkRubbleInterval = setInterval(this.checkUnclearedRubble.bind(this), CHECK_CLEAR_RUBBLE_INTERVAL)
+    update(elapsedMs: number) {
+        this.assignJobs(elapsedMs)
+        this.checkUnclearedRubble(elapsedMs)
     }
 
-    stop() {
-        this.assignInterval = clearIntervalSafe(this.assignInterval)
-        this.checkRubbleInterval = clearIntervalSafe(this.checkRubbleInterval)
-    }
-
-    assignJobs() {
+    assignJobs(elapsedMs: number) {
+        this.assignJobsTimer += elapsedMs
+        if (this.assignJobsTimer < JOB_SCHEDULE_INTERVAL) return
+        this.assignJobsTimer %= JOB_SCHEDULE_INTERVAL
         const availableJobs: ShareableJob[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobState === JobState.INCOMPLETE
@@ -138,7 +139,10 @@ export class Supervisor {
         })
     }
 
-    checkUnclearedRubble() {
+    checkUnclearedRubble(elapsedMs: number) {
+        this.checkClearRubbleTimer += elapsedMs
+        if (this.checkClearRubbleTimer < CHECK_CLEAR_RUBBLE_INTERVAL) return
+        this.checkClearRubbleTimer %= CHECK_CLEAR_RUBBLE_INTERVAL
         if (!this.isEnabled(PriorityIdentifier.aiPriorityClearing)) return
         this.entityMgr.raiders.forEach((raider) => {
             if (raider.job) return
@@ -176,11 +180,6 @@ export class Supervisor {
 
     isEnabled(priorityIdentifier: PriorityIdentifier): boolean {
         return !!this.priorityList.find((p) => p.key === priorityIdentifier)?.enabled
-    }
-
-    updatePriorities(priorityList: PriorityEntry[]) {
-        this.priorityList = [...priorityList]
-        this.priorityIndexList = this.priorityList.map((p) => p.key)
     }
 
 }

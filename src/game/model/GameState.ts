@@ -12,8 +12,6 @@ export class GameState {
     static remainingDiggables: number = 0
     static totalCaverns: number = 0
     static discoveredCaverns: number = 0
-    static levelStartTime: number = 0
-    static levelStopTime: number = 0
 
     static reset() {
         this.numCrystal = 0
@@ -28,12 +26,6 @@ export class GameState {
         this.remainingDiggables = 0
         this.totalCaverns = 0
         this.discoveredCaverns = 0
-        this.levelStartTime = 0
-        this.levelStopTime = 0
-    }
-
-    static get gameTimeSeconds() {
-        return Math.round((GameState.levelStopTime - GameState.levelStartTime) / 1000)
     }
 
 }

@@ -1,6 +1,6 @@
 import { Vector2 } from 'three'
 import { getRandom, getRandomInclusive } from '../../../core/Util'
-import { NATIVE_FRAMERATE, TILESIZE } from '../../../params'
+import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
@@ -12,6 +12,8 @@ import { Monster } from './Monster'
 
 export class SmallSpider extends Monster {
 
+    idleTimer: number = 0
+
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae')
         this.sceneEntity.floorOffset = 1 // TODO rotate spider according to surface normal vector
@@ -21,23 +23,18 @@ export class SmallSpider extends Monster {
         return ResourceManager.stats.SmallSpider
     }
 
-    startMoving() {
-        SmallSpider.onMove(this)
-    }
-
-    private static onMove(spider: SmallSpider) {
-        if (spider.target.length > 0 && spider.moveToClosestTarget(spider.target) === MoveState.MOVED) {
-            if (!spider.sceneMgr.terrain.getSurfaceFromWorld(spider.sceneEntity.position.clone()).surfaceType.floor) {
-                spider.onDeath()
-            } else {
-                spider.moveTimeout = setTimeout(() => SmallSpider.onMove(spider), 1000 / NATIVE_FRAMERATE)
+    update(elapsedMs: number) {
+        this.sceneEntity.update(elapsedMs)
+        this.idleTimer -= elapsedMs
+        if (this.idleTimer > 0) return
+        if (this.target.length > 0 && this.moveToClosestTarget(this.target, elapsedMs) === MoveState.MOVED) { // TODO consider elapsed time when moving
+            if (!this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).surfaceType.floor) {
+                this.onDeath()
             }
         } else {
-            spider.sceneEntity.changeActivity()
-            spider.moveTimeout = setTimeout(() => {
-                spider.target = [spider.findTarget()]
-                SmallSpider.onMove(spider)
-            }, 1000 + getRandom(9000))
+            this.sceneEntity.changeActivity()
+            this.target = [this.findTarget()]
+            this.idleTimer = 1000 + getRandom(9000)
         }
     }
 

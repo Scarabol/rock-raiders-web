@@ -1,89 +1,111 @@
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { NerpParser } from '../core/NerpParser'
 import { NerpRunner } from '../core/NerpRunner'
-import { clearIntervalSafe } from '../core/Util'
+import { clearTimeoutSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { AirLevelChanged } from '../event/LocalEvents'
 import { RequestedRaidersChanged } from '../event/WorldEvents'
-import { CHECK_SPAWN_RAIDER_TIMER, UPDATE_OXYGEN_TIMER } from '../params'
+import { CHECK_SPAWN_RAIDER_TIMER, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
 import { EntityType } from './model/EntityType'
 import { GameResultState } from './model/GameResult'
 import { GameState } from './model/GameState'
 import { Raider } from './model/raider/Raider'
+import { updateSafe } from './model/Updateable'
 import { SceneManager } from './SceneManager'
+import { Supervisor } from './Supervisor'
 
 export class WorldManager {
 
     sceneMgr: SceneManager
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
-    oxygenUpdateInterval = null
-    spawnRaiderInterval = null
+    jobSupervisor: Supervisor = null
+    masterTimeout = null
     oxygenRate: number = 0
+    elapsedGameTimeMs: number = 0
     requestedRaiders: number = 0
+    spawnRaiderTimer: number = 0
 
     constructor() {
-        EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => {
-            GameState.discoveredCaverns++
-        })
-        EventBus.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, () => {
-            if (this.requestedRaiders > 0 && !this.spawnRaiderInterval) {
-                this.spawnRaiderInterval = setInterval(this.checkSpawnRaiders.bind(this), CHECK_SPAWN_RAIDER_TIMER)
-            }
-        })
+        EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
+        EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.pause())
+        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.unPause())
     }
 
     setup(levelConf: LevelEntryCfg, onLevelEnd: (state: GameResultState) => any) {
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         this.oxygenRate = levelConf.oxygenRate
+        this.elapsedGameTimeMs = 0
         this.requestedRaiders = 0
+        this.spawnRaiderTimer = 0
         // load nerp script
         this.nerpRunner = NerpParser.parse(this.entityMgr, ResourceManager.getResource(levelConf.nerpFile))
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
         this.nerpRunner.onLevelEnd = onLevelEnd
     }
 
-    start() {
-        this.nerpRunner?.startExecution()
-        this.oxygenUpdateInterval = setInterval(this.updateOxygen.bind(this), UPDATE_OXYGEN_TIMER)
-        GameState.levelStartTime = Date.now()
+    pause() {
+        this.masterTimeout = clearTimeoutSafe(this.masterTimeout)
     }
 
-    stop() {
-        GameState.levelStopTime = Date.now()
-        this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
-        this.oxygenUpdateInterval = clearIntervalSafe(this.oxygenUpdateInterval)
-        this.nerpRunner?.pauseExecution()
+    unPause() {
+        this.masterTimeout = clearTimeoutSafe(this.masterTimeout)
+        this.masterTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), UPDATE_INTERVAL_MS)
     }
 
-    updateOxygen() {
-        const sum = this.entityMgr.getOxygenSum()
-        const rateMultiplier = 0.001
-        const valuePerSecond = 1 / 25
-        const msToSeconds = 0.001
-        const diff = sum * this.oxygenRate * rateMultiplier * valuePerSecond * UPDATE_OXYGEN_TIMER * msToSeconds / 10
-        const airLevel = Math.min(1, Math.max(0, GameState.airLevel + diff))
-        if (GameState.airLevel !== airLevel) {
-            GameState.airLevel = airLevel
-            EventBus.publishEvent(new AirLevelChanged(GameState.airLevel))
+    update(elapsedMs: number) {
+        const startUpdate = window.performance.now()
+        this.elapsedGameTimeMs += UPDATE_INTERVAL_MS
+        this.updateOxygen(elapsedMs)
+        this.checkSpawnRaiders(elapsedMs)
+        updateSafe(this.entityMgr, elapsedMs)
+        updateSafe(this.sceneMgr.terrain, elapsedMs)
+        updateSafe(this.jobSupervisor, elapsedMs)
+        updateSafe(this.nerpRunner, elapsedMs)
+        const endUpdate = window.performance.now()
+        const updateDurationMs = endUpdate - startUpdate
+        const sleepForMs = UPDATE_INTERVAL_MS - Math.round(updateDurationMs)
+        this.masterTimeout = clearTimeoutSafe(this.masterTimeout)
+        this.masterTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), sleepForMs)
+    }
+
+    updateOxygen(elapsedMs: number) {
+        try {
+            const sum = this.entityMgr.getOxygenSum()
+            const rateMultiplier = 0.001
+            const valuePerSecond = 1 / 25
+            const msToSeconds = 0.001
+            const diff = sum * this.oxygenRate * rateMultiplier * valuePerSecond * elapsedMs * msToSeconds / 10
+            const airLevel = Math.min(1, Math.max(0, GameState.airLevel + diff))
+            if (GameState.airLevel !== airLevel) {
+                GameState.airLevel = airLevel
+                EventBus.publishEvent(new AirLevelChanged(GameState.airLevel))
+            }
+        } catch (e) {
+            console.error(e)
         }
     }
 
-    checkSpawnRaiders() {
-        if (this.requestedRaiders < 1) {
-            this.spawnRaiderInterval = clearIntervalSafe(this.spawnRaiderInterval)
-            return
+    checkSpawnRaiders(elapsedMs: number) {
+        try {
+            for (this.spawnRaiderTimer += elapsedMs; this.spawnRaiderTimer >= CHECK_SPAWN_RAIDER_TIMER; this.spawnRaiderTimer -= CHECK_SPAWN_RAIDER_TIMER) {
+                if (this.requestedRaiders > 0 && !this.entityMgr.hasMaxRaiders()) {
+                    const teleportBuilding = this.entityMgr.findTeleportBuilding(EntityType.PILOT)
+                    if (teleportBuilding) { // TODO only spawn in, when primary surface is free
+                        this.requestedRaiders--
+                        EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
+                        const raider = new Raider(this.sceneMgr, this.entityMgr)
+                        this.entityMgr.raidersInBeam.push(raider)
+                        teleportBuilding.teleport.teleportIn(raider, this.entityMgr.raiders, this.entityMgr.raidersInBeam)
+                    }
+                }
+            }
+        } catch (e) {
+            console.error(e)
         }
-        if (this.entityMgr.hasMaxRaiders()) return
-        const teleportBuilding = this.entityMgr.findTeleportBuilding(EntityType.PILOT)
-        if (!teleportBuilding) return
-        // TODO only spawn in, when primary surface is free
-        this.requestedRaiders--
-        EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
-        teleportBuilding.teleport.teleportIn(new Raider(this.sceneMgr, this.entityMgr), this.entityMgr.raiders)
     }
 
 }

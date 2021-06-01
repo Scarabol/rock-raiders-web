@@ -205,3 +205,14 @@ export class UpdateRadarSurface extends LocalEvent {
     }
 
 }
+
+export class UpdatePriorities extends LocalEvent {
+
+    priorityList: PriorityEntry[]
+
+    constructor(priorityList: PriorityEntry[]) {
+        super(EventKey.UPDATE_PRIORITIES)
+        this.priorityList = priorityList
+    }
+
+}
