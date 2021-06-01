@@ -130,7 +130,7 @@ export class TerrainLoader {
         if (fallinMap) {
             for (let x = 0; x < terrain.width; x++) {
                 for (let y = 0; y < terrain.height; y++) {
-                    terrain.getSurface(x, y).setFallinLevel(fallinMap[y][x]) // rows (y) before columns (x) used in maps
+                    terrain.setFallinLevel(x, y, fallinMap[y][x]) // rows (y) before columns (x) used in maps
                 }
             }
         }

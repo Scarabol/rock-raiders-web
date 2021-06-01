@@ -1,9 +1,11 @@
 import { AxesHelper, Group, Vector2, Vector3 } from 'three'
+import { clearIntervalSafe } from '../../../core/Util'
 import { DEV_MODE, TILESIZE } from '../../../params'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { PathTarget } from '../PathTarget'
 import { astar, Graph } from './astar'
+import { FallIn } from './FallIn'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 import { TerrainPath } from './TerrainPath'
@@ -26,6 +28,8 @@ export class Terrain {
     cachedDrivePaths = new Map<string, Vector2[]>()
     cachedFlyPaths = new Map<string, Vector2[]>()
     cachedSwimPaths = new Map<string, Vector2[]>()
+    fallIns: FallIn[] = []
+    updateInterval = null
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         this.sceneMgr = sceneMgr
@@ -34,6 +38,9 @@ export class Terrain {
         this.roofGroup.scale.setScalar(TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
         if (DEV_MODE) this.floorGroup.add(new AxesHelper())
+        this.updateInterval = setInterval(() => {
+            this.update(500)
+        }, 500)
     }
 
     getSurfaceFromWorld(worldPosition: Vector3): Surface | null {
@@ -114,39 +121,8 @@ export class Terrain {
         return new TerrainPath(target, [...resultPath, target.targetLocation]) // return shallow copy to avoid interference
     }
 
-    findFallInOrigin(x: number, y: number): [number, number] {
-        const leftSurface = this.getSurface(x - 1, y)
-        if (leftSurface.isReinforcable()) return [leftSurface.x, leftSurface.y]
-        const topSurface = this.getSurface(x, y - 1)
-        if (topSurface.isReinforcable()) return [topSurface.x, topSurface.y]
-        const rightSurface = this.getSurface(x + 1, y)
-        if (rightSurface.isReinforcable()) return [rightSurface.x, rightSurface.y]
-        const bottomSurface = this.getSurface(x, y + 1)
-        if (bottomSurface.isReinforcable()) return [bottomSurface.x, bottomSurface.y]
-        const leftSurface2 = this.getSurface(x - 1, y)
-        if (leftSurface2.isDigable()) return [leftSurface2.x, leftSurface2.y]
-        const topSurface2 = this.getSurface(x, y - 1)
-        if (topSurface2.isDigable()) return [topSurface2.x, topSurface2.y]
-        const rightSurface2 = this.getSurface(x + 1, y)
-        if (rightSurface2.isDigable()) return [rightSurface2.x, rightSurface2.y]
-        const bottomSurface2 = this.getSurface(x, y + 1)
-        if (bottomSurface2.isDigable()) return [bottomSurface2.x, bottomSurface2.y]
-        return null
-    }
-
-    findFallInTarget(x: number, y: number): [number, number] {
-        const leftSurface = this.getSurface(x - 1, y)
-        if (leftSurface.isWalkable()) return [leftSurface.x, leftSurface.y]
-        const topSurface = this.getSurface(x, y - 1)
-        if (topSurface.isWalkable()) return [topSurface.x, topSurface.y]
-        const rightSurface = this.getSurface(x + 1, y)
-        if (rightSurface.isWalkable()) return [rightSurface.x, rightSurface.y]
-        const bottomSurface = this.getSurface(x, y + 1)
-        if (bottomSurface.isWalkable()) return [bottomSurface.x, bottomSurface.y]
-        return null
-    }
-
     dispose() {
+        this.updateInterval = clearIntervalSafe(this.updateInterval)
         this.forEachSurface(s => s.dispose())
     }
 
@@ -170,6 +146,43 @@ export class Terrain {
         let totalOres = 0
         this.forEachSurface((s) => totalOres += s.containedOres)
         return totalOres
+    }
+
+    setFallinLevel(x: number, y: number, fallinLevel: number) {
+        if (fallinLevel < 1) return
+        const surface = this.getSurface(x, y)
+        let originPos: Surface = null
+        let targetPos: Surface = null
+        if (surface.surfaceType.floor) {
+            originPos = this.findFallInOrigin(surface)
+            targetPos = surface
+        } else if (surface.isReinforcable()) {
+            originPos = surface
+            targetPos = this.findFallInTarget(surface)
+        }
+        if (originPos && targetPos) {
+            this.fallIns.push(new FallIn(originPos, targetPos))
+        }
+    }
+
+    findFallInOrigin(target: Surface): Surface {
+        const s = target.neighbors.find((n) => n.isReinforcable())
+        if (!s) return null
+        return s
+    }
+
+    findFallInTarget(source: Surface): Surface {
+        const s = source.neighbors.find((n) => n.isWalkable()) // TODO don't target surfaces with lava erosion
+        if (!s) return null
+        return s
+    }
+
+    removeFallInOrigin(surface: Surface) {
+        this.fallIns = this.fallIns.filter((f) => f.source !== surface)
+    }
+
+    update(elapsedMs: number) {
+        this.fallIns.forEach((f) => f.update(elapsedMs))
     }
 
 }

@@ -1,7 +1,7 @@
 import { MathUtils, Mesh, MeshPhongMaterial, PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
-import { clearTimeoutSafe, getRandom, getRandomSign } from '../../../core/Util'
+import { getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarSurface } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
@@ -49,7 +49,6 @@ export class Surface implements Selectable {
     clearRubbleJob: ClearRubbleJob = null
     surfaceRotation: number = 0
     seamLevel: number = 0
-    fallinTimeout = null
 
     fallinGrp: AnimationGroup = null
 
@@ -168,7 +167,7 @@ export class Surface implements Selectable {
 
     collapse() {
         this.cancelJobs()
-        this.fallinTimeout = clearTimeoutSafe(this.fallinTimeout)
+        this.terrain.removeFallInOrigin(this)
         this.surfaceType = SurfaceType.RUBBLE4
         EventBus.publishEvent(new UpdateRadarSurface(this))
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
@@ -489,7 +488,7 @@ export class Surface implements Selectable {
     reinforce() {
         this.reinforced = true
         this.cancelReinforceJobs()
-        this.fallinTimeout = clearTimeoutSafe(this.fallinTimeout)
+        this.terrain.removeFallInOrigin(this)
         this.updateTexture()
         EventBus.publishEvent(new UpdateRadarSurface(this))
     }
@@ -507,46 +506,22 @@ export class Surface implements Selectable {
         return new Vector3(center.x, terrainHeight, center.y)
     }
 
-    setFallinLevel(fallinLevel: number) {
-        if (fallinLevel < 1) return
-        let originPos
-        let targetPos
-        if (this.surfaceType.floor) {
-            originPos = this.terrain.findFallInOrigin(this.x, this.y)
-            targetPos = [this.x, this.y]
-        } else {
-            originPos = [this.x, this.y]
-            targetPos = this.terrain.findFallInTarget(this.x, this.y)
-        }
-        if (originPos && targetPos) {
-            this.terrain.getSurface(originPos[0], originPos[1]).scheduleFallin(targetPos[0], targetPos[1])
-        }
-    }
-
-    scheduleFallin(targetX: number, targetY: number) {
-        this.fallinTimeout = setTimeout(() => {
-            this.createFallin(targetX, targetY)
-            this.scheduleFallin(targetX, targetY)
-        }, (30 + getRandom(60)) * 1000) // TODO adapt timer to level multiplier and fallin value
-    }
-
-    createFallin(targetX: number, targetY: number) {
-        const fallinPosition = this.terrain.getSurface(targetX, targetY).getCenterWorld()
+    createFallin(target: Surface) {
+        const fallinPosition = target.getCenterWorld()
         EventBus.publishEvent(new LandslideEvent(fallinPosition))
         this.fallinGrp = new AnimationGroup('MiscAnims/RockFall/Rock3Sides.lws', this.sceneMgr.listener)
         this.fallinGrp.position.copy(fallinPosition)
-        const dx = this.x - targetX, dy = targetY - this.y
+        const dx = this.x - target.x, dy = target.y - this.y
         this.fallinGrp.rotateOnAxis(new Vector3(0, 1, 0), Math.atan2(dy, dx) + Math.PI / 2)
         this.sceneMgr.scene.add(this.fallinGrp)
         this.fallinGrp.startAnimation(() => {
             this.sceneMgr.scene.remove(this.fallinGrp)
             this.fallinGrp = null
         })
-        this.terrain.getSurface(targetX, targetY).makeRubble()
+        target.makeRubble()
     }
 
     dispose() {
-        this.fallinTimeout = clearTimeoutSafe(this.fallinTimeout)
         this.forEachMaterial(m => m.dispose())
         this.mesh?.geometry?.dispose()
     }
