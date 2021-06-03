@@ -3,9 +3,11 @@ import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
+import { BuildingCarryPathTarget } from '../job/carry/BuildingCarryPathTarget'
+import { CarryPathTarget } from '../job/carry/CarryPathTarget'
+import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { BarrierLocation } from './BarrierLocation'
-import { BuildingCarryPathTarget, CarryPathTarget, SiteCarryPathTarget } from './CarryPathTarget'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Barrier extends MaterialEntity {

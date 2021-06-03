@@ -15,6 +15,7 @@ import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
+import { GetToolPathTarget } from '../job/raider/GetToolPathTarget'
 import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
 import { Barrier } from '../material/Barrier'
@@ -22,7 +23,6 @@ import { BarrierLocation } from '../material/BarrierLocation'
 import { Crystal } from '../material/Crystal'
 import { ElectricFence } from '../material/ElectricFence'
 import { Ore } from '../material/Ore'
-import { PathTarget } from '../PathTarget'
 import { RaiderTraining, RaiderTrainingSites, RaiderTrainingStatsProperty } from '../raider/RaiderTraining'
 import { Selectable } from '../Selectable'
 import { BuildingPathTarget } from './BuildingPathTarget'
@@ -54,7 +54,7 @@ export abstract class BuildingEntity implements Selectable {
     crystalsInUse: number = 0
     inBeam: boolean = false
     beamUpAnimator: BeamUpAnimator = null
-    pathTarget: BuildingPathTarget = null
+    pathTarget: GetToolPathTarget = null
     engineSound: PositionalAudio
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
@@ -282,15 +282,18 @@ export abstract class BuildingEntity implements Selectable {
 
     getTrainingTargets() {
         return [new Vector2(-1, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(0, -1)]
-            .map((v) => new PathTarget(v.multiplyScalar(TILESIZE / 2).add(this.primarySurface.getCenterWorld2D())))
+            .map((v) => {
+                const location = v.multiplyScalar(TILESIZE / 2).add(this.primarySurface.getCenterWorld2D())
+                return new BuildingPathTarget(location, this)
+            })
     }
 
     addToScene(worldPosition: Vector2, radHeading: number) {
         this.sceneEntity.addToScene(worldPosition, radHeading)
-        this.pathTarget = new BuildingPathTarget(this)
+        this.pathTarget = new GetToolPathTarget(this)
     }
 
-    getPathTarget(): BuildingPathTarget {
+    getPathTarget(): GetToolPathTarget {
         return this.pathTarget
     }
 

@@ -1,8 +1,9 @@
 import { RaiderActivity } from '../../activities/RaiderActivity'
-import { CarryPathTarget, SiteCarryPathTarget } from '../../material/CarryPathTarget'
 import { MaterialEntity } from '../../material/MaterialEntity'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
+import { CarryPathTarget } from './CarryPathTarget'
+import { SiteCarryPathTarget } from './SiteCarryPathTarget'
 
 export class CarryJob<I extends MaterialEntity> extends ShareableJob {
 

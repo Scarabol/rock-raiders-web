@@ -4,9 +4,9 @@ import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
 import { CarryJob } from '../job/carry/CarryJob'
+import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
-import { CarryPathTarget } from './CarryPathTarget'
 
 export abstract class MaterialEntity {
 

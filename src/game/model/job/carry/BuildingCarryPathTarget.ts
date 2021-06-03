@@ -1,65 +1,13 @@
 import { Vector2 } from 'three'
-import { EventBus } from '../../../event/EventBus'
-import { MaterialAmountChanged } from '../../../event/WorldEvents'
-import { ITEM_ACTION_RANGE_SQ } from '../../../params'
-import { BarrierActivity } from '../activities/BarrierActivity'
-import { BuildingActivity } from '../activities/BuildingActivity'
-import { RaiderActivity } from '../activities/RaiderActivity'
-import { BuildingEntity } from '../building/BuildingEntity'
-import { BuildingSite } from '../building/BuildingSite'
-import { EntityType } from '../EntityType'
-import { GameState } from '../GameState'
-import { PathTarget } from '../PathTarget'
-import { MaterialEntity } from './MaterialEntity'
-
-export class CarryPathTarget extends PathTarget {
-
-    constructor(location: Vector2, radiusSq: number = 0) {
-        super(location, radiusSq)
-    }
-
-    canGatherItem(): boolean {
-        return true
-    }
-
-    gatherItem(item: MaterialEntity) {
-        item.sceneEntity.addToScene(null, null)
-    }
-
-    getDropAction(): RaiderActivity {
-        return RaiderActivity.Place
-    }
-
-}
-
-export class SiteCarryPathTarget extends CarryPathTarget {
-
-    site: BuildingSite
-    headingOnSite: number
-
-    constructor(site: BuildingSite, location: Vector2, headingOnSite: number = null) {
-        super(location, ITEM_ACTION_RANGE_SQ)
-        this.site = site
-        this.headingOnSite = headingOnSite
-    }
-
-    gatherItem(item: MaterialEntity) {
-        item.sceneEntity.addToScene(this.targetLocation, this.headingOnSite)
-        if (item.entityType === EntityType.BARRIER) {
-            item.sceneEntity.changeActivity(BarrierActivity.Expand, () => item.sceneEntity.changeActivity(BarrierActivity.Long))
-        }
-        this.site.addItem(item)
-    }
-
-    getDropAction(): RaiderActivity {
-        return this.site.getDropAction()
-    }
-
-    isInvalid(): boolean {
-        return this.site.complete || this.site.canceled
-    }
-
-}
+import { EventBus } from '../../../../event/EventBus'
+import { MaterialAmountChanged } from '../../../../event/WorldEvents'
+import { BuildingActivity } from '../../activities/BuildingActivity'
+import { RaiderActivity } from '../../activities/RaiderActivity'
+import { BuildingEntity } from '../../building/BuildingEntity'
+import { EntityType } from '../../EntityType'
+import { GameState } from '../../GameState'
+import { MaterialEntity } from '../../material/MaterialEntity'
+import { CarryPathTarget } from './CarryPathTarget'
 
 export class BuildingCarryPathTarget extends CarryPathTarget {
 

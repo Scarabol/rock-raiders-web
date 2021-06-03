@@ -5,12 +5,12 @@ import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
 import { CHECK_CLEAR_RUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
 import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
-import { BuildingPathTarget } from './model/building/BuildingPathTarget'
 import { EntityType } from './model/EntityType'
 import { JobState } from './model/job/JobState'
 import { PriorityEntry } from './model/job/PriorityEntry'
 import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { GetToolJob } from './model/job/raider/GetToolJob'
+import { GetToolPathTarget } from './model/job/raider/GetToolPathTarget'
 import { MoveJob } from './model/job/raider/MoveJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
 import { ShareableJob } from './model/job/ShareableJob'
@@ -102,7 +102,7 @@ export class Supervisor {
                             closestToolRaider = raider
                             closestToolRaiderIndex = index
                             minToolDistance = dist
-                            closestToolstation = (pathToToolstation.target as BuildingPathTarget).building
+                            closestToolstation = (pathToToolstation.target as GetToolPathTarget).building
                         }
                     }
                 } else {
@@ -116,7 +116,7 @@ export class Supervisor {
                             closestTrainingRaider = raider
                             closestTrainingRaiderIndex = index
                             minTrainingDistance = dist
-                            closestTrainingArea = (pathToTrainingSite.target as BuildingPathTarget).building
+                            closestTrainingArea = (pathToTrainingSite.target as GetToolPathTarget).building
                         }
                     }
                 }
@@ -160,7 +160,7 @@ export class Supervisor {
                                 .filter((p) => !!p)
                                 .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                             if (pathToToolstation) {
-                                raider.setJob(new GetToolJob(this.entityMgr, requiredTool, (pathToToolstation.target as BuildingPathTarget).building), clearRubbleJob)
+                                raider.setJob(new GetToolJob(this.entityMgr, requiredTool, (pathToToolstation.target as GetToolPathTarget).building), clearRubbleJob)
                                 return
                             }
                         }

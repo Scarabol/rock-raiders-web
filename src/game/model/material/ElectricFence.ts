@@ -2,10 +2,11 @@ import { ElectricFenceSceneEntity } from '../../../scene/entities/ElectricFenceS
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
+import { BuildingCarryPathTarget } from '../job/carry/BuildingCarryPathTarget'
 import { CarryFenceJob } from '../job/carry/CarryFenceJob'
+import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
-import { BuildingCarryPathTarget, CarryPathTarget } from './CarryPathTarget'
 import { MaterialEntity } from './MaterialEntity'
 
 export class ElectricFence extends MaterialEntity {
