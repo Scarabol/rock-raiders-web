@@ -56,6 +56,7 @@ export abstract class BuildingEntity implements Selectable {
     beamUpAnimator: BeamUpAnimator = null
     pathTarget: GetToolPathTarget = null
     engineSound: PositionalAudio
+    surfaces: Surface[] = []
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
         this.sceneMgr = sceneMgr
@@ -226,35 +227,30 @@ export abstract class BuildingEntity implements Selectable {
         this.engineSound = null
     }
 
-    get surfaces(): Surface[] { // TODO performance cache this in member variable
-        const result = []
-        if (this.primarySurface) result.push(this.primarySurface)
-        if (this.secondarySurface) result.push(this.secondarySurface)
-        if (this.primaryPathSurface) result.push(this.primaryPathSurface)
-        if (this.secondaryPathSurface) result.push(this.secondaryPathSurface)
-        return result
-    }
-
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
         this.primarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(worldPosition)
         this.primarySurface.setBuilding(this)
+        this.surfaces.push(this.primarySurface)
         if (this.secondaryBuildingPart) {
             const secondaryOffset = new Vector2(TILESIZE * this.secondaryBuildingPart.x, TILESIZE * this.secondaryBuildingPart.y)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.secondarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(secondaryOffset)
             this.secondarySurface.setBuilding(this)
+            this.surfaces.push(this.secondarySurface)
         }
         if (this.primaryPowerPath) {
             const pathOffset = new Vector2(this.primaryPowerPath.x, this.primaryPowerPath.y).multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
+            this.surfaces.push(this.primaryPathSurface)
         }
         if (this.secondaryPowerPath) {
             const pathOffset = new Vector2(this.secondaryPowerPath.x, this.secondaryPowerPath.y).multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.secondaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             this.secondaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
+            this.surfaces.push(this.secondaryPathSurface)
         }
         this.addToScene(worldPosition, radHeading)
         this.sceneEntity.createPickSphere(this.stats.PickSphere, this, this.stats.PickSphere / 4)
