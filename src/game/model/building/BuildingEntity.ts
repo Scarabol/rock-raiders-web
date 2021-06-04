@@ -251,6 +251,12 @@ export abstract class BuildingEntity implements Selectable {
             this.primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         }
+        if (this.secondaryPowerPath) {
+            const pathOffset = new Vector2(this.secondaryPowerPath.x, this.secondaryPowerPath.y).multiplyScalar(TILESIZE)
+                .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
+            this.secondaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
+            this.secondaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
+        }
         this.addToScene(worldPosition, radHeading)
         this.sceneEntity.createPickSphere(this.stats.PickSphere, this, this.stats.PickSphere / 4)
         if (this.sceneEntity.visible) {

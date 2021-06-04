@@ -11,8 +11,9 @@ export class TeleportBig extends BuildingEntity {
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.TELEPORT_BIG, 'Buildings/BIGTeleport/BIGTeleport.ae')
-        this.secondaryBuildingPart = new Vector2(1, 0)
-        this.secondaryPowerPath = new Vector2(1, 1)
+        this.secondaryBuildingPart = new Vector2(0, 1)
+        this.primaryPowerPath = new Vector2(-1, 0)
+        this.secondaryPowerPath = new Vector2(-1, 1)
         this.teleport = new SuperTeleport(this)
     }
 
