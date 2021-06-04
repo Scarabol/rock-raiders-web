@@ -11,7 +11,7 @@ import { MaterialEntity } from './MaterialEntity'
 export class ElectricFence extends MaterialEntity {
 
     targetSurface: Surface
-    target: CarryPathTarget[] = []
+    target: CarryPathTarget[]
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager, targetSurface: Surface) {
         super(sceneMgr, entityMgr, EntityType.ELECTRIC_FENCE)

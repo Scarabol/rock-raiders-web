@@ -12,8 +12,8 @@ export abstract class MaterialEntity {
 
     sceneMgr: SceneManager
     entityMgr: EntityManager
-    entityType: EntityType = null
-    sceneEntity: SceneEntity
+    entityType: EntityType
+    sceneEntity: SceneEntity = null
     positionAsPathTargets: PathTarget[] = []
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
@@ -22,7 +22,7 @@ export abstract class MaterialEntity {
         this.entityType = entityType
     }
 
-    abstract findCarryTargets(): CarryPathTarget[];
+    abstract findCarryTargets(): CarryPathTarget[]
 
     abstract getPriorityIdentifier(): PriorityIdentifier
 

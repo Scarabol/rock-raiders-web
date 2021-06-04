@@ -10,7 +10,7 @@ import { MaterialEntity } from './MaterialEntity'
 
 export class Barrier extends MaterialEntity {
 
-    targets: SiteCarryPathTarget[] = []
+    targets: SiteCarryPathTarget[]
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager, location: BarrierLocation, site: BuildingSite) {
         super(sceneMgr, entityMgr, EntityType.BARRIER)
