@@ -142,9 +142,8 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     beamUp() {
-        GameState.usedCrystals -= this.crystalsInUse
-        this.crystalsInUse = 0
         this.inBeam = true
+        this.updatePowerState()
         for (let c = 0; c < this.stats.CostOre; c++) {
             this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), this.primarySurface.getRandomPosition())
         }
@@ -198,7 +197,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     updatePowerState() {
-        if (this.powerSwitch) {
+        if (this.powerSwitch && !this.inBeam) {
             this.turnPowerOn()
         } else {
             this.turnPowerOff()
