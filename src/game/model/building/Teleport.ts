@@ -68,10 +68,18 @@ export class SmallTeleport extends Teleport {
 
 }
 
-export class SuperTeleport extends Teleport {
+export class LargeTeleport extends Teleport {
 
     canTeleportIn(entityType: EntityType): boolean {
-        return super.canTeleportIn(entityType)
+        return super.canTeleportIn(entityType) && LargeTeleport.isLarge(entityType)
+    }
+
+    private static isLarge(entityType: EntityType) { // TODO evaluate stats UseLargeTeleporter
+        return entityType === EntityType.BULLDOZER ||
+            entityType === EntityType.WALKER_DIGGER ||
+            entityType === EntityType.LARGE_MLP ||
+            entityType === EntityType.LARGE_DIGGER ||
+            entityType === EntityType.LARGE_CAT
     }
 
 }
