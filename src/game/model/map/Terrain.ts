@@ -88,31 +88,31 @@ export class Terrain {
     }
 
     findWalkPath(start: Vector2, target: PathTarget): TerrainPath {
-        return Terrain.findPath(start, target, this.cachedWalkPaths, this.graphWalk, 3 / TILESIZE, 0.25)
+        return Terrain.findPath(start, target, this.cachedWalkPaths, this.graphWalk, TILESIZE / 3, 0.25)
     }
 
     findDrivePath(start: Vector2, target: PathTarget): TerrainPath {
-        return Terrain.findPath(start, target, this.cachedDrivePaths, this.graphDrive, 1 / TILESIZE, 0)
+        return Terrain.findPath(start, target, this.cachedDrivePaths, this.graphDrive, TILESIZE, 0)
     }
 
     findFlyPath(start: Vector2, target: PathTarget): TerrainPath {
-        return Terrain.findPath(start, target, this.cachedFlyPaths, this.graphFly, 1 / TILESIZE, 0)
+        return Terrain.findPath(start, target, this.cachedFlyPaths, this.graphFly, TILESIZE, 0)
     }
 
     findSwimPath(start: Vector2, target: PathTarget): TerrainPath {
-        return Terrain.findPath(start, target, this.cachedSwimPaths, this.graphSwim, 1 / TILESIZE, 0)
+        return Terrain.findPath(start, target, this.cachedSwimPaths, this.graphSwim, TILESIZE, 0)
     }
 
-    private static findPath(start: Vector2, target: PathTarget, cachedPaths: Map<string, Vector2[]>, graph: Graph, gridScale: number, maxRandomOffset: number): TerrainPath {
-        const gridStart = start.clone().multiplyScalar(gridScale).floor()
-        const gridEnd = target.targetLocation.clone().multiplyScalar(gridScale).floor()
+    private static findPath(start: Vector2, target: PathTarget, cachedPaths: Map<string, Vector2[]>, graph: Graph, gridSize: number, maxRandomOffset: number): TerrainPath {
+        const gridStart = start.clone().divideScalar(gridSize).floor()
+        const gridEnd = target.targetLocation.clone().divideScalar(gridSize).floor()
         if (gridStart.x === gridEnd.x && gridStart.y === gridEnd.y) return new TerrainPath(target, target.targetLocation)
         const cacheIdentifier = gridStart.x + '/' + gridStart.y + ' -> ' + gridEnd.x + '/' + gridEnd.y
         const resultPath = cachedPaths.getOrUpdate(cacheIdentifier, () => {
             const startNode = graph.grid[gridStart.x][gridStart.y]
             const endNode = graph.grid[gridEnd.x][gridEnd.y]
             const freshPath = astar.search(graph, startNode, endNode).map((n) =>
-                new Vector2(n.x + 0.5, n.y + 0.5).add(new Vector2().random().multiplyScalar(maxRandomOffset)).divideScalar(gridScale))
+                new Vector2(n.x + 0.5, n.y + 0.5).add(new Vector2().random().multiplyScalar(maxRandomOffset)).multiplyScalar(gridSize))
             if (freshPath.length < 1) return null // no path found
             freshPath.pop() // last node is replaced with actual target position
             return freshPath
