@@ -21,6 +21,7 @@ import { RaiderTraining } from './RaiderTraining'
 
 export class Raider extends FulfillerEntity {
 
+    sceneEntity: FulfillerSceneEntity
     tools: Map<RaiderTool, boolean> = new Map()
     trainings: Map<RaiderTraining, boolean> = new Map()
     slipped: boolean = false

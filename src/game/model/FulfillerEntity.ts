@@ -17,7 +17,6 @@ import { Selectable } from './Selectable'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable {
 
-    sceneEntity: FulfillerSceneEntity
     level: number = 0
     selected: boolean
     job: Job = null
@@ -34,6 +33,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     abstract get stats()
 
     abstract isPrepared(job: Job): boolean
+
+    abstract get sceneEntity(): FulfillerSceneEntity
 
     pickupItem(item: MaterialEntity) {
         this.carries = item

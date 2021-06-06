@@ -20,6 +20,7 @@ import { VehicleActivity } from './VehicleActivity'
 
 export abstract class VehicleEntity extends FulfillerEntity {
 
+    sceneEntity: FulfillerSceneEntity
     driver: Raider = null
     callManJob: VehicleCallManJob = null
     engineSound: PositionalAudio
