@@ -25,9 +25,7 @@ export class AnimationGroup extends Group {
                 audio.setRefDistance(TILESIZE * 6) // TODO optimize ref distance for SFX sounds
                 audio.loop = false
                 polyModel.add(audio)
-                SoundManager.getSoundBuffer(body.sfxName).then((audioBuffer) => {
-                    audio.setBuffer(audioBuffer)
-                })
+                SoundManager.getSoundBuffer(body.sfxName).then((audioBuffer) => audio.setBuffer(audioBuffer))
                 body.sfxFrames.forEach((frame) => this.animation.sfxAudioByFrame.getOrUpdate(frame, () => []).push(audio))
             }
         })

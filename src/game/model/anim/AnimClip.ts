@@ -22,6 +22,7 @@ export class AnimClip {
     nullJoints: Map<string, SceneMesh[]> = new Map()
     polyModel: Group = new Group()
     sfxAudioByFrame: Map<number, PositionalAudio[]> = new Map()
+
     timer: number = 0
     currentFrame: number = null
     onAnimationDone: () => any = null
