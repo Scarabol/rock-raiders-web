@@ -190,7 +190,6 @@ export class Surface implements Selectable {
         }
         // update meshes
         this.terrain.updateSurfaceMeshes()
-        this.terrain.floorGroup.updateWorldMatrix(true, true)
         this.playPositionalSample(Sample.SFX_RockBreak)
     }
 
@@ -420,7 +419,6 @@ export class Surface implements Selectable {
         this.mesh.userData = {selectable: this, surface: this}
 
         this.terrain.floorGroup.add(this.mesh)
-        this.terrain.floorGroup.updateWorldMatrix(true, true) // otherwise ray intersection is not working before rendering
     }
 
     isSelectable(): boolean {
