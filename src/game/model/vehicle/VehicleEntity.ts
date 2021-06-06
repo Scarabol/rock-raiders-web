@@ -5,7 +5,6 @@ import { SelectionChanged, VehiclesChangedEvent } from '../../../event/LocalEven
 import { FulfillerSceneEntity } from '../../../scene/entities/FulfillerSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
@@ -82,7 +81,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
     }
 
     getRouteActivity(): VehicleActivity {
-        return AnimEntityActivity.Stand
+        return VehicleActivity.Route
     }
 
     isPrepared(job: Job): boolean {
