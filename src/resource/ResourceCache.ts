@@ -66,6 +66,7 @@ export class ResourceCache {
     }
 
     static loadAllCursor() {
+        console.time('loadAllCursor') // TODO improve cursor loading performance (caching?, parallelization?, faster create base64?)
         const pointersCfg = this.cfg('Pointers')
         const blankPointerFilename = iGet(pointersCfg, Cursor[Cursor.Pointer_Blank])
         const blankPointerImageData = this.getImageData(blankPointerFilename)
@@ -89,6 +90,7 @@ export class ResourceCache {
                 this.cursorToUrl.set(cursor, new AnimatedCursor(cursorImage))
             }
         })
+        console.timeEnd('loadAllCursor')
     }
 
     static getCursorImage(imageName: string): HTMLCanvasElement {

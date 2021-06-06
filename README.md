@@ -20,6 +20,28 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Development Roadmap
 
+Make animated meshes cloneable and move their creation into ResourceManager within loading screen
+Replace ResourceManager.cfg with calls to pre-parsed collections that contain explicit types
+Add credits section to README
+
+Bugs in master branch (tested with Frosteinbruch)
+- performance issues
+- Energy crystals are marked as consumed on start but, buildings are not yet discovered
+- Dynamite not updated and therefore not ticking down
+Update call missing for material entities like barries and crystals
+- Surface discovery extremely slow
+- Raider collecting ores even with higher priority on crystals
+- Undiscovered buildings shows as powered after discovery
+- Energy crystals never collected, when power station discovered first
+- Carry animation played extremely fast
+
+Fix loadAllCursors performance issues
+Refactor Stats classes, turn into EntityType classes
+Make AnimClip cloneable (needs split too, because classes mixes state and type of animations)
+Refactor BuildingEntities and VehicleEntities, no actual typing needed
+
+Replace load from url tab in frontend with option to load Buz mod
+
 ### Vehicles Milestone (v0.5.0)
 
 - Introduce waiting lists for vehicles

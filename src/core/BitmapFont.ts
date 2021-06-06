@@ -2,7 +2,7 @@ import { createContext, createDummyImgData, getPixel, setPixel } from './ImageHe
 
 export class BitmapFont {
 
-    charHeight: number
+    charHeight: number // TODO split into BitmapFont and BitmapFontData (or similar) and cache plain data with separated/parsed letters
     letters: ImageData[] = []
 
     constructor(fontImageData: ImageData, cols = 10, rows = 19) { // font images always consist of 10 columns and 19 rows with last row empty
