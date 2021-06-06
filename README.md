@@ -29,15 +29,15 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Vehicles Milestone (v0.5.0)
 
+- Fix raider not shown as driver in tunnel scout
 - Introduce waiting lists for vehicles
 - Add pricing for vehicles
 - Add range checks to jobs, such that raider mount vehicles earlier and place down materials on buildings sites earlier (better check position of material)
-- Remove default driver skill from raiders
 - Auto train raider to man vehicles
-- Make raider unselectable as driver
-- Implement beam up for vehicles
 - Raider sometimes sitting wrong way around in vehicles
 - Walker digger not loaded correctly or at least the upgrades
+- Make vehicles work
+- Activity of upgrades should be synced (for example walker diggers engines)
 
 ### Near (v0.6.0)
 
@@ -72,7 +72,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in
 - Raiders not spawned in Level 01 when restarted from Level 03
 - Level24 cannot be loaded, because collapsing surface needs terrain, which is not yet initialized
-- Refactor power management introduce power grid class
 
 ### Nice to have
 
@@ -97,6 +96,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add greenish priority panel button hover frame
 - Tooltip SFX sounds not working for priority panel
 - Seams get not teared down while drilling
+- Ring on drills rendered as flat plate instead of helix
 
 ## Technical Debt
 
