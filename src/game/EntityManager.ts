@@ -140,6 +140,7 @@ export class EntityManager {
                 e.sceneEntity.visible = true
                 onRemove(e)
             }
+            return !discovered
         })
     }
 
