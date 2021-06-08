@@ -42,6 +42,7 @@ export enum EntityType {
     LARGE_MLP,
     LARGE_DIGGER,
     LARGE_CAT,
+    LARGE_HELI,
 
     // OTHERS
     TV_CAMERA,
@@ -49,7 +50,9 @@ export enum EntityType {
 }
 
 export function getEntityTypeByName(type: string): EntityType {
-    if ('Pilot'.equalsIgnoreCase(type)) {
+    if ('TVCamera'.equalsIgnoreCase(type)) {
+        return EntityType.TV_CAMERA
+    } else if ('Pilot'.equalsIgnoreCase(type)) {
         return EntityType.PILOT
     } else if ('Toolstation'.equalsIgnoreCase(type)) {
         return EntityType.TOOLSTATION
@@ -83,7 +86,7 @@ export function getEntityTypeByName(type: string): EntityType {
         return EntityType.LAVA_MONSTER
     } else if ('Dynamite'.equalsIgnoreCase(type)) {
         return EntityType.DYNAMITE
-    } else if ('EletricFence'.equalsIgnoreCase(type)) {
+    } else if ('ElectricFence'.equalsIgnoreCase(type)) {
         return EntityType.ELECTRIC_FENCE
     } else if ('PowerCrystal'.equalsIgnoreCase(type)) {
         return EntityType.CRYSTAL
@@ -97,7 +100,7 @@ export function getEntityTypeByName(type: string): EntityType {
         return EntityType.HOVERBOARD
     } else if ('SmallDigger'.equalsIgnoreCase(type)) {
         return EntityType.SMALL_DIGGER
-    } else if ('SamllTruck'.equalsIgnoreCase(type)) {
+    } else if ('SmallTruck'.equalsIgnoreCase(type)) {
         return EntityType.SMALL_TRUCK
     } else if ('SmallCat'.equalsIgnoreCase(type)) {
         return EntityType.SMALL_CAT
@@ -115,8 +118,8 @@ export function getEntityTypeByName(type: string): EntityType {
         return EntityType.LARGE_DIGGER
     } else if ('LargeCat'.equalsIgnoreCase(type)) {
         return EntityType.LARGE_CAT
-    } else if ('TVCamera'.equalsIgnoreCase(type)) {
-        return EntityType.TV_CAMERA
+    } else if ('LargeHeli'.equalsIgnoreCase(type)) {
+        return EntityType.LARGE_HELI
     } else {
         console.error('Could not identify entity type from string: ' + type)
         return null

@@ -8,7 +8,7 @@ import { BuildingEntity } from '../BuildingEntity'
 export class Upgrade extends BuildingEntity {
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        super(sceneMgr, entityMgr, EntityType.UPGRADE, null)
+        super(sceneMgr, entityMgr, EntityType.UPGRADE, 'Buildings/Upgrade/Upgrade.ae')
     }
 
     get stats(): BuildingEntityStats {
