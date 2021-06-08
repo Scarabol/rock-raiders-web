@@ -40,7 +40,6 @@ export class ScreenLayer {
     }
 
     show() {
-        this.reset()
         this.active = true
         this.canvas.style.visibility = 'visible'
         this.redraw()

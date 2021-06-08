@@ -41,8 +41,8 @@ export class BriefingPanel extends Panel {
 
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
         this.imgBack = GuiResourceCache.getImageOrNull(objectiveBackImgCfg.filename)
-        this.xIn = objectiveBackImgCfg.x
-        this.yIn = objectiveBackImgCfg.y
+        this.relX = this.xIn = objectiveBackImgCfg.x
+        this.relY = this.yIn = objectiveBackImgCfg.y
         this.width = this.imgBack.width
         this.height = this.imgBack.height
         this.updatePosition()
