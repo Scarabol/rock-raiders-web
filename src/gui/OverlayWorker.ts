@@ -68,7 +68,12 @@ export class OverlayWorker extends GuiWorker {
 
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
         this.panelBriefing.setup(objectiveText, objectiveBackImgCfg)
-        if (!DEV_MODE) this.setActivePanel(this.panelBriefing)
+        this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
+    }
+
+    reset() {
+        super.reset()
+        this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
