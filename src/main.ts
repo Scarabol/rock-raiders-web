@@ -43,21 +43,15 @@ ResourceManager.onLoadDone = () => {
     const rewardScreen = new RewardScreen()
 
     mainMenuScreen.onLevelSelected = (levelName) => {
-        let levelConf: LevelEntryCfg = null
         try {
-            levelConf = ResourceManager.getResource('Levels').levelsByName[levelName]
-            if (levelConf) {
-                rewardScreen.setup(levelConf.fullName, levelConf.reward)
-                gameScreen.startLevel(levelName, levelConf)
-            }
+            const levelConf: LevelEntryCfg = ResourceManager.getResource('Levels').levelsByName[levelName]
+            if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"' // TODO this could be nicer
+            rewardScreen.setup(levelConf.fullName, levelConf.reward)
+            gameScreen.startLevel(levelName, levelConf)
         } catch (e) {
             console.error('Could not load level: ' + levelName, e)
-        } finally {
-            if (!levelConf) {
-                console.error('Could not find level configuration for "' + levelName + '"')
-                gameScreen.hide()
-                mainMenuScreen.showLevelSelection()
-            }
+            gameScreen.hide()
+            mainMenuScreen.showLevelSelection()
         }
     }
     gameScreen.onLevelEnd = (result) => {
