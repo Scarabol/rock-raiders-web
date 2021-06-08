@@ -31,7 +31,6 @@ export abstract class GuiWorker extends OffscreenWorker {
     }
 
     reset() {
-        super.reset()
         this.panels.forEach((p) => p.reset())
     }
 

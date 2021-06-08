@@ -28,8 +28,7 @@ export abstract class OffscreenWorker implements IEventHandler {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     }
 
-    reset() {
-    }
+    abstract reset()
 
     setCanvas(canvas: OffscreenCanvas) {
         this.canvas = canvas

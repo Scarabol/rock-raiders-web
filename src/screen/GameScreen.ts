@@ -99,7 +99,6 @@ export class GameScreen extends BaseScreen {
         super.show()
         this.sceneMgr.startScene()
         this.worldMgr.unPause()
-        this.entityMgr.start()
     }
 
     hide() {

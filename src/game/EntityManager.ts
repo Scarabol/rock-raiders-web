@@ -60,9 +60,6 @@ export class EntityManager {
         this.vehiclesUndiscovered = []
     }
 
-    start() {
-    }
-
     update(elapsedMs: number) {
         this.raiders.forEach((r) => updateSafe(r, elapsedMs))
         this.raidersInBeam.forEach((r) => updateSafe(r, elapsedMs))
