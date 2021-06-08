@@ -20,7 +20,7 @@ export class FallIn {
     update(elapsedMs: number) {
         this.timer += elapsedMs
         if (this.timer < this.fallinTimeout) return
-        this.terrain.createFallIn(this.source, this.target)
+        if (this.source.discovered) this.terrain.createFallIn(this.source, this.target)
         this.timer -= this.fallinTimeout
         this.restartTimeout()
     }
