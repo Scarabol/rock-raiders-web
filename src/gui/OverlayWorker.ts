@@ -6,7 +6,7 @@ import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { LocalEvent } from '../event/LocalEvents'
 import { DEV_MODE } from '../params'
-import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
+import { WorkerMessageType } from '../worker/WorkerMessageType'
 import { Panel } from './base/Panel'
 import { BriefingPanel } from './briefing/BriefingPanel'
 import { GuiResourceCache } from './GuiResourceCache'
@@ -26,8 +26,8 @@ export class OverlayWorker extends GuiWorker {
     }
 
     init() {
-        this.panelPause = this.addPanel(new PausePanel(this.rootElement, GuiResourceCache.getResource('PausedMenu') as MenuCfg))
-        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, GuiResourceCache.getResource('OptionsMenu') as MenuCfg))
+        this.panelPause = this.addPanel(new PausePanel(this.rootElement, new MenuCfg(GuiResourceCache.cfg('Menu', 'PausedMenu'))))
+        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, new MenuCfg(GuiResourceCache.cfg('Menu', 'OptionsMenu'))))
         this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
         // link items
         this.panelPause.onContinueGame = () => this.setActivePanel(null)

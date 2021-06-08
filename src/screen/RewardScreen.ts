@@ -35,7 +35,7 @@ export class RewardScreen extends BaseScreen {
 
     constructor() {
         super()
-        this.cfg = ResourceManager.getResource('Reward')
+        this.cfg = new RewardCfg(ResourceManager.cfg('Reward'))
         this.titleFont = ResourceManager.getBitmapFont(this.cfg.titleFont)
         const backgroundImg = ResourceManager.getImage(this.cfg.wallpaper)
         const backgroundLayer = this.addLayer(new ScaledLayer())
@@ -68,9 +68,10 @@ export class RewardScreen extends BaseScreen {
         })
         this.descriptionTextLayer = this.addLayer(new ScaledLayer(), 20)
         this.btnLayer = this.addLayer(new ScaledLayer(), 50)
-        this.btnSave = new RewardScreenButton(this.cfg.saveButton)
-        this.btnSave.disabled = true
-        this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton)
+        // FIXME something removes the image paths from these two button configurations
+        // this.btnSave = new RewardScreenButton(this.cfg.saveButton)
+        // this.btnSave.disabled = true
+        // this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton)
         this.btnLayer.handlePointerEvent = ((event) => {
             if (event.eventEnum === POINTER_EVENT.MOVE) {
                 const [sx, sy] = this.btnLayer.toScaledCoords(event.clientX, event.clientY)

@@ -1,6 +1,6 @@
 import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
 import { GuiWorkerMessage } from '../../gui/GuiWorkerMessage'
-import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
+import { WorkerMessageType } from '../../worker/WorkerMessageType'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
 

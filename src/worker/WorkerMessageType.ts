@@ -1,13 +1,5 @@
 export enum WorkerMessageType {
 
-    // wad worker
-    MSG,
-    CFG,
-    CACHE_MISS,
-    SFX,
-    ASSET,
-    DONE,
-
     // gui/scene worker
     INIT,
     CANVAS,

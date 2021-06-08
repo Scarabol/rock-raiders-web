@@ -1,6 +1,6 @@
 import { ButtonsCfg } from '../cfg/ButtonsCfg'
 import { PanelsCfg } from '../cfg/PanelsCfg'
-import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
+import { WorkerMessageType } from '../worker/WorkerMessageType'
 import { Panel } from './base/Panel'
 import { CameraControlPanel } from './cameracontrol/CameraControlPanel'
 import { GuiResourceCache } from './GuiResourceCache'

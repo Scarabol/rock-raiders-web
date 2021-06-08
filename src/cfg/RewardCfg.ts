@@ -16,8 +16,8 @@ export class RewardCfg extends BaseConfig {
     font: string = ''
     titleFont: string = ''
     timer: number = 0
-    saveButton: any = ''
-    advanceButton: any = ''
+    saveButton: any[] = []
+    advanceButton: any[] = []
     completeText: string = ''
     failedText: string = ''
     quitText: string = ''

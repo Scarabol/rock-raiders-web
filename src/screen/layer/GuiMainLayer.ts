@@ -1,4 +1,4 @@
-import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
+import { WorkerMessageType } from '../../worker/WorkerMessageType'
 import { OffscreenLayer } from './OffscreenLayer'
 
 export class GuiMainLayer extends OffscreenLayer {

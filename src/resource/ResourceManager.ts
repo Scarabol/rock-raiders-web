@@ -6,66 +6,10 @@ import { SceneMesh } from '../scene/SceneMesh'
 import { AnimEntityLoader } from './AnimEntityLoader'
 import { LWOLoader } from './LWOLoader'
 import { ResourceCache } from './ResourceCache'
-import { InitLoadingMessage } from './wadworker/InitLoadingMessage'
-import { WadWorkerMessage } from './wadworker/WadWorkerMessage'
-import { WorkerMessageType } from './wadworker/WorkerMessageType'
 
 export class ResourceManager extends ResourceCache {
 
-    static worker: Worker = new Worker(new URL('./wadworker/WadWorker', import.meta.url))
-
     static lwoCache: Map<string, SceneMesh> = new Map()
-
-    static startLoadingFromCache() {
-        return this.startLoading(null)
-    }
-
-    static startLoadingFromUrl(wad0Url: string, wad1Url: string) {
-        return this.startLoading(new InitLoadingMessage(wad0Url, wad1Url))
-    }
-
-    private static startLoading(msg: InitLoadingMessage) {
-        this.worker.onmessage = (event) => {
-            const msg: WadWorkerMessage = event.data
-            if (msg.type === WorkerMessageType.ASSET) {
-                msg.assetNames.forEach((assetName) => this.resourceByName.set(assetName.toLowerCase(), msg.assetObj))
-                msg.sfxKeys?.forEach((sfxKey) => this.sfxByKey.set(sfxKey, msg.assetObj))
-                this.onAssetLoaded()
-            } else if (msg.type === WorkerMessageType.MSG) {
-                this.onMessage(msg.text)
-            } else if (msg.type === WorkerMessageType.CFG) {
-                this.configuration = msg.cfg
-                this.stats = msg.stats
-                this.loadDefaultCursor()
-                this.onInitialLoad(msg.totalResources)
-            } else if (msg.type === WorkerMessageType.CACHE_MISS) {
-                this.onCacheMissed()
-            } else if (msg.type === WorkerMessageType.DONE) {
-                this.loadAllCursor()
-                console.log('Loading of about ' + msg.totalResources + ' assets complete!')
-                this.onLoadDone()
-            }
-        }
-        this.worker.postMessage(msg)
-    }
-
-    static onMessage: (msg: string) => any = (msg: string) => {
-        console.log(msg)
-    }
-
-    static onCacheMissed: () => any = () => {
-        console.log('Worker missed cache')
-    }
-
-    static onInitialLoad: (totalResources: number) => any = () => {
-        console.log('Initial loading done.')
-    }
-
-    static onAssetLoaded: () => any = () => {
-    }
-
-    static onLoadDone: () => any = () => {
-    }
 
     static getTexturesBySequenceName(basename: string): Texture[] {
         const lBasename = basename?.toLowerCase()

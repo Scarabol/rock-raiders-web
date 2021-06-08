@@ -4,6 +4,7 @@ import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
 import { getRandomInclusive } from './core/Util'
 import { GameState } from './game/model/GameState'
 import { DEV_MODE } from './params'
+import { AssetLoader } from './resource/assets/AssetLoader'
 import { ResourceManager } from './resource/ResourceManager'
 import { GameScreen } from './screen/GameScreen'
 import { LoadingScreen } from './screen/LoadingScreen'
@@ -21,22 +22,22 @@ const githubBox = new GithubBox('game-container')
 const clearCacheButton = new ClearCacheButton('game-container')
 
 wadFileSelectModal.onStart = (wad0Url, wad1Url) => {
-    ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
+    AssetLoader.startLoadingFromUrl(wad0Url, wad1Url)
 }
-ResourceManager.onMessage = (msg: string) => {
+AssetLoader.onMessage = (msg: string) => {
     loadingScreen.setLoadingMessage(msg)
 }
-ResourceManager.onCacheMissed = () => {
+AssetLoader.onCacheError = () => {
     wadFileSelectModal.show()
 }
-ResourceManager.onInitialLoad = (totalResources: number) => {
+AssetLoader.onInitialLoad = (totalResources: number) => {
     wadFileSelectModal.hide()
     loadingScreen.enableGraphicMode(totalResources)
 }
-ResourceManager.onAssetLoaded = () => {
+AssetLoader.onAssetLoaded = () => {
     loadingScreen.increaseLoadingState()
 }
-ResourceManager.onLoadDone = () => {
+AssetLoader.onLoadDone = () => {
     console.timeEnd('Total asset loading time')
     // complete setup
     const mainMenuScreen = new MainMenuScreen()
@@ -86,4 +87,4 @@ ResourceManager.onLoadDone = () => {
 // start the game engine with loading resources
 
 loadingScreen.show()
-ResourceManager.startLoadingFromCache()
+AssetLoader.startLoadingFromCache()

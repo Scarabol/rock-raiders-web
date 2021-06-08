@@ -11,7 +11,7 @@ export class MainMenuScreen extends BaseScreen {
 
     constructor() {
         super()
-        const mainMenuFullCfg = ResourceManager.getResource('MainMenuFull') as MenuCfg
+        const mainMenuFullCfg = new MenuCfg(ResourceManager.cfg('Menu', 'MainMenuFull'))
         mainMenuFullCfg.menus.forEach((menuCfg) => {
             let layer
             if (menuCfg.title === 'Levels') {
