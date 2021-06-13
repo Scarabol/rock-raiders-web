@@ -1,4 +1,4 @@
-import { LevelEntryCfg, LevelsCfg } from '../../cfg/LevelsCfg'
+import { LevelsCfg } from '../../cfg/LevelsCfg'
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { RewardCfg } from '../../cfg/RewardCfg'
 import { getFilename, getPath, iGet } from '../../core/Util'
@@ -56,8 +56,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         // level files
         this.addAsset(this.wadLoader.loadNerpAsset, 'Levels/nerpnrn.h')
         const levelsCfg = new LevelsCfg(iGet(mainConf, 'Levels'))
-        this.wadLoader.onAssetLoaded(0, ['Levels'], levelsCfg)
-        Object.values(levelsCfg.levelsByName).forEach((level: LevelEntryCfg) => {
+        levelsCfg.levelCfgByName.forEach((level) => {
             level.menuBMP.forEach((bmpName) => {
                 this.addAsset(this.wadLoader.loadAlphaImageAsset, bmpName)
             })

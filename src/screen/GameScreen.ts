@@ -7,7 +7,7 @@ import { EntityManager } from '../game/EntityManager'
 import { GuiManager } from '../game/GuiManager'
 import { GameResult, GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
-import { ObjectListLoader } from '../game/ObjectListLoader'
+import { ObjectListEntry, ObjectListLoader } from '../game/ObjectListLoader'
 import { SceneManager } from '../game/SceneManager'
 import { Supervisor } from '../game/Supervisor'
 import { WorldManager } from '../game/WorldManager'
@@ -89,7 +89,8 @@ export class GameScreen extends BaseScreen {
         this.overlayLayer.setup(objectiveText.objective, this.levelConf.objectiveImage640x480)
         EventBus.publishEvent(new SetupPriorityList(this.levelConf.priorities))
         // load in non-space objects next
-        ObjectListLoader.loadObjectList(this.levelConf, this.worldMgr, this.sceneMgr, this.entityMgr)
+        const objectList: ObjectListEntry[] = Object.values(ResourceManager.getResource(this.levelConf.oListFile))
+        ObjectListLoader.loadObjectList(objectList, this.levelConf.disableStartTeleport, this.sceneMgr, this.entityMgr)
         // finally generate initial radar panel map
         EventBus.publishEvent(new UpdateRadarTerrain(this.sceneMgr.terrain, this.sceneMgr.controls.target.clone()))
         this.show()

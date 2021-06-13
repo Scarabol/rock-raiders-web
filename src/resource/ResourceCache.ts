@@ -1,4 +1,5 @@
 import { GameStatsCfg } from '../cfg/GameStatsCfg'
+import { LevelsCfg } from '../cfg/LevelsCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { createContext, createDummyImgData } from '../core/ImageHelper'
 import { iGet } from '../core/Util'
@@ -16,6 +17,10 @@ export class ResourceCache {
 
     static cfg(...keys: string[]): any {
         return iGet(this.configuration, ...keys)
+    }
+
+    static getLevelConfig(): LevelsCfg {
+        return new LevelsCfg(this.cfg('Levels'))
     }
 
     static getResource(resourceName: string): any {

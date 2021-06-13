@@ -1,5 +1,4 @@
 import { parseLabel } from '../cfg/CfgHelper'
-import { LevelEntryCfg, LevelsCfg } from '../cfg/LevelsCfg'
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { iGet } from '../core/Util'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -14,14 +13,12 @@ export class LevelSelectLayer extends MainMenuLayer {
 
     constructor(screen: MainMenuScreen, menuCfg: MenuEntryCfg, modeLevel: boolean) {
         super(screen, menuCfg)
-        const levelsCfg: LevelsCfg = ResourceManager.getResource('Levels')
         const levelTextCfg = new LevelTextCfg()
         this.items.push(new MainMenuPanel(levelTextCfg.panelImgData, levelTextCfg.panelPos))
         const levelTextWindow = new MainMenuWindow(ResourceManager.getDefaultFont(), levelTextCfg.window)
         levelTextWindow.setFirstLine(modeLevel ? levelTextCfg.level : levelTextCfg.tutorial)
         this.items.push(levelTextWindow)
-        Object.keys(levelsCfg.levelsByName).forEach((levelKey) => {
-            const level: LevelEntryCfg = levelsCfg.levelsByName[levelKey]
+        ResourceManager.getLevelConfig().levelCfgByName.forEach((level, levelKey) => {
             const levelButton = new MainMenuLevelButton(this, levelKey, level)
             levelButton.onHoverChange = () => levelTextWindow.setSecondLine(levelButton.hover ? level.fullName : '')
             this.items.push(levelButton)

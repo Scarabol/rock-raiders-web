@@ -1,7 +1,6 @@
 import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
 import { GithubBox } from '../site/github/github-box'
 import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
-import { LevelEntryCfg } from './cfg/LevelsCfg'
 import { getRandomInclusive } from './core/Util'
 import { GameState } from './game/model/GameState'
 import { DEV_MODE } from './params'
@@ -44,7 +43,7 @@ ResourceManager.onLoadDone = () => {
 
     mainMenuScreen.onLevelSelected = (levelName) => {
         try {
-            const levelConf: LevelEntryCfg = ResourceManager.getResource('Levels').levelsByName[levelName]
+            const levelConf = ResourceManager.getLevelConfig().levelCfgByName.get(levelName)
             if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"' // TODO this could be nicer
             rewardScreen.setup(levelConf.fullName, levelConf.reward)
             gameScreen.startLevel(levelName, levelConf)

@@ -6,12 +6,12 @@ import { ObjectiveImageCfg } from './ObjectiveImageCfg'
 
 export class LevelsCfg {
 
-    levelsByName: {} = []
+    levelCfgByName: Map<string, LevelEntryCfg> = new Map()
 
     constructor(cfgObj: any) {
         Object.keys(cfgObj).forEach((levelKey) => {
             if (!levelKey.startsWith('Tutorial') && !levelKey.startsWith('Level')) return // ignore incomplete test levels and duplicates
-            this.levelsByName[levelKey] = new LevelEntryCfg(cfgObj[levelKey])
+            this.levelCfgByName.set(levelKey, new LevelEntryCfg(cfgObj[levelKey]))
         })
     }
 
