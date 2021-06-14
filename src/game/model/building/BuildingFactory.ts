@@ -38,7 +38,7 @@ export class BuildingFactory {
             case EntityType.TELEPORT_BIG:
                 return new TeleportBig(sceneMgr, entityMgr)
             default:
-                throw 'Unexpected building type: ' + EntityType[entityType]
+                throw new Error('Unexpected building type: ' + EntityType[entityType])
         }
     }
 

@@ -44,7 +44,7 @@ ResourceManager.onLoadDone = () => {
     mainMenuScreen.onLevelSelected = (levelName) => {
         try {
             const levelConf = ResourceManager.getLevelConfig().levelCfgByName.get(levelName)
-            if (!levelConf) throw 'Could not find level configuration for "' + levelName + '"' // TODO this could be nicer
+            if (!levelConf) throw new Error('Could not find level configuration for "' + levelName + '"') // TODO this could be nicer
             rewardScreen.setup(levelConf.fullName, levelConf.reward)
             gameScreen.startLevel(levelName, levelConf)
         } catch (e) {

@@ -27,7 +27,7 @@ export class NerpParser {
                 }
                 const includedRunner = NerpParser.parse(entityMgr, ResourceManager.getResource('Levels/' + includeName))
                 if (!includedRunner || !includedRunner.scriptLines || includedRunner.scriptLines.length < 1) {
-                    throw 'Can\'t include unknown nerp script: ' + line
+                    throw new Error('Can\'t include unknown nerp script: ' + line)
                 }
                 nerpRunner.scriptLines = nerpRunner.scriptLines.concat(includedRunner.scriptLines)
                 // copy macros from included file to current file
@@ -81,7 +81,7 @@ export class NerpParser {
             } else if (nerpRunner.statements[c].length === 1) { // just a call
                 nerpRunner.statements[c] = this.preProcess(nerpRunner.statements[c][0])
             } else { // lines contains more than 1 condition statement
-                throw 'Can\'t deal with line: ' + line
+                throw new Error('Can\'t deal with line: ' + line)
             }
         }
         return nerpRunner
@@ -94,7 +94,7 @@ export class NerpParser {
         if (macro) {
             const argValues = split.splice(1).join('(').slice(0, -1).split(',')
             if (argValues.length !== macro.args.length) {
-                throw 'Invalid number of args provided for macro in line ' + line
+                throw new Error('Invalid number of args provided for macro in line ' + line)
             }
             const macroLines = []
             macro.lines.forEach((line) => {
@@ -134,7 +134,7 @@ export class NerpParser {
             return {jump: jumpMatch[1].toLowerCase()}
         } else { // function call without args
             if (expression.match(/[ =?><!]/)) {
-                throw 'Invalid expression given, parsing must have failed before somewhere'
+                throw new Error('Invalid expression given, parsing must have failed before somewhere')
             }
             return {invoke: expression, args: []}
         }

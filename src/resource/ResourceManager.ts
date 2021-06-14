@@ -120,7 +120,7 @@ export class ResourceManager extends ResourceCache {
 
     static getTexture(textureFilepath): Texture | null {
         if (!textureFilepath) {
-            throw 'textureFilepath must not be undefined, null or empty - was ' + textureFilepath
+            throw new Error('textureFilepath must not be undefined, null or empty - was ' + textureFilepath)
         }
         const imgData = this.resourceByName.get(textureFilepath.toLowerCase())
         if (!imgData) return null
@@ -132,7 +132,7 @@ export class ResourceManager extends ResourceCache {
 
     static getAnimationEntityType(aeFilename: string, audioListener: AudioListener): AnimationEntityType {
         let cfgRoot = this.getResource(aeFilename)
-        if (!cfgRoot) throw 'Could not get animation entity type for: ' + aeFilename
+        if (!cfgRoot) throw new Error('Could not get animation entity type for: ' + aeFilename)
         return new AnimEntityLoader(aeFilename, cfgRoot, audioListener).loadModels()
     }
 

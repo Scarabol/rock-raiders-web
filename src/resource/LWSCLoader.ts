@@ -29,14 +29,14 @@ export class LWSCLoader {
     }
 
     parse(content): AnimClip {
-        if (!content) throw 'Cannot parse LWS, no content given'
+        if (!content) throw new Error('Cannot parse LWS, no content given')
         this.lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
             .split('\n')
             .map(l => l.trim())
 
         if (this.lines[0] !== 'LWSC') {
-            throw 'Invalid start of file! Expected \'LWSC\' in first line'
+            throw new Error('Invalid start of file! Expected \'LWSC\' in first line')
         }
 
         const sceneFileVersion = parseInt(this.lines[1], 10)
@@ -120,7 +120,7 @@ export class LWSCLoader {
                     subObj.model = new SceneMesh()
                     subObj.isNull = true
                 } else {
-                    throw 'Unexpected line: ' + line
+                    throw new Error('Unexpected line: ' + line)
                 }
             } else if (key === 'ObjectMotion') {
                 let line = this.lines[++this.lineIndex]

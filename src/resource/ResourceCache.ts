@@ -29,7 +29,7 @@ export class ResourceCache {
     }
 
     static getImageData(imageName: string): ImageData {
-        if (!imageName) throw 'imageName must not be undefined, null or empty - was ' + imageName
+        if (!imageName) throw new Error('imageName must not be undefined, null or empty - was ' + imageName)
         return this.resourceByName.getOrUpdate((imageName.toLowerCase()), () => {
             console.error('Image \'' + imageName + '\' unknown! Using placeholder image instead')
             return createDummyImgData(64, 64)
@@ -50,7 +50,7 @@ export class ResourceCache {
     static getBitmapFont(name: string): BitmapFont {
         return this.fontCache.getOrUpdate(name, () => {
             const fontImageData = this.getResource(name)
-            if (!fontImageData) throw 'Could not load font image data for: ' + name
+            if (!fontImageData) throw new Error('Could not load font image data for: ' + name)
             return new BitmapFont(fontImageData)
         })
     }

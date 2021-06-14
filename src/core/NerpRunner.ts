@@ -296,7 +296,7 @@ export class NerpRunner {
 
     callMethod(methodName, methodArgs) {
         if (methodName === 'Stop') {
-            throw 'Stop'
+            throw new Error('Stop')
         } else if (methodName === 'TRUE') {
             return true
         } else if (methodName === 'FALSE') {
@@ -396,7 +396,7 @@ export class NerpRunner {
                 }
             }
         } catch (e) {
-            if (e === 'Stop') {
+            if ((e as Error).message === 'Stop') {
                 return
             }
             console.error(e)

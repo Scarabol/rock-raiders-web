@@ -20,7 +20,7 @@ export class WadFile {
         this.buffer = new Int8Array(data)
         let pos = 0
         if (String.fromCharCode.apply(null, this.buffer.slice(pos, 4)) !== 'WWAD') {
-            throw 'Invalid WAD0 file provided'
+            throw new Error('Invalid WAD0 file provided')
         }
         if (debug) {
             console.log('WAD0 file seems legit')
@@ -96,7 +96,7 @@ export class WadFile {
     getEntryBuffer(entryName): ArrayBufferLike {
         const index = this.entryIndexByName.get(entryName.toLowerCase())
         if (index === undefined || index === null) {
-            throw 'Entry \'' + entryName + '\' not found in WAD file'
+            throw new Error('Entry \'' + entryName + '\' not found in WAD file')
         }
         return this.buffer.slice(this.fStart[index], this.fStart[index] + this.fLength[index]).buffer
     }

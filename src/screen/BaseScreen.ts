@@ -21,7 +21,7 @@ export class BaseScreen implements IEventHandler {
         this.gameCanvasContainer = document.getElementById('game-canvas-container')
         this.gameCanvasContainer.focus()
         this.eventMgr = new EventManager(this)
-        if (!this.gameCanvasContainer) throw 'Fatal error: game canvas container not found!'
+        if (!this.gameCanvasContainer) throw new Error('Fatal error: game canvas container not found!')
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
         this.cursorLayer = this.addLayer(new CursorLayer(this), 1000) // TODO turn cursor layer into singleton?

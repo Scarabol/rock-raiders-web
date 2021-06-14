@@ -33,14 +33,14 @@ export class WadParser {
             } else {
                 const split = line.split(/\s+/)
                 if (split.length !== 2 || currentObject === null) {
-                    throw 'Unexpected key value entry: ' + line
+                    throw new Error('Unexpected key value entry: ' + line)
                 }
                 const key = split[0]
                 let val: any = split[1]
                 if (key === 'xPos' || key === 'yPos' || key === 'heading') {
                     val = parseFloat(val)
                 } else if (key !== 'type') {
-                    throw 'Unexpected key value entry: ' + line
+                    throw new Error('Unexpected key value entry: ' + line)
                 }
                 currentObject[key] = val
             }

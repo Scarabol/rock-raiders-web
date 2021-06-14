@@ -49,7 +49,7 @@ export class NerpMsgParser {
                 result[index] = result[index] || {}
                 result[index].snd = sndMatch[2].replace(/\\/g, '/')
             } else {
-                throw 'Line in nerps message file did not match anything'
+                throw new Error('Line in nerps message file did not match anything')
             }
         }
         return result
@@ -57,7 +57,7 @@ export class NerpMsgParser {
 
     static numericNameToNumber(name: string): number {
         if (name === undefined) {
-            throw 'Numeric name must not be undefined'
+            throw new Error('Numeric name must not be undefined')
         }
         const digits = {one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9}
         const specials = {
@@ -76,7 +76,7 @@ export class NerpMsgParser {
             })
         }
         if (number === undefined) {
-            throw 'Found unexpected numeric name ' + name
+            throw new Error('Found unexpected numeric name ' + name)
         }
         return number
     }

@@ -57,7 +57,7 @@ export class AnimClip {
     }
 
     private updateBodiesAnimationFrame() {
-        if (this.polyList.length !== this.bodies.length) throw 'Cannot animate poly. Length differs from bodies length'
+        if (this.polyList.length !== this.bodies.length) throw new Error('Cannot animate poly. Length differs from bodies length')
         this.bodies.forEach((body: AnimSubObj, index) => {
             const p = this.polyList[index]
             p.position.copy(body.relPos[this.currentFrame]).sub(body.pivot)

@@ -45,7 +45,7 @@ export class ObjectiveTextParser {
                     value = ''
                     state = PARSING_STATE.DROP
                 } else if (char === '\n' || char === '\r') {
-                    throw 'Malformed objective text file'
+                    throw new Error('Malformed objective text file')
                 } else {
                     value += char
                 }

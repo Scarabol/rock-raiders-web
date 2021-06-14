@@ -212,7 +212,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
             .map((l) => l.trim())
 
         if (lines[0] !== 'LWSC') {
-            throw 'Invalid start of file! Expected \'LWSC\' in first line'
+            throw new Error('Invalid start of file! Expected \'LWSC\' in first line')
         }
 
         return lines.filter((line) => line.toLowerCase().startsWith('LoadObject '.toLowerCase()))
