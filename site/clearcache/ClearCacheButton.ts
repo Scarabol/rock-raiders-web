@@ -1,4 +1,4 @@
-import { WAD_CACHE_DB_NAME } from '../../src/params'
+import { ASSET_CACHE_DB_NAME } from '../../src/params'
 import './clearCacheButton.css'
 
 export class ClearCacheButton {
@@ -11,9 +11,9 @@ export class ClearCacheButton {
 
         const button = this.rootElement.appendChild(document.createElement('button'))
         button.classList.add('btn', 'btn-info')
-        button.innerText = 'Clear cached wad files and restart'
+        button.innerText = 'Clear asset cache and restart'
         button.onclick = () => {
-            indexedDB.deleteDatabase(WAD_CACHE_DB_NAME)
+            indexedDB.deleteDatabase(ASSET_CACHE_DB_NAME)
             location.reload()
         }
     }

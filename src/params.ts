@@ -1,5 +1,5 @@
 export const DEV_MODE = process.env.WEBPACK_MODE === 'development'
-export const WAD_CACHE_DB_NAME = 'RockRaidersWeb'
+export const ASSET_CACHE_DB_NAME = 'RockRaidersWeb'
 export const JOB_SCHEDULE_INTERVAL = 1000 // milliseconds
 export const CHECK_CLEAR_RUBBLE_INTERVAL = 5000 // milliseconds
 export const CHECK_SPAWN_RAIDER_TIMER = 1000 // milliseconds

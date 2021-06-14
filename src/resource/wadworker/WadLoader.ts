@@ -1,5 +1,5 @@
 import { getFilename, iGet } from '../../core/Util'
-import { WAD_CACHE_DB_NAME } from '../../params'
+import { ASSET_CACHE_DB_NAME } from '../../params'
 import { FlhParser } from '../FlhParser'
 import { BitmapWithPalette } from './parser/BitmapWithPalette'
 import { CfgFileParser } from './parser/CfgFileParser'
@@ -255,7 +255,7 @@ export class WadLoader {
     }
 
     openLocalCache(onopen: (IDBObjectStore) => void) {
-        const request: IDBOpenDBRequest = indexedDB.open(WAD_CACHE_DB_NAME)
+        const request: IDBOpenDBRequest = indexedDB.open(ASSET_CACHE_DB_NAME)
         request.onupgradeneeded = function () {
             const db = request.result
             if (db.objectStoreNames.contains('wadfiles')) {

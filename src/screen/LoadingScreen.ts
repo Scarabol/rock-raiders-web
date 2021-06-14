@@ -27,7 +27,7 @@ export class LoadingScreen extends BaseScreen {
             // draw the loading title
             context.font = '24px Arial'
             context.fillStyle = 'white'
-            context.fillText('Loading Rock Raiders', 20, this.layer.fixedHeight - 50)
+            context.fillText('Initializing Rock Raiders Web...', 20, this.layer.fixedHeight - 50)
             // hard-code the first loading message
             context.font = '18px Arial'
             context.fillStyle = 'white'
