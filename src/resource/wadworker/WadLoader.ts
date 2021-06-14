@@ -1,5 +1,5 @@
 import { getFilename, iGet } from '../../core/Util'
-import { ASSET_CACHE_DB_NAME } from '../../params'
+import { cacheGetData, cachePutData } from '../assets/AssetCacheHelper'
 import { FlhParser } from '../FlhParser'
 import { BitmapWithPalette } from './parser/BitmapWithPalette'
 import { CfgFileParser } from './parser/CfgFileParser'
@@ -21,6 +21,9 @@ export class WadLoader {
 
     onMessage: (msg: string) => any = (msg: string) => {
         console.log(msg)
+    }
+    onCacheMiss: (cacheIdentifier: string) => any = (cacheIdentifier: string) => {
+        console.log('Cache missed for: ' + cacheIdentifier)
     }
     onInitialLoad: (totalResources: number, cfg: any) => any = () => {
         console.log('Initial loading done.')
@@ -174,47 +177,32 @@ export class WadLoader {
         })
     }
 
-    startWithCachedFiles(onCacheMiss: () => any) {
+    startWithCachedFiles() {
         this.startTime = new Date()
-        const _onerror = () => {
-            this.onMessage('WAD files not found in cache')
-            onCacheMiss()
-        }
         this.onMessage('Loading WAD files from cache...')
-        const that = this
-        this.openLocalCache((objectStore) => {
-            const request1 = objectStore.get('wad0')
-            request1.onerror = _onerror
-            request1.onsuccess = function () {
-                if (request1.result === undefined) {
-                    _onerror()
-                    return
-                }
-                // console.log('First WAD file loaded from cache after ' + ((new Date().getTime() - that.startTime.getTime()) / 1000));
-                that.wad0File = new WadFile()
-                for (let prop in request1.result) { // class info are runtime info and not stored in cache => use copy constructor
-                    if (request1.result.hasOwnProperty(prop)) {
-                        that.wad0File[prop] = request1.result[prop]
-                    }
-                }
-                const request2 = objectStore.get('wad1')
-                request2.onerror = _onerror
-                request2.onsuccess = function () {
-                    if (request2.result === undefined) {
-                        _onerror()
-                        return
-                    }
-                    that.wad1File = new WadFile()
-                    for (let prop in request2.result) { // class info are runtime info and not stored in cache => use copy constructor
-                        if (request2.result.hasOwnProperty(prop)) {
-                            that.wad1File[prop] = request2.result[prop]
-                        }
-                    }
-                    console.log('WAD files loaded from cache after ' + ((new Date().getTime() - that.startTime.getTime()) / 1000))
-                    that.startLoadingProcess()
-                }
-            }
+        Promise.all<WadFile>([
+            cacheGetData('wad0'),
+            cacheGetData('wad1'),
+        ]).then((wadData) => {
+            this.wad0File = WadLoader.createWadFile(wadData[0])
+            this.wad1File = WadLoader.createWadFile(wadData[1])
+            console.log('WAD files loaded from cache after ' + ((new Date().getTime() - this.startTime.getTime()) / 1000) + ' seconds')
+            this.startLoadingProcess()
+        }).catch((e) => {
+            console.error(e)
+            this.onMessage('WAD file not found in cache')
+            this.onCacheMiss(e)
         })
+    }
+
+    private static createWadFile(wadData: WadFile) {
+        const wadFile = new WadFile()
+        for (let prop in wadData) { // class info are runtime info and not stored in cache => use copy constructor
+            if (wadData.hasOwnProperty(prop)) {
+                wadFile[prop] = wadData[prop]
+            }
+        }
+        return wadFile
     }
 
     /**
@@ -223,14 +211,14 @@ export class WadLoader {
      * @param wad1Url Url to parse the LegoRR1.wad file from
      */
     loadWadFiles(wad0Url: string, wad1Url: string) {
-        const that = this
-        Promise.all([this.loadWadFile(wad0Url), this.loadWadFile(wad1Url)]).then(wadFiles => {
-            that.wad0File = wadFiles[0] as WadFile
-            that.wad1File = wadFiles[1] as WadFile
-            this.openLocalCache((objectStore) => {
-                objectStore.put(that.wad0File, 'wad0')
-                objectStore.put(that.wad1File, 'wad1')
-            })
+        Promise.all<WadFile>([
+            this.loadWadFile(wad0Url),
+            this.loadWadFile(wad1Url),
+        ]).then((wadFiles) => {
+            this.wad0File = wadFiles[0]
+            this.wad1File = wadFiles[1]
+            cachePutData('wad0', this.wad0File).then()
+            cachePutData('wad1', this.wad1File).then()
             this.startLoadingProcess()
         })
     }
@@ -240,7 +228,7 @@ export class WadLoader {
      * @param url the url to the WAD file, can be local file url (file://...) too
      */
     loadWadFile(url: string) {
-        return new Promise(resolve => {
+        return new Promise<WadFile>(resolve => {
             console.log('Loading WAD file from ' + url)
             fetch(url).then((response) => {
                 if (response.ok) {
@@ -252,23 +240,6 @@ export class WadLoader {
                 }
             }).catch((e) => console.error(e))
         })
-    }
-
-    openLocalCache(onopen: (IDBObjectStore) => void) {
-        const request: IDBOpenDBRequest = indexedDB.open(ASSET_CACHE_DB_NAME)
-        request.onupgradeneeded = function () {
-            const db = request.result
-            if (db.objectStoreNames.contains('wadfiles')) {
-                db.deleteObjectStore('wadfiles')
-            }
-            db.createObjectStore('wadfiles')
-        }
-        request.onsuccess = function () {
-            const db = request.result
-            const transaction = db.transaction(['wadfiles'], 'readwrite')
-            const objectStore = transaction.objectStore('wadfiles')
-            onopen(objectStore)
-        }
     }
 
     /**

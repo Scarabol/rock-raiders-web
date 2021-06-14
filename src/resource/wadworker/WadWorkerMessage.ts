@@ -38,4 +38,8 @@ export class WadWorkerMessage {
         return {type: WorkerMessageType.DONE, totalResources: totalResources, loadingTimeSeconds: loadingTimeSeconds}
     }
 
+    static createCacheMissed(cacheIdentifier: string) {
+        return {type: WorkerMessageType.CACHE_MISS, cacheIdentifier: cacheIdentifier}
+    }
+
 }
