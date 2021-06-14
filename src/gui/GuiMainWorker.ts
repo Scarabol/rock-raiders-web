@@ -35,6 +35,9 @@ export class GuiMainWorker extends GuiWorker {
 
     constructor(worker: Worker) {
         super(worker)
+    }
+
+    init() {
         const panelsCfg = new PanelsCfg(GuiResourceCache.cfg('Panels640x480'))
         const buttonsCfg = new ButtonsCfg(GuiResourceCache.cfg('Buttons640x480'))
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
@@ -79,18 +82,6 @@ export class GuiMainWorker extends GuiWorker {
 
 }
 
-let workerInstance: GuiWorker = null
-
 const worker: Worker = self as any
-
-worker.addEventListener('message', (event) => {
-    const msg: GuiWorkerMessage = event.data
-    if (msg.type === WorkerMessageType.INIT) {
-        GuiResourceCache.resourceByName = msg.resourceByName
-        GuiResourceCache.configuration = msg.cfg
-        GuiResourceCache.stats = msg.stats
-        workerInstance = new GuiMainWorker(worker)
-    } else {
-        workerInstance.processMessage(msg)
-    }
-})
+const workerInstance = new GuiMainWorker(worker)
+worker.addEventListener('message', (event) => workerInstance.processMessage(event.data))

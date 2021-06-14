@@ -4,6 +4,7 @@ import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { IEventHandler } from '../event/IEventHandler'
+import { GuiResourceCache } from '../gui/GuiResourceCache'
 import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../params'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { OffscreenWorkerMessage } from './OffscreenWorkerMessage'
@@ -29,6 +30,8 @@ export abstract class OffscreenWorker implements IEventHandler {
     }
 
     abstract reset()
+
+    abstract init()
 
     setCanvas(canvas: OffscreenCanvas) {
         this.canvas = canvas
@@ -58,7 +61,12 @@ export abstract class OffscreenWorker implements IEventHandler {
     }
 
     processMessage(msg: OffscreenWorkerMessage) {
-        if (msg.type === WorkerMessageType.CANVAS) {
+        if (msg.type === WorkerMessageType.INIT) {
+            GuiResourceCache.resourceByName = msg.resourceByName
+            GuiResourceCache.configuration = msg.cfg
+            GuiResourceCache.stats = msg.stats
+            this.init()
+        } else if (msg.type === WorkerMessageType.CANVAS) {
             this.setCanvas(msg.canvas)
         } else if (msg.type === WorkerMessageType.EVENT_POINTER) {
             const consumed = this.handlePointerEvent(msg.inputEvent as GamePointerEvent)

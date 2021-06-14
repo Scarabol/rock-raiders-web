@@ -23,6 +23,9 @@ export class OverlayWorker extends GuiWorker {
 
     constructor(worker: Worker) {
         super(worker)
+    }
+
+    init() {
         this.panelPause = this.addPanel(new PausePanel(this.rootElement, GuiResourceCache.getResource('PausedMenu') as MenuCfg))
         this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, GuiResourceCache.getResource('OptionsMenu') as MenuCfg))
         this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
@@ -102,18 +105,6 @@ export class OverlayWorker extends GuiWorker {
 
 }
 
-let workerInstance: GuiWorker = null
-
 const worker: Worker = self as any
-
-worker.addEventListener('message', (event) => {
-    const msg: GuiWorkerMessage = event.data
-    if (msg.type === WorkerMessageType.INIT) {
-        GuiResourceCache.resourceByName = msg.resourceByName
-        GuiResourceCache.configuration = msg.cfg
-        GuiResourceCache.stats = msg.stats
-        workerInstance = new OverlayWorker(worker)
-    } else {
-        workerInstance.processMessage(msg)
-    }
-})
+const workerInstance = new OverlayWorker(worker)
+worker.addEventListener('message', (event) => workerInstance.processMessage(event.data))
