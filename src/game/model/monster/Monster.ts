@@ -16,6 +16,10 @@ export abstract class Monster extends MovableEntity {
         this.sceneEntity = new AnimatedSceneEntity(sceneMgr, aeFilename)
     }
 
+    update(elapsedMs: number) {
+        this.sceneEntity.update(elapsedMs)
+    }
+
     removeFromScene() {
         this.sceneEntity.removeFromScene()
     }

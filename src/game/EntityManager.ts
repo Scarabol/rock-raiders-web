@@ -67,6 +67,8 @@ export class EntityManager {
         this.raiders.forEach((r) => updateSafe(r, elapsedMs))
         this.spiders.forEach((s) => updateSafe(s, elapsedMs))
         this.bats.forEach((b) => updateSafe(b, elapsedMs))
+        this.rockMonsters.forEach((m) => updateSafe(m, elapsedMs))
+        this.vehicles.forEach((v) => updateSafe(v, elapsedMs))
     }
 
     stop() {
@@ -78,6 +80,8 @@ export class EntityManager {
         this.materialsUndiscovered.forEach((m) => m.removeFromScene())
         this.spiders.forEach((m) => m.removeFromScene())
         this.bats.forEach((b) => b.removeFromScene())
+        this.rockMonsters.forEach((m) => m.removeFromScene())
+        this.vehicles.forEach((v) => v.removeFromScene())
     }
 
     getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
