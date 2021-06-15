@@ -109,7 +109,7 @@ export class WadFileSelectionModal {
         urlHint.innerText = 'Direct links with correct Allow-Origin-CORS-Headers required here.'
 
         const wad0Url = WadFileSelectionModal.appendWadUrlGroup(navUrlTab, 'wad0-url', 'LegoRR0.wad', 'https://drive.google.com/uc?export=download&id=11t9AJnGCWnEWlLxSsYQeB_Y4jrKfxVxQ')
-        const wad1Url = WadFileSelectionModal.appendWadUrlGroup(navUrlTab, 'wad1-url', 'LegoRR1.wad', 'https://drive.google.com/uc?export=download&id=11t9AJnGCWnEWlLxSsYQeB_Y4jrKfxVxQ')
+        const wad1Url = WadFileSelectionModal.appendWadUrlGroup(navUrlTab, 'wad1-url', 'LegoRR1.wad', 'https://drive.google.com/uc?export=download&id=11lDL8ewSIWrRVTJvoLDYF9YOx2ra1ULN')
 
         const btnStartUrl = navUrlTab.appendChild(document.createElement('button'))
         btnStartUrl.type = 'submit'
