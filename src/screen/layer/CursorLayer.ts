@@ -36,6 +36,11 @@ export class CursorLayer extends ScreenLayer {
         this.changeCursor(Cursor.Pointer_Standard)
     }
 
+    show() {
+        this.reset()
+        super.show()
+    }
+
     hide() {
         super.hide()
         this.canvas.style.cursor = null
