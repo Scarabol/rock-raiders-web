@@ -11,6 +11,7 @@ import { MainMenuScreen } from './screen/MainMenuScreen'
 import { RewardScreen } from './screen/RewardScreen'
 
 if (DEV_MODE) console.warn('DEV MODE ACTIVE')
+console.time('Total asset loading time')
 
 // setup and link all components
 
@@ -36,6 +37,7 @@ ResourceManager.onAssetLoaded = () => {
     loadingScreen.increaseLoadingState()
 }
 ResourceManager.onLoadDone = () => {
+    console.timeEnd('Total asset loading time')
     // complete setup
     const mainMenuScreen = new MainMenuScreen()
     const gameScreen = new GameScreen()

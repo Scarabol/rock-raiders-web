@@ -17,8 +17,8 @@ worker.addEventListener('message', (event) => {
     wadLoader.onAssetLoaded = (assetIndex: number, assetNames: string[], assetObj: any, sfxKeys: string[]) => {
         postMessage(WadWorkerMessage.createAssetLoaded(assetIndex, assetNames, assetObj, sfxKeys))
     }
-    wadLoader.onLoadDone = (totalResources: number, loadingTimeSeconds: string) => {
-        postMessage(WadWorkerMessage.createLoadDone(totalResources, loadingTimeSeconds))
+    wadLoader.onLoadDone = (totalResources: number) => {
+        postMessage(WadWorkerMessage.createLoadDone(totalResources))
     }
     // start loading
     const msg = event.data as InitLoadingMessage

@@ -14,7 +14,6 @@ export class WadLoader {
 
     wad0File: WadFile = null
     wad1File: WadFile = null
-    startTime: Date
     assetIndex: number = 0
     totalResources: number = 0
     assetRegistry: WadAssetRegistry = new WadAssetRegistry(this)
@@ -30,8 +29,8 @@ export class WadLoader {
     }
     onAssetLoaded: (assetIndex: number, assetNames: string[], assetObj: any, sfxKeys?: string[]) => any = () => {
     }
-    onLoadDone: (totalResources: number, loadingTimeSeconds: string) => any = (totalResources: number, loadingTimeSeconds: string) => {
-        console.log('Loading of about ' + totalResources + ' assets complete! Total load time: ' + loadingTimeSeconds + ' seconds.')
+    onLoadDone: (totalResources: number) => any = (totalResources: number) => {
+        console.log('Loading of about ' + totalResources + ' assets complete!')
     }
 
     loadWadImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
@@ -170,15 +169,11 @@ export class WadLoader {
                 }
             }))
         })
-        Promise.all(promises).then(() => {
-            // indicate that loading has finished, and display the total loading time
-            const loadingTimeSeconds = ((new Date().getTime() - this.startTime.getTime()) / 1000).toFixed(3).toString()
-            this.onLoadDone(this.totalResources, loadingTimeSeconds)
-        })
+        Promise.all(promises).then(() => this.onLoadDone(this.totalResources))
     }
 
     startWithCachedFiles() {
-        this.startTime = new Date()
+        console.time('WAD files loaded from cache')
         this.onMessage('Loading WAD files from cache...')
         Promise.all<WadFile>([
             cacheGetData('wad0'),
@@ -186,7 +181,7 @@ export class WadLoader {
         ]).then((wadData) => {
             this.wad0File = WadLoader.createWadFile(wadData[0])
             this.wad1File = WadLoader.createWadFile(wadData[1])
-            console.log('WAD files loaded from cache after ' + ((new Date().getTime() - this.startTime.getTime()) / 1000) + ' seconds')
+            console.timeEnd('WAD files loaded from cache')
             this.startLoadingProcess()
         }).catch((e) => {
             console.error(e)
@@ -246,7 +241,6 @@ export class WadLoader {
      * Load essential files, to begin the chain of asset loading
      */
     startLoadingProcess() {
-        this.startTime = new Date()
         this.onMessage('Loading configuration...')
         const cfg = CfgFileParser.parse(this.wad1File.getEntryData('Lego.cfg'))
         // dynamically register all assets from config

@@ -11,7 +11,6 @@ export class WadWorkerMessage {
     assetNames?: string[]
     assetObj?: any
     sfxKeys?: string[]
-    loadingTimeSeconds?: string
 
     constructor(type: WorkerMessageType) {
         this.type = type
@@ -34,8 +33,8 @@ export class WadWorkerMessage {
         return {type: WorkerMessageType.ASSET, assetNames: assetNames, assetObj: assetObj, sfxKeys: sfxKeys}
     }
 
-    static createLoadDone(totalResources: number, loadingTimeSeconds: string): WadWorkerMessage {
-        return {type: WorkerMessageType.DONE, totalResources: totalResources, loadingTimeSeconds: loadingTimeSeconds}
+    static createLoadDone(totalResources: number): WadWorkerMessage {
+        return {type: WorkerMessageType.DONE, totalResources: totalResources}
     }
 
     static createCacheMissed(cacheIdentifier: string) {

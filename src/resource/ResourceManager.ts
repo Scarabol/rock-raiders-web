@@ -42,7 +42,7 @@ export class ResourceManager extends ResourceCache {
                 this.onCacheMissed()
             } else if (msg.type === WorkerMessageType.DONE) {
                 this.loadAllCursor()
-                console.log('Loading of about ' + msg.totalResources + ' assets complete! Total load time: ' + msg.loadingTimeSeconds + ' seconds.')
+                console.log('Loading of about ' + msg.totalResources + ' assets complete!')
                 this.onLoadDone()
             }
         }
