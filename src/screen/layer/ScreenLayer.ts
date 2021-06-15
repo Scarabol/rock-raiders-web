@@ -9,6 +9,7 @@ export class ScreenLayer {
     context: CanvasRenderingContext2D
     onRedraw: (context: SpriteContext) => any
     active: boolean = true
+    lastAnimationRequest = null
 
     constructor(alpha: boolean, withContext: boolean) {
         this.canvas = document.createElement('canvas')
@@ -36,7 +37,15 @@ export class ScreenLayer {
     }
 
     redraw() {
-        if (this.onRedraw && this.isActive()) requestAnimationFrame(this.onRedraw.bind(this, this.context))
+        if (this.onRedraw && this.isActive()) {
+            if (this.lastAnimationRequest) cancelAnimationFrame(this.lastAnimationRequest)
+            this.lastAnimationRequest = requestAnimationFrame(this.doRedraw.bind(this))
+        }
+    }
+
+    doRedraw() {
+        this.lastAnimationRequest = null
+        this.onRedraw(this.context)
     }
 
     show() {
