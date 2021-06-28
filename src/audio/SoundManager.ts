@@ -29,15 +29,15 @@ export class SoundManager {
 
     static getSoundBuffer(sfxName: string): Promise<AudioBuffer> {
         sfxName = sfxName.toLowerCase()
-        const cachedSound = SoundManager.audioBufferCache.get(sfxName)
-        if (cachedSound) return new Promise<AudioBuffer>((resolve) => resolve(cachedSound))
-        const sfxContent = ResourceCache.sfxByKey.get(sfxName)
-        if (!sfxContent) {
-            console.error('Could not find ' + sfxName + ' in: ', ResourceCache.sfxByKey)
-            return
-        }
-        const data = sfxContent.slice(0) // slice used to create copy, because array gets auto detached after decode
         return new Promise<AudioBuffer>((resolve) => {
+            const cachedSound = SoundManager.audioBufferCache.get(sfxName)
+            if (cachedSound) return new Promise<AudioBuffer>((resolve) => resolve(cachedSound))
+            const sfxContent = ResourceCache.sfxByKey.get(sfxName)
+            if (!sfxContent) {
+                console.error('Could not find ' + sfxName + ' in: ', ResourceCache.sfxByKey)
+                return
+            }
+            const data = sfxContent.slice(0) // slice used to create copy, because array gets auto detached after decode
             SoundManager.audioContext = SoundManager.audioContext || new (window['AudioContext'] || window['webkitAudioContext'])()
             SoundManager.audioContext.decodeAudioData(data).then((audioBuffer) => {
                 SoundManager.audioBufferCache.set(sfxName, audioBuffer)
