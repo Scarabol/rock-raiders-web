@@ -36,5 +36,8 @@ module.exports = (env, argv) => {
             extensions: ['.tsx', '.ts', '.js'],
         },
         devtool: 'source-map',
+        devServer: {
+            contentBase: './site',
+        },
     }
 }
