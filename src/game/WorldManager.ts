@@ -23,19 +23,23 @@ export class WorldManager {
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
     jobSupervisor: Supervisor = null
-    masterTimeout = null
+    gameLoopTimeout = null
     oxygenRate: number = 0
     elapsedGameTimeMs: number = 0
     requestedRaiders: number = 0
     spawnRaiderTimer: number = 0
+    started: boolean = false
 
     constructor() {
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.pause())
-        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.unPause())
+        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
+            if (this.started) this.unPause()
+        })
     }
 
     setup(levelConf: LevelEntryCfg, onLevelEnd: (state: GameResultState) => any) {
+        this.started = false
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         this.oxygenRate = levelConf.oxygenRate
         this.elapsedGameTimeMs = 0
@@ -47,13 +51,23 @@ export class WorldManager {
         this.nerpRunner.onLevelEnd = onLevelEnd
     }
 
+    start() {
+        this.started = true
+        this.unPause()
+    }
+
+    stop() {
+        this.started = false
+        this.pause()
+    }
+
     pause() {
-        this.masterTimeout = clearTimeoutSafe(this.masterTimeout)
+        this.gameLoopTimeout = clearTimeoutSafe(this.gameLoopTimeout)
     }
 
     unPause() {
-        this.masterTimeout = clearTimeoutSafe(this.masterTimeout)
-        this.masterTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), UPDATE_INTERVAL_MS)
+        this.gameLoopTimeout = clearTimeoutSafe(this.gameLoopTimeout)
+        this.gameLoopTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), UPDATE_INTERVAL_MS)
     }
 
     update(elapsedMs: number) {
@@ -68,8 +82,8 @@ export class WorldManager {
         const endUpdate = window.performance.now()
         const updateDurationMs = endUpdate - startUpdate
         const sleepForMs = UPDATE_INTERVAL_MS - Math.round(updateDurationMs)
-        this.masterTimeout = clearTimeoutSafe(this.masterTimeout)
-        this.masterTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), sleepForMs)
+        this.gameLoopTimeout = clearTimeoutSafe(this.gameLoopTimeout)
+        this.gameLoopTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), sleepForMs)
     }
 
     updateOxygen(elapsedMs: number) {
