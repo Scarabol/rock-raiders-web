@@ -41,12 +41,12 @@ export class WadFileSelectionModal {
         navTabList.setAttribute('role', 'tablist')
 
         const navFileBtn = WadFileSelectionModal.appendNavButton(navTabList, true, 'nav-file-tab', 'nav-file', 'Local files (recommended)')
-        const navUrlBtn = WadFileSelectionModal.appendNavButton(navTabList, false, 'nav-url-tab', 'nav-url', 'Online from URL')
+        // const navUrlBtn = WadFileSelectionModal.appendNavButton(navTabList, false, 'nav-url-tab', 'nav-url', 'Online from URL')
 
         const navTabContent = modalBody.appendChild(document.createElement('div'))
         navTabContent.classList.add('tab-content')
         this.appendNavFileTab(navTabContent, navFileBtn.id)
-        this.appendNavUrlTab(navTabContent, navUrlBtn.id)
+        // this.appendNavUrlTab(navTabContent, navUrlBtn.id)
 
         // rootElement has to be a valid bootstrap HTML modal before we can instantiate it
         this.modal = new Modal(rootElement, {backdrop: 'static', keyboard: false})
