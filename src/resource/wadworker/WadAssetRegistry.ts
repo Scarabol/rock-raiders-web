@@ -23,7 +23,6 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
 
     registerAllAssets(mainConf: any) {
         // add fonts and cursors
-        this.addAssetFolder(this.wadLoader.loadFontImageAsset, 'Interface/Fonts/')
         this.addAssetFolder(this.wadLoader.loadAlphaImageAsset, 'Interface/Pointers/')
         this.wadLoader.wad0File.filterEntryNames('Interface/Pointers/' + '.+\\.flh').forEach((assetPath) => {
             this.addAsset(this.wadLoader.loadFlhAsset, assetPath)

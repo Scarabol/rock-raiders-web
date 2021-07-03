@@ -1,3 +1,4 @@
+import { BitmapFontData } from '../../core/BitmapFont'
 import { getFilename, iGet } from '../../core/Util'
 import { cacheGetData, cachePutData } from '../assets/AssetCacheHelper'
 import { FlhParser } from '../FlhParser'
@@ -65,10 +66,11 @@ export class WadLoader {
         callback(assetNames, imgData)
     }
 
-    loadFontImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
+    loadFontImageAsset(name: string, callback: (assetNames: string[], obj: BitmapFontData) => any) {
         const data = this.wad0File.getEntryData(name)
         const imgData = BitmapWithPalette.decode(data)
-        callback([name], imgData)
+        const bitmapFontData = new BitmapFontData(imgData)
+        callback([name], bitmapFontData)
     }
 
     loadNerpAsset(name: string, callback: (assetNames: string[], obj: string) => any) {

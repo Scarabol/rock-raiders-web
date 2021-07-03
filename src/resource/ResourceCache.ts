@@ -1,6 +1,6 @@
 import { GameStatsCfg } from '../cfg/GameStatsCfg'
 import { LevelsCfg } from '../cfg/LevelsCfg'
-import { BitmapFont } from '../core/BitmapFont'
+import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 import { createContext, createDummyImgData } from '../core/ImageHelper'
 import { iGet } from '../core/Util'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
@@ -50,9 +50,9 @@ export class ResourceCache {
 
     static getBitmapFont(name: string): BitmapFont {
         return this.fontCache.getOrUpdate(name, () => {
-            const fontImageData = this.getResource(name)
-            if (!fontImageData) throw new Error('Could not load font image data for: ' + name)
-            return new BitmapFont(fontImageData)
+            const fontData = this.getResource(name) as BitmapFontData
+            if (!fontData) throw new Error('Could not load font image data for: ' + name)
+            return new BitmapFont(fontData)
         })
     }
 

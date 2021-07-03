@@ -1,6 +1,6 @@
 import { createContext, createDummyImgData, getPixel, setPixel } from './ImageHelper'
 
-export class BitmapFont {
+export class BitmapFontData {
 
     charHeight: number
     letters: ImageData[] = []
@@ -72,6 +72,16 @@ export class BitmapFont {
         return result
     }
 
+}
+
+export class BitmapFont {
+
+    data: BitmapFontData
+
+    constructor(data: BitmapFontData) {
+        this.data = data
+    }
+
     createTextImage(text: string, maxWidth?: number, autoCenter: boolean = true): SpriteImage {
         if (text === undefined || text === null || text.length < 1) {
             // empty text requested, context with width 0 is not allowed, but 1 with alpha is close enough
@@ -80,13 +90,13 @@ export class BitmapFont {
         text = text.replace(/_/g, ' ')
         const rows = this.determineRows(text, maxWidth)
         const width = Math.max(...(rows.map(r => r.width)))
-        const result = new ImageData(width, this.charHeight * rows.length)
+        const result = new ImageData(width, this.data.charHeight * rows.length)
         rows.forEach((row, index) => {
             const rowX = autoCenter ? Math.round((width - row.width) / 2) : 0
-            const rowY = index * this.charHeight
+            const rowY = index * this.data.charHeight
             let letterX = 0
             for (let c = 0; c < row.text.length; c++) {
-                const letterImgData = this.letters[row.text.charAt(c)]
+                const letterImgData = this.data.letters[row.text.charAt(c)]
                 if (letterImgData) {
                     for (let x = letterX; x < letterX + letterImgData.width; x++) {
                         for (let y = 0; y < letterImgData.height; y++) {
@@ -104,7 +114,7 @@ export class BitmapFont {
     }
 
     private determineRows(text: string, maxWidth?: number): { text: string, width: number }[] {
-        const spaceWidth = this.letters[' '].width
+        const spaceWidth = this.data.letters[' '].width
         const rows: { text: string, width: number }[] = []
         let rowText = ''
         let rowWidth = 0
@@ -112,7 +122,7 @@ export class BitmapFont {
             let wordWidth = 0
             for (let c = 0; c < word.length; c++) {
                 const letter = word.charAt(c)
-                const letterImg = this.letters[letter]
+                const letterImg = this.data.letters[letter]
                 if (letterImg) {
                     wordWidth += letterImg.width
                 } else {
