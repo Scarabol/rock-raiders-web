@@ -163,6 +163,10 @@ export class Surface implements Selectable {
     }
 
     collapse() {
+        if (this.surfaceType.floor) {
+            console.log('Cannot collapse floor type surface')
+            return
+        }
         this.cancelJobs()
         this.terrain.removeFallInOrigin(this)
         this.surfaceType = SurfaceType.RUBBLE4
