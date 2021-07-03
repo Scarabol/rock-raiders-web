@@ -11,6 +11,7 @@ import { ObjectListEntry, ObjectListLoader } from '../game/ObjectListLoader'
 import { SceneManager } from '../game/SceneManager'
 import { Supervisor } from '../game/Supervisor'
 import { WorldManager } from '../game/WorldManager'
+import { DEV_MODE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { BaseScreen } from './BaseScreen'
 import { GameLayer } from './layer/GameLayer'
@@ -91,7 +92,7 @@ export class GameScreen extends BaseScreen {
         EventBus.publishEvent(new SetupPriorityList(this.levelConf.priorities))
         // load in non-space objects next
         const objectList: ObjectListEntry[] = Object.values(ResourceManager.getResource(this.levelConf.oListFile))
-        ObjectListLoader.loadObjectList(objectList, this.levelConf.disableStartTeleport, this.sceneMgr, this.entityMgr)
+        ObjectListLoader.loadObjectList(objectList, this.levelConf.disableStartTeleport || DEV_MODE, this.sceneMgr, this.entityMgr)
         // finally generate initial radar panel map
         EventBus.publishEvent(new UpdateRadarTerrain(this.sceneMgr.terrain, this.sceneMgr.controls.target.clone()))
         this.show()
