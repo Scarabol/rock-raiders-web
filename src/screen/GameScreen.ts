@@ -78,6 +78,7 @@ export class GameScreen extends BaseScreen {
     }
 
     private setupAndStartLevel() {
+        this.worldMgr.jobSupervisor.reset()
         this.entityMgr.reset()
         this.guiLayer.reset()
         console.log('Starting level ' + this.levelName + ' - ' + this.levelConf.fullName)

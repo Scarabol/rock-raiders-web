@@ -42,6 +42,11 @@ export class Supervisor {
         })
     }
 
+    reset() {
+        this.jobs.forEach((j) => j.cancel())
+        this.jobs = []
+    }
+
     update(elapsedMs: number) {
         this.assignJobs(elapsedMs)
         this.checkUnclearedRubble(elapsedMs)
