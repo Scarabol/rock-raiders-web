@@ -36,14 +36,16 @@ export class ResourceManager extends ResourceCache {
             } else if (msg.type === WorkerMessageType.CFG) {
                 this.configuration = msg.cfg
                 this.stats = msg.stats
-                this.loadDefaultCursor()
-                this.onInitialLoad(msg.totalResources)
+                this.loadDefaultCursor().then(() => {
+                    this.onInitialLoad(msg.totalResources)
+                })
             } else if (msg.type === WorkerMessageType.CACHE_MISS) {
                 this.onCacheMissed()
             } else if (msg.type === WorkerMessageType.DONE) {
-                this.loadAllCursor()
-                console.log('Loading of about ' + msg.totalResources + ' assets complete!')
-                this.onLoadDone()
+                this.loadAllCursor().then(() => {
+                    console.log('Loading of about ' + msg.totalResources + ' assets complete!')
+                    this.onLoadDone()
+                })
             }
         }
         this.worker.postMessage(msg)

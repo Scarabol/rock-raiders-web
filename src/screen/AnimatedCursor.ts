@@ -7,8 +7,8 @@ export class AnimatedCursor {
     animationInterval = null
     animationIndex: number = 0
 
-    constructor(cursorImage: HTMLCanvasElement | HTMLCanvasElement[]) {
-        this.cursorUrls = (Array.isArray(cursorImage) ? cursorImage : [cursorImage]).map((c) => 'url(' + c.toDataURL() + '), auto')
+    constructor(cursorUrls: string[]) {
+        this.cursorUrls = cursorUrls
     }
 
     enableAnimation(cssTarget: CSSStyleDeclaration) {

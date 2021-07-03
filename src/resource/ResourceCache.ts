@@ -5,6 +5,7 @@ import { createContext, createDummyImgData } from '../core/ImageHelper'
 import { iGet } from '../core/Util'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { allCursor, Cursor } from '../screen/Cursor'
+import { cacheGetData, cachePutData } from './assets/AssetCacheHelper'
 
 export class ResourceCache {
 
@@ -59,45 +60,60 @@ export class ResourceCache {
         return this.getBitmapFont('Interface/Fonts/Font5_Hi.bmp')
     }
 
-    static loadDefaultCursor() {
-        const imageName = iGet(this.cfg('Pointers'), Cursor[Cursor.Pointer_Standard])
-        const cursorImage = this.getCursorImage(imageName)
-        this.cursorToUrl.set(Cursor.Pointer_Standard, new AnimatedCursor(cursorImage))
+    static async loadDefaultCursor() {
+        const cursorImageName = iGet(this.cfg('Pointers'), Cursor[Cursor.Pointer_Standard])
+        await this.loadCursor(cursorImageName, Cursor.Pointer_Standard)
     }
 
-    static loadAllCursor() {
+    static async loadAllCursor() {
         const pointersCfg = this.cfg('Pointers')
         const blankPointerFilename = iGet(pointersCfg, Cursor[Cursor.Pointer_Blank])
         const blankPointerImageData = this.getImageData(blankPointerFilename)
-        allCursor.forEach((cursor) => {
+        await Promise.all(allCursor.map((cursor) => {
             const cursorCfg = iGet(pointersCfg, Cursor[cursor])
             if (Array.isArray(cursorCfg)) {
-                const cursorImages = (this.getResource(cursorCfg[0]) as ImageData[]).map((imgData) => {
-                    const canvas = document.createElement('canvas')
-                    canvas.setAttribute('width', blankPointerImageData.width.toString())
-                    canvas.setAttribute('height', blankPointerImageData.height.toString())
-                    const context = canvas.getContext('2d')
-                    context.putImageData(blankPointerImageData, 0, 0)
-                    const animContext = createContext(imgData.width, imgData.height)
-                    animContext.putImageData(imgData, 0, 0)
-                    context.drawImage(animContext.canvas, Math.round((blankPointerImageData.width - imgData.width) / 2), Math.round((blankPointerImageData.height - imgData.height) / 2))
-                    return context.canvas
+                const cursorImageName = cursorCfg[0]
+                return cacheGetData(cursorImageName).then((cursorDataUrls) => {
+                    if (!cursorDataUrls) {
+                        const cursorImages = (this.getResource(cursorImageName) as ImageData[]).map((imgData) => {
+                            const canvas = document.createElement('canvas')
+                            canvas.setAttribute('width', blankPointerImageData.width.toString())
+                            canvas.setAttribute('height', blankPointerImageData.height.toString())
+                            const context = canvas.getContext('2d')
+                            context.putImageData(blankPointerImageData, 0, 0)
+                            const animContext = createContext(imgData.width, imgData.height)
+                            animContext.putImageData(imgData, 0, 0)
+                            context.drawImage(animContext.canvas, Math.round((blankPointerImageData.width - imgData.width) / 2), Math.round((blankPointerImageData.height - imgData.height) / 2))
+                            return context.canvas
+                        })
+                        cursorDataUrls = this.cursorToDataUrl(cursorImages)
+                        cachePutData(cursorImageName, cursorDataUrls).then()
+                    }
+                    this.cursorToUrl.set(cursor, new AnimatedCursor(cursorDataUrls))
                 })
-                this.cursorToUrl.set(cursor, new AnimatedCursor(cursorImages))
             } else {
-                const cursorImage = this.getCursorImage(cursorCfg)
-                this.cursorToUrl.set(cursor, new AnimatedCursor(cursorImage))
+                return this.loadCursor(cursorCfg, cursor)
             }
+        }))
+    }
+
+    private static async loadCursor(cursorImageName: string, cursor: Cursor) {
+        return cacheGetData(cursorImageName).then((cursorDataUrls) => {
+            if (!cursorDataUrls) {
+                const imgData = this.getImageData(cursorImageName)
+                const canvas = document.createElement('canvas')
+                canvas.setAttribute('width', imgData.width.toString())
+                canvas.setAttribute('height', imgData.height.toString())
+                canvas.getContext('2d').putImageData(imgData, 0, 0)
+                cursorDataUrls = this.cursorToDataUrl(canvas)
+                cachePutData(cursorImageName, cursorDataUrls).then()
+            }
+            this.cursorToUrl.set(cursor, new AnimatedCursor(cursorDataUrls))
         })
     }
 
-    static getCursorImage(imageName: string): HTMLCanvasElement {
-        const imgData = this.getImageData(imageName)
-        const canvas = document.createElement('canvas')
-        canvas.setAttribute('width', imgData.width.toString())
-        canvas.setAttribute('height', imgData.height.toString())
-        canvas.getContext('2d').putImageData(imgData, 0, 0)
-        return canvas
+    private static cursorToDataUrl(cursorImages: HTMLCanvasElement | HTMLCanvasElement[]) {
+        return (Array.isArray(cursorImages) ? cursorImages : [cursorImages]).map((c) => 'url(' + c.toDataURL() + '), auto')
     }
 
     static getCursor(cursor: Cursor): AnimatedCursor {
