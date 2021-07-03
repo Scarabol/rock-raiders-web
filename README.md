@@ -107,3 +107,16 @@ cd rock-raiders-web
 npm install
 npm run dev
 ```
+
+## Credits
+
+### Other Rock Raider Projects
+
+* [Rock Raiders Remake](https://github.com/rystills/rock-raiders-remake) - another web based 2D clone
+* [toolstore.io](https://github.com/marcbizal/toolstore-io) - web based WAD file handling
+* [RRU](https://www.rockraidersunited.com/) - Game and mods community
+
+### Technical Stuff
+
+* [three.js](https://github.com/mrdoob/three.js) - Web based 3D Engine
+* [IDB-Keyval](https://github.com/jakearchibald/idb-keyval) - Indexed cache handling helper
