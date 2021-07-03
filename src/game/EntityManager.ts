@@ -29,6 +29,7 @@ export class EntityManager {
     raidersInBeam: Raider[] = []
     materials: MaterialEntity[] = []
     materialsUndiscovered: MaterialEntity[] = []
+    scarer: MaterialEntity[] = []
     buildingSites: BuildingSite[] = []
     spiders: SmallSpider[] = []
     bats: Bat[] = []
@@ -52,6 +53,7 @@ export class EntityManager {
         this.raidersInBeam = []
         this.materials = []
         this.materialsUndiscovered = []
+        this.scarer = []
         this.buildingSites = []
         this.spiders = []
         this.bats = []
@@ -65,6 +67,8 @@ export class EntityManager {
         this.raidersInBeam.forEach((r) => updateSafe(r, elapsedMs))
         this.buildings.forEach((b) => updateSafe(b, elapsedMs))
         this.raiders.forEach((r) => updateSafe(r, elapsedMs))
+        this.materials.forEach((m) => updateSafe(m, elapsedMs))
+        this.scarer.forEach((s) => updateSafe(s, elapsedMs))
         this.spiders.forEach((s) => updateSafe(s, elapsedMs))
         this.bats.forEach((b) => updateSafe(b, elapsedMs))
         this.rockMonsters.forEach((m) => updateSafe(m, elapsedMs))
@@ -78,6 +82,7 @@ export class EntityManager {
         this.raidersUndiscovered.forEach((r) => r.removeFromScene())
         this.materials.forEach((m) => m.removeFromScene())
         this.materialsUndiscovered.forEach((m) => m.removeFromScene())
+        this.scarer.forEach((s) => s.removeFromScene())
         this.spiders.forEach((m) => m.removeFromScene())
         this.bats.forEach((b) => b.removeFromScene())
         this.rockMonsters.forEach((m) => m.removeFromScene())

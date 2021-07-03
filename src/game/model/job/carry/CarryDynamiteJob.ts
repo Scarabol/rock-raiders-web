@@ -17,9 +17,10 @@ export class CarryDynamiteJob extends CarryJob<Dynamite> {
 
     onJobComplete() {
         super.onJobComplete()
-        // TODO add as explosive and scare em all!
+        this.item.entityMgr.scarer.push(this.item)
         this.item.sceneEntity.headTowards(this.item.targetSurface.getCenterWorld2D())
         this.item.sceneEntity.changeActivity(DynamiteActivity.TickDown, () => {
+            this.item.entityMgr.scarer.remove(this.item)
             this.item.sceneEntity.removeFromScene()
             this.item.targetSurface.collapse()
             // TODO add explosion animation

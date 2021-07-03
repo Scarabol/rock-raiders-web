@@ -157,4 +157,7 @@ export class SceneEntity {
         this.lookAt(new Vector3(location.x, this.group.position.y, location.y))
     }
 
+    update(elapsedMs: number) {
+    }
+
 }

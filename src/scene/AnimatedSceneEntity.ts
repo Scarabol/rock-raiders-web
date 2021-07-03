@@ -51,6 +51,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     }
 
     update(elapsedMs: number) {
+        super.update(elapsedMs)
         this.animation?.update(elapsedMs)
     }
 

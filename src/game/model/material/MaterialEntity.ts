@@ -42,4 +42,8 @@ export abstract class MaterialEntity {
         this.sceneEntity.removeFromScene()
     }
 
+    update(elapsedMs: number) {
+        this.sceneEntity.update(elapsedMs)
+    }
+
 }
