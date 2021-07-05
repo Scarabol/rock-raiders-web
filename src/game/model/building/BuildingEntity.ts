@@ -164,6 +164,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     removeFromScene() {
+        this.sceneEntity.removeFromScene()
         this.entityMgr.buildings.remove(this)
     }
 

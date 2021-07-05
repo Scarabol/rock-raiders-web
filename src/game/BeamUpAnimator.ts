@@ -12,22 +12,24 @@ export class BeamUpAnimator {
 
     entity: BeamUpEntity
     counter: number
+    animGroup: AnimationGroup
 
     constructor(entity: BeamUpEntity) {
         this.entity = entity
         this.counter = 6 * TILESIZE
         EventBus.publishEvent(new DeselectAll())
-        const animGroup = new AnimationGroup('Mini-Figures/Pilot/VLP_TelepUp.lws', this.entity.sceneMgr.listener)
-        animGroup.position.copy(this.entity.sceneEntity.position.clone())
-        animGroup.rotateOnAxis(new Vector3(0, 1, 0), this.entity.sceneEntity.getHeading())
-        this.entity.sceneMgr.scene.add(animGroup)
-        animGroup.startAnimation(() => {
+        this.animGroup = new AnimationGroup('Mini-Figures/Pilot/VLP_TelepUp.lws', this.entity.sceneMgr.listener)
+        this.animGroup.position.copy(this.entity.sceneEntity.position.clone())
+        this.animGroup.rotateOnAxis(new Vector3(0, 1, 0), this.entity.sceneEntity.getHeading())
+        this.entity.sceneMgr.scene.add(this.animGroup)
+        this.animGroup.startAnimation(() => {
             this.entity.removeFromScene()
-            this.entity.sceneMgr.scene.remove(animGroup)
+            this.entity.sceneMgr.scene.remove(this.animGroup)
         })
     }
 
     update(elapsedMs: number) {
+        this.animGroup.update(elapsedMs)
         if (this.counter > 0) {
             this.counter--
             this.entity.sceneEntity.position.y += (TILESIZE / NATIVE_FRAMERATE) / 2 * (elapsedMs / NATIVE_UPDATE_INTERVAL)
