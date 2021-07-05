@@ -73,8 +73,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Camera can glitch through terrain and zoom in/out infinitely
 - GUI not shown when game start paused by debugger
 - Provide resources explicit to workers with messaging
-- Least prioritized task is shown outside of panel on level start
-- Fallins can origin from surfaces that are not reinforcable (see Level05)
 - Add rotation speed to entities and play turnLeft, turnRight animations
 
 ### Cosmetics
@@ -82,19 +80,23 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Cursor does not (always) react on targeted object
 - Adapt building placement marker to surface shape
 - Add water and lava animation (texture UV coords tearing)
-- Selection layer has bad performance and behaves funny when GUI is hovered
+- Selection layer has bad performance and behaves funny when hovering GUI
 - Shovel and drilling cursor shown even if selected entities cannot do the job
 - Use given wheel radius to rotate wheels while moving vehicles
 - ElectricFenceStud missing between fences and fence and building
 - Change cursor to X when over disabled IconPanelButtons
 - Add captain flh animation to mission briefing
-- Fallins can happen outside of visible area (at least hide the info message)
 - Add no-power-thunderbolt to buildings that are switched on, but without power supply
 - Add greenish priority panel button hover frame
 - Tooltip SFX sounds not working for priority panel
+- Seams get not teared down while drilling
 
 ## Technical Debt
 
+- Uplift configuration parsing into loading process for type safety and error resilience
+- Make animated meshes cloneable and move their creation into ResourceManager within loading screen for performance
+- Make AnimClip cloneable (requires separation too, because classes mixes state and type of animations)
+- Refactor BuildingEntities and VehicleEntities, no actual typing needed
 - Move threejs rendering to separate worker
 
 ## Development
