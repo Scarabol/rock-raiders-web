@@ -1,4 +1,5 @@
 import { PositionalAudio } from 'three'
+import { resetAudioSafe } from '../../audio/AudioUtil'
 import { Sample } from '../../audio/Sample'
 import { FulfillerSceneEntity } from '../../scene/entities/FulfillerSceneEntity'
 import { BeamUpAnimator } from '../BeamUpAnimator'
@@ -56,8 +57,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     stopJob() {
-        this.workAudio?.stop()
-        this.workAudio = null
+        this.workAudio = resetAudioSafe(this.workAudio)
         this.dropItem()
         if (!this.job) return
         this.job.unAssign(this)
@@ -144,8 +144,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     private completeJob() {
-        this.workAudio?.stop()
-        this.workAudio = null
+        this.workAudio = resetAudioSafe(this.workAudio)
         this.job?.onJobComplete()
         this.sceneEntity.changeActivity()
         if (this.job?.jobState === JobState.INCOMPLETE) return

@@ -1,4 +1,5 @@
 import { PositionalAudio, Vector2, Vector3 } from 'three'
+import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { BuildingEntityStats } from '../../../cfg/BuildingEntityStats'
 import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
@@ -228,8 +229,7 @@ export abstract class BuildingEntity implements Selectable {
         this.surfaces.forEach((s) => s.setHasPower(false, false))
         this.sceneEntity.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
-        this.engineSound?.stop()
-        this.engineSound = null
+        this.engineSound = resetAudioSafe(this.engineSound)
     }
 
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {

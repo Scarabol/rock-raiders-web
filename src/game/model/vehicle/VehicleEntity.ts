@@ -1,4 +1,5 @@
 import { PositionalAudio } from 'three'
+import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, VehiclesChangedEvent } from '../../../event/LocalEvents'
 import { FulfillerSceneEntity } from '../../../scene/entities/FulfillerSceneEntity'
@@ -74,8 +75,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
         this.driver.sceneMgr.scene.add(this.driver.sceneEntity.group)
         this.driver.sceneEntity.changeActivity()
         this.driver = null
-        this.engineSound?.stop()
-        this.engineSound = null
+        this.engineSound = resetAudioSafe(this.engineSound)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
