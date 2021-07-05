@@ -107,8 +107,12 @@ export abstract class BuildingEntity implements Selectable {
         }
     }
 
+    isReady(): boolean {
+        return !this.inBeam && this.sceneEntity.visible
+    }
+
     isUsable(): boolean {
-        return !this.inBeam && this.powerSwitch && (this.isPowered() || this.stats.PowerBuilding) && this.sceneEntity.visible
+        return this.isReady() && this.powerSwitch && (this.isPowered() || this.stats.PowerBuilding)
     }
 
     isPowered(): boolean {
@@ -134,6 +138,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     setLevel(level: number) {
+        if (this.level == level) return
         this.level = level
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }

@@ -122,11 +122,16 @@ export class SetupPriorityList extends LocalEvent {
 
 export class BuildingsChangedEvent extends LocalEvent {
 
+    discoveredBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
     usableBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.BUILDINGS_CHANGED)
         entityMgr.buildings.forEach((b) => {
+            if (b.isReady()) {
+                const perLevel = this.discoveredBuildingsByTypeAndLevel.getOrUpdate(b.entityType, () => new Map())
+                perLevel.set(b.level, perLevel.getOrUpdate(b.level, () => 0) + 1)
+            }
             if (b.isUsable()) {
                 const perLevel = this.usableBuildingsByTypeAndLevel.getOrUpdate(b.entityType, () => new Map())
                 perLevel.set(b.level, perLevel.getOrUpdate(b.level, () => 0) + 1)
