@@ -7,13 +7,11 @@ import { EntityManager } from './EntityManager'
 import { BuildingFactory } from './model/building/BuildingFactory'
 import { PowerPathBuildingSite } from './model/building/PowerPathBuildingSite'
 import { EntityType } from './model/EntityType'
+import { ManVehicleJob } from './model/job/ManVehicleJob'
 import { EatJob } from './model/job/raider/EatJob'
 import { GetToolJob } from './model/job/raider/GetToolJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
 import { UpgradeRaiderJob } from './model/job/raider/UpgradeRaiderJob'
-import { VehicleCallManJob } from './model/job/VehicleCallManJob'
-import { VehicleActivity } from './model/vehicle/VehicleActivity'
-import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
 
@@ -132,7 +130,7 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_GET_MAN, () => {
             entityMgr.selection.vehicles.forEach((v) => {
-                if (!v.callManJob && !v.driver) EventBus.publishEvent(new JobCreateEvent(new VehicleCallManJob(v)))
+                if (!v.callManJob && !v.driver) EventBus.publishEvent(new JobCreateEvent(new ManVehicleJob(v)))
             })
             EventBus.publishEvent(new DeselectAll())
         })

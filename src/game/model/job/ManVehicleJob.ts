@@ -1,12 +1,11 @@
 import { PathTarget } from '../PathTarget'
-import { Raider } from '../raider/Raider'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { JobState } from './JobState'
 import { PriorityIdentifier } from './PriorityIdentifier'
-import { ShareableJob } from './ShareableJob'
+import { RaiderJob } from './raider/RaiderJob'
 
-export class VehicleCallManJob extends ShareableJob {
+export class ManVehicleJob extends RaiderJob {
 
     vehicle: VehicleEntity
     workplaces: PathTarget[]
@@ -30,7 +29,7 @@ export class VehicleCallManJob extends ShareableJob {
     }
 
     onJobComplete() {
-        this.vehicle.addDriver(this.fulfiller[0] as Raider) // TODO vehicles: this should only consider the one near the vehicle
+        this.vehicle.addDriver(this.raider)
         this.vehicle.callManJob = null
         super.onJobComplete()
     }
@@ -41,6 +40,11 @@ export class VehicleCallManJob extends ShareableJob {
 
     getPriorityIdentifier(): PriorityIdentifier {
         return PriorityIdentifier.aiPriorityGetIn
+    }
+
+    // noinspection JSUnusedGlobalSymbols used as part of SupervisedJob in Supervisor
+    hasFulfiller(): boolean {
+        return !!this.raider
     }
 
 }

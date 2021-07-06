@@ -10,8 +10,8 @@ import { IEventHandler } from '../../event/IEventHandler'
 import { DeselectAll } from '../../event/LocalEvents'
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { EntityManager } from '../../game/EntityManager'
+import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
-import { VehicleCallManJob } from '../../game/model/job/VehicleCallManJob'
 import { SceneManager } from '../../game/SceneManager'
 import { WorldManager } from '../../game/WorldManager'
 import { DEV_MODE } from '../../params'
@@ -73,7 +73,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         if (selection.vehicle) {
             const selectedRaiders = this.entityMgr.selection.raiders
             if (selectedRaiders.length > 0) {
-                const manVehicleJob = new VehicleCallManJob(selection.vehicle)
+                const manVehicleJob = new ManVehicleJob(selection.vehicle)
                 selectedRaiders.some((r) => {
                     if (r.isPrepared(manVehicleJob)) {
                         r.setJob(manVehicleJob)

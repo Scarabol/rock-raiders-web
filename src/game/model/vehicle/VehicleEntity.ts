@@ -9,7 +9,7 @@ import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
-import { VehicleCallManJob } from '../job/VehicleCallManJob'
+import { ManVehicleJob } from '../job/ManVehicleJob'
 import { Crystal } from '../material/Crystal'
 import { Ore } from '../material/Ore'
 import { Raider } from '../raider/Raider'
@@ -20,7 +20,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
 
     sceneEntity: FulfillerSceneEntity
     driver: Raider = null
-    callManJob: VehicleCallManJob = null
+    callManJob: ManVehicleJob = null
     engineSound: PositionalAudio
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {

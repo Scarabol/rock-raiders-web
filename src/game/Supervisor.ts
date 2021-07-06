@@ -7,6 +7,7 @@ import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { EntityType } from './model/EntityType'
 import { JobState } from './model/job/JobState'
+import { ManVehicleJob } from './model/job/ManVehicleJob'
 import { PriorityEntry } from './model/job/PriorityEntry'
 import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { GetToolJob } from './model/job/raider/GetToolJob'
@@ -17,11 +18,13 @@ import { ShareableJob } from './model/job/ShareableJob'
 import { Raider } from './model/raider/Raider'
 import { SceneManager } from './SceneManager'
 
+export type SupervisedJob = ShareableJob | ManVehicleJob
+
 export class Supervisor {
 
     sceneMgr: SceneManager
     entityMgr: EntityManager
-    jobs: ShareableJob[] = []
+    jobs: SupervisedJob[] = []
     priorityIndexList: PriorityIdentifier[] = []
     priorityList: PriorityEntry[] = []
     assignJobsTimer: number = 0
@@ -56,10 +59,10 @@ export class Supervisor {
         this.assignJobsTimer += elapsedMs
         if (this.assignJobsTimer < JOB_SCHEDULE_INTERVAL) return
         this.assignJobsTimer %= JOB_SCHEDULE_INTERVAL
-        const availableJobs: ShareableJob[] = []
+        const availableJobs: SupervisedJob[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobState === JobState.INCOMPLETE
-            if (result && j.fulfiller.length < 1 && this.isEnabled(j.getPriorityIdentifier())) {
+            if (result && !j.hasFulfiller() && this.isEnabled(j.getPriorityIdentifier())) {
                 availableJobs.push(j)
             }
             return result
@@ -158,7 +161,7 @@ export class Supervisor {
                         const surface = this.sceneMgr.terrain.getSurfaceOrNull(x, y)
                         if (!(surface?.hasRubble()) || !surface?.discovered) continue
                         const clearRubbleJob = surface.createClearRubbleJob()
-                        if (!clearRubbleJob || clearRubbleJob.fulfiller.length > 0) continue
+                        if (!clearRubbleJob || clearRubbleJob.hasFulfiller()) continue
                         const requiredTool = clearRubbleJob.getRequiredTool()
                         if (raider.hasTool(requiredTool)) {
                             raider.setJob(clearRubbleJob)
@@ -179,7 +182,7 @@ export class Supervisor {
         })
     }
 
-    getPriority(job: ShareableJob) {
+    getPriority(job: SupervisedJob) {
         return this.priorityIndexList.indexOf(job.getPriorityIdentifier())
     }
 

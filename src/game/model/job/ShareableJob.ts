@@ -5,7 +5,7 @@ import { PriorityIdentifier } from './PriorityIdentifier'
 
 export abstract class ShareableJob extends Job {
 
-    fulfiller: FulfillerEntity[] = []
+    protected fulfiller: FulfillerEntity[] = []
 
     abstract getPriorityIdentifier(): PriorityIdentifier
 
@@ -18,6 +18,10 @@ export abstract class ShareableJob extends Job {
 
     unAssign(fulfiller: FulfillerEntity) {
         this.fulfiller.remove(fulfiller)
+    }
+
+    hasFulfiller(): boolean {
+        return this.fulfiller.length > 0
     }
 
     cancel() {
