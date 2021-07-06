@@ -1,3 +1,6 @@
+import { EventBus } from '../../event/EventBus'
+import { MaterialAmountChanged } from '../../event/WorldEvents'
+
 export class GameState {
 
     static numCrystal: number = 0
@@ -26,6 +29,12 @@ export class GameState {
         this.remainingDiggables = 0
         this.totalCaverns = 0
         this.discoveredCaverns = 0
+    }
+
+    static changeUsedCrystals(changedCrystals: number) {
+        if (!changedCrystals) return
+        this.usedCrystals += changedCrystals
+        EventBus.publishEvent(new MaterialAmountChanged())
     }
 
 }

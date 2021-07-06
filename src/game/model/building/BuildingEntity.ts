@@ -216,7 +216,7 @@ export abstract class BuildingEntity implements Selectable {
     turnPowerOn() {
         if (this.crystalsInUse > 0 || this.stats.SelfPowered || GameState.usedCrystals >= GameState.numCrystal || (this.entityType !== EntityType.POWER_STATION && !this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower)))) return
         this.crystalsInUse = 1
-        GameState.usedCrystals += this.crystalsInUse
+        GameState.changeUsedCrystals(this.crystalsInUse)
         this.surfaces.forEach((s) => s.setHasPower(true, true))
         this.sceneEntity.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
@@ -226,8 +226,9 @@ export abstract class BuildingEntity implements Selectable {
 
     turnPowerOff() {
         if (this.crystalsInUse < 1) return
-        GameState.usedCrystals -= this.crystalsInUse
+        const usedCrystals = this.crystalsInUse
         this.crystalsInUse = 0
+        GameState.changeUsedCrystals(-usedCrystals)
         this.surfaces.forEach((s) => s.setHasPower(false, false))
         this.sceneEntity.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
