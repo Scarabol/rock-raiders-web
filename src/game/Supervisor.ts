@@ -59,7 +59,7 @@ export class Supervisor {
         const availableJobs: ShareableJob[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobState === JobState.INCOMPLETE
-            if (result && j.fulfiller.length < 1 && this.isEnabled(j.getPriorityIdentifier())) { // TODO don't assign jobs on hidden surfaces
+            if (result && j.fulfiller.length < 1 && this.isEnabled(j.getPriorityIdentifier())) {
                 availableJobs.push(j)
             }
             return result
