@@ -90,7 +90,11 @@ export class Raider extends FulfillerEntity {
 
     work(elapsedMs: number) {
         if (this.slipped) return
-        super.work(elapsedMs)
+        if (this.vehicle) {
+            this.sceneEntity.changeActivity(this.vehicle.getDriverActivity())
+        } else {
+            super.work(elapsedMs)
+        }
     }
 
     beamUp() {
