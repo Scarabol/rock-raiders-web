@@ -5,6 +5,7 @@ import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
 import { TILESIZE } from '../params'
+import { SceneMesh } from '../scene/SceneMesh'
 import { LWSCLoader } from './LWSCLoader'
 import { ResourceManager } from './ResourceManager'
 
@@ -207,6 +208,10 @@ export class AnimEntityLoader {
                 }
             }
         })
+        if (!animation.driverJoint) {
+            animation.driverJoint = new SceneMesh()
+            animation.polyRootGroup.add(animation.driverJoint)
+        }
     }
 
     private applyDefaultUpgrades(animation: AnimClip) {

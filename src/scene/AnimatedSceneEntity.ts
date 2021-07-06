@@ -45,6 +45,10 @@ export class AnimatedSceneEntity extends SceneEntity {
         if (carriedChildren && carriedChildren.length > 0 && animation.carryJoint) {
             animation.carryJoint.add(...carriedChildren) // keep carried children
         }
+        const driver = this.animation?.driverJoint.children
+        if (driver && driver.length > 0) {
+            animation.driverJoint.add(...driver) // keep driver
+        }
         this.animation = animation
         this.add(this.animation.polyRootGroup)
         this.animation.start(onAnimationDone, durationTimeMs)

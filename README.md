@@ -29,7 +29,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Vehicles Milestone (v0.5.0)
 
-- Fix raider not shown as driver in tunnel scout
 - Introduce waiting lists for vehicles
 - Add pricing for vehicles
 - Auto train raider to man vehicles
