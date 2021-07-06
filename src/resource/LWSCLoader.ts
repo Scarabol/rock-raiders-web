@@ -8,7 +8,7 @@
 
 import { Vector3 } from 'three'
 import { Sample } from '../audio/Sample'
-import { getFilename } from '../core/Util'
+import { getFilename, getPath } from '../core/Util'
 import { AnimClip } from '../game/model/anim/AnimClip'
 import { AnimSubObj } from '../game/model/anim/AnimSubObj'
 import { SceneMesh } from '../scene/SceneMesh'
@@ -16,20 +16,20 @@ import { ResourceManager } from './ResourceManager'
 
 export class LWSCLoader {
 
-    path: string = ''
+    animationClip: AnimClip
     verbose: boolean = false
-    animationClip: AnimClip = new AnimClip()
     lines: string[] = []
     lineIndex: number = 0
 
-    constructor(path: string, verbose: boolean = false) {
-        this.path = path
+    constructor(verbose: boolean = false) {
         this.verbose = verbose
         if (this.verbose) console.log('Using verbose mode')
     }
 
-    parse(content): AnimClip {
-        if (!content) throw new Error('Cannot parse LWS, no content given')
+    parse(filepath: string): AnimClip {
+        const content = ResourceManager.getResource(filepath)
+        if (!content) throw new Error('Cannot parse LWS, no content given for: ' + filepath)
+        this.animationClip = new AnimClip(filepath)
         this.lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
             .split('\n')
@@ -64,18 +64,18 @@ export class LWSCLoader {
         return this.animationClip
     }
 
-    parseLine(line: string): string[] {
+    private static parseLine(line: string): string[] {
         const lineParts = line.split(' ').filter((l: string) => l !== '')
         const key = lineParts.shift()
         const value = lineParts.join(' ')
         return [key, value]
     }
 
-    parseFrameBlock() {
+    private parseFrameBlock() {
         for (; this.lineIndex < this.lines.length; this.lineIndex++) {
             const line = this.lines[this.lineIndex]
             if (!line) return
-            const [key, value] = this.parseLine(line)
+            const [key, value] = LWSCLoader.parseLine(line)
             if (key === 'FirstFrame') {
                 this.animationClip.firstFrame = parseInt(value)
             } else if (key === 'LastFrame') {
@@ -94,18 +94,18 @@ export class LWSCLoader {
         console.error('Parsing block reached content end')
     }
 
-    parseObjectBlock(): AnimSubObj {
+    private parseObjectBlock(): AnimSubObj {
         const subObj = new AnimSubObj()
-        this.animationClip.bodies.push(subObj)
+        this.animationClip.animatedPolys.push(subObj)
         for (; this.lineIndex < this.lines.length; this.lineIndex++) {
             let line = this.lines[this.lineIndex]
             if (!line) return subObj
-            const [key, value] = this.parseLine(line)
+            const [key, value] = LWSCLoader.parseLine(line)
             if (key === 'AddNullObject' || key === 'LoadObject') {
                 if (key === 'LoadObject') {
                     const filename = getFilename(value)
                     subObj.lowerName = filename.slice(0, filename.length - '.lwo'.length).toLowerCase()
-                    subObj.filename = this.path + filename
+                    subObj.filename = getPath(this.animationClip.lwsFilepath) + filename
                     subObj.model = ResourceManager.getLwoModel(subObj.filename)
                 } else if (key === 'AddNullObject') {
                     const nameParts = value.split(',')

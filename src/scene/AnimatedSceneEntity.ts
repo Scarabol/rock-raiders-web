@@ -38,7 +38,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             return
         }
         if (this.animation) {
-            this.remove(this.animation.polyModel)
+            this.remove(this.animation.polyRootGroup)
             this.animation.stop()
         }
         const carriedChildren = this.animation?.carryJoint?.children
@@ -46,7 +46,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             animation.carryJoint.add(...carriedChildren) // keep carried children
         }
         this.animation = animation
-        this.add(this.animation.polyModel)
+        this.add(this.animation.polyRootGroup)
         this.animation.start(onAnimationDone, durationTimeMs)
     }
 

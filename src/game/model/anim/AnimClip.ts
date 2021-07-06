@@ -6,12 +6,13 @@ import { AnimSubObj } from './AnimSubObj'
 
 export class AnimClip {
 
+    lwsFilepath: string = null
     looping: boolean = false
     transcoef: number = 1
     firstFrame: number = null
     lastFrame: number = null
     framesPerSecond: number = null
-    bodies: AnimSubObj[] = []
+    animatedPolys: AnimSubObj[] = []
     polyList: SceneMesh[] = []
     carryJoint: SceneMesh = null
     depositJoint: SceneMesh = null
@@ -20,13 +21,17 @@ export class AnimClip {
     drillJoint: SceneMesh = null
     driverJoint: SceneMesh = null
     nullJoints: Map<string, SceneMesh[]> = new Map()
-    polyModel: Group = new Group()
+    polyRootGroup: Group = new Group()
     sfxAudioByFrame: Map<number, PositionalAudio[]> = new Map()
 
     timer: number = 0
     currentFrame: number = null
     onAnimationDone: () => any = null
     durationTimeMs: number = null
+
+    constructor(lwsFilepath: string) {
+        this.lwsFilepath = lwsFilepath
+    }
 
     start(onAnimationDone: () => any, durationTimeMs: number) {
         this.timer = 0
@@ -57,14 +62,14 @@ export class AnimClip {
     }
 
     private updateBodiesAnimationFrame() {
-        if (this.polyList.length !== this.bodies.length) throw new Error('Cannot animate poly. Length differs from bodies length')
-        this.bodies.forEach((body: AnimSubObj, index) => {
-            const p = this.polyList[index]
-            p.position.copy(body.relPos[this.currentFrame]).sub(body.pivot)
-            p.rotation.copy(body.relRot[this.currentFrame])
-            p.scale.copy(body.relScale[this.currentFrame])
-            if (p.hasOwnProperty('material')) {
-                const material = p['material']
+        if (this.polyList.length !== this.animatedPolys.length) throw new Error('Cannot animate polyList. Length differs from animatedPolys length')
+        this.animatedPolys.forEach((body: AnimSubObj, index) => {
+            const poly = this.polyList[index]
+            poly.position.copy(body.relPos[this.currentFrame]).sub(body.pivot)
+            poly.rotation.copy(body.relRot[this.currentFrame])
+            poly.scale.copy(body.relScale[this.currentFrame])
+            if (poly.hasOwnProperty('material')) {
+                const material = poly['material']
                 const opacity = body.opacity[this.currentFrame]
                 if (material && opacity !== undefined) {
                     const matArr = Array.isArray(material) ? material : [material]

@@ -118,8 +118,7 @@ export class AnimEntityLoader {
         const transcoef = iGet(act, 'TRANSCOEF')
         const looping = iGet(act, 'LOOPING') === true
         if (isLws) {
-            const content = ResourceManager.getResource(this.path + file + '.lws')
-            const animation = new LWSCLoader(this.path, this.verbose).parse(content)
+            const animation = new LWSCLoader(this.verbose).parse(this.path + file + '.lws')
             animation.looping = looping
             animation.transcoef = transcoef ? Number(transcoef) : 1
             if (lActivityName.startsWith('!')) lActivityName = lActivityName.substr(1) // XXX Whats the meaning of leading ! for activities???
@@ -158,21 +157,21 @@ export class AnimEntityLoader {
 
             this.applyDefaultUpgrades(animation)
 
-            animation.polyModel.scale.setScalar(this.entityType.scale)
-            animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
+            animation.polyRootGroup.scale.setScalar(this.entityType.scale)
+            animation.animatedPolys.forEach((body, index) => { // not all bodies may have been added in first iteration
                 const polyPart = animation.polyList[index]
                 const parentInd = body.parentObjInd
                 if (parentInd !== undefined && parentInd !== null) { // can be 0
                     animation.polyList[parentInd].add(polyPart)
                 } else {
-                    animation.polyModel.add(polyPart)
+                    animation.polyRootGroup.add(polyPart)
                 }
             })
         })
     }
 
     private resolveAnimationBodies(animation: AnimClip) {
-        animation.bodies.forEach((body) => {
+        animation.animatedPolys.forEach((body) => {
             let model = this.entityType.highPolyBodies.get(body.lowerName)
             if (!model) model = this.entityType.mediumPolyBodies.get(body.lowerName)
             if (!model) model = body.model
@@ -221,7 +220,7 @@ export class AnimEntityLoader {
                         joint.add(lwoModel)
                     } else {
                         const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae', this.audioListener)
-                        upgradeModels.animations.get('activity_stand')?.bodies.forEach((b) => joint.add(b.model.clone()))
+                        upgradeModels.animations.get('activity_stand')?.animatedPolys.forEach((b) => joint.add(b.model.clone()))
                     }
                 }
             })

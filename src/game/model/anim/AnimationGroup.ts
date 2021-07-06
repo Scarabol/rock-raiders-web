@@ -1,9 +1,7 @@
 import { AudioListener, Group, PositionalAudio } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
-import { getPath } from '../../../core/Util'
 import { TILESIZE } from '../../../params'
 import { LWSCLoader } from '../../../resource/LWSCLoader'
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimClip } from './AnimClip'
 
 export class AnimationGroup extends Group {
@@ -12,9 +10,8 @@ export class AnimationGroup extends Group {
 
     constructor(lwsFilepath: string, audioListener: AudioListener) {
         super()
-        const content = ResourceManager.getResource(lwsFilepath)
-        this.animation = new LWSCLoader(getPath(lwsFilepath), false).parse(content)
-        this.animation.bodies.forEach((body) => {
+        this.animation = new LWSCLoader().parse(lwsFilepath)
+        this.animation.animatedPolys.forEach((body) => {
             const polyModel = body.model.clone()
             this.animation.polyList.push(polyModel)
             if (body.lowerName && body.isNull) {
@@ -30,17 +27,17 @@ export class AnimationGroup extends Group {
             }
         })
 
-        this.animation.bodies.forEach((body, index) => { // not all bodies may have been added in first iteration
+        this.animation.animatedPolys.forEach((body, index) => { // not all bodies may have been added in first iteration
             const polyPart = this.animation.polyList[index]
             const parentInd = body.parentObjInd
             if (parentInd !== undefined && parentInd !== null) { // can be 0
                 this.animation.polyList[parentInd].add(polyPart)
             } else {
-                this.animation.polyModel.add(polyPart)
+                this.animation.polyRootGroup.add(polyPart)
             }
         })
 
-        this.add(this.animation.polyModel)
+        this.add(this.animation.polyRootGroup)
     }
 
     startAnimation(onAnimationDone) {
