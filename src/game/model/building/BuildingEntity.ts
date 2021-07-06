@@ -3,7 +3,7 @@ import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { BuildingEntityStats } from '../../../cfg/BuildingEntityStats'
 import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'
-import { BuildingsChangedEvent, DeselectAll } from '../../../event/LocalEvents'
+import { BuildingsChangedEvent, DeselectAll, SelectionChanged } from '../../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -220,6 +220,7 @@ export abstract class BuildingEntity implements Selectable {
         this.surfaces.forEach((s) => s.setHasPower(true, true))
         this.sceneEntity.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
         if (this.stats.EngineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
     }
 
@@ -230,6 +231,7 @@ export abstract class BuildingEntity implements Selectable {
         this.surfaces.forEach((s) => s.setHasPower(false, false))
         this.sceneEntity.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
         this.engineSound = resetAudioSafe(this.engineSound)
     }
 

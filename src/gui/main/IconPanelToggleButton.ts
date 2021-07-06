@@ -11,6 +11,7 @@ export class IconPanelToggleButton extends IconPanelButton {
     imgOnHover: SpriteImage
     imgOnPressed: SpriteImage
     imgOnDisabled: SpriteImage
+    isToggled: () => boolean = () => false
 
     constructor(parent: BaseElement, menuItemOffCfg: MenuItemCfg, menuItemOnCfg: MenuItemCfg, parentWidth: number, menuIndex: number) {
         super(parent, menuItemOffCfg, null, parentWidth, menuIndex)
@@ -23,6 +24,15 @@ export class IconPanelToggleButton extends IconPanelButton {
     clicked(cx: number, cy: number, button: MOUSE_BUTTON) {
         this.toggleState = !this.toggleState
         super.clicked(cx, cy, button)
+    }
+
+    updateState(autoRedraw: boolean = true): boolean {
+        const stateChanged = super.updateState(false)
+        const targetToggleState = !!this.isToggled()
+        const toggleStateChanged = this.toggleState = targetToggleState
+        this.toggleState = targetToggleState
+        if ((stateChanged || toggleStateChanged) && autoRedraw) this.notifyRedraw()
+        return stateChanged || toggleStateChanged
     }
 
     onRedraw(context: SpriteContext) {

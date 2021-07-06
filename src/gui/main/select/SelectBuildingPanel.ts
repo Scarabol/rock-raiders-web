@@ -13,8 +13,9 @@ export class SelectBuildingPanel extends SelectBasePanel {
 
     usedCrystal = 0
     numCrystal = 0
-    buildingCanUpgrade: boolean = false
     buildingCanSwitchPower: boolean = false
+    buildingPowerSwitchState: boolean = false
+    buildingCanUpgrade: boolean = false
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 4, onBackPanel)
@@ -24,6 +25,7 @@ export class SelectBuildingPanel extends SelectBasePanel {
         const powerSwitchItem = this.addChild(new IconPanelToggleButton(this, menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(powerSwitchItem)
         powerSwitchItem.isDisabled = () => this.usedCrystal >= this.numCrystal || !this.buildingCanSwitchPower
+        powerSwitchItem.isToggled = () => !this.buildingPowerSwitchState
         powerSwitchItem.onClick = () => this.publishEvent(new ChangeBuildingPowerState(!powerSwitchItem.toggleState))
         const upgradeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeBuilding')
         upgradeItem.isDisabled = () => !this.buildingCanUpgrade
@@ -32,8 +34,9 @@ export class SelectBuildingPanel extends SelectBasePanel {
         deleteBuildingItem.isDisabled = () => false
         deleteBuildingItem.onClick = () => this.publishEvent(new BeamUpBuilding())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
-            this.buildingCanUpgrade = event.buildingCanUpgrade
             this.buildingCanSwitchPower = event.buildingCanSwitchPower
+            this.buildingPowerSwitchState = event.buildingPowerSwitchState
+            this.buildingCanUpgrade = event.buildingCanUpgrade
             this.updateAllButtonStates()
         })
         this.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
@@ -47,8 +50,9 @@ export class SelectBuildingPanel extends SelectBasePanel {
         super.reset()
         this.usedCrystal = 0
         this.numCrystal = 0
-        this.buildingCanUpgrade = false
         this.buildingCanSwitchPower = false
+        this.buildingPowerSwitchState = false
+        this.buildingCanUpgrade = false
     }
 
 }
