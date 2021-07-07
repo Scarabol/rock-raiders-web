@@ -31,7 +31,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Auto train raider to man vehicles
 - Raider sometimes sitting wrong way around in vehicles
-- Walker digger not loaded correctly or at least the upgrades
 - Make vehicles work
 - Activity of upgrades should be synced (for example walker diggers engines)
 

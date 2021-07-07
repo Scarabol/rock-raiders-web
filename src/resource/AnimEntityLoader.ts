@@ -133,13 +133,17 @@ export class AnimEntityLoader {
         Object.keys(value).forEach((levelKey: string) => {
             const match = levelKey.match(/level(\d\d\d\d)/i) // [carry] [scan] [speed] [drill]
             if (match) {
-                const upgradeValue = value[levelKey]
-                this.entityType.upgradesByLevel.set(match[1], Object.keys(upgradeValue).map((upgradeName: string) => {
-                    const upgradeFilepath = ResourceManager.cfg('UpgradeTypes', upgradeName)
-                    const upgradeNullName = upgradeValue[upgradeName][0][0]
-                    const upgradeNullIndex = Number(upgradeValue[upgradeName][1][0]) - 1
-                    return new AnimationEntityUpgrade(upgradeFilepath, upgradeNullName, upgradeNullIndex)
-                }))
+                const upgradesCfg = value[levelKey]
+                const upgradesByLevel = []
+                Object.keys(upgradesCfg).forEach((upgradeTypeName: string) => {
+                    const upgradeFilepath = ResourceManager.cfg('UpgradeTypes', upgradeTypeName)
+                    const upgradeEntry = upgradesCfg[upgradeTypeName]
+                    const upgradeEntries = Array.isArray(upgradeEntry[0]) ? upgradeEntry : [upgradeEntry]
+                    upgradeEntries.forEach((upgradeTypeEntry) => {
+                        upgradesByLevel.push(new AnimationEntityUpgrade(upgradeFilepath, upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))
+                    })
+                })
+                this.entityType.upgradesByLevel.set(match[1], upgradesByLevel)
             } else {
                 console.warn('Unexpected upgrade level key: ' + levelKey)
             }
@@ -155,8 +159,6 @@ export class AnimEntityLoader {
                     joint.add(this.entityType.wheelMesh.clone(true))
                 })
             }
-
-            this.applyDefaultUpgrades(animation)
 
             animation.polyRootGroup.scale.setScalar(this.entityType.scale)
             animation.animatedPolys.forEach((body, index) => { // not all bodies may have been added in first iteration
@@ -211,24 +213,6 @@ export class AnimEntityLoader {
         if (!animation.driverJoint) {
             animation.driverJoint = new SceneMesh()
             animation.polyRootGroup.add(animation.driverJoint)
-        }
-    }
-
-    private applyDefaultUpgrades(animation: AnimClip) {
-        const upgrades0000 = this.entityType.upgradesByLevel.get('0000')
-        if (upgrades0000) { // TODO check for other upgrade levels
-            upgrades0000.forEach((upgrade) => {
-                const joint = animation.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
-                if (joint) {
-                    const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath + '.lwo')
-                    if (lwoModel) {
-                        joint.add(lwoModel)
-                    } else {
-                        const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae', this.audioListener)
-                        upgradeModels.animations.get('activity_stand')?.animatedPolys.forEach((b) => joint.add(b.model.clone()))
-                    }
-                }
-            })
         }
     }
 

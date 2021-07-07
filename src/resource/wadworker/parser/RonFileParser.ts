@@ -13,6 +13,7 @@ export class RonFileParser {
     }
 
     private static parseObj(obj: {}, lines: string[], start): number {
+        const multiValues = []
         for (let c = start; c < lines.length; c++) {
             const line = lines[c]
             if (line === '') continue
@@ -23,14 +24,24 @@ export class RonFileParser {
                 c = this.parseObj(obj[key], lines, c + 1)
             } else if (key === '}') {
                 return c
-            } else { // parse values
-                let value: any = val.split(/:+/) // there is key::value
-                    .map(v => v.split(',').map(v => v.split('|').map(v => this.parseValue(v))))
-                while (value.length === 1) value = value[0] // flatten arrays with only one value
-                obj[key] = value
+            } else {
+                const values = this.parseVal(val)
+                this.assignValue(obj, key, multiValues, values)
             }
         }
         return lines.length
+    }
+
+    private static parseVal(val) {
+        const r = val.split(/:+/) // there is key::value
+            .map(v => {
+                const r = v.split(',').map(v => {
+                    const r = v.split('|').map(v => this.parseValue(v))
+                    return r.length === 1 ? r[0] : r
+                })
+                return r.length === 1 ? r[0] : r
+            })
+        return r.length === 1 ? r[0] : r
     }
 
     private static parseValue(value: string) {
@@ -43,6 +54,18 @@ export class RonFileParser {
             return true
         }
         return value
+    }
+
+    private static assignValue(obj: {}, key: string, multiProperties: any[], value: any) {
+        if (obj.hasOwnProperty(key)) {
+            if (!multiProperties.includes(key)) {
+                multiProperties.push(key)
+                obj[key] = [obj[key]]
+            }
+            obj[key].push(value)
+        } else {
+            obj[key] = value
+        }
     }
 
 }

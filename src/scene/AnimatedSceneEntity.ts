@@ -1,10 +1,12 @@
 import { AnimEntityActivity } from '../game/model/activities/AnimEntityActivity'
 import { BaseActivity } from '../game/model/activities/BaseActivity'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
+import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
 import { SceneManager } from '../game/SceneManager'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneEntity } from './SceneEntity'
+import { SceneMesh } from './SceneMesh'
 
 export class AnimatedSceneEntity extends SceneEntity {
 
@@ -38,6 +40,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             return
         }
         if (this.animation) {
+            // TODO remove/dispose upgrade models
             this.remove(this.animation.polyRootGroup)
             this.animation.stop()
         }
@@ -50,6 +53,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             animation.driverJoint.add(...driver) // keep driver
         }
         this.animation = animation
+        this.applyDefaultUpgrades()
         this.add(this.animation.polyRootGroup)
         this.animation.start(onAnimationDone, durationTimeMs)
     }
@@ -57,6 +61,32 @@ export class AnimatedSceneEntity extends SceneEntity {
     update(elapsedMs: number) {
         super.update(elapsedMs)
         this.animation?.update(elapsedMs)
+    }
+
+    private applyDefaultUpgrades() {
+        const upgrades0000 = this.animationEntityType.upgradesByLevel.get('0000')
+        if (upgrades0000) { // TODO check for other upgrade levels
+            upgrades0000.forEach((upgrade) => { // TODO parse upgrades only once
+                const joint = this.getNullJointForUpgrade(upgrade)
+                if (joint) {
+                    const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath + '.lwo')
+                    if (lwoModel) {
+                        joint.add(lwoModel)
+                    } else {
+                        const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae', this.sceneMgr.listener)
+                        upgradeModels.animations.get('activity_stand')?.animatedPolys.forEach((b) => {
+                            joint.add(b.model.clone())
+                        })
+                    }
+                } else {
+                    console.warn('Could not find null joint ' + upgrade.upgradeNullName + ' and index ' + upgrade.upgradeNullIndex + ' to attach upgrade: ' + upgrade.upgradeFilepath)
+                }
+            })
+        }
+    }
+
+    protected getNullJointForUpgrade(upgrade: AnimationEntityUpgrade): SceneMesh | undefined {
+        return this.animation.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
     }
 
 }
