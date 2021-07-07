@@ -1,3 +1,4 @@
+import { EntityType } from '../game/model/EntityType'
 import { GameState } from '../game/model/GameState'
 import { SupervisedJob } from '../game/Supervisor'
 import { EventKey } from './EventKeyEnum'
@@ -46,6 +47,19 @@ export class RequestedRaidersChanged extends WorldEvent {
 
     constructor(numRequested: number) {
         super(EventKey.REQUESTED_RAIDERS_CHANGED)
+        this.numRequested = numRequested
+    }
+
+}
+
+export class RequestedVehiclesChanged extends WorldEvent {
+
+    vehicle: EntityType
+    numRequested: number
+
+    constructor(vehicle: EntityType, numRequested: number) {
+        super(EventKey.REQUESTED_VEHICLES_CHANGED)
+        this.vehicle = vehicle
         this.numRequested = numRequested
     }
 

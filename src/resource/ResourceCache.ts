@@ -3,6 +3,7 @@ import { LevelsCfg } from '../cfg/LevelsCfg'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 import { createContext, createDummyImgData } from '../core/ImageHelper'
 import { iGet } from '../core/Util'
+import { EntityType } from '../game/model/EntityType'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { allCursor, Cursor } from '../screen/Cursor'
 import { cacheGetData, cachePutData } from './assets/AssetCacheHelper'
@@ -118,6 +119,35 @@ export class ResourceCache {
 
     static getCursor(cursor: Cursor): AnimatedCursor {
         return this.cursorToUrl.get(cursor)
+    }
+
+    static getStatsByType(entityType: EntityType) {
+        switch (entityType) {
+            case EntityType.HOVERBOARD:
+                return this.stats.Hoverboard
+            case EntityType.SMALL_DIGGER:
+                return this.stats.SmallDigger
+            case EntityType.SMALL_TRUCK:
+                return this.stats.SmallTruck
+            case EntityType.SMALL_CAT:
+                return this.stats.SmallCat
+            case EntityType.SMALL_MLP:
+                return this.stats.Smallmlp
+            case EntityType.SMALL_HELI:
+                return this.stats.SmallHeli
+            case EntityType.BULLDOZER:
+                return this.stats.Bulldozer
+            case EntityType.WALKER_DIGGER:
+                return this.stats.WalkerDigger
+            case EntityType.LARGE_MLP:
+                return this.stats.LargeMLP
+            case EntityType.LARGE_DIGGER:
+                return this.stats.LargeDigger
+            case EntityType.LARGE_CAT:
+                return this.stats.LargeCat
+            default:
+                throw new Error('Unexpected entity type: ' + EntityType[entityType])
+        }
     }
 
 }

@@ -36,6 +36,7 @@ export class EntityManager {
     rockMonsters: RockMonster[] = []
     vehicles: VehicleEntity[] = []
     vehiclesUndiscovered: VehicleEntity[] = []
+    vehiclesInBeam: VehicleEntity[] = []
 
     constructor() {
         // event handler must be placed here, because only this class knows the "actual" selection instance
@@ -60,6 +61,7 @@ export class EntityManager {
         this.rockMonsters = []
         this.vehicles = []
         this.vehiclesUndiscovered = []
+        this.vehiclesInBeam = []
     }
 
     update(elapsedMs: number) {
@@ -73,6 +75,7 @@ export class EntityManager {
         this.bats.forEach((b) => updateSafe(b, elapsedMs))
         this.rockMonsters.forEach((m) => updateSafe(m, elapsedMs))
         this.vehicles.forEach((v) => updateSafe(v, elapsedMs))
+        this.vehiclesInBeam.forEach((v) => updateSafe(v, elapsedMs))
     }
 
     stop() {
@@ -87,6 +90,7 @@ export class EntityManager {
         this.bats.forEach((b) => b.removeFromScene())
         this.rockMonsters.forEach((m) => m.removeFromScene())
         this.vehicles.forEach((v) => v.removeFromScene())
+        this.vehiclesInBeam.forEach((v) => v.removeFromScene())
     }
 
     getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
