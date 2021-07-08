@@ -32,7 +32,6 @@ import { Teleport } from './Teleport'
 
 export abstract class BuildingEntity implements Selectable {
 
-    blocksPathSurface: boolean = true
     secondaryBuildingPart: Vector2 = null
     primaryPowerPath: Vector2 = new Vector2(0, 1)
     secondaryPowerPath: Vector2 = null
@@ -237,14 +236,14 @@ export abstract class BuildingEntity implements Selectable {
 
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
         this.primarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(worldPosition)
-        this.primarySurface.setBuilding(this)
         this.surfaces.push(this.primarySurface)
+        this.primarySurface.pathBlockedByBuilding = this.entityType !== EntityType.TOOLSTATION // XXX better evaluate EnterToolStore in stats while path finding
         if (this.secondaryBuildingPart) {
             const secondaryOffset = new Vector2(TILESIZE * this.secondaryBuildingPart.x, TILESIZE * this.secondaryBuildingPart.y)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.secondarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(secondaryOffset)
-            this.secondarySurface.setBuilding(this)
             this.surfaces.push(this.secondarySurface)
+            this.secondarySurface.pathBlockedByBuilding = this.entityType !== EntityType.TOOLSTATION // XXX better evaluate EnterToolStore in stats while path finding
         }
         if (this.primaryPowerPath) {
             const pathOffset = new Vector2(this.primaryPowerPath.x, this.primaryPowerPath.y).multiplyScalar(TILESIZE)
@@ -260,6 +259,7 @@ export abstract class BuildingEntity implements Selectable {
             this.secondaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
             this.surfaces.push(this.secondaryPathSurface)
         }
+        this.surfaces.forEach((s) => s.setBuilding(this))
         this.addToScene(worldPosition, radHeading)
         this.sceneEntity.createPickSphere(this.stats.PickSphere, this, this.stats.PickSphere / 4)
         if (this.sceneEntity.visible) {

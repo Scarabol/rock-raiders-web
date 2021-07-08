@@ -65,6 +65,7 @@ export class Surface implements Selectable {
     rubblePositions: Vector2[] = []
 
     building: BuildingEntity = null
+    pathBlockedByBuilding: boolean = false
     site: BuildingSite = null
     fence: ElectricFence = null
     energyLevel: number = 0
@@ -476,7 +477,7 @@ export class Surface implements Selectable {
     }
 
     isWalkable(): boolean {
-        return this.surfaceType.floor && this.discovered && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER && !this.building?.blocksPathSurface
+        return this.surfaceType.floor && this.discovered && this.surfaceType !== SurfaceType.LAVA && this.surfaceType !== SurfaceType.WATER && !this.pathBlockedByBuilding
     }
 
     isDigable(): boolean {
@@ -576,7 +577,7 @@ export class Surface implements Selectable {
     }
 
     getPathFindingFlyWeight(): number {
-        return this.surfaceType.floor && !this.building?.blocksPathSurface ? 1 : 0
+        return this.surfaceType.floor && !this.pathBlockedByBuilding ? 1 : 0
     }
 
     getPathFindingSwimWeight(): number {
