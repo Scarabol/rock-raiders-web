@@ -587,14 +587,12 @@ export class Surface implements Selectable {
     canPlaceFence(): boolean { // TODO performance this can be cached
         return this.surfaceType.canCarryFence && !this.building && !this.fence &&
             [1, 2].some((n) => {
-                return !!this.terrain.getSurface(this.x - n, this.y).building ||
-                    !!this.terrain.getSurface(this.x, this.y - n).building ||
-                    !!this.terrain.getSurface(this.x + n, this.y).building ||
-                    !!this.terrain.getSurface(this.x, this.y + n).building ||
-                    !!this.terrain.getSurface(this.x - n, this.y).fence ||
-                    !!this.terrain.getSurface(this.x, this.y - n).fence ||
-                    !!this.terrain.getSurface(this.x + n, this.y).fence ||
-                    !!this.terrain.getSurface(this.x, this.y + n).fence
+                const north = this.terrain.getSurface(this.x - n, this.y)
+                const west = this.terrain.getSurface(this.x, this.y - n)
+                const south = this.terrain.getSurface(this.x + n, this.y)
+                const east = this.terrain.getSurface(this.x, this.y + n)
+                return !!north.building || !!west.building || !!south.building || !!east.building
+                    || !!north.fence || !!west.fence || !!south.fence || !!east.fence
             })
     }
 
