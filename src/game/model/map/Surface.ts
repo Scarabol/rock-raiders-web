@@ -408,7 +408,7 @@ export class Surface implements Selectable {
     }
 
     get isEnergized(): boolean {
-        return this.energyLevel > 0
+        return this.energyLevel > 0 && (!this.building || this.building.energized)
     }
 
     setEnergyLevel(level: number) {

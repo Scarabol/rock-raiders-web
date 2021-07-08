@@ -11,8 +11,6 @@ import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectBuildingPanel extends SelectBasePanel {
 
-    usedCrystal = 0
-    numCrystal = 0
     buildingCanSwitchPower: boolean = false
     buildingPowerSwitchState: boolean = false
     buildingCanUpgrade: boolean = false
@@ -24,7 +22,7 @@ export class SelectBuildingPanel extends SelectBasePanel {
         const menuItemOnCfg = new MenuItemCfg(GuiResourceCache.cfg('InterfaceImages', 'Interface_MenuItem_PowerOn'))
         const powerSwitchItem = this.addChild(new IconPanelToggleButton(this, menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(powerSwitchItem)
-        powerSwitchItem.isDisabled = () => this.usedCrystal >= this.numCrystal || !this.buildingCanSwitchPower
+        powerSwitchItem.isDisabled = () => !this.buildingCanSwitchPower
         powerSwitchItem.isToggled = () => !this.buildingPowerSwitchState
         powerSwitchItem.onClick = () => this.publishEvent(new ChangeBuildingPowerState(!powerSwitchItem.toggleState))
         const upgradeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeBuilding')
@@ -40,16 +38,12 @@ export class SelectBuildingPanel extends SelectBasePanel {
             this.updateAllButtonStates()
         })
         this.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
-            this.numCrystal = event.numCrystal
-            this.usedCrystal = event.usedCrystal
             this.updateAllButtonStates()
         })
     }
 
     reset() {
         super.reset()
-        this.usedCrystal = 0
-        this.numCrystal = 0
         this.buildingCanSwitchPower = false
         this.buildingPowerSwitchState = false
         this.buildingCanUpgrade = false

@@ -18,7 +18,6 @@ import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { GetToolPathTarget } from '../job/raider/GetToolPathTarget'
 import { Surface } from '../map/Surface'
-import { SurfaceType } from '../map/SurfaceType'
 import { Barrier } from '../material/Barrier'
 import { BarrierLocation } from '../material/BarrierLocation'
 import { Crystal } from '../material/Crystal'
@@ -200,7 +199,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     updateEnergyState() {
-        if (this.isReady() && this.powerSwitch && (this.energized || GameState.usedCrystals < GameState.numCrystal) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.isEnergized))) {
+        if (this.isReady() && this.powerSwitch && (this.energized || GameState.usedCrystals < GameState.numCrystal) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.energyLevel > 0))) {
             this.turnEnergyOn()
         } else {
             this.turnEnergyOff()
@@ -249,14 +248,12 @@ export abstract class BuildingEntity implements Selectable {
             const pathOffset = new Vector2(this.primaryPowerPath.x, this.primaryPowerPath.y).multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
-            this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
             this.surfaces.push(this.primaryPathSurface)
         }
         if (this.secondaryPowerPath) {
             const pathOffset = new Vector2(this.secondaryPowerPath.x, this.secondaryPowerPath.y).multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.secondaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
-            this.secondaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
             this.surfaces.push(this.secondaryPathSurface)
         }
         this.surfaces.forEach((s) => s.setBuilding(this))
