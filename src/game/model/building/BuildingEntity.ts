@@ -214,14 +214,10 @@ export abstract class BuildingEntity implements Selectable {
         this.energized = true
         GameState.changeUsedCrystals(this.crystalDrain)
         if (this.stats.PowerBuilding) this.surfaces.forEach((s) => s.setEnergyLevel(s.energyLevel + 1))
-        this.sceneEntity.changeActivity()
+        this.sceneEntity.changeActivity(this.getDefaultActivity())
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
         if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
-    }
-
-    get crystalDrain(): number {
-        return (Array.isArray(this.stats.CrystalDrain) ? this.stats.CrystalDrain?.[this.level] : this.stats.CrystalDrain) || 0
     }
 
     private turnEnergyOff() {
@@ -229,10 +225,14 @@ export abstract class BuildingEntity implements Selectable {
         this.energized = false
         GameState.changeUsedCrystals(-this.crystalDrain)
         if (this.stats.PowerBuilding) this.surfaces.forEach((s) => s.setEnergyLevel(s.energyLevel - 1))
-        this.sceneEntity.changeActivity()
+        this.sceneEntity.changeActivity(this.getDefaultActivity())
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
         this.engineSound = resetAudioSafe(this.engineSound)
+    }
+
+    get crystalDrain(): number {
+        return (Array.isArray(this.stats.CrystalDrain) ? this.stats.CrystalDrain?.[this.level] : this.stats.CrystalDrain) || 0
     }
 
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
@@ -280,7 +280,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     private onPlaceDown() {
-        this.sceneEntity.changeActivity()
+        this.sceneEntity.changeActivity(this.getDefaultActivity())
         this.updateEnergyState()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
