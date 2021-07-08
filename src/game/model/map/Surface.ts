@@ -334,7 +334,7 @@ export class Surface implements Selectable {
         } else if (this.surfaceType === SurfaceType.POWER_PATH) {
             textureName += this.updatePowerPathTexture()
         } else if (!this.surfaceType.shaping && this.neighbors.some((n) => n.discovered && n.surfaceType.floor)) {
-            if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.isEnergized) {
+            if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.building?.energized) {
                 textureName += '66'
             } else {
                 textureName += this.surfaceType.matIndex.toString()
@@ -374,29 +374,25 @@ export class Surface implements Selectable {
             if (left) this.surfaceRotation = -Math.PI / 2
             if (top) this.surfaceRotation = Math.PI
             if (right) this.surfaceRotation = Math.PI / 2
-            return this.isEnergized ? '75' : '65'
+            return this.energyLevel > 0 ? '75' : '65'
         } else if (pathSum === 2) {
             if (left === right) {
                 this.surfaceRotation = left ? Math.PI / 2 : 0
-                return this.isEnergized ? '72' : '62'
+                return this.energyLevel > 0 ? '72' : '62'
             } else {
                 if (left && bottom) this.surfaceRotation = -Math.PI / 2
                 if (left && top) this.surfaceRotation = Math.PI
                 if (top && right) this.surfaceRotation = Math.PI / 2
-                return this.isEnergized ? '73' : '63'
+                return this.energyLevel > 0 ? '73' : '63'
             }
         } else if (pathSum === 3) {
             if (!top) this.surfaceRotation = -Math.PI / 2
             if (!right) this.surfaceRotation = Math.PI
             if (!bottom) this.surfaceRotation = Math.PI / 2
-            return this.isEnergized ? '74' : '64'
+            return this.energyLevel > 0 ? '74' : '64'
         } else {
-            return this.isEnergized ? '71' : '60'
+            return this.energyLevel > 0 ? '71' : '60'
         }
-    }
-
-    get isEnergized(): boolean {
-        return this.energyLevel > 0 && (!this.building || this.building.energized)
     }
 
     setEnergyLevel(level: number) {
