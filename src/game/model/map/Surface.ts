@@ -319,19 +319,7 @@ export class Surface implements Selectable {
 
         this.updateTexture()
         this.updateJobColor()
-        this.updatePathfinding()
-    }
-
-    private updatePathfinding() {
-        const weight = this.getPathfindingWalkWeight()
-        for (let x = 0; x < 3; x++) {
-            for (let y = 0; y < 3; y++) {
-                this.terrain.graphWalk.grid[this.x * 3 + x][this.y * 3 + y].weight = weight
-            }
-        }
-        this.terrain.graphDrive.grid[this.x][this.y].weight = this.getPathfindingDriveWeight()
-        this.terrain.graphFly.grid[this.x][this.y].weight = this.getPathFindingFlyWeight()
-        this.terrain.graphSwim.grid[this.x][this.y].weight = this.getPathFindingSwimWeight()
+        this.terrain.pathFinder.updateSurface(this)
     }
 
     cancelReinforceJobs() {
@@ -548,7 +536,7 @@ export class Surface implements Selectable {
 
     setBuilding(building: BuildingEntity) {
         this.building = building
-        this.updatePathfinding()
+        this.terrain.pathFinder.updateSurface(this)
         this.setSurfaceType(this.building ? SurfaceType.POWER_PATH_BUILDING : SurfaceType.GROUND)
     }
 
@@ -566,22 +554,6 @@ export class Surface implements Selectable {
         let maxLevel = 0
         this.neighbors.forEach((n) => maxLevel = Math.max(maxLevel, n.energyLevel))
         return maxLevel
-    }
-
-    getPathfindingWalkWeight(): number {
-        return this.isWalkable() ? this.hasRubble() ? 4 : 1 : 0
-    }
-
-    getPathfindingDriveWeight(): number {
-        return this.isWalkable() ? 1 : 0
-    }
-
-    getPathFindingFlyWeight(): number {
-        return this.surfaceType.floor && !this.pathBlockedByBuilding ? 1 : 0
-    }
-
-    getPathFindingSwimWeight(): number {
-        return this.surfaceType === SurfaceType.WATER ? 1 : 0
     }
 
     canPlaceFence(): boolean { // TODO performance this can be cached

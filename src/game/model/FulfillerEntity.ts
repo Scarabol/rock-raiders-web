@@ -31,8 +31,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         super(sceneMgr, entityMgr, entityType)
     }
 
-    abstract get stats()
-
     abstract isPrepared(job: Job): boolean
 
     abstract get sceneEntity(): FulfillerSceneEntity

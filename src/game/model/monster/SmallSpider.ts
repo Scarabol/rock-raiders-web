@@ -6,6 +6,7 @@ import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
 import { SurfaceType } from '../map/SurfaceType'
+import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
 import { Monster } from './Monster'
@@ -21,6 +22,10 @@ export class SmallSpider extends Monster {
 
     get stats() {
         return ResourceManager.stats.SmallSpider
+    }
+
+    findPathToTarget(target: PathTarget): TerrainPath { // TODO consider stats: random move and random enter wall
+        return new TerrainPath(target, target.targetLocation)
     }
 
     update(elapsedMs: number) {

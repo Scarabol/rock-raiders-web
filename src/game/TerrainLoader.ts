@@ -2,7 +2,6 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
-import { Graph } from './model/map/astar'
 import { Surface } from './model/map/Surface'
 import { SurfaceType } from './model/map/SurfaceType'
 import { Terrain } from './model/map/Terrain'
@@ -93,32 +92,7 @@ export class TerrainLoader {
         })
 
         // generate path finding weights
-        const weightsWalk: number[][] = []
-        const weightsDrive: number[][] = []
-        const weightsFly: number[][] = []
-        const weightsSwim: number[][] = []
-        for (let x = 0; x < terrain.width; x++) {
-            const colWalk: number[] = []
-            const colDrive: number[] = []
-            const colFly: number[] = []
-            const colSwim: number[] = []
-            for (let y = 0; y < terrain.height; y++) {
-                const surface = terrain.getSurfaceOrNull(x, y)
-                const w = surface.getPathfindingWalkWeight()
-                colWalk.push(w, w, w)
-                colDrive.push(surface.getPathfindingDriveWeight())
-                colFly.push(surface.getPathFindingFlyWeight())
-                colSwim.push(surface.getPathFindingSwimWeight())
-            }
-            weightsWalk.push(colWalk, colWalk, colWalk)
-            weightsDrive.push(colDrive)
-            weightsFly.push(colFly)
-            weightsSwim.push(colSwim)
-        }
-        terrain.graphWalk = new Graph(weightsWalk, {diagonal: true})
-        terrain.graphDrive = new Graph(weightsDrive, {diagonal: true})
-        terrain.graphFly = new Graph(weightsFly, {diagonal: true})
-        terrain.graphSwim = new Graph(weightsSwim, {diagonal: true})
+        terrain.pathFinder.initWeights(terrain)
 
         // crumble unsupported walls
         terrain.forEachSurface((s) => {

@@ -45,8 +45,10 @@ export abstract class MovableEntity {
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {
-        return new TerrainPath(target, target.targetLocation)
+        return this.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D.clone(), target, this.stats, this.entityType === EntityType.PILOT)
     }
+
+    abstract get stats()
 
     private determineStep(elapsedMs: number): EntityStep {
         const targetWorld = this.sceneMgr.getFloorPosition(this.currentPath.firstLocation)

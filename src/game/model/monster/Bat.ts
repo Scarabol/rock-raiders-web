@@ -5,6 +5,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
+import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
 import { Monster } from './Monster'
@@ -18,6 +19,10 @@ export class Bat extends Monster {
 
     get stats() {
         return ResourceManager.stats.Bat
+    }
+
+    findPathToTarget(target: PathTarget): TerrainPath { // TODO consider stats: random move
+        return new TerrainPath(target, target.targetLocation)
     }
 
     update(elapsedMs: number) {

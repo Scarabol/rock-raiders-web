@@ -11,10 +11,8 @@ import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
 import { VehicleCallManJob } from '../job/VehicleCallManJob'
-import { TerrainPath } from '../map/TerrainPath'
 import { Crystal } from '../material/Crystal'
 import { Ore } from '../material/Ore'
-import { PathTarget } from '../PathTarget'
 import { Raider } from '../raider/Raider'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { VehicleActivity } from './VehicleActivity'
@@ -30,10 +28,6 @@ export abstract class VehicleEntity extends FulfillerEntity {
         super(sceneMgr, entityMgr, entityType)
         this.sceneEntity = new FulfillerSceneEntity(sceneMgr, aeFilename)
         this.sceneEntity.flipXAxis()
-    }
-
-    findPathToTarget(target: PathTarget): TerrainPath {
-        return this.sceneMgr.terrain.findDrivePath(this.sceneEntity.position2D.clone(), target)
     }
 
     beamUp() {

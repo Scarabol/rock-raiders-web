@@ -12,7 +12,6 @@ import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
 import { Surface } from '../map/Surface'
-import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
@@ -36,10 +35,6 @@ export class Raider extends FulfillerEntity {
 
     get stats() {
         return ResourceManager.stats.Pilot
-    }
-
-    findPathToTarget(target: PathTarget): TerrainPath {
-        return this.sceneMgr.terrain.findWalkPath(this.sceneEntity.position2D.clone(), target)
     }
 
     isSelectable(): boolean {

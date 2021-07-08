@@ -3,8 +3,6 @@ import { EntityManager } from '../../../EntityManager'
 import { SceneManager } from '../../../SceneManager'
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { EntityType } from '../../EntityType'
-import { TerrainPath } from '../../map/TerrainPath'
-import { PathTarget } from '../../PathTarget'
 import { RaiderTraining } from '../../raider/RaiderTraining'
 import { VehicleEntity } from '../VehicleEntity'
 
@@ -24,10 +22,6 @@ export class SmallHeli extends VehicleEntity {
 
     getDriverActivity(): RaiderActivity {
         return RaiderActivity.SMALLheli
-    }
-
-    findPathToTarget(target: PathTarget): TerrainPath {
-        return this.sceneMgr.terrain.findFlyPath(this.sceneEntity.position2D.clone(), target)
     }
 
 }

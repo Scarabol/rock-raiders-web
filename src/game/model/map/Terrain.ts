@@ -5,13 +5,11 @@ import { DEV_MODE, TILESIZE } from '../../../params'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { AnimationGroup } from '../anim/AnimationGroup'
-import { PathTarget } from '../PathTarget'
 import { updateSafe } from '../Updateable'
-import { astar, Graph } from './astar'
 import { FallIn } from './FallIn'
+import { PathFinder } from './PathFinder'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
-import { TerrainPath } from './TerrainPath'
 
 export class Terrain {
 
@@ -23,14 +21,7 @@ export class Terrain {
     surfaces: Surface[][] = []
     floorGroup: Group = new Group()
     roofGroup: Group = new Group()
-    graphWalk: Graph = null
-    graphDrive: Graph = null
-    graphFly: Graph = null
-    graphSwim: Graph = null
-    cachedWalkPaths = new Map<string, Vector2[]>()
-    cachedDrivePaths = new Map<string, Vector2[]>()
-    cachedFlyPaths = new Map<string, Vector2[]>()
-    cachedSwimPaths = new Map<string, Vector2[]>()
+    pathFinder: PathFinder = new PathFinder()
     fallIns: FallIn[] = []
     fallInGroups: AnimationGroup[] = []
 
@@ -72,53 +63,7 @@ export class Terrain {
     updateSurfaceMeshes(force: boolean = false) {
         this.forEachSurface((s) => s.updateMesh(force))
         this.floorGroup.updateWorldMatrix(true, true) // otherwise ray intersection is not working before rendering
-        this.resetGraphWalk()
-    }
-
-    resetGraphWalk() {
-        this.graphWalk.init()
-        this.graphDrive.init()
-        this.graphFly.init()
-        this.graphSwim.init()
-        this.cachedWalkPaths.clear()
-        this.cachedDrivePaths.clear()
-        this.cachedFlyPaths.clear()
-        this.cachedSwimPaths.clear()
-        console.log('Cached paths cleared')
-    }
-
-    findWalkPath(start: Vector2, target: PathTarget): TerrainPath {
-        return Terrain.findPath(start, target, this.cachedWalkPaths, this.graphWalk, TILESIZE / 3, 0.25)
-    }
-
-    findDrivePath(start: Vector2, target: PathTarget): TerrainPath {
-        return Terrain.findPath(start, target, this.cachedDrivePaths, this.graphDrive, TILESIZE, 0)
-    }
-
-    findFlyPath(start: Vector2, target: PathTarget): TerrainPath {
-        return Terrain.findPath(start, target, this.cachedFlyPaths, this.graphFly, TILESIZE, 0)
-    }
-
-    findSwimPath(start: Vector2, target: PathTarget): TerrainPath {
-        return Terrain.findPath(start, target, this.cachedSwimPaths, this.graphSwim, TILESIZE, 0)
-    }
-
-    private static findPath(start: Vector2, target: PathTarget, cachedPaths: Map<string, Vector2[]>, graph: Graph, gridSize: number, maxRandomOffset: number): TerrainPath {
-        const gridStart = start.clone().divideScalar(gridSize).floor()
-        const gridEnd = target.targetLocation.clone().divideScalar(gridSize).floor()
-        if (gridStart.x === gridEnd.x && gridStart.y === gridEnd.y) return new TerrainPath(target, target.targetLocation)
-        const cacheIdentifier = gridStart.x + '/' + gridStart.y + ' -> ' + gridEnd.x + '/' + gridEnd.y
-        const resultPath = cachedPaths.getOrUpdate(cacheIdentifier, () => {
-            const startNode = graph.grid[gridStart.x][gridStart.y]
-            const endNode = graph.grid[gridEnd.x][gridEnd.y]
-            const freshPath = astar.search(graph, startNode, endNode).map((n) =>
-                new Vector2(n.x + 0.5, n.y + 0.5).add(new Vector2().random().multiplyScalar(maxRandomOffset)).multiplyScalar(gridSize))
-            if (freshPath.length < 1) return null // no path found
-            freshPath.pop() // last node is replaced with actual target position
-            return freshPath
-        })
-        if (!resultPath) return null
-        return new TerrainPath(target, [...resultPath, target.targetLocation]) // return shallow copy to avoid interference
+        this.pathFinder.resetGraphsAndCaches()
     }
 
     dispose() {

@@ -273,7 +273,7 @@ export abstract class BuildingEntity implements Selectable {
         } else {
             this.onPlaceDown()
         }
-        this.sceneMgr.terrain.resetGraphWalk()
+        this.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
     }
 
     private onPlaceDown() {
