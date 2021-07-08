@@ -52,7 +52,7 @@ export abstract class BuildingEntity implements Selectable {
     secondaryPathSurface: Surface = null
     upgradeCostOre: number = 0
     upgradeCostBrick: number = 0
-    crystalsInUse: number = 0
+    energized: boolean = false
     inBeam: boolean = false
     beamUpAnimator: BeamUpAnimator = null
     pathTarget: GetToolPathTarget = null
@@ -113,11 +113,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     isPowered(): boolean {
-        return this.isReady() && this.powerSwitch && (this.isEnergized() || this.stats.PowerBuilding)
-    }
-
-    isEnergized(): boolean {
-        return this.stats.SelfPowered || this.crystalsInUse > 0
+        return this.isReady() && this.powerSwitch && (this.stats.SelfPowered || this.stats.PowerBuilding || this.energized)
     }
 
     hasMaxLevel(): boolean {
@@ -205,31 +201,34 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     updateEnergyState() {
-        if (this.powerSwitch && !this.inBeam) {
+        if (this.isReady() && this.powerSwitch && (this.energized || GameState.usedCrystals < GameState.numCrystal) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.isEnergized))) {
             this.turnEnergyOn()
         } else {
             this.turnEnergyOff()
         }
-        if (this.teleport) this.teleport.powered = this.isEnergized()
+        if (this.teleport) this.teleport.powered = this.energized
     }
 
     private turnEnergyOn() {
-        if (this.crystalsInUse > 0 || this.stats.SelfPowered || GameState.usedCrystals >= GameState.numCrystal || (this.entityType !== EntityType.POWER_STATION && !this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower)))) return
-        this.crystalsInUse = 1
-        GameState.changeUsedCrystals(this.crystalsInUse)
-        this.surfaces.forEach((s) => s.setHasPower(true, true))
+        if (this.energized) return
+        this.energized = true
+        GameState.changeUsedCrystals(this.crystalDrain)
+        if (this.stats.PowerBuilding) this.surfaces.forEach((s) => s.setEnergyLevel(s.energyLevel + 1))
         this.sceneEntity.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
-        if (this.stats.EngineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
+        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
+    }
+
+    get crystalDrain(): number {
+        return (Array.isArray(this.stats.CrystalDrain) ? this.stats.CrystalDrain?.[this.level] : this.stats.CrystalDrain) || 0
     }
 
     private turnEnergyOff() {
-        if (this.crystalsInUse < 1) return
-        const usedCrystals = this.crystalsInUse
-        this.crystalsInUse = 0
-        GameState.changeUsedCrystals(-usedCrystals)
-        this.surfaces.forEach((s) => s.setHasPower(false, false))
+        if (!this.energized) return
+        this.energized = false
+        GameState.changeUsedCrystals(-this.crystalDrain)
+        if (this.stats.PowerBuilding) this.surfaces.forEach((s) => s.setEnergyLevel(s.energyLevel - 1))
         this.sceneEntity.changeActivity()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))

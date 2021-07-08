@@ -67,7 +67,7 @@ export class Surface implements Selectable {
     building: BuildingEntity = null
     site: BuildingSite = null
     fence: ElectricFence = null
-    hasPower: boolean = false
+    energyLevel: number = 0
 
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
         this.terrain = terrain
@@ -345,7 +345,7 @@ export class Surface implements Selectable {
         } else if (this.surfaceType === SurfaceType.POWER_PATH) {
             textureName += this.updatePowerPathTexture()
         } else if (!this.surfaceType.shaping && this.neighbors.some((n) => n.discovered && n.surfaceType.floor)) {
-            if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.hasPower) {
+            if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.isEnergized) {
                 textureName += '66'
             } else {
                 textureName += this.surfaceType.matIndex.toString()
@@ -385,25 +385,37 @@ export class Surface implements Selectable {
             if (left) this.surfaceRotation = -Math.PI / 2
             if (top) this.surfaceRotation = Math.PI
             if (right) this.surfaceRotation = Math.PI / 2
-            return this.hasPower ? '75' : '65'
+            return this.isEnergized ? '75' : '65'
         } else if (pathSum === 2) {
             if (left === right) {
                 this.surfaceRotation = left ? Math.PI / 2 : 0
-                return this.hasPower ? '72' : '62'
+                return this.isEnergized ? '72' : '62'
             } else {
                 if (left && bottom) this.surfaceRotation = -Math.PI / 2
                 if (left && top) this.surfaceRotation = Math.PI
                 if (top && right) this.surfaceRotation = Math.PI / 2
-                return this.hasPower ? '73' : '63'
+                return this.isEnergized ? '73' : '63'
             }
         } else if (pathSum === 3) {
             if (!top) this.surfaceRotation = -Math.PI / 2
             if (!right) this.surfaceRotation = Math.PI
             if (!bottom) this.surfaceRotation = Math.PI / 2
-            return this.hasPower ? '74' : '64'
+            return this.isEnergized ? '74' : '64'
         } else {
-            return this.hasPower ? '71' : '60'
+            return this.isEnergized ? '71' : '60'
         }
+    }
+
+    get isEnergized(): boolean {
+        return this.energyLevel > 0
+    }
+
+    setEnergyLevel(level: number) {
+        if (this.energyLevel === level) return
+        this.energyLevel = level
+        this.updateTexture()
+        if (this.building) this.building.updateEnergyState()
+        this.neighbors.forEach((n) => n.isPath() && n.setEnergyLevel(level))
     }
 
     forEachMaterial(callback: (mat: MeshPhongMaterial) => void): void {
@@ -543,9 +555,16 @@ export class Surface implements Selectable {
         if (surfaceType === this.surfaceType) return
         const oldSurfaceType = this.surfaceType
         this.surfaceType = surfaceType
+        this.setEnergyLevel(this.getMaxEnergyLevel())
         this.updateTexture()
         if (oldSurfaceType.connectsPath || this.surfaceType.connectsPath) this.neighbors.forEach((n) => n.updateTexture())
         EventBus.publishEvent(new UpdateRadarSurface(this))
+    }
+
+    private getMaxEnergyLevel(): number {
+        let maxLevel = 0
+        this.neighbors.forEach((n) => maxLevel = Math.max(maxLevel, n.energyLevel))
+        return maxLevel
     }
 
     getPathfindingWalkWeight(): number {
@@ -562,13 +581,6 @@ export class Surface implements Selectable {
 
     getPathFindingSwimWeight(): number {
         return this.surfaceType === SurfaceType.WATER ? 1 : 0
-    }
-
-    setHasPower(state: boolean, recursive: boolean) {
-        if (this.hasPower === state) return
-        this.hasPower = state
-        this.updateTexture()
-        if (recursive) this.neighbors.forEach((n) => n.isPath() && n.setHasPower(state, recursive))
     }
 
     canPlaceFence(): boolean { // TODO performance this can be cached
