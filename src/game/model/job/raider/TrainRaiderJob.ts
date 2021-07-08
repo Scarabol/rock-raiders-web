@@ -24,7 +24,7 @@ export class TrainRaiderJob extends RaiderJob {
     }
 
     getWorkplaces(): PathTarget[] {
-        if (!this.building?.isUsable()) {
+        if (!this.building?.isPowered()) {
             this.workplaces = []
             this.entityMgr.getTrainingSites(this.training).map((s) => s.getTrainingTargets().forEach((t) => this.workplaces.push(t)))
         }

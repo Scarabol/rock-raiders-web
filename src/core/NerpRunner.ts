@@ -262,11 +262,11 @@ export class NerpRunner {
     }
 
     getPoweredPowerStationsBuilt() {
-        return this.entityMgr.buildings.count((b) => b.isUsable() && b.entityType === EntityType.POWER_STATION)
+        return this.entityMgr.buildings.count((b) => b.isPowered() && b.entityType === EntityType.POWER_STATION)
     }
 
     getPoweredBarracksBuilt() {
-        return this.entityMgr.buildings.count((b) => b.isUsable() && b.entityType === EntityType.BARRACKS)
+        return this.entityMgr.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS)
     }
 
     getRecordObjectAtTutorial() {

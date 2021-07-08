@@ -68,7 +68,7 @@ export abstract class BuildingEntity implements Selectable {
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
-            this.updatePowerState()
+            this.updateEnergyState()
         })
     }
 
@@ -112,11 +112,11 @@ export abstract class BuildingEntity implements Selectable {
         return !this.inBeam && this.sceneEntity.visible
     }
 
-    isUsable(): boolean {
-        return this.isReady() && this.powerSwitch && (this.isPowered() || this.stats.PowerBuilding)
+    isPowered(): boolean {
+        return this.isReady() && this.powerSwitch && (this.isEnergized() || this.stats.PowerBuilding)
     }
 
-    isPowered(): boolean {
+    isEnergized(): boolean {
         return this.stats.SelfPowered || this.crystalsInUse > 0
     }
 
@@ -150,7 +150,7 @@ export abstract class BuildingEntity implements Selectable {
 
     beamUp() {
         this.inBeam = true
-        this.updatePowerState()
+        this.updateEnergyState()
         for (let c = 0; c < this.stats.CostOre; c++) {
             this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), this.primarySurface.getRandomPosition())
         }
@@ -201,19 +201,19 @@ export abstract class BuildingEntity implements Selectable {
 
     setPowerSwitch(state: boolean) {
         this.powerSwitch = state
-        this.updatePowerState()
+        this.updateEnergyState()
     }
 
-    updatePowerState() {
+    updateEnergyState() {
         if (this.powerSwitch && !this.inBeam) {
-            this.turnPowerOn()
+            this.turnEnergyOn()
         } else {
-            this.turnPowerOff()
+            this.turnEnergyOff()
         }
-        if (this.teleport) this.teleport.powered = this.isPowered()
+        if (this.teleport) this.teleport.powered = this.isEnergized()
     }
 
-    turnPowerOn() {
+    private turnEnergyOn() {
         if (this.crystalsInUse > 0 || this.stats.SelfPowered || GameState.usedCrystals >= GameState.numCrystal || (this.entityType !== EntityType.POWER_STATION && !this.surfaces.some((s) => s.neighbors.some((n) => n.hasPower)))) return
         this.crystalsInUse = 1
         GameState.changeUsedCrystals(this.crystalsInUse)
@@ -224,7 +224,7 @@ export abstract class BuildingEntity implements Selectable {
         if (this.stats.EngineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
     }
 
-    turnPowerOff() {
+    private turnEnergyOff() {
         if (this.crystalsInUse < 1) return
         const usedCrystals = this.crystalsInUse
         this.crystalsInUse = 0
@@ -282,7 +282,7 @@ export abstract class BuildingEntity implements Selectable {
 
     private onPlaceDown() {
         this.sceneEntity.changeActivity()
-        this.updatePowerState()
+        this.updateEnergyState()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
 
@@ -308,7 +308,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     isTrainingSite(training: RaiderTraining): boolean {
-        return this.entityType === RaiderTrainingSites[training] && this.isUsable() && this.stats[RaiderTrainingStatsProperty[training]][this.level]
+        return this.entityType === RaiderTrainingSites[training] && this.isPowered() && this.stats[RaiderTrainingStatsProperty[training]][this.level]
     }
 
     canTeleportIn(entityType: EntityType): boolean {

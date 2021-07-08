@@ -16,7 +16,7 @@ export class UpgradeRaiderJob extends RaiderJob {
     }
 
     getWorkplaces(): PathTarget[] {
-        return this.building.isUsable() ? this.workplaces : []
+        return this.building.isPowered() ? this.workplaces : []
     }
 
     onJobComplete() {

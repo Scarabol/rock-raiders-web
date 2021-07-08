@@ -60,7 +60,7 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
     }
 
     isInvalid(): boolean {
-        return !this.building.isUsable()
+        return !this.building.isPowered()
     }
 
 }

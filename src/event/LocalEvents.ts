@@ -65,7 +65,7 @@ export class SelectionChanged extends LocalEvent {
         this.hasRubble = entityMgr.selection.surface?.hasRubble()
         this.isDrillable = entityMgr.selection.surface?.isDigable()
         this.isReinforcable = entityMgr.selection.surface?.isReinforcable()
-        this.canPlaceFence = entityMgr.selection.surface?.canPlaceFence() && entityMgr && entityMgr.buildings.some((b) => b.entityType === EntityType.POWER_STATION && b.isUsable())
+        this.canPlaceFence = entityMgr.selection.surface?.canPlaceFence() && entityMgr && entityMgr.buildings.some((b) => b.entityType === EntityType.POWER_STATION && b.isPowered())
         this.someCarries = !!entityMgr.selection.raiders.some((r) => !!r.carries)
         this.everyHasMaxLevel = !!entityMgr.selection.raiders.every((r) => r.level >= r.stats.Levels)
         AllRaiderTrainings.forEach((training) => this.canDoTraining.set(training, entityMgr && entityMgr.getTrainingSites(training).length > 0 && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
@@ -134,7 +134,7 @@ export class BuildingsChangedEvent extends LocalEvent {
                 const perLevel = this.discoveredBuildingsByTypeAndLevel.getOrUpdate(b.entityType, () => new Map())
                 perLevel.set(b.level, perLevel.getOrUpdate(b.level, () => 0) + 1)
             }
-            if (b.isUsable()) {
+            if (b.isPowered()) {
                 const perLevel = this.usableBuildingsByTypeAndLevel.getOrUpdate(b.entityType, () => new Map())
                 perLevel.set(b.level, perLevel.getOrUpdate(b.level, () => 0) + 1)
             }

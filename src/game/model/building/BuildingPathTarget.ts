@@ -16,7 +16,7 @@ export class BuildingPathTarget extends PathTarget {
     }
 
     isInvalid(): boolean {
-        return !this.building.isUsable()
+        return !this.building.isPowered()
     }
 
 }

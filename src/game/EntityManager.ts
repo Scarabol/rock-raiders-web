@@ -90,7 +90,7 @@ export class EntityManager {
     }
 
     getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
-        return this.buildings.filter(b => b.isUsable() && buildingTypes.some(bt => b.entityType === bt))
+        return this.buildings.filter(b => b.isPowered() && buildingTypes.some(bt => b.entityType === bt))
     }
 
     getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity {
@@ -119,7 +119,7 @@ export class EntityManager {
     }
 
     getMaxRaiders(): number {
-        return MAX_RAIDER_BASE + this.buildings.count((b) => b.isUsable() && b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT
+        return MAX_RAIDER_BASE + this.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT
     }
 
     discoverSurface(surface: Surface) {
@@ -166,7 +166,7 @@ export class EntityManager {
 
     getOxygenSum(): number {
         return this.raiders.map((r) => r.stats.OxygenCoef).reduce((l, r) => l + r, 0) +
-            this.buildings.map((b) => b.isUsable() ? b.stats.OxygenCoef : 0).reduce((l, r) => l + r, 0)
+            this.buildings.map((b) => b.isPowered() ? b.stats.OxygenCoef : 0).reduce((l, r) => l + r, 0)
     }
 
     hasMaxRaiders(): boolean {

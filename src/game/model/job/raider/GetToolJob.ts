@@ -19,7 +19,7 @@ export class GetToolJob extends RaiderJob {
     }
 
     getWorkplaces(): GetToolPathTarget[] {
-        if (this.workplaces.some((b) => !b.building.isUsable())) {
+        if (this.workplaces.some((b) => !b.building.isPowered())) {
             this.workplaces = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new GetToolPathTarget(b))
         }
         return this.workplaces
