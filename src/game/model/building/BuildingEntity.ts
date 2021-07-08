@@ -199,7 +199,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     updateEnergyState() {
-        if (this.isReady() && this.powerSwitch && (this.energized || GameState.usedCrystals < GameState.numCrystal) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.energyLevel > 0))) {
+        if (this.isReady() && this.powerSwitch && (this.energized || GameState.usedCrystals + this.crystalDrain <= GameState.numCrystal) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.energyLevel > 0))) {
             this.turnEnergyOn()
         } else {
             this.turnEnergyOff()
@@ -212,6 +212,7 @@ export abstract class BuildingEntity implements Selectable {
         this.energized = true
         GameState.changeUsedCrystals(this.crystalDrain)
         if (this.stats.PowerBuilding) this.surfaces.forEach((s) => s.setEnergyLevel(s.energyLevel + 1))
+        this.surfaces.forEach((s) => s.updateTexture())
         this.sceneEntity.changeActivity(this.getDefaultActivity())
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
@@ -223,6 +224,7 @@ export abstract class BuildingEntity implements Selectable {
         this.energized = false
         GameState.changeUsedCrystals(-this.crystalDrain)
         if (this.stats.PowerBuilding) this.surfaces.forEach((s) => s.setEnergyLevel(s.energyLevel - 1))
+        this.surfaces.forEach((s) => s.updateTexture())
         this.sceneEntity.changeActivity(this.getDefaultActivity())
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
