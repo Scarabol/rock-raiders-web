@@ -99,10 +99,10 @@ export class GameSelection {
     assignMoveJob(target: Vector2) {
         if (!target) return
         const raiderGridSize = TILESIZE / 3
-        const raiderTarget = target.divideScalar(raiderGridSize).floor().addScalar(0.5).multiplyScalar(raiderGridSize)
+        const raiderTarget = target.clone().divideScalar(raiderGridSize).floor().addScalar(0.5).multiplyScalar(raiderGridSize)
         this.raiders.forEach((r) => r.setJob(new MoveJob(raiderTarget)))
         const vehicleGridSize = TILESIZE
-        const vehicleTarget = target.divideScalar(vehicleGridSize).floor().addScalar(0.5).multiplyScalar(vehicleGridSize)
+        const vehicleTarget = target.clone().divideScalar(vehicleGridSize).floor().addScalar(0.5).multiplyScalar(vehicleGridSize)
         this.vehicles.forEach((v) => v.setJob(new MoveJob(vehicleTarget)))
     }
 
