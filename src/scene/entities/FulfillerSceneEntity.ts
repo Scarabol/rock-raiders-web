@@ -1,6 +1,4 @@
 import { Vector2 } from 'three'
-import { BaseActivity } from '../../game/model/activities/BaseActivity'
-import { RaiderActivity } from '../../game/model/activities/RaiderActivity'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { SceneEntity } from '../SceneEntity'
 
@@ -25,10 +23,6 @@ export class FulfillerSceneEntity extends AnimatedSceneEntity {
         }
         this.carriedEntity.addToScene(new Vector2(position.x, position.z), null)
         this.carriedEntity = null
-    }
-
-    getDefaultActivity(): BaseActivity {
-        return this.carriedEntity ? RaiderActivity.CarryStand : super.getDefaultActivity()
     }
 
 }

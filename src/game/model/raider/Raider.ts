@@ -3,7 +3,7 @@ import { EventBus } from '../../../event/EventBus'
 import { RaidersChangedEvent } from '../../../event/LocalEvents'
 import { SPIDER_SLIP_RANGE_SQ } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { FulfillerSceneEntity } from '../../../scene/entities/FulfillerSceneEntity'
+import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { BaseActivity } from '../activities/BaseActivity'
@@ -20,7 +20,7 @@ import { RaiderTraining } from './RaiderTraining'
 
 export class Raider extends FulfillerEntity {
 
-    sceneEntity: FulfillerSceneEntity
+    sceneEntity: RaiderSceneEntity
     tools: Map<RaiderTool, boolean> = new Map()
     trainings: Map<RaiderTraining, boolean> = new Map()
     slipped: boolean = false
@@ -30,7 +30,7 @@ export class Raider extends FulfillerEntity {
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.PILOT)
         this.tools.set(RaiderTool.DRILL, true)
-        this.sceneEntity = new FulfillerSceneEntity(sceneMgr, 'mini-figures/pilot/pilot.ae')
+        this.sceneEntity = new RaiderSceneEntity(sceneMgr, 'mini-figures/pilot/pilot.ae')
     }
 
     get stats() {
