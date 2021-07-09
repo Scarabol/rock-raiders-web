@@ -13,6 +13,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     animationEntityType: AnimationEntityType = null
     animation: AnimClip = null
     activity: BaseActivity = null
+    upgrades: SceneMesh[] = []
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
         super(sceneMgr)
@@ -40,7 +41,10 @@ export class AnimatedSceneEntity extends SceneEntity {
             return
         }
         if (this.animation) {
-            // TODO remove/dispose upgrade models
+            this.upgrades.forEach((u) => {
+                u.parent?.remove(u)
+                u.dispose()
+            })
             this.remove(this.animation.polyRootGroup)
             this.animation.stop()
         }
@@ -72,10 +76,13 @@ export class AnimatedSceneEntity extends SceneEntity {
                     const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath + '.lwo')
                     if (lwoModel) {
                         joint.add(lwoModel)
+                        this.upgrades.push(lwoModel)
                     } else {
                         const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae', this.sceneMgr.listener)
                         upgradeModels.animations.get('activity_stand')?.animatedPolys.forEach((b) => {
-                            joint.add(b.model.clone())
+                            const upgradeSceneMesh = b.model.clone()
+                            joint.add(upgradeSceneMesh)
+                            this.upgrades.push(upgradeSceneMesh)
                         })
                     }
                 } else {
