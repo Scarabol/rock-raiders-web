@@ -1,5 +1,5 @@
 import { EventBus } from '../../event/EventBus'
-import { MaterialAmountChanged } from '../../event/WorldEvents'
+import { UsedCrystalChanged } from '../../event/WorldEvents'
 
 export class GameState {
 
@@ -34,7 +34,7 @@ export class GameState {
     static changeUsedCrystals(changedCrystals: number) {
         if (!changedCrystals) return
         this.usedCrystals += changedCrystals
-        EventBus.publishEvent(new MaterialAmountChanged())
+        EventBus.publishEvent(new UsedCrystalChanged())
     }
 
 }

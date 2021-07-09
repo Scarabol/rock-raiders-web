@@ -2,7 +2,7 @@ import { BaseConfig } from '../../cfg/BaseConfig'
 import { ButtonCfg } from '../../cfg/ButtonCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventKey } from '../../event/EventKeyEnum'
-import { MaterialAmountChanged } from '../../event/WorldEvents'
+import { MaterialAmountChanged, UsedCrystalChanged } from '../../event/WorldEvents'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { GuiResourceCache } from '../GuiResourceCache'
@@ -34,10 +34,12 @@ export class PanelCrystalSideBar extends Panel {
             this.labelOre.label = event.totalOre.toString()
             this.labelCrystal.label = event.numCrystal.toString()
             this.numCrystal = event.numCrystal
-            this.usedCrystals = event.usedCrystal
             this.neededCrystals = event.neededCrystal
             this.totalOre = event.totalOre
             this.notifyRedraw()
+        })
+        this.registerEventListener(EventKey.USED_CRYSTAL_CHANGED, (event: UsedCrystalChanged) => {
+            this.usedCrystals = event.usedCrystal
         })
     }
 
