@@ -10,7 +10,7 @@ export class BaseConfig {
                 return config.assignValue(objKey, lCfgKeyName, cfgObj[cfgKey])
             })
             if (!found) {
-                console.warn('cfg key: ' + cfgKey + ' does not exist in cfg: ' + config?.constructor?.name)
+                console.warn(`cfg key: ${cfgKey} does not exist in cfg: ${config?.constructor?.name}`)
             }
         })
         return config
@@ -26,7 +26,7 @@ export class BaseConfig {
                 if (currentIsArray) {
                     parsedValue = [parsedValue]
                     // } else {
-                    //     console.warn('Array overwrite conflict for key ' + objKey + ' with existing value (' + currentValue + ') and new value (' + parsedValue + ')')
+                    //     console.warn(`Array overwrite conflict for key ${objKey} with existing value (${currentValue}) and new value (${parsedValue})`)
                 }
             }
             this[objKey] = parsedValue

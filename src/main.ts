@@ -11,7 +11,7 @@ import { MainMenuScreen } from './screen/MainMenuScreen'
 import { RewardScreen } from './screen/RewardScreen'
 
 if (DEV_MODE) console.warn('DEV MODE ACTIVE')
-else console.log('Rock Raider Web v' + require('../package.json').version)
+else console.log(`Rock Raider Web v${require('../package.json').version}`)
 console.time('Total asset loading time')
 
 // setup and link all components
@@ -47,11 +47,11 @@ ResourceManager.onLoadDone = () => {
     mainMenuScreen.onLevelSelected = (levelName) => {
         try {
             const levelConf = ResourceManager.getLevelConfig().levelCfgByName.get(levelName)
-            if (!levelConf) throw new Error('Could not find level configuration for "' + levelName + '"') // TODO this could be nicer
+            if (!levelConf) throw new Error(`Could not find level configuration for "${levelName}"`) // TODO this could be nicer
             rewardScreen.setup(levelConf.fullName, levelConf.reward)
             gameScreen.startLevel(levelName, levelConf)
         } catch (e) {
-            console.error('Could not load level: ' + levelName, e)
+            console.error(`Could not load level: ${levelName}`, e)
             gameScreen.hide()
             mainMenuScreen.showLevelSelection()
         }
@@ -77,7 +77,7 @@ ResourceManager.onLoadDone = () => {
         GameState.numCrystal = Number(params.get('numCrystal')) || 0
         if (entry === 'level') mainMenuScreen.showLevelSelection()
         else if (entry === 'reward') rewardScreen.show()
-        else if (entry === 'random') mainMenuScreen.selectLevel('Level' + (('00' + getRandomInclusive(1, 25)).substr(-2)))
+        else if (entry === 'random') mainMenuScreen.selectLevel(`Level${(`00${getRandomInclusive(1, 25)}`).substr(-2)}`)
         else if (entry) mainMenuScreen.selectLevel(entry)
     } else {
         mainMenuScreen.showMainMenu()

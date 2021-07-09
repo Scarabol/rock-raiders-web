@@ -49,7 +49,7 @@ export class NerpRunner {
      */
     checkRegister(register) {
         const num = parseInt(register)
-        if (isNaN(num) || num < 0 || num > this.registers.length) throw new Error('Invalid register (' + register + ') provided')
+        if (isNaN(num) || num < 0 || num > this.registers.length) throw new Error(`Invalid register (${register}) provided`)
         return num
     }
 
@@ -60,7 +60,7 @@ export class NerpRunner {
      */
     checkRegisterValue(value) {
         const num = parseInt(value)
-        if (isNaN(num)) throw new Error('Invalid register value (' + value + ') provided')
+        if (isNaN(num)) throw new Error(`Invalid register value (${value}) provided`)
         return num
     }
 
@@ -103,7 +103,7 @@ export class NerpRunner {
      */
     setTimer(timer, value) {
         const num = parseInt(value)
-        if (isNaN(num)) throw new Error('Can\'t set timer to NaN value: ' + value)
+        if (isNaN(num)) throw new Error(`Can't set timer to NaN value: ${value}`)
         this.timers[timer] = new Date().getTime() + num
     }
 
@@ -129,7 +129,7 @@ export class NerpRunner {
      * End the level as failure and show the score screen.
      */
     setLevelFail() {
-        console.log('NerpRunner marks level as failed; at line: ' + this.scriptLines[this.programCounter])
+        console.log(`NerpRunner marks level as failed; at line: ${this.scriptLines[this.programCounter]}`)
         this.halted = true
         this.onLevelEnd(GameResultState.FAILED)
     }
@@ -325,13 +325,13 @@ export class NerpRunner {
         const lMethodName = methodName.toLowerCase()
         const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.toLowerCase() === lMethodName)
         if (memberName) return this[memberName].apply(this, methodArgs)
-        throw new Error('Undefined method: ' + methodName)
+        throw new Error(`Undefined method: ${methodName}`)
     }
 
     conditional(left, right) {
         const conditionResult = this.executeStatement(left)
         if (this.debug) {
-            console.log('Condition evaluated to ' + conditionResult)
+            console.log(`Condition evaluated to ${conditionResult}`)
         }
         if (conditionResult) {
             this.executeStatement(right)
@@ -343,7 +343,7 @@ export class NerpRunner {
             const argValues = expression.invoke !== 'conditional' ? expression.args.map(e => this.executeStatement(e)) : expression.args
             const result = this.callMethod(expression.invoke, argValues)
             if (result !== undefined && this.debug) {
-                console.log('Method returned: ' + result)
+                console.log(`Method returned: ${result}`)
             }
             return result
         } else if (expression.comparator) {
@@ -359,21 +359,21 @@ export class NerpRunner {
                 return left > right
             } else {
                 console.log(expression)
-                throw new Error('Unknown comparator: ' + expression.comparator)
+                throw new Error(`Unknown comparator: ${expression.comparator}`)
             }
         } else if (!isNaN(expression)) { // just a number
             return expression
         } else if (expression.jump) {
             this.programCounter = this.labelsByName[expression.jump]
             if (this.programCounter === undefined) {
-                throw new Error('Label \'' + expression.jump + '\' is unknown!')
+                throw new Error(`Label '${expression.jump}' is unknown!`)
             }
             if (this.debug) {
-                console.log('Jumping to label \'' + expression.jump + '\' in line ' + this.programCounter)
+                console.log(`Jumping to label '${expression.jump}' in line ${this.programCounter}`)
             }
         } else {
             console.log(expression)
-            throw new Error('Unknown expression in line ' + this.programCounter + ': ' + expression)
+            throw new Error(`Unknown expression in line ${this.programCounter}: ${expression}`)
         }
     }
 
@@ -382,13 +382,14 @@ export class NerpRunner {
         if (this.halted) return
         try {
             if (this.debug) {
-                console.log('Executing following script\n' + this.scriptLines.join('\n'))
-                console.log('Registers: ' + this.registers)
+                console.log(`Executing following script
+${this.scriptLines.join('\n')}`)
+                console.log(`Registers: ${this.registers}`)
             }
             for (this.programCounter = 0; this.programCounter < this.statements.length; this.programCounter++) {
                 const statement = this.statements[this.programCounter]
                 if (this.debug) {
-                    console.log(this.programCounter + ': ' + this.scriptLines[this.programCounter])
+                    console.log(`${this.programCounter}: ${this.scriptLines[this.programCounter]}`)
                     console.log(statement)
                 }
                 if (!statement.label) { // do nothing for label markers

@@ -110,7 +110,7 @@ export class MainMenuLayer extends ScaledLayer {
                         } else if (item.actionName.toLowerCase() === 'selectlevel') {
                             this.screen.selectLevel((item as MainMenuLevelButton).levelKey)
                         } else if (item.actionName) {
-                            console.warn('not implemented: ' + item.actionName + ' - ' + item.targetIndex)
+                            console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
                         }
                     }
                 })

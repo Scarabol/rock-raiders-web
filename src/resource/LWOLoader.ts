@@ -249,7 +249,7 @@ export class LWOLoader {
 
     parsePoints(view, chunkOffset, chunkSize) {
         if (chunkSize % VEC12_SIZE !== 0) {
-            console.error('LWOLoader.parse: F12 does not evenly divide into chunk size (' + chunkSize + '). Possible corruption.')
+            console.error(`LWOLoader.parse: F12 does not evenly divide into chunk size (${chunkSize}). Possible corruption.`)
             return
         }
 
@@ -269,7 +269,7 @@ export class LWOLoader {
     parseSurfaceNames(buffer, chunkOffset, chunkSize) {
         let textChunk = new TextDecoder().decode(new Uint8Array(buffer, chunkOffset, chunkSize))
         this.materials = textChunk.split('\0').filter((s) => !!s).map((name) => new SequenceTextureMaterial(name))
-        if (this.verbose) console.log('LWO contains ' + this.materials.length + ' materials with following names: ' + this.materials.map((m) => m.name))
+        if (this.verbose) console.log(`LWO contains ${this.materials.length} materials with following names: ${this.materials.map((m) => m.name)}`)
     }
 
     parsePolygons(view, chunkOffset, chunkSize) {
@@ -320,7 +320,7 @@ export class LWOLoader {
         while (view.getUint8(chunkOffset + offset) !== 0) offset++
 
         let materialName = decodeString(new Uint8Array(buffer, chunkOffset, offset))
-        if (this.verbose) console.log('Start parsing surface: ' + materialName)
+        if (this.verbose) console.log(`Start parsing surface: ${materialName}`)
         let materialIndex = -1
         let material: SequenceTextureMaterial = null
         for (let i = 0; i < this.materials.length; i++) {
@@ -348,7 +348,7 @@ export class LWOLoader {
                 const subChunkType = view.getInt32(subChunkOffset)
                 const subChunkSize = view.getInt16(subChunkOffset + ID4_SIZE)
 
-                if (this.verbose) console.log('Parsing sub-chunk ' + new TextDecoder().decode(new Uint8Array(buffer, subChunkOffset, ID4_SIZE)) + ' at ' + subChunkOffset + '; length ' + subChunkSize)
+                if (this.verbose) console.log(`Parsing sub-chunk ${new TextDecoder().decode(new Uint8Array(buffer, subChunkOffset, ID4_SIZE))} at ${subChunkOffset}; length ${subChunkSize}`)
 
                 const currentOffset = subChunkOffset + SUBCHUNK_HEADER_SIZE
                 switch (subChunkType) {
@@ -359,11 +359,11 @@ export class LWOLoader {
                             view.getUint8(currentOffset + 2) / 255,
                         ]
                         material.color = new Color().fromArray(colorArray)
-                        if (this.verbose) console.log('Material color (COLR): ' + colorArray.join(' '))
+                        if (this.verbose) console.log(`Material color (COLR): ${colorArray.join(' ')}`)
                         break
                     case SURF_FLAG:
                         const flags = view.getUint16(currentOffset)
-                        if (this.verbose) console.log('Flags (FLAG): ' + flags.toString(2))
+                        if (this.verbose) console.log(`Flags (FLAG): ${flags.toString(2)}`)
                         // if (this.verbose && flags & LUMINOUS_BIT) console.warn('Flag is set but unhandled: luminous') // flag replaced with LUMI below
                         if (this.verbose && flags & OUTLINE_BIT) console.warn('Flag is set but unhandled: outline')
                         if (this.verbose && flags & SMOOTHING_BIT) console.warn('Flag is set but unhandled: smoothing')
@@ -385,26 +385,26 @@ export class LWOLoader {
                         break
                     case SURF_EDGE:
                         const edgeTransparencyThreshold = view.getFloat32(currentOffset)
-                        if (this.verbose) console.warn('Edge transparency threshold (0.0 to 1.0): ' + edgeTransparencyThreshold)
+                        if (this.verbose) console.warn(`Edge transparency threshold (0.0 to 1.0): ${edgeTransparencyThreshold}`)
                         break
                     case SURF_SMAN:
                         const maxSmoothAngle = view.getFloat32(currentOffset)
-                        if (this.verbose) console.warn('Implement maximum angle between two adjacent polygons that can be smooth shaded: ' + maxSmoothAngle)
+                        if (this.verbose) console.warn(`Implement maximum angle between two adjacent polygons that can be smooth shaded: ${maxSmoothAngle}`)
                         break
                     case SURF_LUMI:
                         const luminosity = view.getInt16(currentOffset) / 256
-                        if (this.verbose) console.log('Luminosity (LUMI): ' + luminosity)
+                        if (this.verbose) console.log(`Luminosity (LUMI): ${luminosity}`)
                         material.emissiveIntensity = luminosity
                         break
                     case SURF_DIFF:
                         const diffuse = view.getInt16(currentOffset) / 256
-                        if (this.verbose) console.log('Diffuse (DIFF): ' + diffuse)
+                        if (this.verbose) console.log(`Diffuse (DIFF): ${diffuse}`)
                         if (!diffuse) material.color = null
                         break
                     case SURF_SPEC:
                         const specular = view.getInt16(currentOffset) / 256
                         // material.specular = material.color.multiplyScalar(specular);
-                        if (this.verbose) console.warn('Specular (SPEC): ' + specular)
+                        if (this.verbose) console.warn(`Specular (SPEC): ${specular}`)
                         break
                     case SURF_REFL:
                         let reflection = 0
@@ -414,7 +414,7 @@ export class LWOLoader {
                             reflection = view.getInt16(currentOffset) / 256
                         }
                         material.reflectivity = reflection
-                        if (this.verbose) console.log('Reflectivity (REFL): ' + material.reflectivity)
+                        if (this.verbose) console.log(`Reflectivity (REFL): ${material.reflectivity}`)
                         break
                     case SURF_TRAN:
                     case SURF_VTRN:
@@ -425,22 +425,22 @@ export class LWOLoader {
                             transparency = view.getInt16(currentOffset) / 256
                         }
                         material.setOpacity(1 - transparency)
-                        if (this.verbose) console.log('Opacity (TRAN/VTRN): ' + material.opacity)
+                        if (this.verbose) console.log(`Opacity (TRAN/VTRN): ${material.opacity}`)
                         break
                     case SURF_VLUM:
                         const vLuminosity = view.getFloat32(currentOffset)
-                        if (this.verbose) console.log('Luminosity (VLUM): ' + vLuminosity)
+                        if (this.verbose) console.log(`Luminosity (VLUM): ${vLuminosity}`)
                         material.emissiveIntensity = vLuminosity
                         break
                     case SURF_VDIF:
                         let vDiffuse = view.getFloat32(currentOffset)
-                        if (this.verbose) console.log('Diffuse (VDIF): ' + vDiffuse)
+                        if (this.verbose) console.log(`Diffuse (VDIF): ${vDiffuse}`)
                         // material.vertexColors = !!vDiffuse // XXX push vertex colors first
                         break
                     case SURF_VSPC:
                         let vSpecular = view.getFloat32(currentOffset)
                         // material.specular = material.color.multiplyScalar(vSpecular);
-                        if (this.verbose) console.warn('Specular (VSPC): ' + vSpecular)
+                        if (this.verbose) console.warn(`Specular (VSPC): ${vSpecular}`)
                         break
                     case SURF_CTEX: // start of new texture sub-chunk
                     case SURF_DTEX:
@@ -449,12 +449,12 @@ export class LWOLoader {
                     case SURF_TTEX:
                     case SURF_BTEX:
                         const textureTypeName = decodeFilepath(new Uint8Array(buffer, currentOffset, subChunkSize))
-                        if (this.verbose) console.warn('Unhandled texture typename: ' + textureTypeName)
+                        if (this.verbose) console.warn(`Unhandled texture typename: ${textureTypeName}`)
                         // XXX handle different texture types
                         break
                     case SURF_TFLG:
                         textureFlags = view.getUint16(currentOffset)
-                        if (this.verbose) console.log('Flags (TFLG): ' + textureFlags.toString(2))
+                        if (this.verbose) console.log(`Flags (TFLG): ${textureFlags.toString(2)}`)
                         if (this.verbose && textureFlags & XAXIS_BIT) console.warn('Flag is set but unhandled: X Axis')
                         if (this.verbose && textureFlags & YAXIS_BIT) console.warn('Flag is set but unhandled: Y Axis')
                         if (this.verbose && textureFlags & ZAXIS_BIT) console.warn('Flag is set but unhandled: Z Axis')
@@ -465,11 +465,11 @@ export class LWOLoader {
                         break
                     case SURF_TSIZ:
                         textureSize = getVector3AtOffset(view, currentOffset)
-                        if (this.verbose) console.log('Texture size (TSIZ): ' + textureSize.toArray().join(' '))
+                        if (this.verbose) console.log(`Texture size (TSIZ): ${textureSize.toArray().join(' ')}`)
                         break
                     case SURF_TCTR:
                         textureCenter = getVector3AtOffset(view, currentOffset)
-                        if (this.verbose) console.warn('Unhandled texture center (TCTR): ' + textureCenter.toArray().join(' '))
+                        if (this.verbose) console.warn(`Unhandled texture center (TCTR): ${textureCenter.toArray().join(' ')}`)
                         break
                     case SURF_TCLR:
                         const textureColorArray = [
@@ -480,15 +480,15 @@ export class LWOLoader {
                         ]
                         // const textureColor = new Color().fromArray(textureColorArray);
                         // seems to be 0 0 0 anyway...
-                        if (this.verbose) console.log('Unhandled texture color (TCLR): ' + textureColorArray.join(' '))
+                        if (this.verbose) console.log(`Unhandled texture color (TCLR): ${textureColorArray.join(' ')}`)
                         break
                     case SURF_TVAL:
                         const textureValue = view.getUint16(currentOffset) / 256
-                        if (this.verbose) console.warn('Unhandled texture value (TVAL): ' + textureValue)
+                        if (this.verbose) console.warn(`Unhandled texture value (TVAL): ${textureValue}`)
                         break
                     case SURF_TIMG:
                         const textureFilepath = decodeFilepath(new Uint8Array(buffer, currentOffset, subChunkSize))
-                        if (this.verbose) console.log('Texture filepath (TIMG): ' + textureFilepath)
+                        if (this.verbose) console.log(`Texture filepath (TIMG): ${textureFilepath}`)
                         const lTextureFilename = getFilename(textureFilepath)?.toLowerCase()
                         if (!lTextureFilename || lTextureFilename === '(none)') break
                         material.transparent = material.transparent || !!lTextureFilename.match(/a\d\d\d\D.*bmp/i)
@@ -514,10 +514,10 @@ export class LWOLoader {
                         break
                     case SURF_TAAS: // not supported by threejs
                         // const antialiasingStrength = view.getFloat32(currentOffset)
-                        // if (this.verbose) console.log('Antialiasing strength: ' + antialiasingStrength)
+                        // if (this.verbose) console.log(`Antialiasing strength: ${antialiasingStrength}`)
                         break
                     default: // TODO implement all LWO features
-                        if (this.verbose) console.warn('Found unrecognised SURF sub-chunk type ' + new TextDecoder().decode(new Uint8Array(buffer, subChunkOffset, ID4_SIZE)) + ' (' + subChunkType + ') at ' + subChunkOffset + '; length ' + subChunkSize)
+                        if (this.verbose) console.warn(`Found unrecognised SURF sub-chunk type ${new TextDecoder().decode(new Uint8Array(buffer, subChunkOffset, ID4_SIZE))} (${subChunkType}) at ${subChunkOffset}; length ${subChunkSize}`)
                         break
                 }
 
@@ -527,7 +527,7 @@ export class LWOLoader {
 
         planarMapUVS(this.geometry, this.vertices, this.uvs, this.indices, materialIndex, textureSize, textureCenter, textureFlags)
 
-        if (this.verbose) console.log('Done parsing surface: ' + materialName)
+        if (this.verbose) console.log(`Done parsing surface: ${materialName}`)
     }
 
     parse(buffer: ArrayBuffer): SceneMesh {
@@ -540,13 +540,13 @@ export class LWOLoader {
 
         const fileSize = view.getUint32(ID4_SIZE)
         if (fileSize + CHUNK_HEADER_SIZE !== view.byteLength) {
-            console.warn('LWOLoader.parse: Discrepancy between size in header (' + (fileSize + CHUNK_HEADER_SIZE) + ' bytes) and actual size (' + view.byteLength + ' bytes).')
+            console.warn(`LWOLoader.parse: Discrepancy between size in header (${fileSize + CHUNK_HEADER_SIZE} bytes) and actual size (${view.byteLength} bytes).`)
         }
 
         let magicOffset = ID4_SIZE + I4_SIZE
         if (view.getUint32(magicOffset) !== LWO_MAGIC) {
             const magic = decodeString(new Uint8Array(buffer, magicOffset, ID4_SIZE))
-            console.error('LWOLoader.parse: Invalid magic ID (' + magic + ') in LWO header.')
+            console.error(`LWOLoader.parse: Invalid magic ID (${magic}) in LWO header.`)
             return
         }
 
@@ -575,7 +575,7 @@ export class LWOLoader {
                         this.parseSurface(view, buffer, cursor, chunkSize)
                         break
                     default:
-                        console.warn('Found unrecognised chunk type ' + decodeString(new Uint8Array(buffer, cursor - CHUNK_HEADER_SIZE, ID4_SIZE)) + ' at ' + cursor)
+                        console.warn(`Found unrecognised chunk type ${decodeString(new Uint8Array(buffer, cursor - CHUNK_HEADER_SIZE, ID4_SIZE))} at ${cursor}`)
                 }
 
                 cursor += chunkSize
@@ -604,7 +604,7 @@ export class LWOLoader {
         } else if (wrap === 3) {
             return MirroredRepeatWrapping
         } else {
-            console.warn('Unexpected texture wrapping mode given: ' + wrap)
+            console.warn(`Unexpected texture wrapping mode given: ${wrap}`)
             return RepeatWrapping
         }
     }

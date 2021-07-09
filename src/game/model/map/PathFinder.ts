@@ -90,7 +90,7 @@ export class PathFinder {
         } else if (crossLand && crossWater && crossLava) {
             return this.findFlyPath(start, target)
         } else { // TODO at least path finding for LavaMonster missing
-            console.error('Unexpected path finding combination (' + crossLand + ', ' + crossWater + ', ' + crossLava + ') found. No graph available returning direct path')
+            console.error(`Unexpected path finding combination (${crossLand}, ${crossWater}, ${crossLava}) found. No graph available returning direct path`)
             return new TerrainPath(target, target.targetLocation)
         }
     }
@@ -115,7 +115,7 @@ export class PathFinder {
         const gridStart = start.clone().divideScalar(gridSize).floor()
         const gridEnd = target.targetLocation.clone().divideScalar(gridSize).floor()
         if (gridStart.x === gridEnd.x && gridStart.y === gridEnd.y) return new TerrainPath(target, target.targetLocation)
-        const cacheIdentifier = gridStart.x + '/' + gridStart.y + ' -> ' + gridEnd.x + '/' + gridEnd.y
+        const cacheIdentifier = `${gridStart.x}/${gridStart.y} -> ${gridEnd.x}/${gridEnd.y}`
         const resultPath = cachedPaths.getOrUpdate(cacheIdentifier, () => {
             const startNode = graph.grid[gridStart.x][gridStart.y]
             const endNode = graph.grid[gridEnd.x][gridEnd.y]

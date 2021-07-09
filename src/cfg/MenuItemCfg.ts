@@ -18,7 +18,7 @@ export class MenuItemCfg extends BaseButtonCfg {
             this.tooltip = parseLabel(tooltip)
             this.tooltipDisabled = parseLabel(tooltipDisabled)
         } else {
-            console.error('Unexpected menu item cfg value length: ' + cfgValue.length)
+            console.error(`Unexpected menu item cfg value length: ${cfgValue.length}`)
         }
         this.width = 40
         this.height = 40

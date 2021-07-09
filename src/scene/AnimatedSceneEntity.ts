@@ -37,7 +37,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             })
         }
         if (!animation) {
-            console.warn('Activity ' + activity.activityKey + ' unknown or has no animation defined')
+            console.warn(`Activity ${activity.activityKey} unknown or has no animation defined`)
             console.log(this.animationEntityType.animations)
             return
         }
@@ -74,12 +74,12 @@ export class AnimatedSceneEntity extends SceneEntity {
             upgrades0000.forEach((upgrade) => { // TODO parse upgrades only once
                 const joint = this.getNullJointForUpgrade(upgrade)
                 if (joint) {
-                    const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath + '.lwo')
+                    const lwoModel = ResourceManager.getLwoModel(`${upgrade.upgradeFilepath}.lwo`)
                     if (lwoModel) {
                         joint.add(lwoModel)
                         this.upgrades.push(lwoModel)
                     } else {
-                        const upgradeModels = ResourceManager.getAnimationEntityType(upgrade.upgradeFilepath + '/' + upgrade.upgradeFilepath.split('/').last() + '.ae', this.sceneMgr.listener)
+                        const upgradeModels = ResourceManager.getAnimationEntityType(`${upgrade.upgradeFilepath}/${upgrade.upgradeFilepath.split('/').last()}.ae`, this.sceneMgr.listener)
                         upgradeModels.animations.get('activity_stand')?.animatedPolys.forEach((b) => {
                             const upgradeSceneMesh = b.model.clone()
                             joint.add(upgradeSceneMesh)
@@ -87,7 +87,7 @@ export class AnimatedSceneEntity extends SceneEntity {
                         })
                     }
                 } else {
-                    console.warn('Could not find null joint ' + upgrade.upgradeNullName + ' and index ' + upgrade.upgradeNullIndex + ' to attach upgrade: ' + upgrade.upgradeFilepath)
+                    console.warn(`Could not find null joint ${upgrade.upgradeNullName} and index ${upgrade.upgradeNullIndex} to attach upgrade: ${upgrade.upgradeFilepath}`)
                 }
             })
         }

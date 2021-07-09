@@ -34,7 +34,7 @@ export class SoundManager {
             if (cachedSound) return new Promise<AudioBuffer>((resolve) => resolve(cachedSound))
             const sfxContent = ResourceCache.sfxByKey.get(sfxName)
             if (!sfxContent) {
-                console.error('Could not find ' + sfxName + ' in: ', ResourceCache.sfxByKey)
+                console.error(`Could not find ${sfxName} in: `, ResourceCache.sfxByKey)
                 return
             }
             const data = sfxContent.slice(0) // slice used to create copy, because array gets auto detached after decode

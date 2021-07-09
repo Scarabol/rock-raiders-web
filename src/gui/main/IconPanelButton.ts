@@ -20,7 +20,7 @@ export class IconPanelButton extends Button {
         this.tooltipDisabledSfx = menuItemCfg.tooltipDisabledSfx
         this.hotkey = menuItemCfg.hotkey
         this.disabled = true
-        this.onClick = () => console.log('menu item pressed: ' + this.buttonType)
+        this.onClick = () => console.log(`menu item pressed: ${this.buttonType}`)
     }
 
     reset() {

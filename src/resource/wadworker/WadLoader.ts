@@ -23,7 +23,7 @@ export class WadLoader {
         console.log(msg)
     }
     onCacheMiss: (cacheIdentifier: string) => any = (cacheIdentifier: string) => {
-        console.log('Cache missed for: ' + cacheIdentifier)
+        console.log(`Cache missed for: ${cacheIdentifier}`)
     }
     onInitialLoad: (totalResources: number, cfg: any) => any = () => {
         console.log('Initial loading done.')
@@ -31,7 +31,7 @@ export class WadLoader {
     onAssetLoaded: (assetIndex: number, assetNames: string[], assetObj: any, sfxKeys?: string[]) => any = () => {
     }
     onLoadDone: (totalResources: number) => any = (totalResources: number) => {
-        console.log('Loading of about ' + totalResources + ' assets complete!')
+        console.log(`Loading of about ${totalResources} assets complete!`)
     }
 
     loadWadImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
@@ -95,7 +95,7 @@ export class WadLoader {
     loadMapAsset(name: string, callback: (assetNames: string[], obj: any) => any) {
         const buffer = this.wad0File.getEntryData(name)
         if (buffer.length < 13 || String.fromCharCode.apply(String, buffer.slice(0, 3)) !== 'MAP') {
-            console.error('Invalid map data provided for: ' + name)
+            console.error(`Invalid map data provided for: ${name}`)
             return
         }
         const map = WadParser.parseMap(buffer)
@@ -129,7 +129,7 @@ export class WadLoader {
             lwoContent = this.wad0File.getEntryBuffer(lwoFilepath)
         } catch (e) {
             try {
-                lwoContent = this.wad0File.getEntryBuffer('world/shared/' + getFilename(lwoFilepath))
+                lwoContent = this.wad0File.getEntryBuffer(`world/shared/${getFilename(lwoFilepath)}`)
             } catch (e) {
                 if (!lwoFilepath.equalsIgnoreCase('Vehicles/BullDozer/VLBD_light.lwo') // ignore known issues
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_bucket.lwo')
@@ -138,7 +138,7 @@ export class WadLoader {
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_Light01.lwo')
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/digbodlight.lwo')
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_PipeL.lwo')) {
-                    console.error('Could not load LWO file ' + lwoFilepath + '; Error: ' + e)
+                    console.error(`Could not load LWO file ${lwoFilepath}; Error: ${e}`)
                 }
                 lwoContent = {}
             }
@@ -226,7 +226,7 @@ export class WadLoader {
      */
     loadWadFile(url: string) {
         return new Promise<WadFile>(resolve => {
-            console.log('Loading WAD file from ' + url)
+            console.log(`Loading WAD file from ${url}`)
             fetch(url).then((response) => {
                 if (response.ok) {
                     response.arrayBuffer().then((buffer) => {

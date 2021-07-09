@@ -6,7 +6,7 @@
  */
 export function createContext(width, height): SpriteContext {
     if (width < 1 || height < 1) {
-        console.error('Can\'t create context with size ' + width + ' x ' + height)
+        console.error(`Can't create context with size ${width} x ${height}`)
         return createDummyContext(64, 64)
     }
     let canvas

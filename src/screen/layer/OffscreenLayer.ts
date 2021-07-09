@@ -47,7 +47,7 @@ export abstract class OffscreenLayer extends ScreenLayer {
                 }
                 EventBus.publishEvent(event)
             } else if (!this.onMessage(response)) {
-                console.warn('Offscreen layer ignored message: ' + WorkerMessageType[response.type])
+                console.warn(`Offscreen layer ignored message: ${WorkerMessageType[response.type]}`)
             }
         }
         EventBus.registerWorkerListener((event: GameEvent) => {

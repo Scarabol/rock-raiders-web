@@ -31,9 +31,9 @@ export class ResourceCache {
     }
 
     static getImageData(imageName: string): ImageData {
-        if (!imageName) throw new Error('imageName must not be undefined, null or empty - was ' + imageName)
+        if (!imageName) throw new Error(`imageName must not be undefined, null or empty - was ${imageName}`)
         return this.resourceByName.getOrUpdate((imageName.toLowerCase()), () => {
-            console.error('Image \'' + imageName + '\' unknown! Using placeholder image instead')
+            console.error(`Image '${imageName}' unknown! Using placeholder image instead`)
             return createDummyImgData(64, 64)
         })
     }
@@ -52,7 +52,7 @@ export class ResourceCache {
     static getBitmapFont(name: string): BitmapFont {
         return this.fontCache.getOrUpdate(name, () => {
             const fontData = this.getResource(name) as BitmapFontData
-            if (!fontData) throw new Error('Could not load font image data for: ' + name)
+            if (!fontData) throw new Error(`Could not load font image data for: ${name}`)
             return new BitmapFont(fontData)
         })
     }
@@ -114,7 +114,7 @@ export class ResourceCache {
     }
 
     private static cursorToDataUrl(cursorImages: HTMLCanvasElement | HTMLCanvasElement[]) {
-        return (Array.isArray(cursorImages) ? cursorImages : [cursorImages]).map((c) => 'url(' + c.toDataURL() + '), auto')
+        return (Array.isArray(cursorImages) ? cursorImages : [cursorImages]).map((c) => `url(${c.toDataURL()}), auto`)
     }
 
     static getCursor(cursor: Cursor): AnimatedCursor {
@@ -146,7 +146,7 @@ export class ResourceCache {
             case EntityType.LARGE_CAT:
                 return this.stats.LargeCat
             default:
-                throw new Error('Unexpected entity type: ' + EntityType[entityType])
+                throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
         }
     }
 

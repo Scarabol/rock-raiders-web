@@ -175,7 +175,7 @@ export class RewardScreen extends BaseScreen {
         if (max === 0) max = 1
         let value = Math.round(Math.max(Math.min(actual / max, 1), 0) * 100)
         if (lessIsMore) value = 100 - value
-        return value.toString() + '%'
+        return `${value.toString()}%`
     }
 
     padLeft(value: string, padding = '0', length = 2) {
@@ -188,7 +188,7 @@ export class RewardScreen extends BaseScreen {
         const minutes = Math.floor(seconds / 60)
         const mm = this.padLeft(((minutes % 60).toString()))
         const hh = this.padLeft((Math.floor(minutes / 60).toString()))
-        return hh + ':' + mm + ':' + ss
+        return `${hh}:${mm}:${ss}`
     }
 
     uncoverResult() {

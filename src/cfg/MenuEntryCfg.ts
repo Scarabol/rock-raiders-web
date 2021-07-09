@@ -38,7 +38,7 @@ export class MenuEntryCfg extends BaseConfig {
             } else if (lActionName === 'cycle') {
                 this.itemsCycle.push(new MenuCycleItemCfg(cfgValue))
             } else {
-                console.warn('Unexpected item action name: ' + cfgValue[0])
+                console.warn(`Unexpected item action name: ${cfgValue[0]}`)
                 return false
             }
             return true

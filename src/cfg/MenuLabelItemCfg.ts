@@ -20,7 +20,7 @@ export class MenuLabelItemCfg {
         } else if (cfgObj.length === 8) {
             [this.actionName, this.x, this.y, this.imgNormal, this.imgHover, this.imgPressed, this.tooltip, this.target] = cfgObj
         } else {
-            console.warn('Unexpected cfg object length: ' + cfgObj.length)
+            console.warn(`Unexpected cfg object length: ${cfgObj.length}`)
             console.log(cfgObj)
         }
     }

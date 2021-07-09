@@ -126,12 +126,12 @@ export class BitmapFont {
                 if (letterImg) {
                     wordWidth += letterImg.width
                 } else {
-                    console.error('Letter \'' + letter + '\' not found in charset! Ignoring it')
+                    console.error(`Letter '${letter}' not found in charset! Ignoring it`)
                 }
             }
             if (rowWidth > 0) {
                 if (!maxWidth || rowWidth + spaceWidth + wordWidth < maxWidth) {
-                    rowText += ' ' + word
+                    rowText += ` ${word}`
                     rowWidth += spaceWidth + wordWidth
                 } else {
                     rows.push({text: rowText, width: rowWidth})

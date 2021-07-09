@@ -43,7 +43,7 @@ export class ResourceManager extends ResourceCache {
                 this.onCacheMissed()
             } else if (msg.type === WorkerMessageType.DONE) {
                 this.loadAllCursor().then(() => {
-                    console.log('Loading of about ' + msg.totalResources + ' assets complete!')
+                    console.log(`Loading of about ${msg.totalResources} assets complete!`)
                     this.onLoadDone()
                 })
             }
@@ -78,9 +78,9 @@ export class ResourceManager extends ResourceCache {
         if (result.length > 0) {
             return result.map((textureFilepath) => this.getTexture(textureFilepath))
         } else if (!lBasename.startsWith('world/shared/')) {
-            return this.getTexturesBySequenceName('world/shared/' + getFilename(lBasename))
+            return this.getTexturesBySequenceName(`world/shared/${getFilename(lBasename)}`)
         } else {
-            console.warn('Texture sequence not found: ' + lBasename)
+            console.warn(`Texture sequence not found: ${lBasename}`)
             return []
         }
     }
@@ -106,13 +106,13 @@ export class ResourceManager extends ResourceCache {
     }
 
     private static getImgDataFromSharedPaths(lTextureFilename: string, textureFilename: string, lMeshFilepath: string, lEntityFilepath: string): ImageData {
-        const ugSharedFilename = 'vehicles/sharedug/' + lTextureFilename
+        const ugSharedFilename = `vehicles/sharedug/${lTextureFilename}`
         return this.resourceByName.getOrUpdate(ugSharedFilename, () => {
-            const worldSharedFilename = 'world/shared/' + lTextureFilename
+            const worldSharedFilename = `world/shared/${lTextureFilename}`
             return this.resourceByName.getOrUpdate(worldSharedFilename, () => {
                 if (lTextureFilename !== 'teofoilreflections.jpg' && lTextureFilename !== 'wingbase3.bmp' &&
                     lTextureFilename !== 'a_side.bmp' && lTextureFilename !== 'a_top.bmp') {
-                    console.warn('Texture \'' + textureFilename + '\' (' + lMeshFilepath + ', ' + lEntityFilepath + ', ' + worldSharedFilename + ') unknown! Using placeholder texture instead')
+                    console.warn(`Texture '${textureFilename}' (${lMeshFilepath}, ${lEntityFilepath}, ${worldSharedFilename}) unknown! Using placeholder texture instead`)
                     return createDummyImgData(64, 64)
                 }
                 return null
@@ -122,7 +122,7 @@ export class ResourceManager extends ResourceCache {
 
     static getTexture(textureFilepath): Texture | null {
         if (!textureFilepath) {
-            throw new Error('textureFilepath must not be undefined, null or empty - was ' + textureFilepath)
+            throw new Error(`textureFilepath must not be undefined, null or empty - was ${textureFilepath}`)
         }
         const imgData = this.resourceByName.get(textureFilepath.toLowerCase())
         if (!imgData) return null
@@ -134,7 +134,7 @@ export class ResourceManager extends ResourceCache {
 
     static getAnimationEntityType(aeFilename: string, audioListener: AudioListener): AnimationEntityType {
         let cfgRoot = this.getResource(aeFilename)
-        if (!cfgRoot) throw new Error('Could not get animation entity type for: ' + aeFilename)
+        if (!cfgRoot) throw new Error(`Could not get animation entity type for: ${aeFilename}`)
         return new AnimEntityLoader(aeFilename, cfgRoot, audioListener).loadModels()
     }
 

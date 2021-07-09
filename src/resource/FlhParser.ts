@@ -33,13 +33,13 @@ export class FlhParser {
     private parseHeader() {
         this.fileLength = this.getDWord(0)
         this.flicFileType = this.getWord(4)
-        if (this.flicFileType !== 0xAF43) console.warn('Unexpected FLIC file type found: ' + this.flicFileType + ' does not match expected 0xAF43')
+        if (this.flicFileType !== 0xAF43) console.warn(`Unexpected FLIC file type found: ${this.flicFileType} does not match expected 0xAF43`)
         this.lengthFrames = this.getWord(6)
         this.frames = new Array(this.lengthFrames)
         this.width = this.getWord(8)
         this.height = this.getWord(10)
         this.depth = this.getWord(12)
-        if (this.depth != 16) console.warn('Expected 16 bit colors in flh file; got instead: ' + this.depth)
+        if (this.depth != 16) console.warn(`Expected 16 bit colors in flh file; got instead: ${this.depth}`)
         // const flags = this.getWord(14) // always 0
         // const speed = this.getDWord(16) // delay between frames; always 0
         this.offsetFirstFrame = this.getDWord(80)
@@ -59,7 +59,7 @@ export class FlhParser {
                     }
                     break
                 default:
-                    console.warn('Unexpected chunk type: 0x' + chunkType.toString(16).toUpperCase())
+                    console.warn(`Unexpected chunk type: 0x${chunkType.toString(16).toUpperCase()}`)
                     break
             }
             chunkStart += chunkLength
@@ -70,7 +70,7 @@ export class FlhParser {
         let offset = 0
         const numChunks = seg.getUint16(offset, true)
         if (numChunks > 1) {
-            console.warn('More than one sub-chunk; got instead: ' + numChunks)
+            console.warn(`More than one sub-chunk; got instead: ${numChunks}`)
         }
         offset += 2
         offset += 2
@@ -91,7 +91,7 @@ export class FlhParser {
                 this.parseDeltaFlc(seg, offset, len, frameIndex)
                 break
             default:
-                console.warn('Unsupported sub-chunk type: ' + chunkType)
+                console.warn(`Unsupported sub-chunk type: ${chunkType}`)
                 break
         }
     }
@@ -107,13 +107,13 @@ export class FlhParser {
             if (repeat < 0) {
                 repeat = (repeat * -1)
                 for (let i = 0; i < repeat; i++) {
-                    const [r, g, b] = this.getARGBFrom555RGB(seg, offset + i * 2 + 1)
+                    const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset + i * 2 + 1)
                     setPixel(imgData, x, y, r, g, b, (!r && !g && !b ? 0 : 255)) // TODO these loops can be simplified, don't use x y
                     x++
                 }
                 offset += repeat * 2 + 1
             } else {
-                const [r, g, b] = this.getARGBFrom555RGB(seg, offset + 1)
+                const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset + 1)
                 for (let i = 0; i < repeat; i++) {
                     setPixel(imgData, x, y, r, g, b, (!r && !g && !b ? 0 : 255)) // TODO these loops can be simplified, don't use x y
                     x++
@@ -141,7 +141,7 @@ export class FlhParser {
         let linesDone = 0
         while ((len - offset) > 0) {
             if (numLines === linesDone) {
-                console.warn('All lines already done. Unexpected data at: ' + (len - offset))
+                console.warn(`All lines already done. Unexpected data at: ${len - offset}`)
                 break
             }
             let packCount = -1
@@ -154,7 +154,7 @@ export class FlhParser {
                         packCount = opcode
                         break
                     case 1: // undefined opcode according to specs
-                        console.warn('Undefined opcode: ' + opcode)
+                        console.warn(`Undefined opcode: ${opcode}`)
                         break
                     case 2:
                         // console.log('Last Pixel?')
@@ -163,7 +163,7 @@ export class FlhParser {
                         y += Math.abs(opcode) & 0x000000FF
                         break
                     default:
-                        console.warn('Unknown opType: ' + opType + '; opcode: ' + opcode)
+                        console.warn(`Unknown opType: ${opType}; opcode: ${opcode}`)
                         break
                 }
             }
@@ -175,7 +175,7 @@ export class FlhParser {
                 offset++
                 if (repeat < 0) {
                     repeat = (-1 * repeat)
-                    const [r, g, b] = this.getARGBFrom555RGB(seg, offset) // TODO these loops can be simplified, don't use x y
+                    const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset) // TODO these loops can be simplified, don't use x y
                     for (let j = 0; j < repeat; j++) {
                         setPixel(res, x, y, r, g, b)
                         x++
@@ -183,7 +183,7 @@ export class FlhParser {
                     offset += 2
                 } else {
                     for (let j = 0; j < repeat; j++) {
-                        const [r, g, b] = this.getARGBFrom555RGB(seg, offset + j * 2) // TODO these loops can be simplified, don't use x y
+                        const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset + j * 2) // TODO these loops can be simplified, don't use x y
                         setPixel(res, x, y, r, g, b)
                         x++
                     }
@@ -196,7 +196,7 @@ export class FlhParser {
         this.frames[frameIndex] = res
     }
 
-    private getARGBFrom555RGB(a: DataView, offset: number): [number, number, number] {
+    private static getARGBFrom555RGB(a: DataView, offset: number): [number, number, number] {
         let rgb = 0x000000FF
         rgb &= a.getInt8(offset + 1)
         rgb = rgb << 8

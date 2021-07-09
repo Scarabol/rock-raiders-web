@@ -9,7 +9,7 @@ export class EventBus {
 
     static publishEvent(event: GameEvent) {
         if (this.blockedEvents.includes(event.eventKey)) return // event is currently blocked from publishing
-        if (!event.isLocal) console.log('Event published: ' + EventKey[event.eventKey])
+        if (!event.isLocal) console.log(`Event published: ${EventKey[event.eventKey]}`)
         this.blockedEvents.push(event.eventKey)
         this.workerListener.forEach((callback) => callback(event))
         this.getListener(event.eventKey).forEach((callback) => callback(event))

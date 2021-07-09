@@ -287,7 +287,7 @@ class GridNode {
     }
 
     toString() {
-        return '[' + this.x + ' ' + this.y + ']'
+        return `[${this.x} ${this.y}]`
     }
 
     getCost(fromNeighbor: GridNode) {

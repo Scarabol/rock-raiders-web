@@ -173,7 +173,7 @@ export abstract class BuildingEntity implements Selectable {
                 material.push(new Ore(this.sceneMgr, this.entityMgr))
             }
         } else {
-            console.error('Material drop not implemented for: ' + type)
+            console.error(`Material drop not implemented for: ${type}`)
         }
         if (material.length > 0) EventBus.publishEvent(new MaterialAmountChanged())
         material.forEach((m) => this.entityMgr.placeMaterial(m, this.getDropPosition2D()))

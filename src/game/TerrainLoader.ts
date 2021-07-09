@@ -11,7 +11,7 @@ export class TerrainLoader {
 
     static loadTerrain(levelConf: LevelEntryCfg, sceneMgr: SceneManager, entityMgr: EntityManager): Terrain {
         const tileSize = levelConf.blockSize
-        if (tileSize !== TILESIZE) console.error('Unexpected tile size in level configuration: ' + tileSize)
+        if (tileSize !== TILESIZE) console.error(`Unexpected tile size in level configuration: ${tileSize}`)
         const terrain = new Terrain(sceneMgr, entityMgr)
 
         const themeName = levelConf.textureSet[1]
@@ -41,12 +41,12 @@ export class TerrainLoader {
                         || surfaceType === SurfaceType.POWER_PATH_BUILDING) { // used by mods
                         surfaceType = SurfaceType.GROUND
                     } else if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA) {
-                        console.warn('Unexpected cavern surface type: ' + surfaceType.name)
+                        console.warn(`Unexpected cavern surface type: ${surfaceType.name}`)
                     }
                 } else if (predugLevel === PredugMap.SLUG_HOLE_EXPOSED || predugLevel === PredugMap.SLUG_HOLE_HIDDEN) {
                     surfaceType = SurfaceType.SLUG_HOLE
                 } else if (predugLevel !== PredugMap.WALL && predugLevel !== PredugMap.CAVERN_HIDDEN) {
-                    console.warn('Unexpected predug level: ' + predugLevel)
+                    console.warn(`Unexpected predug level: ${predugLevel}`)
                 }
                 // give the path map the highest priority, if it exists
                 const pathMapLevel = pathMap && surfaceType.floor ? pathMap[r][c] : PathMap.NONE
@@ -55,7 +55,7 @@ export class TerrainLoader {
                 } else if (pathMapLevel === PathMap.POWER_PATH) {
                     surfaceType = SurfaceType.POWER_PATH
                 } else if (pathMapLevel !== PathMap.NONE) {
-                    console.warn('Unexpected path map level: ' + pathMapLevel)
+                    console.warn(`Unexpected path map level: ${pathMapLevel}`)
                 }
 
                 const surface = new Surface(terrain, surfaceType, c, r, surfaceMap[r][c])

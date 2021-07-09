@@ -97,7 +97,7 @@ export abstract class OffscreenWorker implements IEventHandler {
             const event = msg.gameEvent
             this.eventListener.getOrUpdate(event.eventKey, () => []).forEach((callback) => callback(event))
         } else if (!this.onProcessMessage(msg)) {
-            console.warn('Worker ignores message of type: ' + WorkerMessageType[msg.type])
+            console.warn(`Worker ignores message of type: ${WorkerMessageType[msg.type]}`)
         }
         return true
     }

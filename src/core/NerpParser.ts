@@ -25,9 +25,9 @@ export class NerpParser {
                     // see https://github.com/jgrip/legorr/blob/master/nerpdef.h
                     continue
                 }
-                const includedRunner = NerpParser.parse(entityMgr, ResourceManager.getResource('Levels/' + includeName))
+                const includedRunner = NerpParser.parse(entityMgr, ResourceManager.getResource(`Levels/${includeName}`))
                 if (!includedRunner || !includedRunner.scriptLines || includedRunner.scriptLines.length < 1) {
-                    throw new Error('Can\'t include unknown nerp script: ' + line)
+                    throw new Error(`Can't include unknown nerp script: ${line}`)
                 }
                 nerpRunner.scriptLines = nerpRunner.scriptLines.concat(includedRunner.scriptLines)
                 // copy macros from included file to current file
@@ -81,7 +81,7 @@ export class NerpParser {
             } else if (nerpRunner.statements[c].length === 1) { // just a call
                 nerpRunner.statements[c] = this.preProcess(nerpRunner.statements[c][0])
             } else { // lines contains more than 1 condition statement
-                throw new Error('Can\'t deal with line: ' + line)
+                throw new Error(`Can't deal with line: ${line}`)
             }
         }
         return nerpRunner
@@ -94,12 +94,12 @@ export class NerpParser {
         if (macro) {
             const argValues = split.splice(1).join('(').slice(0, -1).split(',')
             if (argValues.length !== macro.args.length) {
-                throw new Error('Invalid number of args provided for macro in line ' + line)
+                throw new Error(`Invalid number of args provided for macro in line ${line}`)
             }
             const macroLines = []
             macro.lines.forEach((line) => {
                 for (let c = 0; c < argValues.length; c++) {
-                    line = line.replace(new RegExp('\\b' + macro.args[c] + '\\b'), argValues[c])
+                    line = line.replace(new RegExp(`\\b${macro.args[c]}\\b`), argValues[c])
                 }
                 macroLines.push(...(this.replaceMacros(macrosByName, line)))
             })

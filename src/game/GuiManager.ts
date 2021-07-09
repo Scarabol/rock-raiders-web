@@ -146,7 +146,7 @@ export class GuiManager {
                 sceneMgr.controls.update()
             }
             if (event.rotationIndex >= 0) { // TODO implement custom camera controls, that is better remotely controllable
-                console.log('TODO implement rotate camera: ' + (['left', 'up', 'right', 'down'][event.rotationIndex]))
+                console.log(`TODO implement rotate camera: ${['left', 'up', 'right', 'down'][event.rotationIndex]}`)
             }
         })
     }

@@ -76,7 +76,7 @@ export class NerpMsgParser {
             })
         }
         if (number === undefined) {
-            throw new Error('Found unexpected numeric name ' + name)
+            throw new Error(`Found unexpected numeric name ${name}`)
         }
         return number
     }

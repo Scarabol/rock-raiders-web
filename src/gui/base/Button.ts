@@ -37,7 +37,7 @@ export class Button extends BaseElement {
         }
         this.tooltip = this.tooltip?.replace(/_/g, ' ')
         this.updatePosition()
-        this.onClick = () => console.log('button pressed: ' + this.buttonType)
+        this.onClick = () => console.log(`button pressed: ${this.buttonType}`)
     }
 
     showTooltip() {

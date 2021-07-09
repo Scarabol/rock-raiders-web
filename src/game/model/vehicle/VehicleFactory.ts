@@ -41,7 +41,7 @@ export class VehicleFactory {
             case EntityType.LARGE_CAT:
                 return new LargeCat(sceneMgr, entityMgr)
             default:
-                throw new Error('Unexpected vehicle type: ' + EntityType[entityType])
+                throw new Error(`Unexpected vehicle type: ${EntityType[entityType]}`)
         }
     }
 

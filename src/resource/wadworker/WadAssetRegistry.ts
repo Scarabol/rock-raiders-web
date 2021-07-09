@@ -24,7 +24,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
     registerAllAssets(mainConf: any) {
         // add fonts and cursors
         this.addAssetFolder(this.wadLoader.loadAlphaImageAsset, 'Interface/Pointers/')
-        this.wadLoader.wad0File.filterEntryNames('Interface/Pointers/' + '.+\\.flh').forEach((assetPath) => {
+        this.wadLoader.wad0File.filterEntryNames(`Interface/Pointers/.+\\.flh`).forEach((assetPath) => {
             this.addAsset(this.wadLoader.loadFlhAsset, assetPath)
         })
         // add menu assets
@@ -138,10 +138,10 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
                     sndPath = sndPath.slice(1)
                 } else if (sndPath.startsWith('@')) {
                     // sndPath = sndPath.slice(1)
-                    // console.warn('Sound ' + sndPath + ' must be loaded from program files folder. Not yet implemented!')
+                    // console.warn(`Sound ${sndPath} must be loaded from program files folder. Not yet implemented!`)
                     return // TODO implement sounds from program files folder
                 }
-                sndPathToKeys.getOrUpdate(sndPath + '.wav', () => []).push(sndKey)
+                sndPathToKeys.getOrUpdate(`${sndPath}.wav`, () => []).push(sndKey)
             })
         })
         sndPathToKeys.forEach((sndKeys, sndPath) => {
@@ -150,17 +150,17 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
     }
 
     addMeshObjects(basePath: string) {
-        const aeFilepath = basePath + '/' + basePath.split('/').last() + '.ae'
+        const aeFilepath = `${basePath}/${basePath.split('/').last()}.ae`
         if (this.wadLoader.wad0File.hasEntry(aeFilepath)) this.addAnimatedEntity(aeFilepath)
-        const aeSharedFilepath = 'world/shared/' + basePath.split('/').last() + '.ae'
+        const aeSharedFilepath = `world/shared/${basePath.split('/').last()}.ae`
         if (this.wadLoader.wad0File.hasEntry(aeSharedFilepath)) this.addAnimatedEntity(aeSharedFilepath)
-        const lwsFilepath = basePath + '.lws'
+        const lwsFilepath = `${basePath}.lws`
         if (this.wadLoader.wad0File.hasEntry(lwsFilepath)) this.addLWSFile(lwsFilepath)
-        const lwsSharedFilepath = 'world/shared/' + basePath.split('/').last() + '.lws'
+        const lwsSharedFilepath = `world/shared/${basePath.split('/').last()}.lws`
         if (this.wadLoader.wad0File.hasEntry(lwsSharedFilepath)) this.addLWSFile(lwsSharedFilepath)
-        const lwoFilepath = basePath + '.lwo'
+        const lwoFilepath = `${basePath}.lwo`
         if (this.wadLoader.wad0File.hasEntry(lwoFilepath)) this.addAsset(this.wadLoader.loadLWOFile, lwoFilepath)
-        const lwoSharedFilepath = 'world/shared/' + basePath.split('/').last() + '.lwo'
+        const lwoSharedFilepath = `world/shared/${basePath.split('/').last()}.lwo`
         if (this.wadLoader.wad0File.hasEntry(lwoSharedFilepath)) this.addAsset(this.wadLoader.loadLWOFile, lwoSharedFilepath)
     }
 
@@ -173,13 +173,13 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addTextureFolder(path)
         const wheelMeshName = iGet(cfgRoot, 'WheelMesh')
         if (wheelMeshName && !'NULL_OBJECT'.equalsIgnoreCase(wheelMeshName)) {
-            this.addAsset(this.wadLoader.loadLWOFile, path + wheelMeshName + '.lwo')
+            this.addAsset(this.wadLoader.loadLWOFile, `${path + wheelMeshName}.lwo`)
         }
         ['HighPoly', 'MediumPoly', 'LowPoly'].forEach((polyType) => { // TODO add 'FPPoly' (contains two cameras)
             const cfgPoly = iGet(cfgRoot, polyType)
             if (cfgPoly) {
                 Object.keys(cfgPoly).forEach((key) => {
-                    this.addAsset(this.wadLoader.loadLWOFile, path + cfgPoly[key] + '.lwo')
+                    this.addAsset(this.wadLoader.loadLWOFile, `${path + cfgPoly[key]}.lwo`)
                 })
             }
         })
@@ -189,7 +189,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
                 const isLws = iGet(value, 'LWSFILE') === true
                 if (isLws) {
                     const file = iGet(value, 'FILE')
-                    this.addLWSFile(path + file + '.lws')
+                    this.addLWSFile(`${path + file}.lws`)
                 }
             } catch (e) {
                 // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/...
@@ -227,7 +227,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
     }
 
     addAssetFolder(callback: (name: string, callback: (assetNames: string[], obj: any) => any) => void, folderPath) {
-        this.wadLoader.wad0File.filterEntryNames(folderPath + '.+\\.bmp').forEach((assetPath) => {
+        this.wadLoader.wad0File.filterEntryNames(`${folderPath}.+\\.bmp`).forEach((assetPath) => {
             this.addAsset(callback, assetPath)
         })
     }

@@ -44,9 +44,9 @@ export class AnimEntityLoader {
                 this.entityType.toolNullName = value
             } else if (rootKey.equalsIgnoreCase('WheelMesh')) {
                 if (!'NULL_OBJECT'.equalsIgnoreCase(value)) {
-                    const lwoFilename = this.path + value + '.lwo'
+                    const lwoFilename = `${this.path + value}.lwo`
                     this.entityType.wheelMesh = ResourceManager.getLwoModel(lwoFilename)
-                    if (!this.entityType.wheelMesh) console.error('Could not load wheel mesh from: ' + lwoFilename)
+                    if (!this.entityType.wheelMesh) console.error(`Could not load wheel mesh from: ${lwoFilename}`)
                 }
             } else if (rootKey.equalsIgnoreCase('WheelRadius')) {
                 this.entityType.wheelRadius = Number(value)
@@ -65,7 +65,7 @@ export class AnimEntityLoader {
             } else if (rootKey.equalsIgnoreCase('HighPoly')) {
                 Object.keys(value).forEach((key) => {
                     const polyKey = key.startsWith('!') ? key.slice(1) : key
-                    const mesh = ResourceManager.getLwoModel(this.path + value[key] + '.lwo')
+                    const mesh = ResourceManager.getLwoModel(`${this.path + value[key]}.lwo`)
                     this.entityType.highPolyBodies.set(polyKey.toLowerCase(), mesh)
                 })
             } else if (rootKey.equalsIgnoreCase('MediumPoly')) {
@@ -83,12 +83,12 @@ export class AnimEntityLoader {
             } else if (value['lwsfile'] && !this.knownAnimations.includes(rootKey)) {
                 // some activities are not listed in the Activities section... try parse them anyway
                 try {
-                    this.parseActivity(value, 'activity_' + rootKey)
+                    this.parseActivity(value, `activity_${rootKey}`)
                 } catch (e) {
-                    if (this.verbose) console.warn('Could not parse unlisted activity: ' + rootKey, value, e)
+                    if (this.verbose) console.warn(`Could not parse unlisted activity: ${rootKey}`, value, e)
                 }
             } else if (this.verbose) {
-                console.warn('Unhandled animated entity key found: ' + rootKey, value)
+                console.warn(`Unhandled animated entity key found: ${rootKey}`, value)
             }
         })
 
@@ -119,7 +119,7 @@ export class AnimEntityLoader {
         const transcoef = iGet(act, 'TRANSCOEF')
         const looping = iGet(act, 'LOOPING') === true
         if (isLws) {
-            const animation = new LWSCLoader(this.verbose).parse(this.path + file + '.lws')
+            const animation = new LWSCLoader(this.verbose).parse(`${this.path + file}.lws`)
             animation.looping = looping
             animation.transcoef = transcoef ? Number(transcoef) : 1
             if (lActivityName.startsWith('!')) lActivityName = lActivityName.substr(1) // XXX Whats the meaning of leading ! for activities???
@@ -145,7 +145,7 @@ export class AnimEntityLoader {
                 })
                 this.entityType.upgradesByLevel.set(match[1], upgradesByLevel)
             } else {
-                console.warn('Unexpected upgrade level key: ' + levelKey)
+                console.warn(`Unexpected upgrade level key: ${levelKey}`)
             }
         })
     }

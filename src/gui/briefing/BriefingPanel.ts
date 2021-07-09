@@ -17,7 +17,7 @@ export class BriefingPanel extends Panel {
     imgParagraphList: SpriteImage[] = []
     paragraph: number = 0
     imgParagraph: SpriteImage = null
-    onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log('Message: press space to continue = ' + state)
+    onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log(`Message: press space to continue = ${state}`)
     onStartMission: () => any = () => console.log('Start mission')
 
     constructor(parent: BaseElement) {

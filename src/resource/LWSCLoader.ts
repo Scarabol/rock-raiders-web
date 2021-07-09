@@ -28,7 +28,7 @@ export class LWSCLoader {
 
     parse(filepath: string): AnimClip {
         const content = ResourceManager.getResource(filepath)
-        if (!content) throw new Error('Cannot parse LWS, no content given for: ' + filepath)
+        if (!content) throw new Error(`Cannot parse LWS, no content given for: ${filepath}`)
         this.animationClip = new AnimClip(filepath)
         this.lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
@@ -41,7 +41,7 @@ export class LWSCLoader {
 
         const sceneFileVersion = parseInt(this.lines[1], 10)
         if (sceneFileVersion !== 1) {
-            console.warn('Unexpected scene file version: ' + sceneFileVersion)
+            console.warn(`Unexpected scene file version: ${sceneFileVersion}`)
         }
 
         for (this.lineIndex = 2; this.lineIndex < this.lines.length; this.lineIndex++) {
@@ -56,7 +56,7 @@ export class LWSCLoader {
             } else if (line.startsWith('PreviewFirstFrame ') || line.startsWith('PreviewLastFrame ') || line.startsWith('PreviewFrameStep ')) {
                 // only used in editor
             } else {
-                // console.warn('Unexpected line: ' + line); // TODO analyze remaining entries
+                // console.warn(`Unexpected line: ${line}`); // TODO analyze remaining entries
             }
         }
 
@@ -82,7 +82,7 @@ export class LWSCLoader {
                 this.animationClip.lastFrame = parseInt(value)
             } else if (key === 'FrameStep') {
                 const frameStep = parseInt(value)
-                if (frameStep !== 1) console.error('Animation frameStep has unexpected value: ' + frameStep)
+                if (frameStep !== 1) console.error(`Animation frameStep has unexpected value: ${frameStep}`)
             } else if (key === 'FramesPerSecond') {
                 this.animationClip.framesPerSecond = parseInt(value)
             } else if (key === 'PreviewFirstFrame' || key === 'PreviewLastFrame' || key === 'PreviewFrameStep') {
@@ -120,7 +120,7 @@ export class LWSCLoader {
                     subObj.model = new SceneMesh()
                     subObj.isNull = true
                 } else {
-                    throw new Error('Unexpected line: ' + line)
+                    throw new Error(`Unexpected line: ${line}`)
                 }
             } else if (key === 'ObjectMotion') {
                 let line = this.lines[++this.lineIndex]
@@ -132,7 +132,7 @@ export class LWSCLoader {
                     let line = this.lines[this.lineIndex + c * 2]
                     if (line.startsWith('EndBehavior')) break
                     const infos = line.split(' ').map(Number)
-                    if (infos.length !== lenInfos) console.warn('Number of infos (' + infos.length + ') does not match if specified count (' + lenInfos + ')')
+                    if (infos.length !== lenInfos) console.warn(`Number of infos (${infos.length}) does not match if specified count (${lenInfos})`)
                     line = this.lines[this.lineIndex + c * 2 + 1]
                     const animationFrameIndex = parseInt(line.split(' ')[0]) // other entries in line should be zeros
                     subObj.setFrameAndFollowing(animationFrameIndex, this.animationClip.lastFrame, infos)
@@ -140,7 +140,7 @@ export class LWSCLoader {
                 this.lineIndex += lenFrames * 2
             } else if (key === 'ParentObject') {
                 subObj.parentObjInd = Number(value) - 1 // index is 1 based
-                if (this.verbose) console.log('parent obj ind is: ' + subObj.parentObjInd)
+                if (this.verbose) console.log(`parent obj ind is: ${subObj.parentObjInd}`)
             } else if (key === 'ShowObject' || key === 'LockedChannels') {
                 // only used in editor
             } else if (key === 'ShadowOptions') { // TODO implement shadow options (bitwise)
@@ -151,7 +151,7 @@ export class LWSCLoader {
                 if (value == '(envelope)') {
                     let line = this.lines[++this.lineIndex]
                     const numOfInformationChannels = parseInt(line)
-                    if (numOfInformationChannels !== 1) console.error('Number of information channels for opacity is not 1, but: ' + numOfInformationChannels)
+                    if (numOfInformationChannels !== 1) console.error(`Number of information channels for opacity is not 1, but: ${numOfInformationChannels}`)
                     line = this.lines[++this.lineIndex]
                     const numOfKeyframes = parseInt(line)
                     this.lineIndex++
@@ -171,7 +171,7 @@ export class LWSCLoader {
             } else if (key === 'PivotPoint') {
                 subObj.pivot = new Vector3().fromArray(value.split(' ').map((n) => Number(n)))
             } else if (this.verbose) {
-                console.warn('Unhandled line in object block: ' + line + '; key: ' + key + '; value: ' + value) // TODO analyze unhandled lines
+                console.warn(`Unhandled line in object block: ${line}; key: ${key}; value: ${value}`) // TODO analyze unhandled lines
             }
         }
         console.error('Parsing block reached content end')

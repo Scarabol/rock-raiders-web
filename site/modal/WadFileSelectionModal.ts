@@ -58,7 +58,7 @@ export class WadFileSelectionModal {
         if (active) navBtn.classList.add('active')
         navBtn.id = id
         navBtn.setAttribute('data-bs-toggle', 'tab')
-        navBtn.setAttribute('data-bs-target', '#' + controlTarget)
+        navBtn.setAttribute('data-bs-target', `#${controlTarget}`)
         navBtn.type = 'button'
         navBtn.setAttribute('role', 'tab')
         navBtn.setAttribute('aria-controls', controlTarget)
@@ -92,7 +92,7 @@ export class WadFileSelectionModal {
         const wadFileLabel = wadFileGroup.appendChild(document.createElement('label'))
         wadFileLabel.setAttribute('for', id)
         wadFileLabel.classList.add('form-label')
-        wadFileLabel.innerHTML = 'Select <span class="fw-bold">' + filename + '</span> here:'
+        wadFileLabel.innerHTML = `Select <span class="fw-bold">${filename}</span> here:`
         const wadFileInput = wadFileGroup.appendChild(document.createElement('input'))
         wadFileInput.type = 'file'
         wadFileInput.classList.add('form-control')
@@ -139,7 +139,7 @@ export class WadFileSelectionModal {
         const wadUrlLabel = wadUrlGroup.appendChild(document.createElement('label'))
         wadUrlLabel.setAttribute('for', id)
         wadUrlLabel.classList.add('form-label')
-        wadUrlLabel.innerHTML = 'Enter url for <span class="fw-bold">' + filename + '</span> here:'
+        wadUrlLabel.innerHTML = `Enter url for <span class="fw-bold">${filename}</span> here:`
         const wadUrlInput = wadUrlGroup.appendChild(document.createElement('input'))
         wadUrlInput.type = 'url'
         wadUrlInput.classList.add('form-control')

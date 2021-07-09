@@ -6,7 +6,7 @@ import { OffscreenLayer } from './OffscreenLayer'
 
 export class OverlayLayer extends OffscreenLayer {
 
-    onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log('set space to continue: ' + state)
+    onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log(`set space to continue: ${state}`)
     onAbortGame: () => any = () => console.log('abort the game')
     onRestartGame: () => any = () => console.log('restart the game')
 

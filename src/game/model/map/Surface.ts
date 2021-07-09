@@ -129,7 +129,7 @@ export class Surface implements Selectable {
                 o.collapse()
             }
         })
-        console.log('surface discover handled ' + counter + ' floors and ' + others.length + ' others')
+        console.log(`surface discover handled ${counter} floors and ${others.length} others`)
         return caveFound
     }
 
@@ -436,7 +436,7 @@ export class Surface implements Selectable {
         this.forEachMaterial((mat) => mat.color.setHex(0x6060a0))
         if (this.surfaceType.floor) SoundManager.playSample(Sample.SFX_Floor)
         if (this.surfaceType.shaping) SoundManager.playSample(Sample.SFX_Wall)
-        console.log('Surface selected at ' + this.x + '/' + this.y)
+        console.log(`Surface selected at ${this.x}/${this.y}`)
         return true
     }
 
@@ -497,7 +497,7 @@ export class Surface implements Selectable {
         const center = this.getCenterWorld2D()
         const raycaster = new Raycaster(new Vector3(center.x, 3 * TILESIZE, center.y), new Vector3(0, -1, 0))
         const intersect = raycaster.intersectObject(this.mesh, true)
-        if (intersect.length < 1) console.warn('could not determine terrain height for ' + center.x + '/' + center.y)
+        if (intersect.length < 1) console.warn(`could not determine terrain height for ${center.x}/${center.y}`)
         const terrainHeight = intersect[0]?.point?.y || 0
         return new Vector3(center.x, terrainHeight, center.y)
     }

@@ -53,7 +53,7 @@ export class WadFile {
         }
 
         if (debug) {
-            console.log('Offset after absolute original names is ' + pos)
+            console.log(`Offset after absolute original names is ${pos}`)
         }
 
         for (let i = 0; i < numberOfEntries; i++) {
@@ -96,7 +96,7 @@ export class WadFile {
     getEntryBuffer(entryName): ArrayBufferLike {
         const index = this.entryIndexByName.get(entryName.toLowerCase())
         if (index === undefined || index === null) {
-            throw new Error('Entry \'' + entryName + '\' not found in WAD file')
+            throw new Error(`Entry '${entryName}' not found in WAD file`)
         }
         return this.buffer.slice(this.fStart[index], this.fStart[index] + this.fLength[index]).buffer
     }

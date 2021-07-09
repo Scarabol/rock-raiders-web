@@ -20,7 +20,7 @@ export class BaseElement {
     pressedByButton: MOUSE_BUTTON = null
     onClick: (cx?: number, cy?: number) => any = null
     onClickSecondary: (cx?: number, cy?: number) => any = null
-    onPublishEvent: (event: LocalEvent) => any = (event) => console.log('TODO publish event: ' + EventKey[event.eventKey])
+    onPublishEvent: (event: LocalEvent) => any = (event) => console.log(`TODO publish event: ${EventKey[event.eventKey]}`)
     tooltipTimeout = null
 
     constructor(parent: BaseElement) {

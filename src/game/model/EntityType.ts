@@ -121,7 +121,7 @@ export function getEntityTypeByName(type: string): EntityType {
     } else if ('LargeHeli'.equalsIgnoreCase(type)) {
         return EntityType.LARGE_HELI
     } else {
-        console.error('Could not identify entity type from string: ' + type)
+        console.error(`Could not identify entity type from string: ${type}`)
         return null
     }
 }

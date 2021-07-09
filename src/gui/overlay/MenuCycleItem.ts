@@ -30,7 +30,7 @@ export class MenuCycleItem extends BaseElement {
         this.height = this.imgTextNormal.height
         this.onClick = () => {
             this.state = !this.state
-            console.log('TODO: cycle item clicked; state: ' + this.state)
+            console.log(`TODO: cycle item clicked; state: ${this.state}`)
         }
     }
 

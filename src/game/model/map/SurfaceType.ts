@@ -202,7 +202,7 @@ export class SurfaceType {
             case 103:
                 return SurfaceType.RUBBLE1
             default:
-                console.error('Unexpected surface type num: ' + typeNum)
+                console.error(`Unexpected surface type num: ${typeNum}`)
                 return SurfaceType.SOLID_ROCK
         }
     }

@@ -17,7 +17,7 @@ export class MenuSliderItem extends BaseElement {
     min: number = 0
     max: number = 1
     value: number = 0
-    onValueChanged: (value: number) => any = (value) => console.log('value changed to: ' + value)
+    onValueChanged: (value: number) => any = (value) => console.log(`value changed to: ${value}`)
 
     constructor(parent: MenuLayer, itemCfg: MenuSliderItemCfg) {
         super(parent)

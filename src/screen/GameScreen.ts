@@ -82,7 +82,7 @@ export class GameScreen extends BaseScreen {
         this.worldMgr.jobSupervisor.reset()
         this.entityMgr.reset()
         this.guiLayer.reset()
-        console.log('Starting level ' + this.levelName + ' - ' + this.levelConf.fullName)
+        console.log(`Starting level ${this.levelName} - ${this.levelConf.fullName}`)
         this.worldMgr.setup(this.levelConf, (state) => this.onLevelEnd(new GameResult(state, this.entityMgr, this.worldMgr)))
         this.sceneMgr.setupScene(this.levelConf)
         // setup GUI
