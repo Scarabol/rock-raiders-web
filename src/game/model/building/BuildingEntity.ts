@@ -199,7 +199,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     updateEnergyState() {
-        if (this.isReady() && this.powerSwitch && (this.energized || GameState.usedCrystals + this.crystalDrain <= GameState.numCrystal) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.energyLevel > 0))) {
+        if (this.isReady() && this.powerSwitch && (this.energized || (GameState.usedCrystals + this.crystalDrain <= GameState.numCrystal && GameState.numCrystal > 0)) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.energyLevel > 0))) {
             this.turnEnergyOn()
         } else {
             this.turnEnergyOff()
