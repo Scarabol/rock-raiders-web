@@ -7,11 +7,10 @@ import { BuildingsChangedEvent, DeselectAll, SelectionChanged } from '../../../e
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
+import { BuildingSceneEntity } from '../../../scene/entities/BuildingSceneEntity'
 import { BeamUpAnimator } from '../../BeamUpAnimator'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
@@ -40,7 +39,7 @@ export abstract class BuildingEntity implements Selectable {
     sceneMgr: SceneManager
     entityMgr: EntityManager
     entityType: EntityType = null
-    sceneEntity: AnimatedSceneEntity
+    sceneEntity: BuildingSceneEntity
     level: number = 0
     selected: boolean
     powerSwitch: boolean = true
@@ -61,8 +60,7 @@ export abstract class BuildingEntity implements Selectable {
         this.sceneMgr = sceneMgr
         this.entityMgr = entityMgr
         this.entityType = entityType
-        this.sceneEntity = new AnimatedSceneEntity(this.sceneMgr, aeFilename)
-        this.sceneEntity.flipXAxis()
+        this.sceneEntity = new BuildingSceneEntity(this.sceneMgr, aeFilename)
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
@@ -138,10 +136,6 @@ export abstract class BuildingEntity implements Selectable {
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
 
-    getDefaultActivity(): BuildingActivity {
-        return !this.isPowered() ? BuildingActivity.Unpowered : AnimEntityActivity.Stand
-    }
-
     beamUp() {
         this.inBeam = true
         this.updateEnergyState()
@@ -204,7 +198,12 @@ export abstract class BuildingEntity implements Selectable {
         } else {
             this.turnEnergyOff()
         }
-        if (this.teleport) this.teleport.powered = this.energized
+        this.sceneEntity.powered = this.isPowered()
+        this.surfaces.forEach((s) => s.updateTexture())
+        this.sceneEntity.changeActivity()
+        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
+        if (this.teleport) this.teleport.powered = this.isPowered()
     }
 
     private turnEnergyOn() {
@@ -212,10 +211,6 @@ export abstract class BuildingEntity implements Selectable {
         this.energized = true
         GameState.changeUsedCrystals(this.crystalDrain)
         if (this.stats.PowerBuilding) this.surfaces.forEach((s) => s.setEnergyLevel(s.energyLevel + 1))
-        this.surfaces.forEach((s) => s.updateTexture())
-        this.sceneEntity.changeActivity(this.getDefaultActivity())
-        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
         if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
     }
 
@@ -224,10 +219,6 @@ export abstract class BuildingEntity implements Selectable {
         this.energized = false
         GameState.changeUsedCrystals(-this.crystalDrain)
         if (this.stats.PowerBuilding) this.surfaces.forEach((s) => s.setEnergyLevel(s.energyLevel - 1))
-        this.surfaces.forEach((s) => s.updateTexture())
-        this.sceneEntity.changeActivity(this.getDefaultActivity())
-        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
         this.engineSound = resetAudioSafe(this.engineSound)
     }
 
@@ -279,7 +270,6 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     private onPlaceDown() {
-        this.sceneEntity.changeActivity(this.getDefaultActivity())
         this.updateEnergyState()
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }

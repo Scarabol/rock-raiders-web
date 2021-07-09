@@ -1,4 +1,4 @@
-import { Box3, CanvasTexture, Group, Matrix4, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector2, Vector3 } from 'three'
+import { Box3, CanvasTexture, Group, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, SpriteMaterial, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../audio/SoundManager'
 import { createContext } from '../core/ImageHelper'
 import { AnimEntityActivity } from '../game/model/activities/AnimEntityActivity'
@@ -64,10 +64,6 @@ export class SceneEntity {
 
     lookAt(target: Vector3) {
         this.group.lookAt(target)
-    }
-
-    flipXAxis() {
-        this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
     }
 
     createPickSphere(pickSphereDiameter: number, selectable: Selectable, pickSphereHeightOffset: number = this.getBoundingSphereCenter().y - this.position.y) {

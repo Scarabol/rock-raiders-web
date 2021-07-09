@@ -23,7 +23,7 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
     }
 
     canGatherItem(): boolean {
-        return this.building.sceneEntity.activity.activityKey === this.building.getDefaultActivity().activityKey
+        return this.building.sceneEntity.activity.activityKey === this.building.sceneEntity.getDefaultActivity().activityKey
     }
 
     gatherItem(item: MaterialEntity) {

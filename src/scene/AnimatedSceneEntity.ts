@@ -1,3 +1,4 @@
+import { Matrix4 } from 'three'
 import { AnimEntityActivity } from '../game/model/activities/AnimEntityActivity'
 import { BaseActivity } from '../game/model/activities/BaseActivity'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
@@ -94,6 +95,10 @@ export class AnimatedSceneEntity extends SceneEntity {
 
     protected getNullJointForUpgrade(upgrade: AnimationEntityUpgrade): SceneMesh | undefined {
         return this.animation.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
+    }
+
+    flipXAxis() {
+        this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
     }
 
 }
