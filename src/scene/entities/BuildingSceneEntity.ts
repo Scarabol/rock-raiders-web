@@ -12,6 +12,12 @@ export class BuildingSceneEntity extends AnimatedSceneEntity {
         this.flipXAxis()
     }
 
+    setPowered(state: boolean) {
+        if (this.powered === state) return
+        this.powered = state
+        this.changeActivity()
+    }
+
     getDefaultActivity(): BuildingActivity {
         return !this.powered ? BuildingActivity.Unpowered : AnimEntityActivity.Stand
     }
