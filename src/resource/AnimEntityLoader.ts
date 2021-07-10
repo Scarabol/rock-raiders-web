@@ -4,7 +4,7 @@ import { getPath, iGet } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
-import { TILESIZE } from '../params'
+import { DEV_MODE, TILESIZE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
 import { LWSCLoader } from './LWSCLoader'
 import { ResourceManager } from './ResourceManager'
@@ -28,8 +28,7 @@ export class AnimEntityLoader {
     }
 
     loadModels(): AnimationEntityType {
-        Object.keys(this.cfgRoot).forEach((rootKey: string) => {
-            const value = this.cfgRoot[rootKey]
+        Object.entries<any>(this.cfgRoot).forEach(([rootKey, value]) => {
             if (rootKey.equalsIgnoreCase('Scale')) {
                 this.entityType.scale = Number(value)
             } else if (rootKey.equalsIgnoreCase('CarryNullName')) {
@@ -78,15 +77,14 @@ export class AnimEntityLoader {
                 this.parseAnimations(value)
             } else if (rootKey.equalsIgnoreCase('Upgrades')) {
                 this.parseUpgrades(value)
-            } else if (rootKey.match(/level\d\d\d\d/i)) {
-                // TODO geo dome has upgrade defined at root level without Upgrades group
             } else if (value['lwsfile'] && !this.knownAnimations.includes(rootKey)) {
-                // some activities are not listed in the Activities section... try parse them anyway
-                try {
+                try { // some activities are not listed in the Activities section... try parse them anyway
                     this.parseActivity(value, `activity_${rootKey}`)
                 } catch (e) {
                     if (this.verbose) console.warn(`Could not parse unlisted activity: ${rootKey}`, value, e)
                 }
+            } else if (this.parseUpgradeEntry(rootKey, value)) {
+                if (!DEV_MODE) console.warn(`Entity ${this.aeFilename} has upgrade defined outside of Upgrades group`, value)
             } else if (this.verbose) {
                 console.warn(`Unhandled animated entity key found: ${rootKey}`, value)
             }
@@ -98,9 +96,8 @@ export class AnimEntityLoader {
     }
 
     private parseAnimations(value) {
-        Object.keys(value).forEach((activityName) => {
+        Object.entries<string>(value).forEach(([activityName, keyName]) => {
             try {
-                let keyName = iGet(value, activityName)
                 this.knownAnimations.push(keyName.toLowerCase())
                 const act = iGet(this.cfgRoot, keyName)
                 this.parseActivity(act, activityName.toLowerCase())
@@ -130,24 +127,26 @@ export class AnimEntityLoader {
     }
 
     private parseUpgrades(value) {
-        Object.keys(value).forEach((levelKey: string) => {
-            const match = levelKey.match(/level(\d\d\d\d)/i) // [carry] [scan] [speed] [drill]
-            if (match) {
-                const upgradesCfg = value[levelKey]
-                const upgradesByLevel = []
-                Object.keys(upgradesCfg).forEach((upgradeTypeName: string) => {
-                    const upgradeFilepath = ResourceManager.cfg('UpgradeTypes', upgradeTypeName)
-                    const upgradeEntry = upgradesCfg[upgradeTypeName]
-                    const upgradeEntries = Array.isArray(upgradeEntry[0]) ? upgradeEntry : [upgradeEntry]
-                    upgradeEntries.forEach((upgradeTypeEntry) => {
-                        upgradesByLevel.push(new AnimationEntityUpgrade(upgradeFilepath, upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))
-                    })
-                })
-                this.entityType.upgradesByLevel.set(match[1], upgradesByLevel)
-            } else {
+        Object.entries(value).forEach(([levelKey, upgradesCfg]) => {
+            if (!this.parseUpgradeEntry(levelKey, upgradesCfg)) {
                 console.warn(`Unexpected upgrade level key: ${levelKey}`)
             }
         })
+    }
+
+    private parseUpgradeEntry(levelKey: string, upgradesCfg): boolean {
+        const match = levelKey.match(/level(\d\d\d\d)/i) // [carry] [scan] [speed] [drill]
+        if (!match) return false
+        const upgradesByLevel = []
+        Object.entries<unknown[]>(upgradesCfg).forEach(([upgradeTypeName, upgradeEntry]) => {
+            const upgradeFilepath = ResourceManager.cfg('UpgradeTypes', upgradeTypeName) || this.path + upgradeTypeName
+            const upgradeEntries = Array.isArray(upgradeEntry[0]) ? upgradeEntry : [upgradeEntry]
+            upgradeEntries.forEach((upgradeTypeEntry) => {
+                upgradesByLevel.push(new AnimationEntityUpgrade(upgradeFilepath, upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))
+            })
+        })
+        this.entityType.upgradesByLevel.set(match[1], upgradesByLevel)
+        return true
     }
 
     private finalizeAnimations() {
