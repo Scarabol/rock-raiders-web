@@ -26,6 +26,11 @@ export class LevelSelectLayer extends MainMenuLayer {
         this.items.sort((a, b) => MainMenuBaseItem.compareZ(a, b))
     }
 
+    show() {
+        this.reset()
+        super.show()
+    }
+
 }
 
 class LevelTextCfg {
