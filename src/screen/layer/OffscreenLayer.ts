@@ -75,7 +75,10 @@ export abstract class OffscreenLayer extends ScreenLayer {
 
     resize(width, height) {
         const zIndex = Number(this.canvas.style.zIndex) || 0
-        this.canvas = document.createElement('canvas')
+        const parent = this.canvas.parentElement
+        parent?.removeChild(this.canvas)
+        this.initCanvas()
+        parent?.appendChild(this.canvas)
         if (!this.active) this.canvas.style.visibility = 'hidden'
         super.resize(width, height)
         this.setZIndex(zIndex)

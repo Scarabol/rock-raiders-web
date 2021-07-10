@@ -12,10 +12,15 @@ export class ScreenLayer {
     lastAnimationRequest = null
 
     constructor(alpha: boolean, withContext: boolean) {
-        this.canvas = document.createElement('canvas')
+        this.initCanvas()
         if (!alpha) this.canvas.style.background = '#f0f'
         if (withContext) this.context = this.canvas.getContext('2d', {alpha: alpha})
         this.hide()
+    }
+
+    protected initCanvas() {
+        this.canvas = document.createElement('canvas')
+        this.canvas.setAttribute('data-layer-class', this.constructor.name)
     }
 
     reset() {
