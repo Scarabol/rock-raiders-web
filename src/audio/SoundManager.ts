@@ -31,7 +31,10 @@ export class SoundManager {
         sfxName = sfxName.toLowerCase()
         return new Promise<AudioBuffer>((resolve) => {
             const cachedSound = SoundManager.audioBufferCache.get(sfxName)
-            if (cachedSound) return new Promise<AudioBuffer>((resolve) => resolve(cachedSound))
+            if (cachedSound) {
+                resolve(cachedSound)
+                return
+            }
             const sfxContent = ResourceCache.sfxByKey.get(sfxName)
             if (!sfxContent) {
                 console.error(`Could not find ${sfxName} in: `, ResourceCache.sfxByKey)
