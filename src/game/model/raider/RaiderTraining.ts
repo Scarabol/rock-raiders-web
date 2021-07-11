@@ -21,7 +21,6 @@ export const AllRaiderTrainings: RaiderTraining[] = [
 
 export const RaiderTrainingSites: EntityType[] = []
 RaiderTrainingSites[RaiderTraining.DRIVER] = EntityType.BARRACKS
-RaiderTrainingSites[RaiderTraining.DRIVER] = EntityType.BARRACKS
 RaiderTrainingSites[RaiderTraining.ENGINEER] = EntityType.UPGRADE
 RaiderTrainingSites[RaiderTraining.GEOLOGIST] = EntityType.GEODOME
 RaiderTrainingSites[RaiderTraining.PILOT] = EntityType.TELEPORT_PAD
