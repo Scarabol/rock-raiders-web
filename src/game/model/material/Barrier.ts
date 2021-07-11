@@ -3,7 +3,6 @@ import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
-import { BuildingCarryPathTarget } from '../job/carry/BuildingCarryPathTarget'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
@@ -22,7 +21,7 @@ export class Barrier extends MaterialEntity {
 
     findCarryTargets(): CarryPathTarget[] {
         if (this.targets.every((t) => t.isInvalid())) {
-            return this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new BuildingCarryPathTarget(b))
+            return this.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
         } else {
             return this.targets
         }

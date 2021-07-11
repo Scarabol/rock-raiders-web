@@ -5,7 +5,7 @@ import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
 import { CHECK_CLEAR_RUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
 import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
-import { EntityType } from './model/EntityType'
+import { BuildingPathTarget } from './model/building/BuildingPathTarget'
 import { JobState } from './model/job/JobState'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
 import { PriorityEntry } from './model/job/PriorityEntry'
@@ -101,8 +101,8 @@ export class Supervisor {
                         }
                     }
                 } else if (!hasRequiredTool) {
-                    const pathToToolstation = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)
-                        .map((b) => raider.findPathToTarget(b.getPathTarget()))
+                    const pathToToolstation = this.entityMgr.getGetToolTargets()
+                        .map((b) => raider.findPathToTarget(b))
                         .filter((p) => !!p)
                         .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                     if (pathToToolstation) {
@@ -111,12 +111,12 @@ export class Supervisor {
                             closestToolRaider = raider
                             closestToolRaiderIndex = index
                             minToolDistance = dist
-                            closestToolstation = (pathToToolstation.target as GetToolPathTarget).building
+                            closestToolstation = (pathToToolstation.target as BuildingPathTarget).building
                         }
                     }
                 } else {
-                    const pathToTrainingSite = this.entityMgr.getTrainingSites(requiredTraining)
-                        .map((b) => raider.findPathToTarget(b.getPathTarget()))
+                    const pathToTrainingSite = this.entityMgr.getTrainingSiteTargets(requiredTraining)
+                        .map((b) => raider.findPathToTarget(b))
                         .filter((p) => !!p)
                         .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                     if (pathToTrainingSite) {
@@ -125,7 +125,7 @@ export class Supervisor {
                             closestTrainingRaider = raider
                             closestTrainingRaiderIndex = index
                             minTrainingDistance = dist
-                            closestTrainingArea = (pathToTrainingSite.target as GetToolPathTarget).building
+                            closestTrainingArea = (pathToTrainingSite.target as BuildingPathTarget).building
                         }
                     }
                 }
@@ -167,8 +167,8 @@ export class Supervisor {
                             raider.setJob(clearRubbleJob)
                             return
                         } else {
-                            const pathToToolstation = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)
-                                .map((b) => raider.findPathToTarget(b.getPathTarget()))
+                            const pathToToolstation = this.entityMgr.getGetToolTargets()
+                                .map((b) => raider.findPathToTarget(b))
                                 .filter((p) => !!p)
                                 .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                             if (pathToToolstation) {

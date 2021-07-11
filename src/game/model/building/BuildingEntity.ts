@@ -15,6 +15,7 @@ import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
+import { BuildingCarryPathTarget } from '../job/carry/BuildingCarryPathTarget'
 import { GetToolPathTarget } from '../job/raider/GetToolPathTarget'
 import { Surface } from '../map/Surface'
 import { Barrier } from '../material/Barrier'
@@ -52,7 +53,8 @@ export abstract class BuildingEntity implements Selectable {
     energized: boolean = false
     inBeam: boolean = false
     beamUpAnimator: BeamUpAnimator = null
-    pathTarget: GetToolPathTarget = null
+    getToolPathTarget: GetToolPathTarget = null
+    carryPathTarget: BuildingCarryPathTarget = null
     engineSound: PositionalAudio
     surfaces: Surface[] = []
 
@@ -146,7 +148,6 @@ export abstract class BuildingEntity implements Selectable {
             this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), this.primarySurface.getRandomPosition())
         }
         this.surfaces.forEach((s) => s.setBuilding(null))
-        this.pathTarget = null
         this.beamUpAnimator = new BeamUpAnimator(this)
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
@@ -271,6 +272,8 @@ export abstract class BuildingEntity implements Selectable {
 
     private onPlaceDown() {
         this.updateEnergyState()
+        this.getToolPathTarget = new GetToolPathTarget(this)
+        this.carryPathTarget = new BuildingCarryPathTarget(this)
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
 
@@ -288,11 +291,6 @@ export abstract class BuildingEntity implements Selectable {
 
     addToScene(worldPosition: Vector2, radHeading: number) {
         this.sceneEntity.addToScene(worldPosition, radHeading)
-        this.pathTarget = new GetToolPathTarget(this)
-    }
-
-    getPathTarget(): GetToolPathTarget {
-        return this.pathTarget
     }
 
     isTrainingSite(training: RaiderTraining): boolean {

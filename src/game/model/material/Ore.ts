@@ -3,7 +3,6 @@ import { OreSceneEntity } from '../../../scene/entities/OreSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
-import { BuildingCarryPathTarget } from '../job/carry/BuildingCarryPathTarget'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
@@ -19,10 +18,9 @@ export class Ore extends MaterialEntity {
     findCarryTargets(): CarryPathTarget[] {
         const sites = this.entityMgr.buildingSites.filter((b) => b.needs(this.entityType))
         if (sites.length > 0) return sites.map((s) => new SiteCarryPathTarget(s, s.getRandomDropPosition()))
-        const oreRefineries = this.entityMgr.getBuildingsByType(EntityType.ORE_REFINERY)
-        if (oreRefineries.length > 0) return oreRefineries.map((b) => new BuildingCarryPathTarget(b))
-        const toolStations = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)
-        return toolStations.map((b) => new BuildingCarryPathTarget(b))
+        const oreRefineries = this.entityMgr.getBuildingCarryPathTargets(EntityType.ORE_REFINERY)
+        if (oreRefineries.length > 0) return oreRefineries
+        return this.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
     }
 
     get stats() {

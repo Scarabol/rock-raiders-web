@@ -3,6 +3,7 @@ import { RaidersChangedEvent } from '../../../../event/LocalEvents'
 import { EntityManager } from '../../../EntityManager'
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
+import { BuildingPathTarget } from '../../building/BuildingPathTarget'
 import { FulfillerEntity } from '../../FulfillerEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTraining } from '../../raider/RaiderTraining'
@@ -20,15 +21,17 @@ export class TrainRaiderJob extends RaiderJob {
         this.entityMgr = entityMgr
         this.training = training
         this.building = building
-        this.workplaces = this.getWorkplaces()
+        this.workplaces = this.building?.getTrainingTargets()
     }
 
     getWorkplaces(): PathTarget[] {
-        if (!this.building?.isPowered()) {
-            this.workplaces = []
-            this.entityMgr.getTrainingSites(this.training).map((s) => s.getTrainingTargets().forEach((t) => this.workplaces.push(t)))
-        }
+        if (!this.building?.isPowered()) this.workplaces = this.entityMgr.getTrainingSiteTargets(this.training)
         return this.workplaces
+    }
+
+    setActualWorkplace(target: BuildingPathTarget) {
+        super.setActualWorkplace(target)
+        this.building = target.building
     }
 
     onJobComplete() {

@@ -3,7 +3,6 @@ import { CrystalSceneEntity } from '../../../scene/entities/CrystalSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
-import { BuildingCarryPathTarget } from '../job/carry/BuildingCarryPathTarget'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
@@ -19,10 +18,9 @@ export class Crystal extends MaterialEntity {
     findCarryTargets(): CarryPathTarget[] {
         const sites = this.entityMgr.buildingSites.filter((b) => b.needs(this.entityType))
         if (sites.length > 0) return sites.map((s) => new SiteCarryPathTarget(s, s.getRandomDropPosition()))
-        const powerStations = this.entityMgr.getBuildingsByType(EntityType.POWER_STATION)
-        if (powerStations.length > 0) return powerStations.map((b) => new BuildingCarryPathTarget(b))
-        const toolStations = this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION)
-        return toolStations.map((b) => new BuildingCarryPathTarget(b))
+        const powerStations = this.entityMgr.getBuildingCarryPathTargets(EntityType.POWER_STATION)
+        if (powerStations.length > 0) return powerStations
+        return this.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
     }
 
     get stats() {

@@ -6,9 +6,11 @@ import { JobCreateEvent } from '../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
+import { BuildingPathTarget } from './model/building/BuildingPathTarget'
 import { BuildingSite } from './model/building/BuildingSite'
 import { EntityType } from './model/EntityType'
 import { GameSelection } from './model/GameSelection'
+import { BuildingCarryPathTarget } from './model/job/carry/BuildingCarryPathTarget'
 import { Surface } from './model/map/Surface'
 import { MaterialEntity } from './model/material/MaterialEntity'
 import { Bat } from './model/monster/Bat'
@@ -93,7 +95,7 @@ export class EntityManager {
         this.vehiclesInBeam.forEach((v) => v.removeFromScene())
     }
 
-    getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
+    private getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
         return this.buildings.filter(b => b.isPowered() && buildingTypes.some(bt => b.entityType === bt))
     }
 
@@ -101,12 +103,22 @@ export class EntityManager {
         return EntityManager.getClosestBuilding(this.getBuildingsByType(...buildingTypes), position)
     }
 
-    getTrainingSites(training: RaiderTraining): BuildingEntity[] {
-        return this.buildings.filter((b) => b.isTrainingSite(training))
+    getGetToolTargets(): BuildingPathTarget[] {
+        return this.getBuildingsByType(EntityType.TOOLSTATION).map((b) => b.getToolPathTarget)
     }
 
-    getClosestTrainingSite(position: Vector3, training: RaiderTraining) {
-        return EntityManager.getClosestBuilding(this.getTrainingSites(training), position)
+    getBuildingCarryPathTargets(entityType: EntityType): BuildingCarryPathTarget[] {
+        return this.getBuildingsByType(entityType).map((b) => b.carryPathTarget)
+    }
+
+    getTrainingSiteTargets(training: RaiderTraining): BuildingPathTarget[] {
+        const targets = []
+        this.buildings.filter((b) => b.isTrainingSite(training)).map((b) => b.getTrainingTargets().forEach((t) => targets.push(t)))
+        return targets
+    }
+
+    hasTrainingSite(training: RaiderTraining): boolean {
+        return this.buildings.some((b) => b.isTrainingSite(training))
     }
 
     private static getClosestBuilding(buildings: BuildingEntity[], position: Vector3) {

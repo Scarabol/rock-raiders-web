@@ -68,7 +68,7 @@ export class SelectionChanged extends LocalEvent {
         this.canPlaceFence = entityMgr.selection.surface?.canPlaceFence() && entityMgr.buildings.some((b) => b.entityType === EntityType.POWER_STATION && b.isPowered())
         this.someCarries = !!entityMgr.selection.raiders.some((r) => !!r.carries)
         this.everyHasMaxLevel = !!entityMgr.selection.raiders.every((r) => r.level >= r.stats.Levels)
-        AllRaiderTrainings.forEach((training) => this.canDoTraining.set(training, entityMgr.getTrainingSites(training).length > 0 && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
+        AllRaiderTrainings.forEach((training) => this.canDoTraining.set(training, entityMgr.hasTrainingSite(training) && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
         AllRaiderTools.forEach((tool) => this.everyHasTool.set(tool, !!entityMgr.selection.raiders.every((r) => r.hasTool(tool))))
         this.buildingCanUpgrade = entityMgr.selection.building?.canUpgrade()
         this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.SelfPowered && !entityMgr.selection.building?.stats.PowerBuilding

@@ -10,6 +10,7 @@ import { IEventHandler } from '../../event/IEventHandler'
 import { DeselectAll } from '../../event/LocalEvents'
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { EntityManager } from '../../game/EntityManager'
+import { BuildingPathTarget } from '../../game/model/building/BuildingPathTarget'
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
 import { SceneManager } from '../../game/SceneManager'
@@ -79,9 +80,12 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                         r.setJob(manVehicleJob)
                     } else {
                         const requiredTraining = manVehicleJob.getRequiredTraining()
-                        const closestTrainingSite = r.entityMgr.getClosestTrainingSite(r.sceneEntity.position.clone(), requiredTraining)
+                        const closestTrainingSite = this.entityMgr.getTrainingSiteTargets(requiredTraining)
+                            .map((b) => r.findPathToTarget(b))
+                            .filter((p) => !!p)
+                            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                         if (!closestTrainingSite) return false
-                        r.setJob(new TrainRaiderJob(r.entityMgr, requiredTraining, closestTrainingSite), manVehicleJob)
+                        r.setJob(new TrainRaiderJob(r.entityMgr, requiredTraining, (closestTrainingSite.target as BuildingPathTarget).building), manVehicleJob)
                     }
                     EventBus.publishEvent(new DeselectAll())
                     return true

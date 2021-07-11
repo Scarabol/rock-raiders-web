@@ -2,7 +2,6 @@ import { ElectricFenceSceneEntity } from '../../../scene/entities/ElectricFenceS
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
-import { BuildingCarryPathTarget } from '../job/carry/BuildingCarryPathTarget'
 import { CarryFenceJob } from '../job/carry/CarryFenceJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
@@ -23,7 +22,7 @@ export class ElectricFence extends MaterialEntity {
 
     findCarryTargets(): CarryPathTarget[] {
         if (this.target.every((t) => t.isInvalid())) {
-            return this.entityMgr.getBuildingsByType(EntityType.TOOLSTATION).map((b) => new BuildingCarryPathTarget(b))
+            return this.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
         } else {
             return this.target
         }
