@@ -89,7 +89,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
     }
 
     isPrepared(job: Job): boolean {
-        return false // TODO vehicles: get vehicles to work
+        return false
     }
 
     update(elapsedMs: number) {
