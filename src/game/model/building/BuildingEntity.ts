@@ -271,6 +271,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     private onPlaceDown() {
+        this.sceneEntity.changeActivity()
         this.updateEnergyState()
         this.getToolPathTarget = new GetToolPathTarget(this)
         this.carryPathTarget = new BuildingCarryPathTarget(this)
