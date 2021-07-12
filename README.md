@@ -27,10 +27,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Development Roadmap
 
-### Vehicles Milestone (v0.5.0)
-
-- Raider sometimes sitting wrong way around in vehicles
-
 ### Near (v0.6.0)
 
 - Alarm mode and shooting

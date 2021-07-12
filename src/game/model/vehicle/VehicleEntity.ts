@@ -51,7 +51,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
         this.driver = driver
         this.driver.vehicle = this
         this.driver.sceneEntity.position.set(0, 0, 0)
-        this.driver.sceneEntity.setHeading(0)
+        this.driver.sceneEntity.setHeading(Math.PI)
         this.driver.sceneEntity.changeActivity(this.getDriverActivity())
         if (!this.stats.InvisibleDriver) {
             this.sceneEntity.animation.driverJoint.add(this.driver.sceneEntity.group)
