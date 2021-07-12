@@ -92,9 +92,4 @@ export abstract class VehicleEntity extends FulfillerEntity {
         return false
     }
 
-    update(elapsedMs: number) {
-        super.update(elapsedMs)
-        this.driver?.update(elapsedMs)
-    }
-
 }
