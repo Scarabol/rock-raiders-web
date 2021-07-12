@@ -12,5 +12,6 @@ export class BuildingEntityStats extends BaseConfig {
     CrystalDrain: number|number[] = 0
     OxygenCoef: number = 0
     EngineSound: string = null
+    CanDoubleSelect: boolean = false
 
 }

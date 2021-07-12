@@ -15,6 +15,11 @@ export class AnimationEntityType {
     wheelNullName: string = null
     drillNullName: string = null
     driverNullName: string = null
+    xPivot: string = null
+    yPivot: string = null
+    PivotMinZ: number = 0
+    PivotMaxZ: number = 0
+    fireNullName: string = null
     cameraNullName: string = null
     cameraNullFrames: number = null
     mediumPolyBodies: Map<string, SceneMesh> = new Map()

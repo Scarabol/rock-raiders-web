@@ -142,7 +142,9 @@ export class ResourceManager extends ResourceCache {
         return this.lwoCache.getOrUpdate(lwoFilepath.toLowerCase(), () => {
             const lwoBuffer = ResourceManager.getResource(lwoFilepath)
             if (!lwoBuffer) return null
-            return new LWOLoader(getPath(lwoFilepath), entityPath).parse(lwoBuffer)
+            const result = new LWOLoader(getPath(lwoFilepath), entityPath).parse(lwoBuffer)
+            result.name = lwoFilepath
+            return result
         })?.clone()
     }
 

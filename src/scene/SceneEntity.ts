@@ -15,6 +15,7 @@ export class SceneEntity {
     group: Group = new Group()
     pickSphere: Mesh = null
     selectionFrame: Sprite = null
+    selectionFrameDouble: Sprite = null
     boundingSphere: Sphere = new Sphere()
 
     constructor(sceneMgr: SceneManager) {
@@ -77,6 +78,8 @@ export class SceneEntity {
         this.add(this.pickSphere)
         this.selectionFrame = SceneEntity.createSelectionFrame(pickSphereDiameter, this.pickSphere.position, '#0f0')
         this.add(this.selectionFrame)
+        this.selectionFrameDouble = SceneEntity.createSelectionFrame(pickSphereDiameter, this.pickSphere.position, '#f00')
+        this.add(this.selectionFrameDouble)
     }
 
     getBoundingSphereCenter(): Vector3 {

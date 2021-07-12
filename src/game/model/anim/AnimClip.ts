@@ -21,6 +21,9 @@ export class AnimClip {
     drillJoint: SceneMesh = null
     driverJoint: SceneMesh = null
     nullJoints: Map<string, SceneMesh[]> = new Map()
+    xPivot: SceneMesh = null
+    yPivot: SceneMesh = null
+    zPivot: SceneMesh = null
     polyRootGroup: Group = new Group()
     sfxAudioByFrame: Map<number, PositionalAudio[]> = new Map()
 

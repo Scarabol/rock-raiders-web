@@ -87,8 +87,16 @@ export abstract class BuildingEntity implements Selectable {
         return true
     }
 
+    doubleSelect(): boolean {
+        if (!this.selected) return false
+        this.sceneEntity.selectionFrame.visible = false
+        this.sceneEntity.selectionFrameDouble.visible = true
+        return true
+    }
+
     deselect() {
         this.sceneEntity.selectionFrame.visible = false
+        this.sceneEntity.selectionFrameDouble.visible = false
         this.selected = false
     }
 

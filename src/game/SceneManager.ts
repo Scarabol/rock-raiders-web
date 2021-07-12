@@ -60,20 +60,20 @@ export class SceneManager {
         const raycaster = new Raycaster()
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
         const selection = new GameSelection()
-        selection.raiders.push(...SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))))
-        if (selection.isEmpty()) selection.vehicles.push(...SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))))
-        if (selection.isEmpty()) selection.building = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere)))[0]
-        if (selection.isEmpty() && this.terrain) selection.surface = SceneManager.getSelection(raycaster.intersectObjects(this.terrain.floorGroup.children))[0]
+        selection.raiders.push(...SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere)), false))
+        if (selection.isEmpty()) selection.vehicles.push(...SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)), true))
+        if (selection.isEmpty()) selection.building = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere)), true)[0]
+        if (selection.isEmpty() && this.terrain) selection.surface = SceneManager.getSelection(raycaster.intersectObjects(this.terrain.floorGroup.children), false)[0]
         return selection
     }
 
-    private static getSelection(intersects: Intersection[]): any[] {
+    private static getSelection(intersects: Intersection[], allowDoubleSelection: boolean): any[] {
         if (intersects.length < 1) return []
         const selection = []
         const userData = intersects[0].object.userData
         if (userData && userData.hasOwnProperty('selectable')) {
             const selectable = userData['selectable'] as Selectable
-            if (selectable?.isInSelection()) selection.push(selectable)
+            if (selectable?.isInSelection() || (selectable?.selected && allowDoubleSelection)) selection.push(selectable)
         }
         return selection
     }
@@ -165,7 +165,8 @@ export class SceneManager {
 
         const selection = new GameSelection()
         selection.raiders.push(...this.entityMgr.raiders.filter((r) => r.isInSelection() && SceneManager.isInFrustum(r.sceneEntity.pickSphere, frustum)))
-        selection.vehicles.push(...this.entityMgr.vehicles.filter((v) => v.isInSelection() && SceneManager.isInFrustum(v.sceneEntity.pickSphere, frustum)))
+        const hasRaiderSelected = selection.raiders.length > 0
+        selection.vehicles.push(...this.entityMgr.vehicles.filter((v) => v.isInSelection() && (!hasRaiderSelected || v.driver) && SceneManager.isInFrustum(v.sceneEntity.pickSphere, frustum)))
         if (selection.isEmpty()) selection.building = this.entityMgr.buildings.find((b) => SceneManager.isInFrustum(b.sceneEntity.pickSphere, frustum))
         return selection
     }

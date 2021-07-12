@@ -1,4 +1,4 @@
-import { Matrix4 } from 'three'
+import { Matrix4, Vector2, Vector3 } from 'three'
 import { AnimEntityActivity } from '../game/model/activities/AnimEntityActivity'
 import { BaseActivity } from '../game/model/activities/BaseActivity'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
@@ -16,6 +16,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     activity: BaseActivity = null
     upgrades: SceneMesh[] = []
     animatedUpgrades: AnimatedSceneEntity[] = []
+    bodiesByName: Map<string, SceneMesh> = new Map()
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
         super(sceneMgr)
@@ -44,8 +45,15 @@ export class AnimatedSceneEntity extends SceneEntity {
             this.disposeUpgrades()
             this.remove(this.animation.polyRootGroup)
             this.animation.stop()
+            this.bodiesByName.clear()
         }
         this.animation = animation
+        this.animation.nullJoints.forEach((j, lName) => { // TODO using this name is super hacky
+            if (lName) j.forEach((m) => this.bodiesByName.set(lName, m))
+        })
+        this.animation.polyList.forEach((m) => {
+            if (m.name) this.bodiesByName.set(m.name, m) // TODO using this name is super hacky
+        })
         this.applyDefaultUpgrades(activity)
         this.add(this.animation.polyRootGroup)
         this.animation.start(onAnimationDone, durationTimeMs)
@@ -82,6 +90,9 @@ export class AnimatedSceneEntity extends SceneEntity {
                         animatedUpgrade.changeActivity(activity)
                         joint.add(animatedUpgrade.group)
                         this.animatedUpgrades.push(animatedUpgrade)
+                        animatedUpgrade.bodiesByName.forEach((mesh, name) => {
+                            this.bodiesByName.set(name, mesh)
+                        })
                     }
                 } else {
                     console.warn(`Could not find null joint ${upgrade.upgradeNullName} and index ${upgrade.upgradeNullIndex} to attach upgrade: ${upgrade.upgradeFilepath}`)
@@ -96,6 +107,29 @@ export class AnimatedSceneEntity extends SceneEntity {
 
     flipXAxis() {
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
+    }
+
+    pointLaserAt(terrainIntersectionPoint: Vector2) {
+        if (!terrainIntersectionPoint) return
+        const xPivot = this.bodiesByName.get(this.animationEntityType.xPivot?.toLowerCase())
+        if (xPivot) {
+            const pivotWorldPos = new Vector3()
+            xPivot.getWorldPosition(pivotWorldPos)
+            const worldTarget = this.sceneMgr.getFloorPosition(terrainIntersectionPoint).setY(0)
+            const diff = worldTarget.sub(pivotWorldPos)
+            const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI - Math.PI / 20 // TODO Does not compute!
+            const lAngle = angle > this.animationEntityType.PivotMaxZ ? this.animationEntityType.PivotMaxZ : (angle < this.animationEntityType.PivotMinZ ? this.animationEntityType.PivotMinZ : angle) // TODO only limit angle if value is not null/undefined
+            xPivot.setRotationFromAxisAngle(new Vector3(1, 0, 0), lAngle) // XXX use rotation speed and smooth movement
+        }
+        const yPivot = this.bodiesByName.get(this.animationEntityType.yPivot?.toLowerCase())
+        if (yPivot) {
+            const pivotWorldPos = new Vector3()
+            yPivot.getWorldPosition(pivotWorldPos)
+            const angle = terrainIntersectionPoint.clone().sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() + Math.PI / 2
+            yPivot.setRotationFromAxisAngle(new Vector3(0, 1, 0), angle) // XXX use rotation speed and smooth movement
+            // TODO limit by PivotMax???
+        }
+        // XXX handle zPivot (not used in the game)
     }
 
 }

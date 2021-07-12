@@ -26,6 +26,12 @@ export function iGet(obj, ...keys: string[]): any {
     return obj
 }
 
+export function iSet(obj: any, key: string, value: any) {
+    Object.keys(obj).forEach((keyname) => {
+        if (keyname.toLowerCase() === key.toLowerCase()) obj[keyname] = value
+    })
+}
+
 export function decodeString(data) {
     return new TextDecoder().decode(data).replace(/\0/g, '')
 }

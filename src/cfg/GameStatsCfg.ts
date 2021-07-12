@@ -2,6 +2,7 @@
 
 import { BaseConfig } from './BaseConfig'
 import { BuildingEntityStats } from './BuildingEntityStats'
+import { VehicleEntityStats } from './VehicleEntityStats'
 
 export class GameStatsCfg extends BaseConfig {
 
@@ -270,7 +271,7 @@ export class GameStatsCfg extends BaseConfig {
         ShowHealthBar: boolean = true
     }
 
-    Hoverboard = new class HoverboardStats extends BaseConfig { // [Carry][Scan][Speed][Drill]    (No drill or carry)
+    Hoverboard = new class HoverboardStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No drill or carry)
         Levels: number = 8
         RouteSpeed: number[] = [3.0, 3.0, 5.0, 5.0, 3.0, 3.0, 5.0, 5.0]
         SurveyRadius: number[] = [0, 0, 0, 0, 4, 4, 4, 4]
@@ -289,7 +290,7 @@ export class GameStatsCfg extends BaseConfig {
         EngineSound: string = 'SND_SmallEngine'
     }
 
-    SmallHeli = new class SmallHeliStats extends BaseConfig {
+    SmallHeli = new class SmallHeliStats extends VehicleEntityStats {
         Levels: number = 1
         RouteSpeed: number = 2.50
         TrackDist: number = 50.0
@@ -307,7 +308,7 @@ export class GameStatsCfg extends BaseConfig {
         EngineSound: string = 'SND_HeliEngine'
     }
 
-    Smallmlp = new class SmallmlpStats extends BaseConfig {
+    Smallmlp = new class SmallmlpStats extends VehicleEntityStats {
         Levels: number = 4
         RouteSpeed: number[] = [0.50, 0.50, 0.50, 0.50]
         TrackDist: number = 50.0
@@ -326,7 +327,7 @@ export class GameStatsCfg extends BaseConfig {
         EngineSound: string = 'SND_MediumEngine'
     }
 
-    SmallCat = new class SmallCatStats extends BaseConfig {
+    SmallCat = new class SmallCatStats extends VehicleEntityStats {
         Levels: number = 3
         RouteSpeed: number[] = [2.0, 3.0, 4.0]
         TrackDist: number = 50.0
@@ -345,7 +346,7 @@ export class GameStatsCfg extends BaseConfig {
         EngineSound: string = 'SND_Catamaran'
     }
 
-    SmallDigger = new class SmallDiggerStats extends BaseConfig {
+    SmallDigger = new class SmallDiggerStats extends VehicleEntityStats {
         Levels: number = 8
         RouteSpeed: number[] = [2.0, 2.0, 4.0, 4.0, 2.0, 2.0, 4.0, 4.0]
         SoilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
@@ -371,7 +372,7 @@ export class GameStatsCfg extends BaseConfig {
         EngineSound: string = 'SND_SmallEngine'
     }
 
-    SmallTruck = new class SmallTruckStats extends BaseConfig { // [Carry][Scan][Speed][Drill]    (No drill)
+    SmallTruck = new class SmallTruckStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No drill)
         Levels: number = 16
         RouteSpeed: number[] = [2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0, 2.0, 2.0, 3.0, 3.0]
         MaxCarry: number[] = [3, 3, 3, 3, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6]
@@ -393,7 +394,7 @@ export class GameStatsCfg extends BaseConfig {
         EngineSound: string = 'SND_SmallEngine'
     }
 
-    Bulldozer = new class BulldozerStats extends BaseConfig { // [Carry][Scan][Speed][Drill]    (No drill)
+    Bulldozer = new class BulldozerStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No drill)
         Levels: number = 16
         RouteSpeed: number[] = [0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8, 0.5, 0.5, 0.8, 0.8]
         MaxCarry: number[] = [0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2]
@@ -414,7 +415,7 @@ export class GameStatsCfg extends BaseConfig {
         EngineSound: string = 'SND_MediumEngine'
     }
 
-    WalkerDigger = new class WalkerDiggerStats extends BaseConfig { // [Carry][Scan][Speed][Drill]    (No carry)
+    WalkerDigger = new class WalkerDiggerStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No carry)
         Levels: number = 8
         RouteSpeed: number[] = [0.50, 0.50, 0.80, 0.80, 0.50, 0.50, 0.80, 0.80]
         SoilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
@@ -441,7 +442,7 @@ export class GameStatsCfg extends BaseConfig {
         EngineSound: string = 'SND_MediumEngine'
     }
 
-    LargeDigger = new class LargeDiggerStats extends BaseConfig { // [Carry][Scan][Speed][Drill]    (No carry or scan)
+    LargeDigger = new class LargeDiggerStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No carry or scan)
         Levels: number = 4
         RouteSpeed: number[] = [0.30, 0.30, 0.60, 0.60]
         SoilDrillTime: number[] = [1.0, 1.0, 1.0, 1.0]
@@ -468,7 +469,7 @@ export class GameStatsCfg extends BaseConfig {
         EngineSound: string = 'SND_LargeEngine'
     }
 
-    LargeCat = new class LargeCatStats extends BaseConfig { // [Carry][Scan][Speed][Drill] (No carry) (Drill???)
+    LargeCat = new class LargeCatStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill] (No carry) (Drill???)
         Levels: number = 1
         RouteSpeed: number = 1.50
         SurveyRadius: number = 0
@@ -486,7 +487,7 @@ export class GameStatsCfg extends BaseConfig {
         ShowHealthBar: boolean = true
     }
 
-    LargeHeli = new class LargeHeliStats extends BaseConfig {
+    LargeHeli = new class LargeHeliStats extends VehicleEntityStats {
         Levels: number = 3
         RouteSpeed: number[] = [0.30, 0.40, 0.50]
         TrackDist: number = 80.0
@@ -497,7 +498,7 @@ export class GameStatsCfg extends BaseConfig {
         EngineSound: string = 'SND_HeliEngine'
     }
 
-    LargeMLP = new class LargeMLPStats extends BaseConfig { // [Carry][Scan][Speed][Drill]    (No carry or speed) (Doesn't have drills, just lasers)
+    LargeMLP = new class LargeMLPStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill]    (No carry or speed) (Doesn't have drills, just lasers)
         Levels: number = 8
         RouteSpeed: number[] = [0.40, 0.40, 0.40, 0.40, 0.40, 0.40, 0.40, 0.40]
         SurveyRadius: number[] = [0, 0, 0, 0, 5, 5, 5, 5]

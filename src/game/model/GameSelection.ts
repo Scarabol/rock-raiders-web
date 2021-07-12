@@ -5,12 +5,12 @@ import { SelectPanelType } from '../../event/LocalEvents'
 import { TILESIZE } from '../../params'
 import { BuildingEntity } from './building/BuildingEntity'
 import { EntityType } from './EntityType'
+import { FulfillerEntity } from './FulfillerEntity'
 import { Job } from './job/Job'
 import { GetToolJob } from './job/raider/GetToolJob'
 import { MoveJob } from './job/raider/MoveJob'
 import { Surface } from './map/Surface'
 import { Raider } from './raider/Raider'
-import { Selectable } from './Selectable'
 import { VehicleEntity } from './vehicle/VehicleEntity'
 
 export class GameSelection {
@@ -19,15 +19,17 @@ export class GameSelection {
     building: BuildingEntity = null
     raiders: Raider[] = []
     vehicles: VehicleEntity[] = []
+    doubleSelect: BuildingEntity | VehicleEntity = null
 
     isEmpty(): boolean {
         return !this.surface && !this.building && this.raiders.length < 1 && this.vehicles.length < 1
     }
 
     set(selection: GameSelection) {
+        this.doubleSelect = null // XXX refactor this only reset if needed
         let added = false
-        added = GameSelection.syncSelection(this.raiders, selection.raiders) || added
-        added = GameSelection.syncSelection(this.vehicles, selection.vehicles) || added
+        added = this.syncSelection(this.raiders, selection.raiders) || added
+        added = this.syncSelection(this.vehicles, selection.vehicles) || added
         if (this.building !== selection.building) {
             this.building?.deselect()
             if (selection.building?.isInSelection()) {
@@ -35,6 +37,11 @@ export class GameSelection {
                 if (this.building.select()) added = true
             } else {
                 this.building = null
+            }
+        } else if (this.building?.stats.CanDoubleSelect) {
+            if (this.building.doubleSelect()) {
+                this.doubleSelect = this.building
+                added = true
             }
         }
         if (this.surface !== selection.surface) {
@@ -49,13 +56,12 @@ export class GameSelection {
         if (added) SoundManager.playSample(Sample.SFX_Okay)
     }
 
-    private static syncSelection(before: Selectable[], after: Selectable[]): boolean {
+    private syncSelection(before: FulfillerEntity[], after: FulfillerEntity[]): boolean {
         let added = false
-        before.forEach((r) => {
-            if (after.indexOf(r) === -1) {
-                before.remove(r)
-                r.deselect()
-            }
+        const deselected = before.filter((r) => {
+            const deselected = after.indexOf(r) === -1
+            if (deselected) r.deselect()
+            return deselected
         })
         after.forEach((r) => {
             if (before.indexOf(r) === -1) {
@@ -63,8 +69,14 @@ export class GameSelection {
                     before.push(r)
                     added = true
                 }
+            } else if (r.stats.CanDoubleSelect && r['driver']) {
+                if (r.doubleSelect()) {
+                    this.doubleSelect = r as VehicleEntity
+                    added = true
+                }
             }
         })
+        deselected.forEach((r) => before.remove(r))
         return added
     }
 
@@ -115,6 +127,7 @@ export class GameSelection {
         this.building = null
         this.surface?.deselect()
         this.surface = null
+        this.doubleSelect = null
     }
 
 }

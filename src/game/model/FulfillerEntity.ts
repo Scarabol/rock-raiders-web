@@ -81,8 +81,13 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         return true
     }
 
+    doubleSelect(): boolean {
+        return false
+    }
+
     deselect() {
         this.sceneEntity.selectionFrame.visible = false
+        this.sceneEntity.selectionFrameDouble.visible = false
         this.selected = false
     }
 

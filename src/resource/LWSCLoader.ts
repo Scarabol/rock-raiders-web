@@ -107,6 +107,7 @@ export class LWSCLoader {
                     subObj.lowerName = filename.slice(0, filename.length - '.lwo'.length).toLowerCase()
                     subObj.filename = getPath(this.animationClip.lwsFilepath) + filename
                     subObj.model = ResourceManager.getLwoModel(subObj.filename)
+                    subObj.model.name = subObj.lowerName
                 } else if (key === 'AddNullObject') {
                     const nameParts = value.split(',')
                     subObj.lowerName = nameParts[0].toLowerCase()
@@ -118,6 +119,7 @@ export class LWSCLoader {
                         subObj.sfxFrames = nameParts.slice(2).map((n) => Number(n))
                     }
                     subObj.model = new SceneMesh()
+                    subObj.model.name = value
                     subObj.isNull = true
                 } else {
                     throw new Error(`Unexpected line: ${line}`)

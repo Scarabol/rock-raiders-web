@@ -1,6 +1,6 @@
 import { AudioListener, PositionalAudio } from 'three'
 import { SoundManager } from '../audio/SoundManager'
-import { getPath, iGet } from '../core/Util'
+import { getPath, iGet, iSet } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
@@ -77,14 +77,24 @@ export class AnimEntityLoader {
                 this.parseAnimations(value)
             } else if (rootKey.equalsIgnoreCase('Upgrades')) {
                 this.parseUpgrades(value)
-            } else if (value['lwsfile'] && !this.knownAnimations.includes(rootKey)) {
-                try { // some activities are not listed in the Activities section... try parse them anyway
-                    this.parseActivity(value, `activity_${rootKey}`)
-                } catch (e) {
-                    if (this.verbose) console.warn(`Could not parse unlisted activity: ${rootKey}`, value, e)
+            } else if (value['lwsfile']) { // some activities are not listed in the Activities section... try parse them anyway
+                if (!this.knownAnimations.includes(rootKey)) {
+                    try {
+                        this.parseActivity(value, `activity_${rootKey}`)
+                    } catch (e) {
+                        if (this.verbose) console.warn(`Could not parse unlisted activity: ${rootKey}`, value, e)
+                    }
                 }
             } else if (this.parseUpgradeEntry(rootKey, value)) {
                 if (!DEV_MODE) console.warn(`Entity ${this.aeFilename} has upgrade defined outside of Upgrades group`, value)
+            } else if (rootKey.equalsIgnoreCase('FireNullName')) {
+                this.entityType.fireNullName = value
+            } else if (rootKey.match(/^[xy]Pivot$/i)) {
+                iSet(this.entityType, rootKey, value)
+            } else if (rootKey.equalsIgnoreCase('PivotMaxZ')) {
+                this.entityType.PivotMaxZ = value
+            } else if (rootKey.equalsIgnoreCase('PivotMinZ')) {
+                this.entityType.PivotMinZ = value
             } else if (this.verbose) {
                 console.warn(`Unhandled animated entity key found: ${rootKey}`, value)
             }
@@ -194,6 +204,10 @@ export class AnimEntityLoader {
                     animation.driverJoint = polyModel
                 } else if (body.isNull) {
                     animation.nullJoints.getOrUpdate(body.lowerName.toLowerCase(), () => []).push(polyModel)
+                } else if (body.lowerName.equalsIgnoreCase(this.entityType.xPivot)) {
+                    animation.xPivot = polyModel
+                } else if (body.lowerName.equalsIgnoreCase(this.entityType.yPivot)) {
+                    animation.yPivot = polyModel
                 }
             }
             if (body.sfxName) {
@@ -211,6 +225,7 @@ export class AnimEntityLoader {
         })
         if (!animation.driverJoint) {
             animation.driverJoint = new SceneMesh()
+            animation.driverJoint.name = 'driverJoint'
             animation.polyRootGroup.add(animation.driverJoint)
         }
     }

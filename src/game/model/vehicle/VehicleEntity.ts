@@ -1,5 +1,6 @@
 import { PositionalAudio } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
+import { VehicleEntityStats } from '../../../cfg/VehicleEntityStats'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, VehiclesChangedEvent } from '../../../event/LocalEvents'
 import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
@@ -26,6 +27,8 @@ export abstract class VehicleEntity extends FulfillerEntity {
     }
 
     abstract get sceneEntity(): VehicleSceneEntity
+
+    abstract get stats(): VehicleEntityStats
 
     beamUp() {
         this.dropDriver()
@@ -87,6 +90,13 @@ export abstract class VehicleEntity extends FulfillerEntity {
 
     isPrepared(job: Job): boolean {
         return false
+    }
+
+    doubleSelect(): boolean {
+        if (!this.selected || !this.stats.CanDoubleSelect || !this.driver) return false
+        this.sceneEntity.selectionFrame.visible = false
+        this.sceneEntity.selectionFrameDouble.visible = true
+        return true
     }
 
 }
