@@ -1,4 +1,5 @@
 import { Vector2 } from 'three'
+import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivity'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { SceneEntity } from '../SceneEntity'
 
@@ -9,8 +10,8 @@ export class FulfillerSceneEntity extends AnimatedSceneEntity {
     pickupEntity(entity: SceneEntity) {
         if (this.carriedEntity === entity) return
         this.dropEntity()
-        this.carriedEntity = entity;
-        (this.animation?.carryJoint || this).add(this.carriedEntity.group)
+        this.carriedEntity = entity
+        this.addCarried()
         this.carriedEntity.position.set(0, 0, 0)
     }
 
@@ -24,6 +25,16 @@ export class FulfillerSceneEntity extends AnimatedSceneEntity {
         this.carriedEntity.addToScene(new Vector2(position.x, position.z), null)
         this.carriedEntity = null
         this.changeActivity()
+    }
+
+    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
+        super.changeActivity(activity, onAnimationDone, durationTimeMs)
+        this.addCarried() // keep carried children
+    }
+
+    private addCarried() {
+        if (!this.carriedEntity) return
+        (this.animation?.carryJoint || this).add(this.carriedEntity.group)
     }
 
 }
