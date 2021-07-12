@@ -3,9 +3,9 @@ import { AnimationEntityUpgrade } from '../../game/model/anim/AnimationEntityUpg
 import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { SceneMesh } from '../SceneMesh'
-import { FulfillerSceneEntity } from './FulfillerSceneEntity'
+import { VehicleSceneEntity } from './VehicleSceneEntity'
 
-export class WalkerDiggerSceneEntity extends FulfillerSceneEntity {
+export class WalkerDiggerSceneEntity extends VehicleSceneEntity {
 
     body: AnimatedSceneEntity = null
 

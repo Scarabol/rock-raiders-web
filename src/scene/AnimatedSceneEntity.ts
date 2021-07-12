@@ -45,14 +45,6 @@ export class AnimatedSceneEntity extends SceneEntity {
             this.remove(this.animation.polyRootGroup)
             this.animation.stop()
         }
-        const carriedChildren = this.animation?.carryJoint?.children
-        if (carriedChildren && carriedChildren.length > 0 && animation.carryJoint) {
-            animation.carryJoint.add(...carriedChildren) // keep carried children
-        }
-        const driver = this.animation?.driverJoint.children
-        if (driver && driver.length > 0) {
-            animation.driverJoint.add(...driver) // keep driver
-        }
         this.animation = animation
         this.applyDefaultUpgrades(activity)
         this.add(this.animation.polyRootGroup)

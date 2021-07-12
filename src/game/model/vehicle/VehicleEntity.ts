@@ -2,7 +2,7 @@ import { PositionalAudio } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, VehiclesChangedEvent } from '../../../event/LocalEvents'
-import { FulfillerSceneEntity } from '../../../scene/entities/FulfillerSceneEntity'
+import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
@@ -17,16 +17,15 @@ import { VehicleActivity } from './VehicleActivity'
 
 export abstract class VehicleEntity extends FulfillerEntity {
 
-    sceneEntity: FulfillerSceneEntity
     driver: Raider = null
     callManJob: ManVehicleJob = null
     engineSound: PositionalAudio
 
-    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
         super(sceneMgr, entityMgr, entityType)
-        this.sceneEntity = new FulfillerSceneEntity(sceneMgr, aeFilename)
-        this.sceneEntity.flipXAxis()
     }
+
+    abstract get sceneEntity(): VehicleSceneEntity
 
     beamUp() {
         this.dropDriver()
@@ -49,11 +48,8 @@ export abstract class VehicleEntity extends FulfillerEntity {
     addDriver(driver: Raider) {
         this.driver = driver
         this.driver.vehicle = this
-        this.driver.sceneEntity.position.set(0, 0, 0)
-        this.driver.sceneEntity.setHeading(Math.PI)
-        this.driver.sceneEntity.changeActivity(this.getDriverActivity())
         if (!this.stats.InvisibleDriver) {
-            this.sceneEntity.animation.driverJoint.add(this.driver.sceneEntity.group)
+            this.sceneEntity.addDriver(this.driver.sceneEntity)
         } else {
             this.driver.sceneEntity.removeFromScene()
         }
@@ -64,11 +60,9 @@ export abstract class VehicleEntity extends FulfillerEntity {
     dropDriver() {
         this.stopJob()
         if (!this.driver) return
-        this.sceneEntity.animation.driverJoint.remove(this.driver.sceneEntity.group)
+        this.sceneEntity.removeDriver()
         this.driver.vehicle = null
-        this.driver.sceneEntity.position.copy(this.sceneEntity.position)
-        this.driver.sceneEntity.setHeading(this.sceneEntity.getHeading())
-        this.driver.sceneMgr.scene.add(this.driver.sceneEntity.group)
+        this.driver.sceneEntity.addToScene(this.sceneEntity.position2D, this.sceneEntity.getHeading())
         this.driver.sceneEntity.changeActivity()
         this.driver = null
         this.engineSound = resetAudioSafe(this.engineSound)

@@ -9,10 +9,11 @@ import { VehicleEntity } from '../VehicleEntity'
 
 export class WalkerDigger extends VehicleEntity {
 
+    sceneEntity: WalkerDiggerSceneEntity
+
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        super(sceneMgr, entityMgr, EntityType.WALKER_DIGGER, 'Vehicles/WalkerBody/WalkerBody.ae')
+        super(sceneMgr, entityMgr, EntityType.WALKER_DIGGER)
         this.sceneEntity = new WalkerDiggerSceneEntity(sceneMgr)
-        this.sceneEntity.flipXAxis()
     }
 
     isPrepared(job: Job): boolean {
