@@ -3,6 +3,7 @@ import { EntityManager } from '../../../EntityManager'
 import { SceneManager } from '../../../SceneManager'
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { EntityType } from '../../EntityType'
+import { VehicleActivity } from '../VehicleActivity'
 import { VehicleEntity } from '../VehicleEntity'
 
 export class Hoverboard extends VehicleEntity {
@@ -16,7 +17,7 @@ export class Hoverboard extends VehicleEntity {
     }
 
     getDriverActivity(): RaiderActivity {
-        return RaiderActivity.Hoverboard
+        return this.sceneEntity.activity === VehicleActivity.Stand ? RaiderActivity.Standhoverboard : RaiderActivity.Hoverboard
     }
 
 }

@@ -1,8 +1,10 @@
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { EntityManager } from '../../../EntityManager'
 import { SceneManager } from '../../../SceneManager'
+import { RaiderActivity } from '../../activities/RaiderActivity'
 import { EntityType } from '../../EntityType'
 import { RaiderTraining } from '../../raider/RaiderTraining'
+import { VehicleActivity } from '../VehicleActivity'
 import { VehicleEntity } from '../VehicleEntity'
 
 export class LargeCat extends VehicleEntity {
@@ -17,6 +19,10 @@ export class LargeCat extends VehicleEntity {
 
     getRequiredTraining(): RaiderTraining {
         return RaiderTraining.SAILOR
+    }
+
+    getDriverActivity(): RaiderActivity {
+        return this.sceneEntity.activity === VehicleActivity.Stand ? RaiderActivity.StandLARGECAT : RaiderActivity.LARGECAT
     }
 
 }

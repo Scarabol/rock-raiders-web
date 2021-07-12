@@ -4,6 +4,7 @@ import { SceneManager } from '../../../SceneManager'
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { EntityType } from '../../EntityType'
 import { RaiderTraining } from '../../raider/RaiderTraining'
+import { VehicleActivity } from '../VehicleActivity'
 import { VehicleEntity } from '../VehicleEntity'
 
 export class SmallHeli extends VehicleEntity {
@@ -21,7 +22,7 @@ export class SmallHeli extends VehicleEntity {
     }
 
     getDriverActivity(): RaiderActivity {
-        return RaiderActivity.SMALLheli
+        return this.sceneEntity.activity === VehicleActivity.Stand ? RaiderActivity.StandSMALLheli : RaiderActivity.SMALLheli
     }
 
 }
