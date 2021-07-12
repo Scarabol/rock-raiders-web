@@ -72,7 +72,7 @@ export abstract class MovableEntity {
     abstract getRouteActivity(): AnimEntityActivity
 
     getSpeed(): number {
-        return this.sceneEntity.animation?.transcoef || 1
+        return this.sceneEntity.animation?.transcoef
     }
 
 }

@@ -44,7 +44,7 @@ export class AnimClip {
     update(elapsedMs: number) {
         this.polyList.forEach((m) => updateSafe(m, elapsedMs))
         this.timer += elapsedMs
-        const msPerFrame = 1000 / this.framesPerSecond * (this.transcoef || 1)
+        const msPerFrame = 1000 / this.framesPerSecond * this.transcoef
         const skippedFrames = Math.floor(this.timer / msPerFrame)
         this.timer -= skippedFrames * msPerFrame
         if (skippedFrames === 0) return

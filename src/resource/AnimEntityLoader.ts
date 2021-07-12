@@ -118,7 +118,7 @@ export class AnimEntityLoader {
         if (isLws) {
             const animation = new LWSCLoader(this.verbose).parse(`${this.path + file}.lws`)
             animation.looping = looping
-            animation.transcoef = transcoef ? Number(transcoef) : 1
+            animation.transcoef = Number(transcoef) || animation.transcoef
             if (lActivityName.startsWith('!')) lActivityName = lActivityName.substr(1) // XXX Whats the meaning of leading ! for activities???
             this.entityType.animations.set(lActivityName, animation)
         } else {
