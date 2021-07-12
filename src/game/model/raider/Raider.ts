@@ -14,6 +14,7 @@ import { Job } from '../job/Job'
 import { Surface } from '../map/Surface'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
+import { VehicleActivity } from '../vehicle/VehicleActivity'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { RaiderTool } from './RaiderTool'
 import { RaiderTraining } from './RaiderTraining'
@@ -91,9 +92,30 @@ export class Raider extends FulfillerEntity {
     work(elapsedMs: number) {
         if (this.slipped) return
         if (this.vehicle) {
-            this.sceneEntity.changeActivity(this.vehicle.getDriverActivity())
+            this.sceneEntity.changeActivity(this.getDriverActivity())
         } else {
             super.work(elapsedMs)
+        }
+    }
+
+    getDriverActivity(): RaiderActivity {
+        if (!this.vehicle) return RaiderActivity.Stand
+        const vehicleStands = this.vehicle.sceneEntity.activity === VehicleActivity.Stand
+        switch (this.vehicle.entityType) {
+            case EntityType.HOVERBOARD:
+                return vehicleStands ? RaiderActivity.Standhoverboard : RaiderActivity.Hoverboard
+            case EntityType.SMALL_DIGGER:
+                return vehicleStands ? RaiderActivity.StandSMALLDIGGER : RaiderActivity.SMALLDIGGER
+            case EntityType.SMALL_TRUCK:
+                return vehicleStands ? RaiderActivity.StandSMALLTRUCK : RaiderActivity.SMALLTRUCK
+            case EntityType.SMALL_MLP:
+                return vehicleStands ? RaiderActivity.StandSMALLMLP : RaiderActivity.SMALLMLP
+            case EntityType.SMALL_CAT:
+                return vehicleStands ? RaiderActivity.StandSMALLCAT : RaiderActivity.SMALLCAT
+            case EntityType.SMALL_HELI:
+                return vehicleStands ? RaiderActivity.StandSMALLheli : RaiderActivity.SMALLheli
+            case EntityType.LARGE_CAT:
+                return vehicleStands ? RaiderActivity.StandLARGECAT : RaiderActivity.LARGECAT
         }
     }
 

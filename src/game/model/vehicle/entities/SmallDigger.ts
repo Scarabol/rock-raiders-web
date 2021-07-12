@@ -1,11 +1,9 @@
 import { ResourceManager } from '../../../../resource/ResourceManager'
 import { EntityManager } from '../../../EntityManager'
 import { SceneManager } from '../../../SceneManager'
-import { RaiderActivity } from '../../activities/RaiderActivity'
 import { EntityType } from '../../EntityType'
 import { Job } from '../../job/Job'
 import { RaiderTool } from '../../raider/RaiderTool'
-import { VehicleActivity } from '../VehicleActivity'
 import { VehicleEntity } from '../VehicleEntity'
 
 export class SmallDigger extends VehicleEntity {
@@ -20,10 +18,6 @@ export class SmallDigger extends VehicleEntity {
 
     get stats() {
         return ResourceManager.stats.SmallDigger
-    }
-
-    getDriverActivity(): RaiderActivity {
-        return this.sceneEntity.activity === VehicleActivity.Stand ? RaiderActivity.StandSMALLDIGGER : RaiderActivity.SMALLDIGGER
     }
 
 }

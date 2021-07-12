@@ -5,7 +5,6 @@ import { SelectionChanged, VehiclesChangedEvent } from '../../../event/LocalEven
 import { FulfillerSceneEntity } from '../../../scene/entities/FulfillerSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
@@ -78,10 +77,6 @@ export abstract class VehicleEntity extends FulfillerEntity {
 
     getRequiredTraining(): RaiderTraining {
         return RaiderTraining.DRIVER
-    }
-
-    getDriverActivity(): RaiderActivity {
-        return RaiderActivity.Stand
     }
 
     getRouteActivity(): VehicleActivity {
