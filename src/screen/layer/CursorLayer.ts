@@ -67,11 +67,11 @@ export class CursorLayer extends ScreenLayer {
         if (this.sceneMgr.hasBuildModeSelection()) {
             return this.sceneMgr.buildMarker.lastCheck ? Cursor.Pointer_CanBuild : Cursor.Pointer_CannotBuild
         }
-        let intersects = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
-        if (intersects.length > 0) return Cursor.Pointer_Selected
-        intersects = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
-        if (intersects.length > 0) {
-            const userData = intersects[0].object.userData
+        const intersectsRaider = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
+        if (intersectsRaider.length > 0) return Cursor.Pointer_Selected
+        const intersectsVehicle = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
+        if (intersectsVehicle.length > 0) {
+            const userData = intersectsVehicle[0].object.userData
             if (userData && userData.hasOwnProperty('selectable')) {
                 const vehicle = userData['selectable'] as VehicleEntity
                 if (!vehicle?.driver && this.entityMgr.selection.raiders.length > 0) {
@@ -80,11 +80,11 @@ export class CursorLayer extends ScreenLayer {
             }
             return Cursor.Pointer_Selected
         }
-        intersects = raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere))
-        if (intersects.length > 0) return Cursor.Pointer_Selected
-        intersects = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
-        if (intersects.length > 0) {
-            const userData = intersects[0].object.userData
+        const intersectsBuilding = raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere))
+        if (intersectsBuilding.length > 0) return Cursor.Pointer_Selected
+        const intersectsSurface = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
+        if (intersectsSurface.length > 0) {
+            const userData = intersectsSurface[0].object.userData
             if (userData && userData.hasOwnProperty('surface')) {
                 const surface = userData['surface'] as Surface
                 if (surface) {

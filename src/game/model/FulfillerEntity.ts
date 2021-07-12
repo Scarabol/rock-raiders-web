@@ -65,11 +65,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.sceneEntity.changeActivity()
     }
 
-    deselect() {
-        this.sceneEntity.selectionFrame.visible = false
-        this.selected = false
-    }
-
     isSelectable(): boolean {
         return !this.selected && !this.inBeam
     }
@@ -84,6 +79,11 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.selected = true
         this.sceneEntity.changeActivity()
         return true
+    }
+
+    deselect() {
+        this.sceneEntity.selectionFrame.visible = false
+        this.selected = false
     }
 
     removeFromScene() {
