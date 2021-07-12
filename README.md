@@ -30,7 +30,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Vehicles Milestone (v0.5.0)
 
 - Raider sometimes sitting wrong way around in vehicles
-- Activity of upgrades should be synced (for example walker diggers engines)
 
 ### Near (v0.6.0)
 
@@ -60,7 +59,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Important
 
-- GunStation mesh not loaded correctly missing turret part (test with level 18)
 - Surface discovery has very bad performance (test with level 20 and level 17)
 - Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in
 - Raiders not spawned in Level 01 when restarted from Level 03
@@ -89,7 +87,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add greenish priority panel button hover frame
 - Tooltip SFX sounds not working for priority panel
 - Seams get not teared down while drilling
-- Ring on drills rendered as flat plate instead of helix
 
 ## Technical Debt
 

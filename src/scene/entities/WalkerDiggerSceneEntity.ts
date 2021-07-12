@@ -1,6 +1,5 @@
 import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivity'
 import { AnimationEntityUpgrade } from '../../game/model/anim/AnimationEntityUpgrade'
-import { VehicleActivity } from '../../game/model/vehicle/VehicleActivity'
 import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { SceneMesh } from '../SceneMesh'
@@ -19,11 +18,7 @@ export class WalkerDiggerSceneEntity extends FulfillerSceneEntity {
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
         if (this.body.activity === activity) return
         this.body.changeActivity(activity, onAnimationDone, durationTimeMs)
-        if (activity === VehicleActivity.Route || activity === VehicleActivity.TeleportIn) {
-            super.changeActivity(activity)
-        } else {
-            super.changeActivity(VehicleActivity.Stand)
-        }
+        super.changeActivity(activity)
     }
 
     update(elapsedMs: number) {

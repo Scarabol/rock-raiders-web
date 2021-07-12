@@ -15,6 +15,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     animation: AnimClip = null
     activity: BaseActivity = null
     upgrades: SceneMesh[] = []
+    animatedUpgrades: AnimatedSceneEntity[] = []
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
         super(sceneMgr)
@@ -31,10 +32,8 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.activity = activity
         const lActivityKey = activity.activityKey.toLowerCase()
         let animation = this.animationEntityType.animations.get(lActivityKey)
-        if (!animation) { // find by prefix
-            this.animationEntityType.animations.forEach((a, key) => {
-                if (!animation && lActivityKey.startsWith(key)) animation = a
-            })
+        if (!animation) { // fallback to stand
+            animation = this.animationEntityType.animations.get(AnimEntityActivity.Stand.activityKey.toLowerCase())
         }
         if (!animation) {
             console.warn(`Activity ${activity.activityKey} unknown or has no animation defined`)
@@ -42,10 +41,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             return
         }
         if (this.animation) {
-            this.upgrades.forEach((u) => {
-                u.parent?.remove(u)
-                u.dispose()
-            })
+            this.disposeUpgrades()
             this.remove(this.animation.polyRootGroup)
             this.animation.stop()
         }
@@ -58,17 +54,28 @@ export class AnimatedSceneEntity extends SceneEntity {
             animation.driverJoint.add(...driver) // keep driver
         }
         this.animation = animation
-        this.applyDefaultUpgrades()
+        this.applyDefaultUpgrades(activity)
         this.add(this.animation.polyRootGroup)
         this.animation.start(onAnimationDone, durationTimeMs)
+    }
+
+    private disposeUpgrades() { // TODO create each mesh/upgrade/animation only once and re-use it
+        this.upgrades.forEach((u) => {
+            u.parent?.remove(u)
+            u.dispose()
+        })
+        this.animatedUpgrades.forEach((u) => {
+            u.group.parent?.remove(u.group)
+        })
     }
 
     update(elapsedMs: number) {
         super.update(elapsedMs)
         this.animation?.update(elapsedMs)
+        this.upgrades.forEach((u) => u.update(elapsedMs))
     }
 
-    private applyDefaultUpgrades() {
+    private applyDefaultUpgrades(activity: AnimEntityActivity) {
         const upgrades0000 = this.animationEntityType.upgradesByLevel.get('0000')
         if (upgrades0000) { // TODO check for other upgrade levels
             upgrades0000.forEach((upgrade) => { // TODO parse upgrades only once
@@ -79,12 +86,10 @@ export class AnimatedSceneEntity extends SceneEntity {
                         joint.add(lwoModel)
                         this.upgrades.push(lwoModel)
                     } else {
-                        const upgradeModels = ResourceManager.getAnimationEntityType(`${upgrade.upgradeFilepath}/${upgrade.upgradeFilepath.split('/').last()}.ae`, this.sceneMgr.listener)
-                        upgradeModels.animations.get('activity_stand')?.animatedPolys.forEach((b) => {
-                            const upgradeSceneMesh = b.model.clone()
-                            joint.add(upgradeSceneMesh)
-                            this.upgrades.push(upgradeSceneMesh)
-                        })
+                        const animatedUpgrade = new AnimatedSceneEntity(this.sceneMgr, `${upgrade.upgradeFilepath}/${upgrade.upgradeFilepath.split('/').last()}.ae`)
+                        animatedUpgrade.changeActivity(activity)
+                        joint.add(animatedUpgrade.group)
+                        this.animatedUpgrades.push(animatedUpgrade)
                     }
                 } else {
                     console.warn(`Could not find null joint ${upgrade.upgradeNullName} and index ${upgrade.upgradeNullIndex} to attach upgrade: ${upgrade.upgradeFilepath}`)
