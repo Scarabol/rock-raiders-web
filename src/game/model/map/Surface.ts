@@ -89,7 +89,6 @@ export class Surface implements Selectable {
      */
     discover(): boolean { // TODO improve performance then test with level 20
         this.setDiscovered()
-        this.needsMeshUpdate = true
         if (!this.surfaceType.floor) return false
         const floors: Surface[] = []
         const others: Surface[] = []
@@ -280,8 +279,8 @@ export class Surface implements Selectable {
 
         const topLeftVertex = new Vector3(this.x, 0, this.y)
         const topRightVertex = new Vector3(this.x + 1, 0, this.y)
-        const bottomLeftVertex = new Vector3(this.x, 0, this.y + 1)
         const bottomRightVertex = new Vector3(this.x + 1, 0, this.y + 1)
+        const bottomLeftVertex = new Vector3(this.x, 0, this.y + 1)
 
         if (isHighGround(this, surfLeft, surfTopLeft, surfTop)) topLeftVertex.y = 1
         if (isHighGround(this, surfTop, surfTopRight, surfRight)) topRightVertex.y = 1

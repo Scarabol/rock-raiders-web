@@ -72,7 +72,7 @@ export class TerrainLoader {
             }
         }
 
-        // exlpore predug surfaces
+        // explore pre-dug surfaces
         terrain.forEachSurface((s) => {
             if (predugMap[s.y][s.x] === PredugMap.CAVERN_EXPOSED || predugMap[s.y][s.x] === PredugMap.SLUG_HOLE_EXPOSED) { // map are rows (y) first, columns (x) second
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
