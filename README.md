@@ -58,6 +58,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Surface discovery has very bad performance (test with level 20 and level 17)
 - Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in
 - Raiders not spawned in Level 01 when restarted from Level 03
+- Toolstation not shown in level 03
 - Level24 cannot be loaded, because collapsing surface needs terrain, which is not yet initialized
 
 ### Nice to have
