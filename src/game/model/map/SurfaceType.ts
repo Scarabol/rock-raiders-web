@@ -69,12 +69,11 @@ export class SurfaceType {
         mapSurfaceColor: '#B000F0',
     })
     static readonly SLUG_HOLE = new SurfaceType({
-        name: 'slug hole',
-        floor: true,
-        matIndex: '30',
-        mapSurfaceColor: '#280048',
+        name: 'slug hole', floor: true, matIndex: '30', mapSurfaceColor: '#280048',
     })
-    static readonly LAVA = new SurfaceType({name: 'lava', floor: true, matIndex: '46'})
+    static readonly LAVA = new SurfaceType({
+        name: 'lava', floor: true, matIndex: '46', mapSurfaceColor: '#fa5700',
+    })
     static readonly ORE_SEAM = new SurfaceType({
         name: 'ore seam',
         matIndex: '40',
@@ -84,7 +83,9 @@ export class SurfaceType {
         cursor: Cursor.Pointer_SurfaceType_OreSeam,
         statsDrillName: 'SeamDrillTime',
     })
-    static readonly WATER = new SurfaceType({name: 'water', floor: true, matIndex: '45', mapSurfaceColor: '#000080'})
+    static readonly WATER = new SurfaceType({
+        name: 'water', floor: true, matIndex: '45', mapSurfaceColor: '#000080',
+    })
     static readonly CRYSTAL_SEAM = new SurfaceType({
         name: 'energy crystal seam',
         matIndex: '20',
