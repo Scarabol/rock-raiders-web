@@ -70,7 +70,7 @@ export class Supervisor {
         availableJobs.sort((left, right) => {
             return Math.sign(this.getPriority(left) - this.getPriority(right))
         })
-        const unemployedRaider = this.entityMgr.raiders.filter((r) => !r.job && !r.inBeam)
+        const unemployedRaider = this.entityMgr.raiders.filter((r) => r.isReadyToTakeAJob())
         availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
             let closestRaider: Raider = null
             let closestRaiderIndex: number = null

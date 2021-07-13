@@ -154,4 +154,8 @@ export class Raider extends FulfillerEntity {
         return super.canDrill(surface) && this.hasTool(RaiderTool.DRILL)
     }
 
+    isReadyToTakeAJob(): boolean {
+        return !this.job && !this.selected && !this.inBeam && !this.slipped
+    }
+
 }
