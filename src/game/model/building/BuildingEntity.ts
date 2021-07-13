@@ -148,7 +148,7 @@ export abstract class BuildingEntity implements Selectable {
 
     beamUp() {
         this.inBeam = true
-        this.updateEnergyState()
+        this.turnEnergyOff()
         for (let c = 0; c < this.stats.CostOre; c++) {
             this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), this.primarySurface.getRandomPosition())
         }
