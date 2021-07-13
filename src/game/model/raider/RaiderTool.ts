@@ -1,22 +1,18 @@
-export enum RaiderTool {
-    NONE,
-    DRILL,
-    HAMMER,
-    SHOVEL,
-    SPANNER,
-    FREEZERGUN,
-    LASER,
-    PUSHERGUN,
-    BIRDSCARER,
-}
+export class RaiderTool {
 
-export const AllRaiderTools: RaiderTool[] = [
-    RaiderTool.DRILL,
-    RaiderTool.HAMMER,
-    RaiderTool.SHOVEL,
-    RaiderTool.SPANNER,
-    RaiderTool.FREEZERGUN,
-    RaiderTool.LASER,
-    RaiderTool.PUSHERGUN,
-    RaiderTool.BIRDSCARER,
-]
+    static readonly values: RaiderTool[] = []
+
+    static readonly DRILL = new RaiderTool()
+    static readonly HAMMER = new RaiderTool()
+    static readonly SHOVEL = new RaiderTool()
+    static readonly SPANNER = new RaiderTool()
+    static readonly FREEZERGUN = new RaiderTool()
+    static readonly LASER = new RaiderTool()
+    static readonly PUSHERGUN = new RaiderTool()
+    static readonly BIRDSCARER = new RaiderTool()
+
+    private constructor() {
+        RaiderTool.values.push(this)
+    }
+
+}

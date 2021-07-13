@@ -21,11 +21,11 @@ export abstract class Job {
     abstract cancel()
 
     getRequiredTool(): RaiderTool {
-        return RaiderTool.NONE
+        return null
     }
 
     getRequiredTraining(): RaiderTraining {
-        return RaiderTraining.NONE
+        return null
     }
 
     isReadyToComplete(): boolean {
