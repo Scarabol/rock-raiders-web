@@ -13,7 +13,7 @@ import { LavaMonster } from './model/monster/LavaMonster'
 import { RockMonster } from './model/monster/RockMonster'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
-import { SmallDigger } from './model/vehicle/entities/SmallDigger'
+import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import degToRad = MathUtils.degToRad
 
@@ -85,15 +85,25 @@ export class ObjectListLoader {
                     bat.sceneEntity.addToScene(worldPos, radHeading)
                     entityMgr.bats.push(bat)
                     break
+                case EntityType.HOVERBOARD:
                 case EntityType.SMALL_DIGGER:
-                    const smallDigger = new SmallDigger(sceneMgr, entityMgr)
-                    smallDigger.sceneEntity.changeActivity()
-                    smallDigger.sceneEntity.createPickSphere(smallDigger.stats.PickSphere, smallDigger)
-                    smallDigger.sceneEntity.addToScene(worldPos, radHeading + Math.PI)
-                    if (smallDigger.sceneEntity.visible) {
-                        entityMgr.vehicles.push(smallDigger)
+                case EntityType.SMALL_TRUCK:
+                case EntityType.SMALL_CAT:
+                case EntityType.SMALL_MLP:
+                case EntityType.SMALL_HELI:
+                case EntityType.BULLDOZER:
+                case EntityType.WALKER_DIGGER:
+                case EntityType.LARGE_MLP:
+                case EntityType.LARGE_DIGGER:
+                case EntityType.LARGE_CAT:
+                    const vehicle = VehicleFactory.createVehicleFromType(entityType, sceneMgr, entityMgr)
+                    vehicle.sceneEntity.changeActivity()
+                    vehicle.sceneEntity.createPickSphere(vehicle.stats.PickSphere, vehicle)
+                    vehicle.sceneEntity.addToScene(worldPos, radHeading + Math.PI)
+                    if (vehicle.sceneEntity.visible) {
+                        entityMgr.vehicles.push(vehicle)
                     } else {
-                        entityMgr.vehiclesUndiscovered.push(smallDigger)
+                        entityMgr.vehiclesUndiscovered.push(vehicle)
                     }
                     break
                 case EntityType.ICE_MONSTER:
