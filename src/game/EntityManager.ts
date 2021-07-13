@@ -155,9 +155,12 @@ export class EntityManager {
             m.entityMgr.materials.push(m)
             EventBus.publishEvent(new JobCreateEvent(m.createCarryJob()))
         })
+        this.vehiclesUndiscovered = EntityManager.removeInRect(this.vehiclesUndiscovered, minX, maxX, minZ, maxZ, (v) => {
+            v.entityMgr.vehicles.push(v)
+        })
     }
 
-    private static removeInRect<T extends Raider | BuildingEntity | MaterialEntity>(listing: T[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: T) => any) {
+    private static removeInRect<T extends Raider | BuildingEntity | MaterialEntity | VehicleEntity>(listing: T[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: T) => any) {
         return listing.filter((e) => {
             const pos = e.sceneEntity.position2D.clone()
             const discovered = pos.x >= minX && pos.x < maxX && pos.y >= minZ && pos.y < maxZ
