@@ -127,6 +127,7 @@ export class Raider extends FulfillerEntity {
     removeFromScene() {
         super.removeFromScene()
         this.entityMgr.raiders.remove(this)
+        this.entityMgr.raidersInBeam.remove(this)
     }
 
     hasTool(tool: RaiderTool) {

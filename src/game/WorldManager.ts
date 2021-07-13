@@ -154,6 +154,7 @@ export class WorldManager {
                             vehicle.sceneEntity.changeActivity(VehicleActivity.TeleportIn, () => {
                                 vehicle.sceneEntity.changeActivity()
                                 vehicle.sceneEntity.createPickSphere(vehicle.stats.PickSphere, vehicle)
+                                this.entityMgr.vehiclesInBeam.remove(vehicle)
                                 this.entityMgr.vehicles.push(vehicle)
                             })
                             this.entityMgr.vehiclesInBeam.push(vehicle)

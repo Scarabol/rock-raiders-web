@@ -37,7 +37,15 @@ export abstract class VehicleEntity extends FulfillerEntity {
         for (let c = 0; c < this.stats.CostCrystal; c++) {
             this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), surface.getRandomPosition())
         }
+        this.entityMgr.vehicles.remove(this)
+        this.entityMgr.vehiclesInBeam.add(this)
         EventBus.publishEvent(new VehiclesChangedEvent())
+    }
+
+    removeFromScene() {
+        super.removeFromScene()
+        this.entityMgr.vehicles.remove(this)
+        this.entityMgr.vehiclesInBeam.remove(this)
     }
 
     setJob(job: Job, followUpJob: Job = null) {
