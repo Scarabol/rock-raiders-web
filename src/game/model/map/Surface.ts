@@ -87,56 +87,43 @@ export class Surface implements Selectable {
     /**
      * @return {boolean} Returns true, if a new cave has been discovered
      */
-    discover(): boolean { // TODO improve performance then test with level 20
-        this.setDiscovered()
-        if (!this.surfaceType.floor) return false
-        const floors: Surface[] = []
-        const others: Surface[] = []
-        for (let x = -1; x <= 1; x++) {
-            for (let y = -1; y <= 1; y++) {
-                if (x === 0 && y === 0) continue
-                const n = this.terrain.getSurface(this.x + x, this.y + y)
-                if ((x === 0 || y === 0) && n.surfaceType.floor) {
-                    floors.push(n)
-                } else {
-                    others.push(n)
-                }
-            }
-        }
-        let caveFound = false
-        let counter = 0
-        while (floors.length > 0) {
-            counter++
-            const neighbor = floors.shift()
-            neighbor.setDiscovered()
-            for (let x = -1; x <= 1; x++) {
-                for (let y = -1; y <= 1; y++) {
-                    if (x === 0 && y === 0) continue
-                    const n = neighbor.terrain.getSurface(neighbor.x + x, neighbor.y + y)
-                    if ((x === 0 || y === 0) && n.surfaceType.floor && !n.discovered) {
-                        floors.push(n)
-                        caveFound = true
-                    } else {
-                        others.push(n)
-                    }
-                }
-            }
-        }
-        others.forEach((o) => {
-            o.setDiscovered()
-            if (!o.isSupported()) {
-                o.collapse()
-            }
+    discover(): boolean {
+        const walls: Map<string, Surface> = new Map()
+        const touched: Map<string, Surface> = new Map()
+        const caveFound = this.discoverNeighbors(true, walls, touched)
+        walls.forEach((w) => w.markDiscovered())
+        touched.forEach((w) => {
+            w.needsMeshUpdate = true
+            if (!w.isSupported()) w.collapse()
         })
-        console.log(`surface discover handled ${counter} floors and ${others.length} others`)
         return caveFound
     }
 
-    private setDiscovered() {
-        if (!this.discovered) this.entityMgr.discoverSurface(this)
+    private discoverNeighbors(first: boolean, walls: Map<string, Surface>, touched: Map<string, Surface>): boolean {
+        this.markDiscovered()
+        let caveFound = false
+        for (let x = -1; x <= 1; x++) {
+            for (let y = -1; y <= 1; y++) {
+                if (x === 0 && y === 0) continue
+                const neighbor = this.terrain.getSurface(this.x + x, this.y + y)
+                touched.set(`${neighbor.x}#${neighbor.y}`, neighbor)
+                if (neighbor.discovered && !first) continue
+                if ((x === 0 || y === 0) && neighbor.surfaceType.floor) {
+                    const neighborCaveFound = neighbor.discoverNeighbors(false, walls, touched) // XXX refactor this remove recursion
+                    caveFound = caveFound || !neighbor.discovered || neighborCaveFound
+                } else {
+                    walls.set(`${neighbor.x}#${neighbor.y}`, neighbor)
+                }
+            }
+        }
+        return caveFound
+    }
+
+    private markDiscovered() {
+        if (this.discovered) return
+        this.entityMgr.discoverSurface(this)
         this.discovered = true
         this.needsMeshUpdate = true
-        EventBus.publishEvent(new UpdateRadarSurface(this))
     }
 
     onDrillComplete(drillPosition: Vector2): boolean {
@@ -174,8 +161,8 @@ export class Surface implements Selectable {
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += 4
         this.needsMeshUpdate = true
-        const foundCave = this.discover()
-        if (foundCave) EventBus.publishEvent(new CavernDiscovered())
+        const caveFound = this.discover()
+        if (caveFound) EventBus.publishEvent(new CavernDiscovered())
         // drop contained ores and crystals
         this.dropContainedOre(this.containedOres - 4)
         for (let c = 0; c < this.containedCrystals; c++) {
