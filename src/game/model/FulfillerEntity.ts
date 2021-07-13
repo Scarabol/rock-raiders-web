@@ -157,6 +157,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     canDrill(surface: Surface): boolean {
+        if (!surface) return false
         return (this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0) > 0
     }
 
