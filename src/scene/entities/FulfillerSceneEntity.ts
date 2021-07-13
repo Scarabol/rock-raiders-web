@@ -23,6 +23,7 @@ export class FulfillerSceneEntity extends AnimatedSceneEntity {
         }
         this.carriedEntity.addToScene(new Vector2(position.x, position.z), null)
         this.carriedEntity = null
+        this.changeActivity()
     }
 
 }
