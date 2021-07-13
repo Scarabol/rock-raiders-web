@@ -1,3 +1,5 @@
+import { ObjectListEntryCfg } from '../../../cfg/ObjectListEntryCfg'
+
 export class WadParser {
 
     static parseMap(buffer: Uint8Array) {
@@ -13,23 +15,23 @@ export class WadParser {
         return map
     }
 
-    static parseObjectList(data: string) {
+    static parseObjectList(data: string): Map<string, ObjectListEntryCfg> {
         const lines = data.split('\n')
-        const objectList = []
+        const objectList = new Map<string, ObjectListEntryCfg>()
         let currentObject = null
         for (let c = 0; c < lines.length; c++) {
             const line = lines[c].trim()
             const objectStartMatch = line.match(/(.+)\s+{/)
-            const drivingMatch = line.match(/driving\s+(.+)/)
+            const drivingMatch = line.match(/driving\s+(.+)/i)
             if (line.length < 1 || line.startsWith(';') || line.startsWith('Lego*')) {
                 // ignore empty lines, comments and the root object
             } else if (objectStartMatch) {
-                currentObject = {}
-                objectList[objectStartMatch[1]] = currentObject
+                currentObject = new ObjectListEntryCfg()
+                objectList.set(objectStartMatch[1].toLowerCase(), currentObject)
             } else if (line === '}') {
                 currentObject = null
             } else if (drivingMatch) {
-                currentObject.driving = drivingMatch[1]
+                currentObject.driving = drivingMatch[1].toLowerCase()
             } else {
                 const split = line.split(/\s+/)
                 if (split.length !== 2 || currentObject === null) {

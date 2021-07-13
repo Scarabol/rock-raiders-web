@@ -157,6 +157,13 @@ export class EntityManager {
         })
         this.vehiclesUndiscovered = EntityManager.removeInRect(this.vehiclesUndiscovered, minX, maxX, minZ, maxZ, (v) => {
             v.entityMgr.vehicles.push(v)
+            const driver = v.driver
+            if (driver) {
+                driver.entityMgr.raidersUndiscovered.remove(driver)
+                driver.sceneEntity.visible = true
+                driver.entityMgr.raiders.push(driver)
+                EventBus.publishEvent(new RaiderDiscoveredEvent(driver.sceneEntity.position.clone()))
+            }
         })
     }
 

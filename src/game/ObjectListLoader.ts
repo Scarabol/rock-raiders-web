@@ -1,4 +1,5 @@
 import { MathUtils, Vector2 } from 'three'
+import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { EventBus } from '../event/EventBus'
 import { RaidersChangedEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
@@ -13,23 +14,17 @@ import { LavaMonster } from './model/monster/LavaMonster'
 import { RockMonster } from './model/monster/RockMonster'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
+import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import degToRad = MathUtils.degToRad
 
-export class ObjectListEntry {
-
-    type: string
-    xPos: number
-    yPos: number
-    heading: number
-
-}
-
 export class ObjectListLoader {
 
-    static loadObjectList(objectList: ObjectListEntry[], disableStartTeleport: boolean, sceneMgr: SceneManager, entityMgr: EntityManager) {
-        objectList.forEach((olEntry) => {
+    static loadObjectList(objectList: Map<string, ObjectListEntryCfg>, disableStartTeleport: boolean, sceneMgr: SceneManager, entityMgr: EntityManager) {
+        const vehicleKeyToDriver = new Map<string, Raider>()
+        const vehicleByKey = new Map<string, VehicleEntity>()
+        objectList.forEach((olEntry, olKey) => {
             const entityType = getEntityTypeByName(olEntry.type ? olEntry.type.toLowerCase() : olEntry.type)
             // all object positions are off by one tile, because they start at 1 not 0
             const worldPos = new Vector2(olEntry.xPos, olEntry.yPos).addScalar(-1).multiplyScalar(TILESIZE) // TODO assert that world pos is over terrain otherwise drop item
@@ -55,6 +50,7 @@ export class ObjectListLoader {
                     } else {
                         entityMgr.raidersUndiscovered.push(raider)
                     }
+                    if (olEntry.driving) vehicleKeyToDriver.set(olEntry.driving, raider)
                     break
                 case EntityType.TOOLSTATION:
                 case EntityType.TELEPORT_PAD:
@@ -105,6 +101,7 @@ export class ObjectListLoader {
                     } else {
                         entityMgr.vehiclesUndiscovered.push(vehicle)
                     }
+                    vehicleByKey.set(olKey, vehicle)
                     break
                 case EntityType.ICE_MONSTER:
                     const iceMonster = new IceMonster(sceneMgr, entityMgr)
@@ -128,6 +125,15 @@ export class ObjectListLoader {
                     console.warn(`Object type ${olEntry.type} not yet implemented`)
                     break
             }
+        })
+        vehicleKeyToDriver.forEach((driver, vehicleKey) => {
+            const vehicle = vehicleByKey.get(vehicleKey)
+            if (!vehicle) {
+                console.error(`Could not find vehicle for driver ${driver}`)
+                return
+            }
+            driver.addTraining(vehicle.getRequiredTraining())
+            vehicle.addDriver(driver)
         })
     }
 

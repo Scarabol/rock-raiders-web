@@ -16,7 +16,7 @@ export class VehicleSceneEntity extends FulfillerSceneEntity {
         if (this.driver && this.driver !== driver) throw new Error('Cannot add two drivers to the same vehicle entity')
         this.driver = driver
         this.driver.position.set(0, 0, 0)
-        this.driver.setHeading(Math.PI)
+        this.driver.setHeading(0)
         this.addDriverToJoint()
     }
 
