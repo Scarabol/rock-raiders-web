@@ -2,7 +2,7 @@ import { PositionalAudio } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { VehicleEntityStats } from '../../../cfg/VehicleEntityStats'
 import { EventBus } from '../../../event/EventBus'
-import { SelectionChanged, VehiclesChangedEvent } from '../../../event/LocalEvents'
+import { SelectionChanged } from '../../../event/LocalEvents'
 import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
@@ -42,7 +42,6 @@ export abstract class VehicleEntity extends FulfillerEntity {
         }
         this.entityMgr.vehicles.remove(this)
         this.entityMgr.vehiclesInBeam.add(this)
-        EventBus.publishEvent(new VehiclesChangedEvent())
     }
 
     removeFromScene() {

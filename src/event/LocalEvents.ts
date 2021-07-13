@@ -164,14 +164,6 @@ export class RaidersChangedEvent extends LocalEvent {
 
 }
 
-export class VehiclesChangedEvent extends LocalEvent {
-
-    constructor() {
-        super(EventKey.VEHICLES_CHANGED)
-    }
-
-}
-
 export class PlaySoundEvent extends LocalEvent {
 
     sample: Sample
