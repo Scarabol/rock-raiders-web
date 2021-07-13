@@ -1,6 +1,7 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { BuildingsChangedEvent, RaidersChangedEvent } from '../../event/LocalEvents'
 import { EntityType, getEntityTypeByName } from '../../game/model/EntityType'
+import { DEV_MODE } from '../../params'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { GuiResourceCache } from '../GuiResourceCache'
@@ -36,7 +37,7 @@ export abstract class DependencyCheckPanel extends IconSubPanel {
         const item = super.addMenuItem('InterfaceBuildImages', itemKey)
         // TODO when update state also update tooltip icons showing missing dependencies
         const dependencies: [string, number][] = GuiResourceCache.cfg('Dependencies', `AlwaysCheck:${itemKey}`)
-        item.isDisabled = () => dependencies.some((d) => !this.checkDependency(d))
+        item.isDisabled = () => !DEV_MODE && dependencies.some((d) => !this.checkDependency(d))
         return item
     }
 
