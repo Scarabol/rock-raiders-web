@@ -1,6 +1,8 @@
 import { Box3, Group, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../audio/SoundManager'
 import { AnimEntityActivity } from '../game/model/activities/AnimEntityActivity'
+import { BuildingEntity } from '../game/model/building/BuildingEntity'
+import { FulfillerEntity } from '../game/model/FulfillerEntity'
 import { Surface } from '../game/model/map/Surface'
 import { Selectable } from '../game/model/Selectable'
 import { SceneManager } from '../game/SceneManager'
@@ -67,19 +69,23 @@ export class SceneEntity {
         this.group.lookAt(target)
     }
 
-    createPickSphere(pickSphereDiameter: number, selectable: Selectable, pickSphereHeightOffset: number = this.getBoundingSphereCenter().y - this.position.y) {
+    makeSelectable(entity: (FulfillerEntity | BuildingEntity) & Selectable, pickSphereHeightOffset: number = null) {
+        this.addPickSphere(entity.stats.PickSphere, pickSphereHeightOffset)
+        this.pickSphere.userData = {selectable: entity}
+        this.selectionFrame = SceneEntity.createSelectionFrame(entity.stats.PickSphere, this.pickSphere.position, '#0f0')
+        this.add(this.selectionFrame)
+        this.selectionFrameDouble = SceneEntity.createSelectionFrame(entity.stats.PickSphere, this.pickSphere.position, '#f00')
+        this.add(this.selectionFrameDouble)
+    }
+
+    addPickSphere(pickSphereDiameter: number, pickSphereHeightOffset: number = null) {
         if (this.pickSphere) return
         const pickSphereRadius = pickSphereDiameter / 2
         const geometry = new SphereGeometry(pickSphereRadius, pickSphereRadius, pickSphereRadius)
-        const material = new MeshBasicMaterial({color: 0xffff00, visible: false}) // change visible to true for debugging
+        const material = new MeshBasicMaterial({color: 0xa0a000, visible: false, wireframe: true}) // change visible to true for debugging
         this.pickSphere = new Mesh(geometry, material)
-        this.pickSphere.userData = {selectable: selectable}
-        this.pickSphere.position.y = pickSphereHeightOffset
+        this.pickSphere.position.y = pickSphereHeightOffset ?? (this.getBoundingSphereCenter().y - this.position.y)
         this.add(this.pickSphere)
-        this.selectionFrame = SceneEntity.createSelectionFrame(pickSphereDiameter, this.pickSphere.position, '#0f0')
-        this.add(this.selectionFrame)
-        this.selectionFrameDouble = SceneEntity.createSelectionFrame(pickSphereDiameter, this.pickSphere.position, '#f00')
-        this.add(this.selectionFrameDouble)
     }
 
     getBoundingSphereCenter(): Vector3 {

@@ -31,7 +31,7 @@ export abstract class Teleport {
         entity.sceneEntity.changeActivity(RaiderActivity.TeleportIn, () => {
             this.operating = false
             entity.sceneEntity.changeActivity()
-            entity.sceneEntity.createPickSphere(entity.stats.PickSphere, entity)
+            entity.sceneEntity.makeSelectable(entity)
             const walkOutPos = this.building.primaryPathSurface.getRandomPosition()
             entity.setJob(new MoveJob(walkOutPos))
             beamListing.remove(entity)

@@ -259,8 +259,8 @@ export abstract class BuildingEntity implements Selectable {
             this.surfaces.push(this.secondaryPathSurface)
         }
         this.surfaces.forEach((s) => s.setBuilding(this))
+        this.sceneEntity.makeSelectable(this, this.stats.PickSphere / 4)
         this.addToScene(worldPosition, radHeading)
-        this.sceneEntity.createPickSphere(this.stats.PickSphere, this, this.stats.PickSphere / 4)
         if (this.sceneEntity.visible) {
             this.entityMgr.buildings.push(this)
         } else {

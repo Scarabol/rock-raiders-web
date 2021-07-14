@@ -153,7 +153,7 @@ export class WorldManager {
                             vehicle.sceneEntity.addToScene(teleportBuilding.primaryPathSurface.getCenterWorld2D(), teleportBuilding.sceneEntity.getHeading())
                             vehicle.sceneEntity.changeActivity(VehicleActivity.TeleportIn, () => {
                                 vehicle.sceneEntity.changeActivity()
-                                vehicle.sceneEntity.createPickSphere(vehicle.stats.PickSphere, vehicle)
+                                vehicle.sceneEntity.makeSelectable(vehicle)
                                 this.entityMgr.vehiclesInBeam.remove(vehicle)
                                 this.entityMgr.vehicles.push(vehicle)
                             })

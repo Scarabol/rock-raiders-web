@@ -42,7 +42,7 @@ export class ObjectListLoader {
                 case EntityType.PILOT:
                     const raider = new Raider(sceneMgr, entityMgr)
                     raider.sceneEntity.changeActivity()
-                    raider.sceneEntity.createPickSphere(raider.stats.PickSphere, raider)
+                    raider.sceneEntity.makeSelectable(raider)
                     raider.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
                     if (raider.sceneEntity.visible) {
                         entityMgr.raiders.push(raider)
@@ -94,7 +94,7 @@ export class ObjectListLoader {
                 case EntityType.LARGE_CAT:
                     const vehicle = VehicleFactory.createVehicleFromType(entityType, sceneMgr, entityMgr)
                     vehicle.sceneEntity.changeActivity()
-                    vehicle.sceneEntity.createPickSphere(vehicle.stats.PickSphere, vehicle)
+                    vehicle.sceneEntity.makeSelectable(vehicle)
                     vehicle.sceneEntity.addToScene(worldPos, radHeading + Math.PI)
                     if (vehicle.sceneEntity.visible) {
                         entityMgr.vehicles.push(vehicle)
