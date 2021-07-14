@@ -6,6 +6,7 @@ import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { IEventHandler } from '../../event/IEventHandler'
 import { ChangeCursor } from '../../event/LocalEvents'
 import { EntityManager } from '../../game/EntityManager'
+import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/model/map/Surface'
 import { VehicleEntity } from '../../game/model/vehicle/VehicleEntity'
 import { SceneManager } from '../../game/SceneManager'
@@ -67,6 +68,7 @@ export class CursorLayer extends ScreenLayer {
         if (this.sceneMgr.hasBuildModeSelection()) {
             return this.sceneMgr.buildMarker.lastCheck ? Cursor.Pointer_CanBuild : Cursor.Pointer_CannotBuild
         }
+        // TODO use sceneManager.getFirstByRay here too?!
         const intersectsRaider = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
         if (intersectsRaider.length > 0) return Cursor.Pointer_Selected
         const intersectsVehicle = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
@@ -82,6 +84,17 @@ export class CursorLayer extends ScreenLayer {
         }
         const intersectsBuilding = raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere))
         if (intersectsBuilding.length > 0) return Cursor.Pointer_Selected
+        const intersectsMaterial = raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere))
+        if (intersectsMaterial.length > 0) {
+            if (this.entityMgr.selection.raiders.length > 0) {
+                if (intersectsMaterial[0].object.userData?.entityType === EntityType.ORE) {
+                    return Cursor.Pointer_PickUpOre
+                } else {
+                    return Cursor.Pointer_PickUp
+                }
+            }
+            return Cursor.Pointer_Selected
+        }
         const intersectsSurface = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
         if (intersectsSurface.length > 0) {
             const userData = intersectsSurface[0].object.userData

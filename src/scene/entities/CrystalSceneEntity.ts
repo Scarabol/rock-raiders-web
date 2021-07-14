@@ -1,4 +1,5 @@
 import { AdditiveBlending, Color } from 'three'
+import { EntityType } from '../../game/model/EntityType'
 import { SceneManager } from '../../game/SceneManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SceneEntity } from '../SceneEntity'
@@ -27,6 +28,8 @@ export class CrystalSceneEntity extends SceneEntity {
             mat.setOpacity(0.9) // XXX read from LWO file?
         })
         this.add(this.highPolyMesh)
+        this.addPickSphere(ResourceManager.stats.PowerCrystal.PickSphere)
+        this.pickSphere.userData = {entityType: EntityType.CRYSTAL}
     }
 
     update(elapsedMs: number) {
