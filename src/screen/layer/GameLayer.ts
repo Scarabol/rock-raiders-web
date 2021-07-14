@@ -94,7 +94,8 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
                 EventBus.publishEvent(new JobCreateEvent(manVehicleJob))
             }
         } else if (selection.material) {
-            // this.entityMgr.selection.assignCarryJob() // TODO assign carry job to the closest fulfiller with capacity // TODO add capacity to raider and vehicles
+            this.entityMgr.selection.assignCarryJob(selection.material)
+            if (!this.entityMgr.selection.isEmpty()) this.publishEvent(new DeselectAll())
         } else if (selection.surface) {
             const drillJob = selection.surface.createDrillJob()
             this.entityMgr.selection.assignSurfaceJob(drillJob)

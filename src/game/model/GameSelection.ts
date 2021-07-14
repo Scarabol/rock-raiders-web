@@ -10,6 +10,7 @@ import { Job } from './job/Job'
 import { GetToolJob } from './job/raider/GetToolJob'
 import { MoveJob } from './job/raider/MoveJob'
 import { Surface } from './map/Surface'
+import { MaterialEntity } from './material/MaterialEntity'
 import { Raider } from './raider/Raider'
 import { VehicleEntity } from './vehicle/VehicleEntity'
 
@@ -116,6 +117,24 @@ export class GameSelection {
         const vehicleGridSize = TILESIZE
         const vehicleTarget = target.clone().divideScalar(vehicleGridSize).floor().addScalar(0.5).multiplyScalar(vehicleGridSize)
         this.vehicles.forEach((v) => v.setJob(new MoveJob(vehicleTarget)))
+    }
+
+    assignCarryJob(material: MaterialEntity) {
+        if (!material) return
+        const job = material.createCarryJob()
+        const doneByVehicle = this.vehicles.some((v) => {
+            if (v.isPrepared(job)) {
+                v.setJob(job)
+                return true
+            }
+        })
+        if (doneByVehicle) return
+        this.raiders.some((r) => {
+            if (r.isPrepared(job)) {
+                r.setJob(job)
+                return true
+            }
+        })
     }
 
     deselectAll() {

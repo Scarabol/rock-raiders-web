@@ -13,6 +13,7 @@ export class Crystal extends MaterialEntity {
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.CRYSTAL)
         this.sceneEntity = new CrystalSceneEntity(sceneMgr)
+        this.sceneEntity.pickSphere.userData = {entityType: EntityType.CRYSTAL, materialEntity: this}
     }
 
     findCarryTargets(): CarryPathTarget[] {

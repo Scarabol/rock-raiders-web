@@ -81,20 +81,23 @@ export class SceneManager {
     getFirstByRay(rx: number, ry: number): { vehicle?: VehicleEntity, material?: MaterialEntity, surface?: Surface } {
         const raycaster = new Raycaster()
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
-        const vehicle = SceneManager.getEntity(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
+        const vehicle = SceneManager.getSelectable(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
         if (vehicle) return {vehicle: vehicle}
-        // TODO materials don't have pick spheres yet
-        // const material = SceneManager.getEntity(raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere)))
-        // if (material) return {material: material}
+        const materialEntity = SceneManager.getMaterialEntity(raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere)))
+        if (materialEntity) return {material: materialEntity}
         if (this.terrain) {
-            const surface = SceneManager.getEntity(raycaster.intersectObjects(this.terrain.floorGroup.children))
+            const surface = SceneManager.getSelectable(raycaster.intersectObjects(this.terrain.floorGroup.children))
             if (surface) return {surface: surface}
         }
         return null
     }
 
-    private static getEntity(intersects: Intersection[]) {
-        return (intersects[0]?.object?.userData?.['selectable']) || null
+    private static getSelectable(intersects: Intersection[]) {
+        return intersects[0]?.object?.userData?.selectable || null
+    }
+
+    private static getMaterialEntity(intersects: Intersection[]): MaterialEntity {
+        return intersects[0]?.object?.userData?.materialEntity || null
     }
 
     getEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number): GameSelection {

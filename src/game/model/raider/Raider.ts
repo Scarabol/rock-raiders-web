@@ -147,7 +147,7 @@ export class Raider extends FulfillerEntity {
     }
 
     isPrepared(job: Job): boolean {
-        return this.hasTool(job.getRequiredTool()) && this.hasTraining(job.getRequiredTraining())
+        return this.hasTool(job.getRequiredTool()) && this.hasTraining(job.getRequiredTraining()) && !this.carries
     }
 
     canDrill(surface: Surface): boolean {

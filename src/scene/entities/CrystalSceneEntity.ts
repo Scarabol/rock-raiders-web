@@ -1,5 +1,4 @@
 import { AdditiveBlending, Color } from 'three'
-import { EntityType } from '../../game/model/EntityType'
 import { SceneManager } from '../../game/SceneManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SceneEntity } from '../SceneEntity'
@@ -29,7 +28,6 @@ export class CrystalSceneEntity extends SceneEntity {
         })
         this.add(this.highPolyMesh)
         this.addPickSphere(ResourceManager.stats.PowerCrystal.PickSphere)
-        this.pickSphere.userData = {entityType: EntityType.CRYSTAL}
     }
 
     update(elapsedMs: number) {

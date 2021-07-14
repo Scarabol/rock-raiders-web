@@ -13,6 +13,7 @@ export class Ore extends MaterialEntity {
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.ORE)
         this.sceneEntity = new OreSceneEntity(sceneMgr)
+        this.sceneEntity.pickSphere.userData = {entityType: EntityType.ORE, materialEntity: this}
     }
 
     findCarryTargets(): CarryPathTarget[] {
