@@ -17,7 +17,7 @@ export class BullDozer extends VehicleEntity {
     }
 
     isPrepared(job: Job): boolean {
-        return job.getRequiredTool() === RaiderTool.SHOVEL
+        return job.getRequiredTool() === RaiderTool.SHOVEL // TODO check for max carry and accept carry jobs too
     }
 
     get stats() {

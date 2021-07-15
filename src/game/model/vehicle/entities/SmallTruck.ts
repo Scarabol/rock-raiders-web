@@ -3,6 +3,7 @@ import { VehicleSceneEntity } from '../../../../scene/entities/VehicleSceneEntit
 import { EntityManager } from '../../../EntityManager'
 import { SceneManager } from '../../../SceneManager'
 import { EntityType } from '../../EntityType'
+import { Job } from '../../job/Job'
 import { VehicleEntity } from '../VehicleEntity'
 
 export class SmallTruck extends VehicleEntity {
@@ -16,6 +17,11 @@ export class SmallTruck extends VehicleEntity {
 
     get stats() {
         return ResourceManager.stats.SmallTruck
+    }
+
+    isPrepared(job: Job): boolean {
+        const carryType = job.getCarryItem()?.entityType
+        return carryType && (carryType === EntityType.ORE || carryType === EntityType.CRYSTAL || carryType === EntityType.ELECTRIC_FENCE)
     }
 
 }

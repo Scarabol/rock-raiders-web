@@ -88,7 +88,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
     }
 
     isPrepared(job: Job): boolean {
-        return false // TODO implement vehicle carry jobs and consider capacity
+        return false
     }
 
     doubleSelect(): boolean {
