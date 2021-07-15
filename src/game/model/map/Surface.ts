@@ -1,7 +1,7 @@
 import { MathUtils, Mesh, MeshPhongMaterial, PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
-import { getRandom, getRandomSign } from '../../../core/Util'
+import { asArray, getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarSurface } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
@@ -390,8 +390,7 @@ export class Surface implements Selectable {
     }
 
     forEachMaterial(callback: (mat: MeshPhongMaterial) => void): void {
-        if (!this.mesh?.material) return;
-        (Array.isArray(this.mesh.material) ? this.mesh.material : [this.mesh.material]).forEach((m) => callback(m as MeshPhongMaterial))
+        asArray(this.mesh?.material).forEach((m) => callback(m as MeshPhongMaterial))
     }
 
     updateGeometry(topLeftVertex: Vector3, topRightVertex: Vector3, bottomRightVertex: Vector3, bottomLeftVertex: Vector3) {

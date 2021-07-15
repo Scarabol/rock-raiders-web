@@ -1,6 +1,5 @@
 import { Group, PositionalAudio } from 'three'
 import { SceneMesh } from '../../../scene/SceneMesh'
-import { SequenceTextureMaterial } from '../../../scene/SequenceTextureMaterial'
 import { updateSafe } from '../Updateable'
 import { AnimSubObj } from './AnimSubObj'
 
@@ -70,13 +69,9 @@ export class AnimClip {
             poly.position.copy(body.relPos[this.currentFrame]).sub(body.pivot)
             poly.rotation.copy(body.relRot[this.currentFrame])
             poly.scale.copy(body.relScale[this.currentFrame])
-            if (poly.hasOwnProperty('material')) {
-                const material = poly['material']
-                const opacity = body.opacity[this.currentFrame]
-                if (material && opacity !== undefined) {
-                    const matArr = Array.isArray(material) ? material : [material]
-                    matArr.forEach((mat: SequenceTextureMaterial) => mat.setOpacity(opacity))
-                }
+            const opacity = body.opacity[this.currentFrame]
+            if (opacity !== undefined && opacity !== null) {
+                poly.getMaterials().forEach((mat) => mat.setOpacity(opacity))
             }
         })
         this.playAudio()

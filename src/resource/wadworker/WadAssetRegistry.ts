@@ -1,7 +1,7 @@
 import { LevelsCfg } from '../../cfg/LevelsCfg'
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { RewardCfg } from '../../cfg/RewardCfg'
-import { getFilename, getPath, iGet } from '../../core/Util'
+import { asArray, getFilename, getPath, iGet } from '../../core/Util'
 import { RonFileParser } from './parser/RonFileParser'
 import { WadLoader } from './WadLoader'
 
@@ -93,7 +93,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         // load vehicles
         const vehicleTypes = iGet(mainConf, 'VehicleTypes')
         Object.values(vehicleTypes).forEach((v) => {
-            (Array.isArray(v) ? v : [v]).forEach((vType: string) => {
+            asArray(v).forEach((vType: string) => {
                 this.addMeshObjects(vType)
             })
         })

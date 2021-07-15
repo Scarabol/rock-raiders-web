@@ -1,5 +1,6 @@
 import { SoundManager } from '../../audio/SoundManager'
 import { ButtonCfg } from '../../cfg/ButtonCfg'
+import { asArray } from '../../core/Util'
 import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { GuiResourceCache } from '../GuiResourceCache'
 import { BaseElement } from './BaseElement'
@@ -16,12 +17,8 @@ export class Button extends BaseElement {
     sfxTooltip: string = null
 
     constructor(parent: BaseElement, btnCfg: ButtonCfg) {
-        super(parent)
-        if (Array.isArray(btnCfg.buttonType)) {
-            [this.buttonType, this.sfxName] = btnCfg.buttonType
-        } else {
-            this.buttonType = btnCfg.buttonType
-        }
+        super(parent);
+        [this.buttonType, this.sfxName] = asArray(btnCfg.buttonType)
         this.imgNormal = GuiResourceCache.getImageOrNull(btnCfg.normalFile)
         this.imgHover = GuiResourceCache.getImageOrNull(btnCfg.highlightFile)
         this.imgPressed = GuiResourceCache.getImageOrNull(btnCfg.pressedFile)

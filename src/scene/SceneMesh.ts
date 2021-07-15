@@ -1,4 +1,5 @@
 import { BufferGeometry, Mesh } from 'three'
+import { asArray } from '../core/Util'
 import { SceneManager } from '../game/SceneManager'
 import { SequenceTextureMaterial } from './SequenceTextureMaterial'
 
@@ -22,9 +23,7 @@ export class SceneMesh extends Mesh {
     }
 
     getMaterials(): SequenceTextureMaterial[] {
-        const mat = this.material
-        if (!mat) return []
-        return (Array.isArray(mat) ? mat : [mat]) as SequenceTextureMaterial[]
+        return asArray(this.material as SequenceTextureMaterial | SequenceTextureMaterial[])
     }
 
     update(elapsedMs: number) {

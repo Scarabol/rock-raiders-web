@@ -2,7 +2,7 @@ import { GameStatsCfg } from '../cfg/GameStatsCfg'
 import { LevelsCfg } from '../cfg/LevelsCfg'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 import { createContext, createDummyImgData } from '../core/ImageHelper'
-import { iGet } from '../core/Util'
+import { asArray, iGet } from '../core/Util'
 import { EntityType } from '../game/model/EntityType'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { allCursor, Cursor } from '../screen/Cursor'
@@ -114,7 +114,7 @@ export class ResourceCache {
     }
 
     private static cursorToDataUrl(cursorImages: HTMLCanvasElement | HTMLCanvasElement[]) {
-        return (Array.isArray(cursorImages) ? cursorImages : [cursorImages]).map((c) => `url(${c.toDataURL()}), auto`)
+        return asArray(cursorImages).map((c) => `url(${c.toDataURL()}), auto`)
     }
 
     static getCursor(cursor: Cursor): AnimatedCursor {

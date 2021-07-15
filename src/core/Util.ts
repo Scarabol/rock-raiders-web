@@ -64,6 +64,11 @@ export function clearIntervalSafe(interval: NodeJS.Timeout) {
     return null
 }
 
+export function asArray<T>(value: T | T[]): T[] {
+    if (!value) return []
+    return Array.isArray(value) ? value : [value]
+}
+
 declare global {
 
     interface Array<T> {
