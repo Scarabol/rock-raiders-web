@@ -28,7 +28,7 @@ export class Barrier extends MaterialEntity {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityConstruction
+        return PriorityIdentifier.CONSTRUCTION
     }
 
 }

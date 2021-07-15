@@ -32,7 +32,7 @@ export class Dynamite extends MaterialEntity {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityDestruction
+        return PriorityIdentifier.DESTRUCTION
     }
 
 }

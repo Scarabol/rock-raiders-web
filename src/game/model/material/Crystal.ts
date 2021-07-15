@@ -29,7 +29,7 @@ export class Crystal extends MaterialEntity {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityCrystal
+        return PriorityIdentifier.CRYSTAL
     }
 
 }

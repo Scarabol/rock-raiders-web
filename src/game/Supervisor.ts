@@ -151,7 +151,7 @@ export class Supervisor {
         this.checkClearRubbleTimer += elapsedMs
         if (this.checkClearRubbleTimer < CHECK_CLEAR_RUBBLE_INTERVAL) return
         this.checkClearRubbleTimer %= CHECK_CLEAR_RUBBLE_INTERVAL
-        if (!this.isEnabled(PriorityIdentifier.aiPriorityClearing)) return
+        if (!this.isEnabled(PriorityIdentifier.CLEARING)) return
         this.entityMgr.raiders.forEach((raider) => {
             if (raider.job) return
             const startSurface = raider.sceneEntity.surfaces[0]

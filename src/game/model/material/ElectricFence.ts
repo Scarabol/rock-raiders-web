@@ -33,7 +33,7 @@ export class ElectricFence extends MaterialEntity {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityConstruction
+        return PriorityIdentifier.CONSTRUCTION
     }
 
 }

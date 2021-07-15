@@ -29,7 +29,7 @@ export class Ore extends MaterialEntity {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityOre
+        return PriorityIdentifier.ORE
     }
 
 }

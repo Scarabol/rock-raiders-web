@@ -38,7 +38,7 @@ export class ClearRubbleJob extends ShareableJob {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityClearing
+        return PriorityIdentifier.CLEARING
     }
 
     getWorkActivity(): RaiderActivity {

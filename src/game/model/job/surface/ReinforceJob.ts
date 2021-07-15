@@ -34,7 +34,7 @@ export class ReinforceJob extends ShareableJob {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityReinforce
+        return PriorityIdentifier.REINFORCE
     }
 
     getWorkActivity(): RaiderActivity {

@@ -38,7 +38,7 @@ export class DrillJob extends ShareableJob {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityDestruction
+        return PriorityIdentifier.DESTRUCTION
     }
 
     getWorkActivity(): RaiderActivity {

@@ -31,7 +31,7 @@ export class CompletePowerPathJob extends ShareableJob {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityConstruction
+        return PriorityIdentifier.CONSTRUCTION
     }
 
     getWorkplaces(): PathTarget[] {

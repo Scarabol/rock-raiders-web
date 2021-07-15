@@ -39,7 +39,7 @@ export class ManVehicleJob extends RaiderJob {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.aiPriorityGetIn
+        return PriorityIdentifier.GET_IN
     }
 
     // noinspection JSUnusedGlobalSymbols used as part of SupervisedJob in Supervisor

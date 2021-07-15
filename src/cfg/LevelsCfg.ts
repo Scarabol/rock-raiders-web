@@ -1,5 +1,4 @@
-import { iGet } from '../core/Util'
-import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
+import { PriorityIdentifier, priorityIdentifierFromString } from '../game/model/job/PriorityIdentifier'
 import { BaseConfig } from './BaseConfig'
 import { ConfigColor } from './ConfigColor'
 import { ObjectiveImageCfg } from './ObjectiveImageCfg'
@@ -91,9 +90,9 @@ export class LevelEntryCfg extends BaseConfig {
         } else if (lCfgKeyName.endsWith('rgb')) {
             return new ConfigColor(cfgValue)
         } else if (lCfgKeyName === 'priorities') {
-            return Object.keys(cfgValue)
-                .filter(name => name.toLowerCase() !== 'AI_Priority_GetTool'.toLowerCase()) // not used in the game
-                .map(name => new LevelPrioritiesEntryConfig(name, cfgValue[name]))
+            return Object.entries<boolean>(cfgValue)
+                .filter(([name]) => !name.equalsIgnoreCase('AI_Priority_GetTool')) // not used in the game
+                .map(([name, enabled]) => new LevelPrioritiesEntryConfig(name, enabled))
         } else if (lCfgKeyName === 'reward') {
             return new LevelRewardConfig(cfgValue)
         } else if (lCfgKeyName === 'objectiveimage640x480') {
@@ -111,7 +110,7 @@ export class LevelPrioritiesEntryConfig {
     enabled: boolean
 
     constructor(name: string, enabled: boolean) {
-        this.key = iGet(PriorityIdentifier, name.replace(/_/g, ''))
+        this.key = priorityIdentifierFromString(name)
         this.enabled = enabled
     }
 
