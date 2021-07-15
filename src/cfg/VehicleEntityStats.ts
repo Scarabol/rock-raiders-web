@@ -8,5 +8,6 @@ export class VehicleEntityStats extends BaseConfig {
     CostCrystal: number = 0
     InvisibleDriver: boolean = false
     EngineSound: string = ''
+    CanClearRubble: boolean = false
 
 }

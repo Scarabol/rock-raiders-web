@@ -69,11 +69,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Cosmetics
 
-- Cursor does not (always) react on targeted object
+- Cursor may not react on targeted object
 - Adapt building placement marker to surface shape
 - Add water and lava animation (texture UV coords tearing)
 - Selection layer has bad performance and behaves funny when hovering GUI
-- Shovel and drilling cursor shown even if selected entities cannot do the job
 - Use given wheel radius to rotate wheels while moving vehicles
 - ElectricFenceStud missing between fences and fence and building
 - Change cursor to X when over disabled IconPanelButtons

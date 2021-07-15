@@ -83,7 +83,7 @@ export class SceneManager {
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
         const vehicle = SceneManager.getSelectable(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
         if (vehicle) return {vehicle: vehicle}
-        const materialEntity = SceneManager.getMaterialEntity(raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere)))
+        const materialEntity = SceneManager.getMaterialEntity(raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere).filter((p) => !!p)))
         if (materialEntity) return {material: materialEntity}
         if (this.terrain) {
             const surface = SceneManager.getSelectable(raycaster.intersectObjects(this.terrain.floorGroup.children))

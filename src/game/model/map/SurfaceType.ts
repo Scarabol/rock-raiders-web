@@ -10,7 +10,6 @@ export class SurfaceType {
     digable: boolean = false
     reinforcable: boolean = false
     cursor: Cursor = Cursor.Pointer_Standard
-    cursorFulfiller: Cursor = Cursor.Pointer_Standard
     statsDrillName: string = null
     canCarryFence: boolean = false
     connectsPath: boolean = false
@@ -25,7 +24,6 @@ export class SurfaceType {
         floor: true,
         selectable: true,
         canCarryFence: true,
-        cursorFulfiller: Cursor.Pointer_LegoManGo,
         mapSurfaceColor: '#280048',
     })
     static readonly SOLID_ROCK = new SurfaceType({
@@ -137,7 +135,6 @@ export class SurfaceType {
         matIndex: '13',
         selectable: true,
         canCarryFence: true,
-        cursorFulfiller: Cursor.Pointer_Clear,
         mapSurfaceColor: '#280048',
     })
     static readonly RUBBLE2 = new SurfaceType({
@@ -146,7 +143,6 @@ export class SurfaceType {
         matIndex: '12',
         selectable: true,
         canCarryFence: true,
-        cursorFulfiller: Cursor.Pointer_Clear,
         mapSurfaceColor: '#280048',
     })
     static readonly RUBBLE3 = new SurfaceType({
@@ -155,7 +151,6 @@ export class SurfaceType {
         matIndex: '11',
         selectable: true,
         canCarryFence: true,
-        cursorFulfiller: Cursor.Pointer_Clear,
         mapSurfaceColor: '#280048',
     })
     static readonly RUBBLE4 = new SurfaceType({
@@ -164,7 +159,6 @@ export class SurfaceType {
         matIndex: '10',
         selectable: true,
         canCarryFence: true,
-        cursorFulfiller: Cursor.Pointer_Clear,
         mapSurfaceColor: '#280048',
     })
 

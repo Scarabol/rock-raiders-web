@@ -12,6 +12,7 @@ import { MoveJob } from './job/raider/MoveJob'
 import { Surface } from './map/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
 import { Raider } from './raider/Raider'
+import { RaiderTool } from './raider/RaiderTool'
 import { VehicleEntity } from './vehicle/VehicleEntity'
 
 export class GameSelection {
@@ -24,6 +25,10 @@ export class GameSelection {
 
     isEmpty(): boolean {
         return !this.surface && !this.building && this.raiders.length < 1 && this.vehicles.length < 1
+    }
+
+    canMove(): boolean {
+        return this.raiders.length > 0 || this.vehicles.some((v) => !!v.driver)
     }
 
     set(selection: GameSelection) {
@@ -147,6 +152,18 @@ export class GameSelection {
         this.surface?.deselect()
         this.surface = null
         this.doubleSelect = null
+    }
+
+    canDrill(surface: Surface): boolean {
+        return this.raiders.some((r) => r.canDrill(surface)) || this.vehicles.some((v) => v.canDrill(surface))
+    }
+
+    canClear(): boolean {
+        return this.raiders.some((r) => r.hasTool(RaiderTool.SHOVEL)) || this.vehicles.some((v) => v.canClear())
+    }
+
+    canPickup(): boolean {
+        return this.raiders.some((r) => r.canPickup()) || this.vehicles.some((v) => v.canPickup())
     }
 
 }

@@ -161,4 +161,10 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         return (this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0) > 0
     }
 
+    canClear(): boolean {
+        return false
+    }
+
+    abstract canPickup(): boolean
+
 }

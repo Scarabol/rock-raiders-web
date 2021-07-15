@@ -1,4 +1,4 @@
-import { Raycaster } from 'three'
+import { Intersection, Raycaster } from 'three'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
 import { POINTER_EVENT } from '../../event/EventTypeEnum'
@@ -77,43 +77,51 @@ export class CursorLayer extends ScreenLayer {
         if (intersectsRaider.length > 0) return Cursor.Pointer_Selected
         const intersectsVehicle = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
         if (intersectsVehicle.length > 0) {
-            const userData = intersectsVehicle[0].object.userData
-            if (userData && userData.hasOwnProperty('selectable')) {
-                const vehicle = userData['selectable'] as VehicleEntity
-                if (!vehicle?.driver && this.entityMgr.selection.raiders.length > 0) {
-                    return Cursor.Pointer_GetIn
-                }
+            const vehicle = intersectsVehicle[0].object.userData?.selectable as VehicleEntity
+            if (!vehicle?.driver && this.entityMgr.selection.raiders.length > 0) {
+                return Cursor.Pointer_GetIn
             }
             return Cursor.Pointer_Selected
         }
         const intersectsBuilding = raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere))
         if (intersectsBuilding.length > 0) return Cursor.Pointer_Selected
-        const intersectsMaterial = raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere))
+        const intersectsMaterial = raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere).filter((p) => !!p))
         if (intersectsMaterial.length > 0) {
-            if (this.entityMgr.selection.raiders.length > 0) {
-                if (intersectsMaterial[0].object.userData?.entityType === EntityType.ORE) {
-                    return Cursor.Pointer_PickUpOre
-                } else {
-                    return Cursor.Pointer_PickUp
-                }
-            }
-            return Cursor.Pointer_Selected
+            return this.determineMaterialCursor(intersectsMaterial)
         }
         const intersectsSurface = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
         if (intersectsSurface.length > 0) {
-            const userData = intersectsSurface[0].object.userData
-            if (userData && userData.hasOwnProperty('surface')) {
-                const surface = userData['surface'] as Surface
-                if (surface) {
-                    if (this.entityMgr.selection.raiders.some((r) => r.canDrill(surface)) || this.entityMgr.selection.vehicles.some((v) => v.canDrill(surface))) {
-                        return surface.surfaceType.cursorFulfiller
-                    } else {
-                        return surface.surfaceType.cursor
-                    }
-                }
-            }
+            return this.determineSurfaceCursor(intersectsSurface[0].object.userData?.surface)
         }
         return Cursor.Pointer_Standard
+    }
+
+    private determineMaterialCursor(intersectsMaterial: Intersection[]): Cursor {
+        if (this.entityMgr.selection.canPickup()) {
+            if (intersectsMaterial[0].object.userData?.entityType === EntityType.ORE) {
+                return Cursor.Pointer_PickUpOre
+            } else {
+                return Cursor.Pointer_PickUp
+            }
+        }
+        return Cursor.Pointer_Selected
+    }
+
+    private determineSurfaceCursor(surface: Surface): Cursor {
+        if (!surface) return Cursor.Pointer_Standard
+        if (this.entityMgr.selection.canMove()) {
+            if (surface.surfaceType.digable) {
+                if (this.entityMgr.selection.canDrill(surface)) {
+                    return Cursor.Pointer_Drill
+                }
+            } else if (surface.surfaceType.floor) {
+                if (surface.hasRubble() && this.entityMgr.selection.canClear()) {
+                    return Cursor.Pointer_Clear
+                }
+                return Cursor.Pointer_LegoManGo
+            }
+        }
+        return surface.surfaceType.cursor
     }
 
     private changeCursor(cursor: Cursor, timeout: number = null) {
