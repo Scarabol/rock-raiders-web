@@ -167,4 +167,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     abstract canPickup(): boolean
 
+    isReadyToTakeAJob(): boolean {
+        return !this.job && !this.selected && !this.inBeam
+    }
+
 }

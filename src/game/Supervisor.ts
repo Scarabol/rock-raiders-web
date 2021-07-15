@@ -16,6 +16,7 @@ import { MoveJob } from './model/job/raider/MoveJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
 import { ShareableJob } from './model/job/ShareableJob'
 import { Raider } from './model/raider/Raider'
+import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { SceneManager } from './SceneManager'
 
 export type SupervisedJob = ShareableJob | ManVehicleJob
@@ -71,7 +72,31 @@ export class Supervisor {
             return Math.sign(this.getPriority(left) - this.getPriority(right))
         })
         const unemployedRaider = this.entityMgr.raiders.filter((r) => r.isReadyToTakeAJob())
+        const unemployedVehicles = this.entityMgr.vehicles.filter((v) => v.isReadyToTakeAJob())
         availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
+            let closestVehicle: VehicleEntity = null
+            let closestVehicleIndex: number = null
+            let closestVehicleDistance: number = null
+            unemployedVehicles.forEach((vehicle, index) => {
+                if (vehicle.isPrepared(job)) {
+                    const pathToJob = job.getWorkplaces().map((b) => vehicle.findPathToTarget(b))
+                        .filter((t) => !!t)
+                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                    if (pathToJob) {
+                        const dist = pathToJob.lengthSq
+                        if (closestVehicleDistance === null || dist < closestVehicleDistance) {
+                            closestVehicle = vehicle
+                            closestVehicleIndex = index
+                            closestVehicleDistance = dist
+                        }
+                    }
+                }
+            })
+            if (closestVehicle) {
+                closestVehicle.setJob(job)
+                unemployedVehicles.splice(closestVehicleIndex, 1)
+                return // if vehicle found do not check for raider
+            }
             let closestRaider: Raider = null
             let closestRaiderIndex: number = null
             let minDistance: number = null
@@ -145,6 +170,7 @@ export class Supervisor {
             const sites = raider.sceneEntity.surfaces.map((s) => s.site).filter(s => !!s)
             if (sites.length > 0) raider.setJob(new MoveJob(sites[0].getWalkOutSurface().getRandomPosition()))
         })
+        // TODO move unemployed vehicles out of building spawns
     }
 
     checkUnclearedRubble(elapsedMs: number) {

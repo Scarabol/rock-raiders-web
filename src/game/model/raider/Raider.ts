@@ -155,7 +155,7 @@ export class Raider extends FulfillerEntity {
     }
 
     isReadyToTakeAJob(): boolean {
-        return !this.job && !this.selected && !this.inBeam && !this.slipped
+        return super.isReadyToTakeAJob() && !this.slipped
     }
 
 }

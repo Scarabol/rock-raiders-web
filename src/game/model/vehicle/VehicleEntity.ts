@@ -110,4 +110,8 @@ export abstract class VehicleEntity extends FulfillerEntity {
         return Array.isArray(this.stats.RouteSpeed) ? this.stats.RouteSpeed[this.level] : this.stats.RouteSpeed
     }
 
+    isReadyToTakeAJob(): boolean {
+        return super.isReadyToTakeAJob() && !!this.driver
+    }
+
 }
