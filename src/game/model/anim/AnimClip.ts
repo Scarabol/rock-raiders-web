@@ -67,7 +67,9 @@ export class AnimClip {
         this.animatedPolys.forEach((body: AnimSubObj, index) => {
             const poly = this.polyList[index]
             poly.position.copy(body.relPos[this.currentFrame]).sub(body.pivot)
-            poly.rotation.copy(body.relRot[this.currentFrame])
+            if (!this.wheelJoints.includes(poly)) {
+                poly.rotation.copy(body.relRot[this.currentFrame])
+            }
             poly.scale.copy(body.relScale[this.currentFrame])
             const opacity = body.opacity[this.currentFrame]
             if (opacity !== undefined && opacity !== null) {

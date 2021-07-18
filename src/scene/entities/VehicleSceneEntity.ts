@@ -1,4 +1,5 @@
 import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivity'
+import { VehicleActivity } from '../../game/model/vehicle/VehicleActivity'
 import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { FulfillerSceneEntity } from './FulfillerSceneEntity'
@@ -34,6 +35,13 @@ export class VehicleSceneEntity extends FulfillerSceneEntity {
     private addDriverToJoint() {
         if (!this.driver) return
         this.animation.driverJoint.add(this.driver.group)
+    }
+
+    update(elapsedMs: number) {
+        super.update(elapsedMs)
+        if (this.activity === VehicleActivity.Route) {
+            this.animation.wheelJoints.forEach((w) => w.rotateX(elapsedMs / 1000 * 2 * Math.PI / this.animationEntityType.wheelRadius)) // TODO take current speed into action
+        }
     }
 
 }
