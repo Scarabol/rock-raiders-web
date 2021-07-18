@@ -1,7 +1,7 @@
 import { Vector2, Vector3 } from 'three'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { BuildingsChangedEvent, RaidersChangedEvent, SelectionChanged, SelectPanelType } from '../event/LocalEvents'
+import { BuildingsChangedEvent, RaidersChangedEvent, SelectionChanged } from '../event/LocalEvents'
 import { JobCreateEvent } from '../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
@@ -42,8 +42,9 @@ export class EntityManager {
 
     constructor() {
         // event handler must be placed here, because only this class knows the "actual" selection instance
-        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
-            if (event.selectPanelType === SelectPanelType.NONE) this.selection.deselectAll()
+        EventBus.registerEventListener(EventKey.DESELECT_ALL, () => {
+            this.selection.deselectAll()
+            EventBus.publishEvent(new SelectionChanged(this))
         })
     }
 

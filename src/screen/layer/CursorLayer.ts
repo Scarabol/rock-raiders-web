@@ -25,12 +25,17 @@ export class CursorLayer extends ScreenLayer {
     timedCursor: Cursor = null
     cursorTimeout = null
     activeCursor: AnimatedCursor = null
+    cursorRelativePos: { x: number, y: number } = {x: 0, y: 0}
 
     constructor(parent: IEventHandler) {
         super(true, false)
         parent.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
             if (this.active) this.changeCursor(event.cursor, event.timeout)
         })
+        parent.registerEventListener(EventKey.SELECTION_CHANGED, () => {
+            if (this.active) this.changeCursor(this.determineCursor())
+        })
+        // TODO change cursor when an entity moves below cursor
     }
 
     reset() {
@@ -55,20 +60,19 @@ export class CursorLayer extends ScreenLayer {
     handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
         if (event.eventEnum === POINTER_EVENT.MOVE && this.sceneMgr) {
             const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
-            const rx = (cx / this.canvas.width) * 2 - 1
-            const ry = -(cy / this.canvas.height) * 2 + 1
-            const raycaster = new Raycaster()
-            raycaster.setFromCamera({x: rx, y: ry}, this.sceneMgr.camera)
-            this.changeCursor(this.determineCursor(raycaster))
+            this.cursorRelativePos = {x: (cx / this.canvas.width) * 2 - 1, y: -(cy / this.canvas.height) * 2 + 1}
+            this.changeCursor(this.determineCursor())
         }
         return super.handlePointerEvent(event)
     }
 
-    determineCursor(raycaster: Raycaster): Cursor {
+    determineCursor(): Cursor {
         if (this.sceneMgr.hasBuildModeSelection()) {
             return this.sceneMgr.buildMarker.lastCheck ? Cursor.Pointer_CanBuild : Cursor.Pointer_CannotBuild
         }
         // TODO use sceneManager.getFirstByRay here too?!
+        const raycaster = new Raycaster()
+        raycaster.setFromCamera(this.cursorRelativePos, this.sceneMgr.camera)
         const intersectsRaider = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
         if (intersectsRaider.length > 0) return Cursor.Pointer_Selected
         const intersectsVehicle = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))

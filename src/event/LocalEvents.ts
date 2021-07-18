@@ -56,7 +56,6 @@ export class SelectionChanged extends LocalEvent {
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.SELECTION_CHANGED)
-        if (!entityMgr) return
         this.selectPanelType = entityMgr.selection.getSelectPanelType()
         this.isGround = entityMgr.selection.surface?.surfaceType === SurfaceType.GROUND
         this.isPowerPath = entityMgr.selection.surface?.surfaceType === SurfaceType.POWER_PATH
@@ -79,10 +78,10 @@ export class SelectionChanged extends LocalEvent {
 
 }
 
-export class DeselectAll extends SelectionChanged {
+export class DeselectAll extends LocalEvent {
 
     constructor() {
-        super(null)
+        super(EventKey.DESELECT_ALL)
     }
 
 }
