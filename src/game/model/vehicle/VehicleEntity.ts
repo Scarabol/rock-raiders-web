@@ -106,4 +106,8 @@ export abstract class VehicleEntity extends FulfillerEntity {
         return !this.carries // TODO implement capacity for vehicle
     }
 
+    getSpeed(): number {
+        return Array.isArray(this.stats.RouteSpeed) ? this.stats.RouteSpeed[this.level] : this.stats.RouteSpeed
+    }
+
 }

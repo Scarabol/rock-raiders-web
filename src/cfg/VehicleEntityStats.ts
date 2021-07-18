@@ -9,5 +9,6 @@ export class VehicleEntityStats extends BaseConfig {
     InvisibleDriver: boolean = false
     EngineSound: string = ''
     CanClearRubble: boolean = false
+    RouteSpeed: number | number[] = 1
 
 }

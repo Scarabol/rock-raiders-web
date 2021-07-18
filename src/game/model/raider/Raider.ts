@@ -47,11 +47,7 @@ export class Raider extends FulfillerEntity {
     }
 
     getSpeed(): number {
-        return super.getSpeed() * this.stats.RouteSpeed[this.level] * (this.isOnPath() ? this.stats.PathCoef : 1)
-    }
-
-    isOnPath(): boolean {
-        return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).isPath()
+        return this.stats.RouteSpeed[this.level] * (this.isOnPath() ? this.stats.PathCoef : 1)
     }
 
     isOnRubble() {

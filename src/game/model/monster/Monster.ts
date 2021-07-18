@@ -28,4 +28,8 @@ export abstract class Monster extends MovableEntity {
         return MonsterActivity.Route
     }
 
+    getSpeed(): number {
+        return this.stats.RouteSpeed * (this.isOnPath() ? this.stats.PathCoef : 1)
+    }
+
 }

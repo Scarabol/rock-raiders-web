@@ -71,8 +71,10 @@ export abstract class MovableEntity {
 
     abstract getRouteActivity(): AnimEntityActivity
 
-    getSpeed(): number {
-        return this.sceneEntity.animation?.transcoef
+    abstract getSpeed(): number
+
+    isOnPath(): boolean {
+        return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).isPath()
     }
 
 }
