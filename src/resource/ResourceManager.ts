@@ -120,7 +120,7 @@ export class ResourceManager extends ResourceCache {
         })
     }
 
-    static getTexture(textureFilepath): Texture | null {
+    static getTexture(textureFilepath: string): Texture | null {
         if (!textureFilepath) {
             throw new Error(`textureFilepath must not be undefined, null or empty - was ${textureFilepath}`)
         }

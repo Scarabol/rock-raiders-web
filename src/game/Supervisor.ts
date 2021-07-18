@@ -93,7 +93,7 @@ export class Supervisor {
                         .filter((t) => !!t)
                         .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                     if (pathToJob) {
-                        const dist = pathToJob.lengthSq // TODO use precalculated path to job
+                        const dist = pathToJob.lengthSq
                         if (minDistance === null || dist < minDistance) {
                             closestRaider = raider
                             closestRaiderIndex = index

@@ -91,7 +91,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
             this.addMeshObjects(mType)
         })
         // load vehicles
-        const vehicleTypes = mainConf['VehicleTypes']
+        const vehicleTypes = iGet(mainConf, 'VehicleTypes')
         Object.values(vehicleTypes).forEach((v) => {
             (Array.isArray(v) ? v : [v]).forEach((vType: string) => {
                 this.addMeshObjects(vType)

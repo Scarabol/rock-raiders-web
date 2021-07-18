@@ -62,7 +62,6 @@ export class ObjectListLoader {
                 case EntityType.ORE_REFINERY:
                 case EntityType.GUNSTATION:
                 case EntityType.TELEPORT_BIG:
-                    console.log(`${olEntry.type} heading: ${Math.round(olEntry.heading % 360)}`)
                     const entity = BuildingFactory.createBuildingFromType(entityType, sceneMgr, entityMgr)
                     entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
                     break
