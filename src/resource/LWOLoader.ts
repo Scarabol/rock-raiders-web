@@ -404,7 +404,11 @@ export class LWOLoader {
                     case SURF_SPEC:
                         const specular = view.getInt16(currentOffset) / 256
                         // material.specular = material.color.multiplyScalar(specular);
-                        if (this.verbose) console.warn(`Specular (SPEC): ${specular}`)
+                        if (this.verbose) console.warn(`Unhandled specular (SPEC): ${specular}`)
+                        break
+                    case SURF_GLOS:
+                        const glossiness = view.getInt16(currentOffset) / 1024
+                        if (this.verbose) console.warn(`Unhandled glossiness (GLOS): ${glossiness}`)
                         break
                     case SURF_REFL:
                         let reflection = 0
