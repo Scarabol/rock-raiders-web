@@ -68,10 +68,9 @@ export class EntityManager {
     }
 
     update(elapsedMs: number) {
-        this.raiders.forEach((r) => updateSafe(r, elapsedMs))
-        this.raidersInBeam.forEach((r) => updateSafe(r, elapsedMs))
         this.buildings.forEach((b) => updateSafe(b, elapsedMs))
         this.raiders.forEach((r) => updateSafe(r, elapsedMs))
+        this.raidersInBeam.forEach((r) => updateSafe(r, elapsedMs))
         this.materials.forEach((m) => updateSafe(m, elapsedMs))
         this.scarer.forEach((s) => updateSafe(s, elapsedMs))
         this.spiders.forEach((s) => updateSafe(s, elapsedMs))
