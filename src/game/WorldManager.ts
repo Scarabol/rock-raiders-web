@@ -36,10 +36,8 @@ export class WorldManager {
 
     constructor() {
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
-        EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.pause())
-        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
-            if (this.started) this.unPause()
-        })
+        EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
+        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.startLoop(UPDATE_INTERVAL_MS))
         EventBus.registerEventListener(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
             const requestedChange = event.numRequested - this.requestedVehicleTypes.count((e) => e === event.vehicle)
             for (let c = 0; c < -requestedChange; c++) {
@@ -68,21 +66,21 @@ export class WorldManager {
 
     start() {
         this.started = true
-        this.unPause()
+        this.startLoop(UPDATE_INTERVAL_MS)
     }
 
     stop() {
         this.started = false
-        this.pause()
+        this.stopLoop()
     }
 
-    pause() {
-        this.gameLoopTimeout = clearTimeoutSafe(this.gameLoopTimeout)
+    private startLoop(timeout: number) {
+        this.stopLoop() // avoid duplicate timeouts
+        if (this.started) this.gameLoopTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), timeout)
     }
 
-    unPause() {
+    private stopLoop() {
         this.gameLoopTimeout = clearTimeoutSafe(this.gameLoopTimeout)
-        this.gameLoopTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), UPDATE_INTERVAL_MS)
     }
 
     update(elapsedMs: number) {
@@ -98,8 +96,7 @@ export class WorldManager {
         const endUpdate = window.performance.now()
         const updateDurationMs = endUpdate - startUpdate
         const sleepForMs = UPDATE_INTERVAL_MS - Math.round(updateDurationMs)
-        this.gameLoopTimeout = clearTimeoutSafe(this.gameLoopTimeout)
-        this.gameLoopTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), sleepForMs)
+        this.startLoop(sleepForMs)
     }
 
     updateOxygen(elapsedMs: number) {
