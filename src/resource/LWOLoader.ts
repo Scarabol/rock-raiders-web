@@ -495,7 +495,6 @@ export class LWOLoader {
                         if (this.verbose) console.log(`Texture filepath (TIMG): ${textureFilepath}`)
                         const lTextureFilename = getFilename(textureFilepath)?.toLowerCase()
                         if (!lTextureFilename || lTextureFilename === '(none)') break
-                        material.transparent = material.transparent || !!lTextureFilename.match(/a\d\d\d\D.*bmp/i)
                         const hasSequence = lTextureFilename.endsWith('(sequence)')
                         const sequenceBaseFilepath = lTextureFilename.substring(0, lTextureFilename.length - '(sequence)'.length).trim()
                         let textures: Texture[] = []
