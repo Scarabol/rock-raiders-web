@@ -118,7 +118,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             const worldTarget = this.sceneMgr.getFloorPosition(terrainIntersectionPoint).setY(0)
             const diff = worldTarget.sub(pivotWorldPos)
             const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI - Math.PI / 20 // TODO Does not compute!
-            const lAngle = angle > this.animationEntityType.PivotMaxZ ? this.animationEntityType.PivotMaxZ : (angle < this.animationEntityType.PivotMinZ ? this.animationEntityType.PivotMinZ : angle) // FIXME vehicles: only limit angle if value is not null/undefined
+            const lAngle = this.limitAngle(angle)
             xPivot.setRotationFromAxisAngle(new Vector3(1, 0, 0), lAngle) // XXX use rotation speed and smooth movement
         }
         const yPivot = this.bodiesByName.get(this.animationEntityType.yPivot?.toLowerCase())
@@ -127,8 +127,20 @@ export class AnimatedSceneEntity extends SceneEntity {
             yPivot.getWorldPosition(pivotWorldPos)
             const angle = terrainIntersectionPoint.clone().sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() + Math.PI / 2
             yPivot.setRotationFromAxisAngle(new Vector3(0, 1, 0), angle) // XXX use rotation speed and smooth movement
-            // FIXME vehicles: limit by PivotMax???
         }
+    }
+
+    private limitAngle(angle: number): number {
+        let result = angle
+        const min = this.animationEntityType.PivotMinZ
+        if (min !== null && min !== undefined && result < min) {
+            result = min
+        }
+        const max = this.animationEntityType.PivotMaxZ
+        if (max !== null && max !== undefined && result > max) {
+            result = max
+        }
+        return result
     }
 
 }
