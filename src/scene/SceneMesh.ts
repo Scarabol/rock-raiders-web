@@ -1,14 +1,8 @@
-import { BufferGeometry, Mesh } from 'three'
+import { Mesh } from 'three'
 import { asArray } from '../core/Util'
-import { SceneManager } from '../game/SceneManager'
 import { SequenceTextureMaterial } from './SequenceTextureMaterial'
 
 export class SceneMesh extends Mesh {
-
-    constructor(geometry?: BufferGeometry, materials?: SequenceTextureMaterial[]) {
-        super(geometry, materials)
-        SceneManager.registerMesh(this)
-    }
 
     clone(): this {
         const clone = super.clone(true)

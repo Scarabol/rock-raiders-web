@@ -56,8 +56,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Important
 
 - Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in
-- Raiders not spawned in Level 01 when restarted from Level 03
-- Toolstation not shown in level 03
 
 ### Nice to have
 
@@ -88,6 +86,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Uplift configuration parsing into loading process for type safety and error resilience
 - Make animated meshes cloneable and move their creation into ResourceManager within loading screen for performance
 - Make AnimClip cloneable (requires separation too, because classes mixes state and type of animations)
+- Cleanup meshes and scene after level ends (currently leaks resources)
 - Refactor BuildingEntities and VehicleEntities, no actual typing needed
 - Move threejs rendering to separate worker
 

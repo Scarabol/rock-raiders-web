@@ -4,7 +4,6 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearIntervalSafe } from '../core/Util'
 import { KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
-import { SceneMesh } from '../scene/SceneMesh'
 import { DebugHelper } from '../screen/DebugHelper'
 import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
@@ -20,8 +19,6 @@ import { TerrainLoader } from './TerrainLoader'
 import { WorldManager } from './WorldManager'
 
 export class SceneManager {
-
-    static meshRegistry: SceneMesh[] = []
 
     worldMgr: WorldManager
     entityMgr: EntityManager
@@ -229,13 +226,6 @@ export class SceneManager {
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null
-        SceneManager.meshRegistry.forEach(mesh => mesh.dispose())
-        SceneManager.meshRegistry = []
-    }
-
-    static registerMesh(mesh: SceneMesh): SceneMesh {
-        this.meshRegistry.push(mesh)
-        return mesh
     }
 
     resize(width: number, height: number) {
