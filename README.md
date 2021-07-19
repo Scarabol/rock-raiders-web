@@ -29,9 +29,23 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near (v0.6.0)
 
-- Alarm mode and shooting
-- Rock-Monsters and Slugs
-- Damage, show health bar and teleport at bad health
+- turn all lights red, when alarm mode is active
+- switch all raider with weapon from work to defend
+- let raider in defend mode target any known slug or rock monster
+- add spawn timer for slugs, only one slug per hole
+- make slugs look for nearby reachable buildings or fences to leech energy
+- spawn a depleted energy crystal, when slug leeched energy
+- wake up rock monsters, when raider are near or by big bangs
+- show health bar over raider, monster and buildings, when health changes
+- beam up raider or buildings when health is too low
+- emerge rock monster by timer from walls
+- make monster attack any nearby powered buildings
+- make monster create bolder and throw at buildings
+- show lightning between electric fences
+- show ElectricFenceStud between electric fences and buildings
+- make rock monster crumble when reaching a fence or lightning
+- make rock monster pick up nearby raider and shake them upside down
+- make rock monster punch vehicles passing by
 
 ### Mid (v0.7.0)
 
@@ -71,7 +85,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add water and lava animation (texture UV coords tearing)
 - Selection layer has bad performance and behaves funny when hovering GUI
 - Use given wheel radius to rotate wheels while moving vehicles
-- ElectricFenceStud missing between fences and fence and building
 - Change cursor to X when over disabled IconPanelButtons
 - Add captain flh animation to mission briefing
 - Tooltip SFX sounds not working for priority panel
