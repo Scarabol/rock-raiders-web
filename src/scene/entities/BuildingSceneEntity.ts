@@ -2,15 +2,24 @@ import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivi
 import { BuildingActivity } from '../../game/model/activities/BuildingActivity'
 import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
+import { BubbleSprite } from '../BubbleSprite'
 import { SceneEntity } from '../SceneEntity'
 
 export class BuildingSceneEntity extends AnimatedSceneEntity {
 
+    inBeam: boolean = false
     powered: boolean = false
+    powerBubble: BubbleSprite = new BubbleSprite('Bubble_PowerOff')
+    powerBubbleFlashTimer: number = 0
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
         super(sceneMgr, aeFilename)
         this.flipXAxis()
+        this.add(this.powerBubble)
+    }
+
+    setInBeam(state: boolean) {
+        this.inBeam = state
     }
 
     setPowered(state: boolean) {
@@ -36,4 +45,11 @@ export class BuildingSceneEntity extends AnimatedSceneEntity {
     dropEntity(sceneEntity: SceneEntity) {
         this.animation.carryJoints.forEach((j) => j.remove(sceneEntity.group))
     }
+
+    update(elapsedMs: number) {
+        super.update(elapsedMs)
+        this.powerBubbleFlashTimer = (this.powerBubbleFlashTimer + elapsedMs) % 1000
+        this.powerBubble.visible = !this.inBeam && !this.powered && this.powerBubbleFlashTimer < 500
+    }
+
 }

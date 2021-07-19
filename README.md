@@ -74,7 +74,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - ElectricFenceStud missing between fences and fence and building
 - Change cursor to X when over disabled IconPanelButtons
 - Add captain flh animation to mission briefing
-- Add no-power-thunderbolt to buildings that are switched on, but without power supply
 - Add greenish priority panel button hover frame
 - Tooltip SFX sounds not working for priority panel
 - Seams get not teared down while drilling

@@ -150,6 +150,7 @@ export abstract class BuildingEntity implements Selectable {
     beamUp() {
         this.inBeam = true
         this.turnEnergyOff()
+        this.sceneEntity.setInBeam(this.inBeam)
         for (let c = 0; c < this.stats.CostOre; c++) {
             this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), this.primarySurface.getRandomPosition())
         }
@@ -269,8 +270,10 @@ export abstract class BuildingEntity implements Selectable {
         }
         if (this.sceneEntity.visible && !disableTeleportIn) {
             this.inBeam = true
+            this.sceneEntity.setInBeam(this.inBeam)
             this.sceneEntity.changeActivity(BuildingActivity.Teleport, () => {
                 this.inBeam = false
+                this.sceneEntity.setInBeam(this.inBeam)
                 this.onPlaceDown()
             })
         } else {

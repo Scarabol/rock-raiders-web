@@ -97,6 +97,11 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
                 this.addMeshObjects(vType)
             })
         })
+        // load bubbles
+        const bubbles = iGet(mainConf, 'Bubbles')
+        Object.values<string>(bubbles).forEach((b) => {
+            this.addAsset(this.wadLoader.loadAlphaImageAsset, b)
+        })
         // load misc objects
         this.addTextureFolder('MiscAnims/Crystal/')
         this.addAsset(this.wadLoader.loadLWOFile, 'World/Shared/Crystal.lwo') // high-poly version
