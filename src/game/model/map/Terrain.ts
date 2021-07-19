@@ -27,6 +27,8 @@ export class Terrain {
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         this.sceneMgr = sceneMgr
+        this.sceneMgr.terrain = this
+        this.sceneMgr.scene.add(this.floorGroup)
         this.entityMgr = entityMgr
         this.floorGroup.scale.setScalar(TILESIZE)
         this.roofGroup.scale.setScalar(TILESIZE)

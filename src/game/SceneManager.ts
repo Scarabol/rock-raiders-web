@@ -200,8 +200,7 @@ export class SceneManager {
         this.setBuildModeSelection(null)
 
         // create terrain mesh and add it to the scene
-        this.terrain = TerrainLoader.loadTerrain(levelConf, this, this.entityMgr)
-        this.scene.add(this.terrain.floorGroup)
+        TerrainLoader.loadTerrain(levelConf, this, this.entityMgr)
 
         // gather level start details for game result score calculation
         GameState.totalDiggables = this.terrain.countDiggables()

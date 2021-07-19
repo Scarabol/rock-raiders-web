@@ -9,7 +9,7 @@ import { SceneManager } from './SceneManager'
 
 export class TerrainLoader {
 
-    static loadTerrain(levelConf: LevelEntryCfg, sceneMgr: SceneManager, entityMgr: EntityManager): Terrain {
+    static loadTerrain(levelConf: LevelEntryCfg, sceneMgr: SceneManager, entityMgr: EntityManager) {
         const tileSize = levelConf.blockSize
         if (tileSize !== TILESIZE) console.error(`Unexpected tile size in level configuration: ${tileSize}`)
         const terrain = new Terrain(sceneMgr, entityMgr)
@@ -96,7 +96,7 @@ export class TerrainLoader {
 
         // crumble unsupported walls
         terrain.forEachSurface((s) => {
-            if (!s.isSupported()) s.collapse()
+            if (!s.isSupported()) s.collapse() // TODO this should happen right after mission briefing is done
         })
 
         terrain.updateSurfaceMeshes(true)
@@ -116,8 +116,6 @@ export class TerrainLoader {
         if (blockMap) { // TODO implement tutorial blocks map
             // console.log(blockMap)
         }
-
-        return terrain
     }
 
 }
