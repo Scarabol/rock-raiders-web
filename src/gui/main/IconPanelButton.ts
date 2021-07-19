@@ -15,6 +15,7 @@ export class IconPanelButton extends Button {
         this.buttonType = itemKey
         this.relX = parentWidth - 59
         this.relY = 9 + this.height * menuIndex
+        this.hoverFrame = true
         this.tooltipSfx = menuItemCfg.tooltipSfx
         this.tooltipDisabled = menuItemCfg.tooltipDisabled
         this.tooltipDisabledSfx = menuItemCfg.tooltipDisabledSfx
@@ -35,15 +36,6 @@ export class IconPanelButton extends Button {
         this.disabled = targetState
         if (stateChanged && autoRedraw) this.notifyRedraw()
         return stateChanged
-    }
-
-    drawHover(context: SpriteContext) {
-        super.drawHover(context)
-        if (!this.disabled && this.hover) {
-            context.strokeStyle = '#0f0'
-            context.lineWidth = 2
-            context.strokeRect(this.x - context.lineWidth / 2, this.y - context.lineWidth / 2, this.width + context.lineWidth - 1, this.height + context.lineWidth - 1)
-        }
     }
 
 }

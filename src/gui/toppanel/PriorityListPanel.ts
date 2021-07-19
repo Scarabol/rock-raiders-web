@@ -48,6 +48,7 @@ export class PriorityListPanel extends Panel {
         this.prioByName.set(PriorityIdentifier.CONSTRUCTION, this.addChild(new Button(this, cfg.aiPriorityConstruction)))
         this.prioByName.set(PriorityIdentifier.REINFORCE, this.addChild(new Button(this, cfg.aiPriorityReinforce)))
         this.prioByName.set(PriorityIdentifier.RECHARGE, this.addChild(new Button(this, cfg.aiPriorityRecharge)))
+        this.prioByName.forEach((btn) => btn.hoverFrame = true)
         this.registerEventListener(EventKey.SETUP_PRIORITY_LIST, (event: SetupPriorityList) => {
             this.priorityList.setList(event.priorityList)
             this.updateList()

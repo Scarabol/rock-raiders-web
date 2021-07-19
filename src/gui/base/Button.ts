@@ -15,6 +15,7 @@ export class Button extends BaseElement {
     imgDisabled: SpriteImage = null
     tooltip: string = null
     sfxTooltip: string = null
+    hoverFrame: boolean = false
 
     constructor(parent: BaseElement, btnCfg: ButtonCfg) {
         super(parent);
@@ -79,6 +80,15 @@ export class Button extends BaseElement {
         }
         if (img) context.drawImage(img, this.x, this.y)
         super.onRedraw(context)
+    }
+
+    drawHover(context: SpriteContext) {
+        super.drawHover(context)
+        if (!this.disabled && this.hover && this.hoverFrame) {
+            context.strokeStyle = '#0f0'
+            context.lineWidth = 2
+            context.strokeRect(this.x - context.lineWidth / 2, this.y - context.lineWidth / 2, this.width + context.lineWidth - 1, this.height + context.lineWidth - 1)
+        }
     }
 
 }
