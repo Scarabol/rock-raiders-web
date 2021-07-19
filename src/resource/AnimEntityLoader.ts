@@ -191,7 +191,7 @@ export class AnimEntityLoader {
             animation.polyList.push(polyModel)
             if (body.lowerName) {
                 if (body.lowerName.equalsIgnoreCase(this.entityType.carryNullName)) {
-                    animation.carryJoint = polyModel
+                    animation.carryJoints.push(polyModel)
                 } else if (body.lowerName.equalsIgnoreCase(this.entityType.depositNullName)) {
                     animation.depositJoint = polyModel
                 } else if (body.lowerName.equalsIgnoreCase(this.entityType.toolNullName)) {
@@ -199,7 +199,7 @@ export class AnimEntityLoader {
                 } else if (body.lowerName.equalsIgnoreCase(this.entityType.wheelNullName)) {
                     animation.wheelJoints.push(polyModel)
                 } else if (body.lowerName.equalsIgnoreCase(this.entityType.drillNullName)) {
-                    animation.drillJoint = polyModel
+                    animation.drillJoint = polyModel // TODO there are multiple drill joints
                 } else if (body.lowerName.equalsIgnoreCase(this.entityType.driverNullName)) {
                     animation.driverJoint = polyModel
                 } else if (body.isNull) {

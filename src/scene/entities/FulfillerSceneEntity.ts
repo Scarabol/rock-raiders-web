@@ -18,9 +18,10 @@ export class FulfillerSceneEntity extends AnimatedSceneEntity {
     dropEntity() {
         if (!this.carriedEntity) return
         const position = this.position.clone()
-        if (this.animation?.carryJoint) {
-            this.animation.carryJoint.remove(this.carriedEntity.group)
-            this.animation.carryJoint.getWorldPosition(position)
+        const carryJoint = this.animation?.carryJoints?.[0] // TODO implement multi carry for vehicles
+        if (carryJoint) {
+            carryJoint.remove(this.carriedEntity.group)
+            carryJoint.getWorldPosition(position)
         }
         this.carriedEntity.addToScene(new Vector2(position.x, position.z), null)
         this.carriedEntity = null
@@ -34,7 +35,7 @@ export class FulfillerSceneEntity extends AnimatedSceneEntity {
 
     private addCarried() {
         if (!this.carriedEntity) return
-        (this.animation?.carryJoint || this).add(this.carriedEntity.group)
+        this.animation?.carryJoints?.[0]?.add(this.carriedEntity.group) // TODO implement multi carry for vehicles
     }
 
 }

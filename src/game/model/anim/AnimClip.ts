@@ -13,7 +13,7 @@ export class AnimClip {
     framesPerSecond: number = null
     animatedPolys: AnimSubObj[] = []
     polyList: SceneMesh[] = []
-    carryJoint: SceneMesh = null
+    carryJoints: SceneMesh[] = []
     depositJoint: SceneMesh = null
     getToolJoint: SceneMesh = null
     wheelJoints: SceneMesh[] = []

@@ -28,13 +28,10 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
 
     gatherItem(item: MaterialEntity) {
         if (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY) {
-            if (this.building.sceneEntity.animation?.carryJoint) {
-                this.building.sceneEntity.animation.carryJoint.add(item.sceneEntity.group)
-                item.sceneEntity.position.set(0, 0, 0)
-            }
+            this.building.sceneEntity.pickupEntity(item.sceneEntity)
             this.building.sceneEntity.changeActivity(BuildingActivity.Deposit, () => {
                 this.building.sceneEntity.changeActivity()
-                if (this.building.sceneEntity.animation?.carryJoint) this.building.sceneEntity.animation.carryJoint.remove(item.sceneEntity.group)
+                this.building.sceneEntity.dropEntity(item.sceneEntity)
                 BuildingCarryPathTarget.addItemToStorage(item)
             })
         } else {
