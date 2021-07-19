@@ -50,7 +50,7 @@ export class FlhParser {
         for (let chunkStart = this.offsetFirstFrame; chunkStart < this.fileLength;) {
             const chunkLength = this.getDWord(chunkStart)
             const chunkType = this.getWord(chunkStart + 4)
-            const chunkDataView = new DataView(this.dataView.buffer.slice(chunkStart + 6, chunkStart + chunkLength)) // TODO do not slice buffer, but instead use offsets
+            const chunkDataView = new DataView(this.dataView.buffer, chunkStart + 6, chunkLength - 6)
             switch (chunkType) {
                 case 0xF1FA:
                     if (chunkLength > 16) {
@@ -108,14 +108,14 @@ export class FlhParser {
                 repeat = (repeat * -1)
                 for (let i = 0; i < repeat; i++) {
                     const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset + i * 2 + 1)
-                    setPixel(imgData, x, y, r, g, b, (!r && !g && !b ? 0 : 255)) // TODO these loops can be simplified, don't use x y
+                    setPixel(imgData, x, y, r, g, b, (!r && !g && !b ? 0 : 255))
                     x++
                 }
                 offset += repeat * 2 + 1
             } else {
                 const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset + 1)
                 for (let i = 0; i < repeat; i++) {
-                    setPixel(imgData, x, y, r, g, b, (!r && !g && !b ? 0 : 255)) // TODO these loops can be simplified, don't use x y
+                    setPixel(imgData, x, y, r, g, b, (!r && !g && !b ? 0 : 255))
                     x++
                 }
                 offset += 3
@@ -175,7 +175,7 @@ export class FlhParser {
                 offset++
                 if (repeat < 0) {
                     repeat = (-1 * repeat)
-                    const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset) // TODO these loops can be simplified, don't use x y
+                    const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset)
                     for (let j = 0; j < repeat; j++) {
                         setPixel(res, x, y, r, g, b)
                         x++
@@ -183,7 +183,7 @@ export class FlhParser {
                     offset += 2
                 } else {
                     for (let j = 0; j < repeat; j++) {
-                        const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset + j * 2) // TODO these loops can be simplified, don't use x y
+                        const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset + j * 2)
                         setPixel(res, x, y, r, g, b)
                         x++
                     }

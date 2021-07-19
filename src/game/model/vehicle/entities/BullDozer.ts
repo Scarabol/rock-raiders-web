@@ -9,6 +9,8 @@ import { VehicleEntity } from '../VehicleEntity'
 
 export class BullDozer extends VehicleEntity {
 
+    // FIXME entity moving funny while clearing
+
     sceneEntity: VehicleSceneEntity
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
@@ -17,7 +19,7 @@ export class BullDozer extends VehicleEntity {
     }
 
     isPrepared(job: Job): boolean {
-        return job.getRequiredTool() === RaiderTool.SHOVEL // TODO check for max carry and accept carry jobs too
+        return job.getRequiredTool() === RaiderTool.SHOVEL // FIXME vehicles: check for max carry and accept carry jobs too
     }
 
     get stats() {

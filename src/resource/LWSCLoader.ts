@@ -56,7 +56,7 @@ export class LWSCLoader {
             } else if (line.startsWith('PreviewFirstFrame ') || line.startsWith('PreviewLastFrame ') || line.startsWith('PreviewFrameStep ')) {
                 // only used in editor
             } else {
-                // console.warn(`Unexpected line: ${line}`); // TODO analyze remaining entries
+                // console.warn(`Unexpected line: ${line}`); // TODO implement all LWS features
             }
         }
 
@@ -173,7 +173,7 @@ export class LWSCLoader {
             } else if (key === 'PivotPoint') {
                 subObj.pivot = new Vector3().fromArray(value.split(' ').map((n) => Number(n)))
             } else if (this.verbose) {
-                console.warn(`Unhandled line in object block: ${line}; key: ${key}; value: ${value}`) // TODO analyze unhandled lines
+                console.warn(`Unhandled line in object block: ${line}; key: ${key}; value: ${value}`) // TODO implement all LWS features
             }
         }
         console.error('Parsing block reached content end')

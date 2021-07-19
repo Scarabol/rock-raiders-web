@@ -199,7 +199,7 @@ export class AnimEntityLoader {
                 } else if (body.lowerName.equalsIgnoreCase(this.entityType.wheelNullName)) {
                     animation.wheelJoints.push(polyModel)
                 } else if (body.lowerName.equalsIgnoreCase(this.entityType.drillNullName)) {
-                    animation.drillJoint = polyModel // TODO there are multiple drill joints
+                    animation.drillJoints.push(polyModel)
                 } else if (body.lowerName.equalsIgnoreCase(this.entityType.driverNullName)) {
                     animation.driverJoint = polyModel
                 } else if (body.isNull) {

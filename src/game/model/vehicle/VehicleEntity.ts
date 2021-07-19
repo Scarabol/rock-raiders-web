@@ -103,7 +103,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
     }
 
     canPickup(): boolean {
-        return !this.carries // TODO implement capacity for vehicle
+        return !this.carries // FIXME vehicles: implement capacity for vehicle
     }
 
     getSpeed(): number {

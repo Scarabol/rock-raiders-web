@@ -40,7 +40,7 @@ export class VehicleSceneEntity extends FulfillerSceneEntity {
     update(elapsedMs: number) {
         super.update(elapsedMs)
         if (this.activity === VehicleActivity.Route) {
-            this.animation.wheelJoints.forEach((w) => w.rotateX(elapsedMs / 1000 * 2 * Math.PI / this.animationEntityType.wheelRadius)) // TODO take current speed into action
+            this.animation.wheelJoints.forEach((w) => w.rotateX(elapsedMs / 1000 * 2 * Math.PI / this.animationEntityType.wheelRadius)) // FIXME vehicles: take current speed into action
         }
     }
 

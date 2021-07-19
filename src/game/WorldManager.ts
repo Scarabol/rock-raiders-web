@@ -124,7 +124,7 @@ export class WorldManager {
             for (this.spawnRaiderTimer += elapsedMs; this.spawnRaiderTimer >= CHECK_SPAWN_RAIDER_TIMER; this.spawnRaiderTimer -= CHECK_SPAWN_RAIDER_TIMER) {
                 if (this.requestedRaiders > 0 && !this.entityMgr.hasMaxRaiders()) {
                     const teleportBuilding = this.entityMgr.findTeleportBuilding(EntityType.PILOT)
-                    if (teleportBuilding) { // TODO only spawn in, when primary surface is free
+                    if (teleportBuilding) {
                         this.requestedRaiders--
                         EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
                         const raider = new Raider(this.sceneMgr, this.entityMgr)

@@ -17,7 +17,7 @@ export class AnimClip {
     depositJoint: SceneMesh = null
     getToolJoint: SceneMesh = null
     wheelJoints: SceneMesh[] = []
-    drillJoint: SceneMesh = null
+    drillJoints: SceneMesh[] = []
     driverJoint: SceneMesh = null
     nullJoints: Map<string, SceneMesh[]> = new Map()
     xPivot: SceneMesh = null

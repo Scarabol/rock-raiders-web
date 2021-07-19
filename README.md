@@ -81,7 +81,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add greenish priority panel button hover frame
 - Tooltip SFX sounds not working for priority panel
 - Seams get not teared down while drilling
-- Driver may site wrong way around on vehicle
+- Driver may sit wrong way around on vehicle
+- Yellow arrows not shown on power station flaps
 
 ## Technical Debt
 

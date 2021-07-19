@@ -48,18 +48,18 @@ export class AnimatedSceneEntity extends SceneEntity {
             this.bodiesByName.clear()
         }
         this.animation = animation
-        this.animation.nullJoints.forEach((j, lName) => { // TODO using this name is super hacky
+        this.animation.nullJoints.forEach((j, lName) => { // FIXME vehicles: using this name is super hacky
             if (lName) j.forEach((m) => this.bodiesByName.set(lName, m))
         })
         this.animation.polyList.forEach((m) => {
-            if (m.name) this.bodiesByName.set(m.name, m) // TODO using this name is super hacky
+            if (m.name) this.bodiesByName.set(m.name, m) // FIXME vehicles: using this name is super hacky
         })
         this.applyDefaultUpgrades(activity)
         this.add(this.animation.polyRootGroup)
         this.animation.start(onAnimationDone, durationTimeMs)
     }
 
-    private disposeUpgrades() { // TODO create each mesh/upgrade/animation only once and re-use it
+    private disposeUpgrades() { // FIXME vehicles: create each mesh/upgrade/animation only once and re-use it
         this.upgrades.forEach((u) => {
             u.parent?.remove(u)
             u.dispose()
@@ -77,8 +77,8 @@ export class AnimatedSceneEntity extends SceneEntity {
 
     private applyDefaultUpgrades(activity: AnimEntityActivity) {
         const upgrades0000 = this.animationEntityType.upgradesByLevel.get('0000')
-        if (upgrades0000) { // TODO check for other upgrade levels
-            upgrades0000.forEach((upgrade) => { // TODO parse upgrades only once
+        if (upgrades0000) { // FIXME vehicles: check for other upgrade levels
+            upgrades0000.forEach((upgrade) => { // FIXME vehicles: parse upgrades only once
                 const joint = this.getNullJointForUpgrade(upgrade)
                 if (joint) {
                     const lwoModel = ResourceManager.getLwoModel(`${upgrade.upgradeFilepath}.lwo`)
@@ -118,7 +118,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             const worldTarget = this.sceneMgr.getFloorPosition(terrainIntersectionPoint).setY(0)
             const diff = worldTarget.sub(pivotWorldPos)
             const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI - Math.PI / 20 // TODO Does not compute!
-            const lAngle = angle > this.animationEntityType.PivotMaxZ ? this.animationEntityType.PivotMaxZ : (angle < this.animationEntityType.PivotMinZ ? this.animationEntityType.PivotMinZ : angle) // TODO only limit angle if value is not null/undefined
+            const lAngle = angle > this.animationEntityType.PivotMaxZ ? this.animationEntityType.PivotMaxZ : (angle < this.animationEntityType.PivotMinZ ? this.animationEntityType.PivotMinZ : angle) // FIXME vehicles: only limit angle if value is not null/undefined
             xPivot.setRotationFromAxisAngle(new Vector3(1, 0, 0), lAngle) // XXX use rotation speed and smooth movement
         }
         const yPivot = this.bodiesByName.get(this.animationEntityType.yPivot?.toLowerCase())
@@ -127,9 +127,8 @@ export class AnimatedSceneEntity extends SceneEntity {
             yPivot.getWorldPosition(pivotWorldPos)
             const angle = terrainIntersectionPoint.clone().sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() + Math.PI / 2
             yPivot.setRotationFromAxisAngle(new Vector3(0, 1, 0), angle) // XXX use rotation speed and smooth movement
-            // TODO limit by PivotMax???
+            // FIXME vehicles: limit by PivotMax???
         }
-        // XXX handle zPivot (not used in the game)
     }
 
 }
