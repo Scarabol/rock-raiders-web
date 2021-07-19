@@ -29,7 +29,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
-        if (this.activity === activity || this.animationEntityType === null) return
+        if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone) return
         this.activity = activity
         const lActivityKey = activity.activityKey.toLowerCase()
         let animation = this.animationEntityType.animations.get(lActivityKey)

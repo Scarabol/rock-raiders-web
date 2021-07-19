@@ -16,7 +16,7 @@ export class WalkerDiggerSceneEntity extends VehicleSceneEntity {
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
-        if (this.body.activity === activity) return
+        if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone) return
         this.body.changeActivity(activity, onAnimationDone, durationTimeMs)
         super.changeActivity(activity)
     }

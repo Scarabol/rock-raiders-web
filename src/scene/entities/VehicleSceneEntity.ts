@@ -27,7 +27,7 @@ export class VehicleSceneEntity extends FulfillerSceneEntity {
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
-        if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone && this.animation?.durationTimeMs === durationTimeMs) return
+        if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone) return
         super.changeActivity(activity, onAnimationDone, durationTimeMs)
         this.addDriverToJoint() // keep driver
     }

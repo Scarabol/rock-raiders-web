@@ -29,6 +29,7 @@ export class FulfillerSceneEntity extends AnimatedSceneEntity {
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
+        if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone) return
         super.changeActivity(activity, onAnimationDone, durationTimeMs)
         this.addCarried() // keep carried children
     }
