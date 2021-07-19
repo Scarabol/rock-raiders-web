@@ -24,7 +24,7 @@ import { BarrierLocation } from '../material/BarrierLocation'
 import { Crystal } from '../material/Crystal'
 import { ElectricFence } from '../material/ElectricFence'
 import { Ore } from '../material/Ore'
-import { RaiderTraining } from '../raider/RaiderTraining'
+import { RaiderTraining, RaiderTrainings } from '../raider/RaiderTraining'
 import { Selectable } from '../Selectable'
 import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
@@ -307,7 +307,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     isTrainingSite(training: RaiderTraining): boolean {
-        return this.isPowered() && this.stats[training.statsName]?.[this.level]
+        return this.isPowered() && this.stats[RaiderTrainings.toStatsProperty(training)]?.[this.level]
     }
 
     canTeleportIn(entityType: EntityType): boolean {

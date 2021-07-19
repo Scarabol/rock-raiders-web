@@ -6,8 +6,8 @@ import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/model/map/Surface'
 import { SurfaceType } from '../game/model/map/SurfaceType'
 import { Terrain } from '../game/model/map/Terrain'
-import { RaiderTool } from '../game/model/raider/RaiderTool'
-import { RaiderTraining } from '../game/model/raider/RaiderTraining'
+import { RaiderTool, RaiderTools } from '../game/model/raider/RaiderTool'
+import { RaiderTraining, RaiderTrainings } from '../game/model/raider/RaiderTraining'
 import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { TILESIZE } from '../params'
 import { Cursor } from '../screen/Cursor'
@@ -67,8 +67,8 @@ export class SelectionChanged extends LocalEvent {
         this.canPlaceFence = entityMgr.selection.surface?.canPlaceFence() && entityMgr.buildings.some((b) => b.entityType === EntityType.POWER_STATION && b.isPowered())
         this.someCarries = !!entityMgr.selection.raiders.some((r) => !!r.carries)
         this.everyHasMaxLevel = !!entityMgr.selection.raiders.every((r) => r.level >= r.stats.Levels)
-        RaiderTraining.values.forEach((training) => this.canDoTraining.set(training, entityMgr.hasTrainingSite(training) && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
-        RaiderTool.values.forEach((tool) => this.everyHasTool.set(tool, !!entityMgr.selection.raiders.every((r) => r.hasTool(tool))))
+        RaiderTrainings.values.forEach((training) => this.canDoTraining.set(training, entityMgr.hasTrainingSite(training) && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
+        RaiderTools.values.forEach((tool) => this.everyHasTool.set(tool, !!entityMgr.selection.raiders.every((r) => r.hasTool(tool))))
         this.buildingCanUpgrade = entityMgr.selection.building?.canUpgrade()
         this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.SelfPowered && !entityMgr.selection.building?.stats.PowerBuilding
         this.buildingPowerSwitchState = entityMgr.selection.building?.powerSwitch

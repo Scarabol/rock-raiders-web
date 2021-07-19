@@ -1,16 +1,41 @@
-export class RaiderTraining {
+export enum RaiderTraining {
+    NONE,
+    DRIVER,
+    ENGINEER,
+    GEOLOGIST,
+    PILOT,
+    SAILOR,
+    DEMOLITION,
+}
 
-    static readonly values: RaiderTraining[] = []
+export class RaiderTrainings {
 
-    static readonly DRIVER = new RaiderTraining('TrainDriver')
-    static readonly ENGINEER = new RaiderTraining('TrainRepair')
-    static readonly GEOLOGIST = new RaiderTraining('TrainScanner')
-    static readonly PILOT = new RaiderTraining('TrainPilot')
-    static readonly SAILOR = new RaiderTraining('TrainSailor')
-    static readonly DEMOLITION = new RaiderTraining('TrainDynamite')
+    static values: RaiderTraining[] = [
+        RaiderTraining.DRIVER,
+        RaiderTraining.ENGINEER,
+        RaiderTraining.GEOLOGIST,
+        RaiderTraining.PILOT,
+        RaiderTraining.SAILOR,
+        RaiderTraining.DEMOLITION,
+    ]
 
-    private constructor(readonly statsName: string) {
-        RaiderTraining.values.push(this)
+    static toStatsProperty(training: RaiderTraining): string {
+        switch (training) {
+            case RaiderTraining.DRIVER:
+                return 'TrainDriver'
+            case RaiderTraining.ENGINEER:
+                return 'TrainRepair'
+            case RaiderTraining.GEOLOGIST:
+                return 'TrainScanner'
+            case RaiderTraining.PILOT:
+                return 'TrainPilot'
+            case RaiderTraining.SAILOR:
+                return 'TrainSailor'
+            case RaiderTraining.DEMOLITION:
+                return 'TrainDynamite'
+            default:
+                throw new Error(`Unexpected training value given: ${training} (${RaiderTraining[training]})`)
+        }
     }
 
 }
