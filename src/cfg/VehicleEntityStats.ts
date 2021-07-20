@@ -13,5 +13,6 @@ export class VehicleEntityStats extends BaseConfig {
     CrossLand: boolean = false
     CrossWater: boolean = false
     CrossLava: boolean = false
+    MaxCarry: number[] = []
 
 }

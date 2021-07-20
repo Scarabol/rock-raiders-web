@@ -50,7 +50,7 @@ export class CarryJob<I extends MaterialEntity> extends ShareableJob {
         super.onJobComplete()
         this.fulfiller.forEach((f) => {
             f.sceneEntity.headTowards(this.actualTarget.targetLocation)
-            f.dropItem()
+            f.dropCarried()
             this.item.sceneEntity.position.copy(this.item.sceneMgr.getFloorPosition(this.actualTarget.targetLocation))
         })
         this.actualTarget.gatherItem(this.item)

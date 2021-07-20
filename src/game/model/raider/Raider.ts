@@ -12,6 +12,7 @@ import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
 import { Surface } from '../map/Surface'
+import { MaterialEntity } from '../material/MaterialEntity'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
 import { VehicleActivity } from '../vehicle/VehicleActivity'
@@ -24,6 +25,7 @@ export class Raider extends FulfillerEntity {
     sceneEntity: RaiderSceneEntity
     tools: Map<RaiderTool, boolean> = new Map()
     trainings: Map<RaiderTraining, boolean> = new Map()
+    carries: MaterialEntity = null
     slipped: boolean = false
     hungerLevel: number = 1
     vehicle: VehicleEntity = null
@@ -78,7 +80,7 @@ export class Raider extends FulfillerEntity {
 
     slip() {
         if (getRandomInclusive(0, 100) < 10) this.stopJob()
-        this.dropItem()
+        this.dropCarried()
         this.slipped = true
         this.sceneEntity.changeActivity(RaiderActivity.Slip, () => {
             this.slipped = false
@@ -92,6 +94,29 @@ export class Raider extends FulfillerEntity {
         } else {
             super.work(elapsedMs)
         }
+    }
+
+    grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
+        if (this.carries === carryItem) return true
+        this.dropCarried()
+        if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets(), elapsedMs) === MoveState.TARGET_REACHED) {
+            this.sceneEntity.changeActivity(RaiderActivity.Collect, () => {
+                this.carries = carryItem
+                this.sceneEntity.pickupEntity(carryItem.sceneEntity)
+            })
+        }
+        return false
+    }
+
+    stopJob() {
+        this.dropCarried()
+        super.stopJob()
+    }
+
+    dropCarried() {
+        if (!this.carries) return
+        this.sceneEntity.dropAllCarriedItems()
+        this.carries = null
     }
 
     getDriverActivity(): RaiderActivity {

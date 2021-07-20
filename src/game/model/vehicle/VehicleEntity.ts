@@ -11,10 +11,13 @@ import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
 import { ManVehicleJob } from '../job/ManVehicleJob'
 import { Crystal } from '../material/Crystal'
+import { MaterialEntity } from '../material/MaterialEntity'
 import { Ore } from '../material/Ore'
+import { MoveState } from '../MoveState'
 import { Raider } from '../raider/Raider'
 import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
+import { VehicleActivity } from './VehicleActivity'
 
 export class VehicleEntity extends FulfillerEntity {
 
@@ -23,11 +26,13 @@ export class VehicleEntity extends FulfillerEntity {
     driver: Raider = null
     callManJob: ManVehicleJob = null
     engineSound: PositionalAudio = null
+    carriedItems: MaterialEntity[] = []
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity) {
         super(sceneMgr, entityMgr, entityType)
         this.stats = stats
         this.sceneEntity = sceneEntity
+        this.sceneEntity.speed = this.getSpeed() // TODO update speed on entity upgrade
     }
 
     beamUp() {
@@ -54,6 +59,24 @@ export class VehicleEntity extends FulfillerEntity {
     setJob(job: Job, followUpJob: Job = null) {
         if (!this.driver) return
         super.setJob(job, followUpJob)
+    }
+
+    grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
+        if (this.carriedItems.includes(carryItem)) return true
+        this.dropCarried()
+        if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets(), elapsedMs) === MoveState.TARGET_REACHED) {
+            this.sceneEntity.changeActivity(VehicleActivity.Stand, () => {
+                this.carriedItems.push(carryItem)
+                this.sceneEntity.pickupEntity(carryItem.sceneEntity)
+            })
+        }
+        return false
+    }
+
+    dropCarried() {
+        if (this.carriedItems.length < 1) return
+        this.sceneEntity.dropAllCarriedItems()
+        this.carriedItems = []
     }
 
     addDriver(driver: Raider) {
@@ -107,7 +130,7 @@ export class VehicleEntity extends FulfillerEntity {
     }
 
     hasCapacity(): boolean {
-        return !this.carries // FIXME vehicles: implement capacity for vehicle
+        return this.carriedItems.length < this.getCarryCapacity()
     }
 
     getSpeed(): number {
@@ -116,6 +139,10 @@ export class VehicleEntity extends FulfillerEntity {
 
     isReadyToTakeAJob(): boolean {
         return super.isReadyToTakeAJob() && !!this.driver
+    }
+
+    getCarryCapacity(): number {
+        return this.stats.MaxCarry?.[this.level] || 0
     }
 
 }

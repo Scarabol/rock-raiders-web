@@ -1,7 +1,7 @@
 import { PositionalAudio } from 'three'
 import { resetAudioSafe } from '../../audio/AudioUtil'
 import { Sample } from '../../audio/Sample'
-import { FulfillerSceneEntity } from '../../scene/entities/FulfillerSceneEntity'
+import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { BeamUpAnimator } from '../BeamUpAnimator'
 import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
@@ -22,7 +22,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     selected: boolean
     job: Job = null
     followUpJob: Job = null
-    carries: MaterialEntity = null
     inBeam: boolean = false
     beamUpAnimator: BeamUpAnimator = null
     workAudio: PositionalAudio
@@ -33,18 +32,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     abstract isPrepared(job: Job): boolean
 
-    abstract get sceneEntity(): FulfillerSceneEntity
-
-    pickupItem(item: MaterialEntity) {
-        this.carries = item
-        this.sceneEntity.pickupEntity(item.sceneEntity)
-    }
-
-    dropItem() {
-        if (!this.carries) return
-        this.sceneEntity.dropEntity()
-        this.carries = null
-    }
+    abstract get sceneEntity(): AnimatedSceneEntity
 
     setJob(job: Job, followUpJob: Job = null) {
         if (this.job !== job) this.stopJob()
@@ -56,7 +44,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     stopJob() {
         this.workAudio = resetAudioSafe(this.workAudio)
-        this.dropItem()
+        this.dropCarried()
         if (!this.job) return
         this.job.unAssign(this)
         if (this.followUpJob) this.followUpJob.unAssign(this)
@@ -113,14 +101,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             this.stopJob()
         } else {
             const carryItem = this.job.getCarryItem()
-            if (carryItem && this.carries !== carryItem) {
-                this.dropItem()
-                if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets(), elapsedMs) === MoveState.TARGET_REACHED) {
-                    this.sceneEntity.changeActivity(RaiderActivity.Collect, () => {
-                        this.pickupItem(carryItem)
-                    })
-                }
-            } else if (this.moveToClosestTarget(this.job.getWorkplaces(), elapsedMs) === MoveState.TARGET_REACHED) {
+            if ((!carryItem || this.grabJobItem(elapsedMs, carryItem)) && this.moveToClosestTarget(this.job.getWorkplaces(), elapsedMs) === MoveState.TARGET_REACHED) {
                 if (this.job.isReadyToComplete()) {
                     const workActivity = this.job.getWorkActivity() || this.sceneEntity.getDefaultActivity()
                     if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
@@ -135,6 +116,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
             }
         }
     }
+
+    abstract grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean
 
     moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
         const result = super.moveToClosestTarget(target, elapsedMs)
@@ -155,6 +138,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.job = this.followUpJob
         this.followUpJob = null
     }
+
+    abstract dropCarried()
 
     canDrill(surface: Surface): boolean {
         if (!surface) return false

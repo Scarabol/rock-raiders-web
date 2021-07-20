@@ -1,12 +1,16 @@
+import { Vector2, Vector3 } from 'three'
 import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivity'
 import { VehicleActivity } from '../../game/model/vehicle/VehicleActivity'
 import { SceneManager } from '../../game/SceneManager'
+import { TILESIZE } from '../../params'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
-import { FulfillerSceneEntity } from './FulfillerSceneEntity'
+import { SceneEntity } from '../SceneEntity'
 
-export class VehicleSceneEntity extends FulfillerSceneEntity {
+export class VehicleSceneEntity extends AnimatedSceneEntity {
 
     driver: AnimatedSceneEntity
+    carriedByIndex: Map<number, SceneEntity> = new Map()
+    speed: number
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
         super(sceneMgr, aeFilename)
@@ -27,9 +31,10 @@ export class VehicleSceneEntity extends FulfillerSceneEntity {
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
-        if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone) return
+        if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation.onAnimationDone) return
         super.changeActivity(activity, onAnimationDone, durationTimeMs)
         this.addDriverToJoint() // keep driver
+        this.addCarriedToJoints() // keep carried items
     }
 
     private addDriverToJoint() {
@@ -37,11 +42,50 @@ export class VehicleSceneEntity extends FulfillerSceneEntity {
         this.animation.driverJoint.add(this.driver.group)
     }
 
+    private addCarriedToJoints() {
+        this.carriedByIndex.forEach((item, index) => {
+            const carryJoint = this.animation.carryJoints[index]
+            if (carryJoint) {
+                carryJoint.add(item.group)
+            } else {
+                console.warn(`Could not find carry joint with index ${index} in ${this.animation.carryJoints}`)
+            }
+        })
+    }
+
     update(elapsedMs: number) {
         super.update(elapsedMs)
         if (this.activity === VehicleActivity.Route) {
-            this.animation.wheelJoints.forEach((w) => w.rotateX(elapsedMs / 1000 * 2 * Math.PI / this.animationEntityType.wheelRadius)) // FIXME vehicles: take current speed into action
+            const angle = elapsedMs / 1000 * 2 * Math.PI / this.animationEntityType.wheelRadius * this.speed
+            this.animation.wheelJoints.forEach((w) => w.rotateX(angle))
         }
+    }
+
+    pickupEntity(entity: SceneEntity) {
+        const foundCarryJoint = this.animation.carryJoints.some((carryJoint, index) => {
+            if (carryJoint.children.length < 1) {
+                this.carriedByIndex.set(index, entity)
+                carryJoint.add(entity.group)
+                return true
+            }
+        })
+        if (!foundCarryJoint) {
+            console.warn('Could not find empty carry joint to attach carried entity')
+        }
+        entity.position.set(0, 0, 0)
+    }
+
+    dropAllCarriedItems() {
+        const position = this.position.clone().add(new Vector3().random().multiplyScalar(TILESIZE / 4))
+        this.carriedByIndex.forEach((item, index) => {
+            const carryJoint = this.animation.carryJoints[index]
+            if (carryJoint) {
+                carryJoint.remove(item.group)
+                carryJoint.getWorldPosition(position)
+            }
+            item.addToScene(new Vector2(position.x, position.z), null)
+        })
+        this.carriedByIndex.clear()
     }
 
 }
