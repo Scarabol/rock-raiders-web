@@ -150,6 +150,7 @@ export abstract class BuildingEntity implements Selectable {
 
     beamUp() {
         this.inBeam = true
+        this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
         this.turnEnergyOff()
         this.sceneEntity.setInBeam(this.inBeam)
         for (let c = 0; c < this.stats.CostOre; c++) {
