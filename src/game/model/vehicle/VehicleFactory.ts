@@ -1,17 +1,9 @@
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
+import { WalkerDiggerSceneEntity } from '../../../scene/entities/WalkerDiggerSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
-import { BullDozer } from './entities/BullDozer'
-import { Hoverboard } from './entities/Hoverboard'
-import { LargeCat } from './entities/LargeCat'
-import { LargeDigger } from './entities/LargeDigger'
-import { LargeMlp } from './entities/LargeMlp'
-import { SmallCat } from './entities/SmallCat'
-import { SmallDigger } from './entities/SmallDigger'
-import { SmallHeli } from './entities/SmallHeli'
-import { SmallMlp } from './entities/SmallMlp'
-import { SmallTruck } from './entities/SmallTruck'
-import { WalkerDigger } from './entities/WalkerDigger'
 import { VehicleEntity } from './VehicleEntity'
 
 export class VehicleFactory {
@@ -19,27 +11,27 @@ export class VehicleFactory {
     static createVehicleFromType(entityType: EntityType, sceneMgr: SceneManager, entityMgr: EntityManager): VehicleEntity {
         switch (entityType) {
             case EntityType.HOVERBOARD:
-                return new Hoverboard(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.Hoverboard, new VehicleSceneEntity(sceneMgr, 'Vehicles/Hoverboard/Hoverboard.ae'))
             case EntityType.SMALL_DIGGER:
-                return new SmallDigger(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.SmallDigger, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallDigger/SmallDigger.ae'))
             case EntityType.SMALL_TRUCK:
-                return new SmallTruck(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.SmallTruck, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallTruck/SmallTruck.ae'))
             case EntityType.SMALL_CAT:
-                return new SmallCat(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.SmallCat, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallCat/SmallCat.ae'))
             case EntityType.SMALL_MLP:
-                return new SmallMlp(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.Smallmlp, new VehicleSceneEntity(sceneMgr, 'Vehicles/SMLP/SMLP.ae'))
             case EntityType.SMALL_HELI:
-                return new SmallHeli(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.SmallHeli, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallHeli/SmallHeli.ae'))
             case EntityType.BULLDOZER:
-                return new BullDozer(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.Bulldozer, new VehicleSceneEntity(sceneMgr, 'Vehicles/Bulldozer/Bulldozer.ae'))
             case EntityType.WALKER_DIGGER:
-                return new WalkerDigger(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.WalkerDigger, new WalkerDiggerSceneEntity(sceneMgr))
             case EntityType.LARGE_MLP:
-                return new LargeMlp(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.LargeMLP, new VehicleSceneEntity(sceneMgr, 'Vehicles/LMLP/LMLP.ae'))
             case EntityType.LARGE_DIGGER:
-                return new LargeDigger(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.LargeDigger, new VehicleSceneEntity(sceneMgr, 'Vehicles/LargeDigger/LargeDigger.ae'))
             case EntityType.LARGE_CAT:
-                return new LargeCat(sceneMgr, entityMgr)
+                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.LargeCat, new VehicleSceneEntity(sceneMgr, 'Vehicles/LargeCat/LargeCat.ae'))
             default:
                 throw new Error(`Unexpected vehicle type: ${EntityType[entityType]}`)
         }

@@ -131,7 +131,7 @@ export class ObjectListLoader {
                 console.error(`Could not find vehicle for driver ${driver}`)
                 return
             }
-            driver.addTraining(vehicle.getRequiredTraining())
+            driver.addTraining(vehicle.stats.getRequiredTraining())
             vehicle.addDriver(driver)
         })
     }

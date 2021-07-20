@@ -13,20 +13,21 @@ import { ManVehicleJob } from '../job/ManVehicleJob'
 import { Crystal } from '../material/Crystal'
 import { Ore } from '../material/Ore'
 import { Raider } from '../raider/Raider'
-import { RaiderTraining } from '../raider/RaiderTraining'
+import { RaiderTool } from '../raider/RaiderTool'
 
-export abstract class VehicleEntity extends FulfillerEntity {
+export class VehicleEntity extends FulfillerEntity {
 
+    stats: VehicleEntityStats
     sceneEntity: VehicleSceneEntity
     driver: Raider = null
     callManJob: ManVehicleJob = null
     engineSound: PositionalAudio = null
 
-    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity) {
         super(sceneMgr, entityMgr, entityType)
+        this.stats = stats
+        this.sceneEntity = sceneEntity
     }
-
-    abstract get stats(): VehicleEntityStats
 
     beamUp() {
         this.dropDriver()
@@ -78,12 +79,10 @@ export abstract class VehicleEntity extends FulfillerEntity {
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
-    getRequiredTraining(): RaiderTraining {
-        return RaiderTraining.DRIVER
-    }
-
     isPrepared(job: Job): boolean {
-        return false
+        const carryType = job.getCarryItem()?.entityType
+        return this.canDrill(job.surface) || (job.getRequiredTool() === RaiderTool.SHOVEL && this.canClear()) ||
+            ((carryType === EntityType.ORE || carryType === EntityType.CRYSTAL || carryType === EntityType.ELECTRIC_FENCE) && this.hasCapacity())
     }
 
     doubleSelect(): boolean {
