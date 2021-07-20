@@ -102,7 +102,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
         return !!this.stats.CanClearRubble
     }
 
-    canPickup(): boolean {
+    hasCapacity(): boolean {
         return !this.carries // FIXME vehicles: implement capacity for vehicle
     }
 

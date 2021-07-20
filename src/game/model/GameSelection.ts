@@ -163,7 +163,7 @@ export class GameSelection {
     }
 
     canPickup(): boolean {
-        return this.raiders.some((r) => r.canPickup()) || this.vehicles.some((v) => v.canPickup())
+        return this.raiders.some((r) => r.hasCapacity()) || this.vehicles.some((v) => v.hasCapacity())
     }
 
 }
