@@ -87,13 +87,13 @@ export class BuildingSite {
             EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
         } else {
             this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item: Barrier) => {
-                item.sceneEntity.changeActivity(BarrierActivity.Teleport, () => item.sceneEntity.removeFromScene())
+                item.sceneEntity.changeActivity(BarrierActivity.Teleport, () => item.disposeFromWorld())
             })
             this.onSiteByType.getOrUpdate(EntityType.CRYSTAL, () => []).forEach((item: Crystal) => {
-                item.sceneEntity.removeFromScene()
+                item.sceneEntity.disposeFromScene()
             })
             this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: Ore) => {
-                item.sceneEntity.removeFromScene()
+                item.sceneEntity.disposeFromScene()
             })
             const world = this.primarySurface.getCenterWorld2D()
             this.building.placeDown(world, -this.heading + Math.PI / 2, false)

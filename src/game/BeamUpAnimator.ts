@@ -23,7 +23,7 @@ export class BeamUpAnimator {
         this.animGroup.rotateOnAxis(new Vector3(0, 1, 0), this.entity.sceneEntity.getHeading())
         this.entity.sceneMgr.scene.add(this.animGroup)
         this.animGroup.startAnimation(() => {
-            this.entity.removeFromScene()
+            this.entity.disposeFromWorld()
             this.entity.sceneMgr.scene.remove(this.animGroup)
         })
     }

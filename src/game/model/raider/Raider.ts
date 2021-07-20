@@ -68,7 +68,7 @@ export class Raider extends FulfillerEntity {
             this.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
                 if (this.sceneEntity.position.distanceToSquared(spider.sceneEntity.position) < SPIDER_SLIP_RANGE_SQ) {
                     this.slip()
-                    spider.onDeath()
+                    spider.disposeFromWorld()
                     return true
                 }
             })
@@ -120,9 +120,10 @@ export class Raider extends FulfillerEntity {
         EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
     }
 
-    removeFromScene() {
-        super.removeFromScene()
+    disposeFromWorld() {
+        super.disposeFromWorld()
         this.entityMgr.raiders.remove(this)
+        this.entityMgr.raidersUndiscovered.remove(this)
         this.entityMgr.raidersInBeam.remove(this)
     }
 

@@ -21,7 +21,7 @@ export class CarryDynamiteJob extends CarryJob<Dynamite> {
         this.item.sceneEntity.headTowards(this.item.targetSurface.getCenterWorld2D())
         this.item.sceneEntity.changeActivity(DynamiteActivity.TickDown, () => {
             this.item.entityMgr.scarer.remove(this.item)
-            this.item.sceneEntity.removeFromScene()
+            this.item.sceneEntity.disposeFromScene()
             this.item.targetSurface.collapse()
             // TODO add explosion animation
             // TODO damage raider, vehicle, buildings

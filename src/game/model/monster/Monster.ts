@@ -20,8 +20,8 @@ export abstract class Monster extends MovableEntity {
         this.sceneEntity.update(elapsedMs)
     }
 
-    removeFromScene() {
-        this.sceneEntity.removeFromScene()
+    disposeFromWorld() {
+        this.sceneEntity.disposeFromScene()
     }
 
     getRouteActivity(): MonsterActivity {

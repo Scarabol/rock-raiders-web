@@ -162,9 +162,10 @@ export abstract class BuildingEntity implements Selectable {
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
     }
 
-    removeFromScene() {
-        this.sceneEntity.removeFromScene()
+    disposeFromWorld() {
+        this.sceneEntity.disposeFromScene()
         this.entityMgr.buildings.remove(this)
+        this.entityMgr.buildingsUndiscovered.remove(this)
     }
 
     canUpgrade() {

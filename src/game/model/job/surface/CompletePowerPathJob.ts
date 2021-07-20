@@ -22,7 +22,7 @@ export class CompletePowerPathJob extends ShareableJob {
 
     onJobComplete() {
         super.onJobComplete()
-        this.placedItems.forEach((placed) => placed.sceneEntity.removeFromScene())
+        this.placedItems.forEach((placed) => placed.sceneEntity.disposeFromScene())
         this.surface.setSurfaceType(SurfaceType.POWER_PATH)
     }
 

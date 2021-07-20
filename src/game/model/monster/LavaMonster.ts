@@ -14,4 +14,9 @@ export class LavaMonster extends Monster {
         return ResourceManager.stats.LavaMonster
     }
 
+    disposeFromWorld() {
+        super.disposeFromWorld()
+        this.entityMgr.rockMonsters.remove(this)
+    }
+
 }

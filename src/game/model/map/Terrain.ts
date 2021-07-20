@@ -69,7 +69,7 @@ export class Terrain {
     }
 
     dispose() {
-        this.forEachSurface(s => s.dispose())
+        this.forEachSurface(s => s.disposeFromWorld())
     }
 
     forEachSurface(each: (surface: Surface) => any) {

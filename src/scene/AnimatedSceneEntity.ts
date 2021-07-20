@@ -23,8 +23,8 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.animationEntityType = ResourceManager.getAnimationEntityType(aeFilename, this.sceneMgr.listener)
     }
 
-    removeFromScene() {
-        super.removeFromScene()
+    disposeFromScene() {
+        super.disposeFromScene()
         this.animation?.stop()
     }
 

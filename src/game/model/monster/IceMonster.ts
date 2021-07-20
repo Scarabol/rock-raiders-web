@@ -14,4 +14,9 @@ export class IceMonster extends Monster {
         return ResourceManager.stats.IceMonster
     }
 
+    disposeFromWorld() {
+        super.disposeFromWorld()
+        this.entityMgr.rockMonsters.remove(this)
+    }
+
 }

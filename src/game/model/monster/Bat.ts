@@ -46,8 +46,8 @@ export class Bat extends Monster {
         return null
     }
 
-    onDeath() {
-        this.removeFromScene()
+    disposeFromWorld() {
+        super.disposeFromWorld()
         this.entityMgr.bats.remove(this)
     }
 

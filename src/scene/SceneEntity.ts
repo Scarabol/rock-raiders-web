@@ -133,8 +133,9 @@ export class SceneEntity {
         this.sceneMgr.scene.add(this.group)
     }
 
-    removeFromScene() {
+    disposeFromScene() {
         this.sceneMgr.scene.remove(this.group)
+        // TODO dispose scene meshes, use on-remove event trigger?
     }
 
     getDefaultActivity(): AnimEntityActivity {

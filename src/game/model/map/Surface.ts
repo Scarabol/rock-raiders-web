@@ -487,7 +487,7 @@ export class Surface implements Selectable {
         return new Vector3(center.x, terrainHeight, center.y)
     }
 
-    dispose() {
+    disposeFromWorld() {
         this.forEachMaterial(m => m.dispose())
         this.mesh?.geometry?.dispose()
     }

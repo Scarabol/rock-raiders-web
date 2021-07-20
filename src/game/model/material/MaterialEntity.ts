@@ -38,8 +38,11 @@ export abstract class MaterialEntity {
         return this.positionAsPathTargets
     }
 
-    removeFromScene() {
-        this.sceneEntity.removeFromScene()
+    disposeFromWorld() {
+        this.sceneEntity.disposeFromScene()
+        this.entityMgr.materials.remove(this)
+        this.entityMgr.materialsUndiscovered.remove(this)
+        this.entityMgr.scarer.remove(this)
     }
 
     update(elapsedMs: number) {

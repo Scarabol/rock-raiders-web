@@ -255,7 +255,7 @@ export class SceneManager {
     }
 
     setBuildModeSelection(building: BuildingEntity) {
-        this.buildMarker.buildModeSelection?.removeFromScene()
+        this.buildMarker.buildModeSelection?.disposeFromWorld()
         this.buildMarker.buildModeSelection = building
         if (!building) this.buildMarker.hideAllMarker()
     }

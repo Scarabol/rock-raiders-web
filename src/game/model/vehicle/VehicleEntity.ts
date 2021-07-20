@@ -44,9 +44,10 @@ export abstract class VehicleEntity extends FulfillerEntity {
         this.entityMgr.vehiclesInBeam.add(this)
     }
 
-    removeFromScene() {
-        super.removeFromScene()
+    disposeFromWorld() {
+        super.disposeFromWorld()
         this.entityMgr.vehicles.remove(this)
+        this.entityMgr.vehiclesUndiscovered.remove(this)
         this.entityMgr.vehiclesInBeam.remove(this)
     }
 
@@ -61,7 +62,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
         if (!this.stats.InvisibleDriver) {
             this.sceneEntity.addDriver(this.driver.sceneEntity)
         } else {
-            this.driver.sceneEntity.removeFromScene()
+            this.driver.sceneEntity.disposeFromScene()
         }
         if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))

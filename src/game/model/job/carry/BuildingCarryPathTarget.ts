@@ -49,7 +49,7 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
                 break
         }
         EventBus.publishEvent(new MaterialAmountChanged())
-        item.sceneEntity.removeFromScene()
+        item.sceneEntity.disposeFromScene()
     }
 
     getDropAction(): RaiderActivity {

@@ -81,18 +81,18 @@ export class EntityManager {
     }
 
     stop() {
-        this.buildings.forEach((b) => b.removeFromScene())
-        this.buildingsUndiscovered.forEach((b) => b.removeFromScene())
-        this.raiders.forEach((r) => r.removeFromScene())
-        this.raidersUndiscovered.forEach((r) => r.removeFromScene())
-        this.materials.forEach((m) => m.removeFromScene())
-        this.materialsUndiscovered.forEach((m) => m.removeFromScene())
-        this.scarer.forEach((s) => s.removeFromScene())
-        this.spiders.forEach((m) => m.removeFromScene())
-        this.bats.forEach((b) => b.removeFromScene())
-        this.rockMonsters.forEach((m) => m.removeFromScene())
-        this.vehicles.forEach((v) => v.removeFromScene())
-        this.vehiclesInBeam.forEach((v) => v.removeFromScene())
+        this.buildings.forEach((b) => b.disposeFromWorld())
+        this.buildingsUndiscovered.forEach((b) => b.disposeFromWorld())
+        this.raiders.forEach((r) => r.disposeFromWorld())
+        this.raidersUndiscovered.forEach((r) => r.disposeFromWorld())
+        this.materials.forEach((m) => m.disposeFromWorld())
+        this.materialsUndiscovered.forEach((m) => m.disposeFromWorld())
+        this.scarer.forEach((s) => s.disposeFromWorld())
+        this.spiders.forEach((m) => m.disposeFromWorld())
+        this.bats.forEach((b) => b.disposeFromWorld())
+        this.rockMonsters.forEach((m) => m.disposeFromWorld())
+        this.vehicles.forEach((v) => v.disposeFromWorld())
+        this.vehiclesInBeam.forEach((v) => v.disposeFromWorld())
     }
 
     private getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {

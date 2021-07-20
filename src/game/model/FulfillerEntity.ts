@@ -91,8 +91,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.selected = false
     }
 
-    removeFromScene() {
-        this.sceneEntity.removeFromScene()
+    disposeFromWorld() {
+        this.sceneEntity.disposeFromScene()
     }
 
     beamUp() {

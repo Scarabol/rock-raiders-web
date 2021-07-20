@@ -34,7 +34,7 @@ export class SmallSpider extends Monster {
         if (this.idleTimer > 0) return
         if (this.target.length > 0 && this.moveToClosestTarget(this.target, elapsedMs) === MoveState.MOVED) { // TODO consider elapsed time when moving
             if (!this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).surfaceType.floor) {
-                this.onDeath()
+                this.disposeFromWorld()
             }
         } else {
             this.sceneEntity.changeActivity()
@@ -58,8 +58,8 @@ export class SmallSpider extends Monster {
         return null
     }
 
-    onDeath() {
-        this.removeFromScene()
+    disposeFromWorld() {
+        super.disposeFromWorld()
         this.entityMgr.spiders.remove(this)
     }
 
