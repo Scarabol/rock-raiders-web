@@ -292,7 +292,7 @@ export class GameStatsCfg extends BaseConfig {
 
     SmallHeli = new class SmallHeliStats extends VehicleEntityStats {
         Levels: number = 1
-        RouteSpeed: number = 2.50
+        RouteSpeed: number[] = [2.50]
         TrackDist: number = 50.0
         CollRadius: number = 10.0
         CollHeight: number = 12.0
@@ -471,7 +471,7 @@ export class GameStatsCfg extends BaseConfig {
 
     LargeCat = new class LargeCatStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill] (No carry) (Drill???)
         Levels: number = 1
-        RouteSpeed: number = 1.50
+        RouteSpeed: number[] = [1.50]
         SurveyRadius: number = 0
         TrackDist: number = 80.0
         CollRadius: number = 22.0

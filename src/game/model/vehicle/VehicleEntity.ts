@@ -107,7 +107,7 @@ export abstract class VehicleEntity extends FulfillerEntity {
     }
 
     getSpeed(): number {
-        return Array.isArray(this.stats.RouteSpeed) ? this.stats.RouteSpeed[this.level] : this.stats.RouteSpeed
+        return this.stats.RouteSpeed[this.level]
     }
 
     isReadyToTakeAJob(): boolean {
