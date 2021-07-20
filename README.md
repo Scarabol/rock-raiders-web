@@ -69,8 +69,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Important
 
-- Wait for all raiders/vehicles/ores/crystals to leave building site, before spawning in
-
 ### Nice to have
 
 - Dependency tooltips for buildings/vehicles not shown

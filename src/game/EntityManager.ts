@@ -39,6 +39,7 @@ export class EntityManager {
     vehicles: VehicleEntity[] = []
     vehiclesUndiscovered: VehicleEntity[] = []
     vehiclesInBeam: VehicleEntity[] = []
+    completedBuildingSites: BuildingSite[] = []
 
     constructor() {
         // event handler must be placed here, because only this class knows the "actual" selection instance
@@ -65,6 +66,7 @@ export class EntityManager {
         this.vehicles = []
         this.vehiclesUndiscovered = []
         this.vehiclesInBeam = []
+        this.completedBuildingSites = []
     }
 
     update(elapsedMs: number) {
@@ -78,6 +80,7 @@ export class EntityManager {
         this.rockMonsters.forEach((m) => updateSafe(m, elapsedMs))
         this.vehicles.forEach((v) => updateSafe(v, elapsedMs))
         this.vehiclesInBeam.forEach((v) => updateSafe(v, elapsedMs))
+        this.completedBuildingSites.forEach((b) => updateSafe(b, elapsedMs))
     }
 
     stop() {

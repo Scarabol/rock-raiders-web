@@ -29,6 +29,8 @@ export class BuildingSite {
     onSiteByType: Map<EntityType, MaterialEntity[]> = new Map()
     complete: boolean = false
     canceled: boolean = false
+    placeDownTimer: number = 0
+    isEmptyTimer: number = 0
 
     constructor(entityMgr: EntityManager, primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, building: BuildingEntity) {
         this.entityMgr = entityMgr
@@ -86,18 +88,34 @@ export class BuildingSite {
             this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
             EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
         } else {
-            this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item: Barrier) => {
-                item.sceneEntity.changeActivity(BarrierActivity.Teleport, () => item.disposeFromWorld())
-            })
-            this.onSiteByType.getOrUpdate(EntityType.CRYSTAL, () => []).forEach((item: Crystal) => {
-                item.sceneEntity.disposeFromScene()
-            })
-            this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: Ore) => {
-                item.sceneEntity.disposeFromScene()
-            })
-            const world = this.primarySurface.getCenterWorld2D()
-            this.building.placeDown(world, -this.heading + Math.PI / 2, false)
+            this.entityMgr.completedBuildingSites.push(this)
         }
+    }
+
+    update(elapsedMs: number) {
+        this.placeDownTimer += elapsedMs
+        if (this.placeDownTimer < 100) return
+        if (this.primarySurface.isBlocked() || this.secondarySurface?.isBlocked()) {
+            this.isEmptyTimer = 0
+            return
+        }
+        this.isEmptyTimer += elapsedMs
+        if (this.isEmptyTimer < 100) return
+        this.teleportIn()
+    }
+
+    teleportIn() {
+        this.entityMgr.completedBuildingSites.remove(this)
+        this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item: Barrier) => {
+            item.sceneEntity.changeActivity(BarrierActivity.Teleport, () => item.disposeFromWorld())
+        })
+        this.onSiteByType.getOrUpdate(EntityType.CRYSTAL, () => []).forEach((item: Crystal) => {
+            item.disposeFromWorld()
+        })
+        this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: Ore) => {
+            item.disposeFromWorld()
+        })
+        this.building.placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
     }
 
     getDropAction(): RaiderActivity {

@@ -609,4 +609,16 @@ export class Surface implements Selectable {
         return audio
     }
 
+    isBlockedByVehicle() {
+        return this.entityMgr.vehicles.some((v) => v.sceneEntity.surfaces.includes(this))
+    }
+
+    isBlockedByRaider() {
+        return this.entityMgr.raiders.some((r) => r.sceneEntity.surfaces.includes(this))
+    }
+
+    isBlocked(): boolean {
+        return this.isBlockedByRaider() || this.isBlockedByVehicle()
+    }
+
 }

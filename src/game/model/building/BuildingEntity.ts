@@ -58,6 +58,7 @@ export abstract class BuildingEntity implements Selectable {
     carryPathTarget: BuildingCarryPathTarget = null
     engineSound: PositionalAudio
     surfaces: Surface[] = []
+    pathSurfaces: Surface[] = []
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
         this.sceneMgr = sceneMgr
@@ -254,12 +255,14 @@ export abstract class BuildingEntity implements Selectable {
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             this.surfaces.push(this.primaryPathSurface)
+            this.pathSurfaces.push(this.primaryPathSurface)
         }
         if (this.secondaryPowerPath) {
             const pathOffset = new Vector2(this.secondaryPowerPath.x, this.secondaryPowerPath.y).multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.secondaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             this.surfaces.push(this.secondaryPathSurface)
+            this.pathSurfaces.push(this.secondaryPathSurface)
         }
         this.surfaces.forEach((s) => s.setBuilding(this))
         this.sceneEntity.makeSelectable(this, this.stats.PickSphere / 4)
@@ -312,7 +315,7 @@ export abstract class BuildingEntity implements Selectable {
     }
 
     canTeleportIn(entityType: EntityType): boolean {
-        return this.teleport?.canTeleportIn(entityType)
+        return this.teleport?.canTeleportIn(entityType) && (entityType === EntityType.PILOT || !this.pathSurfaces.some((s) => s.isBlockedByVehicle()))
     }
 
     update(elapsedMs: number) {

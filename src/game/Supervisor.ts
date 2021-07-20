@@ -170,7 +170,10 @@ export class Supervisor {
             const sites = raider.sceneEntity.surfaces.map((s) => s.site).filter(s => !!s)
             if (sites.length > 0) raider.setJob(new MoveJob(sites[0].getWalkOutSurface().getRandomPosition()))
         })
-        // FIXME vehicles: move unemployed vehicles out of building spawns
+        unemployedVehicles.forEach((vehicle) => {
+            const sites = vehicle.sceneEntity.surfaces.map((s) => s.site).filter(s => !!s)
+            if (sites.length > 0) vehicle.setJob(new MoveJob(sites[0].getWalkOutSurface().getRandomPosition()))
+        })
     }
 
     checkUnclearedRubble(elapsedMs: number) {
