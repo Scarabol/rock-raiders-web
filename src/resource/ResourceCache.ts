@@ -1,7 +1,7 @@
 import { GameStatsCfg } from '../cfg/GameStatsCfg'
 import { LevelsCfg } from '../cfg/LevelsCfg'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
-import { createContext, createDummyImgData } from '../core/ImageHelper'
+import { createContext, createDummyImgData, imgDataToContext } from '../core/ImageHelper'
 import { asArray, iGet } from '../core/Util'
 import { EntityType } from '../game/model/EntityType'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
@@ -77,14 +77,8 @@ export class ResourceCache {
                 return cacheGetData(cursorImageName).then((cursorDataUrls) => {
                     if (!cursorDataUrls) {
                         const cursorImages = (this.getResource(cursorImageName) as ImageData[]).map((imgData) => {
-                            const canvas = document.createElement('canvas')
-                            canvas.setAttribute('width', blankPointerImageData.width.toString())
-                            canvas.setAttribute('height', blankPointerImageData.height.toString())
-                            const context = canvas.getContext('2d')
-                            context.putImageData(blankPointerImageData, 0, 0)
-                            const animContext = createContext(imgData.width, imgData.height)
-                            animContext.putImageData(imgData, 0, 0)
-                            context.drawImage(animContext.canvas, Math.round((blankPointerImageData.width - imgData.width) / 2), Math.round((blankPointerImageData.height - imgData.height) / 2))
+                            const context = imgDataToContext(blankPointerImageData)
+                            context.drawImage(imgDataToContext(imgData).canvas, Math.round((blankPointerImageData.width - imgData.width) / 2), Math.round((blankPointerImageData.height - imgData.height) / 2))
                             return context.canvas
                         })
                         cursorDataUrls = this.cursorToDataUrl(cursorImages)
@@ -102,11 +96,7 @@ export class ResourceCache {
         return cacheGetData(cursorImageName).then((cursorDataUrls) => {
             if (!cursorDataUrls) {
                 const imgData = this.getImageData(cursorImageName)
-                const canvas = document.createElement('canvas')
-                canvas.setAttribute('width', imgData.width.toString())
-                canvas.setAttribute('height', imgData.height.toString())
-                canvas.getContext('2d').putImageData(imgData, 0, 0)
-                cursorDataUrls = this.cursorToDataUrl(canvas)
+                cursorDataUrls = this.cursorToDataUrl(imgDataToContext(imgData).canvas)
                 cachePutData(cursorImageName, cursorDataUrls).then()
             }
             this.cursorToUrl.set(cursor, new AnimatedCursor(cursorDataUrls))

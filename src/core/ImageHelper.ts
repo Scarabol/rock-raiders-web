@@ -12,8 +12,8 @@ export function createContext(width, height): SpriteContext {
     let canvas
     if (typeof document !== 'undefined') {
         canvas = document.createElement('canvas')
-        canvas.setAttribute('width', width)
-        canvas.setAttribute('height', height)
+        canvas.width = width
+        canvas.height = height
     } else {
         canvas = new OffscreenCanvas(width, height)
     }
@@ -69,4 +69,13 @@ export function setPixel(imgData, x, y, r, g, b, a = 255): void {
 export function getPixel(imgData, x, y): { r: number, g: number, b: number, a: number } {
     const n = (y * imgData.width + x) * 4
     return {r: imgData.data[n], g: imgData.data[n + 1], b: imgData.data[n + 2], a: imgData.data[n + 3]}
+}
+
+export function imgDataToContext(imgData: ImageData): CanvasRenderingContext2D {
+    const canvas = document.createElement('canvas')
+    canvas.width = imgData.width
+    canvas.height = imgData.height
+    const context = canvas.getContext('2d')
+    context.putImageData(imgData, 0, 0)
+    return context
 }

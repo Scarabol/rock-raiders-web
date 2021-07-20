@@ -18,15 +18,14 @@ import { VehicleActivity } from './VehicleActivity'
 
 export abstract class VehicleEntity extends FulfillerEntity {
 
+    sceneEntity: VehicleSceneEntity
     driver: Raider = null
     callManJob: ManVehicleJob = null
-    engineSound: PositionalAudio
+    engineSound: PositionalAudio = null
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
         super(sceneMgr, entityMgr, entityType)
     }
-
-    abstract get sceneEntity(): VehicleSceneEntity
 
     abstract get stats(): VehicleEntityStats
 

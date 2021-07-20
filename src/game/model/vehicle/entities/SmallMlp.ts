@@ -7,8 +7,6 @@ import { VehicleEntity } from '../VehicleEntity'
 
 export class SmallMlp extends VehicleEntity {
 
-    sceneEntity: VehicleSceneEntity
-
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.SMALL_MLP)
         this.sceneEntity = new VehicleSceneEntity(sceneMgr, 'Vehicles/SMLP/SMLP.ae')

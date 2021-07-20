@@ -9,8 +9,6 @@ import { VehicleEntity } from '../VehicleEntity'
 
 export class LargeDigger extends VehicleEntity {
 
-    sceneEntity: VehicleSceneEntity
-
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.LARGE_DIGGER)
         this.sceneEntity = new VehicleSceneEntity(sceneMgr, 'Vehicles/LargeDigger/LargeDigger.ae')

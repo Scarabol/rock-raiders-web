@@ -20,10 +20,7 @@ export class EventManager {
             screen.gameCanvasContainer.addEventListener(eventType, (event: PointerEvent) => {
                 if (!screen.isInRect(event)) return
                 event.preventDefault()
-                const nonBubblingClone = new GamePointerEvent(eventEnum, event)
-                const activeLayers = screen.layers.filter(l => l.isActive())
-                    .sort((a, b) => ScreenLayer.compareZ(a, b))
-                EventManager.publishPointerEvent(activeLayers, nonBubblingClone)
+                EventManager.publishPointerEvent(screen.getActiveLayersSorted(), new GamePointerEvent(eventEnum, event))
             })
         })
         new Map<string, KEY_EVENT>([
@@ -32,18 +29,12 @@ export class EventManager {
         ]).forEach((eventEnum, eventType) => {
             screen.gameCanvasContainer.addEventListener(eventType, (event: KeyboardEvent) => {
                 if (!DEV_MODE) event.preventDefault()
-                const nonBubblingClone = new GameKeyboardEvent(eventEnum, event)
-                const activeLayers = screen.layers.filter(l => l.isActive())
-                    .sort((a, b) => ScreenLayer.compareZ(a, b))
-                EventManager.publishKeyEvent(activeLayers, nonBubblingClone)
+                EventManager.publishKeyEvent(screen.getActiveLayersSorted(), new GameKeyboardEvent(eventEnum, event))
             })
         })
         screen.gameCanvasContainer.addEventListener('wheel', (event: WheelEvent) => {
             if (!screen.isInRect(event)) return
-            const nonBubblingClone = new GameWheelEvent(event)
-            const activeLayers = screen.layers.filter(l => l.isActive())
-                .sort((a, b) => ScreenLayer.compareZ(a, b))
-            EventManager.publishWheelEvent(activeLayers, nonBubblingClone)
+            EventManager.publishWheelEvent(screen.getActiveLayersSorted(), new GameWheelEvent(event))
         })
     }
 

@@ -82,4 +82,8 @@ export class BaseScreen implements IEventHandler {
         EventBus.registerEventListener(eventKey, callback)
     }
 
+    getActiveLayersSorted(): ScreenLayer[] {
+        return this.layers.filter(l => l.isActive()).sort((a, b) => ScreenLayer.compareZ(a, b))
+    }
+
 }

@@ -8,8 +8,6 @@ import { VehicleEntity } from '../VehicleEntity'
 
 export class SmallHeli extends VehicleEntity {
 
-    sceneEntity: VehicleSceneEntity
-
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.SMALL_HELI)
         this.sceneEntity = new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallHeli/SmallHeli.ae')

@@ -7,8 +7,6 @@ import { VehicleEntity } from '../VehicleEntity'
 
 export class Hoverboard extends VehicleEntity {
 
-    sceneEntity: VehicleSceneEntity
-
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.HOVERBOARD)
         this.sceneEntity = new VehicleSceneEntity(sceneMgr, 'Vehicles/Hoverboard/Hoverboard.ae')

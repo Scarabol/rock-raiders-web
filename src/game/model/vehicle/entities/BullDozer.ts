@@ -11,8 +11,6 @@ export class BullDozer extends VehicleEntity {
 
     // FIXME entity moving funny while clearing
 
-    sceneEntity: VehicleSceneEntity
-
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.BULLDOZER)
         this.sceneEntity = new VehicleSceneEntity(sceneMgr, 'Vehicles/Bulldozer/Bulldozer.ae')
