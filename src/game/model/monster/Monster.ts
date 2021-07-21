@@ -1,7 +1,6 @@
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { MonsterActivity } from '../activities/MonsterActivity'
 import { EntityType } from '../EntityType'
 import { MovableEntity } from '../MovableEntity'
 import { PathTarget } from '../PathTarget'
@@ -22,10 +21,6 @@ export abstract class Monster extends MovableEntity {
 
     disposeFromWorld() {
         this.sceneEntity.disposeFromScene()
-    }
-
-    getRouteActivity(): MonsterActivity {
-        return MonsterActivity.Route
     }
 
     getSpeed(): number {

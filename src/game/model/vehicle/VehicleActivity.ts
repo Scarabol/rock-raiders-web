@@ -1,8 +1,8 @@
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
+import { MovableEntityActivity } from '../activities/MovableEntityActivity'
 
-export class VehicleActivity extends AnimEntityActivity {
+export class VehicleActivity extends MovableEntityActivity {
 
-    static Route = new AnimEntityActivity('Activity_Route')
     static TeleportIn = new AnimEntityActivity('Activity_TeleportIN')
 
 }

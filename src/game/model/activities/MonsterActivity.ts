@@ -1,7 +1,5 @@
-import { AnimEntityActivity } from './AnimEntityActivity'
+import { MovableEntityActivity } from './MovableEntityActivity'
 
-export class MonsterActivity extends AnimEntityActivity {
-
-    static Route = new MonsterActivity('Activity_Route')
+export class MonsterActivity extends MovableEntityActivity {
 
 }

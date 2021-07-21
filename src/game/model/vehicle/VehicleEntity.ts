@@ -14,7 +14,6 @@ import { Crystal } from '../material/Crystal'
 import { Ore } from '../material/Ore'
 import { Raider } from '../raider/Raider'
 import { RaiderTraining } from '../raider/RaiderTraining'
-import { VehicleActivity } from './VehicleActivity'
 
 export abstract class VehicleEntity extends FulfillerEntity {
 
@@ -81,10 +80,6 @@ export abstract class VehicleEntity extends FulfillerEntity {
 
     getRequiredTraining(): RaiderTraining {
         return RaiderTraining.DRIVER
-    }
-
-    getRouteActivity(): VehicleActivity {
-        return VehicleActivity.Route
     }
 
     isPrepared(job: Job): boolean {

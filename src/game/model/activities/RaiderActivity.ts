@@ -1,9 +1,8 @@
-import { AnimEntityActivity } from './AnimEntityActivity'
+import { MovableEntityActivity } from './MovableEntityActivity'
 
 // noinspection JSUnusedGlobalSymbols
-export class RaiderActivity extends AnimEntityActivity {
+export class RaiderActivity extends MovableEntityActivity {
 
-    static Route = new RaiderActivity('Activity_Route')
     static RunPanic = new RaiderActivity('Activity_RunPanic')
     static Drill = new RaiderActivity('Activity_Drill')
     static Walk = new RaiderActivity('Activity_Walk')
