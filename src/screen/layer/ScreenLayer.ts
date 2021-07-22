@@ -85,6 +85,10 @@ export class ScreenLayer {
         return new Promise((resolve) => resolve(false))
     }
 
+    takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {
+        return new Promise<HTMLCanvasElement>((resolve) => resolve(this.canvas))
+    }
+
 }
 
 export class ScaledLayer extends ScreenLayer {

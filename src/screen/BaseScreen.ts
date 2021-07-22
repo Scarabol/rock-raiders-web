@@ -1,3 +1,4 @@
+import { cloneContext } from '../core/ImageHelper'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { EventManager } from '../event/EventManager'
@@ -25,6 +26,7 @@ export class BaseScreen implements IEventHandler {
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
         this.cursorLayer = this.addLayer(new CursorLayer(this), 1000) // TODO turn cursor layer into singleton?
+        EventBus.registerEventListener(EventKey.TAKE_SCREENSHOT, () => this.takeScreenshot())
     }
 
     addLayer<T extends ScreenLayer>(layer: T, zIndex: number = 0): T {
@@ -84,6 +86,27 @@ export class BaseScreen implements IEventHandler {
 
     getActiveLayersSorted(): ScreenLayer[] {
         return this.layers.filter(l => l.isActive()).sort((a, b) => ScreenLayer.compareZ(a, b))
+    }
+
+    takeScreenshot() {
+        const activeLayers = this.getActiveLayersSorted().reverse()
+        if (activeLayers.length < 1) return
+        const context = cloneContext(activeLayers[0].canvas)
+        Promise.all(activeLayers.map((l) => l.takeScreenshotFromLayer())).then((layers) => {
+            layers.forEach((c) => context.drawImage(c, 0, 0))
+            this.downloadCanvasAsImage(context.canvas)
+        })
+    }
+
+    private downloadCanvasAsImage(canvas: HTMLCanvasElement) {
+        canvas.toBlob((blob) => {
+            const link = document.createElement('a')
+            link.download = `Rock Raiders Web ${new Date().toISOString().replace('T', ' ').replace('Z', '')}.png`
+            link.href = URL.createObjectURL(blob)
+            link.onclick = () => setTimeout(() => URL.revokeObjectURL(link.href), 1500)
+            link.click()
+            link.remove()
+        })
     }
 
 }

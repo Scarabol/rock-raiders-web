@@ -1,6 +1,7 @@
 import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { cloneContext } from '../core/ImageHelper'
 import { clearIntervalSafe } from '../core/Util'
 import { KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -36,6 +37,7 @@ export class SceneManager {
     controls: MapControls
     cursorTorchlight: PointLight
     buildMarker: BuildPlacementMarker
+    screenshotCallback: (HTMLCanvasElement) => any
 
     constructor(canvas: SpriteImage) {
         this.renderer = new WebGLRenderer({antialias: true, canvas: canvas})
@@ -212,8 +214,24 @@ export class SceneManager {
                 this.debugHelper.renderStart()
                 this.renderer.render(this.scene, this.camera)
                 this.debugHelper.renderDone()
+                this.checkForScreenshot()
             })
         }, 1000 / this.maxFps)
+    }
+
+    private checkForScreenshot() {
+        if (!this.screenshotCallback) return
+        const callback = this.screenshotCallback
+        this.screenshotCallback = null
+        this.renderer.domElement.toBlob((blob) => {
+            const img = document.createElement('img')
+            img.onload = () => {
+                const context = cloneContext(this.renderer.domElement)
+                context.drawImage(img, 0, 0)
+                callback(context.canvas)
+            }
+            img.src = URL.createObjectURL(blob)
+        })
     }
 
     disposeScene() {

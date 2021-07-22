@@ -253,3 +253,11 @@ export class CameraControl extends GuiCommand {
     }
 
 }
+
+export class TakeScreenshot extends GuiCommand {
+
+    constructor() {
+        super(EventKey.TAKE_SCREENSHOT)
+    }
+
+}

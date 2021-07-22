@@ -1,8 +1,12 @@
 import { Intersection, Raycaster } from 'three'
+import { cloneContext } from '../../core/ImageHelper'
 import { clearTimeoutSafe } from '../../core/Util'
+import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
-import { POINTER_EVENT } from '../../event/EventTypeEnum'
+import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
+import { TakeScreenshot } from '../../event/GuiCommand'
 import { IEventHandler } from '../../event/IEventHandler'
 import { ChangeCursor } from '../../event/LocalEvents'
 import { EntityManager } from '../../game/EntityManager'
@@ -25,6 +29,7 @@ export class CursorLayer extends ScreenLayer {
     timedCursor: Cursor = null
     cursorTimeout = null
     activeCursor: AnimatedCursor = null
+    cursorCanvasPos: { x: number, y: number } = {x: 0, y: 0}
     cursorRelativePos: { x: number, y: number } = {x: 0, y: 0}
 
     constructor(parent: IEventHandler) {
@@ -57,9 +62,19 @@ export class CursorLayer extends ScreenLayer {
         this.activeCursor = null
     }
 
+    handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
+        if (event.key === 'p') {
+            if (event.eventEnum === KEY_EVENT.DOWN) EventBus.publishEvent(new TakeScreenshot())
+            return new Promise((resolve) => resolve(true))
+        } else {
+            return super.handleKeyEvent(event)
+        }
+    }
+
     handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
         if (event.eventEnum === POINTER_EVENT.MOVE && this.sceneMgr) {
             const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
+            this.cursorCanvasPos = {x: cx, y: cy}
             this.cursorRelativePos = {x: (cx / this.canvas.width) * 2 - 1, y: -(cy / this.canvas.height) * 2 + 1}
             this.changeCursor(this.determineCursor())
         }
@@ -144,6 +159,25 @@ export class CursorLayer extends ScreenLayer {
         this.activeCursor?.disableAnimation()
         this.activeCursor = ResourceManager.getCursor(cursor)
         this.activeCursor.enableAnimation(this.canvas.style)
+    }
+
+    takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {
+        const cx = this.cursorCanvasPos.x
+        const cy = this.cursorCanvasPos.y
+        const encoded = this.canvas.style.cursor.match(/"(.+)"/)?.[1]
+        if (!encoded) throw new Error('Could not extract encoded url from layer style attributes')
+        return new Promise<HTMLCanvasElement>((resolve) => {
+            const context = cloneContext(this.canvas)
+            const img = document.createElement('img')
+            img.onload = () => {
+                context.drawImage(img, cx, cy)
+                resolve(context.canvas)
+            }
+            img.onerror = () => {
+                throw new Error('Could decode image for screenshot')
+            }
+            img.src = encoded
+        })
     }
 
 }

@@ -59,5 +59,6 @@ export enum EventKey {
     PAUSE_GAME,
     UNPAUSE_GAME,
     UPDATE_PRIORITIES,
+    TAKE_SCREENSHOT,
 
 }

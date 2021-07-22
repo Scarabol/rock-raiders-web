@@ -142,4 +142,10 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         this.parent.registerEventListener(eventKey, callback)
     }
 
+    takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {
+        return new Promise<HTMLCanvasElement>((resolve) => {
+            this.sceneMgr.screenshotCallback = resolve
+        })
+    }
+
 }

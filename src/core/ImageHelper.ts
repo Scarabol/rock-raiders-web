@@ -79,3 +79,10 @@ export function imgDataToContext(imgData: ImageData): CanvasRenderingContext2D {
     context.putImageData(imgData, 0, 0)
     return context
 }
+
+export function cloneContext(origin: HTMLCanvasElement): CanvasRenderingContext2D {
+    const canvas = document.createElement('canvas')
+    canvas.width = origin.width
+    canvas.height = origin.height
+    return canvas.getContext('2d')
+}
