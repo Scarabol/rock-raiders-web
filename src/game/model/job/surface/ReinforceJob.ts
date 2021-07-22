@@ -10,7 +10,6 @@ import { SurfacePathTarget } from './SurfacePathTarget'
 export class ReinforceJob extends ShareableJob {
 
     color: number = 0x60a060
-    surface: Surface
     digPositions: PathTarget[]
 
     constructor(surface: Surface) {

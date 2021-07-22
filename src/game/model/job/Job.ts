@@ -1,5 +1,6 @@
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { FulfillerEntity } from '../FulfillerEntity'
+import { Surface } from '../map/Surface'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
 import { RaiderTool } from '../raider/RaiderTool'
@@ -8,11 +9,8 @@ import { JobState } from './JobState'
 
 export abstract class Job {
 
-    jobState: JobState
-
-    constructor() {
-        this.jobState = JobState.INCOMPLETE
-    }
+    jobState: JobState = JobState.INCOMPLETE
+    surface: Surface = null
 
     abstract assign(fulfiller: FulfillerEntity)
 

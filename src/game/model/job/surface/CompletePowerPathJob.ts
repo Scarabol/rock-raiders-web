@@ -9,7 +9,6 @@ import { ShareableJob } from '../ShareableJob'
 
 export class CompletePowerPathJob extends ShareableJob {
 
-    surface: Surface
     placedItems: MaterialEntity[]
     workplaces: PathTarget[]
 

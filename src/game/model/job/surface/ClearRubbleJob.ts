@@ -7,7 +7,6 @@ import { ShareableJob } from '../ShareableJob'
 
 export class ClearRubbleJob extends ShareableJob {
 
-    surface: Surface
     lastRubblePositions: PathTarget[]
 
     constructor(surface: Surface) {
