@@ -30,12 +30,14 @@ import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
 import { Teleport } from './Teleport'
 
-export abstract class BuildingEntity implements Selectable {
+export class BuildingEntity implements Selectable {
 
+    stats: BuildingEntityStats = null
     secondaryBuildingPart: Vector2 = null
     primaryPowerPath: Vector2 = new Vector2(0, 1)
     secondaryPowerPath: Vector2 = null
     waterPathSurface: Vector2 = null
+    dropAction: RaiderActivity = RaiderActivity.Place
     teleport: Teleport = null
 
     sceneMgr: SceneManager
@@ -60,10 +62,11 @@ export abstract class BuildingEntity implements Selectable {
     surfaces: Surface[] = []
     pathSurfaces: Surface[] = []
 
-    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, stats: BuildingEntityStats, aeFilename: string) {
         this.sceneMgr = sceneMgr
         this.entityMgr = entityMgr
         this.entityType = entityType
+        this.stats = stats
         this.sceneEntity = new BuildingSceneEntity(this.sceneMgr, aeFilename)
         this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
         this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
@@ -71,8 +74,6 @@ export abstract class BuildingEntity implements Selectable {
             this.updateEnergyState()
         })
     }
-
-    abstract get stats(): BuildingEntityStats
 
     isSelectable(): boolean {
         return !this.selected && !this.inBeam

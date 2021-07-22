@@ -15,10 +15,6 @@ export abstract class Teleport {
     operating: boolean
     powered: boolean
 
-    constructor(building: BuildingEntity) {
-        this.building = building
-    }
-
     canTeleportIn(entityType: EntityType): boolean {
         return this.powered && !this.operating
     }
@@ -68,10 +64,10 @@ export class SmallTeleport extends Teleport {
 
 }
 
-export class LargeTeleport extends Teleport {
+export class BigTeleport extends Teleport {
 
     canTeleportIn(entityType: EntityType): boolean {
-        return super.canTeleportIn(entityType) && LargeTeleport.isLarge(entityType)
+        return super.canTeleportIn(entityType) && BigTeleport.isLarge(entityType)
     }
 
     private static isLarge(entityType: EntityType) { // TODO evaluate stats UseLargeTeleporter
