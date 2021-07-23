@@ -128,6 +128,9 @@ export class GuiManager {
             entityMgr.selection.vehicles.forEach((v) => v.dropDriver())
             EventBus.publishEvent(new DeselectAll())
         })
+        EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_UNLOAD, () => {
+            entityMgr.selection.vehicles.forEach((v) => v.dropItem())
+        })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {
             EventBus.publishEvent(new UpdatePriorities(event.priorityList))
         })

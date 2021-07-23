@@ -239,6 +239,14 @@ export class VehicleDriverGetOut extends GuiCommand {
 
 }
 
+export class VehicleUnload extends GuiCommand {
+
+    constructor() {
+        super(EventKey.COMMAND_VEHICLE_UNLOAD)
+    }
+
+}
+
 export class CameraControl extends GuiCommand {
 
     zoom: number
