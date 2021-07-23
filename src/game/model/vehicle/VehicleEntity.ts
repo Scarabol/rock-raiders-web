@@ -14,6 +14,7 @@ import { Crystal } from '../material/Crystal'
 import { Ore } from '../material/Ore'
 import { Raider } from '../raider/Raider'
 import { RaiderTool } from '../raider/RaiderTool'
+import { RaiderTraining } from '../raider/RaiderTraining'
 
 export class VehicleEntity extends FulfillerEntity {
 
@@ -77,6 +78,15 @@ export class VehicleEntity extends FulfillerEntity {
         this.driver = null
         this.engineSound = resetAudioSafe(this.engineSound)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
+    }
+
+    getRequiredTraining(): RaiderTraining {
+        if (this.stats.CrossLand && !this.stats.CrossLava && !this.stats.CrossWater) {
+            return RaiderTraining.DRIVER
+        } else if (this.stats.CrossWater) {
+            return RaiderTraining.SAILOR
+        }
+        return RaiderTraining.PILOT
     }
 
     isPrepared(job: Job): boolean {

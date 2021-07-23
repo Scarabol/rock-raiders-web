@@ -35,7 +35,7 @@ export class ManVehicleJob extends RaiderJob {
     }
 
     getRequiredTraining(): RaiderTraining {
-        return this.vehicle.stats.getRequiredTraining()
+        return this.vehicle.getRequiredTraining()
     }
 
     getPriorityIdentifier(): PriorityIdentifier {

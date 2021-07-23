@@ -1,4 +1,3 @@
-import { RaiderTraining } from '../game/model/raider/RaiderTraining'
 import { BaseConfig } from './BaseConfig'
 
 export class VehicleEntityStats extends BaseConfig {
@@ -14,14 +13,5 @@ export class VehicleEntityStats extends BaseConfig {
     CrossLand: boolean = false
     CrossWater: boolean = false
     CrossLava: boolean = false
-
-    getRequiredTraining(): RaiderTraining {
-        if (this.CrossLand && !this.CrossLava && !this.CrossWater) {
-            return RaiderTraining.DRIVER
-        } else if (this.CrossWater) {
-            return RaiderTraining.SAILOR
-        }
-        return RaiderTraining.PILOT
-    }
 
 }
