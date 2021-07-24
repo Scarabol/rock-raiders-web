@@ -100,7 +100,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             if (this.entityMgr.selection.canDrill(selection.surface)) {
                 const drillJob = selection.surface.createDrillJob()
                 this.entityMgr.selection.assignSurfaceJob(drillJob)
-            } else if (this.entityMgr.selection.canClear()) {
+            } else if (this.entityMgr.selection.canClear() && selection.surface.hasRubble()) {
                 const clearJob = selection.surface.createClearRubbleJob()
                 this.entityMgr.selection.assignSurfaceJob(clearJob)
             } else if (this.entityMgr.selection.canMove() && selection.surface.isWalkable()) {
