@@ -31,9 +31,8 @@ export class NerpRunner {
     // more state variables and switches
     messagePermit = null
 
-    constructor(entityMgr: EntityManager, debug = false) {
+    constructor(entityMgr: EntityManager) {
         this.entityMgr = entityMgr
-        this.debug = debug
     }
 
     update(elapsedMs: number) {
@@ -377,8 +376,7 @@ export class NerpRunner {
         }
     }
 
-    execute(debug = false) {
-        this.debug = debug
+    execute() {
         if (this.halted) return
         try {
             if (this.debug) {

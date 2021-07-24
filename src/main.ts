@@ -58,8 +58,7 @@ ResourceManager.onLoadDone = () => {
     }
     gameScreen.onLevelEnd = (result) => {
         gameScreen.hide()
-        rewardScreen.setGameResult(result)
-        rewardScreen.show()
+        rewardScreen.showGameResult(result)
     }
     rewardScreen.onAdvance = () => {
         GameState.reset()

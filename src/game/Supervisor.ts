@@ -167,12 +167,12 @@ export class Supervisor {
             }
         })
         unemployedRaider.forEach((raider) => {
-            const sites = raider.sceneEntity.surfaces.map((s) => s.site).filter(s => !!s)
-            if (sites.length > 0) raider.setJob(new MoveJob(sites[0].getWalkOutSurface().getRandomPosition()))
+            const blockedSite = raider.sceneEntity.surfaces.find((s) => !!s.site)
+            if (blockedSite) raider.setJob(new MoveJob(blockedSite.site.getWalkOutSurface().getRandomPosition()))
         })
         unemployedVehicles.forEach((vehicle) => {
-            const sites = vehicle.sceneEntity.surfaces.map((s) => s.site).filter(s => !!s)
-            if (sites.length > 0) vehicle.setJob(new MoveJob(sites[0].getWalkOutSurface().getRandomPosition()))
+            const blockedSite = vehicle.sceneEntity.surfaces.find((s) => !!s.site)
+            if (blockedSite) vehicle.setJob(new MoveJob(blockedSite.site.getWalkOutSurface().getRandomPosition()))
         })
     }
 
@@ -182,7 +182,7 @@ export class Supervisor {
         this.checkClearRubbleTimer %= CHECK_CLEAR_RUBBLE_INTERVAL
         if (!this.isEnabled(PriorityIdentifier.CLEARING)) return
         this.entityMgr.raiders.forEach((raider) => {
-            if (raider.job) return
+            if (!raider.isReadyToTakeAJob()) return
             const startSurface = raider.sceneEntity.surfaces[0]
             for (let rad = 0; rad < 10; rad++) {
                 for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {

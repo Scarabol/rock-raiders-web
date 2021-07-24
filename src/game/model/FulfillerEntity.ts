@@ -101,16 +101,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.beamUpAnimator = new BeamUpAnimator(this)
     }
 
-    moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
-        const result = super.moveToClosestTarget(target, elapsedMs)
-        this.job.setActualWorkplace(this.currentPath?.target)
-        if (result === MoveState.TARGET_UNREACHABLE) {
-            console.log('Entity could not move to job target, stopping job')
-            this.stopJob()
-        }
-        return result
-    }
-
     update(elapsedMs: number) {
         this.work(elapsedMs)
         this.sceneEntity.update(elapsedMs)
@@ -144,6 +134,16 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
                 }
             }
         }
+    }
+
+    moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
+        const result = super.moveToClosestTarget(target, elapsedMs)
+        this.job.setActualWorkplace(this.currentPath?.target)
+        if (result === MoveState.TARGET_UNREACHABLE) {
+            console.log('Entity could not move to job target, stopping job')
+            this.stopJob()
+        }
+        return result
     }
 
     private completeJob() {

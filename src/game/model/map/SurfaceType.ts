@@ -11,7 +11,7 @@ export class SurfaceType {
     reinforcable: boolean = false
     cursor: Cursor = Cursor.Pointer_Standard
     statsDrillName: string = null
-    canCarryFence: boolean = false
+    canHaveFence: boolean = false
     connectsPath: boolean = false
     mapSurfaceColor: string = '#00FFFF'
 
@@ -23,7 +23,7 @@ export class SurfaceType {
         name: 'ground',
         floor: true,
         selectable: true,
-        canCarryFence: true,
+        canHaveFence: true,
         mapSurfaceColor: '#280048',
     })
     static readonly SOLID_ROCK = new SurfaceType({
@@ -103,7 +103,7 @@ export class SurfaceType {
         floor: true,
         matIndex: '60',
         selectable: true,
-        canCarryFence: true,
+        canHaveFence: true,
         connectsPath: true,
         mapSurfaceColor: '#FFFF00',
     })
@@ -112,7 +112,7 @@ export class SurfaceType {
         floor: true,
         matIndex: '61',
         selectable: true,
-        canCarryFence: true,
+        canHaveFence: true,
     })
     static readonly POWER_PATH_BUILDING = new SurfaceType({
         name: 'power path building',
@@ -121,20 +121,12 @@ export class SurfaceType {
         connectsPath: true,
         mapSurfaceColor: '#B8BBB8',
     })
-    static readonly POWER_PATH_CONSTRUCTION = new SurfaceType({
-        name: 'power path construction',
-        floor: true,
-        matIndex: '76',
-        selectable: true,
-        connectsPath: true,
-        mapSurfaceColor: '#B8BBB8',
-    })
     static readonly RUBBLE1 = new SurfaceType({
         name: 'rubble 1',
         floor: true,
         matIndex: '13',
         selectable: true,
-        canCarryFence: true,
+        canHaveFence: true,
         mapSurfaceColor: '#280048',
     })
     static readonly RUBBLE2 = new SurfaceType({
@@ -142,7 +134,7 @@ export class SurfaceType {
         floor: true,
         matIndex: '12',
         selectable: true,
-        canCarryFence: true,
+        canHaveFence: true,
         mapSurfaceColor: '#280048',
     })
     static readonly RUBBLE3 = new SurfaceType({
@@ -150,7 +142,7 @@ export class SurfaceType {
         floor: true,
         matIndex: '11',
         selectable: true,
-        canCarryFence: true,
+        canHaveFence: true,
         mapSurfaceColor: '#280048',
     })
     static readonly RUBBLE4 = new SurfaceType({
@@ -158,7 +150,7 @@ export class SurfaceType {
         floor: true,
         matIndex: '10',
         selectable: true,
-        canCarryFence: true,
+        canHaveFence: true,
         mapSurfaceColor: '#280048',
     })
 

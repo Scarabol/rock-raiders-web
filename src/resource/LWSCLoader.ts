@@ -101,29 +101,25 @@ export class LWSCLoader {
             let line = this.lines[this.lineIndex]
             if (!line) return subObj
             const [key, value] = LWSCLoader.parseLine(line)
-            if (key === 'AddNullObject' || key === 'LoadObject') {
-                if (key === 'LoadObject') {
-                    const filename = getFilename(value)
-                    subObj.lowerName = filename.slice(0, filename.length - '.lwo'.length).toLowerCase()
-                    subObj.filename = getPath(this.animationClip.lwsFilepath) + filename
-                    subObj.model = ResourceManager.getLwoModel(subObj.filename)
-                    subObj.model.name = subObj.lowerName
-                } else if (key === 'AddNullObject') {
-                    const nameParts = value.split(',')
-                    subObj.lowerName = nameParts[0].toLowerCase()
-                    if (subObj.lowerName === 'sfx') {
-                        subObj.sfxName = nameParts[1] || null
-                        subObj.sfxFrames = nameParts.slice(2).map((n) => Number(n))
-                    } else if (subObj.lowerName === 'snd' && nameParts[1].equalsIgnoreCase('SFX_LANDSLIDE')) {
-                        subObj.sfxName = Sample[Sample.SFX_FallIn]
-                        subObj.sfxFrames = nameParts.slice(2).map((n) => Number(n))
-                    }
-                    subObj.model = new SceneMesh()
-                    subObj.model.name = value
-                    subObj.isNull = true
-                } else {
-                    throw new Error(`Unexpected line: ${line}`)
+            if (key === 'LoadObject') {
+                const filename = getFilename(value)
+                subObj.lowerName = filename.slice(0, filename.length - '.lwo'.length).toLowerCase()
+                subObj.filename = getPath(this.animationClip.lwsFilepath) + filename
+                subObj.model = ResourceManager.getLwoModel(subObj.filename)
+                subObj.model.name = subObj.lowerName
+            } else if (key === 'AddNullObject') {
+                const nameParts = value.split(',')
+                subObj.lowerName = nameParts[0].toLowerCase()
+                if (subObj.lowerName === 'sfx') {
+                    subObj.sfxName = nameParts[1] || null
+                    subObj.sfxFrames = nameParts.slice(2).map((n) => Number(n))
+                } else if (subObj.lowerName === 'snd' && nameParts[1].equalsIgnoreCase('SFX_LANDSLIDE')) {
+                    subObj.sfxName = Sample[Sample.SFX_FallIn]
+                    subObj.sfxFrames = nameParts.slice(2).map((n) => Number(n))
                 }
+                subObj.model = new SceneMesh()
+                subObj.model.name = value
+                subObj.isNull = true
             } else if (key === 'ObjectMotion') {
                 let line = this.lines[++this.lineIndex]
                 const lenInfos = parseInt(line)

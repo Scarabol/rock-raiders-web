@@ -1,13 +1,9 @@
-import { PathTarget } from '../../PathTarget'
 import { Raider } from '../../raider/Raider'
 import { Job } from '../Job'
-import { JobState } from '../JobState'
 
 export abstract class RaiderJob extends Job {
 
     raider: Raider
-
-    abstract getWorkplaces(): PathTarget[]
 
     assign(raider: Raider) {
         if (this.raider === raider) return
@@ -21,7 +17,7 @@ export abstract class RaiderJob extends Job {
     }
 
     cancel() {
-        this.jobState = JobState.CANCELED
+        super.cancel()
         this.raider?.stopJob()
     }
 

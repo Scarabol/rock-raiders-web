@@ -1,11 +1,8 @@
 export class TextInfoMessageEntryConfig {
 
     text: string
-    imageFilename: string
-    sfxName: string
-
-    textImage
-    infoImage
+    imageFilename?: string
+    sfxName?: string
 
     constructor(cfgValue: any) {
         [this.text, this.imageFilename, this.sfxName] = cfgValue

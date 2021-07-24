@@ -102,7 +102,7 @@ export class RewardScreen extends BaseScreen {
         }
     }
 
-    setGameResult(result: GameResult) {
+    showGameResult(result: GameResult) {
         this.resultText = this.cfg.quitText
         this.resultLastIndex = this.images.length - 2
         if (result.state === GameResultState.COMPLETE) {
@@ -122,6 +122,7 @@ export class RewardScreen extends BaseScreen {
         this.resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(GameState.airLevel)))
         this.resultValues.push(this.fonts['timer'].createTextImage(this.timeString(result.gameTimeSeconds)))
         this.resultValues.push(this.fonts['score'].createTextImage(this.percentString(this.calcScore(result))))
+        this.show()
     }
 
     calcScore(result: GameResult): number {

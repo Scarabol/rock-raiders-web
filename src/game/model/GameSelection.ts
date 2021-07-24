@@ -27,6 +27,18 @@ export class GameSelection {
         return !this.surface && !this.building && this.raiders.length < 1 && this.vehicles.length < 1
     }
 
+    deselectAll() {
+        this.raiders.forEach((r) => r.deselect())
+        this.raiders = []
+        this.vehicles.forEach((v) => v.deselect())
+        this.vehicles = []
+        this.building?.deselect()
+        this.building = null
+        this.surface?.deselect()
+        this.surface = null
+        this.doubleSelect = null
+    }
+
     canMove(): boolean {
         return this.raiders.length > 0 || this.vehicles.some((v) => !!v.driver)
     }
@@ -140,18 +152,6 @@ export class GameSelection {
                 return true
             }
         })
-    }
-
-    deselectAll() {
-        this.raiders.forEach((r) => r.deselect())
-        this.raiders = []
-        this.vehicles.forEach((v) => v.deselect())
-        this.vehicles = []
-        this.building?.deselect()
-        this.building = null
-        this.surface?.deselect()
-        this.surface = null
-        this.doubleSelect = null
     }
 
     canDrill(surface: Surface): boolean {

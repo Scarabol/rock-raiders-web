@@ -9,9 +9,7 @@ export class SelectSitePanel extends SelectBasePanel {
         super(parent, 1, onBackPanel)
         const cancelBuilding = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_CancelConstruction')
         cancelBuilding.isDisabled = () => false
-        cancelBuilding.onClick = () => {
-            this.publishEvent(new CancelBuilding())
-        }
+        cancelBuilding.onClick = () => this.publishEvent(new CancelBuilding())
     }
 
 }

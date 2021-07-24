@@ -8,50 +8,39 @@ interface NerpMessage {
 export class NerpMsgParser {
 
     static parseNerpMessages(wad0Data: string, wad1Data: string): NerpMessage[] {
-        const result = this.parseNerpMsgFile(wad0Data, true)
-        const msg1 = this.parseNerpMsgFile(wad1Data, false)
+        // line formatting differs between wad0 and wad1 files!
+        const txt0Matcher = /\\\[([^\\]+)\\]\s*(#([^#]+)#)?/
+        const result = this.parseNerpMsgFile(wad0Data, txt0Matcher)
+        const txt1Matcher = /^([^$][^#]+)(\s*#([^#]+)#)?/
+        const msg1 = this.parseNerpMsgFile(wad1Data, txt1Matcher)
         for (let c = 0; c < msg1.length; c++) {
             result[c] = result[c] || {}
             const m1 = msg1[c]
             if (!m1) continue
-            if (m1.txt) {
-                result[c].txt = m1.txt
-            }
-            if (m1.snd) {
-                result[c].snd = m1.snd
-            }
+            if (m1.txt) result[c].txt = m1.txt
+            if (m1.snd) result[c].snd = m1.snd
         }
         return result
     }
 
-    static parseNerpMsgFile(wadData: string, isWad0File: boolean): NerpMessage[] {
-        const result = []
-        const lines = wadData.split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l)
-        for (let c = 0; c < lines.length; c++) {
-            const line = lines[c]
-            if (line === '-') {
-                continue
-            }
-            // line formatting differs between wad0 and wad1 files!
-            const txt0Match = line.match(/\\\[([^\\]+)\\](\s*#([^#]+)#)?/)
-            const txt1Match = line.match(/^([^$][^#]+)(\s*#([^#]+)#)?/)
-            const sndMatch = line.match(/\$([^\s]+)\s*([^\s]+)/)
-            if (isWad0File && txt0Match) {
-                const index = txt0Match[3] !== undefined ? this.numericNameToNumber(txt0Match[3]) : c // THIS IS MADNESS! #number# at the end of line is OPTIONAL
-                result[index] = result[index] || {}
-                result[index].txt = txt0Match[1]
-            } else if (!isWad0File && txt1Match) {
-                const index = txt1Match[3] !== undefined ? this.numericNameToNumber(txt1Match[3]) : c // THIS IS MADNESS! #number# at the end of line is OPTIONAL
-                result[index] = result[index] || {}
-                result[index].txt = txt1Match[1].replace(/_/g, ' ').trim()
-            } else if (sndMatch && sndMatch.length === 3) {
-                const index = this.numericNameToNumber(sndMatch[1])
-                result[index] = result[index] || {}
-                result[index].snd = sndMatch[2].replace(/\\/g, '/')
-            } else {
-                throw new Error('Line in nerps message file did not match anything')
-            }
-        }
+    static parseNerpMsgFile(wadData: string, txtMatcher): NerpMessage[] {
+        const result: NerpMessage[] = []
+        wadData.split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l && l !== '-')
+            .forEach((line, c) => {
+                const txtMatch = line.match(txtMatcher)
+                const sndMatch = line.match(/\$(\S+)\s+(\S+)/)
+                if (txtMatch) {
+                    const index = txtMatch[3] !== undefined ? this.numericNameToNumber(txtMatch[3]) : c // THIS IS MADNESS! #number# at the end of line is OPTIONAL
+                    result[index] = result[index] || {}
+                    result[index].txt = txtMatch[1].replace(/_/g, ' ').trim()
+                } else if (sndMatch?.length === 3) {
+                    const index = this.numericNameToNumber(sndMatch[1])
+                    result[index] = result[index] || {}
+                    result[index].snd = sndMatch[2].replace(/\\/g, '/')
+                } else {
+                    throw new Error('Line in nerp message file did not match anything')
+                }
+            })
         return result
     }
 

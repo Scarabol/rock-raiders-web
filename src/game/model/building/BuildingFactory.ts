@@ -25,9 +25,11 @@ export class BuildingFactory {
                 return new BuildingEntityBuilder(sceneMgr, entityMgr, entityType, ResourceManager.stats.Powerstation, 'Buildings/Powerstation/Powerstation.ae')
                     .secondaryBuildingPart(-1, 0).dropAction(RaiderActivity.Deposit).build()
             case EntityType.BARRACKS:
-                return new BuildingEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.Barracks, 'Buildings/Barracks/Barracks.ae')
+                return new BuildingEntityBuilder(sceneMgr, entityMgr, entityType, ResourceManager.stats.Barracks, 'Buildings/Barracks/Barracks.ae')
+                    .build()
             case EntityType.UPGRADE:
-                return new BuildingEntity(sceneMgr, entityMgr, entityType, ResourceManager.stats.Upgrade, 'Buildings/Upgrade/Upgrade.ae')
+                return new BuildingEntityBuilder(sceneMgr, entityMgr, entityType, ResourceManager.stats.Upgrade, 'Buildings/Upgrade/Upgrade.ae')
+                    .build()
             case EntityType.GEODOME:
                 return new BuildingEntityBuilder(sceneMgr, entityMgr, entityType, ResourceManager.stats.Geodome, 'Buildings/Geo-dome/Geo-dome.ae')
                     .removePrimaryPowerPath().secondaryBuildingPart(0, 1).build()

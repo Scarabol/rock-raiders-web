@@ -19,6 +19,7 @@ export class SceneEntity {
     selectionFrame: Sprite = null
     selectionFrameDouble: Sprite = null
     boundingSphere: Sphere = new Sphere()
+    lastRadiusSquare: number = null
 
     constructor(sceneMgr: SceneManager) {
         this.sceneMgr = sceneMgr
@@ -46,15 +47,20 @@ export class SceneEntity {
 
     add(other: Object3D) {
         this.group.add(other)
+        this.lastRadiusSquare = null
     }
 
     remove(other: Object3D) {
         this.group.remove(other)
+        this.lastRadiusSquare = null
     }
 
     getRadiusSquare(): number {
-        new Box3().setFromObject(this.group).getBoundingSphere(this.boundingSphere)
-        return this.boundingSphere.radius * this.boundingSphere.radius
+        if (!this.lastRadiusSquare) {
+            new Box3().setFromObject(this.group).getBoundingSphere(this.boundingSphere)
+            this.lastRadiusSquare = this.boundingSphere.radius * this.boundingSphere.radius
+        }
+        return this.lastRadiusSquare
     }
 
     getHeading(): number {

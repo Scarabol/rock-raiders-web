@@ -24,6 +24,8 @@ export abstract class MovableEntity {
 
     abstract get sceneEntity(): AnimatedSceneEntity
 
+    abstract get stats()
+
     moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
         if (!target || target.length < 1) return MoveState.TARGET_UNREACHABLE
         if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.target.targetLocation))) {
@@ -39,7 +41,7 @@ export abstract class MovableEntity {
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.sceneEntity.position.add(step.vec)
-            this.sceneEntity.changeActivity(this.getRouteActivity()) // only change when actually moving
+            this.sceneEntity.changeActivity(this.getRouteActivity())
             return MoveState.MOVED
         }
     }
@@ -47,8 +49,6 @@ export abstract class MovableEntity {
     findPathToTarget(target: PathTarget): TerrainPath {
         return this.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D.clone(), target, this.stats, this.entityType === EntityType.PILOT)
     }
-
-    abstract get stats()
 
     private determineStep(elapsedMs: number): EntityStep {
         const targetWorld = this.sceneMgr.getFloorPosition(this.currentPath.firstLocation)

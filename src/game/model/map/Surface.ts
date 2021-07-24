@@ -156,8 +156,7 @@ export class Surface implements Selectable {
         }
         this.cancelJobs()
         this.terrain.removeFallInOrigin(this)
-        this.surfaceType = SurfaceType.RUBBLE4
-        EventBus.publishEvent(new UpdateRadarSurface(this))
+        this.setSurfaceType(SurfaceType.RUBBLE4)
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += 4
         this.needsMeshUpdate = true
@@ -212,13 +211,21 @@ export class Surface implements Selectable {
 
     reduceRubble() {
         this.rubblePositions.shift()
-        if (this.surfaceType === SurfaceType.RUBBLE4) this.surfaceType = SurfaceType.RUBBLE3
-        else if (this.surfaceType === SurfaceType.RUBBLE3) this.surfaceType = SurfaceType.RUBBLE2
-        else if (this.surfaceType === SurfaceType.RUBBLE2) this.surfaceType = SurfaceType.RUBBLE1
-        else if (this.surfaceType === SurfaceType.RUBBLE1) this.surfaceType = SurfaceType.GROUND
-        EventBus.publishEvent(new UpdateRadarSurface(this))
+        switch (this.surfaceType) {
+            case SurfaceType.RUBBLE4:
+                this.setSurfaceType(SurfaceType.RUBBLE3)
+                break
+            case SurfaceType.RUBBLE3:
+                this.setSurfaceType(SurfaceType.RUBBLE2)
+                break
+            case SurfaceType.RUBBLE2:
+                this.setSurfaceType(SurfaceType.RUBBLE1)
+                break
+            case SurfaceType.RUBBLE1:
+                this.setSurfaceType(SurfaceType.GROUND)
+                break
+        }
         this.dropContainedOre(this.containedOres - this.rubblePositions.length)
-        this.updateTexture()
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
@@ -323,7 +330,7 @@ export class Surface implements Selectable {
             if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.building?.energized) {
                 textureName += '66'
             } else {
-                textureName += this.surfaceType.matIndex.toString()
+                textureName += this.surfaceType.matIndex
             }
         } else if (this.wallType === WALL_TYPE.WEIRD_CREVICE) {
             textureName += '77'
@@ -386,7 +393,9 @@ export class Surface implements Selectable {
         this.energyLevel = level
         this.updateTexture()
         if (this.building) this.building.updateEnergyState()
-        this.neighbors.forEach((n) => n.isPath() && n.setEnergyLevel(level))
+        this.neighbors.forEach((n) => {
+            if (n.isPath()) n.setEnergyLevel(level)
+        })
     }
 
     forEachMaterial(callback: (mat: MeshPhongMaterial) => void): void {
@@ -408,7 +417,7 @@ export class Surface implements Selectable {
     }
 
     isSelectable(): boolean {
-        return this.surfaceType.selectable && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered
+        return (this.surfaceType.selectable || !!this.site) && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered
     }
 
     isInSelection(): boolean {
@@ -426,10 +435,9 @@ export class Surface implements Selectable {
     }
 
     deselect(): any {
-        if (this.selected) {
-            this.selected = false
-            this.updateJobColor()
-        }
+        if (!this.selected) return
+        this.selected = false
+        this.updateJobColor()
     }
 
     updateJobColor() {
@@ -538,7 +546,7 @@ export class Surface implements Selectable {
     }
 
     canPlaceFence(): boolean { // TODO performance this can be cached
-        return this.surfaceType.canCarryFence && !this.building && !this.fence &&
+        return this.surfaceType.canHaveFence && !this.building && !this.fence &&
             [1, 2].some((n) => {
                 const north = this.terrain.getSurface(this.x - n, this.y)
                 const west = this.terrain.getSurface(this.x, this.y - n)

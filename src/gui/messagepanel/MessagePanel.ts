@@ -58,7 +58,7 @@ export class MessagePanel extends Panel {
         this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
         this.currentMessage = textInfoMessage
         this.notifyRedraw()
-        if (textInfoMessage.sfxSample) this.publishEvent(new PlaySoundEvent(textInfoMessage.sfxSample))
+        if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample))
         if (timeout) {
             const that = this
             this.messageTimeout = setTimeout(() => {

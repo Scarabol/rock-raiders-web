@@ -12,11 +12,13 @@ export abstract class Job {
     jobState: JobState = JobState.INCOMPLETE
     surface: Surface = null
 
-    abstract assign(fulfiller: FulfillerEntity)
+    abstract assign(fulfiller: FulfillerEntity): void
 
-    abstract unAssign(fulfiller: FulfillerEntity)
+    abstract unAssign(fulfiller: FulfillerEntity): void
 
-    abstract cancel()
+    cancel() {
+        this.jobState = JobState.CANCELED
+    }
 
     getRequiredTool(): RaiderTool {
         return RaiderTool.NONE
@@ -34,7 +36,7 @@ export abstract class Job {
         this.jobState = JobState.COMPLETE
     }
 
-    abstract getWorkplaces(): PathTarget[];
+    abstract getWorkplaces(): PathTarget[]
 
     setActualWorkplace(target: PathTarget) {
     }
