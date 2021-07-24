@@ -35,16 +35,19 @@ export class BuildingSite {
     constructor(entityMgr: EntityManager, primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, building: BuildingEntity) {
         this.entityMgr = entityMgr
         this.primarySurface = primarySurface
-        this.primarySurface.setSite(this)
+        this.primarySurface.site = this
         this.surfaces.push(this.primarySurface)
         this.secondarySurface = secondarySurface
         if (this.secondarySurface) {
-            this.secondarySurface.setSite(this)
+            this.secondarySurface.site = this
+            this.secondarySurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
             this.surfaces.push(this.secondarySurface)
         }
         this.primaryPathSurface = primaryPathSurface
-        this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
-        this.surfaces.push(this.primaryPathSurface)
+        if (this.primaryPathSurface) {
+            this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
+            this.surfaces.push(this.primaryPathSurface)
+        }
         if (secondaryPathSurface) {
             secondaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
             this.surfaces.push(secondaryPathSurface)
@@ -106,6 +109,7 @@ export class BuildingSite {
 
     teleportIn() {
         this.entityMgr.completedBuildingSites.remove(this)
+        this.surfaces.forEach((s) => s.site = null)
         this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item: Barrier) => {
             item.sceneEntity.changeActivity(BarrierActivity.Teleport, () => item.disposeFromWorld())
         })
@@ -125,7 +129,10 @@ export class BuildingSite {
     cancelSite() {
         this.entityMgr.buildingSites.remove(this)
         this.canceled = true
-        this.surfaces.forEach((s) => s?.setSite(null))
+        this.surfaces.forEach((s) => {
+            s.site = null
+            s.setSurfaceType(SurfaceType.GROUND)
+        })
         this.onSiteByType.forEach((materials) => materials.forEach((item) => {
             this.entityMgr.placeMaterial(item, item.sceneEntity.position2D.clone())
         }))

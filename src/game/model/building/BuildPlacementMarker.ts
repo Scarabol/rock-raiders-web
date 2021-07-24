@@ -104,6 +104,7 @@ export class BuildPlacementMarker {
         const neededOre = stats?.CostOre || 0
         const primarySurface = this.buildingMarkerPrimary.surface
         const site = new BuildingSite(this.entityMgr, primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, this.buildModeSelection)
+        primarySurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         site.heading = this.heading
         site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
         site.neededByType.set(EntityType.CRYSTAL, neededCrystals)

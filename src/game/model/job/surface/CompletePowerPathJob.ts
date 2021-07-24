@@ -23,6 +23,7 @@ export class CompletePowerPathJob extends ShareableJob {
         super.onJobComplete()
         this.placedItems.forEach((placed) => placed.sceneEntity.disposeFromScene())
         this.surface.setSurfaceType(SurfaceType.POWER_PATH)
+        this.surface.site = null
     }
 
     getRequiredTool(): RaiderTool {
