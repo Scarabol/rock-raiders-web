@@ -209,7 +209,7 @@ export class BuildingEntity implements Selectable {
 
     updateEnergyState() {
         if (!this.isReady()) return
-        if (this.powerSwitch && (this.energized || (GameState.usedCrystals + this.crystalDrain <= GameState.numCrystal && GameState.numCrystal > 0)) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.energyLevel > 0))) {
+        if (this.powerSwitch && (this.energized || (GameState.usedCrystals + this.crystalDrain <= GameState.numCrystal && GameState.numCrystal > 0)) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.energized))) {
             this.turnEnergyOn()
         } else {
             this.turnEnergyOff()
@@ -225,7 +225,7 @@ export class BuildingEntity implements Selectable {
         if (this.energized) return
         this.energized = true
         GameState.changeUsedCrystals(this.crystalDrain)
-        if (this.stats.PowerBuilding) this.surfaces.forEach((s) => s.setEnergyLevel(s.energyLevel + 1))
+        if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this)
         if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
     }
 
@@ -233,7 +233,7 @@ export class BuildingEntity implements Selectable {
         if (!this.energized) return
         this.energized = false
         GameState.changeUsedCrystals(-this.crystalDrain)
-        if (this.stats.PowerBuilding) this.surfaces.forEach((s) => s.setEnergyLevel(s.energyLevel - 1))
+        if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.removeEnergySource(this)
         this.engineSound = resetAudioSafe(this.engineSound)
     }
 
@@ -291,6 +291,11 @@ export class BuildingEntity implements Selectable {
     private onPlaceDown() {
         this.sceneEntity.changeActivity()
         this.updateEnergyState()
+        this.surfaces.forEach((surface) => {
+            surface.updateTexture()
+            if (surface.surfaceType.connectsPath) surface.neighbors.forEach((n) => n.updateTexture())
+            surface.terrain.powerGrid.onPathChange(surface)
+        })
         this.getToolPathTarget = new GetToolPathTarget(this)
         this.carryPathTarget = new BuildingCarryPathTarget(this)
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))

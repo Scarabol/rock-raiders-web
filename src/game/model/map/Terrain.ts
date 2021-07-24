@@ -8,6 +8,7 @@ import { AnimationGroup } from '../anim/AnimationGroup'
 import { updateSafe } from '../Updateable'
 import { FallIn } from './FallIn'
 import { PathFinder } from './PathFinder'
+import { PowerGrid } from './PowerGrid'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 
@@ -24,6 +25,7 @@ export class Terrain {
     pathFinder: PathFinder = new PathFinder()
     fallIns: FallIn[] = []
     fallInGroups: AnimationGroup[] = []
+    powerGrid: PowerGrid = new PowerGrid()
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         this.sceneMgr = sceneMgr
