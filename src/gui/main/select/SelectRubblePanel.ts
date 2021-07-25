@@ -1,5 +1,5 @@
 import { EventKey } from '../../../event/EventKeyEnum'
-import { CreateClearRubbleJob } from '../../../event/GuiCommand'
+import { CreateClearRubbleJob, PlaceFence } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
@@ -17,6 +17,7 @@ export class SelectRubblePanel extends SelectBasePanel {
         clearRubbleItem.onClick = () => this.publishEvent(new CreateClearRubbleJob())
         const placeFenceItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_PlaceFence')
         placeFenceItem.isDisabled = () => !this.canPlaceFence
+        placeFenceItem.onClick = () => this.publishEvent(new PlaceFence())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             this.hasRubble = event.hasRubble
             this.canPlaceFence = event.canPlaceFence
