@@ -62,6 +62,7 @@ export class SceneManager {
         selection.raiders.push(...SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere)), false))
         if (selection.isEmpty()) selection.vehicles.push(...SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)), true))
         if (selection.isEmpty()) selection.building = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere)), true)[0]
+        if (selection.isEmpty()) selection.fence = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.placedFences.map((f) => f.sceneEntity.pickSphere)), false)[0]
         if (selection.isEmpty() && this.terrain) selection.surface = SceneManager.getSelection(raycaster.intersectObjects(this.terrain.floorGroup.children), false)[0]
         return selection
     }

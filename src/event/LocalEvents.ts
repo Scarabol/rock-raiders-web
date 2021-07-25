@@ -30,6 +30,7 @@ export enum SelectPanelType {
     VEHICLE,
     BUILDING,
     SURFACE,
+    FENCE,
 
 }
 

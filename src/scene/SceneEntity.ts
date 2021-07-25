@@ -1,8 +1,6 @@
 import { Box3, Group, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../audio/SoundManager'
 import { AnimEntityActivity } from '../game/model/activities/AnimEntityActivity'
-import { BuildingEntity } from '../game/model/building/BuildingEntity'
-import { FulfillerEntity } from '../game/model/FulfillerEntity'
 import { Surface } from '../game/model/map/Surface'
 import { Selectable } from '../game/model/Selectable'
 import { SceneManager } from '../game/SceneManager'
@@ -75,7 +73,7 @@ export class SceneEntity {
         this.group.lookAt(target)
     }
 
-    makeSelectable(entity: (FulfillerEntity | BuildingEntity) & Selectable, pickSphereHeightOffset: number = null) {
+    makeSelectable(entity: { stats: { PickSphere: number } } & Selectable, pickSphereHeightOffset: number = null) {
         this.addPickSphere(entity.stats.PickSphere, pickSphereHeightOffset)
         this.pickSphere.userData = {selectable: entity}
         this.selectionFrame = SceneEntity.createSelectionFrame(entity.stats.PickSphere, this.pickSphere.position, '#0f0')

@@ -40,6 +40,9 @@ export class GuiManager {
             if (s) entityMgr.getClosestBuildingByType(s.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(s)
             EventBus.publishEvent(new DeselectAll())
         })
+        EventBus.registerEventListener(EventKey.COMMAND_FENCE_BEAMUP, () => {
+            entityMgr.selection.fence?.beamUp()
+        })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_RAIDER_SPAWN_REQUEST, (event: ChangeRaiderSpawnRequest) => {
             if (event.increase) {
                 worldMgr.requestedRaiders++

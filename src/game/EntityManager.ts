@@ -12,6 +12,7 @@ import { EntityType } from './model/EntityType'
 import { GameSelection } from './model/GameSelection'
 import { BuildingCarryPathTarget } from './model/job/carry/BuildingCarryPathTarget'
 import { Surface } from './model/map/Surface'
+import { ElectricFence } from './model/material/ElectricFence'
 import { MaterialEntity } from './model/material/MaterialEntity'
 import { Bat } from './model/monster/Bat'
 import { RockMonster } from './model/monster/RockMonster'
@@ -32,6 +33,7 @@ export class EntityManager {
     materials: MaterialEntity[] = []
     materialsUndiscovered: MaterialEntity[] = []
     scarer: MaterialEntity[] = []
+    placedFences: ElectricFence[] = []
     buildingSites: BuildingSite[] = []
     spiders: SmallSpider[] = []
     bats: Bat[] = []
@@ -59,6 +61,7 @@ export class EntityManager {
         this.materials = []
         this.materialsUndiscovered = []
         this.scarer = []
+        this.placedFences = []
         this.buildingSites = []
         this.spiders = []
         this.bats = []
@@ -75,6 +78,7 @@ export class EntityManager {
         this.raidersInBeam.forEach((r) => updateSafe(r, elapsedMs))
         this.materials.forEach((m) => updateSafe(m, elapsedMs))
         this.scarer.forEach((s) => updateSafe(s, elapsedMs))
+        this.placedFences.forEach((f) => updateSafe(f, elapsedMs))
         this.spiders.forEach((s) => updateSafe(s, elapsedMs))
         this.bats.forEach((b) => updateSafe(b, elapsedMs))
         this.rockMonsters.forEach((m) => updateSafe(m, elapsedMs))
@@ -91,6 +95,7 @@ export class EntityManager {
         this.materials.forEach((m) => m.disposeFromWorld())
         this.materialsUndiscovered.forEach((m) => m.disposeFromWorld())
         this.scarer.forEach((s) => s.disposeFromWorld())
+        this.placedFences.forEach((f) => f.disposeFromWorld())
         this.spiders.forEach((m) => m.disposeFromWorld())
         this.bats.forEach((b) => b.disposeFromWorld())
         this.rockMonsters.forEach((m) => m.disposeFromWorld())

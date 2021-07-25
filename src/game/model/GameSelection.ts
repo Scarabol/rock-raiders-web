@@ -10,6 +10,7 @@ import { Job } from './job/Job'
 import { GetToolJob } from './job/raider/GetToolJob'
 import { MoveJob } from './job/raider/MoveJob'
 import { Surface } from './map/Surface'
+import { ElectricFence } from './material/ElectricFence'
 import { MaterialEntity } from './material/MaterialEntity'
 import { Raider } from './raider/Raider'
 import { RaiderTool } from './raider/RaiderTool'
@@ -21,10 +22,11 @@ export class GameSelection {
     building: BuildingEntity = null
     raiders: Raider[] = []
     vehicles: VehicleEntity[] = []
+    fence: ElectricFence = null
     doubleSelect: BuildingEntity | VehicleEntity = null
 
     isEmpty(): boolean {
-        return !this.surface && !this.building && this.raiders.length < 1 && this.vehicles.length < 1
+        return !this.surface && !this.building && this.raiders.length < 1 && this.vehicles.length < 1 && !this.fence
     }
 
     deselectAll() {
@@ -37,6 +39,8 @@ export class GameSelection {
         this.surface?.deselect()
         this.surface = null
         this.doubleSelect = null
+        this.fence?.deselect()
+        this.fence = null
     }
 
     canMove(): boolean {
@@ -60,6 +64,15 @@ export class GameSelection {
             if (this.building.doubleSelect()) {
                 this.doubleSelect = this.building
                 added = true
+            }
+        }
+        if (this.fence !== selection.fence) {
+            this.fence?.deselect()
+            if (selection.fence?.isInSelection()) {
+                this.fence = selection.fence
+                if (this.fence.select()) added = true
+            } else {
+                this.fence = null
             }
         }
         if (this.surface !== selection.surface) {
@@ -107,6 +120,8 @@ export class GameSelection {
             return SelectPanelType.BUILDING
         } else if (this.surface) {
             return SelectPanelType.SURFACE
+        } else if (this.fence) {
+            return SelectPanelType.FENCE
         }
     }
 

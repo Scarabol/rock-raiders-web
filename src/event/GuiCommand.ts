@@ -97,6 +97,14 @@ export class BeamUpBuilding extends GuiCommand {
 
 }
 
+export class BeamUpFence extends GuiCommand {
+
+    constructor() {
+        super(EventKey.COMMAND_FENCE_BEAMUP)
+    }
+
+}
+
 export class ChangePriorityList extends GuiCommand {
 
     priorityList: PriorityEntry[]
