@@ -9,7 +9,7 @@ import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BuildingSceneEntity } from '../../../scene/entities/BuildingSceneEntity'
-import { BeamUpAnimator } from '../../BeamUpAnimator'
+import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { BuildingActivity } from '../activities/BuildingActivity'
@@ -30,7 +30,7 @@ import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
 import { Teleport } from './Teleport'
 
-export class BuildingEntity implements Selectable {
+export class BuildingEntity implements Selectable, BeamUpEntity {
 
     stats: BuildingEntityStats = null
     secondaryBuildingPart: Vector2 = null

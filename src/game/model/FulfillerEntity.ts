@@ -2,7 +2,7 @@ import { PositionalAudio } from 'three'
 import { resetAudioSafe } from '../../audio/AudioUtil'
 import { Sample } from '../../audio/Sample'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
-import { BeamUpAnimator } from '../BeamUpAnimator'
+import { BeamUpAnimator, BeamUpEntity } from '../BeamUpAnimator'
 import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
 import { RaiderActivity } from './activities/RaiderActivity'
@@ -16,7 +16,7 @@ import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
 import { Selectable } from './Selectable'
 
-export abstract class FulfillerEntity extends MovableEntity implements Selectable {
+export abstract class FulfillerEntity extends MovableEntity implements Selectable, BeamUpEntity {
 
     level: number = 0
     selected: boolean

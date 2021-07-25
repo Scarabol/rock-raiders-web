@@ -2,11 +2,18 @@ import { Vector3 } from 'three'
 import { EventBus } from '../event/EventBus'
 import { DeselectAll } from '../event/LocalEvents'
 import { NATIVE_FRAMERATE, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
+import { SceneEntity } from '../scene/SceneEntity'
 import { AnimationGroup } from './model/anim/AnimationGroup'
-import { BuildingEntity } from './model/building/BuildingEntity'
-import { FulfillerEntity } from './model/FulfillerEntity'
+import { SceneManager } from './SceneManager'
 
-type BeamUpEntity = BuildingEntity | FulfillerEntity
+export interface BeamUpEntity {
+
+    sceneMgr: SceneManager
+    sceneEntity: SceneEntity
+
+    disposeFromWorld()
+
+}
 
 export class BeamUpAnimator {
 
