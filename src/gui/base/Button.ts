@@ -26,8 +26,8 @@ export class Button extends BaseElement {
         this.imgDisabled = GuiResourceCache.getImageOrNull(btnCfg.disabledFile)
         this.relX = btnCfg.relX
         this.relY = btnCfg.relY
-        this.width = btnCfg.width || this.imgNormal?.width || this.imgPressed?.width || this.imgHover?.width
-        this.height = btnCfg.height || this.imgNormal?.height || this.imgPressed?.height || this.imgHover?.height
+        this.width = Button.ignoreUndefinedMax(btnCfg.width, this.imgNormal?.width, this.imgPressed?.width, this.imgHover?.width)
+        this.height = Button.ignoreUndefinedMax(btnCfg.height, this.imgNormal?.height, this.imgPressed?.height, this.imgHover?.height)
         if (Array.isArray(btnCfg.tooltip)) {
             [this.tooltip, this.sfxTooltip] = btnCfg.tooltip
         } else {
@@ -36,6 +36,10 @@ export class Button extends BaseElement {
         this.tooltip = this.tooltip?.replace(/_/g, ' ')
         this.updatePosition()
         this.onClick = () => console.log(`button pressed: ${this.buttonType}`)
+    }
+
+    private static ignoreUndefinedMax(...numbers: number[]): number {
+        return Math.max(...numbers.map((n) => n || 0))
     }
 
     showTooltip() {
