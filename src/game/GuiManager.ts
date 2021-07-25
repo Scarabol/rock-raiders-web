@@ -36,8 +36,11 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_PLACE_FENCE, () => {
-            const s = entityMgr.selection.surface
-            if (s) entityMgr.getClosestBuildingByType(s.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(s)
+            const targetSurface = entityMgr.selection.surface
+            if (targetSurface) {
+                entityMgr.getClosestBuildingByType(targetSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(targetSurface)
+                targetSurface.fenceRequested = true
+            }
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_FENCE_BEAMUP, () => {

@@ -74,6 +74,7 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
     beamUp() {
         this.inBeam = true
         this.targetSurface.fence = null
+        this.targetSurface.fenceRequested = false
         // TODO stop spawning lightning animations
         this.beamUpAnimator = new BeamUpAnimator(this)
         // TODO update defence grid

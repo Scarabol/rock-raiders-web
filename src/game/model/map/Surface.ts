@@ -68,6 +68,7 @@ export class Surface implements Selectable {
     pathBlockedByBuilding: boolean = false
     site: BuildingSite = null
     fence: ElectricFence = null
+    fenceRequested: boolean = false
     energized: boolean = false
 
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
@@ -538,7 +539,7 @@ export class Surface implements Selectable {
     }
 
     canPlaceFence(): boolean { // TODO performance this can be cached
-        return this.surfaceType.canHaveFence && !this.building && !this.fence &&
+        return this.surfaceType.canHaveFence && !this.building && !this.fence && !this.fenceRequested &&
             [1, 2].some((n) => {
                 const north = this.terrain.getSurface(this.x - n, this.y)
                 const west = this.terrain.getSurface(this.x, this.y - n)
