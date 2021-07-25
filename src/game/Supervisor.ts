@@ -113,7 +113,7 @@ export class Supervisor {
             unemployedRaider.forEach((raider, index) => {
                 const hasRequiredTool = raider.hasTool(requiredTool)
                 const hasTraining = raider.hasTraining(requiredTraining)
-                if (hasRequiredTool && hasTraining) {
+                if (raider.isPrepared(job)) {
                     const pathToJob = job.getWorkplaces().map((b) => raider.findPathToTarget(b))
                         .filter((t) => !!t)
                         .sort((l, r) => l.lengthSq - r.lengthSq)[0]
@@ -139,7 +139,7 @@ export class Supervisor {
                             closestToolstation = (pathToToolstation.target as BuildingPathTarget).building
                         }
                     }
-                } else {
+                } else if (!hasTraining) {
                     const pathToTrainingSite = this.entityMgr.getTrainingSiteTargets(requiredTraining)
                         .map((b) => raider.findPathToTarget(b))
                         .filter((p) => !!p)
