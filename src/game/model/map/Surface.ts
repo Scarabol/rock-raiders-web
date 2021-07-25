@@ -437,6 +437,7 @@ export class Surface implements Selectable {
     }
 
     updateJobColor() {
+        if (this.selected) return
         const color = this.dynamiteJob?.color || this.reinforceJob?.color || this.drillJob?.color || 0xffffff
         this.forEachMaterial((mat) => mat.color.setHex(color))
     }
