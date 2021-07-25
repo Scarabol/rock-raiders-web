@@ -84,6 +84,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         Object.values(buildingTypes).forEach((bType: string) => {
             this.addMeshObjects(bType)
         })
+        this.addTextureFolder('Buildings/E-Fence')
         this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
         // load monsters
         const rockMonsterTypes = iGet(mainConf, 'RockMonsterTypes')
