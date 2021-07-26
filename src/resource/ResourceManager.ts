@@ -73,7 +73,7 @@ export class ResourceManager extends ResourceCache {
         const lBasename = basename?.toLowerCase()
         const result = []
         this.resourceByName.forEach((res, name) => {
-            if (name.startsWith(lBasename)) result.push(name)
+            if (name.startsWith(lBasename + '0')) result.push(name)
         })
         if (result.length > 0) {
             return result.map((textureFilepath) => this.getTexture(textureFilepath))
