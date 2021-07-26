@@ -538,16 +538,16 @@ export class Surface implements Selectable {
         if (wasPath !== this.isPath()) this.terrain.powerGrid.onPathChange(this)
     }
 
-    canPlaceFence(): boolean { // TODO performance this can be cached
+    canPlaceFence(): boolean {
         return this.surfaceType.canHaveFence && !this.building && !this.fence && !this.fenceRequested &&
             [1, 2].some((n) => {
-                const north = this.terrain.getSurface(this.x - n, this.y)
-                const west = this.terrain.getSurface(this.x, this.y - n)
-                const south = this.terrain.getSurface(this.x + n, this.y)
-                const east = this.terrain.getSurface(this.x, this.y + n)
-                return !!north.building || !!west.building || !!south.building || !!east.building
-                    || !!north.fence || !!west.fence || !!south.fence || !!east.fence
+                return this.terrain.getSurface(this.x - n, this.y).fencePowerSupplier || this.terrain.getSurface(this.x, this.y - n).fencePowerSupplier
+                    || this.terrain.getSurface(this.x + n, this.y).fencePowerSupplier || this.terrain.getSurface(this.x, this.y + n).fencePowerSupplier
             })
+    }
+
+    get fencePowerSupplier(): boolean {
+        return !!this.fence || (this === this.building?.primarySurface || this === this.building?.secondarySurface)
     }
 
     createDrillJob(): DrillJob {
