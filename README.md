@@ -27,6 +27,13 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Development Roadmap
 
+### Vehicles (v0.5.x)
+
+- Maned vehicle do not auto move out of teleporter path surface
+- Refactor job system to allow multi-carry jobs
+- Refactor upgrade system and make vehicles upgradeable
+- Take some screenshots with vehicles
+
 ### Near (v0.6.0)
 
 - turn all lights red, when alarm mode is active
@@ -69,12 +76,16 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Important
 
+- Two buttons in priority list can be hovered/pressed/released at the same time
+
 ### Nice to have
 
 - Dependency tooltips for buildings/vehicles not shown
 - Camera can glitch through terrain and zoom in/out infinitely
 - Provide resources explicit to workers with messaging
 - Add rotation speed to entities and play turnLeft, turnRight animations
+- Large digger and walker digger moving into wall for drilling
+- Beamup animation sequence missing on successful level end
 
 ### Cosmetics
 
@@ -82,13 +93,14 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Adapt building placement marker to surface shape
 - Add water and lava animation (texture UV coords tearing)
 - Selection layer has bad performance and behaves funny when hovering GUI
-- Use given wheel radius to rotate wheels while moving vehicles
 - Change cursor to X when over disabled IconPanelButtons
 - Add captain flh animation to mission briefing
 - Tooltip SFX sounds not working for priority panel
-- Seams get not teared down while drilling
+- Seams do not show tear down progress while drilling
 - Driver may sit wrong way around on vehicle
-- Yellow arrows not shown on power station flaps
+- Arrows not shown on power station flaps
+- Numbers above dynamite not shown as sprite (same issue as with sleeping rockies?)
+- Level 11 spams console with unreachable jobs
 
 ## Technical Debt
 
