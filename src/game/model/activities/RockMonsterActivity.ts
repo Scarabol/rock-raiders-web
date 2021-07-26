@@ -1,6 +1,6 @@
-import { MonsterActivity } from './MonsterActivity'
+import { AnimEntityActivity } from './AnimEntityActivity'
 
-export class RockMonsterActivity extends MonsterActivity {
+export class RockMonsterActivity extends AnimEntityActivity {
 
     static TurnLeft = new RockMonsterActivity('Activity_TurnLeft')
     static TurnRight = new RockMonsterActivity('Activity_TurnRight')

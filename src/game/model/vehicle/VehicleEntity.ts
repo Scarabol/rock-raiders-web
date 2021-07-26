@@ -6,6 +6,7 @@ import { SelectionChanged } from '../../../event/LocalEvents'
 import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
+import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
@@ -17,7 +18,6 @@ import { MoveState } from '../MoveState'
 import { Raider } from '../raider/Raider'
 import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
-import { VehicleActivity } from './VehicleActivity'
 
 export class VehicleEntity extends FulfillerEntity {
 
@@ -65,7 +65,7 @@ export class VehicleEntity extends FulfillerEntity {
         if (this.carriedItems.has(carryItem)) return true
         this.dropCarried()
         if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets(), elapsedMs) === MoveState.TARGET_REACHED) {
-            this.sceneEntity.changeActivity(VehicleActivity.Stand, () => {
+            this.sceneEntity.changeActivity(AnimEntityActivity.Stand, () => {
                 this.carriedItems.add(carryItem)
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
             })

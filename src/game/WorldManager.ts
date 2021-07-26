@@ -9,12 +9,12 @@ import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChange
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
+import { AnimEntityActivity } from './model/activities/AnimEntityActivity'
 import { EntityType } from './model/EntityType'
 import { GameResultState } from './model/GameResult'
 import { GameState } from './model/GameState'
 import { Raider } from './model/raider/Raider'
 import { updateSafe } from './model/Updateable'
-import { VehicleActivity } from './model/vehicle/VehicleActivity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import { Supervisor } from './Supervisor'
@@ -148,7 +148,7 @@ export class WorldManager {
                             EventBus.publishEvent(new MaterialAmountChanged())
                             const vehicle = VehicleFactory.createVehicleFromType(vType, this.sceneMgr, this.entityMgr)
                             vehicle.sceneEntity.addToScene(teleportBuilding.primaryPathSurface.getCenterWorld2D(), teleportBuilding.sceneEntity.getHeading())
-                            vehicle.sceneEntity.changeActivity(VehicleActivity.TeleportIn, () => {
+                            vehicle.sceneEntity.changeActivity(AnimEntityActivity.TeleportIn, () => {
                                 vehicle.sceneEntity.changeActivity()
                                 vehicle.sceneEntity.makeSelectable(vehicle)
                                 this.entityMgr.vehiclesInBeam.remove(vehicle)

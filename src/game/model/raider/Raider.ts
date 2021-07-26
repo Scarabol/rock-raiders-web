@@ -6,6 +6,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
+import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BaseActivity } from '../activities/BaseActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
@@ -15,7 +16,6 @@ import { Surface } from '../map/Surface'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
-import { VehicleActivity } from '../vehicle/VehicleActivity'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { RaiderTool } from './RaiderTool'
 import { RaiderTraining } from './RaiderTraining'
@@ -60,7 +60,7 @@ export class Raider extends FulfillerEntity {
         if (this.isOnRubble()) {
             return !!this.carries ? RaiderActivity.CarryRubble : RaiderActivity.routeRubble
         } else {
-            return !!this.carries ? RaiderActivity.Carry : RaiderActivity.Route
+            return !!this.carries ? RaiderActivity.Carry : AnimEntityActivity.Route
         }
     }
 
@@ -120,8 +120,8 @@ export class Raider extends FulfillerEntity {
     }
 
     getDriverActivity(): RaiderActivity {
-        if (!this.vehicle) return RaiderActivity.Stand
-        const vehicleStands = this.vehicle.sceneEntity.activity === VehicleActivity.Stand
+        if (!this.vehicle) return AnimEntityActivity.Stand
+        const vehicleStands = this.vehicle.sceneEntity.activity === AnimEntityActivity.Stand
         switch (this.vehicle.entityType) {
             case EntityType.HOVERBOARD:
                 return vehicleStands ? RaiderActivity.Standhoverboard : RaiderActivity.Hoverboard

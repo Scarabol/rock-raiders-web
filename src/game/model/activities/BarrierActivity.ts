@@ -1,10 +1,10 @@
-import { AnimEntityActivity } from './AnimEntityActivity'
+import { BaseActivity } from './BaseActivity'
 
-export class BarrierActivity extends AnimEntityActivity {
+export class BarrierActivity extends BaseActivity {
 
-    static Short = new AnimEntityActivity('Short')
-    static Expand = new AnimEntityActivity('Expand')
-    static Long = new AnimEntityActivity('Long')
-    static Teleport = new AnimEntityActivity('Teleport')
+    static Short = new BarrierActivity('Short')
+    static Expand = new BarrierActivity('Expand')
+    static Long = new BarrierActivity('Long')
+    static Teleport = new BarrierActivity('Teleport')
 
 }

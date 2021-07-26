@@ -2,7 +2,7 @@ import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
-import { MovableEntityActivity } from './activities/MovableEntityActivity'
+import { AnimEntityActivity } from './activities/AnimEntityActivity'
 import { EntityStep } from './EntityStep'
 import { EntityType } from './EntityType'
 import { TerrainPath } from './map/TerrainPath'
@@ -69,8 +69,8 @@ export abstract class MovableEntity {
         return step
     }
 
-    getRouteActivity(): MovableEntityActivity {
-        return MovableEntityActivity.Route
+    getRouteActivity(): AnimEntityActivity {
+        return AnimEntityActivity.Route
     }
 
     abstract getSpeed(): number

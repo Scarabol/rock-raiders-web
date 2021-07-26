@@ -1,7 +1,7 @@
-import { MovableEntityActivity } from './MovableEntityActivity'
+import { AnimEntityActivity } from './AnimEntityActivity'
 
 // noinspection JSUnusedGlobalSymbols
-export class RaiderActivity extends MovableEntityActivity {
+export class RaiderActivity extends AnimEntityActivity {
 
     static RunPanic = new RaiderActivity('Activity_RunPanic')
     static Drill = new RaiderActivity('Activity_Drill')
@@ -20,7 +20,6 @@ export class RaiderActivity extends MovableEntityActivity {
     static Dynamite = new RaiderActivity('Activity_Dynamite')
     static Place = new RaiderActivity('Activity_Place')
     static Deposit = new RaiderActivity('Activity_Deposit')
-    static TeleportIn = new RaiderActivity('Activity_TeleportIn')
     static Repair = new RaiderActivity('Activity_Repair')
     static rest = new RaiderActivity('Activity_rest')
     static routeRubble = new RaiderActivity('Activity_routeRubble')

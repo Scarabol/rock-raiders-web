@@ -1,6 +1,5 @@
 import { Vector2, Vector3 } from 'three'
 import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivity'
-import { VehicleActivity } from '../../game/model/vehicle/VehicleActivity'
 import { SceneManager } from '../../game/SceneManager'
 import { TILESIZE } from '../../params'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
@@ -55,7 +54,7 @@ export class VehicleSceneEntity extends AnimatedSceneEntity {
 
     update(elapsedMs: number) {
         super.update(elapsedMs)
-        if (this.activity === VehicleActivity.Route) {
+        if (this.activity === AnimEntityActivity.Route) {
             const angle = elapsedMs / 1000 * 2 * Math.PI / this.animationEntityType.wheelRadius * this.speed
             this.animation.wheelJoints.forEach((w) => w.rotateX(angle))
         }
