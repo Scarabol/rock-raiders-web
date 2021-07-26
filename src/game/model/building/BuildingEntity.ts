@@ -302,6 +302,9 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     }
 
     getDropAction(): RaiderActivity {
+        if (this.entityType === EntityType.POWER_STATION || this.entityType === EntityType.ORE_REFINERY) {
+            return RaiderActivity.Deposit
+        }
         return RaiderActivity.Place
     }
 
