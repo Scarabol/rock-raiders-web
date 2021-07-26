@@ -110,8 +110,9 @@ export class Surface implements Selectable {
                 touched.set(`${neighbor.x}#${neighbor.y}`, neighbor)
                 if (neighbor.discovered && !first) continue
                 if ((x === 0 || y === 0) && neighbor.surfaceType.floor) {
+                    caveFound = caveFound || !neighbor.discovered
                     const neighborCaveFound = neighbor.discoverNeighbors(false, walls, touched) // XXX refactor this remove recursion
-                    caveFound = caveFound || !neighbor.discovered || neighborCaveFound
+                    caveFound = caveFound || neighborCaveFound
                 } else {
                     walls.set(`${neighbor.x}#${neighbor.y}`, neighbor)
                 }
