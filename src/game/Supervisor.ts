@@ -71,13 +71,12 @@ export class Supervisor {
         availableJobs.sort((left, right) => {
             return Math.sign(this.getPriority(left) - this.getPriority(right))
         })
-        const unemployedRaider = this.entityMgr.raiders.filter((r) => r.isReadyToTakeAJob())
-        const unemployedVehicles = this.entityMgr.vehicles.filter((v) => v.isReadyToTakeAJob())
+        const unemployedRaider = new Set(this.entityMgr.raiders.filter((r) => r.isReadyToTakeAJob()))
+        const unemployedVehicles = new Set(this.entityMgr.vehicles.filter((v) => v.isReadyToTakeAJob()))
         availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
             let closestVehicle: VehicleEntity = null
-            let closestVehicleIndex: number = null
             let closestVehicleDistance: number = null
-            unemployedVehicles.forEach((vehicle, index) => {
+            unemployedVehicles.forEach((vehicle) => {
                 if (vehicle.isPrepared(job)) {
                     const pathToJob = job.getWorkplaces().map((b) => vehicle.findPathToTarget(b))
                         .filter((t) => !!t)
@@ -86,7 +85,6 @@ export class Supervisor {
                         const dist = pathToJob.lengthSq
                         if (closestVehicleDistance === null || dist < closestVehicleDistance) {
                             closestVehicle = vehicle
-                            closestVehicleIndex = index
                             closestVehicleDistance = dist
                         }
                     }
@@ -94,23 +92,20 @@ export class Supervisor {
             })
             if (closestVehicle) {
                 closestVehicle.setJob(job)
-                unemployedVehicles.splice(closestVehicleIndex, 1)
+                unemployedVehicles.delete(closestVehicle)
                 return // if vehicle found do not check for raider
             }
             let closestRaider: Raider = null
-            let closestRaiderIndex: number = null
             let minDistance: number = null
             let closestToolRaider: Raider = null
-            let closestToolRaiderIndex: number = null
             let minToolDistance: number = null
             let closestToolstation: BuildingEntity = null
             const requiredTool = job.getRequiredTool()
             let closestTrainingRaider: Raider = null
-            let closestTrainingRaiderIndex: number = null
             let minTrainingDistance: number = null
             let closestTrainingArea: BuildingEntity = null
             const requiredTraining = job.getRequiredTraining()
-            unemployedRaider.forEach((raider, index) => {
+            unemployedRaider.forEach((raider) => {
                 const hasRequiredTool = raider.hasTool(requiredTool)
                 const hasTraining = raider.hasTraining(requiredTraining)
                 if (raider.isPrepared(job)) {
@@ -121,7 +116,6 @@ export class Supervisor {
                         const dist = pathToJob.lengthSq
                         if (minDistance === null || dist < minDistance) {
                             closestRaider = raider
-                            closestRaiderIndex = index
                             minDistance = dist
                         }
                     }
@@ -134,7 +128,6 @@ export class Supervisor {
                         const dist = pathToToolstation.lengthSq
                         if (minToolDistance === null || dist < minToolDistance) {
                             closestToolRaider = raider
-                            closestToolRaiderIndex = index
                             minToolDistance = dist
                             closestToolstation = (pathToToolstation.target as BuildingPathTarget).building
                         }
@@ -148,7 +141,6 @@ export class Supervisor {
                         const dist = pathToTrainingSite.lengthSq
                         if (minTrainingDistance === null || dist < minTrainingDistance) {
                             closestTrainingRaider = raider
-                            closestTrainingRaiderIndex = index
                             minTrainingDistance = dist
                             closestTrainingArea = (pathToTrainingSite.target as BuildingPathTarget).building
                         }
@@ -157,13 +149,13 @@ export class Supervisor {
             })
             if (closestRaider) {
                 closestRaider.setJob(job)
-                unemployedRaider.splice(closestRaiderIndex, 1)
+                unemployedRaider.delete(closestRaider)
             } else if (closestToolRaider) {
                 closestToolRaider.setJob(new GetToolJob(this.entityMgr, requiredTool, closestToolstation), job)
-                unemployedRaider.splice(closestToolRaiderIndex, 1)
+                unemployedRaider.delete(closestToolRaider)
             } else if (closestTrainingRaider) {
                 closestTrainingRaider.setJob(new TrainRaiderJob(this.entityMgr, requiredTraining, closestTrainingArea), job)
-                unemployedRaider.splice(closestTrainingRaiderIndex, 1)
+                unemployedRaider.delete(closestTrainingRaider)
             }
         })
         unemployedRaider.forEach((raider) => {

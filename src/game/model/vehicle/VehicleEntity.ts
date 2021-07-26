@@ -26,7 +26,7 @@ export class VehicleEntity extends FulfillerEntity {
     driver: Raider = null
     callManJob: ManVehicleJob = null
     engineSound: PositionalAudio = null
-    carriedItems: MaterialEntity[] = []
+    carriedItems: Set<MaterialEntity> = new Set()
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity) {
         super(sceneMgr, entityMgr, entityType)
@@ -62,11 +62,11 @@ export class VehicleEntity extends FulfillerEntity {
     }
 
     grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
-        if (this.carriedItems.includes(carryItem)) return true
+        if (this.carriedItems.has(carryItem)) return true
         this.dropCarried()
         if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets(), elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.changeActivity(VehicleActivity.Stand, () => {
-                this.carriedItems.push(carryItem)
+                this.carriedItems.add(carryItem)
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
             })
         }
@@ -74,9 +74,9 @@ export class VehicleEntity extends FulfillerEntity {
     }
 
     dropCarried() {
-        if (this.carriedItems.length < 1) return
+        if (this.carriedItems.size < 1) return
         this.sceneEntity.dropAllCarriedItems()
-        this.carriedItems = []
+        this.carriedItems.clear()
     }
 
     addDriver(driver: Raider) {
@@ -130,7 +130,7 @@ export class VehicleEntity extends FulfillerEntity {
     }
 
     hasCapacity(): boolean {
-        return this.carriedItems.length < this.getCarryCapacity()
+        return this.carriedItems.size < this.getCarryCapacity()
     }
 
     getSpeed(): number {

@@ -76,7 +76,7 @@ export class SelectionChanged extends LocalEvent {
         this.buildingPowerSwitchState = entityMgr.selection.building?.powerSwitch
         this.vehicleHasCallManJob = entityMgr.selection.vehicles.every((v) => !!v.callManJob)
         this.noVehicleWithDriver = entityMgr.selection.vehicles.every((v) => !v.driver)
-        this.vehicleWithCarriedItems = entityMgr.selection.vehicles.some((v) => v.carriedItems.length > 0)
+        this.vehicleWithCarriedItems = entityMgr.selection.vehicles.some((v) => v.carriedItems.size > 0)
     }
 
 }
