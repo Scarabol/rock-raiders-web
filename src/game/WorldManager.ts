@@ -9,7 +9,6 @@ import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChange
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
-import { AnimEntityActivity } from './model/activities/AnimEntityActivity'
 import { EntityType } from './model/EntityType'
 import { GameResultState } from './model/GameResult'
 import { GameState } from './model/GameState'
@@ -125,8 +124,7 @@ export class WorldManager {
                         this.requestedRaiders--
                         EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
                         const raider = new Raider(this.sceneMgr, this.entityMgr)
-                        teleportBuilding.teleport.teleportIn(raider, this.entityMgr.raiders, this.entityMgr.raidersInBeam)
-                        this.entityMgr.raidersInBeam.push(raider)
+                        teleportBuilding.teleport.teleportInRaider(raider, this.entityMgr.raiders, this.entityMgr.raidersInBeam)
                     }
                 }
             }
@@ -147,14 +145,7 @@ export class WorldManager {
                             GameState.numCrystal -= stats.CostCrystal
                             EventBus.publishEvent(new MaterialAmountChanged())
                             const vehicle = VehicleFactory.createVehicleFromType(vType, this.sceneMgr, this.entityMgr)
-                            vehicle.sceneEntity.addToScene(teleportBuilding.primaryPathSurface.getCenterWorld2D(), teleportBuilding.sceneEntity.getHeading())
-                            vehicle.sceneEntity.changeActivity(AnimEntityActivity.TeleportIn, () => {
-                                vehicle.sceneEntity.changeActivity()
-                                vehicle.sceneEntity.makeSelectable(vehicle)
-                                this.entityMgr.vehiclesInBeam.remove(vehicle)
-                                this.entityMgr.vehicles.push(vehicle)
-                            })
-                            this.entityMgr.vehiclesInBeam.push(vehicle)
+                            teleportBuilding.teleport.teleportInVehicle(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam)
                             return true
                         }
                     })

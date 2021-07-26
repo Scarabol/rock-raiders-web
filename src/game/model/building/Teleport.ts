@@ -7,33 +7,47 @@ import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { MoveJob } from '../job/raider/MoveJob'
+import { Raider } from '../raider/Raider'
+import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { BuildingEntity } from './BuildingEntity'
 
 export abstract class Teleport {
 
     building: BuildingEntity // TODO instead hook in setter for position and heading
-    operating: boolean
-    powered: boolean
+    operating: boolean = false
+    powered: boolean = false
 
     canTeleportIn(entityType: EntityType): boolean {
         return this.powered && !this.operating
     }
 
-    teleportIn<T extends FulfillerEntity>(entity: T, listing: T[], beamListing: T[]) {
-        this.operating = true
+    teleportInRaider(raider: Raider, listing: Raider[], beamListing: Raider[]) {
         const heading = this.building.sceneEntity.getHeading()
-        entity.sceneEntity.addToScene(new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(this.building.sceneEntity.position2D.clone()), heading)
+        const worldPosition = new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(this.building.sceneEntity.position2D.clone())
+        const walkOutPos = this.building.primaryPathSurface.getRandomPosition()
+        this.teleportIn(raider, listing, beamListing, worldPosition, heading, walkOutPos)
+    }
+
+    teleportInVehicle(vehicle: VehicleEntity, listing: VehicleEntity[], beamListing: VehicleEntity[]) {
+        const worldPosition = this.building.primaryPathSurface.getCenterWorld2D()
+        const heading = this.building.sceneEntity.getHeading()
+        this.teleportIn(vehicle, listing, beamListing, worldPosition, heading, null)
+    }
+
+    private teleportIn<T extends FulfillerEntity>(entity: T, listing: T[], beamListing: T[], worldPosition: Vector2, heading: number, walkOutPos: Vector2) {
+        this.operating = true
+        entity.sceneEntity.addToScene(worldPosition, heading)
         entity.sceneEntity.playPositionalAudio(Sample[Sample.SND_teleport], false)
         entity.sceneEntity.changeActivity(RaiderActivity.TeleportIn, () => {
             this.operating = false
             entity.sceneEntity.changeActivity()
             entity.sceneEntity.makeSelectable(entity)
-            const walkOutPos = this.building.primaryPathSurface.getRandomPosition()
-            entity.setJob(new MoveJob(walkOutPos))
+            if (walkOutPos) entity.setJob(new MoveJob(walkOutPos))
             beamListing.remove(entity)
             listing.push(entity)
             EventBus.publishEvent(new RaidersChangedEvent(entity.entityMgr))
         })
+        beamListing.push(entity)
     }
 
 }
