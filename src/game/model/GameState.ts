@@ -1,8 +1,10 @@
 import { EventBus } from '../../event/EventBus'
 import { UsedCrystalChanged } from '../../event/WorldEvents'
+import { GameResultState } from './GameResult'
 
 export class GameState {
 
+    static gameResult: GameResultState = GameResultState.UNDECIDED
     static numCrystal: number = 0
     static numOre: number = 0
     static numBrick: number = 0
@@ -17,6 +19,7 @@ export class GameState {
     static discoveredCaverns: number = 0
 
     static reset() {
+        this.gameResult = GameResultState.UNDECIDED
         this.numCrystal = 0
         this.numOre = 0
         this.numBrick = 0

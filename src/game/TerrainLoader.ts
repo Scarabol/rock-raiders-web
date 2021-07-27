@@ -38,6 +38,7 @@ export class TerrainLoader {
                 const predugLevel = predugMap[r][c]
                 if (predugLevel === PredugMap.CAVERN_EXPOSED) {
                     if (surfaceType === SurfaceType.GROUND || surfaceType === SurfaceType.DIRT
+                        || surfaceType === SurfaceType.SOLID_ROCK || surfaceType === SurfaceType.HARD_ROCK // as seen in level 14
                         || surfaceType === SurfaceType.POWER_PATH_BUILDING) { // used by mods
                         surfaceType = SurfaceType.GROUND
                     } else if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA) {

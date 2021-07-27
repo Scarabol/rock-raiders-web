@@ -21,7 +21,7 @@ import { SelectionLayer } from './layer/SelectionLayer'
 
 export class GameScreen extends BaseScreen {
 
-    onLevelEnd: (result: GameResult) => any = () => console.log('Level aborted')
+    onLevelEnd: (result: GameResult) => any = (result) => console.log(`Level ended with: ${JSON.stringify(result)}`)
     gameLayer: GameLayer
     selectionLayer: SelectionLayer
     guiLayer: GuiMainLayer
@@ -47,6 +47,7 @@ export class GameScreen extends BaseScreen {
         this.worldMgr.sceneMgr = this.sceneMgr
         this.worldMgr.entityMgr = this.entityMgr
         this.worldMgr.jobSupervisor = new Supervisor(this.worldMgr.sceneMgr, this.worldMgr.entityMgr)
+        this.worldMgr.onLevelEnd = (result) => this.onLevelEnd(new GameResult(result, this.entityMgr, this.worldMgr))
         this.cursorLayer.worldMgr = this.worldMgr
         this.cursorLayer.sceneMgr = this.sceneMgr
         this.cursorLayer.entityMgr = this.entityMgr
@@ -83,7 +84,7 @@ export class GameScreen extends BaseScreen {
         this.entityMgr.reset()
         this.guiLayer.reset()
         console.log(`Starting level ${this.levelName} - ${this.levelConf.fullName}`)
-        this.worldMgr.setup(this.levelConf, (state) => this.onLevelEnd(new GameResult(state, this.entityMgr, this.worldMgr)))
+        this.worldMgr.setup(this.levelConf)
         this.sceneMgr.setupScene(this.levelConf)
         // setup GUI
         this.guiMgr.buildingCycleIndex = 0

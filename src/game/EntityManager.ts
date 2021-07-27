@@ -156,6 +156,7 @@ export class EntityManager {
         })
         if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBus.publishEvent(new RaidersChangedEvent(this))
         this.buildingsUndiscovered = EntityManager.removeInRect(this.buildingsUndiscovered, minX, maxX, minZ, maxZ, (b) => {
+            b.updateEnergyState()
             b.entityMgr.buildings.push(b)
             EventBus.publishEvent(new BuildingsChangedEvent(b.entityMgr))
         })

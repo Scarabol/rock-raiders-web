@@ -3,6 +3,7 @@ import { WorldManager } from '../WorldManager'
 
 export enum GameResultState {
 
+    UNDECIDED,
     QUIT,
     COMPLETE,
     FAILED,

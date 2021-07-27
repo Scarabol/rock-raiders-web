@@ -16,7 +16,6 @@ export class NerpRunner {
 
     entityMgr: EntityManager
     debug = false
-    onLevelEnd: (state: GameResultState) => any = null
 
     timer: number = 0
     registers = new Array(8).fill(0)
@@ -121,7 +120,7 @@ export class NerpRunner {
     setLevelCompleted() {
         console.log('Nerp runner marks level as complete')
         this.halted = true
-        this.onLevelEnd(GameResultState.COMPLETE)
+        GameState.gameResult = GameResultState.COMPLETE
     }
 
     /**
@@ -130,7 +129,7 @@ export class NerpRunner {
     setLevelFail() {
         console.log(`NerpRunner marks level as failed; at line: ${this.scriptLines[this.programCounter]}`)
         this.halted = true
-        this.onLevelEnd(GameResultState.FAILED)
+        GameState.gameResult = GameResultState.FAILED
     }
 
     /**
@@ -192,6 +191,10 @@ export class NerpRunner {
      */
     getMinifiguresOnLevel() {
         return this.entityMgr.raiders.length
+    }
+
+    getMonstersOnLevel() {
+        return this.entityMgr.rockMonsters.length
     }
 
     /**

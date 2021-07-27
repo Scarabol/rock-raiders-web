@@ -20,6 +20,7 @@ import { Supervisor } from './Supervisor'
 
 export class WorldManager {
 
+    onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
     sceneMgr: SceneManager
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
@@ -29,7 +30,6 @@ export class WorldManager {
     elapsedGameTimeMs: number = 0
     requestedRaiders: number = 0
     spawnRaiderTimer: number = 0
-    started: boolean = false
     requestedVehicleTypes: EntityType[] = []
     spawnVehicleTimer: number = 0
 
@@ -48,8 +48,8 @@ export class WorldManager {
         })
     }
 
-    setup(levelConf: LevelEntryCfg, onLevelEnd: (state: GameResultState) => any) {
-        this.started = false
+    setup(levelConf: LevelEntryCfg) {
+        GameState.gameResult = GameResultState.UNDECIDED
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         this.oxygenRate = levelConf.oxygenRate
         this.elapsedGameTimeMs = 0
@@ -60,22 +60,19 @@ export class WorldManager {
         // load nerp script
         this.nerpRunner = NerpParser.parse(this.entityMgr, ResourceManager.getResource(levelConf.nerpFile))
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
-        this.nerpRunner.onLevelEnd = onLevelEnd
     }
 
     start() {
-        this.started = true
         this.startLoop(UPDATE_INTERVAL_MS)
     }
 
     stop() {
-        this.started = false
         this.stopLoop()
     }
 
     private startLoop(timeout: number) {
         this.stopLoop() // avoid duplicate timeouts
-        if (this.started) this.gameLoopTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), timeout)
+        this.gameLoopTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), timeout)
     }
 
     private stopLoop() {
@@ -92,6 +89,10 @@ export class WorldManager {
         updateSafe(this.sceneMgr.terrain, elapsedMs)
         updateSafe(this.jobSupervisor, elapsedMs)
         updateSafe(this.nerpRunner, elapsedMs)
+        if (GameState.gameResult !== GameResultState.UNDECIDED) {
+            this.onLevelEnd(GameState.gameResult)
+            return
+        }
         const endUpdate = window.performance.now()
         const updateDurationMs = endUpdate - startUpdate
         const sleepForMs = UPDATE_INTERVAL_MS - Math.round(updateDurationMs)

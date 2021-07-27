@@ -47,7 +47,6 @@ export class Supervisor {
     }
 
     reset() {
-        this.jobs.forEach((j) => j.cancel())
         this.jobs = []
     }
 

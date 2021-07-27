@@ -104,9 +104,12 @@ export class CursorLayer extends ScreenLayer {
         if (intersectsMaterial.length > 0) {
             return this.determineMaterialCursor(intersectsMaterial)
         }
-        const intersectsSurface = raycaster.intersectObjects(this.sceneMgr.terrain.floorGroup.children)
-        if (intersectsSurface.length > 0) {
-            return this.determineSurfaceCursor(intersectsSurface[0].object.userData?.surface)
+        const surfaces = this.sceneMgr.terrain?.floorGroup?.children
+        if (surfaces) {
+            const intersectsSurface = raycaster.intersectObjects(surfaces)
+            if (intersectsSurface.length > 0) {
+                return this.determineSurfaceCursor(intersectsSurface[0].object.userData?.surface)
+            }
         }
         return Cursor.Pointer_Standard
     }

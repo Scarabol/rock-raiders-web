@@ -76,6 +76,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Important
 
 - Two buttons in priority list can be hovered/pressed/released at the same time
+- Lava erosion not implemented (test with level 14)
 
 ### Nice to have
 
