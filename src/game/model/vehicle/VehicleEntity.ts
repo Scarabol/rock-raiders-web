@@ -64,7 +64,6 @@ export class VehicleEntity extends FulfillerEntity {
 
     grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
         if (this.carriedItems.has(carryItem)) return true
-        this.dropCarried()
         if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets(), elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.changeActivity(AnimEntityActivity.Stand, () => {
                 this.carriedItems.add(carryItem)
