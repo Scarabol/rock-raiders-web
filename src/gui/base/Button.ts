@@ -1,7 +1,8 @@
-import { SoundManager } from '../../audio/SoundManager'
+import { Sample } from '../../audio/Sample'
 import { ButtonCfg } from '../../cfg/ButtonCfg'
 import { asArray } from '../../core/Util'
 import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
+import { PlaySoundEvent } from '../../event/LocalEvents'
 import { GuiResourceCache } from '../GuiResourceCache'
 import { BaseElement } from './BaseElement'
 
@@ -44,8 +45,8 @@ export class Button extends BaseElement {
 
     showTooltip() {
         // TODO show tooltip rendering
-        if (this.sfxName) SoundManager.playSound(this.sfxName)
-        if (this.sfxTooltip) SoundManager.playSound(this.sfxTooltip)
+        if (this.sfxName) this.publishEvent(new PlaySoundEvent(Sample[this.sfxName]))
+        if (this.sfxTooltip) this.publishEvent(new PlaySoundEvent(Sample[this.sfxTooltip]))
     }
 
     checkHover(cx, cy): boolean {

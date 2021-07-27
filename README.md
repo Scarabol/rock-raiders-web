@@ -95,7 +95,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Selection layer has bad performance and behaves funny when hovering GUI
 - Change cursor to X when over disabled IconPanelButtons
 - Add captain flh animation to mission briefing
-- Tooltip SFX sounds not working for priority panel
 - Seams do not show tear down progress while drilling
 - Driver may sit wrong way around on vehicle
 - Arrows not shown on power station flaps
