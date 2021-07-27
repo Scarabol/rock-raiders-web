@@ -99,22 +99,24 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         if (!this.job || this.selected || this.inBeam) return
         if (this.job.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
-        } else {
-            const carryItem = this.job.getCarryItem()
-            if ((!carryItem || this.grabJobItem(elapsedMs, carryItem)) && this.moveToClosestTarget(this.job.getWorkplaces(), elapsedMs) === MoveState.TARGET_REACHED) {
-                if (this.job.isReadyToComplete()) {
-                    const workActivity = this.job.getWorkActivity() || this.sceneEntity.getDefaultActivity()
-                    if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
-                        this.workAudio = this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Drill], true)
-                    }
-                    this.sceneEntity.changeActivity(workActivity, () => {
-                        this.completeJob()
-                    }, this.job.getWorkDuration(this))
-                } else {
-                    this.sceneEntity.changeActivity()
-                }
-            }
+            return
         }
+        const carryItem = this.job.getCarryItem()
+        const grabbedJobItem = !carryItem || this.grabJobItem(elapsedMs, carryItem)
+        if (!grabbedJobItem) return
+        const workplaceReached = this.moveToClosestTarget(this.job.getWorkplaces(), elapsedMs) === MoveState.TARGET_REACHED
+        if (!workplaceReached) return
+        if (!this.job.isReadyToComplete()) {
+            this.sceneEntity.changeActivity()
+            return
+        }
+        const workActivity = this.job.getWorkActivity() || this.sceneEntity.getDefaultActivity()
+        if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
+            this.workAudio = this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Drill], true)
+        }
+        this.sceneEntity.changeActivity(workActivity, () => {
+            this.completeJob()
+        }, this.job.getWorkDuration(this))
     }
 
     abstract grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean
