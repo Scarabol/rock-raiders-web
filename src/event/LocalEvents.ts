@@ -180,8 +180,7 @@ export class PlaySoundEvent extends LocalEvent {
 export class UpdateRadarTerrain extends LocalEvent {
 
     surfaces: MapSurfaceRect[] = []
-    tileX: number
-    tileY: number
+    focusTile: { x: number, y: number } = null
 
     constructor(terrain: Terrain, mapFocus: Vector3) {
         super(EventKey.UPDATE_RADAR_TERRAIN)
@@ -190,8 +189,7 @@ export class UpdateRadarTerrain extends LocalEvent {
                 this.surfaces.push(new MapSurfaceRect(s))
             }
         })
-        this.tileX = Math.floor(mapFocus.x / TILESIZE)
-        this.tileY = Math.floor(mapFocus.z / TILESIZE)
+        if (mapFocus) this.focusTile = {x: Math.floor(mapFocus.x / TILESIZE), y: Math.floor(mapFocus.z / TILESIZE)}
     }
 
 }

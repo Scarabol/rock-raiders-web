@@ -35,8 +35,10 @@ export class MapPanel extends Panel {
                 this.surfaceMap[s.x] = this.surfaceMap[s.x] || []
                 this.surfaceMap[s.x][s.y] = s
             })
-            this.offsetX = event.tileX * this.surfaceRectSize - this.width / 2
-            this.offsetY = event.tileY * this.surfaceRectSize - this.height / 2
+            if (event.focusTile) {
+                this.offsetX = event.focusTile.x * this.surfaceRectSize - this.width / 2
+                this.offsetY = event.focusTile.y * this.surfaceRectSize - this.height / 2
+            }
             this.redrawMap()
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_SURFACE, (event: UpdateRadarSurface) => {

@@ -3,7 +3,7 @@ import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
 import { asArray, getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
-import { SelectionChanged, UpdateRadarSurface } from '../../../event/LocalEvents'
+import { SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
 import { HEIGHT_MULTIPLIER, TILESIZE } from '../../../params'
@@ -97,6 +97,7 @@ export class Surface implements Selectable {
             w.needsMeshUpdate = true
             if (!w.isSupported()) w.collapse()
         })
+        EventBus.publishEvent(new UpdateRadarTerrain(this.terrain, null))
         return caveFound
     }
 
