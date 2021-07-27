@@ -11,6 +11,7 @@ import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
 import { ManVehicleJob } from '../job/ManVehicleJob'
+import { MoveJob } from '../job/raider/MoveJob'
 import { Crystal } from '../material/Crystal'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { Ore } from '../material/Ore'
@@ -143,6 +144,14 @@ export class VehicleEntity extends FulfillerEntity {
 
     getCarryCapacity(): number {
         return this.stats.MaxCarry?.[this.level] || 0
+    }
+
+    unblockTeleporter() {
+        const blockedTeleporter = this.sceneEntity.surfaces.find((s) => !!s.building?.teleport && s.building?.primaryPathSurface === s)
+        if (blockedTeleporter) {
+            const walkableNeighbor = blockedTeleporter.neighbors.find((n) => !n.site && n.isWalkable() && !n.building?.teleport)
+            if (walkableNeighbor) this.setJob(new MoveJob(walkableNeighbor.getCenterWorld2D()))
+        }
     }
 
 }

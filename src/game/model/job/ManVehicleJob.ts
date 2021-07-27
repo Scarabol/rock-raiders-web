@@ -32,6 +32,7 @@ export class ManVehicleJob extends RaiderJob {
         this.vehicle.addDriver(this.raider)
         this.vehicle.callManJob = null
         super.onJobComplete()
+        this.vehicle.unblockTeleporter()
     }
 
     getRequiredTraining(): RaiderTraining {

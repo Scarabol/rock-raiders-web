@@ -163,8 +163,12 @@ export class Supervisor {
             if (blockedSite) raider.setJob(new MoveJob(blockedSite.site.getWalkOutSurface().getRandomPosition()))
         })
         unemployedVehicles.forEach((vehicle) => {
-            const blockedSite = vehicle.sceneEntity.surfaces.find((s) => !!s.site)
-            if (blockedSite) vehicle.setJob(new MoveJob(blockedSite.site.getWalkOutSurface().getRandomPosition()))
+            const blockedSite = vehicle.sceneEntity.surfaces.find((s) => !!s.site && !s.building?.teleport)
+            if (blockedSite) {
+                vehicle.setJob(new MoveJob(blockedSite.site.getWalkOutSurface().getRandomPosition()))
+            } else {
+                vehicle.unblockTeleporter()
+            }
         })
     }
 

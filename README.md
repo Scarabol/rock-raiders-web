@@ -29,7 +29,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Vehicles (v0.5.x)
 
-- Maned vehicle do not auto move out of teleporter path surface
 - Refactor job system to allow multi-carry jobs
 - Refactor upgrade system and make vehicles upgradeable
 - Take some screenshots with vehicles
