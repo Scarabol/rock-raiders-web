@@ -76,7 +76,7 @@ export class VehicleEntity extends FulfillerEntity {
 
     dropCarried() {
         if (this.carriedItems.size < 1) return
-        this.sceneEntity.dropAllCarriedItems()
+        this.sceneEntity.dropAllEntities()
         this.carriedItems.clear()
     }
 

@@ -17,6 +17,7 @@ export class AnimatedSceneEntity extends SceneEntity {
     upgrades: SceneMesh[] = []
     animatedUpgrades: AnimatedSceneEntity[] = []
     bodiesByName: Map<string, SceneMesh> = new Map()
+    carriedByIndex: Map<number, SceneEntity> = new Map()
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
         super(sceneMgr)
@@ -26,6 +27,12 @@ export class AnimatedSceneEntity extends SceneEntity {
     disposeFromScene() {
         super.disposeFromScene()
         this.animation?.stop()
+    }
+
+    update(elapsedMs: number) {
+        super.update(elapsedMs)
+        this.animation?.update(elapsedMs)
+        this.upgrades.forEach((u) => u.update(elapsedMs))
     }
 
     changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
@@ -57,6 +64,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.applyDefaultUpgrades(activity)
         this.add(this.animation.polyRootGroup)
         this.animation.start(onAnimationDone, durationTimeMs)
+        this.addCarriedToJoints() // keep carried items
     }
 
     private disposeUpgrades() { // FIXME vehicles: create each mesh/upgrade/animation only once and re-use it
@@ -67,12 +75,6 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.animatedUpgrades.forEach((u) => {
             u.group.parent?.remove(u.group)
         })
-    }
-
-    update(elapsedMs: number) {
-        super.update(elapsedMs)
-        this.animation?.update(elapsedMs)
-        this.upgrades.forEach((u) => u.update(elapsedMs))
     }
 
     private applyDefaultUpgrades(activity: AnimEntityActivity) {
@@ -103,6 +105,17 @@ export class AnimatedSceneEntity extends SceneEntity {
 
     protected getNullJointForUpgrade(upgrade: AnimationEntityUpgrade): SceneMesh | undefined {
         return this.animation.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
+    }
+
+    private addCarriedToJoints() {
+        this.carriedByIndex.forEach((item, index) => {
+            const carryJoint = this.animation.carryJoints[index]
+            if (carryJoint) {
+                carryJoint.add(item.group)
+            } else {
+                console.warn(`Could not find carry joint with index ${index} in ${this.animation.carryJoints}`)
+            }
+        })
     }
 
     flipXAxis() {
@@ -141,6 +154,35 @@ export class AnimatedSceneEntity extends SceneEntity {
             result = max
         }
         return result
+    }
+
+    pickupEntity(entity: SceneEntity) {
+        const foundCarryJoint = this.animation.carryJoints.some((carryJoint, index) => {
+            if (carryJoint.children.length < 1) {
+                this.carriedByIndex.set(index, entity)
+                carryJoint.add(entity.group)
+                return true
+            }
+        })
+        if (!foundCarryJoint) {
+            console.warn('Could not find empty carry joint to attach carried entity')
+        }
+        entity.position.set(0, 0, 0)
+    }
+
+    dropAllEntities(): SceneEntity[] {
+        const dropped = Array.from(this.carriedByIndex.values())
+        const position = this.position.clone()
+        this.carriedByIndex.forEach((item, index) => {
+            const carryJoint = this.animation.carryJoints[index]
+            if (carryJoint) {
+                carryJoint.remove(item.group)
+                carryJoint.getWorldPosition(position)
+            }
+            item.position.copy(position)
+        })
+        this.carriedByIndex.clear()
+        return dropped
     }
 
 }

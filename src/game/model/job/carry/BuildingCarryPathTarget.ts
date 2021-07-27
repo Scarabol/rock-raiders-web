@@ -31,7 +31,7 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
             this.building.sceneEntity.pickupEntity(item.sceneEntity)
             this.building.sceneEntity.changeActivity(BuildingActivity.Deposit, () => {
                 this.building.sceneEntity.changeActivity()
-                this.building.sceneEntity.dropEntity(item.sceneEntity)
+                this.building.sceneEntity.dropAllEntities()
                 BuildingCarryPathTarget.addItemToStorage(item)
             })
         } else {

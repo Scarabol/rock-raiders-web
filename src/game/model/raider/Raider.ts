@@ -115,7 +115,7 @@ export class Raider extends FulfillerEntity {
 
     dropCarried() {
         if (!this.carries) return
-        this.sceneEntity.dropAllCarriedItems()
+        this.sceneEntity.dropAllEntities()
         this.carries = null
     }
 
