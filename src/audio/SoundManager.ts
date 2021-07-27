@@ -1,8 +1,8 @@
-import { ResourceCache } from '../resource/ResourceCache'
 import { Sample } from './Sample'
 
 export class SoundManager {
 
+    static sfxByKey: Map<string, any> = new Map()
     static audioBufferCache: Map<string, AudioBuffer> = new Map()
     static audioContext
 
@@ -35,9 +35,9 @@ export class SoundManager {
                 resolve(cachedSound)
                 return
             }
-            const sfxContent = ResourceCache.sfxByKey.get(sfxName)
+            const sfxContent = this.sfxByKey.get(sfxName)
             if (!sfxContent) {
-                console.error(`Could not find ${sfxName} in: `, ResourceCache.sfxByKey)
+                console.error(`Could not find ${sfxName} in: `, this.sfxByKey)
                 return
             }
             const data = sfxContent.slice(0) // slice used to create copy, because array gets auto detached after decode

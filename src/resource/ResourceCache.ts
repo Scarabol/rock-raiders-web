@@ -15,7 +15,6 @@ export class ResourceCache {
     static fontCache: Map<string, BitmapFont> = new Map()
     static stats: GameStatsCfg
     static cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
-    static sfxByKey: Map<string, any> = new Map()
 
     static cfg(...keys: string[]): any {
         return iGet(this.configuration, ...keys)
