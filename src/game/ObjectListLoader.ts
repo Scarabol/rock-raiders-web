@@ -106,19 +106,31 @@ export class ObjectListLoader {
                     const iceMonster = new IceMonster(sceneMgr, entityMgr)
                     iceMonster.sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
                     iceMonster.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
-                    entityMgr.rockMonsters.push(iceMonster)
+                    if (iceMonster.sceneEntity.visible) {
+                        entityMgr.rockMonsters.push(iceMonster)
+                    } else {
+                        entityMgr.undiscoveredRockMonsters.push(iceMonster)
+                    }
                     break
                 case EntityType.LAVA_MONSTER:
                     const lavaMonster = new LavaMonster(sceneMgr, entityMgr)
                     lavaMonster.sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
                     lavaMonster.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
-                    entityMgr.rockMonsters.push(lavaMonster)
+                    if (lavaMonster.sceneEntity.visible) {
+                        entityMgr.rockMonsters.push(lavaMonster)
+                    } else {
+                        entityMgr.undiscoveredRockMonsters.push(lavaMonster)
+                    }
                     break
                 case EntityType.ROCK_MONSTER:
                     const rockMonster = new RockMonster(sceneMgr, entityMgr)
                     rockMonster.sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
                     rockMonster.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
-                    entityMgr.rockMonsters.push(rockMonster)
+                    if (rockMonster.sceneEntity.visible) {
+                        entityMgr.rockMonsters.push(rockMonster)
+                    } else {
+                        entityMgr.undiscoveredRockMonsters.push(rockMonster)
+                    }
                     break
                 default:
                     console.warn(`Object type ${olEntry.type} not yet implemented`)

@@ -38,6 +38,7 @@ export class EntityManager {
     spiders: SmallSpider[] = []
     bats: Bat[] = []
     rockMonsters: RockMonster[] = []
+    undiscoveredRockMonsters: RockMonster[] = []
     vehicles: VehicleEntity[] = []
     vehiclesUndiscovered: VehicleEntity[] = []
     vehiclesInBeam: VehicleEntity[] = []
@@ -66,6 +67,7 @@ export class EntityManager {
         this.spiders = []
         this.bats = []
         this.rockMonsters = []
+        this.undiscoveredRockMonsters = []
         this.vehicles = []
         this.vehiclesUndiscovered = []
         this.vehiclesInBeam = []
@@ -82,6 +84,7 @@ export class EntityManager {
         this.spiders.forEach((s) => updateSafe(s, elapsedMs))
         this.bats.forEach((b) => updateSafe(b, elapsedMs))
         this.rockMonsters.forEach((m) => updateSafe(m, elapsedMs))
+        this.undiscoveredRockMonsters.forEach((m) => updateSafe(m, elapsedMs))
         this.vehicles.forEach((v) => updateSafe(v, elapsedMs))
         this.vehiclesInBeam.forEach((v) => updateSafe(v, elapsedMs))
         this.completedBuildingSites.forEach((b) => updateSafe(b, elapsedMs))
@@ -99,6 +102,7 @@ export class EntityManager {
         this.spiders.forEach((m) => m.disposeFromWorld())
         this.bats.forEach((b) => b.disposeFromWorld())
         this.rockMonsters.forEach((m) => m.disposeFromWorld())
+        this.undiscoveredRockMonsters.forEach((m) => m.disposeFromWorld())
         this.vehicles.forEach((v) => v.disposeFromWorld())
         this.vehiclesInBeam.forEach((v) => v.disposeFromWorld())
     }
@@ -174,9 +178,12 @@ export class EntityManager {
                 EventBus.publishEvent(new RaiderDiscoveredEvent(driver.sceneEntity.position.clone()))
             }
         })
+        this.undiscoveredRockMonsters = EntityManager.removeInRect(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
+            m.entityMgr.rockMonsters.push(m)
+        })
     }
 
-    private static removeInRect<T extends Raider | BuildingEntity | MaterialEntity | VehicleEntity>(listing: T[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: T) => any) {
+    private static removeInRect<T extends Raider | BuildingEntity | MaterialEntity | VehicleEntity | RockMonster>(listing: T[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: T) => any) {
         return listing.filter((e) => {
             const pos = e.sceneEntity.position2D.clone()
             const discovered = pos.x >= minX && pos.x < maxX && pos.y >= minZ && pos.y < maxZ
