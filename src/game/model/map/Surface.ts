@@ -158,6 +158,8 @@ export class Surface implements Selectable {
         }
         this.cancelJobs()
         this.terrain.removeFallInOrigin(this)
+        const droppedOre = this.containedOres + (this.surfaceType === SurfaceType.ORE_SEAM ? this.seamLevel : 0)
+        const droppedCrystals = this.containedCrystals + (this.surfaceType === SurfaceType.CRYSTAL_SEAM ? this.seamLevel : 0)
         this.setSurfaceType(SurfaceType.RUBBLE4)
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += 4
@@ -165,11 +167,7 @@ export class Surface implements Selectable {
         const caveFound = this.discover()
         if (caveFound) EventBus.publishEvent(new CavernDiscovered())
         // drop contained ores and crystals
-        this.dropContainedOre(this.containedOres - 4)
-        for (let c = 0; c < this.containedCrystals; c++) {
-            const crystal = this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), this.getRandomPosition())
-            EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
-        }
+        this.dropContainedMaterials(droppedOre, droppedCrystals)
         // check for unsupported neighbors
         for (let x = this.x - 1; x <= this.x + 1; x++) {
             for (let y = this.y - 1; y <= this.y + 1; y++) {
@@ -185,11 +183,15 @@ export class Surface implements Selectable {
         this.playPositionalSample(Sample.SFX_RockBreak)
     }
 
-    private dropContainedOre(dropAmount: number) {
-        for (let c = 0; c < dropAmount && this.containedOres > 0; c++) {
+    private dropContainedMaterials(droppedOre: number, droppedCrystals: number) {
+        for (let c = 0; c < droppedOre && this.containedOres > 0; c++) {
             this.containedOres--
             this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), this.getRandomPosition())
             EventBus.publishEvent(new OreFoundEvent())
+        }
+        for (let c = 0; c < droppedCrystals; c++) {
+            const crystal = this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), this.getRandomPosition())
+            EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
         }
     }
 
@@ -227,7 +229,7 @@ export class Surface implements Selectable {
                 this.setSurfaceType(SurfaceType.GROUND)
                 break
         }
-        this.dropContainedOre(this.containedOres - this.rubblePositions.length)
+        this.dropContainedMaterials(this.containedOres - this.rubblePositions.length, 0)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
