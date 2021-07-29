@@ -1,16 +1,13 @@
 import { encodeChar } from './EncodingHelper'
 
 const enum PARSING_STATE {
-
     LOOKING_FOR_KEY,
     INSIDE_KEY,
     LOOKING_FOR_VALUE,
     INSIDE_VALUE,
-
 }
 
 export class CfgFileParser {
-
     static parse(buffer): any {
         const result = {}
         const ancestry = []
@@ -155,5 +152,4 @@ export class CfgFileParser {
             return num
         }
     }
-
 }

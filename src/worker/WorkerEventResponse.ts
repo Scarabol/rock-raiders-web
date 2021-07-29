@@ -2,7 +2,6 @@ import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { WorkerResponse } from './WorkerResponse'
 
 export class WorkerEventResponse extends WorkerResponse {
-
     eventId: string
     eventConsumed: boolean
 
@@ -11,5 +10,4 @@ export class WorkerEventResponse extends WorkerResponse {
         this.eventId = eventId
         this.eventConsumed = eventConsumed
     }
-
 }

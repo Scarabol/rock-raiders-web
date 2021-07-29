@@ -10,7 +10,6 @@ import { BaseElement } from './base/BaseElement'
 import { Panel } from './base/Panel'
 
 export abstract class GuiWorker extends OffscreenWorker {
-
     rootElement: BaseElement = new BaseElement(null)
     panels: Panel[] = []
 
@@ -63,5 +62,4 @@ export abstract class GuiWorker extends OffscreenWorker {
     handleWheelEvent(event: GameWheelEvent): boolean {
         return !this.context || this.context.getImageData(event.canvasX, event.canvasY, 1, 1).data[3] > 0
     }
-
 }

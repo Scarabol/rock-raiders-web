@@ -4,7 +4,6 @@ import { BaseElement } from './BaseElement'
 import { Button } from './Button'
 
 export class ToggleButton extends Button {
-
     toggleState: boolean = false
 
     constructor(parent: BaseElement, btnCfg: ButtonCfg) {
@@ -67,6 +66,5 @@ export class ToggleButton extends Button {
     release(): boolean {
         return false
     }
-
 }
 

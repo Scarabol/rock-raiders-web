@@ -7,7 +7,6 @@ import { SurfaceType } from '../map/SurfaceType'
 import { BuildingSite } from './BuildingSite'
 
 export class PowerPathBuildingSite extends BuildingSite {
-
     constructor(entityMgr: EntityManager, surface: Surface) {
         super(entityMgr, surface, null, null, null, null)
         surface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING_SITE)
@@ -16,5 +15,4 @@ export class PowerPathBuildingSite extends BuildingSite {
         entityMgr.buildingSites.push(this)
         EventBus.publishEvent(new DeselectAll())
     }
-
 }

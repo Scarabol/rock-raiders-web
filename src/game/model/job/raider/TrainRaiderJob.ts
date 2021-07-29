@@ -10,7 +10,6 @@ import { RaiderTraining } from '../../raider/RaiderTraining'
 import { RaiderJob } from './RaiderJob'
 
 export class TrainRaiderJob extends RaiderJob {
-
     entityMgr: EntityManager
     training: RaiderTraining
     building: BuildingEntity
@@ -47,5 +46,4 @@ export class TrainRaiderJob extends RaiderJob {
     getWorkDuration(fulfiller: FulfillerEntity): number {
         return 10000 // XXX adjust training time
     }
-
 }

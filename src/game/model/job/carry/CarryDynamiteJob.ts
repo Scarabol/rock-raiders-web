@@ -4,7 +4,6 @@ import { RaiderTraining } from '../../raider/RaiderTraining'
 import { CarryJob } from './CarryJob'
 
 export class CarryDynamiteJob extends CarryJob<Dynamite> {
-
     color: number = 0xa06060
 
     constructor(dynamite: Dynamite) {
@@ -27,5 +26,4 @@ export class CarryDynamiteJob extends CarryJob<Dynamite> {
             // TODO damage raider, vehicle, buildings
         })
     }
-
 }

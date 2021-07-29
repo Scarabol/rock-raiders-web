@@ -1,7 +1,6 @@
 import { BaseButtonCfg } from './BaseButtonCfg'
 
 export class InfoButtonCfg extends BaseButtonCfg {
-
     constructor(buttonImageFilename: string) {
         super()
         this.normalFile = buttonImageFilename
@@ -11,5 +10,4 @@ export class InfoButtonCfg extends BaseButtonCfg {
         this.relX = 0
         this.relY = 0
     }
-
 }

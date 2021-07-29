@@ -20,7 +20,6 @@ import { SceneManager } from './SceneManager'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
-
     static loadObjectList(objectList: Map<string, ObjectListEntryCfg>, disableStartTeleport: boolean, sceneMgr: SceneManager, entityMgr: EntityManager) {
         const vehicleKeyToDriver = new Map<string, Raider>()
         const vehicleByKey = new Map<string, VehicleEntity>()
@@ -147,5 +146,4 @@ export class ObjectListLoader {
             vehicle.addDriver(driver)
         })
     }
-
 }

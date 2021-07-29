@@ -20,7 +20,6 @@ import { PriorityPositionsEntry } from './toppanel/PriorityPositionsEntry'
 import { TopPanel } from './toppanel/TopPanel'
 
 export class GuiMainWorker extends GuiWorker {
-
     panelRadar: RadarPanel
     panelMessages: MessagePanel
     panelMessagesSide: Panel
@@ -79,7 +78,6 @@ export class GuiMainWorker extends GuiWorker {
         }
         return true
     }
-
 }
 
 const worker: Worker = self as any

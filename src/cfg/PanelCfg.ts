@@ -1,5 +1,4 @@
 export class PanelCfg {
-
     filename: string
     xOut: number
     yOut: number
@@ -9,5 +8,4 @@ export class PanelCfg {
     constructor(cfgValue: any) {
         [this.filename, this.xOut, this.yOut, this.xIn, this.yIn] = cfgValue
     }
-
 }

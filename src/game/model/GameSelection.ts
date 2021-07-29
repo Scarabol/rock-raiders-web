@@ -17,7 +17,6 @@ import { RaiderTool } from './raider/RaiderTool'
 import { VehicleEntity } from './vehicle/VehicleEntity'
 
 export class GameSelection {
-
     surface: Surface = null
     building: BuildingEntity = null
     raiders: Raider[] = []
@@ -180,5 +179,4 @@ export class GameSelection {
     canPickup(): boolean {
         return this.raiders.some((r) => r.hasCapacity()) || this.vehicles.some((v) => v.hasCapacity())
     }
-
 }

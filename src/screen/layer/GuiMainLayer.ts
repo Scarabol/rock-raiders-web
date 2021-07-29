@@ -2,7 +2,6 @@ import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { OffscreenLayer } from './OffscreenLayer'
 
 export class GuiMainLayer extends OffscreenLayer {
-
     onOptionsShow: () => any = () => console.log('Show options triggered')
 
     constructor() {
@@ -21,5 +20,4 @@ export class GuiMainLayer extends OffscreenLayer {
     setSpaceToContinue(state: boolean) {
         this.sendMessage({type: WorkerMessageType.SPACE_TO_CONINUE, messageState: state})
     }
-
 }

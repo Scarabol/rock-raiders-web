@@ -2,16 +2,13 @@ import { EntityManager } from '../EntityManager'
 import { WorldManager } from '../WorldManager'
 
 export enum GameResultState {
-
     UNDECIDED,
     QUIT,
     COMPLETE,
     FAILED,
-
 }
 
 export class GameResult {
-
     state: GameResultState
     numBuildings: number
     numRaiders: number
@@ -25,5 +22,4 @@ export class GameResult {
         this.numMaxRaiders = entityMgr.getMaxRaiders()
         this.gameTimeSeconds = Math.round(worldMgr.elapsedGameTimeMs / 1000)
     }
-
 }

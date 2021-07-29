@@ -5,7 +5,6 @@ import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
 
 export class UpgradeRaiderJob extends RaiderJob {
-
     building: BuildingEntity
     workplaces: PathTarget[]
 
@@ -31,5 +30,4 @@ export class UpgradeRaiderJob extends RaiderJob {
     getWorkDuration(fulfiller: FulfillerEntity): number {
         return 30000 // XXX adjust upgrade time
     }
-
 }

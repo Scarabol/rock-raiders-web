@@ -2,7 +2,6 @@ import { BaseConfig } from '../../cfg/BaseConfig'
 import { TextInfoMessageEntryConfig } from './TextInfoMessageEntryConfig'
 
 export class TextInfoMessageConfig extends BaseConfig {
-
     textCrystalFound: TextInfoMessageEntryConfig = null
     textSpaceToContinue: TextInfoMessageEntryConfig = null
     textCavernDiscovered: TextInfoMessageEntryConfig = null
@@ -21,5 +20,4 @@ export class TextInfoMessageConfig extends BaseConfig {
     parseValue(lCfgKeyName: string, cfgValue: any): any {
         return new TextInfoMessageEntryConfig(cfgValue)
     }
-
 }

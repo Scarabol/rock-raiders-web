@@ -6,7 +6,6 @@ import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectRubblePanel extends SelectBasePanel {
-
     hasRubble: boolean = false
     canPlaceFence: boolean = false
 
@@ -30,5 +29,4 @@ export class SelectRubblePanel extends SelectBasePanel {
         this.hasRubble = false
         this.canPlaceFence = false
     }
-
 }

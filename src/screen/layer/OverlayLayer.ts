@@ -5,7 +5,6 @@ import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
 
 export class OverlayLayer extends OffscreenLayer {
-
     onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log(`set space to continue: ${state}`)
     onAbortGame: () => any = () => console.log('abort the game')
     onRestartGame: () => any = () => console.log('restart the game')
@@ -42,5 +41,4 @@ export class OverlayLayer extends OffscreenLayer {
     showOptions() {
         this.sendMessage({type: WorkerMessageType.SHOW_OPTIONS})
     }
-
 }

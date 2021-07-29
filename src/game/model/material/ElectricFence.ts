@@ -12,7 +12,6 @@ import { Selectable } from '../Selectable'
 import { MaterialEntity } from './MaterialEntity'
 
 export class ElectricFence extends MaterialEntity implements Selectable, BeamUpEntity {
-
     targetSurface: Surface
     target: CarryPathTarget[]
     selected: boolean = false
@@ -89,5 +88,4 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
         super.disposeFromWorld()
         this.entityMgr.placedFences.remove(this)
     }
-
 }

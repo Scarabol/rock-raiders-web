@@ -4,7 +4,6 @@ import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../../params'
 
 export class ScreenLayer {
-
     canvas: HTMLCanvasElement
     context: CanvasRenderingContext2D
     onRedraw: (context: SpriteContext) => any
@@ -88,11 +87,9 @@ export class ScreenLayer {
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {
         return new Promise<HTMLCanvasElement>((resolve) => resolve(this.canvas))
     }
-
 }
 
 export class ScaledLayer extends ScreenLayer {
-
     fixedWidth: number = SPRITE_RESOLUTION_WIDTH
     fixedHeight: number = SPRITE_RESOLUTION_HEIGHT
     scaleX: number
@@ -118,5 +115,4 @@ export class ScaledLayer extends ScreenLayer {
         this.updateScale()
         this.context.scale(this.scaleX, this.scaleY)
     }
-
 }

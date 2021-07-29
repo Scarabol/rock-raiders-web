@@ -1,5 +1,4 @@
 export class InitLoadingMessage {
-
     wad0FileUrl: string
     wad1FileUrl: string
 
@@ -7,5 +6,4 @@ export class InitLoadingMessage {
         this.wad0FileUrl = wad0FileUrl
         this.wad1FileUrl = wad1FileUrl
     }
-
 }

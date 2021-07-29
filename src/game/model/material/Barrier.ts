@@ -10,7 +10,6 @@ import { BarrierLocation } from './BarrierLocation'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Barrier extends MaterialEntity {
-
     targets: SiteCarryPathTarget[]
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager, location: BarrierLocation, site: BuildingSite) {
@@ -30,5 +29,4 @@ export class Barrier extends MaterialEntity {
     getPriorityIdentifier(): PriorityIdentifier {
         return PriorityIdentifier.CONSTRUCTION
     }
-
 }

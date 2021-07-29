@@ -13,7 +13,6 @@ import { getRandom } from './Util'
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
-
     entityMgr: EntityManager
     debug = false
 
@@ -406,5 +405,4 @@ ${this.scriptLines.join('\n')}`)
             this.halted = true
         }
     }
-
 }

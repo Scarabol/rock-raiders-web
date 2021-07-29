@@ -9,7 +9,6 @@ import { TextInfoMessage } from './TextInfoMessage'
 import { TextInfoMessageConfig } from './TextInfoMessageConfig'
 
 export class MessagePanel extends Panel {
-
     imgAir: SpriteImage = null
     currentMessage: TextInfoMessage = null
     messageTimeout = null
@@ -92,5 +91,4 @@ export class MessagePanel extends Panel {
             context.drawImage(infoImage, infoX, this.y + 16)
         }
     }
-
 }

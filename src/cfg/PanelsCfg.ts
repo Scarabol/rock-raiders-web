@@ -2,7 +2,6 @@ import { BaseConfig } from './BaseConfig'
 import { PanelCfg } from './PanelCfg'
 
 export class PanelsCfg extends BaseConfig {
-
     panelRadar: PanelCfg = null
     panelRadarFill: PanelCfg = null
     panelRadarOverlay: PanelCfg = null

@@ -3,7 +3,6 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { NerpRunner } from './NerpRunner'
 
 export class NerpParser {
-
     static parse(entityMgr: EntityManager, nerpScript: string): NerpRunner {
         const nerpRunner = new NerpRunner(entityMgr)
         const lines = nerpScript.split('\n').map(l => l
@@ -139,5 +138,4 @@ export class NerpParser {
             return {invoke: expression, args: []}
         }
     }
-
 }

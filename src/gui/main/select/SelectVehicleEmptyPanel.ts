@@ -6,7 +6,6 @@ import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectVehicleEmptyPanel extends SelectBasePanel {
-
     vehicleHasJob: boolean = false
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
@@ -22,5 +21,4 @@ export class SelectVehicleEmptyPanel extends SelectBasePanel {
             manVehicleItem.updateState()
         })
     }
-
 }

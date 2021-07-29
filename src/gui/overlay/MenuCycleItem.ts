@@ -4,7 +4,6 @@ import { BaseElement } from '../base/BaseElement'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuCycleItem extends BaseElement {
-
     imgTextNormal: SpriteImage
     imgTextHover: SpriteImage
     imgLabelOnNormal: SpriteImage // TODO only toggle state with clicks on label
@@ -70,5 +69,4 @@ export class MenuCycleItem extends BaseElement {
         context.drawImage(imgLabel, this.x + this.labelX, this.y)
         super.onRedraw(context)
     }
-
 }

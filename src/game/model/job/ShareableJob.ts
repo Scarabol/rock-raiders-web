@@ -3,7 +3,6 @@ import { Job } from './Job'
 import { PriorityIdentifier } from './PriorityIdentifier'
 
 export abstract class ShareableJob extends Job {
-
     protected fulfiller: FulfillerEntity[] = []
 
     abstract getPriorityIdentifier(): PriorityIdentifier
@@ -29,5 +28,4 @@ export abstract class ShareableJob extends Job {
         this.fulfiller = []
         fulfiller.forEach((fulfiller) => fulfiller.stopJob())
     }
-
 }

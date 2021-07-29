@@ -7,7 +7,6 @@ import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectWallPanel extends SelectBasePanel {
-
     isDrillable: boolean = false
     isReinforcable: boolean = false
     numToolstationsLevel2: number = 0
@@ -42,5 +41,4 @@ export class SelectWallPanel extends SelectBasePanel {
         this.isReinforcable = false
         this.numToolstationsLevel2 = 0
     }
-
 }

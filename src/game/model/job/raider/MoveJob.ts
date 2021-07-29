@@ -3,7 +3,6 @@ import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
 
 export class MoveJob extends RaiderJob {
-
     target: PathTarget[]
 
     constructor(target: Vector2) {
@@ -14,5 +13,4 @@ export class MoveJob extends RaiderJob {
     getWorkplaces(): PathTarget[] {
         return this.target
     }
-
 }

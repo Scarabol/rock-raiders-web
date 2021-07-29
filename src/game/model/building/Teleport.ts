@@ -12,7 +12,6 @@ import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { BuildingEntity } from './BuildingEntity'
 
 export abstract class Teleport {
-
     building: BuildingEntity // TODO instead hook in setter for position and heading
     operating: boolean = false
     powered: boolean = false
@@ -49,19 +48,15 @@ export abstract class Teleport {
         })
         beamListing.push(entity)
     }
-
 }
 
 export class RaiderOnlyTeleport extends Teleport {
-
     canTeleportIn(entityType: EntityType): boolean {
         return super.canTeleportIn(entityType) && entityType === EntityType.PILOT
     }
-
 }
 
 export class SmallTeleport extends Teleport {
-
     canTeleportIn(entityType: EntityType): boolean {
         return super.canTeleportIn(entityType) && SmallTeleport.isSmall(entityType)
     }
@@ -75,11 +70,9 @@ export class SmallTeleport extends Teleport {
             entityType === EntityType.SMALL_MLP ||
             entityType === EntityType.SMALL_HELI
     }
-
 }
 
 export class BigTeleport extends Teleport {
-
     canTeleportIn(entityType: EntityType): boolean {
         return super.canTeleportIn(entityType) && BigTeleport.isLarge(entityType)
     }
@@ -91,5 +84,4 @@ export class BigTeleport extends Teleport {
             entityType === EntityType.LARGE_DIGGER ||
             entityType === EntityType.LARGE_CAT
     }
-
 }

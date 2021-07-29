@@ -11,7 +11,6 @@ import { PathTarget } from '../PathTarget'
 import { Monster } from './Monster'
 
 export class Bat extends Monster {
-
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.BAT, 'Creatures/bat/bat.ae')
         this.sceneEntity.floorOffset = TILESIZE / 2
@@ -50,5 +49,4 @@ export class Bat extends Monster {
         super.disposeFromWorld()
         this.entityMgr.bats.remove(this)
     }
-
 }

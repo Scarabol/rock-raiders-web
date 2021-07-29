@@ -1,5 +1,4 @@
 export class Rect {
-
     x: number = 0
     y: number = 0
     w: number = 0
@@ -8,5 +7,4 @@ export class Rect {
     constructor(arr: number[]) {
         [this.x, this.y, this.w, this.h] = arr
     }
-
 }

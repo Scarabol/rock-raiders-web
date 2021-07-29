@@ -8,7 +8,6 @@ import { Terrain } from './model/map/Terrain'
 import { SceneManager } from './SceneManager'
 
 export class TerrainLoader {
-
     static loadTerrain(levelConf: LevelEntryCfg, sceneMgr: SceneManager, entityMgr: EntityManager) {
         const tileSize = levelConf.blockSize
         if (tileSize !== TILESIZE) console.error(`Unexpected tile size in level configuration: ${tileSize}`)
@@ -118,19 +117,15 @@ export class TerrainLoader {
             // console.log(blockMap)
         }
     }
-
 }
 
 enum PathMap {
-
     NONE = 0,
     RUBBLE = 1,
     POWER_PATH = 2,
-
 }
 
 enum PredugMap {
-
     WALL = 0,
     CAVERN_EXPOSED = 1,
     CAVERN_HIDDEN = 2,

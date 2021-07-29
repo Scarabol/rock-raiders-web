@@ -15,27 +15,22 @@ import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
 export class LocalEvent extends GameEvent {
-
     constructor(eventKey: EventKey) {
         super(eventKey)
         this.isLocal = true
     }
-
 }
 
 export enum SelectPanelType {
-
     NONE,
     RAIDER,
     VEHICLE,
     BUILDING,
     SURFACE,
     FENCE,
-
 }
 
 export class SelectionChanged extends LocalEvent {
-
     selectPanelType: SelectPanelType = SelectPanelType.NONE
     isGround: boolean
     isPowerPath: boolean
@@ -78,30 +73,24 @@ export class SelectionChanged extends LocalEvent {
         this.noVehicleWithDriver = entityMgr.selection.vehicles.every((v) => !v.driver)
         this.vehicleWithCarriedItems = entityMgr.selection.vehicles.some((v) => v.carriedItems.size > 0)
     }
-
 }
 
 export class DeselectAll extends LocalEvent {
-
     constructor() {
         super(EventKey.DESELECT_ALL)
     }
-
 }
 
 export class AirLevelChanged extends LocalEvent {
-
     airLevel: number
 
     constructor(airLevel: number) {
         super(EventKey.AIR_LEVEL_CHANGED)
         this.airLevel = airLevel
     }
-
 }
 
 export class ChangeCursor extends LocalEvent {
-
     cursor: Cursor
     timeout: number
 
@@ -110,22 +99,18 @@ export class ChangeCursor extends LocalEvent {
         this.cursor = cursor
         this.timeout = timeout
     }
-
 }
 
 export class SetupPriorityList extends LocalEvent {
-
     priorityList: PriorityEntry[]
 
     constructor(priorityList: PriorityEntry[]) {
         super(EventKey.SETUP_PRIORITY_LIST)
         this.priorityList = priorityList
     }
-
 }
 
 export class BuildingsChangedEvent extends LocalEvent {
-
     discoveredBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
     usableBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
 
@@ -150,11 +135,9 @@ export class BuildingsChangedEvent extends LocalEvent {
         })
         return result
     }
-
 }
 
 export class RaidersChangedEvent extends LocalEvent {
-
     numRaiders: number
     training: RaiderTraining
 
@@ -163,22 +146,18 @@ export class RaidersChangedEvent extends LocalEvent {
         this.numRaiders = entityMgr.raiders.length
         this.training = training
     }
-
 }
 
 export class PlaySoundEvent extends LocalEvent {
-
     sample: Sample
 
     constructor(sample: Sample) {
         super(EventKey.PLAY_SOUND)
         this.sample = sample
     }
-
 }
 
 export class UpdateRadarTerrain extends LocalEvent {
-
     surfaces: MapSurfaceRect[] = []
     focusTile: { x: number, y: number } = null
 
@@ -191,27 +170,22 @@ export class UpdateRadarTerrain extends LocalEvent {
         })
         if (mapFocus) this.focusTile = {x: Math.floor(mapFocus.x / TILESIZE), y: Math.floor(mapFocus.z / TILESIZE)}
     }
-
 }
 
 export class UpdateRadarSurface extends LocalEvent {
-
     surfaceRect: MapSurfaceRect
 
     constructor(surface: Surface) {
         super(EventKey.UPDATE_RADAR_SURFACE)
         this.surfaceRect = new MapSurfaceRect(surface)
     }
-
 }
 
 export class UpdatePriorities extends LocalEvent {
-
     priorityList: PriorityEntry[]
 
     constructor(priorityList: PriorityEntry[]) {
         super(EventKey.UPDATE_PRIORITIES)
         this.priorityList = priorityList
     }
-
 }

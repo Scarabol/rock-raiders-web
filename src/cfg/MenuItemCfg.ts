@@ -2,7 +2,6 @@ import { BaseButtonCfg } from './BaseButtonCfg'
 import { parseLabel } from './CfgHelper'
 
 export class MenuItemCfg extends BaseButtonCfg {
-
     tooltipSfx: string = null
     tooltipDisabled: string = null
     tooltipDisabledSfx: string = null
@@ -23,5 +22,4 @@ export class MenuItemCfg extends BaseButtonCfg {
         this.width = 40
         this.height = 40
     }
-
 }

@@ -1,7 +1,6 @@
 import { KEY_EVENT } from './EventTypeEnum'
 
 export class GameKeyboardEvent {
-
     eventEnum: KEY_EVENT
     type: string
     bubbles: boolean
@@ -15,5 +14,4 @@ export class GameKeyboardEvent {
         this.key = event.key
         this.code = event.code
     }
-
 }

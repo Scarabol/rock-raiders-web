@@ -8,7 +8,6 @@ import { RaiderTraining } from '../raider/RaiderTraining'
 import { JobState } from './JobState'
 
 export abstract class Job {
-
     jobState: JobState = JobState.INCOMPLETE
     surface: Surface = null
 
@@ -52,5 +51,4 @@ export abstract class Job {
     getWorkDuration(fulfiller: FulfillerEntity): number {
         return null
     }
-
 }

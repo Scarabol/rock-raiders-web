@@ -4,7 +4,6 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 
 export class MainMenuLevelButton extends MainMenuBaseItem {
-
     layer: MainMenuLayer
     imgActive = null
     imgInactive = null
@@ -37,5 +36,4 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
         if (this.unlocked) img = this.hover ? this.imgActive : this.imgInactive
         context.drawImage(img, this.x, this.y - this.layer.scrollY)
     }
-
 }

@@ -6,7 +6,6 @@ import { GuiResourceCache } from '../GuiResourceCache'
 import { BriefingPanelCfg } from './BriefingPanelCfg'
 
 export class BriefingPanel extends Panel {
-
     cfg: BriefingPanelCfg = null
     imgTitle: SpriteImage = null
     titleRelX: number = 0
@@ -90,5 +89,4 @@ export class BriefingPanel extends Panel {
         if (this.imgParagraph) context.drawImage(this.imgParagraph, this.x + this.cfg.textWindow.x, this.y + this.cfg.textWindow.y)
         super.onRedraw(context)
     }
-
 }

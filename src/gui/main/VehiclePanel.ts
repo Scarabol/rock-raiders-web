@@ -8,7 +8,6 @@ import { DependencyCheckPanel } from './DependencyCheckPanel'
 import { IconPanelButtonLabel } from './IconPanelButtonLabel'
 
 abstract class VehiclePanel extends DependencyCheckPanel {
-
     requestedVehiclesByType: Map<EntityType, number> = new Map()
     btnLabelByType: Map<EntityType, IconPanelButtonLabel> = new Map()
 
@@ -29,11 +28,9 @@ abstract class VehiclePanel extends DependencyCheckPanel {
         }
         this.btnLabelByType.set(entityType, item.addChild(new IconPanelButtonLabel(item)))
     }
-
 }
 
 export class SmallVehiclePanel extends VehiclePanel {
-
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 6, onBackPanel)
         this.addVehicleMenuItem('Hoverboard', EntityType.HOVERBOARD)
@@ -43,11 +40,9 @@ export class SmallVehiclePanel extends VehiclePanel {
         this.addVehicleMenuItem('SmallMLP', EntityType.SMALL_MLP)
         this.addVehicleMenuItem('SmallHeli', EntityType.SMALL_HELI)
     }
-
 }
 
 export class LargeVehiclePanel extends VehiclePanel {
-
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 5, onBackPanel)
         this.addVehicleMenuItem('BullDozer', EntityType.BULLDOZER)
@@ -56,5 +51,4 @@ export class LargeVehiclePanel extends VehiclePanel {
         this.addVehicleMenuItem('LargeDigger', EntityType.LARGE_DIGGER)
         this.addVehicleMenuItem('LargeCat', EntityType.LARGE_CAT)
     }
-
 }

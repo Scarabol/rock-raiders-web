@@ -15,7 +15,6 @@ import { SceneMesh } from '../scene/SceneMesh'
 import { ResourceManager } from './ResourceManager'
 
 export class LWSCLoader {
-
     animationClip: AnimClip
     verbose: boolean = false
     lines: string[] = []
@@ -175,5 +174,4 @@ export class LWSCLoader {
         console.error('Parsing block reached content end')
         return subObj
     }
-
 }

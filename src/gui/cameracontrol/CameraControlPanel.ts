@@ -6,7 +6,6 @@ import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 
 export class CameraControlPanel extends Panel {
-
     constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonCameraControlCfg, panelRotationControlCfg: any) {
         super(parent, panelCfg)
         this.addChild(new Button(this, buttonsCfg.panelButtonCameraControlZoomIn)).onClick = () => {
@@ -29,5 +28,4 @@ export class CameraControlPanel extends Panel {
             }
         })
     }
-
 }

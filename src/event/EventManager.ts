@@ -7,7 +7,6 @@ import { GamePointerEvent } from './GamePointerEvent'
 import { GameWheelEvent } from './GameWheelEvent'
 
 export class EventManager {
-
     constructor(screen: BaseScreen) {
         screen.gameCanvasContainer.addEventListener('contextmenu', (event: MouseEvent) => {
             if (screen.isInRect(event)) event.preventDefault()
@@ -55,5 +54,4 @@ export class EventManager {
             if (!consumed) this.publishWheelEvent(activeLayers, event)
         })
     }
-
 }

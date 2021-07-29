@@ -7,7 +7,6 @@ import { GuiResourceCache } from '../GuiResourceCache'
 import { BaseElement } from './BaseElement'
 
 export class Button extends BaseElement {
-
     buttonType: string = null
     sfxName: string = null
     imgNormal: SpriteImage = null
@@ -95,6 +94,5 @@ export class Button extends BaseElement {
             context.strokeRect(this.x - context.lineWidth / 2, this.y - context.lineWidth / 2, this.width + context.lineWidth - 1, this.height + context.lineWidth - 1)
         }
     }
-
 }
 

@@ -5,7 +5,6 @@ import { GetToolPathTarget } from './GetToolPathTarget'
 import { RaiderJob } from './RaiderJob'
 
 export class GetToolJob extends RaiderJob {
-
     entityMgr: EntityManager
     tool: RaiderTool
     workplaces: GetToolPathTarget[]
@@ -28,5 +27,4 @@ export class GetToolJob extends RaiderJob {
         super.onJobComplete()
         this.raider.addTool(this.tool)
     }
-
 }

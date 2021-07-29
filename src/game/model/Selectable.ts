@@ -1,5 +1,4 @@
 export interface Selectable {
-
     selected: boolean
 
     isSelectable(): boolean
@@ -9,5 +8,4 @@ export interface Selectable {
     select(): boolean
 
     deselect(): any
-
 }

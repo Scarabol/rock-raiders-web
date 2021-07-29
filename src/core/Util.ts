@@ -70,7 +70,6 @@ export function asArray<T>(value: T | T[]): T[] {
 }
 
 declare global {
-
     interface Array<T> {
         add(element: T): void
 
@@ -96,7 +95,6 @@ declare global {
     interface String {
         equalsIgnoreCase(other: string): boolean
     }
-
 }
 
 Array.prototype.add = function <T>(element: T): void {

@@ -12,7 +12,6 @@ import { PriorityList } from './PriorityList'
 import { PriorityPositionsEntry } from './PriorityPositionsEntry'
 
 export class PriorityListPanel extends Panel {
-
     prioPositions: PriorityPositionsEntry[] = []
     prioByName: Map<PriorityIdentifier, Button> = new Map()
 
@@ -88,5 +87,4 @@ export class PriorityListPanel extends Panel {
             this.publishEvent(new ChangePriorityList(this.priorityList.current))
         }
     }
-
 }

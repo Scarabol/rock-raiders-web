@@ -12,7 +12,6 @@ import { PathTarget } from '../PathTarget'
 import { Monster } from './Monster'
 
 export class SmallSpider extends Monster {
-
     idleTimer: number = 0
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
@@ -62,5 +61,4 @@ export class SmallSpider extends Monster {
         super.disposeFromWorld()
         this.entityMgr.spiders.remove(this)
     }
-
 }

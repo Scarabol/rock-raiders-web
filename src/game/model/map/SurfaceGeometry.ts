@@ -3,7 +3,6 @@ import { BufferAttribute } from 'three/src/core/BufferAttribute'
 import { WALL_TYPE } from './WallType'
 
 export class SurfaceGeometry {
-
     public static create(wallType: WALL_TYPE,
                          topLeftVertex: Vector3, topRightVertex: Vector3, bottomRightVertex: Vector3, bottomLeftVertex: Vector3,
                          topLeftHeight: number, topRightHeight: number, bottomRightHeight: number, bottomLeftHeight: number,

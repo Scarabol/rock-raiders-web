@@ -12,7 +12,6 @@ import { BaseScreen } from './BaseScreen'
 import { ScaledLayer } from './layer/ScreenLayer'
 
 export class RewardScreen extends BaseScreen {
-
     onAdvance: () => void
     cfg: RewardCfg = null
     titleFont: BitmapFont
@@ -210,5 +209,4 @@ export class RewardScreen extends BaseScreen {
         this.levelFullNameImg = this.titleFont.createTextImage(levelFullName)
         this.rewardConfig = rewardConfig
     }
-
 }

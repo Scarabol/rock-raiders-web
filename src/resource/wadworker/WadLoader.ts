@@ -12,7 +12,6 @@ import { WadFile } from './WadFile'
 import { grayscaleToGreen } from './WadUtil'
 
 export class WadLoader {
-
     wad0File: WadFile = null
     wad1File: WadFile = null
     assetIndex: number = 0
@@ -285,5 +284,4 @@ export class WadLoader {
             this.loadAssetsParallel()
         })
     }
-
 }

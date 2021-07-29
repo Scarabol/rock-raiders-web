@@ -1,7 +1,6 @@
 import { BaseConfig } from './BaseConfig'
 
 export class BuildingEntityStats extends BaseConfig {
-
     Levels: number = 0
     SelfPowered: boolean = false
     PowerBuilding: boolean = false
@@ -13,5 +12,4 @@ export class BuildingEntityStats extends BaseConfig {
     OxygenCoef: number = 0
     EngineSound: string = null
     CanDoubleSelect: boolean = false
-
 }

@@ -6,7 +6,6 @@ import { SceneMesh } from '../SceneMesh'
 import { SequenceTextureMaterial } from '../SequenceTextureMaterial'
 
 export class CrystalSceneEntity extends SceneEntity {
-
     animGlowMesh: SceneMesh
     highPolyMesh: SceneMesh
 
@@ -35,5 +34,4 @@ export class CrystalSceneEntity extends SceneEntity {
         this.animGlowMesh.update(elapsedMs)
         this.highPolyMesh.update(elapsedMs)
     }
-
 }

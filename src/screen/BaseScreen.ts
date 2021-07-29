@@ -9,7 +9,6 @@ import { CursorLayer } from './layer/CursorLayer'
 import { ScreenLayer } from './layer/ScreenLayer'
 
 export class BaseScreen implements IEventHandler {
-
     gameCanvasContainer: HTMLElement
     eventMgr: EventManager
     layers: ScreenLayer[] = []
@@ -108,5 +107,4 @@ export class BaseScreen implements IEventHandler {
             link.remove()
         })
     }
-
 }

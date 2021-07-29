@@ -10,7 +10,6 @@ import { MaterialEntity } from '../../material/MaterialEntity'
 import { CarryPathTarget } from './CarryPathTarget'
 
 export class BuildingCarryPathTarget extends CarryPathTarget {
-
     building: BuildingEntity
 
     constructor(building: BuildingEntity) {
@@ -59,5 +58,4 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
     isInvalid(): boolean {
         return !this.building.isPowered()
     }
-
 }

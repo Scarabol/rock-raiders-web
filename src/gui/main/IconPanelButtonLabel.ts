@@ -1,7 +1,6 @@
 import { BaseElement } from '../base/BaseElement'
 
 export class IconPanelButtonLabel extends BaseElement {
-
     label: string = ''
 
     constructor(parent: BaseElement) {
@@ -27,5 +26,4 @@ export class IconPanelButtonLabel extends BaseElement {
         context.fillText(this.label, this.x, this.y)
         super.onRedraw(context)
     }
-
 }

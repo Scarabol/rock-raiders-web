@@ -4,7 +4,6 @@ import { BaseElement } from '../base/BaseElement'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuLabelItem extends BaseElement {
-
     target: string
     loImg: SpriteImage
     hiImg: SpriteImage
@@ -53,5 +52,4 @@ export class MenuLabelItem extends BaseElement {
         }
         super.onRedraw(context)
     }
-
 }

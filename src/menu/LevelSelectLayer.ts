@@ -10,7 +10,6 @@ import { MainMenuPanel } from './MainMenuPanel'
 import { MainMenuWindow } from './MainMenuWindow'
 
 export class LevelSelectLayer extends MainMenuLayer {
-
     constructor(screen: MainMenuScreen, menuCfg: MenuEntryCfg, modeLevel: boolean) {
         super(screen, menuCfg)
         const levelTextCfg = new LevelTextCfg()
@@ -30,11 +29,9 @@ export class LevelSelectLayer extends MainMenuLayer {
         this.reset()
         super.show()
     }
-
 }
 
 class LevelTextCfg {
-
     window = {x: 0, y: 0, w: 0, h: 0}
     panelImgData: ImageData
     panelPos = {x: 0, y: 0, w: 0, h: 0}
@@ -51,5 +48,4 @@ class LevelTextCfg {
         this.level = parseLabel(iGet(cfg, 'Level'))
         this.tutorial = parseLabel(iGet(cfg, 'Tutorial'))
     }
-
 }

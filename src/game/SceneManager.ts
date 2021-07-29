@@ -20,7 +20,6 @@ import { TerrainLoader } from './TerrainLoader'
 import { WorldManager } from './WorldManager'
 
 export class SceneManager {
-
     worldMgr: WorldManager
     entityMgr: EntityManager
     maxFps: number = 30 // most animations use 25 fps so this should be enough
@@ -278,5 +277,4 @@ export class SceneManager {
         this.buildMarker.buildModeSelection = building
         if (!building) this.buildMarker.hideAllMarker()
     }
-
 }

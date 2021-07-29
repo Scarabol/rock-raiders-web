@@ -6,7 +6,6 @@ import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectVehicleManedPanel extends SelectBasePanel {
-
     noVehicleWithDriver: boolean = false
     noVehicleWithCarriedItems: boolean = false
 
@@ -31,5 +30,4 @@ export class SelectVehicleManedPanel extends SelectBasePanel {
             leaveVehicleItem.updateState()
         })
     }
-
 }

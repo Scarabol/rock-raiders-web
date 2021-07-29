@@ -5,7 +5,6 @@ import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { BubbleSprite } from '../BubbleSprite'
 
 export class BuildingSceneEntity extends AnimatedSceneEntity {
-
     inBeam: boolean = false
     powered: boolean = false
     powerBubble: BubbleSprite = new BubbleSprite('Bubble_PowerOff')
@@ -36,5 +35,4 @@ export class BuildingSceneEntity extends AnimatedSceneEntity {
         this.powerBubbleFlashTimer = (this.powerBubbleFlashTimer + elapsedMs) % 1000
         this.powerBubble.visible = !this.inBeam && !this.powered && this.powerBubbleFlashTimer < 500
     }
-
 }

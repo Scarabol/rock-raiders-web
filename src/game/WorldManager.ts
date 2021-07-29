@@ -19,7 +19,6 @@ import { SceneManager } from './SceneManager'
 import { Supervisor } from './Supervisor'
 
 export class WorldManager {
-
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
     sceneMgr: SceneManager
     entityMgr: EntityManager
@@ -160,5 +159,4 @@ export class WorldManager {
             console.error(e)
         }
     }
-
 }

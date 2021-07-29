@@ -198,7 +198,6 @@ function planarMapUVS(geometry, vertices, uvs, indices, materialIndex, size, cen
             if (group.materialIndex !== materialIndex) continue
 
             for (let i = group.start; i < group.start + group.count; i++) {
-
                 let vertexIndex = indices[i] * 3
                 let x = vertices[vertexIndex] - center.x
                 let y = vertices[vertexIndex + 1] - center.y
@@ -229,7 +228,6 @@ function planarMapUVS(geometry, vertices, uvs, indices, materialIndex, size, cen
 }
 
 export class LWOLoader {
-
     COUNTER_CLOCKWISE: false
 
     meshPath: string

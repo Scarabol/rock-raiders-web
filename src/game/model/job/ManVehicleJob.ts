@@ -6,7 +6,6 @@ import { PriorityIdentifier } from './PriorityIdentifier'
 import { RaiderJob } from './raider/RaiderJob'
 
 export class ManVehicleJob extends RaiderJob {
-
     vehicle: VehicleEntity
     workplaces: PathTarget[]
 
@@ -47,5 +46,4 @@ export class ManVehicleJob extends RaiderJob {
     hasFulfiller(): boolean {
         return !!this.raider
     }
-
 }

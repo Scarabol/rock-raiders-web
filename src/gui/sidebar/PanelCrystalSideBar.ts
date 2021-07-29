@@ -9,7 +9,6 @@ import { GuiResourceCache } from '../GuiResourceCache'
 import { SideBarLabel } from './SideBarLabel'
 
 export class PanelCrystalSideBar extends Panel {
-
     labelOre: SideBarLabel
     labelCrystal: SideBarLabel
     imgNoCrystal: SpriteImage
@@ -74,11 +73,9 @@ export class PanelCrystalSideBar extends Panel {
             context.drawImage(this.imgOre, curX - this.imgOre.width / 2, curY)
         }
     }
-
 }
 
 export class ButtonCrystalSideBarCfg extends BaseConfig {
-
     panelButtonCrystalSideBarOre: ButtonCfg = null
     panelButtonCrystalSideBarCrystals: ButtonCfg = null
 
@@ -90,5 +87,4 @@ export class ButtonCrystalSideBarCfg extends BaseConfig {
     parseValue(lCfgKeyName: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
     }
-
 }

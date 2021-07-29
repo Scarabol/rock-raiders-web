@@ -9,7 +9,6 @@ import { WorldManager } from '../../game/WorldManager'
 import { ScreenLayer } from './ScreenLayer'
 
 export class SelectionLayer extends ScreenLayer {
-
     worldMgr: WorldManager
     sceneMgr: SceneManager
     entityMgr: EntityManager
@@ -71,5 +70,4 @@ export class SelectionLayer extends ScreenLayer {
         this.selectStart = null
         return true
     }
-
 }

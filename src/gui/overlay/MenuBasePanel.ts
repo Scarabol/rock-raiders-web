@@ -4,7 +4,6 @@ import { Panel } from '../base/Panel'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuBasePanel extends Panel {
-
     layersByKey: Map<string, MenuLayer> = new Map()
 
     constructor(parent: BaseElement, cfg: MenuCfg) {
@@ -35,5 +34,4 @@ export class MenuBasePanel extends Panel {
         layer.show()
         this.notifyRedraw()
     }
-
 }

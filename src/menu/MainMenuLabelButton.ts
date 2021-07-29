@@ -3,7 +3,6 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {
-
     labelImgLo = null
     labelImgHi = null
 
@@ -24,5 +23,4 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
         const img = this.hover && !this.pressed ? this.labelImgHi : this.labelImgLo
         context.drawImage(img, this.x, this.y)
     }
-
 }

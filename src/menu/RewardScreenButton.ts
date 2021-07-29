@@ -2,7 +2,6 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class RewardScreenButton extends MainMenuBaseItem {
-
     imgNormal: SpriteImage
     imgHover: SpriteImage
     imgPressed: SpriteImage
@@ -35,5 +34,4 @@ export class RewardScreenButton extends MainMenuBaseItem {
         }
         context.drawImage(img, this.x, this.y)
     }
-
 }

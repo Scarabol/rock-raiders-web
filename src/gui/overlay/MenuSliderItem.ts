@@ -6,7 +6,6 @@ import { GuiResourceCache } from '../GuiResourceCache'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuSliderItem extends BaseElement {
-
     imgTextNormal: SpriteImage
     imgTextHover: SpriteImage
     imgLeft: SpriteImage
@@ -85,5 +84,4 @@ export class MenuSliderItem extends BaseElement {
         context.drawImage(this.imgRight, posX, this.y)
         super.onRedraw(context)
     }
-
 }

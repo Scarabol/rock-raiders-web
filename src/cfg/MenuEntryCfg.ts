@@ -4,7 +4,6 @@ import { MenuLabelItemCfg } from './MenuLabelItemCfg'
 import { MenuSliderItemCfg } from './MenuSliderItemCfg'
 
 export class MenuEntryCfg extends BaseConfig {
-
     fullName: string = ''
     title: string = ''
     position: [number, number] = [0, 0]
@@ -56,5 +55,4 @@ export class MenuEntryCfg extends BaseConfig {
             return super.parseValue(lCfgKeyName, cfgValue)
         }
     }
-
 }

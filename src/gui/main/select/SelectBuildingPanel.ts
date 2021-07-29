@@ -10,7 +10,6 @@ import { IconPanelToggleButton } from '../IconPanelToggleButton'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectBuildingPanel extends SelectBasePanel {
-
     buildingCanSwitchPower: boolean = false
     buildingPowerSwitchState: boolean = false
     buildingCanUpgrade: boolean = false
@@ -48,5 +47,4 @@ export class SelectBuildingPanel extends SelectBasePanel {
         this.buildingPowerSwitchState = false
         this.buildingCanUpgrade = false
     }
-
 }

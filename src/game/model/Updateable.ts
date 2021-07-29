@@ -1,7 +1,5 @@
 export interface Updatable {
-
     update(elapsedMs: number)
-
 }
 
 export function updateSafe(updatable: Updatable, elapsedMs: number) {

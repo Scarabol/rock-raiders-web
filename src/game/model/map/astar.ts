@@ -22,7 +22,6 @@ function getHeap() {
 }
 
 export const astar = {
-
     /**
      * Perform an A* Search on a graph given a start and end node.
      * @param {Graph} graph
@@ -49,7 +48,6 @@ export const astar = {
         openHeap.push(start)
 
         while (openHeap.size() > 0) {
-
             // Grab the lowest f(x) to process next.  Heap keeps this sorted for us.
             const currentNode = openHeap.pop()
 
@@ -80,7 +78,6 @@ export const astar = {
                 const beenVisited = neighbor.visited
 
                 if (!beenVisited || gScore < neighbor.g) {
-
                     // Found an optimal (so far) path to this node.  Take score for node to see how good it is.
                     neighbor.visited = true
                     neighbor.parent = currentNode
@@ -143,7 +140,6 @@ export const astar = {
 }
 
 export class Graph {
-
     readonly nodes: GridNode[] = []
     readonly diagonal: boolean
     readonly grid: GridNode[][] = []
@@ -269,7 +265,6 @@ export class Graph {
 }
 
 class GridNode {
-
     x: number
     y: number
     weight: number
@@ -304,7 +299,6 @@ class GridNode {
 }
 
 class BinaryHeap {
-
     content = []
     scoreFunction
 
@@ -367,7 +361,6 @@ class BinaryHeap {
 
         // When at 0, an element can not sink any further.
         while (n > 0) {
-
             // Compute the parent element's index, and fetch it.
             const parentN = ((n + 1) >> 1) - 1
             const parent = this.content[parentN]

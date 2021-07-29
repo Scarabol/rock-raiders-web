@@ -1,7 +1,6 @@
 import { ObjectListEntryCfg } from '../../../cfg/ObjectListEntryCfg'
 
 export class WadParser {
-
     static parseMap(buffer: Uint8Array) {
         const map = {width: buffer[8], height: buffer[12], level: []}
         let row = []
@@ -49,5 +48,4 @@ export class WadParser {
         }
         return objectList
     }
-
 }

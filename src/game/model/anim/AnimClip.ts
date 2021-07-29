@@ -4,7 +4,6 @@ import { updateSafe } from '../Updateable'
 import { AnimSubObj } from './AnimSubObj'
 
 export class AnimClip {
-
     lwsFilepath: string = null
     looping: boolean = false
     transcoef: number = 1
@@ -93,5 +92,4 @@ export class AnimClip {
     private stopAudio() {
         this.sfxAudioByFrame.forEach((f) => f.forEach((a) => a.isPlaying && a.stop()))
     }
-
 }

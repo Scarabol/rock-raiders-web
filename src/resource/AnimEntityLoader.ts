@@ -10,7 +10,6 @@ import { LWSCLoader } from './LWSCLoader'
 import { ResourceManager } from './ResourceManager'
 
 export class AnimEntityLoader {
-
     aeFilename: string
     path: string
     cfgRoot: any
@@ -229,5 +228,4 @@ export class AnimEntityLoader {
             animation.polyRootGroup.add(animation.driverJoint)
         }
     }
-
 }

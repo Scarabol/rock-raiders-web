@@ -29,7 +29,6 @@ import { WALL_TYPE } from './WallType'
 import degToRad = MathUtils.degToRad
 
 export class Surface implements Selectable {
-
     terrain: Terrain
     sceneMgr: SceneManager
     entityMgr: EntityManager
@@ -620,5 +619,4 @@ export class Surface implements Selectable {
     isBlocked(): boolean {
         return this.isBlockedByRaider() || this.isBlockedByVehicle()
     }
-
 }

@@ -2,7 +2,6 @@ import { Raider } from '../../raider/Raider'
 import { Job } from '../Job'
 
 export abstract class RaiderJob extends Job {
-
     raider: Raider
 
     assign(raider: Raider) {
@@ -20,5 +19,4 @@ export abstract class RaiderJob extends Job {
         super.cancel()
         this.raider?.stopJob()
     }
-
 }

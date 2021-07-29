@@ -3,7 +3,6 @@ import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 
 export class BarrierSceneEntity extends AnimatedSceneEntity {
-
     constructor(sceneMgr: SceneManager) {
         super(sceneMgr, 'MiscAnims/Barrier/Barrier.ae')
         this.changeActivity()
@@ -12,5 +11,4 @@ export class BarrierSceneEntity extends AnimatedSceneEntity {
     getDefaultActivity(): BarrierActivity {
         return BarrierActivity.Short
     }
-
 }

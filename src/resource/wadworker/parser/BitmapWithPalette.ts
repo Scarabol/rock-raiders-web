@@ -623,7 +623,6 @@ class BmpDecoder implements IBitmapImage {
 }
 
 export class BitmapWithPalette extends ImageData {
-
     readonly palette: IColor[]
 
     static decode(buffer: Uint8Array): BitmapWithPalette {
@@ -657,5 +656,4 @@ export class BitmapWithPalette extends ImageData {
         }
         return this
     }
-
 }

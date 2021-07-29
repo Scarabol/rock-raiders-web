@@ -2,7 +2,6 @@ import { BuildingEntity } from '../building/BuildingEntity'
 import { Surface } from './Surface'
 
 export class PowerGrid {
-
     energySources: Set<BuildingEntity> = new Set()
     energizedSurfaces: Set<Surface> = new Set()
 
@@ -54,5 +53,4 @@ export class PowerGrid {
         surface.setEnergized(false)
         this.energizedSurfaces.delete(surface)
     }
-
 }

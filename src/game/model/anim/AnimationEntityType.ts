@@ -4,7 +4,6 @@ import { AnimationEntityUpgrade } from './AnimationEntityUpgrade'
 import { AnimClip } from './AnimClip'
 
 export class AnimationEntityType {
-
     scale: number = 1
     carryNullName: string = ''
     carryNullFrames: number = 0
@@ -27,5 +26,4 @@ export class AnimationEntityType {
     fPPolyBodies: Map<string, SceneMesh> = new Map()
     animations: Map<string, AnimClip> = new Map()
     upgradesByLevel: Map<string, AnimationEntityUpgrade[]> = new Map()
-
 }

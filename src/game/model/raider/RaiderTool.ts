@@ -11,7 +11,6 @@ export enum RaiderTool {
 }
 
 export class RaiderTools {
-
     static values: RaiderTool[] = [
         RaiderTool.DRILL,
         RaiderTool.HAMMER,
@@ -22,5 +21,4 @@ export class RaiderTools {
         RaiderTool.PUSHERGUN,
         RaiderTool.BIRDSCARER,
     ]
-
 }

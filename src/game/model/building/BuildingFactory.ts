@@ -9,7 +9,6 @@ import { BuildingEntity } from './BuildingEntity'
 import { BigTeleport, RaiderOnlyTeleport, SmallTeleport, Teleport } from './Teleport'
 
 export class BuildingFactory {
-
     static createBuildingFromType(entityType: EntityType, sceneMgr: SceneManager, entityMgr: EntityManager): BuildingEntity {
         switch (entityType) {
             case EntityType.TOOLSTATION:
@@ -46,11 +45,9 @@ export class BuildingFactory {
                 throw new Error(`Unexpected building type: ${EntityType[entityType]}`)
         }
     }
-
 }
 
 class BuildingEntityBuilder {
-
     building: BuildingEntity
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, stats: BuildingEntityStats, aeFilename: string) {
@@ -96,5 +93,4 @@ class BuildingEntityBuilder {
     build(): BuildingEntity {
         return this.building
     }
-
 }

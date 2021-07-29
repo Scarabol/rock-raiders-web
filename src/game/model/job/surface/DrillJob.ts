@@ -9,7 +9,6 @@ import { ShareableJob } from '../ShareableJob'
 import { SurfacePathTarget } from './SurfacePathTarget'
 
 export class DrillJob extends ShareableJob {
-
     color: number = 0xa0a0a0
     digPositions: PathTarget[]
 
@@ -56,5 +55,4 @@ export class DrillJob extends ShareableJob {
         if (!drillTimeMs) console.warn('According to cfg this entity cannot drill this material')
         return drillTimeMs
     }
-
 }

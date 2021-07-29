@@ -13,7 +13,6 @@ import { WorkerPublishEvent } from './WorkerPublishEvent'
 import { WorkerResponse } from './WorkerResponse'
 
 export abstract class OffscreenWorker implements IEventHandler {
-
     worker: Worker
 
     canvas: OffscreenCanvas = null
@@ -111,5 +110,4 @@ export abstract class OffscreenWorker implements IEventHandler {
     }
 
     abstract onProcessMessage(msg: OffscreenWorkerMessage): boolean
-
 }

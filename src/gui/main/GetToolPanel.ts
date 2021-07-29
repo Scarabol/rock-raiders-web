@@ -9,7 +9,6 @@ import { IconPanelButton } from './IconPanelButton'
 import { IconSubPanel } from './IconSubPanel'
 
 export class GetToolPanel extends IconSubPanel {
-
     numUsableToolstations: number = 0
     everyHasTool: Map<RaiderTool, boolean> = new Map()
 
@@ -45,5 +44,4 @@ export class GetToolPanel extends IconSubPanel {
         this.numUsableToolstations = 0
         this.everyHasTool = new Map()
     }
-
 }

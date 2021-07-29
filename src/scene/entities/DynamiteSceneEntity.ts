@@ -4,7 +4,6 @@ import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 
 export class DynamiteSceneEntity extends AnimatedSceneEntity {
-
     constructor(sceneMgr: SceneManager) {
         super(sceneMgr, 'MiscAnims/Dynamite/Dynamite.ae')
         this.changeActivity()
@@ -13,5 +12,4 @@ export class DynamiteSceneEntity extends AnimatedSceneEntity {
     getDefaultActivity(): AnimEntityActivity {
         return DynamiteActivity.Normal
     }
-
 }

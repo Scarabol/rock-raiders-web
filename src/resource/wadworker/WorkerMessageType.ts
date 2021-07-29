@@ -1,5 +1,4 @@
 export enum WorkerMessageType {
-
     // wad worker
     MSG,
     CFG,
@@ -23,5 +22,4 @@ export enum WorkerMessageType {
     GAME_ABORT,
     GAME_RESTART,
     GAME_EVENT,
-
 }

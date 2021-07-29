@@ -4,7 +4,6 @@ import { GuiResourceCache } from '../GuiResourceCache'
 import { TextInfoMessageEntryConfig } from './TextInfoMessageEntryConfig'
 
 export class TextInfoMessage {
-
     infoImage: SpriteImage
     textImage: SpriteImage
     sfxSample: Sample
@@ -14,5 +13,4 @@ export class TextInfoMessage {
         this.infoImage = GuiResourceCache.getImageOrNull(infoMessageEntryConfig.imageFilename)
         this.sfxSample = Sample[infoMessageEntryConfig.sfxName]
     }
-
 }

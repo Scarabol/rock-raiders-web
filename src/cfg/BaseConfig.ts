@@ -1,5 +1,4 @@
 export class BaseConfig {
-
     static setFromCfg(config: BaseConfig, cfgObj: any) {
         Object.keys(cfgObj).forEach((cfgKey) => {
             const lCfgKeyName = (cfgKey.startsWith('!') ? cfgKey.substring(1) : cfgKey)
@@ -37,5 +36,4 @@ export class BaseConfig {
     parseValue(lCfgKeyName: string, cfgValue: any): any {
         return cfgValue
     }
-
 }

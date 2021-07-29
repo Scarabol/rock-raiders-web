@@ -2,7 +2,6 @@ import { CanvasTexture, Sprite, SpriteMaterial } from 'three'
 import { createContext } from '../core/ImageHelper'
 
 export class SelectionFrameSprite extends Sprite {
-
     private static readonly textureSize = 128
     private static readonly baseStrength = 50
     private static readonly shankLength = SelectionFrameSprite.textureSize / 6
@@ -26,5 +25,4 @@ export class SelectionFrameSprite extends Sprite {
         const selectionFrameTexture = new CanvasTexture(ctx.canvas as HTMLCanvasElement)
         return new SpriteMaterial({map: selectionFrameTexture, depthTest: false})
     }
-
 }

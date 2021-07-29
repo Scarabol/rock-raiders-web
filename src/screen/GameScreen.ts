@@ -20,7 +20,6 @@ import { OverlayLayer } from './layer/OverlayLayer'
 import { SelectionLayer } from './layer/SelectionLayer'
 
 export class GameScreen extends BaseScreen {
-
     onLevelEnd: (result: GameResult) => any = (result) => console.log(`Level ended with: ${JSON.stringify(result)}`)
     gameLayer: GameLayer
     selectionLayer: SelectionLayer
@@ -116,5 +115,4 @@ export class GameScreen extends BaseScreen {
         super.resize(width, height)
         this.sceneMgr?.resize(width, height)
     }
-
 }

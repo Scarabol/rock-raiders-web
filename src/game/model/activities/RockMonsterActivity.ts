@@ -1,7 +1,6 @@
 import { AnimEntityActivity } from './AnimEntityActivity'
 
 export class RockMonsterActivity extends AnimEntityActivity {
-
     static TurnLeft = new RockMonsterActivity('Activity_TurnLeft')
     static TurnRight = new RockMonsterActivity('Activity_TurnRight')
     static Emerge = new RockMonsterActivity('Activity_Emerge')
@@ -21,5 +20,4 @@ export class RockMonsterActivity extends AnimEntityActivity {
     static HitHard = new RockMonsterActivity('Activity_HitHard')
     static Unpowered = new RockMonsterActivity('Activity_Unpowered')
     static WakeUp = new RockMonsterActivity('Activity_WakeUp')
-
 }

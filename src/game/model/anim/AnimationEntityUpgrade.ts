@@ -1,5 +1,4 @@
 export class AnimationEntityUpgrade {
-
     upgradeFilepath: string
     upgradeNullName: string
     upgradeNullIndex: number

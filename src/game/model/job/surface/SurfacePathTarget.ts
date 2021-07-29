@@ -3,7 +3,6 @@ import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 
 export class SurfacePathTarget extends PathTarget {
-
     surface: Surface
 
     constructor(location: Vector2, surface: Surface) {
@@ -18,5 +17,4 @@ export class SurfacePathTarget extends PathTarget {
     isInvalid(): boolean {
         return !this.surface.isDigable()
     }
-
 }

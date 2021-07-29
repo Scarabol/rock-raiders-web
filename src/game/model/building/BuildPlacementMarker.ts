@@ -14,7 +14,6 @@ import { BuildingSite } from './BuildingSite'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
 
 export class BuildPlacementMarker {
-
     static readonly buildingMarkerColor: number = 0x005000
     static readonly pathMarkerColor: number = 0x505000
     static readonly waterMarkerColor: number = 0x000050
@@ -151,5 +150,4 @@ export class BuildPlacementMarker {
         }
         return barrierLocations
     }
-
 }

@@ -1,7 +1,6 @@
 import { BaseConfig } from './BaseConfig'
 
 export class RewardCfg extends BaseConfig {
-
     display: boolean = true
     wallpaper: string = ''
     images: RewardImageCfg[] = []
@@ -45,11 +44,9 @@ export class RewardCfg extends BaseConfig {
             return super.assignValue(objKey, lCfgKeyName, cfgValue)
         }
     }
-
 }
 
 export class RewardImageCfg {
-
     filePath: string = ''
     x: number = 0
     y: number = 0
@@ -57,11 +54,9 @@ export class RewardImageCfg {
     constructor(cfgObj: any) {
         [this.filePath, this.x, this.y] = cfgObj
     }
-
 }
 
 export class RewardTextCfg {
-
     text: string = ''
     x: number = 0
     y: number = 0
@@ -69,11 +64,9 @@ export class RewardTextCfg {
     constructor(cfgObj: any) {
         [this.text, this.x, this.y] = cfgObj
     }
-
 }
 
 export class RewardFontsCfg extends BaseConfig {
-
     crystals: string = ''
     ore: string = ''
     diggable: string = ''
@@ -89,5 +82,4 @@ export class RewardFontsCfg extends BaseConfig {
         super()
         BaseConfig.setFromCfg(this, cfgObj)
     }
-
 }

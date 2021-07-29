@@ -8,7 +8,6 @@ import { TILESIZE } from '../params'
 import { SelectionFrameSprite } from './SelectionFrameSprite'
 
 export class SceneEntity {
-
     floorOffset: number = 0.1
 
     sceneMgr: SceneManager
@@ -155,5 +154,4 @@ export class SceneEntity {
 
     update(elapsedMs: number) {
     }
-
 }

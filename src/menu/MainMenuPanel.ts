@@ -2,7 +2,6 @@ import { createContext } from '../core/ImageHelper'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class MainMenuPanel extends MainMenuBaseItem {
-
     context: SpriteContext
 
     constructor(imgData: ImageData, area: { x: number, y: number, w: number, h: number }) {
@@ -28,5 +27,4 @@ export class MainMenuPanel extends MainMenuBaseItem {
         super.draw(context)
         context.drawImage(this.context.canvas, this.x, this.y, this.width, this.height)
     }
-
 }

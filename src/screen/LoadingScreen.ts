@@ -3,7 +3,6 @@ import { BaseScreen } from './BaseScreen'
 import { ScaledLayer } from './layer/ScreenLayer'
 
 export class LoadingScreen extends BaseScreen {
-
     layer: ScaledLayer
     assetIndex: number = 0
 
@@ -54,5 +53,4 @@ export class LoadingScreen extends BaseScreen {
         this.assetIndex++
         this.redraw()
     }
-
 }

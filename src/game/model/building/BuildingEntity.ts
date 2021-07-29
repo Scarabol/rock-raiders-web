@@ -31,7 +31,6 @@ import { BuildingSite } from './BuildingSite'
 import { Teleport } from './Teleport'
 
 export class BuildingEntity implements Selectable, BeamUpEntity {
-
     stats: BuildingEntityStats = null
     secondaryBuildingPart: Vector2 = null
     primaryPowerPath: Vector2 = new Vector2(0, 1)
@@ -332,5 +331,4 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.sceneEntity.update(elapsedMs)
         this.beamUpAnimator?.update(elapsedMs)
     }
-
 }

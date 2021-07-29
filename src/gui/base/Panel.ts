@@ -5,7 +5,6 @@ import { GuiResourceCache } from '../GuiResourceCache'
 import { BaseElement } from './BaseElement'
 
 export class Panel extends BaseElement {
-
     img: SpriteImage = null
     xOut: number = 0
     yOut: number = 0
@@ -82,5 +81,4 @@ export class Panel extends BaseElement {
         if (this.img) context.drawImage(this.img, this.x, this.y)
         super.onRedraw(context)
     }
-
 }

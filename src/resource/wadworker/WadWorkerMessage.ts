@@ -2,7 +2,6 @@ import { GameStatsCfg } from '../../cfg/GameStatsCfg'
 import { WorkerMessageType } from './WorkerMessageType'
 
 export class WadWorkerMessage {
-
     type: WorkerMessageType = null
     text?: string
     cfg?: any
@@ -40,5 +39,4 @@ export class WadWorkerMessage {
     static createCacheMissed(cacheIdentifier: string) {
         return {type: WorkerMessageType.CACHE_MISS, cacheIdentifier: cacheIdentifier}
     }
-
 }

@@ -7,7 +7,6 @@ import { Panel } from '../base/Panel'
 import { MapPanel } from './MapPanel'
 
 export class RadarPanel extends Panel {
-
     map: MapPanel
     fill: Panel
     overlay: Panel
@@ -55,11 +54,9 @@ export class RadarPanel extends Panel {
         super.onRedraw(context)
         this.map.hidden = false
     }
-
 }
 
 export class ButtonRadarCfg extends BaseConfig {
-
     panelButtonRadarToggle: ButtonCfg = null
     panelButtonRadarTaggedObjectView: ButtonCfg = null
     panelButtonRadarZoomIn: ButtonCfg = null
@@ -74,5 +71,4 @@ export class ButtonRadarCfg extends BaseConfig {
     parseValue(lCfgKeyName: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
     }
-
 }

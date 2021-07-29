@@ -9,7 +9,6 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 
 export abstract class MaterialEntity {
-
     sceneMgr: SceneManager
     entityMgr: EntityManager
     entityType: EntityType
@@ -48,5 +47,4 @@ export abstract class MaterialEntity {
     update(elapsedMs: number) {
         this.sceneEntity.update(elapsedMs)
     }
-
 }

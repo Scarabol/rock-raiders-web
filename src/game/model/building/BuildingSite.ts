@@ -16,7 +16,6 @@ import { Ore } from '../material/Ore'
 import { BuildingEntity } from './BuildingEntity'
 
 export class BuildingSite {
-
     entityMgr: EntityManager
     primarySurface: Surface = null
     secondarySurface: Surface = null
@@ -145,5 +144,4 @@ export class BuildingSite {
         return this.primaryPathSurface || this.primarySurface.neighbors.find((n) => !n.site && n.isWalkable()) ||
             this.secondarySurface?.neighbors.find((n) => !n.site && n.isWalkable())
     }
-
 }

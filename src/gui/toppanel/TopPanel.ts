@@ -6,7 +6,6 @@ import { ToggleButton } from '../base/ToggleButton'
 import { ButtonTopCfg } from './ButtonTopCfg'
 
 export class TopPanel extends Panel {
-
     btnCallToArms: ToggleButton
     btnOptions: Button
     btnPriorities: ToggleButton
@@ -17,6 +16,5 @@ export class TopPanel extends Panel {
         this.btnOptions = this.addChild(new Button(this, buttonsCfg.panelButtonTopPanelOptions))
         this.btnPriorities = this.addChild(new ToggleButton(this, buttonsCfg.panelButtonTopPanelPriorities))
     }
-
 }
 

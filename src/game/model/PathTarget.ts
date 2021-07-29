@@ -3,7 +3,6 @@ import { RaiderActivity } from './activities/RaiderActivity'
 import { MaterialEntity } from './material/MaterialEntity'
 
 export class PathTarget {
-
     targetLocation: Vector2
     radiusSq: number
 
@@ -31,5 +30,4 @@ export class PathTarget {
     isInvalid(): boolean {
         return false
     }
-
 }

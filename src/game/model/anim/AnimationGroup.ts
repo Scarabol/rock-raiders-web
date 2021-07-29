@@ -5,7 +5,6 @@ import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { AnimClip } from './AnimClip'
 
 export class AnimationGroup extends Group {
-
     animation: AnimClip
 
     constructor(lwsFilepath: string, audioListener: AudioListener) {
@@ -47,5 +46,4 @@ export class AnimationGroup extends Group {
     update(elapsedMs: number) {
         this.animation.update(elapsedMs)
     }
-
 }

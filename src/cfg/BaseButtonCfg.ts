@@ -1,5 +1,4 @@
 export class BaseButtonCfg {
-
     buttonType?: string = null
     normalFile?: string = null
     highlightFile?: string = null

@@ -4,7 +4,6 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 
 export class MainMenuIconButton extends MainMenuBaseItem {
-
     imgNormal = null
     imgHover = null
     imgPressed = null
@@ -31,5 +30,4 @@ export class MainMenuIconButton extends MainMenuBaseItem {
         if (this.pressed) img = this.imgPressed
         context.drawImage(img, this.x, this.y)
     }
-
 }

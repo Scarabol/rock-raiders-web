@@ -10,7 +10,6 @@ import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
 
 export abstract class MovableEntity {
-
     sceneMgr: SceneManager
     entityMgr: EntityManager
     entityType: EntityType = null
@@ -78,5 +77,4 @@ export abstract class MovableEntity {
     isOnPath(): boolean {
         return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).isPath()
     }
-
 }

@@ -10,7 +10,6 @@ import { SceneEntity } from './SceneEntity'
 import { SceneMesh } from './SceneMesh'
 
 export class AnimatedSceneEntity extends SceneEntity {
-
     animationEntityType: AnimationEntityType = null
     animation: AnimClip = null
     activity: BaseActivity = null
@@ -184,5 +183,4 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.carriedByIndex.clear()
         return dropped
     }
-
 }

@@ -8,7 +8,6 @@ import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
 
 export class CompletePowerPathJob extends ShareableJob {
-
     placedItems: MaterialEntity[]
     workplaces: PathTarget[]
 
@@ -41,5 +40,4 @@ export class CompletePowerPathJob extends ShareableJob {
     getWorkActivity(): RaiderActivity {
         return RaiderActivity.Clear
     }
-
 }

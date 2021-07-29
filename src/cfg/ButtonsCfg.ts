@@ -8,7 +8,6 @@ import { ButtonCameraControlCfg } from './ButtonCameraControlCfg'
 import { ButtonInformationCfg } from './ButtonInformationCfg'
 
 export class ButtonsCfg extends BaseConfig {
-
     panelRadar: ButtonRadarCfg = null
     panelCrystalSideBar: ButtonCrystalSideBarCfg = null
     panelTopPanel: ButtonTopCfg = null
@@ -46,5 +45,4 @@ export class ButtonsCfg extends BaseConfig {
             return btnCfgValue
         }
     }
-
 }

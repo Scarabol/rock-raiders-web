@@ -9,7 +9,6 @@ import { Terrain } from './Terrain'
 import { TerrainPath } from './TerrainPath'
 
 export class PathFinder {
-
     graphWalk: Graph = null
     graphDrive: Graph = null
     graphFly: Graph = null
@@ -140,5 +139,4 @@ export class PathFinder {
         this.cachedSwimPaths.clear()
         console.log('Cached paths cleared')
     }
-
 }

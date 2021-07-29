@@ -19,7 +19,6 @@ import { ScreenLayer } from './ScreenLayer'
 import generateUUID = MathUtils.generateUUID
 
 export abstract class OffscreenLayer extends ScreenLayer {
-
     private worker: Worker
     entityMgr: EntityManager
     resolveCallbackByEventId: Map<string, ((consumed: boolean) => any)> = new Map()
@@ -116,5 +115,4 @@ export abstract class OffscreenLayer extends ScreenLayer {
         })
         return new Promise((resolve) => this.resolveCallbackByEventId.set(eventId, resolve))
     }
-
 }

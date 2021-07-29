@@ -1,7 +1,6 @@
 import { Surface } from '../../game/model/map/Surface'
 
 export class MapSurfaceRect {
-
     x: number
     y: number
     surfaceColor: string

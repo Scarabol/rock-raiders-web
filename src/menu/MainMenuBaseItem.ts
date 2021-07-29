@@ -1,5 +1,4 @@
 export class MainMenuBaseItem {
-
     x: number = 0
     y: number = 0
     width: number = 0
@@ -44,5 +43,4 @@ export class MainMenuBaseItem {
     draw(context: SpriteContext) {
         this.needsRedraw = false
     }
-
 }

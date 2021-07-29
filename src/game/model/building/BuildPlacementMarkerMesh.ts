@@ -7,7 +7,6 @@ import { SurfaceGeometry } from '../map/SurfaceGeometry'
 import { WALL_TYPE } from '../map/WallType'
 
 export class BuildPlacementMarkerMesh extends Mesh {
-
     static readonly geometry = SurfaceGeometry.create(WALL_TYPE.WALL,
         new Vector3(0, 0, 0), new Vector3(TILESIZE, 0, 0),
         new Vector3(TILESIZE, 0, TILESIZE), new Vector3(0, 0, TILESIZE),
@@ -46,5 +45,4 @@ export class BuildPlacementMarkerMesh extends Mesh {
     get surface(): Surface {
         return this.visible ? this.sceneMgr.terrain.getSurfaceFromWorld(this.position) : null
     }
-
 }

@@ -13,7 +13,6 @@ interface WadAsset {
 }
 
 export class WadAssetRegistry extends Map<string, WadAsset> {
-
     wadLoader: WadLoader
 
     constructor(wadLoader: WadLoader) {
@@ -262,5 +261,4 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
             sfxKeys: sfxKeys,
         })
     }
-
 }

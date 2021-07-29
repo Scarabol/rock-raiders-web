@@ -2,7 +2,6 @@ import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
 
 export class GetToolPathTarget extends PathTarget {
-
     building: BuildingEntity
 
     constructor(building: BuildingEntity) {
@@ -13,5 +12,4 @@ export class GetToolPathTarget extends PathTarget {
     isInvalid(): boolean {
         return !this.building.isPowered()
     }
-
 }

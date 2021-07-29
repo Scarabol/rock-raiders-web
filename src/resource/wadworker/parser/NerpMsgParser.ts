@@ -1,12 +1,9 @@
 interface NerpMessage {
-
     txt?: string
     snd?: string
-
 }
 
 export class NerpMsgParser {
-
     static parseNerpMessages(wad0Data: string, wad1Data: string): NerpMessage[] {
         // line formatting differs between wad0 and wad1 files!
         const txt0Matcher = /\\\[([^\\]+)\\]\s*(#([^#]+)#)?/
@@ -69,5 +66,4 @@ export class NerpMsgParser {
         }
         return number
     }
-
 }

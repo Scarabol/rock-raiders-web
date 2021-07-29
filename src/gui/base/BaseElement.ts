@@ -5,7 +5,6 @@ import { ChangeCursor, LocalEvent, PlaySoundEvent } from '../../event/LocalEvent
 import { Cursor } from '../../screen/Cursor'
 
 export class BaseElement {
-
     parent: BaseElement = null
     x: number = 0
     y: number = 0
@@ -165,5 +164,4 @@ export class BaseElement {
     registerEventListener(eventKey: EventKey, callback: (GameEvent) => any) {
         this.parent.registerEventListener(eventKey, callback)
     }
-
 }

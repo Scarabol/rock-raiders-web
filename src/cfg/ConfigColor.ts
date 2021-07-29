@@ -1,5 +1,4 @@
 export class ConfigColor {
-
     r: number
     g: number
     b: number
@@ -7,5 +6,4 @@ export class ConfigColor {
     constructor(values: number[]) {
         [this.r, this.g, this.b] = values
     }
-
 }

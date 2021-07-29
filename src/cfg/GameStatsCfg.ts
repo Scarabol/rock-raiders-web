@@ -5,7 +5,6 @@ import { BuildingEntityStats } from './BuildingEntityStats'
 import { VehicleEntityStats } from './VehicleEntityStats'
 
 export class GameStatsCfg extends BaseConfig {
-
     Pilot = new class PilotStats extends BaseConfig {
         Levels: number = 4
         RouteSpeed: number[] = [1.10, 1.10, 1.10, 1.10]
@@ -757,5 +756,4 @@ export class GameStatsCfg extends BaseConfig {
             return true
         }
     }
-
 }

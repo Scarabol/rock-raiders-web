@@ -10,7 +10,6 @@ export enum PriorityIdentifier { // This needs to be an actual enum, because it 
     CONSTRUCTION,
     REINFORCE,
     RECHARGE,
-
 }
 
 export function priorityIdentifierFromString(name: string) {

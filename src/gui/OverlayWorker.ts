@@ -16,7 +16,6 @@ import { OptionsPanel } from './overlay/OptionsPanel'
 import { PausePanel } from './overlay/PausePanel'
 
 export class OverlayWorker extends GuiWorker {
-
     panelBriefing: BriefingPanel
     panelOptions: OptionsPanel
     panelPause: PausePanel
@@ -102,7 +101,6 @@ export class OverlayWorker extends GuiWorker {
         }
         return result
     }
-
 }
 
 const worker: Worker = self as any

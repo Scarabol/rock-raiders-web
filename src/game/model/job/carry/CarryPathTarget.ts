@@ -4,7 +4,6 @@ import { MaterialEntity } from '../../material/MaterialEntity'
 import { PathTarget } from '../../PathTarget'
 
 export class CarryPathTarget extends PathTarget {
-
     constructor(location: Vector2, radiusSq: number = 0) {
         super(location, radiusSq)
     }
@@ -20,5 +19,4 @@ export class CarryPathTarget extends PathTarget {
     getDropAction(): RaiderActivity {
         return RaiderActivity.Place
     }
-
 }

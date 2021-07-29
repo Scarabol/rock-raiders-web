@@ -6,7 +6,6 @@ import { Rect } from '../../core/Rect'
 import { GuiResourceCache } from '../GuiResourceCache'
 
 export class BriefingPanelCfg extends PanelCfg {
-
     // XXX find config values for this class
 
     titleFont: BitmapFont
@@ -39,5 +38,4 @@ export class BriefingPanelCfg extends PanelCfg {
             normalFile: GuiResourceCache.cfg('Main', 'BackArrow'),
         }
     }
-
 }

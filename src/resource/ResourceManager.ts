@@ -12,7 +12,6 @@ import { WadWorkerMessage } from './wadworker/WadWorkerMessage'
 import { WorkerMessageType } from './wadworker/WorkerMessageType'
 
 export class ResourceManager extends ResourceCache {
-
     static worker: Worker = new Worker(new URL('./wadworker/WadWorker', import.meta.url))
 
     static lwoCache: Map<string, SceneMesh> = new Map()
@@ -148,5 +147,4 @@ export class ResourceManager extends ResourceCache {
             return result
         })?.clone()
     }
-
 }

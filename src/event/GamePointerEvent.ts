@@ -1,7 +1,6 @@
 import { MOUSE_BUTTON, POINTER_EVENT } from './EventTypeEnum'
 
 export class GamePointerEvent implements PointerEventInit {
-
     type: string
     eventEnum: POINTER_EVENT
     bubbles: boolean
@@ -28,5 +27,4 @@ export class GamePointerEvent implements PointerEventInit {
         this.metaKey = event.metaKey
         this.shiftKey = event.shiftKey
     }
-
 }

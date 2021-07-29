@@ -4,7 +4,6 @@ import { ConfigColor } from './ConfigColor'
 import { ObjectiveImageCfg } from './ObjectiveImageCfg'
 
 export class LevelsCfg {
-
     levelCfgByName: Map<string, LevelEntryCfg> = new Map()
 
     constructor(cfgObj: any) {
@@ -13,11 +12,9 @@ export class LevelsCfg {
             this.levelCfgByName.set(levelKey, new LevelEntryCfg(cfgObj[levelKey]))
         })
     }
-
 }
 
 export class LevelEntryCfg extends BaseConfig {
-
     fullName: string = ''
     endGameAvi1: string = ''
     endGameAvi2: string = ''
@@ -101,11 +98,9 @@ export class LevelEntryCfg extends BaseConfig {
             return super.parseValue(lCfgKeyName, cfgValue)
         }
     }
-
 }
 
 export class LevelPrioritiesEntryConfig {
-
     key: PriorityIdentifier
     enabled: boolean
 
@@ -113,11 +108,9 @@ export class LevelPrioritiesEntryConfig {
         this.key = priorityIdentifierFromString(name)
         this.enabled = enabled
     }
-
 }
 
 export class LevelRewardConfig extends BaseConfig {
-
     enable: boolean = true
     modifier: number = null
     importance: LevelRewardImportanceConfig = null
@@ -140,7 +133,6 @@ export class LevelRewardConfig extends BaseConfig {
 }
 
 export class LevelRewardImportanceConfig extends BaseConfig {
-
     crystals: number = 0
     timer: number = 0
     caverns: number = 0
@@ -152,11 +144,9 @@ export class LevelRewardImportanceConfig extends BaseConfig {
         super()
         BaseConfig.setFromCfg(this, cfgObj)
     }
-
 }
 
 export class LevelRewardQuotaConfig extends BaseConfig {
-
     crystals: number = null
     timer: number = null
     caverns: number = null
@@ -166,5 +156,4 @@ export class LevelRewardQuotaConfig extends BaseConfig {
         super()
         BaseConfig.setFromCfg(this, cfgObj)
     }
-
 }

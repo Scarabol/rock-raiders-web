@@ -1,7 +1,6 @@
 // The RockRaidersObjectNotation (RON) format is related to JSON
 
 export class RonFileParser {
-
     static parse(content: string) {
         const lines: string[] = content.split(/[\r\n]+/g).map((l) => l
             .replace(/;.*|\/\/.*/, '') // strip comments from each line
@@ -67,5 +66,4 @@ export class RonFileParser {
             obj[key] = value
         }
     }
-
 }

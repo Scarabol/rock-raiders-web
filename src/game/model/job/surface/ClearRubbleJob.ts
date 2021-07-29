@@ -6,7 +6,6 @@ import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
 
 export class ClearRubbleJob extends ShareableJob {
-
     lastRubblePositions: PathTarget[]
 
     constructor(surface: Surface) {
@@ -43,5 +42,4 @@ export class ClearRubbleJob extends ShareableJob {
     getWorkActivity(): RaiderActivity {
         return RaiderActivity.Clear
     }
-
 }

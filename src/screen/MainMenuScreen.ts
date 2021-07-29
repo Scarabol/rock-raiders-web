@@ -5,7 +5,6 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { BaseScreen } from './BaseScreen'
 
 export class MainMenuScreen extends BaseScreen {
-
     onLevelSelected: (levelName: string) => void = null
     menus: MainMenuLayer[] = []
 
@@ -39,5 +38,4 @@ export class MainMenuScreen extends BaseScreen {
         this.hide()
         this.onLevelSelected(levelName)
     }
-
 }

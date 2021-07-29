@@ -1,5 +1,4 @@
 export class MenuSliderItemCfg {
-
     actionName: string
     x: number
     y: number
@@ -21,5 +20,4 @@ export class MenuSliderItemCfg {
         [this.actionName, this.x, this.y, this.width, this.height, this.description, this.min, this.max, this.imgOff, this.imgOn,
             this.imgLeft, this.imgRight, this.btnRightNormal, this.btnLeftNormal, this.btnRightHover, this.btnLeftHover] = cfgObj
     }
-
 }

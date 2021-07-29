@@ -16,7 +16,6 @@ import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
 
 export class GuiManager {
-
     buildingCycleIndex: number = 0
 
     constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityMgr: EntityManager, gameLayerCanvas: HTMLCanvasElement) {
@@ -159,5 +158,4 @@ export class GuiManager {
             }
         })
     }
-
 }

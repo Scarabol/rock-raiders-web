@@ -14,7 +14,6 @@ import { MainMenuLabelButton } from './MainMenuLabelButton'
 import { MainMenuLevelButton } from './MainMenuLevelButton'
 
 export class MainMenuLayer extends ScaledLayer {
-
     screen: MainMenuScreen
     cfg: MenuEntryCfg
     loFont: BitmapFont
@@ -139,5 +138,4 @@ export class MainMenuLayer extends ScaledLayer {
     needsRedraw(): boolean {
         return this.items.some((item) => item.needsRedraw)
     }
-
 }

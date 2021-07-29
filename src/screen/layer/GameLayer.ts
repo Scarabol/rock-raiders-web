@@ -19,7 +19,6 @@ import { DEV_MODE } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
 
 export class GameLayer extends ScreenLayer implements IEventHandler {
-
     parent: IEventHandler
     worldMgr: WorldManager
     sceneMgr: SceneManager
@@ -147,5 +146,4 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             this.sceneMgr.screenshotCallback = resolve
         })
     }
-
 }

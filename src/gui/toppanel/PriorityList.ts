@@ -1,7 +1,6 @@
 import { PriorityEntry } from '../../game/model/job/PriorityEntry'
 
 export class PriorityList {
-
     levelDefault: PriorityEntry[] = []
     current: PriorityEntry[] = []
 
@@ -31,5 +30,4 @@ export class PriorityList {
         }
         this.current[0] = element
     }
-
 }

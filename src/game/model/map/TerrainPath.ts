@@ -3,7 +3,6 @@ import { asArray } from '../../../core/Util'
 import { PathTarget } from '../PathTarget'
 
 export class TerrainPath {
-
     target: PathTarget = null
     locations: Vector2[] = []
     lengthSq: number = 0
@@ -21,5 +20,4 @@ export class TerrainPath {
     get firstLocation(): Vector2 {
         return this.locations[0] || null
     }
-
 }

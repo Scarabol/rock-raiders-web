@@ -21,7 +21,6 @@ import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
 
 export class VehicleEntity extends FulfillerEntity {
-
     stats: VehicleEntityStats
     sceneEntity: VehicleSceneEntity
     driver: Raider = null
@@ -152,5 +151,4 @@ export class VehicleEntity extends FulfillerEntity {
             if (walkableNeighbor) this.setJob(new MoveJob(walkableNeighbor.getCenterWorld2D()))
         }
     }
-
 }

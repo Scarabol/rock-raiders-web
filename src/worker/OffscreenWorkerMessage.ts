@@ -5,7 +5,6 @@ import { GameWheelEvent } from '../event/GameWheelEvent'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 
 export class OffscreenWorkerMessage {
-
     type: WorkerMessageType
     cfg?: any
     stats?: any
@@ -19,5 +18,4 @@ export class OffscreenWorkerMessage {
     constructor(type: WorkerMessageType) {
         this.type = type
     }
-
 }

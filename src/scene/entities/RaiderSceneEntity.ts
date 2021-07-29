@@ -4,7 +4,6 @@ import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { SceneEntity } from '../SceneEntity'
 
 export class RaiderSceneEntity extends AnimatedSceneEntity {
-
     dropAllEntities(): SceneEntity[] {
         const dropped = super.dropAllEntities()
         dropped.forEach((d) => d.addToScene(d.position2D, null))
@@ -15,5 +14,4 @@ export class RaiderSceneEntity extends AnimatedSceneEntity {
     getDefaultActivity(): BaseActivity {
         return this.carriedByIndex.size > 0 ? RaiderActivity.CarryStand : super.getDefaultActivity()
     }
-
 }

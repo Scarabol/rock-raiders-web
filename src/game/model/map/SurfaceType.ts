@@ -1,7 +1,6 @@
 import { Cursor } from '../../../screen/Cursor'
 
 export class SurfaceType {
-
     name: string // human readable, maybe used as label later on
     shaping: boolean = false
     matIndex: string = '00'

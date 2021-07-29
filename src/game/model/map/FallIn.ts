@@ -3,7 +3,6 @@ import { Surface } from './Surface'
 import { Terrain } from './Terrain'
 
 export class FallIn {
-
     terrain: Terrain
     source: Surface
     target: Surface
@@ -28,5 +27,4 @@ export class FallIn {
     private restartTimeout() {
         this.fallinTimeout = (30 + getRandom(60)) * 1000 // TODO adapt timer to level multiplier and fallin value
     }
-
 }

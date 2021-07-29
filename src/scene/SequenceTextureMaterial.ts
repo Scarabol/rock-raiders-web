@@ -2,7 +2,6 @@ import { DoubleSide, MeshPhongMaterial, Texture } from 'three'
 import { SEQUENCE_TEXTURE_INTERVAL_MS } from '../params'
 
 export class SequenceTextureMaterial extends MeshPhongMaterial {
-
     textures: Texture[] = []
     timer: number = 0
     seqNum: number = 0
@@ -42,5 +41,4 @@ export class SequenceTextureMaterial extends MeshPhongMaterial {
         this.opacity = opacity
         this.transparent = this.transparent || this.opacity < 1
     }
-
 }

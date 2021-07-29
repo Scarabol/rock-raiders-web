@@ -6,7 +6,6 @@ import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectFloorPanel extends SelectBasePanel {
-
     isGround: boolean = false
     isPowerPath: boolean = false
     canPlaceFence: boolean = false
@@ -36,5 +35,4 @@ export class SelectFloorPanel extends SelectBasePanel {
         this.isPowerPath = false
         this.canPlaceFence = false
     }
-
 }

@@ -2,7 +2,6 @@ import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
 export class EventBus {
-
     static eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
     static workerListener: ((event: GameEvent) => any)[] = []
     static blockedEvents = []
@@ -29,5 +28,4 @@ export class EventBus {
     }
 
     // TODO cleanup/unregister all event listener at level end?!
-
 }

@@ -5,7 +5,6 @@ import { Panel } from '../base/Panel'
 import { DependencyCheckPanel } from './DependencyCheckPanel'
 
 export class BuildingPanel extends DependencyCheckPanel {
-
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 10, onBackPanel)
         this.backBtn.onClick = () => {
@@ -43,5 +42,4 @@ export class BuildingPanel extends DependencyCheckPanel {
             return result
         }
     }
-
 }

@@ -6,7 +6,6 @@ import { Panel } from '../base/Panel'
 import { MapSurfaceRect } from './MapSurfaceRect'
 
 export class MapPanel extends Panel {
-
     context: SpriteContext
     offsetX: number = 0
     offsetY: number = 0
@@ -70,5 +69,4 @@ export class MapPanel extends Panel {
             this.context.fillRect(surfaceX, surfaceY, this.surfaceRectSize - this.surfaceRectMargin, this.surfaceRectSize - this.surfaceRectMargin)
         }
     }
-
 }

@@ -5,16 +5,13 @@ import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
 export class WorldEvent extends GameEvent {
-
     constructor(entityKey: EventKey) {
         super(entityKey)
         this.isLocal = false
     }
-
 }
 
 export abstract class JobEvent extends WorldEvent {
-
     job: SupervisedJob
 
     protected constructor(eventKey: EventKey, job: SupervisedJob) {
@@ -22,38 +19,30 @@ export abstract class JobEvent extends WorldEvent {
         this.guiForward = false
         this.job = job
     }
-
 }
 
 export class JobCreateEvent extends JobEvent {
-
     constructor(job: SupervisedJob) {
         super(EventKey.JOB_CREATE, job)
     }
-
 }
 
 export class JobDeleteEvent extends JobEvent {
-
     constructor(job: SupervisedJob) {
         super(EventKey.JOB_DELETE, job)
     }
-
 }
 
 export class RequestedRaidersChanged extends WorldEvent {
-
     numRequested: number
 
     constructor(numRequested: number) {
         super(EventKey.REQUESTED_RAIDERS_CHANGED)
         this.numRequested = numRequested
     }
-
 }
 
 export class RequestedVehiclesChanged extends WorldEvent {
-
     vehicle: EntityType
     numRequested: number
 
@@ -62,11 +51,9 @@ export class RequestedVehiclesChanged extends WorldEvent {
         this.vehicle = vehicle
         this.numRequested = numRequested
     }
-
 }
 
 export class MaterialAmountChanged extends WorldEvent {
-
     numCrystal: number
     neededCrystal: number
     totalOre: number
@@ -77,32 +64,25 @@ export class MaterialAmountChanged extends WorldEvent {
         this.neededCrystal = GameState.neededCrystals
         this.totalOre = GameState.numOre + GameState.numBrick * 5
     }
-
 }
 
 export class UsedCrystalChanged extends WorldEvent {
-
     usedCrystal: number
 
     constructor() {
         super(EventKey.USED_CRYSTAL_CHANGED)
         this.usedCrystal = GameState.usedCrystals
     }
-
 }
 
 export class CavernDiscovered extends WorldEvent {
-
     constructor() {
         super(EventKey.CAVERN_DISCOVERED)
     }
-
 }
 
 export class OreFoundEvent extends WorldEvent {
-
     constructor() {
         super(EventKey.ORE_FOUND)
     }
-
 }

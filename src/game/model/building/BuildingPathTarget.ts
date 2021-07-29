@@ -3,7 +3,6 @@ import { PathTarget } from '../PathTarget'
 import { BuildingEntity } from './BuildingEntity'
 
 export class BuildingPathTarget extends PathTarget {
-
     building: BuildingEntity
 
     constructor(location: Vector2, building: BuildingEntity) {
@@ -18,5 +17,4 @@ export class BuildingPathTarget extends PathTarget {
     isInvalid(): boolean {
         return !this.building.isPowered()
     }
-
 }

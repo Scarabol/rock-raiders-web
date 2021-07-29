@@ -2,7 +2,6 @@ import { LevelObjectiveTextEntry } from '../../../cfg/LevelObjectiveTextEntry'
 import { encodeChar } from './EncodingHelper'
 
 export class ObjectiveTextParser {
-
     parseObjectiveTextFile(txtFileContent: Uint8Array) {
         const result = {}
         let state = PARSING_STATE.DROP
@@ -87,17 +86,14 @@ export class ObjectiveTextParser {
         currentLevel = null
         return result
     }
-
 }
 
 enum PARSING_STATE {
-
     DROP,
     KEY,
     OBJECTIVE,
     FAILURE,
     COMPLETION,
     CRYSTAL_FAILURE,
-
 }
 

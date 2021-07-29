@@ -1,7 +1,6 @@
 import { EventKey } from './EventKeyEnum'
 
 export class GameEvent {
-
     eventKey: EventKey
     isLocal: boolean
     guiForward: boolean
@@ -10,5 +9,4 @@ export class GameEvent {
         this.eventKey = eventKey
         this.guiForward = true
     }
-
 }

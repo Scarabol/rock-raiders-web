@@ -7,16 +7,13 @@ import { AnimationGroup } from './model/anim/AnimationGroup'
 import { SceneManager } from './SceneManager'
 
 export interface BeamUpEntity {
-
     sceneMgr: SceneManager
     sceneEntity: SceneEntity
 
     disposeFromWorld()
-
 }
 
 export class BeamUpAnimator {
-
     entity: BeamUpEntity
     counter: number
     animGroup: AnimationGroup
@@ -42,5 +39,4 @@ export class BeamUpAnimator {
             this.entity.sceneEntity.position.y += (TILESIZE / NATIVE_FRAMERATE) / 2 * (elapsedMs / NATIVE_UPDATE_INTERVAL)
         }
     }
-
 }

@@ -10,7 +10,6 @@ import { InfoMessagesConfig } from './InfoMessagesConfig'
 import { InformationPanel } from './InformationPanel'
 
 export class InfoDockPanel extends Panel {
-
     stackButtons: InfoDockButton[] = []
     informationPanel: InformationPanel = null
 
@@ -108,6 +107,5 @@ export class InfoDockPanel extends Panel {
             })
         })
     }
-
 }
 

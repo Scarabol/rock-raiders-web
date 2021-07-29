@@ -5,7 +5,6 @@ import { EntityType } from '../EntityType'
 import { Monster } from './Monster'
 
 export class IceMonster extends Monster {
-
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.ICE_MONSTER, 'Creatures/IceMonster/IceMonster.ae')
     }
@@ -18,5 +17,4 @@ export class IceMonster extends Monster {
         super.disposeFromWorld()
         this.entityMgr.rockMonsters.remove(this)
     }
-
 }

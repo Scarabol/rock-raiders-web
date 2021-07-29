@@ -2,7 +2,6 @@ import { BaseConfig } from '../../cfg/BaseConfig'
 import { ButtonCfg } from '../../cfg/ButtonCfg'
 
 export class PriorityButtonsConfig extends BaseConfig {
-
     aiPriorityTrain: ButtonCfg = null
     aiPriorityGetIn: ButtonCfg = null
     aiPriorityCrystal: ButtonCfg = null
@@ -28,5 +27,4 @@ export class PriorityButtonsConfig extends BaseConfig {
             disabledFile: cfgValue[3],
         }
     }
-
 }

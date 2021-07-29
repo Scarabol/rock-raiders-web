@@ -23,7 +23,6 @@ import { TrainRaiderPanel } from './TrainRaiderPanel'
 import { LargeVehiclePanel, SmallVehiclePanel } from './VehiclePanel'
 
 export class MainPanel extends Panel {
-
     subPanels: IconSubPanel[] = []
     mainPanel: IconSubPanel // don't use root itself, since sub panel must be decoupled from (animated) main panel position
     selectWallPanel: SelectWallPanel
@@ -156,5 +155,4 @@ export class MainPanel extends Panel {
             this.selectSubPanel(this.selectWallPanel)
         }
     }
-
 }

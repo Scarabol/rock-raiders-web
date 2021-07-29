@@ -1,5 +1,4 @@
 export enum EventKey {
-
     SELECTION_CHANGED,
     DESELECT_ALL,
     BUILDINGS_CHANGED,
@@ -62,5 +61,4 @@ export enum EventKey {
     UNPAUSE_GAME,
     UPDATE_PRIORITIES,
     TAKE_SCREENSHOT,
-
 }

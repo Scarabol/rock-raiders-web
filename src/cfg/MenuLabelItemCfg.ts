@@ -1,7 +1,6 @@
 import { parseLabel } from './CfgHelper'
 
 export class MenuLabelItemCfg {
-
     actionName: string
     x: number
     y: number
@@ -24,5 +23,4 @@ export class MenuLabelItemCfg {
             console.log(cfgObj)
         }
     }
-
 }

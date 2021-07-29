@@ -3,7 +3,6 @@ import { SceneMesh } from '../../../scene/SceneMesh'
 import degToRad = MathUtils.degToRad
 
 export class AnimSubObj {
-
     lowerName: string = ''
     filename: string = ''
     pivot: Vector3 = new Vector3(0, 0, 0)
@@ -37,5 +36,4 @@ export class AnimSubObj {
             this.opacity[c] = value
         }
     }
-
 }

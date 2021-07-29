@@ -1,7 +1,6 @@
 import { BaseConfig } from './BaseConfig'
 
 export class VehicleEntityStats extends BaseConfig {
-
     PickSphere: number = 0
     CanDoubleSelect: boolean = false
     CostOre: number = 0
@@ -14,5 +13,4 @@ export class VehicleEntityStats extends BaseConfig {
     CrossWater: boolean = false
     CrossLava: boolean = false
     MaxCarry: number[] = []
-
 }

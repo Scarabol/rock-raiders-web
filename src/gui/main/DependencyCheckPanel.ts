@@ -8,7 +8,6 @@ import { GuiResourceCache } from '../GuiResourceCache'
 import { IconSubPanel } from './IconSubPanel'
 
 export abstract class DependencyCheckPanel extends IconSubPanel {
-
     hasRaider: boolean = false
     discoveredBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
     usableBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
@@ -55,5 +54,4 @@ export abstract class DependencyCheckPanel extends IconSubPanel {
             return result
         }
     }
-
 }

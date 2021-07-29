@@ -3,7 +3,6 @@ import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 
 export class IconPanelButton extends Button {
-
     tooltipSfx: string = null
     tooltipDisabled: string = null
     tooltipDisabledSfx: string = null
@@ -37,5 +36,4 @@ export class IconPanelButton extends Button {
         if (stateChanged && autoRedraw) this.notifyRedraw()
         return stateChanged
     }
-
 }

@@ -6,7 +6,6 @@ import { MovableEntity } from '../MovableEntity'
 import { PathTarget } from '../PathTarget'
 
 export abstract class Monster extends MovableEntity {
-
     sceneEntity: AnimatedSceneEntity
     target: PathTarget[] = []
 
@@ -26,5 +25,4 @@ export abstract class Monster extends MovableEntity {
     getSpeed(): number {
         return this.stats.RouteSpeed * (this.isOnPath() ? this.stats.PathCoef : 1)
     }
-
 }

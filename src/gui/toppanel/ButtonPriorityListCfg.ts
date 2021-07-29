@@ -2,7 +2,6 @@ import { BaseConfig } from '../../cfg/BaseConfig'
 import { ButtonCfg } from '../../cfg/ButtonCfg'
 
 export class ButtonPriorityListCfg extends BaseConfig {
-
     panelButtonPriorityListDisable: ButtonCfg[] = []
     panelButtonPriorityListUpOne: ButtonCfg[] = []
     panelButtonPriorityListClose: ButtonCfg = null // not used in the game
@@ -28,5 +27,4 @@ export class ButtonPriorityListCfg extends BaseConfig {
     parseValue(lCfgKeyName: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
     }
-
 }

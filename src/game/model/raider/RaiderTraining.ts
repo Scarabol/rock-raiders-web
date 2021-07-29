@@ -9,7 +9,6 @@ export enum RaiderTraining {
 }
 
 export class RaiderTrainings {
-
     static values: RaiderTraining[] = [
         RaiderTraining.DRIVER,
         RaiderTraining.ENGINEER,
@@ -37,5 +36,4 @@ export class RaiderTrainings {
                 throw new Error(`Unexpected training value given: ${training} (${RaiderTraining[training]})`)
         }
     }
-
 }

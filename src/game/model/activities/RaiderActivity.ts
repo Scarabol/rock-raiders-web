@@ -2,7 +2,6 @@ import { AnimEntityActivity } from './AnimEntityActivity'
 
 // noinspection JSUnusedGlobalSymbols
 export class RaiderActivity extends AnimEntityActivity {
-
     static RunPanic = new RaiderActivity('Activity_RunPanic')
     static Drill = new RaiderActivity('Activity_Drill')
     static Walk = new RaiderActivity('Activity_Walk')
@@ -81,5 +80,4 @@ export class RaiderActivity extends AnimEntityActivity {
 
     static SMALLDIGGER = new RaiderActivity('Activity_SMALLDIGGER')
     static StandSMALLDIGGER = new RaiderActivity('Activity_StandSMALLDIGGER')
-
 }

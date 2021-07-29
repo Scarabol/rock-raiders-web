@@ -4,7 +4,6 @@ import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { SceneEntity } from '../SceneEntity'
 
 export class VehicleSceneEntity extends AnimatedSceneEntity {
-
     driver: AnimatedSceneEntity
     speed: number
 
@@ -50,5 +49,4 @@ export class VehicleSceneEntity extends AnimatedSceneEntity {
         dropped.forEach((d) => d.addToScene(d.position2D, null))
         return dropped
     }
-
 }

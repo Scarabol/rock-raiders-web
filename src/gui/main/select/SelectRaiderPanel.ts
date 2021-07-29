@@ -8,7 +8,6 @@ import { IconPanelButton } from '../IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
 
 export class SelectRaiderPanel extends SelectBasePanel {
-
     getToolItem: IconPanelButton
     trainItem: IconPanelButton
 
@@ -55,5 +54,4 @@ export class SelectRaiderPanel extends SelectBasePanel {
         this.everyHasMaxLevel = false
         this.numToolstations = 0
     }
-
 }

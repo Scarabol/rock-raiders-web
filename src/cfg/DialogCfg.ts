@@ -2,7 +2,6 @@ import { Rect } from '../core/Rect'
 import { BaseConfig } from './BaseConfig'
 
 export class DialogCfg extends BaseConfig {
-
     image: string = null
     titleWindow: Rect = null
     textWindow: Rect = null
@@ -21,5 +20,4 @@ export class DialogCfg extends BaseConfig {
         }
         return super.parseValue(lCfgKeyName, cfgValue)
     }
-
 }

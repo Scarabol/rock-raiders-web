@@ -1,5 +1,4 @@
 export enum EntityType {
-
     // RAIDER
     PILOT,
 
@@ -46,7 +45,6 @@ export enum EntityType {
 
     // OTHERS
     TV_CAMERA,
-
 }
 
 export function getEntityTypeByName(type: string): EntityType {

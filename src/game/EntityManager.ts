@@ -23,7 +23,6 @@ import { updateSafe } from './model/Updateable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 
 export class EntityManager {
-
     selection: GameSelection = new GameSelection()
     buildings: BuildingEntity[] = []
     buildingsUndiscovered: BuildingEntity[] = []
@@ -218,5 +217,4 @@ export class EntityManager {
     findTeleportBuilding(entityType: EntityType): BuildingEntity {
         return this.buildings.find((b) => b.canTeleportIn(entityType))
     }
-
 }

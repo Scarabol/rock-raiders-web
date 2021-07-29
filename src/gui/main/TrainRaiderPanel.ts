@@ -7,7 +7,6 @@ import { Panel } from '../base/Panel'
 import { IconSubPanel } from './IconSubPanel'
 
 export class TrainRaiderPanel extends IconSubPanel {
-
     canDoTraining: Map<RaiderTraining, boolean> = new Map()
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
@@ -34,5 +33,4 @@ export class TrainRaiderPanel extends IconSubPanel {
         super.reset()
         this.canDoTraining = new Map()
     }
-
 }

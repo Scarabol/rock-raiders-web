@@ -8,7 +8,6 @@ import { MenuLabelItem } from './MenuLabelItem'
 import { MenuSliderItem } from './MenuSliderItem'
 
 export class MenuLayer extends BaseElement {
-
     menuImage: SpriteImage
     titleImage: SpriteImage
     loFont: BitmapFont
@@ -48,5 +47,4 @@ export class MenuLayer extends BaseElement {
         context.drawImage(this.titleImage, (SPRITE_RESOLUTION_WIDTH - this.titleImage.width) / 2, this.y)
         super.onRedraw(context)
     }
-
 }

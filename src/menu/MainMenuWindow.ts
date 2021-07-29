@@ -2,7 +2,6 @@ import { BitmapFont } from '../core/BitmapFont'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class MainMenuWindow extends MainMenuBaseItem {
-
     font: BitmapFont
     imgFirstLine = null
     imgSecondLine = null
@@ -30,5 +29,4 @@ export class MainMenuWindow extends MainMenuBaseItem {
         if (this.imgFirstLine) context.drawImage(this.imgFirstLine, cx - this.imgFirstLine.width / 2, cy - this.imgFirstLine.height)
         if (this.imgSecondLine) context.drawImage(this.imgSecondLine, cx - this.imgSecondLine.width / 2, cy)
     }
-
 }

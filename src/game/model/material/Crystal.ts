@@ -9,7 +9,6 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Crystal extends MaterialEntity {
-
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         super(sceneMgr, entityMgr, EntityType.CRYSTAL)
         this.sceneEntity = new CrystalSceneEntity(sceneMgr)
@@ -31,5 +30,4 @@ export class Crystal extends MaterialEntity {
     getPriorityIdentifier(): PriorityIdentifier {
         return PriorityIdentifier.CRYSTAL
     }
-
 }

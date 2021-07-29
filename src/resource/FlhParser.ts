@@ -12,7 +12,6 @@ import { setPixel } from '../core/ImageHelper'
  */
 
 export class FlhParser {
-
     dataView: DataView = null
     fileLength: number = null
     flicFileType: number = null
@@ -214,5 +213,4 @@ export class FlhParser {
     private getWord(offset: number): number {
         return this.dataView.getUint16(offset, true)
     }
-
 }

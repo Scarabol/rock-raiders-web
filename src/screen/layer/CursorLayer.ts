@@ -21,7 +21,6 @@ import { Cursor } from '../Cursor'
 import { ScreenLayer } from './ScreenLayer'
 
 export class CursorLayer extends ScreenLayer {
-
     worldMgr: WorldManager
     sceneMgr: SceneManager
     entityMgr: EntityManager
@@ -182,5 +181,4 @@ export class CursorLayer extends ScreenLayer {
             img.src = encoded
         })
     }
-
 }

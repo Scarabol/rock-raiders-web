@@ -1,6 +1,5 @@
 // noinspection JSUnusedGlobalSymbols
 export enum Sample {
-
     SFX_Bodge,
 
     SFX_Drip,
@@ -493,5 +492,4 @@ export enum Sample {
     FrontSFX_Truck,
     FrontSFX_Sand,
     FrontSFX_Slug,
-
 }

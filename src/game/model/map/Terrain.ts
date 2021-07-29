@@ -13,7 +13,6 @@ import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 
 export class Terrain {
-
     sceneMgr: SceneManager
     entityMgr: EntityManager
     textureSet: any = {}
@@ -149,5 +148,4 @@ export class Terrain {
         this.fallIns.forEach((f) => updateSafe(f, elapsedMs))
         this.fallInGroups.forEach((g) => updateSafe(g, elapsedMs))
     }
-
 }

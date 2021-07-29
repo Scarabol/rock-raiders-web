@@ -1,7 +1,6 @@
 import { BaseButtonCfg } from './BaseButtonCfg'
 
 export class ButtonCfg extends BaseButtonCfg {
-
     constructor(cfgValue: any) {
         super()
         if (cfgValue.length === 9) {
@@ -10,5 +9,4 @@ export class ButtonCfg extends BaseButtonCfg {
             throw new Error(`Invalid number of arguments (${cfgValue.length}) given for button configuration expected 9 or 5`)
         }
     }
-
 }

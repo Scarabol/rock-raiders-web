@@ -1,7 +1,6 @@
 import { createContext, createDummyImgData, getPixel, setPixel } from './ImageHelper'
 
 export class BitmapFontData {
-
     charHeight: number
     letters: ImageData[] = []
 
@@ -71,11 +70,9 @@ export class BitmapFontData {
         }
         return result
     }
-
 }
 
 export class BitmapFont {
-
     data: BitmapFontData
 
     constructor(data: BitmapFontData) {

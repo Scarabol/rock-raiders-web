@@ -7,7 +7,6 @@ import { GuiResourceCache } from '../GuiResourceCache'
 import { IconPanelButton } from './IconPanelButton'
 
 export class IconSubPanel extends Panel {
-
     backBtn: Button = null
     iconPanelButtons: IconPanelButton[] = []
 
@@ -41,5 +40,4 @@ export class IconSubPanel extends Panel {
         this.iconPanelButtons.forEach((button) => button.updateState(false))
         this.notifyRedraw()
     }
-
 }

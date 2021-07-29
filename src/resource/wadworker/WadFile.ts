@@ -4,7 +4,6 @@ import { encodeChar } from './parser/EncodingHelper'
  * Handles the extraction of single files from a bigger WAD data blob
  */
 export class WadFile {
-
     buffer: Int8Array = null
     entryIndexByName: Map<string, number> = new Map()
     fLength: number[] = []
@@ -114,5 +113,4 @@ export class WadFile {
         const index = this.entryIndexByName.get(entryName.toLowerCase())
         return index !== undefined && index !== null
     }
-
 }

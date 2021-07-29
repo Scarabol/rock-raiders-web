@@ -10,7 +10,6 @@ import { Surface } from '../map/Surface'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Dynamite extends MaterialEntity {
-
     targetSurface: Surface
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager, surface: Surface) {
@@ -34,5 +33,4 @@ export class Dynamite extends MaterialEntity {
     getPriorityIdentifier(): PriorityIdentifier {
         return PriorityIdentifier.DESTRUCTION
     }
-
 }

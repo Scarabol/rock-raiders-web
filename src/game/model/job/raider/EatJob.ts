@@ -3,7 +3,6 @@ import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
 
 export class EatJob extends RaiderJob {
-
     target: PathTarget[] = []
 
     getWorkplaces(): PathTarget[] {
@@ -19,5 +18,4 @@ export class EatJob extends RaiderJob {
     getWorkActivity(): RaiderActivity {
         return RaiderActivity.Eat
     }
-
 }

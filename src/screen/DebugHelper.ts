@@ -1,7 +1,6 @@
 const Stats = require('stats.js')
 
 export class DebugHelper {
-
     stats
 
     constructor() {
@@ -31,5 +30,4 @@ export class DebugHelper {
     renderDone() {
         this.stats.end()
     }
-
 }

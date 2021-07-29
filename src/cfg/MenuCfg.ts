@@ -2,7 +2,6 @@ import { BaseConfig } from './BaseConfig'
 import { MenuEntryCfg } from './MenuEntryCfg'
 
 export class MenuCfg extends BaseConfig {
-
     menuCount: number = 0
     menus: MenuEntryCfg[] = []
 
@@ -18,5 +17,4 @@ export class MenuCfg extends BaseConfig {
         }
         return super.assignValue(objKey, lCfgKeyName, cfgValue)
     }
-
 }

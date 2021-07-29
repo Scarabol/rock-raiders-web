@@ -3,7 +3,6 @@ import { UsedCrystalChanged } from '../../event/WorldEvents'
 import { GameResultState } from './GameResult'
 
 export class GameState {
-
     static gameResult: GameResultState = GameResultState.UNDECIDED
     static numCrystal: number = 0
     static numOre: number = 0
@@ -39,5 +38,4 @@ export class GameState {
         this.usedCrystals += changedCrystals
         EventBus.publishEvent(new UsedCrystalChanged())
     }
-
 }

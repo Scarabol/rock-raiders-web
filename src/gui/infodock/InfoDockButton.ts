@@ -9,7 +9,6 @@ import { InfoDockPanel } from './InfoDockPanel'
 import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
 
 export class InfoDockButton extends Button {
-
     messages: WorldEvent[] = [] // newest message first
     text: string = null
     animationTimeout = null
@@ -71,5 +70,4 @@ export class InfoDockButton extends Button {
         context.fillStyle = '#fff'
         context.fillText(this.messages.length.toString(), this.x + 2, this.y + this.height / 2 + 2)
     }
-
 }

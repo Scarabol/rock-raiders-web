@@ -1,5 +1,4 @@
 export class InfoMessagesEntryConfig {
-
     message: string = null
     buttonImageFilename: string = null
     sfx: string = null
@@ -10,5 +9,4 @@ export class InfoMessagesEntryConfig {
         [this.message, this.buttonImageFilename, this.sfx, this.timing, this.flag] = cfgValue
         this.message = this.message.replace(/_/g, ' ')
     }
-
 }

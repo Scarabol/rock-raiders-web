@@ -6,7 +6,6 @@ import { CarryPathTarget } from './CarryPathTarget'
 import { SiteCarryPathTarget } from './SiteCarryPathTarget'
 
 export class CarryJob<I extends MaterialEntity> extends ShareableJob {
-
     item: I
     targets: CarryPathTarget[] = []
     actualTarget: CarryPathTarget = null
@@ -55,5 +54,4 @@ export class CarryJob<I extends MaterialEntity> extends ShareableJob {
         })
         this.actualTarget.gatherItem(this.item)
     }
-
 }

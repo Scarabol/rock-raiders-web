@@ -2,7 +2,6 @@ import { BaseConfig } from './BaseConfig'
 import { ButtonCfg } from './ButtonCfg'
 
 export class ButtonCameraControlCfg extends BaseConfig {
-
     panelButtonCameraControlZoomIn: ButtonCfg = null
     panelButtonCameraControlZoomOut: ButtonCfg = null
     panelButtonCameraControlCycleBuildings: ButtonCfg = null
@@ -16,5 +15,4 @@ export class ButtonCameraControlCfg extends BaseConfig {
     parseValue(lCfgKeyName: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
     }
-
 }

@@ -22,7 +22,6 @@ import { SceneManager } from './SceneManager'
 export type SupervisedJob = ShareableJob | ManVehicleJob
 
 export class Supervisor {
-
     sceneMgr: SceneManager
     entityMgr: EntityManager
     jobs: SupervisedJob[] = []
@@ -213,5 +212,4 @@ export class Supervisor {
     isEnabled(priorityIdentifier: PriorityIdentifier): boolean {
         return !!this.priorityList.find((p) => p.key === priorityIdentifier)?.enabled
     }
-
 }

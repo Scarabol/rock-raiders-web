@@ -9,7 +9,6 @@ import { allCursor, Cursor } from '../screen/Cursor'
 import { cacheGetData, cachePutData } from './assets/AssetCacheHelper'
 
 export class ResourceCache {
-
     static configuration: any = {}
     static resourceByName: Map<string, any> = new Map()
     static fontCache: Map<string, BitmapFont> = new Map()
@@ -138,5 +137,4 @@ export class ResourceCache {
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
         }
     }
-
 }

@@ -7,7 +7,6 @@ import { EntityType } from '../EntityType'
 import { VehicleEntity } from './VehicleEntity'
 
 export class VehicleFactory {
-
     static createVehicleFromType(entityType: EntityType, sceneMgr: SceneManager, entityMgr: EntityManager): VehicleEntity {
         switch (entityType) {
             case EntityType.HOVERBOARD:
@@ -36,5 +35,4 @@ export class VehicleFactory {
                 throw new Error(`Unexpected vehicle type: ${EntityType[entityType]}`)
         }
     }
-
 }

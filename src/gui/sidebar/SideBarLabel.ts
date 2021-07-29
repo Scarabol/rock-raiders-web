@@ -2,7 +2,6 @@ import { ButtonCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from '../base/BaseElement'
 
 export class SideBarLabel extends BaseElement {
-
     tooltip: string
     label: string
 
@@ -30,6 +29,5 @@ export class SideBarLabel extends BaseElement {
         context.fillText(this.label, this.x + this.width / 2, this.y + this.height - 2)
         super.onRedraw(context)
     }
-
 }
 

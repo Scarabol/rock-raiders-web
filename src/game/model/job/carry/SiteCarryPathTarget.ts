@@ -8,7 +8,6 @@ import { MaterialEntity } from '../../material/MaterialEntity'
 import { CarryPathTarget } from './CarryPathTarget'
 
 export class SiteCarryPathTarget extends CarryPathTarget {
-
     site: BuildingSite
     headingOnSite: number
 
@@ -33,5 +32,4 @@ export class SiteCarryPathTarget extends CarryPathTarget {
     isInvalid(): boolean {
         return this.site.complete || this.site.canceled
     }
-
 }

@@ -6,7 +6,6 @@ import { SceneMesh } from '../SceneMesh'
 import { VehicleSceneEntity } from './VehicleSceneEntity'
 
 export class WalkerDiggerSceneEntity extends VehicleSceneEntity {
-
     body: AnimatedSceneEntity = null
 
     constructor(sceneMgr: SceneManager) {
@@ -30,5 +29,4 @@ export class WalkerDiggerSceneEntity extends VehicleSceneEntity {
         return super.getNullJointForUpgrade(upgrade) ||
             this.body.animation.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
     }
-
 }

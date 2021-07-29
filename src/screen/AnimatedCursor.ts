@@ -2,7 +2,6 @@ import { clearIntervalSafe } from '../core/Util'
 import { NATIVE_FRAMERATE } from '../params'
 
 export class AnimatedCursor {
-
     cursorUrls: string[] = []
     animationInterval = null
     animationIndex: number = 0
@@ -27,5 +26,4 @@ export class AnimatedCursor {
     disableAnimation() {
         this.animationInterval = clearIntervalSafe(this.animationInterval)
     }
-
 }

@@ -1,5 +1,4 @@
 export enum Cursor {
-
     Pointer_Blank,
     Pointer_Standard,
     Pointer_Drill,
@@ -52,7 +51,6 @@ export enum Cursor {
     Pointer_SurfaceType_OreSeam,
     Pointer_SurfaceType_CrystalSeam,
     Pointer_SurfaceType_RechargeSeam,
-
 }
 
 export const allCursor: Cursor[] = [

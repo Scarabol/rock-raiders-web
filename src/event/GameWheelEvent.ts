@@ -1,5 +1,4 @@
 export class GameWheelEvent {
-
     type: string
     bubbles: boolean
     clientX: number
@@ -28,5 +27,4 @@ export class GameWheelEvent {
         this.metaKey = event.metaKey
         this.shiftKey = event.shiftKey
     }
-
 }

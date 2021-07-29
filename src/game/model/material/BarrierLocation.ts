@@ -1,7 +1,6 @@
 import { Vector2 } from 'three'
 
 export class BarrierLocation {
-
     position: Vector2
     heading: number
 
@@ -14,5 +13,4 @@ export class BarrierLocation {
             this.heading += Math.PI / 2
         }
     }
-
 }
