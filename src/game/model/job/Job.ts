@@ -7,17 +7,40 @@ import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { JobState } from './JobState'
 
-export abstract class Job {
+export interface Job {
+    jobState: JobState
+    surface: Surface
+
+    assign(fulfiller: FulfillerEntity): void
+
+    unAssign(fulfiller: FulfillerEntity): void
+
+    getRequiredTool(): RaiderTool
+
+    getRequiredTraining(): RaiderTraining
+
+    isReadyToComplete(): boolean
+
+    onJobComplete(): void
+
+    getWorkplaces(): PathTarget[]
+
+    setActualWorkplace(target: PathTarget): void
+
+    getCarryItem(): MaterialEntity
+
+    getWorkActivity(): RaiderActivity
+
+    getWorkDuration(fulfiller: FulfillerEntity): number
+}
+
+export abstract class AbstractJob implements Job {
     jobState: JobState = JobState.INCOMPLETE
     surface: Surface = null
 
     abstract assign(fulfiller: FulfillerEntity): void
 
     abstract unAssign(fulfiller: FulfillerEntity): void
-
-    cancel() {
-        this.jobState = JobState.CANCELED
-    }
 
     getRequiredTool(): RaiderTool {
         return RaiderTool.NONE

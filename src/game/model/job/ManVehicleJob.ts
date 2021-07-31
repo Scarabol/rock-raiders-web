@@ -1,3 +1,4 @@
+import { SupervisedJob } from '../../Supervisor'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
@@ -5,7 +6,7 @@ import { JobState } from './JobState'
 import { PriorityIdentifier } from './PriorityIdentifier'
 import { RaiderJob } from './raider/RaiderJob'
 
-export class ManVehicleJob extends RaiderJob {
+export class ManVehicleJob extends RaiderJob implements SupervisedJob {
     vehicle: VehicleEntity
     workplaces: PathTarget[]
 
@@ -38,11 +39,15 @@ export class ManVehicleJob extends RaiderJob {
         return this.vehicle.getRequiredTraining()
     }
 
+    cancel() {
+        this.jobState = JobState.CANCELED
+        this.raider?.stopJob()
+    }
+
     getPriorityIdentifier(): PriorityIdentifier {
         return PriorityIdentifier.GET_IN
     }
 
-    // noinspection JSUnusedGlobalSymbols used as part of SupervisedJob in Supervisor
     hasFulfiller(): boolean {
         return !!this.raider
     }

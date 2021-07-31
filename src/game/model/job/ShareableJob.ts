@@ -1,8 +1,10 @@
+import { SupervisedJob } from '../../Supervisor'
 import { FulfillerEntity } from '../FulfillerEntity'
-import { Job } from './Job'
+import { AbstractJob } from './Job'
+import { JobState } from './JobState'
 import { PriorityIdentifier } from './PriorityIdentifier'
 
-export abstract class ShareableJob extends Job {
+export abstract class ShareableJob extends AbstractJob implements SupervisedJob {
     protected fulfiller: FulfillerEntity[] = []
 
     abstract getPriorityIdentifier(): PriorityIdentifier
@@ -23,7 +25,7 @@ export abstract class ShareableJob extends Job {
     }
 
     cancel() {
-        super.cancel()
+        this.jobState = JobState.CANCELED
         const fulfiller = this.fulfiller // ensure consistency while processing
         this.fulfiller = []
         fulfiller.forEach((fulfiller) => fulfiller.stopJob())

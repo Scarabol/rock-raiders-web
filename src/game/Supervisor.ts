@@ -6,20 +6,25 @@ import { CHECK_CLEAR_RUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
 import { EntityManager } from './EntityManager'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingPathTarget } from './model/building/BuildingPathTarget'
+import { Job } from './model/job/Job'
 import { JobState } from './model/job/JobState'
-import { ManVehicleJob } from './model/job/ManVehicleJob'
 import { PriorityEntry } from './model/job/PriorityEntry'
 import { PriorityIdentifier } from './model/job/PriorityIdentifier'
 import { GetToolJob } from './model/job/raider/GetToolJob'
 import { GetToolPathTarget } from './model/job/raider/GetToolPathTarget'
 import { MoveJob } from './model/job/raider/MoveJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
-import { ShareableJob } from './model/job/ShareableJob'
 import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { SceneManager } from './SceneManager'
 
-export type SupervisedJob = ShareableJob | ManVehicleJob
+export interface SupervisedJob extends Job {
+    cancel(): void
+
+    getPriorityIdentifier(): PriorityIdentifier
+
+    hasFulfiller(): boolean
+}
 
 export class Supervisor {
     sceneMgr: SceneManager
