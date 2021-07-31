@@ -31,7 +31,6 @@ ResourceManager.onCacheMissed = () => {
     wadFileSelectModal.show()
 }
 ResourceManager.onInitialLoad = (totalResources: number) => {
-    wadFileSelectModal.hide()
     loadingScreen.enableGraphicMode(totalResources)
 }
 ResourceManager.onAssetLoaded = () => {

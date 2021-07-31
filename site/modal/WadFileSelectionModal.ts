@@ -80,6 +80,7 @@ export class WadFileSelectionModal {
         btnStartFile.innerText = 'Start Game'
         btnStartFile.addEventListener('click', () => {
             btnStartFile.disabled = true
+            this.hide()
             const wad0FileUrl = URL.createObjectURL(wad0File.files[0])
             const wad1FileUrl = URL.createObjectURL(wad1File.files[0])
             this.onStart(wad0FileUrl, wad1FileUrl)
@@ -118,6 +119,7 @@ export class WadFileSelectionModal {
         btnStartUrl.innerText = 'Start Game'
         btnStartUrl.addEventListener('click', () => {
             btnStartUrl.disabled = true
+            this.hide()
             // XXX show loading progress for WAD files
             this.onStart(wad0Url.value, wad1Url.value)
         })
