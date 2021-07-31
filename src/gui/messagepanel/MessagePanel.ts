@@ -42,9 +42,9 @@ export class MessagePanel extends Panel {
         this.msgManTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
         this.registerEventListener(EventKey.RAIDERS_CHANGED, (event: RaidersChangedEvent) => event.training && this.setMessage(this.msgManTrained))
         this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
-        this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, () => this.notifyRedraw())
         this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, (event: AirLevelChanged) => {
             this.airLevel = event.airLevel
+            this.notifyRedraw()
         })
     }
 
@@ -77,7 +77,7 @@ export class MessagePanel extends Panel {
     onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         if (this.airLevel > 0) {
-            const width = Math.round(236 * Math.min(1, this.airLevel))
+            const width = Math.round(236 * this.airLevel)
             context.drawImage(this.imgAir, this.x + 85, this.y + 6, width, 8)
         }
         const textImage = this.currentMessage?.textImage

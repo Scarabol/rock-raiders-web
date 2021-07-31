@@ -4,7 +4,6 @@ import { NerpRunner } from '../core/NerpRunner'
 import { clearTimeoutSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { AirLevelChanged } from '../event/LocalEvents'
 import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -50,7 +49,7 @@ export class WorldManager {
     setup(levelConf: LevelEntryCfg) {
         GameState.gameResult = GameResultState.UNDECIDED
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
-        this.oxygenRate = levelConf.oxygenRate
+        this.oxygenRate = levelConf.oxygenRate / 1000
         this.elapsedGameTimeMs = 0
         this.requestedRaiders = 0
         this.spawnRaiderTimer = 0
@@ -100,16 +99,10 @@ export class WorldManager {
 
     updateOxygen(elapsedMs: number) {
         try {
-            const sum = this.entityMgr.getOxygenSum()
-            const rateMultiplier = 0.001
-            const valuePerSecond = 1 / 25
-            const msToSeconds = 0.001
-            const diff = sum * this.oxygenRate * rateMultiplier * valuePerSecond * elapsedMs * msToSeconds / 10
-            const airLevel = Math.min(1, Math.max(0, GameState.airLevel + diff))
-            if (GameState.airLevel !== airLevel) {
-                GameState.airLevel = airLevel
-                EventBus.publishEvent(new AirLevelChanged(GameState.airLevel))
-            }
+            const coefSum = this.entityMgr.getOxygenCoefSum()
+            const valuePerMs = 1.8 / 100 / 1000
+            const diff = coefSum * this.oxygenRate * valuePerMs * elapsedMs
+            GameState.changeAirLevel(diff)
         } catch (e) {
             console.error(e)
         }
