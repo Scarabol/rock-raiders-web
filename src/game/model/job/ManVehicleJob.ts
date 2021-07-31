@@ -18,7 +18,7 @@ export class ManVehicleJob extends RaiderJob {
 
     getWorkplaces(): PathTarget[] {
         if (this.vehicle.inBeam) {
-            this.jobState = JobState.INCOMPLETE
+            this.jobState = JobState.CANCELED
             return []
         } else if (this.vehicle.driver) {
             this.jobState = JobState.COMPLETE
