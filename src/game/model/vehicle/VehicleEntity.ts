@@ -113,8 +113,9 @@ export class VehicleEntity extends FulfillerEntity {
 
     isPrepared(job: Job): boolean {
         const carryType = job.getCarryItem()?.entityType
-        return this.canDrill(job.surface) || (job.getRequiredTool() === RaiderTool.SHOVEL && this.canClear()) ||
-            ((carryType === EntityType.ORE || carryType === EntityType.CRYSTAL || carryType === EntityType.ELECTRIC_FENCE) && this.hasCapacity())
+        return (job.getRequiredTool() === RaiderTool.DRILL && this.canDrill(job.surface))
+            || (job.getRequiredTool() === RaiderTool.SHOVEL && this.canClear())
+            || ((carryType === EntityType.ORE || carryType === EntityType.CRYSTAL || carryType === EntityType.ELECTRIC_FENCE) && this.hasCapacity())
     }
 
     doubleSelect(): boolean {
