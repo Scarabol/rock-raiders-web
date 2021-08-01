@@ -81,7 +81,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Nice to have
 
 - Dependency tooltips for buildings/vehicles not shown
-- Camera can glitch through terrain and zoom in/out infinitely
+- Camera can glitch through terrain
 - Provide resources explicit to workers with messaging
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Large digger and walker digger moving into wall for drilling

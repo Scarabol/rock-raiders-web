@@ -15,6 +15,8 @@ export const KEY_PAN_SPEED = 20
 export const SPIDER_SLIP_RANGE_SQ = 49
 export const ITEM_ACTION_RANGE_SQ = 49
 export const UPDATE_INTERVAL_MS = Math.round(1000 / 30)
+export const CAMERA_MIN_DISTANCE = 2 // tiles
+export const CAMERA_MAX_DISTANCE = 8 // tiles
 
 // native constants (do not change)
 

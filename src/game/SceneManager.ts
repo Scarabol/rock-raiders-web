@@ -3,7 +3,7 @@ import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { cloneContext } from '../core/ImageHelper'
 import { clearIntervalSafe } from '../core/Util'
-import { KEY_PAN_SPEED, TILESIZE } from '../params'
+import { CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE, DEV_MODE, KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { DebugHelper } from '../screen/DebugHelper'
 import { EntityManager } from './EntityManager'
@@ -52,6 +52,10 @@ export class SceneManager {
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
         this.controls.listenToKeyEvents(this.renderer.domElement)
         this.controls.keyPanSpeed = this.controls.keyPanSpeed * KEY_PAN_SPEED
+        if (!DEV_MODE) {
+            this.controls.minDistance = CAMERA_MIN_DISTANCE * TILESIZE
+            this.controls.maxDistance = CAMERA_MAX_DISTANCE * TILESIZE
+        }
     }
 
     getSelectionByRay(rx: number, ry: number): GameSelection {
