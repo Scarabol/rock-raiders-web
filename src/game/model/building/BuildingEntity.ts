@@ -274,6 +274,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         } else {
             this.entityMgr.buildingsUndiscovered.push(this)
         }
+        if (this.surfaces.some((s) => s.selected)) EventBus.publishEvent(new DeselectAll())
         if (this.sceneEntity.visible && !disableTeleportIn) {
             this.inBeam = true
             this.sceneEntity.setInBeam(this.inBeam)
