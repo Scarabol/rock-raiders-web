@@ -202,7 +202,7 @@ export class EntityManager {
     }
 
     placeMaterial(item: MaterialEntity, worldPosition: Vector2) {
-        item.sceneEntity.addToScene(worldPosition, 0)
+        item.sceneEntity.addToScene(worldPosition, null)
         if (item.sceneEntity.visible) {
             this.materials.push(item)
             EventBus.publishEvent(new JobCreateEvent(item.createCarryJob()))
