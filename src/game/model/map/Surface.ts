@@ -519,6 +519,7 @@ export class Surface implements Selectable {
     }
 
     makeRubble(containedOre: number = 0) {
+        if (this.surfaceType.rubbleResilient) return
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += containedOre
         this.setSurfaceType(SurfaceType.RUBBLE4)

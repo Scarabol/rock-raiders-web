@@ -137,7 +137,7 @@ export class Terrain {
             this.sceneMgr.scene.remove(fallinGrp)
             this.fallInGroups.remove(fallinGrp)
         })
-        target.makeRubble() // TODO do not turn building power paths into rubble
+        target.makeRubble()
     }
 
     removeFallInOrigin(surface: Surface) {
