@@ -95,8 +95,8 @@ export class AnimatedSceneEntity extends SceneEntity {
                             this.bodiesByName.set(name, mesh)
                         })
                     }
-                } else {
-                    console.warn(`Could not find null joint ${upgrade.upgradeNullName} and index ${upgrade.upgradeNullIndex} to attach upgrade: ${upgrade.upgradeFilepath}`)
+                } else { // this may happen for some animations
+                    // console.warn(`Could not find null joint ${upgrade.upgradeNullName} and index ${upgrade.upgradeNullIndex} to attach upgrade: ${upgrade.upgradeFilepath}`)
                 }
             })
         }
