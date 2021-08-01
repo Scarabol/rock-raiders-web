@@ -5,6 +5,7 @@ import { BuildingsChangedEvent, RaidersChangedEvent, SelectionChanged } from '..
 import { JobCreateEvent } from '../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
+import { BeamUpEntity } from './BeamUpAnimator'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingPathTarget } from './model/building/BuildingPathTarget'
 import { BuildingSite } from './model/building/BuildingSite'
@@ -90,20 +91,26 @@ export class EntityManager {
     }
 
     stop() {
-        this.buildings.forEach((b) => b.disposeFromWorld())
-        this.buildingsUndiscovered.forEach((b) => b.disposeFromWorld())
-        this.raiders.forEach((r) => r.disposeFromWorld())
-        this.raidersUndiscovered.forEach((r) => r.disposeFromWorld())
-        this.materials.forEach((m) => m.disposeFromWorld())
-        this.materialsUndiscovered.forEach((m) => m.disposeFromWorld())
-        this.scarer.forEach((s) => s.disposeFromWorld())
-        this.placedFences.forEach((f) => f.disposeFromWorld())
-        this.spiders.forEach((m) => m.disposeFromWorld())
-        this.bats.forEach((b) => b.disposeFromWorld())
-        this.rockMonsters.forEach((m) => m.disposeFromWorld())
-        this.undiscoveredRockMonsters.forEach((m) => m.disposeFromWorld())
-        this.vehicles.forEach((v) => v.disposeFromWorld())
-        this.vehiclesInBeam.forEach((v) => v.disposeFromWorld())
+        EntityManager.disposeAll(this.buildings)
+        EntityManager.disposeAll(this.buildingsUndiscovered)
+        EntityManager.disposeAll(this.raiders)
+        EntityManager.disposeAll(this.raidersUndiscovered)
+        EntityManager.disposeAll(this.materials)
+        EntityManager.disposeAll(this.materialsUndiscovered)
+        EntityManager.disposeAll(this.scarer)
+        EntityManager.disposeAll(this.placedFences)
+        EntityManager.disposeAll(this.spiders)
+        EntityManager.disposeAll(this.bats)
+        EntityManager.disposeAll(this.rockMonsters)
+        EntityManager.disposeAll(this.undiscoveredRockMonsters)
+        EntityManager.disposeAll(this.vehicles)
+        EntityManager.disposeAll(this.vehiclesInBeam)
+    }
+
+    private static disposeAll(list: BeamUpEntity[]) {
+        const copy = [...list]
+        copy.forEach((e) => e.disposeFromWorld())
+        list.length = 0
     }
 
     private getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {
