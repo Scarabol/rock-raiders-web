@@ -5,6 +5,8 @@
  * https://kb.rockraidersunited.com/NERPs_documentation#Labels
  *
  */
+import { EventBus } from '../event/EventBus'
+import { NerpMessage } from '../event/LocalEvents'
 import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
@@ -214,6 +216,7 @@ export class NerpRunner {
     }
 
     getMessageTimer() {
+        console.warn('getMessageTimer not implemented, immediately returning 0')
         return 0 // TODO return remaining amount of time needed to fully play WAV message
     }
 
@@ -223,10 +226,13 @@ export class NerpRunner {
 
     setMessage(messageNumber, arrowDisabled) {
         if (!this.messagePermit) return
-        if (messageNumber === 0) return // TODO messages start at 1
+        if (messageNumber < 1) {
+            console.warn(`Unexpected message number ${messageNumber} given`)
+            return
+        }
         const msg = this.messages[messageNumber]
-        console.log(msg.txt) // TODO show message to user
-        // msg.snd resides in sounds/streamed/ which is currently not loaded :(
+        if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt))
+        if (msg.snd) console.log(msg.snd) // TODO snd files reside in sounds/streamed/ which is currently not loaded :(
     }
 
     setCameraGotoTutorial(arg1) {

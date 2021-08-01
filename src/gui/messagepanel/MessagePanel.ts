@@ -1,7 +1,7 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
-import { AirLevelChanged, PlaySoundEvent, RaidersChangedEvent } from '../../event/LocalEvents'
+import { AirLevelChanged, NerpMessage, PlaySoundEvent, RaidersChangedEvent } from '../../event/LocalEvents'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { GuiResourceCache } from '../GuiResourceCache'
@@ -45,6 +45,9 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, (event: AirLevelChanged) => {
             this.airLevel = event.airLevel
             this.notifyRedraw()
+        })
+        this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessage) => {
+            this.setMessage(new TextInfoMessage(font, {text: event.text}, this.img.width))
         })
     }
 

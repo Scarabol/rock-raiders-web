@@ -90,6 +90,15 @@ export class AirLevelChanged extends LocalEvent {
     }
 }
 
+export class NerpMessage extends LocalEvent {
+    text: string
+
+    constructor(text: string) {
+        super(EventKey.NERP_MESSAGE)
+        this.text = text
+    }
+}
+
 export class ChangeCursor extends LocalEvent {
     cursor: Cursor
     timeout: number
