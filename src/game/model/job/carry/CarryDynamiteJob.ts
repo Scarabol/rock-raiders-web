@@ -1,3 +1,4 @@
+import { Sample } from '../../../../audio/Sample'
 import { DynamiteActivity } from '../../activities/DynamiteActivity'
 import { Dynamite } from '../../material/Dynamite'
 import { RaiderTraining } from '../../raider/RaiderTraining'
@@ -22,7 +23,8 @@ export class CarryDynamiteJob extends CarryJob<Dynamite> {
             this.item.entityMgr.scarer.remove(this.item)
             this.item.sceneEntity.disposeFromScene()
             this.item.targetSurface.collapse()
-            // TODO add explosion animation
+            this.item.entityMgr.addMiscAnim('MiscAnims/Effects/Mockup_explode3.lws', this.item.sceneMgr, this.item.sceneEntity.position, this.item.sceneEntity.getHeading())
+            this.item.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Dynamite], false)
             // TODO damage raider, vehicle, buildings
         })
     }

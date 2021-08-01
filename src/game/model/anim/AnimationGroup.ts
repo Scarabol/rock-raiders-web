@@ -46,4 +46,8 @@ export class AnimationGroup extends Group {
     update(elapsedMs: number) {
         this.animation.update(elapsedMs)
     }
+
+    disposeFromWorld() {
+        this.animation.stop()
+    }
 }

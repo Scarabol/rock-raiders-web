@@ -139,7 +139,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.level++
         EventBus.publishEvent(new DeselectAll())
         EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
-        // TODO add sparkly upgrade animation
+        this.entityMgr.addMiscAnim('MiscAnims/Effects/UPGRADE_SPARKS.lws', this.sceneMgr, this.primarySurface.getCenterWorld(), this.sceneEntity.getHeading())
     }
 
     setLevel(level: number) {

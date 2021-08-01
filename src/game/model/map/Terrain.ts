@@ -1,10 +1,7 @@
 import { AxesHelper, Group, Vector2, Vector3 } from 'three'
-import { EventBus } from '../../../event/EventBus'
-import { LandslideEvent } from '../../../event/WorldLocationEvent'
 import { DEV_MODE, TILESIZE } from '../../../params'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { AnimationGroup } from '../anim/AnimationGroup'
 import { updateSafe } from '../Updateable'
 import { FallIn } from './FallIn'
 import { PathFinder } from './PathFinder'
@@ -23,7 +20,6 @@ export class Terrain {
     roofGroup: Group = new Group()
     pathFinder: PathFinder = new PathFinder()
     fallIns: FallIn[] = []
-    fallInGroups: AnimationGroup[] = []
     powerGrid: PowerGrid = new PowerGrid()
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
@@ -126,17 +122,8 @@ export class Terrain {
 
     createFallIn(source: Surface, target: Surface) {
         const fallinPosition = target.getCenterWorld()
-        EventBus.publishEvent(new LandslideEvent(fallinPosition))
-        const fallinGrp = new AnimationGroup('MiscAnims/RockFall/Rock3Sides.lws', this.sceneMgr.listener)
-        this.fallInGroups.push(fallinGrp)
-        fallinGrp.position.copy(fallinPosition)
-        const dx = source.x - target.x, dy = target.y - source.y
-        fallinGrp.rotateOnAxis(new Vector3(0, 1, 0), Math.atan2(dy, dx) + Math.PI / 2)
-        this.sceneMgr.scene.add(fallinGrp)
-        fallinGrp.startAnimation(() => {
-            this.sceneMgr.scene.remove(fallinGrp)
-            this.fallInGroups.remove(fallinGrp)
-        })
+        const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
+        this.entityMgr.addMiscAnim('MiscAnims/RockFall/Rock3Sides.lws', this.sceneMgr, fallinPosition, heading)
         target.makeRubble()
     }
 
@@ -146,6 +133,5 @@ export class Terrain {
 
     update(elapsedMs: number) {
         this.fallIns.forEach((f) => updateSafe(f, elapsedMs))
-        this.fallInGroups.forEach((g) => updateSafe(g, elapsedMs))
     }
 }

@@ -5,7 +5,7 @@ import { BuildingsChangedEvent, RaidersChangedEvent, SelectionChanged } from '..
 import { JobCreateEvent } from '../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
-import { BeamUpEntity } from './BeamUpAnimator'
+import { AnimationGroup } from './model/anim/AnimationGroup'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingPathTarget } from './model/building/BuildingPathTarget'
 import { BuildingSite } from './model/building/BuildingSite'
@@ -22,6 +22,7 @@ import { Raider } from './model/raider/Raider'
 import { RaiderTraining } from './model/raider/RaiderTraining'
 import { updateSafe } from './model/Updateable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
+import { SceneManager } from './SceneManager'
 
 export class EntityManager {
     selection: GameSelection = new GameSelection()
@@ -43,6 +44,7 @@ export class EntityManager {
     vehiclesUndiscovered: VehicleEntity[] = []
     vehiclesInBeam: VehicleEntity[] = []
     completedBuildingSites: BuildingSite[] = []
+    miscAnims: AnimationGroup[] = []
 
     constructor() {
         // event handler must be placed here, because only this class knows the "actual" selection instance
@@ -72,6 +74,7 @@ export class EntityManager {
         this.vehiclesUndiscovered = []
         this.vehiclesInBeam = []
         this.completedBuildingSites = []
+        this.miscAnims = []
     }
 
     update(elapsedMs: number) {
@@ -88,6 +91,7 @@ export class EntityManager {
         this.vehicles.forEach((v) => updateSafe(v, elapsedMs))
         this.vehiclesInBeam.forEach((v) => updateSafe(v, elapsedMs))
         this.completedBuildingSites.forEach((b) => updateSafe(b, elapsedMs))
+        this.miscAnims.forEach((m) => updateSafe(m, elapsedMs))
     }
 
     stop() {
@@ -105,9 +109,10 @@ export class EntityManager {
         EntityManager.disposeAll(this.undiscoveredRockMonsters)
         EntityManager.disposeAll(this.vehicles)
         EntityManager.disposeAll(this.vehiclesInBeam)
+        EntityManager.disposeAll(this.miscAnims)
     }
 
-    private static disposeAll(list: BeamUpEntity[]) {
+    private static disposeAll(list: { disposeFromWorld: () => any }[]) {
         const copy = [...list]
         copy.forEach((e) => e.disposeFromWorld())
         list.length = 0
@@ -223,5 +228,15 @@ export class EntityManager {
 
     findTeleportBuilding(entityType: EntityType): BuildingEntity {
         return this.buildings.find((b) => b.canTeleportIn(entityType))
+    }
+
+    addMiscAnim(lwsFilename: string, sceneMgr: SceneManager, position: Vector3, heading: number): AnimationGroup {
+        const grp = new AnimationGroup(lwsFilename, sceneMgr.listener)
+        this.miscAnims.push(grp)
+        grp.position.copy(position)
+        grp.rotateOnAxis(new Vector3(0, 1, 0), heading)
+        sceneMgr.scene.add(grp)
+        grp.startAnimation(() => sceneMgr.scene.remove(grp))
+        return grp
     }
 }
