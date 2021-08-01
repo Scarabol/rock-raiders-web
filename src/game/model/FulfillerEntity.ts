@@ -80,6 +80,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     disposeFromWorld() {
         this.sceneEntity.disposeFromScene()
+        this.workAudio = resetAudioSafe(this.workAudio)
     }
 
     beamUp() {

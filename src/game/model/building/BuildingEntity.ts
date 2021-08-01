@@ -166,6 +166,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
 
     disposeFromWorld() {
         this.sceneEntity.disposeFromScene()
+        this.engineSound = resetAudioSafe(this.engineSound)
         this.entityMgr.buildings.remove(this)
         this.entityMgr.buildingsUndiscovered.remove(this)
     }

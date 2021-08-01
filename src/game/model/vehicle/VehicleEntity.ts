@@ -51,6 +51,7 @@ export class VehicleEntity extends FulfillerEntity {
 
     disposeFromWorld() {
         super.disposeFromWorld()
+        this.engineSound = resetAudioSafe(this.engineSound)
         this.entityMgr.vehicles.remove(this)
         this.entityMgr.vehiclesUndiscovered.remove(this)
         this.entityMgr.vehiclesInBeam.remove(this)
