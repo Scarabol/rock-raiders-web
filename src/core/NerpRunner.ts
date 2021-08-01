@@ -230,7 +230,7 @@ export class NerpRunner {
             console.warn(`Unexpected message number ${messageNumber} given`)
             return
         }
-        const msg = this.messages[messageNumber]
+        const msg = this.messages[messageNumber - 1]
         if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt))
         if (msg.snd) console.log(msg.snd) // TODO snd files reside in sounds/streamed/ which is currently not loaded :(
     }
