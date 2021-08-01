@@ -44,6 +44,7 @@ export class WorldManager {
                 this.requestedVehicleTypes.push(event.vehicle)
             }
         })
+        EventBus.registerEventListener(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
     }
 
     setup(levelConf: LevelEntryCfg) {

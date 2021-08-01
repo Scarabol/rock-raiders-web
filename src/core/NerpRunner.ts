@@ -275,8 +275,7 @@ export class NerpRunner {
     }
 
     getHiddenObjectsFound() {
-        // TODO implement this
-        return 0
+        return GameState.hiddenObjectsFound
     }
 
     getLevel1PowerStationsBuilt() {
