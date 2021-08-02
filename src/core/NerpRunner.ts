@@ -96,6 +96,17 @@ export class NerpRunner {
     }
 
     /**
+     * Subtracts the given value from the given register, internally used to handle all registers with one method.
+     * @param register the register to subtract from
+     * @param value the value to subtract from the given register
+     */
+    subR(register, value) {
+        register = this.checkRegister(register)
+        value = this.checkRegisterValue(value)
+        this.registers[register] -= value
+    }
+
+    /**
      * Set the respective timer to the given numerical value. Units are in milliseconds.
      * @param timer
      * @param value
@@ -315,6 +326,10 @@ export class NerpRunner {
         const addRegisterMatch = methodName.match(/^AddR([0-7])$/)
         if (addRegisterMatch) {
             return this.addR(addRegisterMatch[1], methodArgs[0])
+        }
+        const subRegisterMatch = methodName.match(/^SubR([0-7])$/)
+        if (subRegisterMatch) {
+            return this.subR(subRegisterMatch[1], methodArgs[0])
         }
         const getRegisterMatch = methodName.match(/^GetR([0-7])$/)
         if (getRegisterMatch) {
