@@ -117,7 +117,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')
         this.addTextureFolder('World/WorldTextures/RockSplit/Rock')
         // reward screen
-        const rewardCfg = new RewardCfg(iGet(mainConf, 'Reward'))
+        const rewardCfg = new RewardCfg().setFromCfgObj(iGet(mainConf, 'Reward'))
         this.wadLoader.onAssetLoaded(0, ['Reward'], rewardCfg)
         this.addAsset(this.wadLoader.loadWadImageAsset, rewardCfg.wallpaper)
         this.addAsset(this.wadLoader.loadFontImageAsset, rewardCfg.backFont)
@@ -238,7 +238,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
     }
 
     addMenuWithAssets(mainConf, name: string, menuImageAlpha: boolean = true) {
-        const menuCfg = new MenuCfg(iGet(mainConf, 'Menu', name))
+        const menuCfg = new MenuCfg().setFromCfgObj(iGet(mainConf, 'Menu', name))
         this.wadLoader.onAssetLoaded(0, [name], menuCfg)
         menuCfg.menus.forEach((menuCfg) => {
             const method = menuImageAlpha ? this.wadLoader.loadAlphaImageAsset : this.wadLoader.loadWadImageAsset

@@ -20,7 +20,7 @@ export class BriefingPanelCfg extends PanelCfg {
         super([])
         this.titleFont = GuiResourceCache.getBitmapFont('Interface/Fonts/MbriefFont2.bmp')
         this.title = GuiResourceCache.cfg('Main', 'MissionBriefingText')
-        const dialogCfg = new DialogCfg(GuiResourceCache.cfg('Dialog'))
+        const dialogCfg = new DialogCfg().setFromCfgObj(GuiResourceCache.cfg('Dialog'))
         this.titleWindow = dialogCfg.titleWindow
         this.textFont = GuiResourceCache.getBitmapFont('Interface/Fonts/MbriefFont.bmp')
         this.textWindow = dialogCfg.textWindow

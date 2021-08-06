@@ -9,7 +9,7 @@ export class LevelsCfg {
     constructor(cfgObj: any) {
         Object.keys(cfgObj).forEach((levelKey) => {
             if (!levelKey.startsWith('Tutorial') && !levelKey.startsWith('Level')) return // ignore incomplete test levels and duplicates
-            this.levelCfgByName.set(levelKey, new LevelEntryCfg(cfgObj[levelKey]))
+            this.levelCfgByName.set(levelKey, new LevelEntryCfg().setFromCfgObj(cfgObj[levelKey]))
         })
     }
 }
@@ -24,17 +24,17 @@ export class LevelEntryCfg extends BaseConfig {
     video: string = ''
     disableEndTeleport: boolean = false
     disableStartTeleport: boolean = false
-    emergeTimeOut: any = ''
+    emergeTimeOut: number = 0
     boulderAnimation: any = ''
-    noMultiSelect: any = ''
-    noAutoEat: any = ''
-    disableToolTipSound: any = ''
-    blockSize: any = ''
-    digDepth: any = ''
-    roughLevel: any = ''
-    roofHeight: any = ''
-    useRoof: any = ''
-    selBoxHeight: any = ''
+    noMultiSelect: boolean = false
+    noAutoEat: boolean = false
+    disableToolTipSound: boolean = false
+    blockSize: number = 40
+    digDepth: number = 40
+    roughLevel: number = 6
+    roofHeight: number = 40
+    useRoof: string = ''
+    selBoxHeight: number = 10
     fpRotLightRGB: any = ''
     fogColourRGB: any = ''
     highFogColourRGB: any = ''
@@ -54,15 +54,15 @@ export class LevelEntryCfg extends BaseConfig {
     pathMap: string = ''
     noGather: boolean = false
     textureSet: string = ''
-    rockFallStyle: any = ''
-    emergeCreature: any = ''
-    safeCaverns: any = ''
-    seeThroughWalls: any = ''
-    oListFile: any = ''
-    ptlFile: any = ''
-    nerpFile: any = ''
-    nerpMessageFile: any = ''
-    objectiveText: any = ''
+    rockFallStyle: string = ''
+    emergeCreature: string = ''
+    safeCaverns: boolean = true
+    seeThroughWalls: boolean = false
+    oListFile: string = ''
+    ptlFile: string = ''
+    nerpFile: string = ''
+    nerpMessageFile: string = ''
+    objectiveText: string = ''
     objectiveImage640x480: ObjectiveImageCfg = null
     erodeTriggerTime: number = 0
     erodeErodeTime: number = 0
@@ -76,26 +76,23 @@ export class LevelEntryCfg extends BaseConfig {
     reward: LevelRewardConfig = null
     menuBMP: string[] = []
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
-        if (lCfgKeyName === 'fullName'.toLowerCase()) {
+    parseValue(unifiedKey: string, cfgValue: any): any {
+        if (unifiedKey === 'fullName'.toLowerCase()) {
             return cfgValue.replace(/_/g, ' ')
-        } else if (lCfgKeyName.endsWith('rgb')) {
+        } else if (unifiedKey.endsWith('rgb')) {
             return new ConfigColor(cfgValue)
-        } else if (lCfgKeyName === 'priorities') {
+        } else if (unifiedKey === 'priorities') {
             return Object.entries<boolean>(cfgValue)
                 .filter(([name]) => !name.equalsIgnoreCase('AI_Priority_GetTool')) // not used in the game
                 .map(([name, enabled]) => new LevelPrioritiesEntryConfig(name, enabled))
-        } else if (lCfgKeyName === 'reward') {
-            return new LevelRewardConfig(cfgValue)
-        } else if (lCfgKeyName === 'objectiveimage640x480') {
+        } else if (unifiedKey === 'reward') {
+            return new LevelRewardConfig().setFromCfgObj(cfgValue)
+        } else if (unifiedKey === 'objectiveimage640x480') {
             return new ObjectiveImageCfg(cfgValue)
+        } else if (unifiedKey === 'textureset') {
+            return Array.isArray(cfgValue) ? cfgValue[0] : cfgValue
         } else {
-            return super.parseValue(lCfgKeyName, cfgValue)
+            return super.parseValue(unifiedKey, cfgValue)
         }
     }
 }
@@ -116,18 +113,13 @@ export class LevelRewardConfig extends BaseConfig {
     importance: LevelRewardImportanceConfig = null
     quota: LevelRewardQuotaConfig = null
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
-        if (lCfgKeyName === 'importance') {
-            return new LevelRewardImportanceConfig(cfgValue)
-        } else if (lCfgKeyName === 'quota') {
-            return new LevelRewardQuotaConfig(cfgValue)
+    parseValue(unifiedKey: string, cfgValue: any): any {
+        if (unifiedKey === 'importance') {
+            return new LevelRewardImportanceConfig().setFromCfgObj(cfgValue)
+        } else if (unifiedKey === 'quota') {
+            return new LevelRewardQuotaConfig().setFromCfgObj(cfgValue)
         } else {
-            return super.parseValue(lCfgKeyName, cfgValue)
+            return super.parseValue(unifiedKey, cfgValue)
         }
     }
 }
@@ -139,21 +131,11 @@ export class LevelRewardImportanceConfig extends BaseConfig {
     constructions: number = 0
     oxygen: number = 0
     figures: number = 0
-
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
 }
 
 export class LevelRewardQuotaConfig extends BaseConfig {
-    crystals: number = null
-    timer: number = null
-    caverns: number = null
-    constructions: number = null
-
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
+    crystals: number = 0
+    timer: number = 0
+    caverns: number = 0
+    constructions: number = 0
 }

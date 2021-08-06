@@ -19,16 +19,11 @@ export class MenuEntryCfg extends BaseConfig {
     itemsLabel: MenuLabelItemCfg[] = []
     itemsSlider: MenuSliderItemCfg[] = []
     itemsCycle: MenuCycleItemCfg[] = []
-    anchored: boolean = false
+    anchored: number[] = [0, 0]
     canScroll: boolean = false
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    assignValue(objKey, lCfgKeyName, cfgValue): boolean {
-        if (lCfgKeyName.match(/item\d+/i)) {
+    assignValue(objKey, unifiedKey, cfgValue): boolean {
+        if (unifiedKey.match(/item\d+/i)) {
             const lActionName = cfgValue[0].toLowerCase()
             if (lActionName === 'next' || lActionName === 'trigger') {
                 this.itemsLabel.push(new MenuLabelItemCfg(cfgValue))
@@ -41,18 +36,18 @@ export class MenuEntryCfg extends BaseConfig {
                 return false
             }
             return true
-        } else if (lCfgKeyName.match(/overlay\d+/i)) {
+        } else if (unifiedKey.match(/overlay\d+/i)) {
             this.overlays.push(cfgValue)
             return true
         }
-        return super.assignValue(objKey, lCfgKeyName, cfgValue)
+        return super.assignValue(objKey, unifiedKey, cfgValue)
     }
 
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
-        if (lCfgKeyName === 'fullName'.toLowerCase() || lCfgKeyName === 'title') {
+    parseValue(unifiedKey: string, cfgValue: any): any {
+        if (unifiedKey === 'fullName'.toLowerCase() || unifiedKey === 'title') {
             return cfgValue.replace(/_/g, ' ')
         } else {
-            return super.parseValue(lCfgKeyName, cfgValue)
+            return super.parseValue(unifiedKey, cfgValue)
         }
     }
 }

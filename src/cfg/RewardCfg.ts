@@ -22,26 +22,21 @@ export class RewardCfg extends BaseConfig {
     quitText: string = ''
     textPos: [number, number] = [0, 0]
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    assignValue(objKey, lCfgKeyName, cfgValue): boolean {
-        if (lCfgKeyName === 'images') {
+    assignValue(objKey, unifiedKey, cfgValue): boolean {
+        if (unifiedKey === 'images') {
             Object.values(cfgValue).forEach((imgConf) => this.images.push(new RewardImageCfg(imgConf)))
             return true
-        } else if (lCfgKeyName === 'text') {
+        } else if (unifiedKey === 'text') {
             Object.values(cfgValue).forEach((imgConf) => this.texts.push(new RewardTextCfg(imgConf)))
             return true
-        } else if (lCfgKeyName === 'boximages') {
+        } else if (unifiedKey === 'boximages') {
             Object.values(cfgValue).forEach((imgConf) => this.boxImages.push(new RewardImageCfg(imgConf)))
             return true
-        } else if (lCfgKeyName === 'fonts') {
-            this.fonts = new RewardFontsCfg(cfgValue)
+        } else if (unifiedKey === 'fonts') {
+            this.fonts = new RewardFontsCfg().setFromCfgObj(cfgValue)
             return true
         } else {
-            return super.assignValue(objKey, lCfgKeyName, cfgValue)
+            return super.assignValue(objKey, unifiedKey, cfgValue)
         }
     }
 }
@@ -77,9 +72,4 @@ export class RewardFontsCfg extends BaseConfig {
     oxygen: string = ''
     timer: string = ''
     score: string = ''
-
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
 }

@@ -7,24 +7,19 @@ export class ButtonPriorityListCfg extends BaseConfig {
     panelButtonPriorityListClose: ButtonCfg = null // not used in the game
     panelButtonPriorityListReset: ButtonCfg = null
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    assignValue(objKey, lCfgKeyName, cfgValue): boolean {
-        if (lCfgKeyName.match(/panelButtonPriorityListDisable\d+/i)) {
-            this.panelButtonPriorityListDisable.push(this.parseValue(lCfgKeyName, cfgValue))
+    assignValue(objKey, unifiedKey, cfgValue): boolean {
+        if (unifiedKey.match(/panelButtonPriorityListDisable\d+/i)) {
+            this.panelButtonPriorityListDisable.push(this.parseValue(unifiedKey, cfgValue))
             return true
-        } else if (lCfgKeyName.match(/panelButtonPriorityListUpOne\d+/i)) {
-            this.panelButtonPriorityListUpOne.push(this.parseValue(lCfgKeyName, cfgValue))
+        } else if (unifiedKey.match(/panelButtonPriorityListUpOne\d+/i)) {
+            this.panelButtonPriorityListUpOne.push(this.parseValue(unifiedKey, cfgValue))
             return true
         } else {
-            return super.assignValue(objKey, lCfgKeyName, cfgValue)
+            return super.assignValue(objKey, unifiedKey, cfgValue)
         }
     }
 
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
+    parseValue(unifiedKey: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
     }
 }

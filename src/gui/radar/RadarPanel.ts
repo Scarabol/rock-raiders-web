@@ -63,12 +63,7 @@ export class ButtonRadarCfg extends BaseConfig {
     panelButtonRadarZoomOut: ButtonCfg = null
     panelButtonRadarMapView: ButtonCfg = null
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
+    parseValue(unifiedKey: string, cfgValue: any): any {
         return new ButtonCfg(cfgValue)
     }
 }

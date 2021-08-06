@@ -58,6 +58,16 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
     CrossLand: boolean = false
     CrossLava: boolean = false
     CrossWater: boolean = false
+    CanBeShotAt: boolean = false
+
+    assignValue(objKey, unifiedKey, cfgValue): boolean {
+        if ('CanBeShotAt'.equalsIgnoreCase(unifiedKey) && Array.isArray(cfgValue)) {
+            this.CanBeShotAt = cfgValue[0] // value may be specified twice in original config
+            return true
+        } else {
+            return super.assignValue(objKey, unifiedKey, cfgValue)
+        }
+    }
 }
 
 export class GameStatsCfg extends BaseConfig {
@@ -803,14 +813,9 @@ export class GameStatsCfg extends BaseConfig {
         CostRefinedOre: number = 1
     }
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    assignValue(objKey, lCfgKeyName, cfgValue): boolean {
-        if (objKey.toLowerCase() === lCfgKeyName) {
-            BaseConfig.setFromCfg(this[objKey], cfgValue)
+    assignValue(objKey, unifiedKey, cfgValue): boolean {
+        if (objKey.toLowerCase() === unifiedKey) {
+            this[objKey].setFromCfgObj(cfgValue)
             return true
         }
     }

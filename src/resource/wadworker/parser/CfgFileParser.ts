@@ -140,12 +140,15 @@ export class CfgFileParser {
             if (lVal === 'true') return true
             if (lVal === 'false') return false
             if (lVal === 'null') return ''
-            if (val.includes(':')) { // XXX Dependencies uses separator , over : however icon panel entries use : over ,
-                splitShrink.call(this, ':')
+            const hasReference = val.includes('::') // XXX actually these are references to other paths in the cfg file
+            if (val.includes(':') && !hasReference) { // XXX Dependencies uses separator , over : however icon panel entries use : over ,
+                splitShrink.call(this, /:+/)
             } else if (val.includes(',')) {
                 splitShrink.call(this, ',')
             } else if (val.includes('|')) {
                 splitShrink.call(this, '|')
+            } else if (hasReference) {
+                val = val.split(/:+/)[1]
             }
             return val
         } else {

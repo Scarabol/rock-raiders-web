@@ -6,16 +6,11 @@ export class MenuCfg extends BaseConfig {
     menuCount: number = 0
     menus: MenuEntryCfg[] = []
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    assignValue(objKey, lCfgKeyName, cfgValue): boolean {
-        if (lCfgKeyName.match(/menu\d+/i)) {
-            this.menus.push(new MenuEntryCfg(cfgValue))
+    assignValue(objKey, unifiedKey, cfgValue): boolean {
+        if (unifiedKey.match(/menu\d+/i)) {
+            this.menus.push(new MenuEntryCfg().setFromCfgObj(cfgValue))
             return true
         }
-        return super.assignValue(objKey, lCfgKeyName, cfgValue)
+        return super.assignValue(objKey, unifiedKey, cfgValue)
     }
 }

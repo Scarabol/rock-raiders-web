@@ -9,15 +9,10 @@ export class DialogCfg extends BaseConfig {
     cancelWindow: Rect = null
     contrastOverlay: string = null // not used in the game
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
-        if (lCfgKeyName.endsWith('window')) {
+    parseValue(unifiedKey: string, cfgValue: any): any {
+        if (unifiedKey.endsWith('window')) {
             return Rect.fromArray(cfgValue)
         }
-        return super.parseValue(lCfgKeyName, cfgValue)
+        return super.parseValue(unifiedKey, cfgValue)
     }
 }

@@ -15,13 +15,7 @@ export class PanelsCfg extends BaseConfig {
     panelInfoDock: PanelCfg = null
     panelEncyclopedia: PanelCfg = null
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
+    parseValue(unifiedKey: string, cfgValue: any): any {
         return new PanelCfg(cfgValue)
     }
 }
-

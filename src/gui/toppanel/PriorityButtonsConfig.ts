@@ -13,12 +13,7 @@ export class PriorityButtonsConfig extends BaseConfig {
     aiPriorityReinforce: ButtonCfg = null
     aiPriorityRecharge: ButtonCfg = null
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): ButtonCfg {
+    parseValue(unifiedKey: string, cfgValue: any): any {
         return {
             buttonType: cfgValue[0],
             normalFile: cfgValue[1],

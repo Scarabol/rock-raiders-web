@@ -23,7 +23,7 @@ export class WadWorkerMessage {
         return {
             type: WorkerMessageType.CFG,
             cfg: cfg,
-            stats: new GameStatsCfg(cfg['Stats']),
+            stats: new GameStatsCfg().setFromCfgObj(cfg['Stats']),
             totalResources: totalResources,
         }
     }

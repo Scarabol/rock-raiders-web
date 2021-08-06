@@ -32,7 +32,7 @@ export class RonFileParser {
     }
 
     private static parseVal(val) {
-        const r = val.split(/:+/) // there is key::value
+        const r = val.split(/:/)
             .map(v => {
                 const r = v.split(',').map(v => {
                     const r = v.split('|').map(v => this.parseValue(v))

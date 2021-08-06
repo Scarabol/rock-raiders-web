@@ -12,12 +12,7 @@ export class TextInfoMessageConfig extends BaseConfig {
     textManTrained: TextInfoMessageEntryConfig = null
     textUnitUpgraded: TextInfoMessageEntryConfig = null
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
+    parseValue(unifiedKey: string, cfgValue: any): any {
         return new TextInfoMessageEntryConfig(cfgValue)
     }
 }

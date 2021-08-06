@@ -11,12 +11,7 @@ export class InfoMessagesConfig extends BaseConfig {
     infoSlugEmerge: InfoMessagesEntryConfig = null
     infoFoundMinifigure: InfoMessagesEntryConfig = null
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
+    parseValue(unifiedKey: string, cfgValue: any): any {
         return new InfoMessagesEntryConfig(cfgValue)
     }
 }

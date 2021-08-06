@@ -17,29 +17,24 @@ export class ButtonsCfg extends BaseConfig {
     panelInfoDock: ButtonInfoDockCfg = null
     panelEncyclopedia: any = null // not used in the game
 
-    constructor(cfgObj: any) {
-        super()
-        BaseConfig.setFromCfg(this, cfgObj)
-    }
-
-    parseValue(lCfgKeyName: string, cfgValue: any): any {
+    parseValue(unifiedKey: string, cfgValue: any): any {
         const btnCfgValue = {}
         cfgValue.forEach(arr => btnCfgValue[arr[0]] = arr)
-        if (lCfgKeyName === 'panelRadar'.toLowerCase()) {
-            return new ButtonRadarCfg(btnCfgValue)
-        } else if (lCfgKeyName === 'panelCrystalSideBar'.toLowerCase()) {
-            return new ButtonCrystalSideBarCfg(btnCfgValue)
-        } else if (lCfgKeyName === 'panelTopPanel'.toLowerCase()) {
-            return new ButtonTopCfg(btnCfgValue)
-        } else if (lCfgKeyName === 'panelInformation'.toLowerCase()) {
-            return new ButtonInformationCfg(btnCfgValue)
-        } else if (lCfgKeyName === 'panelPriorityList'.toLowerCase()) {
-            return new ButtonPriorityListCfg(btnCfgValue)
-        } else if (lCfgKeyName === 'panelCameraControl'.toLowerCase()) {
-            return new ButtonCameraControlCfg(btnCfgValue)
-        } else if (lCfgKeyName === 'panelInfoDock'.toLowerCase()) {
-            return new ButtonInfoDockCfg(btnCfgValue)
-        } else if (lCfgKeyName === 'panelEncyclopedia'.toLowerCase()) {
+        if (unifiedKey === 'panelRadar'.toLowerCase()) {
+            return new ButtonRadarCfg().setFromCfgObj(btnCfgValue)
+        } else if (unifiedKey === 'panelCrystalSideBar'.toLowerCase()) {
+            return new ButtonCrystalSideBarCfg().setFromCfgObj(btnCfgValue)
+        } else if (unifiedKey === 'panelTopPanel'.toLowerCase()) {
+            return new ButtonTopCfg().setFromCfgObj(btnCfgValue)
+        } else if (unifiedKey === 'panelInformation'.toLowerCase()) {
+            return new ButtonInformationCfg().setFromCfgObj(btnCfgValue)
+        } else if (unifiedKey === 'panelPriorityList'.toLowerCase()) {
+            return new ButtonPriorityListCfg().setFromCfgObj(btnCfgValue)
+        } else if (unifiedKey === 'panelCameraControl'.toLowerCase()) {
+            return new ButtonCameraControlCfg().setFromCfgObj(btnCfgValue)
+        } else if (unifiedKey === 'panelInfoDock'.toLowerCase()) {
+            return new ButtonInfoDockCfg().setFromCfgObj(btnCfgValue)
+        } else if (unifiedKey === 'panelEncyclopedia'.toLowerCase()) {
             return null // not used in the game
         } else {
             return btnCfgValue
