@@ -26,7 +26,7 @@ export class CrystalSceneEntity extends SceneEntity {
             mat.setOpacity(0.9) // XXX read from LWO file?
         })
         this.add(this.highPolyMesh)
-        this.addPickSphere(ResourceManager.stats.PowerCrystal.PickSphere)
+        this.addPickSphere(ResourceManager.configuration.stats.PowerCrystal.PickSphere)
     }
 
     update(elapsedMs: number) {

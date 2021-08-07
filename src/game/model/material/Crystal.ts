@@ -24,7 +24,7 @@ export class Crystal extends MaterialEntity {
     }
 
     get stats() {
-        return ResourceManager.stats.PowerCrystal
+        return ResourceManager.configuration.stats.PowerCrystal
     }
 
     getPriorityIdentifier(): PriorityIdentifier {

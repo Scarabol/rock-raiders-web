@@ -26,7 +26,7 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
     }
 
     get stats() {
-        return ResourceManager.stats.ElectricFence
+        return ResourceManager.configuration.stats.ElectricFence
     }
 
     findCarryTargets(): CarryPathTarget[] {

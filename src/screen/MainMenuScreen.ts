@@ -1,4 +1,3 @@
-import { MenuCfg } from '../cfg/MenuCfg'
 import { LevelSelectLayer } from '../menu/LevelSelectLayer'
 import { MainMenuLayer } from '../menu/MainMenuLayer'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -10,8 +9,7 @@ export class MainMenuScreen extends BaseScreen {
 
     constructor() {
         super()
-        const mainMenuFullCfg = ResourceManager.getResource('MainMenuFull') as MenuCfg
-        mainMenuFullCfg.menus.forEach((menuCfg) => {
+        ResourceManager.configuration.menu.mainMenuFull.menus.forEach((menuCfg) => {
             let layer
             if (menuCfg.title === 'Levels') {
                 layer = new LevelSelectLayer(this, menuCfg, true)

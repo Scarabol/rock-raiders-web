@@ -1,4 +1,5 @@
 import { Intersection, Raycaster } from 'three'
+import { Cursor } from '../../cfg/PointerCfg'
 import { cloneContext } from '../../core/ImageHelper'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventBus } from '../../event/EventBus'
@@ -17,7 +18,6 @@ import { SceneManager } from '../../game/SceneManager'
 import { WorldManager } from '../../game/WorldManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedCursor } from '../AnimatedCursor'
-import { Cursor } from '../Cursor'
 import { ScreenLayer } from './ScreenLayer'
 
 export class CursorLayer extends ScreenLayer {
@@ -43,7 +43,7 @@ export class CursorLayer extends ScreenLayer {
     }
 
     reset() {
-        this.changeCursor(Cursor.Pointer_Standard)
+        this.changeCursor('pointerStandard')
     }
 
     show() {
@@ -82,23 +82,23 @@ export class CursorLayer extends ScreenLayer {
 
     determineCursor(): Cursor {
         if (this.sceneMgr.hasBuildModeSelection()) {
-            return this.sceneMgr.buildMarker.lastCheck ? Cursor.Pointer_CanBuild : Cursor.Pointer_CannotBuild
+            return this.sceneMgr.buildMarker.lastCheck ? 'pointerCanBuild' : 'pointerCannotBuild'
         }
         // TODO use sceneManager.getFirstByRay here too?!
         const raycaster = new Raycaster()
         raycaster.setFromCamera(this.cursorRelativePos, this.sceneMgr.camera)
         const intersectsRaider = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
-        if (intersectsRaider.length > 0) return Cursor.Pointer_Selected
+        if (intersectsRaider.length > 0) return 'pointerSelected'
         const intersectsVehicle = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
         if (intersectsVehicle.length > 0) {
             const vehicle = intersectsVehicle[0].object.userData?.selectable as VehicleEntity
             if (!vehicle?.driver && this.entityMgr.selection.raiders.length > 0) {
-                return Cursor.Pointer_GetIn
+                return 'pointerGetIn'
             }
-            return Cursor.Pointer_Selected
+            return 'pointerSelected'
         }
         const intersectsBuilding = raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere))
-        if (intersectsBuilding.length > 0) return Cursor.Pointer_Selected
+        if (intersectsBuilding.length > 0) return 'pointerSelected'
         const intersectsMaterial = raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere).filter((p) => !!p))
         if (intersectsMaterial.length > 0) {
             return this.determineMaterialCursor(intersectsMaterial)
@@ -110,32 +110,32 @@ export class CursorLayer extends ScreenLayer {
                 return this.determineSurfaceCursor(intersectsSurface[0].object.userData?.surface)
             }
         }
-        return Cursor.Pointer_Standard
+        return 'pointerStandard'
     }
 
     private determineMaterialCursor(intersectsMaterial: Intersection[]): Cursor {
         if (this.entityMgr.selection.canPickup()) {
             if (intersectsMaterial[0].object.userData?.entityType === EntityType.ORE) {
-                return Cursor.Pointer_PickUpOre
+                return 'pointerPickUpOre'
             } else {
-                return Cursor.Pointer_PickUp
+                return 'pointerPickUp'
             }
         }
-        return Cursor.Pointer_Selected
+        return 'pointerSelected'
     }
 
     private determineSurfaceCursor(surface: Surface): Cursor {
-        if (!surface) return Cursor.Pointer_Standard
+        if (!surface) return 'pointerStandard'
         if (this.entityMgr.selection.canMove()) {
             if (surface.surfaceType.digable) {
                 if (this.entityMgr.selection.canDrill(surface)) {
-                    return Cursor.Pointer_Drill
+                    return 'pointerDrill'
                 }
             } else if (surface.surfaceType.floor) {
                 if (surface.hasRubble() && this.entityMgr.selection.canClear()) {
-                    return Cursor.Pointer_Clear
+                    return 'pointerClear'
                 }
-                return Cursor.Pointer_LegoManGo
+                return 'pointerLegoManGo'
             }
         }
         return surface.surfaceType.cursor

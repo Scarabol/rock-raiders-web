@@ -1,4 +1,4 @@
-import { InfoButtonCfg } from '../../cfg/InfoButtonCfg'
+import { InfoButtonCfg } from '../../cfg/ButtonCfg'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
 import { WorldEvent } from '../../event/WorldEvents'

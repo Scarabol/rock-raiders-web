@@ -326,7 +326,7 @@ export class Surface implements Selectable {
     updateTexture() {
         this.forEachMaterial((mat) => mat.map?.dispose())
         let {textureNameSuffix, textureRotation} = this.determineTextureNameSuffixAndRotation()
-        const texture = ResourceManager.getTexture(this.terrain.textureSet.texturebasename + textureNameSuffix + '.bmp')
+        const texture = ResourceManager.getTexture(this.terrain.textureSet.textureBasename + textureNameSuffix + '.bmp')
         texture.center.set(0.5, 0.5)
         texture.rotation = textureRotation
         this.forEachMaterial((mat) => mat.map = texture)

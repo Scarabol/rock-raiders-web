@@ -1,26 +1,19 @@
-import { GameStatsCfg } from '../cfg/GameStatsCfg'
-import { LevelsCfg } from '../cfg/LevelsCfg'
+import { GameConfig } from '../cfg/GameConfig'
+import { Cursor } from '../cfg/PointerCfg'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 import { createContext, createDummyImgData, imgDataToContext } from '../core/ImageHelper'
 import { asArray, iGet } from '../core/Util'
-import { EntityType } from '../game/model/EntityType'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
-import { allCursor, Cursor } from '../screen/Cursor'
 import { cacheGetData, cachePutData } from './assets/AssetCacheHelper'
 
 export class ResourceCache {
-    static configuration: any = {}
+    static configuration: GameConfig = new GameConfig()
     static resourceByName: Map<string, any> = new Map()
     static fontCache: Map<string, BitmapFont> = new Map()
-    static stats: GameStatsCfg
     static cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
 
     static cfg(...keys: string[]): any {
         return iGet(this.configuration, ...keys)
-    }
-
-    static getLevelConfig(): LevelsCfg {
-        return new LevelsCfg(this.cfg('Levels'))
     }
 
     static getResource(resourceName: string): any {
@@ -60,16 +53,15 @@ export class ResourceCache {
     }
 
     static async loadDefaultCursor() {
-        const cursorImageName = iGet(this.cfg('Pointers'), Cursor[Cursor.Pointer_Standard])
-        await this.loadCursor(cursorImageName, Cursor.Pointer_Standard)
+        const cursorImageName = this.configuration.pointers.pointerStandard
+        await this.loadCursor(cursorImageName, 'pointerStandard')
     }
 
     static async loadAllCursor() {
-        const pointersCfg = this.cfg('Pointers')
-        const blankPointerFilename = iGet(pointersCfg, Cursor[Cursor.Pointer_Blank])
+        const blankPointerFilename = this.configuration.pointers.pointerBlank
         const blankPointerImageData = this.getImageData(blankPointerFilename)
-        await Promise.all(allCursor.map((cursor) => {
-            const cursorCfg = iGet(pointersCfg, Cursor[cursor])
+        await Promise.all(Object.entries(this.configuration.pointers).map(([objKey, cursorCfg]) => {
+            const cursor = objKey as Cursor
             if (Array.isArray(cursorCfg)) {
                 const cursorImageName = cursorCfg[0]
                 return cacheGetData(cursorImageName).then((cursorDataUrls) => {
@@ -107,34 +99,5 @@ export class ResourceCache {
 
     static getCursor(cursor: Cursor): AnimatedCursor {
         return this.cursorToUrl.get(cursor)
-    }
-
-    static getStatsByType(entityType: EntityType) {
-        switch (entityType) {
-            case EntityType.HOVERBOARD:
-                return this.stats.Hoverboard
-            case EntityType.SMALL_DIGGER:
-                return this.stats.SmallDigger
-            case EntityType.SMALL_TRUCK:
-                return this.stats.SmallTruck
-            case EntityType.SMALL_CAT:
-                return this.stats.SmallCat
-            case EntityType.SMALL_MLP:
-                return this.stats.Smallmlp
-            case EntityType.SMALL_HELI:
-                return this.stats.SmallHeli
-            case EntityType.BULLDOZER:
-                return this.stats.Bulldozer
-            case EntityType.WALKER_DIGGER:
-                return this.stats.WalkerDigger
-            case EntityType.LARGE_MLP:
-                return this.stats.LargeMLP
-            case EntityType.LARGE_DIGGER:
-                return this.stats.LargeDigger
-            case EntityType.LARGE_CAT:
-                return this.stats.LargeCat
-            default:
-                throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
-        }
     }
 }

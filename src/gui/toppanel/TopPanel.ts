@@ -1,9 +1,9 @@
+import { ButtonTopCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { ToggleButton } from '../base/ToggleButton'
-import { ButtonTopCfg } from './ButtonTopCfg'
 
 export class TopPanel extends Panel {
     btnCallToArms: ToggleButton

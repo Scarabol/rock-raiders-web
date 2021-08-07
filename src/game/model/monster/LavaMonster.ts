@@ -11,7 +11,7 @@ export class LavaMonster extends Monster {
     }
 
     get stats(): MonsterEntityStats {
-        return ResourceManager.stats.LavaMonster
+        return ResourceManager.configuration.stats.LavaMonster
     }
 
     disposeFromWorld() {

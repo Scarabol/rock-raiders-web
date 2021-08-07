@@ -1,11 +1,10 @@
-import { GameStatsCfg } from '../../cfg/GameStatsCfg'
+import { GameConfig } from '../../cfg/GameConfig'
 import { WorkerMessageType } from './WorkerMessageType'
 
 export class WadWorkerMessage {
     type: WorkerMessageType = null
     text?: string
-    cfg?: any
-    stats?: any
+    cfg?: GameConfig
     totalResources?: number
     assetNames?: string[]
     assetObj?: any
@@ -19,11 +18,10 @@ export class WadWorkerMessage {
         return {type: WorkerMessageType.MSG, text: msg}
     }
 
-    static createCfgLoaded(cfg: any, totalResources: number): WadWorkerMessage {
+    static createCfgLoaded(cfg: GameConfig, totalResources: number): WadWorkerMessage {
         return {
             type: WorkerMessageType.CFG,
             cfg: cfg,
-            stats: new GameStatsCfg().setFromCfgObj(cfg['Stats']),
             totalResources: totalResources,
         }
     }

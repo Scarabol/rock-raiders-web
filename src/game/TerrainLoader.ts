@@ -12,7 +12,7 @@ export class TerrainLoader {
         const tileSize = levelConf.blockSize
         if (tileSize !== TILESIZE) console.error(`Unexpected tile size in level configuration: ${tileSize}`)
         const terrain = new Terrain(sceneMgr, entityMgr)
-        terrain.textureSet = ResourceManager.cfg('Textures', levelConf.textureSet)
+        terrain.textureSet = ResourceManager.configuration.textures.textureSetByName.get(levelConf.textureSet)
 
         const terrainMap = ResourceManager.getResource(levelConf.terrainMap)
         terrain.width = terrainMap.width

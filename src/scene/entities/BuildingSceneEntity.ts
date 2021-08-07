@@ -1,13 +1,14 @@
 import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivity'
 import { BuildingActivity } from '../../game/model/activities/BuildingActivity'
 import { SceneManager } from '../../game/SceneManager'
+import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { BubbleSprite } from '../BubbleSprite'
 
 export class BuildingSceneEntity extends AnimatedSceneEntity {
     inBeam: boolean = false
     powered: boolean = false
-    powerBubble: BubbleSprite = new BubbleSprite('Bubble_PowerOff')
+    powerBubble: BubbleSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
     powerBubbleFlashTimer: number = 0
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {

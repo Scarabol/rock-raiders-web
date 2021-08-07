@@ -21,7 +21,7 @@ export class SmallSpider extends Monster {
     }
 
     get stats(): MonsterEntityStats {
-        return ResourceManager.stats.SmallSpider
+        return ResourceManager.configuration.stats.SmallSpider
     }
 
     findPathToTarget(target: PathTarget): TerrainPath { // TODO consider stats: random move and random enter wall

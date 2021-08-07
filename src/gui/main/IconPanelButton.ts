@@ -1,4 +1,4 @@
-import { MenuItemCfg } from '../../cfg/MenuItemCfg'
+import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 

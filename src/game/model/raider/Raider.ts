@@ -36,7 +36,7 @@ export class Raider extends FulfillerEntity {
     }
 
     get stats() {
-        return ResourceManager.stats.Pilot
+        return ResourceManager.configuration.stats.Pilot
     }
 
     isSelectable(): boolean {

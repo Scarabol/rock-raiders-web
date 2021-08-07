@@ -1,5 +1,12 @@
-import { LevelObjectiveTextEntry } from '../../../cfg/LevelObjectiveTextEntry'
 import { encodeChar } from './EncodingHelper'
+
+export class LevelObjectiveTextEntry {
+    key: string
+    objective: string
+    failure: string
+    completion: string
+    crystalFailure: string
+}
 
 export class ObjectiveTextParser {
     parseObjectiveTextFile(txtFileContent: Uint8Array) {

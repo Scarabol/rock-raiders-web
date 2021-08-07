@@ -1,5 +1,6 @@
+import { GameConfig } from '../../cfg/GameConfig'
 import { BitmapFontData } from '../../core/BitmapFont'
-import { getFilename, iGet } from '../../core/Util'
+import { getFilename } from '../../core/Util'
 import { cacheGetData, cachePutData } from '../assets/AssetCacheHelper'
 import { FlhParser } from '../FlhParser'
 import { BitmapWithPalette } from './parser/BitmapWithPalette'
@@ -24,7 +25,7 @@ export class WadLoader {
     onCacheMiss: (cacheIdentifier: string) => any = (cacheIdentifier: string) => {
         console.log(`Cache missed for: ${cacheIdentifier}`)
     }
-    onInitialLoad: (totalResources: number, cfg: any) => any = () => {
+    onInitialLoad: (totalResources: number, cfg: GameConfig) => any = () => {
         console.log('Initial loading done.')
     }
     onAssetLoaded: (assetIndex: number, assetNames: string[], assetObj: any, sfxKeys?: string[]) => any = () => {
@@ -248,21 +249,21 @@ export class WadLoader {
         this.onMessage('Loading initial assets...')
         Promise.all([
             new Promise<void>((resolve) => {
-                const name = iGet(cfg, 'Main', 'LoadScreen') // loading screen image
+                const name = cfg.main.loadScreen // loading screen image
                 this.loadWadImageAsset(name, (assetNames: string[], imgData) => {
                     this.onAssetLoaded(0, assetNames, imgData)
                     resolve()
                 })
             }),
             new Promise<void>((resolve) => {
-                const name = iGet(cfg, 'Main', 'ProgressBar') // loading bar container image
+                const name = cfg.main.progressBar // loading bar container image
                 this.loadWadImageAsset(name, (assetNames: string[], imgData) => {
                     this.onAssetLoaded(0, assetNames, imgData)
                     resolve()
                 })
             }),
             new Promise<void>((resolve) => {
-                const name = iGet(cfg, 'Pointers', 'Pointer_Standard')
+                const name = cfg.pointers.pointerStandard
                 this.loadAlphaImageAsset(name, (assetNames: string[], imgData) => {
                     this.onAssetLoaded(0, assetNames, imgData)
                     resolve()

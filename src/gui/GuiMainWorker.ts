@@ -1,5 +1,3 @@
-import { ButtonsCfg } from '../cfg/ButtonsCfg'
-import { PanelsCfg } from '../cfg/PanelsCfg'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { Panel } from './base/Panel'
 import { CameraControlPanel } from './cameracontrol/CameraControlPanel'
@@ -7,16 +5,12 @@ import { GuiResourceCache } from './GuiResourceCache'
 import { GuiWorker } from './GuiWorker'
 import { GuiWorkerMessage } from './GuiWorkerMessage'
 import { InfoDockPanel } from './infodock/InfoDockPanel'
-import { InfoMessagesConfig } from './infodock/InfoMessagesConfig'
 import { InformationPanel } from './infodock/InformationPanel'
 import { MainPanel } from './main/MainPanel'
 import { MessagePanel } from './messagepanel/MessagePanel'
-import { TextInfoMessageConfig } from './messagepanel/TextInfoMessageConfig'
 import { RadarPanel } from './radar/RadarPanel'
 import { PanelCrystalSideBar } from './sidebar/PanelCrystalSideBar'
-import { PriorityButtonsConfig } from './toppanel/PriorityButtonsConfig'
 import { PriorityListPanel } from './toppanel/PriorityListPanel'
-import { PriorityPositionsEntry } from './toppanel/PriorityPositionsEntry'
 import { TopPanel } from './toppanel/TopPanel'
 
 export class GuiMainWorker extends GuiWorker {
@@ -37,21 +31,19 @@ export class GuiMainWorker extends GuiWorker {
     }
 
     init(): void {
-        const panelsCfg = new PanelsCfg().setFromCfgObj(GuiResourceCache.cfg('Panels640x480'))
-        const buttonsCfg = new ButtonsCfg().setFromCfgObj(GuiResourceCache.cfg('Buttons640x480'))
+        const panelsCfg = GuiResourceCache.configuration.panels
+        const buttonsCfg = GuiResourceCache.configuration.buttons
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
         this.panelEncyclopedia = this.addPanel(new Panel(this.rootElement, panelsCfg.panelEncyclopedia))
         this.panelInformation = this.addPanel(new InformationPanel(this.rootElement, panelsCfg.panelInformation))
-        this.panelInfoDock = this.addPanel(new InfoDockPanel(this.rootElement, panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, new InfoMessagesConfig().setFromCfgObj(GuiResourceCache.cfg('InfoMessages')), this.panelInformation))
-        this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, GuiResourceCache.cfg('PanelRotationControl')))
-        const priorityPositionsConfig = Object.values(GuiResourceCache.cfg('PrioritiesImagePositions')).map(cfgValue => new PriorityPositionsEntry(cfgValue))
-        const priorityButtonsConfig = new PriorityButtonsConfig().setFromCfgObj(GuiResourceCache.cfg('PriorityImages'))
-        this.panelPriorityList = this.addPanel(new PriorityListPanel(this.rootElement, panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, priorityPositionsConfig, priorityButtonsConfig))
+        this.panelInfoDock = this.addPanel(new InfoDockPanel(this.rootElement, panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, GuiResourceCache.configuration.infoMessages, this.panelInformation))
+        this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, GuiResourceCache.configuration.panelRotationControl))
+        this.panelPriorityList = this.addPanel(new PriorityListPanel(this.rootElement, panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, GuiResourceCache.configuration.prioritiesImagePositions, GuiResourceCache.configuration.priorityImages))
         this.panelTopPanel = this.addPanel(new TopPanel(this.rootElement, panelsCfg.panelTopPanel, buttonsCfg.panelTopPanel))
         this.panelMain = this.addPanel(new MainPanel(this.rootElement))
         this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(this.rootElement, panelsCfg.panelCrystalSideBar, buttonsCfg.panelCrystalSideBar))
         this.panelMessagesSide = this.addPanel(new Panel(this.rootElement, panelsCfg.panelMessagesSide))
-        this.panelMessages = this.addPanel(new MessagePanel(this.rootElement, panelsCfg.panelMessages, new TextInfoMessageConfig().setFromCfgObj(GuiResourceCache.cfg('TextMessagesWithImages'))))
+        this.panelMessages = this.addPanel(new MessagePanel(this.rootElement, panelsCfg.panelMessages, GuiResourceCache.configuration.textMessagesWithImages))
         this.panelRadar = this.addPanel(new RadarPanel(this.rootElement, panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         // link panels
         this.panelTopPanel.btnOptions.onClick = () => {

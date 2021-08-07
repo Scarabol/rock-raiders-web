@@ -18,7 +18,7 @@ export class Bat extends Monster {
     }
 
     get stats(): MonsterEntityStats {
-        return ResourceManager.stats.Bat
+        return ResourceManager.configuration.stats.Bat
     }
 
     findPathToTarget(target: PathTarget): TerrainPath { // TODO consider stats: random move

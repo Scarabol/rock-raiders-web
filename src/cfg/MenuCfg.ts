@@ -1,5 +1,29 @@
+import { Rect } from '../core/Rect'
 import { BaseConfig } from './BaseConfig'
+import { parseLabel } from './CfgHelper'
 import { MenuEntryCfg } from './MenuEntryCfg'
+
+export class GameMenuCfg extends BaseConfig {
+    levelText: LevelTextCfg = new LevelTextCfg()
+    pausedMenu: MenuCfg = new MenuCfg()
+    mainMenuFull: MenuCfg = new MenuCfg()
+    optionsMenu: MenuCfg = new MenuCfg()
+
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
+        if ('LevelText'.equalsIgnoreCase(unifiedKey)) {
+            this.levelText.setFromCfgObj(cfgValue)
+        } else if ('PausedMenu'.equalsIgnoreCase(unifiedKey)) {
+            this.pausedMenu.setFromCfgObj(cfgValue)
+        } else if ('MainMenuFull'.equalsIgnoreCase(unifiedKey)) {
+            this.mainMenuFull.setFromCfgObj(cfgValue)
+        } else if ('OptionsMenu'.equalsIgnoreCase(unifiedKey)) {
+            this.optionsMenu.setFromCfgObj(cfgValue)
+        } else {
+            return super.assignValue(objKey, unifiedKey, cfgValue)
+        }
+        return true
+    }
+}
 
 export class MenuCfg extends BaseConfig {
     // noinspection JSUnusedGlobalSymbols
@@ -12,5 +36,37 @@ export class MenuCfg extends BaseConfig {
             return true
         }
         return super.assignValue(objKey, unifiedKey, cfgValue)
+    }
+}
+
+class LevelTextCfg extends BaseConfig {
+    window: Rect = new Rect()
+    panel: MenuPanelCfg = new MenuPanelCfg()
+    level: string = null
+    tutorial: string = null
+
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
+        if ('Window'.equalsIgnoreCase(unifiedKey)) {
+            this.window = Rect.fromArray(cfgValue)
+        } else if ('Panel'.equalsIgnoreCase(unifiedKey)) {
+            this.panel.setFromCfgObj(cfgValue)
+        } else {
+            return super.assignValue(objKey, unifiedKey, parseLabel(cfgValue))
+        }
+        return true
+    }
+}
+
+export class MenuPanelCfg extends BaseConfig {
+    imgBackground: string = null
+    rect: Rect = new Rect()
+
+    setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
+        this.imgBackground = cfgObj[0]
+        this.rect.x = cfgObj[1]
+        this.rect.y = cfgObj[2]
+        this.rect.w = cfgObj[3]
+        this.rect.h = cfgObj[4]
+        return this
     }
 }

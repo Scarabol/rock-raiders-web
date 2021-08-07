@@ -132,7 +132,7 @@ export class WorldManager {
             for (this.spawnVehicleTimer += elapsedMs; this.spawnVehicleTimer >= CHECK_SPAWN_VEHICLE_TIMER; this.spawnVehicleTimer -= CHECK_SPAWN_VEHICLE_TIMER) {
                 if (this.requestedVehicleTypes.length > 0) {
                     const spawnedVehicleType = this.requestedVehicleTypes.find((vType) => {
-                        const stats = ResourceManager.getStatsByType(vType)
+                        const stats = VehicleFactory.getVehicleStatsByType(vType)
                         if (GameState.numCrystal < stats.CostCrystal) return false
                         const teleportBuilding = this.entityMgr.findTeleportBuilding(vType)
                         if (teleportBuilding) {

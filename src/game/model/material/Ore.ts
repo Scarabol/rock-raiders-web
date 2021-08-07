@@ -24,7 +24,7 @@ export class Ore extends MaterialEntity {
     }
 
     get stats() {
-        return ResourceManager.stats.Ore
+        return ResourceManager.configuration.stats.Ore
     }
 
     getPriorityIdentifier(): PriorityIdentifier {

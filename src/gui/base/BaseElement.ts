@@ -3,7 +3,6 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { GameEvent } from '../../event/GameEvent'
 import { ChangeCursor, LocalEvent, PlaySoundEvent } from '../../event/LocalEvents'
-import { Cursor } from '../../screen/Cursor'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 
 export class BaseElement {
@@ -132,13 +131,13 @@ export class BaseElement {
     clicked(event: GuiClickEvent) {
         if (event.button === MOUSE_BUTTON.MAIN) {
             if (this.onClick) {
-                this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
+                this.publishEvent(new ChangeCursor('pointerOkay', 1000))
                 this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
                 this.onClick(event.sx, event.sy)
             }
         } else if (event.button === MOUSE_BUTTON.SECONDARY) {
             if (this.onClickSecondary) {
-                this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
+                this.publishEvent(new ChangeCursor('pointerOkay', 1000))
                 this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
                 this.onClickSecondary(event.sx, event.sy)
             }

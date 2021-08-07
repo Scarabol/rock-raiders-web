@@ -1,12 +1,18 @@
+import { DEV_MODE } from '../params'
+
 export class BaseConfig {
-    setFromCfgObj(cfgObj: any): this {
+    setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
         Object.entries(cfgObj).forEach(([cfgKey, value]) => {
             const unifiedKey = BaseConfig.unifyKey(cfgKey)
             const found = Object.keys(this).some((objKey) => {
                 return this.assignValue(objKey, unifiedKey, value)
             })
             if (!found) {
-                console.warn(`cfg key: ${cfgKey} does not exist in cfg: ${this?.constructor?.name}`)
+                if (createMissing) {
+                    this[cfgKey] = value
+                } else {
+                    if (!DEV_MODE) console.warn(`cfg key: ${cfgKey} does not exist in cfg: ${this?.constructor?.name}`)
+                }
             }
         })
         return this

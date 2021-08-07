@@ -1,3 +1,4 @@
+import { RewardButtonCfg } from '../cfg/RewardCfg'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 
@@ -9,14 +10,14 @@ export class RewardScreenButton extends MainMenuBaseItem {
     disabled: boolean = false
     visible: boolean = true
 
-    constructor(conf: any) {
+    constructor(conf: RewardButtonCfg) {
         super()
-        let imgNormalFilepath, imgHoverFilepath, imgPressedFilepath, imgDisabledFilepath;
-        [imgNormalFilepath, imgHoverFilepath, imgPressedFilepath, imgDisabledFilepath, this.x, this.y] = conf
-        this.imgNormal = ResourceManager.getImage(imgNormalFilepath)
-        this.imgHover = ResourceManager.getImage(imgHoverFilepath)
-        this.imgPressed = ResourceManager.getImage(imgPressedFilepath)
-        this.imgDisabled = ResourceManager.getImage(imgDisabledFilepath)
+        this.x = conf.x
+        this.y = conf.y
+        this.imgNormal = ResourceManager.getImage(conf.imgNormalFilepath)
+        this.imgHover = ResourceManager.getImage(conf.imgHoverFilepath)
+        this.imgPressed = ResourceManager.getImage(conf.imgPressedFilepath)
+        this.imgDisabled = ResourceManager.getImage(conf.imgDisabledFilepath)
         this.width = this.imgNormal.width
         this.height = this.imgNormal.height
     }

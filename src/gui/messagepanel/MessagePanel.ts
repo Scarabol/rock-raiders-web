@@ -6,7 +6,7 @@ import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { GuiResourceCache } from '../GuiResourceCache'
 import { TextInfoMessage } from './TextInfoMessage'
-import { TextInfoMessageConfig } from './TextInfoMessageConfig'
+import { TextInfoMessageCfg } from './TextInfoMessageCfg'
 
 export class MessagePanel extends Panel {
     imgAir: SpriteImage = null
@@ -22,7 +22,7 @@ export class MessagePanel extends Panel {
 
     airLevel: number = 1
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageConfig) {
+    constructor(parent: BaseElement, panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageCfg) {
         super(parent, panelCfg)
         this.relX = this.xOut = this.xIn = 42
         this.relY = this.yOut = this.yIn = 409

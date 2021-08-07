@@ -1,16 +1,15 @@
 import { PriorityIdentifier, priorityIdentifierFromString } from '../game/model/job/PriorityIdentifier'
 import { BaseConfig } from './BaseConfig'
-import { ConfigColor } from './ConfigColor'
-import { ObjectiveImageCfg } from './ObjectiveImageCfg'
 
-export class LevelsCfg {
+export class LevelsCfg extends BaseConfig {
     levelCfgByName: Map<string, LevelEntryCfg> = new Map()
 
-    constructor(cfgObj: any) {
+    setFromCfgObj(cfgObj: any): this {
         Object.keys(cfgObj).forEach((levelKey) => {
             if (!levelKey.startsWith('Tutorial') && !levelKey.startsWith('Level')) return // ignore incomplete test levels and duplicates
             this.levelCfgByName.set(levelKey, new LevelEntryCfg().setFromCfgObj(cfgObj[levelKey]))
         })
+        return this
     }
 }
 
@@ -53,7 +52,7 @@ export class LevelEntryCfg extends BaseConfig {
     cryOreMap: string = ''
     pathMap: string = ''
     noGather: boolean = false
-    textureSet: string = ''
+    textureSet: string = null
     rockFallStyle: string = ''
     emergeCreature: string = ''
     safeCaverns: boolean = true
@@ -79,8 +78,6 @@ export class LevelEntryCfg extends BaseConfig {
     parseValue(unifiedKey: string, cfgValue: any): any {
         if (unifiedKey === 'fullName'.toLowerCase()) {
             return cfgValue.replace(/_/g, ' ')
-        } else if (unifiedKey.endsWith('rgb')) {
-            return new ConfigColor(cfgValue)
         } else if (unifiedKey === 'priorities') {
             return Object.entries<boolean>(cfgValue)
                 .filter(([name]) => !name.equalsIgnoreCase('AI_Priority_GetTool')) // not used in the game
@@ -90,7 +87,7 @@ export class LevelEntryCfg extends BaseConfig {
         } else if (unifiedKey === 'objectiveimage640x480') {
             return new ObjectiveImageCfg(cfgValue)
         } else if (unifiedKey === 'textureset') {
-            return Array.isArray(cfgValue) ? cfgValue[0] : cfgValue
+            return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
         } else {
             return super.parseValue(unifiedKey, cfgValue)
         }
@@ -138,4 +135,14 @@ export class LevelRewardQuotaConfig extends BaseConfig {
     timer: number = 0
     caverns: number = 0
     constructions: number = 0
+}
+
+export class ObjectiveImageCfg {
+    filename: string
+    x: number
+    y: number
+
+    constructor(cfgValue: any) {
+        [this.filename, this.x, this.y] = cfgValue
+    }
 }

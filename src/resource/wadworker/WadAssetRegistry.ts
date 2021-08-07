@@ -1,6 +1,5 @@
-import { LevelsCfg } from '../../cfg/LevelsCfg'
+import { GameConfig } from '../../cfg/GameConfig'
 import { MenuCfg } from '../../cfg/MenuCfg'
-import { RewardCfg } from '../../cfg/RewardCfg'
 import { asArray, getFilename, getPath, iGet } from '../../core/Util'
 import { RonFileParser } from './parser/RonFileParser'
 import { WadLoader } from './WadLoader'
@@ -20,16 +19,16 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.wadLoader = wadLoader
     }
 
-    registerAllAssets(mainConf: any) {
+    registerAllAssets(gameConfig: GameConfig) {
         // add fonts and cursors
         this.addAssetFolder(this.wadLoader.loadAlphaImageAsset, 'Interface/Pointers/')
         this.wadLoader.wad0File.filterEntryNames(`Interface/Pointers/.+\\.flh`).forEach((assetPath) => {
             this.addAsset(this.wadLoader.loadFlhAsset, assetPath)
         })
         // add menu assets
-        this.addMenuWithAssets(mainConf, 'MainMenuFull', false)
-        this.addMenuWithAssets(mainConf, 'PausedMenu')
-        this.addMenuWithAssets(mainConf, 'OptionsMenu')
+        this.addMenuWithAssets(gameConfig.menu.mainMenuFull, false)
+        this.addMenuWithAssets(gameConfig.menu.pausedMenu)
+        this.addMenuWithAssets(gameConfig.menu.optionsMenu)
         this.addAsset(this.wadLoader.loadAlphaImageAsset, 'Interface/BriefingPanel/BriefingPanel.bmp')
         this.addAsset(this.wadLoader.loadObjectiveTexts, 'Languages/ObjectiveText.txt')
         // add in-game assets
@@ -53,8 +52,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addAsset(this.wadLoader.loadAlphaImageAsset, 'Interface/FrontEnd/LowerPanel.bmp')
         // level files
         this.addAsset(this.wadLoader.loadNerpAsset, 'Levels/nerpnrn.h')
-        const levelsCfg = new LevelsCfg(iGet(mainConf, 'Levels'))
-        levelsCfg.levelCfgByName.forEach((level) => {
+        gameConfig.levels.levelCfgByName.forEach((level) => {
             level.menuBMP.forEach((bmpName) => {
                 this.addAsset(this.wadLoader.loadAlphaImageAsset, bmpName)
             })
@@ -74,32 +72,31 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addTextureFolder('World/Shared/')
         this.addTextureFolder('Vehicles/SharedUG/')
         // load all entity upgrades
-        const upgradeTypes = iGet(mainConf, 'UpgradeTypes')
+        const upgradeTypes = iGet(gameConfig, 'UpgradeTypes')
         Object.values<string>(upgradeTypes).forEach((uType) => {
             this.addMeshObjects(uType)
         })
         // load all building types
-        const buildingTypes = iGet(mainConf, 'BuildingTypes')
+        const buildingTypes = iGet(gameConfig, 'BuildingTypes')
         Object.values<string>(buildingTypes).forEach((bType) => {
             this.addMeshObjects(bType)
         })
         this.addTextureFolder('Buildings/E-Fence')
         this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
         // load monsters
-        const rockMonsterTypes = iGet(mainConf, 'RockMonsterTypes')
+        const rockMonsterTypes = iGet(gameConfig, 'RockMonsterTypes')
         Object.values<string>(rockMonsterTypes).forEach((mType) => {
             this.addMeshObjects(mType)
         })
         // load vehicles
-        const vehicleTypes = iGet(mainConf, 'VehicleTypes')
+        const vehicleTypes = iGet(gameConfig, 'VehicleTypes')
         Object.values<string>(vehicleTypes).forEach((v) => {
             asArray(v).forEach((vType) => {
                 this.addMeshObjects(vType)
             })
         })
         // load bubbles
-        const bubbles = iGet(mainConf, 'Bubbles')
-        Object.values<string>(bubbles).forEach((b) => {
+        Object.values(gameConfig.bubbles).forEach((b) => {
             this.addAsset(this.wadLoader.loadAlphaImageAsset, b)
         })
         // load misc objects
@@ -108,7 +105,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addAsset(this.wadLoader.loadWadTexture, 'MiscAnims/Ore/Ore.bmp')
         this.addTextureFolder('MiscAnims/RockFall/')
         this.addLWSFile('MiscAnims/RockFall/Rock3Sides.lws')
-        const miscObjects = mainConf['MiscObjects']
+        const miscObjects = gameConfig['MiscObjects']
         Object.values<string>(miscObjects).forEach((mType) => {
             this.addMeshObjects(mType)
         })
@@ -117,18 +114,20 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')
         this.addTextureFolder('World/WorldTextures/RockSplit/Rock')
         // reward screen
-        const rewardCfg = new RewardCfg().setFromCfgObj(iGet(mainConf, 'Reward'))
-        this.wadLoader.onAssetLoaded(0, ['Reward'], rewardCfg)
-        this.addAsset(this.wadLoader.loadWadImageAsset, rewardCfg.wallpaper)
-        this.addAsset(this.wadLoader.loadFontImageAsset, rewardCfg.backFont)
-        Object.values(rewardCfg.fonts).forEach(imgPath => this.addAsset(this.wadLoader.loadFontImageAsset, imgPath))
-        rewardCfg.images.forEach(img => this.addAsset(this.wadLoader.loadAlphaImageAsset, img.filePath))
-        rewardCfg.boxImages.forEach(img => this.addAsset(this.wadLoader.loadWadImageAsset, img.filePath))
-        rewardCfg.saveButton.splice(0, 4).forEach((img) => this.addAsset(this.wadLoader.loadWadImageAsset, img))
-        rewardCfg.advanceButton.splice(0, 4).forEach((img) => this.addAsset(this.wadLoader.loadWadImageAsset, img))
+        this.addAsset(this.wadLoader.loadWadImageAsset, gameConfig.reward.wallpaper)
+        this.addAsset(this.wadLoader.loadFontImageAsset, gameConfig.reward.backFont)
+        Object.values(gameConfig.reward.fonts).forEach(imgPath => this.addAsset(this.wadLoader.loadFontImageAsset, imgPath))
+        gameConfig.reward.images.forEach(img => this.addAsset(this.wadLoader.loadAlphaImageAsset, img.filePath))
+        gameConfig.reward.boxImages.forEach(img => this.addAsset(this.wadLoader.loadWadImageAsset, img.filePath));
+        [gameConfig.reward.saveButton, gameConfig.reward.advanceButton].forEach((cfg) => {
+            this.addAsset(this.wadLoader.loadWadImageAsset, cfg.imgNormalFilepath)
+            this.addAsset(this.wadLoader.loadWadImageAsset, cfg.imgHoverFilepath)
+            this.addAsset(this.wadLoader.loadWadImageAsset, cfg.imgPressedFilepath)
+            this.addAsset(this.wadLoader.loadWadImageAsset, cfg.imgDisabledFilepath)
+        })
         // sounds
         const sndPathToKeys = new Map<string, string[]>()
-        const samplesConf = mainConf['Samples']
+        const samplesConf = gameConfig['Samples']
         Object.keys(samplesConf).forEach((sndKey) => {
             const value = samplesConf[sndKey]
             sndKey = sndKey.toLowerCase()
@@ -237,9 +236,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         })
     }
 
-    addMenuWithAssets(mainConf: any, name: string, menuImageAlpha: boolean = true) {
-        const menuCfg = new MenuCfg().setFromCfgObj(iGet(mainConf, 'Menu', name))
-        this.wadLoader.onAssetLoaded(0, [name], menuCfg)
+    addMenuWithAssets(menuCfg: MenuCfg, menuImageAlpha: boolean = true) {
         menuCfg.menus.forEach((menuCfg) => {
             const method = menuImageAlpha ? this.wadLoader.loadAlphaImageAsset : this.wadLoader.loadWadImageAsset
             const menuImage = Array.isArray(menuCfg.menuImage) ? menuCfg.menuImage[0] : menuCfg.menuImage

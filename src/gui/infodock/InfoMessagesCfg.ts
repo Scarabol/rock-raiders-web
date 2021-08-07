@@ -1,7 +1,7 @@
 import { BaseConfig } from '../../cfg/BaseConfig'
 import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
 
-export class InfoMessagesConfig extends BaseConfig {
+export class InfoMessagesCfg extends BaseConfig {
     infoGenericDeath: InfoMessagesEntryConfig = null
     infoGenericMonster: InfoMessagesEntryConfig = null
     infoCrystalFound: InfoMessagesEntryConfig = null

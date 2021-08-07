@@ -1,5 +1,5 @@
 import { Sample } from '../../audio/Sample'
-import { ButtonCfg } from '../../cfg/ButtonCfg'
+import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { asArray } from '../../core/Util'
 import { PlaySoundEvent } from '../../event/LocalEvents'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
@@ -17,7 +17,7 @@ export class Button extends BaseElement {
     sfxTooltip: string = null
     hoverFrame: boolean = false
 
-    constructor(parent: BaseElement, btnCfg: ButtonCfg) {
+    constructor(parent: BaseElement, btnCfg: BaseButtonCfg) {
         super(parent);
         [this.buttonType, this.sfxName] = asArray(btnCfg.buttonType)
         this.imgNormal = GuiResourceCache.getImageOrNull(btnCfg.normalFile)

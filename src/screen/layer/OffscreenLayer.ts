@@ -30,7 +30,6 @@ export abstract class OffscreenLayer extends ScreenLayer {
             type: WorkerMessageType.INIT,
             resourceByName: ResourceManager.resourceByName,
             cfg: ResourceManager.configuration,
-            stats: ResourceManager.stats,
         })
         this.worker.onmessage = (event) => {
             const response = event.data as WorkerResponse

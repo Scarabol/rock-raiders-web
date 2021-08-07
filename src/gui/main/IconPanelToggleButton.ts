@@ -1,4 +1,4 @@
-import { MenuItemCfg } from '../../cfg/MenuItemCfg'
+import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from '../base/BaseElement'
 import { GuiClickEvent } from '../event/GuiEvent'
 import { GuiResourceCache } from '../GuiResourceCache'

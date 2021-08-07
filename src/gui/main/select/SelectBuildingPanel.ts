@@ -1,4 +1,4 @@
-import { MenuItemCfg } from '../../../cfg/MenuItemCfg'
+import { MenuItemCfg } from '../../../cfg/ButtonCfg'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { BeamUpBuilding, ChangeBuildingPowerState, UpgradeBuilding } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'

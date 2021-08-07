@@ -1,4 +1,4 @@
-import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
+import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
 import { GuiWorkerMessage } from '../../gui/GuiWorkerMessage'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { WorkerResponse } from '../../worker/WorkerResponse'

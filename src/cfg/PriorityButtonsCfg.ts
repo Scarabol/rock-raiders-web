@@ -1,7 +1,7 @@
-import { BaseConfig } from '../../cfg/BaseConfig'
-import { ButtonCfg } from '../../cfg/ButtonCfg'
+import { BaseConfig } from './BaseConfig'
+import { ButtonCfg } from './ButtonCfg'
 
-export class PriorityButtonsConfig extends BaseConfig {
+export class PriorityButtonsCfg extends BaseConfig {
     aiPriorityTrain: ButtonCfg = null
     aiPriorityGetIn: ButtonCfg = null
     aiPriorityCrystal: ButtonCfg = null
@@ -21,5 +21,23 @@ export class PriorityButtonsConfig extends BaseConfig {
             pressedFile: cfgValue[2],
             disabledFile: cfgValue[3],
         }
+    }
+}
+
+export class PrioritiesImagePositionsCfg extends BaseConfig {
+    positionByIndex: PriorityPositionsEntry[] = []
+
+    setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
+        this.positionByIndex = Object.values(cfgObj).map(cfgValue => new PriorityPositionsEntry(cfgValue))
+        return this
+    }
+}
+
+export class PriorityPositionsEntry {
+    x: number
+    y: number
+
+    constructor(cfgValue: any) {
+        [this.x, this.y] = cfgValue
     }
 }

@@ -1,4 +1,4 @@
-import { ObjectiveImageCfg } from '../cfg/ObjectiveImageCfg'
+import { ObjectiveImageCfg } from '../cfg/LevelsCfg'
 import { OffscreenWorkerMessage } from '../worker/OffscreenWorkerMessage'
 
 export class GuiWorkerMessage extends OffscreenWorkerMessage {

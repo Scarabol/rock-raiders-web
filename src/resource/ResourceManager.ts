@@ -10,6 +10,7 @@ import { ResourceCache } from './ResourceCache'
 import { InitLoadingMessage } from './wadworker/InitLoadingMessage'
 import { WadWorkerMessage } from './wadworker/WadWorkerMessage'
 import { WorkerMessageType } from './wadworker/WorkerMessageType'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 
 export class ResourceManager extends ResourceCache {
     static worker: Worker = new Worker(new URL('./wadworker/WadWorker', import.meta.url))
@@ -35,7 +36,6 @@ export class ResourceManager extends ResourceCache {
                 this.onMessage(msg.text)
             } else if (msg.type === WorkerMessageType.CFG) {
                 this.configuration = msg.cfg
-                this.stats = msg.stats
                 this.loadDefaultCursor().then(() => this.onInitialLoad(msg.totalResources))
             } else if (msg.type === WorkerMessageType.CACHE_MISS) {
                 this.onCacheMissed()
@@ -65,6 +65,12 @@ export class ResourceManager extends ResourceCache {
     }
 
     static onLoadDone: () => any = () => {
+    }
+
+    static getLevelEntryCfg(levelName: string): LevelEntryCfg {
+        const levelConf = this.configuration.levels.levelCfgByName.get(levelName)
+        if (!levelConf) throw new Error(`Could not find level configuration for "${levelName}"`)
+        return levelConf
     }
 
     static getTexturesBySequenceName(basename: string): Texture[] {

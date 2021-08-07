@@ -1,5 +1,4 @@
-import { BaseConfig } from '../../cfg/BaseConfig'
-import { ButtonCfg } from '../../cfg/ButtonCfg'
+import { ButtonRadarCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
@@ -53,17 +52,5 @@ export class RadarPanel extends Panel {
         this.map.hidden = true // TODO refactor workaround add z layering to panels
         super.onRedraw(context)
         this.map.hidden = false
-    }
-}
-
-export class ButtonRadarCfg extends BaseConfig {
-    panelButtonRadarToggle: ButtonCfg = null
-    panelButtonRadarTaggedObjectView: ButtonCfg = null
-    panelButtonRadarZoomIn: ButtonCfg = null
-    panelButtonRadarZoomOut: ButtonCfg = null
-    panelButtonRadarMapView: ButtonCfg = null
-
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
     }
 }

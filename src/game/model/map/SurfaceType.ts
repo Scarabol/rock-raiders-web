@@ -1,4 +1,4 @@
-import { Cursor } from '../../../screen/Cursor'
+import { Cursor } from '../../../cfg/PointerCfg'
 
 export class SurfaceType {
     name: string // human readable, maybe used as label later on
@@ -8,7 +8,7 @@ export class SurfaceType {
     selectable: boolean = false
     digable: boolean = false
     reinforcable: boolean = false
-    cursor: Cursor = Cursor.Pointer_Standard
+    cursor: Cursor = 'pointerStandard'
     statsDrillName: string = null
     canHaveFence: boolean = false
     connectsPath: boolean = false
@@ -31,7 +31,7 @@ export class SurfaceType {
         name: 'solid rock',
         shaping: true,
         matIndex: '5',
-        cursor: Cursor.Pointer_SurfaceType_Immovable,
+        cursor: 'pointerSurfaceTypeImmovable',
         mapSurfaceColor: '#500090',
     })
     static readonly HARD_ROCK = new SurfaceType({
@@ -41,7 +41,7 @@ export class SurfaceType {
         selectable: true,
         digable: true,
         reinforcable: true,
-        cursor: Cursor.Pointer_SurfaceType_Hard,
+        cursor: 'pointerSurfaceTypeHard',
         statsDrillName: 'HardDrillTime',
         mapSurfaceColor: '#7000B0',
     })
@@ -52,7 +52,7 @@ export class SurfaceType {
         selectable: true,
         digable: true,
         reinforcable: true,
-        cursor: Cursor.Pointer_SurfaceType_Medium,
+        cursor: 'pointerSurfaceTypeMedium',
         statsDrillName: 'LooseDrillTime',
         mapSurfaceColor: '#9000D0',
     })
@@ -63,7 +63,7 @@ export class SurfaceType {
         selectable: true,
         digable: true,
         reinforcable: true,
-        cursor: Cursor.Pointer_SurfaceType_Loose,
+        cursor: 'pointerSurfaceTypeLoose',
         statsDrillName: 'SoilDrillTime',
         mapSurfaceColor: '#B000F0',
     })
@@ -79,7 +79,7 @@ export class SurfaceType {
         selectable: true,
         digable: true,
         reinforcable: true,
-        cursor: Cursor.Pointer_SurfaceType_OreSeam,
+        cursor: 'pointerSurfaceTypeOreSeam',
         statsDrillName: 'SeamDrillTime',
     })
     static readonly WATER = new SurfaceType({
@@ -91,13 +91,13 @@ export class SurfaceType {
         selectable: true,
         digable: true,
         reinforcable: true,
-        cursor: Cursor.Pointer_SurfaceType_CrystalSeam,
+        cursor: 'pointerSurfaceTypeCrystalSeam',
         statsDrillName: 'SeamDrillTime',
     })
     static readonly RECHARGE_SEAM = new SurfaceType({
         name: 'recharge seam',
         matIndex: '67',
-        cursor: Cursor.Pointer_SurfaceType_RechargeSeam,
+        cursor: 'pointerSurfaceTypeRechargeSeam',
     })
     static readonly POWER_PATH = new SurfaceType({
         name: 'power path all',

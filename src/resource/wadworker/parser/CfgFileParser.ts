@@ -1,3 +1,4 @@
+import { GameConfig } from '../../../cfg/GameConfig'
 import { encodeChar } from './EncodingHelper'
 
 const enum PARSING_STATE {
@@ -8,7 +9,7 @@ const enum PARSING_STATE {
 }
 
 export class CfgFileParser {
-    static parse(buffer: Uint8Array): any {
+    static parse(buffer: Uint8Array): GameConfig {
         const result = {}
         const ancestry = []
         let activeObject = result
@@ -120,7 +121,7 @@ export class CfgFileParser {
             }, [])
         })
 
-        return result['Lego*']
+        return new GameConfig().setFromCfgObj(result['Lego*'], true) // TODO do not create missing
     }
 
     static parseValue(val) {

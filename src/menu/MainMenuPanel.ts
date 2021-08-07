@@ -1,18 +1,21 @@
+import { MenuPanelCfg } from '../cfg/MenuCfg'
 import { createContext } from '../core/ImageHelper'
+import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class MainMenuPanel extends MainMenuBaseItem {
     context: SpriteContext
 
-    constructor(imgData: ImageData, area: { x: number, y: number, w: number, h: number }) {
+    constructor(cfg: MenuPanelCfg) {
         super()
         this.zIndex = 50
+        const imgData = ResourceManager.getImageData(cfg.imgBackground)
         this.context = createContext(imgData.width, imgData.height)
         this.context.putImageData(imgData, 0, 0)
-        this.x = area.x
-        this.y = area.y
-        this.width = area.w
-        this.height = area.h
+        this.x = cfg.rect.x
+        this.y = cfg.rect.y
+        this.width = cfg.rect.w
+        this.height = cfg.rect.h
     }
 
     checkHover(sx: number, sy: number): boolean {

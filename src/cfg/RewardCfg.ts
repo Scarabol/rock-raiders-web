@@ -4,9 +4,9 @@ export class RewardCfg extends BaseConfig {
     display: boolean = true
     wallpaper: string = ''
     images: RewardImageCfg[] = []
-    texts: RewardTextCfg[] = []
+    text: RewardTextCfg[] = []
     boxImages: RewardImageCfg[] = []
-    fonts: RewardFontsCfg = null
+    fonts: RewardFontsCfg = new RewardFontsCfg()
     flics: { flhFilepath: string, x: number, y: number, w: number, h: number } = null
     scrollSpeed: number = 0
     centreText: boolean = false
@@ -15,29 +15,31 @@ export class RewardCfg extends BaseConfig {
     font: string = ''
     titleFont: string = ''
     timer: number = 0
-    saveButton: string[] = []
-    advanceButton: string[] = []
+    saveButton: RewardButtonCfg = new RewardButtonCfg()
+    advanceButton: RewardButtonCfg = new RewardButtonCfg()
     completeText: string = ''
     failedText: string = ''
     quitText: string = ''
     textPos: [number, number] = [0, 0]
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
+        if (objKey.toLowerCase() !== unifiedKey) return false
         if (unifiedKey === 'images') {
             Object.values(cfgValue).forEach((imgConf) => this.images.push(new RewardImageCfg(imgConf)))
-            return true
         } else if (unifiedKey === 'text') {
-            Object.values(cfgValue).forEach((imgConf) => this.texts.push(new RewardTextCfg(imgConf)))
-            return true
+            Object.values(cfgValue).forEach((imgConf) => this.text.push(new RewardTextCfg(imgConf)))
         } else if (unifiedKey === 'boximages') {
             Object.values(cfgValue).forEach((imgConf) => this.boxImages.push(new RewardImageCfg(imgConf)))
-            return true
         } else if (unifiedKey === 'fonts') {
-            this.fonts = new RewardFontsCfg().setFromCfgObj(cfgValue)
-            return true
+            this.fonts.setFromCfgObj(cfgValue)
+        } else if (unifiedKey === 'savebutton') {
+            this.saveButton.setFromCfgObj(cfgValue)
+        } else if (unifiedKey === 'advancebutton') {
+            this.advanceButton.setFromCfgObj(cfgValue)
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
         }
+        return true
     }
 }
 
@@ -72,4 +74,21 @@ export class RewardFontsCfg extends BaseConfig {
     oxygen: string = ''
     timer: string = ''
     score: string = ''
+}
+
+export class RewardButtonCfg extends BaseConfig {
+    imgNormalFilepath: string = null
+    imgHoverFilepath: string = null
+    imgPressedFilepath: string = null
+    imgDisabledFilepath: string = null
+    x: number = 0
+    y: number = 0
+
+    setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
+        if (!Array.isArray(cfgObj) || cfgObj.length !== 6) {
+            throw new Error(`Invalid number of args given: ${cfgObj}`)
+        }
+        [this.imgNormalFilepath, this.imgHoverFilepath, this.imgPressedFilepath, this.imgDisabledFilepath, this.x, this.y] = cfgObj
+        return this
+    }
 }

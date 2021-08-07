@@ -3,7 +3,7 @@ import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { cloneContext } from '../core/ImageHelper'
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
-import { CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE, DEV_MODE, KEY_PAN_SPEED, TILESIZE } from '../params'
+import { DEV_MODE, KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { DebugHelper } from '../screen/DebugHelper'
 import { EntityManager } from './EntityManager'
@@ -53,8 +53,8 @@ export class SceneManager {
         this.controls.listenToKeyEvents(this.renderer.domElement)
         this.controls.keyPanSpeed = this.controls.keyPanSpeed * KEY_PAN_SPEED
         if (!DEV_MODE) {
-            this.controls.minDistance = CAMERA_MIN_DISTANCE * TILESIZE
-            this.controls.maxDistance = CAMERA_MAX_DISTANCE * TILESIZE
+            this.controls.minDistance = ResourceManager.configuration.main.minDist
+            this.controls.maxDistance = ResourceManager.configuration.main.maxDist
         }
     }
 
@@ -187,7 +187,7 @@ export class SceneManager {
     setupScene(levelConf: LevelEntryCfg) {
         this.scene = new Scene()
 
-        const ambientRgb: number[] = ResourceManager.cfg('Main', 'AmbientRGB') || [10, 10, 10]
+        const ambientRgb = ResourceManager.configuration.main.ambientRGB
         const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
         const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
         const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])

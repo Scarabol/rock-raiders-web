@@ -1,4 +1,4 @@
-import { ObjectiveImageCfg } from '../../cfg/ObjectiveImageCfg'
+import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'

@@ -1,5 +1,4 @@
-import { BaseConfig } from '../../cfg/BaseConfig'
-import { ButtonCfg } from '../../cfg/ButtonCfg'
+import { ButtonCrystalSideBarCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventKey } from '../../event/EventKeyEnum'
 import { MaterialAmountChanged, UsedCrystalChanged } from '../../event/WorldEvents'
@@ -72,14 +71,5 @@ export class PanelCrystalSideBar extends Panel {
             curY -= this.imgOre.height
             context.drawImage(this.imgOre, curX - this.imgOre.width / 2, curY)
         }
-    }
-}
-
-export class ButtonCrystalSideBarCfg extends BaseConfig {
-    panelButtonCrystalSideBarOre: ButtonCfg = null
-    panelButtonCrystalSideBarCrystals: ButtonCfg = null
-
-    parseValue(unifiedKey: string, cfgValue: any): any {
-        return new ButtonCfg(cfgValue)
     }
 }

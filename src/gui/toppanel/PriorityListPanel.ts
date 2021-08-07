@@ -1,4 +1,6 @@
+import { ButtonPriorityListCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
+import { PrioritiesImagePositionsCfg, PriorityButtonsCfg, PriorityPositionsEntry } from '../../cfg/PriorityButtonsCfg'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangePriorityList } from '../../event/GuiCommand'
 import { SetupPriorityList } from '../../event/LocalEvents'
@@ -6,10 +8,7 @@ import { PriorityIdentifier } from '../../game/model/job/PriorityIdentifier'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
-import { ButtonPriorityListCfg } from './ButtonPriorityListCfg'
-import { PriorityButtonsConfig } from './PriorityButtonsConfig'
 import { PriorityList } from './PriorityList'
-import { PriorityPositionsEntry } from './PriorityPositionsEntry'
 
 export class PriorityListPanel extends Panel {
     prioPositions: PriorityPositionsEntry[] = []
@@ -17,7 +16,7 @@ export class PriorityListPanel extends Panel {
 
     priorityList: PriorityList = new PriorityList()
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, pos: PriorityPositionsEntry[], cfg: PriorityButtonsConfig) {
+    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonPriorityListCfg, cfgPos: PrioritiesImagePositionsCfg, cfg: PriorityButtonsCfg) {
         super(parent, panelCfg)
         buttonsCfg.panelButtonPriorityListDisable.forEach((buttonCfg, index) => {
             this.addChild(new Button(this, buttonCfg)).onClick = () => {
@@ -36,7 +35,7 @@ export class PriorityListPanel extends Panel {
             this.updateList()
         }
 
-        this.prioPositions = pos
+        this.prioPositions = cfgPos.positionByIndex
         this.prioByName.set(PriorityIdentifier.TRAIN, this.addChild(new Button(this, cfg.aiPriorityTrain)))
         this.prioByName.set(PriorityIdentifier.GET_IN, this.addChild(new Button(this, cfg.aiPriorityGetIn)))
         this.prioByName.set(PriorityIdentifier.CRYSTAL, this.addChild(new Button(this, cfg.aiPriorityCrystal)))

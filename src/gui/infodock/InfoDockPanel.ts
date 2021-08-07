@@ -1,19 +1,19 @@
+import { ButtonInfoDockCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventKey } from '../../event/EventKeyEnum'
 import { LandslideEvent } from '../../event/WorldLocationEvent'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
-import { ButtonInfoDockCfg } from './ButtonInfoDockCfg'
 import { InfoDockButton } from './InfoDockButton'
-import { InfoMessagesConfig } from './InfoMessagesConfig'
+import { InfoMessagesCfg } from './InfoMessagesCfg'
 import { InformationPanel } from './InformationPanel'
 
 export class InfoDockPanel extends Panel {
     stackButtons: InfoDockButton[] = []
     informationPanel: InformationPanel = null
 
-    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonInfoDockCfg, infoMessagesConfig: InfoMessagesConfig, informationPanel: InformationPanel) {
+    constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonInfoDockCfg, infoMessagesConfig: InfoMessagesCfg, informationPanel: InformationPanel) {
         super(parent, panelCfg)
         this.informationPanel = informationPanel
         this.addChild(new Button(this, buttonsCfg.panelButtonInfoDockGoto)).onClick = () => this.gotoLatestMessage()

@@ -1,4 +1,5 @@
 import { AxesHelper, Group, Vector2, Vector3 } from 'three'
+import { TextureEntryCfg } from '../../../cfg/TexturesCfg'
 import { DEV_MODE, TILESIZE } from '../../../params'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
@@ -12,7 +13,7 @@ import { SurfaceType } from './SurfaceType'
 export class Terrain {
     sceneMgr: SceneManager
     entityMgr: EntityManager
-    textureSet: any = {}
+    textureSet: TextureEntryCfg = null
     width: number = 0
     height: number = 0
     surfaces: Surface[][] = []

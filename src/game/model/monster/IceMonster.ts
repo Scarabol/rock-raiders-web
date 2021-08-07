@@ -11,7 +11,7 @@ export class IceMonster extends Monster {
     }
 
     get stats(): MonsterEntityStats {
-        return ResourceManager.stats.IceMonster
+        return ResourceManager.configuration.stats.IceMonster
     }
 
     disposeFromWorld() {

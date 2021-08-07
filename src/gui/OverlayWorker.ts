@@ -1,5 +1,4 @@
-import { MenuCfg } from '../cfg/MenuCfg'
-import { ObjectiveImageCfg } from '../cfg/ObjectiveImageCfg'
+import { ObjectiveImageCfg } from '../cfg/LevelsCfg'
 import { EventKey } from '../event/EventKeyEnum'
 import { KEY_EVENT } from '../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
@@ -25,8 +24,8 @@ export class OverlayWorker extends GuiWorker {
     }
 
     init(): void {
-        this.panelPause = this.addPanel(new PausePanel(this.rootElement, GuiResourceCache.getResource('PausedMenu') as MenuCfg))
-        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, GuiResourceCache.getResource('OptionsMenu') as MenuCfg))
+        this.panelPause = this.addPanel(new PausePanel(this.rootElement, GuiResourceCache.configuration.menu.pausedMenu))
+        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, GuiResourceCache.configuration.menu.optionsMenu))
         this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
         // link items
         this.panelPause.onContinueGame = () => this.setActivePanel(null)

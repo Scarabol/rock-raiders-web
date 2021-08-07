@@ -34,7 +34,7 @@ export class RewardScreen extends BaseScreen {
 
     constructor() {
         super()
-        this.cfg = ResourceManager.getResource('Reward')
+        this.cfg = ResourceManager.configuration.reward
         this.titleFont = ResourceManager.getBitmapFont(this.cfg.titleFont)
         const backgroundImg = ResourceManager.getImage(this.cfg.wallpaper)
         const backgroundLayer = this.addLayer(new ScaledLayer())
@@ -48,7 +48,7 @@ export class RewardScreen extends BaseScreen {
         Object.keys(this.cfg.fonts).forEach((fontKey, index) => {
             const font = ResourceManager.getBitmapFont(this.cfg.fonts[fontKey])
             this.fonts[fontKey.toLowerCase()] = font
-            const txt = this.cfg.texts[index]
+            const txt = this.cfg.text[index]
             const labelFont = index < 9 ? font : ResourceManager.getBitmapFont(this.cfg.backFont)
             this.texts.push(labelFont.createTextImage(txt.text))
         })
@@ -153,7 +153,7 @@ export class RewardScreen extends BaseScreen {
                 if (box) context.drawImage(box.img, box.x, box.y)
             }
             for (let c = 0; c <= this.resultIndex; c++) {
-                const txt = this.cfg.texts[c]
+                const txt = this.cfg.text[c]
                 const text = this.resultValues[c]
                 if (text) context.drawImage(text, txt.x - text.width / 2, txt.y)
             }

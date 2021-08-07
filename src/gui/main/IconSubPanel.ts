@@ -1,5 +1,4 @@
-import { IconPanelBackButtonCfg } from '../../cfg/IconPanelBackButtonCfg'
-import { MenuItemCfg } from '../../cfg/MenuItemCfg'
+import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
@@ -13,8 +12,7 @@ export class IconSubPanel extends Panel {
     constructor(parent: BaseElement, numOfItems: number, onBackPanel: Panel = null) {
         super(parent)
         if (onBackPanel) {
-            const backBtnCfg = new IconPanelBackButtonCfg(GuiResourceCache.cfg('InterfaceBackButton'))
-            this.backBtn = this.addChild(new Button(this, backBtnCfg))
+            this.backBtn = this.addChild(new Button(this, GuiResourceCache.configuration.interfaceBackButton))
             this.backBtn.onClick = () => this.toggleState(() => onBackPanel.toggleState())
         }
         const frameImgCfg = GuiResourceCache.cfg('InterfaceSurroundImages', numOfItems.toString())

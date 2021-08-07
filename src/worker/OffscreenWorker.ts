@@ -63,7 +63,6 @@ export abstract class OffscreenWorker implements IEventHandler {
         if (msg.type === WorkerMessageType.INIT) {
             GuiResourceCache.resourceByName = msg.resourceByName
             GuiResourceCache.configuration = msg.cfg
-            GuiResourceCache.stats = msg.stats
             this.init()
         } else if (msg.type === WorkerMessageType.CANVAS) {
             this.setCanvas(msg.canvas)

@@ -1,3 +1,4 @@
+import { GameConfig } from '../../cfg/GameConfig'
 import { InitLoadingMessage } from './InitLoadingMessage'
 import { WadLoader } from './WadLoader'
 import { WadWorkerMessage } from './WadWorkerMessage'
@@ -13,7 +14,7 @@ worker.addEventListener('message', (event) => {
     // set callbacks on wadLoader
     wadLoader.onMessage = (text: string) => postMessage(WadWorkerMessage.createTextMessage(text))
     wadLoader.onCacheMiss = (cacheIdentifier: string) => postMessage(WadWorkerMessage.createCacheMissed(cacheIdentifier))
-    wadLoader.onInitialLoad = (totalResources: number, cfg: any) => postMessage(WadWorkerMessage.createCfgLoaded(cfg, totalResources))
+    wadLoader.onInitialLoad = (totalResources: number, cfg: GameConfig) => postMessage(WadWorkerMessage.createCfgLoaded(cfg, totalResources))
     wadLoader.onAssetLoaded = (assetIndex: number, assetNames: string[], assetObj: any, sfxKeys: string[]) => {
         postMessage(WadWorkerMessage.createAssetLoaded(assetIndex, assetNames, assetObj, sfxKeys))
     }

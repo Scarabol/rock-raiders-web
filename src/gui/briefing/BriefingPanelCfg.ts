@@ -1,5 +1,4 @@
 import { ButtonCfg } from '../../cfg/ButtonCfg'
-import { DialogCfg } from '../../cfg/DialogCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { BitmapFont } from '../../core/BitmapFont'
 import { Rect } from '../../core/Rect'
@@ -17,10 +16,10 @@ export class BriefingPanelCfg extends PanelCfg {
     backButtonCfg: ButtonCfg
 
     constructor() {
-        super([])
+        super()
         this.titleFont = GuiResourceCache.getBitmapFont('Interface/Fonts/MbriefFont2.bmp')
-        this.title = GuiResourceCache.cfg('Main', 'MissionBriefingText')
-        const dialogCfg = new DialogCfg().setFromCfgObj(GuiResourceCache.cfg('Dialog'))
+        this.title = GuiResourceCache.configuration.main.missionBriefingText
+        const dialogCfg = GuiResourceCache.configuration.dialog
         this.titleWindow = dialogCfg.titleWindow
         this.textFont = GuiResourceCache.getBitmapFont('Interface/Fonts/MbriefFont.bmp')
         this.textWindow = dialogCfg.textWindow
@@ -29,13 +28,13 @@ export class BriefingPanelCfg extends PanelCfg {
             buttonType: 'Next briefing paragraph',
             relX: 394,
             relY: 214,
-            normalFile: GuiResourceCache.cfg('Main', 'NextButton640x480'),
+            normalFile: GuiResourceCache.configuration.main.nextButton640x480,
         }
         this.backButtonCfg = {
             buttonType: 'Previous briefing paragraph',
             relX: 54,
             relY: 214,
-            normalFile: GuiResourceCache.cfg('Main', 'BackArrow'),
+            normalFile: GuiResourceCache.configuration.main.backArrow,
         }
     }
 }

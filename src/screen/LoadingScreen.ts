@@ -36,9 +36,9 @@ export class LoadingScreen extends BaseScreen {
     }
 
     enableGraphicMode(totalResources: number) {
-        const imgBackground = ResourceManager.getImage(ResourceManager.cfg('Main', 'LoadScreen'))
-        const imgProgress = ResourceManager.getImage(ResourceManager.cfg('Main', 'ProgressBar'))
-        const imgLoading = ResourceManager.getDefaultFont().createTextImage(ResourceManager.cfg('Main', 'LoadingText'))
+        const imgBackground = ResourceManager.getImage(ResourceManager.configuration.main.loadScreen)
+        const imgProgress = ResourceManager.getImage(ResourceManager.configuration.main.progressBar)
+        const imgLoading = ResourceManager.getDefaultFont().createTextImage(ResourceManager.configuration.main.loadingText)
         this.layer.onRedraw = (context => {
             context.drawImage(imgBackground, 0, 0)
             const loadingBarWidth = Math.round(353 * (this.assetIndex < totalResources ? this.assetIndex / totalResources : 1))

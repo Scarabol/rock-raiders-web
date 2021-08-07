@@ -50,8 +50,6 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     secondarySurface: Surface = null
     primaryPathSurface: Surface = null
     secondaryPathSurface: Surface = null
-    upgradeCostOre: number = 0
-    upgradeCostBrick: number = 0
     energized: boolean = false
     inBeam: boolean = false
     beamUpAnimator: BeamUpAnimator = null
@@ -67,8 +65,6 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.entityType = entityType
         this.stats = stats
         this.sceneEntity = new BuildingSceneEntity(this.sceneMgr, aeFilename)
-        this.upgradeCostOre = ResourceManager.cfg('Main', 'BuildingUpgradeCostOre')
-        this.upgradeCostBrick = ResourceManager.cfg('Main', 'BuildingUpgradeCostStuds')
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
             this.updateEnergyState()
         })
@@ -130,10 +126,10 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
 
     upgrade() {
         if (!this.canUpgrade()) return
-        if (GameState.numBrick >= this.upgradeCostBrick) {
-            GameState.numBrick -= this.upgradeCostBrick
+        if (GameState.numBrick >= ResourceManager.configuration.main.buildingUpgradeCostStuds) {
+            GameState.numBrick -= ResourceManager.configuration.main.buildingUpgradeCostStuds
         } else {
-            GameState.numOre -= this.upgradeCostOre
+            GameState.numOre -= ResourceManager.configuration.main.buildingUpgradeCostOre
         }
         EventBus.publishEvent(new MaterialAmountChanged())
         this.level++
@@ -172,7 +168,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     }
 
     canUpgrade() {
-        return !this.hasMaxLevel() && (GameState.numOre >= this.upgradeCostOre || GameState.numBrick >= this.upgradeCostBrick)
+        return !this.hasMaxLevel() && (GameState.numOre >= ResourceManager.configuration.main.buildingUpgradeCostOre || GameState.numBrick >= ResourceManager.configuration.main.buildingUpgradeCostStuds)
     }
 
     spawnMaterials(type: EntityType, quantity: number) {
