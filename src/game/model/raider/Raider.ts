@@ -47,14 +47,6 @@ export class Raider extends FulfillerEntity {
         return !!this.vehicle
     }
 
-    getSpeed(): number {
-        return this.stats.RouteSpeed[this.level] * (this.isOnPath() ? this.stats.PathCoef : 1)
-    }
-
-    isOnRubble() {
-        return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).hasRubble()
-    }
-
     getRouteActivity(): BaseActivity {
         if (this.isOnRubble()) {
             return !!this.carries ? RaiderActivity.CarryRubble : RaiderActivity.routeRubble

@@ -1,5 +1,5 @@
 import { Vector2 } from 'three'
-import { iGet } from '../../../core/Util'
+import { MovableEntityStats } from '../../../cfg/GameStatsCfg'
 import { TILESIZE } from '../../../params'
 import { PathTarget } from '../PathTarget'
 import { astar, Graph } from './astar'
@@ -75,21 +75,18 @@ export class PathFinder {
         return surface.surfaceType === SurfaceType.WATER ? 1 : 0
     }
 
-    findPath(start: Vector2, target: PathTarget, stats: {}, highPrecision: boolean): TerrainPath {
-        const crossLand = !!iGet(stats, 'CrossLand')
-        const crossWater = !!iGet(stats, 'CrossWater')
-        const crossLava = !!iGet(stats, 'CrossLava')
+    findPath(start: Vector2, target: PathTarget, stats: MovableEntityStats, highPrecision: boolean): TerrainPath {
         // const canEnterToolstore = !!iGet(stats, 'EnterToolStore') // TODO consider enter toolstore in path finding
         if (highPrecision) {
             return this.findWalkPath(start, target)
-        } else if (crossLand && !crossWater && !crossLava) {
+        } else if (stats.CrossLand && !stats.CrossWater && !stats.CrossLava) {
             return this.findDrivePath(start, target)
-        } else if (!crossLand && crossWater && !crossLava) {
+        } else if (!stats.CrossLand && stats.CrossWater && !stats.CrossLava) {
             return this.findSwimPath(start, target)
-        } else if (crossLand && crossWater && crossLava) {
+        } else if (stats.CrossLand && stats.CrossWater && stats.CrossLava) {
             return this.findFlyPath(start, target)
         } else { // TODO at least path finding for LavaMonster missing
-            console.error(`Unexpected path finding combination (${crossLand}, ${crossWater}, ${crossLava}) found. No graph available returning direct path`)
+            console.error(`Unexpected path finding combination (${(stats.CrossLand)}, ${(stats.CrossWater)}, ${(stats.CrossLava)}) found. No graph available returning direct path`)
             return new TerrainPath(target, target.targetLocation)
         }
     }

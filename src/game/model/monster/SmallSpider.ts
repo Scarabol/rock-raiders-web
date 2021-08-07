@@ -1,4 +1,5 @@
 import { Vector2 } from 'three'
+import { MonsterEntityStats } from '../../../cfg/GameStatsCfg'
 import { getRandom, getRandomInclusive } from '../../../core/Util'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -19,7 +20,7 @@ export class SmallSpider extends Monster {
         this.sceneEntity.floorOffset = 1 // TODO rotate spider according to surface normal vector
     }
 
-    get stats() {
+    get stats(): MonsterEntityStats {
         return ResourceManager.stats.SmallSpider
     }
 

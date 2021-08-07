@@ -1,3 +1,4 @@
+import { MovableEntityStats } from '../../cfg/GameStatsCfg'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { EntityManager } from '../EntityManager'
@@ -14,6 +15,7 @@ export abstract class MovableEntity {
     entityMgr: EntityManager
     entityType: EntityType = null
     currentPath: TerrainPath = null
+    level: number = 0
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
         this.sceneMgr = sceneMgr
@@ -23,7 +25,7 @@ export abstract class MovableEntity {
 
     abstract get sceneEntity(): AnimatedSceneEntity
 
-    abstract get stats()
+    abstract get stats(): MovableEntityStats
 
     moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
         if (!target || target.length < 1) return MoveState.TARGET_UNREACHABLE
@@ -72,9 +74,15 @@ export abstract class MovableEntity {
         return AnimEntityActivity.Route
     }
 
-    abstract getSpeed(): number
+    getSpeed(): number {
+        return this.stats.RouteSpeed[this.level] * (this.isOnPath() ? this.stats.PathCoef : 1) * (this.isOnRubble() ? this.stats.RubbleCoef : 1)
+    }
 
     isOnPath(): boolean {
         return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).isPath()
+    }
+
+    isOnRubble() {
+        return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).hasRubble()
     }
 }

@@ -1,5 +1,5 @@
 import { Vector2 } from 'three'
-import { BuildingEntityStats } from '../../../cfg/BuildingEntityStats'
+import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'

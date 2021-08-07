@@ -1,6 +1,6 @@
 import { PositionalAudio } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
-import { VehicleEntityStats } from '../../../cfg/VehicleEntityStats'
+import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'

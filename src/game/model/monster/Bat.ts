@@ -1,4 +1,5 @@
 import { Vector2 } from 'three'
+import { MonsterEntityStats } from '../../../cfg/GameStatsCfg'
 import { getRandomInclusive } from '../../../core/Util'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -16,7 +17,7 @@ export class Bat extends Monster {
         this.sceneEntity.floorOffset = TILESIZE / 2
     }
 
-    get stats() {
+    get stats(): MonsterEntityStats {
         return ResourceManager.stats.Bat
     }
 

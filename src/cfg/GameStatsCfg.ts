@@ -1,11 +1,67 @@
 // noinspection JSUnusedGlobalSymbols
 
 import { BaseConfig } from './BaseConfig'
-import { BuildingEntityStats } from './BuildingEntityStats'
-import { VehicleEntityStats } from './VehicleEntityStats'
+
+export interface PickSphereStats {
+    PickSphere: number
+}
+
+export interface DoubleSelectStats {
+    CanDoubleSelect: boolean
+}
+
+export interface MovableEntityStats extends PickSphereStats {
+    RouteSpeed: number[]
+    PathCoef: number
+    RubbleCoef: number
+    CrossLand: boolean
+    CrossWater: boolean
+    CrossLava: boolean
+}
+
+export class VehicleEntityStats extends BaseConfig implements MovableEntityStats, DoubleSelectStats {
+    PickSphere: number = 0
+    CanDoubleSelect: boolean = false
+    CostOre: number = 0
+    CostCrystal: number = 0
+    InvisibleDriver: boolean = false
+    EngineSound: string = ''
+    CanClearRubble: boolean = false
+    RouteSpeed: number[] = []
+    PathCoef: number = 1
+    RubbleCoef: number = 1
+    CrossLand: boolean = false
+    CrossWater: boolean = false
+    CrossLava: boolean = false
+    MaxCarry: number[] = []
+}
+
+export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats {
+    Levels: number = 0
+    SelfPowered: boolean = false
+    PowerBuilding: boolean = false
+    PickSphere: number = 0
+    TrainDynamite: boolean[] = null
+    CostOre: number = 0
+    CostCrystal: number = 0
+    CrystalDrain: number | number[] = 0
+    OxygenCoef: number = 0
+    EngineSound: string = null
+    CanDoubleSelect: boolean = false
+}
+
+export class MonsterEntityStats extends BaseConfig implements MovableEntityStats {
+    PickSphere: number = 0
+    RouteSpeed: number[] = []
+    PathCoef: number = 1
+    RubbleCoef: number = 1
+    CrossLand: boolean = false
+    CrossLava: boolean = false
+    CrossWater: boolean = false
+}
 
 export class GameStatsCfg extends BaseConfig {
-    Pilot = new class PilotStats extends BaseConfig {
+    Pilot = new class PilotStats extends BaseConfig implements MovableEntityStats {
         Levels: number = 4
         RouteSpeed: number[] = [1.10, 1.10, 1.10, 1.10]
         SoilDrillTime: number[] = [4.0, 4.0, 4.0, 4.0] // Time in seconds to drill through the rock.
@@ -28,6 +84,8 @@ export class GameStatsCfg extends BaseConfig {
         CanClearRubble: boolean = true
         NumOfToolsCanCarry: number[] = [2, 3, 4, 5]
         CrossLand: boolean = true
+        CrossWater: boolean = false
+        CrossLava: boolean = false
         RubbleCoef: number = 0.5
         PathCoef: number = 2.0
         RouteAvoidance: boolean = true
@@ -39,9 +97,9 @@ export class GameStatsCfg extends BaseConfig {
         ShowHealthBar: boolean = true
     }
 
-    RockMonster = new class RockMonsterStats extends BaseConfig {
+    RockMonster = new class RockMonsterStats extends MonsterEntityStats {
         Levels: number = 1
-        RouteSpeed: number = 0.8
+        RouteSpeed: number[] = [0.8]
         TrackDist: number = 50.0
         CollRadius: number = 10.0
         CollHeight: number = 22.0
@@ -82,7 +140,7 @@ export class GameStatsCfg extends BaseConfig {
         ShowHealthBar: boolean = true
     }
 
-    SmallSpider = new class SmallSpiderStats extends BaseConfig {
+    SmallSpider = new class SmallSpiderStats extends MonsterEntityStats {
         Levels: number = 1
         RouteSpeed: number[] = [2.0]
         TrackDist: number = 10.0
@@ -100,7 +158,7 @@ export class GameStatsCfg extends BaseConfig {
         ScaredByBigBangs: boolean = true
     }
 
-    Bat = new class BatStats extends BaseConfig {
+    Bat = new class BatStats extends MonsterEntityStats {
         Levels: number = 1
         RouteSpeed: number[] = [1.0]
         TrackDist: number = 10.0
@@ -127,9 +185,9 @@ export class GameStatsCfg extends BaseConfig {
         DontShowDamage: boolean = true
     }
 
-    TinyRM = new class TinyRMStats extends BaseConfig {
+    TinyRM = new class TinyRMStats extends MonsterEntityStats {
         Levels: number = 1
-        RouteSpeed: number = 1.2
+        RouteSpeed: number[] = [1.2]
         TrackDist: number = 10.0
         CollRadius: number = 0.0
         CollHeight: number = 5.0
@@ -143,9 +201,9 @@ export class GameStatsCfg extends BaseConfig {
         ScaredByBigBangs: boolean = true
     }
 
-    TinyIM = new class TinyIMStats extends BaseConfig {
+    TinyIM = new class TinyIMStats extends MonsterEntityStats {
         Levels: number = 1
-        RouteSpeed: number = 1.2
+        RouteSpeed: number[] = [1.2]
         TrackDist: number = 10.0
         CollRadius: number = 0.0
         CollHeight: number = 5.0
@@ -159,9 +217,9 @@ export class GameStatsCfg extends BaseConfig {
         ScaredByBigBangs: boolean = true
     }
 
-    Slug = new class SlugStats extends BaseConfig {
+    Slug = new class SlugStats extends MonsterEntityStats {
         Levels: number = 1
-        RouteSpeed: number = 0.3
+        RouteSpeed: number[] = [0.3]
         TrackDist: number = 10.0
         CollRadius: number = 3.0
         CollHeight: number = 7.0
@@ -183,9 +241,9 @@ export class GameStatsCfg extends BaseConfig {
         ScaredByBigBangs: boolean = true
     }
 
-    LavaMonster = new class LavaMonsterStats extends BaseConfig {
+    LavaMonster = new class LavaMonsterStats extends MonsterEntityStats {
         Levels: number = 1
-        RouteSpeed: number = 0.8
+        RouteSpeed: number[] = [0.8]
         TrackDist: number = 50.0
         CollRadius: number = 10.0
         CollHeight: number = 22.0
@@ -227,9 +285,9 @@ export class GameStatsCfg extends BaseConfig {
         ShowHealthBar: boolean = true
     }
 
-    IceMonster = new class IceMonsterStats extends BaseConfig {
+    IceMonster = new class IceMonsterStats extends MonsterEntityStats {
         Levels: number = 1
-        RouteSpeed: number = 0.8
+        RouteSpeed: number[] = [0.8]
         TrackDist: number = 50.0
         CollRadius: number = 10.0
         CollHeight: number = 22.0

@@ -1,6 +1,6 @@
 import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
-import { BuildingEntityStats } from '../../../cfg/BuildingEntityStats'
+import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { asArray } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { EventKey } from '../../../event/EventKeyEnum'

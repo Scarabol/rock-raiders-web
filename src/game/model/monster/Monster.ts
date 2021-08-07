@@ -1,3 +1,4 @@
+import { MonsterEntityStats } from '../../../cfg/GameStatsCfg'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
@@ -14,15 +15,13 @@ export abstract class Monster extends MovableEntity {
         this.sceneEntity = new AnimatedSceneEntity(sceneMgr, aeFilename)
     }
 
+    abstract get stats(): MonsterEntityStats
+
     update(elapsedMs: number) {
         this.sceneEntity.update(elapsedMs)
     }
 
     disposeFromWorld() {
         this.sceneEntity.disposeFromScene()
-    }
-
-    getSpeed(): number {
-        return this.stats.RouteSpeed * (this.isOnPath() ? this.stats.PathCoef : 1)
     }
 }

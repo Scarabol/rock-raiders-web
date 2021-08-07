@@ -1,3 +1,4 @@
+import { MonsterEntityStats } from '../../../cfg/GameStatsCfg'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
@@ -9,7 +10,7 @@ export class LavaMonster extends Monster {
         super(sceneMgr, entityMgr, EntityType.LAVA_MONSTER, 'Creatures/LavaMonster/LavaMonster.ae')
     }
 
-    get stats() {
+    get stats(): MonsterEntityStats {
         return ResourceManager.stats.LavaMonster
     }
 

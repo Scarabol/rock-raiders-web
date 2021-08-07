@@ -17,7 +17,6 @@ import { PathTarget } from './PathTarget'
 import { Selectable } from './Selectable'
 
 export abstract class FulfillerEntity extends MovableEntity implements Selectable, BeamUpEntity {
-    level: number = 0
     selected: boolean
     job: Job = null
     followUpJob: Job = null

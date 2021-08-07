@@ -99,7 +99,7 @@ export class GameSelection {
                     before.push(r)
                     added = true
                 }
-            } else if (r.stats.CanDoubleSelect && r['driver']) {
+            } else if (r.stats['CanDoubleSelect'] && r['driver']) { // TODO refactor this
                 if (r.doubleSelect()) {
                     this.doubleSelect = r as VehicleEntity
                     added = true
