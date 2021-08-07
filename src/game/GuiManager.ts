@@ -107,7 +107,7 @@ export class GuiManager {
             entityMgr.selection.raiders.forEach((r) => r.dropCarried())
         })
         EventBus.registerEventListener(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
-            sceneMgr.setBuildModeSelection(BuildingFactory.createBuildingFromType(event.entityType, sceneMgr, entityMgr))
+            sceneMgr.setBuildModeSelection(BuildingFactory.createBuildingFromType(event.entityType, sceneMgr, entityMgr)) // TODO build selection should not receive events
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
             sceneMgr.setBuildModeSelection(null)

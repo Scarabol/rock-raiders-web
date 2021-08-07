@@ -75,8 +75,12 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Important
 
-- Two buttons in priority list can be hovered/pressed/released at the same time
 - Lava erosion not implemented (test with level 14)
+- Dynamite can not be spawned, if demolition exists, but no toolstation level 2
+- Walker digger never completes to drill down hard rock
+- When level is quit by player diggables are always shown as 0%
+- Ore and Crystals are shown at 100% even though there was plenty left (in rubble and walls)
+- Percent of raider shown in reward screen not compared to oxygen rate and therefore always too low
 
 ### Nice to have
 
@@ -86,6 +90,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Large digger and walker digger moving into wall for drilling
 - Beamup animation sequence missing on successful level end
+- Explosion sound for dynamite is very quiet
+- Screen shake missing for exploding dynamites
 
 ### Cosmetics
 
@@ -100,6 +106,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Arrows not shown on power station flaps
 - Numbers above dynamite not shown as sprite (same issue as with sleeping rockies?)
 - Level 11 spams console with unreachable jobs
+- Work sounds missing for most of the jobs
+- Surfaces mesh positions should be at the center of their world position instead of 0,0,0
+- Show loading screen when starting a level
+- Two buttons in priority list can be hovered/pressed/released at the same time
 
 ## Technical Debt
 
@@ -122,7 +132,7 @@ npm run dev
 
 ## Credits
 
-### Other Rock Raider Projects
+### Related Projects
 
 * [Rock Raiders Remake](https://github.com/rystills/rock-raiders-remake) - another web based 2D clone
 * [toolstore.io](https://github.com/marcbizal/toolstore-io) - web based WAD file handling
@@ -132,3 +142,7 @@ npm run dev
 
 * [three.js](https://github.com/mrdoob/three.js) - Web based 3D Engine
 * [IDB-Keyval](https://github.com/jakearchibald/idb-keyval) - Indexed cache handling helper
+
+### Media
+
+* [Youtube walkthrough](https://www.youtube.com/watch?v=2jQ93-cdJeY) - Nice walkthrough with many details

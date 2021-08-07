@@ -601,6 +601,7 @@ export class Surface implements Selectable {
     playPositionalSample(sample: Sample): PositionalAudio { // TODO merge with AnimEntity code (at least in SceneEntity maybe)
         const audio = new PositionalAudio(this.sceneMgr.listener)
         audio.setRefDistance(TILESIZE * 6)
+        // audio.position.copy(new Vector3(this.x, 0, this.y).addScalar(0.5).multiplyScalar(TILESIZE)) // TODO change surface mesh position to surface center not geometry
         this.mesh.add(audio)
         SoundManager.getSoundBuffer(Sample[sample]).then((audioBuffer) => {
             audio.setBuffer(audioBuffer)
