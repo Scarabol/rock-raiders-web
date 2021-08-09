@@ -7,7 +7,7 @@ export class ButtonPriorityListCfg extends BaseConfig {
     panelButtonPriorityListClose: ButtonCfg = null // not used in the game
     panelButtonPriorityListReset: ButtonCfg = null
 
-    assignValue(objKey, unifiedKey, cfgValue): boolean {
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if (unifiedKey.match(/panelButtonPriorityListDisable\d+/i)) {
             this.panelButtonPriorityListDisable.push(this.parseValue(unifiedKey, cfgValue))
             return true

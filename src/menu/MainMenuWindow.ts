@@ -3,8 +3,8 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class MainMenuWindow extends MainMenuBaseItem {
     font: BitmapFont
-    imgFirstLine = null
-    imgSecondLine = null
+    imgFirstLine: SpriteImage = null
+    imgSecondLine: SpriteImage = null
 
     constructor(font: BitmapFont, area: { x: number, y: number, w: number, h: number }) {
         super()

@@ -26,7 +26,7 @@ export class CursorLayer extends ScreenLayer {
     entityMgr: EntityManager
     currentCursor: Cursor = null
     timedCursor: Cursor = null
-    cursorTimeout = null
+    cursorTimeout: NodeJS.Timeout = null
     activeCursor: AnimatedCursor = null
     cursorCanvasPos: { x: number, y: number } = {x: 0, y: 0}
     cursorRelativePos: { x: number, y: number } = {x: 0, y: 0}

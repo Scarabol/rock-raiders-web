@@ -9,10 +9,7 @@ import { EntityType } from '../EntityType'
 import { CompletePowerPathJob } from '../job/surface/CompletePowerPathJob'
 import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
-import { Barrier } from '../material/Barrier'
-import { Crystal } from '../material/Crystal'
 import { MaterialEntity } from '../material/MaterialEntity'
-import { Ore } from '../material/Ore'
 import { BuildingEntity } from './BuildingEntity'
 
 export class BuildingSite {
@@ -86,7 +83,7 @@ export class BuildingSite {
         if (!this.complete) return
         this.entityMgr.buildingSites.remove(this)
         if (!this.building) {
-            const items = []
+            const items: MaterialEntity[] = []
             this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
             EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
         } else {
@@ -109,13 +106,13 @@ export class BuildingSite {
     teleportIn() {
         this.entityMgr.completedBuildingSites.remove(this)
         this.surfaces.forEach((s) => s.site = null)
-        this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item: Barrier) => {
+        this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item: MaterialEntity) => {
             item.sceneEntity.changeActivity(BarrierActivity.Teleport, () => item.disposeFromWorld())
         })
-        this.onSiteByType.getOrUpdate(EntityType.CRYSTAL, () => []).forEach((item: Crystal) => {
+        this.onSiteByType.getOrUpdate(EntityType.CRYSTAL, () => []).forEach((item: MaterialEntity) => {
             item.disposeFromWorld()
         })
-        this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: Ore) => {
+        this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: MaterialEntity) => {
             item.disposeFromWorld()
         })
         this.building.placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)

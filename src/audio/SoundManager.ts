@@ -1,9 +1,10 @@
+import { AudioContext } from 'three'
 import { Sample } from './Sample'
 
 export class SoundManager {
     static sfxByKey: Map<string, any> = new Map()
     static audioBufferCache: Map<string, AudioBuffer> = new Map()
-    static audioContext
+    static audioContext: AudioContext
 
     static playSample(sample: Sample) {
         this.playSound(Sample[sample])

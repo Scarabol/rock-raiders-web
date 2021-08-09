@@ -60,7 +60,7 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
     CrossWater: boolean = false
     CanBeShotAt: boolean = false
 
-    assignValue(objKey, unifiedKey, cfgValue): boolean {
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if ('CanBeShotAt'.equalsIgnoreCase(unifiedKey) && Array.isArray(cfgValue)) {
             this.CanBeShotAt = cfgValue[0] // value may be specified twice in original config
             return true
@@ -813,7 +813,7 @@ export class GameStatsCfg extends BaseConfig {
         CostRefinedOre: number = 1
     }
 
-    assignValue(objKey, unifiedKey, cfgValue): boolean {
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if (objKey.toLowerCase() === unifiedKey) {
             this[objKey].setFromCfgObj(cfgValue)
             return true

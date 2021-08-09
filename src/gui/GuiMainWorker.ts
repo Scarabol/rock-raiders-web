@@ -36,7 +36,7 @@ export class GuiMainWorker extends GuiWorker {
         super(worker)
     }
 
-    init() {
+    init(): void {
         const panelsCfg = new PanelsCfg().setFromCfgObj(GuiResourceCache.cfg('Panels640x480'))
         const buttonsCfg = new ButtonsCfg().setFromCfgObj(GuiResourceCache.cfg('Buttons640x480'))
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels

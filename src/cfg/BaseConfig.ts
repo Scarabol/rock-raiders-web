@@ -19,7 +19,7 @@ export class BaseConfig {
             .toLowerCase()
     }
 
-    assignValue(objKey, unifiedKey, cfgValue): boolean {
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if (objKey.toLowerCase() !== unifiedKey) return false
         const currentValue = this[objKey]
         const currentIsArray = Array.isArray(currentValue)

@@ -4,7 +4,7 @@ import { Panel } from '../../base/Panel'
 import { IconSubPanel } from '../IconSubPanel'
 
 export class SelectBasePanel extends IconSubPanel {
-    constructor(parent: BaseElement, numOfItems, onBackPanel: Panel) {
+    constructor(parent: BaseElement, numOfItems: number, onBackPanel: Panel) {
         super(parent, numOfItems, onBackPanel)
         this.backBtn.onClick = () => this.publishEvent(new DeselectAll())
     }

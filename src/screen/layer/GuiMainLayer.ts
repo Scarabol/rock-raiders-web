@@ -1,4 +1,5 @@
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
+import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
 
 export class GuiMainLayer extends OffscreenLayer {
@@ -8,7 +9,7 @@ export class GuiMainLayer extends OffscreenLayer {
         super(new Worker(new URL('../../gui/GuiMainWorker', import.meta.url))) // webpack does not allow to extract the URL
     }
 
-    onMessage(msg): boolean {
+    onMessage(msg: WorkerResponse): boolean {
         if (msg.type === WorkerMessageType.SHOW_OPTIONS) {
             this.onOptionsShow()
         } else {

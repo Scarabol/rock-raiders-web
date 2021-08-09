@@ -11,7 +11,7 @@ abstract class VehiclePanel extends DependencyCheckPanel {
     requestedVehiclesByType: Map<EntityType, number> = new Map()
     btnLabelByType: Map<EntityType, IconPanelButtonLabel> = new Map()
 
-    protected constructor(parent: BaseElement, numOfItems, onBackPanel: Panel) {
+    protected constructor(parent: BaseElement, numOfItems: number, onBackPanel: Panel) {
         super(parent, numOfItems, onBackPanel)
         this.registerEventListener(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
             this.requestedVehiclesByType.set(event.vehicle, event.numRequested)

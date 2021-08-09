@@ -137,7 +137,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         this.parent?.publishEvent(event)
     }
 
-    registerEventListener(eventKey: EventKey, callback: (GameEvent) => any): void {
+    registerEventListener(eventKey: EventKey, callback: (event: GameEvent) => any): void {
         this.parent.registerEventListener(eventKey, callback)
     }
 

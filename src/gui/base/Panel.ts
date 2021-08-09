@@ -10,7 +10,7 @@ export class Panel extends BaseElement {
     yOut: number = 0
     xIn: number = 0
     yIn: number = 0
-    animationTimeout = null
+    animationTimeout: NodeJS.Timeout = null
     movedIn: boolean = true // xIn, yIn is the collapsed position out of screen
 
     constructor(parent: BaseElement, panelCfg?: PanelCfg) {
@@ -36,7 +36,7 @@ export class Panel extends BaseElement {
     }
 
     isInactive(): boolean {
-        return this.animationTimeout || super.isInactive()
+        return !!this.animationTimeout || super.isInactive()
     }
 
     setMovedIn(movedIn: boolean, onDone: () => any = null) {

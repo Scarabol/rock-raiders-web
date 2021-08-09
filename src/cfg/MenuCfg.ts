@@ -6,7 +6,7 @@ export class MenuCfg extends BaseConfig {
     menuCount: number = 0
     menus: MenuEntryCfg[] = []
 
-    assignValue(objKey, unifiedKey, cfgValue): boolean {
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if (unifiedKey.match(/menu\d+/i)) {
             this.menus.push(new MenuEntryCfg().setFromCfgObj(cfgValue))
             return true

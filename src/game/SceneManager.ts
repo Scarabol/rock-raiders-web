@@ -25,8 +25,8 @@ export class SceneManager {
     maxFps: number = 30 // most animations use 25 fps so this should be enough
     renderer: WebGLRenderer
     debugHelper: DebugHelper = new DebugHelper()
-    renderInterval
-    animRequest
+    renderInterval: NodeJS.Timeout
+    animRequest: number
     scene: Scene
     listener: AudioListener
     camera: PerspectiveCamera
@@ -36,7 +36,7 @@ export class SceneManager {
     controls: MapControls
     cursorTorchlight: PointLight
     buildMarker: BuildPlacementMarker
-    screenshotCallback: (HTMLCanvasElement) => any
+    screenshotCallback: (canvas: HTMLCanvasElement) => any
 
     constructor(canvas: SpriteImage) {
         this.renderer = new WebGLRenderer({antialias: true, canvas: canvas})
@@ -187,7 +187,7 @@ export class SceneManager {
     setupScene(levelConf: LevelEntryCfg) {
         this.scene = new Scene()
 
-        const ambientRgb = ResourceManager.cfg('Main', 'AmbientRGB') || [10, 10, 10]
+        const ambientRgb: number[] = ResourceManager.cfg('Main', 'AmbientRGB') || [10, 10, 10]
         const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
         const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
         const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])

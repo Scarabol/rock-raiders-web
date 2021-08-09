@@ -75,25 +75,25 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addTextureFolder('Vehicles/SharedUG/')
         // load all entity upgrades
         const upgradeTypes = iGet(mainConf, 'UpgradeTypes')
-        Object.values(upgradeTypes).forEach((uType: string) => {
+        Object.values<string>(upgradeTypes).forEach((uType) => {
             this.addMeshObjects(uType)
         })
         // load all building types
         const buildingTypes = iGet(mainConf, 'BuildingTypes')
-        Object.values(buildingTypes).forEach((bType: string) => {
+        Object.values<string>(buildingTypes).forEach((bType) => {
             this.addMeshObjects(bType)
         })
         this.addTextureFolder('Buildings/E-Fence')
         this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
         // load monsters
         const rockMonsterTypes = iGet(mainConf, 'RockMonsterTypes')
-        Object.values(rockMonsterTypes).forEach((mType: string) => {
+        Object.values<string>(rockMonsterTypes).forEach((mType) => {
             this.addMeshObjects(mType)
         })
         // load vehicles
         const vehicleTypes = iGet(mainConf, 'VehicleTypes')
-        Object.values(vehicleTypes).forEach((v) => {
-            asArray(v).forEach((vType: string) => {
+        Object.values<string>(vehicleTypes).forEach((v) => {
+            asArray(v).forEach((vType) => {
                 this.addMeshObjects(vType)
             })
         })
@@ -109,7 +109,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addTextureFolder('MiscAnims/RockFall/')
         this.addLWSFile('MiscAnims/RockFall/Rock3Sides.lws')
         const miscObjects = mainConf['MiscObjects']
-        Object.values(miscObjects).forEach((mType: string) => {
+        Object.values<string>(miscObjects).forEach((mType) => {
             this.addMeshObjects(mType)
         })
         // spaces
@@ -231,13 +231,13 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addAssetFolder(this.wadLoader.loadWadTexture, folderPath)
     }
 
-    addAssetFolder(callback: (name: string, callback: (assetNames: string[], obj: any) => any) => void, folderPath) {
+    addAssetFolder(callback: (name: string, callback: (assetNames: string[], obj: any) => any) => void, folderPath: string) {
         this.wadLoader.wad0File.filterEntryNames(`${folderPath}.+\\.bmp`).forEach((assetPath) => {
             this.addAsset(callback, assetPath)
         })
     }
 
-    addMenuWithAssets(mainConf, name: string, menuImageAlpha: boolean = true) {
+    addMenuWithAssets(mainConf: any, name: string, menuImageAlpha: boolean = true) {
         const menuCfg = new MenuCfg().setFromCfgObj(iGet(mainConf, 'Menu', name))
         this.wadLoader.onAssetLoaded(0, [name], menuCfg)
         menuCfg.menus.forEach((menuCfg) => {

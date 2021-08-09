@@ -4,7 +4,7 @@
  * @param height: the desired height of the new context
  * @returns RenderingContext the newly created canvas
  */
-export function createContext(width, height): SpriteContext {
+export function createContext(width: number, height: number): SpriteContext {
     if (width < 1 || height < 1) {
         console.error(`Can't create context with size ${width} x ${height}`)
         return createDummyContext(64, 64)
@@ -28,7 +28,7 @@ export function createContext(width, height): SpriteContext {
  * @param width: expected width of the original image
  * @param height: expected height of the original image
  */
-export function createDummyContext(width, height): SpriteContext {
+export function createDummyContext(width: number, height: number): SpriteContext {
     const result = createContext(width, height)
     for (let y = 0; y < height; y += 16) {
         for (let x = 0; x < width; x += 16) {
@@ -43,7 +43,7 @@ export function createDummyContext(width, height): SpriteContext {
     return result
 }
 
-export function createDummyImgData(width, height): ImageData {
+export function createDummyImgData(width: number, height: number): ImageData {
     const result = new ImageData(width, height)
     for (let y = 0; y < height; y += 16) {
         for (let x = 0; x < width; x += 16) {
@@ -58,7 +58,7 @@ export function createDummyImgData(width, height): ImageData {
     return result
 }
 
-export function setPixel(imgData, x, y, r, g, b, a = 255): void {
+export function setPixel(imgData: ImageData, x: number, y: number, r: number, g: number, b: number, a: number = 255): void {
     const n = (y * imgData.width + x) * 4
     imgData.data[n] = r
     imgData.data[n + 1] = g
@@ -66,7 +66,7 @@ export function setPixel(imgData, x, y, r, g, b, a = 255): void {
     imgData.data[n + 3] = a
 }
 
-export function getPixel(imgData, x, y): { r: number, g: number, b: number, a: number } {
+export function getPixel(imgData: ImageData, x: number, y: number): { r: number; g: number; b: number; a: number } {
     const n = (y * imgData.width + x) * 4
     return {r: imgData.data[n], g: imgData.data[n + 1], b: imgData.data[n + 2], a: imgData.data[n + 3]}
 }

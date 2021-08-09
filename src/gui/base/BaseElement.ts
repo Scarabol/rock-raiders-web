@@ -1,6 +1,7 @@
 import { Sample } from '../../audio/Sample'
 import { EventKey } from '../../event/EventKeyEnum'
 import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
+import { GameEvent } from '../../event/GameEvent'
 import { ChangeCursor, LocalEvent, PlaySoundEvent } from '../../event/LocalEvents'
 import { Cursor } from '../../screen/Cursor'
 
@@ -20,7 +21,7 @@ export class BaseElement {
     onClick: (cx?: number, cy?: number) => any = null
     onClickSecondary: (cx?: number, cy?: number) => any = null
     onPublishEvent: (event: LocalEvent) => any = (event) => console.log(`TODO publish event: ${EventKey[event.eventKey]}`)
-    tooltipTimeout = null
+    tooltipTimeout: NodeJS.Timeout = null
 
     constructor(parent: BaseElement) {
         this.parent = parent
@@ -76,11 +77,11 @@ export class BaseElement {
         this.children.forEach((child) => child.updatePosition())
     }
 
-    isInRect(cx, cy) {
+    isInRect(cx: number, cy: number) {
         return cx >= this.x && cy >= this.y && cx < this.x + this.width && cy < this.y + this.height
     }
 
-    checkHover(cx, cy): boolean {
+    checkHover(cx: number, cy: number): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
         let stateChanged = this.hover !== inRect
@@ -99,7 +100,7 @@ export class BaseElement {
     showTooltip() {
     }
 
-    checkClick(cx, cy, button: MOUSE_BUTTON): boolean {
+    checkClick(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
         if (this.isInactive()) return false
         const oldState = this.pressedByButton
         if (this.isInRect(cx, cy)) {
@@ -115,7 +116,7 @@ export class BaseElement {
         return stateChanged
     }
 
-    checkRelease(cx, cy, button: MOUSE_BUTTON): boolean {
+    checkRelease(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
         if (inRect && this.pressedByButton !== null) {
@@ -161,7 +162,7 @@ export class BaseElement {
         else this.onPublishEvent(event)
     }
 
-    registerEventListener(eventKey: EventKey, callback: (GameEvent) => any) {
+    registerEventListener(eventKey: EventKey, callback: (event: GameEvent) => any) {
         this.parent.registerEventListener(eventKey, callback)
     }
 }

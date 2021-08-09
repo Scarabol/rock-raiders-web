@@ -24,7 +24,7 @@ export class OverlayWorker extends GuiWorker {
         super(worker)
     }
 
-    init() {
+    init(): void {
         this.panelPause = this.addPanel(new PausePanel(this.rootElement, GuiResourceCache.getResource('PausedMenu') as MenuCfg))
         this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, GuiResourceCache.getResource('OptionsMenu') as MenuCfg))
         this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
@@ -73,7 +73,7 @@ export class OverlayWorker extends GuiWorker {
         this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
     }
 
-    reset() {
+    reset(): void {
         super.reset()
         this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
     }

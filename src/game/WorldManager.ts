@@ -23,7 +23,7 @@ export class WorldManager {
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
     jobSupervisor: Supervisor = null
-    gameLoopTimeout = null
+    gameLoopTimeout: NodeJS.Timeout = null
     oxygenRate: number = 0
     elapsedGameTimeMs: number = 0
     requestedRaiders: number = 0

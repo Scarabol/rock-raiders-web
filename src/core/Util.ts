@@ -16,7 +16,7 @@ export function getFilename(url: string): string {
     return strUrl.substring(lastInd + 1)
 }
 
-export function iGet(obj, ...keys: string[]): any {
+export function iGet(obj: any, ...keys: string[]): any {
     keys.forEach((keyname) => {
         obj = Object.keys(obj)
             .filter((key) => key.toLowerCase() === keyname.toLowerCase())
@@ -32,21 +32,21 @@ export function iSet(obj: any, key: string, value: any) {
     })
 }
 
-export function decodeString(data) {
+export function decodeString(data: BufferSource) {
     return new TextDecoder().decode(data).replace(/\0/g, '')
 }
 
-export function decodeFilepath(data) {
+export function decodeFilepath(data: BufferSource) {
     return decodeString(data).replace(/\\/g, '/')
 }
 
-export function getRandomInclusive(min, max) {
+export function getRandomInclusive(min: number, max: number) {
     min = Math.ceil(min)
     max = Math.floor(max)
     return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-export function getRandom(max) {
+export function getRandom(max: number) {
     return getRandomInclusive(0, max)
 }
 
@@ -54,12 +54,12 @@ export function getRandomSign() {
     return -1 + getRandomInclusive(0, 1) * 2
 }
 
-export function clearTimeoutSafe(timeout: NodeJS.Timeout) {
+export function clearTimeoutSafe(timeout: NodeJS.Timeout): null {
     if (timeout) clearTimeout(timeout)
     return null
 }
 
-export function clearIntervalSafe(interval: NodeJS.Timeout) {
+export function clearIntervalSafe(interval: NodeJS.Timeout): null {
     if (interval) clearInterval(interval)
     return null
 }
@@ -118,13 +118,13 @@ Array.prototype.last = function <T>(): T {
 
 Array.prototype.count = function <T>(callback: (element: T) => boolean): number {
     let counter = 0
-    this.forEach((e) => callback(e) && counter++)
+    this.forEach((e: T) => callback(e) && counter++)
     return counter
 }
 
 Array.prototype.partition = function <T>(filter: (element: T) => boolean): [T[], T[]] {
     const left: T[] = [], right: T[] = []
-    this.forEach((a) => filter(a) ? left.push(a) : right.push(a))
+    this.forEach((a: T) => filter(a) ? left.push(a) : right.push(a))
     return [left, right]
 }
 

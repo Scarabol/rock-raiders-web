@@ -23,7 +23,7 @@ export class MainMenuLayer extends ScaledLayer {
     items: MainMenuBaseItem[] = []
     scrollY: number = 0
     scrollSpeedY: number = 0
-    scrollInterval = null
+    scrollInterval: NodeJS.Timeout = null
 
     constructor(screen: MainMenuScreen, menuCfg: MenuEntryCfg) {
         super()

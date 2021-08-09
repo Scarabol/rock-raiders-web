@@ -2,7 +2,7 @@ import { Modal } from 'bootstrap'
 
 export class WadFileSelectionModal {
 
-    public onStart: (wad0Url, wad1Url) => any = null
+    public onStart: (wad0Url: string, wad1Url: string) => any = null
 
     private readonly modal: Modal
 

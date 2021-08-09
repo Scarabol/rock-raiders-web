@@ -77,7 +77,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.selected = false
     }
 
-    disposeFromWorld() {
+    disposeFromWorld(): void {
         this.sceneEntity.disposeFromScene()
         this.workAudio = resetAudioSafe(this.workAudio)
     }
@@ -140,7 +140,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.followUpJob = null
     }
 
-    abstract dropCarried()
+    abstract dropCarried(): void
 
     canDrill(surface: Surface): boolean {
         if (!surface) return false

@@ -15,7 +15,7 @@ export class ToggleButton extends Button {
         this.toggleState = false
     }
 
-    checkHover(cx, cy): boolean {
+    checkHover(cx: number, cy: number): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
         let updated = this.hover !== inRect
@@ -27,7 +27,7 @@ export class ToggleButton extends Button {
         return updated
     }
 
-    checkClick(cx, cy, button: MOUSE_BUTTON): boolean {
+    checkClick(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
         if (this.isInactive()) return false
         const oldState = this.pressedByButton
         if (this.isInRect(cx, cy) || this.toggleState) {
@@ -44,7 +44,7 @@ export class ToggleButton extends Button {
         return updated
     }
 
-    checkRelease(cx, cy, button: MOUSE_BUTTON): boolean {
+    checkRelease(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(cx, cy)
         let updated = inRect && this.pressedByButton !== null

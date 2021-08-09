@@ -1,5 +1,6 @@
 import { EventKey } from '../event/EventKeyEnum'
 import { POINTER_EVENT } from '../event/EventTypeEnum'
+import { GameEvent } from '../event/GameEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { ChangeCursor, LocalEvent } from '../event/LocalEvents'
@@ -19,7 +20,7 @@ export abstract class GuiWorker extends OffscreenWorker {
         this.rootElement.publishEvent = (event: LocalEvent) => {
             this.publishEvent(event)
         }
-        this.rootElement.registerEventListener = (eventKey: EventKey, callback: (GameEvent) => any) => {
+        this.rootElement.registerEventListener = (eventKey: EventKey, callback: (event: GameEvent) => any) => {
             this.registerEventListener(eventKey, callback)
         }
     }
@@ -29,7 +30,7 @@ export abstract class GuiWorker extends OffscreenWorker {
         this.rootElement.onRedraw(this.context)
     }
 
-    reset() {
+    reset(): void {
         this.panels.forEach((p) => p.reset())
     }
 

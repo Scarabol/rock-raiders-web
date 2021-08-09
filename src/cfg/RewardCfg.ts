@@ -15,14 +15,14 @@ export class RewardCfg extends BaseConfig {
     font: string = ''
     titleFont: string = ''
     timer: number = 0
-    saveButton: any = ''
-    advanceButton: any = ''
+    saveButton: string[] = []
+    advanceButton: string[] = []
     completeText: string = ''
     failedText: string = ''
     quitText: string = ''
     textPos: [number, number] = [0, 0]
 
-    assignValue(objKey, unifiedKey, cfgValue): boolean {
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if (unifiedKey === 'images') {
             Object.values(cfgValue).forEach((imgConf) => this.images.push(new RewardImageCfg(imgConf)))
             return true

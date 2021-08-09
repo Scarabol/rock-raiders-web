@@ -14,7 +14,7 @@ export class WadFile {
      * @param data binary blob
      * @param debug enable/disable debug output while parsing
      */
-    parseWadFile(data, debug = false) {
+    parseWadFile(data: ArrayBufferLike, debug = false) {
         const dataView = new DataView(data)
         this.buffer = new Int8Array(data)
         let pos = 0
@@ -72,7 +72,7 @@ export class WadFile {
      * @param entryName Entry name to be extracted
      * @returns {Uint8Array} Returns the content as Uint8Array
      */
-    getEntryData(entryName): Uint8Array {
+    getEntryData(entryName: string): Uint8Array {
         return new Uint8Array(this.getEntryBuffer(entryName))
     }
 
@@ -81,7 +81,7 @@ export class WadFile {
      * @param entryName Entry name to be extracted
      * @returns {string} Returns the content as String
      */
-    getEntryText(entryName): string {
+    getEntryText(entryName: string): string {
         let result = ''
         this.getEntryData(entryName).forEach((c) => result += String.fromCharCode(encodeChar[c]))
         return result
@@ -92,7 +92,7 @@ export class WadFile {
      * @param entryName Entry name to be extracted
      * @returns {ArrayBufferLike} Returns the content as buffer slice
      */
-    getEntryBuffer(entryName): ArrayBufferLike {
+    getEntryBuffer(entryName: string): ArrayBufferLike {
         const index = this.entryIndexByName.get(entryName.toLowerCase())
         if (index === undefined || index === null) {
             throw new Error(`Entry '${entryName}' not found in WAD file`)
@@ -100,9 +100,9 @@ export class WadFile {
         return this.buffer.slice(this.fStart[index], this.fStart[index] + this.fLength[index]).buffer
     }
 
-    filterEntryNames(regexStr) {
+    filterEntryNames(regexStr: string) {
         const regex = new RegExp(regexStr.toLowerCase())
-        const result = []
+        const result: string[] = []
         this.entryIndexByName.forEach((index, entry) => {
             if (entry.match(regex)) result.push(entry)
         })

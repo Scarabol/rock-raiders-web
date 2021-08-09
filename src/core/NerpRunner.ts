@@ -21,15 +21,15 @@ export class NerpRunner {
     timer: number = 0
     registers = new Array(8).fill(0)
     timers = new Array(4).fill(0)
-    scriptLines = [] // contains human readable script strings
-    statements = [] // contains parsed statements for execution
-    macrosByName = {}
-    labelsByName = {}
+    scriptLines: string[] = [] // contains human readable script strings
+    statements: any[] = [] // contains parsed statements for execution
+    macrosByName: Map<string, { args: string[], lines: string[] }> = new Map()
+    labelsByName: Map<string, number> = new Map()
     halted = false
     programCounter = 0
-    messages = []
+    messages: { txt: string, snd: string }[] = []
     // more state variables and switches
-    messagePermit = null
+    messagePermit: boolean = null
 
     constructor(entityMgr: EntityManager) {
         this.entityMgr = entityMgr
@@ -235,7 +235,7 @@ export class NerpRunner {
         // TODO implement this
     }
 
-    setMessage(messageNumber, arrowDisabled) {
+    setMessage(messageNumber: number, arrowDisabled) {
         if (!this.messagePermit) return
         if (messageNumber < 1) {
             console.warn(`Unexpected message number ${messageNumber} given`)
@@ -311,7 +311,7 @@ export class NerpRunner {
         console.warn('Slugs not yet implemented') // TODO implement slugs
     }
 
-    callMethod(methodName, methodArgs) {
+    callMethod(methodName: string, methodArgs: any[]) {
         if (methodName === 'Stop') {
             throw new Error('Stop')
         } else if (methodName === 'TRUE') {
@@ -385,7 +385,7 @@ export class NerpRunner {
         } else if (!isNaN(expression)) { // just a number
             return expression
         } else if (expression.jump) {
-            this.programCounter = this.labelsByName[expression.jump]
+            this.programCounter = this.labelsByName.get(expression.jump)
             if (this.programCounter === undefined) {
                 throw new Error(`Label '${expression.jump}' is unknown!`)
             }

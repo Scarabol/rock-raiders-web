@@ -10,7 +10,7 @@ export class IconSubPanel extends Panel {
     backBtn: Button = null
     iconPanelButtons: IconPanelButton[] = []
 
-    constructor(parent: BaseElement, numOfItems, onBackPanel: Panel = null) {
+    constructor(parent: BaseElement, numOfItems: number, onBackPanel: Panel = null) {
         super(parent)
         if (onBackPanel) {
             const backBtnCfg = new IconPanelBackButtonCfg(GuiResourceCache.cfg('InterfaceBackButton'))

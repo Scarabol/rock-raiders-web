@@ -45,13 +45,13 @@ export class Terrain {
         return this.getSurface(worldX / TILESIZE, worldZ / TILESIZE)
     }
 
-    getSurface(x, y): Surface {
+    getSurface(x: number, y: number): Surface {
         x = Math.floor(x)
         y = Math.floor(y)
         return this.getSurfaceOrNull(x, y) || new Surface(this, SurfaceType.SOLID_ROCK, x, y, 0)
     }
 
-    getSurfaceOrNull(x, y): Surface | null {
+    getSurfaceOrNull(x: number, y: number): Surface | null {
         if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
             return this.surfaces[x][y]
         } else {

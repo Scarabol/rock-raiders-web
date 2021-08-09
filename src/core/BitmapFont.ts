@@ -2,7 +2,7 @@ import { createContext, createDummyImgData, getPixel, setPixel } from './ImageHe
 
 export class BitmapFontData {
     charHeight: number
-    letters: ImageData[] = []
+    letterMap: Map<string, ImageData> = new Map()
 
     constructor(fontImageData: ImageData, cols = 10, rows = 19) { // font images always consist of 10 columns and 19 rows with last row empty
         // actually chars are font dependent and have to be externalized in future
@@ -30,7 +30,7 @@ export class BitmapFontData {
         const maxCharWidth = fontImageData.width / cols
         this.charHeight = fontImageData.height / rows
 
-        function getActualCharacterWidth(imgData) {
+        function getActualCharacterWidth(imgData: ImageData) {
             for (let y = 0; y < imgData.height / rows; y++) { // find non-empty row first
                 let rowPixelIndex = y * 4 * imgData.width
                 if (imgData.data[rowPixelIndex] !== 255 && imgData.data[rowPixelIndex + 2] !== 255) { // red/blue pixels indicate end of character
@@ -54,11 +54,11 @@ export class BitmapFontData {
             } else {
                 imgData = createDummyImgData(maxCharWidth, this.charHeight)
             }
-            this.letters[chars[i]] = imgData
+            this.letterMap.set(chars[i], imgData)
         }
     }
 
-    extractData(imgData, startX, startY, width, height): ImageData {
+    extractData(imgData: ImageData, startX: number, startY: number, width: number, height: number): ImageData {
         const alpha = getPixel(imgData, startX + width - 1, startY + height - 1)
         const result = new ImageData(width, height)
         for (let x = 0; x < width; x++) {
@@ -93,7 +93,7 @@ export class BitmapFont {
             const rowY = index * this.data.charHeight
             let letterX = 0
             for (let c = 0; c < row.text.length; c++) {
-                const letterImgData = this.data.letters[row.text.charAt(c)]
+                const letterImgData = this.data.letterMap.get(row.text.charAt(c))
                 if (letterImgData) {
                     for (let x = letterX; x < letterX + letterImgData.width; x++) {
                         for (let y = 0; y < letterImgData.height; y++) {
@@ -111,7 +111,7 @@ export class BitmapFont {
     }
 
     private determineRows(text: string, maxWidth?: number): { text: string, width: number }[] {
-        const spaceWidth = this.data.letters[' '].width
+        const spaceWidth = this.data.letterMap.get(' ').width
         const rows: { text: string, width: number }[] = []
         let rowText = ''
         let rowWidth = 0
@@ -119,7 +119,7 @@ export class BitmapFont {
             let wordWidth = 0
             for (let c = 0; c < word.length; c++) {
                 const letter = word.charAt(c)
-                const letterImg = this.data.letters[letter]
+                const letterImg = this.data.letterMap.get(letter)
                 if (letterImg) {
                     wordWidth += letterImg.width
                 } else {

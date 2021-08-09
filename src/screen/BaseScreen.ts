@@ -79,7 +79,7 @@ export class BaseScreen implements IEventHandler {
         EventBus.publishEvent(event)
     }
 
-    registerEventListener(eventKey: EventKey, callback: (GameEvent) => any): void {
+    registerEventListener(eventKey: EventKey, callback: (event: GameEvent) => any): void {
         EventBus.registerEventListener(eventKey, callback)
     }
 

@@ -8,7 +8,7 @@ const enum PARSING_STATE {
 }
 
 export class CfgFileParser {
-    static parse(buffer): any {
+    static parse(buffer: Uint8Array): any {
         const result = {}
         const ancestry = []
         let activeObject = result

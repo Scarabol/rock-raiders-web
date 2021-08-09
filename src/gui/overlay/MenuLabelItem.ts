@@ -19,19 +19,19 @@ export class MenuLabelItem extends BaseElement {
         this.relY = itemCfg.y
     }
 
-    checkHover(cx, cy): boolean {
+    checkHover(cx: number, cy: number): boolean {
         const stateChanged = super.checkHover(cx, cy)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    checkClick(cx, cy, button: MOUSE_BUTTON): boolean {
+    checkClick(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
         const stateChanged = super.checkClick(cx, cy, button)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    checkRelease(cx, cy, button: MOUSE_BUTTON): boolean {
+    checkRelease(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
         const stateChanged = super.checkRelease(cx, cy, button)
         if (stateChanged) this.notifyRedraw()
         return stateChanged

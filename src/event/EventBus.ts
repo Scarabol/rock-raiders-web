@@ -4,7 +4,7 @@ import { GameEvent } from './GameEvent'
 export class EventBus {
     static eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
     static workerListener: ((event: GameEvent) => any)[] = []
-    static blockedEvents = []
+    static blockedEvents: EventKey[] = []
 
     static publishEvent(event: GameEvent) {
         if (this.blockedEvents.includes(event.eventKey)) return // event is currently blocked from publishing
@@ -15,7 +15,7 @@ export class EventBus {
         this.blockedEvents.remove(event.eventKey)
     }
 
-    static registerEventListener(eventKey: EventKey, callback: (GameEvent) => any) {
+    static registerEventListener(eventKey: EventKey, callback: (event: GameEvent) => any) {
         this.getListener(eventKey).push(callback)
     }
 
@@ -23,7 +23,7 @@ export class EventBus {
         return this.eventListener.getOrUpdate(eventKey, () => [])
     }
 
-    static registerWorkerListener(callback: (GameEvent) => any) {
+    static registerWorkerListener(callback: (event: GameEvent) => any) {
         this.workerListener.push(callback)
     }
 

@@ -11,7 +11,7 @@ import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
 export class InfoDockButton extends Button {
     messages: WorldEvent[] = [] // newest message first
     text: string = null
-    animationTimeout = null
+    animationTimeout: NodeJS.Timeout = null
     animationSpeedX = 0.5
     animationSpeedY = 1
 

@@ -11,8 +11,8 @@ export class RonFileParser {
         return root
     }
 
-    private static parseObj(obj: {}, lines: string[], start): number {
-        const multiValues = []
+    private static parseObj(obj: {}, lines: string[], start: number): number {
+        const multiValues: any[] = []
         for (let c = start; c < lines.length; c++) {
             const line = lines[c]
             if (line === '') continue
@@ -31,7 +31,7 @@ export class RonFileParser {
         return lines.length
     }
 
-    private static parseVal(val) {
+    private static parseVal(val: string) {
         const r = val.split(/:/)
             .map(v => {
                 const r = v.split(',').map(v => {

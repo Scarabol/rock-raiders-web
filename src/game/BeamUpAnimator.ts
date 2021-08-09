@@ -8,7 +8,7 @@ export interface BeamUpEntity {
     sceneMgr: SceneManager
     sceneEntity: SceneEntity
 
-    disposeFromWorld()
+    disposeFromWorld(): void
 }
 
 export class BeamUpAnimator {

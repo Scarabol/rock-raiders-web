@@ -22,7 +22,7 @@ export class MenuEntryCfg extends BaseConfig {
     anchored: number[] = [0, 0]
     canScroll: boolean = false
 
-    assignValue(objKey, unifiedKey, cfgValue): boolean {
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if (unifiedKey.match(/item\d+/i)) {
             const lActionName = cfgValue[0].toLowerCase()
             if (lActionName === 'next' || lActionName === 'trigger') {

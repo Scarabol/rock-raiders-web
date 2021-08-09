@@ -104,7 +104,7 @@ export class Raider extends FulfillerEntity {
         super.stopJob()
     }
 
-    dropCarried() {
+    dropCarried(): void {
         if (!this.carries) return
         this.sceneEntity.dropAllEntities()
         this.carries = null
@@ -136,7 +136,7 @@ export class Raider extends FulfillerEntity {
         EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
     }
 
-    disposeFromWorld() {
+    disposeFromWorld(): void {
         super.disposeFromWorld()
         this.entityMgr.raiders.remove(this)
         this.entityMgr.raidersUndiscovered.remove(this)

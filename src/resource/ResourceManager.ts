@@ -69,7 +69,7 @@ export class ResourceManager extends ResourceCache {
 
     static getTexturesBySequenceName(basename: string): Texture[] {
         const lBasename = basename?.toLowerCase()
-        const result = []
+        const result: string[] = []
         this.resourceByName.forEach((res, name) => {
             if (name.startsWith(lBasename + '0')) result.push(name)
         })

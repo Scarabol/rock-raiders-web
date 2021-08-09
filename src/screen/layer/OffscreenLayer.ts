@@ -59,7 +59,7 @@ export abstract class OffscreenLayer extends ScreenLayer {
         })
     }
 
-    abstract onMessage(msg): boolean
+    abstract onMessage(msg: WorkerResponse): boolean
 
     protected sendMessage(message: OffscreenWorkerMessage, transfer?: (Transferable | OffscreenCanvas)[]) {
         this.worker.postMessage(message, transfer)
@@ -72,7 +72,7 @@ export abstract class OffscreenLayer extends ScreenLayer {
         this.sendMessage({type: WorkerMessageType.GAME_EVENT, gameEvent: new MaterialAmountChanged()})
     }
 
-    resize(width, height) {
+    resize(width: number, height: number) {
         const zIndex = Number(this.canvas.style.zIndex) || 0
         const parent = this.canvas.parentElement
         parent?.removeChild(this.canvas)

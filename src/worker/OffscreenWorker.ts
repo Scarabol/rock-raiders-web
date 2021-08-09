@@ -28,9 +28,9 @@ export abstract class OffscreenWorker implements IEventHandler {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     }
 
-    abstract reset()
+    abstract reset(): void
 
-    abstract init()
+    abstract init(): void
 
     setCanvas(canvas: OffscreenCanvas) {
         this.canvas = canvas
@@ -105,7 +105,7 @@ export abstract class OffscreenWorker implements IEventHandler {
         this.sendResponse(new WorkerPublishEvent(event))
     }
 
-    registerEventListener(eventKey: EventKey, callback: (GameEvent) => any): void {
+    registerEventListener(eventKey: EventKey, callback: (event: GameEvent) => any): void {
         this.eventListener.getOrUpdate(eventKey, () => []).push(callback)
     }
 

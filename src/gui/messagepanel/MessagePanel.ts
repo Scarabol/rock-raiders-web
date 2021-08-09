@@ -11,7 +11,7 @@ import { TextInfoMessageConfig } from './TextInfoMessageConfig'
 export class MessagePanel extends Panel {
     imgAir: SpriteImage = null
     currentMessage: TextInfoMessage = null
-    messageTimeout = null
+    messageTimeout: NodeJS.Timeout = null
 
     msgSpaceToContinue: TextInfoMessage
     msgAirSupplyLow: TextInfoMessage

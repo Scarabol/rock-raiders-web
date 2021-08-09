@@ -39,7 +39,7 @@ export class AnimationGroup extends Group {
         this.add(this.animation.polyRootGroup)
     }
 
-    startAnimation(onAnimationDone) {
+    startAnimation(onAnimationDone: () => any) {
         this.animation.start(onAnimationDone, null)
     }
 

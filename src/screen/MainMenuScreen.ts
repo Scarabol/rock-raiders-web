@@ -34,7 +34,7 @@ export class MainMenuScreen extends BaseScreen {
         this.showMainMenu(1)
     }
 
-    selectLevel(levelName) {
+    selectLevel(levelName: string) {
         this.hide()
         this.onLevelSelected(levelName)
     }

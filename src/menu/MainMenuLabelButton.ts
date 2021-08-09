@@ -3,8 +3,8 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {
-    labelImgLo = null
-    labelImgHi = null
+    labelImgLo: SpriteImage = null
+    labelImgHi: SpriteImage = null
 
     constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()

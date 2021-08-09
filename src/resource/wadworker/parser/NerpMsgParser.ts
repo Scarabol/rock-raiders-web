@@ -21,7 +21,7 @@ export class NerpMsgParser {
         return result
     }
 
-    static parseNerpMsgFile(wadData: string, txtMatcher): NerpMessage[] {
+    static parseNerpMsgFile(wadData: string, txtMatcher: RegExp): NerpMessage[] {
         const result: NerpMessage[] = []
         wadData.split(/[\r\n]/).map((l) => l?.trim()).filter((l) => !!l && l !== '-')
             .forEach((line, index) => {

@@ -152,7 +152,7 @@ export class WadLoader {
     }
 
     loadAssetsParallel() {
-        const promises = []
+        const promises: Promise<void>[] = []
         const that = this
         this.assetRegistry.forEach((asset) => {
             promises.push(new Promise<void>((resolve) => {

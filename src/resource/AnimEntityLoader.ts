@@ -135,7 +135,7 @@ export class AnimEntityLoader {
         }
     }
 
-    private parseUpgrades(value) {
+    private parseUpgrades(value: any) {
         Object.entries(value).forEach(([levelKey, upgradesCfg]) => {
             if (!this.parseUpgradeEntry(levelKey, upgradesCfg)) {
                 console.warn(`Unexpected upgrade level key: ${levelKey}`)
@@ -143,10 +143,10 @@ export class AnimEntityLoader {
         })
     }
 
-    private parseUpgradeEntry(levelKey: string, upgradesCfg): boolean {
+    private parseUpgradeEntry(levelKey: string, upgradesCfg: any): boolean {
         const match = levelKey.match(/level(\d\d\d\d)/i) // [carry] [scan] [speed] [drill]
         if (!match) return false
-        const upgradesByLevel = []
+        const upgradesByLevel: AnimationEntityUpgrade[] = []
         Object.entries<unknown[]>(upgradesCfg).forEach(([upgradeTypeName, upgradeEntry]) => {
             const upgradeFilepath = ResourceManager.cfg('UpgradeTypes', upgradeTypeName) || this.path + upgradeTypeName
             const upgradeEntries = Array.isArray(upgradeEntry[0]) ? upgradeEntry : [upgradeEntry]

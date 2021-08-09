@@ -135,7 +135,7 @@ export class EntityManager {
     }
 
     getTrainingSiteTargets(training: RaiderTraining): BuildingPathTarget[] {
-        const targets = []
+        const targets: BuildingPathTarget[] = []
         this.buildings.filter((b) => b.isTrainingSite(training)).map((b) => b.getTrainingTargets().forEach((t) => targets.push(t)))
         return targets
     }
@@ -145,7 +145,7 @@ export class EntityManager {
     }
 
     private static getClosestBuilding(buildings: BuildingEntity[], position: Vector3) {
-        let closest = null, minDist = null
+        let closest: BuildingEntity = null, minDist: number = null
         buildings.forEach((b) => {
             const bPos = b.sceneEntity.position.clone()
             const dist = position.distanceToSquared(bPos) // TODO better use pathfinding

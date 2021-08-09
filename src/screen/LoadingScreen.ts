@@ -18,7 +18,7 @@ export class LoadingScreen extends BaseScreen {
         this.setLoadingMessage('Loading...')
     }
 
-    setLoadingMessage(text) {
+    setLoadingMessage(text: string) {
         this.layer.onRedraw = (context) => {
             // clear the screen to black
             context.fillStyle = 'black'

@@ -26,7 +26,7 @@ export class LWSCLoader {
     }
 
     parse(filepath: string): AnimClip {
-        const content = ResourceManager.getResource(filepath)
+        const content: string = ResourceManager.getResource(filepath)
         if (!content) throw new Error(`Cannot parse LWS, no content given for: ${filepath}`)
         this.animationClip = new AnimClip(filepath)
         this.lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines

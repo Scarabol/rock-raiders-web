@@ -5,9 +5,9 @@ import { MainMenuLayer } from './MainMenuLayer'
 
 export class MainMenuLevelButton extends MainMenuBaseItem {
     layer: MainMenuLayer
-    imgActive = null
-    imgInactive = null
-    imgCross = null
+    imgActive: SpriteImage = null
+    imgInactive: SpriteImage = null
+    imgCross: SpriteImage = null
     unlocked: boolean = false
     levelKey: string = ''
 

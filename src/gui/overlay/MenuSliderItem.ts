@@ -62,7 +62,7 @@ export class MenuSliderItem extends BaseElement {
         this.height = this.imgTextNormal.height
     }
 
-    checkHover(cx, cy): boolean {
+    checkHover(cx: number, cy: number): boolean {
         const stateChanged = super.checkHover(cx, cy)
         if (stateChanged) this.notifyRedraw()
         return stateChanged

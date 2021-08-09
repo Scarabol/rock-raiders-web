@@ -4,9 +4,9 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 
 export class MainMenuIconButton extends MainMenuBaseItem {
-    imgNormal = null
-    imgHover = null
-    imgPressed = null
+    imgNormal: SpriteImage = null
+    imgHover: SpriteImage = null
+    imgPressed: SpriteImage = null
     tooltip = ''
 
     constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {

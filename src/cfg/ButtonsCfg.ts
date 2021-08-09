@@ -17,7 +17,7 @@ export class ButtonsCfg extends BaseConfig {
     panelInfoDock: ButtonInfoDockCfg = null
     panelEncyclopedia: any = null // not used in the game
 
-    parseValue(unifiedKey: string, cfgValue: any): any {
+    parseValue(unifiedKey: string, cfgValue: any[]): any {
         const btnCfgValue = {}
         cfgValue.forEach(arr => btnCfgValue[arr[0]] = arr)
         if (unifiedKey === 'panelRadar'.toLowerCase()) {

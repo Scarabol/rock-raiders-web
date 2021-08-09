@@ -12,7 +12,7 @@ export abstract class DependencyCheckPanel extends IconSubPanel {
     discoveredBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
     usableBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
 
-    protected constructor(parent: BaseElement, numOfItems, onBackPanel: Panel) {
+    protected constructor(parent: BaseElement, numOfItems: number, onBackPanel: Panel) {
         super(parent, numOfItems, onBackPanel)
         this.registerEventListener(EventKey.RAIDERS_CHANGED, (event: RaidersChangedEvent) => {
             this.hasRaider = event.numRaiders > 0

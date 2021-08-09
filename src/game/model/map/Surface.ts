@@ -207,7 +207,7 @@ export class Surface implements Selectable {
         this.updateJobColor()
     }
 
-    private static safeRemoveJob(job: DrillJob | ReinforceJob | CarryDynamiteJob | ClearRubbleJob) {
+    private static safeRemoveJob(job: DrillJob | ReinforceJob | CarryDynamiteJob | ClearRubbleJob): null {
         if (job) EventBus.publishEvent(new JobDeleteEvent(job))
         return null
     }

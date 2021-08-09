@@ -3,7 +3,7 @@ import { NATIVE_FRAMERATE } from '../params'
 
 export class AnimatedCursor {
     cursorUrls: string[] = []
-    animationInterval = null
+    animationInterval: NodeJS.Timeout = null
     animationIndex: number = 0
 
     constructor(cursorUrls: string[]) {

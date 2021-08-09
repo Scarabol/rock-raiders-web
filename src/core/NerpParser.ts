@@ -30,7 +30,7 @@ export class NerpParser {
                 }
                 nerpRunner.scriptLines = nerpRunner.scriptLines.concat(includedRunner.scriptLines)
                 // copy macros from included file to current file
-                nerpRunner.macrosByName = Object.assign({}, nerpRunner.macrosByName, includedRunner.macrosByName)
+                nerpRunner.macrosByName = new Map([...nerpRunner.macrosByName, ...includedRunner.macrosByName])
             } else if (line.startsWith('#define ')) { // parse C++ preprocessor macro
                 const firstLine = line.replace(/^#define /, '').split(' ')
                 const macroLines = [firstLine.splice(1).join(' ').replace(/\\$/, '').trim()]
@@ -53,10 +53,10 @@ export class NerpParser {
                     }
                 }
                 const macroCall = firstLine[0].split('(')
-                nerpRunner.macrosByName[macroCall[0]] = {
+                nerpRunner.macrosByName.set(macroCall[0], {
                     args: macroCall[1].replace(/\)$/, '').split(','),
                     lines: macroLines,
-                }
+                })
             } else {
                 nerpRunner.scriptLines = nerpRunner.scriptLines.concat(this.replaceMacros(nerpRunner.macrosByName, line))
             }
@@ -75,7 +75,7 @@ export class NerpParser {
                 }
             } else if (labelMatch) { // keep label line number for later usage
                 const labelName = labelMatch[1].toLowerCase()
-                nerpRunner.labelsByName[labelName] = c
+                nerpRunner.labelsByName.set(labelName, c)
                 nerpRunner.statements[c] = {label: labelName}
             } else if (nerpRunner.statements[c].length === 1) { // just a call
                 nerpRunner.statements[c] = this.preProcess(nerpRunner.statements[c][0])
@@ -86,16 +86,16 @@ export class NerpParser {
         return nerpRunner
     }
 
-    static replaceMacros(macrosByName, line): string[] {
+    static replaceMacros(macrosByName: Map<string, { args: string[], lines: string[] }>, line: string): string[] {
         // check if this line contains a macro
         const split = line.split('(') // not a very stable check though...
-        const macro = macrosByName[split[0]]
+        const macro = macrosByName.get(split[0])
         if (macro) {
             const argValues = split.splice(1).join('(').slice(0, -1).split(',')
             if (argValues.length !== macro.args.length) {
                 throw new Error(`Invalid number of args provided for macro in line ${line}`)
             }
-            const macroLines = []
+            const macroLines: string[] = []
             macro.lines.forEach((line) => {
                 for (let c = 0; c < argValues.length; c++) {
                     line = line.replace(new RegExp(`\\b${macro.args[c]}\\b`), argValues[c])

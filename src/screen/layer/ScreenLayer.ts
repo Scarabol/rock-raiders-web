@@ -8,7 +8,7 @@ export class ScreenLayer {
     context: CanvasRenderingContext2D
     onRedraw: (context: SpriteContext) => any
     active: boolean = true
-    lastAnimationRequest = null
+    lastAnimationRequest: number = null
 
     constructor(alpha: boolean, withContext: boolean) {
         this.initCanvas()
@@ -35,7 +35,7 @@ export class ScreenLayer {
         return aIndex === bIndex ? 0 : aIndex > bIndex ? -1 : 1
     }
 
-    resize(width, height) {
+    resize(width: number, height: number) {
         this.canvas.width = width
         this.canvas.height = height
     }
@@ -110,7 +110,7 @@ export class ScaledLayer extends ScreenLayer {
         return [cx / this.scaleX, cy / this.scaleY].map((c) => Math.round(c))
     }
 
-    resize(width, height) {
+    resize(width: number, height: number) {
         super.resize(width, height)
         this.updateScale()
         this.context.scale(this.scaleX, this.scaleY)

@@ -6,7 +6,7 @@ import { GuiResourceCache } from '../GuiResourceCache'
 
 export class InformationPanel extends Panel {
     font: BitmapFont = null
-    textImage = null
+    textImage: SpriteImage = null
 
     constructor(parent: BaseElement, panelCfg: PanelCfg) {
         super(parent, panelCfg)

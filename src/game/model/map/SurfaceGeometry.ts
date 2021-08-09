@@ -74,10 +74,10 @@ export class SurfaceGeometry {
             new Vector2(0, 0),
         ]
 
-        const bufferVertices = []
-        const bufferNormals = []
+        const bufferVertices: {x: number, y: number, z: number}[] = []
+        const bufferNormals: {x: number, y: number, z: number}[] = []
 
-        function addFaceAndNormals(a, b, c) {
+        function addFaceAndNormals(a: Vector3, b: Vector3, c: Vector3) {
             bufferVertices.push(a, b, c)
             const normal = new Vector3().subVectors(c, b)
             normal.cross(new Vector3().subVectors(a, b))

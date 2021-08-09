@@ -24,7 +24,7 @@ export class RewardScreen extends BaseScreen {
     boxes: { img: SpriteImage, x: number, y: number }[] = []
     fonts = {}
     texts: SpriteImage[] = []
-    uncoverTimeout = null
+    uncoverTimeout: NodeJS.Timeout = null
     btnSave: RewardScreenButton
     btnAdvance: RewardScreenButton
     levelFullNameImg: SpriteImage
@@ -170,7 +170,7 @@ export class RewardScreen extends BaseScreen {
         super.show()
     }
 
-    percentString(actual, max = 1, lessIsMore: boolean = false) {
+    percentString(actual: number, max = 1, lessIsMore: boolean = false) {
         if (max === 0) max = 1
         let value = Math.round(Math.max(Math.min(actual / max, 1), 0) * 100)
         if (lessIsMore) value = 100 - value
