@@ -45,7 +45,6 @@ export class Surface implements Selectable {
     reinforceJob: ReinforceJob = null
     dynamiteJob: CarryDynamiteJob = null
     clearRubbleJob: ClearRubbleJob = null
-    surfaceRotation: number = 0
     seamLevel: number = 0
 
     wallType: WALL_TYPE = null
@@ -325,71 +324,75 @@ export class Surface implements Selectable {
     }
 
     updateTexture() {
-        let textureName = this.terrain.textureSet.texturebasename
-        if (!this.discovered) {
-            textureName += '70'
-        } else if (this.surfaceType === SurfaceType.POWER_PATH) {
-            textureName += this.updatePowerPathTexture()
-        } else if (!this.surfaceType.shaping && this.neighbors.some((n) => n.discovered && n.surfaceType.floor)) {
-            if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.energized && this.building) {
-                textureName += '66'
-            } else {
-                textureName += this.surfaceType.matIndex
-            }
-        } else if (this.wallType === WALL_TYPE.WEIRD_CREVICE) {
-            textureName += '77'
-        } else {
-            if (this.wallType === WALL_TYPE.CORNER) {
-                textureName += '5'
-            } else if (this.wallType === WALL_TYPE.INVERTED_CORNER) {
-                textureName += '3'
-            } else if (this.reinforced) {
-                textureName += '2'
-            } else {
-                textureName += '0'
-            }
-            textureName += this.surfaceType.shaping ? this.surfaceType.matIndex : SurfaceType.SOLID_ROCK.matIndex
-        }
-        textureName += '.bmp'
-
         this.forEachMaterial((mat) => mat.map?.dispose())
-        const texture = ResourceManager.getTexture(textureName)
+        let {textureNameSuffix, textureRotation} = this.determineTextureNameSuffixAndRotation()
+        const texture = ResourceManager.getTexture(this.terrain.textureSet.texturebasename + textureNameSuffix + '.bmp')
         texture.center.set(0.5, 0.5)
-        texture.rotation = this.surfaceRotation
-
+        texture.rotation = textureRotation
         this.forEachMaterial((mat) => mat.map = texture)
     }
 
-    private updatePowerPathTexture(): string {
-        this.surfaceRotation = 0
+    private determineTextureNameSuffixAndRotation(): { textureNameSuffix: string, textureRotation: number } {
+        let suffix = '', rotation = 0
+        if (!this.discovered) {
+            suffix = '70'
+        } else if (this.surfaceType === SurfaceType.POWER_PATH) {
+            const powerPath = this.determinePowerPathTextureNameSuffixAndRotation(rotation, suffix)
+            rotation = powerPath.rotation
+            suffix = powerPath.suffix
+        } else if (!this.surfaceType.shaping && this.neighbors.some((n) => n.discovered && n.surfaceType.floor)) {
+            if (this.surfaceType === SurfaceType.POWER_PATH_BUILDING && this.energized && this.building) {
+                suffix = '66'
+            } else {
+                suffix = this.surfaceType.matIndex
+            }
+        } else if (this.wallType === WALL_TYPE.WEIRD_CREVICE) {
+            suffix = '77'
+        } else {
+            if (this.wallType === WALL_TYPE.CORNER) {
+                suffix += '5'
+            } else if (this.wallType === WALL_TYPE.INVERTED_CORNER) {
+                suffix += '3'
+            } else if (this.reinforced) {
+                suffix += '2'
+            } else {
+                suffix += '0'
+            }
+            suffix += this.surfaceType.shaping ? this.surfaceType.matIndex : SurfaceType.SOLID_ROCK.matIndex
+        }
+        return {textureNameSuffix: suffix, textureRotation: rotation}
+    }
+
+    private determinePowerPathTextureNameSuffixAndRotation(rotation: number, suffix: string) {
         const left = this.terrain.getSurface(this.x - 1, this.y).isPath()
         const top = this.terrain.getSurface(this.x, this.y - 1).isPath()
         const right = this.terrain.getSurface(this.x + 1, this.y).isPath()
         const bottom = this.terrain.getSurface(this.x, this.y + 1).isPath()
         const pathSum = (left ? 1 : 0) + (top ? 1 : 0) + (right ? 1 : 0) + (bottom ? 1 : 0)
         if (pathSum === 0 || pathSum === 1) {
-            if (left) this.surfaceRotation = -Math.PI / 2
-            if (top) this.surfaceRotation = Math.PI
-            if (right) this.surfaceRotation = Math.PI / 2
-            return this.energized ? '75' : '65'
+            if (left) rotation = -Math.PI / 2
+            else if (top) rotation = Math.PI
+            else if (right) rotation = Math.PI / 2
+            suffix = this.energized ? '75' : '65'
         } else if (pathSum === 2) {
             if (left === right) {
-                this.surfaceRotation = left ? Math.PI / 2 : 0
-                return this.energized ? '72' : '62'
+                rotation = left ? Math.PI / 2 : 0
+                suffix = this.energized ? '72' : '62'
             } else {
-                if (left && bottom) this.surfaceRotation = -Math.PI / 2
-                if (left && top) this.surfaceRotation = Math.PI
-                if (top && right) this.surfaceRotation = Math.PI / 2
-                return this.energized ? '73' : '63'
+                if (left && bottom) rotation = -Math.PI / 2
+                else if (left && top) rotation = Math.PI
+                else if (top && right) rotation = Math.PI / 2
+                suffix = this.energized ? '73' : '63'
             }
         } else if (pathSum === 3) {
-            if (!top) this.surfaceRotation = -Math.PI / 2
-            if (!right) this.surfaceRotation = Math.PI
-            if (!bottom) this.surfaceRotation = Math.PI / 2
-            return this.energized ? '74' : '64'
+            if (!top) rotation = -Math.PI / 2
+            else if (!right) rotation = Math.PI
+            else if (!bottom) rotation = Math.PI / 2
+            suffix = this.energized ? '74' : '64'
         } else {
-            return this.energized ? '71' : '60'
+            suffix = this.energized ? '71' : '60'
         }
+        return {rotation, suffix}
     }
 
     setEnergized(state: boolean) {
