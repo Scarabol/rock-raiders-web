@@ -2,7 +2,7 @@ import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, MOUSE,
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { cloneContext } from '../core/ImageHelper'
-import { clearIntervalSafe } from '../core/Util'
+import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
 import { CAMERA_MAX_DISTANCE, CAMERA_MIN_DISTANCE, DEV_MODE, KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { DebugHelper } from '../screen/DebugHelper'
@@ -26,7 +26,7 @@ export class SceneManager {
     renderer: WebGLRenderer
     debugHelper: DebugHelper = new DebugHelper()
     renderInterval: NodeJS.Timeout
-    animRequest: number
+    lastAnimationRequest: number
     scene: Scene
     listener: AudioListener
     camera: PerspectiveCamera
@@ -214,7 +214,7 @@ export class SceneManager {
     startScene() {
         this.debugHelper.show()
         this.renderInterval = setInterval(() => {
-            this.animRequest = requestAnimationFrame(() => {
+            this.lastAnimationRequest = requestAnimationFrame(() => {
                 this.debugHelper.renderStart()
                 this.renderer.render(this.scene, this.camera)
                 this.debugHelper.renderDone()
@@ -241,10 +241,7 @@ export class SceneManager {
     disposeScene() {
         this.debugHelper.hide()
         this.renderInterval = clearIntervalSafe(this.renderInterval)
-        if (this.animRequest) {
-            cancelAnimationFrame(this.animRequest)
-            this.animRequest = null
-        }
+        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null

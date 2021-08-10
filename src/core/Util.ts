@@ -64,6 +64,11 @@ export function clearIntervalSafe(interval: NodeJS.Timeout): null {
     return null
 }
 
+export function cancelAnimationFrameSafe(handle: number): null {
+    if (handle) cancelAnimationFrame(handle)
+    return null
+}
+
 export function asArray<T>(value: T | T[]): T[] {
     if (!value) return []
     return Array.isArray(value) ? value : [value]

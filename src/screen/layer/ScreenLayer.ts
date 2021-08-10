@@ -1,3 +1,4 @@
+import { cancelAnimationFrameSafe } from '../../core/Util'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
@@ -42,13 +43,12 @@ export class ScreenLayer {
 
     redraw() {
         if (this.onRedraw && this.isActive()) {
-            if (this.lastAnimationRequest) cancelAnimationFrame(this.lastAnimationRequest)
+            cancelAnimationFrameSafe(this.lastAnimationRequest)
             this.lastAnimationRequest = requestAnimationFrame(this.doRedraw.bind(this))
         }
     }
 
     doRedraw() {
-        this.lastAnimationRequest = null
         this.onRedraw(this.context)
     }
 
