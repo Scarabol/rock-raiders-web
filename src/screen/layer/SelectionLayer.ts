@@ -1,3 +1,4 @@
+import { Rect } from '../../core/Rect'
 import { EventBus } from '../../event/EventBus'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
@@ -12,15 +13,26 @@ export class SelectionLayer extends ScreenLayer {
     worldMgr: WorldManager
     sceneMgr: SceneManager
     entityMgr: EntityManager
-    selectStart: { x: number, y: number } = null
+    selectionRect: Rect = null
 
     constructor() {
         super(true, true)
+        this.onRedraw = (context) => {
+            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            if (!this.selectionRect) return
+            context.strokeRect(this.selectionRect.x, this.selectionRect.y, this.selectionRect.w, this.selectionRect.h)
+        }
     }
 
     reset() {
         super.reset()
-        this.selectStart = null
+        this.selectionRect = null
+    }
+
+    resize(width: number, height: number) {
+        super.resize(width, height)
+        this.context.strokeStyle = 'rgba(128, 192, 192, 0.5)'
+        this.context.lineWidth = 2
     }
 
     handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
@@ -37,37 +49,36 @@ export class SelectionLayer extends ScreenLayer {
     }
 
     private startSelection(screenX: number, screenY: number) {
-        this.selectStart = {x: screenX, y: screenY}
+        this.selectionRect = new Rect(screenX, screenY)
         return true
     }
 
     private changeSelection(screenX: number, screenY: number) {
-        if (!this.selectStart) return false // selection was not started on this layer
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-        this.context.strokeStyle = 'rgba(128, 192, 192, 0.5)'
-        this.context.lineWidth = 2
-        this.context.strokeRect(this.selectStart.x, this.selectStart.y, screenX - this.selectStart.x, screenY - this.selectStart.y)
+        if (!this.selectionRect) return false // selection was not started on this layer
+        this.selectionRect.w = screenX - this.selectionRect.x
+        this.selectionRect.h = screenY - this.selectionRect.y
+        this.redraw()
         return true
     }
 
     private selectEntities(screenX: number, screenY: number) {
-        if (!this.selectStart) return false // selection was not started on this layer
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+        if (!this.selectionRect) return false // selection was not started on this layer
         let entities: GameSelection
-        if (Math.abs(screenX - this.selectStart.x) < 5 && Math.abs(screenY - this.selectStart.y) < 5) {
-            const x = (this.selectStart.x + screenX) / this.canvas.width - 1
-            const y = -(this.selectStart.y + screenY) / this.canvas.height + 1
+        if (Math.abs(screenX - this.selectionRect.x) < 5 && Math.abs(screenY - this.selectionRect.y) < 5) {
+            const x = (this.selectionRect.x + screenX) / this.canvas.width - 1
+            const y = -(this.selectionRect.y + screenY) / this.canvas.height + 1
             entities = this.sceneMgr.getSelectionByRay(x, y)
         } else {
-            const r1x = (this.selectStart.x / this.canvas.width) * 2 - 1
-            const r1y = -(this.selectStart.y / this.canvas.height) * 2 + 1
+            const r1x = (this.selectionRect.x / this.canvas.width) * 2 - 1
+            const r1y = -(this.selectionRect.y / this.canvas.height) * 2 + 1
             const r2x = (screenX / this.canvas.width) * 2 - 1
             const r2y = -(screenY / this.canvas.height) * 2 + 1
             entities = this.sceneMgr.getEntitiesInFrustum(r1x, r1y, r2x, r2y)
         }
         this.entityMgr.selection.set(entities)
         EventBus.publishEvent(this.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.entityMgr))
-        this.selectStart = null
+        this.selectionRect = null
+        this.redraw()
         return true
     }
 }
