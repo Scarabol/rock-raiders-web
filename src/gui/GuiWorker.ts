@@ -1,3 +1,4 @@
+import { cancelAnimationFrameSafe } from '../core/Util'
 import { EventKey } from '../event/EventKeyEnum'
 import { POINTER_EVENT } from '../event/EventTypeEnum'
 import { GameEvent } from '../event/GameEvent'
@@ -11,6 +12,7 @@ import { BaseElement } from './base/BaseElement'
 import { Panel } from './base/Panel'
 
 export abstract class GuiWorker extends OffscreenWorker {
+    lastAnimationRequest: number
     rootElement: BaseElement = new BaseElement(null)
     panels: Panel[] = []
 
@@ -26,8 +28,11 @@ export abstract class GuiWorker extends OffscreenWorker {
     }
 
     redraw() {
-        super.redraw()
-        this.rootElement.onRedraw(this.context)
+        cancelAnimationFrameSafe(this.lastAnimationRequest)
+        this.lastAnimationRequest = requestAnimationFrame(() => {
+            super.redraw()
+            this.rootElement.onRedraw(this.context)
+        })
     }
 
     reset(): void {
