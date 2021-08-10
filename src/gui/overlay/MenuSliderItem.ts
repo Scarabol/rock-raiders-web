@@ -2,6 +2,7 @@ import { BaseButtonCfg } from '../../cfg/BaseButtonCfg'
 import { MenuSliderItemCfg } from '../../cfg/MenuSliderItemCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
+import { GuiHoverEvent } from '../event/GuiEvent'
 import { GuiResourceCache } from '../GuiResourceCache'
 import { MenuLayer } from './MenuLayer'
 
@@ -62,10 +63,9 @@ export class MenuSliderItem extends BaseElement {
         this.height = this.imgTextNormal.height
     }
 
-    checkHover(cx: number, cy: number): boolean {
-        const stateChanged = super.checkHover(cx, cy)
-        if (stateChanged) this.notifyRedraw()
-        return stateChanged
+    checkHover(event: GuiHoverEvent): void {
+        super.checkHover(event)
+        if (event.hoverStateChanged) this.notifyRedraw()
     }
 
     onRedraw(context: SpriteContext) {

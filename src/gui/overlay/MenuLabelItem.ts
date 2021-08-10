@@ -1,6 +1,6 @@
 import { MenuLabelItemCfg } from '../../cfg/MenuLabelItemCfg'
-import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { BaseElement } from '../base/BaseElement'
+import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuLabelItem extends BaseElement {
@@ -19,20 +19,19 @@ export class MenuLabelItem extends BaseElement {
         this.relY = itemCfg.y
     }
 
-    checkHover(cx: number, cy: number): boolean {
-        const stateChanged = super.checkHover(cx, cy)
+    checkHover(event: GuiHoverEvent): void {
+        super.checkHover(event)
+        if (event.hoverStateChanged) this.notifyRedraw()
+    }
+
+    checkClick(event: GuiClickEvent): boolean {
+        const stateChanged = super.checkClick(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }
 
-    checkClick(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
-        const stateChanged = super.checkClick(cx, cy, button)
-        if (stateChanged) this.notifyRedraw()
-        return stateChanged
-    }
-
-    checkRelease(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
-        const stateChanged = super.checkRelease(cx, cy, button)
+    checkRelease(event: GuiReleaseEvent): boolean {
+        const stateChanged = super.checkRelease(event)
         if (stateChanged) this.notifyRedraw()
         return stateChanged
     }

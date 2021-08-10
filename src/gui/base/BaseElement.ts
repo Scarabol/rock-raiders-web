@@ -4,6 +4,7 @@ import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { GameEvent } from '../../event/GameEvent'
 import { ChangeCursor, LocalEvent, PlaySoundEvent } from '../../event/LocalEvents'
 import { Cursor } from '../../screen/Cursor'
+import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 
 export class BaseElement {
     parent: BaseElement = null
@@ -81,10 +82,10 @@ export class BaseElement {
         return cx >= this.x && cy >= this.y && cx < this.x + this.width && cy < this.y + this.height
     }
 
-    checkHover(cx: number, cy: number): boolean {
-        if (this.isInactive()) return false
-        const inRect = this.isInRect(cx, cy)
-        let stateChanged = this.hover !== inRect
+    checkHover(event: GuiHoverEvent): void {
+        if (this.isInactive()) return
+        const inRect = this.isInRect(event.sx, event.sy)
+        event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
         this.hover = inRect
         if (this.hover) {
             if (!this.tooltipTimeout) this.tooltipTimeout = setTimeout(() => this.showTooltip(), 1000)
@@ -93,54 +94,53 @@ export class BaseElement {
             this.tooltipTimeout = null
         }
         if (!this.hover) this.pressedByButton = null
-        this.children.forEach((child) => stateChanged = child.checkHover(cx, cy) || stateChanged)
-        return stateChanged
+        this.children.forEach((child) => child.checkHover(event))
     }
 
     showTooltip() {
     }
 
-    checkClick(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
+    checkClick(event: GuiClickEvent): boolean {
         if (this.isInactive()) return false
         const oldState = this.pressedByButton
-        if (this.isInRect(cx, cy)) {
-            if (this.pressedByButton === null && ((button === MOUSE_BUTTON.MAIN && this.onClick) ||
-                (button === MOUSE_BUTTON.SECONDARY && this.onClickSecondary))) {
-                this.pressedByButton = button
+        if (this.isInRect(event.sx, event.sy)) {
+            if (this.pressedByButton === null && ((event.button === MOUSE_BUTTON.MAIN && this.onClick) ||
+                (event.button === MOUSE_BUTTON.SECONDARY && this.onClickSecondary))) {
+                this.pressedByButton = event.button
             }
         } else {
             this.pressedByButton = null
         }
         let stateChanged = this.pressedByButton !== oldState
-        this.children.forEach((child) => stateChanged = child.checkClick(cx, cy, button) || stateChanged)
+        this.children.forEach((child) => stateChanged = child.checkClick(event) || stateChanged)
         return stateChanged
     }
 
-    checkRelease(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
+    checkRelease(event: GuiReleaseEvent): boolean {
         if (this.isInactive()) return false
-        const inRect = this.isInRect(cx, cy)
+        const inRect = this.isInRect(event.sx, event.sy)
         if (inRect && this.pressedByButton !== null) {
-            this.clicked(cx, cy, button)
+            this.clicked(event)
         }
         let stateChanged = false
-        this.children.forEach((child) => stateChanged = child.checkRelease(cx, cy, button) || stateChanged)
+        this.children.forEach((child) => stateChanged = child.checkRelease(event) || stateChanged)
         stateChanged = this.pressedByButton !== null || stateChanged
         this.pressedByButton = null
         return stateChanged
     }
 
-    clicked(cx: number, cy: number, button: MOUSE_BUTTON) {
-        if (button === MOUSE_BUTTON.MAIN) {
+    clicked(event: GuiClickEvent) {
+        if (event.button === MOUSE_BUTTON.MAIN) {
             if (this.onClick) {
                 this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
                 this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
-                this.onClick(cx, cy)
+                this.onClick(event.sx, event.sy)
             }
-        } else if (button === MOUSE_BUTTON.SECONDARY) {
+        } else if (event.button === MOUSE_BUTTON.SECONDARY) {
             if (this.onClickSecondary) {
                 this.publishEvent(new ChangeCursor(Cursor.Pointer_Okay, 1000))
                 this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
-                this.onClickSecondary(cx, cy)
+                this.onClickSecondary(event.sx, event.sy)
             }
         }
     }

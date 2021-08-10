@@ -10,6 +10,7 @@ import { Cursor } from '../screen/Cursor'
 import { OffscreenWorker } from '../worker/OffscreenWorker'
 import { BaseElement } from './base/BaseElement'
 import { Panel } from './base/Panel'
+import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from './event/GuiEvent'
 
 export abstract class GuiWorker extends OffscreenWorker {
     lastAnimationRequest: number
@@ -53,11 +54,11 @@ export abstract class GuiWorker extends OffscreenWorker {
         if (hit) {
             this.publishEvent(new ChangeCursor(Cursor.Pointer_Standard)) // TODO don't spam so many events?!
             if (event.eventEnum === POINTER_EVENT.MOVE) {
-                this.rootElement.checkHover(sx, sy)
+                this.rootElement.checkHover(new GuiHoverEvent(sx, sy))
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {
-                this.rootElement.checkClick(sx, sy, event.button)
+                this.rootElement.checkClick(new GuiClickEvent(sx, sy, event.button))
             } else if (event.eventEnum === POINTER_EVENT.UP) {
-                this.rootElement.checkRelease(sx, sy, event.button)
+                this.rootElement.checkRelease(new GuiReleaseEvent(sx, sy, event.button))
             }
         } else if (event.eventEnum === POINTER_EVENT.MOVE) {
             this.rootElement.release()

@@ -1,6 +1,6 @@
 import { MenuItemCfg } from '../../cfg/MenuItemCfg'
-import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { BaseElement } from '../base/BaseElement'
+import { GuiClickEvent } from '../event/GuiEvent'
 import { GuiResourceCache } from '../GuiResourceCache'
 import { IconPanelButton } from './IconPanelButton'
 
@@ -20,9 +20,9 @@ export class IconPanelToggleButton extends IconPanelButton {
         this.imgOnDisabled = GuiResourceCache.getImageOrNull(menuItemOnCfg.disabledFile)
     }
 
-    clicked(cx: number, cy: number, button: MOUSE_BUTTON) {
+    clicked(event: GuiClickEvent) {
         this.toggleState = !this.toggleState
-        super.clicked(cx, cy, button)
+        super.clicked(event)
     }
 
     updateState(autoRedraw: boolean = true): boolean {

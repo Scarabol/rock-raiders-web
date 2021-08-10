@@ -1,5 +1,6 @@
 import { ButtonCfg } from '../../cfg/ButtonCfg'
 import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
+import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { BaseElement } from './BaseElement'
 import { Button } from './Button'
 
@@ -15,52 +16,51 @@ export class ToggleButton extends Button {
         this.toggleState = false
     }
 
-    checkHover(cx: number, cy: number): boolean {
-        if (this.isInactive()) return false
-        const inRect = this.isInRect(cx, cy)
-        let updated = this.hover !== inRect
+    checkHover(event: GuiHoverEvent): void {
+        if (this.isInactive()) return
+        const inRect = this.isInRect(event.sx, event.sy)
+        event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
         this.hover = inRect
         if (!this.hover && !this.toggleState) this.pressedByButton = null
         // TODO start tooltip timeout (if not already started)
-        this.children.forEach((child) => updated = child.checkHover(cx, cy) || updated)
-        if (updated) this.notifyRedraw()
-        return updated
+        this.children.forEach((child) => child.checkHover(event))
+        if (event.hoverStateChanged) this.notifyRedraw()
     }
 
-    checkClick(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
+    checkClick(event: GuiClickEvent): boolean {
         if (this.isInactive()) return false
         const oldState = this.pressedByButton
-        if (this.isInRect(cx, cy) || this.toggleState) {
-            if (this.pressedByButton === null && ((button === MOUSE_BUTTON.MAIN && this.onClick) ||
-                (button === MOUSE_BUTTON.SECONDARY && this.onClickSecondary))) {
-                this.pressedByButton = button
+        if (this.isInRect(event.sx, event.sy) || this.toggleState) {
+            if (this.pressedByButton === null && ((event.button === MOUSE_BUTTON.MAIN && this.onClick) ||
+                (event.button === MOUSE_BUTTON.SECONDARY && this.onClickSecondary))) {
+                this.pressedByButton = event.button
             }
         } else {
             this.pressedByButton = null
         }
         let updated = this.pressedByButton !== oldState
-        this.children.forEach((child) => updated = child.checkClick(cx, cy, button) || updated)
+        this.children.forEach((child) => updated = child.checkClick(event) || updated)
         if (updated) this.notifyRedraw()
         return updated
     }
 
-    checkRelease(cx: number, cy: number, button: MOUSE_BUTTON): boolean {
+    checkRelease(event: GuiReleaseEvent): boolean {
         if (this.isInactive()) return false
-        const inRect = this.isInRect(cx, cy)
+        const inRect = this.isInRect(event.sx, event.sy)
         let updated = inRect && this.pressedByButton !== null
         if (updated) {
-            this.clicked(cx, cy, button)
-            this.pressedByButton = (updated && this.toggleState) ? button : null
+            this.clicked(event)
+            this.pressedByButton = (updated && this.toggleState) ? event.button : null
             this.hover = inRect
         }
-        this.children.forEach((child) => updated = child.checkRelease(cx, cy, button) || updated)
+        this.children.forEach((child) => updated = child.checkRelease(event) || updated)
         if (updated) this.notifyRedraw()
         return updated
     }
 
-    clicked(cx: number, cy: number, button: MOUSE_BUTTON) {
+    clicked(event: GuiClickEvent) {
         this.toggleState = !this.toggleState
-        super.clicked(cx, cy, button)
+        super.clicked(event)
     }
 
     release(): boolean {
