@@ -21,6 +21,7 @@ export class AnimationEntityType {
     fireNullName: string = null
     cameraNullName: string = null
     cameraNullFrames: number = null
+    lowPolyBodies: Map<string, SceneMesh> = new Map()
     mediumPolyBodies: Map<string, SceneMesh> = new Map()
     highPolyBodies: Map<string, SceneMesh> = new Map()
     fPPolyBodies: Map<string, SceneMesh> = new Map()

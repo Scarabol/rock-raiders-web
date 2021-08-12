@@ -61,17 +61,13 @@ export class AnimEntityLoader {
             } else if (rootKey.equalsIgnoreCase('CameraFlipDir')) {
                 // XXX what is this? flip upside down when hanging from rm?
             } else if (rootKey.equalsIgnoreCase('HighPoly')) {
-                Object.keys(value).forEach((key) => {
-                    const polyKey = key.startsWith('!') ? key.slice(1) : key
-                    const mesh = ResourceManager.getLwoModel(`${this.path + value[key]}.lwo`)
-                    this.entityType.highPolyBodies.set(polyKey.toLowerCase(), mesh)
-                })
+                this.parsePolyBodies(value, this.entityType.highPolyBodies)
             } else if (rootKey.equalsIgnoreCase('MediumPoly')) {
-                // TODO implement medium poly parsing
+                this.parsePolyBodies(value, this.entityType.mediumPolyBodies)
             } else if (rootKey.equalsIgnoreCase('LowPoly')) {
-                // TODO implement low poly parsing
+                this.parsePolyBodies(value, this.entityType.lowPolyBodies)
             } else if (rootKey.equalsIgnoreCase('FPPoly')) {
-                // TODO implement first person poly parsing
+                this.parsePolyBodies(value, this.entityType.fPPolyBodies)
             } else if (rootKey.equalsIgnoreCase('Activities')) {
                 this.parseActivities(value)
             } else if (rootKey.equalsIgnoreCase('Upgrades')) {
@@ -102,6 +98,14 @@ export class AnimEntityLoader {
         this.finalizeAnimations()
 
         return this.entityType
+    }
+
+    private parsePolyBodies(value, polyBodies: Map<string, SceneMesh>) {
+        Object.keys(value).forEach((key) => {
+            const polyKey = key.startsWith('!') ? key.slice(1) : key
+            const mesh = ResourceManager.getLwoModel(`${this.path + value[key]}.lwo`)
+            polyBodies.set(polyKey.toLowerCase(), mesh)
+        })
     }
 
     private parseActivities(value: any) {
@@ -185,6 +189,7 @@ export class AnimEntityLoader {
         animation.animatedPolys.forEach((body) => {
             let model = this.entityType.highPolyBodies.get(body.lowerName)
             if (!model) model = this.entityType.mediumPolyBodies.get(body.lowerName)
+            if (!model) model = this.entityType.lowPolyBodies.get(body.lowerName)
             if (!model) model = body.model
             const polyModel = model.clone()
             animation.polyList.push(polyModel)

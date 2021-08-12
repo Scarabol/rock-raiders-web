@@ -123,7 +123,7 @@ export class WadLoader {
     }
 
     loadLWOFile(lwoFilepath: string, callback: (assetNames: string[], obj: any) => any) {
-        let lwoContent
+        let lwoContent = null
         try {
             lwoContent = this.wad0File.getEntryBuffer(lwoFilepath)
         } catch (e) {
@@ -139,7 +139,6 @@ export class WadLoader {
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_PipeL.lwo')) {
                     console.error(`Could not load LWO file ${lwoFilepath}; Error: ${e}`)
                 }
-                lwoContent = {}
             }
         }
         callback([lwoFilepath], lwoContent)
