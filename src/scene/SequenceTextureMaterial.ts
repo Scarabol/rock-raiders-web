@@ -1,4 +1,4 @@
-import { DoubleSide, MeshPhongMaterial, Texture } from 'three'
+import { MeshPhongMaterial, Texture } from 'three'
 import { SEQUENCE_TEXTURE_INTERVAL_MS } from '../params'
 
 export class SequenceTextureMaterial extends MeshPhongMaterial {
@@ -8,7 +8,6 @@ export class SequenceTextureMaterial extends MeshPhongMaterial {
 
     constructor(name: string) {
         super({
-            side: DoubleSide,
             alphaToCoverage: true,
             shininess: 0,
         })
