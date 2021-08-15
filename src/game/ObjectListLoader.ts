@@ -14,12 +14,15 @@ import { LavaMonster } from './model/monster/LavaMonster'
 import { RockMonster } from './model/monster/RockMonster'
 import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
+import { RaiderTrainings } from './model/raider/RaiderTraining'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
+    static numTestRaider: number = 0
+
     static loadObjectList(objectList: Map<string, ObjectListEntryCfg>, disableStartTeleport: boolean, sceneMgr: SceneManager, entityMgr: EntityManager) {
         const vehicleKeyToDriver = new Map<string, Raider>()
         const vehicleByKey = new Map<string, VehicleEntity>()
@@ -63,6 +66,17 @@ export class ObjectListLoader {
                 case EntityType.TELEPORT_BIG:
                     const entity = BuildingFactory.createBuildingFromType(entityType, sceneMgr, entityMgr)
                     entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
+                    if (entityType === EntityType.TOOLSTATION) {
+                        for (let c = 0; c < this.numTestRaider; c++) {
+                            const raider = new Raider(sceneMgr, entityMgr)
+                            raider.sceneEntity.changeActivity()
+                            raider.sceneEntity.makeSelectable(raider)
+                            raider.sceneEntity.addToScene(entity.primaryPathSurface.getRandomPosition(), radHeading - Math.PI)
+                            RaiderTrainings.values.forEach((t) => raider.addTraining(t))
+                            entityMgr.raiders.push(raider)
+                            EventBus.publishEvent(new RaidersChangedEvent(entityMgr))
+                        }
+                    }
                     break
                 case EntityType.CRYSTAL:
                     entityMgr.placeMaterial(new Crystal(sceneMgr, entityMgr), worldPos)

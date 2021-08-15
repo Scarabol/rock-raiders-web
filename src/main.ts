@@ -3,6 +3,7 @@ import { GithubBox } from '../site/github/github-box'
 import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
 import { getRandomInclusive } from './core/Util'
 import { GameState } from './game/model/GameState'
+import { ObjectListLoader } from './game/ObjectListLoader'
 import { DEV_MODE } from './params'
 import { ResourceManager } from './resource/ResourceManager'
 import { GameScreen } from './screen/GameScreen'
@@ -73,6 +74,7 @@ ResourceManager.onLoadDone = () => {
     if (DEV_MODE && entry) {
         GameState.numOre = Number(params.get('numOre')) || 0
         GameState.numCrystal = Number(params.get('numCrystal')) || 0
+        ObjectListLoader.numTestRaider = Number(params.get('numTestRaider')) || 0
         if (entry === 'level') mainMenuScreen.showLevelSelection()
         else if (entry === 'reward') rewardScreen.show()
         else if (entry === 'random') mainMenuScreen.selectLevel(`Level${(`00${getRandomInclusive(1, 25)}`).substr(-2)}`)
