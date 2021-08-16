@@ -1,5 +1,4 @@
 export enum PriorityIdentifier { // This needs to be an actual enum, because it is serialized between workers
-
     TRAIN,
     GET_IN,
     CRYSTAL,

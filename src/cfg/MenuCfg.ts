@@ -2,6 +2,7 @@ import { BaseConfig } from './BaseConfig'
 import { MenuEntryCfg } from './MenuEntryCfg'
 
 export class MenuCfg extends BaseConfig {
+    // noinspection JSUnusedGlobalSymbols
     menuCount: number = 0
     menus: MenuEntryCfg[] = []
 

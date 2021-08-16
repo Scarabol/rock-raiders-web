@@ -3,9 +3,9 @@
     "outDir": "./dist/",
     "target": "ES6",
     "module": "ESNext",
-    "sourceMap": true,
-    "allowJs": true,
-    "moduleResolution": "Node"
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "sourceMap": true
   },
   "exclude": [
     "node_modules"

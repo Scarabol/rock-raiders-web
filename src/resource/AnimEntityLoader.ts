@@ -73,13 +73,13 @@ export class AnimEntityLoader {
             } else if (rootKey.equalsIgnoreCase('FPPoly')) {
                 // TODO implement first person poly parsing
             } else if (rootKey.equalsIgnoreCase('Activities')) {
-                this.parseAnimations(value)
+                this.parseActivities(value)
             } else if (rootKey.equalsIgnoreCase('Upgrades')) {
                 this.parseUpgrades(value)
             } else if (value['lwsfile']) { // some activities are not listed in the Activities section... try parse them anyway
                 if (!this.knownAnimations.includes(rootKey)) {
                     try {
-                        this.parseActivity(value, `activity_${rootKey}`)
+                        this.parseActivityEntry(value, `activity_${rootKey}`)
                     } catch (e) {
                         if (this.verbose) console.warn(`Could not parse unlisted activity: ${rootKey}`, value, e)
                     }
@@ -104,12 +104,12 @@ export class AnimEntityLoader {
         return this.entityType
     }
 
-    private parseAnimations(value) {
+    private parseActivities(value: any) {
         Object.entries<string>(value).forEach(([activityName, keyName]) => {
             try {
                 this.knownAnimations.push(keyName.toLowerCase())
                 const act = iGet(this.cfgRoot, keyName)
-                this.parseActivity(act, activityName.toLowerCase())
+                this.parseActivityEntry(act, activityName.toLowerCase())
             } catch (e) {
                 console.error(e)
                 console.log(this.cfgRoot)
@@ -119,7 +119,7 @@ export class AnimEntityLoader {
         })
     }
 
-    private parseActivity(act: any, lActivityName: string) {
+    private parseActivityEntry(act: any, lActivityName: string) {
         const file = iGet(act, 'FILE')
         const isLws = iGet(act, 'LWSFILE') === true
         const transcoef = iGet(act, 'TRANSCOEF')
@@ -169,7 +169,7 @@ export class AnimEntityLoader {
             }
 
             animation.polyRootGroup.scale.setScalar(this.entityType.scale)
-            animation.animatedPolys.forEach((body, index) => { // not all bodies may have been added in first iteration
+            animation.animatedPolys.forEach((body, index) => {
                 const polyPart = animation.polyList[index]
                 const parentInd = body.parentObjInd
                 if (parentInd !== undefined && parentInd !== null) { // can be 0

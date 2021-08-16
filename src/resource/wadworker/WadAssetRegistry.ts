@@ -124,8 +124,8 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         Object.values(rewardCfg.fonts).forEach(imgPath => this.addAsset(this.wadLoader.loadFontImageAsset, imgPath))
         rewardCfg.images.forEach(img => this.addAsset(this.wadLoader.loadAlphaImageAsset, img.filePath))
         rewardCfg.boxImages.forEach(img => this.addAsset(this.wadLoader.loadWadImageAsset, img.filePath))
-        rewardCfg.saveButton.splice(0, 4).forEach(img => this.addAsset(this.wadLoader.loadWadImageAsset, img))
-        rewardCfg.advanceButton.splice(0, 4).forEach(img => this.addAsset(this.wadLoader.loadWadImageAsset, img))
+        rewardCfg.saveButton.splice(0, 4).forEach((img) => this.addAsset(this.wadLoader.loadWadImageAsset, img))
+        rewardCfg.advanceButton.splice(0, 4).forEach((img) => this.addAsset(this.wadLoader.loadWadImageAsset, img))
         // sounds
         const sndPathToKeys = new Map<string, string[]>()
         const samplesConf = mainConf['Samples']

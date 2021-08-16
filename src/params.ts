@@ -17,6 +17,7 @@ export const ITEM_ACTION_RANGE_SQ = 49
 export const UPDATE_INTERVAL_MS = Math.round(1000 / 30)
 export const CAMERA_MIN_DISTANCE = 2 // tiles
 export const CAMERA_MAX_DISTANCE = 8 // tiles
+export const BRICK_ORE_VALUE = 5
 
 // native constants (do not change)
 

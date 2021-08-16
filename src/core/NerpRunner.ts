@@ -21,7 +21,7 @@ export class NerpRunner {
     timer: number = 0
     registers = new Array(8).fill(0)
     timers = new Array(4).fill(0)
-    scriptLines = [] // contains humand readable script strings
+    scriptLines = [] // contains human readable script strings
     statements = [] // contains parsed statements for execution
     macrosByName = {}
     labelsByName = {}
@@ -387,8 +387,7 @@ export class NerpRunner {
         if (this.halted) return
         try {
             if (this.debug) {
-                console.log(`Executing following script
-${this.scriptLines.join('\n')}`)
+                console.log(`Executing following script\\n${this.scriptLines.join('\n')}`)
                 console.log(`Registers: ${this.registers}`)
             }
             for (this.programCounter = 0; this.programCounter < this.statements.length; this.programCounter++) {

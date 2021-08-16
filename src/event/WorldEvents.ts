@@ -1,6 +1,7 @@
 import { EntityType } from '../game/model/EntityType'
 import { GameState } from '../game/model/GameState'
 import { SupervisedJob } from '../game/Supervisor'
+import { BRICK_ORE_VALUE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
@@ -62,7 +63,7 @@ export class MaterialAmountChanged extends WorldEvent {
         super(EventKey.MATERIAL_AMOUNT_CHANGED)
         this.numCrystal = GameState.numCrystal
         this.neededCrystal = GameState.neededCrystals
-        this.totalOre = GameState.numOre + GameState.numBrick * 5
+        this.totalOre = GameState.numOre + GameState.numBrick * BRICK_ORE_VALUE
     }
 }
 

@@ -32,7 +32,7 @@ export class LWSCLoader {
         this.lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
             .split('\n')
-            .map(l => l.trim())
+            .map((l) => l.trim())
 
         if (this.lines[0] !== 'LWSC') {
             throw new Error('Invalid start of file! Expected \'LWSC\' in first line')

@@ -16,7 +16,7 @@ export class DialogCfg extends BaseConfig {
 
     parseValue(lCfgKeyName: string, cfgValue: any): any {
         if (lCfgKeyName.endsWith('window')) {
-            return new Rect(cfgValue)
+            return Rect.fromArray(cfgValue)
         }
         return super.parseValue(lCfgKeyName, cfgValue)
     }

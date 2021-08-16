@@ -56,7 +56,6 @@ export class RewardScreen extends BaseScreen {
         this.resultsLayer.handlePointerEvent = ((event) => {
             if (event.eventEnum === POINTER_EVENT.UP) {
                 this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
-                this.uncoverTimeout = null
                 this.resultIndex = this.resultLastIndex
                 this.btnSave.visible = true
                 this.btnAdvance.visible = true
