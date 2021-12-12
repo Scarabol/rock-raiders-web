@@ -61,7 +61,7 @@ export abstract class OffscreenLayer extends ScreenLayer {
 
     abstract onMessage(msg): boolean
 
-    protected sendMessage(message: OffscreenWorkerMessage, transfer?: OffscreenCanvas[]) {
+    protected sendMessage(message: OffscreenWorkerMessage, transfer?: (Transferable | OffscreenCanvas)[]) {
         this.worker.postMessage(message, transfer)
     }
 

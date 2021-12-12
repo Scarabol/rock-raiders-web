@@ -37,7 +37,7 @@ module.exports = (env, argv) => {
         },
         devtool: 'source-map',
         devServer: {
-            contentBase: './site',
+            static: './site',
         },
     }
 }
