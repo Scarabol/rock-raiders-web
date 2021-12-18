@@ -137,12 +137,9 @@ export class BuildingsChangedEvent extends LocalEvent {
         })
     }
 
-    static countUsable(event: BuildingsChangedEvent, building: EntityType, minLevel: number = 0) {
-        let result = 0
-        event.usableBuildingsByTypeAndLevel.getOrUpdate(building, () => new Map()).forEach((count, level) => {
-            if (level >= minLevel) result += count
-        })
-        return result
+    // needs static, because events might get de-/serialized, which removes class methods
+    static hasUsable(event: BuildingsChangedEvent, building: EntityType, minLevel: number = 0): boolean {
+        return event.usableBuildingsByTypeAndLevel.get(building)?.some((level) => level >= minLevel)
     }
 }
 

@@ -9,7 +9,7 @@ import { SelectBasePanel } from './SelectBasePanel'
 export class SelectWallPanel extends SelectBasePanel {
     isDrillable: boolean = false
     isReinforcable: boolean = false
-    numToolstationsLevel2: number = 0
+    hasToolstationLevel2: boolean = false
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 4, onBackPanel)
@@ -20,7 +20,7 @@ export class SelectWallPanel extends SelectBasePanel {
         itemReinforce.isDisabled = () => !this.isReinforcable
         itemReinforce.onClick = () => this.publishEvent(new CreateReinforceJob())
         const itemDynamite = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Dynamite')
-        itemDynamite.isDisabled = () => this.numToolstationsLevel2 < 1
+        itemDynamite.isDisabled = () => !this.hasToolstationLevel2
         itemDynamite.onClick = () => this.publishEvent(new CreateDynamiteJob())
         const itemDeselect = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig')
         itemDeselect.isDisabled = () => false
@@ -31,7 +31,7 @@ export class SelectWallPanel extends SelectBasePanel {
             this.updateAllButtonStates()
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
-            this.numToolstationsLevel2 = BuildingsChangedEvent.countUsable(event, EntityType.TOOLSTATION, 2)
+            this.hasToolstationLevel2 = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION, 2)
         })
     }
 
@@ -39,6 +39,6 @@ export class SelectWallPanel extends SelectBasePanel {
         super.reset()
         this.isDrillable = false
         this.isReinforcable = false
-        this.numToolstationsLevel2 = 0
+        this.hasToolstationLevel2 = false
     }
 }

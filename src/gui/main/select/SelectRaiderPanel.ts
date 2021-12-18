@@ -13,7 +13,7 @@ export class SelectRaiderPanel extends SelectBasePanel {
 
     someCarries: boolean = false
     everyHasMaxLevel: boolean = false
-    numToolstations: number = 0
+    hasToolstation: boolean = false
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 10, onBackPanel)
@@ -28,7 +28,7 @@ export class SelectRaiderPanel extends SelectBasePanel {
         this.getToolItem.isDisabled = () => false
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DropBirdScarer')
         const upgradeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeMan')
-        upgradeItem.isDisabled = () => this.everyHasMaxLevel || this.numToolstations < 1
+        upgradeItem.isDisabled = () => this.everyHasMaxLevel || !this.hasToolstation
         upgradeItem.onClick = () => this.publishEvent(new RaiderUpgrade())
         this.trainItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainSkill')
         this.trainItem.isDisabled = () => false
@@ -43,7 +43,7 @@ export class SelectRaiderPanel extends SelectBasePanel {
             this.updateAllButtonStates()
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
-            this.numToolstations = BuildingsChangedEvent.countUsable(event, EntityType.TOOLSTATION)
+            this.hasToolstation = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION)
             this.updateAllButtonStates()
         })
     }
@@ -52,6 +52,6 @@ export class SelectRaiderPanel extends SelectBasePanel {
         super.reset()
         this.someCarries = false
         this.everyHasMaxLevel = false
-        this.numToolstations = 0
+        this.hasToolstation = false
     }
 }

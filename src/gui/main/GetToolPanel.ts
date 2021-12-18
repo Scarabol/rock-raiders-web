@@ -9,7 +9,7 @@ import { IconPanelButton } from './IconPanelButton'
 import { IconSubPanel } from './IconSubPanel'
 
 export class GetToolPanel extends IconSubPanel {
-    numUsableToolstations: number = 0
+    hasToolstation: boolean = false
     everyHasTool: Map<RaiderTool, boolean> = new Map()
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
@@ -23,7 +23,7 @@ export class GetToolPanel extends IconSubPanel {
         this.addGetToolItem('InterfaceImages', 'Interface_MenuItem_GetPusherGun', RaiderTool.PUSHERGUN)
         this.addGetToolItem('InterfaceImages', 'Interface_MenuItem_GetBirdScarer', RaiderTool.BIRDSCARER)
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
-            this.numUsableToolstations = BuildingsChangedEvent.countUsable(event, EntityType.TOOLSTATION)
+            this.hasToolstation = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION)
             this.updateAllButtonStates()
         })
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
@@ -34,14 +34,14 @@ export class GetToolPanel extends IconSubPanel {
 
     addGetToolItem(menuItemGroup: string, itemKey: string, tool: RaiderTool): IconPanelButton {
         const menuItem = super.addMenuItem(menuItemGroup, itemKey)
-        menuItem.isDisabled = () => this.numUsableToolstations < 1 || !!this.everyHasTool.get(tool)
+        menuItem.isDisabled = () => !this.hasToolstation || !!this.everyHasTool.get(tool)
         menuItem.onClick = () => this.publishEvent(new SelectedRaiderPickTool(tool))
         return menuItem
     }
 
     reset() {
         super.reset()
-        this.numUsableToolstations = 0
+        this.hasToolstation = false
         this.everyHasTool = new Map()
     }
 }

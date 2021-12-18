@@ -31,9 +31,9 @@ export class MainPanel extends Panel {
     selectSitePanel: SelectSitePanel
 
     numRequestedRaiders: number = 0
-    numToolstations: number = 0
-    numTeleportPads: number = 0
-    numBarracks: number = 0
+    hasToolstation: boolean = false
+    hasTeleportPad: boolean = false
+    hasBarracks: boolean = false
     hasMaxRaiders: boolean = false
 
     constructor(parent: BaseElement) {
@@ -65,7 +65,7 @@ export class MainPanel extends Panel {
         const selectFencePanel = this.addSubPanel(new SelectFencePanel(this, this.mainPanel))
 
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
-        teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || (this.numToolstations < 1 && this.numTeleportPads < 1)
+        teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || !this.hasToolstation || !this.hasTeleportPad
         teleportRaider.updateState()
         teleportRaider.onClick = () => this.publishEvent(new ChangeRaiderSpawnRequest(true))
         teleportRaider.onClickSecondary = () => {
@@ -98,9 +98,9 @@ export class MainPanel extends Panel {
             else this.selectSubPanel(this.mainPanel)
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
-            this.numToolstations = BuildingsChangedEvent.countUsable(event, EntityType.TOOLSTATION)
-            this.numTeleportPads = BuildingsChangedEvent.countUsable(event, EntityType.TELEPORT_PAD)
-            this.numBarracks = BuildingsChangedEvent.countUsable(event, EntityType.BARRACKS)
+            this.hasToolstation = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION)
+            this.hasTeleportPad = BuildingsChangedEvent.hasUsable(event, EntityType.TELEPORT_PAD)
+            this.hasBarracks = BuildingsChangedEvent.hasUsable(event, EntityType.BARRACKS)
             teleportRaider.updateState()
         })
         this.registerEventListener(EventKey.RAIDER_AMOUNT_CHANGED, (event: RaidersAmountChangedEvent) => {
@@ -120,9 +120,9 @@ export class MainPanel extends Panel {
         this.mainPanel.movedIn = false
         this.mainPanel.updatePosition()
         this.numRequestedRaiders = 0
-        this.numToolstations = 0
-        this.numTeleportPads = 0
-        this.numBarracks = 0
+        this.hasToolstation = false
+        this.hasTeleportPad = false
+        this.hasBarracks = false
         this.hasMaxRaiders = false
     }
 

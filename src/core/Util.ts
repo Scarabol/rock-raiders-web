@@ -95,6 +95,8 @@ declare global {
         getOrUpdate(key: K, updateCallback: () => V): V
 
         getOrDefault(key: K, fallback: V): V
+
+        some(predicate: (value: V) => boolean): boolean
     }
 
     interface String {
@@ -150,6 +152,13 @@ Map.prototype.getOrUpdate = function <K, V>(key: K, updateCallback: () => V): V 
 
 Map.prototype.getOrDefault = function <K, V>(key: K, fallback: V): V {
     return this.has(key) ? this.get(key) : fallback
+}
+
+Map.prototype.some = function <K, V>(predicate: (element: V) => boolean): boolean {
+    for (const value of this.values()) {
+        if (predicate(value)) return true
+    }
+    return false
 }
 
 String.prototype.equalsIgnoreCase = function (other: string): boolean {
