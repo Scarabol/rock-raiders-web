@@ -29,8 +29,6 @@ export class BuildPlacementMarker {
     powerPathMarkerSecondary: BuildPlacementMarkerMesh = null
     waterPathMarker: BuildPlacementMarkerMesh = null
     heading: number = 0
-    sdx: number = 0
-    sdz: number = 0
     lastCheck: boolean = false
     buildingType: BuildingType = null
 
@@ -64,22 +62,17 @@ export class BuildPlacementMarker {
         }
     }
 
-    private updateAllMarker(worldPosition: Vector2 = null): boolean {
-        // TODO use surface height offsets, refactor terrain map/data handling before
-        this.buildingMarkerPrimary.visible = true
-        this.buildingMarkerPrimary.position.copy(this.sceneMgr.getFloorPosition(new Vector2(Math.floor(worldPosition.x / TILESIZE) * TILESIZE, Math.floor(worldPosition.y / TILESIZE) * TILESIZE)))
+    private updateAllMarker(worldPosition: Vector2): boolean {
+        this.buildingMarkerPrimary.updateMesh(worldPosition, new Vector2(0, 0))
         const sdxv = worldPosition.x - this.buildingMarkerPrimary.position.x - TILESIZE / 2
         const sdzv = worldPosition.y - this.buildingMarkerPrimary.position.z - TILESIZE / 2
         const sdx = Math.abs(sdxv) > Math.abs(sdzv) ? Math.sign(sdxv) : 0
         const sdz = Math.abs(sdzv) > Math.abs(sdxv) ? Math.sign(sdzv) : 0
-        if (this.sdx === sdx && this.sdz === sdz) return this.lastCheck
-        this.sdx = sdx
-        this.sdz = sdz
         this.heading = Math.atan2(sdz, sdx)
-        this.buildingMarkerSecondary.updateState(this.buildingType.secondaryBuildingPart, this.heading, this.buildingMarkerPrimary.position)
-        this.powerPathMarkerPrimary.updateState(this.buildingType.primaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
-        this.powerPathMarkerSecondary.updateState(this.buildingType.secondaryPowerPath, this.heading, this.buildingMarkerPrimary.position)
-        this.waterPathMarker.updateState(this.buildingType.waterPathSurface, this.heading, this.buildingMarkerPrimary.position)
+        this.buildingMarkerSecondary.updateMesh(worldPosition, this.buildingType.secondaryBuildingPart, this.heading)
+        this.powerPathMarkerPrimary.updateMesh(worldPosition, this.buildingType.primaryPowerPath, this.heading)
+        this.powerPathMarkerSecondary.updateMesh(worldPosition, this.buildingType.secondaryPowerPath, this.heading)
+        this.waterPathMarker.updateMesh(worldPosition, this.buildingType.waterPathSurface, this.heading)
         const allSurfacesAreGround = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
             .filter((c) => c.visible).map((c) => this.sceneMgr.terrain.getSurfaceFromWorld(c.position)).every((s) => s.surfaceType === SurfaceType.GROUND)
         this.lastCheck = allSurfacesAreGround && (

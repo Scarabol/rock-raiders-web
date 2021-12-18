@@ -1,22 +1,15 @@
-import { Mesh, MeshPhongMaterial, Vector3 } from 'three'
+import { BufferGeometry, Mesh, MeshPhongMaterial, Vector2 } from 'three'
 import { TILESIZE } from '../../../params'
 import { SceneManager } from '../../SceneManager'
 import { Surface } from '../map/Surface'
-import { SurfaceGeometry } from '../map/SurfaceGeometry'
-import { WALL_TYPE } from '../map/WallType'
 
 export class BuildPlacementMarkerMesh extends Mesh {
-    static readonly geometry = SurfaceGeometry.create(WALL_TYPE.WALL,
-        new Vector3(0, 0, 0), new Vector3(TILESIZE, 0, 0),
-        new Vector3(TILESIZE, 0, TILESIZE), new Vector3(0, 0, TILESIZE),
-        1, 1, 1, 1,
-    )
-
     sceneMgr: SceneManager
     standardColor: number
+    lastSurfaceMesh: Mesh
 
     constructor(sceneMgr: SceneManager, standardColor: number) {
-        super(BuildPlacementMarkerMesh.geometry, new MeshPhongMaterial({
+        super(new BufferGeometry(), new MeshPhongMaterial({
             shininess: 0,
             transparent: true,
             opacity: 0.4,
@@ -25,15 +18,20 @@ export class BuildPlacementMarkerMesh extends Mesh {
         this.sceneMgr = sceneMgr
         this.standardColor = standardColor
         this.visible = false
+        this.scale.setScalar(TILESIZE)
     }
 
-    updateState(position: { x: number, y: number }, heading: number, primaryPosition: Vector3) {
-        this.visible = !!position
-        if (position) {
-            this.position.set(position.x, 0, position.y).multiplyScalar(TILESIZE)
-                .applyAxisAngle(new Vector3(0, 1, 0), -heading + Math.PI / 2)
-                .add(primaryPosition)
-        }
+    updateMesh(worldPosition: Vector2, offset: Vector2, heading: number = 0) {
+        this.visible = !!offset
+        if (!this.visible) return
+        const posWithOffset = offset.clone().multiplyScalar(TILESIZE).rotateAround(new Vector2(0, 0), heading - Math.PI / 2).add(worldPosition)
+        const surfaceMesh = this.sceneMgr.terrain.getSurfaceFromWorld2D(posWithOffset).mesh
+        if (surfaceMesh === this.lastSurfaceMesh) return
+        this.lastSurfaceMesh = surfaceMesh
+        this.position.copy(surfaceMesh.position.clone().multiplyScalar(TILESIZE))
+        this.position.y += TILESIZE / 20
+        this.geometry?.dispose()
+        this.geometry = surfaceMesh.geometry.clone()
     }
 
     markAsValid(isValid: boolean) {
