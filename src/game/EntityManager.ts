@@ -1,7 +1,7 @@
 import { Vector2, Vector3 } from 'three'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { BuildingsChangedEvent, RaidersChangedEvent, SelectionChanged } from '../event/LocalEvents'
+import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged } from '../event/LocalEvents'
 import { JobCreateEvent } from '../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
@@ -169,7 +169,7 @@ export class EntityManager {
             r.entityMgr.raiders.push(r)
             EventBus.publishEvent(new RaiderDiscoveredEvent(r.sceneEntity.position.clone()))
         })
-        if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBus.publishEvent(new RaidersChangedEvent(this))
+        if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBus.publishEvent(new RaidersAmountChangedEvent(this))
         this.buildingsUndiscovered = EntityManager.removeInRect(this.buildingsUndiscovered, minX, maxX, minZ, maxZ, (b) => {
             b.updateEnergyState()
             b.entityMgr.buildings.push(b)

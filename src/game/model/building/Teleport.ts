@@ -1,7 +1,7 @@
 import { Vector2 } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
-import { RaidersChangedEvent } from '../../../event/LocalEvents'
+import { RaidersAmountChangedEvent } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
@@ -44,7 +44,7 @@ export abstract class Teleport {
             if (walkOutPos) entity.setJob(new MoveJob(walkOutPos))
             beamListing.remove(entity)
             listing.push(entity)
-            EventBus.publishEvent(new RaidersChangedEvent(entity.entityMgr))
+            EventBus.publishEvent(new RaidersAmountChangedEvent(entity.entityMgr))
         })
         beamListing.push(entity)
     }

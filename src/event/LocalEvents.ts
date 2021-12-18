@@ -146,14 +146,23 @@ export class BuildingsChangedEvent extends LocalEvent {
     }
 }
 
-export class RaidersChangedEvent extends LocalEvent {
-    numRaiders: number
+export class RaidersAmountChangedEvent extends LocalEvent {
+    hasRaider: boolean
+    hasMaxRaiders: boolean
+
+    constructor(entityMgr: EntityManager) {
+        super(EventKey.RAIDER_AMOUNT_CHANGED)
+        this.hasRaider = entityMgr.raiders.length > 0
+        this.hasMaxRaiders = entityMgr.hasMaxRaiders()
+    }
+}
+
+export class RaiderTrainingCompleteEvent extends LocalEvent {
     training: RaiderTraining
 
-    constructor(entityMgr: EntityManager, training: RaiderTraining = null) {
-        super(EventKey.RAIDERS_CHANGED)
-        this.numRaiders = entityMgr.raiders.length
-        this.training = training
+    constructor(training: RaiderTraining) {
+        super(EventKey.RAIDER_TRAINING_COMPLETE);
+        this.training = training;
     }
 }
 

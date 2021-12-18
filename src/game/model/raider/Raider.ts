@@ -1,6 +1,6 @@
 import { getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
-import { RaidersChangedEvent } from '../../../event/LocalEvents'
+import { RaidersAmountChangedEvent } from '../../../event/LocalEvents'
 import { SPIDER_SLIP_RANGE_SQ } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
@@ -133,7 +133,7 @@ export class Raider extends FulfillerEntity {
 
     beamUp() {
         super.beamUp()
-        EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr))
+        EventBus.publishEvent(new RaidersAmountChangedEvent(this.entityMgr))
     }
 
     disposeFromWorld(): void {

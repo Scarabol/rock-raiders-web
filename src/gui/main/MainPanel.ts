@@ -1,9 +1,9 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeRaiderSpawnRequest } from '../../event/GuiCommand'
-import { BuildingsChangedEvent, RaidersChangedEvent, SelectionChanged, SelectPanelType } from '../../event/LocalEvents'
+import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType } from '../../event/LocalEvents'
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
 import { EntityType } from '../../game/model/EntityType'
-import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, MAX_RAIDER_REQUEST } from '../../params'
+import { MAX_RAIDER_REQUEST } from '../../params'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { BuildingPanel } from './BuildingPanel'
@@ -34,7 +34,7 @@ export class MainPanel extends Panel {
     numToolstations: number = 0
     numTeleportPads: number = 0
     numBarracks: number = 0
-    numRaiders: number = 0
+    hasMaxRaiders: boolean = false
 
     constructor(parent: BaseElement) {
         super(parent)
@@ -65,8 +65,7 @@ export class MainPanel extends Panel {
         const selectFencePanel = this.addSubPanel(new SelectFencePanel(this, this.mainPanel))
 
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
-        teleportRaider.isDisabled = () => this.numRaiders >= this.getMaxRaiders() || this.numRequestedRaiders >= MAX_RAIDER_REQUEST ||
-            (this.numToolstations < 1 && this.numTeleportPads < 1)
+        teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || (this.numToolstations < 1 && this.numTeleportPads < 1)
         teleportRaider.updateState()
         teleportRaider.onClick = () => this.publishEvent(new ChangeRaiderSpawnRequest(true))
         teleportRaider.onClickSecondary = () => {
@@ -104,14 +103,10 @@ export class MainPanel extends Panel {
             this.numBarracks = BuildingsChangedEvent.countUsable(event, EntityType.BARRACKS)
             teleportRaider.updateState()
         })
-        this.registerEventListener(EventKey.RAIDERS_CHANGED, (event: RaidersChangedEvent) => {
-            this.numRaiders = event.numRaiders
+        this.registerEventListener(EventKey.RAIDER_AMOUNT_CHANGED, (event: RaidersAmountChangedEvent) => {
+            this.hasMaxRaiders = event.hasMaxRaiders
             teleportRaider.updateState()
         })
-    }
-
-    getMaxRaiders(): number {
-        return MAX_RAIDER_BASE + this.numBarracks * ADDITIONAL_RAIDER_PER_SUPPORT
     }
 
     reset() {
@@ -128,7 +123,7 @@ export class MainPanel extends Panel {
         this.numToolstations = 0
         this.numTeleportPads = 0
         this.numBarracks = 0
-        this.numRaiders = 0
+        this.hasMaxRaiders = false
     }
 
     addSubPanel<T extends IconSubPanel>(childPanel: T): T {

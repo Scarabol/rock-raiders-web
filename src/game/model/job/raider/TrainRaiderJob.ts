@@ -1,5 +1,5 @@
 import { EventBus } from '../../../../event/EventBus'
-import { RaidersChangedEvent } from '../../../../event/LocalEvents'
+import { RaiderTrainingCompleteEvent } from '../../../../event/LocalEvents'
 import { EntityManager } from '../../../EntityManager'
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
@@ -36,7 +36,7 @@ export class TrainRaiderJob extends RaiderJob {
     onJobComplete() {
         super.onJobComplete()
         this.raider.addTraining(this.training)
-        EventBus.publishEvent(new RaidersChangedEvent(this.entityMgr, this.training))
+        EventBus.publishEvent(new RaiderTrainingCompleteEvent(this.training))
     }
 
     getWorkActivity(): RaiderActivity {

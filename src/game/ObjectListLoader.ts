@@ -1,7 +1,7 @@
 import { MathUtils, Vector2 } from 'three'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { EventBus } from '../event/EventBus'
-import { RaidersChangedEvent } from '../event/LocalEvents'
+import { RaidersAmountChangedEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
 import { EntityManager } from './EntityManager'
 import { RockMonsterActivity } from './model/activities/RockMonsterActivity'
@@ -48,7 +48,7 @@ export class ObjectListLoader {
                     raider.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
                     if (raider.sceneEntity.visible) {
                         entityMgr.raiders.push(raider)
-                        EventBus.publishEvent(new RaidersChangedEvent(entityMgr))
+                        EventBus.publishEvent(new RaidersAmountChangedEvent(entityMgr))
                     } else {
                         entityMgr.raidersUndiscovered.push(raider)
                     }
@@ -74,7 +74,7 @@ export class ObjectListLoader {
                             raider.sceneEntity.addToScene(entity.primaryPathSurface.getRandomPosition(), radHeading - Math.PI)
                             RaiderTrainings.values.forEach((t) => raider.addTraining(t))
                             entityMgr.raiders.push(raider)
-                            EventBus.publishEvent(new RaidersChangedEvent(entityMgr))
+                            EventBus.publishEvent(new RaidersAmountChangedEvent(entityMgr))
                         }
                     }
                     break

@@ -6,7 +6,7 @@ import { GameEvent } from '../../event/GameEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
-import { BuildingsChangedEvent, PlaySoundEvent, RaidersChangedEvent } from '../../event/LocalEvents'
+import { BuildingsChangedEvent, PlaySoundEvent, RaidersAmountChangedEvent } from '../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -67,7 +67,7 @@ export abstract class OffscreenLayer extends ScreenLayer {
     reset() {
         this.sendMessage({type: WorkerMessageType.RESET})
         this.sendMessage({type: WorkerMessageType.GAME_EVENT, gameEvent: new BuildingsChangedEvent(this.entityMgr)})
-        this.sendMessage({type: WorkerMessageType.GAME_EVENT, gameEvent: new RaidersChangedEvent(this.entityMgr)})
+        this.sendMessage({type: WorkerMessageType.GAME_EVENT, gameEvent: new RaidersAmountChangedEvent(this.entityMgr)})
         this.sendMessage({type: WorkerMessageType.GAME_EVENT, gameEvent: new MaterialAmountChanged()})
     }
 

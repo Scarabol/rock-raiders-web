@@ -1,5 +1,5 @@
 import { EventKey } from '../../event/EventKeyEnum'
-import { BuildingsChangedEvent, RaidersChangedEvent } from '../../event/LocalEvents'
+import { BuildingsChangedEvent, RaidersAmountChangedEvent } from '../../event/LocalEvents'
 import { EntityType, getEntityTypeByName } from '../../game/model/EntityType'
 import { DEV_MODE } from '../../params'
 import { BaseElement } from '../base/BaseElement'
@@ -13,8 +13,8 @@ export abstract class DependencyCheckPanel extends IconSubPanel {
 
     protected constructor(parent: BaseElement, numOfItems: number, onBackPanel: Panel) {
         super(parent, numOfItems, onBackPanel)
-        this.registerEventListener(EventKey.RAIDERS_CHANGED, (event: RaidersChangedEvent) => {
-            this.hasRaider = event.numRaiders > 0
+        this.registerEventListener(EventKey.RAIDER_AMOUNT_CHANGED, (event: RaidersAmountChangedEvent) => {
+            this.hasRaider = event.hasRaider
             this.updateAllButtonStates()
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {

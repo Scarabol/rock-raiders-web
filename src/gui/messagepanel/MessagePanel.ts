@@ -1,7 +1,7 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
-import { AirLevelChanged, NerpMessage, PlaySoundEvent, RaidersChangedEvent } from '../../event/LocalEvents'
+import { AirLevelChanged, NerpMessage, PlaySoundEvent, RaiderTrainingCompleteEvent } from '../../event/LocalEvents'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { GuiResourceCache } from '../GuiResourceCache'
@@ -40,7 +40,7 @@ export class MessagePanel extends Panel {
         this.msgAirSupplyRunningOut = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
         this.msgGameCompleted = new TextInfoMessage(font, textInfoMessageConfig.textGameCompleted, this.img.width)
         this.msgManTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
-        this.registerEventListener(EventKey.RAIDERS_CHANGED, (event: RaidersChangedEvent) => event.training && this.setMessage(this.msgManTrained))
+        this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(this.msgManTrained))
         this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
         this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, (event: AirLevelChanged) => {
             this.airLevel = event.airLevel
