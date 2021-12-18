@@ -1,5 +1,5 @@
 import { CancelBuildMode, SelectBuildMode } from '../../event/GuiCommand'
-import { EntityType, getEntityTypeByName } from '../../game/model/EntityType'
+import { EntityType } from '../../game/model/EntityType'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { DependencyCheckPanel } from './DependencyCheckPanel'
@@ -26,20 +26,5 @@ export class BuildingPanel extends DependencyCheckPanel {
     addBuildMenuItem(itemKey: string, entityType: EntityType) {
         const item = this.addDependencyMenuItem(itemKey)
         item.onClick = () => this.publishEvent(new SelectBuildMode(entityType))
-    }
-
-    protected checkDependency(dependency: [string, number]): boolean {
-        const type = getEntityTypeByName(dependency[0])
-        const minLevel = dependency[1]
-        if (type === EntityType.PILOT) {
-            return this.hasRaider
-        } else {
-            const buildingsByLevel = this.discoveredBuildingsByTypeAndLevel.get(type)
-            let result = false
-            buildingsByLevel?.forEach((quantity, level) => {
-                if (level >= minLevel) result = result || quantity > 0
-            })
-            return result
-        }
     }
 }
