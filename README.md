@@ -107,7 +107,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Numbers above dynamite not shown as sprite (same issue as with sleeping rockies?)
 - Level 11 spams console with unreachable jobs
 - Work sounds missing for most of the jobs
-- Surfaces mesh positions should be at the center of their world position instead of 0,0,0
 - Show loading screen when starting a level
 - Two buttons in priority list can be hovered/pressed/released at the same time
 

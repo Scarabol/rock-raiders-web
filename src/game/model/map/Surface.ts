@@ -274,10 +274,10 @@ export class Surface implements Selectable {
             )
         }
 
-        const topLeftVertex = new Vector3(this.x, 0, this.y)
-        const topRightVertex = new Vector3(this.x + 1, 0, this.y)
-        const bottomRightVertex = new Vector3(this.x + 1, 0, this.y + 1)
-        const bottomLeftVertex = new Vector3(this.x, 0, this.y + 1)
+        const topLeftVertex = new Vector3(0, 0, )
+        const topRightVertex = new Vector3(1, 0, 0)
+        const bottomRightVertex = new Vector3(1, 0, 1)
+        const bottomLeftVertex = new Vector3(0, 0, 1)
 
         if (isHighGround(this, surfLeft, surfTopLeft, surfTop)) topLeftVertex.y = 1
         if (isHighGround(this, surfTop, surfTopRight, surfRight)) topRightVertex.y = 1
@@ -414,6 +414,7 @@ export class Surface implements Selectable {
             this.topLeftVertex.y, this.topRightVertex.y, this.bottomRightVertex.y, this.bottomLeftVertex.y)
 
         this.mesh = new Mesh(geometry, new MeshPhongMaterial({shininess: 0}))
+        this.mesh.position.set(this.x, 0, this.y)
         this.mesh.userData = {selectable: this, surface: this}
 
         this.terrain.floorGroup.add(this.mesh)
@@ -604,7 +605,7 @@ export class Surface implements Selectable {
     playPositionalSample(sample: Sample): PositionalAudio { // TODO merge with AnimEntity code (at least in SceneEntity maybe)
         const audio = new PositionalAudio(this.sceneMgr.listener)
         audio.setRefDistance(TILESIZE * 6)
-        // audio.position.copy(new Vector3(this.x, 0, this.y).addScalar(0.5).multiplyScalar(TILESIZE)) // TODO change surface mesh position to surface center not geometry
+        audio.position.setScalar(0.5)
         this.mesh.add(audio)
         SoundManager.getSoundBuffer(Sample[sample]).then((audioBuffer) => {
             audio.setBuffer(audioBuffer)
