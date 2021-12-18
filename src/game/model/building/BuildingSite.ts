@@ -11,14 +11,17 @@ import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { BuildingEntity } from './BuildingEntity'
+import { BuildingType } from './BuildingType'
+import { SceneManager } from '../../SceneManager'
 
 export class BuildingSite {
+    sceneMgr: SceneManager
     entityMgr: EntityManager
     primarySurface: Surface = null
     secondarySurface: Surface = null
     primaryPathSurface: Surface = null
     surfaces: Surface[] = []
-    building: BuildingEntity
+    buildingType: BuildingType
     heading: number = 0
     neededByType: Map<EntityType, number> = new Map()
     assignedByType: Map<EntityType, MaterialEntity[]> = new Map()
@@ -28,7 +31,8 @@ export class BuildingSite {
     placeDownTimer: number = 0
     isEmptyTimer: number = 0
 
-    constructor(entityMgr: EntityManager, primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, building: BuildingEntity) {
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, buildingType: BuildingType) {
+        this.sceneMgr = sceneMgr
         this.entityMgr = entityMgr
         this.primarySurface = primarySurface
         this.primarySurface.site = this
@@ -48,7 +52,7 @@ export class BuildingSite {
             secondaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
             this.surfaces.push(secondaryPathSurface)
         }
-        this.building = building
+        this.buildingType = buildingType
     }
 
     getRandomDropPosition(): Vector2 {
@@ -82,7 +86,7 @@ export class BuildingSite {
         })
         if (!this.complete) return
         this.entityMgr.buildingSites.remove(this)
-        if (!this.building) {
+        if (!this.buildingType) {
             const items: MaterialEntity[] = []
             this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
             EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
@@ -115,7 +119,8 @@ export class BuildingSite {
         this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: MaterialEntity) => {
             item.disposeFromWorld()
         })
-        this.building.placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
+        new BuildingEntity(this.sceneMgr, this.entityMgr, this.buildingType)
+            .placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
     }
 
     getDropAction(): RaiderActivity {

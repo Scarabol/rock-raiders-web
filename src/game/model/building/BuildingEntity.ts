@@ -29,19 +29,12 @@ import { Selectable } from '../Selectable'
 import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
 import { Teleport } from './Teleport'
+import { BuildingType } from './BuildingType'
 
 export class BuildingEntity implements Selectable, BeamUpEntity {
-    stats: BuildingEntityStats = null
-    secondaryBuildingPart: Vector2 = null
-    primaryPowerPath: Vector2 = new Vector2(0, 1)
-    secondaryPowerPath: Vector2 = null
-    waterPathSurface: Vector2 = null
-    dropAction: RaiderActivity = RaiderActivity.Place
-    teleport: Teleport = null
-
     sceneMgr: SceneManager
     entityMgr: EntityManager
-    entityType: EntityType = null
+    buildingType: BuildingType
     sceneEntity: BuildingSceneEntity
     level: number = 0
     selected: boolean
@@ -58,16 +51,25 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     engineSound: PositionalAudio
     surfaces: Surface[] = []
     pathSurfaces: Surface[] = []
+    teleport: Teleport = null
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, stats: BuildingEntityStats, aeFilename: string) {
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, buildingType: BuildingType) {
         this.sceneMgr = sceneMgr
         this.entityMgr = entityMgr
-        this.entityType = entityType
-        this.stats = stats
-        this.sceneEntity = new BuildingSceneEntity(this.sceneMgr, aeFilename)
+        this.buildingType = buildingType
+        this.sceneEntity = new BuildingSceneEntity(this.sceneMgr, this.buildingType.aeFilename)
+        this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
         EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
             this.updateEnergyState()
         })
+    }
+
+    get entityType(): EntityType {
+        return this.buildingType.entityType
+    }
+
+    get stats(): BuildingEntityStats {
+        return this.buildingType.stats
     }
 
     isSelectable(): boolean {
@@ -241,22 +243,22 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.primarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(worldPosition)
         this.surfaces.push(this.primarySurface)
         this.primarySurface.pathBlockedByBuilding = this.entityType !== EntityType.TOOLSTATION // XXX better evaluate EnterToolStore in stats while path finding
-        if (this.secondaryBuildingPart) {
-            const secondaryOffset = new Vector2(TILESIZE * this.secondaryBuildingPart.x, TILESIZE * this.secondaryBuildingPart.y)
+        if (this.buildingType.secondaryBuildingPart) {
+            const secondaryOffset = new Vector2(TILESIZE * this.buildingType.secondaryBuildingPart.x, TILESIZE * this.buildingType.secondaryBuildingPart.y)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.secondarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(secondaryOffset)
             this.surfaces.push(this.secondarySurface)
             this.secondarySurface.pathBlockedByBuilding = this.entityType !== EntityType.TOOLSTATION // XXX better evaluate EnterToolStore in stats while path finding
         }
-        if (this.primaryPowerPath) {
-            const pathOffset = new Vector2(this.primaryPowerPath.x, this.primaryPowerPath.y).multiplyScalar(TILESIZE)
+        if (this.buildingType.primaryPowerPath) {
+            const pathOffset = this.buildingType.primaryPowerPath.clone().multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             this.surfaces.push(this.primaryPathSurface)
             this.pathSurfaces.push(this.primaryPathSurface)
         }
-        if (this.secondaryPowerPath) {
-            const pathOffset = new Vector2(this.secondaryPowerPath.x, this.secondaryPowerPath.y).multiplyScalar(TILESIZE)
+        if (this.buildingType.secondaryPowerPath) {
+            const pathOffset = this.buildingType.secondaryPowerPath.clone().multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.secondaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             this.surfaces.push(this.secondaryPathSurface)
@@ -299,10 +301,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     }
 
     getDropAction(): RaiderActivity {
-        if (this.entityType === EntityType.POWER_STATION || this.entityType === EntityType.ORE_REFINERY) {
-            return RaiderActivity.Deposit
-        }
-        return RaiderActivity.Place
+        return this.buildingType.dropAction
     }
 
     getTrainingTargets() {

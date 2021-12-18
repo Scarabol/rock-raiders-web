@@ -4,7 +4,6 @@ import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaid
 import { DeselectAll, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { EntityManager } from './EntityManager'
-import { BuildingFactory } from './model/building/BuildingFactory'
 import { PowerPathBuildingSite } from './model/building/PowerPathBuildingSite'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
@@ -28,7 +27,7 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_POWER_PATH, () => {
-            new PowerPathBuildingSite(entityMgr, entityMgr.selection.surface)
+            new PowerPathBuildingSite(sceneMgr, entityMgr, entityMgr.selection.surface)
         })
         EventBus.registerEventListener(EventKey.COMMAND_MAKE_RUBBLE, () => {
             entityMgr.selection.surface?.makeRubble(2)
@@ -107,7 +106,7 @@ export class GuiManager {
             entityMgr.selection.raiders.forEach((r) => r.dropCarried())
         })
         EventBus.registerEventListener(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
-            sceneMgr.setBuildModeSelection(BuildingFactory.createBuildingFromType(event.entityType, sceneMgr, entityMgr)) // TODO build selection should not receive events
+            sceneMgr.setBuildModeSelection(event.entityType)
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
             sceneMgr.setBuildModeSelection(null)

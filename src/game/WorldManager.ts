@@ -5,7 +5,7 @@ import { clearTimeoutSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
-import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, UPDATE_INTERVAL_MS } from '../params'
+import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
 import { EntityType } from './model/EntityType'
@@ -16,6 +16,7 @@ import { updateSafe } from './model/Updateable'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import { Supervisor } from './Supervisor'
+import { Vector2 } from 'three'
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
@@ -118,7 +119,10 @@ export class WorldManager {
                         this.requestedRaiders--
                         EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
                         const raider = new Raider(this.sceneMgr, this.entityMgr)
-                        teleportBuilding.teleport.teleportInRaider(raider, this.entityMgr.raiders, this.entityMgr.raidersInBeam)
+                        const heading = teleportBuilding.sceneEntity.getHeading()
+                        const worldPosition = new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleportBuilding.sceneEntity.position2D.clone())
+                        const walkOutPos = teleportBuilding.primaryPathSurface.getRandomPosition()
+                        teleportBuilding.teleport.teleportIn(raider, this.entityMgr.raiders, this.entityMgr.raidersInBeam, worldPosition, heading, walkOutPos)
                     }
                 }
             }
@@ -139,7 +143,9 @@ export class WorldManager {
                             GameState.numCrystal -= stats.CostCrystal
                             EventBus.publishEvent(new MaterialAmountChanged())
                             const vehicle = VehicleFactory.createVehicleFromType(vType, this.sceneMgr, this.entityMgr)
-                            teleportBuilding.teleport.teleportInVehicle(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam)
+                            const worldPosition = teleportBuilding.primaryPathSurface.getCenterWorld2D()
+                            const heading = teleportBuilding.sceneEntity.getHeading()
+                            teleportBuilding.teleport.teleportIn(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam, worldPosition, heading, null)
                             return true
                         }
                     })

@@ -5,7 +5,6 @@ import { RaidersAmountChangedEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
 import { EntityManager } from './EntityManager'
 import { RockMonsterActivity } from './model/activities/RockMonsterActivity'
-import { BuildingFactory } from './model/building/BuildingFactory'
 import { EntityType, getEntityTypeByName } from './model/EntityType'
 import { Crystal } from './model/material/Crystal'
 import { Bat } from './model/monster/Bat'
@@ -18,6 +17,8 @@ import { RaiderTrainings } from './model/raider/RaiderTraining'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
+import { BuildingType } from './model/building/BuildingType'
+import { BuildingEntity } from './model/building/BuildingEntity'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -64,7 +65,8 @@ export class ObjectListLoader {
                 case EntityType.ORE_REFINERY:
                 case EntityType.GUNSTATION:
                 case EntityType.TELEPORT_BIG:
-                    const entity = BuildingFactory.createBuildingFromType(entityType, sceneMgr, entityMgr)
+                    const buildingType = BuildingType.from(entityType)
+                    const entity = new BuildingEntity(sceneMgr, entityMgr, buildingType)
                     entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
                     if (entityType === EntityType.TOOLSTATION) {
                         for (let c = 0; c < this.numTestRaider; c++) {

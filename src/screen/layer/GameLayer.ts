@@ -43,7 +43,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
         const buildMarker = this.sceneMgr.buildMarker
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             if (terrainIntersectionPoint) this.sceneMgr.setTorchPosition(terrainIntersectionPoint)
-            buildMarker.update(terrainIntersectionPoint)
+            buildMarker.updatePosition(terrainIntersectionPoint)
             this.entityMgr.selection.doubleSelect?.sceneEntity.pointLaserAt(terrainIntersectionPoint)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {

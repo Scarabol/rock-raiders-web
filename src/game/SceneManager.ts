@@ -7,7 +7,6 @@ import { DEV_MODE, KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { DebugHelper } from '../screen/DebugHelper'
 import { EntityManager } from './EntityManager'
-import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
 import { GameSelection } from './model/GameSelection'
 import { GameState } from './model/GameState'
@@ -18,6 +17,7 @@ import { Selectable } from './model/Selectable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { TerrainLoader } from './TerrainLoader'
 import { WorldManager } from './WorldManager'
+import { EntityType } from './model/EntityType'
 
 export class SceneManager {
     worldMgr: WorldManager
@@ -270,12 +270,10 @@ export class SceneManager {
     }
 
     hasBuildModeSelection(): boolean {
-        return !!this.buildMarker?.buildModeSelection
+        return !!this.buildMarker?.hasBuildMode()
     }
 
-    setBuildModeSelection(building: BuildingEntity) {
-        this.buildMarker.buildModeSelection?.disposeFromWorld()
-        this.buildMarker.buildModeSelection = building
-        if (!building) this.buildMarker.hideAllMarker()
+    setBuildModeSelection(entityType: EntityType) {
+        this.buildMarker.setBuildMode(entityType)
     }
 }
