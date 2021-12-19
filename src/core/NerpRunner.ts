@@ -405,7 +405,7 @@ export class NerpRunner {
                 console.log(`Executing following script\\n${this.scriptLines.join('\n')}`)
                 console.log(`Registers: ${this.registers}`)
             }
-            for (this.programCounter = 0; this.programCounter < this.statements.length; this.programCounter++) {
+            for (this.programCounter = 0; this.programCounter < this.statements.length && !this.halted; this.programCounter++) {
                 const statement = this.statements[this.programCounter]
                 if (this.debug) {
                     console.log(`${this.programCounter}: ${this.scriptLines[this.programCounter]}`)
