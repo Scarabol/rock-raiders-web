@@ -364,7 +364,7 @@ export class NerpRunner {
             const argValues = expression.invoke !== 'conditional' ? expression.args.map(e => this.executeStatement(e)) : expression.args
             const result = this.callMethod(expression.invoke, argValues)
             if (result !== undefined && this.debug) {
-                console.log(`Method returned: ${result}`)
+                console.log(`Method ${expression.invoke}(${JSON.stringify(expression.args).slice(1, -1)}) returned: ${result}`)
             }
             return result
         } else if (expression.comparator) {
