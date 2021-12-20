@@ -26,6 +26,4 @@ export class EventBus {
     static registerWorkerListener(callback: (event: GameEvent) => any) {
         this.workerListener.push(callback)
     }
-
-    // TODO cleanup/unregister all event listener at level end?!
 }

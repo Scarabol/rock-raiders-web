@@ -3,7 +3,6 @@ import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { asArray } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
-import { EventKey } from '../../../event/EventKeyEnum'
 import { BuildingsChangedEvent, DeselectAll, SelectionChanged } from '../../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
@@ -59,9 +58,6 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.buildingType = buildingType
         this.sceneEntity = new BuildingSceneEntity(this.sceneMgr, this.buildingType.aeFilename)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
-        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
-            this.updateEnergyState()
-        })
     }
 
     get entityType(): EntityType {

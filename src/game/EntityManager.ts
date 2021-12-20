@@ -52,6 +52,9 @@ export class EntityManager {
             this.selection.deselectAll()
             EventBus.publishEvent(new SelectionChanged(this))
         })
+        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
+            this.buildings.forEach((b) => b.updateEnergyState())
+        })
     }
 
     reset() {
