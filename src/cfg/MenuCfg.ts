@@ -8,9 +8,22 @@ export class GameMenuCfg extends BaseConfig {
     pausedMenu: MenuCfg = new MenuCfg()
     mainMenuFull: MenuCfg = new MenuCfg()
     optionsMenu: MenuCfg = new MenuCfg()
+    saveGame: string = ''
+    loadGame: string = ''
+    saveImage: {
+        BigWidth: number,
+        Pos1: number[],
+        Pos2: number[],
+        Pos3: number[],
+        Pos4: number[],
+        Pos5: number[],
+    } = null
+    saveText: SaveTextCfg = new SaveTextCfg()
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if ('LevelText'.equalsIgnoreCase(unifiedKey)) {
+        if ('SaveText'.equalsIgnoreCase(unifiedKey)) {
+            this.saveText.setFromCfgObj(cfgValue)
+        } else if ('LevelText'.equalsIgnoreCase(unifiedKey)) {
             this.levelText.setFromCfgObj(cfgValue)
         } else if ('PausedMenu'.equalsIgnoreCase(unifiedKey)) {
             this.pausedMenu.setFromCfgObj(cfgValue)
@@ -22,6 +35,14 @@ export class GameMenuCfg extends BaseConfig {
             return super.assignValue(objKey, unifiedKey, cfgValue)
         }
         return true
+    }
+
+    parseValue(unifiedKey: string, cfgValue: any): any {
+        if (unifiedKey === 'savegame' || unifiedKey === 'loadgame') {
+            return parseLabel(cfgValue)
+        } else {
+            return super.parseValue(unifiedKey, cfgValue)
+        }
     }
 }
 
@@ -68,5 +89,20 @@ export class MenuPanelCfg extends BaseConfig {
         this.rect.w = cfgObj[3]
         this.rect.h = cfgObj[4]
         return this
+    }
+}
+
+export class SaveTextCfg extends BaseConfig {
+    window: Rect = new Rect()
+    load: string = ''
+    save: string = ''
+    slot: string = ''
+
+    parseValue(unifiedKey: string, cfgValue: any): any {
+        if (unifiedKey === 'window') {
+            return Rect.fromArray(cfgValue)
+        } else {
+            return parseLabel(cfgValue)
+        }
     }
 }

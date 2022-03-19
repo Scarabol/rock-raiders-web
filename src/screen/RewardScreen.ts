@@ -10,6 +10,8 @@ import { MAX_RAIDER_BASE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { ScaledLayer } from './layer/ScreenLayer'
 import { ScreenMaster } from './ScreenMaster'
+import { LoadSaveLayer } from '../menu/LoadSaveLayer'
+import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
 
 export class RewardScreen {
     onAdvance: () => void
@@ -19,6 +21,7 @@ export class RewardScreen {
     resultsLayer: ScaledLayer
     descriptionTextLayer: ScaledLayer
     btnLayer: ScaledLayer
+    saveGameLayer: LoadSaveLayer
     resultIndex: number = 0
     resultLastIndex: number = 0
     images: { img: SpriteImage, x: number, y: number }[] = []
@@ -68,7 +71,6 @@ export class RewardScreen {
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer(), 20)
         this.btnLayer = screenMaster.addLayer(new ScaledLayer(), 50)
         this.btnSave = new RewardScreenButton(this.cfg.saveButton)
-        this.btnSave.disabled = true
         this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton)
         this.btnLayer.handlePointerEvent = ((event) => {
             if (event.eventEnum === POINTER_EVENT.MOVE) {
@@ -84,13 +86,14 @@ export class RewardScreen {
                 if (event.button === MOUSE_BUTTON.MAIN) {
                     if (this.btnSave.pressed) {
                         this.btnSave.setReleased()
-                        // TODO switch to save screen
+                        this.saveGameLayer.show()
                     } else if (this.btnAdvance.pressed) {
                         this.btnAdvance.setReleased()
                         this.backgroundLayer.hide()
                         this.resultsLayer.hide()
                         this.descriptionTextLayer.hide()
                         this.btnLayer.hide()
+                        this.saveGameLayer.hide()
                         this.onAdvance()
                     }
                 }
@@ -103,6 +106,17 @@ export class RewardScreen {
             this.btnAdvance.draw(context)
         }
         this.levelFullNameImg = this.titleFont.createTextImage('No level selected')
+        this.saveGameLayer = screenMaster.addLayer(new LoadSaveLayer(ResourceManager.configuration.menu.mainMenuFull.menus[3], false), 60)
+        this.saveGameLayer.onItemAction = (item: MainMenuBaseItem) => {
+            if (item.actionName.equalsIgnoreCase('next')) {
+                this.saveGameLayer.hide()
+            } else if (item.actionName.toLowerCase().startsWith('save_game_')) {
+                // TODO show overwrite warning window
+                console.warn('Save game not yet implemented') // TODO trigger save game here
+            } else {
+                console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
+            }
+        }
     }
 
     showGameResult(result: GameResult) {

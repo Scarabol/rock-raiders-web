@@ -4,24 +4,33 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { ScreenMaster } from './ScreenMaster'
 import { MainMenuLevelButton } from '../menu/MainMenuLevelButton'
 import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
+import { LoadSaveLayer } from '../menu/LoadSaveLayer'
 
 export class MainMenuScreen {
     onLevelSelected: (levelName: string) => void = null
-    menus: MainMenuLayer[] = []
+    menuLayers: MainMenuLayer[] = []
+    loadSaveLayer: LoadSaveLayer
 
     constructor(screenMaster: ScreenMaster) {
         ResourceManager.configuration.menu.mainMenuFull.menus.forEach((menuCfg) => {
             let layer: MainMenuLayer
-            if (menuCfg.title === 'Levels') {
+            if (menuCfg.title.equalsIgnoreCase('Main')) {
+                layer = new MainMenuLayer(menuCfg)
+            } else if (menuCfg.title.equalsIgnoreCase('Levels')) {
                 layer = new LevelSelectLayer(menuCfg, true)
-            } else if (menuCfg.title === 'Tutorials') {
+            } else if (menuCfg.title.equalsIgnoreCase('Tutorials')) {
                 layer = new LevelSelectLayer(menuCfg, false)
+            } else if (menuCfg.title.equalsIgnoreCase('Load Level Save')) {
+                this.loadSaveLayer = new LoadSaveLayer(menuCfg, true)
+                layer = this.loadSaveLayer
+            } else if (menuCfg.title.equalsIgnoreCase('ARE YOU SURE?')) {
+                layer = new MainMenuLayer(menuCfg)
             } else {
+                console.warn('Unexpected menu title in cfg', menuCfg)
                 layer = new MainMenuLayer(menuCfg)
             }
             layer.onItemAction = (item: MainMenuBaseItem) => this.onItemAction(item)
-            this.menus.push(layer)
-            screenMaster.addLayer(layer)
+            this.menuLayers.push(screenMaster.addLayer(layer))
         })
     }
 
@@ -35,8 +44,9 @@ export class MainMenuScreen {
         }
     }
 
-    showMainMenu(index: number = 0) {
-        this.menus.forEach((menu, i) => i === index ? menu.show() : menu.hide())
+    showMainMenu(index: number = 0, loading: boolean = true) {
+        if (index === 3) this.loadSaveLayer.setMode(loading)
+        this.menuLayers.forEach((m, i) => i === index ? m.show() : m.hide())
     }
 
     showLevelSelection() {
@@ -44,7 +54,7 @@ export class MainMenuScreen {
     }
 
     selectLevel(levelName: string) {
-        this.menus.forEach((m) => m.hide())
+        this.menuLayers.forEach((m) => m.hide())
         this.onLevelSelected(levelName)
     }
 }
