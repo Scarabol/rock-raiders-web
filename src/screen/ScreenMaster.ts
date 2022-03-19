@@ -4,6 +4,7 @@ import { EventKey } from '../event/EventKeyEnum'
 import { EventManager } from '../event/EventManager'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
+import { getElementByIdOrThrow } from '../core/Util'
 
 export class ScreenMaster {
     gameContainer: HTMLElement
@@ -15,10 +16,8 @@ export class ScreenMaster {
     ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
 
     constructor() {
-        this.gameContainer = document.getElementById('game-container')
-        if (!this.gameContainer) throw new Error('Fatal error: "game-container" not found!')
-        this.gameCanvasContainer = document.getElementById('game-canvas-container')
-        if (!this.gameCanvasContainer) throw new Error('Fatal error: "game-canvas-container" not found!')
+        this.gameContainer = getElementByIdOrThrow('game-container')
+        this.gameCanvasContainer = getElementByIdOrThrow('game-canvas-container')
         this.gameCanvasContainer.focus()
         this.eventMgr = new EventManager(this)
         window.addEventListener('resize', () => this.onWindowResize())

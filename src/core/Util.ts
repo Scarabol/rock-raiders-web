@@ -74,6 +74,12 @@ export function asArray<T>(value: T | T[]): T[] {
     return Array.isArray(value) ? value : [value]
 }
 
+export function getElementByIdOrThrow(elementId: string): HTMLElement {
+    const element = document.getElementById(elementId)
+    if (!element) throw new Error('Fatal error: "' + elementId + '" not found!')
+    return element
+}
+
 declare global {
     interface Array<T> {
         add(element: T): void

@@ -1,4 +1,5 @@
 import { Modal } from 'bootstrap'
+import { getElementByIdOrThrow } from '../../src/core/Util'
 
 export class WadFileSelectionModal {
 
@@ -7,7 +8,7 @@ export class WadFileSelectionModal {
     private readonly modal: Modal
 
     constructor(parentId: string) {
-        const rootElement = document.getElementById(parentId).appendChild(document.createElement('div'))
+        const rootElement = getElementByIdOrThrow(parentId).appendChild(document.createElement('div'))
         rootElement.classList.add('modal')
         rootElement.tabIndex = -1
         rootElement.setAttribute('role', 'dialog')

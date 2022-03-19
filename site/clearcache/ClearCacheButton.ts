@@ -1,12 +1,13 @@
 import { ASSET_CACHE_DB_NAME } from '../../src/params'
 import './clearCacheButton.css'
+import { getElementByIdOrThrow } from '../../src/core/Util'
 
 export class ClearCacheButton {
 
     rootElement: HTMLDivElement
 
     constructor(parentId: string) {
-        this.rootElement = document.getElementById(parentId).appendChild(document.createElement('div'))
+        this.rootElement = getElementByIdOrThrow(parentId).appendChild(document.createElement('div'))
         this.rootElement.classList.add('clear-cache-box')
 
         const button = this.rootElement.appendChild(document.createElement('button'))
