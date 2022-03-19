@@ -102,28 +102,28 @@ export class WadFileSelectionModal {
         return wadFileInput
     }
 
-    private appendNavUrlTab(parent: HTMLDivElement, labelledBy: string) {
-        const navUrlTab = WadFileSelectionModal.appendNavTab(parent, false, 'nav-url', labelledBy)
-
-        const urlHint = navUrlTab.appendChild(document.createElement('div'))
-        urlHint.classList.add('my-3')
-        urlHint.innerText = 'Direct links with correct Allow-Origin-CORS-Headers required here.'
-
-        const wad0Url = WadFileSelectionModal.appendWadUrlGroup(navUrlTab, 'wad0-url', 'LegoRR0.wad', 'https://drive.google.com/uc?export=download&id=11t9AJnGCWnEWlLxSsYQeB_Y4jrKfxVxQ')
-        const wad1Url = WadFileSelectionModal.appendWadUrlGroup(navUrlTab, 'wad1-url', 'LegoRR1.wad', 'https://drive.google.com/uc?export=download&id=11t9AJnGCWnEWlLxSsYQeB_Y4jrKfxVxQ')
-
-        const btnStartUrl = navUrlTab.appendChild(document.createElement('button'))
-        btnStartUrl.type = 'submit'
-        btnStartUrl.classList.add('btn', 'btn-primary', 'float-end')
-        btnStartUrl.id = 'button-start-url'
-        btnStartUrl.innerText = 'Start Game'
-        btnStartUrl.addEventListener('click', () => {
-            btnStartUrl.disabled = true
-            this.hide()
-            // XXX show loading progress for WAD files
-            this.onStart(wad0Url.value, wad1Url.value)
-        })
-    }
+    // private appendNavUrlTab(parent: HTMLDivElement, labelledBy: string) {
+    //     const navUrlTab = WadFileSelectionModal.appendNavTab(parent, false, 'nav-url', labelledBy)
+    //
+    //     const urlHint = navUrlTab.appendChild(document.createElement('div'))
+    //     urlHint.classList.add('my-3')
+    //     urlHint.innerText = 'Direct links with correct Allow-Origin-CORS-Headers required here.'
+    //
+    //     const wad0Url = WadFileSelectionModal.appendWadUrlGroup(navUrlTab, 'wad0-url', 'LegoRR0.wad', 'https://drive.google.com/uc?export=download&id=11t9AJnGCWnEWlLxSsYQeB_Y4jrKfxVxQ')
+    //     const wad1Url = WadFileSelectionModal.appendWadUrlGroup(navUrlTab, 'wad1-url', 'LegoRR1.wad', 'https://drive.google.com/uc?export=download&id=11t9AJnGCWnEWlLxSsYQeB_Y4jrKfxVxQ')
+    //
+    //     const btnStartUrl = navUrlTab.appendChild(document.createElement('button'))
+    //     btnStartUrl.type = 'submit'
+    //     btnStartUrl.classList.add('btn', 'btn-primary', 'float-end')
+    //     btnStartUrl.id = 'button-start-url'
+    //     btnStartUrl.innerText = 'Start Game'
+    //     btnStartUrl.addEventListener('click', () => {
+    //         btnStartUrl.disabled = true
+    //         this.hide()
+    //         // XXX show loading progress for WAD files
+    //         this.onStart(wad0Url.value, wad1Url.value)
+    //     })
+    // }
 
     private static appendNavTab(parent: HTMLDivElement, active: boolean, id: string, labelledBy: string) {
         const navTab = parent.appendChild(document.createElement('div'))
@@ -135,21 +135,21 @@ export class WadFileSelectionModal {
         return navTab
     }
 
-    private static appendWadUrlGroup(parent: HTMLDivElement, id: string, filename: string, example: string) {
-        const wadUrlGroup = parent.appendChild(document.createElement('div'))
-        wadUrlGroup.classList.add('my-3')
-        const wadUrlLabel = wadUrlGroup.appendChild(document.createElement('label'))
-        wadUrlLabel.setAttribute('for', id)
-        wadUrlLabel.classList.add('form-label')
-        wadUrlLabel.innerHTML = `Enter url for <span class="fw-bold">${filename}</span> here:`
-        const wadUrlInput = wadUrlGroup.appendChild(document.createElement('input'))
-        wadUrlInput.type = 'url'
-        wadUrlInput.classList.add('form-control')
-        wadUrlInput.id = id
-        wadUrlInput.required = true
-        wadUrlInput.value = example
-        return wadUrlInput
-    }
+    // private static appendWadUrlGroup(parent: HTMLDivElement, id: string, filename: string, example: string) {
+    //     const wadUrlGroup = parent.appendChild(document.createElement('div'))
+    //     wadUrlGroup.classList.add('my-3')
+    //     const wadUrlLabel = wadUrlGroup.appendChild(document.createElement('label'))
+    //     wadUrlLabel.setAttribute('for', id)
+    //     wadUrlLabel.classList.add('form-label')
+    //     wadUrlLabel.innerHTML = `Enter url for <span class="fw-bold">${filename}</span> here:`
+    //     const wadUrlInput = wadUrlGroup.appendChild(document.createElement('input'))
+    //     wadUrlInput.type = 'url'
+    //     wadUrlInput.classList.add('form-control')
+    //     wadUrlInput.id = id
+    //     wadUrlInput.required = true
+    //     wadUrlInput.value = example
+    //     return wadUrlInput
+    // }
 
     public show() {
         this.modal.show()

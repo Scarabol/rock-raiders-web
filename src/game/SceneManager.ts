@@ -3,7 +3,7 @@ import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { cloneContext } from '../core/ImageHelper'
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
-import { DEV_MODE, KEY_PAN_SPEED, TILESIZE } from '../params'
+import { CAMERA_FOV, CAMERA_MAX_DISTANCE, DEV_MODE, KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { DebugHelper } from '../screen/DebugHelper'
 import { EntityManager } from './EntityManager'
@@ -22,7 +22,7 @@ import { EntityType } from './model/EntityType'
 export class SceneManager {
     worldMgr: WorldManager
     entityMgr: EntityManager
-    maxFps: number = 30 // most animations use 25 fps so this should be enough
+    maxFps: number = 30 // animations have only 25 fps
     renderer: WebGLRenderer
     debugHelper: DebugHelper = new DebugHelper()
     renderInterval: NodeJS.Timeout
@@ -40,13 +40,9 @@ export class SceneManager {
 
     constructor(canvas: SpriteImage) {
         this.renderer = new WebGLRenderer({antialias: true, canvas: canvas})
-        this.renderer.setClearColor(0x000000)
-
         this.listener = new AudioListener()
-
-        this.camera = new PerspectiveCamera(30, canvas.width / canvas.height, 0.1, 5000) // TODO make these params configurable
+        this.camera = new PerspectiveCamera(CAMERA_FOV, canvas.width / canvas.height, 0.1, CAMERA_MAX_DISTANCE)
         this.camera.add(this.listener)
-
         this.controls = new MapControls(this.camera, this.renderer.domElement)
         this.controls.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position

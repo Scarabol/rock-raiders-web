@@ -159,8 +159,8 @@ export class RaiderTrainingCompleteEvent extends LocalEvent {
     training: RaiderTraining
 
     constructor(training: RaiderTraining) {
-        super(EventKey.RAIDER_TRAINING_COMPLETE);
-        this.training = training;
+        super(EventKey.RAIDER_TRAINING_COMPLETE)
+        this.training = training
     }
 }
 

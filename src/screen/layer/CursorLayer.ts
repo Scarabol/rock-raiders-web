@@ -15,13 +15,11 @@ import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/model/map/Surface'
 import { VehicleEntity } from '../../game/model/vehicle/VehicleEntity'
 import { SceneManager } from '../../game/SceneManager'
-import { WorldManager } from '../../game/WorldManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedCursor } from '../AnimatedCursor'
 import { ScreenLayer } from './ScreenLayer'
 
 export class CursorLayer extends ScreenLayer {
-    worldMgr: WorldManager
     sceneMgr: SceneManager
     entityMgr: EntityManager
     currentCursor: Cursor = null
@@ -39,7 +37,6 @@ export class CursorLayer extends ScreenLayer {
         parent.registerEventListener(EventKey.SELECTION_CHANGED, () => {
             if (this.active) this.changeCursor(this.determineCursor())
         })
-        // TODO change cursor when an entity moves below cursor
     }
 
     reset() {

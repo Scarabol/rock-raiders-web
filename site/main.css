@@ -1,3 +1,10 @@
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #333;
+}
+
 #game-container {
     display: flex;
     flex-direction: column;

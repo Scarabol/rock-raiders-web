@@ -5,7 +5,7 @@ import { GameEvent } from '../event/GameEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { ChangeCursor, LocalEvent } from '../event/LocalEvents'
-import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../params'
+import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { OffscreenWorker } from '../worker/OffscreenWorker'
 import { BaseElement } from './base/BaseElement'
 import { Panel } from './base/Panel'
@@ -47,7 +47,7 @@ export abstract class GuiWorker extends OffscreenWorker {
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         const [cx, cy] = [event.canvasX, event.canvasY]
-        const [sx, sy] = [cx / (this.canvas.width / SPRITE_RESOLUTION_WIDTH), cy / (this.canvas.height / SPRITE_RESOLUTION_HEIGHT)]
+        const [sx, sy] = [cx / (this.canvas.width / NATIVE_SCREEN_WIDTH), cy / (this.canvas.height / NATIVE_SCREEN_HEIGHT)]
             .map((c) => Math.round(c))
         const hit = this.context && this.context.getImageData(cx, cy, 1, 1).data[3] > 0
         if (hit) {

@@ -16,11 +16,13 @@ export const SPIDER_SLIP_RANGE_SQ = 49
 export const ITEM_ACTION_RANGE_SQ = 49
 export const UPDATE_INTERVAL_MS = Math.round(1000 / 30)
 export const BRICK_ORE_VALUE = 5
+export const CAMERA_FOV = 30
+export const CAMERA_MAX_DISTANCE = 5000
 
 // native constants (do not change)
 
-export const SPRITE_RESOLUTION_WIDTH = 640
-export const SPRITE_RESOLUTION_HEIGHT = 480
+export const NATIVE_SCREEN_WIDTH = 640
+export const NATIVE_SCREEN_HEIGHT = 480
 export const TILESIZE = 40
 export const NATIVE_FRAMERATE = 30
 export const NATIVE_UPDATE_INTERVAL = 1000 / NATIVE_FRAMERATE

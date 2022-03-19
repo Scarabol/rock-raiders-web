@@ -33,7 +33,7 @@ export class ResourceManager extends ResourceCache {
                 msg.sfxKeys?.forEach((sfxKey) => SoundManager.sfxByKey.set(sfxKey, msg.assetObj))
                 this.onAssetLoaded()
             } else if (msg.type === WorkerMessageType.MSG) {
-                this.onMessage(msg.text)
+                this.onLoadingMessage(msg.text)
             } else if (msg.type === WorkerMessageType.CFG) {
                 this.configuration = msg.cfg
                 this.loadDefaultCursor().then(() => this.onInitialLoad(msg.totalResources))
@@ -49,7 +49,7 @@ export class ResourceManager extends ResourceCache {
         this.worker.postMessage(msg)
     }
 
-    static onMessage: (msg: string) => any = (msg: string) => {
+    static onLoadingMessage: (msg: string) => any = (msg: string) => {
         console.log(msg)
     }
 

@@ -4,7 +4,7 @@ import { EventKey } from '../event/EventKeyEnum'
 import { EventManager } from '../event/EventManager'
 import { GameEvent } from '../event/GameEvent'
 import { IEventHandler } from '../event/IEventHandler'
-import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../params'
+import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { CursorLayer } from './layer/CursorLayer'
 import { ScreenLayer } from './layer/ScreenLayer'
 
@@ -12,9 +12,9 @@ export class BaseScreen implements IEventHandler {
     gameCanvasContainer: HTMLElement
     eventMgr: EventManager
     layers: ScreenLayer[] = []
-    width: number = SPRITE_RESOLUTION_WIDTH
-    height: number = SPRITE_RESOLUTION_HEIGHT
-    ratio: number = SPRITE_RESOLUTION_WIDTH / SPRITE_RESOLUTION_HEIGHT
+    width: number = NATIVE_SCREEN_WIDTH
+    height: number = NATIVE_SCREEN_HEIGHT
+    ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
     cursorLayer: CursorLayer
 
     constructor() {

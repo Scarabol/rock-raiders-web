@@ -25,7 +25,7 @@ const clearCacheButton = new ClearCacheButton('game-container')
 wadFileSelectModal.onStart = (wad0Url, wad1Url) => {
     ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
 }
-ResourceManager.onMessage = (msg: string) => {
+ResourceManager.onLoadingMessage = (msg: string) => {
     loadingScreen.setLoadingMessage(msg)
 }
 ResourceManager.onCacheMissed = () => {

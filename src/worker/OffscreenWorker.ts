@@ -5,7 +5,7 @@ import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { IEventHandler } from '../event/IEventHandler'
 import { GuiResourceCache } from '../gui/GuiResourceCache'
-import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../params'
+import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { OffscreenWorkerMessage } from './OffscreenWorkerMessage'
 import { WorkerEventResponse } from './WorkerEventResponse'
@@ -35,7 +35,7 @@ export abstract class OffscreenWorker implements IEventHandler {
     setCanvas(canvas: OffscreenCanvas) {
         this.canvas = canvas
         this.context = canvas.getContext('2d')
-        this.context.scale(this.canvas.width / SPRITE_RESOLUTION_WIDTH, this.canvas.height / SPRITE_RESOLUTION_HEIGHT)
+        this.context.scale(this.canvas.width / NATIVE_SCREEN_WIDTH, this.canvas.height / NATIVE_SCREEN_HEIGHT)
         this.redraw()
     }
 

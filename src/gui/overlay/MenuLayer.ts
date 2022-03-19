@@ -1,6 +1,6 @@
 import { MenuEntryCfg } from '../../cfg/MenuEntryCfg'
 import { BitmapFont } from '../../core/BitmapFont'
-import { SPRITE_RESOLUTION_HEIGHT, SPRITE_RESOLUTION_WIDTH } from '../../params'
+import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { BaseElement } from '../base/BaseElement'
 import { GuiResourceCache } from '../GuiResourceCache'
 import { MenuCycleItem } from './MenuCycleItem'
@@ -43,8 +43,8 @@ export class MenuLayer extends BaseElement {
 
     onRedraw(context: SpriteContext) {
         if (this.hidden) return
-        context.drawImage(this.menuImage, (SPRITE_RESOLUTION_WIDTH - this.menuImage.width) / 2, (SPRITE_RESOLUTION_HEIGHT - this.menuImage.height) / 2)
-        context.drawImage(this.titleImage, (SPRITE_RESOLUTION_WIDTH - this.titleImage.width) / 2, this.y)
+        context.drawImage(this.menuImage, (NATIVE_SCREEN_WIDTH - this.menuImage.width) / 2, (NATIVE_SCREEN_HEIGHT - this.menuImage.height) / 2)
+        context.drawImage(this.titleImage, (NATIVE_SCREEN_WIDTH - this.titleImage.width) / 2, this.y)
         super.onRedraw(context)
     }
 }

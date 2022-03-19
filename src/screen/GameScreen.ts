@@ -47,7 +47,6 @@ export class GameScreen extends BaseScreen {
         this.worldMgr.entityMgr = this.entityMgr
         this.worldMgr.jobSupervisor = new Supervisor(this.worldMgr.sceneMgr, this.worldMgr.entityMgr)
         this.worldMgr.onLevelEnd = (result) => this.onLevelEnd(new GameResult(result, this.entityMgr, this.worldMgr))
-        this.cursorLayer.worldMgr = this.worldMgr
         this.cursorLayer.sceneMgr = this.sceneMgr
         this.cursorLayer.entityMgr = this.entityMgr
         this.gameLayer.worldMgr = this.worldMgr
@@ -109,10 +108,5 @@ export class GameScreen extends BaseScreen {
         this.worldMgr.stop()
         this.sceneMgr.disposeScene()
         super.hide()
-    }
-
-    resize(width: number, height: number) {
-        super.resize(width, height)
-        this.sceneMgr?.resize(width, height)
     }
 }

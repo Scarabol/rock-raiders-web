@@ -146,4 +146,9 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             this.sceneMgr.screenshotCallback = resolve
         })
     }
+
+    resize(width: number, height: number) {
+        super.resize(width, height)
+        this.sceneMgr?.resize(width, height)
+    }
 }

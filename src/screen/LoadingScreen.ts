@@ -9,13 +9,13 @@ export class LoadingScreen extends BaseScreen {
     constructor() {
         super()
         this.layer = this.addLayer(new ScaledLayer())
+        this.setLoadingMessage('Loading...')
     }
 
     show() {
         this.layers.forEach((layer) => {
             if (layer !== this.cursorLayer) layer.show()
         })
-        this.setLoadingMessage('Loading...')
     }
 
     setLoadingMessage(text: string) {
