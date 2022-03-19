@@ -13,13 +13,13 @@ import { WorldManager } from '../game/WorldManager'
 import { DEV_MODE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { LevelObjectiveTextEntry } from '../resource/wadworker/parser/ObjectiveTextParser'
-import { BaseScreen } from './BaseScreen'
 import { GameLayer } from './layer/GameLayer'
 import { GuiMainLayer } from './layer/GuiMainLayer'
 import { OverlayLayer } from './layer/OverlayLayer'
 import { SelectionLayer } from './layer/SelectionLayer'
+import { ScreenMaster } from './ScreenMaster'
 
-export class GameScreen extends BaseScreen {
+export class GameScreen {
     onLevelEnd: (result: GameResult) => any = (result) => console.log(`Level ended with: ${JSON.stringify(result)}`)
     gameLayer: GameLayer
     selectionLayer: SelectionLayer
@@ -32,12 +32,11 @@ export class GameScreen extends BaseScreen {
     levelName: string
     levelConf: LevelEntryCfg
 
-    constructor() {
-        super()
-        this.gameLayer = this.addLayer(new GameLayer(this), 0)
-        this.selectionLayer = this.addLayer(new SelectionLayer(), 10)
-        this.guiLayer = this.addLayer(new GuiMainLayer(), 20)
-        this.overlayLayer = this.addLayer(new OverlayLayer(), 30)
+    constructor(screenMaster: ScreenMaster) {
+        this.gameLayer = screenMaster.addLayer(new GameLayer(), 0)
+        this.selectionLayer = screenMaster.addLayer(new SelectionLayer(), 10)
+        this.guiLayer = screenMaster.addLayer(new GuiMainLayer(), 20)
+        this.overlayLayer = screenMaster.addLayer(new OverlayLayer(), 30)
         this.entityMgr = new EntityManager()
         this.worldMgr = new WorldManager()
         this.sceneMgr = new SceneManager(this.gameLayer.canvas)
@@ -47,8 +46,6 @@ export class GameScreen extends BaseScreen {
         this.worldMgr.entityMgr = this.entityMgr
         this.worldMgr.jobSupervisor = new Supervisor(this.worldMgr.sceneMgr, this.worldMgr.entityMgr)
         this.worldMgr.onLevelEnd = (result) => this.onLevelEnd(new GameResult(result, this.entityMgr, this.worldMgr))
-        this.cursorLayer.sceneMgr = this.sceneMgr
-        this.cursorLayer.entityMgr = this.entityMgr
         this.gameLayer.worldMgr = this.worldMgr
         this.gameLayer.sceneMgr = this.sceneMgr
         this.gameLayer.entityMgr = this.entityMgr
@@ -98,7 +95,10 @@ export class GameScreen extends BaseScreen {
     }
 
     show() {
-        super.show()
+        this.gameLayer.show()
+        this.selectionLayer.show()
+        this.guiLayer.show()
+        this.overlayLayer.show()
         this.sceneMgr.startScene()
         this.worldMgr.start()
     }
@@ -107,6 +107,9 @@ export class GameScreen extends BaseScreen {
         this.entityMgr.stop()
         this.worldMgr.stop()
         this.sceneMgr.disposeScene()
-        super.hide()
+        this.overlayLayer.hide()
+        this.guiLayer.hide()
+        this.selectionLayer.hide()
+        this.gameLayer.hide()
     }
 }

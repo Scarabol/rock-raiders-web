@@ -1,14 +1,13 @@
 import { LevelSelectLayer } from '../menu/LevelSelectLayer'
 import { MainMenuLayer } from '../menu/MainMenuLayer'
 import { ResourceManager } from '../resource/ResourceManager'
-import { BaseScreen } from './BaseScreen'
+import { ScreenMaster } from './ScreenMaster'
 
-export class MainMenuScreen extends BaseScreen {
+export class MainMenuScreen {
     onLevelSelected: (levelName: string) => void = null
     menus: MainMenuLayer[] = []
 
-    constructor() {
-        super()
+    constructor(screenMaster: ScreenMaster) {
         ResourceManager.configuration.menu.mainMenuFull.menus.forEach((menuCfg) => {
             let layer
             if (menuCfg.title === 'Levels') {
@@ -19,13 +18,12 @@ export class MainMenuScreen extends BaseScreen {
                 layer = new MainMenuLayer(this, menuCfg)
             }
             this.menus.push(layer)
-            this.addLayer(layer)
+            screenMaster.addLayer(layer)
         })
     }
 
     showMainMenu(index: number = 0) {
         this.menus.forEach((menu, i) => i === index ? menu.show() : menu.hide())
-        this.cursorLayer.show()
     }
 
     showLevelSelection() {
@@ -33,7 +31,7 @@ export class MainMenuScreen extends BaseScreen {
     }
 
     selectLevel(levelName: string) {
-        this.hide()
+        this.menus.forEach((m) => m.hide())
         this.onLevelSelected(levelName)
     }
 }

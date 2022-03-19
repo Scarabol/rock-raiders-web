@@ -1,12 +1,9 @@
 import { Vector2 } from 'three'
 import { EventBus } from '../../event/EventBus'
-import { EventKey } from '../../event/EventKeyEnum'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
-import { GameEvent } from '../../event/GameEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
-import { IEventHandler } from '../../event/IEventHandler'
 import { DeselectAll } from '../../event/LocalEvents'
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { EntityManager } from '../../game/EntityManager'
@@ -18,16 +15,14 @@ import { WorldManager } from '../../game/WorldManager'
 import { DEV_MODE } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
 
-export class GameLayer extends ScreenLayer implements IEventHandler {
-    parent: IEventHandler
+export class GameLayer extends ScreenLayer {
     worldMgr: WorldManager
     sceneMgr: SceneManager
     entityMgr: EntityManager
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
 
-    constructor(parent: IEventHandler) {
+    constructor() {
         super(false, false)
-        this.parent = parent
     }
 
     reset() {
@@ -94,7 +89,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             }
         } else if (selection.material) {
             this.entityMgr.selection.assignCarryJob(selection.material)
-            if (!this.entityMgr.selection.isEmpty()) this.publishEvent(new DeselectAll())
+            if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
         } else if (selection.surface) {
             if (this.entityMgr.selection.canDrill(selection.surface)) {
                 const drillJob = selection.surface.createDrillJob()
@@ -105,7 +100,7 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             } else if (this.entityMgr.selection.canMove() && selection.surface.isWalkable()) {
                 this.entityMgr.selection.assignMoveJob(terrainIntersectionPoint)
             }
-            if (!this.entityMgr.selection.isEmpty()) this.publishEvent(new DeselectAll())
+            if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
         }
     }
 
@@ -114,13 +109,13 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
             if (this.entityMgr.selection.surface) {
                 if (event.code === 'KeyC') {
                     this.entityMgr.selection.surface.collapse()
-                    this.publishEvent(new DeselectAll())
+                    EventBus.publishEvent(new DeselectAll())
                 } else if (event.code === 'KeyF') {
                     const surface = this.entityMgr.selection.surface
                     if (!surface.surfaceType.floor) {
                         this.sceneMgr.terrain.createFallIn(surface, this.sceneMgr.terrain.findFallInTarget(surface))
                     }
-                    this.publishEvent(new DeselectAll())
+                    EventBus.publishEvent(new DeselectAll())
                 }
             }
         }
@@ -131,14 +126,6 @@ export class GameLayer extends ScreenLayer implements IEventHandler {
     handleWheelEvent(event: GameWheelEvent): Promise<boolean> {
         this.canvas.dispatchEvent(new WheelEvent(event.type, event))
         return new Promise((resolve) => resolve(true))
-    }
-
-    publishEvent(event: GameEvent): void {
-        this.parent?.publishEvent(event)
-    }
-
-    registerEventListener(eventKey: EventKey, callback: (event: GameEvent) => any): void {
-        this.parent.registerEventListener(eventKey, callback)
     }
 
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {

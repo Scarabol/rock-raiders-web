@@ -8,7 +8,6 @@ import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { TakeScreenshot } from '../../event/GuiCommand'
-import { IEventHandler } from '../../event/IEventHandler'
 import { ChangeCursor } from '../../event/LocalEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { EntityType } from '../../game/model/EntityType'
@@ -29,12 +28,12 @@ export class CursorLayer extends ScreenLayer {
     cursorCanvasPos: { x: number, y: number } = {x: 0, y: 0}
     cursorRelativePos: { x: number, y: number } = {x: 0, y: 0}
 
-    constructor(parent: IEventHandler) {
+    constructor() {
         super(true, false)
-        parent.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
+        EventBus.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
             if (this.active) this.changeCursor(event.cursor, event.timeout)
         })
-        parent.registerEventListener(EventKey.SELECTION_CHANGED, () => {
+        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
             if (this.active) this.changeCursor(this.determineCursor())
         })
     }

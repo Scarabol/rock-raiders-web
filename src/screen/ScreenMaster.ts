@@ -2,29 +2,27 @@ import { cloneContext } from '../core/ImageHelper'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { EventManager } from '../event/EventManager'
-import { GameEvent } from '../event/GameEvent'
-import { IEventHandler } from '../event/IEventHandler'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
-import { CursorLayer } from './layer/CursorLayer'
 import { ScreenLayer } from './layer/ScreenLayer'
 
-export class BaseScreen implements IEventHandler {
+export class ScreenMaster {
+    gameContainer: HTMLElement
     gameCanvasContainer: HTMLElement
     eventMgr: EventManager
     layers: ScreenLayer[] = []
     width: number = NATIVE_SCREEN_WIDTH
     height: number = NATIVE_SCREEN_HEIGHT
     ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
-    cursorLayer: CursorLayer
 
     constructor() {
+        this.gameContainer = document.getElementById('game-container')
+        if (!this.gameContainer) throw new Error('Fatal error: "game-container" not found!')
         this.gameCanvasContainer = document.getElementById('game-canvas-container')
+        if (!this.gameCanvasContainer) throw new Error('Fatal error: "game-canvas-container" not found!')
         this.gameCanvasContainer.focus()
         this.eventMgr = new EventManager(this)
-        if (!this.gameCanvasContainer) throw new Error('Fatal error: game canvas container not found!')
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
-        this.cursorLayer = this.addLayer(new CursorLayer(this), 1000) // TODO turn cursor layer into singleton?
         EventBus.registerEventListener(EventKey.TAKE_SCREENSHOT, () => this.takeScreenshot())
     }
 
@@ -36,21 +34,9 @@ export class BaseScreen implements IEventHandler {
         return layer
     }
 
-    redraw() {
-        this.layers.forEach((layer) => layer.redraw())
-    }
-
-    show() {
-        this.layers.forEach((layer) => layer.show())
-        this.redraw()
-    }
-
-    hide() {
-        this.layers.forEach((layer) => layer.hide())
-    }
-
-    onWindowResize() {
-        const maxWidth = this.gameCanvasContainer.offsetWidth, maxHeight = this.gameCanvasContainer.offsetHeight
+    private onWindowResize() {
+        const maxWidth = this.gameContainer.offsetWidth
+        const maxHeight = this.gameContainer.offsetHeight
         const idealHeight = Math.round(maxWidth / this.ratio)
         if (idealHeight > maxHeight) {
             this.resize(Math.round(maxHeight * this.ratio), maxHeight)
@@ -59,28 +45,13 @@ export class BaseScreen implements IEventHandler {
         }
     }
 
-    resize(width: number, height: number) {
+    private resize(width: number, height: number) {
         this.width = width
         this.height = height
-        this.layers.forEach((layer) => layer.resize(width, height))
-        this.redraw()
-    }
-
-    isInRect(event: MouseEvent | WheelEvent) {
-        if (this.layers.length < 1) return false
-        const firstLayer = this.layers[0] // all layers have same state and size
-        if (!firstLayer.isActive() || !firstLayer.canvas) return false
-        const rect = firstLayer.canvas.getBoundingClientRect()
-        const clientX = event.clientX, clientY = event.clientY
-        return clientX >= rect.left && clientX < rect.right && clientY >= rect.top && clientY < rect.bottom
-    }
-
-    publishEvent(event: GameEvent): void {
-        EventBus.publishEvent(event)
-    }
-
-    registerEventListener(eventKey: EventKey, callback: (event: GameEvent) => any): void {
-        EventBus.registerEventListener(eventKey, callback)
+        this.layers.forEach((layer) => {
+            layer.resize(width, height)
+            layer.redraw()
+        })
     }
 
     getActiveLayersSorted(): ScreenLayer[] {

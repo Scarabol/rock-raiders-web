@@ -8,13 +8,14 @@ import { GameState } from '../game/model/GameState'
 import { RewardScreenButton } from '../menu/RewardScreenButton'
 import { MAX_RAIDER_BASE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
-import { BaseScreen } from './BaseScreen'
 import { ScaledLayer } from './layer/ScreenLayer'
+import { ScreenMaster } from './ScreenMaster'
 
-export class RewardScreen extends BaseScreen {
+export class RewardScreen {
     onAdvance: () => void
     cfg: RewardCfg = null
     titleFont: BitmapFont
+    backgroundLayer: ScaledLayer
     resultsLayer: ScaledLayer
     descriptionTextLayer: ScaledLayer
     btnLayer: ScaledLayer
@@ -32,13 +33,12 @@ export class RewardScreen extends BaseScreen {
     resultText: string
     resultValues: SpriteImage[] = []
 
-    constructor() {
-        super()
+    constructor(screenMaster: ScreenMaster) {
         this.cfg = ResourceManager.configuration.reward
         this.titleFont = ResourceManager.getBitmapFont(this.cfg.titleFont)
         const backgroundImg = ResourceManager.getImage(this.cfg.wallpaper)
-        const backgroundLayer = this.addLayer(new ScaledLayer())
-        backgroundLayer.onRedraw = (context) => context.drawImage(backgroundImg, 0, 0)
+        this.backgroundLayer = screenMaster.addLayer(new ScaledLayer())
+        this.backgroundLayer.onRedraw = (context) => context.drawImage(backgroundImg, 0, 0)
         this.cfg.images.forEach((img) => {
             this.images.push({img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y})
         })
@@ -52,20 +52,21 @@ export class RewardScreen extends BaseScreen {
             const labelFont = index < 9 ? font : ResourceManager.getBitmapFont(this.cfg.backFont)
             this.texts.push(labelFont.createTextImage(txt.text))
         })
-        this.resultsLayer = this.addLayer(new ScaledLayer())
+        this.resultsLayer = screenMaster.addLayer(new ScaledLayer())
         this.resultsLayer.handlePointerEvent = ((event) => {
             if (event.eventEnum === POINTER_EVENT.UP) {
                 this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
                 this.resultIndex = this.resultLastIndex
                 this.btnSave.visible = true
                 this.btnAdvance.visible = true
-                this.redraw()
+                this.resultsLayer.redraw()
+                this.btnLayer.redraw()
                 return new Promise((resolve) => resolve(true))
             }
             return new Promise((resolve) => resolve(false))
         })
-        this.descriptionTextLayer = this.addLayer(new ScaledLayer(), 20)
-        this.btnLayer = this.addLayer(new ScaledLayer(), 50)
+        this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer(), 20)
+        this.btnLayer = screenMaster.addLayer(new ScaledLayer(), 50)
         this.btnSave = new RewardScreenButton(this.cfg.saveButton)
         this.btnSave.disabled = true
         this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton)
@@ -86,12 +87,15 @@ export class RewardScreen extends BaseScreen {
                         // TODO switch to save screen
                     } else if (this.btnAdvance.pressed) {
                         this.btnAdvance.setReleased()
-                        this.hide()
+                        this.backgroundLayer.hide()
+                        this.resultsLayer.hide()
+                        this.descriptionTextLayer.hide()
+                        this.btnLayer.hide()
                         this.onAdvance()
                     }
                 }
             }
-            if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.redraw()
+            if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.redraw()
             return new Promise((resolve) => resolve(false))
         })
         this.btnLayer.onRedraw = (context) => {
@@ -167,7 +171,10 @@ export class RewardScreen extends BaseScreen {
             const ty = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[1] : 195
             context.drawImage(descriptionTextImg, tx - descriptionTextImg.width / 2, ty)
         }
-        super.show()
+        this.backgroundLayer.show()
+        this.resultsLayer.show()
+        this.descriptionTextLayer.show()
+        this.btnLayer.show()
     }
 
     percentString(actual: number, max = 1, lessIsMore: boolean = false) {
@@ -200,7 +207,10 @@ export class RewardScreen extends BaseScreen {
                 this.btnSave.visible = true
                 this.btnAdvance.visible = true
             }
-            this.redraw()
+            this.backgroundLayer.redraw()
+            this.resultsLayer.redraw()
+            this.descriptionTextLayer.redraw()
+            this.btnLayer.redraw()
         }, this.cfg.timer * 1000)
     }
 
