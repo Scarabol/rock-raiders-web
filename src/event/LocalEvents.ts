@@ -120,26 +120,27 @@ export class SetupPriorityList extends LocalEvent {
 }
 
 export class BuildingsChangedEvent extends LocalEvent {
-    discoveredBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
-    usableBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
+    discoveredBuildingsMaxLevel: Map<EntityType, number> = new Map()
+    usableBuildingsMaxLevel: Map<EntityType, number> = new Map()
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.BUILDINGS_CHANGED)
         entityMgr.buildings.forEach((b) => {
             if (b.isReady()) {
-                const perLevel = this.discoveredBuildingsByTypeAndLevel.getOrUpdate(b.entityType, () => new Map())
-                perLevel.set(b.level, perLevel.getOrUpdate(b.level, () => 0) + 1)
+                const level = this.discoveredBuildingsMaxLevel.get(b.entityType) || b.level
+                this.discoveredBuildingsMaxLevel.set(b.entityType, level)
             }
             if (b.isPowered()) {
-                const perLevel = this.usableBuildingsByTypeAndLevel.getOrUpdate(b.entityType, () => new Map())
-                perLevel.set(b.level, perLevel.getOrUpdate(b.level, () => 0) + 1)
+                const level = this.usableBuildingsMaxLevel.get(b.entityType) || b.level
+                this.usableBuildingsMaxLevel.set(b.entityType, level)
             }
         })
     }
 
     // needs static, because events might get de-/serialized, which removes class methods
     static hasUsable(event: BuildingsChangedEvent, building: EntityType, minLevel: number = 0): boolean {
-        return event.usableBuildingsByTypeAndLevel.get(building)?.some((level) => level >= minLevel)
+        const currentMaxLevel = event.usableBuildingsMaxLevel.getOrDefault(building, -1)
+        return currentMaxLevel >= minLevel
     }
 }
 

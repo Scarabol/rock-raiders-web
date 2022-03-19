@@ -31,9 +31,7 @@ export class MainPanel extends Panel {
     selectSitePanel: SelectSitePanel
 
     numRequestedRaiders: number = 0
-    hasToolstation: boolean = false
-    hasTeleportPad: boolean = false
-    hasBarracks: boolean = false
+    hasRaiderTeleport: boolean = false
     hasMaxRaiders: boolean = false
 
     constructor(parent: BaseElement) {
@@ -65,7 +63,7 @@ export class MainPanel extends Panel {
         const selectFencePanel = this.addSubPanel(new SelectFencePanel(this, this.mainPanel))
 
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')
-        teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || !this.hasToolstation || !this.hasTeleportPad
+        teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || !this.hasRaiderTeleport
         teleportRaider.updateState()
         teleportRaider.onClick = () => this.publishEvent(new ChangeRaiderSpawnRequest(true))
         teleportRaider.onClickSecondary = () => {
@@ -98,9 +96,8 @@ export class MainPanel extends Panel {
             else this.selectSubPanel(this.mainPanel)
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
-            this.hasToolstation = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION)
-            this.hasTeleportPad = BuildingsChangedEvent.hasUsable(event, EntityType.TELEPORT_PAD)
-            this.hasBarracks = BuildingsChangedEvent.hasUsable(event, EntityType.BARRACKS)
+            this.hasRaiderTeleport = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION)
+                || BuildingsChangedEvent.hasUsable(event, EntityType.TELEPORT_PAD)
             teleportRaider.updateState()
         })
         this.registerEventListener(EventKey.RAIDER_AMOUNT_CHANGED, (event: RaidersAmountChangedEvent) => {
@@ -120,9 +117,7 @@ export class MainPanel extends Panel {
         this.mainPanel.movedIn = false
         this.mainPanel.updatePosition()
         this.numRequestedRaiders = 0
-        this.hasToolstation = false
-        this.hasTeleportPad = false
-        this.hasBarracks = false
+        this.hasRaiderTeleport = false
         this.hasMaxRaiders = false
     }
 

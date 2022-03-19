@@ -9,7 +9,7 @@ import { IconSubPanel } from './IconSubPanel'
 
 export abstract class DependencyCheckPanel extends IconSubPanel {
     hasRaider: boolean = false
-    discoveredBuildingsByTypeAndLevel: Map<EntityType, Map<number, number>> = new Map()
+    discoveredBuildingsMaxLevel: Map<EntityType, number> = new Map()
 
     protected constructor(parent: BaseElement, numOfItems: number, onBackPanel: Panel) {
         super(parent, numOfItems, onBackPanel)
@@ -18,7 +18,7 @@ export abstract class DependencyCheckPanel extends IconSubPanel {
             this.updateAllButtonStates()
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
-            this.discoveredBuildingsByTypeAndLevel = event.discoveredBuildingsByTypeAndLevel
+            this.discoveredBuildingsMaxLevel = event.discoveredBuildingsMaxLevel
             this.updateAllButtonStates()
         })
     }
@@ -26,7 +26,7 @@ export abstract class DependencyCheckPanel extends IconSubPanel {
     reset() {
         super.reset()
         this.hasRaider = false
-        this.discoveredBuildingsByTypeAndLevel = new Map()
+        this.discoveredBuildingsMaxLevel = new Map()
     }
 
     protected addDependencyMenuItem(itemKey: string) {
@@ -43,7 +43,8 @@ export abstract class DependencyCheckPanel extends IconSubPanel {
         if (type === EntityType.PILOT) {
             return this.hasRaider
         } else {
-            return this.discoveredBuildingsByTypeAndLevel.get(type)?.some((level) => level >= minLevel)
+            const currentMaxLevel = this.discoveredBuildingsMaxLevel.getOrDefault(type, -1)
+            return currentMaxLevel >= minLevel
         }
     }
 }
