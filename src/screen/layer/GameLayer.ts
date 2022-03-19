@@ -30,7 +30,7 @@ export class GameLayer extends ScreenLayer {
         this.rightDown = {x: 0, y: 0}
     }
 
-    handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
+    handlePointerEvent(event: GamePointerEvent): boolean {
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         const rx = (cx / this.canvas.width) * 2 - 1
         const ry = -(cy / this.canvas.height) * 2 + 1
@@ -61,7 +61,7 @@ export class GameLayer extends ScreenLayer {
         }
         this.canvas.dispatchEvent(new PointerEvent(event.type, event))
         this.canvas.ownerDocument.dispatchEvent(new PointerEvent(event.type, event))
-        return new Promise((resolve) => resolve(true))
+        return true
     }
 
     handleSecondaryClickForSelection(rx: number, ry: number, terrainIntersectionPoint: Vector2) {
@@ -104,7 +104,7 @@ export class GameLayer extends ScreenLayer {
         }
     }
 
-    handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
+    handleKeyEvent(event: GameKeyboardEvent): boolean {
         if (DEV_MODE && event.eventEnum === KEY_EVENT.UP) {
             if (this.entityMgr.selection.surface) {
                 if (event.code === 'KeyC') {
@@ -120,12 +120,12 @@ export class GameLayer extends ScreenLayer {
             }
         }
         this.canvas.dispatchEvent(new KeyboardEvent(event.type, event))
-        return new Promise((resolve) => resolve(true))
+        return true
     }
 
-    handleWheelEvent(event: GameWheelEvent): Promise<boolean> {
+    handleWheelEvent(event: GameWheelEvent): boolean {
         this.canvas.dispatchEvent(new WheelEvent(event.type, event))
-        return new Promise((resolve) => resolve(true))
+        return true
     }
 
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {

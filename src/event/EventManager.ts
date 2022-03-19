@@ -34,19 +34,19 @@ export class EventManager {
     }
 
     private static publishPointerEvent(activeLayers: ScreenLayer[], event: GamePointerEvent) {
-        activeLayers.shift()?.handlePointerEvent(event).then((consumed) => {
+        activeLayers.shift()?.pushPointerEvent(event).then((consumed) => {
             if (!consumed) this.publishPointerEvent(activeLayers, event)
         })
     }
 
     private static publishKeyEvent(activeLayers: ScreenLayer[], event: GameKeyboardEvent) {
-        activeLayers.shift()?.handleKeyEvent(event).then((consumed) => {
+        activeLayers.shift()?.pushKeyEvent(event).then((consumed) => {
             if (!consumed) this.publishKeyEvent(activeLayers, event)
         })
     }
 
     private static publishWheelEvent(activeLayers: ScreenLayer[], event: GameWheelEvent) {
-        activeLayers.shift()?.handleWheelEvent(event).then((consumed) => {
+        activeLayers.shift()?.pushWheelEvent(event).then((consumed) => {
             if (!consumed) this.publishWheelEvent(activeLayers, event)
         })
     }

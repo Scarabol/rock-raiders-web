@@ -35,17 +35,17 @@ export class SelectionLayer extends ScreenLayer {
         this.context.lineWidth = 2
     }
 
-    handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
-        if (this.sceneMgr.hasBuildModeSelection()) return new Promise((resolve) => resolve(false))
+    handlePointerEvent(event: GamePointerEvent): boolean {
+        if (this.sceneMgr.hasBuildModeSelection()) return false
         const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
         if (event.eventEnum === POINTER_EVENT.DOWN) {
-            if (event.button === MOUSE_BUTTON.MAIN) return new Promise((resolve) => resolve(this.startSelection(cx, cy)))
+            if (event.button === MOUSE_BUTTON.MAIN) return this.startSelection(cx, cy)
         } else if (event.eventEnum === POINTER_EVENT.MOVE) {
-            return new Promise((resolve) => resolve(this.changeSelection(cx, cy)))
+            return this.changeSelection(cx, cy)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
-            if (event.button === MOUSE_BUTTON.MAIN) return new Promise((resolve) => resolve(this.selectEntities(cx, cy)))
+            if (event.button === MOUSE_BUTTON.MAIN) return this.selectEntities(cx, cy)
         }
-        return new Promise((resolve) => resolve(false))
+        return false
     }
 
     private startSelection(screenX: number, screenY: number) {

@@ -91,16 +91,16 @@ export abstract class OffscreenLayer extends ScreenLayer {
         if (this.isActive()) this.sendMessage({type: WorkerMessageType.REDRAW})
     }
 
-    handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
+    pushPointerEvent(event: GamePointerEvent): Promise<boolean> {
         [event.canvasX, event.canvasY] = this.toCanvasCoords(event.clientX, event.clientY)
         return this.sendEventMessage(WorkerMessageType.EVENT_POINTER, event)
     }
 
-    handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
+    pushKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
         return this.sendEventMessage(WorkerMessageType.EVENT_KEY, event)
     }
 
-    handleWheelEvent(event: GameWheelEvent): Promise<boolean> {
+    pushWheelEvent(event: GameWheelEvent): Promise<boolean> {
         [event.canvasX, event.canvasY] = this.toCanvasCoords(event.clientX, event.clientY)
         return this.sendEventMessage(WorkerMessageType.EVENT_POINTER, event)
     }

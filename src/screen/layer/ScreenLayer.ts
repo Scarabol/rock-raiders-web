@@ -72,16 +72,31 @@ export class ScreenLayer {
         return [windowX - clientRect.left, windowY - clientRect.top]
     }
 
-    handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
-        return new Promise((resolve) => resolve(false))
+    pushPointerEvent(event: GamePointerEvent): Promise<boolean> {
+        const eventConsumed = this.handlePointerEvent(event)
+        return new Promise((resolve) => resolve(eventConsumed))
     }
 
-    handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
-        return new Promise((resolve) => resolve(false))
+    handlePointerEvent(event: GamePointerEvent): boolean {
+        return false
     }
 
-    handleWheelEvent(event: GameWheelEvent): Promise<boolean> {
-        return new Promise((resolve) => resolve(false))
+    pushKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
+        const eventConsumed = this.handleKeyEvent(event)
+        return new Promise((resolve) => resolve(eventConsumed))
+    }
+
+    handleKeyEvent(event: GameKeyboardEvent): boolean {
+        return false
+    }
+
+    pushWheelEvent(event: GameWheelEvent): Promise<boolean> {
+        const eventConsumed = this.handleWheelEvent(event)
+        return new Promise((resolve) => resolve(eventConsumed))
+    }
+
+    handleWheelEvent(event: GameWheelEvent): boolean {
+        return false
     }
 
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {

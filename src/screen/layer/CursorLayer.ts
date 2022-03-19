@@ -57,16 +57,16 @@ export class CursorLayer extends ScreenLayer {
         this.activeCursor = null
     }
 
-    handleKeyEvent(event: GameKeyboardEvent): Promise<boolean> {
+    handleKeyEvent(event: GameKeyboardEvent): boolean {
         if (event.key === 'p') {
             if (event.eventEnum === KEY_EVENT.DOWN) EventBus.publishEvent(new TakeScreenshot())
-            return new Promise((resolve) => resolve(true))
+            return true
         } else {
             return super.handleKeyEvent(event)
         }
     }
 
-    handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
+    handlePointerEvent(event: GamePointerEvent): boolean {
         if (event.eventEnum === POINTER_EVENT.MOVE && this.sceneMgr) {
             const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
             this.cursorCanvasPos = {x: cx, y: cy}

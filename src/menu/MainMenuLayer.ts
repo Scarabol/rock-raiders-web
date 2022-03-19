@@ -71,7 +71,7 @@ export class MainMenuLayer extends ScaledLayer {
         super.hide()
     }
 
-    handlePointerEvent(event: GamePointerEvent): Promise<boolean> {
+    handlePointerEvent(event: GamePointerEvent): boolean {
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
             let hovered = false
@@ -116,17 +116,17 @@ export class MainMenuLayer extends ScaledLayer {
             }
         }
         if (this.needsRedraw()) this.redraw()
-        return new Promise((resolve) => resolve(false))
+        return false
     }
 
     private setScrollSpeedY(deltaY: number) {
         this.scrollSpeedY = Math.sign(deltaY) * Math.pow(Math.round(deltaY / 20), 2)
     }
 
-    handleWheelEvent(event: GameWheelEvent): Promise<boolean> {
-        if (!this.cfg.canScroll) return new Promise((resolve) => resolve(false))
+    handleWheelEvent(event: GameWheelEvent): boolean {
+        if (!this.cfg.canScroll) return false
         this.setScrollY(event.deltaY)
-        return new Promise((resolve) => resolve(true))
+        return true
     }
 
     private setScrollY(deltaY: number) {

@@ -61,9 +61,9 @@ export class RewardScreen {
                 this.btnAdvance.visible = true
                 this.resultsLayer.redraw()
                 this.btnLayer.redraw()
-                return new Promise((resolve) => resolve(true))
+                return true
             }
-            return new Promise((resolve) => resolve(false))
+            return false
         })
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer(), 20)
         this.btnLayer = screenMaster.addLayer(new ScaledLayer(), 50)
@@ -96,7 +96,7 @@ export class RewardScreen {
                 }
             }
             if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.redraw()
-            return new Promise((resolve) => resolve(false))
+            return false
         })
         this.btnLayer.onRedraw = (context) => {
             this.btnSave.draw(context)
