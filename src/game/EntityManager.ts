@@ -242,4 +242,8 @@ export class EntityManager {
         grp.startAnimation(() => sceneMgr.scene.remove(grp))
         return grp
     }
+
+    hasProfessional(training: RaiderTraining) {
+        return this.raiders.some((r) => r.hasTraining(training))
+    }
 }

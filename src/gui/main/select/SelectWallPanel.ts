@@ -1,14 +1,17 @@
 import { EventKey } from '../../../event/EventKeyEnum'
 import { CancelSurfaceJobs, CreateDrillJob, CreateDynamiteJob, CreateReinforceJob } from '../../../event/GuiCommand'
-import { BuildingsChangedEvent, SelectionChanged } from '../../../event/LocalEvents'
+import { BuildingsChangedEvent, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SelectionChanged } from '../../../event/LocalEvents'
 import { EntityType } from '../../../game/model/EntityType'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
+import { RaiderTraining } from '../../../game/model/raider/RaiderTraining'
 
 export class SelectWallPanel extends SelectBasePanel {
     isDrillable: boolean = false
     isReinforcable: boolean = false
+    hasDemolition: boolean = false
+    hasToolstation: boolean = false
     hasToolstationLevel2: boolean = false
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
@@ -20,7 +23,7 @@ export class SelectWallPanel extends SelectBasePanel {
         itemReinforce.isDisabled = () => !this.isReinforcable
         itemReinforce.onClick = () => this.publishEvent(new CreateReinforceJob())
         const itemDynamite = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Dynamite')
-        itemDynamite.isDisabled = () => !this.hasToolstationLevel2
+        itemDynamite.isDisabled = () => !(this.hasDemolition && this.hasToolstation) && !this.hasToolstationLevel2
         itemDynamite.onClick = () => this.publishEvent(new CreateDynamiteJob())
         const itemDeselect = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig')
         itemDeselect.isDisabled = () => false
@@ -31,7 +34,14 @@ export class SelectWallPanel extends SelectBasePanel {
             this.updateAllButtonStates()
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
+            this.hasToolstation = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION)
             this.hasToolstationLevel2 = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION, 2)
+        })
+        this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => {
+            this.hasDemolition = this.hasDemolition || event.training === RaiderTraining.DEMOLITION
+        })
+        this.registerEventListener(EventKey.RAIDER_AMOUNT_CHANGED, (event: RaidersAmountChangedEvent) => {
+            this.hasDemolition = event.hasDemolition
         })
     }
 
@@ -39,6 +49,8 @@ export class SelectWallPanel extends SelectBasePanel {
         super.reset()
         this.isDrillable = false
         this.isReinforcable = false
+        this.hasDemolition = false
+        this.hasToolstation = false
         this.hasToolstationLevel2 = false
     }
 }

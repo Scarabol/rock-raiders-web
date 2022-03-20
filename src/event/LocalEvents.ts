@@ -147,11 +147,13 @@ export class BuildingsChangedEvent extends LocalEvent {
 export class RaidersAmountChangedEvent extends LocalEvent {
     hasRaider: boolean
     hasMaxRaiders: boolean
+    hasDemolition: boolean
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.RAIDER_AMOUNT_CHANGED)
         this.hasRaider = entityMgr.raiders.length > 0
         this.hasMaxRaiders = entityMgr.hasMaxRaiders()
+        this.hasDemolition = entityMgr.hasProfessional(RaiderTraining.DEMOLITION)
     }
 }
 
