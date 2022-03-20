@@ -86,7 +86,7 @@ ResourceManager.onLoadDone = () => {
         ObjectListLoader.numTestRaider = Number(params.get('numTestRaider')) || 0
         if (entry === 'level') mainMenuScreen.showLevelSelection()
         else if (entry === 'reward') rewardScreen.show()
-        else if (entry === 'random') mainMenuScreen.selectLevel(`Level${(`00${getRandomInclusive(1, 25)}`).substring(-2)}`)
+        else if (entry === 'random') mainMenuScreen.selectLevel(`Level${getRandomInclusive(1, 25).toPadded()}`)
         else if (entry) mainMenuScreen.selectLevel(entry)
     } else {
         mainMenuScreen.showMainMenu()

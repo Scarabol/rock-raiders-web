@@ -67,6 +67,7 @@ export class RewardScreen {
                 this.btnSave.visible = true
                 this.btnAdvance.visible = true
                 this.resultsLayer.redraw()
+                this.descriptionTextLayer.redraw()
                 this.btnLayer.redraw()
                 return true
             }
@@ -129,6 +130,7 @@ export class RewardScreen {
     }
 
     showGameResult(result: GameResult) {
+        this.btnSave.disabled = result.state !== GameResultState.COMPLETE
         this.resultText = this.cfg.quitText
         this.resultLastIndex = this.images.length - 2
         if (result.state === GameResultState.COMPLETE) {
@@ -155,8 +157,8 @@ export class RewardScreen {
 
     calcScore(result: GameResult): number {
         if (!this.rewardConfig) return 0
-        let quota = this.rewardConfig.quota
-        let importance = this.rewardConfig.importance
+        const quota = this.rewardConfig.quota
+        const importance = this.rewardConfig.importance
         const scoreCrystals = GameState.numCrystal >= (quota.crystals || Infinity) ? importance.crystals : 0
         const scoreTimer = result.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
         const scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
@@ -192,7 +194,8 @@ export class RewardScreen {
         }
         this.descriptionTextLayer.onRedraw = (context) => {
             const descriptionTextImg = this.texts[this.resultIndex]
-            context.clearRect(0, this.cfg.textPos[1], this.descriptionTextLayer.fixedWidth, this.descriptionTextLayer.fixedHeight - this.cfg.textPos[1])
+            if (!descriptionTextImg) return
+            context.clearRect(0, 0, this.descriptionTextLayer.fixedWidth, this.descriptionTextLayer.fixedHeight)
             const tx = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[0] : 305
             const ty = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[1] : 195
             context.drawImage(descriptionTextImg, tx - descriptionTextImg.width / 2, ty)
@@ -210,30 +213,24 @@ export class RewardScreen {
         return `${value.toString()}%`
     }
 
-    padLeft(value: string, padding = '0', length = 2) {
-        while (value.length < length) value = padding + value
-        return value
-    }
-
     timeString(seconds: number) {
-        const ss = this.padLeft((seconds % 60).toString())
+        const ss = (seconds % 60).toPadded()
         const minutes = Math.floor(seconds / 60)
-        const mm = this.padLeft(((minutes % 60).toString()))
-        const hh = this.padLeft((Math.floor(minutes / 60).toString()))
+        const mm = ((minutes % 60).toPadded())
+        const hh = (Math.floor(minutes / 60).toPadded())
         return `${hh}:${mm}:${ss}`
     }
 
     uncoverResult() {
         this.uncoverTimeout = setTimeout(() => {
-            this.uncoverTimeout = null
-            this.resultIndex++
+            this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
             if (this.resultIndex < this.resultLastIndex) {
+                this.resultIndex++
                 this.uncoverResult()
             } else {
                 this.btnSave.visible = true
                 this.btnAdvance.visible = true
             }
-            this.backgroundLayer.redraw()
             this.resultsLayer.redraw()
             this.descriptionTextLayer.redraw()
             this.btnLayer.redraw()

@@ -108,6 +108,10 @@ declare global {
     interface String {
         equalsIgnoreCase(other: string): boolean
     }
+
+    interface Number {
+        toPadded(): string
+    }
 }
 
 Array.prototype.add = function <T>(element: T): void {
@@ -169,4 +173,8 @@ Map.prototype.some = function <K, V>(predicate: (element: V) => boolean): boolea
 
 String.prototype.equalsIgnoreCase = function (other: string): boolean {
     return this.toLowerCase() === other?.toLowerCase()
+}
+
+Number.prototype.toPadded = function (): string {
+    return `00${this.toString()}`.slice(-2)
 }

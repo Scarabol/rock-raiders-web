@@ -22,6 +22,11 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.height = this.imgNormal.height
     }
 
+    checkSetPressed() {
+        if (this.disabled) return
+        super.checkSetPressed()
+    }
+
     draw(context: SpriteContext) {
         super.draw(context)
         if (!this.visible) return
