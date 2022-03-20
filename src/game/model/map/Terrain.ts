@@ -76,7 +76,7 @@ export class Terrain {
 
     countDiggables(): number {
         let totalDiggables = 0
-        this.forEachSurface((s) => totalDiggables += s.isDigable() ? 1 : 0)
+        this.forEachSurface((s) => totalDiggables += s.surfaceType.digable ? 1 : 0)
         return totalDiggables
     }
 
