@@ -12,6 +12,9 @@ export class GameMenuCfg extends BaseConfig {
     loadGame: string = ''
     saveImage: {
         BigWidth: number,
+        BigHeight: number,
+        Width: number,
+        Height: number,
         Pos1: number[],
         Pos2: number[],
         Pos3: number[],

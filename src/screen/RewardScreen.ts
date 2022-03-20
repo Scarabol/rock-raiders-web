@@ -12,6 +12,7 @@ import { ScaledLayer } from './layer/ScreenLayer'
 import { ScreenMaster } from './ScreenMaster'
 import { LoadSaveLayer } from '../menu/LoadSaveLayer'
 import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
+import { SaveGameManager } from '../resource/SaveGameManager'
 
 export class RewardScreen {
     onAdvance: () => void
@@ -31,10 +32,13 @@ export class RewardScreen {
     uncoverTimeout: NodeJS.Timeout = null
     btnSave: RewardScreenButton
     btnAdvance: RewardScreenButton
+    score: number = 0
+    levelName: string = ''
     levelFullNameImg: SpriteImage
     rewardConfig: LevelRewardConfig
     resultText: string
     resultValues: SpriteImage[] = []
+    screenshot: HTMLCanvasElement = null
 
     constructor(screenMaster: ScreenMaster) {
         this.cfg = ResourceManager.configuration.reward
@@ -111,8 +115,13 @@ export class RewardScreen {
             if (item.actionName.equalsIgnoreCase('next')) {
                 this.saveGameLayer.hide()
             } else if (item.actionName.toLowerCase().startsWith('save_game_')) {
-                // TODO show overwrite warning window
-                console.warn('Save game not yet implemented') // TODO trigger save game here
+                if (SaveGameManager.hasSaveGame(item.targetIndex)) {
+                    console.warn('Overwrite window not yet implemented') // TODO show overwrite warning window
+                    SaveGameManager.saveGame(item.targetIndex, this.levelName, this.score, this.screenshot)
+                } else {
+                    SaveGameManager.saveGame(item.targetIndex, this.levelName, this.score, this.screenshot)
+                }
+                this.saveGameLayer.hide()
             } else {
                 console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
             }
@@ -138,7 +147,9 @@ export class RewardScreen {
         this.resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(1))) // TODO defence report is either 0% or 100%
         this.resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(GameState.airLevel)))
         this.resultValues.push(this.fonts['timer'].createTextImage(this.timeString(result.gameTimeSeconds)))
-        this.resultValues.push(this.fonts['score'].createTextImage(this.percentString(this.calcScore(result))))
+        this.score = this.calcScore(result)
+        this.resultValues.push(this.fonts['score'].createTextImage(this.percentString(this.score)))
+        this.screenshot = result.screenshot
         this.show()
     }
 
@@ -229,7 +240,9 @@ export class RewardScreen {
         }, this.cfg.timer * 1000)
     }
 
-    setup(levelFullName: string, rewardConfig: LevelRewardConfig) {
+    setup(levelName: string, levelFullName: string, rewardConfig: LevelRewardConfig) {
+        this.levelName = levelName
+        this.score = 0
         this.levelFullNameImg = this.titleFont.createTextImage(levelFullName)
         this.rewardConfig = rewardConfig
     }

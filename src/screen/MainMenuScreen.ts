@@ -5,6 +5,7 @@ import { ScreenMaster } from './ScreenMaster'
 import { MainMenuLevelButton } from '../menu/MainMenuLevelButton'
 import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
 import { LoadSaveLayer } from '../menu/LoadSaveLayer'
+import { SaveGameManager } from '../resource/SaveGameManager'
 
 export class MainMenuScreen {
     onLevelSelected: (levelName: string) => void = null
@@ -39,6 +40,9 @@ export class MainMenuScreen {
             this.showMainMenu(item.targetIndex)
         } else if (item.actionName.equalsIgnoreCase('selectlevel')) {
             this.selectLevel((item as MainMenuLevelButton).levelKey)
+        } else if (item.actionName.toLowerCase().startsWith('load_game')) {
+            SaveGameManager.loadGame(item.targetIndex)
+            this.showMainMenu()
         } else if (item.actionName) {
             console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
         }

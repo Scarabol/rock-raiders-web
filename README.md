@@ -56,8 +56,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Mid (v0.7.0)
 
 - Bricks and brick refinery
-- Level score shown and level unlocking
-- Save and load
 - First-Person and shoulder camera
 
 ### Far (v0.8.0)

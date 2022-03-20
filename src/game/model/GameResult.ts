@@ -14,6 +14,7 @@ export class GameResult {
     numRaiders: number
     numMaxRaiders: number
     gameTimeSeconds: number
+    screenshot: HTMLCanvasElement
 
     constructor(state: GameResultState, entityMgr: EntityManager, worldMgr: WorldManager) {
         this.state = state
@@ -21,5 +22,6 @@ export class GameResult {
         this.numRaiders = entityMgr.raiders.length
         this.numMaxRaiders = entityMgr.getMaxRaiders()
         this.gameTimeSeconds = Math.round(worldMgr.elapsedGameTimeMs / 1000)
+        this.screenshot = null
     }
 }

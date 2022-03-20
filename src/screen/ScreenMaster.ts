@@ -57,14 +57,20 @@ export class ScreenMaster {
         return this.layers.filter(l => l.isActive()).sort((a, b) => ScreenLayer.compareZ(a, b))
     }
 
-    takeScreenshot() {
+    createScreenshot(): Promise<HTMLCanvasElement> {
         const activeLayers = this.getActiveLayersSorted().reverse()
         if (activeLayers.length < 1) return
         const context = cloneContext(activeLayers[0].canvas)
-        Promise.all(activeLayers.map((l) => l.takeScreenshotFromLayer())).then((layers) => {
-            layers.forEach((c) => context.drawImage(c, 0, 0))
-            this.downloadCanvasAsImage(context.canvas)
+        return new Promise<HTMLCanvasElement>((resolve) => {
+            Promise.all(activeLayers.map((l) => l.takeScreenshotFromLayer())).then((layers) => {
+                layers.forEach((c) => context.drawImage(c, 0, 0))
+                resolve(context.canvas)
+            })
         })
+    }
+
+    takeScreenshot() {
+        this.createScreenshot().then((canvas) => this.downloadCanvasAsImage(canvas))
     }
 
     private downloadCanvasAsImage(canvas: HTMLCanvasElement) {

@@ -54,7 +54,7 @@ ResourceManager.onLoadDone = () => {
     mainMenuScreen.onLevelSelected = (levelName) => {
         try {
             const levelConf = ResourceManager.getLevelEntryCfg(levelName)
-            rewardScreen.setup(levelConf.fullName, levelConf.reward)
+            rewardScreen.setup(levelName, levelConf.fullName, levelConf.reward)
             gameScreen.startLevel(levelName, levelConf)
         } catch (e) {
             console.error(`Could not load level: ${levelName}`, e)
@@ -63,8 +63,11 @@ ResourceManager.onLoadDone = () => {
         }
     }
     gameScreen.onLevelEnd = (result) => {
-        gameScreen.hide()
-        rewardScreen.showGameResult(result)
+        screenMaster.createScreenshot().then((canvas) => {
+            result.screenshot = canvas
+            gameScreen.hide()
+            rewardScreen.showGameResult(result)
+        })
     }
     rewardScreen.onAdvance = () => {
         GameState.reset()
