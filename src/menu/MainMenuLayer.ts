@@ -7,14 +7,12 @@ import { GameWheelEvent } from '../event/GameWheelEvent'
 import { NATIVE_FRAMERATE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { ScaledLayer } from '../screen/layer/ScreenLayer'
-import { MainMenuScreen } from '../screen/MainMenuScreen'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuIconButton } from './MainMenuIconButton'
 import { MainMenuLabelButton } from './MainMenuLabelButton'
-import { MainMenuLevelButton } from './MainMenuLevelButton'
 
 export class MainMenuLayer extends ScaledLayer {
-    screen: MainMenuScreen
+    onItemAction: (item: MainMenuBaseItem) => any = () => console.warn('onItemAction not implemented')
     cfg: MenuEntryCfg
     loFont: BitmapFont
     hiFont: BitmapFont
@@ -25,9 +23,8 @@ export class MainMenuLayer extends ScaledLayer {
     scrollSpeedY: number = 0
     scrollInterval: NodeJS.Timeout = null
 
-    constructor(screen: MainMenuScreen, menuCfg: MenuEntryCfg) {
+    constructor(menuCfg: MenuEntryCfg) {
         super()
-        this.screen = screen
         this.cfg = menuCfg
         this.loFont = menuCfg.loFont ? ResourceManager.getBitmapFont(menuCfg.loFont) : null
         this.hiFont = menuCfg.hiFont ? ResourceManager.getBitmapFont(menuCfg.hiFont) : null
@@ -101,18 +98,13 @@ export class MainMenuLayer extends ScaledLayer {
             }
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
-                this.items.forEach((item) => {
-                    if (item.pressed) {
-                        item.setReleased()
-                        if (item.actionName.toLowerCase() === 'next') {
-                            this.screen.showMainMenu(item.targetIndex)
-                        } else if (item.actionName.toLowerCase() === 'selectlevel') {
-                            this.screen.selectLevel((item as MainMenuLevelButton).levelKey)
-                        } else if (item.actionName) {
-                            console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
-                        }
-                    }
-                })
+                const item = this.items.find((item) => item.pressed)
+                if (item) {
+                    item.setReleased()
+                    this.redraw()
+                    this.onItemAction(item)
+                    return true
+                }
             }
         }
         if (this.needsRedraw()) this.redraw()

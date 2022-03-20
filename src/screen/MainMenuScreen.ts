@@ -2,6 +2,8 @@ import { LevelSelectLayer } from '../menu/LevelSelectLayer'
 import { MainMenuLayer } from '../menu/MainMenuLayer'
 import { ResourceManager } from '../resource/ResourceManager'
 import { ScreenMaster } from './ScreenMaster'
+import { MainMenuLevelButton } from '../menu/MainMenuLevelButton'
+import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
 
 export class MainMenuScreen {
     onLevelSelected: (levelName: string) => void = null
@@ -9,17 +11,28 @@ export class MainMenuScreen {
 
     constructor(screenMaster: ScreenMaster) {
         ResourceManager.configuration.menu.mainMenuFull.menus.forEach((menuCfg) => {
-            let layer
+            let layer: MainMenuLayer
             if (menuCfg.title === 'Levels') {
-                layer = new LevelSelectLayer(this, menuCfg, true)
+                layer = new LevelSelectLayer(menuCfg, true)
             } else if (menuCfg.title === 'Tutorials') {
-                layer = new LevelSelectLayer(this, menuCfg, false)
+                layer = new LevelSelectLayer(menuCfg, false)
             } else {
-                layer = new MainMenuLayer(this, menuCfg)
+                layer = new MainMenuLayer(menuCfg)
             }
+            layer.onItemAction = (item: MainMenuBaseItem) => this.onItemAction(item)
             this.menus.push(layer)
             screenMaster.addLayer(layer)
         })
+    }
+
+    private onItemAction(item: MainMenuBaseItem) {
+        if (item.actionName.equalsIgnoreCase('next')) {
+            this.showMainMenu(item.targetIndex)
+        } else if (item.actionName.equalsIgnoreCase('selectlevel')) {
+            this.selectLevel((item as MainMenuLevelButton).levelKey)
+        } else if (item.actionName) {
+            console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
+        }
     }
 
     showMainMenu(index: number = 0) {

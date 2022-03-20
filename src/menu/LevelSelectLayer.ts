@@ -1,6 +1,5 @@
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { ResourceManager } from '../resource/ResourceManager'
-import { MainMenuScreen } from '../screen/MainMenuScreen'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { MainMenuLevelButton } from './MainMenuLevelButton'
@@ -8,8 +7,8 @@ import { MainMenuPanel } from './MainMenuPanel'
 import { MainMenuWindow } from './MainMenuWindow'
 
 export class LevelSelectLayer extends MainMenuLayer {
-    constructor(screen: MainMenuScreen, menuCfg: MenuEntryCfg, modeLevel: boolean) {
-        super(screen, menuCfg)
+    constructor(menuCfg: MenuEntryCfg, modeLevel: boolean) {
+        super(menuCfg)
         const levelTextCfg = ResourceManager.configuration.menu.levelText
         this.items.push(new MainMenuPanel(levelTextCfg.panel))
         const levelTextWindow = new MainMenuWindow(ResourceManager.getDefaultFont(), levelTextCfg.window)
