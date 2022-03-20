@@ -54,7 +54,6 @@ ResourceManager.onLoadDone = () => {
     mainMenuScreen.onLevelSelected = (levelName) => {
         try {
             const levelConf = ResourceManager.getLevelEntryCfg(levelName)
-            rewardScreen.setup(levelName, levelConf.fullName, levelConf.reward)
             gameScreen.startLevel(levelName, levelConf)
         } catch (e) {
             console.error(`Could not load level: ${levelName}`, e)

@@ -79,7 +79,7 @@ export class SaveGameManager {
     static getLevelScoreString(levelName: string) {
         const levelScore = this.currentLevels.find((l) => l.levelName.equalsIgnoreCase(levelName))?.levelScore
         if (levelScore) {
-            return ` (${Math.round(levelScore * 100)})`
+            return ` (${levelScore})`
         } else {
             return ''
         }

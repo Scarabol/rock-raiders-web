@@ -78,7 +78,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Walker digger never completes to drill down hard rock
 - When level is quit by player diggables are always shown as 0%
 - Ore and Crystals are shown at 100% even though there was plenty left (in rubble and walls)
-- Percent of raider shown in reward screen not compared to oxygen rate and therefore always too low
 
 ### Nice to have
 

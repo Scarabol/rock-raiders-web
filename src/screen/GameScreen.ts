@@ -45,7 +45,7 @@ export class GameScreen {
         this.worldMgr.sceneMgr = this.sceneMgr
         this.worldMgr.entityMgr = this.entityMgr
         this.worldMgr.jobSupervisor = new Supervisor(this.worldMgr.sceneMgr, this.worldMgr.entityMgr)
-        this.worldMgr.onLevelEnd = (result) => this.onLevelEnd(new GameResult(result, this.entityMgr, this.worldMgr))
+        this.worldMgr.onLevelEnd = (result) => this.onLevelEnd(new GameResult(this.levelName, this.levelConf, result, this.entityMgr, this.worldMgr))
         this.gameLayer.worldMgr = this.worldMgr
         this.gameLayer.sceneMgr = this.sceneMgr
         this.gameLayer.entityMgr = this.entityMgr
@@ -58,7 +58,7 @@ export class GameScreen {
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.showOptions()
         this.overlayLayer.onSetSpaceToContinue = (state: boolean) => this.guiLayer.setSpaceToContinue(state)
-        this.overlayLayer.onAbortGame = () => this.onLevelEnd(new GameResult(GameResultState.QUIT, this.entityMgr, this.worldMgr))
+        this.overlayLayer.onAbortGame = () => this.onLevelEnd(new GameResult(this.levelName, this.levelConf, GameResultState.QUIT, this.entityMgr, this.worldMgr))
         this.overlayLayer.onRestartGame = () => this.restartLevel()
     }
 

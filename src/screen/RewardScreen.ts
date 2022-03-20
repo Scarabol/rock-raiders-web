@@ -1,4 +1,3 @@
-import { LevelRewardConfig } from '../cfg/LevelsCfg'
 import { RewardCfg } from '../cfg/RewardCfg'
 import { BitmapFont } from '../core/BitmapFont'
 import { clearTimeoutSafe } from '../core/Util'
@@ -6,7 +5,6 @@ import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GameResult, GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { RewardScreenButton } from '../menu/RewardScreenButton'
-import { MAX_RAIDER_BASE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { ScaledLayer } from './layer/ScreenLayer'
 import { ScreenMaster } from './ScreenMaster'
@@ -35,7 +33,6 @@ export class RewardScreen {
     score: number = 0
     levelName: string = ''
     levelFullNameImg: SpriteImage
-    rewardConfig: LevelRewardConfig
     resultText: string
     resultValues: SpriteImage[] = []
     screenshot: HTMLCanvasElement = null
@@ -130,6 +127,9 @@ export class RewardScreen {
     }
 
     showGameResult(result: GameResult) {
+        console.log('Your game result', result)
+        this.levelName = result.levelName
+        this.levelFullNameImg = this.titleFont.createTextImage(result.levelFullName)
         this.btnSave.disabled = result.state !== GameResultState.COMPLETE
         this.resultText = this.cfg.quitText
         this.resultLastIndex = this.images.length - 2
@@ -149,23 +149,10 @@ export class RewardScreen {
         this.resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(1))) // TODO defence report is either 0% or 100%
         this.resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(GameState.airLevel)))
         this.resultValues.push(this.fonts['timer'].createTextImage(this.timeString(result.gameTimeSeconds)))
-        this.score = this.calcScore(result)
-        this.resultValues.push(this.fonts['score'].createTextImage(this.percentString(this.score)))
+        this.resultValues.push(this.fonts['score'].createTextImage(`${result.score}%`))
+        this.score = result.score
         this.screenshot = result.screenshot
         this.show()
-    }
-
-    calcScore(result: GameResult): number {
-        if (!this.rewardConfig) return 0
-        const quota = this.rewardConfig.quota
-        const importance = this.rewardConfig.importance
-        const scoreCrystals = GameState.numCrystal >= (quota.crystals || Infinity) ? importance.crystals : 0
-        const scoreTimer = result.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
-        const scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
-        const scoreConstructions = quota.constructions ? Math.min(1, result.numBuildings / quota.constructions * importance.constructions) : 0
-        const scoreOxygen = GameState.airLevel * importance.oxygen
-        const scoreFigures = result.numRaiders >= MAX_RAIDER_BASE ? importance.figures : 0
-        return Math.max(0, Math.min(100, Math.round(scoreCrystals + scoreTimer + scoreCaverns + scoreConstructions + scoreOxygen + scoreFigures) / 100))
     }
 
     show() {
@@ -235,12 +222,5 @@ export class RewardScreen {
             this.descriptionTextLayer.redraw()
             this.btnLayer.redraw()
         }, this.cfg.timer * 1000)
-    }
-
-    setup(levelName: string, levelFullName: string, rewardConfig: LevelRewardConfig) {
-        this.levelName = levelName
-        this.score = 0
-        this.levelFullNameImg = this.titleFont.createTextImage(levelFullName)
-        this.rewardConfig = rewardConfig
     }
 }
