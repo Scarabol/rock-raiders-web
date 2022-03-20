@@ -141,7 +141,7 @@ Array.prototype.partition = function <T>(filter: (element: T) => boolean): [T[],
     return [left, right]
 }
 
-Array.prototype.random = function <T>(): T {
+Array.prototype.random = function <T>(): T | undefined {
     if (!this.length) return undefined
     return this[getRandom(this.length - 1)]
 }

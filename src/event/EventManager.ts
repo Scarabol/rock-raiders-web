@@ -14,18 +14,18 @@ export class EventManager {
             ['pointerdown', POINTER_EVENT.DOWN],
             ['pointerup', POINTER_EVENT.UP],
         ]).forEach((eventEnum, eventType) => {
-            screenMaster.gameCanvasContainer.addEventListener(eventType, (event: PointerEvent) => {
+            screenMaster.gameCanvasContainer.addEventListener(eventType, (event: Event) => {
                 event.preventDefault()
-                EventManager.publishPointerEvent(screenMaster.getActiveLayersSorted(), new GamePointerEvent(eventEnum, event))
+                EventManager.publishPointerEvent(screenMaster.getActiveLayersSorted(), new GamePointerEvent(eventEnum, event as PointerEvent))
             })
         })
         new Map<string, KEY_EVENT>([
             ['keydown', KEY_EVENT.DOWN],
             ['keyup', KEY_EVENT.UP],
         ]).forEach((eventEnum, eventType) => {
-            screenMaster.gameCanvasContainer.addEventListener(eventType, (event: KeyboardEvent) => {
+            screenMaster.gameCanvasContainer.addEventListener(eventType, (event: Event) => {
                 if (!DEV_MODE) event.preventDefault()
-                EventManager.publishKeyEvent(screenMaster.getActiveLayersSorted(), new GameKeyboardEvent(eventEnum, event))
+                EventManager.publishKeyEvent(screenMaster.getActiveLayersSorted(), new GameKeyboardEvent(eventEnum, event as KeyboardEvent))
             })
         })
         screenMaster.gameCanvasContainer.addEventListener('wheel', (event: WheelEvent) => {
