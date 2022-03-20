@@ -54,7 +54,7 @@ export class GameScreen {
         this.selectionLayer.entityMgr = this.entityMgr
         this.guiLayer.entityMgr = this.entityMgr
         this.overlayLayer.entityMgr = this.entityMgr
-        this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr, this.entityMgr, this.gameLayer.canvas)
+        this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr, this.entityMgr, this.sceneMgr.controls)
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.showOptions()
         this.overlayLayer.onSetSpaceToContinue = (state: boolean) => this.guiLayer.setSpaceToContinue(state)

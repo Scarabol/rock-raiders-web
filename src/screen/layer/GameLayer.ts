@@ -23,6 +23,7 @@ export class GameLayer extends ScreenLayer {
 
     constructor() {
         super(false, false)
+        this.canvas.style.cursor = 'none' // this cursor is effective, when OrbitControls captures the pointer during movements
     }
 
     reset() {
@@ -59,9 +60,7 @@ export class GameLayer extends ScreenLayer {
                 this.rightDown.y = event.clientY
             }
         }
-        this.canvas.dispatchEvent(new PointerEvent(event.type, event))
-        this.canvas.ownerDocument.dispatchEvent(new PointerEvent(event.type, event))
-        return true
+        return this.sceneMgr.controls.handlePointerEvent(event)
     }
 
     handleSecondaryClickForSelection(rx: number, ry: number, terrainIntersectionPoint: Vector2) {
@@ -119,13 +118,11 @@ export class GameLayer extends ScreenLayer {
                 }
             }
         }
-        this.canvas.dispatchEvent(new KeyboardEvent(event.type, event))
-        return true
+        return this.sceneMgr.controls.handleKeyEvent(event)
     }
 
     handleWheelEvent(event: GameWheelEvent): boolean {
-        this.canvas.dispatchEvent(new WheelEvent(event.type, event))
-        return true
+        return this.sceneMgr.controls.handleWheelEvent(event)
     }
 
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {

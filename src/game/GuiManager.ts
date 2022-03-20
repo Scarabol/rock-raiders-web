@@ -13,11 +13,12 @@ import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
 import { UpgradeRaiderJob } from './model/job/raider/UpgradeRaiderJob'
 import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
+import { CustomCameraControls } from './CustomCameraControls'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityMgr: EntityManager, gameLayerCanvas: HTMLCanvasElement) {
+    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityMgr: EntityManager, cameraControls: CustomCameraControls) {
         EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: SelectedRaiderPickTool) => {
             entityMgr.selection.raiders.forEach((r) => {
                 if (!r.hasTool(event.tool)) {
@@ -139,10 +140,8 @@ export class GuiManager {
             EventBus.publishEvent(new UpdatePriorities(event.priorityList))
         })
         EventBus.registerEventListener(EventKey.COMMAND_CAMERA_CONTROL, (event: CameraControl) => {
-            if (event.zoom) { // TODO implement custom camera controls, that is better remotely controllable
-                const zoomInEvent = new WheelEvent('wheel', {deltaY: 5 * event.zoom})
-                gameLayerCanvas.dispatchEvent(zoomInEvent)
-                gameLayerCanvas.ownerDocument.dispatchEvent(zoomInEvent)
+            if (event.zoom) {
+                cameraControls.zoom(event.zoom)
             }
             if (event.cycleBuilding) {
                 this.buildingCycleIndex = (this.buildingCycleIndex + 1) % entityMgr.buildings.length
@@ -152,8 +151,8 @@ export class GuiManager {
                 sceneMgr.controls.target.copy(target)
                 sceneMgr.controls.update()
             }
-            if (event.rotationIndex >= 0) { // TODO implement custom camera controls, that is better remotely controllable
-                console.log(`TODO implement rotate camera: ${['left', 'up', 'right', 'down'][event.rotationIndex]}`)
+            if (event.rotationIndex >= 0) {
+                cameraControls.rotate(event.rotationIndex)
             }
         })
     }

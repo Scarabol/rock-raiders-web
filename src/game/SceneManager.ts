@@ -1,5 +1,5 @@
 import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
-import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
+import { CustomCameraControls } from './CustomCameraControls'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { cloneContext } from '../core/ImageHelper'
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
@@ -33,7 +33,7 @@ export class SceneManager {
     ambientLight: AmbientLight
     light: PointLight
     terrain: Terrain
-    controls: MapControls
+    controls: CustomCameraControls
     cursorTorchlight: PointLight
     buildMarker: BuildPlacementMarker
     screenshotCallback: (canvas: HTMLCanvasElement) => any
@@ -43,7 +43,7 @@ export class SceneManager {
         this.listener = new AudioListener()
         this.camera = new PerspectiveCamera(CAMERA_FOV, canvas.width / canvas.height, 0.1, CAMERA_MAX_DISTANCE)
         this.camera.add(this.listener)
-        this.controls = new MapControls(this.camera, this.renderer.domElement)
+        this.controls = new CustomCameraControls(this.camera, this.renderer.domElement)
         this.controls.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
         // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
         this.controls.listenToKeyEvents(this.renderer.domElement)
