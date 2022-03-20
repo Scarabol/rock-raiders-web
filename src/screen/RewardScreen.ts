@@ -102,6 +102,7 @@ export class RewardScreen {
             this.btnSave.draw(context)
             this.btnAdvance.draw(context)
         }
+        this.levelFullNameImg = this.titleFont.createTextImage('No level selected')
     }
 
     showGameResult(result: GameResult) {
