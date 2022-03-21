@@ -45,6 +45,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - turn all lights red, when alarm mode is active
 - switch all raider with weapon from work to defend
 - let raider in defend mode target any known slug or rock monster
+- make raider flee from nearby monsters and ticking dynamite
 - add spawn timer for slugs, only one slug per hole
 - make slugs look for nearby reachable buildings or fences to leech energy
 - spawn a depleted energy crystal, when slug leeched energy
@@ -81,8 +82,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Important
 
-- Walker digger never completes to drill down hard rock
-- Ore and Crystals are shown at 100% even though there was plenty left (in rubble and walls)
 - Selection layer has bad performance and behaves funny when hovering GUI
 - Refactor job system to allow multi-carry jobs
 - Refactor upgrade system and make vehicles upgradeable
@@ -95,7 +94,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Large digger and walker digger moving into wall for drilling
 - Beamup animation sequence missing on successful level end
-- Explosion sound for dynamite is very quiet
 - Screen shake missing for exploding dynamites
 
 ### Cosmetics
@@ -106,7 +104,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add captain flh animation to mission briefing
 - Seams do not show tear down progress while drilling
 - Driver may sit wrong way around on vehicle
-- Arrows not shown on power station flaps
 - Numbers above dynamite not shown as sprite (same issue as with sleeping rockies?)
 - Level 11 spams console with unreachable jobs
 - Work sounds missing for most of the jobs

@@ -13,6 +13,7 @@ import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { TILESIZE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
+import { GameState } from '../game/model/GameState'
 
 export class LocalEvent extends GameEvent {
     constructor(eventKey: EventKey) {
@@ -205,5 +206,14 @@ export class UpdatePriorities extends LocalEvent {
     constructor(priorityList: PriorityEntry[]) {
         super(EventKey.UPDATE_PRIORITIES)
         this.priorityList = priorityList
+    }
+}
+
+export class NeededCrystalsChanged extends LocalEvent {
+    neededCrystals: number
+
+    constructor() {
+        super(EventKey.NEEDED_CRYSTALS_CHANGED)
+        this.neededCrystals = GameState.neededCrystals
     }
 }

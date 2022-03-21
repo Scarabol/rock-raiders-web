@@ -209,8 +209,8 @@ export class RewardScreen {
     }
 
     uncoverResult() {
+        this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
         this.uncoverTimeout = setTimeout(() => {
-            this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
             if (this.resultIndex < this.resultLastIndex) {
                 this.resultIndex++
                 this.uncoverResult()

@@ -50,6 +50,7 @@ export class WorldManager {
 
     setup(levelConf: LevelEntryCfg) {
         GameState.gameResult = GameResultState.UNDECIDED
+        GameState.changeNeededCrystals(levelConf.reward?.quota?.crystals || 0)
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         this.oxygenRate = levelConf.oxygenRate / 1000
         this.elapsedGameTimeMs = 0

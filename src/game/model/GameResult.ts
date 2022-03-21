@@ -45,7 +45,7 @@ export class GameResult {
             this.scoreCrystals = GameState.numCrystal >= (quota.crystals || Infinity) ? importance.crystals : 0
             this.scoreTimer = this.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
             this.scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
-            this.scoreConstructions = quota.constructions ? Math.min(1, this.numBuildings / quota.constructions * importance.constructions) : 0
+            this.scoreConstructions = quota.constructions ? Math.min(1, this.numBuildings / quota.constructions) * importance.constructions : 0
             this.scoreOxygen = GameState.airLevel * importance.oxygen
             this.scoreFigures = this.numRaiders >= ADDITIONAL_RAIDER_PER_SUPPORT ? importance.figures : 0
             this.score = Math.max(0, Math.min(100, Math.round(this.scoreCrystals + this.scoreTimer + this.scoreCaverns + this.scoreConstructions + this.scoreOxygen + this.scoreFigures)))

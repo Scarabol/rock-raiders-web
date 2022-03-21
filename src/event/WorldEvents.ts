@@ -56,23 +56,21 @@ export class RequestedVehiclesChanged extends WorldEvent {
 
 export class MaterialAmountChanged extends WorldEvent {
     numCrystal: number
-    neededCrystal: number
     totalOre: number
 
     constructor() {
         super(EventKey.MATERIAL_AMOUNT_CHANGED)
         this.numCrystal = GameState.numCrystal
-        this.neededCrystal = GameState.neededCrystals
         this.totalOre = GameState.numOre + GameState.numBrick * BRICK_ORE_VALUE
     }
 }
 
-export class UsedCrystalChanged extends WorldEvent {
-    usedCrystal: number
+export class UsedCrystalsChanged extends WorldEvent {
+    usedCrystals: number
 
     constructor() {
-        super(EventKey.USED_CRYSTAL_CHANGED)
-        this.usedCrystal = GameState.usedCrystals
+        super(EventKey.USED_CRYSTALS_CHANGED)
+        this.usedCrystals = GameState.usedCrystals
     }
 }
 

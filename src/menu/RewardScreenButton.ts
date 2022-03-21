@@ -23,7 +23,7 @@ export class RewardScreenButton extends MainMenuBaseItem {
     }
 
     checkSetPressed() {
-        if (this.disabled) return
+        if (this.disabled || !this.visible) return
         super.checkSetPressed()
     }
 

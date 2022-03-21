@@ -1,6 +1,6 @@
 import { AxesHelper, Group, Vector2, Vector3 } from 'three'
 import { TextureEntryCfg } from '../../../cfg/TexturesCfg'
-import { DEV_MODE, TILESIZE } from '../../../params'
+import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, TILESIZE } from '../../../params'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { updateSafe } from '../Updateable'
@@ -88,7 +88,7 @@ export class Terrain {
 
     countOres(): number {
         let totalOres = 0
-        this.forEachSurface((s) => totalOres += s.containedOres)
+        this.forEachSurface((s) => totalOres += s.containedOres + (s.surfaceType === SurfaceType.ORE_SEAM ? s.seamLevel : 0) + (s.surfaceType.digable ? SURFACE_NUM_CONTAINED_ORE : 0))
         return totalOres
     }
 

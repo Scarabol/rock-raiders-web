@@ -1,11 +1,12 @@
 import { ButtonCrystalSideBarCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventKey } from '../../event/EventKeyEnum'
-import { MaterialAmountChanged, UsedCrystalChanged } from '../../event/WorldEvents'
+import { MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { GuiResourceCache } from '../GuiResourceCache'
 import { SideBarLabel } from './SideBarLabel'
+import { NeededCrystalsChanged } from '../../event/LocalEvents'
 
 export class PanelCrystalSideBar extends Panel {
     labelOre: SideBarLabel
@@ -32,12 +33,14 @@ export class PanelCrystalSideBar extends Panel {
             this.labelOre.label = event.totalOre.toString()
             this.labelCrystal.label = event.numCrystal.toString()
             this.numCrystal = event.numCrystal
-            this.neededCrystals = event.neededCrystal
             this.totalOre = event.totalOre
             this.notifyRedraw()
         })
-        this.registerEventListener(EventKey.USED_CRYSTAL_CHANGED, (event: UsedCrystalChanged) => {
-            this.usedCrystals = event.usedCrystal
+        this.registerEventListener(EventKey.USED_CRYSTALS_CHANGED, (event: UsedCrystalsChanged) => {
+            this.usedCrystals = event.usedCrystals
+        })
+        this.registerEventListener(EventKey.NEEDED_CRYSTALS_CHANGED, (event: NeededCrystalsChanged) => {
+            this.neededCrystals = event.neededCrystals
         })
     }
 

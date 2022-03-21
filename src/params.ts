@@ -22,6 +22,8 @@ export const NUM_OF_LEVELS_TO_COMPLETE_GAME = 25
 export const SAVE_GAME_SCREENSHOT_WIDTH = 160
 export const SAVE_GAME_SCREENSHOT_HEIGHT = 120
 export const RAIDER_CARRY_SLOWDOWN = 0.7
+export const SURFACE_NUM_SEAM_LEVELS = 4
+export const SURFACE_NUM_CONTAINED_ORE = 4
 
 // native constants (do not change)
 

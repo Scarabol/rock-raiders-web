@@ -6,7 +6,7 @@ import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
-import { HEIGHT_MULTIPLIER, TILESIZE } from '../../../params'
+import { HEIGHT_MULTIPLIER, SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
@@ -74,7 +74,7 @@ export class Surface implements Selectable {
         this.sceneMgr = this.terrain.sceneMgr
         this.entityMgr = this.terrain.entityMgr
         this.surfaceType = surfaceType
-        if (surfaceType === SurfaceType.CRYSTAL_SEAM || surfaceType === SurfaceType.ORE_SEAM) this.seamLevel = 4
+        if (surfaceType === SurfaceType.CRYSTAL_SEAM || surfaceType === SurfaceType.ORE_SEAM) this.seamLevel = SURFACE_NUM_SEAM_LEVELS
         this.x = x
         this.y = y
         this.heightOffset = heightOffset
@@ -161,7 +161,7 @@ export class Surface implements Selectable {
         const droppedCrystals = this.containedCrystals + (this.surfaceType === SurfaceType.CRYSTAL_SEAM ? this.seamLevel : 0)
         this.setSurfaceType(SurfaceType.RUBBLE4)
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
-        this.containedOres += 4
+        this.containedOres += SURFACE_NUM_CONTAINED_ORE
         this.needsMeshUpdate = true
         const caveFound = this.discover()
         if (caveFound) EventBus.publishEvent(new CavernDiscovered())
