@@ -130,4 +130,9 @@ export class MainMenuLayer extends ScaledLayer {
     needsRedraw(): boolean {
         return this.items.some((item) => item.needsRedraw)
     }
+
+    handleMouseLeaveEvent(): boolean {
+        this.scrollSpeedY = 0
+        return true
+    }
 }
