@@ -18,7 +18,6 @@ export class ScreenMaster {
     constructor() {
         this.gameContainer = getElementByIdOrThrow('game-container')
         this.gameCanvasContainer = getElementByIdOrThrow('game-canvas-container')
-        this.gameCanvasContainer.focus()
         this.eventMgr = new EventManager(this)
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()

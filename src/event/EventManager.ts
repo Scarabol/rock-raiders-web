@@ -16,6 +16,7 @@ export class EventManager {
         ]).forEach((eventEnum, eventType) => {
             screenMaster.gameCanvasContainer.addEventListener(eventType, (event: Event) => {
                 event.preventDefault()
+                screenMaster.gameCanvasContainer.focus()
                 EventManager.publishPointerEvent(screenMaster.getActiveLayersSorted(), new GamePointerEvent(eventEnum, event as PointerEvent))
             })
         })
