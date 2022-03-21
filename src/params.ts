@@ -21,6 +21,7 @@ export const CAMERA_MAX_DISTANCE = 5000
 export const NUM_OF_LEVELS_TO_COMPLETE_GAME = 25
 export const SAVE_GAME_SCREENSHOT_WIDTH = 160
 export const SAVE_GAME_SCREENSHOT_HEIGHT = 120
+export const RAIDER_CARRY_SLOWDOWN = 0.7
 
 // native constants (do not change)
 

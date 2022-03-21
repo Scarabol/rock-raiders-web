@@ -1,7 +1,7 @@
 import { getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent } from '../../../event/LocalEvents'
-import { SPIDER_SLIP_RANGE_SQ } from '../../../params'
+import { RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
 import { EntityManager } from '../../EntityManager'
@@ -174,5 +174,9 @@ export class Raider extends FulfillerEntity {
 
     isReadyToTakeAJob(): boolean {
         return super.isReadyToTakeAJob() && !this.slipped
+    }
+
+    getSpeed(): number {
+        return super.getSpeed() * (!!this.carries ? RAIDER_CARRY_SLOWDOWN : 1)
     }
 }
