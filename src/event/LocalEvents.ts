@@ -1,4 +1,4 @@
-import { Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { Sample } from '../audio/Sample'
 import { Cursor } from '../cfg/PointerCfg'
 import { EntityManager } from '../game/EntityManager'
@@ -215,5 +215,15 @@ export class NeededCrystalsChanged extends LocalEvent {
     constructor() {
         super(EventKey.NEEDED_CRYSTALS_CHANGED)
         this.neededCrystals = GameState.neededCrystals
+    }
+}
+
+export class UpdateRadarEntities extends LocalEvent {
+    fulfillers: Vector2[] = []
+    materials: Vector2[] = []
+    monsters: Vector2[] = []
+
+    constructor() {
+        super(EventKey.UPDATE_RADAR_ENTITIES)
     }
 }

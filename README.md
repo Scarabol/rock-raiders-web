@@ -70,7 +70,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Far (v0.8.0)
 
 - Background music and soundtrack
-- Show moving entities in radar panel (raider, monster, vehicles, collectables)
 - Geologists and scanner
 - Tutorial levels
 

@@ -1,7 +1,7 @@
 import { Vector2, Vector3 } from 'three'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged } from '../event/LocalEvents'
+import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, UpdateRadarEntities } from '../event/LocalEvents'
 import { JobCreateEvent } from '../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
@@ -95,6 +95,7 @@ export class EntityManager {
         this.vehiclesInBeam.forEach((v) => updateSafe(v, elapsedMs))
         this.completedBuildingSites.forEach((b) => updateSafe(b, elapsedMs))
         this.miscAnims.forEach((m) => updateSafe(m, elapsedMs))
+        this.updateRadarEntities()
     }
 
     stop() {
@@ -245,5 +246,35 @@ export class EntityManager {
 
     hasProfessional(training: RaiderTraining) {
         return this.raiders.some((r) => r.hasTraining(training))
+    }
+
+    updateRadarEntities() { // TODO Only send moved entities and adds/removals
+        const event = new UpdateRadarEntities()
+        this.raiders.forEach((raider) => {
+            event.fulfillers.push(raider.sceneEntity.position2D.divideScalar(TILESIZE))
+            if (raider.carries) {
+                const carriedWorldPos = new Vector3()
+                raider.carries.sceneEntity.group.getWorldPosition(carriedWorldPos)
+                event.materials.push(new Vector2(carriedWorldPos.x, carriedWorldPos.z).divideScalar(TILESIZE))
+            }
+        })
+        this.vehicles.forEach((vehicle) => {
+            event.fulfillers.push(vehicle.sceneEntity.position2D.divideScalar(TILESIZE))
+            vehicle.carriedItems.forEach((carried) => {
+                const carriedWorldPos = new Vector3()
+                carried.sceneEntity.group.getWorldPosition(carriedWorldPos)
+                event.materials.push(new Vector2(carriedWorldPos.x, carriedWorldPos.z).divideScalar(TILESIZE))
+            })
+        })
+        this.bats.forEach((bat) => {
+            event.monsters.push(bat.sceneEntity.position2D.divideScalar(TILESIZE))
+        })
+        this.rockMonsters.forEach((rocky) => {
+            event.monsters.push(rocky.sceneEntity.position2D.divideScalar(TILESIZE))
+        })
+        this.materials.forEach((material) => {
+            event.materials.push(material.sceneEntity.position2D.divideScalar(TILESIZE))
+        })
+        EventBus.publishEvent(event)
     }
 }
