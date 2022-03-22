@@ -111,6 +111,15 @@ export class ChangeCursor extends LocalEvent {
     }
 }
 
+export class ChangeTooltip extends LocalEvent {
+    tooltipKey: string
+
+    constructor(tooltipKey: string) {
+        super(EventKey.CHANGE_TOOLTIP)
+        this.tooltipKey = tooltipKey.toLowerCase()
+    }
+}
+
 export class SetupPriorityList extends LocalEvent {
     priorityList: PriorityEntry[]
 

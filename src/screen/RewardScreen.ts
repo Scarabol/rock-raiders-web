@@ -72,32 +72,32 @@ export class RewardScreen {
         })
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer(), 20)
         this.btnLayer = screenMaster.addLayer(new ScaledLayer(), 50)
-        this.btnSave = new RewardScreenButton(this.cfg.saveButton)
-        this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton)
+        this.btnSave = new RewardScreenButton(this.cfg.saveButton, 'ToolTip_Reward_Save')
+        this.btnSave.onPressed = () => this.saveGameLayer.show()
+        this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton, 'ToolTip_Reward_Advance')
+        this.btnAdvance.onPressed = () => {
+            this.backgroundLayer.hide()
+            this.resultsLayer.hide()
+            this.descriptionTextLayer.hide()
+            this.btnLayer.hide()
+            this.saveGameLayer.hide()
+            this.onAdvance()
+        }
         this.btnLayer.handlePointerEvent = ((event) => {
             if (event.eventEnum === POINTER_EVENT.MOVE) {
                 const [sx, sy] = this.btnLayer.toScaledCoords(event.clientX, event.clientY)
-                this.btnSave.checkHover(sx, sy)
-                this.btnAdvance.checkHover(sx, sy)
+                let needsRedraw = this.btnSave.setHovered(this.btnSave.isHovered(sx, sy))
+                needsRedraw = this.btnAdvance.setHovered(this.btnAdvance.isHovered(sx, sy)) || needsRedraw
+                if (needsRedraw) this.btnLayer.redraw()
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {
                 if (event.button === MOUSE_BUTTON.MAIN) {
-                    this.btnSave.checkSetPressed()
-                    this.btnAdvance.checkSetPressed()
+                    this.btnSave.onMouseDown()
+                    this.btnAdvance.onMouseDown()
                 }
             } else if (event.eventEnum === POINTER_EVENT.UP) {
                 if (event.button === MOUSE_BUTTON.MAIN) {
-                    if (this.btnSave.pressed) {
-                        this.btnSave.setReleased()
-                        this.saveGameLayer.show()
-                    } else if (this.btnAdvance.pressed) {
-                        this.btnAdvance.setReleased()
-                        this.backgroundLayer.hide()
-                        this.resultsLayer.hide()
-                        this.descriptionTextLayer.hide()
-                        this.btnLayer.hide()
-                        this.saveGameLayer.hide()
-                        this.onAdvance()
-                    }
+                    this.btnSave.onMouseUp()
+                    this.btnAdvance.onMouseUp()
                 }
             }
             if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.redraw()

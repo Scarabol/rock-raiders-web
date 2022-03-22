@@ -15,6 +15,7 @@ import { PointerCfg } from './PointerCfg'
 import { PrioritiesImagePositionsCfg, PriorityButtonsCfg } from './PriorityButtonsCfg'
 import { RewardCfg } from './RewardCfg'
 import { TexturesCfg } from './TexturesCfg'
+import { parseLabel } from './CfgHelper'
 
 export class GameConfig extends BaseConfig {
     main: MainCfg = new MainCfg()
@@ -44,6 +45,7 @@ export class GameConfig extends BaseConfig {
     stats: GameStatsCfg = new GameStatsCfg()
     // dependencies: DependenciesCfg = new DependenciesCfg()
     levels: LevelsCfg = new LevelsCfg()
+    tooltips: Map<string, string> = new Map()
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if ('Main'.equalsIgnoreCase(unifiedKey)) {
@@ -80,8 +82,8 @@ export class GameConfig extends BaseConfig {
             this.bubbles.setFromCfgObj(cfgValue)
         } else if ('TextMessagesWithImages'.equalsIgnoreCase(unifiedKey)) {
             this.textMessagesWithImages.setFromCfgObj(cfgValue)
-        // } else if ('Samples'.equalsIgnoreCase(unifiedKey)) {
-        //     this.samples.setFromCfgObj(cfgValue)
+            // } else if ('Samples'.equalsIgnoreCase(unifiedKey)) {
+            //     this.samples.setFromCfgObj(cfgValue)
         } else if ('Textures'.equalsIgnoreCase(unifiedKey)) {
             this.textures.setFromCfgObj(cfgValue)
         // } else if ('VehicleTypes'.equalsIgnoreCase(unifiedKey)) {
@@ -100,6 +102,8 @@ export class GameConfig extends BaseConfig {
         //     this.dependencies.setFromCfgObj(cfgValue)
         } else if ('Levels'.equalsIgnoreCase(unifiedKey)) {
             this.levels.setFromCfgObj(cfgValue)
+        } else if ('ToolTips'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltips.set(cfgKey.toLowerCase(), parseLabel(value as string)))
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
         }

@@ -33,7 +33,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
     draw(context: SpriteContext) {
         super.draw(context)
         let img = this.imgCross
-        if (this.unlocked) img = this.hover ? this.imgActive : this.imgInactive
+        if (this.unlocked) img = this.state.hover ? this.imgActive : this.imgInactive
         context.drawImage(img, this.x, this.y - this.layer.scrollY)
     }
 }

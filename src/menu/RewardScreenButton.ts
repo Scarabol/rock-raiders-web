@@ -1,16 +1,16 @@
 import { RewardButtonCfg } from '../cfg/RewardCfg'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
+import { EventBus } from '../event/EventBus'
+import { ChangeTooltip } from '../event/LocalEvents'
 
 export class RewardScreenButton extends MainMenuBaseItem {
     imgNormal: SpriteImage
     imgHover: SpriteImage
     imgPressed: SpriteImage
     imgDisabled: SpriteImage
-    disabled: boolean = false
-    visible: boolean = true
 
-    constructor(conf: RewardButtonCfg) {
+    constructor(conf: RewardButtonCfg, tooltipKey: string) {
         super()
         this.x = conf.x
         this.y = conf.y
@@ -20,22 +20,18 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.imgDisabled = ResourceManager.getImage(conf.imgDisabledFilepath)
         this.width = this.imgNormal.width
         this.height = this.imgNormal.height
-    }
-
-    checkSetPressed() {
-        if (this.disabled || !this.visible) return
-        super.checkSetPressed()
+        this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipKey))
     }
 
     draw(context: SpriteContext) {
         super.draw(context)
-        if (!this.visible) return
+        if (!this.state.visible) return
         let img = this.imgNormal
-        if (this.disabled) {
+        if (this.state.disabled) {
             img = this.imgDisabled
-        } else if (this.pressed) {
+        } else if (this.state.pressed) {
             img = this.imgPressed
-        } else if (this.hover) {
+        } else if (this.state.hover) {
             img = this.imgHover
         }
         context.drawImage(img, this.x, this.y)

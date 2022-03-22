@@ -4,7 +4,7 @@ import { clearIntervalSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
-import { NATIVE_FRAMERATE } from '../params'
+import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { ScaledLayer } from '../screen/layer/ScreenLayer'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
@@ -12,7 +12,6 @@ import { MainMenuIconButton } from './MainMenuIconButton'
 import { MainMenuLabelButton } from './MainMenuLabelButton'
 
 export class MainMenuLayer extends ScaledLayer {
-    onItemAction: (item: MainMenuBaseItem) => any = () => console.warn('onItemAction not implemented')
     cfg: MenuEntryCfg
     loFont: BitmapFont
     hiFont: BitmapFont
@@ -50,17 +49,17 @@ export class MainMenuLayer extends ScaledLayer {
 
     reset() {
         super.reset()
+        this.items.forEach((item) => item.reset())
         this.scrollY = 0
         this.scrollSpeedY = 0
     }
 
     show() {
         super.show()
-        const that = this
         this.scrollInterval = setInterval(() => {
-            if (that.scrollSpeedY === 0) return
-            that.setScrollY(that.scrollSpeedY)
-        }, 1000 / NATIVE_FRAMERATE)
+            if (this.scrollSpeedY === 0) return
+            this.setScrollY(this.scrollSpeedY)
+        }, NATIVE_UPDATE_INTERVAL)
     }
 
     hide() {
@@ -71,17 +70,18 @@ export class MainMenuLayer extends ScaledLayer {
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
+            let needsRedraw = false
             let hovered = false
             this.items.forEach((item) => {
                 if (!hovered) {
                     const absY = sy + (item.scrollAffected ? this.scrollY : 0)
-                    hovered = item.checkHover(sx, absY)
+                    hovered = item.isHovered(sx, absY)
+                    needsRedraw = item.setHovered(hovered) || needsRedraw
                 } else {
-                    if (item.hover) item.needsRedraw = true
-                    item.hover = false
-                    item.setReleased()
+                    item.setHovered(false)
                 }
             })
+            if (needsRedraw) this.redraw()
             if (this.cfg.canScroll) {
                 const scrollAreaHeight = 100
                 if (sy < scrollAreaHeight) {
@@ -94,15 +94,19 @@ export class MainMenuLayer extends ScaledLayer {
             }
         } else if (event.eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.MAIN) {
-                this.items.forEach((item) => item.checkSetPressed())
+                let needsRedraw = false
+                this.items.forEach((item) => needsRedraw = item.onMouseDown() || needsRedraw)
+                if (needsRedraw) {
+                    this.redraw()
+                    return true
+                }
             }
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             if (event.button === MOUSE_BUTTON.MAIN) {
-                const item = this.items.find((item) => item.pressed)
-                if (item) {
-                    item.setReleased()
+                let needsRedraw = false
+                this.items.forEach((item) => needsRedraw = item.onMouseUp() || needsRedraw)
+                if (needsRedraw) {
                     this.redraw()
-                    this.onItemAction(item)
                     return true
                 }
             }
@@ -134,5 +138,9 @@ export class MainMenuLayer extends ScaledLayer {
     handleMouseLeaveEvent(): boolean {
         this.scrollSpeedY = 0
         return true
+    }
+
+    set onItemAction(callback: (item: MainMenuBaseItem) => any) {
+        this.items.forEach((item) => item.onPressed = () => callback(item))
     }
 }

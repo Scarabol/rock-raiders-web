@@ -8,7 +8,7 @@ import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { TakeScreenshot } from '../../event/GuiCommand'
-import { ChangeCursor } from '../../event/LocalEvents'
+import { ChangeCursor, ChangeTooltip } from '../../event/LocalEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/model/map/Surface'
@@ -17,6 +17,8 @@ import { SceneManager } from '../../game/SceneManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedCursor } from '../AnimatedCursor'
 import { ScreenLayer } from './ScreenLayer'
+import { Rect } from '../../core/Rect'
+import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 
 export class CursorLayer extends ScreenLayer {
     sceneMgr: SceneManager
@@ -27,14 +29,18 @@ export class CursorLayer extends ScreenLayer {
     activeCursor: AnimatedCursor = null
     cursorCanvasPos: { x: number, y: number } = {x: 0, y: 0}
     cursorRelativePos: { x: number, y: number } = {x: 0, y: 0}
+    tooltipRect: Rect = null
 
     constructor() {
-        super(true, false)
+        super(true, true)
         EventBus.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
             if (this.active) this.changeCursor(event.cursor, event.timeout)
         })
         EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
             if (this.active) this.changeCursor(this.determineCursor())
+        })
+        EventBus.registerEventListener(EventKey.CHANGE_TOOLTIP, (event: ChangeTooltip) => {
+            if (this.active) this.changeTooltip(event.tooltipKey)
         })
     }
 
@@ -67,11 +73,17 @@ export class CursorLayer extends ScreenLayer {
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
-        if (event.eventEnum === POINTER_EVENT.MOVE && this.sceneMgr) {
-            const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
-            this.cursorCanvasPos = {x: cx, y: cy}
-            this.cursorRelativePos = {x: (cx / this.canvas.width) * 2 - 1, y: -(cy / this.canvas.height) * 2 + 1}
-            this.changeCursor(this.determineCursor())
+        if (event.eventEnum === POINTER_EVENT.MOVE) {
+            if (this.sceneMgr) {
+                const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
+                this.cursorCanvasPos = {x: cx, y: cy}
+                this.cursorRelativePos = {x: (cx / this.canvas.width) * 2 - 1, y: -(cy / this.canvas.height) * 2 + 1}
+                this.changeCursor(this.determineCursor())
+            }
+            if (this.tooltipRect) {
+                this.context.clearRect(this.tooltipRect.x, this.tooltipRect.y, this.tooltipRect.w, this.tooltipRect.h)
+                this.tooltipRect = null
+            }
         }
         return super.handlePointerEvent(event)
     }
@@ -157,6 +169,16 @@ export class CursorLayer extends ScreenLayer {
         this.activeCursor?.disableAnimation()
         this.activeCursor = ResourceManager.getCursor(cursor)
         this.activeCursor.enableAnimation(this.canvas.style)
+    }
+
+    private changeTooltip(tooltipKey: string) {
+        const tooltipImg = ResourceManager.getTooltip(tooltipKey)
+        if (!tooltipImg) return
+        const posY = this.cursorCanvasPos.y + 32 // TODO consider dynamic cursor height
+        const tooltipWidth = Math.round(tooltipImg.width * this.canvas.width / NATIVE_SCREEN_WIDTH)
+        const tooltipHeight = Math.round(tooltipImg.height * this.canvas.height / NATIVE_SCREEN_HEIGHT)
+        this.context.drawImage(tooltipImg, this.cursorCanvasPos.x, posY, tooltipWidth, tooltipHeight)
+        this.tooltipRect = new Rect(this.cursorCanvasPos.x, posY, tooltipWidth, tooltipHeight)
     }
 
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {

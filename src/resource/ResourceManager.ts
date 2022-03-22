@@ -11,11 +11,13 @@ import { InitLoadingMessage } from './wadworker/InitLoadingMessage'
 import { WadWorkerMessage } from './wadworker/WadWorkerMessage'
 import { WorkerMessageType } from './wadworker/WorkerMessageType'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { createContext } from '../core/ImageHelper'
 
 export class ResourceManager extends ResourceCache {
     static worker: Worker = new Worker(new URL('./wadworker/WadWorker', import.meta.url))
 
     static lwoCache: Map<string, SceneMesh> = new Map()
+    static tooltipSpriteCache: Map<string, SpriteImage> = new Map()
 
     static startLoadingFromCache() {
         return this.startLoading(null)
@@ -146,5 +148,24 @@ export class ResourceManager extends ResourceCache {
             result.name = lwoFilepath
             return result
         })?.clone()
+    }
+
+    static getTooltip(tooltipKey: string): SpriteImage {
+        return this.tooltipSpriteCache.getOrUpdate(tooltipKey, () => {
+            const tooltipText = this.configuration.tooltips.get(tooltipKey)
+            if (!tooltipText) return null
+            const tooltipTextImage = this.getTooltipFont().createTextImage(tooltipText)
+            const margin = 2
+            const padding = 2
+            const context = createContext(tooltipTextImage.width + 2 * margin + 2 * padding, tooltipTextImage.height + 2 * margin + 2 * padding)
+            context.fillStyle = '#001600'
+            context.fillRect(0, 0, context.canvas.width, context.canvas.height)
+            context.fillStyle = '#006400' // TODO read ToolTipRGB from config
+            context.fillRect(0, 0, tooltipTextImage.width + margin + 2 * padding, tooltipTextImage.height + margin + 2 * padding)
+            context.fillStyle = '#003200'
+            context.fillRect(margin, margin, tooltipTextImage.width + 2 * padding, tooltipTextImage.height + 2 * padding)
+            context.drawImage(tooltipTextImage, margin + padding, margin + padding)
+            return context.canvas
+        })
     }
 }

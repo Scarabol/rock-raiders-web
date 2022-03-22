@@ -18,12 +18,8 @@ export class MainMenuPanel extends MainMenuBaseItem {
         this.height = cfg.rect.h
     }
 
-    checkHover(sx: number, sy: number): boolean {
-        const inRect = sx >= this.x && sx < this.x + this.width && sy >= this.y && sy < this.y + this.height
-        const hover = inRect && this.context.getImageData(sx, sy, 1, 1).data[3] > 0
-        if (this.hover !== hover) this.needsRedraw = true
-        this.hover = hover
-        return this.hover
+    isHovered(sx: number, sy: number): boolean {
+        return super.isHovered(sx, sy) && this.context.getImageData(sx, sy, 1, 1).data[3] > 0
     }
 
     draw(context: SpriteContext) {

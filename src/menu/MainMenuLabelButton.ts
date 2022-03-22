@@ -20,7 +20,7 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
 
     draw(context: SpriteContext) {
         super.draw(context)
-        const img = this.hover && !this.pressed ? this.labelImgHi : this.labelImgLo
+        const img = this.state.hover && !this.state.pressed ? this.labelImgHi : this.labelImgLo
         context.drawImage(img, this.x, this.y)
     }
 }

@@ -276,6 +276,13 @@ export class WadLoader {
                     resolve()
                 })
             }),
+            new Promise<void>((resolve) => { // TODO load somewhere else, or load all fonts in general
+                const name = 'Interface/Fonts/ToolTipFont.bmp'
+                this.loadFontImageAsset(name, (assetNames: string[], imgData) => {
+                    this.onAssetLoaded(0, assetNames, imgData)
+                    resolve()
+                })
+            }),
         ]).then(() => {
             this.onMessage('Start loading assets...')
             this.totalResources = this.assetRegistry.size

@@ -1,13 +1,13 @@
+import { UiElementCallback, UiElementState } from './UiElementState'
+
 export class MainMenuBaseItem {
+    protected state: UiElementState = new UiElementState()
     x: number = 0
     y: number = 0
     width: number = 0
     height: number = 0
     zIndex: number = 100
     scrollAffected = false
-    needsRedraw: boolean = false
-    hover: boolean = false
-    pressed: boolean = false
     actionName: string = ''
     targetIndex: number = 0
 
@@ -15,32 +15,51 @@ export class MainMenuBaseItem {
         return left.zIndex === right.zIndex ? 0 : left.zIndex > right.zIndex ? -1 : 1
     }
 
-    checkHover(sx: number, sy: number): boolean {
-        const hover = sx >= this.x && sx < this.x + this.width && sy >= this.y && sy < this.y + this.height
-        if (this.hover !== hover) {
-            this.hover = hover
-            this.needsRedraw = true
-            this.onHoverChange()
-        }
-        if (!this.hover) this.pressed = false
-        return this.hover
+    isHovered(sx: number, sy: number): boolean {
+        return sx >= this.x && sx < this.x + this.width && sy >= this.y && sy < this.y + this.height
     }
 
-    onHoverChange() {
+    setHovered(hovered: boolean): boolean {
+        return this.state.setHovered(hovered)
     }
 
-    checkSetPressed() {
-        if (!this.hover) return
-        if (!this.pressed) this.needsRedraw = true
-        this.pressed = true
+    set onHoverChange(callback: UiElementCallback) {
+        this.state.onHoverChanged = callback
     }
 
-    setReleased() {
-        if (this.pressed) this.needsRedraw = true
-        this.pressed = false
+    onMouseDown(): boolean {
+        return this.state.onMouseDown()
+    }
+
+    set onPressed(callback: UiElementCallback) {
+        this.state.onPressed = callback
+    }
+
+    onMouseUp(): boolean {
+        return this.state.onMouseUp()
     }
 
     draw(context: SpriteContext) {
-        this.needsRedraw = false
+        this.state.clearStateChanged()
+    }
+
+    get hover(): boolean {
+        return this.state.hover
+    }
+
+    get needsRedraw(): boolean {
+        return this.state.stateChanged
+    }
+
+    set visible(state: boolean) {
+        this.state.setHidden(!state)
+    }
+
+    set disabled(state: boolean) {
+        this.state.setDisabled(state)
+    }
+
+    reset() {
+        this.state.reset()
     }
 }

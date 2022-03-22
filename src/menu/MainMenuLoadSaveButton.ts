@@ -59,7 +59,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
     draw(context: SpriteContext) {
         super.draw(context)
         if (this.saveGameImg) {
-            if (this.hover) {
+            if (this.state.hover) {
                 const x = this.x - (this.saveGameImgWidthHi - this.saveGameImgWidthLo) / 2
                 const y = this.y - (this.saveGameImgHeightHi - this.saveGameImgHeightLo) / 2
                 context.drawImage(this.saveGameImg, x, y, this.saveGameImgWidthHi, this.saveGameImgHeightHi)
@@ -67,7 +67,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
                 context.drawImage(this.saveGameImg, this.x, this.y, this.saveGameImgWidthLo, this.saveGameImgHeightLo)
             }
         }
-        const img = this.hover && !this.pressed ? this.labelImgHi : this.labelImgLo
+        const img = this.state.hover && !this.state.pressed ? this.labelImgHi : this.labelImgLo
         context.drawImage(img, this.x + 80, this.y)
     }
 }
