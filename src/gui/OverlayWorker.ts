@@ -8,7 +8,7 @@ import { DEV_MODE } from '../params'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { Panel } from './base/Panel'
 import { BriefingPanel } from './briefing/BriefingPanel'
-import { GuiResourceCache } from './GuiResourceCache'
+import { OffscreenCache } from '../worker/OffscreenCache'
 import { GuiWorker } from './GuiWorker'
 import { GuiWorkerMessage } from './GuiWorkerMessage'
 import { OptionsPanel } from './overlay/OptionsPanel'
@@ -19,13 +19,10 @@ export class OverlayWorker extends GuiWorker {
     panelOptions: OptionsPanel
     panelPause: PausePanel
 
-    constructor(worker: Worker) {
-        super(worker)
-    }
-
-    init(): void {
-        this.panelPause = this.addPanel(new PausePanel(this.rootElement, GuiResourceCache.configuration.menu.pausedMenu))
-        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, GuiResourceCache.configuration.menu.optionsMenu))
+    onCacheReady(): void {
+        super.onCacheReady()
+        this.panelPause = this.addPanel(new PausePanel(this.rootElement, OffscreenCache.configuration.menu.pausedMenu))
+        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, OffscreenCache.configuration.menu.optionsMenu))
         this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
         // link items
         this.panelPause.onContinueGame = () => this.setActivePanel(null)

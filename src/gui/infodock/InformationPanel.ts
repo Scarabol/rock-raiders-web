@@ -2,7 +2,7 @@ import { PanelCfg } from '../../cfg/PanelCfg'
 import { BitmapFont } from '../../core/BitmapFont'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
-import { GuiResourceCache } from '../GuiResourceCache'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 
 export class InformationPanel extends Panel {
     font: BitmapFont = null
@@ -10,7 +10,7 @@ export class InformationPanel extends Panel {
 
     constructor(parent: BaseElement, panelCfg: PanelCfg) {
         super(parent, panelCfg)
-        this.font = GuiResourceCache.getDefaultFont()
+        this.font = OffscreenCache.getDefaultFont()
     }
 
     setText(text?: string) {

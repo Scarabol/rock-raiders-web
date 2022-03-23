@@ -3,7 +3,7 @@ import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { asArray } from '../../core/Util'
 import { PlaySoundEvent } from '../../event/LocalEvents'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
-import { GuiResourceCache } from '../GuiResourceCache'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from './BaseElement'
 
 export class Button extends BaseElement {
@@ -20,10 +20,10 @@ export class Button extends BaseElement {
     constructor(parent: BaseElement, btnCfg: BaseButtonCfg) {
         super(parent);
         [this.buttonType, this.sfxName] = asArray(btnCfg.buttonType)
-        this.imgNormal = GuiResourceCache.getImageOrNull(btnCfg.normalFile)
-        this.imgHover = GuiResourceCache.getImageOrNull(btnCfg.highlightFile)
-        this.imgPressed = GuiResourceCache.getImageOrNull(btnCfg.pressedFile)
-        this.imgDisabled = GuiResourceCache.getImageOrNull(btnCfg.disabledFile)
+        this.imgNormal = OffscreenCache.getImageOrNull(btnCfg.normalFile)
+        this.imgHover = OffscreenCache.getImageOrNull(btnCfg.highlightFile)
+        this.imgPressed = OffscreenCache.getImageOrNull(btnCfg.pressedFile)
+        this.imgDisabled = OffscreenCache.getImageOrNull(btnCfg.disabledFile)
         this.relX = btnCfg.relX
         this.relY = btnCfg.relY
         this.width = Button.ignoreUndefinedMax(btnCfg.width, this.imgNormal?.width, this.imgPressed?.width, this.imgHover?.width)

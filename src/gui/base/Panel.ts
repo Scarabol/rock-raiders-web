@@ -1,7 +1,7 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { clearTimeoutSafe } from '../../core/Util'
 import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../params'
-import { GuiResourceCache } from '../GuiResourceCache'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from './BaseElement'
 
 export class Panel extends BaseElement {
@@ -16,7 +16,7 @@ export class Panel extends BaseElement {
     constructor(parent: BaseElement, panelCfg?: PanelCfg) {
         super(parent)
         if (panelCfg) {
-            this.img = GuiResourceCache.getImage(panelCfg.filename)
+            this.img = OffscreenCache.getImage(panelCfg.filename)
             this.xOut = panelCfg.xOut
             this.yOut = panelCfg.yOut
             this.xIn = panelCfg.xIn

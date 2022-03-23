@@ -81,7 +81,7 @@ export class Raider extends FulfillerEntity {
     work(elapsedMs: number) {
         if (this.slipped) return
         if (this.vehicle) {
-            this.sceneEntity.changeActivity(this.getDriverActivity())
+            this.sceneEntity.changeActivity(this.vehicle.getDriverActivity())
         } else {
             super.work(elapsedMs)
         }
@@ -108,27 +108,6 @@ export class Raider extends FulfillerEntity {
         if (!this.carries) return
         this.sceneEntity.dropAllEntities()
         this.carries = null
-    }
-
-    getDriverActivity(): RaiderActivity {
-        if (!this.vehicle) return AnimEntityActivity.Stand
-        const vehicleStands = this.vehicle.sceneEntity.activity === AnimEntityActivity.Stand
-        switch (this.vehicle.entityType) {
-            case EntityType.HOVERBOARD:
-                return vehicleStands ? RaiderActivity.Standhoverboard : RaiderActivity.Hoverboard
-            case EntityType.SMALL_DIGGER:
-                return vehicleStands ? RaiderActivity.StandSMALLDIGGER : RaiderActivity.SMALLDIGGER
-            case EntityType.SMALL_TRUCK:
-                return vehicleStands ? RaiderActivity.StandSMALLTRUCK : RaiderActivity.SMALLTRUCK
-            case EntityType.SMALL_MLP:
-                return vehicleStands ? RaiderActivity.StandSMALLMLP : RaiderActivity.SMALLMLP
-            case EntityType.SMALL_CAT:
-                return vehicleStands ? RaiderActivity.StandSMALLCAT : RaiderActivity.SMALLCAT
-            case EntityType.SMALL_HELI:
-                return vehicleStands ? RaiderActivity.StandSMALLheli : RaiderActivity.SMALLheli
-            case EntityType.LARGE_CAT:
-                return vehicleStands ? RaiderActivity.StandLARGECAT : RaiderActivity.LARGECAT
-        }
     }
 
     beamUp() {

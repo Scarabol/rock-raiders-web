@@ -6,11 +6,9 @@ import { DeselectAll, SelectionChanged } from '../../event/LocalEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { GameSelection } from '../../game/model/GameSelection'
 import { SceneManager } from '../../game/SceneManager'
-import { WorldManager } from '../../game/WorldManager'
 import { ScreenLayer } from './ScreenLayer'
 
 export class SelectionLayer extends ScreenLayer {
-    worldMgr: WorldManager
     sceneMgr: SceneManager
     entityMgr: EntityManager
     selectionRect: Rect = null

@@ -5,7 +5,6 @@ import { DeselectAll } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { SurfaceType } from '../map/SurfaceType'
 import { BarrierLocation } from '../material/BarrierLocation'
@@ -18,7 +17,6 @@ export class BuildPlacementMarker {
     static readonly pathMarkerColor: number = 0x505000
     static readonly waterMarkerColor: number = 0x000050
 
-    worldMgr: WorldManager
     sceneMgr: SceneManager
     entityMgr: EntityManager
     group: Group = new Group()
@@ -32,8 +30,7 @@ export class BuildPlacementMarker {
     lastCheck: boolean = false
     buildingType: BuildingType = null
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityMgr: EntityManager) {
-        this.worldMgr = worldMgr
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         this.sceneMgr = sceneMgr
         this.entityMgr = entityMgr
         this.buildingMarkerPrimary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.buildingMarkerColor)

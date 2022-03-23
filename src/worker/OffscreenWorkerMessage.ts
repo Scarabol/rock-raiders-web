@@ -5,17 +5,15 @@ import { GameWheelEvent } from '../event/GameWheelEvent'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 
 export class OffscreenWorkerMessage {
-    type: WorkerMessageType
-    cfg?: any
-    stats?: any
-    resourceByName?: Map<string, any>
-    messageState?: boolean
-    canvas?: OffscreenCanvas = null
-    eventId?: string = null
-    inputEvent?: GamePointerEvent | GameKeyboardEvent | GameWheelEvent = null
-    gameEvent?: GameEvent
+    cfg?: any = undefined
+    stats?: any = undefined
+    resourceByName?: Map<string, any> = undefined
+    messageState?: boolean = undefined
+    canvas?: OffscreenCanvas = undefined
+    eventId?: string = undefined
+    inputEvent?: GamePointerEvent | GameKeyboardEvent | GameWheelEvent = undefined
+    gameEvent?: GameEvent = undefined
 
-    constructor(type: WorkerMessageType) {
-        this.type = type
+    constructor(readonly type: WorkerMessageType) {
     }
 }

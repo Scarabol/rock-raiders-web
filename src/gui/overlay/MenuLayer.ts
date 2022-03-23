@@ -2,7 +2,7 @@ import { MenuEntryCfg } from '../../cfg/MenuEntryCfg'
 import { BitmapFont } from '../../core/BitmapFont'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { BaseElement } from '../base/BaseElement'
-import { GuiResourceCache } from '../GuiResourceCache'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { MenuCycleItem } from './MenuCycleItem'
 import { MenuLabelItem } from './MenuLabelItem'
 import { MenuSliderItem } from './MenuSliderItem'
@@ -19,10 +19,10 @@ export class MenuLayer extends BaseElement {
         super(parent)
         this.relX = menuCfg.position[0]
         this.relY = menuCfg.position[1]
-        this.menuImage = GuiResourceCache.getImageOrNull(menuCfg.menuImage[0]) // menuImage has 4 parameter here
-        this.titleImage = GuiResourceCache.getBitmapFont(menuCfg.menuFont).createTextImage(menuCfg.fullName)
-        this.loFont = GuiResourceCache.getBitmapFont(menuCfg.loFont)
-        this.hiFont = GuiResourceCache.getBitmapFont(menuCfg.hiFont)
+        this.menuImage = OffscreenCache.getImageOrNull(menuCfg.menuImage[0]) // menuImage has 4 parameter here
+        this.titleImage = OffscreenCache.getBitmapFont(menuCfg.menuFont).createTextImage(menuCfg.fullName)
+        this.loFont = OffscreenCache.getBitmapFont(menuCfg.loFont)
+        this.hiFont = OffscreenCache.getBitmapFont(menuCfg.hiFont)
         menuCfg.itemsLabel.forEach((itemCfg) => {
             const item = this.addChild(new MenuLabelItem(this, itemCfg, menuCfg.autoCenter))
             if (itemCfg.actionName.toLowerCase() === 'trigger') {

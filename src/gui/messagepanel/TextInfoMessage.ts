@@ -1,6 +1,6 @@
 import { Sample } from '../../audio/Sample'
 import { BitmapFont } from '../../core/BitmapFont'
-import { GuiResourceCache } from '../GuiResourceCache'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { TextInfoMessageEntryConfig } from './TextInfoMessageEntryConfig'
 
 export class TextInfoMessage {
@@ -10,7 +10,7 @@ export class TextInfoMessage {
 
     constructor(font: BitmapFont, infoMessageEntryConfig: TextInfoMessageEntryConfig, maxWidth: number) {
         this.textImage = font.createTextImage(infoMessageEntryConfig.text, maxWidth)
-        this.infoImage = GuiResourceCache.getImageOrNull(infoMessageEntryConfig.imageFilename)
+        this.infoImage = OffscreenCache.getImageOrNull(infoMessageEntryConfig.imageFilename)
         this.sfxSample = Sample[infoMessageEntryConfig.sfxName]
     }
 }

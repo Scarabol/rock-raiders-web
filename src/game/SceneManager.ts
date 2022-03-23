@@ -16,11 +16,9 @@ import { MaterialEntity } from './model/material/MaterialEntity'
 import { Selectable } from './model/Selectable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { TerrainLoader } from './TerrainLoader'
-import { WorldManager } from './WorldManager'
 import { EntityType } from './model/EntityType'
 
 export class SceneManager {
-    worldMgr: WorldManager
     entityMgr: EntityManager
     maxFps: number = 30 // animations have only 25 fps
     renderer: WebGLRenderer
@@ -194,7 +192,7 @@ export class SceneManager {
         this.cursorTorchlight.distance *= TILESIZE
         this.scene.add(this.cursorTorchlight)
 
-        this.buildMarker = new BuildPlacementMarker(this.worldMgr, this, this.entityMgr)
+        this.buildMarker = new BuildPlacementMarker(this, this.entityMgr)
         this.scene.add(this.buildMarker.group)
         this.setBuildModeSelection(null)
 

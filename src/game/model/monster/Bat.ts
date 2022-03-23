@@ -1,5 +1,4 @@
 import { Vector2 } from 'three'
-import { MonsterEntityStats } from '../../../cfg/GameStatsCfg'
 import { getRandomInclusive } from '../../../core/Util'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -12,13 +11,11 @@ import { PathTarget } from '../PathTarget'
 import { Monster } from './Monster'
 
 export class Bat extends Monster {
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        super(sceneMgr, entityMgr, EntityType.BAT, 'Creatures/bat/bat.ae')
-        this.sceneEntity.floorOffset = TILESIZE / 2
-    }
+    target: PathTarget[] = []
 
-    get stats(): MonsterEntityStats {
-        return ResourceManager.configuration.stats.Bat
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
+        super(sceneMgr, entityMgr, EntityType.BAT, 'Creatures/bat/bat.ae', ResourceManager.configuration.stats.Bat)
+        this.sceneEntity.floorOffset = TILESIZE / 2
     }
 
     findPathToTarget(target: PathTarget): TerrainPath { // TODO consider stats: random move

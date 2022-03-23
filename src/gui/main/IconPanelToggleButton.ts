@@ -1,7 +1,7 @@
 import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from '../base/BaseElement'
 import { GuiClickEvent } from '../event/GuiEvent'
-import { GuiResourceCache } from '../GuiResourceCache'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { IconPanelButton } from './IconPanelButton'
 
 export class IconPanelToggleButton extends IconPanelButton {
@@ -14,10 +14,10 @@ export class IconPanelToggleButton extends IconPanelButton {
 
     constructor(parent: BaseElement, menuItemOffCfg: MenuItemCfg, menuItemOnCfg: MenuItemCfg, parentWidth: number, menuIndex: number) {
         super(parent, menuItemOffCfg, null, parentWidth, menuIndex)
-        this.imgOnNormal = GuiResourceCache.getImageOrNull(menuItemOnCfg.normalFile)
-        this.imgOnHover = GuiResourceCache.getImageOrNull(menuItemOnCfg.highlightFile)
-        this.imgOnPressed = GuiResourceCache.getImageOrNull(menuItemOnCfg.pressedFile)
-        this.imgOnDisabled = GuiResourceCache.getImageOrNull(menuItemOnCfg.disabledFile)
+        this.imgOnNormal = OffscreenCache.getImageOrNull(menuItemOnCfg.normalFile)
+        this.imgOnHover = OffscreenCache.getImageOrNull(menuItemOnCfg.highlightFile)
+        this.imgOnPressed = OffscreenCache.getImageOrNull(menuItemOnCfg.pressedFile)
+        this.imgOnDisabled = OffscreenCache.getImageOrNull(menuItemOnCfg.disabledFile)
     }
 
     clicked(event: GuiClickEvent) {

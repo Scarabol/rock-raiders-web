@@ -1,5 +1,4 @@
 import { Vector2 } from 'three'
-import { MonsterEntityStats } from '../../../cfg/GameStatsCfg'
 import { getRandom, getRandomInclusive } from '../../../core/Util'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -13,15 +12,12 @@ import { PathTarget } from '../PathTarget'
 import { Monster } from './Monster'
 
 export class SmallSpider extends Monster {
+    target: PathTarget[] = []
     idleTimer: number = 0
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        super(sceneMgr, entityMgr, EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae')
+        super(sceneMgr, entityMgr, EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae', ResourceManager.configuration.stats.SmallSpider)
         this.sceneEntity.floorOffset = 1 // TODO rotate spider according to surface normal vector
-    }
-
-    get stats(): MonsterEntityStats {
-        return ResourceManager.configuration.stats.SmallSpider
     }
 
     findPathToTarget(target: PathTarget): TerrainPath { // TODO consider stats: random move and random enter wall
@@ -30,16 +26,16 @@ export class SmallSpider extends Monster {
 
     update(elapsedMs: number) {
         this.sceneEntity.update(elapsedMs)
-        this.idleTimer -= elapsedMs
-        if (this.idleTimer > 0) return
-        if (this.target.length > 0 && this.moveToClosestTarget(this.target, elapsedMs) === MoveState.MOVED) {
-            if (!this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).surfaceType.floor) {
-                this.disposeFromWorld()
-            }
-        } else {
+        if (this.idleTimer > 0) {
+            this.idleTimer -= elapsedMs
+            return
+        }
+        if (this.target.length <= 0 || this.moveToClosestTarget(this.target, elapsedMs) !== MoveState.MOVED) {
             this.sceneEntity.changeActivity()
             this.target = [this.findTarget()]
             this.idleTimer = 1000 + getRandom(9000)
+        } else if (!this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).surfaceType.floor) {
+            this.disposeFromWorld()
         }
     }
 

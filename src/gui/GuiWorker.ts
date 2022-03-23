@@ -16,8 +16,7 @@ export abstract class GuiWorker extends OffscreenWorker {
     rootElement: BaseElement = new BaseElement(null)
     panels: Panel[] = []
 
-    protected constructor(worker: Worker) {
-        super(worker)
+    onCacheReady() {
         this.rootElement.notifyRedraw = () => this.redraw()
         this.rootElement.publishEvent = (event: LocalEvent) => {
             this.publishEvent(event)

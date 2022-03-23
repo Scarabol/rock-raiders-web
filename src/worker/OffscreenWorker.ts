@@ -4,7 +4,7 @@ import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { IEventHandler } from '../event/IEventHandler'
-import { GuiResourceCache } from '../gui/GuiResourceCache'
+import { OffscreenCache } from './OffscreenCache'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { OffscreenWorkerMessage } from './OffscreenWorkerMessage'
@@ -13,15 +13,12 @@ import { WorkerPublishEvent } from './WorkerPublishEvent'
 import { WorkerResponse } from './WorkerResponse'
 
 export abstract class OffscreenWorker implements IEventHandler {
-    worker: Worker
+    readonly eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
 
     canvas: OffscreenCanvas = null
     context: OffscreenCanvasRenderingContext2D = null
 
-    eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
-
-    protected constructor(worker: Worker) {
-        this.worker = worker
+    constructor(readonly worker: Worker) {
     }
 
     redraw() {
@@ -30,7 +27,7 @@ export abstract class OffscreenWorker implements IEventHandler {
 
     abstract reset(): void
 
-    abstract init(): void
+    abstract onCacheReady(): void
 
     setCanvas(canvas: OffscreenCanvas) {
         this.canvas = canvas
@@ -61,9 +58,9 @@ export abstract class OffscreenWorker implements IEventHandler {
 
     processMessage(msg: OffscreenWorkerMessage) {
         if (msg.type === WorkerMessageType.INIT) {
-            GuiResourceCache.resourceByName = msg.resourceByName
-            GuiResourceCache.configuration = msg.cfg
-            this.init()
+            OffscreenCache.resourceByName = msg.resourceByName
+            OffscreenCache.configuration = msg.cfg
+            this.onCacheReady()
         } else if (msg.type === WorkerMessageType.CANVAS) {
             this.setCanvas(msg.canvas)
         } else if (msg.type === WorkerMessageType.EVENT_POINTER) {

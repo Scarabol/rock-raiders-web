@@ -4,18 +4,20 @@ import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
 import { MovableEntity } from '../MovableEntity'
-import { PathTarget } from '../PathTarget'
 
 export abstract class Monster extends MovableEntity {
     sceneEntity: AnimatedSceneEntity
-    target: PathTarget[] = []
+    monsterStats: MonsterEntityStats
 
-    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string) {
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, aeFilename: string, stats: MonsterEntityStats) {
         super(sceneMgr, entityMgr, entityType)
         this.sceneEntity = new AnimatedSceneEntity(sceneMgr, aeFilename)
+        this.monsterStats = stats
     }
 
-    abstract get stats(): MonsterEntityStats
+    get stats(): MonsterEntityStats {
+        return this.monsterStats
+    }
 
     update(elapsedMs: number) {
         this.sceneEntity.update(elapsedMs)

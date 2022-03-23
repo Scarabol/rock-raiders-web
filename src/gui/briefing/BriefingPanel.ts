@@ -2,7 +2,7 @@ import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
-import { GuiResourceCache } from '../GuiResourceCache'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BriefingPanelCfg } from './BriefingPanelCfg'
 
 export class BriefingPanel extends Panel {
@@ -39,7 +39,7 @@ export class BriefingPanel extends Panel {
     }
 
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
-        this.imgBack = GuiResourceCache.getImageOrNull(objectiveBackImgCfg.filename)
+        this.imgBack = OffscreenCache.getImageOrNull(objectiveBackImgCfg.filename)
         this.relX = this.xIn = objectiveBackImgCfg.x
         this.relY = this.yIn = objectiveBackImgCfg.y
         this.width = this.imgBack.width

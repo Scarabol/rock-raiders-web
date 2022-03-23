@@ -5,7 +5,7 @@ import { SelectionChanged } from '../../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
-import { GuiResourceCache } from '../../GuiResourceCache'
+import { OffscreenCache } from '../../../worker/OffscreenCache'
 import { IconPanelToggleButton } from '../IconPanelToggleButton'
 import { SelectBasePanel } from './SelectBasePanel'
 
@@ -17,8 +17,8 @@ export class SelectBuildingPanel extends SelectBasePanel {
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 4, onBackPanel)
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Repair') // TODO implement repair buildings
-        const menuItemOffCfg = new MenuItemCfg(GuiResourceCache.cfg('InterfaceImages', 'Interface_MenuItem_PowerOff'))
-        const menuItemOnCfg = new MenuItemCfg(GuiResourceCache.cfg('InterfaceImages', 'Interface_MenuItem_PowerOn'))
+        const menuItemOffCfg = new MenuItemCfg(OffscreenCache.cfg('InterfaceImages', 'Interface_MenuItem_PowerOff'))
+        const menuItemOnCfg = new MenuItemCfg(OffscreenCache.cfg('InterfaceImages', 'Interface_MenuItem_PowerOn'))
         const powerSwitchItem = this.addChild(new IconPanelToggleButton(this, menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(powerSwitchItem)
         powerSwitchItem.isDisabled = () => !this.buildingCanSwitchPower

@@ -20,7 +20,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     selected: boolean
     job: Job = null
     followUpJob: Job = null
-    inBeam: boolean = false
     beamUpAnimator: BeamUpAnimator = null
     workAudio: PositionalAudio
 
@@ -52,7 +51,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     isSelectable(): boolean {
-        return !this.selected && !this.inBeam
+        return !this.selected && !this.beamUpAnimator
     }
 
     isInSelection(): boolean {
@@ -84,7 +83,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
 
     beamUp() {
         this.stopJob()
-        this.inBeam = true
         this.beamUpAnimator = new BeamUpAnimator(this)
     }
 
@@ -95,7 +93,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     }
 
     work(elapsedMs: number) {
-        if (!this.job || this.selected || this.inBeam) return
+        if (!this.job || this.selected || !!this.beamUpAnimator) return
         if (this.job.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
             return
@@ -154,6 +152,6 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     abstract hasCapacity(): boolean
 
     isReadyToTakeAJob(): boolean {
-        return !this.job && !this.selected && !this.inBeam
+        return !this.job && !this.selected && !this.beamUpAnimator
     }
 }

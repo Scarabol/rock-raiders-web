@@ -4,7 +4,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { AirLevelChanged, NerpMessage, PlaySoundEvent, RaiderTrainingCompleteEvent } from '../../event/LocalEvents'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
-import { GuiResourceCache } from '../GuiResourceCache'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { TextInfoMessage } from './TextInfoMessage'
 import { TextInfoMessageCfg } from './TextInfoMessageCfg'
 
@@ -26,9 +26,9 @@ export class MessagePanel extends Panel {
         super(parent, panelCfg)
         this.relX = this.xOut = this.xIn = 42
         this.relY = this.yOut = this.yIn = 409
-        this.imgAir = GuiResourceCache.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
+        this.imgAir = OffscreenCache.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
 
-        const font = GuiResourceCache.getDefaultFont()
+        const font = OffscreenCache.getDefaultFont()
         const crystalFound = new TextInfoMessage(font, textInfoMessageConfig.textCrystalFound, this.img.width)
         this.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(crystalFound))
         this.msgSpaceToContinue = new TextInfoMessage(font, textInfoMessageConfig.textSpaceToContinue, this.img.width)

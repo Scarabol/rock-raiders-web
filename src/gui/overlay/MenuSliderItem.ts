@@ -3,7 +3,7 @@ import { MenuSliderItemCfg } from '../../cfg/MenuSliderItemCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { GuiHoverEvent } from '../event/GuiEvent'
-import { GuiResourceCache } from '../GuiResourceCache'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuSliderItem extends BaseElement {
@@ -24,13 +24,13 @@ export class MenuSliderItem extends BaseElement {
         this.relX = itemCfg.x
         this.relY = itemCfg.y
         this.sliderX = itemCfg.width
-        this.imgLeft = GuiResourceCache.getImage(itemCfg.imgLeft)
-        this.imgNormal = GuiResourceCache.getImage(itemCfg.imgOff)
-        this.imgHover = GuiResourceCache.getImage(itemCfg.imgOn)
-        this.imgRight = GuiResourceCache.getImage(itemCfg.imgRight)
+        this.imgLeft = OffscreenCache.getImage(itemCfg.imgLeft)
+        this.imgNormal = OffscreenCache.getImage(itemCfg.imgOff)
+        this.imgHover = OffscreenCache.getImage(itemCfg.imgOn)
+        this.imgRight = OffscreenCache.getImage(itemCfg.imgRight)
         const leftBtn = this.addChild(new Button(this, new BaseButtonCfg()))
-        leftBtn.imgNormal = GuiResourceCache.getImage(itemCfg.btnLeftNormal)
-        leftBtn.imgHover = GuiResourceCache.getImage(itemCfg.btnLeftHover)
+        leftBtn.imgNormal = OffscreenCache.getImage(itemCfg.btnLeftNormal)
+        leftBtn.imgHover = OffscreenCache.getImage(itemCfg.btnLeftHover)
         leftBtn.relX = this.sliderX - this.imgLeft.width - leftBtn.imgHover.width
         leftBtn.width = leftBtn.imgHover.width
         leftBtn.height = leftBtn.imgHover.height
@@ -42,8 +42,8 @@ export class MenuSliderItem extends BaseElement {
             }
         }
         const rightBtn = this.addChild(new Button(this, new BaseButtonCfg()))
-        rightBtn.imgNormal = GuiResourceCache.getImage(itemCfg.btnRightNormal)
-        rightBtn.imgHover = GuiResourceCache.getImage(itemCfg.btnRightHover)
+        rightBtn.imgNormal = OffscreenCache.getImage(itemCfg.btnRightNormal)
+        rightBtn.imgHover = OffscreenCache.getImage(itemCfg.btnRightHover)
         rightBtn.relX = this.sliderX + this.imgNormal.width + this.imgRight.width * 2
         rightBtn.width = rightBtn.imgHover.width
         rightBtn.height = rightBtn.imgHover.height

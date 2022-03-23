@@ -18,7 +18,7 @@ export class ManVehicleJob extends RaiderJob implements SupervisedJob {
     }
 
     getWorkplaces(): PathTarget[] {
-        if (this.vehicle.inBeam) {
+        if (!!this.vehicle.beamUpAnimator) {
             this.jobState = JobState.CANCELED
             return []
         } else if (this.vehicle.driver) {

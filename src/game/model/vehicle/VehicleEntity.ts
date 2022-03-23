@@ -19,6 +19,7 @@ import { MoveState } from '../MoveState'
 import { Raider } from '../raider/Raider'
 import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
+import { RaiderActivity } from '../activities/RaiderActivity'
 
 export class VehicleEntity extends FulfillerEntity {
     stats: VehicleEntityStats
@@ -28,7 +29,7 @@ export class VehicleEntity extends FulfillerEntity {
     engineSound: PositionalAudio = null
     carriedItems: Set<MaterialEntity> = new Set()
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity) {
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity, readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
         super(sceneMgr, entityMgr, entityType)
         this.stats = stats
         this.sceneEntity = sceneEntity
@@ -152,5 +153,9 @@ export class VehicleEntity extends FulfillerEntity {
             const walkableNeighbor = blockedTeleporter.neighbors.find((n) => !n.site && n.isWalkable() && !n.building?.teleport)
             if (walkableNeighbor) this.setJob(new MoveJob(walkableNeighbor.getCenterWorld2D()))
         }
+    }
+
+    getDriverActivity() {
+        return this.sceneEntity.activity === AnimEntityActivity.Stand ? this.driverActivityStand : this.driverActivityRoute
     }
 }

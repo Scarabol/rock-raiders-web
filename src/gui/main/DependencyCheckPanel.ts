@@ -4,7 +4,7 @@ import { EntityType, getEntityTypeByName } from '../../game/model/EntityType'
 import { DEV_MODE } from '../../params'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
-import { GuiResourceCache } from '../GuiResourceCache'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { IconSubPanel } from './IconSubPanel'
 
 export abstract class DependencyCheckPanel extends IconSubPanel {
@@ -32,7 +32,7 @@ export abstract class DependencyCheckPanel extends IconSubPanel {
     protected addDependencyMenuItem(itemKey: string) {
         const item = super.addMenuItem('InterfaceBuildImages', itemKey)
         // TODO when update state also update tooltip icons showing missing dependencies
-        const dependencies: [string, number][] = GuiResourceCache.cfg('Dependencies', `AlwaysCheck:${itemKey}`)
+        const dependencies: [string, number][] = OffscreenCache.cfg('Dependencies', `AlwaysCheck:${itemKey}`)
         item.isDisabled = () => !DEV_MODE && dependencies.some((d) => !this.checkDependency(d))
         return item
     }

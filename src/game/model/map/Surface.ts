@@ -274,7 +274,7 @@ export class Surface implements Selectable {
             )
         }
 
-        const topLeftVertex = new Vector3(0, 0)
+        const topLeftVertex = new Vector3(0, 0, 0)
         const topRightVertex = new Vector3(1, 0, 0)
         const bottomRightVertex = new Vector3(1, 0, 1)
         const bottomLeftVertex = new Vector3(0, 0, 1)

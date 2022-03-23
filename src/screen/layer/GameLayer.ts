@@ -11,12 +11,10 @@ import { BuildingPathTarget } from '../../game/model/building/BuildingPathTarget
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
 import { SceneManager } from '../../game/SceneManager'
-import { WorldManager } from '../../game/WorldManager'
 import { DEV_MODE } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
 
 export class GameLayer extends ScreenLayer {
-    worldMgr: WorldManager
     sceneMgr: SceneManager
     entityMgr: EntityManager
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
@@ -75,9 +73,9 @@ export class GameLayer extends ScreenLayer {
                     } else {
                         const requiredTraining = manVehicleJob.getRequiredTraining()
                         const closestTrainingSite = this.entityMgr.getTrainingSiteTargets(requiredTraining)
-                            .map((b) => r.findPathToTarget(b))
-                            .filter((p) => !!p)
-                            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                        .map((b) => r.findPathToTarget(b))
+                        .filter((p) => !!p)
+                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                         if (!closestTrainingSite) return false
                         r.setJob(new TrainRaiderJob(r.entityMgr, requiredTraining, (closestTrainingSite.target as BuildingPathTarget).building), manVehicleJob)
                     }
