@@ -53,7 +53,7 @@ export class OverlayWorker extends GuiWorker {
         this.panels.forEach(p => p !== panel && p.hide())
         panel?.show()
         this.publishEvent(new LocalEvent(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
-        this.redraw()
+        this.animationFrame.redraw()
     }
 
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {

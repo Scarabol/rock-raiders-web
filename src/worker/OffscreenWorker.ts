@@ -5,7 +5,6 @@ import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { IEventHandler } from '../event/IEventHandler'
 import { OffscreenCache } from './OffscreenCache'
-import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { OffscreenWorkerMessage } from './OffscreenWorkerMessage'
 import { WorkerEventResponse } from './WorkerEventResponse'
@@ -16,13 +15,8 @@ export abstract class OffscreenWorker implements IEventHandler {
     readonly eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
 
     canvas: OffscreenCanvas = null
-    context: OffscreenCanvasRenderingContext2D = null
 
     constructor(readonly worker: Worker) {
-    }
-
-    redraw() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     }
 
     abstract reset(): void
@@ -52,16 +46,11 @@ export abstract class OffscreenWorker implements IEventHandler {
     processMessage(msg: OffscreenWorkerMessage) {
         if (msg.type === WorkerMessageType.INIT) {
             this.canvas = msg.canvas
-            this.context = msg.canvas.getContext('2d')
-            this.context.scale(this.canvas.width / NATIVE_SCREEN_WIDTH, this.canvas.height / NATIVE_SCREEN_HEIGHT)
             OffscreenCache.resourceByName = msg.resourceByName
             OffscreenCache.configuration = msg.cfg
             this.onCacheReady()
-            this.redraw()
         } else if (msg.type === WorkerMessageType.RESIZE) {
-            this.canvas.width = msg.canvasWidth
-            this.canvas.height = msg.canvasHeight
-            this.context.scale(this.canvas.width / NATIVE_SCREEN_WIDTH, this.canvas.height / NATIVE_SCREEN_HEIGHT)
+            this.onResize(msg.canvasWidth, msg.canvasHeight)
         } else if (msg.type === WorkerMessageType.EVENT_POINTER) {
             const consumed = this.handlePointerEvent(msg.inputEvent as GamePointerEvent)
             this.sendEventResponse({
@@ -92,6 +81,11 @@ export abstract class OffscreenWorker implements IEventHandler {
             console.warn(`Worker ignores message of type: ${WorkerMessageType[msg.type]}`)
         }
         return true
+    }
+
+    onResize(width: number, height: number) {
+        this.canvas.width = width
+        this.canvas.height = height
     }
 
     publishEvent(event: GameEvent): void {

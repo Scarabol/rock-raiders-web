@@ -1,4 +1,3 @@
-import { cancelAnimationFrameSafe } from '../core/Util'
 import { EventKey } from '../event/EventKeyEnum'
 import { POINTER_EVENT } from '../event/EventTypeEnum'
 import { GameEvent } from '../event/GameEvent'
@@ -10,31 +9,38 @@ import { OffscreenWorker } from '../worker/OffscreenWorker'
 import { BaseElement } from './base/BaseElement'
 import { Panel } from './base/Panel'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from './event/GuiEvent'
+import { AnimationFrameScaled } from '../screen/AnimationFrame'
 
 export abstract class GuiWorker extends OffscreenWorker {
-    lastAnimationRequest: number
+    animationFrame: AnimationFrameScaled
     rootElement: BaseElement = new BaseElement(null)
     panels: Panel[] = []
 
     onCacheReady() {
-        this.rootElement.notifyRedraw = () => this.redraw()
+        this.animationFrame = new AnimationFrameScaled(this.canvas)
+        this.animationFrame.scale(this.canvas.width / NATIVE_SCREEN_WIDTH, this.canvas.height / NATIVE_SCREEN_HEIGHT)
+        this.animationFrame.onRedraw = (context) => {
+            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            this.rootElement.onRedraw(context)
+        }
+        this.rootElement.notifyRedraw = () => this.animationFrame.redraw()
         this.rootElement.publishEvent = (event: LocalEvent) => {
             this.publishEvent(event)
         }
         this.rootElement.registerEventListener = (eventKey: EventKey, callback: (event: GameEvent) => any) => {
             this.registerEventListener(eventKey, callback)
         }
+        this.animationFrame.redraw()
     }
 
-    redraw() {
-        cancelAnimationFrameSafe(this.lastAnimationRequest)
-        this.lastAnimationRequest = requestAnimationFrame(() => {
-            super.redraw()
-            this.rootElement.onRedraw(this.context)
-        })
+    onResize(width: number, height: number) {
+        super.onResize(width, height)
+        this.animationFrame.scale(this.canvas.width / NATIVE_SCREEN_WIDTH, this.canvas.height / NATIVE_SCREEN_HEIGHT)
+        this.animationFrame.redraw()
     }
 
     reset(): void {
+        this.rootElement.reset()
         this.panels.forEach((p) => p.reset())
     }
 
@@ -45,10 +51,12 @@ export abstract class GuiWorker extends OffscreenWorker {
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
+        const context = this.animationFrame?.context
+        if (!context) return false
         const [cx, cy] = [event.canvasX, event.canvasY]
         const [sx, sy] = [cx / (this.canvas.width / NATIVE_SCREEN_WIDTH), cy / (this.canvas.height / NATIVE_SCREEN_HEIGHT)]
             .map((c) => Math.round(c))
-        const hit = this.context && this.context.getImageData(cx, cy, 1, 1).data[3] > 0
+        const hit = context.getImageData(cx, cy, 1, 1).data[3] > 0
         if (hit) {
             this.publishEvent(new ChangeCursor('pointerStandard')) // TODO don't spam so many events?!
             if (event.eventEnum === POINTER_EVENT.MOVE) {
@@ -65,6 +73,7 @@ export abstract class GuiWorker extends OffscreenWorker {
     }
 
     handleWheelEvent(event: GameWheelEvent): boolean {
-        return !this.context || this.context.getImageData(event.canvasX, event.canvasY, 1, 1).data[3] > 0
+        const context = this.animationFrame?.context
+        return context && context.getImageData(event.canvasX, event.canvasY, 1, 1).data[3] > 0
     }
 }
