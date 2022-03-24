@@ -40,7 +40,7 @@ export class MainMenuLayer extends ScaledLayer {
 
         this.items.sort((a, b) => MainMenuBaseItem.compareZ(a, b))
 
-        this.onRedraw = (context) => {
+        this.animationFrame.onRedraw = (context) => {
             context.drawImage(this.menuImage, 0, -this.scrollY)
             if (menuCfg.displayTitle) context.drawImage(this.titleImage, (this.fixedWidth - this.titleImage.width) / 2, this.cfg.position[1])
             this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
@@ -81,7 +81,7 @@ export class MainMenuLayer extends ScaledLayer {
                     item.setHovered(false)
                 }
             })
-            if (needsRedraw) this.redraw()
+            if (needsRedraw) this.animationFrame.redraw()
             if (this.cfg.canScroll) {
                 const scrollAreaHeight = 100
                 if (sy < scrollAreaHeight) {
@@ -97,7 +97,7 @@ export class MainMenuLayer extends ScaledLayer {
                 let needsRedraw = false
                 this.items.forEach((item) => needsRedraw = item.onMouseDown() || needsRedraw)
                 if (needsRedraw) {
-                    this.redraw()
+                    this.animationFrame.redraw()
                     return true
                 }
             }
@@ -106,12 +106,12 @@ export class MainMenuLayer extends ScaledLayer {
                 let needsRedraw = false
                 this.items.forEach((item) => needsRedraw = item.onMouseUp() || needsRedraw)
                 if (needsRedraw) {
-                    this.redraw()
+                    this.animationFrame.redraw()
                     return true
                 }
             }
         }
-        if (this.needsRedraw()) this.redraw()
+        if (this.needsRedraw()) this.animationFrame.redraw()
         return false
     }
 
@@ -128,7 +128,7 @@ export class MainMenuLayer extends ScaledLayer {
     private setScrollY(deltaY: number) {
         const scrollYBefore = this.scrollY
         this.scrollY = Math.min(Math.max(this.scrollY + deltaY, 0), this.menuImage.height - this.fixedHeight)
-        if (scrollYBefore !== this.scrollY) this.redraw()
+        if (scrollYBefore !== this.scrollY) this.animationFrame.redraw()
     }
 
     needsRedraw(): boolean {

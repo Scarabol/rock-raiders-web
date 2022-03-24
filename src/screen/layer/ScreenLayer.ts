@@ -1,15 +1,13 @@
-import { cancelAnimationFrameSafe } from '../../core/Util'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
+import { AnimationFrame } from '../AnimationFrame'
 
 export class ScreenLayer {
     canvas: HTMLCanvasElement
     context: CanvasRenderingContext2D
-    onRedraw: (context: SpriteContext) => any
     active: boolean = true
-    lastAnimationRequest: number = null
 
     constructor(alpha: boolean, withContext: boolean) {
         this.initCanvas()
@@ -41,21 +39,9 @@ export class ScreenLayer {
         this.canvas.height = height
     }
 
-    redraw() {
-        if (this.onRedraw && this.isActive()) {
-            cancelAnimationFrameSafe(this.lastAnimationRequest)
-            this.lastAnimationRequest = requestAnimationFrame(this.doRedraw.bind(this))
-        }
-    }
-
-    doRedraw() {
-        this.onRedraw(this.context)
-    }
-
     show() {
         this.active = true
         this.canvas.style.visibility = 'visible'
-        this.redraw()
     }
 
     hide() {
@@ -114,6 +100,7 @@ export class ScreenLayer {
 }
 
 export class ScaledLayer extends ScreenLayer {
+    readonly animationFrame: AnimationFrame
     fixedWidth: number = NATIVE_SCREEN_WIDTH
     fixedHeight: number = NATIVE_SCREEN_HEIGHT
     scaleX: number
@@ -122,6 +109,7 @@ export class ScaledLayer extends ScreenLayer {
     constructor(alpha: boolean = true, withContext: boolean = true) {
         super(alpha, withContext)
         this.updateScale()
+        this.animationFrame = new AnimationFrame(this.context)
     }
 
     private updateScale() {
@@ -138,5 +126,10 @@ export class ScaledLayer extends ScreenLayer {
         super.resize(width, height)
         this.updateScale()
         this.context.scale(this.scaleX, this.scaleY)
+    }
+
+    show() {
+        super.show()
+        this.animationFrame.redraw()
     }
 }

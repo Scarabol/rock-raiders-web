@@ -7,15 +7,20 @@ import { EntityManager } from '../../game/EntityManager'
 import { GameSelection } from '../../game/model/GameSelection'
 import { SceneManager } from '../../game/SceneManager'
 import { ScreenLayer } from './ScreenLayer'
+import { AnimationFrame } from '../AnimationFrame'
 
 export class SelectionLayer extends ScreenLayer {
+    readonly animationFrame: AnimationFrame
     sceneMgr: SceneManager
     entityMgr: EntityManager
     selectionRect: Rect = null
 
     constructor() {
         super(true, true)
-        this.onRedraw = (context) => {
+        this.context.strokeStyle = 'rgba(128, 192, 192, 0.5)'
+        this.context.lineWidth = 2
+        this.animationFrame = new AnimationFrame(this.context)
+        this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             if (!this.selectionRect) return
             context.strokeRect(this.selectionRect.x, this.selectionRect.y, this.selectionRect.w, this.selectionRect.h)
@@ -29,8 +34,7 @@ export class SelectionLayer extends ScreenLayer {
 
     resize(width: number, height: number) {
         super.resize(width, height)
-        this.context.strokeStyle = 'rgba(128, 192, 192, 0.5)'
-        this.context.lineWidth = 2
+        this.animationFrame.redraw()
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
@@ -55,7 +59,7 @@ export class SelectionLayer extends ScreenLayer {
         if (!this.selectionRect) return false // selection was not started on this layer
         this.selectionRect.w = screenX - this.selectionRect.x
         this.selectionRect.h = screenY - this.selectionRect.y
-        this.redraw()
+        this.animationFrame.redraw()
         return true
     }
 
@@ -76,7 +80,7 @@ export class SelectionLayer extends ScreenLayer {
         this.entityMgr.selection.set(entities)
         EventBus.publishEvent(this.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.entityMgr))
         this.selectionRect = null
-        this.redraw()
+        this.animationFrame.redraw()
         return true
     }
 }

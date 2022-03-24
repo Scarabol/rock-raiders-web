@@ -42,7 +42,7 @@ export class RewardScreen {
         this.titleFont = ResourceManager.getBitmapFont(this.cfg.titleFont)
         const backgroundImg = ResourceManager.getImage(this.cfg.wallpaper)
         this.backgroundLayer = screenMaster.addLayer(new ScaledLayer())
-        this.backgroundLayer.onRedraw = (context) => context.drawImage(backgroundImg, 0, 0)
+        this.backgroundLayer.animationFrame.onRedraw = (context) => context.drawImage(backgroundImg, 0, 0)
         this.cfg.images.forEach((img) => {
             this.images.push({img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y})
         })
@@ -63,9 +63,9 @@ export class RewardScreen {
                 this.resultIndex = this.resultLastIndex
                 this.btnSave.visible = true
                 this.btnAdvance.visible = true
-                this.resultsLayer.redraw()
-                this.descriptionTextLayer.redraw()
-                this.btnLayer.redraw()
+                this.resultsLayer.animationFrame.redraw()
+                this.descriptionTextLayer.animationFrame.redraw()
+                this.btnLayer.animationFrame.redraw()
                 return true
             }
             return false
@@ -88,7 +88,7 @@ export class RewardScreen {
                 const [sx, sy] = this.btnLayer.toScaledCoords(event.clientX, event.clientY)
                 let needsRedraw = this.btnSave.setHovered(this.btnSave.isHovered(sx, sy))
                 needsRedraw = this.btnAdvance.setHovered(this.btnAdvance.isHovered(sx, sy)) || needsRedraw
-                if (needsRedraw) this.btnLayer.redraw()
+                if (needsRedraw) this.btnLayer.animationFrame.redraw()
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {
                 if (event.button === MOUSE_BUTTON.MAIN) {
                     this.btnSave.onMouseDown()
@@ -100,10 +100,10 @@ export class RewardScreen {
                     this.btnAdvance.onMouseUp()
                 }
             }
-            if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.redraw()
+            if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.animationFrame.redraw()
             return false
         })
-        this.btnLayer.onRedraw = (context) => {
+        this.btnLayer.animationFrame.onRedraw = (context) => {
             this.btnSave.draw(context)
             this.btnAdvance.draw(context)
         }
@@ -161,7 +161,7 @@ export class RewardScreen {
         this.btnAdvance.visible = false
         this.uncoverResult()
         const gameResultTextImg = this.titleFont.createTextImage(this.resultText)
-        this.resultsLayer.onRedraw = (context) => {
+        this.resultsLayer.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.resultsLayer.fixedWidth, this.resultsLayer.fixedHeight)
             for (let c = 0; c <= this.resultIndex; c++) {
                 const img = this.images[c]
@@ -179,7 +179,7 @@ export class RewardScreen {
             context.drawImage(this.levelFullNameImg, this.resultsLayer.fixedWidth / 2 - this.levelFullNameImg.width / 2, this.cfg.vertSpacing - this.levelFullNameImg.height / 2)
             context.drawImage(gameResultTextImg, this.resultsLayer.fixedWidth / 2 - gameResultTextImg.width / 2, this.cfg.vertSpacing + this.levelFullNameImg.height / 2)
         }
-        this.descriptionTextLayer.onRedraw = (context) => {
+        this.descriptionTextLayer.animationFrame.onRedraw = (context) => {
             const descriptionTextImg = this.texts[this.resultIndex]
             if (!descriptionTextImg) return
             context.clearRect(0, 0, this.descriptionTextLayer.fixedWidth, this.descriptionTextLayer.fixedHeight)
@@ -218,9 +218,9 @@ export class RewardScreen {
                 this.btnSave.visible = true
                 this.btnAdvance.visible = true
             }
-            this.resultsLayer.redraw()
-            this.descriptionTextLayer.redraw()
-            this.btnLayer.redraw()
+            this.resultsLayer.animationFrame.redraw()
+            this.descriptionTextLayer.animationFrame.redraw()
+            this.btnLayer.animationFrame.redraw()
         }, this.cfg.timer * 1000)
     }
 }

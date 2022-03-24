@@ -46,10 +46,7 @@ export class ScreenMaster {
     private resize(width: number, height: number) {
         this.width = width
         this.height = height
-        this.layers.forEach((layer) => {
-            layer.resize(width, height)
-            layer.redraw()
-        })
+        this.layers.forEach((layer) => layer.resize(width, height))
     }
 
     getActiveLayersSorted(): ScreenLayer[] {
