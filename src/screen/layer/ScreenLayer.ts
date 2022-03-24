@@ -2,23 +2,16 @@ import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
-import { AnimationFrame } from '../AnimationFrame'
+import { AnimationFrameScaled } from '../AnimationFrame'
 
 export class ScreenLayer {
     canvas: HTMLCanvasElement
-    context: CanvasRenderingContext2D
     active: boolean = true
 
-    constructor(alpha: boolean, withContext: boolean) {
-        this.initCanvas()
-        if (!alpha) this.canvas.style.background = '#f0f'
-        if (withContext) this.context = this.canvas.getContext('2d', {alpha: alpha})
-        this.hide()
-    }
-
-    protected initCanvas() {
+    constructor() {
         this.canvas = document.createElement('canvas')
         this.canvas.setAttribute('data-layer-class', this.constructor.name)
+        this.hide()
     }
 
     reset() {
@@ -100,16 +93,16 @@ export class ScreenLayer {
 }
 
 export class ScaledLayer extends ScreenLayer {
-    readonly animationFrame: AnimationFrame
+    readonly animationFrame: AnimationFrameScaled
     fixedWidth: number = NATIVE_SCREEN_WIDTH
     fixedHeight: number = NATIVE_SCREEN_HEIGHT
     scaleX: number
     scaleY: number
 
-    constructor(alpha: boolean = true, withContext: boolean = true) {
-        super(alpha, withContext)
+    constructor() {
+        super()
         this.updateScale()
-        this.animationFrame = new AnimationFrame(this.context)
+        this.animationFrame = new AnimationFrameScaled(this.canvas)
     }
 
     private updateScale() {
@@ -125,7 +118,7 @@ export class ScaledLayer extends ScreenLayer {
     resize(width: number, height: number) {
         super.resize(width, height)
         this.updateScale()
-        this.context.scale(this.scaleX, this.scaleY)
+        this.animationFrame.scale(this.scaleX, this.scaleY)
     }
 
     show() {

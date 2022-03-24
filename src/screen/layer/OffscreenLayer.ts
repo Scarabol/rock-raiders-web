@@ -24,7 +24,7 @@ export abstract class OffscreenLayer extends ScreenLayer {
     resolveCallbackByEventId: Map<string, ((consumed: boolean) => any)> = new Map()
 
     protected constructor(worker: Worker) {
-        super(true, false)
+        super()
         this.worker = worker
         this.sendMessage({
             type: WorkerMessageType.INIT,
@@ -75,7 +75,8 @@ export abstract class OffscreenLayer extends ScreenLayer {
         const zIndex = Number(this.canvas.style.zIndex) || 0
         const parent = this.canvas.parentElement
         parent?.removeChild(this.canvas)
-        this.initCanvas()
+        this.canvas = document.createElement('canvas')
+        this.canvas.setAttribute('data-layer-class', this.constructor.name)
         parent?.appendChild(this.canvas)
         if (!this.active) this.canvas.style.visibility = 'hidden'
         super.resize(width, height)

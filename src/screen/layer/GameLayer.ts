@@ -20,7 +20,7 @@ export class GameLayer extends ScreenLayer {
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
 
     constructor() {
-        super(false, false)
+        super()
         this.canvas.style.cursor = 'none' // this cursor is effective, when OrbitControls captures the pointer during movements
     }
 

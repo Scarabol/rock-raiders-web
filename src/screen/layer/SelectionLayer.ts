@@ -10,16 +10,14 @@ import { ScreenLayer } from './ScreenLayer'
 import { AnimationFrame } from '../AnimationFrame'
 
 export class SelectionLayer extends ScreenLayer {
-    readonly animationFrame: AnimationFrame
+    readonly animationFrame: AnimationFrameSelection
     sceneMgr: SceneManager
     entityMgr: EntityManager
     selectionRect: Rect = null
 
     constructor() {
-        super(true, true)
-        this.context.strokeStyle = 'rgba(128, 192, 192, 0.5)'
-        this.context.lineWidth = 2
-        this.animationFrame = new AnimationFrame(this.context)
+        super()
+        this.animationFrame = new AnimationFrameSelection(this.canvas)
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             if (!this.selectionRect) return
@@ -82,5 +80,13 @@ export class SelectionLayer extends ScreenLayer {
         this.selectionRect = null
         this.animationFrame.redraw()
         return true
+    }
+}
+
+class AnimationFrameSelection extends AnimationFrame {
+    constructor(canvas: HTMLCanvasElement) {
+        super(canvas)
+        this.context.strokeStyle = 'rgba(128, 192, 192, 0.5)'
+        this.context.lineWidth = 2
     }
 }

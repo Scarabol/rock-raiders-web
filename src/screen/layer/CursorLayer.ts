@@ -19,8 +19,10 @@ import { AnimatedCursor } from '../AnimatedCursor'
 import { ScreenLayer } from './ScreenLayer'
 import { Rect } from '../../core/Rect'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
+import { AnimationFrame } from '../AnimationFrame'
 
 export class CursorLayer extends ScreenLayer {
+    readonly animationFrame: AnimationFrame
     sceneMgr: SceneManager
     entityMgr: EntityManager
     currentCursor: Cursor = null
@@ -32,7 +34,8 @@ export class CursorLayer extends ScreenLayer {
     tooltipRect: Rect = null
 
     constructor() {
-        super(true, true)
+        super()
+        this.animationFrame = new AnimationFrame(this.canvas)
         EventBus.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
             if (this.active) this.changeCursor(event.cursor, event.timeout)
         })
@@ -80,10 +83,12 @@ export class CursorLayer extends ScreenLayer {
                 this.cursorRelativePos = {x: (cx / this.canvas.width) * 2 - 1, y: -(cy / this.canvas.height) * 2 + 1}
                 this.changeCursor(this.determineCursor())
             }
-            if (this.tooltipRect) {
-                this.context.clearRect(this.tooltipRect.x, this.tooltipRect.y, this.tooltipRect.w, this.tooltipRect.h)
+            this.animationFrame.onRedraw = (context) => {
+                if (!this.tooltipRect) return
+                context.clearRect(this.tooltipRect.x, this.tooltipRect.y, this.tooltipRect.w, this.tooltipRect.h)
                 this.tooltipRect = null
             }
+            this.animationFrame.redraw()
         }
         return super.handlePointerEvent(event)
     }
@@ -177,8 +182,9 @@ export class CursorLayer extends ScreenLayer {
         const posY = this.cursorCanvasPos.y + 32 // TODO consider dynamic cursor height
         const tooltipWidth = Math.round(tooltipImg.width * this.canvas.width / NATIVE_SCREEN_WIDTH)
         const tooltipHeight = Math.round(tooltipImg.height * this.canvas.height / NATIVE_SCREEN_HEIGHT)
-        this.context.drawImage(tooltipImg, this.cursorCanvasPos.x, posY, tooltipWidth, tooltipHeight)
         this.tooltipRect = new Rect(this.cursorCanvasPos.x, posY, tooltipWidth, tooltipHeight)
+        this.animationFrame.onRedraw = (context) => context.drawImage(tooltipImg, this.tooltipRect.x, this.tooltipRect.y, this.tooltipRect.w, this.tooltipRect.h)
+        this.animationFrame.redraw()
     }
 
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {
