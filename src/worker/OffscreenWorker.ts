@@ -29,13 +29,6 @@ export abstract class OffscreenWorker implements IEventHandler {
 
     abstract onCacheReady(): void
 
-    setCanvas(canvas: OffscreenCanvas) {
-        this.canvas = canvas
-        this.context = canvas.getContext('2d')
-        this.context.scale(this.canvas.width / NATIVE_SCREEN_WIDTH, this.canvas.height / NATIVE_SCREEN_HEIGHT)
-        this.redraw()
-    }
-
     handlePointerEvent(event: GamePointerEvent): boolean {
         return false
     }
@@ -58,11 +51,17 @@ export abstract class OffscreenWorker implements IEventHandler {
 
     processMessage(msg: OffscreenWorkerMessage) {
         if (msg.type === WorkerMessageType.INIT) {
+            this.canvas = msg.canvas
+            this.context = msg.canvas.getContext('2d')
+            this.context.scale(this.canvas.width / NATIVE_SCREEN_WIDTH, this.canvas.height / NATIVE_SCREEN_HEIGHT)
             OffscreenCache.resourceByName = msg.resourceByName
             OffscreenCache.configuration = msg.cfg
             this.onCacheReady()
-        } else if (msg.type === WorkerMessageType.CANVAS) {
-            this.setCanvas(msg.canvas)
+            this.redraw()
+        } else if (msg.type === WorkerMessageType.RESIZE) {
+            this.canvas.width = msg.canvasWidth
+            this.canvas.height = msg.canvasHeight
+            this.context.scale(this.canvas.width / NATIVE_SCREEN_WIDTH, this.canvas.height / NATIVE_SCREEN_HEIGHT)
         } else if (msg.type === WorkerMessageType.EVENT_POINTER) {
             const consumed = this.handlePointerEvent(msg.inputEvent as GamePointerEvent)
             this.sendEventResponse({

@@ -10,6 +10,8 @@ export class OffscreenWorkerMessage {
     resourceByName?: Map<string, any> = undefined
     messageState?: boolean = undefined
     canvas?: OffscreenCanvas = undefined
+    canvasWidth?: number = undefined
+    canvasHeight?: number = undefined
     eventId?: string = undefined
     inputEvent?: GamePointerEvent | GameKeyboardEvent | GameWheelEvent = undefined
     gameEvent?: GameEvent = undefined

@@ -21,8 +21,8 @@ export class OverlayWorker extends GuiWorker {
 
     onCacheReady(): void {
         super.onCacheReady()
-        this.panelPause = this.addPanel(new PausePanel(this.rootElement, OffscreenCache.configuration.menu.pausedMenu))
-        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, OffscreenCache.configuration.menu.optionsMenu))
+        this.panelPause = this.addPanel(new PausePanel(this.rootElement, OffscreenCache.configuration.menu.pausedMenu, this.canvas.width, this.canvas.height))
+        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, OffscreenCache.configuration.menu.optionsMenu, this.canvas.width, this.canvas.height))
         this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
         // link items
         this.panelPause.onContinueGame = () => this.setActivePanel(null)
@@ -36,14 +36,6 @@ export class OverlayWorker extends GuiWorker {
             messageState: state,
         })
         this.panelBriefing.onStartMission = () => this.setActivePanel(null)
-    }
-
-    setCanvas(canvas: OffscreenCanvas) {
-        super.setCanvas(canvas)
-        this.panelPause.width = this.canvas.width
-        this.panelPause.height = this.canvas.height
-        this.panelOptions.width = this.canvas.width
-        this.panelOptions.height = this.canvas.height
     }
 
     onProcessMessage(msg: GuiWorkerMessage): boolean {

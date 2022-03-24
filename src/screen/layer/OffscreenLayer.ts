@@ -26,11 +26,13 @@ export abstract class OffscreenLayer extends ScreenLayer {
     protected constructor(worker: Worker) {
         super()
         this.worker = worker
+        const canvasOffscreen = this.canvas.transferControlToOffscreen()
         this.sendMessage({
             type: WorkerMessageType.INIT,
+            canvas: canvasOffscreen,
             resourceByName: ResourceManager.resourceByName,
             cfg: ResourceManager.configuration,
-        })
+        }, [canvasOffscreen])
         this.worker.onmessage = (event) => {
             const response = event.data as WorkerResponse
             if (response.type === WorkerMessageType.RESPONSE_EVENT) {
@@ -72,20 +74,11 @@ export abstract class OffscreenLayer extends ScreenLayer {
     }
 
     resize(width: number, height: number) {
-        const zIndex = Number(this.canvas.style.zIndex) || 0
-        const parent = this.canvas.parentElement
-        parent?.removeChild(this.canvas)
-        this.canvas = document.createElement('canvas')
-        this.canvas.setAttribute('data-layer-class', this.constructor.name)
-        parent?.appendChild(this.canvas)
-        if (!this.active) this.canvas.style.visibility = 'hidden'
-        super.resize(width, height)
-        this.setZIndex(zIndex)
-        const canvas = this.canvas.transferControlToOffscreen()
         this.sendMessage({
-            type: WorkerMessageType.CANVAS,
-            canvas: canvas,
-        }, [canvas])
+            type: WorkerMessageType.RESIZE,
+            canvasWidth: width,
+            canvasHeight: height,
+        })
     }
 
     pushPointerEvent(event: GamePointerEvent): Promise<boolean> {

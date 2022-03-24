@@ -9,7 +9,7 @@ export enum WorkerMessageType {
 
     // gui/scene worker
     INIT,
-    CANVAS,
+    RESIZE,
     RESET,
     EVENT_POINTER,
     EVENT_KEY,
