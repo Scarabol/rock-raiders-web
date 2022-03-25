@@ -10,7 +10,6 @@ export enum WorkerMessageType {
     // gui/scene worker
     INIT,
     CANVAS,
-    REDRAW,
     RESET,
     EVENT_POINTER,
     EVENT_KEY,

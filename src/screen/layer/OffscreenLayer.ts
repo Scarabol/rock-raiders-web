@@ -87,10 +87,6 @@ export abstract class OffscreenLayer extends ScreenLayer {
         }, [canvas])
     }
 
-    redraw() {
-        if (this.isActive()) this.sendMessage({type: WorkerMessageType.REDRAW})
-    }
-
     pushPointerEvent(event: GamePointerEvent): Promise<boolean> {
         [event.canvasX, event.canvasY] = this.toCanvasCoords(event.clientX, event.clientY)
         return this.sendEventMessage(WorkerMessageType.EVENT_POINTER, event)

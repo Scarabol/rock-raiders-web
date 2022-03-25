@@ -86,8 +86,6 @@ export abstract class OffscreenWorker implements IEventHandler {
             })
         } else if (msg.type === WorkerMessageType.RESET) {
             this.reset()
-        } else if (msg.type === WorkerMessageType.REDRAW) {
-            this.redraw()
         } else if (msg.type === WorkerMessageType.GAME_EVENT) {
             const event = msg.gameEvent
             this.eventListener.getOrUpdate(event.eventKey, () => []).forEach((callback) => callback(event))
