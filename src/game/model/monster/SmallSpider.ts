@@ -4,7 +4,6 @@ import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { EntityType } from '../EntityType'
 import { SurfaceType } from '../map/SurfaceType'
 import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
@@ -16,7 +15,7 @@ export class SmallSpider extends Monster {
     idleTimer: number = 0
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        super(sceneMgr, entityMgr, EntityType.SMALL_SPIDER, 'Creatures/SpiderSB/SpiderSB.ae', ResourceManager.configuration.stats.SmallSpider)
+        super(sceneMgr, entityMgr, 'Creatures/SpiderSB/SpiderSB.ae', ResourceManager.configuration.stats.SmallSpider)
         this.sceneEntity.floorOffset = 1 // TODO rotate spider according to surface normal vector
     }
 

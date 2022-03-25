@@ -185,7 +185,7 @@ export class SceneManager {
         const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
         const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
         const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])
-        this.ambientLight = new AmbientLight(ambientColor, 0.4)
+        this.ambientLight = new AmbientLight(ambientColor, 0.4) // range [0.1 to 0.4]
         this.scene.add(this.ambientLight)
 
         this.cursorTorchlight = new PointLight(0xffffff, 1.5, 4, 1)

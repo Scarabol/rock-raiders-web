@@ -93,7 +93,7 @@ export class Surface implements Selectable {
         walls.forEach((w) => w.markDiscovered())
         touched.forEach((w) => {
             w.needsMeshUpdate = true
-            if (!w.isSupported()) w.collapse()
+            if (w.isUnstable()) w.collapse()
         })
         EventBus.publishEvent(new UpdateRadarTerrain(this.terrain, null))
         return caveFound
@@ -173,7 +173,7 @@ export class Surface implements Selectable {
                 if (x !== this.x || y !== this.y) {
                     const surf = this.terrain.getSurface(x, y)
                     surf.needsMeshUpdate = true
-                    if (!surf.isSupported()) surf.collapse()
+                    if (surf.isUnstable()) surf.collapse()
                 }
             }
         }
@@ -232,8 +232,8 @@ export class Surface implements Selectable {
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
     }
 
-    isSupported(): boolean {
-        if (this.surfaceType.floor) return true
+    isUnstable(): boolean {
+        if (this.surfaceType.floor) return false
         const surfLeft = this.terrain.getSurface(this.x - 1, this.y)
         const surfTopLeft = this.terrain.getSurface(this.x - 1, this.y - 1)
         const surfTop = this.terrain.getSurface(this.x, this.y - 1)
@@ -248,10 +248,10 @@ export class Surface implements Selectable {
                 (!surf1.surfaceType.floor && !surf2.surfaceType.floor && !surf3.surfaceType.floor)
         }
 
-        return isHighGround(surfLeft, surfTopLeft, surfTop)
-            || isHighGround(surfTop, surfTopRight, surfRight)
-            || isHighGround(surfRight, surfBottomRight, surfBottom)
-            || isHighGround(surfBottom, surfBottomLeft, surfLeft)
+        return !isHighGround(surfLeft, surfTopLeft, surfTop)
+            && !isHighGround(surfTop, surfTopRight, surfRight)
+            && !isHighGround(surfRight, surfBottomRight, surfBottom)
+            && !isHighGround(surfBottom, surfBottomLeft, surfLeft)
     }
 
     updateMesh(force: boolean = true) {

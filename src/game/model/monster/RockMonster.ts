@@ -1,12 +1,17 @@
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { EntityType } from '../EntityType'
 import { Monster } from './Monster'
+import { PathTarget } from '../PathTarget'
+import { TerrainPath } from '../map/TerrainPath'
 
 export class RockMonster extends Monster {
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        super(sceneMgr, entityMgr, EntityType.ROCK_MONSTER, 'Creatures/RMonster/RMonster.ae', ResourceManager.configuration.stats.RockMonster)
+        super(sceneMgr, entityMgr, 'Creatures/RMonster/RMonster.ae', ResourceManager.configuration.stats.RockMonster)
+    }
+
+    findPathToTarget(target: PathTarget): TerrainPath {
+        return this.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, target, this.stats, false)
     }
 
     disposeFromWorld() {

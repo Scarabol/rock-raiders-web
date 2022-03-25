@@ -13,27 +13,27 @@ export class VehicleFactory {
     static createVehicleFromType(entityType: EntityType, sceneMgr: SceneManager, entityMgr: EntityManager): VehicleEntity {
         switch (entityType) {
             case EntityType.HOVERBOARD:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.Hoverboard, new VehicleSceneEntity(sceneMgr, 'Vehicles/Hoverboard/Hoverboard.ae'), RaiderActivity.Standhoverboard, RaiderActivity.Hoverboard)
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.Hoverboard, new VehicleSceneEntity(sceneMgr, 'Vehicles/Hoverboard/Hoverboard.ae'), RaiderActivity.Standhoverboard, RaiderActivity.Hoverboard)
             case EntityType.SMALL_DIGGER:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.SmallDigger, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallDigger/SmallDigger.ae'), RaiderActivity.StandSMALLDIGGER, RaiderActivity.SMALLDIGGER)
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.SmallDigger, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallDigger/SmallDigger.ae'), RaiderActivity.StandSMALLDIGGER, RaiderActivity.SMALLDIGGER)
             case EntityType.SMALL_TRUCK:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.SmallTruck, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallTruck/SmallTruck.ae'), RaiderActivity.StandSMALLTRUCK, RaiderActivity.SMALLTRUCK)
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.SmallTruck, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallTruck/SmallTruck.ae'), RaiderActivity.StandSMALLTRUCK, RaiderActivity.SMALLTRUCK)
             case EntityType.SMALL_CAT:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.SmallCat, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallCat/SmallCat.ae'), RaiderActivity.StandSMALLCAT, RaiderActivity.SMALLCAT)
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.SmallCat, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallCat/SmallCat.ae'), RaiderActivity.StandSMALLCAT, RaiderActivity.SMALLCAT)
             case EntityType.SMALL_MLP:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.Smallmlp, new VehicleSceneEntity(sceneMgr, 'Vehicles/SMLP/SMLP.ae'), RaiderActivity.StandSMALLMLP, RaiderActivity.SMALLMLP)
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.Smallmlp, new VehicleSceneEntity(sceneMgr, 'Vehicles/SMLP/SMLP.ae'), RaiderActivity.StandSMALLMLP, RaiderActivity.SMALLMLP)
             case EntityType.SMALL_HELI:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.SmallHeli, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallHeli/SmallHeli.ae'), RaiderActivity.StandSMALLheli, RaiderActivity.SMALLheli)
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.SmallHeli, new VehicleSceneEntity(sceneMgr, 'Vehicles/SmallHeli/SmallHeli.ae'), RaiderActivity.StandSMALLheli, RaiderActivity.SMALLheli)
             case EntityType.BULLDOZER:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.Bulldozer, new VehicleSceneEntity(sceneMgr, 'Vehicles/Bulldozer/Bulldozer.ae'))
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.Bulldozer, new VehicleSceneEntity(sceneMgr, 'Vehicles/Bulldozer/Bulldozer.ae'))
             case EntityType.WALKER_DIGGER:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.WalkerDigger, new WalkerDiggerSceneEntity(sceneMgr))
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.WalkerDigger, new WalkerDiggerSceneEntity(sceneMgr))
             case EntityType.LARGE_MLP:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.LargeMLP, new VehicleSceneEntity(sceneMgr, 'Vehicles/LMLP/LMLP.ae'))
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.LargeMLP, new VehicleSceneEntity(sceneMgr, 'Vehicles/LMLP/LMLP.ae'))
             case EntityType.LARGE_DIGGER:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.LargeDigger, new VehicleSceneEntity(sceneMgr, 'Vehicles/LargeDigger/LargeDigger.ae'))
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.LargeDigger, new VehicleSceneEntity(sceneMgr, 'Vehicles/LargeDigger/LargeDigger.ae'))
             case EntityType.LARGE_CAT:
-                return new VehicleEntity(sceneMgr, entityMgr, entityType, ResourceManager.configuration.stats.LargeCat, new VehicleSceneEntity(sceneMgr, 'Vehicles/LargeCat/LargeCat.ae'), RaiderActivity.StandLARGECAT, RaiderActivity.LARGECAT)
+                return new VehicleEntity(sceneMgr, entityMgr, ResourceManager.configuration.stats.LargeCat, new VehicleSceneEntity(sceneMgr, 'Vehicles/LargeCat/LargeCat.ae'), RaiderActivity.StandLARGECAT, RaiderActivity.LARGECAT)
             default:
                 throw new Error(`Unexpected vehicle type: ${EntityType[entityType]}`)
         }

@@ -62,7 +62,7 @@ export class NerpParser {
             }
         }
         // somewhat precompile the script and create syntax tree
-        // must be done in separate block to make sure the script is complete and we can refer/rely on line numbers for label jumps
+        // must be done in separate block to make sure the script is complete, and we can refer/rely on line-numbers for label jumps
         for (let c = 0; c < nerpRunner.scriptLines.length; c++) {
             const line = nerpRunner.scriptLines[c]
             nerpRunner.statements[c] = line.replace(/\(\)/g, '') // now the macros are applied and obsolete empty "()" can be removed
@@ -79,14 +79,14 @@ export class NerpParser {
                 nerpRunner.statements[c] = {label: labelName}
             } else if (nerpRunner.statements[c].length === 1) { // just a call
                 nerpRunner.statements[c] = this.preProcess(nerpRunner.statements[c][0])
-            } else { // lines contains more than 1 condition statement
+            } else { // line contains more than 1 condition statement
                 throw new Error(`Can't deal with line: ${line}`)
             }
         }
         return nerpRunner
     }
 
-    static replaceMacros(macrosByName: Map<string, { args: string[], lines: string[] }>, line: string): string[] {
+    private static replaceMacros(macrosByName: Map<string, { args: string[], lines: string[] }>, line: string): string[] {
         // check if this line contains a macro
         const split = line.split('(') // not a very stable check though...
         const macro = macrosByName.get(split[0])
@@ -108,7 +108,7 @@ export class NerpParser {
         }
     }
 
-    static preProcess(expression) {
+    private static preProcess(expression) {
         expression = expression.trim().replace(/^_/, '') // remove whitespace and leading underscore
         const number = parseInt(expression)
         if (!isNaN(number)) {

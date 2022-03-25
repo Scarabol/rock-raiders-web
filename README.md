@@ -115,7 +115,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Make animated meshes cloneable and move their creation into ResourceManager within loading screen for performance
 - Make AnimClip cloneable (requires separation too, because classes mixes state and type of animations)
 - Cleanup meshes and scene after level ends (currently leaks resources)
-- Move threejs rendering to separate worker
+- Move threejs rendering to separate worker (blocked until [worker support for audio](https://github.com/WebAudio/web-audio-api/issues/2423) is solved, so [AudioContext](https://github.com/mrdoob/three.js/blob/master/src/audio/AudioContext.js) does not need _window_ anymore)
 
 ## Development
 

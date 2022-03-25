@@ -9,7 +9,6 @@ import { SceneManager } from '../../SceneManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BaseActivity } from '../activities/BaseActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
-import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
 import { Job } from '../job/Job'
 import { Surface } from '../map/Surface'
@@ -19,6 +18,7 @@ import { PathTarget } from '../PathTarget'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { RaiderTool } from './RaiderTool'
 import { RaiderTraining } from './RaiderTraining'
+import { TerrainPath } from '../map/TerrainPath'
 
 export class Raider extends FulfillerEntity {
     sceneEntity: RaiderSceneEntity
@@ -30,7 +30,7 @@ export class Raider extends FulfillerEntity {
     vehicle: VehicleEntity = null
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        super(sceneMgr, entityMgr, EntityType.PILOT)
+        super(sceneMgr, entityMgr)
         this.tools.set(RaiderTool.DRILL, true)
         this.sceneEntity = new RaiderSceneEntity(sceneMgr, 'mini-figures/pilot/pilot.ae')
     }
@@ -67,6 +67,10 @@ export class Raider extends FulfillerEntity {
             })
         }
         return result
+    }
+
+    findPathToTarget(target: PathTarget): TerrainPath {
+        return this.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, target, this.stats, true)
     }
 
     slip() {

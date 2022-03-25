@@ -5,7 +5,6 @@ import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
 import { EntityStep } from './EntityStep'
-import { EntityType } from './EntityType'
 import { TerrainPath } from './map/TerrainPath'
 import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
@@ -13,14 +12,12 @@ import { PathTarget } from './PathTarget'
 export abstract class MovableEntity {
     sceneMgr: SceneManager
     entityMgr: EntityManager
-    entityType: EntityType = null
     currentPath: TerrainPath = null
     level: number = 0
 
-    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
         this.sceneMgr = sceneMgr
         this.entityMgr = entityMgr
-        this.entityType = entityType
     }
 
     abstract get sceneEntity(): AnimatedSceneEntity
@@ -47,9 +44,7 @@ export abstract class MovableEntity {
         }
     }
 
-    findPathToTarget(target: PathTarget): TerrainPath {
-        return this.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D.clone(), target, this.stats, this.entityType === EntityType.PILOT)
-    }
+    abstract findPathToTarget(target: PathTarget): TerrainPath
 
     private determineStep(elapsedMs: number): EntityStep {
         const targetWorld = this.sceneMgr.getFloorPosition(this.currentPath.firstLocation)

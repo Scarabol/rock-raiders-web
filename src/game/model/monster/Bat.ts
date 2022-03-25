@@ -4,7 +4,6 @@ import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
-import { EntityType } from '../EntityType'
 import { TerrainPath } from '../map/TerrainPath'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
@@ -14,7 +13,7 @@ export class Bat extends Monster {
     target: PathTarget[] = []
 
     constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        super(sceneMgr, entityMgr, EntityType.BAT, 'Creatures/bat/bat.ae', ResourceManager.configuration.stats.Bat)
+        super(sceneMgr, entityMgr, 'Creatures/bat/bat.ae', ResourceManager.configuration.stats.Bat)
         this.sceneEntity.floorOffset = TILESIZE / 2
     }
 

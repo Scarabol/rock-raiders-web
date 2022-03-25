@@ -56,7 +56,7 @@ export class GuiMainWorker extends GuiWorker {
     }
 
     onProcessMessage(msg: GuiWorkerMessage): boolean {
-        if (msg.type === WorkerMessageType.SPACE_TO_CONINUE) {
+        if (msg.type === WorkerMessageType.SPACE_TO_CONTINUE) {
             if (msg.messageState) {
                 this.panelMessages.setMessage(this.panelMessages.msgSpaceToContinue, 0)
             } else {

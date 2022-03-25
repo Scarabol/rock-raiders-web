@@ -62,7 +62,7 @@ export class Terrain {
 
     updateSurfaceMeshes(force: boolean = false) {
         this.forEachSurface((s) => s.updateMesh(force))
-        this.floorGroup.updateWorldMatrix(true, true) // otherwise ray intersection is not working before rendering
+        this.floorGroup.updateWorldMatrix(true, true) // otherwise, ray intersection is not working before rendering
         this.pathFinder.resetGraphsAndCaches()
     }
 

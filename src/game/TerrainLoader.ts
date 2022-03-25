@@ -28,7 +28,7 @@ export class TerrainLoader {
         // maps parsed from WAD are row-wise saved, which means y (row) comes first and x (column) second
         for (let r = 0; r < terrainMap.level.length; r++) {
             for (let c = 0; c < (terrainMap.level)[r].length; c++) {
-                (terrain.surfaces)[c] = (terrain.surfaces)[c] || []
+                terrain.surfaces[c] = terrain.surfaces[c] || []
                 const surfaceTypeNum = (terrainMap.level)[r][c]
                 let surfaceType = SurfaceType.getByNum(surfaceTypeNum)
                 const predugLevel = predugMap[r][c]
@@ -65,7 +65,7 @@ export class TerrainLoader {
                     }
                 }
 
-                (terrain.surfaces)[c].push(surface)
+                terrain.surfaces[c].push(surface)
             }
         }
 
@@ -93,7 +93,7 @@ export class TerrainLoader {
 
         // crumble unsupported walls
         terrain.forEachSurface((s) => {
-            if (!s.isSupported()) s.collapse() // TODO this should happen right after mission briefing is done
+            if (s.isUnstable()) s.collapse()
         })
 
         terrain.updateSurfaceMeshes(true)

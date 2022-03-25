@@ -19,6 +19,6 @@ export class GuiMainLayer extends OffscreenLayer {
     }
 
     setSpaceToContinue(state: boolean) {
-        this.sendMessage({type: WorkerMessageType.SPACE_TO_CONINUE, messageState: state})
+        this.sendMessage({type: WorkerMessageType.SPACE_TO_CONTINUE, messageState: state})
     }
 }

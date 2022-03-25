@@ -20,6 +20,8 @@ import { Raider } from '../raider/Raider'
 import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { RaiderActivity } from '../activities/RaiderActivity'
+import { TerrainPath } from '../map/TerrainPath'
+import { PathTarget } from '../PathTarget'
 
 export class VehicleEntity extends FulfillerEntity {
     stats: VehicleEntityStats
@@ -29,8 +31,8 @@ export class VehicleEntity extends FulfillerEntity {
     engineSound: PositionalAudio = null
     carriedItems: Set<MaterialEntity> = new Set()
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity, readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
-        super(sceneMgr, entityMgr, entityType)
+    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity, readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
+        super(sceneMgr, entityMgr)
         this.stats = stats
         this.sceneEntity = sceneEntity
         this.sceneEntity.speed = this.getSpeed() // TODO update speed on entity upgrade
@@ -56,6 +58,10 @@ export class VehicleEntity extends FulfillerEntity {
         this.entityMgr.vehicles.remove(this)
         this.entityMgr.vehiclesUndiscovered.remove(this)
         this.entityMgr.vehiclesInBeam.remove(this)
+    }
+
+    findPathToTarget(target: PathTarget): TerrainPath {
+        return this.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, target, this.stats, false)
     }
 
     setJob(job: Job, followUpJob: Job = null) {

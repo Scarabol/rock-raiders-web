@@ -33,8 +33,8 @@ export abstract class GuiWorker extends OffscreenWorker {
         this.animationFrame.redraw()
     }
 
-    onResize(width: number, height: number) {
-        super.onResize(width, height)
+    resizeCanvas(width: number, height: number) {
+        super.resizeCanvas(width, height)
         this.animationFrame.scale(this.canvas.width / NATIVE_SCREEN_WIDTH, this.canvas.height / NATIVE_SCREEN_HEIGHT)
         this.animationFrame.redraw()
     }

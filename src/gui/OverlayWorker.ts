@@ -32,7 +32,7 @@ export class OverlayWorker extends GuiWorker {
         this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
         this.panelOptions.onContinueMission = () => this.setActivePanel(null)
         this.panelBriefing.onSetSpaceToContinue = (state: boolean) => this.sendResponse({
-            type: WorkerMessageType.SPACE_TO_CONINUE,
+            type: WorkerMessageType.SPACE_TO_CONTINUE,
             messageState: state,
         })
         this.panelBriefing.onStartMission = () => this.setActivePanel(null)

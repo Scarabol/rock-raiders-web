@@ -14,7 +14,7 @@ export class OverlayLayer extends OffscreenLayer {
     }
 
     onMessage(msg: WorkerResponse): boolean {
-        if (msg.type === WorkerMessageType.SPACE_TO_CONINUE) {
+        if (msg.type === WorkerMessageType.SPACE_TO_CONTINUE) {
             this.onSetSpaceToContinue(msg.messageState)
         } else if (msg.type === WorkerMessageType.GAME_ABORT) {
             this.onAbortGame()

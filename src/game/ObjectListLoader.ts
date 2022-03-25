@@ -3,7 +3,6 @@ import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { EventBus } from '../event/EventBus'
 import { RaidersAmountChangedEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
-import { EntityManager } from './EntityManager'
 import { RockMonsterActivity } from './model/activities/RockMonsterActivity'
 import { EntityType, getEntityTypeByName } from './model/EntityType'
 import { Crystal } from './model/material/Crystal'
@@ -16,15 +15,17 @@ import { Raider } from './model/raider/Raider'
 import { RaiderTrainings } from './model/raider/RaiderTraining'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
-import { SceneManager } from './SceneManager'
 import { BuildingType } from './model/building/BuildingType'
 import { BuildingEntity } from './model/building/BuildingEntity'
+import { WorldManager } from './WorldManager'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
     static numTestRaider: number = 0
 
-    static loadObjectList(objectList: Map<string, ObjectListEntryCfg>, disableStartTeleport: boolean, sceneMgr: SceneManager, entityMgr: EntityManager) {
+    static loadObjectList(objectList: Map<string, ObjectListEntryCfg>, disableStartTeleport: boolean, worldMgr: WorldManager) {
+        const sceneMgr = worldMgr.sceneMgr
+        const entityMgr = worldMgr.entityMgr
         const vehicleKeyToDriver = new Map<string, Raider>()
         const vehicleByKey = new Map<string, VehicleEntity>()
         objectList.forEach((olEntry, olKey) => {

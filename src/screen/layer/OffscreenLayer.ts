@@ -19,13 +19,11 @@ import { ScreenLayer } from './ScreenLayer'
 import generateUUID = MathUtils.generateUUID
 
 export abstract class OffscreenLayer extends ScreenLayer {
-    private worker: Worker
+    readonly resolveCallbackByEventId: Map<string, ((consumed: boolean) => any)> = new Map()
     entityMgr: EntityManager
-    resolveCallbackByEventId: Map<string, ((consumed: boolean) => any)> = new Map()
 
-    protected constructor(worker: Worker) {
+    protected constructor(readonly worker: Worker) {
         super()
-        this.worker = worker
         const canvasOffscreen = this.canvas.transferControlToOffscreen()
         this.sendMessage({
             type: WorkerMessageType.INIT,

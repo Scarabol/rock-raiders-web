@@ -19,9 +19,7 @@ export abstract class OffscreenWorker implements IEventHandler {
     constructor(readonly worker: Worker) {
     }
 
-    abstract reset(): void
-
-    abstract onCacheReady(): void
+    abstract onCacheReady(): any
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         return false
@@ -35,22 +33,23 @@ export abstract class OffscreenWorker implements IEventHandler {
         return false
     }
 
-    sendResponse(response: WorkerResponse) {
-        this.worker.postMessage(response)
+    abstract onProcessMessage(msg: OffscreenWorkerMessage): boolean
+
+    resizeCanvas(width: number, height: number) {
+        this.canvas.width = width
+        this.canvas.height = height
     }
 
-    sendEventResponse(response: WorkerEventResponse) {
-        this.sendResponse(response)
-    }
+    abstract reset(): void
 
-    processMessage(msg: OffscreenWorkerMessage) {
+    processMessage(msg: OffscreenWorkerMessage): void {
         if (msg.type === WorkerMessageType.INIT) {
             this.canvas = msg.canvas
             OffscreenCache.resourceByName = msg.resourceByName
             OffscreenCache.configuration = msg.cfg
             this.onCacheReady()
         } else if (msg.type === WorkerMessageType.RESIZE) {
-            this.onResize(msg.canvasWidth, msg.canvasHeight)
+            this.resizeCanvas(msg.canvasWidth, msg.canvasHeight)
         } else if (msg.type === WorkerMessageType.EVENT_POINTER) {
             const consumed = this.handlePointerEvent(msg.inputEvent as GamePointerEvent)
             this.sendEventResponse({
@@ -80,12 +79,14 @@ export abstract class OffscreenWorker implements IEventHandler {
         } else if (!this.onProcessMessage(msg)) {
             console.warn(`Worker ignores message of type: ${WorkerMessageType[msg.type]}`)
         }
-        return true
     }
 
-    onResize(width: number, height: number) {
-        this.canvas.width = width
-        this.canvas.height = height
+    sendResponse(response: WorkerResponse) {
+        this.worker.postMessage(response)
+    }
+
+    sendEventResponse(response: WorkerEventResponse) {
+        this.sendResponse(response)
     }
 
     publishEvent(event: GameEvent): void {
@@ -95,6 +96,4 @@ export abstract class OffscreenWorker implements IEventHandler {
     registerEventListener(eventKey: EventKey, callback: (event: GameEvent) => any): void {
         this.eventListener.getOrUpdate(eventKey, () => []).push(callback)
     }
-
-    abstract onProcessMessage(msg: OffscreenWorkerMessage): boolean
 }

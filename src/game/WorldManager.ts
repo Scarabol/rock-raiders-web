@@ -73,23 +73,17 @@ export class WorldManager {
 
     private startLoop(timeout: number) {
         this.stopLoop() // avoid duplicate timeouts
-        this.gameLoopTimeout = setTimeout(() => this.update(UPDATE_INTERVAL_MS), timeout)
+        this.gameLoopTimeout = setTimeout(() => this.mainLoop(UPDATE_INTERVAL_MS), timeout)
     }
 
     private stopLoop() {
         this.gameLoopTimeout = clearTimeoutSafe(this.gameLoopTimeout)
     }
 
-    update(elapsedMs: number) {
+    private mainLoop(elapsedMs: number) {
         const startUpdate = window.performance.now()
         this.elapsedGameTimeMs += UPDATE_INTERVAL_MS
-        this.updateOxygen(elapsedMs)
-        this.checkSpawnRaiders(elapsedMs)
-        this.checkSpawnVehicles(elapsedMs)
-        updateSafe(this.entityMgr, elapsedMs)
-        updateSafe(this.sceneMgr.terrain, elapsedMs)
-        updateSafe(this.jobSupervisor, elapsedMs)
-        updateSafe(this.nerpRunner, elapsedMs)
+        this.update(elapsedMs)
         if (GameState.gameResult !== GameResultState.UNDECIDED) {
             this.onLevelEnd(GameState.gameResult)
             return
@@ -100,7 +94,17 @@ export class WorldManager {
         this.startLoop(sleepForMs)
     }
 
-    updateOxygen(elapsedMs: number) {
+    private update(elapsedMs: number) {
+        this.updateOxygen(elapsedMs)
+        this.checkSpawnRaiders(elapsedMs)
+        this.checkSpawnVehicles(elapsedMs)
+        updateSafe(this.entityMgr, elapsedMs)
+        updateSafe(this.sceneMgr.terrain, elapsedMs)
+        updateSafe(this.jobSupervisor, elapsedMs)
+        updateSafe(this.nerpRunner, elapsedMs)
+    }
+
+    private updateOxygen(elapsedMs: number) {
         try {
             const coefSum = this.entityMgr.getOxygenCoefSum()
             const valuePerMs = 1.8 / 100 / 1000
@@ -111,7 +115,7 @@ export class WorldManager {
         }
     }
 
-    checkSpawnRaiders(elapsedMs: number) {
+    private checkSpawnRaiders(elapsedMs: number) {
         try {
             for (this.spawnRaiderTimer += elapsedMs; this.spawnRaiderTimer >= CHECK_SPAWN_RAIDER_TIMER; this.spawnRaiderTimer -= CHECK_SPAWN_RAIDER_TIMER) {
                 if (this.requestedRaiders > 0 && !this.entityMgr.hasMaxRaiders()) {
@@ -132,7 +136,7 @@ export class WorldManager {
         }
     }
 
-    checkSpawnVehicles(elapsedMs: number) {
+    private checkSpawnVehicles(elapsedMs: number) {
         try {
             for (this.spawnVehicleTimer += elapsedMs; this.spawnVehicleTimer >= CHECK_SPAWN_VEHICLE_TIMER; this.spawnVehicleTimer -= CHECK_SPAWN_VEHICLE_TIMER) {
                 if (this.requestedVehicleTypes.length > 0) {

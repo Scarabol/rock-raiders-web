@@ -6,7 +6,6 @@ import { BeamUpAnimator, BeamUpEntity } from '../BeamUpAnimator'
 import { EntityManager } from '../EntityManager'
 import { SceneManager } from '../SceneManager'
 import { RaiderActivity } from './activities/RaiderActivity'
-import { EntityType } from './EntityType'
 import { Job } from './job/Job'
 import { JobState } from './job/JobState'
 import { Surface } from './map/Surface'
@@ -23,8 +22,8 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     beamUpAnimator: BeamUpAnimator = null
     workAudio: PositionalAudio
 
-    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
-        super(sceneMgr, entityMgr, entityType)
+    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
+        super(sceneMgr, entityMgr)
     }
 
     abstract isPrepared(job: Job): boolean
