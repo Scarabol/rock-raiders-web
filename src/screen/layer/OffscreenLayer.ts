@@ -92,7 +92,7 @@ export abstract class OffscreenLayer extends ScreenLayer {
 
     pushWheelEvent(event: GameWheelEvent): Promise<boolean> {
         [event.canvasX, event.canvasY] = this.toCanvasCoords(event.clientX, event.clientY)
-        return this.sendEventMessage(WorkerMessageType.EVENT_POINTER, event)
+        return this.sendEventMessage(WorkerMessageType.EVENT_WHEEL, event)
     }
 
     private sendEventMessage(type: WorkerMessageType, event: GamePointerEvent | GameKeyboardEvent | GameWheelEvent): Promise<boolean> {
