@@ -2,70 +2,46 @@ import { BufferGeometry, Vector2, Vector3 } from 'three'
 import { BufferAttribute } from 'three/src/core/BufferAttribute'
 import { WALL_TYPE } from './WallType'
 
-export class SurfaceGeometry {
-    public static create(wallType: WALL_TYPE,
-                         topLeftVertex: Vector3, topRightVertex: Vector3, bottomRightVertex: Vector3, bottomLeftVertex: Vector3,
-                         topLeftHeight: number, topRightHeight: number, bottomRightHeight: number, bottomLeftHeight: number,
-    ) {
-        let uvOffset = 0
+export class SurfaceGeometry extends BufferGeometry {
+    constructor() {
+        super()
+        this.setAttribute('position', new BufferAttribute(new Float32Array(18), 3))
+        this.setAttribute('normal', new BufferAttribute(new Float32Array(18), 3))
+        this.setAttribute('uv', new BufferAttribute(new Float32Array(12), 2))
+    }
 
-        // not-rotated
-        // 1 ?
-        // ? 0
-        if (topLeftVertex.y && !bottomRightVertex.y &&
-            (wallType === WALL_TYPE.INVERTED_CORNER || ((wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(topRightVertex.y)))) {
-            uvOffset = 0
+    setHeights(wallType: WALL_TYPE, topLeft: SurfaceVertex, topRight: SurfaceVertex, bottomRight: SurfaceVertex, bottomLeft: SurfaceVertex) {
+        const uvOffset = SurfaceGeometry.determineUvOffset(wallType, topLeft.high, bottomRight.high, topRight.high, bottomLeft.high)
+
+        const topLeftVertex = new Vector3(0, topLeft.height, 0)
+        const topRightVertex = new Vector3(1, topRight.height, 0)
+        const bottomRightVertex = new Vector3(1, bottomRight.height, 1)
+        const bottomLeftVertex = new Vector3(0, bottomLeft.height, 1)
+
+        const vertices: Vector3[] = []
+        const normals: Vector3[] = []
+
+        function addFaceAndNormals(a: Vector3, b: Vector3, c: Vector3) {
+            vertices.push(a, b, c)
+            const normal = new Vector3().subVectors(c, b)
+            normal.cross(new Vector3().subVectors(a, b))
+            normal.normalize()
+            normals.push(normal, normal, normal)
         }
 
-        // 90 clock-wise
-        // ? 1
-        // 0 ?
-        if (topRightVertex.y && !bottomLeftVertex.y &&
-            (wallType === WALL_TYPE.INVERTED_CORNER || ((wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(bottomRightVertex.y)))) {
-            uvOffset = 3
+        const uvIndexes = []
+        if (topRight.high !== bottomLeft.high ||
+            (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) && !(topRight.high && bottomLeft.high)) {
+            uvIndexes.push(1, 3, 2)
+            uvIndexes.push(1, 0, 3)
+            addFaceAndNormals(topRightVertex, bottomLeftVertex, bottomRightVertex)
+            addFaceAndNormals(topRightVertex, topLeftVertex, bottomLeftVertex)
+        } else {
+            uvIndexes.push(0, 3, 2)
+            uvIndexes.push(0, 2, 1)
+            addFaceAndNormals(topLeftVertex, bottomLeftVertex, bottomRightVertex)
+            addFaceAndNormals(topLeftVertex, bottomRightVertex, topRightVertex)
         }
-
-        // 180 clock-wise
-        // 0 ?
-        // ? 1
-        if (bottomRightVertex.y && !topLeftVertex.y &&
-            (wallType === WALL_TYPE.INVERTED_CORNER || ((wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(bottomLeftVertex.y)))) {
-            uvOffset = 2
-        }
-
-        // 270 clock-wise
-        // ? 0
-        // 1 ?
-        if (bottomLeftVertex.y && !topRightVertex.y &&
-            (wallType === WALL_TYPE.INVERTED_CORNER || ((wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === Boolean(topLeftVertex.y)))) {
-            uvOffset = 1
-        }
-
-        if (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) {
-            if (topLeftVertex.y && bottomRightVertex.y) {
-                uvOffset = 0
-            }
-            if (topRightVertex.y && bottomLeftVertex.y) {
-                uvOffset = 3
-            }
-        }
-
-        /*
-        //		0---1                1         0---1
-        //		|   |  becomes      /|   and   |  /
-        //		|   |             /  |         |/
-        //		3---2            3---2         3
-        //
-        //		OR
-        //
-        //		0---1            0             0---1
-        //		|   |  becomes   |\    	 and    \  |
-        //		|   |            |  \             \|
-        //		3---2            3---2             2
-        //
-        //		Triangles 0-1-3 and 0-3-2
-        //		Quad 0-1-3-2
-        */
 
         const uv = [
             new Vector2(0, 1),
@@ -73,52 +49,72 @@ export class SurfaceGeometry {
             new Vector2(1, 0),
             new Vector2(0, 0),
         ]
+        const vertexUvs = uvIndexes.map(i => uv[(i + uvOffset) % 4])
+        this.setAttributes(vertices, normals, vertexUvs)
+    }
 
-        const bufferVertices: {x: number, y: number, z: number}[] = []
-        const bufferNormals: {x: number, y: number, z: number}[] = []
-
-        function addFaceAndNormals(a: Vector3, b: Vector3, c: Vector3) {
-            bufferVertices.push(a, b, c)
-            const normal = new Vector3().subVectors(c, b)
-            normal.cross(new Vector3().subVectors(a, b))
-            normal.normalize()
-            bufferNormals.push(normal, normal, normal)
+    private static determineUvOffset(wallType: WALL_TYPE, topLeftHigh: boolean, bottomRightHigh: boolean, topRightHigh: boolean, bottomLeftHigh: boolean) {
+        let uvOffset = 0
+        // not-rotated
+        // 1 ?
+        // ? 0
+        if (topLeftHigh && !bottomRightHigh &&
+            (wallType === WALL_TYPE.INVERTED_CORNER || (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === (topRightHigh))) {
+            uvOffset = 0
         }
-
-        const uvIndexes = []
-        if (topRightVertex.y !== bottomLeftVertex.y ||
-            ((wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) && !(topRightVertex.y && bottomLeftVertex.y))) {
-            uvIndexes.push(1, 3, 2)
-            uvIndexes.push(1, 0, 3)
-
-            // apply height fine-tuning
-            topLeftVertex.y = topLeftHeight
-            topRightVertex.y = topRightHeight
-            bottomRightVertex.y = bottomRightHeight
-            bottomLeftVertex.y = bottomLeftHeight
-
-            addFaceAndNormals(topRightVertex, bottomLeftVertex, bottomRightVertex)
-            addFaceAndNormals(topRightVertex, topLeftVertex, bottomLeftVertex)
-        } else {
-            uvIndexes.push(0, 3, 2)
-            uvIndexes.push(0, 2, 1)
-
-            // apply height fine-tuning
-            topLeftVertex.y = topLeftHeight
-            topRightVertex.y = topRightHeight
-            bottomRightVertex.y = bottomRightHeight
-            bottomLeftVertex.y = bottomLeftHeight
-
-            addFaceAndNormals(topLeftVertex, bottomLeftVertex, bottomRightVertex)
-            addFaceAndNormals(topLeftVertex, bottomRightVertex, topRightVertex)
+        // 90 clock-wise
+        // ? 1
+        // 0 ?
+        if (topRightHigh && !bottomLeftHigh &&
+            (wallType === WALL_TYPE.INVERTED_CORNER || (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === (bottomRightHigh))) {
+            uvOffset = 3
         }
+        // 180 clock-wise
+        // 0 ?
+        // ? 1
+        if (bottomRightHigh && !topLeftHigh &&
+            (wallType === WALL_TYPE.INVERTED_CORNER || (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === (bottomLeftHigh))) {
+            uvOffset = 2
+        }
+        // 270 clock-wise
+        // ? 0
+        // 1 ?
+        if (bottomLeftHigh && !topRightHigh &&
+            (wallType === WALL_TYPE.INVERTED_CORNER || (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) === (topLeftHigh))) {
+            uvOffset = 1
+        }
+        if (wallType === WALL_TYPE.WALL || wallType === WALL_TYPE.WEIRD_CREVICE) {
+            if (topLeftHigh && bottomRightHigh) {
+                uvOffset = 0
+            }
+            if (topRightHigh && bottomLeftHigh) {
+                uvOffset = 3
+            }
+        }
+        return uvOffset
+    }
 
-        const bufferVertexUvs = uvIndexes.map(i => uv[(i + uvOffset) % 4])
+    private setAttributes(vertices: Vector3[], normals: Vector3[], vertexUvs: Vector2[]) {
+        const positionAttribute = this.attributes.position as BufferAttribute
+        positionAttribute.copyVector3sArray(vertices)
+        positionAttribute.needsUpdate = true
+        const normalAttribute = this.attributes.normal as BufferAttribute
+        normalAttribute.copyVector3sArray(normals)
+        normalAttribute.needsUpdate = true
+        const uvAttribute = this.attributes.uv as BufferAttribute
+        uvAttribute.copyVector2sArray(vertexUvs)
+        uvAttribute.needsUpdate = true
+        this.computeBoundingBox()
+        this.computeBoundingSphere()
+    }
+}
 
-        const bufferGeometry = new BufferGeometry()
-        bufferGeometry.setAttribute('position', new BufferAttribute(new Float32Array(18), 3).copyVector3sArray(bufferVertices))
-        bufferGeometry.setAttribute('normal', new BufferAttribute(new Float32Array(18), 3).copyVector3sArray(bufferNormals))
-        bufferGeometry.setAttribute('uv', new BufferAttribute(new Float32Array(12), 2).copyVector2sArray(bufferVertexUvs))
-        return bufferGeometry
+export class SurfaceVertex {
+    highNum: number
+    height: number
+
+    constructor(readonly high: boolean, readonly offset: number) {
+        this.highNum = Number(this.high)
+        this.height = this.highNum + this.offset
     }
 }

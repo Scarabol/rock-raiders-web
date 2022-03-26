@@ -61,6 +61,22 @@ export class Terrain {
         }
     }
 
+    getAdjacent(x: number, y: number): {
+        left: Surface, topLeft: Surface, top: Surface, topRight: Surface,
+        right: Surface, bottomRight: Surface, bottom: Surface, bottomLeft: Surface
+    } {
+        return {
+            left: this.getSurface(x - 1, y),
+            topLeft: this.getSurface(x - 1, y - 1),
+            top: this.getSurface(x, y - 1),
+            topRight: this.getSurface(x + 1, y - 1),
+            right: this.getSurface(x + 1, y),
+            bottomRight: this.getSurface(x + 1, y + 1),
+            bottom: this.getSurface(x, y + 1),
+            bottomLeft: this.getSurface(x - 1, y + 1),
+        }
+    }
+
     updateSurfaceMeshes(force: boolean = false) {
         this.forEachSurface((s) => s.updateMesh(force))
         this.floorGroup.updateWorldMatrix(true, true) // otherwise, ray intersection is not working before rendering

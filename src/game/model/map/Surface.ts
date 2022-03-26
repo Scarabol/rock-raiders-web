@@ -1,13 +1,12 @@
-import { MathUtils, Mesh, MeshPhongMaterial, PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
+import { MathUtils, PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
-import { asArray, getRandom, getRandomSign } from '../../../core/Util'
+import { getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
 import { SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../../params'
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { BuildingEntity } from '../building/BuildingEntity'
@@ -22,9 +21,10 @@ import { Dynamite } from '../material/Dynamite'
 import { ElectricFence } from '../material/ElectricFence'
 import { Ore } from '../material/Ore'
 import { Selectable } from '../Selectable'
-import { SurfaceGeometry } from './SurfaceGeometry'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
+import { SurfaceMesh } from './SurfaceMesh'
+import { SurfaceVertex } from './SurfaceGeometry'
 import { WALL_TYPE } from './WallType'
 import degToRad = MathUtils.degToRad
 
@@ -47,17 +47,8 @@ export class Surface implements Selectable {
     seamLevel: number = 0
 
     wallType: WALL_TYPE = null
-    mesh: Mesh = null
+    mesh: SurfaceMesh = null
     needsMeshUpdate: boolean = false
-
-    topLeftVertex: Vector3 = null
-    topRightVertex: Vector3 = null
-    bottomRightVertex: Vector3 = null
-    bottomLeftVertex: Vector3 = null
-    topLeftHeightOffset: number = null
-    topRightHeightOffset: number = null
-    bottomRightHeightOffset: number = null
-    bottomLeftHeightOffset: number = null
 
     rubblePositions: Vector2[] = []
 
@@ -76,6 +67,8 @@ export class Surface implements Selectable {
         if (surfaceType === SurfaceType.CRYSTAL_SEAM || surfaceType === SurfaceType.ORE_SEAM) this.seamLevel = SURFACE_NUM_SEAM_LEVELS
         this.x = x
         this.y = y
+        this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
+        this.terrain.floorGroup.add(this.mesh)
         if (surfaceType === SurfaceType.RUBBLE4 || surfaceType === SurfaceType.RUBBLE3 || surfaceType === SurfaceType.RUBBLE2 || surfaceType === SurfaceType.RUBBLE1) {
             this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         }
@@ -232,83 +225,44 @@ export class Surface implements Selectable {
 
     isUnstable(): boolean {
         if (this.surfaceType.floor) return false
-        const surfLeft = this.terrain.getSurface(this.x - 1, this.y)
-        const surfTopLeft = this.terrain.getSurface(this.x - 1, this.y - 1)
-        const surfTop = this.terrain.getSurface(this.x, this.y - 1)
-        const surfTopRight = this.terrain.getSurface(this.x + 1, this.y - 1)
-        const surfRight = this.terrain.getSurface(this.x + 1, this.y)
-        const surfBottomRight = this.terrain.getSurface(this.x + 1, this.y + 1)
-        const surfBottom = this.terrain.getSurface(this.x, this.y + 1)
-        const surfBottomLeft = this.terrain.getSurface(this.x - 1, this.y + 1)
+        const adjacent = this.terrain.getAdjacent(this.x, this.y)
+        return [adjacent.left, adjacent.topLeft, adjacent.top].some((s) => s.isGround())
+            && [adjacent.top, adjacent.topRight, adjacent.right].some((s) => s.isGround())
+            && [adjacent.right, adjacent.bottomRight, adjacent.bottom].some((s) => s.isGround())
+            && [adjacent.bottom, adjacent.bottomLeft, adjacent.left].some((s) => s.isGround())
+    }
 
-        function isHighGround(surf1: Surface, surf2: Surface, surf3: Surface) {
-            return !surf1.discovered || !surf2.discovered || !surf3.discovered ||
-                (!surf1.surfaceType.floor && !surf2.surfaceType.floor && !surf3.surfaceType.floor)
-        }
-
-        return !isHighGround(surfLeft, surfTopLeft, surfTop)
-            && !isHighGround(surfTop, surfTopRight, surfRight)
-            && !isHighGround(surfRight, surfBottomRight, surfBottom)
-            && !isHighGround(surfBottom, surfBottomLeft, surfLeft)
+    private isGround(recursion: boolean = true): boolean {
+        return this.discovered && this.surfaceType.floor && (!recursion || this.neighbors.some((n) => n.isGround(false)))
     }
 
     updateMesh(force: boolean = true) {
         if (!force && !this.needsMeshUpdate) return
         this.needsMeshUpdate = false
-
-        const surfLeft = this.terrain.getSurface(this.x - 1, this.y)
-        const surfTopLeft = this.terrain.getSurface(this.x - 1, this.y - 1)
-        const surfTop = this.terrain.getSurface(this.x, this.y - 1)
-        const surfTopRight = this.terrain.getSurface(this.x + 1, this.y - 1)
-        const surfRight = this.terrain.getSurface(this.x + 1, this.y)
-        const surfBottomRight = this.terrain.getSurface(this.x + 1, this.y + 1)
-        const surfBottom = this.terrain.getSurface(this.x, this.y + 1)
-        const surfBottomLeft = this.terrain.getSurface(this.x - 1, this.y + 1)
-
-        function isHighGround(surf0: Surface, surf1: Surface, surf2: Surface, surf3: Surface) {
-            return !surf0.discovered || (
-                (!surf0.surfaceType.floor || !surf0.neighbors.some((n) => n.surfaceType.floor && n.discovered)) &&
-                (!surf1.discovered || !surf2.discovered || !surf3.discovered || (!surf1.surfaceType.floor && !surf2.surfaceType.floor && !surf3.surfaceType.floor))
-            )
-        }
-
-        const topLeftVertex = new Vector3(0, 0, 0)
-        const topRightVertex = new Vector3(1, 0, 0)
-        const bottomRightVertex = new Vector3(1, 0, 1)
-        const bottomLeftVertex = new Vector3(0, 0, 1)
-
-        if (isHighGround(this, surfLeft, surfTopLeft, surfTop)) topLeftVertex.y = 1
-        if (isHighGround(this, surfTop, surfTopRight, surfRight)) topRightVertex.y = 1
-        if (isHighGround(this, surfRight, surfBottomRight, surfBottom)) bottomRightVertex.y = 1
-        if (isHighGround(this, surfBottom, surfBottomLeft, surfLeft)) bottomLeftVertex.y = 1
-
-        // update mesh (geometry), if wall type changed
-        let wallType = topLeftVertex.y + topRightVertex.y + bottomRightVertex.y + bottomLeftVertex.y
-        if (wallType === WALL_TYPE.WALL && topLeftVertex.y === bottomRightVertex.y) wallType = WALL_TYPE.WEIRD_CREVICE
-
-        if (this.wallType !== wallType) {
-            this.wallType = wallType
-
-            this.topLeftVertex = topLeftVertex.clone()
-            this.topRightVertex = topRightVertex.clone()
-            this.bottomRightVertex = bottomRightVertex.clone()
-            this.bottomLeftVertex = bottomLeftVertex.clone()
-            this.topLeftHeightOffset = this.terrain.heightOffset[this.x][this.y]
-            this.topRightHeightOffset = this.terrain.heightOffset[this.x + 1][this.y]
-            this.bottomRightHeightOffset = this.terrain.heightOffset[this.x + 1][this.y + 1]
-            this.bottomLeftHeightOffset = this.terrain.heightOffset[this.x][this.y + 1]
-            this.topLeftVertex.y += this.topLeftHeightOffset
-            this.topRightVertex.y += this.topRightHeightOffset
-            this.bottomRightVertex.y += this.bottomRightHeightOffset
-            this.bottomLeftVertex.y += this.bottomLeftHeightOffset
-
-            this.updateGeometry(topLeftVertex, topRightVertex, bottomRightVertex, bottomLeftVertex)
-            if (this.wallType !== WALL_TYPE.WALL) this.cancelReinforceJobs()
-        }
-
+        const adjacent = this.terrain.getAdjacent(this.x, this.y)
+        const topLeftVertex = this.getVertex(this.x, this.y, adjacent.left, adjacent.topLeft, adjacent.top)
+        const topRightVertex = this.getVertex(this.x + 1, this.y, adjacent.top, adjacent.topRight, adjacent.right)
+        const bottomRightVertex = this.getVertex(this.x + 1, this.y + 1, adjacent.right, adjacent.bottomRight, adjacent.bottom)
+        const bottomLeftVertex = this.getVertex(this.x, this.y + 1, adjacent.bottom, adjacent.bottomLeft, adjacent.left)
+        this.updateWallType(topLeftVertex, topRightVertex, bottomRightVertex, bottomLeftVertex)
         this.updateTexture()
         this.updateJobColor()
         this.terrain.pathFinder.updateSurface(this)
+    }
+
+    private getVertex(x: number, y: number, s1: Surface, s2: Surface, s3: Surface): SurfaceVertex {
+        const high = (!this.discovered || (!this.surfaceType.floor || !this.neighbors.some((s) => s.isGround())) && ![s1, s2, s3].some((s) => s.isGround()))
+        const offset = this.terrain.heightOffset[x][y]
+        return new SurfaceVertex(high, offset)
+    }
+
+    private updateWallType(topLeft: SurfaceVertex, topRight: SurfaceVertex, bottomRight: SurfaceVertex, bottomLeft: SurfaceVertex) {
+        let wallType = topLeft.highNum + topRight.highNum + bottomRight.highNum + bottomLeft.highNum
+        if (wallType === WALL_TYPE.WALL && topLeft.highNum === bottomRight.highNum) wallType = WALL_TYPE.WEIRD_CREVICE
+        if (this.wallType === wallType) return
+        this.wallType = wallType
+        this.mesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
+        if (this.wallType !== WALL_TYPE.WALL) this.cancelReinforceJobs()
     }
 
     cancelReinforceJobs() {
@@ -317,15 +271,6 @@ export class Surface implements Selectable {
     }
 
     updateTexture() {
-        this.forEachMaterial((mat) => mat.map?.dispose())
-        let {textureNameSuffix, textureRotation} = this.determineTextureNameSuffixAndRotation()
-        const texture = ResourceManager.getTexture(this.terrain.textureSet.textureBasename + textureNameSuffix + '.bmp')
-        texture.center.set(0.5, 0.5)
-        texture.rotation = textureRotation
-        this.forEachMaterial((mat) => mat.map = texture)
-    }
-
-    private determineTextureNameSuffixAndRotation(): { textureNameSuffix: string, textureRotation: number } {
         let suffix = '', rotation = 0
         if (!this.discovered) {
             suffix = '70'
@@ -353,7 +298,8 @@ export class Surface implements Selectable {
             }
             suffix += this.surfaceType.shaping ? this.surfaceType.matIndex : SurfaceType.SOLID_ROCK.matIndex
         }
-        return {textureNameSuffix: suffix, textureRotation: rotation}
+        const textureFilepath = this.terrain.textureSet.textureBasename + suffix + '.bmp'
+        this.mesh.setTexture(textureFilepath, rotation)
     }
 
     private determinePowerPathTextureNameSuffixAndRotation(rotation: number, suffix: string) {
@@ -394,25 +340,6 @@ export class Surface implements Selectable {
         this.building?.updateEnergyState()
     }
 
-    forEachMaterial(callback: (mat: MeshPhongMaterial) => void): void {
-        asArray(this.mesh?.material).forEach((m) => callback(m as MeshPhongMaterial))
-    }
-
-    updateGeometry(topLeftVertex: Vector3, topRightVertex: Vector3, bottomRightVertex: Vector3, bottomLeftVertex: Vector3) {
-        if (this.mesh) this.terrain.floorGroup.remove(this.mesh)
-        this.mesh?.geometry?.dispose()
-        this.forEachMaterial((m) => m.dispose())
-
-        const geometry = SurfaceGeometry.create(this.wallType, topLeftVertex, topRightVertex, bottomRightVertex, bottomLeftVertex,
-            this.topLeftVertex.y, this.topRightVertex.y, this.bottomRightVertex.y, this.bottomLeftVertex.y)
-
-        this.mesh = new Mesh(geometry, new MeshPhongMaterial({shininess: 0}))
-        this.mesh.position.set(this.x, 0, this.y)
-        this.mesh.userData = {selectable: this, surface: this}
-
-        this.terrain.floorGroup.add(this.mesh)
-    }
-
     isSelectable(): boolean {
         return (this.surfaceType.selectable || !!this.site) && (this.wallType !== WALL_TYPE.INVERTED_CORNER && this.wallType !== WALL_TYPE.WEIRD_CREVICE) && !this.selected && this.discovered
     }
@@ -424,7 +351,7 @@ export class Surface implements Selectable {
     select(): boolean {
         if (!this.isSelectable()) return false
         this.selected = true
-        this.forEachMaterial((mat) => mat.color.setHex(0x6060a0))
+        this.mesh.setHighlightColor(0x6060a0)
         if (this.surfaceType.floor) SoundManager.playSample(Sample.SFX_Floor)
         if (this.surfaceType.shaping) SoundManager.playSample(Sample.SFX_Wall)
         console.log(`Surface selected at ${this.x}/${this.y}`)
@@ -440,7 +367,7 @@ export class Surface implements Selectable {
     updateJobColor() {
         if (this.selected) return
         const color = this.dynamiteJob?.color || this.reinforceJob?.color || this.drillJob?.color || 0xffffff
-        this.forEachMaterial((mat) => mat.color.setHex(color))
+        this.mesh.setHighlightColor(color)
     }
 
     hasRubble(): boolean {
@@ -494,8 +421,7 @@ export class Surface implements Selectable {
     }
 
     disposeFromWorld() {
-        this.forEachMaterial(m => m.dispose())
-        this.mesh?.geometry?.dispose()
+        this.mesh?.dispose()
     }
 
     get neighbors(): Surface[] {
