@@ -1,5 +1,5 @@
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { TILESIZE } from '../params'
+import { HEIGHT_MULTIPLIER, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
 import { Surface } from './model/map/Surface'
@@ -55,7 +55,7 @@ export class TerrainLoader {
                     console.warn(`Unexpected path map level: ${pathMapLevel}`)
                 }
 
-                const surface = new Surface(terrain, surfaceType, c, r, surfaceMap[r][c])
+                const surface = new Surface(terrain, surfaceType, c, r)
                 if (cryOreMap) {
                     const currentCryOre = cryOreMap[r][c]
                     if (currentCryOre % 2 === 1) {
@@ -66,6 +66,15 @@ export class TerrainLoader {
                 }
 
                 terrain.surfaces[c].push(surface)
+            }
+        }
+
+        // calculate average height offsets
+        for (let x = 0; x < terrain.width + 1; x++) {
+            terrain.heightOffset[x] = []
+            for (let y = 0; y < terrain.height + 1; y++) {
+                const offsets = [surfaceMap?.[y - 1]?.[x - 1], surfaceMap?.[y - 1]?.[x], surfaceMap?.[y]?.[x - 1], surfaceMap?.[y]?.[x]].filter((n) => !isNaN(n))
+                terrain.heightOffset[x][y] = offsets.reduce((l, r) => l + r, 0) / offsets.length * HEIGHT_MULTIPLIER
             }
         }
 

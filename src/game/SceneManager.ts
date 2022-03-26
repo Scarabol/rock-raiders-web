@@ -259,7 +259,12 @@ export class SceneManager {
     }
 
     getFloorPosition(world: Vector2) {
-        const floorY = this.terrain.getSurfaceFromWorldXZ(world.x, world.y).getFloorHeight(world.x, world.y)
+        const p = world.clone().divideScalar(TILESIZE).floor()
+        const s = world.clone().divideScalar(TILESIZE).sub(p)
+        const interpolate = (y0: number, y1: number, x: number): number => y0 + x * (y1 - y0)
+        const dy0 = interpolate(this.terrain.heightOffset[p.x][p.y], this.terrain.heightOffset[p.x + 1][p.y], s.x)
+        const dy1 = interpolate(this.terrain.heightOffset[p.x][p.y + 1], this.terrain.heightOffset[p.x + 1][p.y + 1], s.x)
+        const floorY = interpolate(dy0, dy1, s.y) * TILESIZE
         return new Vector3(world.x, floorY, world.y)
     }
 

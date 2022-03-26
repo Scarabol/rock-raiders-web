@@ -11,6 +11,7 @@ import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 
 export class Terrain {
+    heightOffset: number[][] = [[]]
     sceneMgr: SceneManager
     entityMgr: EntityManager
     textureSet: TextureEntryCfg = null
@@ -49,7 +50,7 @@ export class Terrain {
     getSurface(x: number, y: number): Surface {
         x = Math.floor(x)
         y = Math.floor(y)
-        return this.getSurfaceOrNull(x, y) || new Surface(this, SurfaceType.SOLID_ROCK, x, y, 0)
+        return this.getSurfaceOrNull(x, y) || new Surface(this, SurfaceType.SOLID_ROCK, x, y)
     }
 
     getSurfaceOrNull(x: number, y: number): Surface | null {

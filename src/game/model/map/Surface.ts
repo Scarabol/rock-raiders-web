@@ -6,7 +6,7 @@ import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
-import { HEIGHT_MULTIPLIER, SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../../params'
+import { SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
@@ -37,7 +37,6 @@ export class Surface implements Selectable {
     y: number
     containedOres: number = 0
     containedCrystals: number = 0
-    heightOffset: number = null
     discovered: boolean = false
     selected: boolean = false
     reinforced: boolean = false
@@ -69,7 +68,7 @@ export class Surface implements Selectable {
     fenceRequested: boolean = false
     energized: boolean = false
 
-    constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number, heightOffset: number) {
+    constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number) {
         this.terrain = terrain
         this.sceneMgr = this.terrain.sceneMgr
         this.entityMgr = this.terrain.entityMgr
@@ -77,7 +76,6 @@ export class Surface implements Selectable {
         if (surfaceType === SurfaceType.CRYSTAL_SEAM || surfaceType === SurfaceType.ORE_SEAM) this.seamLevel = SURFACE_NUM_SEAM_LEVELS
         this.x = x
         this.y = y
-        this.heightOffset = heightOffset
         if (surfaceType === SurfaceType.RUBBLE4 || surfaceType === SurfaceType.RUBBLE3 || surfaceType === SurfaceType.RUBBLE2 || surfaceType === SurfaceType.RUBBLE1) {
             this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         }
@@ -291,19 +289,14 @@ export class Surface implements Selectable {
         if (this.wallType !== wallType) {
             this.wallType = wallType
 
-            function avgHeight(...args: Surface[]) {
-                return args.map((s) => s.heightOffset)
-                    .reduce((l, r) => (l || 0) + (r || 0), 0) / (args.length || 1)
-            }
-
             this.topLeftVertex = topLeftVertex.clone()
             this.topRightVertex = topRightVertex.clone()
             this.bottomRightVertex = bottomRightVertex.clone()
             this.bottomLeftVertex = bottomLeftVertex.clone()
-            this.topLeftHeightOffset = avgHeight(surfTopLeft, surfTop, this, surfLeft) * HEIGHT_MULTIPLIER
-            this.topRightHeightOffset = avgHeight(surfTop, surfTopRight, surfRight, this) * HEIGHT_MULTIPLIER
-            this.bottomRightHeightOffset = avgHeight(this, surfRight, surfBottomRight, surfBottom) * HEIGHT_MULTIPLIER
-            this.bottomLeftHeightOffset = avgHeight(surfLeft, this, surfBottom, surfBottomLeft) * HEIGHT_MULTIPLIER
+            this.topLeftHeightOffset = this.terrain.heightOffset[this.x][this.y]
+            this.topRightHeightOffset = this.terrain.heightOffset[this.x + 1][this.y]
+            this.bottomRightHeightOffset = this.terrain.heightOffset[this.x + 1][this.y + 1]
+            this.bottomLeftHeightOffset = this.terrain.heightOffset[this.x][this.y + 1]
             this.topLeftVertex.y += this.topLeftHeightOffset
             this.topRightVertex.y += this.topRightHeightOffset
             this.bottomRightVertex.y += this.bottomRightHeightOffset
@@ -503,18 +496,6 @@ export class Surface implements Selectable {
     disposeFromWorld() {
         this.forEachMaterial(m => m.dispose())
         this.mesh?.geometry?.dispose()
-    }
-
-    getFloorHeight(worldX: number, worldZ: number) {
-        const sx = worldX / TILESIZE - this.x
-        const sy = worldZ / TILESIZE - this.y
-        const dy0 = Surface.interpolate(this.topLeftHeightOffset, this.topRightHeightOffset, sx)
-        const dy1 = Surface.interpolate(this.bottomLeftHeightOffset, this.bottomRightHeightOffset, sx)
-        return Surface.interpolate(dy0, dy1, sy) * TILESIZE
-    }
-
-    private static interpolate(y0: number, y1: number, x: number): number {
-        return y0 + x * (y1 - y0)
     }
 
     get neighbors(): Surface[] {
