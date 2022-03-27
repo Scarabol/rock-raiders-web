@@ -84,7 +84,7 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
         this.beamUpAnimator?.update(elapsedMs)
     }
 
-    disposeFromWorld(): void {
+    disposeFromWorld() {
         super.disposeFromWorld()
         this.entityMgr.placedFences.remove(this)
     }

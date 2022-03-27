@@ -3,12 +3,11 @@ import { DeselectAll } from '../event/LocalEvents'
 import { NATIVE_FRAMERATE, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SceneEntity } from '../scene/SceneEntity'
 import { SceneManager } from './SceneManager'
+import { Disposable } from './model/Disposable'
 
-export interface BeamUpEntity {
+export interface BeamUpEntity extends Disposable {
     sceneMgr: SceneManager
     sceneEntity: SceneEntity
-
-    disposeFromWorld(): void
 }
 
 export class BeamUpAnimator {

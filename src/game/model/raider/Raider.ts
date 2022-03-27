@@ -118,7 +118,7 @@ export class Raider extends FulfillerEntity {
         EventBus.publishEvent(new RaidersAmountChangedEvent(this.entityMgr))
     }
 
-    disposeFromWorld(): void {
+    disposeFromWorld() {
         super.disposeFromWorld()
         this.entityMgr.raiders.remove(this)
         this.entityMgr.raidersUndiscovered.remove(this)

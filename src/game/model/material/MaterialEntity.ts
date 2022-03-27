@@ -7,8 +7,9 @@ import { CarryJob } from '../job/carry/CarryJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
+import { Disposable } from '../Disposable'
 
-export abstract class MaterialEntity {
+export abstract class MaterialEntity implements Disposable {
     sceneMgr: SceneManager
     entityMgr: EntityManager
     entityType: EntityType

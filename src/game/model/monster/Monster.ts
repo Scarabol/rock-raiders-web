@@ -3,8 +3,9 @@ import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { EntityManager } from '../../EntityManager'
 import { SceneManager } from '../../SceneManager'
 import { MovableEntity } from '../MovableEntity'
+import { Disposable } from '../Disposable'
 
-export abstract class Monster extends MovableEntity {
+export abstract class Monster extends MovableEntity implements Disposable {
     sceneEntity: AnimatedSceneEntity
     monsterStats: MonsterEntityStats
 

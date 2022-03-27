@@ -23,6 +23,7 @@ import { RaiderTraining } from './model/raider/RaiderTraining'
 import { updateSafe } from './model/Updateable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { SceneManager } from './SceneManager'
+import { Disposable } from './model/Disposable'
 
 export class EntityManager {
     selection: GameSelection = new GameSelection()
@@ -116,7 +117,7 @@ export class EntityManager {
         EntityManager.disposeAll(this.miscAnims)
     }
 
-    private static disposeAll(list: { disposeFromWorld: () => any }[]) {
+    private static disposeAll(list: Disposable[]) {
         const copy = [...list]
         copy.forEach((e) => e.disposeFromWorld())
         list.length = 0

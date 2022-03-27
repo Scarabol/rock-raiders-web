@@ -14,8 +14,10 @@ import { MovableEntity } from './MovableEntity'
 import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
 import { Selectable } from './Selectable'
+import { Disposable } from './Disposable'
+import { Updatable } from './Updateable'
 
-export abstract class FulfillerEntity extends MovableEntity implements Selectable, BeamUpEntity {
+export abstract class FulfillerEntity extends MovableEntity implements Selectable, BeamUpEntity, Updatable, Disposable {
     selected: boolean
     job: Job = null
     followUpJob: Job = null
@@ -75,7 +77,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         this.selected = false
     }
 
-    disposeFromWorld(): void {
+    disposeFromWorld() {
         this.sceneEntity.disposeFromScene()
         this.workAudio = resetAudioSafe(this.workAudio)
     }
