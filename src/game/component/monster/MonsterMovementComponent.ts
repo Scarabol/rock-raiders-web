@@ -1,13 +1,13 @@
-import { NATIVE_UPDATE_INTERVAL } from '../../../params'
-import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
-import { EntityStep } from '../../model/EntityStep'
-import { Terrain } from '../../model/map/Terrain'
-import { TerrainPath } from '../../model/map/TerrainPath'
-import { MoveState } from '../../model/MoveState'
-import { PathTarget } from '../../model/PathTarget'
-import { AnimatedSceneEntityComponent } from '../common/AnimatedSceneEntityComponent'
-import { MovableEntityStatsComponent } from '../common/MovableEntityStatsComponent'
 import { MovementGameComponent } from '../common/MovementGameComponent'
+import { PathTarget } from '../../model/PathTarget'
+import { MoveState } from '../../model/MoveState'
+import { TerrainPath } from '../../model/map/TerrainPath'
+import { EntityStep } from '../../model/EntityStep'
+import { NATIVE_UPDATE_INTERVAL } from '../../../params'
+import { AnimatedSceneEntityComponent } from '../common/AnimatedSceneEntityComponent'
+import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
+import { MovableEntityStatsComponent } from '../common/MovableEntityStatsComponent'
+import { Terrain } from '../../model/map/Terrain'
 
 export abstract class MonsterMovementComponent extends MovementGameComponent {
     sceneEntity: AnimatedSceneEntityComponent

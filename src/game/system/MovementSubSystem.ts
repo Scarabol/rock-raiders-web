@@ -1,5 +1,5 @@
-import { MovementGameComponent } from '../component/common/MovementGameComponent'
 import { AbstractSubSystem } from './AbstractSubSystem'
+import { MovementGameComponent } from '../component/common/MovementGameComponent'
 
 export class MovementSubSystem extends AbstractSubSystem<MovementGameComponent> {
     constructor() {

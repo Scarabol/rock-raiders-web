@@ -1,18 +1,19 @@
-import { Vector2 } from 'three'
 import { createContext } from '../../core/ImageHelper'
 import { EventKey } from '../../event/EventKeyEnum'
 import { UpdateRadarEntities, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
-import { MAP_MARKER_TYPE } from '../../game/component/common/EntityMapMarkerComponent'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { MapSurfaceRect } from './MapSurfaceRect'
+import { MAP_MARKER_TYPE } from '../../game/component/common/EntityMapMarkerComponent'
+import { TILESIZE } from '../../params'
+import { Vector2 } from 'three'
 
 export class MapPanel extends Panel {
     combinedContext: SpriteContext
     surfaceContext: SpriteContext
     entityContext: SpriteContext
     offset: Vector2 = new Vector2()
-    surfaceRectSize: number = 10
+    surfaceRectSize: number = 10 / TILESIZE
     surfaceRectMargin: number = 1
     surfaceMap: MapSurfaceRect[][] = []
 

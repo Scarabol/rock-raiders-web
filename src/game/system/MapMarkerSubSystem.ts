@@ -1,7 +1,7 @@
-import { EventBus } from '../../event/EventBus'
-import { UpdateRadarEntities } from '../../event/LocalEvents'
-import { EntityMapMarkerComponent } from '../component/common/EntityMapMarkerComponent'
 import { AbstractSubSystem } from './AbstractSubSystem'
+import { EntityMapMarkerComponent } from '../component/common/EntityMapMarkerComponent'
+import { UpdateRadarEntities } from '../../event/LocalEvents'
+import { EventBus } from '../../event/EventBus'
 
 export class MapMarkerSubSystem extends AbstractSubSystem<EntityMapMarkerComponent> {
 

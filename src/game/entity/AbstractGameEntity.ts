@@ -1,9 +1,9 @@
-import { Vector2, Vector3 } from 'three'
-import { Generic } from '../../core/Util'
-import { AnimatedSceneEntityComponent } from '../component/common/AnimatedSceneEntityComponent'
-import { EntityType } from '../model/EntityType'
 import { GameComponent } from '../model/GameComponent'
+import { Generic } from '../../core/Util'
+import { EntityType } from '../model/EntityType'
 import { WorldManager } from '../WorldManager'
+import { Vector2, Vector3 } from 'three'
+import { AnimatedSceneEntityComponent } from '../component/common/AnimatedSceneEntityComponent'
 
 export class AbstractGameEntity {
     readonly components: GameComponent[] = []

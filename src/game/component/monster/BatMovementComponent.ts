@@ -1,9 +1,9 @@
-import { Vector2 } from 'three'
-import { TILESIZE } from '../../../params'
-import { TerrainPath } from '../../model/map/TerrainPath'
-import { MoveState } from '../../model/MoveState'
 import { PathTarget } from '../../model/PathTarget'
+import { MoveState } from '../../model/MoveState'
 import { MonsterMovementComponent } from './MonsterMovementComponent'
+import { TerrainPath } from '../../model/map/TerrainPath'
+import { TILESIZE } from '../../../params'
+import { Vector2 } from 'three'
 
 export class BatMovementComponent extends MonsterMovementComponent {
     target: PathTarget[] = []

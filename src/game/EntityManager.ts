@@ -5,13 +5,10 @@ import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged } fr
 import { JobCreateEvent } from '../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
-import { AnimatedSceneEntityComponent } from './component/common/AnimatedSceneEntityComponent'
-import { AbstractGameEntity } from './entity/AbstractGameEntity'
 import { AnimationGroup } from './model/anim/AnimationGroup'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingPathTarget } from './model/building/BuildingPathTarget'
 import { BuildingSite } from './model/building/BuildingSite'
-import { Disposable } from './model/Disposable'
 import { EntityType } from './model/EntityType'
 import { GameSelection } from './model/GameSelection'
 import { BuildingCarryPathTarget } from './model/job/carry/BuildingCarryPathTarget'
@@ -23,6 +20,9 @@ import { RaiderTraining } from './model/raider/RaiderTraining'
 import { updateSafe } from './model/Updateable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { SceneManager } from './SceneManager'
+import { Disposable } from './model/Disposable'
+import { AbstractGameEntity } from './entity/AbstractGameEntity'
+import { AnimatedSceneEntityComponent } from './component/common/AnimatedSceneEntityComponent'
 
 export class EntityManager {
     selection: GameSelection = new GameSelection()
