@@ -114,7 +114,7 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
         }
         this.sceneEntity.changeActivity(workActivity, () => {
             this.completeJob()
-        }, this.job.getWorkDuration(this))
+        }, this.job.getExpectedTimeLeft(this))
     }
 
     abstract grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean

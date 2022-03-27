@@ -31,7 +31,7 @@ export interface Job {
 
     getWorkActivity(): RaiderActivity
 
-    getWorkDuration(fulfiller: FulfillerEntity): number
+    getExpectedTimeLeft(fulfiller: FulfillerEntity): number | null
 }
 
 export abstract class AbstractJob implements Job {
@@ -71,7 +71,7 @@ export abstract class AbstractJob implements Job {
         return null
     }
 
-    getWorkDuration(fulfiller: FulfillerEntity): number {
+    getExpectedTimeLeft(fulfiller: FulfillerEntity): number | null {
         return null
     }
 }

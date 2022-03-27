@@ -27,7 +27,7 @@ export class UpgradeRaiderJob extends RaiderJob {
         return RaiderActivity.Train
     }
 
-    getWorkDuration(fulfiller: FulfillerEntity): number {
+    getExpectedTimeLeft(fulfiller: FulfillerEntity): number {
         return 30000 // XXX adjust upgrade time
     }
 }

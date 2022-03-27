@@ -43,7 +43,7 @@ export class TrainRaiderJob extends RaiderJob {
         return RaiderActivity.Train
     }
 
-    getWorkDuration(fulfiller: FulfillerEntity): number {
+    getExpectedTimeLeft(fulfiller: FulfillerEntity): number {
         return 10000 // XXX adjust training time
     }
 }

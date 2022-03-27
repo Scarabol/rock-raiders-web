@@ -39,7 +39,7 @@ export class ReinforceJob extends ShareableJob {
         return RaiderActivity.Reinforce
     }
 
-    getWorkDuration(fulfiller: FulfillerEntity): number {
+    getExpectedTimeLeft(fulfiller: FulfillerEntity): number {
         return 2700
     }
 
