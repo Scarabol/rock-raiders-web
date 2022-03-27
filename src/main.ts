@@ -1,7 +1,6 @@
 import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
 import { GithubBox } from '../site/github/github-box'
 import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
-import { getRandomInclusive } from './core/Util'
 import { GameState } from './game/model/GameState'
 import { ObjectListLoader } from './game/ObjectListLoader'
 import { DEV_MODE } from './params'
@@ -85,7 +84,7 @@ ResourceManager.onLoadDone = () => {
         ObjectListLoader.numTestRaider = Number(params.get('numTestRaider')) || 0
         if (entry === 'level') mainMenuScreen.showLevelSelection()
         else if (entry === 'reward') rewardScreen.show()
-        else if (entry === 'random') mainMenuScreen.selectLevel(`Level${getRandomInclusive(1, 25).toPadded()}`)
+        else if (entry === 'random') mainMenuScreen.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
         else if (entry) mainMenuScreen.selectLevel(entry)
     } else {
         mainMenuScreen.showMainMenu()

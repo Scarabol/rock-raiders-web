@@ -11,7 +11,6 @@ import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
-import { getRandom } from './Util'
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
@@ -300,7 +299,7 @@ export class NerpRunner {
     }
 
     getRandom100(): number {
-        return getRandom(100)
+        return Math.randomInclusive(100)
     }
 
     getSlugsOnLevel(): number {

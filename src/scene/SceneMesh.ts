@@ -1,5 +1,4 @@
 import { Mesh } from 'three'
-import { asArray } from '../core/Util'
 import { SequenceTextureMaterial } from './SequenceTextureMaterial'
 
 export class SceneMesh extends Mesh {
@@ -16,7 +15,7 @@ export class SceneMesh extends Mesh {
     }
 
     getMaterials(): SequenceTextureMaterial[] {
-        return asArray(this.material as SequenceTextureMaterial | SequenceTextureMaterial[])
+        return Array.ensure(this.material as SequenceTextureMaterial | SequenceTextureMaterial[])
     }
 
     update(elapsedMs: number) {

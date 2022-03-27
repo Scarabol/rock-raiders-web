@@ -1,6 +1,6 @@
 import { GameConfig } from '../../cfg/GameConfig'
 import { MenuCfg } from '../../cfg/MenuCfg'
-import { asArray, getFilename, getPath, iGet } from '../../core/Util'
+import { getFilename, getPath, iGet } from '../../core/Util'
 import { RonFileParser } from './parser/RonFileParser'
 import { WadLoader } from './WadLoader'
 
@@ -91,7 +91,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         // load vehicles
         const vehicleTypes = iGet(gameConfig, 'VehicleTypes')
         Object.values<string>(vehicleTypes).forEach((v) => {
-            asArray(v).forEach((vType) => {
+            Array.ensure(v).forEach((vType) => {
                 this.addMeshObjects(vType)
             })
         })

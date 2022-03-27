@@ -1,3 +1,4 @@
+import '../core'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { Panel } from './base/Panel'
 import { CameraControlPanel } from './cameracontrol/CameraControlPanel'

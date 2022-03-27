@@ -1,7 +1,6 @@
 import { MathUtils, PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
 import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
-import { getRandom, getRandomSign } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
@@ -122,8 +121,8 @@ export class Surface implements Selectable {
         if (this.seamLevel > 0) {
             this.seamLevel--
             const vec = new Vector2().copy(drillPosition).sub(this.getCenterWorld2D())
-                .multiplyScalar(0.3 + getRandom(3) / 10)
-                .rotateAround(new Vector2(0, 0), degToRad(-10 + getRandom(20)))
+                .multiplyScalar(0.3 + Math.randomInclusive(3) / 10)
+                .rotateAround(new Vector2(0, 0), degToRad(-10 + Math.randomInclusive(20)))
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
                 const crystal = this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), vec)
@@ -186,8 +185,8 @@ export class Surface implements Selectable {
     }
 
     getRandomPosition(): Vector2 {
-        return new Vector2(this.x * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4),
-            this.y * TILESIZE + TILESIZE / 2 + getRandomSign() * getRandom(TILESIZE / 4))
+        return new Vector2(this.x * TILESIZE + TILESIZE / 2 + Math.randomSign() * Math.randomInclusive(TILESIZE / 4),
+            this.y * TILESIZE + TILESIZE / 2 + Math.randomSign() * Math.randomInclusive(TILESIZE / 4))
     }
 
     cancelJobs() {

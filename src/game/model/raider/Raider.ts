@@ -1,4 +1,3 @@
-import { getRandomInclusive } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent } from '../../../event/LocalEvents'
 import { RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
@@ -74,7 +73,7 @@ export class Raider extends FulfillerEntity {
     }
 
     slip() {
-        if (getRandomInclusive(0, 100) < 10) this.stopJob()
+        if (Math.randomInclusive(0, 100) < 10) this.stopJob()
         this.dropCarried()
         this.slipped = true
         this.sceneEntity.changeActivity(RaiderActivity.Slip, () => {

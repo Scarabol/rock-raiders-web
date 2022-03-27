@@ -1,5 +1,4 @@
 import { Vector2 } from 'three'
-import { asArray } from '../../../core/Util'
 import { PathTarget } from '../PathTarget'
 
 export class TerrainPath {
@@ -9,7 +8,7 @@ export class TerrainPath {
 
     constructor(target: PathTarget, locations: Vector2[] | Vector2) {
         this.target = target
-        this.locations = asArray(locations)
+        this.locations = Array.ensure(locations)
         for (let c = 0; c < this.locations.length - 1; c++) {
             const start = this.locations[c]
             const end = this.locations[c + 1]

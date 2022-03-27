@@ -1,7 +1,6 @@
 import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
-import { asArray } from '../../../core/Util'
 import { EventBus } from '../../../event/EventBus'
 import { BuildingsChangedEvent, DeselectAll, SelectionChanged } from '../../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
@@ -232,7 +231,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     }
 
     get crystalDrain(): number {
-        return asArray(this.stats.CrystalDrain)[this.level] || 0
+        return Array.ensure(this.stats.CrystalDrain)[this.level] || 0
     }
 
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {

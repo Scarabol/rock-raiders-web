@@ -1,3 +1,4 @@
+import '../../core'
 import { GameConfig } from '../../cfg/GameConfig'
 import { InitLoadingMessage } from './InitLoadingMessage'
 import { WadLoader } from './WadLoader'

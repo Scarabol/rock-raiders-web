@@ -2,7 +2,7 @@ import { GameConfig } from '../cfg/GameConfig'
 import { Cursor } from '../cfg/PointerCfg'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 import { createContext, createDummyImgData, imgDataToContext } from '../core/ImageHelper'
-import { asArray, iGet } from '../core/Util'
+import { iGet } from '../core/Util'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { cacheGetData, cachePutData } from './assets/AssetCacheHelper'
 
@@ -98,7 +98,7 @@ export class ResourceCache {
     }
 
     private static cursorToDataUrl(cursorImages: HTMLCanvasElement | HTMLCanvasElement[]) {
-        return asArray(cursorImages).map((c) => `url(${c.toDataURL()}), auto`)
+        return Array.ensure(cursorImages).map((c) => `url(${c.toDataURL()}), auto`)
     }
 
     static getCursor(cursor: Cursor): AnimatedCursor {

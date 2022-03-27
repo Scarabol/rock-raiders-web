@@ -1,3 +1,4 @@
+import '../core'
 import { ObjectiveImageCfg } from '../cfg/LevelsCfg'
 import { EventKey } from '../event/EventKeyEnum'
 import { KEY_EVENT } from '../event/EventTypeEnum'

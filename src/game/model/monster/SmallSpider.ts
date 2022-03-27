@@ -1,5 +1,4 @@
 import { Vector2 } from 'three'
-import { getRandom, getRandomInclusive } from '../../../core/Util'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
@@ -32,7 +31,7 @@ export class SmallSpider extends Monster {
         if (this.target.length <= 0 || this.moveToClosestTarget(this.target, elapsedMs) !== MoveState.MOVED) {
             this.sceneEntity.changeActivity()
             this.target = [this.findTarget()]
-            this.idleTimer = 1000 + getRandom(9000)
+            this.idleTimer = 1000 + Math.randomInclusive(9000)
         } else if (!this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).surfaceType.floor) {
             this.disposeFromWorld()
         }
@@ -42,8 +41,8 @@ export class SmallSpider extends Monster {
         const terrain = this.sceneMgr.terrain
         const currentCenter = terrain.getSurfaceFromWorld(this.sceneEntity.position.clone()).getCenterWorld()
         for (let c = 0; c < 20; c++) {
-            const targetX = getRandomInclusive(currentCenter.x - (TILESIZE + TILESIZE / 2), currentCenter.x + TILESIZE + TILESIZE / 2)
-            const targetZ = getRandomInclusive(currentCenter.z - TILESIZE / 2, currentCenter.z + TILESIZE / 2)
+            const targetX = Math.randomInclusive(currentCenter.x - (TILESIZE + TILESIZE / 2), currentCenter.x + TILESIZE + TILESIZE / 2)
+            const targetZ = Math.randomInclusive(currentCenter.z - TILESIZE / 2, currentCenter.z + TILESIZE / 2)
             const surfaceType = terrain.getSurfaceFromWorldXZ(targetX, targetZ).surfaceType
             if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA) { // TODO evaluate CrossLand, CrossLava, CrossWater from stats
                 return new PathTarget(new Vector2(targetX, targetZ))

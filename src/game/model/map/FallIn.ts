@@ -1,4 +1,3 @@
-import { getRandom } from '../../../core/Util'
 import { Surface } from './Surface'
 import { Terrain } from './Terrain'
 
@@ -25,6 +24,6 @@ export class FallIn {
     }
 
     private restartTimeout() {
-        this.fallinTimeout = (30 + getRandom(60)) * 1000 // TODO adapt timer to level multiplier and fallin value
+        this.fallinTimeout = (30 + Math.randomInclusive(60)) * 1000 // TODO adapt timer to level multiplier and fallin value
     }
 }

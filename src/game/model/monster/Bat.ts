@@ -1,5 +1,4 @@
 import { Vector2 } from 'three'
-import { getRandomInclusive } from '../../../core/Util'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityManager } from '../../EntityManager'
@@ -32,8 +31,8 @@ export class Bat extends Monster {
         const terrain = this.sceneMgr.terrain
         const currentCenter = terrain.getSurfaceFromWorld(this.sceneEntity.position.clone()).getCenterWorld()
         for (let c = 0; c < 20; c++) {
-            const targetX = getRandomInclusive(currentCenter.x - (TILESIZE + TILESIZE / 2), currentCenter.x + TILESIZE + TILESIZE / 2)
-            const targetZ = getRandomInclusive(currentCenter.z - TILESIZE / 2, currentCenter.z + TILESIZE / 2)
+            const targetX = Math.randomInclusive(currentCenter.x - (TILESIZE + TILESIZE / 2), currentCenter.x + TILESIZE + TILESIZE / 2)
+            const targetZ = Math.randomInclusive(currentCenter.z - TILESIZE / 2, currentCenter.z + TILESIZE / 2)
             if (terrain.getSurfaceFromWorldXZ(targetX, targetZ).surfaceType.floor) {
                 return new PathTarget(new Vector2(targetX, targetZ))
             }

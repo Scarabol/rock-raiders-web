@@ -1,6 +1,5 @@
 import { Sample } from '../../audio/Sample'
 import { BaseButtonCfg } from '../../cfg/ButtonCfg'
-import { asArray } from '../../core/Util'
 import { PlaySoundEvent } from '../../event/LocalEvents'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { OffscreenCache } from '../../worker/OffscreenCache'
@@ -19,7 +18,7 @@ export class Button extends BaseElement {
 
     constructor(parent: BaseElement, btnCfg: BaseButtonCfg) {
         super(parent);
-        [this.buttonType, this.sfxName] = asArray(btnCfg.buttonType)
+        [this.buttonType, this.sfxName] = Array.ensure(btnCfg.buttonType)
         this.imgNormal = OffscreenCache.getImageOrNull(btnCfg.normalFile)
         this.imgHover = OffscreenCache.getImageOrNull(btnCfg.highlightFile)
         this.imgPressed = OffscreenCache.getImageOrNull(btnCfg.pressedFile)
@@ -94,4 +93,3 @@ export class Button extends BaseElement {
         }
     }
 }
-
