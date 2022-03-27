@@ -14,6 +14,7 @@ import { TILESIZE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 import { GameState } from '../game/model/GameState'
+import { MAP_MARKER_TYPE } from '../game/component/common/EntityMapMarkerComponent'
 
 export class LocalEvent extends GameEvent {
     constructor(eventKey: EventKey) {
@@ -228,9 +229,7 @@ export class NeededCrystalsChanged extends LocalEvent {
 }
 
 export class UpdateRadarEntities extends LocalEvent {
-    fulfillers: Vector2[] = []
-    materials: Vector2[] = []
-    monsters: Vector2[] = []
+    entitiesByOrder: Map<MAP_MARKER_TYPE, Vector2[]> = new Map()
 
     constructor() {
         super(EventKey.UPDATE_RADAR_ENTITIES)

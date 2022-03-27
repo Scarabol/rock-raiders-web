@@ -17,9 +17,15 @@ import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import { Supervisor } from './Supervisor'
 import { Vector2 } from 'three'
+import { AbstractSubSystem } from './system/AbstractSubSystem'
+import { SceneEntitySubSystem } from './system/SceneEntitySubSystem'
+import { AbstractGameEntity } from './entity/AbstractGameEntity'
+import { MovementSubSystem } from './system/MovementSubSystem'
+import { MapMarkerSubSystem } from './system/MapMarkerSubSystem'
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
+    readonly systems: AbstractSubSystem<any>[] = []
     sceneMgr: SceneManager
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
@@ -31,8 +37,12 @@ export class WorldManager {
     spawnRaiderTimer: number = 0
     requestedVehicleTypes: EntityType[] = []
     spawnVehicleTimer: number = 0
+    deadEntities: AbstractGameEntity[] = []
 
     constructor() {
+        this.systems.push(new SceneEntitySubSystem())
+        this.systems.push(new MovementSubSystem())
+        this.systems.push(new MapMarkerSubSystem())
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.startLoop(UPDATE_INTERVAL_MS))
@@ -49,6 +59,7 @@ export class WorldManager {
     }
 
     setup(levelConf: LevelEntryCfg) {
+        this.systems.forEach((s) => s.reset()) // TODO needed here?
         GameState.gameResult = GameResultState.UNDECIDED
         GameState.changeNeededCrystals(levelConf.reward?.quota?.crystals || 0)
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
@@ -69,6 +80,7 @@ export class WorldManager {
 
     stop() {
         this.stopLoop()
+        this.systems.forEach((s) => s.reset())
     }
 
     private startLoop(timeout: number) {
@@ -84,6 +96,7 @@ export class WorldManager {
         const startUpdate = window.performance.now()
         this.elapsedGameTimeMs += UPDATE_INTERVAL_MS
         this.update(elapsedMs)
+        this.removeDeadEntities()
         if (GameState.gameResult !== GameResultState.UNDECIDED) {
             this.onLevelEnd(GameState.gameResult)
             return
@@ -98,10 +111,20 @@ export class WorldManager {
         this.updateOxygen(elapsedMs)
         this.checkSpawnRaiders(elapsedMs)
         this.checkSpawnVehicles(elapsedMs)
+        this.systems.forEach((s) => updateSafe(s, elapsedMs))
         updateSafe(this.entityMgr, elapsedMs)
         updateSafe(this.sceneMgr.terrain, elapsedMs)
         updateSafe(this.jobSupervisor, elapsedMs)
         updateSafe(this.nerpRunner, elapsedMs)
+    }
+
+    private removeDeadEntities() {
+        this.deadEntities.forEach((e) => this.unregisterEntity(e))
+        this.deadEntities.length = 0
+    }
+
+    markDead(entity: AbstractGameEntity) {
+        this.deadEntities.add(entity)
     }
 
     private updateOxygen(elapsedMs: number) {
@@ -163,5 +186,17 @@ export class WorldManager {
         } catch (e) {
             console.error(e)
         }
+    }
+
+    registerEntity(entity: AbstractGameEntity) {
+        entity.setupEntity(this)
+        this.entityMgr.addEntity(entity)
+        entity.components.forEach((c) => this.systems.forEach((s) => s.registerComponent(c)))
+    }
+
+    unregisterEntity(entity: AbstractGameEntity) {
+        entity.components.forEach((c) => this.systems.forEach((s) => s.unregisterComponent(c)))
+        this.entityMgr.removeEntity(entity)
+        entity.disposeEntity()
     }
 }

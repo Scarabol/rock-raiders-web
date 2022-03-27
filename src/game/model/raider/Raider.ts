@@ -58,9 +58,9 @@ export class Raider extends FulfillerEntity {
         const result = super.moveToClosestTarget(target, elapsedMs)
         if (result === MoveState.MOVED) {
             this.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
-                if (this.sceneEntity.position.distanceToSquared(spider.sceneEntity.position) < SPIDER_SLIP_RANGE_SQ) {
+                if (this.sceneEntity.position.distanceToSquared(spider.position) < SPIDER_SLIP_RANGE_SQ) {
                     this.slip()
-                    spider.disposeFromWorld()
+                    spider.markDead()
                     return true
                 }
             })

@@ -6,18 +6,20 @@ import { TILESIZE } from '../params'
 import { RockMonsterActivity } from './model/activities/RockMonsterActivity'
 import { EntityType, getEntityTypeByName } from './model/EntityType'
 import { Crystal } from './model/material/Crystal'
-import { Bat } from './model/monster/Bat'
-import { IceMonster } from './model/monster/IceMonster'
-import { LavaMonster } from './model/monster/LavaMonster'
-import { RockMonster } from './model/monster/RockMonster'
-import { SmallSpider } from './model/monster/SmallSpider'
 import { Raider } from './model/raider/Raider'
 import { RaiderTrainings } from './model/raider/RaiderTraining'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { BuildingType } from './model/building/BuildingType'
 import { BuildingEntity } from './model/building/BuildingEntity'
+import { AbstractGameEntity } from './entity/AbstractGameEntity'
+import { AnimatedSceneEntityComponent } from './component/common/AnimatedSceneEntityComponent'
+import { SpiderMovementComponent } from './component/monster/SpiderMovementComponent'
+import { ResourceManager } from '../resource/ResourceManager'
 import { WorldManager } from './WorldManager'
+import { MovableEntityStatsComponent } from './component/common/MovableEntityStatsComponent'
+import { BatMovementComponent } from './component/monster/BatMovementComponent'
+import { EntityMapMarkerComponent, MAP_MARKER_TYPE } from './component/common/EntityMapMarkerComponent'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -85,16 +87,23 @@ export class ObjectListLoader {
                     entityMgr.placeMaterial(new Crystal(sceneMgr, entityMgr), worldPos)
                     break
                 case EntityType.SMALL_SPIDER:
-                    const spider = new SmallSpider(sceneMgr, entityMgr)
-                    spider.sceneEntity.changeActivity()
-                    spider.sceneEntity.addToScene(worldPos, radHeading)
-                    entityMgr.spiders.push(spider)
+                    const spider = new AbstractGameEntity(entityType)
+                    const spiderSceneEntity = spider.addComponent(new AnimatedSceneEntityComponent(sceneMgr, 'Creatures/SpiderSB/SpiderSB.ae', 1))
+                    spiderSceneEntity.changeActivity()
+                    spiderSceneEntity.addToScene(worldPos, radHeading)
+                    spider.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.SmallSpider))
+                    spider.addComponent(new SpiderMovementComponent())
+                    worldMgr.registerEntity(spider)
                     break
                 case EntityType.BAT:
-                    const bat = new Bat(sceneMgr, entityMgr)
-                    bat.sceneEntity.changeActivity()
-                    bat.sceneEntity.addToScene(worldPos, radHeading)
-                    entityMgr.bats.push(bat)
+                    const bat = new AbstractGameEntity(entityType)
+                    const batSceneEntity = bat.addComponent(new AnimatedSceneEntityComponent(sceneMgr, 'Creatures/bat/bat.ae', TILESIZE / 2))
+                    batSceneEntity.changeActivity()
+                    batSceneEntity.addToScene(worldPos, radHeading)
+                    bat.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.Bat))
+                    bat.addComponent(new BatMovementComponent())
+                    bat.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
+                    worldMgr.registerEntity(bat)
                     break
                 case EntityType.HOVERBOARD:
                 case EntityType.SMALL_DIGGER:
@@ -119,34 +128,28 @@ export class ObjectListLoader {
                     vehicleByKey.set(olKey, vehicle)
                     break
                 case EntityType.ICE_MONSTER:
-                    const iceMonster = new IceMonster(sceneMgr, entityMgr)
-                    iceMonster.sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
-                    iceMonster.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
-                    if (iceMonster.sceneEntity.visible) {
-                        entityMgr.rockMonsters.push(iceMonster)
-                    } else {
-                        entityMgr.undiscoveredRockMonsters.push(iceMonster)
-                    }
+                    const iceMonster = new AbstractGameEntity(entityType)
+                    const iceSceneEntity = iceMonster.addComponent(new AnimatedSceneEntityComponent(sceneMgr, 'Creatures/IceMonster/IceMonster.ae'))
+                    iceSceneEntity.changeActivity(RockMonsterActivity.Unpowered)
+                    iceSceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
+                    iceMonster.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
+                    worldMgr.registerEntity(iceMonster)
                     break
                 case EntityType.LAVA_MONSTER:
-                    const lavaMonster = new LavaMonster(sceneMgr, entityMgr)
-                    lavaMonster.sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
-                    lavaMonster.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
-                    if (lavaMonster.sceneEntity.visible) {
-                        entityMgr.rockMonsters.push(lavaMonster)
-                    } else {
-                        entityMgr.undiscoveredRockMonsters.push(lavaMonster)
-                    }
+                    const lavaMonster = new AbstractGameEntity(entityType)
+                    const lavaSceneEntity = lavaMonster.addComponent(new AnimatedSceneEntityComponent(sceneMgr, 'Creatures/LavaMonster/LavaMonster.ae'))
+                    lavaSceneEntity.changeActivity(RockMonsterActivity.Unpowered)
+                    lavaSceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
+                    lavaMonster.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
+                    worldMgr.registerEntity(lavaMonster)
                     break
                 case EntityType.ROCK_MONSTER:
-                    const rockMonster = new RockMonster(sceneMgr, entityMgr)
-                    rockMonster.sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
-                    rockMonster.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
-                    if (rockMonster.sceneEntity.visible) {
-                        entityMgr.rockMonsters.push(rockMonster)
-                    } else {
-                        entityMgr.undiscoveredRockMonsters.push(rockMonster)
-                    }
+                    const rockMonster = new AbstractGameEntity(entityType)
+                    const rockSceneEntity = rockMonster.addComponent(new AnimatedSceneEntityComponent(sceneMgr, 'Creatures/RMonster/RMonster.ae'))
+                    rockSceneEntity.changeActivity(RockMonsterActivity.Unpowered)
+                    rockSceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
+                    rockMonster.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
+                    worldMgr.registerEntity(rockMonster)
                     break
                 default:
                     console.warn(`Object type ${olEntry.type} not yet implemented`)

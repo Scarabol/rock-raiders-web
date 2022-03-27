@@ -60,3 +60,8 @@ export function getElementByIdOrThrow(elementId: string): HTMLElement {
     if (!element) throw new Error('Fatal error: "' + elementId + '" not found!')
     return element
 }
+
+export interface Generic<T = object> {
+    new (...args: any[]): T;
+    prototype: T;
+}

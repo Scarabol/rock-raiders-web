@@ -1,6 +1,8 @@
+import { Vector2 } from 'three'
 import { createContext } from '../../core/ImageHelper'
 import { EventKey } from '../../event/EventKeyEnum'
 import { UpdateRadarEntities, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
+import { MAP_MARKER_TYPE } from '../../game/component/common/EntityMapMarkerComponent'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { MapSurfaceRect } from './MapSurfaceRect'
@@ -9,8 +11,7 @@ export class MapPanel extends Panel {
     combinedContext: SpriteContext
     surfaceContext: SpriteContext
     entityContext: SpriteContext
-    offsetX: number = 0
-    offsetY: number = 0
+    offset: Vector2 = new Vector2()
     surfaceRectSize: number = 10
     surfaceRectMargin: number = 1
     surfaceMap: MapSurfaceRect[][] = []
@@ -28,8 +29,8 @@ export class MapPanel extends Panel {
         this.onClick = (cx: number, cy: number) => {
             const mapX = cx - this.x
             const mapY = cy - this.y
-            this.offsetX += mapX - this.width / 2
-            this.offsetY += mapY - this.height / 2
+            this.offset.x += mapX - this.width / 2
+            this.offset.y += mapY - this.height / 2
             this.redrawMapSurfaces(true)
         }
         this.registerEventListener(EventKey.UPDATE_RADAR_TERRAIN, (event: UpdateRadarTerrain) => {
@@ -39,8 +40,8 @@ export class MapPanel extends Panel {
                 this.surfaceMap[s.x][s.y] = s
             })
             if (event.focusTile) {
-                this.offsetX = event.focusTile.x * this.surfaceRectSize - this.width / 2
-                this.offsetY = event.focusTile.y * this.surfaceRectSize - this.height / 2
+                this.offset.x = event.focusTile.x * this.surfaceRectSize - this.width / 2
+                this.offset.y = event.focusTile.y * this.surfaceRectSize - this.height / 2
             }
             this.redrawMapSurfaces()
         })
@@ -66,8 +67,8 @@ export class MapPanel extends Panel {
     }
 
     private redrawSurface(surfaceRect: MapSurfaceRect) {
-        const surfaceX = Math.round(surfaceRect.x * this.surfaceRectSize - this.offsetX)
-        const surfaceY = Math.round(surfaceRect.y * this.surfaceRectSize - this.offsetY)
+        const surfaceX = Math.round(surfaceRect.x * this.surfaceRectSize - this.offset.x)
+        const surfaceY = Math.round(surfaceRect.y * this.surfaceRectSize - this.offset.y)
         if (surfaceRect.borderColor) {
             this.surfaceContext.fillStyle = surfaceRect.borderColor
             this.surfaceContext.fillRect(surfaceX, surfaceY, this.surfaceRectSize - this.surfaceRectMargin, this.surfaceRectSize - this.surfaceRectMargin)
@@ -82,26 +83,27 @@ export class MapPanel extends Panel {
     private redrawMapEntities(event: UpdateRadarEntities) {
         this.entityContext.clearRect(0, 0, this.entityContext.canvas.width, this.entityContext.canvas.height)
         this.entityContext.fillStyle = '#edd20c'
-        event.fulfillers.forEach((f) => {
-            const x = Math.round(f.x * this.surfaceRectSize) - 1 - this.offsetX
-            const y = Math.round(f.y * this.surfaceRectSize) - 1 - this.offsetY
-            this.entityContext.fillRect(x, y, 3, 3)
+        event.entitiesByOrder.getOrDefault(MAP_MARKER_TYPE.NORMAL, [])
+            .map((v) => this.mapToMap(v)).forEach((p) => {
+            this.entityContext.fillRect(p.x, p.y, 3, 3)
         })
         this.entityContext.fillStyle = '#f00'
-        event.monsters.forEach((m) => {
-            const x = Math.round(m.x * this.surfaceRectSize) - 1 - this.offsetX
-            const y = Math.round(m.y * this.surfaceRectSize) - 1 - this.offsetY
-            this.entityContext.fillRect(x, y, 3, 3)
+        event.entitiesByOrder.getOrDefault(MAP_MARKER_TYPE.MONSTER, [])
+            .map((v) => this.mapToMap(v)).forEach((p) => {
+            this.entityContext.fillRect(p.x, p.y, 3, 3)
         })
         this.entityContext.fillStyle = '#0f0'
-        event.materials.forEach((m) => {
-            const x = Math.round(m.x * this.surfaceRectSize) - 1 - this.offsetX
-            const y = Math.round(m.y * this.surfaceRectSize) - 1 - this.offsetY
-            this.entityContext.fillRect(x, y, 2, 2)
+        event.entitiesByOrder.getOrDefault(MAP_MARKER_TYPE.MATERIAL, [])
+            .map((v) => this.mapToMap(v)).forEach((p) => {
+            this.entityContext.fillRect(p.x, p.y, 2, 2)
         })
         // TODO only redraw, when visible actually changed position
         this.combinedContext.drawImage(this.surfaceContext.canvas, 0, 0)
         this.combinedContext.drawImage(this.entityContext.canvas, 0, 0)
         this.notifyRedraw()
+    }
+
+    private mapToMap(vec: Vector2): Vector2 {
+        return vec.multiplyScalar(this.surfaceRectSize).round().subScalar(1).sub(this.offset)
     }
 }
