@@ -1,4 +1,5 @@
 import { GuiMainSystem } from '../gui/GuiMainSystem'
+import { OffscreenWorkerBackend } from './OffscreenWorker'
 
 const worker: Worker = self as any
-new GuiMainSystem(worker)
+new GuiMainSystem(new OffscreenWorkerBackend(worker))

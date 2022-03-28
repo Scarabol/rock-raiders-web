@@ -1,12 +1,14 @@
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { WorkerResponse } from '../../worker/WorkerResponse'
-import { OffscreenLayer, OffscreenLayerWorker } from './OffscreenLayer'
+import { OffscreenLayer } from './OffscreenLayer'
+import { OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
 
 export class GuiMainLayer extends OffscreenLayer {
     onOptionsShow: () => any = () => console.log('Show options triggered')
 
-    createOffscreenWorker(): OffscreenLayerWorker {
-        return new Worker(new URL('../../worker/GuiMainWorker', import.meta.url)) // webpack does not allow to extract the URL
+    createOffscreenWorker(): OffscreenWorker {
+        const worker = new Worker(new URL('../../worker/GuiMainWorker', import.meta.url)) // webpack does not allow to extract the URL
+        return new OffscreenWorkerFrontend(worker, (response) => this.onResponseFromWorker(response))
     }
 
     onMessage(msg: WorkerResponse): boolean {

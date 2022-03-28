@@ -2,15 +2,17 @@ import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
 import { GuiWorkerMessage } from '../../gui/GuiWorkerMessage'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { WorkerResponse } from '../../worker/WorkerResponse'
-import { OffscreenLayer, OffscreenLayerWorker } from './OffscreenLayer'
+import { OffscreenLayer } from './OffscreenLayer'
+import { OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
 
 export class OverlayLayer extends OffscreenLayer {
     onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log(`set space to continue: ${state}`)
     onAbortGame: () => any = () => console.log('abort the game')
     onRestartGame: () => any = () => console.log('restart the game')
 
-    createOffscreenWorker(): OffscreenLayerWorker {
-        return new Worker(new URL('../../worker/OverlayWorker', import.meta.url)) // webpack does not allow to extract the URL
+    createOffscreenWorker(): OffscreenWorker {
+        const worker = new Worker(new URL('../../worker/OverlayWorker', import.meta.url)) // webpack does not allow to extract the URL
+        return new OffscreenWorkerFrontend(worker, (response) => this.onResponseFromWorker(response))
     }
 
     onMessage(msg: WorkerResponse): boolean {

@@ -16,39 +16,17 @@ import { WorkerEventResponse } from '../../worker/WorkerEventResponse'
 import { WorkerPublishEvent } from '../../worker/WorkerPublishEvent'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { ScreenLayer } from './ScreenLayer'
+import { OffscreenWorker } from '../../worker/OffscreenWorker'
 import generateUUID = MathUtils.generateUUID
-
-export interface OffscreenLayerWorker {
-    onmessage: ((this: Worker, ev: MessageEvent) => any) | null;
-
-    postMessage(message: any, transfer?: Array<Transferable | OffscreenCanvas>): void;
-}
 
 export abstract class OffscreenLayer extends ScreenLayer {
     readonly resolveCallbackByEventId: Map<string, ((consumed: boolean) => any)> = new Map()
-    worker: OffscreenLayerWorker
+    worker: OffscreenWorker
     entityMgr: EntityManager
 
     constructor() {
         super()
         this.initWorker()
-        this.worker.onmessage = (event) => {
-            const response = event.data as WorkerResponse
-            if (response.type === WorkerMessageType.RESPONSE_EVENT) {
-                const eventResponse = response as WorkerEventResponse
-                const resolve = this.resolveCallbackByEventId.get(eventResponse.eventId)
-                resolve(eventResponse.eventConsumed)
-                this.resolveCallbackByEventId.delete(eventResponse.eventId)
-            } else if (response.type === WorkerMessageType.GAME_EVENT) {
-                const event = (response as WorkerPublishEvent).gameEvent
-                if (event.eventKey === EventKey.PLAY_SOUND) {
-                    SoundManager.playSample((event as PlaySoundEvent).sample)
-                }
-                EventBus.publishEvent(event)
-            } else if (!this.onMessage(response)) {
-                console.warn(`Offscreen layer ignored message: ${WorkerMessageType[response.type]}`)
-            }
-        }
         EventBus.registerWorkerListener((event: GameEvent) => {
             if (!event.guiForward) return
             try {
@@ -70,12 +48,29 @@ export abstract class OffscreenLayer extends ScreenLayer {
         }, [canvasOffscreen])
     }
 
-    abstract createOffscreenWorker(): OffscreenLayerWorker
+    protected onResponseFromWorker(response: WorkerResponse) {
+        if (response.type === WorkerMessageType.RESPONSE_EVENT) {
+            const eventResponse = response as WorkerEventResponse
+            const resolve = this.resolveCallbackByEventId.get(eventResponse.eventId)
+            resolve(eventResponse.eventConsumed)
+            this.resolveCallbackByEventId.delete(eventResponse.eventId)
+        } else if (response.type === WorkerMessageType.GAME_EVENT) {
+            const event = (response as WorkerPublishEvent).gameEvent
+            if (event.eventKey === EventKey.PLAY_SOUND) {
+                SoundManager.playSample((event as PlaySoundEvent).sample)
+            }
+            EventBus.publishEvent(event)
+        } else if (!this.onMessage(response)) {
+            console.warn(`Offscreen layer ignored message: ${WorkerMessageType[response.type]}`)
+        }
+    }
+
+    abstract createOffscreenWorker(): OffscreenWorker
 
     abstract onMessage(msg: WorkerResponse): boolean
 
     protected sendMessage(message: OffscreenWorkerMessage, transfer?: (Transferable | OffscreenCanvas)[]) {
-        this.worker.postMessage(message, transfer)
+        this.worker.sendMessage(message, transfer)
     }
 
     reset() {
