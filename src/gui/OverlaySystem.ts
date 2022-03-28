@@ -10,12 +10,12 @@ import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { Panel } from './base/Panel'
 import { BriefingPanel } from './briefing/BriefingPanel'
 import { OffscreenCache } from '../worker/OffscreenCache'
-import { GuiWorker } from './GuiWorker'
+import { AbstractGuiSystem } from './AbstractGuiSystem'
 import { GuiWorkerMessage } from './GuiWorkerMessage'
 import { OptionsPanel } from './overlay/OptionsPanel'
 import { PausePanel } from './overlay/PausePanel'
 
-export class OverlayWorker extends GuiWorker {
+export class OverlaySystem extends AbstractGuiSystem {
     panelBriefing: BriefingPanel
     panelOptions: OptionsPanel
     panelPause: PausePanel
@@ -91,7 +91,3 @@ export class OverlayWorker extends GuiWorker {
         return result
     }
 }
-
-const worker: Worker = self as any
-const workerInstance = new OverlayWorker(worker)
-worker.addEventListener('message', (event) => workerInstance.processMessage(event.data))

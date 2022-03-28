@@ -11,12 +11,12 @@ import { WorkerEventResponse } from './WorkerEventResponse'
 import { WorkerPublishEvent } from './WorkerPublishEvent'
 import { WorkerResponse } from './WorkerResponse'
 
-export abstract class OffscreenWorker implements IEventHandler {
+export abstract class OffscreenSystem implements IEventHandler {
     readonly eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
-
-    canvas: OffscreenCanvas = null
+    canvas: HTMLCanvasElement | OffscreenCanvas = null
 
     constructor(readonly worker: Worker) {
+        worker.addEventListener('message', (event) => this.processMessage(event.data))
     }
 
     abstract onCacheReady(): any

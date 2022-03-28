@@ -5,13 +5,14 @@ import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { ChangeCursor, LocalEvent } from '../event/LocalEvents'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
-import { OffscreenWorker } from '../worker/OffscreenWorker'
+import { OffscreenSystem } from '../worker/OffscreenSystem'
 import { BaseElement } from './base/BaseElement'
 import { Panel } from './base/Panel'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from './event/GuiEvent'
 import { AnimationFrameScaled } from '../screen/AnimationFrame'
+import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 
-export abstract class GuiWorker extends OffscreenWorker {
+export abstract class AbstractGuiSystem extends OffscreenSystem {
     animationFrame: AnimationFrameScaled
     rootElement: BaseElement = new BaseElement(null)
     panels: Panel[] = []
@@ -70,6 +71,10 @@ export abstract class GuiWorker extends OffscreenWorker {
             this.rootElement.release()
         }
         return hit
+    }
+
+    handleKeyEvent(event: GameKeyboardEvent): boolean {
+        return false
     }
 
     handleWheelEvent(event: GameWheelEvent): boolean {

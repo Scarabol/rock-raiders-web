@@ -3,7 +3,7 @@ import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { Panel } from './base/Panel'
 import { CameraControlPanel } from './cameracontrol/CameraControlPanel'
 import { OffscreenCache } from '../worker/OffscreenCache'
-import { GuiWorker } from './GuiWorker'
+import { AbstractGuiSystem } from './AbstractGuiSystem'
 import { GuiWorkerMessage } from './GuiWorkerMessage'
 import { InfoDockPanel } from './infodock/InfoDockPanel'
 import { InformationPanel } from './infodock/InformationPanel'
@@ -14,7 +14,7 @@ import { PanelCrystalSideBar } from './sidebar/PanelCrystalSideBar'
 import { PriorityListPanel } from './toppanel/PriorityListPanel'
 import { TopPanel } from './toppanel/TopPanel'
 
-export class GuiMainWorker extends GuiWorker {
+export class GuiMainSystem extends AbstractGuiSystem {
     panelRadar: RadarPanel
     panelMessages: MessagePanel
     panelMessagesSide: Panel
@@ -69,7 +69,3 @@ export class GuiMainWorker extends GuiWorker {
         return true
     }
 }
-
-const worker: Worker = self as any
-const workerInstance = new GuiMainWorker(worker)
-worker.addEventListener('message', (event) => workerInstance.processMessage(event.data))

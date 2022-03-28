@@ -18,19 +18,20 @@ import { WorkerResponse } from '../../worker/WorkerResponse'
 import { ScreenLayer } from './ScreenLayer'
 import generateUUID = MathUtils.generateUUID
 
+export interface OffscreenLayerWorker {
+    onmessage: ((this: Worker, ev: MessageEvent) => any) | null;
+
+    postMessage(message: any, transfer?: Array<Transferable | OffscreenCanvas>): void;
+}
+
 export abstract class OffscreenLayer extends ScreenLayer {
     readonly resolveCallbackByEventId: Map<string, ((consumed: boolean) => any)> = new Map()
+    worker: OffscreenLayerWorker
     entityMgr: EntityManager
 
-    protected constructor(readonly worker: Worker) {
+    constructor() {
         super()
-        const canvasOffscreen = this.canvas.transferControlToOffscreen()
-        this.sendMessage({
-            type: WorkerMessageType.INIT,
-            canvas: canvasOffscreen,
-            resourceByName: ResourceManager.resourceByName,
-            cfg: ResourceManager.configuration,
-        }, [canvasOffscreen])
+        this.initWorker()
         this.worker.onmessage = (event) => {
             const response = event.data as WorkerResponse
             if (response.type === WorkerMessageType.RESPONSE_EVENT) {
@@ -57,6 +58,19 @@ export abstract class OffscreenLayer extends ScreenLayer {
             }
         })
     }
+
+    private initWorker() {
+        this.worker = this.createOffscreenWorker()
+        const canvasOffscreen = this.canvas.transferControlToOffscreen()
+        this.sendMessage({
+            type: WorkerMessageType.INIT,
+            canvas: canvasOffscreen,
+            resourceByName: ResourceManager.resourceByName,
+            cfg: ResourceManager.configuration,
+        }, [canvasOffscreen])
+    }
+
+    abstract createOffscreenWorker(): OffscreenLayerWorker
 
     abstract onMessage(msg: WorkerResponse): boolean
 
