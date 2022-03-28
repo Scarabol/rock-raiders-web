@@ -83,6 +83,8 @@ export class NerpParser {
                 throw new Error(`Can't deal with line: ${line}`)
             }
         }
+        // perform basic syntax check
+        nerpRunner.checkSyntax()
         return nerpRunner
     }
 

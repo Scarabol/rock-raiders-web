@@ -423,4 +423,13 @@ export class NerpRunner {
             this.halted = true
         }
     }
+
+    checkSyntax() {
+        this.statements.forEach((statement) => {
+            const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.equalsIgnoreCase(statement.invoke))
+            if (!statement.label && !statement.jump && !this[memberName] && statement.invoke !== 'Stop' && !statement.invoke?.startsWith('AddR') && !statement.invoke?.startsWith('SubR') && !statement.invoke?.startsWith('SetR') && !statement.invoke?.startsWith('SetTimer')) {
+                console.warn(`Unknown statement ${statement.invoke} found, NERP execution may fail!`)
+            }
+        })
+    }
 }
