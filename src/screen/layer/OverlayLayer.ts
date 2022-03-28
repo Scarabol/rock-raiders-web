@@ -3,7 +3,8 @@ import { GuiWorkerMessage } from '../../gui/GuiWorkerMessage'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
-import { OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
+import { OffscreenFallbackWorker, OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
+import { OverlaySystem } from '../../gui/OverlaySystem'
 
 export class OverlayLayer extends OffscreenLayer {
     onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log(`set space to continue: ${state}`)
@@ -13,6 +14,13 @@ export class OverlayLayer extends OffscreenLayer {
     createOffscreenWorker(): OffscreenWorker {
         const worker = new Worker(new URL('../../worker/OverlayWorker', import.meta.url)) // webpack does not allow to extract the URL
         return new OffscreenWorkerFrontend(worker, (response) => this.onResponseFromWorker(response))
+    }
+
+    createFallbackWorker(): OffscreenWorker {
+        const worker = new OffscreenFallbackWorker()
+        worker.onResponseFromWorker = (response) => this.onResponseFromWorker(response)
+        new OverlaySystem(worker)
+        return worker
     }
 
     onMessage(msg: WorkerResponse): boolean {

@@ -9,7 +9,7 @@ export class OffscreenWorkerMessage {
     stats?: any = undefined
     resourceByName?: Map<string, any> = undefined
     messageState?: boolean = undefined
-    canvas?: OffscreenCanvas = undefined
+    canvas?: HTMLCanvasElement | OffscreenCanvas = undefined
     canvasWidth?: number = undefined
     canvasHeight?: number = undefined
     eventId?: string = undefined

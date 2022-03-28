@@ -1,7 +1,8 @@
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
-import { OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
+import { OffscreenFallbackWorker, OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
+import { GuiMainSystem } from '../../gui/GuiMainSystem'
 
 export class GuiMainLayer extends OffscreenLayer {
     onOptionsShow: () => any = () => console.log('Show options triggered')
@@ -9,6 +10,13 @@ export class GuiMainLayer extends OffscreenLayer {
     createOffscreenWorker(): OffscreenWorker {
         const worker = new Worker(new URL('../../worker/GuiMainWorker', import.meta.url)) // webpack does not allow to extract the URL
         return new OffscreenWorkerFrontend(worker, (response) => this.onResponseFromWorker(response))
+    }
+
+    createFallbackWorker(): OffscreenWorker {
+        const worker = new OffscreenFallbackWorker()
+        worker.onResponseFromWorker = (response) => this.onResponseFromWorker(response)
+        new GuiMainSystem(worker)
+        return worker
     }
 
     onMessage(msg: WorkerResponse): boolean {

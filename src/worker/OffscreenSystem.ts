@@ -9,14 +9,14 @@ import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { OffscreenWorkerMessage } from './OffscreenWorkerMessage'
 import { WorkerEventResponse } from './WorkerEventResponse'
 import { WorkerPublishEvent } from './WorkerPublishEvent'
-import { OffscreenWorkerBackend } from './OffscreenWorker'
+import { OffscreenBackend } from './OffscreenWorker'
 import { WorkerResponse } from './WorkerResponse'
 
 export abstract class OffscreenSystem implements IEventHandler {
     readonly eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
     canvas: HTMLCanvasElement | OffscreenCanvas = null
 
-    constructor(readonly worker: OffscreenWorkerBackend) {
+    constructor(readonly worker: OffscreenBackend) {
         this.worker.onMessageFromLayer = (msg) => this.processMessage(msg)
     }
 

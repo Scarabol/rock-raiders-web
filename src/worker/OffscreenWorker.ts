@@ -17,7 +17,13 @@ export class OffscreenWorkerFrontend implements OffscreenWorker {
     }
 }
 
-export class OffscreenWorkerBackend {
+export interface OffscreenBackend {
+    onMessageFromLayer: (message: OffscreenWorkerMessage) => any
+
+    sendResponse(response: WorkerResponse)
+}
+
+export class OffscreenWorkerBackend implements OffscreenBackend {
     onMessageFromLayer: (message: OffscreenWorkerMessage) => any
 
     constructor(readonly worker: Worker) {
@@ -26,5 +32,18 @@ export class OffscreenWorkerBackend {
 
     sendResponse(response: WorkerResponse) {
         this.worker.postMessage(response)
+    }
+}
+
+export class OffscreenFallbackWorker implements OffscreenWorker, OffscreenBackend {
+    onMessageFromLayer: (message: OffscreenWorkerMessage) => any
+    onResponseFromWorker: (response: WorkerResponse) => any
+
+    sendMessage(message: OffscreenWorkerMessage, transfer?: (Transferable | OffscreenCanvas)[]) {
+        this.onMessageFromLayer(message)
+    }
+
+    sendResponse(response: WorkerResponse) {
+        this.onResponseFromWorker(response)
     }
 }

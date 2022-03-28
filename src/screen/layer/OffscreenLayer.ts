@@ -38,14 +38,21 @@ export abstract class OffscreenLayer extends ScreenLayer {
     }
 
     private initWorker() {
-        this.worker = this.createOffscreenWorker()
-        const canvasOffscreen = this.canvas.transferControlToOffscreen()
-        this.sendMessage({
+        const msgInit = {
             type: WorkerMessageType.INIT,
-            canvas: canvasOffscreen,
+            canvas: this.canvas as HTMLCanvasElement | OffscreenCanvas,
             resourceByName: ResourceManager.resourceByName,
             cfg: ResourceManager.configuration,
-        }, [canvasOffscreen])
+        }
+        if ('transferControlToOffscreen' in this.canvas) {
+            this.worker = this.createOffscreenWorker()
+            msgInit.canvas = this.canvas.transferControlToOffscreen()
+            this.sendMessage(msgInit, [msgInit.canvas])
+        } else {
+            console.warn('Your Browser does not support WebGL in workers!\nUsing fallback to main thread, which might have bad performance.\nTo solve this issue for Firefox set gfx.offscreencanvas.enabled to true in about:config or use https://www.chromium.org/')
+            this.worker = this.createFallbackWorker()
+            this.sendMessage(msgInit)
+        }
     }
 
     protected onResponseFromWorker(response: WorkerResponse) {
@@ -66,6 +73,8 @@ export abstract class OffscreenLayer extends ScreenLayer {
     }
 
     abstract createOffscreenWorker(): OffscreenWorker
+
+    abstract createFallbackWorker(): OffscreenWorker
 
     abstract onMessage(msg: WorkerResponse): boolean
 
