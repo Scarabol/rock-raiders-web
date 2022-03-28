@@ -184,10 +184,10 @@ export class WadLoader {
             this.wad1File = WadLoader.createWadFile(wadData[1])
             console.timeEnd('WAD files loaded from cache')
             this.startLoadingProcess()
-        }).catch((e) => {
+        }).catch((e: Error) => {
             console.error(e)
             this.onMessage('WAD file not found in cache')
-            this.onCacheMiss(e)
+            this.onCacheMiss(e.message) // Firefox 98 is not able to transfer Error
         })
     }
 
