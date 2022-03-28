@@ -113,11 +113,13 @@ export abstract class OffscreenLayer extends ScreenLayer {
 
     private sendEventMessage(type: WorkerMessageType, event: GamePointerEvent | GameKeyboardEvent | GameWheelEvent): Promise<boolean> {
         const eventId = generateUUID()
-        this.sendMessage({
-            type: type,
-            eventId: eventId,
-            inputEvent: event,
+        return new Promise((resolve) => {
+            this.resolveCallbackByEventId.set(eventId, resolve)
+            this.sendMessage({
+                type: type,
+                eventId: eventId,
+                inputEvent: event,
+            })
         })
-        return new Promise((resolve) => this.resolveCallbackByEventId.set(eventId, resolve))
     }
 }
