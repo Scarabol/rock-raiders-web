@@ -7,6 +7,7 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from './component/common/AnimatedSceneEntityComponent'
 import { EntityMapMarkerComponent, MAP_MARKER_TYPE } from './component/common/EntityMapMarkerComponent'
 import { MovableEntityStatsComponent } from './component/common/MovableEntityStatsComponent'
+import { PositionComponent } from './component/common/PositionComponent'
 import { BatMovementComponent } from './component/monster/BatMovementComponent'
 import { SpiderMovementComponent } from './component/monster/SpiderMovementComponent'
 import { AbstractGameEntity } from './entity/AbstractGameEntity'
@@ -88,6 +89,7 @@ export class ObjectListLoader {
                     break
                 case EntityType.SMALL_SPIDER:
                     const spider = new AbstractGameEntity(entityType)
+                    spider.addComponent(new PositionComponent(worldPos))
                     const spiderSceneEntity = spider.addComponent(new AnimatedSceneEntityComponent(sceneMgr, 'Creatures/SpiderSB/SpiderSB.ae', 1))
                     spiderSceneEntity.changeActivity()
                     spiderSceneEntity.addToScene(worldPos, radHeading)
@@ -97,6 +99,7 @@ export class ObjectListLoader {
                     break
                 case EntityType.BAT:
                     const bat = new AbstractGameEntity(entityType)
+                    bat.addComponent(new PositionComponent(worldPos))
                     const batSceneEntity = bat.addComponent(new AnimatedSceneEntityComponent(sceneMgr, 'Creatures/bat/bat.ae', TILESIZE / 2))
                     batSceneEntity.changeActivity()
                     batSceneEntity.addToScene(worldPos, radHeading)
@@ -129,6 +132,7 @@ export class ObjectListLoader {
                     break
                 case EntityType.ICE_MONSTER:
                     const iceMonster = new AbstractGameEntity(entityType)
+                    iceMonster.addComponent(new PositionComponent(worldPos))
                     const iceSceneEntity = iceMonster.addComponent(new AnimatedSceneEntityComponent(sceneMgr, 'Creatures/IceMonster/IceMonster.ae'))
                     iceSceneEntity.changeActivity(RockMonsterActivity.Unpowered)
                     iceSceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
@@ -137,6 +141,7 @@ export class ObjectListLoader {
                     break
                 case EntityType.LAVA_MONSTER:
                     const lavaMonster = new AbstractGameEntity(entityType)
+                    lavaMonster.addComponent(new PositionComponent(worldPos))
                     const lavaSceneEntity = lavaMonster.addComponent(new AnimatedSceneEntityComponent(sceneMgr, 'Creatures/LavaMonster/LavaMonster.ae'))
                     lavaSceneEntity.changeActivity(RockMonsterActivity.Unpowered)
                     lavaSceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
@@ -145,6 +150,7 @@ export class ObjectListLoader {
                     break
                 case EntityType.ROCK_MONSTER:
                     const rockMonster = new AbstractGameEntity(entityType)
+                    rockMonster.addComponent(new PositionComponent(worldPos))
                     const rockSceneEntity = rockMonster.addComponent(new AnimatedSceneEntityComponent(sceneMgr, 'Creatures/RMonster/RMonster.ae'))
                     rockSceneEntity.changeActivity(RockMonsterActivity.Unpowered)
                     rockSceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)

@@ -1,6 +1,4 @@
-import { Vector2, Vector3 } from 'three'
 import { Generic } from '../../core/Util'
-import { AnimatedSceneEntityComponent } from '../component/common/AnimatedSceneEntityComponent'
 import { EntityType } from '../model/EntityType'
 import { GameComponent } from '../model/GameComponent'
 import { WorldManager } from '../WorldManager'
@@ -37,13 +35,5 @@ export class AbstractGameEntity {
 
     markDead() {
         this.worldMgr.markDead(this)
-    }
-
-    get position(): Vector3 {
-        return this.getComponent(AnimatedSceneEntityComponent).sceneEntity.position
-    }
-
-    get position2D(): Vector2 {
-        return this.getComponent(AnimatedSceneEntityComponent).sceneEntity.position2D
     }
 }

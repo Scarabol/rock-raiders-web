@@ -6,6 +6,7 @@ import { JobCreateEvent } from '../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
 import { AnimatedSceneEntityComponent } from './component/common/AnimatedSceneEntityComponent'
+import { PositionComponent } from './component/common/PositionComponent'
 import { AbstractGameEntity } from './entity/AbstractGameEntity'
 import { AnimationGroup } from './model/anim/AnimationGroup'
 import { BuildingEntity } from './model/building/BuildingEntity'
@@ -208,10 +209,10 @@ export class EntityManager {
 
     private static removeInRectNew(listing: AbstractGameEntity[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: AbstractGameEntity) => any) {
         return listing.filter((e) => {
-            const pos = e.position2D
+            const pos = e.getComponent(PositionComponent).getPosition2D()
             const discovered = pos.x >= minX && pos.x < maxX && pos.y >= minZ && pos.y < maxZ
             if (discovered) {
-                e.getComponent(AnimatedSceneEntityComponent).sceneEntity.visible = true
+                e.getComponent(AnimatedSceneEntityComponent).visible = true
                 onRemove(e)
             }
             return !discovered
@@ -257,7 +258,7 @@ export class EntityManager {
     }
 
     addEntity(entity: AbstractGameEntity) {
-        const discovered = entity.getComponent(AnimatedSceneEntityComponent).sceneEntity.visible
+        const discovered = entity.getComponent(AnimatedSceneEntityComponent).visible
         switch (entity.entityType) {
             case EntityType.BAT:
                 if (discovered) this.bats.add(entity)

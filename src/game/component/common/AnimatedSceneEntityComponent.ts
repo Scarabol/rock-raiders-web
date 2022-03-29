@@ -4,19 +4,29 @@ import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
 import { AnimEntityActivity } from '../../model/activities/AnimEntityActivity'
 import { GameComponent } from '../../model/GameComponent'
 import { Surface } from '../../model/map/Surface'
-import { Terrain } from '../../model/map/Terrain'
 import { SceneManager } from '../../SceneManager'
+import { PositionComponent } from './PositionComponent'
 
 export class AnimatedSceneEntityComponent implements GameComponent {
-    sceneEntity: AnimatedSceneEntity = null
-    terrain: Terrain = null
+    protected sceneEntity: AnimatedSceneEntity = null
 
-    constructor(readonly sceneMgr: SceneManager, aeFilename: string, floorOffset?: number) {
+    constructor(protected readonly sceneMgr: SceneManager, aeFilename: string, floorOffset?: number) {
         this.sceneEntity = new AnimatedSceneEntity(sceneMgr, aeFilename)
         if (floorOffset) this.sceneEntity.floorOffset = floorOffset
     }
 
     setupComponent(entity: AbstractGameEntity) {
+        const positionComponent = entity.getComponent(PositionComponent)
+        this.setPosition(positionComponent.getPosition2D())
+        positionComponent.addOnChangeCallback((changedPosition) => {
+            this.setPosition(changedPosition)
+            this.sceneEntity.changeActivity(AnimEntityActivity.Route)
+        })
+    }
+
+    private setPosition(changedPosition: Vector2) {
+        this.sceneEntity.position.copy(this.sceneMgr.getFloorPosition(changedPosition))
+        this.sceneEntity.position.y += this.sceneEntity.floorOffset
     }
 
     disposeComponent() {
@@ -29,11 +39,6 @@ export class AnimatedSceneEntityComponent implements GameComponent {
 
     focus(focus: Vector2) {
         this.sceneEntity.headTowards(focus)
-    }
-
-    move(step: Vector3) {
-        this.sceneEntity.position.add(step)
-        this.sceneEntity.changeActivity(AnimEntityActivity.Route)
     }
 
     getWorldDistance(target: Vector2): Vector3 {
@@ -56,5 +61,13 @@ export class AnimatedSceneEntityComponent implements GameComponent {
 
     addToScene(worldPosition: Vector2, radHeading: number) {
         this.sceneEntity.addToScene(worldPosition, radHeading)
+    }
+
+    set visible(state: boolean) {
+        this.sceneEntity.visible = state
+    }
+
+    get visible(): boolean {
+        return this.sceneEntity.visible
     }
 }

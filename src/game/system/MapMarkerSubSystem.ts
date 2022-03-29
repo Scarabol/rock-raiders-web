@@ -15,7 +15,7 @@ export class MapMarkerSubSystem extends AbstractSubSystem<EntityMapMarkerCompone
         const event = new UpdateRadarEntities()
         // TODO Only send moved entities and adds/removals
         this.components.forEach((c) => {
-            event.entitiesByOrder.getOrUpdate(c.mapMarkerType, () => []).push(c.position2d())
+            event.entitiesByOrder.getOrUpdate(c.mapMarkerType, () => []).push(c.position2D())
         })
         EventBus.publishEvent(event)
     }

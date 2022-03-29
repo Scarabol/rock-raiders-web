@@ -1,7 +1,7 @@
 import { Vector2 } from 'three'
 import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
 import { GameComponent } from '../../model/GameComponent'
-import { AnimatedSceneEntityComponent } from './AnimatedSceneEntityComponent'
+import { PositionComponent } from './PositionComponent'
 
 export enum MAP_MARKER_TYPE {
     NORMAL,
@@ -10,19 +10,19 @@ export enum MAP_MARKER_TYPE {
 }
 
 export class EntityMapMarkerComponent implements GameComponent {
-    private sceneEntity: AnimatedSceneEntityComponent
+    private position: PositionComponent
 
     constructor(readonly mapMarkerType: MAP_MARKER_TYPE) {
     }
 
     setupComponent(entity: AbstractGameEntity) {
-        this.sceneEntity = entity.getComponent(AnimatedSceneEntityComponent)
+        this.position = entity.getComponent(PositionComponent)
     }
 
     disposeComponent() {
     }
 
-    position2d(): Vector2 {
-        return this.sceneEntity.sceneEntity.position2D
+    position2D(): Vector2 {
+        return this.position.getPosition2D()
     }
 }

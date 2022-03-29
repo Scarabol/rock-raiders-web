@@ -8,8 +8,10 @@ import { PathTarget } from '../../model/PathTarget'
 import { AnimatedSceneEntityComponent } from '../common/AnimatedSceneEntityComponent'
 import { MovableEntityStatsComponent } from '../common/MovableEntityStatsComponent'
 import { MovementGameComponent } from '../common/MovementGameComponent'
+import { PositionComponent } from '../common/PositionComponent'
 
 export abstract class MonsterMovementComponent extends MovementGameComponent {
+    position: PositionComponent
     sceneEntity: AnimatedSceneEntityComponent
     movable: MovableEntityStatsComponent
     terrain: Terrain = null
@@ -17,6 +19,7 @@ export abstract class MonsterMovementComponent extends MovementGameComponent {
 
     setupComponent(entity: AbstractGameEntity) {
         super.setupComponent(entity)
+        this.position = entity.getComponent(PositionComponent)
         this.sceneEntity = entity.getComponent(AnimatedSceneEntityComponent)
         this.movable = entity.getComponent(MovableEntityStatsComponent)
         this.terrain = entity.worldMgr.sceneMgr.terrain
@@ -38,7 +41,7 @@ export abstract class MonsterMovementComponent extends MovementGameComponent {
             return MoveState.TARGET_REACHED
         } else {
             this.sceneEntity.focus(this.currentPath.firstLocation)
-            this.sceneEntity.move(step.vec) // TODO rotate spider according to surface normal vector
+            this.position.move(step.vec) // TODO rotate spider according to surface normal vector
             return MoveState.MOVED
         }
     }

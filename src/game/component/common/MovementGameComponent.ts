@@ -6,9 +6,9 @@ export class MovementGameComponent implements GameComponent, Updatable {
     setupComponent(entity: AbstractGameEntity) {
     }
 
-    update(elapsedMs: number) {
+    disposeComponent() {
     }
 
-    disposeComponent() {
+    update(elapsedMs: number) {
     }
 }

@@ -3,6 +3,7 @@ import { RaidersAmountChangedEvent } from '../../../event/LocalEvents'
 import { RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
+import { PositionComponent } from '../../component/common/PositionComponent'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BaseActivity } from '../activities/BaseActivity'
@@ -57,7 +58,7 @@ export class Raider extends FulfillerEntity {
         const result = super.moveToClosestTarget(target, elapsedMs)
         if (result === MoveState.MOVED) {
             this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
-                if (this.sceneEntity.position.distanceToSquared(spider.position) < SPIDER_SLIP_RANGE_SQ) {
+                if (this.sceneEntity.position.distanceToSquared(spider.getComponent(PositionComponent).getPosition()) < SPIDER_SLIP_RANGE_SQ) {
                     this.slip()
                     spider.markDead()
                     return true
