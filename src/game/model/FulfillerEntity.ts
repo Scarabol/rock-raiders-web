@@ -10,14 +10,22 @@ import { Job } from './job/Job'
 import { JobState } from './job/JobState'
 import { Surface } from './map/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
-import { MovableEntity } from './MovableEntity'
 import { MoveState } from './MoveState'
 import { PathTarget } from './PathTarget'
 import { Selectable } from './Selectable'
 import { Disposable } from './Disposable'
 import { Updatable } from './Updateable'
+import { TerrainPath } from './map/TerrainPath'
+import { MovableEntityStats } from '../../cfg/GameStatsCfg'
+import { EntityStep } from './EntityStep'
+import { NATIVE_UPDATE_INTERVAL } from '../../params'
+import { AnimEntityActivity } from './activities/AnimEntityActivity'
 
-export abstract class FulfillerEntity extends MovableEntity implements Selectable, BeamUpEntity, Updatable, Disposable {
+export abstract class FulfillerEntity implements Selectable, BeamUpEntity, Updatable, Disposable {
+    sceneMgr: SceneManager
+    entityMgr: EntityManager
+    currentPath: TerrainPath = null
+    level: number = 0
     selected: boolean
     job: Job = null
     followUpJob: Job = null
@@ -25,12 +33,52 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     workAudio: PositionalAudio
 
     protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        super(sceneMgr, entityMgr)
+        this.sceneMgr = sceneMgr
+        this.entityMgr = entityMgr
     }
 
     abstract isPrepared(job: Job): boolean
 
     abstract get sceneEntity(): AnimatedSceneEntity
+
+    abstract get stats(): MovableEntityStats
+
+    abstract findPathToTarget(target: PathTarget): TerrainPath
+
+    private determineStep(elapsedMs: number): EntityStep {
+        const targetWorld = this.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
+        targetWorld.y += this.sceneEntity.floorOffset
+        const step = new EntityStep(targetWorld.sub(this.sceneEntity.position))
+        const stepLengthSq = step.vec.lengthSq()
+        const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // TODO use average speed between current and target position
+        const entitySpeedSq = entitySpeed * entitySpeed
+        if (this.currentPath.locations.length > 1) {
+            if (stepLengthSq <= entitySpeedSq) {
+                this.currentPath.locations.shift()
+                return this.determineStep(elapsedMs)
+            }
+        } else if (stepLengthSq <= entitySpeedSq + this.currentPath.target.radiusSq) {
+            step.targetReached = true
+        }
+        step.vec.clampLength(0, entitySpeed)
+        return step
+    }
+
+    getRouteActivity(): AnimEntityActivity {
+        return AnimEntityActivity.Route
+    }
+
+    getSpeed(): number {
+        return this.stats.RouteSpeed[this.level] * (this.isOnPath() ? this.stats.PathCoef : 1) * (this.isOnRubble() ? this.stats.RubbleCoef : 1)
+    }
+
+    isOnPath(): boolean {
+        return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).isPath()
+    }
+
+    isOnRubble() {
+        return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).hasRubble()
+    }
 
     setJob(job: Job, followUpJob: Job = null) {
         if (this.job !== job) this.stopJob()
@@ -120,13 +168,33 @@ export abstract class FulfillerEntity extends MovableEntity implements Selectabl
     abstract grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean
 
     moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
-        const result = super.moveToClosestTarget(target, elapsedMs)
+        const result = this.moveToClosestTargetInternal(target, elapsedMs)
         this.job.setActualWorkplace(this.currentPath?.target)
         if (result === MoveState.TARGET_UNREACHABLE) {
             console.log('Entity could not move to job target, stopping job')
             this.stopJob()
         }
         return result
+    }
+
+    private moveToClosestTargetInternal(target: PathTarget[], elapsedMs: number): MoveState {
+        if (!target || target.length < 1) return MoveState.TARGET_UNREACHABLE
+        if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.target.targetLocation))) {
+            const paths = target.map((t) => this.findPathToTarget(t)).filter((p) => !!p)
+                .sort((l, r) => l.lengthSq - r.lengthSq)
+            this.currentPath = paths.length > 0 ? paths[0] : null
+            if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
+        }
+        const step = this.determineStep(elapsedMs)
+        if (step.targetReached) {
+            this.sceneEntity.headTowards(this.currentPath.target.getFocusPoint())
+            return MoveState.TARGET_REACHED
+        } else {
+            this.sceneEntity.headTowards(this.currentPath.firstLocation)
+            this.sceneEntity.position.add(step.vec)
+            this.sceneEntity.changeActivity(this.getRouteActivity())
+            return MoveState.MOVED
+        }
     }
 
     private completeJob() {
