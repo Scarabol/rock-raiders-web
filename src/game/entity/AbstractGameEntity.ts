@@ -23,7 +23,7 @@ export class AbstractGameEntity {
                 return c as T
             }
         }
-        throw new Error(`Could not find component ${constr} in entity ${this} but has ${this.components} components`)
+        throw new Error(`Could not find component ${constr} in entity ${this.constructor.name} but has ${this.components.map((c) => c.constructor.name).join(', ')} components`)
     }
 
     setupEntity(worldMgr: WorldManager) {
