@@ -50,16 +50,16 @@ export class OverlaySystem extends AbstractGuiSystem {
         return true
     }
 
+    setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
+        this.panelBriefing.setup(objectiveText, objectiveBackImgCfg)
+        this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
+    }
+
     setActivePanel(panel: Panel) {
         this.panels.forEach(p => p !== panel && p.hide())
         panel?.show()
         this.publishEvent(new LocalEvent(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
         this.animationFrame.redraw()
-    }
-
-    setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
-        this.panelBriefing.setup(objectiveText, objectiveBackImgCfg)
-        this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
     }
 
     reset(): void {
