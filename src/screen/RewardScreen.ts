@@ -4,13 +4,13 @@ import { clearTimeoutSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GameResult, GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
-import { RewardScreenButton } from '../menu/RewardScreenButton'
-import { ResourceManager } from '../resource/ResourceManager'
-import { ScaledLayer } from './layer/ScreenLayer'
-import { ScreenMaster } from './ScreenMaster'
 import { LoadSaveLayer } from '../menu/LoadSaveLayer'
 import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
+import { RewardScreenButton } from '../menu/RewardScreenButton'
+import { ResourceManager } from '../resource/ResourceManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
+import { ScaledLayer } from './layer/ScreenLayer'
+import { ScreenMaster } from './ScreenMaster'
 
 export class RewardScreen {
     onAdvance: () => void

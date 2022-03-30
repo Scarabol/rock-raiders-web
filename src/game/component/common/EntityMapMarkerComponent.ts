@@ -1,7 +1,7 @@
-import { GameComponent } from '../../model/GameComponent'
-import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
-import { AnimatedSceneEntityComponent } from './AnimatedSceneEntityComponent'
 import { Vector2 } from 'three'
+import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
+import { GameComponent } from '../../model/GameComponent'
+import { AnimatedSceneEntityComponent } from './AnimatedSceneEntityComponent'
 
 export enum MAP_MARKER_TYPE {
     NORMAL,

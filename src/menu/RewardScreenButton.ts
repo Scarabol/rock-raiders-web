@@ -1,8 +1,8 @@
 import { RewardButtonCfg } from '../cfg/RewardCfg'
-import { ResourceManager } from '../resource/ResourceManager'
-import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { EventBus } from '../event/EventBus'
 import { ChangeTooltip } from '../event/LocalEvents'
+import { ResourceManager } from '../resource/ResourceManager'
+import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class RewardScreenButton extends MainMenuBaseItem {
     imgNormal: SpriteImage

@@ -1,8 +1,8 @@
-import { EntityType } from '../EntityType'
-import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { Vector2 } from 'three'
-import { RaiderActivity } from '../activities/RaiderActivity'
+import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { RaiderActivity } from '../activities/RaiderActivity'
+import { EntityType } from '../EntityType'
 
 export class BuildingType {
     entityType: EntityType = null

@@ -6,8 +6,8 @@ import { DeselectAll, SelectionChanged } from '../../event/LocalEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { GameSelection } from '../../game/model/GameSelection'
 import { SceneManager } from '../../game/SceneManager'
-import { ScreenLayer } from './ScreenLayer'
 import { AnimationFrame } from '../AnimationFrame'
+import { ScreenLayer } from './ScreenLayer'
 
 export class SelectionLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrameSelection

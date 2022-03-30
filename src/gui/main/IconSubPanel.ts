@@ -1,8 +1,8 @@
 import { MenuItemCfg } from '../../cfg/ButtonCfg'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { IconPanelButton } from './IconPanelButton'
 
 export class IconSubPanel extends Panel {

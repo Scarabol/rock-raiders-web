@@ -1,4 +1,5 @@
 import { DynamiteSceneEntity } from '../../../scene/entities/DynamiteSceneEntity'
+import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { CarryDynamiteJob } from '../job/carry/CarryDynamiteJob'
 import { CarryJob } from '../job/carry/CarryJob'
@@ -6,7 +7,6 @@ import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { MaterialEntity } from './MaterialEntity'
-import { WorldManager } from '../../WorldManager'
 
 export class Dynamite extends MaterialEntity {
     targetSurface: Surface

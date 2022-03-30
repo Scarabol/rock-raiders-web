@@ -1,12 +1,12 @@
 import { ButtonCrystalSideBarCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventKey } from '../../event/EventKeyEnum'
+import { NeededCrystalsChanged } from '../../event/LocalEvents'
 import { MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { SideBarLabel } from './SideBarLabel'
-import { NeededCrystalsChanged } from '../../event/LocalEvents'
 
 export class PanelCrystalSideBar extends Panel {
     labelOre: SideBarLabel

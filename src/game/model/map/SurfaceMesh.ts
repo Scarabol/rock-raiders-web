@@ -1,6 +1,6 @@
 import { Mesh, MeshPhongMaterial } from 'three'
-import { SurfaceGeometry, SurfaceVertex } from './SurfaceGeometry'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { SurfaceGeometry, SurfaceVertex } from './SurfaceGeometry'
 import { WALL_TYPE } from './WallType'
 
 export class SurfaceMesh extends Mesh {

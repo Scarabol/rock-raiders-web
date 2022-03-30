@@ -8,6 +8,7 @@ import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BuildingSceneEntity } from '../../../scene/entities/BuildingSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
+import { WorldManager } from '../../WorldManager'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
@@ -24,9 +25,8 @@ import { RaiderTraining, RaiderTrainings } from '../raider/RaiderTraining'
 import { Selectable } from '../Selectable'
 import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
-import { Teleport } from './Teleport'
 import { BuildingType } from './BuildingType'
-import { WorldManager } from '../../WorldManager'
+import { Teleport } from './Teleport'
 
 export class BuildingEntity implements Selectable, BeamUpEntity {
     buildingType: BuildingType

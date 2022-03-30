@@ -1,8 +1,8 @@
 import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BriefingPanelCfg } from './BriefingPanelCfg'
 
 export class BriefingPanel extends Panel {

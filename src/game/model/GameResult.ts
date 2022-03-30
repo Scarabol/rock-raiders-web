@@ -1,8 +1,8 @@
+import { LevelEntryCfg, LevelRewardConfig } from '../../cfg/LevelsCfg'
+import { ADDITIONAL_RAIDER_PER_SUPPORT } from '../../params'
 import { EntityManager } from '../EntityManager'
 import { WorldManager } from '../WorldManager'
-import { LevelEntryCfg, LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { GameState } from './GameState'
-import { ADDITIONAL_RAIDER_PER_SUPPORT } from '../../params'
 
 export enum GameResultState {
     UNDECIDED,

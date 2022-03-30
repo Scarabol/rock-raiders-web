@@ -1,6 +1,6 @@
 import { DEV_MODE } from '../params'
-import { ScreenMaster } from '../screen/ScreenMaster'
 import { ScreenLayer } from '../screen/layer/ScreenLayer'
+import { ScreenMaster } from '../screen/ScreenMaster'
 import { KEY_EVENT, POINTER_EVENT } from './EventTypeEnum'
 import { GameKeyboardEvent } from './GameKeyboardEvent'
 import { GamePointerEvent } from './GamePointerEvent'

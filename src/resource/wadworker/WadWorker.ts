@@ -1,5 +1,5 @@
-import '../../core'
 import { GameConfig } from '../../cfg/GameConfig'
+import '../../core'
 import { InitLoadingMessage } from './InitLoadingMessage'
 import { WadLoader } from './WadLoader'
 import { WadWorkerMessage } from './WadWorkerMessage'

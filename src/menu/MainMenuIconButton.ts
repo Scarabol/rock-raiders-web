@@ -1,9 +1,9 @@
 import { MenuLabelItemCfg } from '../cfg/MenuLabelItemCfg'
+import { EventBus } from '../event/EventBus'
+import { ChangeTooltip } from '../event/LocalEvents'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
-import { EventBus } from '../event/EventBus'
-import { ChangeTooltip } from '../event/LocalEvents'
 
 export class MainMenuIconButton extends MainMenuBaseItem {
     imgNormal: SpriteImage = null

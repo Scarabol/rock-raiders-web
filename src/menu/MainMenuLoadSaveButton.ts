@@ -1,6 +1,6 @@
+import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
-import { ResourceManager } from '../resource/ResourceManager'
 
 export class MainMenuLoadSaveButton extends MainMenuBaseItem {
     loading: boolean = null

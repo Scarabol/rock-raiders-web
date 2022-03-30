@@ -4,6 +4,7 @@ import { BaseConfig } from './BaseConfig'
 import { BubblesCfg } from './BubblesCfg'
 import { IconPanelBackButtonCfg } from './ButtonCfg'
 import { ButtonsCfg } from './ButtonsCfg'
+import { parseLabel } from './CfgHelper'
 import { DialogCfg } from './DialogCfg'
 import { GameStatsCfg } from './GameStatsCfg'
 import { LevelsCfg } from './LevelsCfg'
@@ -15,7 +16,6 @@ import { PointerCfg } from './PointerCfg'
 import { PrioritiesImagePositionsCfg, PriorityButtonsCfg } from './PriorityButtonsCfg'
 import { RewardCfg } from './RewardCfg'
 import { TexturesCfg } from './TexturesCfg'
-import { parseLabel } from './CfgHelper'
 
 export class GameConfig extends BaseConfig {
     main: MainCfg = new MainCfg()

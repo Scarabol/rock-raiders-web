@@ -2,6 +2,7 @@ import { Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { JobCreateEvent } from '../../../event/WorldEvents'
+import { WorldManager } from '../../WorldManager'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
@@ -11,7 +12,6 @@ import { SurfaceType } from '../map/SurfaceType'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { BuildingEntity } from './BuildingEntity'
 import { BuildingType } from './BuildingType'
-import { WorldManager } from '../../WorldManager'
 
 export class BuildingSite {
     primarySurface: Surface = null

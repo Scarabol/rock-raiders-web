@@ -6,11 +6,11 @@ import { ObjectListLoader } from './game/ObjectListLoader'
 import { DEV_MODE } from './params'
 import { ResourceManager } from './resource/ResourceManager'
 import { GameScreen } from './screen/GameScreen'
+import { CursorLayer } from './screen/layer/CursorLayer'
 import { LoadingLayer } from './screen/layer/LoadingLayer'
 import { MainMenuScreen } from './screen/MainMenuScreen'
 import { RewardScreen } from './screen/RewardScreen'
 import { ScreenMaster } from './screen/ScreenMaster'
-import { CursorLayer } from './screen/layer/CursorLayer'
 
 if (DEV_MODE) console.warn('DEV MODE ACTIVE')
 else console.log(`Rock Raider Web v${require('../package.json').version}`)

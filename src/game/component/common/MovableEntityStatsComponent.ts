@@ -1,6 +1,6 @@
-import { GameComponent } from '../../model/GameComponent'
 import { MovableEntityStats } from '../../../cfg/GameStatsCfg'
 import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
+import { GameComponent } from '../../model/GameComponent'
 import { AnimatedSceneEntityComponent } from './AnimatedSceneEntityComponent'
 
 export class MovableEntityStatsComponent implements GameComponent {

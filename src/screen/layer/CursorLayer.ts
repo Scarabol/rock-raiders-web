@@ -1,6 +1,7 @@
 import { Intersection, Raycaster } from 'three'
 import { Cursor } from '../../cfg/PointerCfg'
 import { cloneContext } from '../../core/ImageHelper'
+import { Rect } from '../../core/Rect'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -14,12 +15,11 @@ import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/model/map/Surface'
 import { VehicleEntity } from '../../game/model/vehicle/VehicleEntity'
 import { SceneManager } from '../../game/SceneManager'
+import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedCursor } from '../AnimatedCursor'
-import { ScreenLayer } from './ScreenLayer'
-import { Rect } from '../../core/Rect'
-import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { AnimationFrame } from '../AnimationFrame'
+import { ScreenLayer } from './ScreenLayer'
 
 export class CursorLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame

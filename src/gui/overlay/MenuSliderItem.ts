@@ -1,9 +1,9 @@
 import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { MenuSliderItemCfg } from '../../cfg/MenuSliderItemCfg'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { GuiHoverEvent } from '../event/GuiEvent'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { MenuLayer } from './MenuLayer'
 
 export class MenuSliderItem extends BaseElement {

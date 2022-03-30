@@ -1,7 +1,7 @@
 import { MenuItemCfg } from '../../cfg/ButtonCfg'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { GuiClickEvent } from '../event/GuiEvent'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { IconPanelButton } from './IconPanelButton'
 
 export class IconPanelToggleButton extends IconPanelButton {

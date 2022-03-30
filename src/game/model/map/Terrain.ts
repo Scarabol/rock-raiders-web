@@ -1,13 +1,13 @@
 import { AxesHelper, Group, Vector2, Vector3 } from 'three'
 import { TextureEntryCfg } from '../../../cfg/TexturesCfg'
 import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, TILESIZE } from '../../../params'
+import { WorldManager } from '../../WorldManager'
 import { updateSafe } from '../Updateable'
 import { FallIn } from './FallIn'
 import { PathFinder } from './PathFinder'
 import { PowerGrid } from './PowerGrid'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
-import { WorldManager } from '../../WorldManager'
 
 export class Terrain {
     heightOffset: number[][] = [[]]

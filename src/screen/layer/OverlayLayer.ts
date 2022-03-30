@@ -1,10 +1,10 @@
 import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
 import { GuiWorkerMessage } from '../../gui/GuiWorkerMessage'
+import { OverlaySystem } from '../../gui/OverlaySystem'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
+import { OffscreenFallbackWorker, OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
-import { OffscreenFallbackWorker, OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
-import { OverlaySystem } from '../../gui/OverlaySystem'
 
 export class OverlayLayer extends OffscreenLayer {
     onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log(`set space to continue: ${state}`)

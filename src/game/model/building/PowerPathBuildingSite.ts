@@ -1,10 +1,10 @@
 import { EventBus } from '../../../event/EventBus'
 import { DeselectAll } from '../../../event/LocalEvents'
+import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
 import { BuildingSite } from './BuildingSite'
-import { WorldManager } from '../../WorldManager'
 
 export class PowerPathBuildingSite extends BuildingSite {
     constructor(worldMgr: WorldManager, surface: Surface) {

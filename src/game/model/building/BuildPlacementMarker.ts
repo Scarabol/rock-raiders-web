@@ -3,13 +3,13 @@ import { EventBus } from '../../../event/EventBus'
 import { CancelBuildMode } from '../../../event/GuiCommand'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
+import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { SurfaceType } from '../map/SurfaceType'
 import { BarrierLocation } from '../material/BarrierLocation'
 import { BuildingSite } from './BuildingSite'
-import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
 import { BuildingType } from './BuildingType'
-import { WorldManager } from '../../WorldManager'
+import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
 
 export class BuildPlacementMarker {
     static readonly buildingMarkerColor: number = 0x005000

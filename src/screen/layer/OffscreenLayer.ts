@@ -11,12 +11,12 @@ import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
+import { OffscreenWorker } from '../../worker/OffscreenWorker'
 import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
 import { WorkerEventResponse } from '../../worker/WorkerEventResponse'
 import { WorkerPublishEvent } from '../../worker/WorkerPublishEvent'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { ScreenLayer } from './ScreenLayer'
-import { OffscreenWorker } from '../../worker/OffscreenWorker'
 import generateUUID = MathUtils.generateUUID
 
 export abstract class OffscreenLayer extends ScreenLayer {

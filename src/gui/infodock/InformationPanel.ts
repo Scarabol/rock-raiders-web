@@ -1,8 +1,8 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { BitmapFont } from '../../core/BitmapFont'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 
 export class InformationPanel extends Panel {
     font: BitmapFont = null

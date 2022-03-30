@@ -1,10 +1,10 @@
 import { cloneContext } from '../core/ImageHelper'
+import { getElementByIdOrThrow } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { EventManager } from '../event/EventManager'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
-import { getElementByIdOrThrow } from '../core/Util'
 
 export class ScreenMaster {
     gameContainer: HTMLElement

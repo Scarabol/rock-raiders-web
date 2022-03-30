@@ -1,11 +1,11 @@
 import { LevelSelectLayer } from '../menu/LevelSelectLayer'
-import { MainMenuLayer } from '../menu/MainMenuLayer'
-import { ResourceManager } from '../resource/ResourceManager'
-import { ScreenMaster } from './ScreenMaster'
-import { MainMenuLevelButton } from '../menu/MainMenuLevelButton'
-import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
 import { LoadSaveLayer } from '../menu/LoadSaveLayer'
+import { MainMenuBaseItem } from '../menu/MainMenuBaseItem'
+import { MainMenuLayer } from '../menu/MainMenuLayer'
+import { MainMenuLevelButton } from '../menu/MainMenuLevelButton'
+import { ResourceManager } from '../resource/ResourceManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
+import { ScreenMaster } from './ScreenMaster'
 
 export class MainMenuScreen {
     onLevelSelected: (levelName: string) => void = null

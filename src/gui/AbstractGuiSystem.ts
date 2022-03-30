@@ -1,16 +1,16 @@
 import { EventKey } from '../event/EventKeyEnum'
 import { POINTER_EVENT } from '../event/EventTypeEnum'
 import { GameEvent } from '../event/GameEvent'
+import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { ChangeCursor, LocalEvent } from '../event/LocalEvents'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
+import { AnimationFrameScaled } from '../screen/AnimationFrame'
 import { OffscreenSystem } from '../worker/OffscreenSystem'
 import { BaseElement } from './base/BaseElement'
 import { Panel } from './base/Panel'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from './event/GuiEvent'
-import { AnimationFrameScaled } from '../screen/AnimationFrame'
-import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 
 export abstract class AbstractGuiSystem extends OffscreenSystem {
     animationFrame: AnimationFrameScaled

@@ -1,5 +1,5 @@
-import { WorkerResponse } from './WorkerResponse'
 import { OffscreenWorkerMessage } from './OffscreenWorkerMessage'
+import { WorkerResponse } from './WorkerResponse'
 
 export interface OffscreenWorker {
     sendMessage(message: OffscreenWorkerMessage, transfer?: (Transferable | OffscreenCanvas)[])

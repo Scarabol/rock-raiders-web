@@ -1,8 +1,8 @@
 import { Sample } from '../../audio/Sample'
 import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { PlaySoundEvent } from '../../event/LocalEvents'
-import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { OffscreenCache } from '../../worker/OffscreenCache'
+import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { BaseElement } from './BaseElement'
 
 export class Button extends BaseElement {

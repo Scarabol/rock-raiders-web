@@ -1,11 +1,11 @@
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { OreSceneEntity } from '../../../scene/entities/OreSceneEntity'
+import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { MaterialEntity } from './MaterialEntity'
-import { WorldManager } from '../../WorldManager'
 
 export class Ore extends MaterialEntity {
     constructor(worldMgr: WorldManager) {

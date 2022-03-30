@@ -1,6 +1,6 @@
 import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
-import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
+import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 
 export class CustomCameraControls extends MapControls {

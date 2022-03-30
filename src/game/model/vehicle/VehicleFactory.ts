@@ -3,10 +3,10 @@ import { ResourceCache } from '../../../resource/ResourceCache'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
 import { WalkerDiggerSceneEntity } from '../../../scene/entities/WalkerDiggerSceneEntity'
+import { WorldManager } from '../../WorldManager'
+import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { VehicleEntity } from './VehicleEntity'
-import { RaiderActivity } from '../activities/RaiderActivity'
-import { WorldManager } from '../../WorldManager'
 
 export class VehicleFactory {
     static createVehicleFromType(entityType: EntityType, worldMgr: WorldManager): VehicleEntity {

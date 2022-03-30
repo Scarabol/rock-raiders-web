@@ -2,10 +2,10 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { CancelSurfaceJobs, CreateDrillJob, CreateDynamiteJob, CreateReinforceJob } from '../../../event/GuiCommand'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SelectionChanged } from '../../../event/LocalEvents'
 import { EntityType } from '../../../game/model/EntityType'
+import { RaiderTraining } from '../../../game/model/raider/RaiderTraining'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
-import { RaiderTraining } from '../../../game/model/raider/RaiderTraining'
 
 export class SelectWallPanel extends SelectBasePanel {
     isDrillable: boolean = false

@@ -2,9 +2,9 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent } from '../../event/LocalEvents'
 import { EntityType, getEntityTypeByName } from '../../game/model/EntityType'
 import { DEV_MODE } from '../../params'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { IconSubPanel } from './IconSubPanel'
 
 export abstract class DependencyCheckPanel extends IconSubPanel {

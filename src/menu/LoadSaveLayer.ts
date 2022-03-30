@@ -1,10 +1,10 @@
-import { MainMenuLayer } from './MainMenuLayer'
+import { GameMenuCfg } from '../cfg/MenuCfg'
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
+import { ResourceManager } from '../resource/ResourceManager'
+import { SaveGameManager } from '../resource/SaveGameManager'
+import { MainMenuLayer } from './MainMenuLayer'
 import { MainMenuLoadSaveButton } from './MainMenuLoadSaveButton'
 import { MainMenuWindow } from './MainMenuWindow'
-import { ResourceManager } from '../resource/ResourceManager'
-import { GameMenuCfg } from '../cfg/MenuCfg'
-import { SaveGameManager } from '../resource/SaveGameManager'
 
 export class LoadSaveLayer extends MainMenuLayer {
 

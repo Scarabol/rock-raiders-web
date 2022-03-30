@@ -1,6 +1,7 @@
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { ElectricFenceSceneEntity } from '../../../scene/entities/ElectricFenceSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
+import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { CarryFenceJob } from '../job/carry/CarryFenceJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
@@ -8,7 +9,6 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { Selectable } from '../Selectable'
 import { MaterialEntity } from './MaterialEntity'
-import { WorldManager } from '../../WorldManager'
 
 export class ElectricFence extends MaterialEntity implements Selectable, BeamUpEntity {
     targetSurface: Surface

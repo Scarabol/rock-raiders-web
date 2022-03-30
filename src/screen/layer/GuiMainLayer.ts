@@ -1,8 +1,8 @@
+import { GuiMainSystem } from '../../gui/GuiMainSystem'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
+import { OffscreenFallbackWorker, OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
-import { OffscreenFallbackWorker, OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
-import { GuiMainSystem } from '../../gui/GuiMainSystem'
 
 export class GuiMainLayer extends OffscreenLayer {
     onOptionsShow: () => any = () => console.log('Show options triggered')

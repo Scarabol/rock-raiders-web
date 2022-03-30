@@ -1,12 +1,12 @@
 import { ITEM_ACTION_RANGE_SQ } from '../../../params'
 import { SceneEntity } from '../../../scene/SceneEntity'
+import { WorldManager } from '../../WorldManager'
+import { Disposable } from '../Disposable'
 import { EntityType } from '../EntityType'
 import { CarryJob } from '../job/carry/CarryJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
-import { Disposable } from '../Disposable'
-import { WorldManager } from '../../WorldManager'
 
 export abstract class MaterialEntity implements Disposable {
     entityType: EntityType

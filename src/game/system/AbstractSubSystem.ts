@@ -1,6 +1,6 @@
-import { Updatable } from '../model/Updateable'
-import { GameComponent } from '../model/GameComponent'
 import { Generic } from '../../core/Util'
+import { GameComponent } from '../model/GameComponent'
+import { Updatable } from '../model/Updateable'
 
 export abstract class AbstractSubSystem<T extends GameComponent> implements Updatable {
     protected readonly components: T[] = []

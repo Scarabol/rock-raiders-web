@@ -1,11 +1,11 @@
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { ResourceManager } from '../resource/ResourceManager'
+import { SaveGameManager } from '../resource/SaveGameManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { MainMenuLevelButton } from './MainMenuLevelButton'
 import { MainMenuPanel } from './MainMenuPanel'
 import { MainMenuWindow } from './MainMenuWindow'
-import { SaveGameManager } from '../resource/SaveGameManager'
 
 export class LevelSelectLayer extends MainMenuLayer {
     constructor(menuCfg: MenuEntryCfg, modeLevel: boolean) {

@@ -1,8 +1,10 @@
 import { Vector2, Vector3 } from 'three'
 import { Sample } from '../audio/Sample'
 import { Cursor } from '../cfg/PointerCfg'
+import { MAP_MARKER_TYPE } from '../game/component/common/EntityMapMarkerComponent'
 import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
+import { GameState } from '../game/model/GameState'
 import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/model/map/Surface'
 import { SurfaceType } from '../game/model/map/SurfaceType'
@@ -13,8 +15,6 @@ import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { TILESIZE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
-import { GameState } from '../game/model/GameState'
-import { MAP_MARKER_TYPE } from '../game/component/common/EntityMapMarkerComponent'
 
 export class LocalEvent extends GameEvent {
     constructor(eventKey: EventKey) {

@@ -1,5 +1,7 @@
 import { AudioListener, RepeatWrapping, Texture } from 'three'
 import { SoundManager } from '../audio/SoundManager'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { createContext } from '../core/ImageHelper'
 import { getFilename, getPath } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { DEV_MODE } from '../params'
@@ -10,8 +12,6 @@ import { ResourceCache } from './ResourceCache'
 import { InitLoadingMessage } from './wadworker/InitLoadingMessage'
 import { WadWorkerMessage } from './wadworker/WadWorkerMessage'
 import { WorkerMessageType } from './wadworker/WorkerMessageType'
-import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { createContext } from '../core/ImageHelper'
 
 export class ResourceManager extends ResourceCache {
     static worker: Worker = new Worker(new URL('./wadworker/WadWorker', import.meta.url))
