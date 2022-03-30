@@ -2,7 +2,6 @@ import { MenuItemCfg } from '../../../cfg/ButtonCfg'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { BeamUpBuilding, ChangeBuildingPowerState, UpgradeBuilding } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
-import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { OffscreenCache } from '../../../worker/OffscreenCache'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
@@ -36,7 +35,7 @@ export class SelectBuildingPanel extends SelectBasePanel {
             this.buildingCanUpgrade = event.buildingCanUpgrade
             this.updateAllButtonStates()
         })
-        this.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
+        this.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
             this.updateAllButtonStates()
         })
     }
