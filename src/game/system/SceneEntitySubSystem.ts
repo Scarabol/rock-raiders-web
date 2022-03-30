@@ -1,5 +1,5 @@
-import { AbstractSubSystem } from './AbstractSubSystem'
 import { AnimatedSceneEntityComponent } from '../component/common/AnimatedSceneEntityComponent'
+import { AbstractSubSystem } from './AbstractSubSystem'
 
 export class SceneEntitySubSystem extends AbstractSubSystem<AnimatedSceneEntityComponent> {
     constructor() {

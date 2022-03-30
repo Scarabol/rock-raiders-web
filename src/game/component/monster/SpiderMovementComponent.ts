@@ -1,11 +1,11 @@
+import { Vector2 } from 'three'
+import { TILESIZE } from '../../../params'
 import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
+import { SurfaceType } from '../../model/map/SurfaceType'
+import { TerrainPath } from '../../model/map/TerrainPath'
 import { MoveState } from '../../model/MoveState'
 import { PathTarget } from '../../model/PathTarget'
-import { TILESIZE } from '../../../params'
-import { SurfaceType } from '../../model/map/SurfaceType'
-import { Vector2 } from 'three'
 import { MonsterMovementComponent } from './MonsterMovementComponent'
-import { TerrainPath } from '../../model/map/TerrainPath'
 
 export class SpiderMovementComponent extends MonsterMovementComponent {
     entity: AbstractGameEntity
