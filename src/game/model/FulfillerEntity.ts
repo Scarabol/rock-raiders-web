@@ -10,6 +10,7 @@ import { AnimEntityActivity } from './activities/AnimEntityActivity'
 import { RaiderActivity } from './activities/RaiderActivity'
 import { Disposable } from './Disposable'
 import { EntityStep } from './EntityStep'
+import { EntityType } from './EntityType'
 import { Job } from './job/Job'
 import { JobState } from './job/JobState'
 import { Surface } from './map/Surface'
@@ -152,8 +153,18 @@ export abstract class FulfillerEntity implements Selectable, BeamUpEntity, Updat
             return
         }
         const workActivity = this.job.getWorkActivity() || this.sceneEntity.getDefaultActivity()
-        if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
-            this.workAudio = this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Drill], true)
+        if (!this.workAudio) {
+            if (workActivity === RaiderActivity.Drill) { // TODO implement work audio
+                this.workAudio = this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Drill], true)
+            } else if (workActivity === RaiderActivity.Place) {
+                if (carryItem.entityType === EntityType.CRYSTAL) {
+                    this.workAudio = this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_PlaceCrystal], false)
+                } else if (carryItem.entityType === EntityType.ORE) {
+                    this.workAudio = this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_PlaceOre], false)
+                } else {
+                    this.workAudio = this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Place], false)
+                }
+            }
         }
         this.sceneEntity.changeActivity(workActivity, () => {
             this.completeJob()
