@@ -160,26 +160,26 @@ export class EntityManager {
         const maxX = minX + TILESIZE, maxZ = minZ + TILESIZE
         const numRaidersUndiscovered = this.raidersUndiscovered.length
         this.raidersUndiscovered = EntityManager.removeInRect(this.raidersUndiscovered, minX, maxX, minZ, maxZ, (r) => {
-            r.entityMgr.raiders.push(r)
+            r.worldMgr.entityMgr.raiders.push(r)
             EventBus.publishEvent(new RaiderDiscoveredEvent(r.sceneEntity.position.clone()))
         })
         if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBus.publishEvent(new RaidersAmountChangedEvent(this))
         this.buildingsUndiscovered = EntityManager.removeInRect(this.buildingsUndiscovered, minX, maxX, minZ, maxZ, (b) => {
             b.updateEnergyState()
-            b.entityMgr.buildings.push(b)
-            EventBus.publishEvent(new BuildingsChangedEvent(b.entityMgr))
+            b.worldMgr.entityMgr.buildings.push(b)
+            EventBus.publishEvent(new BuildingsChangedEvent(b.worldMgr.entityMgr))
         })
         this.materialsUndiscovered = EntityManager.removeInRect(this.materialsUndiscovered, minX, maxX, minZ, maxZ, (m) => {
-            m.entityMgr.materials.push(m)
+            m.worldMgr.entityMgr.materials.push(m)
             EventBus.publishEvent(new JobCreateEvent(m.createCarryJob()))
         })
         this.vehiclesUndiscovered = EntityManager.removeInRect(this.vehiclesUndiscovered, minX, maxX, minZ, maxZ, (v) => {
-            v.entityMgr.vehicles.push(v)
+            v.worldMgr.entityMgr.vehicles.push(v)
             const driver = v.driver
             if (driver) {
-                driver.entityMgr.raidersUndiscovered.remove(driver)
+                driver.worldMgr.entityMgr.raidersUndiscovered.remove(driver)
                 driver.sceneEntity.visible = true
-                driver.entityMgr.raiders.push(driver)
+                driver.worldMgr.entityMgr.raiders.push(driver)
                 EventBus.publishEvent(new RaiderDiscoveredEvent(driver.sceneEntity.position.clone()))
             }
         })

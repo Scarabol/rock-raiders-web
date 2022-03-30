@@ -1,24 +1,19 @@
 import { ITEM_ACTION_RANGE_SQ } from '../../../params'
 import { SceneEntity } from '../../../scene/SceneEntity'
-import { EntityManager } from '../../EntityManager'
-import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
 import { CarryJob } from '../job/carry/CarryJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 import { Disposable } from '../Disposable'
+import { WorldManager } from '../../WorldManager'
 
 export abstract class MaterialEntity implements Disposable {
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
     entityType: EntityType
     sceneEntity: SceneEntity = null
     positionAsPathTargets: PathTarget[] = []
 
-    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager, entityType: EntityType) {
-        this.sceneMgr = sceneMgr
-        this.entityMgr = entityMgr
+    protected constructor(readonly worldMgr: WorldManager, entityType: EntityType) {
         this.entityType = entityType
     }
 
@@ -40,9 +35,9 @@ export abstract class MaterialEntity implements Disposable {
 
     disposeFromWorld() {
         this.sceneEntity.disposeFromScene()
-        this.entityMgr.materials.remove(this)
-        this.entityMgr.materialsUndiscovered.remove(this)
-        this.entityMgr.scarer.remove(this)
+        this.worldMgr.entityMgr.materials.remove(this)
+        this.worldMgr.entityMgr.materialsUndiscovered.remove(this)
+        this.worldMgr.entityMgr.scarer.remove(this)
     }
 
     update(elapsedMs: number) {

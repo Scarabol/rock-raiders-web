@@ -2,7 +2,6 @@ import { Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { JobCreateEvent } from '../../../event/WorldEvents'
-import { EntityManager } from '../../EntityManager'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
@@ -12,11 +11,9 @@ import { SurfaceType } from '../map/SurfaceType'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { BuildingEntity } from './BuildingEntity'
 import { BuildingType } from './BuildingType'
-import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 
 export class BuildingSite {
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
     primarySurface: Surface = null
     secondarySurface: Surface = null
     primaryPathSurface: Surface = null
@@ -31,9 +28,7 @@ export class BuildingSite {
     placeDownTimer: number = 0
     isEmptyTimer: number = 0
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, buildingType: BuildingType) {
-        this.sceneMgr = sceneMgr
-        this.entityMgr = entityMgr
+    constructor(readonly worldMgr: WorldManager, primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, buildingType: BuildingType) {
         this.primarySurface = primarySurface
         this.primarySurface.site = this
         this.surfaces.push(this.primarySurface)
@@ -85,13 +80,13 @@ export class BuildingSite {
             this.complete = this.complete && this.onSiteByType.getOrUpdate(neededType, () => []).length >= needed
         })
         if (!this.complete) return
-        this.entityMgr.buildingSites.remove(this)
+        this.worldMgr.entityMgr.buildingSites.remove(this)
         if (!this.buildingType) {
             const items: MaterialEntity[] = []
             this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
             EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
         } else {
-            this.entityMgr.completedBuildingSites.push(this)
+            this.worldMgr.entityMgr.completedBuildingSites.push(this)
         }
     }
 
@@ -108,7 +103,7 @@ export class BuildingSite {
     }
 
     teleportIn() {
-        this.entityMgr.completedBuildingSites.remove(this)
+        this.worldMgr.entityMgr.completedBuildingSites.remove(this)
         this.surfaces.forEach((s) => s.site = null)
         this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item: MaterialEntity) => {
             item.sceneEntity.changeActivity(BarrierActivity.Teleport, () => item.disposeFromWorld())
@@ -119,7 +114,7 @@ export class BuildingSite {
         this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: MaterialEntity) => {
             item.disposeFromWorld()
         })
-        new BuildingEntity(this.sceneMgr, this.entityMgr, this.buildingType)
+        new BuildingEntity(this.worldMgr, this.buildingType)
             .placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
     }
 
@@ -128,14 +123,14 @@ export class BuildingSite {
     }
 
     cancelSite() {
-        this.entityMgr.buildingSites.remove(this)
+        this.worldMgr.entityMgr.buildingSites.remove(this)
         this.canceled = true
         this.surfaces.forEach((s) => {
             s.site = null
             s.setSurfaceType(SurfaceType.GROUND)
         })
         this.onSiteByType.forEach((materials) => materials.forEach((item) => {
-            this.entityMgr.placeMaterial(item, item.sceneEntity.position2D.clone())
+            this.worldMgr.entityMgr.placeMaterial(item, item.sceneEntity.position2D.clone())
         }))
         this.onSiteByType.clear()
         this.assignedByType.clear()

@@ -4,8 +4,6 @@ import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
-import { EntityManager } from '../../EntityManager'
-import { SceneManager } from '../../SceneManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { EntityType } from '../EntityType'
 import { FulfillerEntity } from '../FulfillerEntity'
@@ -22,6 +20,7 @@ import { RaiderTraining } from '../raider/RaiderTraining'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { TerrainPath } from '../map/TerrainPath'
 import { PathTarget } from '../PathTarget'
+import { WorldManager } from '../../WorldManager'
 
 export class VehicleEntity extends FulfillerEntity {
     stats: VehicleEntityStats
@@ -31,8 +30,8 @@ export class VehicleEntity extends FulfillerEntity {
     engineSound: PositionalAudio = null
     carriedItems: Set<MaterialEntity> = new Set()
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity, readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
-        super(sceneMgr, entityMgr)
+    constructor(worldMgr: WorldManager, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity, readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
+        super(worldMgr)
         this.stats = stats
         this.sceneEntity = sceneEntity
         this.sceneEntity.speed = this.getSpeed() // TODO update speed on entity upgrade
@@ -43,25 +42,25 @@ export class VehicleEntity extends FulfillerEntity {
         super.beamUp()
         const surface = this.sceneEntity.surfaces[0]
         for (let c = 0; c < this.stats.CostOre; c++) {
-            this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), surface.getRandomPosition())
+            this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), surface.getRandomPosition())
         }
         for (let c = 0; c < this.stats.CostCrystal; c++) {
-            this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), surface.getRandomPosition())
+            this.worldMgr.entityMgr.placeMaterial(new Crystal(this.worldMgr), surface.getRandomPosition())
         }
-        this.entityMgr.vehicles.remove(this)
-        this.entityMgr.vehiclesInBeam.add(this)
+        this.worldMgr.entityMgr.vehicles.remove(this)
+        this.worldMgr.entityMgr.vehiclesInBeam.add(this)
     }
 
     disposeFromWorld() {
         super.disposeFromWorld()
         this.engineSound = resetAudioSafe(this.engineSound)
-        this.entityMgr.vehicles.remove(this)
-        this.entityMgr.vehiclesUndiscovered.remove(this)
-        this.entityMgr.vehiclesInBeam.remove(this)
+        this.worldMgr.entityMgr.vehicles.remove(this)
+        this.worldMgr.entityMgr.vehiclesUndiscovered.remove(this)
+        this.worldMgr.entityMgr.vehiclesInBeam.remove(this)
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {
-        return this.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, target, this.stats, false)
+        return this.worldMgr.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, target, this.stats, false)
     }
 
     setJob(job: Job, followUpJob: Job = null) {
@@ -95,7 +94,7 @@ export class VehicleEntity extends FulfillerEntity {
             this.driver.sceneEntity.disposeFromScene()
         }
         if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
     dropDriver() {
@@ -107,7 +106,7 @@ export class VehicleEntity extends FulfillerEntity {
         this.driver.sceneEntity.changeActivity()
         this.driver = null
         this.engineSound = resetAudioSafe(this.engineSound)
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
     getRequiredTraining(): RaiderTraining {

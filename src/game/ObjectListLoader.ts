@@ -46,7 +46,7 @@ export class ObjectListLoader {
                     sceneMgr.setTorchPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
                     break
                 case EntityType.PILOT:
-                    const raider = new Raider(sceneMgr, entityMgr)
+                    const raider = new Raider(worldMgr)
                     raider.sceneEntity.changeActivity()
                     raider.sceneEntity.makeSelectable(raider)
                     raider.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
@@ -69,11 +69,11 @@ export class ObjectListLoader {
                 case EntityType.GUNSTATION:
                 case EntityType.TELEPORT_BIG:
                     const buildingType = BuildingType.from(entityType)
-                    const entity = new BuildingEntity(sceneMgr, entityMgr, buildingType)
+                    const entity = new BuildingEntity(worldMgr, buildingType)
                     entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
                     if (entityType === EntityType.TOOLSTATION) {
                         for (let c = 0; c < this.numTestRaider; c++) {
-                            const raider = new Raider(sceneMgr, entityMgr)
+                            const raider = new Raider(worldMgr)
                             raider.sceneEntity.changeActivity()
                             raider.sceneEntity.makeSelectable(raider)
                             raider.sceneEntity.addToScene(entity.primaryPathSurface.getRandomPosition(), radHeading - Math.PI)
@@ -84,7 +84,7 @@ export class ObjectListLoader {
                     }
                     break
                 case EntityType.CRYSTAL:
-                    entityMgr.placeMaterial(new Crystal(sceneMgr, entityMgr), worldPos)
+                    entityMgr.placeMaterial(new Crystal(worldMgr), worldPos)
                     break
                 case EntityType.SMALL_SPIDER:
                     const spider = new AbstractGameEntity(entityType)
@@ -116,7 +116,7 @@ export class ObjectListLoader {
                 case EntityType.LARGE_MLP:
                 case EntityType.LARGE_DIGGER:
                 case EntityType.LARGE_CAT:
-                    const vehicle = VehicleFactory.createVehicleFromType(entityType, sceneMgr, entityMgr)
+                    const vehicle = VehicleFactory.createVehicleFromType(entityType, worldMgr)
                     vehicle.sceneEntity.changeActivity()
                     vehicle.sceneEntity.makeSelectable(vehicle)
                     vehicle.sceneEntity.addToScene(worldPos, radHeading + Math.PI)

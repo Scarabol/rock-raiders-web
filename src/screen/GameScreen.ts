@@ -40,10 +40,10 @@ export class GameScreen {
         this.entityMgr = new EntityManager()
         this.worldMgr = new WorldManager()
         this.sceneMgr = new SceneManager(this.gameLayer.canvas)
-        this.sceneMgr.entityMgr = this.entityMgr
+        this.sceneMgr.worldMgr = this.worldMgr
         this.worldMgr.sceneMgr = this.sceneMgr
         this.worldMgr.entityMgr = this.entityMgr
-        this.worldMgr.jobSupervisor = new Supervisor(this.worldMgr.sceneMgr, this.worldMgr.entityMgr)
+        this.worldMgr.jobSupervisor = new Supervisor(this.worldMgr)
         this.worldMgr.onLevelEnd = (result) => this.onLevelEnd(new GameResult(this.levelName, this.levelConf, result, this.entityMgr, this.worldMgr))
         this.gameLayer.sceneMgr = this.sceneMgr
         this.gameLayer.entityMgr = this.entityMgr
@@ -51,7 +51,7 @@ export class GameScreen {
         this.selectionLayer.entityMgr = this.entityMgr
         this.guiLayer.entityMgr = this.entityMgr
         this.overlayLayer.entityMgr = this.entityMgr
-        this.guiMgr = new GuiManager(this.worldMgr, this.sceneMgr, this.entityMgr, this.sceneMgr.controls)
+        this.guiMgr = new GuiManager(this.worldMgr)
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.showOptions()
         this.overlayLayer.onSetSpaceToContinue = (state: boolean) => this.guiLayer.setSpaceToContinue(state)

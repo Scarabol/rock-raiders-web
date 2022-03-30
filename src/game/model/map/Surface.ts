@@ -6,8 +6,7 @@ import { SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../
 import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
 import { SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../../params'
-import { EntityManager } from '../../EntityManager'
-import { SceneManager } from '../../SceneManager'
+import { WorldManager } from '../../WorldManager'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
@@ -20,17 +19,16 @@ import { Dynamite } from '../material/Dynamite'
 import { ElectricFence } from '../material/ElectricFence'
 import { Ore } from '../material/Ore'
 import { Selectable } from '../Selectable'
+import { SurfaceVertex } from './SurfaceGeometry'
+import { SurfaceMesh } from './SurfaceMesh'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
-import { SurfaceMesh } from './SurfaceMesh'
-import { SurfaceVertex } from './SurfaceGeometry'
 import { WALL_TYPE } from './WallType'
 import degToRad = MathUtils.degToRad
 
 export class Surface implements Selectable {
     terrain: Terrain
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
+    worldMgr: WorldManager
     surfaceType: SurfaceType
     x: number
     y: number
@@ -60,8 +58,7 @@ export class Surface implements Selectable {
 
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number) {
         this.terrain = terrain
-        this.sceneMgr = this.terrain.sceneMgr
-        this.entityMgr = this.terrain.entityMgr
+        this.worldMgr = this.terrain.worldMgr
         this.surfaceType = surfaceType
         if (surfaceType === SurfaceType.CRYSTAL_SEAM || surfaceType === SurfaceType.ORE_SEAM) this.seamLevel = SURFACE_NUM_SEAM_LEVELS
         this.x = x
@@ -112,7 +109,7 @@ export class Surface implements Selectable {
 
     private markDiscovered() {
         if (this.discovered) return
-        this.entityMgr.discoverSurface(this)
+        this.worldMgr.entityMgr.discoverSurface(this)
         this.discovered = true
         this.needsMeshUpdate = true
     }
@@ -125,10 +122,10 @@ export class Surface implements Selectable {
                 .rotateAround(new Vector2(0, 0), degToRad(-10 + Math.randomInclusive(20)))
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                const crystal = this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), vec)
+                const crystal = this.worldMgr.entityMgr.placeMaterial(new Crystal(this.worldMgr), vec)
                 EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
-                this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), vec)
+                this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), vec)
                 EventBus.publishEvent(new OreFoundEvent())
             }
         }
@@ -175,11 +172,11 @@ export class Surface implements Selectable {
     private dropContainedMaterials(droppedOre: number, droppedCrystals: number) {
         for (let c = 0; c < droppedOre && this.containedOres > 0; c++) {
             this.containedOres--
-            this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), this.getRandomPosition())
+            this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), this.getRandomPosition())
             EventBus.publishEvent(new OreFoundEvent())
         }
         for (let c = 0; c < droppedCrystals; c++) {
-            const crystal = this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), this.getRandomPosition())
+            const crystal = this.worldMgr.entityMgr.placeMaterial(new Crystal(this.worldMgr), this.getRandomPosition())
             EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
         }
     }
@@ -219,7 +216,7 @@ export class Surface implements Selectable {
                 break
         }
         this.dropContainedMaterials(this.containedOres - this.rubblePositions.length, 0)
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
     isUnstable(): boolean {
@@ -487,9 +484,9 @@ export class Surface implements Selectable {
     createDynamiteJob(): CarryDynamiteJob {
         if (!this.isDigable()) return null
         if (!this.dynamiteJob) {
-            const targetBuilding = this.entityMgr.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
+            const targetBuilding = this.worldMgr.entityMgr.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
             if (!targetBuilding) throw new Error('Could not find toolstation to spawn dynamite')
-            const dynamite = new Dynamite(this.sceneMgr, this.entityMgr, this)
+            const dynamite = new Dynamite(this.worldMgr, this)
             dynamite.sceneEntity.addToScene(targetBuilding.getDropPosition2D(), targetBuilding.sceneEntity.getHeading())
             this.dynamiteJob = new CarryDynamiteJob(dynamite)
             this.updateJobColor()
@@ -509,7 +506,7 @@ export class Surface implements Selectable {
     }
 
     playPositionalSample(sample: Sample): PositionalAudio { // TODO merge with AnimEntity code (at least in SceneEntity maybe)
-        const audio = new PositionalAudio(this.sceneMgr.listener)
+        const audio = new PositionalAudio(this.worldMgr.sceneMgr.listener)
         audio.setRefDistance(TILESIZE * 6)
         audio.position.setScalar(0.5)
         this.mesh.add(audio)
@@ -521,11 +518,11 @@ export class Surface implements Selectable {
     }
 
     isBlockedByVehicle() {
-        return this.entityMgr.vehicles.some((v) => v.sceneEntity.surfaces.includes(this))
+        return this.worldMgr.entityMgr.vehicles.some((v) => v.sceneEntity.surfaces.includes(this))
     }
 
     isBlockedByRaider() {
-        return this.entityMgr.raiders.some((r) => r.sceneEntity.surfaces.includes(this))
+        return this.worldMgr.entityMgr.raiders.some((r) => r.sceneEntity.surfaces.includes(this))
     }
 
     isBlocked(): boolean {

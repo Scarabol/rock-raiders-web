@@ -3,7 +3,6 @@ import { EventKey } from '../event/EventKeyEnum'
 import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
 import { DeselectAll, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
-import { EntityManager } from './EntityManager'
 import { PowerPathBuildingSite } from './model/building/PowerPathBuildingSite'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
@@ -11,14 +10,15 @@ import { EatJob } from './model/job/raider/EatJob'
 import { GetToolJob } from './model/job/raider/GetToolJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
 import { UpgradeRaiderJob } from './model/job/raider/UpgradeRaiderJob'
-import { SceneManager } from './SceneManager'
 import { WorldManager } from './WorldManager'
-import { CustomCameraControls } from './CustomCameraControls'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
 
-    constructor(worldMgr: WorldManager, sceneMgr: SceneManager, entityMgr: EntityManager, cameraControls: CustomCameraControls) {
+    constructor(worldMgr: WorldManager) {
+        const sceneMgr = worldMgr.sceneMgr
+        const cameraControls = sceneMgr.controls
+        const entityMgr = worldMgr.entityMgr
         EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: SelectedRaiderPickTool) => {
             entityMgr.selection.raiders.forEach((r) => {
                 if (!r.hasTool(event.tool)) {
@@ -28,7 +28,7 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_POWER_PATH, () => {
-            new PowerPathBuildingSite(sceneMgr, entityMgr, entityMgr.selection.surface)
+            new PowerPathBuildingSite(worldMgr, entityMgr.selection.surface)
         })
         EventBus.registerEventListener(EventKey.COMMAND_MAKE_RUBBLE, () => {
             entityMgr.selection.surface?.makeRubble(2)
@@ -146,10 +146,10 @@ export class GuiManager {
             if (event.cycleBuilding) {
                 this.buildingCycleIndex = (this.buildingCycleIndex + 1) % entityMgr.buildings.length
                 const target = entityMgr.buildings[this.buildingCycleIndex].primarySurface.getCenterWorld()
-                const offsetTargetToCamera = sceneMgr.camera.position.clone().sub(sceneMgr.controls.target)
+                const offsetTargetToCamera = sceneMgr.camera.position.clone().sub(cameraControls.target)
                 sceneMgr.camera.position.copy(target.clone().add(offsetTargetToCamera))
-                sceneMgr.controls.target.copy(target)
-                sceneMgr.controls.update()
+                cameraControls.target.copy(target)
+                cameraControls.update()
             }
             if (event.rotationIndex >= 0) {
                 cameraControls.rotate(event.rotationIndex)

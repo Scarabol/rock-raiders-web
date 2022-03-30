@@ -1,17 +1,16 @@
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { HEIGHT_MULTIPLIER, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
-import { EntityManager } from './EntityManager'
 import { Surface } from './model/map/Surface'
 import { SurfaceType } from './model/map/SurfaceType'
 import { Terrain } from './model/map/Terrain'
-import { SceneManager } from './SceneManager'
+import { WorldManager } from './WorldManager'
 
 export class TerrainLoader {
-    static loadTerrain(levelConf: LevelEntryCfg, sceneMgr: SceneManager, entityMgr: EntityManager) {
+    static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
         const tileSize = levelConf.blockSize
         if (tileSize !== TILESIZE) console.error(`Unexpected tile size in level configuration: ${tileSize}`)
-        const terrain = new Terrain(sceneMgr, entityMgr)
+        const terrain = new Terrain(worldMgr)
         terrain.textureSet = ResourceManager.configuration.textures.textureSetByName.get(levelConf.textureSet)
 
         const terrainMap = ResourceManager.getResource(levelConf.terrainMap)

@@ -17,13 +17,13 @@ export class CarryDynamiteJob extends CarryJob<Dynamite> {
 
     onJobComplete() {
         super.onJobComplete()
-        this.item.entityMgr.scarer.push(this.item)
+        this.item.worldMgr.entityMgr.scarer.push(this.item)
         this.item.sceneEntity.headTowards(this.item.targetSurface.getCenterWorld2D())
         this.item.sceneEntity.changeActivity(DynamiteActivity.TickDown, () => {
-            this.item.entityMgr.scarer.remove(this.item)
+            this.item.worldMgr.entityMgr.scarer.remove(this.item)
             this.item.sceneEntity.disposeFromScene()
             this.item.targetSurface.collapse()
-            this.item.entityMgr.addMiscAnim('MiscAnims/Effects/Mockup_explode3.lws', this.item.sceneMgr, this.item.sceneEntity.position, this.item.sceneEntity.getHeading())
+            this.item.worldMgr.entityMgr.addMiscAnim('MiscAnims/Effects/Mockup_explode3.lws', this.item.worldMgr.sceneMgr, this.item.sceneEntity.position, this.item.sceneEntity.getHeading())
             this.item.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Dynamite], false)
             // TODO damage raider, vehicle, buildings
         })

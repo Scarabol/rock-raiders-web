@@ -3,8 +3,6 @@ import { resetAudioSafe } from '../../audio/AudioUtil'
 import { Sample } from '../../audio/Sample'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../BeamUpAnimator'
-import { EntityManager } from '../EntityManager'
-import { SceneManager } from '../SceneManager'
 import { RaiderActivity } from './activities/RaiderActivity'
 import { Job } from './job/Job'
 import { JobState } from './job/JobState'
@@ -20,10 +18,9 @@ import { MovableEntityStats } from '../../cfg/GameStatsCfg'
 import { EntityStep } from './EntityStep'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { AnimEntityActivity } from './activities/AnimEntityActivity'
+import { WorldManager } from '../WorldManager'
 
 export abstract class FulfillerEntity implements Selectable, BeamUpEntity, Updatable, Disposable {
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
     currentPath: TerrainPath = null
     level: number = 0
     selected: boolean
@@ -32,9 +29,7 @@ export abstract class FulfillerEntity implements Selectable, BeamUpEntity, Updat
     beamUpAnimator: BeamUpAnimator = null
     workAudio: PositionalAudio
 
-    protected constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        this.sceneMgr = sceneMgr
-        this.entityMgr = entityMgr
+    protected constructor(readonly worldMgr: WorldManager) {
     }
 
     abstract isPrepared(job: Job): boolean
@@ -46,7 +41,7 @@ export abstract class FulfillerEntity implements Selectable, BeamUpEntity, Updat
     abstract findPathToTarget(target: PathTarget): TerrainPath
 
     private determineStep(elapsedMs: number): EntityStep {
-        const targetWorld = this.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
+        const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
         targetWorld.y += this.sceneEntity.floorOffset
         const step = new EntityStep(targetWorld.sub(this.sceneEntity.position))
         const stepLengthSq = step.vec.lengthSq()
@@ -73,11 +68,11 @@ export abstract class FulfillerEntity implements Selectable, BeamUpEntity, Updat
     }
 
     isOnPath(): boolean {
-        return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).isPath()
+        return this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).isPath()
     }
 
     isOnRubble() {
-        return this.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).hasRubble()
+        return this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).hasRubble()
     }
 
     setJob(job: Job, followUpJob: Job = null) {

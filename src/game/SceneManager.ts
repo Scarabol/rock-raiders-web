@@ -1,13 +1,13 @@
 import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
-import { CustomCameraControls } from './CustomCameraControls'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { cloneContext } from '../core/ImageHelper'
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
 import { CAMERA_FOV, CAMERA_MAX_DISTANCE, DEV_MODE, KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { DebugHelper } from '../screen/DebugHelper'
-import { EntityManager } from './EntityManager'
+import { CustomCameraControls } from './CustomCameraControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
+import { EntityType } from './model/EntityType'
 import { GameSelection } from './model/GameSelection'
 import { GameState } from './model/GameState'
 import { Surface } from './model/map/Surface'
@@ -16,10 +16,10 @@ import { MaterialEntity } from './model/material/MaterialEntity'
 import { Selectable } from './model/Selectable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { TerrainLoader } from './TerrainLoader'
-import { EntityType } from './model/EntityType'
+import { WorldManager } from './WorldManager'
 
 export class SceneManager {
-    entityMgr: EntityManager
+    worldMgr: WorldManager
     maxFps: number = 30 // animations have only 25 fps
     renderer: WebGLRenderer
     debugHelper: DebugHelper = new DebugHelper()
@@ -56,10 +56,10 @@ export class SceneManager {
         const raycaster = new Raycaster()
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
         const selection = new GameSelection()
-        selection.raiders.push(...SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere)), false))
-        if (selection.isEmpty()) selection.vehicles.push(...SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)), true))
-        if (selection.isEmpty()) selection.building = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere)), true)[0]
-        if (selection.isEmpty()) selection.fence = SceneManager.getSelection(raycaster.intersectObjects(this.entityMgr.placedFences.map((f) => f.sceneEntity.pickSphere)), false)[0]
+        selection.raiders.push(...SceneManager.getSelection(raycaster.intersectObjects(this.worldMgr.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere)), false))
+        if (selection.isEmpty()) selection.vehicles.push(...SceneManager.getSelection(raycaster.intersectObjects(this.worldMgr.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)), true))
+        if (selection.isEmpty()) selection.building = SceneManager.getSelection(raycaster.intersectObjects(this.worldMgr.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere)), true)[0]
+        if (selection.isEmpty()) selection.fence = SceneManager.getSelection(raycaster.intersectObjects(this.worldMgr.entityMgr.placedFences.map((f) => f.sceneEntity.pickSphere)), false)[0]
         if (selection.isEmpty() && this.terrain) selection.surface = SceneManager.getSelection(raycaster.intersectObjects(this.terrain.floorGroup.children), false)[0]
         return selection
     }
@@ -78,9 +78,9 @@ export class SceneManager {
     getFirstByRay(rx: number, ry: number): { vehicle?: VehicleEntity, material?: MaterialEntity, surface?: Surface } {
         const raycaster = new Raycaster()
         raycaster.setFromCamera({x: rx, y: ry}, this.camera)
-        const vehicle = SceneManager.getSelectable(raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
+        const vehicle = SceneManager.getSelectable(raycaster.intersectObjects(this.worldMgr.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
         if (vehicle) return {vehicle: vehicle}
-        const materialEntity = SceneManager.getMaterialEntity(raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere).filter((p) => !!p)))
+        const materialEntity = SceneManager.getMaterialEntity(raycaster.intersectObjects(this.worldMgr.entityMgr.materials.map((m) => m.sceneEntity.pickSphere).filter((p) => !!p)))
         if (materialEntity) return {material: materialEntity}
         if (this.terrain) {
             const surface = SceneManager.getSelectable(raycaster.intersectObjects(this.terrain.floorGroup.children))
@@ -164,10 +164,10 @@ export class SceneManager {
         planes[5].normal.multiplyScalar(-1)
 
         const selection = new GameSelection()
-        selection.raiders.push(...this.entityMgr.raiders.filter((r) => r.isInSelection() && SceneManager.isInFrustum(r.sceneEntity.pickSphere, frustum)))
+        selection.raiders.push(...this.worldMgr.entityMgr.raiders.filter((r) => r.isInSelection() && SceneManager.isInFrustum(r.sceneEntity.pickSphere, frustum)))
         const hasRaiderSelected = selection.raiders.length > 0
-        selection.vehicles.push(...this.entityMgr.vehicles.filter((v) => v.isInSelection() && (!hasRaiderSelected || v.driver) && SceneManager.isInFrustum(v.sceneEntity.pickSphere, frustum)))
-        if (selection.isEmpty()) selection.building = this.entityMgr.buildings.find((b) => SceneManager.isInFrustum(b.sceneEntity.pickSphere, frustum))
+        selection.vehicles.push(...this.worldMgr.entityMgr.vehicles.filter((v) => v.isInSelection() && (!hasRaiderSelected || v.driver) && SceneManager.isInFrustum(v.sceneEntity.pickSphere, frustum)))
+        if (selection.isEmpty()) selection.building = this.worldMgr.entityMgr.buildings.find((b) => SceneManager.isInFrustum(b.sceneEntity.pickSphere, frustum))
         return selection
     }
 
@@ -192,12 +192,12 @@ export class SceneManager {
         this.cursorTorchlight.distance *= TILESIZE
         this.scene.add(this.cursorTorchlight)
 
-        this.buildMarker = new BuildPlacementMarker(this, this.entityMgr)
+        this.buildMarker = new BuildPlacementMarker(this.worldMgr)
         this.scene.add(this.buildMarker.group)
         this.setBuildModeSelection(null)
 
         // create terrain mesh and add it to the scene
-        TerrainLoader.loadTerrain(levelConf, this, this.entityMgr)
+        TerrainLoader.loadTerrain(levelConf, this.worldMgr)
 
         // gather level start details for game result score calculation
         GameState.totalDiggables = this.terrain.countDiggables()

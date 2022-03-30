@@ -2,11 +2,11 @@ import { EventBus } from '../event/EventBus'
 import { DeselectAll } from '../event/LocalEvents'
 import { NATIVE_FRAMERATE, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SceneEntity } from '../scene/SceneEntity'
-import { SceneManager } from './SceneManager'
 import { Disposable } from './model/Disposable'
+import { WorldManager } from './WorldManager'
 
 export interface BeamUpEntity extends Disposable {
-    sceneMgr: SceneManager
+    worldMgr: WorldManager
     sceneEntity: SceneEntity
 }
 
@@ -18,7 +18,7 @@ export class BeamUpAnimator {
         this.entity = entity
         this.counter = 6 * TILESIZE
         EventBus.publishEvent(new DeselectAll())
-        this.entity.sceneMgr.entityMgr.addMiscAnim('Mini-Figures/Pilot/VLP_TelepUp.lws', this.entity.sceneMgr, this.entity.sceneEntity.position, this.entity.sceneEntity.getHeading())
+        this.entity.worldMgr.entityMgr.addMiscAnim('Mini-Figures/Pilot/VLP_TelepUp.lws', this.entity.worldMgr.sceneMgr, this.entity.sceneEntity.position, this.entity.sceneEntity.getHeading())
     }
 
     update(elapsedMs: number) {

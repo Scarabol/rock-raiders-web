@@ -77,7 +77,7 @@ export class GameLayer extends ScreenLayer {
                         .filter((p) => !!p)
                         .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                         if (!closestTrainingSite) return false
-                        r.setJob(new TrainRaiderJob(r.entityMgr, requiredTraining, (closestTrainingSite.target as BuildingPathTarget).building), manVehicleJob)
+                        r.setJob(new TrainRaiderJob(r.worldMgr.entityMgr, requiredTraining, (closestTrainingSite.target as BuildingPathTarget).building), manVehicleJob)
                     }
                     EventBus.publishEvent(new DeselectAll())
                     return true

@@ -1,3 +1,4 @@
+import { Vector2 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { NerpParser } from '../core/NerpParser'
 import { NerpRunner } from '../core/NerpRunner'
@@ -7,6 +8,7 @@ import { EventKey } from '../event/EventKeyEnum'
 import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
+import { AbstractGameEntity } from './entity/AbstractGameEntity'
 import { EntityManager } from './EntityManager'
 import { EntityType } from './model/EntityType'
 import { GameResultState } from './model/GameResult'
@@ -16,12 +18,10 @@ import { updateSafe } from './model/Updateable'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import { Supervisor } from './Supervisor'
-import { Vector2 } from 'three'
 import { AbstractSubSystem } from './system/AbstractSubSystem'
-import { SceneEntitySubSystem } from './system/SceneEntitySubSystem'
-import { AbstractGameEntity } from './entity/AbstractGameEntity'
-import { MovementSubSystem } from './system/MovementSubSystem'
 import { MapMarkerSubSystem } from './system/MapMarkerSubSystem'
+import { MovementSubSystem } from './system/MovementSubSystem'
+import { SceneEntitySubSystem } from './system/SceneEntitySubSystem'
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
@@ -146,7 +146,7 @@ export class WorldManager {
                     if (teleportBuilding) {
                         this.requestedRaiders--
                         EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
-                        const raider = new Raider(this.sceneMgr, this.entityMgr)
+                        const raider = new Raider(this)
                         const heading = teleportBuilding.sceneEntity.getHeading()
                         const worldPosition = new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleportBuilding.sceneEntity.position2D.clone())
                         const walkOutPos = teleportBuilding.primaryPathSurface.getRandomPosition()
@@ -170,7 +170,7 @@ export class WorldManager {
                         if (teleportBuilding) {
                             GameState.numCrystal -= stats.CostCrystal
                             EventBus.publishEvent(new MaterialAmountChanged())
-                            const vehicle = VehicleFactory.createVehicleFromType(vType, this.sceneMgr, this.entityMgr)
+                            const vehicle = VehicleFactory.createVehicleFromType(vType, this)
                             const worldPosition = teleportBuilding.primaryPathSurface.getCenterWorld2D()
                             const heading = teleportBuilding.sceneEntity.getHeading()
                             teleportBuilding.teleport.teleportIn(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam, worldPosition, heading, null)

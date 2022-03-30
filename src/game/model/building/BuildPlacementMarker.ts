@@ -3,22 +3,19 @@ import { EventBus } from '../../../event/EventBus'
 import { CancelBuildMode } from '../../../event/GuiCommand'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
-import { EntityManager } from '../../EntityManager'
-import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
 import { SurfaceType } from '../map/SurfaceType'
 import { BarrierLocation } from '../material/BarrierLocation'
 import { BuildingSite } from './BuildingSite'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
 import { BuildingType } from './BuildingType'
+import { WorldManager } from '../../WorldManager'
 
 export class BuildPlacementMarker {
     static readonly buildingMarkerColor: number = 0x005000
     static readonly pathMarkerColor: number = 0x505000
     static readonly waterMarkerColor: number = 0x000050
 
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
     group: Group = new Group()
     markers: BuildPlacementMarkerMesh[] = []
     buildingMarkerPrimary: BuildPlacementMarkerMesh = null
@@ -30,14 +27,12 @@ export class BuildPlacementMarker {
     lastCheck: boolean = false
     buildingType: BuildingType = null
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        this.sceneMgr = sceneMgr
-        this.entityMgr = entityMgr
-        this.buildingMarkerPrimary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
-        this.buildingMarkerSecondary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
-        this.powerPathMarkerPrimary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.pathMarkerColor)
-        this.powerPathMarkerSecondary = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.pathMarkerColor)
-        this.waterPathMarker = new BuildPlacementMarkerMesh(this.sceneMgr, BuildPlacementMarker.waterMarkerColor)
+    constructor(readonly worldMgr: WorldManager) {
+        this.buildingMarkerPrimary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
+        this.buildingMarkerSecondary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
+        this.powerPathMarkerPrimary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr, BuildPlacementMarker.pathMarkerColor)
+        this.powerPathMarkerSecondary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr, BuildPlacementMarker.pathMarkerColor)
+        this.waterPathMarker = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr, BuildPlacementMarker.waterMarkerColor)
         this.addMarker(this.buildingMarkerPrimary)
         this.addMarker(this.buildingMarkerSecondary)
         this.addMarker(this.powerPathMarkerPrimary)
@@ -71,7 +66,7 @@ export class BuildPlacementMarker {
         this.powerPathMarkerSecondary.updateMesh(worldPosition, this.buildingType.secondaryPowerPath, this.heading)
         this.waterPathMarker.updateMesh(worldPosition, this.buildingType.waterPathSurface, this.heading)
         const allSurfacesAreGround = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
-            .filter((c) => c.visible).map((c) => this.sceneMgr.terrain.getSurfaceFromWorld(c.position)).every((s) => s.surfaceType === SurfaceType.GROUND)
+            .filter((c) => c.visible).map((c) => this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(c.position)).every((s) => s.surfaceType === SurfaceType.GROUND)
         this.lastCheck = allSurfacesAreGround && (
             [this.powerPathMarkerPrimary, this.powerPathMarkerSecondary].some((c) => c.visible && c.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
             (!this.buildingType.primaryPowerPath && (this.buildingMarkerPrimary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH ||
@@ -92,14 +87,14 @@ export class BuildPlacementMarker {
         const neededCrystals = stats?.CostCrystal || 0
         const neededOre = stats?.CostOre || 0
         const primarySurface = this.buildingMarkerPrimary.surface
-        const site = new BuildingSite(this.sceneMgr, this.entityMgr, primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, this.buildingType)
+        const site = new BuildingSite(this.worldMgr, primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, this.buildingType)
         primarySurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         site.heading = this.heading
         site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
         site.neededByType.set(EntityType.CRYSTAL, neededCrystals)
         site.neededByType.set(EntityType.ORE, neededOre)
-        this.entityMgr.buildingSites.push(site)
-        const closestToolstation = this.entityMgr.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
+        this.worldMgr.entityMgr.buildingSites.push(site)
+        const closestToolstation = this.worldMgr.entityMgr.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
         if (closestToolstation) {
             closestToolstation.spawnBarriers(barrierLocations, site)
             closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)

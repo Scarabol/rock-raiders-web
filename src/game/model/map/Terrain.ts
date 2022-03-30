@@ -1,19 +1,16 @@
 import { AxesHelper, Group, Vector2, Vector3 } from 'three'
 import { TextureEntryCfg } from '../../../cfg/TexturesCfg'
 import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, TILESIZE } from '../../../params'
-import { EntityManager } from '../../EntityManager'
-import { SceneManager } from '../../SceneManager'
 import { updateSafe } from '../Updateable'
 import { FallIn } from './FallIn'
 import { PathFinder } from './PathFinder'
 import { PowerGrid } from './PowerGrid'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
+import { WorldManager } from '../../WorldManager'
 
 export class Terrain {
     heightOffset: number[][] = [[]]
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
     textureSet: TextureEntryCfg = null
     width: number = 0
     height: number = 0
@@ -24,11 +21,9 @@ export class Terrain {
     fallIns: FallIn[] = []
     powerGrid: PowerGrid = new PowerGrid()
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        this.sceneMgr = sceneMgr
-        this.sceneMgr.terrain = this
-        this.sceneMgr.scene.add(this.floorGroup)
-        this.entityMgr = entityMgr
+    constructor(readonly worldMgr: WorldManager) {
+        this.worldMgr.sceneMgr.terrain = this
+        this.worldMgr.sceneMgr.scene.add(this.floorGroup)
         this.floorGroup.scale.setScalar(TILESIZE)
         this.roofGroup.scale.setScalar(TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
@@ -141,7 +136,7 @@ export class Terrain {
     createFallIn(source: Surface, target: Surface) {
         const fallinPosition = target.getCenterWorld()
         const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
-        this.entityMgr.addMiscAnim('MiscAnims/RockFall/Rock3Sides.lws', this.sceneMgr, fallinPosition, heading)
+        this.worldMgr.entityMgr.addMiscAnim('MiscAnims/RockFall/Rock3Sides.lws', this.worldMgr.sceneMgr, fallinPosition, heading)
         target.makeRubble()
     }
 

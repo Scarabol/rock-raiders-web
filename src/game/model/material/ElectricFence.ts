@@ -1,8 +1,6 @@
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { ElectricFenceSceneEntity } from '../../../scene/entities/ElectricFenceSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
-import { EntityManager } from '../../EntityManager'
-import { SceneManager } from '../../SceneManager'
 import { EntityType } from '../EntityType'
 import { CarryFenceJob } from '../job/carry/CarryFenceJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
@@ -10,6 +8,7 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { Selectable } from '../Selectable'
 import { MaterialEntity } from './MaterialEntity'
+import { WorldManager } from '../../WorldManager'
 
 export class ElectricFence extends MaterialEntity implements Selectable, BeamUpEntity {
     targetSurface: Surface
@@ -18,9 +17,9 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
     inBeam: boolean = false
     beamUpAnimator: BeamUpAnimator = null
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, targetSurface: Surface) {
-        super(sceneMgr, entityMgr, EntityType.ELECTRIC_FENCE)
-        this.sceneEntity = new ElectricFenceSceneEntity(sceneMgr)
+    constructor(worldMgr: WorldManager, targetSurface: Surface) {
+        super(worldMgr, EntityType.ELECTRIC_FENCE)
+        this.sceneEntity = new ElectricFenceSceneEntity(this.worldMgr.sceneMgr)
         this.targetSurface = targetSurface
         this.target = [new CarryPathTarget(targetSurface.getCenterWorld2D())]
     }
@@ -31,7 +30,7 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
 
     findCarryTargets(): CarryPathTarget[] {
         if (this.target.every((t) => t.isInvalid())) {
-            return this.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+            return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
         } else {
             return this.target
         }
@@ -86,6 +85,6 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
 
     disposeFromWorld() {
         super.disposeFromWorld()
-        this.entityMgr.placedFences.remove(this)
+        this.worldMgr.entityMgr.placedFences.remove(this)
     }
 }

@@ -8,8 +8,6 @@ import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BuildingSceneEntity } from '../../../scene/entities/BuildingSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
-import { EntityManager } from '../../EntityManager'
-import { SceneManager } from '../../SceneManager'
 import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
@@ -28,10 +26,9 @@ import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
 import { Teleport } from './Teleport'
 import { BuildingType } from './BuildingType'
+import { WorldManager } from '../../WorldManager'
 
 export class BuildingEntity implements Selectable, BeamUpEntity {
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
     buildingType: BuildingType
     sceneEntity: BuildingSceneEntity
     level: number = 0
@@ -51,11 +48,9 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     pathSurfaces: Surface[] = []
     teleport: Teleport = null
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager, buildingType: BuildingType) {
-        this.sceneMgr = sceneMgr
-        this.entityMgr = entityMgr
+    constructor(readonly worldMgr: WorldManager, buildingType: BuildingType) {
         this.buildingType = buildingType
-        this.sceneEntity = new BuildingSceneEntity(this.sceneMgr, this.buildingType.aeFilename)
+        this.sceneEntity = new BuildingSceneEntity(this.worldMgr.sceneMgr, this.buildingType.aeFilename)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
     }
 
@@ -131,14 +126,14 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         EventBus.publishEvent(new MaterialAmountChanged())
         this.level++
         EventBus.publishEvent(new DeselectAll())
-        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
-        this.entityMgr.addMiscAnim('MiscAnims/Effects/UPGRADE_SPARKS.lws', this.sceneMgr, this.primarySurface.getCenterWorld(), this.sceneEntity.getHeading())
+        EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+        this.worldMgr.entityMgr.addMiscAnim('MiscAnims/Effects/UPGRADE_SPARKS.lws', this.worldMgr.sceneMgr, this.primarySurface.getCenterWorld(), this.sceneEntity.getHeading())
     }
 
     setLevel(level: number) {
         if (this.level == level) return
         this.level = level
-        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
+        EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
     beamUp() {
@@ -147,21 +142,21 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.turnEnergyOff()
         this.sceneEntity.setInBeam(this.inBeam)
         for (let c = 0; c < this.stats.CostOre; c++) {
-            this.entityMgr.placeMaterial(new Ore(this.sceneMgr, this.entityMgr), this.primarySurface.getRandomPosition())
+            this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), this.primarySurface.getRandomPosition())
         }
         for (let c = 0; c < this.stats.CostCrystal; c++) {
-            this.entityMgr.placeMaterial(new Crystal(this.sceneMgr, this.entityMgr), this.primarySurface.getRandomPosition())
+            this.worldMgr.entityMgr.placeMaterial(new Crystal(this.worldMgr), this.primarySurface.getRandomPosition())
         }
         this.surfaces.forEach((s) => s.setBuilding(null))
         this.beamUpAnimator = new BeamUpAnimator(this)
-        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
+        EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
     disposeFromWorld() {
         this.sceneEntity.disposeFromScene()
         this.engineSound = resetAudioSafe(this.engineSound)
-        this.entityMgr.buildings.remove(this)
-        this.entityMgr.buildingsUndiscovered.remove(this)
+        this.worldMgr.entityMgr.buildings.remove(this)
+        this.worldMgr.entityMgr.buildingsUndiscovered.remove(this)
     }
 
     canUpgrade() {
@@ -173,26 +168,26 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         if (type === EntityType.CRYSTAL) {
             while (GameState.numCrystal > 0 && material.length < quantity) {
                 GameState.numCrystal--
-                material.push(new Crystal(this.sceneMgr, this.entityMgr))
+                material.push(new Crystal(this.worldMgr))
             }
         } else if (type === EntityType.ORE) {
             while (GameState.numOre > 0 && material.length < quantity) {
                 GameState.numOre--
-                material.push(new Ore(this.sceneMgr, this.entityMgr))
+                material.push(new Ore(this.worldMgr))
             }
         } else {
             console.error(`Material drop not implemented for: ${type}`)
         }
         if (material.length > 0) EventBus.publishEvent(new MaterialAmountChanged())
-        material.forEach((m) => this.entityMgr.placeMaterial(m, this.getDropPosition2D()))
+        material.forEach((m) => this.worldMgr.entityMgr.placeMaterial(m, this.getDropPosition2D()))
     }
 
     spawnBarriers(barrierLocations: BarrierLocation[], site: BuildingSite) {
-        barrierLocations.map((l) => new Barrier(this.sceneMgr, this.entityMgr, l, site)).forEach((b) => this.entityMgr.placeMaterial(b, this.getDropPosition2D()))
+        barrierLocations.map((l) => new Barrier(this.worldMgr, l, site)).forEach((b) => this.worldMgr.entityMgr.placeMaterial(b, this.getDropPosition2D()))
     }
 
     spawnFence(targetSurface: Surface) {
-        this.entityMgr.placeMaterial(new ElectricFence(this.sceneMgr, this.entityMgr, targetSurface), this.getDropPosition2D())
+        this.worldMgr.entityMgr.placeMaterial(new ElectricFence(this.worldMgr, targetSurface), this.getDropPosition2D())
     }
 
     setPowerSwitch(state: boolean) {
@@ -209,8 +204,8 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         }
         this.sceneEntity.setPowered(this.isPowered())
         this.surfaces.forEach((s) => s.updateTexture())
-        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.entityMgr))
+        EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
         if (this.teleport) this.teleport.powered = this.isPowered()
     }
 
@@ -235,27 +230,27 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     }
 
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
-        this.primarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(worldPosition)
+        this.primarySurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPosition)
         this.surfaces.push(this.primarySurface)
         this.primarySurface.pathBlockedByBuilding = this.entityType !== EntityType.TOOLSTATION // XXX better evaluate EnterToolStore in stats while path finding
         if (this.buildingType.secondaryBuildingPart) {
             const secondaryOffset = new Vector2(TILESIZE * this.buildingType.secondaryBuildingPart.x, TILESIZE * this.buildingType.secondaryBuildingPart.y)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
-            this.secondarySurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(secondaryOffset)
+            this.secondarySurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(secondaryOffset)
             this.surfaces.push(this.secondarySurface)
             this.secondarySurface.pathBlockedByBuilding = this.entityType !== EntityType.TOOLSTATION // XXX better evaluate EnterToolStore in stats while path finding
         }
         if (this.buildingType.primaryPowerPath) {
             const pathOffset = this.buildingType.primaryPowerPath.clone().multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
-            this.primaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
+            this.primaryPathSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             this.surfaces.push(this.primaryPathSurface)
             this.pathSurfaces.push(this.primaryPathSurface)
         }
         if (this.buildingType.secondaryPowerPath) {
             const pathOffset = this.buildingType.secondaryPowerPath.clone().multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
-            this.secondaryPathSurface = this.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
+            this.secondaryPathSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
             this.surfaces.push(this.secondaryPathSurface)
             this.pathSurfaces.push(this.secondaryPathSurface)
         }
@@ -263,9 +258,9 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.sceneEntity.makeSelectable(this, this.stats.PickSphere / 4)
         this.addToScene(worldPosition, radHeading)
         if (this.sceneEntity.visible) {
-            this.entityMgr.buildings.push(this)
+            this.worldMgr.entityMgr.buildings.push(this)
         } else {
-            this.entityMgr.buildingsUndiscovered.push(this)
+            this.worldMgr.entityMgr.buildingsUndiscovered.push(this)
         }
         if (this.surfaces.some((s) => s.selected)) EventBus.publishEvent(new DeselectAll())
         if (this.sceneEntity.visible && !disableTeleportIn) {
@@ -279,7 +274,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         } else {
             this.onPlaceDown()
         }
-        this.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
+        this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()
     }
 
     private onPlaceDown() {
@@ -292,7 +287,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         })
         this.getToolPathTarget = new GetToolPathTarget(this)
         this.carryPathTarget = new BuildingCarryPathTarget(this)
-        EventBus.publishEvent(new BuildingsChangedEvent(this.entityMgr))
+        EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
     getDropAction(): RaiderActivity {

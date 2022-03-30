@@ -3,8 +3,6 @@ import { RaidersAmountChangedEvent } from '../../../event/LocalEvents'
 import { RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
-import { EntityManager } from '../../EntityManager'
-import { SceneManager } from '../../SceneManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
 import { BaseActivity } from '../activities/BaseActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
@@ -18,6 +16,7 @@ import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { RaiderTool } from './RaiderTool'
 import { RaiderTraining } from './RaiderTraining'
 import { TerrainPath } from '../map/TerrainPath'
+import { WorldManager } from '../../WorldManager'
 
 export class Raider extends FulfillerEntity {
     sceneEntity: RaiderSceneEntity
@@ -28,10 +27,10 @@ export class Raider extends FulfillerEntity {
     hungerLevel: number = 1
     vehicle: VehicleEntity = null
 
-    constructor(sceneMgr: SceneManager, entityMgr: EntityManager) {
-        super(sceneMgr, entityMgr)
+    constructor(worldMgr: WorldManager) {
+        super(worldMgr)
         this.tools.set(RaiderTool.DRILL, true)
-        this.sceneEntity = new RaiderSceneEntity(sceneMgr, 'mini-figures/pilot/pilot.ae')
+        this.sceneEntity = new RaiderSceneEntity(this.worldMgr.sceneMgr, 'mini-figures/pilot/pilot.ae')
     }
 
     get stats() {
@@ -57,7 +56,7 @@ export class Raider extends FulfillerEntity {
     moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
         const result = super.moveToClosestTarget(target, elapsedMs)
         if (result === MoveState.MOVED) {
-            this.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
+            this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
                 if (this.sceneEntity.position.distanceToSquared(spider.position) < SPIDER_SLIP_RANGE_SQ) {
                     this.slip()
                     spider.markDead()
@@ -69,7 +68,7 @@ export class Raider extends FulfillerEntity {
     }
 
     findPathToTarget(target: PathTarget): TerrainPath {
-        return this.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, target, this.stats, true)
+        return this.worldMgr.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, target, this.stats, true)
     }
 
     slip() {
@@ -115,14 +114,14 @@ export class Raider extends FulfillerEntity {
 
     beamUp() {
         super.beamUp()
-        EventBus.publishEvent(new RaidersAmountChangedEvent(this.entityMgr))
+        EventBus.publishEvent(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
     }
 
     disposeFromWorld() {
         super.disposeFromWorld()
-        this.entityMgr.raiders.remove(this)
-        this.entityMgr.raidersUndiscovered.remove(this)
-        this.entityMgr.raidersInBeam.remove(this)
+        this.worldMgr.entityMgr.raiders.remove(this)
+        this.worldMgr.entityMgr.raidersUndiscovered.remove(this)
+        this.worldMgr.entityMgr.raidersInBeam.remove(this)
     }
 
     hasTool(tool: RaiderTool) {

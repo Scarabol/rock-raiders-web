@@ -31,7 +31,7 @@ export class Teleport {
             if (walkOutPos) entity.setJob(new MoveJob(walkOutPos))
             beamListing.remove(entity)
             listing.push(entity)
-            EventBus.publishEvent(new RaidersAmountChangedEvent(entity.entityMgr))
+            EventBus.publishEvent(new RaidersAmountChangedEvent(entity.worldMgr.entityMgr))
         })
         beamListing.push(entity)
     }
