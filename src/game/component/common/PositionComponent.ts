@@ -8,10 +8,6 @@ export class PositionComponent implements GameComponent {
     private readonly onMoveCallbacks: OnMoveCallback[] = []
     private readonly position: Vector3 = new Vector3()
 
-    constructor(position: Vector2) {
-        this.position.set(position.x, 0, position.y)
-    }
-
     setupComponent(entity: AbstractGameEntity) {
     }
 
@@ -25,6 +21,10 @@ export class PositionComponent implements GameComponent {
 
     getPosition(): Vector3 {
         return this.position.clone()
+    }
+
+    setPosition2D(position: Vector2) {
+        this.position.set(position.x, 0, position.y)
     }
 
     getPosition2D(): Vector2 {
