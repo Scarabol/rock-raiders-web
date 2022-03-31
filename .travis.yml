@@ -27,14 +27,13 @@ deploy:
     github-token: "${GITHUB_TOKEN}"
     # Git branch on which it should deploy (master, gh-pages, foo...)
     target_branch: gh-pages
-    body: "rock-raiders-web-${TRAVIS_TAG}/release-notes.txt" # aka release_notes_file
     on:
       # Which branch on commit/push will trigger deployment
       branch: master
   - provider: releases # Publish files as release bundle
     skip_cleanup: true
     api_key: "${GITHUB_TOKEN}"
-    file_glob: true
+    body: "rock-raiders-web-${TRAVIS_TAG}/release-notes.txt" # aka release_notes_file
     file:
       - "rock-raiders-web-${TRAVIS_TAG}.zip"
       - "rock-raiders-web-${TRAVIS_TAG}-debug.zip"
