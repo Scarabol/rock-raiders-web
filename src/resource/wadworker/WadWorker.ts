@@ -1,32 +1,6 @@
-import { GameConfig } from '../../cfg/GameConfig'
 import '../../core'
-import { InitLoadingMessage } from './InitLoadingMessage'
-import { WadLoader } from './WadLoader'
-import { WadWorkerMessage } from './WadWorkerMessage'
+import { TypedWorkerThreaded } from '../../worker/TypedWorker'
+import { WadSystem } from './WadSystem'
 
 const worker: Worker = self as any
-
-function postMessage(assetMessage: WadWorkerMessage) {
-    worker.postMessage(assetMessage)
-}
-
-worker.addEventListener('message', (event) => {
-    const wadLoader = new WadLoader()
-    // set callbacks on wadLoader
-    wadLoader.onMessage = (text: string) => postMessage(WadWorkerMessage.createTextMessage(text))
-    wadLoader.onCacheMiss = (cacheIdentifier: string) => postMessage(WadWorkerMessage.createCacheMissed(cacheIdentifier))
-    wadLoader.onInitialLoad = (totalResources: number, cfg: GameConfig) => postMessage(WadWorkerMessage.createCfgLoaded(cfg, totalResources))
-    wadLoader.onAssetLoaded = (assetIndex: number, assetNames: string[], assetObj: any, sfxKeys: string[]) => {
-        postMessage(WadWorkerMessage.createAssetLoaded(assetIndex, assetNames, assetObj, sfxKeys))
-    }
-    wadLoader.onLoadDone = (totalResources: number) => {
-        postMessage(WadWorkerMessage.createLoadDone(totalResources))
-    }
-    // start loading
-    const msg = event.data as InitLoadingMessage
-    if (msg) {
-        wadLoader.loadWadFiles(msg.wad0FileUrl, msg.wad1FileUrl)
-    } else {
-        wadLoader.startWithCachedFiles()
-    }
-})
+new WadSystem(new TypedWorkerThreaded(worker))
