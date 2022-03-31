@@ -5,6 +5,7 @@ import { GameState } from './game/model/GameState'
 import { ObjectListLoader } from './game/ObjectListLoader'
 import { DEV_MODE } from './params'
 import { ResourceManager } from './resource/ResourceManager'
+import { SaveGameManager } from './resource/SaveGameManager'
 import { GameScreen } from './screen/GameScreen'
 import { CursorLayer } from './screen/layer/CursorLayer'
 import { LoadingLayer } from './screen/layer/LoadingLayer'
@@ -82,6 +83,8 @@ ResourceManager.onLoadDone = () => {
         GameState.numOre = Number(params.get('numOre')) || 0
         GameState.numCrystal = Number(params.get('numCrystal')) || 0
         ObjectListLoader.numTestRaider = Number(params.get('numTestRaider')) || 0
+        const loadGame = params.get('loadGame')
+        if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))
         if (entry === 'level') mainMenuScreen.showLevelSelection()
         else if (entry === 'reward') rewardScreen.show()
         else if (entry === 'random') mainMenuScreen.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
