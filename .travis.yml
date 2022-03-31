@@ -8,21 +8,37 @@ cache:
     - .cache
 script:
   - npm run prod
-branches:
-  only:
-    - master
+
+after_success:
+  - cp -r "dist/" "rock-raiders-web-${TRAVIS_TAG}"
+  - git log $(git describe --tags --abbrev=0 HEAD~1)..HEAD --pretty=format:"- %s" -i --invert-grep --grep="Clean code" | head -n -1 > "rock-raiders-web-${TRAVIS_TAG}/release-notes.txt"
+  - zip -FSr "rock-raiders-web-${TRAVIS_TAG}.zip" "rock-raiders-web-${TRAVIS_TAG}" -x "*.map"
+  - zip -FSr "rock-raiders-web-${TRAVIS_TAG}-debug.zip" "rock-raiders-web-${TRAVIS_TAG}"
+  - tar -czf --exclude="*.map" "rock-raiders-web-${TRAVIS_TAG}.tar.gz" "rock-raiders-web-${TRAVIS_TAG}"
+  - tar -czf "rock-raiders-web-${TRAVIS_TAG}-debug.tar.gz" "rock-raiders-web-${TRAVIS_TAG}"
 
 deploy:
-  # Use Github pages deploy process
-  provider: pages
-  # Keep built pages
-  skip-cleanup: true
-  # Directory where your generated files are located
-  local_dir: dist
-  # GitHub's security/auth token
-  github-token: $GITHUB_TOKEN
-  # Git branch on which it should deploy (master, gh-pages, foo...)
-  target_branch: gh-pages
-  on:
-    # Which branch on commit/push will trigger deployment
-    branch: master
+  - provider: pages # Use Github pages deploy process
+    # Keep built pages
+    skip-cleanup: true
+    # Directory where your generated files are located
+    local_dir: dist
+    # GitHub's security/auth token
+    github-token: "${GITHUB_TOKEN}"
+    # Git branch on which it should deploy (master, gh-pages, foo...)
+    target_branch: gh-pages
+    body: "rock-raiders-web-${TRAVIS_TAG}/release-notes.txt" # aka release_notes_file
+    on:
+      # Which branch on commit/push will trigger deployment
+      branch: master
+  - provider: releases # Publish files as release bundle
+    skip_cleanup: true
+    api_key: "${GITHUB_TOKEN}"
+    file_glob: true
+    file:
+      - "rock-raiders-web-${TRAVIS_TAG}.zip"
+      - "rock-raiders-web-${TRAVIS_TAG}-debug.zip"
+      - "rock-raiders-web-${TRAVIS_TAG}.tar.gz"
+      - "rock-raiders-web-${TRAVIS_TAG}-debug.tar.gz"
+    on:
+      tags: true # Only create release, when tag is pushed
