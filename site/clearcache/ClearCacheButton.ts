@@ -1,9 +1,8 @@
+import { getElementByIdOrThrow } from '../../src/core/Util'
 import { ASSET_CACHE_DB_NAME } from '../../src/params'
 import './clearCacheButton.css'
-import { getElementByIdOrThrow } from '../../src/core/Util'
 
 export class ClearCacheButton {
-
     rootElement: HTMLDivElement
 
     constructor(parentId: string) {
@@ -22,5 +21,4 @@ export class ClearCacheButton {
     hide() {
         this.rootElement.style.visibility = 'hidden'
     }
-
 }

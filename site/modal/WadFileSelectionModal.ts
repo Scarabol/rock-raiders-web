@@ -2,7 +2,6 @@ import { Modal } from 'bootstrap'
 import { getElementByIdOrThrow } from '../../src/core/Util'
 
 export class WadFileSelectionModal {
-
     public onStart: (wad0Url: string, wad1Url: string) => any = null
 
     private readonly modal: Modal
@@ -159,5 +158,4 @@ export class WadFileSelectionModal {
     public hide() {
         this.modal.hide()
     }
-
 }

@@ -1,9 +1,8 @@
+import { getElementByIdOrThrow } from '../../src/core/Util'
 import './github.css'
 import GithubIcon from './github.png'
-import { getElementByIdOrThrow } from '../../src/core/Util'
 
 export class GithubBox {
-
     rootElement: HTMLDivElement
 
     constructor(parentId: string) {
@@ -25,5 +24,4 @@ export class GithubBox {
     hide() {
         this.rootElement.style.visibility = 'hidden'
     }
-
 }

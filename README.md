@@ -108,6 +108,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Level 11 spams console with unreachable jobs
 - Work sounds missing for most of the jobs
 - Show loading screen when starting a level
+- Add rockfall transition when switching in main menu
 - Two buttons in priority list can be hovered/pressed/released at the same time
 
 ## Technical Debt
