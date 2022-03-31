@@ -11,8 +11,8 @@ import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
-import { OffscreenWorker } from '../../worker/OffscreenWorker'
 import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
+import { TypedWorker } from '../../worker/TypedWorker'
 import { WorkerEventResponse } from '../../worker/WorkerEventResponse'
 import { WorkerPublishEvent } from '../../worker/WorkerPublishEvent'
 import { WorkerResponse } from '../../worker/WorkerResponse'
@@ -21,7 +21,7 @@ import generateUUID = MathUtils.generateUUID
 
 export abstract class OffscreenLayer extends ScreenLayer {
     readonly resolveCallbackByEventId: Map<string, ((consumed: boolean) => any)> = new Map()
-    worker: OffscreenWorker
+    worker: TypedWorker<OffscreenWorkerMessage>
     entityMgr: EntityManager
 
     constructor() {
@@ -45,11 +45,17 @@ export abstract class OffscreenLayer extends ScreenLayer {
             cfg: ResourceManager.configuration,
         }
         if ('transferControlToOffscreen' in this.canvas) {
-            this.worker = this.createOffscreenWorker()
-            msgInit.canvas = this.canvas.transferControlToOffscreen()
-            this.sendMessage(msgInit, [msgInit.canvas])
+            try {
+                this.worker = this.createOffscreenWorker()
+                msgInit.canvas = this.canvas.transferControlToOffscreen()
+                this.sendMessage(msgInit, [msgInit.canvas])
+            } catch (e) {
+                console.warn('Could not setup threaded worker!\nUsing fallback to main thread, which might has bad performance.', e)
+                this.worker = this.createFallbackWorker()
+                this.sendMessage(msgInit)
+            }
         } else {
-            console.warn('Your Browser does not support WebGL in workers!\nUsing fallback to main thread, which might have bad performance.\nTo solve this issue for Firefox set gfx.offscreencanvas.enabled to true in about:config or use https://www.chromium.org/')
+            console.warn('Your Browser does not support WebGL in workers!\nUsing fallback to main thread, which might has bad performance.\nTo solve this issue for Firefox set gfx.offscreencanvas.enabled to true in about:config or use https://www.chromium.org/')
             this.worker = this.createFallbackWorker()
             this.sendMessage(msgInit)
         }
@@ -72,9 +78,9 @@ export abstract class OffscreenLayer extends ScreenLayer {
         }
     }
 
-    abstract createOffscreenWorker(): OffscreenWorker
+    abstract createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage>
 
-    abstract createFallbackWorker(): OffscreenWorker
+    abstract createFallbackWorker(): TypedWorker<OffscreenWorkerMessage>
 
     abstract onMessage(msg: WorkerResponse): boolean
 

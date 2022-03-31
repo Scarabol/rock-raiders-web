@@ -1,5 +1,5 @@
 import { OverlaySystem } from '../gui/OverlaySystem'
-import { OffscreenWorkerBackend } from './OffscreenWorker'
+import { TypedWorkerThreaded } from './TypedWorker'
 
 const worker: Worker = self as any
-new OverlaySystem(new OffscreenWorkerBackend(worker))
+new OverlaySystem(new TypedWorkerThreaded(worker))
