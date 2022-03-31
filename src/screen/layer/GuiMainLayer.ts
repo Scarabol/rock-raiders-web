@@ -1,20 +1,20 @@
 import { GuiMainSystem } from '../../gui/GuiMainSystem'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
-import { OffscreenFallbackWorker, OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
+import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
+import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../worker/TypedWorker'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
 
 export class GuiMainLayer extends OffscreenLayer {
     onOptionsShow: () => any = () => console.log('Show options triggered')
 
-    createOffscreenWorker(): OffscreenWorker {
+    createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage> {
         const worker = new Worker(new URL('../../worker/GuiMainWorker', import.meta.url)) // webpack does not allow to extract the URL
-        return new OffscreenWorkerFrontend(worker, (response) => this.onResponseFromWorker(response))
+        return new TypedWorkerFrontend(worker, (r) => this.onResponseFromWorker(r))
     }
 
-    createFallbackWorker(): OffscreenWorker {
-        const worker = new OffscreenFallbackWorker()
-        worker.onResponseFromWorker = (response) => this.onResponseFromWorker(response)
+    createFallbackWorker(): TypedWorker<OffscreenWorkerMessage> {
+        const worker = new TypedWorkerFallback((r) => this.onResponseFromWorker(r))
         new GuiMainSystem(worker)
         return worker
     }

@@ -2,7 +2,8 @@ import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
 import { GuiWorkerMessage } from '../../gui/GuiWorkerMessage'
 import { OverlaySystem } from '../../gui/OverlaySystem'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
-import { OffscreenFallbackWorker, OffscreenWorker, OffscreenWorkerFrontend } from '../../worker/OffscreenWorker'
+import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
+import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../worker/TypedWorker'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
 
@@ -11,14 +12,13 @@ export class OverlayLayer extends OffscreenLayer {
     onAbortGame: () => any = () => console.log('abort the game')
     onRestartGame: () => any = () => console.log('restart the game')
 
-    createOffscreenWorker(): OffscreenWorker {
+    createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage> {
         const worker = new Worker(new URL('../../worker/OverlayWorker', import.meta.url)) // webpack does not allow to extract the URL
-        return new OffscreenWorkerFrontend(worker, (response) => this.onResponseFromWorker(response))
+        return new TypedWorkerFrontend(worker, (response) => this.onResponseFromWorker(response))
     }
 
-    createFallbackWorker(): OffscreenWorker {
-        const worker = new OffscreenFallbackWorker()
-        worker.onResponseFromWorker = (response) => this.onResponseFromWorker(response)
+    createFallbackWorker(): TypedWorker<OffscreenWorkerMessage> {
+        const worker = new TypedWorkerFallback((r) => this.onResponseFromWorker(r))
         new OverlaySystem(worker)
         return worker
     }

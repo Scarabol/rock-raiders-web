@@ -6,8 +6,8 @@ import { GameWheelEvent } from '../event/GameWheelEvent'
 import { IEventHandler } from '../event/IEventHandler'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { OffscreenCache } from './OffscreenCache'
-import { OffscreenBackend } from './OffscreenWorker'
 import { OffscreenWorkerMessage } from './OffscreenWorkerMessage'
+import { TypedWorkerBackend } from './TypedWorker'
 import { WorkerEventResponse } from './WorkerEventResponse'
 import { WorkerPublishEvent } from './WorkerPublishEvent'
 import { WorkerResponse } from './WorkerResponse'
@@ -16,8 +16,8 @@ export abstract class OffscreenSystem implements IEventHandler {
     readonly eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
     canvas: HTMLCanvasElement | OffscreenCanvas = null
 
-    constructor(readonly worker: OffscreenBackend) {
-        this.worker.onMessageFromLayer = (msg) => this.processMessage(msg)
+    constructor(readonly worker: TypedWorkerBackend<OffscreenWorkerMessage>) {
+        this.worker.onMessageFromFrontend = (msg) => this.processMessage(msg)
     }
 
     abstract onCacheReady(): any
