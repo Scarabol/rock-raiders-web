@@ -5,6 +5,9 @@ export class WadFileSelectionModal {
     public onStart: (wad0Url: string, wad1Url: string) => any = null
 
     private readonly modal: Modal
+    private readonly startButtons: HTMLButtonElement[] = []
+    private readonly progressGroup: HTMLDivElement
+    private readonly progressBars: HTMLDivElement[] = []
 
     constructor(parentId: string) {
         const rootElement = getElementByIdOrThrow(parentId).appendChild(document.createElement('div'))
@@ -24,15 +27,15 @@ export class WadFileSelectionModal {
         modalHeader.classList.add('modal-header')
         const modalTitle = modalHeader.appendChild(document.createElement('h5'))
         modalTitle.classList.add('modal-title')
-        modalTitle.innerText = 'Load .wad files'
+        modalTitle.innerText = 'Rock Raiders Web'
         modalTitle.id = 'wadfileSelectModalLabel'
         rootElement.setAttribute('aria-labelledby', modalTitle.id)
 
         const modalBody = modalContent.appendChild(document.createElement('div'))
         modalBody.classList.add('modal-body')
 
-        const hint = modalBody.appendChild(document.createElement('p'))
-        hint.innerText = 'Assets not included! In order to play the game, please select the game files.'
+        const title = modalBody.appendChild(document.createElement('h6'))
+        title.innerText = 'Select game files to start'
 
         const navTabs = modalBody.appendChild(document.createElement('nav'))
         const navTabList = navTabs.appendChild(document.createElement('div'))
@@ -40,16 +43,45 @@ export class WadFileSelectionModal {
         navTabList.classList.add('nav', 'nav-tabs')
         navTabList.setAttribute('role', 'tablist')
 
-        const navFileBtn = WadFileSelectionModal.appendNavButton(navTabList, true, 'nav-file-tab', 'nav-file', 'Local files (recommended)')
-        // const navUrlBtn = WadFileSelectionModal.appendNavButton(navTabList, false, 'nav-url-tab', 'nav-url', 'Online from URL')
+        const urlTabActive = true
+        const navUrlBtn = WadFileSelectionModal.appendNavButton(navTabList, urlTabActive, 'nav-url-tab', 'nav-url', 'Online from URL')
+        const navFileBtn = WadFileSelectionModal.appendNavButton(navTabList, !urlTabActive, 'nav-file-tab', 'nav-file', 'Modded files from local')
 
         const navTabContent = modalBody.appendChild(document.createElement('div'))
         navTabContent.classList.add('tab-content')
-        this.appendNavFileTab(navTabContent, navFileBtn.id)
-        // this.appendNavUrlTab(navTabContent, navUrlBtn.id)
+        const navUrlTab = WadFileSelectionModal.appendNavTab(navTabContent, urlTabActive, 'nav-url', navUrlBtn.id)
+        this.addUrlLangButton(navUrlTab, 'German', '🇩🇪', 'https://scarabol.github.io/wad-editor/de/wad/RR0.wad', 'https://scarabol.github.io/wad-editor/de/wad/RR1.wad')
+        this.addUrlLangButton(navUrlTab, 'English', '🇺🇸', 'https://scarabol.github.io/wad-editor/en/wad/RR0.wad', 'https://scarabol.github.io/wad-editor/en/wad/RR1.wad')
+        this.appendNavFileTab(navTabContent, !urlTabActive, navFileBtn.id)
+
+        this.progressGroup = modalBody.appendChild(document.createElement('div'))
+        this.progressGroup.style.display = 'none'
+
+        const progressHint = this.progressGroup.appendChild(document.createElement('p'))
+        progressHint.classList.add('mt-3')
+        progressHint.innerText = 'Downloading... please wait'
+
+        for (let c = 0; c < 2; c++) {
+            const progress = this.progressGroup.appendChild(document.createElement('div'))
+            progress.classList.add('progress', 'mt-3')
+
+            const progressBar = progress.appendChild(document.createElement('div'))
+            progressBar.classList.add('progress-bar')
+            progressBar.setAttribute('role', 'progressbar')
+            progressBar.setAttribute('aria-valuenow', '0')
+            progressBar.setAttribute('aria-valuemin', '0')
+            progressBar.setAttribute('aria-valuemax', '100')
+            this.progressBars.push(progressBar)
+        }
 
         // rootElement has to be a valid bootstrap HTML modal before we can instantiate it
         this.modal = new Modal(rootElement, {backdrop: 'static', keyboard: false})
+    }
+
+    public setProgress(progressBar: number, progress: number, total: number) {
+        const progressLabel = `${Math.round(progress * 100 / total)}%`
+        this.progressBars[progressBar].innerText = progressLabel
+        this.progressBars[progressBar].style.width = progressLabel
     }
 
     private static appendNavButton(parent: HTMLDivElement, active: boolean, id: string, controlTarget: string, innerText: string) {
@@ -67,24 +99,33 @@ export class WadFileSelectionModal {
         return navBtn
     }
 
-    private appendNavFileTab(parent: HTMLDivElement, labelledBy: string) {
-        const navFileTab = WadFileSelectionModal.appendNavTab(parent, true, 'nav-file', labelledBy)
+    private appendNavFileTab(parent: HTMLDivElement, active: boolean, labelledBy: string) {
+        const navFileTab = WadFileSelectionModal.appendNavTab(parent, active, 'nav-file', labelledBy)
 
-        const wad0File = WadFileSelectionModal.appendWadFileGroup(navFileTab, 'wad0-file', 'LegoRR0.wad')
-        const wad1File = WadFileSelectionModal.appendWadFileGroup(navFileTab, 'wad1-file', 'LegoRR1.wad')
+        const wad0File = WadFileSelectionModal.appendWadFileGroup(navFileTab, 'wad0-file', 'RR0.wad')
+        const wad1File = WadFileSelectionModal.appendWadFileGroup(navFileTab, 'wad1-file', 'RR1.wad')
 
         const btnStartFile = navFileTab.appendChild(document.createElement('button'))
+        this.startButtons.push(btnStartFile)
         btnStartFile.type = 'submit'
         btnStartFile.classList.add('btn', 'btn-primary', 'float-end')
         btnStartFile.id = 'button-start-file'
         btnStartFile.innerText = 'Start Game'
         btnStartFile.addEventListener('click', () => {
-            btnStartFile.disabled = true
-            this.hide()
-            const wad0FileUrl = URL.createObjectURL(wad0File.files[0])
-            const wad1FileUrl = URL.createObjectURL(wad1File.files[0])
-            this.onStart(wad0FileUrl, wad1FileUrl)
+            this.setButtonsDisabled(true)
+            try {
+                const wad0FileUrl = URL.createObjectURL(wad0File.files[0])
+                const wad1FileUrl = URL.createObjectURL(wad1File.files[0])
+                this.onStart(wad0FileUrl, wad1FileUrl)
+            } catch (e) {
+                console.error(e)
+                this.setButtonsDisabled(false)
+            }
         })
+    }
+
+    private setButtonsDisabled(disabled: boolean) {
+        this.startButtons.forEach((b) => b.disabled = disabled)
     }
 
     private static appendWadFileGroup(parent: HTMLDivElement, id: string, filename: string) {
@@ -102,28 +143,19 @@ export class WadFileSelectionModal {
         return wadFileInput
     }
 
-    // private appendNavUrlTab(parent: HTMLDivElement, labelledBy: string) {
-    //     const navUrlTab = WadFileSelectionModal.appendNavTab(parent, false, 'nav-url', labelledBy)
-    //
-    //     const urlHint = navUrlTab.appendChild(document.createElement('div'))
-    //     urlHint.classList.add('my-3')
-    //     urlHint.innerText = 'Direct links with correct Allow-Origin-CORS-Headers required here.'
-    //
-    //     const wad0Url = WadFileSelectionModal.appendWadUrlGroup(navUrlTab, 'wad0-url', 'LegoRR0.wad', 'https://drive.google.com/uc?export=download&id=11t9AJnGCWnEWlLxSsYQeB_Y4jrKfxVxQ')
-    //     const wad1Url = WadFileSelectionModal.appendWadUrlGroup(navUrlTab, 'wad1-url', 'LegoRR1.wad', 'https://drive.google.com/uc?export=download&id=11t9AJnGCWnEWlLxSsYQeB_Y4jrKfxVxQ')
-    //
-    //     const btnStartUrl = navUrlTab.appendChild(document.createElement('button'))
-    //     btnStartUrl.type = 'submit'
-    //     btnStartUrl.classList.add('btn', 'btn-primary', 'float-end')
-    //     btnStartUrl.id = 'button-start-url'
-    //     btnStartUrl.innerText = 'Start Game'
-    //     btnStartUrl.addEventListener('click', () => {
-    //         btnStartUrl.disabled = true
-    //         this.hide()
-    //         // XXX show loading progress for WAD files
-    //         this.onStart(wad0Url.value, wad1Url.value)
-    //     })
-    // }
+    private addUrlLangButton(navUrlTab: HTMLDivElement, lang: string, flag: string, wad0Url: string, wad1Url: string) {
+        const btnStartUrl = navUrlTab.appendChild(document.createElement('button'))
+        this.startButtons.push(btnStartUrl)
+        btnStartUrl.type = 'submit'
+        btnStartUrl.classList.add('btn', 'btn-primary', 'mt-3')
+        btnStartUrl.id = 'button-start-url'
+        btnStartUrl.innerText = 'Start with ' + flag + ' ' + lang + ' game files'
+        btnStartUrl.addEventListener('click', () => {
+            this.setButtonsDisabled(true)
+            this.progressGroup.style.display = 'block'
+            this.onStart(wad0Url, wad1Url)
+        })
+    }
 
     private static appendNavTab(parent: HTMLDivElement, active: boolean, id: string, labelledBy: string) {
         const navTab = parent.appendChild(document.createElement('div'))
@@ -134,22 +166,6 @@ export class WadFileSelectionModal {
         navTab.setAttribute('aria-labelledby', labelledBy)
         return navTab
     }
-
-    // private static appendWadUrlGroup(parent: HTMLDivElement, id: string, filename: string, example: string) {
-    //     const wadUrlGroup = parent.appendChild(document.createElement('div'))
-    //     wadUrlGroup.classList.add('my-3')
-    //     const wadUrlLabel = wadUrlGroup.appendChild(document.createElement('label'))
-    //     wadUrlLabel.setAttribute('for', id)
-    //     wadUrlLabel.classList.add('form-label')
-    //     wadUrlLabel.innerHTML = `Enter url for <span class="fw-bold">${filename}</span> here:`
-    //     const wadUrlInput = wadUrlGroup.appendChild(document.createElement('input'))
-    //     wadUrlInput.type = 'url'
-    //     wadUrlInput.classList.add('form-control')
-    //     wadUrlInput.id = id
-    //     wadUrlInput.required = true
-    //     wadUrlInput.value = example
-    //     return wadUrlInput
-    // }
 
     public show() {
         this.modal.show()

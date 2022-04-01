@@ -1,6 +1,6 @@
 import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
 import { GithubBox } from '../site/github/github-box'
-import { WadFileSelectionModal } from '../site/modal/WadFileSelectionModal'
+import { WadFileSelectionModal } from '../site/wadModal/WadFileSelectionModal'
 import { GameState } from './game/model/GameState'
 import { ObjectListLoader } from './game/ObjectListLoader'
 import { DEV_MODE } from './params'
@@ -30,6 +30,7 @@ wadFileSelectModal.onStart = (wad0Url, wad1Url) => {
     ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
 }
 ResourceManager.onLoadingMessage = (msg: string) => {
+    wadFileSelectModal.hide()
     loadingLayer.setLoadingMessage(msg)
 }
 ResourceManager.onCacheMissed = () => {

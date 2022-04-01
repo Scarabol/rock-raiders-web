@@ -1,18 +1,15 @@
 import { getElementByIdOrThrow } from '../../src/core/Util'
 import { ASSET_CACHE_DB_NAME } from '../../src/params'
-import './clearCacheButton.css'
+import './ClearCacheButton.css'
 
 export class ClearCacheButton {
-    rootElement: HTMLDivElement
+    rootElement: HTMLButtonElement
 
     constructor(parentId: string) {
-        this.rootElement = getElementByIdOrThrow(parentId).appendChild(document.createElement('div'))
-        this.rootElement.classList.add('clear-cache-box')
-
-        const button = this.rootElement.appendChild(document.createElement('button'))
-        button.classList.add('btn', 'btn-info')
-        button.innerText = 'Clear asset cache and restart'
-        button.onclick = () => {
+        this.rootElement = getElementByIdOrThrow(parentId).appendChild(document.createElement('button'))
+        this.rootElement.classList.add('clear-cache-btn')
+        this.rootElement.innerText = 'Clear asset cache and restart'
+        this.rootElement.onclick = () => {
             indexedDB.deleteDatabase(ASSET_CACHE_DB_NAME)
             location.reload()
         }
