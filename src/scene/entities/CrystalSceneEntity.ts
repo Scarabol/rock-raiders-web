@@ -14,7 +14,7 @@ export class CrystalSceneEntity extends SceneEntity {
         this.animGlowMesh = ResourceManager.getLwoModel('MiscAnims/Crystal/vlp_greencrystal.lwo')
         this.animGlowMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
             mat.blending = AdditiveBlending
-            mat.depthWrite = false // otherwise transparent parts "carve out" objects behind
+            mat.depthWrite = false // otherwise, transparent parts "carve out" objects behind
             mat.setOpacity(0.5) // XXX read from LWO file?
         })
         this.animGlowMesh.scale.set(1.75, 1.75, 1.75) // XXX derive from texture scale?

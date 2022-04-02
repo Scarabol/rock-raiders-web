@@ -4,7 +4,6 @@ import { DeselectAll } from '../../../event/LocalEvents'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { WorldManager } from '../../WorldManager'
 import { BarrierActivity } from '../activities/BarrierActivity'
-import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { CompletePowerPathJob } from '../job/surface/CompletePowerPathJob'
 import { Surface } from '../map/Surface'
@@ -116,10 +115,6 @@ export class BuildingSite {
         })
         new BuildingEntity(this.worldMgr, this.buildingType)
             .placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
-    }
-
-    getDropAction(): RaiderActivity {
-        return RaiderActivity.Place
     }
 
     cancelSite() {

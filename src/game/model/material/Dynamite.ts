@@ -2,7 +2,6 @@ import { DynamiteSceneEntity } from '../../../scene/entities/DynamiteSceneEntity
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { CarryDynamiteJob } from '../job/carry/CarryDynamiteJob'
-import { CarryJob } from '../job/carry/CarryJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
@@ -12,7 +11,7 @@ export class Dynamite extends MaterialEntity {
     targetSurface: Surface
 
     constructor(worldMgr: WorldManager, surface: Surface) {
-        super(worldMgr, EntityType.DYNAMITE)
+        super(worldMgr, EntityType.DYNAMITE, PriorityIdentifier.DESTRUCTION)
         this.sceneEntity = new DynamiteSceneEntity(this.worldMgr.sceneMgr)
         this.targetSurface = surface
     }
@@ -25,11 +24,7 @@ export class Dynamite extends MaterialEntity {
         }
     }
 
-    createCarryJob(): CarryJob<Dynamite> {
+    createCarryJob(): CarryDynamiteJob {
         return new CarryDynamiteJob(this)
-    }
-
-    getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.DESTRUCTION
     }
 }

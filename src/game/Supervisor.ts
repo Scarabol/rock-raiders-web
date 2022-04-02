@@ -1,7 +1,7 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { UpdatePriorities } from '../event/LocalEvents'
-import { JobCreateEvent, JobDeleteEvent } from '../event/WorldEvents'
+import { JobCreateEvent } from '../event/WorldEvents'
 import { CHECK_CLEAR_RUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingPathTarget } from './model/building/BuildingPathTarget'
@@ -18,8 +18,6 @@ import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { WorldManager } from './WorldManager'
 
 export interface SupervisedJob extends Job {
-    cancel(): void
-
     getPriorityIdentifier(): PriorityIdentifier
 
     hasFulfiller(): boolean
@@ -35,9 +33,6 @@ export class Supervisor {
     constructor(readonly worldMgr: WorldManager) {
         EventBus.registerEventListener(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
             this.jobs.push(event.job)
-        })
-        EventBus.registerEventListener(EventKey.JOB_DELETE, (event: JobDeleteEvent) => {
-            event.job.cancel()
         })
         EventBus.registerEventListener(EventKey.UPDATE_PRIORITIES, (event: UpdatePriorities) => {
             this.priorityList = [...event.priorityList]

@@ -5,7 +5,6 @@ import { SelectPanelType } from '../../event/LocalEvents'
 import { TILESIZE } from '../../params'
 import { BuildingEntity } from './building/BuildingEntity'
 import { EntityType } from './EntityType'
-import { FulfillerEntity } from './FulfillerEntity'
 import { Job } from './job/Job'
 import { GetToolJob } from './job/raider/GetToolJob'
 import { MoveJob } from './job/raider/MoveJob'
@@ -49,8 +48,8 @@ export class GameSelection {
     set(selection: GameSelection) {
         this.doubleSelect = null // XXX refactor this only reset if needed
         let added = false
-        added = this.syncSelection(this.raiders, selection.raiders) || added
-        added = this.syncSelection(this.vehicles, selection.vehicles) || added
+        added = this.syncRaiderSelection(this.raiders, selection.raiders) || added
+        added = this.syncVehicleSelection(this.vehicles, selection.vehicles) || added
         if (this.building !== selection.building) {
             this.building?.deselect()
             if (selection.building?.isInSelection()) {
@@ -86,7 +85,7 @@ export class GameSelection {
         if (added) SoundManager.playSample(Sample.SFX_Okay)
     }
 
-    private syncSelection(before: FulfillerEntity[], after: FulfillerEntity[]): boolean {
+    private syncRaiderSelection(before: Raider[], after: Raider[]): boolean {
         let added = false
         const deselected = before.filter((r) => {
             const deselected = after.indexOf(r) === -1
@@ -99,9 +98,28 @@ export class GameSelection {
                     before.push(r)
                     added = true
                 }
-            } else if (r.stats['CanDoubleSelect'] && r['driver']) { // TODO refactor this
-                if (r.doubleSelect()) {
-                    this.doubleSelect = r as VehicleEntity
+            }
+        })
+        deselected.forEach((r) => before.remove(r))
+        return added
+    }
+
+    private syncVehicleSelection(before: VehicleEntity[], after: VehicleEntity[]): boolean {
+        let added = false
+        const deselected = before.filter((v) => {
+            const deselected = after.indexOf(v) === -1
+            if (deselected) v.deselect()
+            return deselected
+        })
+        after.forEach((v) => {
+            if (before.indexOf(v) === -1) {
+                if (v.select()) {
+                    before.push(v)
+                    added = true
+                }
+            } else if (v.stats.CanDoubleSelect && !!v.driver) {
+                if (v.doubleSelect()) {
+                    this.doubleSelect = v
                     added = true
                 }
             }

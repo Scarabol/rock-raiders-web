@@ -9,17 +9,13 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 
 export abstract class MaterialEntity implements Disposable {
-    entityType: EntityType
     sceneEntity: SceneEntity = null
     positionAsPathTargets: PathTarget[] = []
 
-    protected constructor(readonly worldMgr: WorldManager, entityType: EntityType) {
-        this.entityType = entityType
+    protected constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType, readonly priorityIdentifier: PriorityIdentifier) {
     }
 
     abstract findCarryTargets(): CarryPathTarget[]
-
-    abstract getPriorityIdentifier(): PriorityIdentifier
 
     createCarryJob(): CarryJob<MaterialEntity> {
         return new CarryJob(this) // TODO better create only one job per item?

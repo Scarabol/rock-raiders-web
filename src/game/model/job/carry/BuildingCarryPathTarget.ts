@@ -10,11 +10,8 @@ import { MaterialEntity } from '../../material/MaterialEntity'
 import { CarryPathTarget } from './CarryPathTarget'
 
 export class BuildingCarryPathTarget extends CarryPathTarget {
-    building: BuildingEntity
-
-    constructor(building: BuildingEntity) {
+    constructor(readonly building: BuildingEntity) {
         super(building.getDropPosition2D())
-        this.building = building
     }
 
     getFocusPoint(): Vector2 {

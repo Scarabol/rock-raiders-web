@@ -1,5 +1,4 @@
 import { RaiderActivity } from '../../activities/RaiderActivity'
-import { FulfillerEntity } from '../../FulfillerEntity'
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
@@ -39,7 +38,7 @@ export class ReinforceJob extends ShareableJob {
         return RaiderActivity.Reinforce
     }
 
-    getExpectedTimeLeft(fulfiller: FulfillerEntity): number {
+    getExpectedTimeLeft(): number {
         return 2700
     }
 

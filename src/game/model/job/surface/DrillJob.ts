@@ -1,5 +1,4 @@
 import { RaiderActivity } from '../../activities/RaiderActivity'
-import { FulfillerEntity } from '../../FulfillerEntity'
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
@@ -42,10 +41,10 @@ export class DrillJob extends ShareableJob {
         return RaiderActivity.Drill
     }
 
-    getExpectedTimeLeft(fulfiller: FulfillerEntity): number {
+    getExpectedTimeLeft(): number {
         // TODO refactor this with surface "health" or "stability", which is reduced by drilling
-        const drillPerSecond = this.fulfiller.map((f) => f.stats[this.surface.surfaceType.statsDrillName][f.level])
-            .filter((n) => !isNaN(n) && n !== 0).map((n) => 1 / n).reduce((l, r) => l + r, 0)
+        const drillPerSecond = this.fulfiller.map((f) => f.getDrillTime(this.surface))
+            .map((drillTime) => drillTime > 0 ? 1 / drillTime : 0).reduce((l, r) => l + r, 0)
         if (!drillPerSecond) {
             console.warn(`Unexpected drill per second ${drillPerSecond}`)
             return 120000

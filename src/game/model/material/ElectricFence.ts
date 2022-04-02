@@ -18,7 +18,7 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
     beamUpAnimator: BeamUpAnimator = null
 
     constructor(worldMgr: WorldManager, targetSurface: Surface) {
-        super(worldMgr, EntityType.ELECTRIC_FENCE)
+        super(worldMgr, EntityType.ELECTRIC_FENCE, PriorityIdentifier.CONSTRUCTION)
         this.sceneEntity = new ElectricFenceSceneEntity(this.worldMgr.sceneMgr)
         this.targetSurface = targetSurface
         this.target = [new CarryPathTarget(targetSurface.getCenterWorld2D())]
@@ -38,10 +38,6 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
 
     createCarryJob(): CarryFenceJob {
         return new CarryFenceJob(this)
-    }
-
-    getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.CONSTRUCTION
     }
 
     isSelectable(): boolean {

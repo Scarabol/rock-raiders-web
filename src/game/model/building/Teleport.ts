@@ -4,8 +4,11 @@ import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent } from '../../../event/LocalEvents'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
-import { FulfillerEntity } from '../FulfillerEntity'
 import { MoveJob } from '../job/raider/MoveJob'
+import { Raider } from '../raider/Raider'
+import { VehicleEntity } from '../vehicle/VehicleEntity'
+
+type TeleportEntity = Raider | VehicleEntity
 
 export class Teleport {
     teleportedEntityTypes: EntityType[] = []
@@ -20,7 +23,7 @@ export class Teleport {
         return this.powered && !this.operating && this.teleportedEntityTypes.includes(entityType)
     }
 
-    teleportIn<T extends FulfillerEntity>(entity: T, listing: T[], beamListing: T[], worldPosition: Vector2, heading: number, walkOutPos: Vector2) {
+    teleportIn(entity: TeleportEntity, listing: TeleportEntity[], beamListing: TeleportEntity[], worldPosition: Vector2, heading: number, walkOutPos: Vector2) {
         this.operating = true
         entity.sceneEntity.addToScene(worldPosition, heading)
         entity.sceneEntity.playPositionalAudio(Sample[Sample.SND_teleport], false)

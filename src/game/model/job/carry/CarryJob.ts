@@ -6,13 +6,11 @@ import { CarryPathTarget } from './CarryPathTarget'
 import { SiteCarryPathTarget } from './SiteCarryPathTarget'
 
 export class CarryJob<I extends MaterialEntity> extends ShareableJob {
-    item: I
     targets: CarryPathTarget[] = []
     actualTarget: CarryPathTarget = null
 
-    constructor(item: I) {
+    constructor(readonly item: I) {
         super()
-        this.item = item
     }
 
     getWorkplaces(): CarryPathTarget[] {
@@ -23,7 +21,7 @@ export class CarryJob<I extends MaterialEntity> extends ShareableJob {
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return this.item.getPriorityIdentifier()
+        return this.item.priorityIdentifier
     }
 
     setActualWorkplace(target: CarryPathTarget) {

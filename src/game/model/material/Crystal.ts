@@ -1,4 +1,3 @@
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { CrystalSceneEntity } from '../../../scene/entities/CrystalSceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
@@ -9,7 +8,7 @@ import { MaterialEntity } from './MaterialEntity'
 
 export class Crystal extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
-        super(worldMgr, EntityType.CRYSTAL)
+        super(worldMgr, EntityType.CRYSTAL, PriorityIdentifier.CRYSTAL)
         this.sceneEntity = new CrystalSceneEntity(this.worldMgr.sceneMgr)
         this.sceneEntity.pickSphere.userData = {entityType: EntityType.CRYSTAL, materialEntity: this}
     }
@@ -20,13 +19,5 @@ export class Crystal extends MaterialEntity {
         const powerStations = this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.POWER_STATION)
         if (powerStations.length > 0) return powerStations
         return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
-    }
-
-    get stats() {
-        return ResourceManager.configuration.stats.PowerCrystal
-    }
-
-    getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.CRYSTAL
     }
 }

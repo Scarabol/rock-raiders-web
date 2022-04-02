@@ -1,22 +1,21 @@
 import { SupervisedJob } from '../../Supervisor'
-import { FulfillerEntity } from '../FulfillerEntity'
-import { AbstractJob } from './Job'
+import { AbstractJob, JobFulfiller } from './Job'
 import { JobState } from './JobState'
 import { PriorityIdentifier } from './PriorityIdentifier'
 
 export abstract class ShareableJob extends AbstractJob implements SupervisedJob {
-    protected fulfiller: FulfillerEntity[] = []
+    protected fulfiller: JobFulfiller[] = []
 
     abstract getPriorityIdentifier(): PriorityIdentifier
 
-    assign(fulfiller: FulfillerEntity) {
+    assign(fulfiller: JobFulfiller) {
         const index = this.fulfiller.indexOf(fulfiller)
         if (fulfiller && index === -1) {
             this.fulfiller.push(fulfiller)
         }
     }
 
-    unAssign(fulfiller: FulfillerEntity) {
+    unAssign(fulfiller: JobFulfiller) {
         this.fulfiller.remove(fulfiller)
     }
 

@@ -3,7 +3,7 @@ import { Sample } from '../../../audio/Sample'
 import { SoundManager } from '../../../audio/SoundManager'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../../event/LocalEvents'
-import { CavernDiscovered, JobCreateEvent, JobDeleteEvent, OreFoundEvent } from '../../../event/WorldEvents'
+import { CavernDiscovered, JobCreateEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
 import { SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
@@ -195,7 +195,7 @@ export class Surface implements Selectable {
     }
 
     private static safeRemoveJob(job: DrillJob | ReinforceJob | CarryDynamiteJob | ClearRubbleJob): null {
-        if (job) EventBus.publishEvent(new JobDeleteEvent(job))
+        job?.cancel()
         return null
     }
 
@@ -488,7 +488,7 @@ export class Surface implements Selectable {
             if (!targetBuilding) throw new Error('Could not find toolstation to spawn dynamite')
             const dynamite = new Dynamite(this.worldMgr, this)
             dynamite.sceneEntity.addToScene(targetBuilding.getDropPosition2D(), targetBuilding.sceneEntity.getHeading())
-            this.dynamiteJob = new CarryDynamiteJob(dynamite)
+            this.dynamiteJob = dynamite.createCarryJob()
             this.updateJobColor()
             EventBus.publishEvent(new JobCreateEvent(this.dynamiteJob))
         }

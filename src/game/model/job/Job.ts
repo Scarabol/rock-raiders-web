@@ -1,19 +1,22 @@
 import { RaiderActivity } from '../activities/RaiderActivity'
-import { FulfillerEntity } from '../FulfillerEntity'
 import { Surface } from '../map/Surface'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
+import { Raider } from '../raider/Raider'
 import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
+import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { JobState } from './JobState'
+
+export type JobFulfiller = Raider | VehicleEntity
 
 export interface Job {
     jobState: JobState
     surface: Surface
 
-    assign(fulfiller: FulfillerEntity): void
+    assign(fulfiller: JobFulfiller): void
 
-    unAssign(fulfiller: FulfillerEntity): void
+    unAssign(fulfiller: JobFulfiller): void
 
     getRequiredTool(): RaiderTool
 
@@ -31,16 +34,16 @@ export interface Job {
 
     getWorkActivity(): RaiderActivity
 
-    getExpectedTimeLeft(fulfiller: FulfillerEntity): number | null
+    getExpectedTimeLeft(): number
 }
 
 export abstract class AbstractJob implements Job {
     jobState: JobState = JobState.INCOMPLETE
     surface: Surface = null
 
-    abstract assign(fulfiller: FulfillerEntity): void
+    abstract assign(fulfiller: JobFulfiller): void
 
-    abstract unAssign(fulfiller: FulfillerEntity): void
+    abstract unAssign(fulfiller: JobFulfiller): void
 
     getRequiredTool(): RaiderTool {
         return RaiderTool.NONE
@@ -71,7 +74,7 @@ export abstract class AbstractJob implements Job {
         return null
     }
 
-    getExpectedTimeLeft(fulfiller: FulfillerEntity): number | null {
+    getExpectedTimeLeft(): number {
         return null
     }
 }

@@ -1,6 +1,5 @@
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
-import { FulfillerEntity } from '../../FulfillerEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
 
@@ -27,7 +26,7 @@ export class UpgradeRaiderJob extends RaiderJob {
         return RaiderActivity.Train
     }
 
-    getExpectedTimeLeft(fulfiller: FulfillerEntity): number {
+    getExpectedTimeLeft(): number {
         return 30000 // XXX adjust upgrade time
     }
 }

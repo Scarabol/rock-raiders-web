@@ -4,7 +4,6 @@ import { EntityManager } from '../../../EntityManager'
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
 import { BuildingPathTarget } from '../../building/BuildingPathTarget'
-import { FulfillerEntity } from '../../FulfillerEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTraining } from '../../raider/RaiderTraining'
 import { RaiderJob } from './RaiderJob'
@@ -43,7 +42,7 @@ export class TrainRaiderJob extends RaiderJob {
         return RaiderActivity.Train
     }
 
-    getExpectedTimeLeft(fulfiller: FulfillerEntity): number {
+    getExpectedTimeLeft(): number {
         return 10000 // XXX adjust training time
     }
 }

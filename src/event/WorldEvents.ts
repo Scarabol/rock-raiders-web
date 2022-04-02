@@ -28,12 +28,6 @@ export class JobCreateEvent extends JobEvent {
     }
 }
 
-export class JobDeleteEvent extends JobEvent {
-    constructor(job: SupervisedJob) {
-        super(EventKey.JOB_DELETE, job)
-    }
-}
-
 export class RequestedRaidersChanged extends WorldEvent {
     numRequested: number
 

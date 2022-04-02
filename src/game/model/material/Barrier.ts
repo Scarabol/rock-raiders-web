@@ -12,7 +12,7 @@ export class Barrier extends MaterialEntity {
     targets: SiteCarryPathTarget[]
 
     constructor(worldMgr: WorldManager, location: BarrierLocation, site: BuildingSite) {
-        super(worldMgr, EntityType.BARRIER)
+        super(worldMgr, EntityType.BARRIER, PriorityIdentifier.CONSTRUCTION)
         this.sceneEntity = new BarrierSceneEntity(this.worldMgr.sceneMgr)
         this.targets = [new SiteCarryPathTarget(site, location.position, location.heading)]
     }
@@ -23,9 +23,5 @@ export class Barrier extends MaterialEntity {
         } else {
             return this.targets
         }
-    }
-
-    getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.CONSTRUCTION
     }
 }
