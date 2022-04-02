@@ -33,7 +33,15 @@ export class ResourceCache {
         const imgData = this.getImageData(imageName)
         const context = createContext(imgData.width, imgData.height)
         context.putImageData(imgData, 0, 0)
+        if (imageName.toLowerCase().endsWith('/loading.bmp') || imageName.toLowerCase().endsWith('/menubgpic.bmp')) {
+            this.drawCopyrightCover(context)
+        }
         return context.canvas
+    }
+
+    private static drawCopyrightCover(context: SpriteContext) {
+        context.fillStyle = '#f00'
+        context.fillRect(38, 9, 131, 131)
     }
 
     static getImageOrNull(imageName: string): SpriteImage | null {
