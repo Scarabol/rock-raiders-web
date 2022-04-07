@@ -3,7 +3,6 @@ import { EventBus } from '../../../event/EventBus'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { WorldManager } from '../../WorldManager'
-import { BarrierActivity } from '../activities/BarrierActivity'
 import { EntityType } from '../EntityType'
 import { CompletePowerPathJob } from '../job/surface/CompletePowerPathJob'
 import { Surface } from '../map/Surface'
@@ -104,15 +103,7 @@ export class BuildingSite {
     teleportIn() {
         this.worldMgr.entityMgr.completedBuildingSites.remove(this)
         this.surfaces.forEach((s) => s.site = null)
-        this.onSiteByType.getOrUpdate(EntityType.BARRIER, () => []).forEach((item: MaterialEntity) => {
-            item.sceneEntity.changeActivity(BarrierActivity.Teleport, () => item.disposeFromWorld())
-        })
-        this.onSiteByType.getOrUpdate(EntityType.CRYSTAL, () => []).forEach((item: MaterialEntity) => {
-            item.disposeFromWorld()
-        })
-        this.onSiteByType.getOrUpdate(EntityType.ORE, () => []).forEach((item: MaterialEntity) => {
-            item.disposeFromWorld()
-        })
+        this.onSiteByType.forEach((byType: MaterialEntity[]) => byType.forEach((item: MaterialEntity) => item.disposeFromWorld()))
         new BuildingEntity(this.worldMgr, this.buildingType)
             .placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
     }

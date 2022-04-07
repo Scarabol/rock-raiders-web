@@ -7,6 +7,7 @@ import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { BarrierLocation } from './BarrierLocation'
 import { MaterialEntity } from './MaterialEntity'
+import { BarrierActivity } from '../activities/BarrierActivity'
 
 export class Barrier extends MaterialEntity {
     targets: SiteCarryPathTarget[]
@@ -23,5 +24,9 @@ export class Barrier extends MaterialEntity {
         } else {
             return this.targets
         }
+    }
+
+    disposeFromWorld() {
+        this.sceneEntity.changeActivity(BarrierActivity.Teleport, () => super.disposeFromWorld())
     }
 }
