@@ -69,10 +69,6 @@ export class SceneEntity {
         this.group.rotation.y = heading
     }
 
-    lookAt(target: Vector3) {
-        this.group.lookAt(target)
-    }
-
     makeSelectable(entity: { stats: PickSphereStats } & Selectable, pickSphereHeightOffset: number = null) {
         this.addPickSphere(entity.stats.PickSphere, pickSphereHeightOffset)
         this.pickSphere.userData = {selectable: entity}
@@ -92,7 +88,7 @@ export class SceneEntity {
         this.add(this.pickSphere)
     }
 
-    getBoundingSphereCenter(): Vector3 {
+    private getBoundingSphereCenter(): Vector3 {
         const center = new Vector3()
         new Box3().setFromObject(this.group).getCenter(center)
         return center
@@ -150,7 +146,7 @@ export class SceneEntity {
     }
 
     headTowards(location: Vector2) {
-        this.lookAt(new Vector3(location.x, this.group.position.y, location.y))
+        this.group.lookAt(new Vector3(location.x, this.group.position.y, location.y))
     }
 
     update(elapsedMs: number) {
