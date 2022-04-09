@@ -13,7 +13,7 @@ export class MapPanel extends Panel {
     surfaceContext: SpriteContext
     entityContext: SpriteContext
     offset: Vector2 = new Vector2()
-    surfaceRectSize: number = 10 / TILESIZE
+    surfaceRectSize: number = 10
     surfaceRectMargin: number = 1
     surfaceMap: MapSurfaceRect[][] = []
 
@@ -104,7 +104,7 @@ export class MapPanel extends Panel {
         this.notifyRedraw()
     }
 
-    private mapToMap(vec: Vector2): Vector2 {
-        return vec.multiplyScalar(this.surfaceRectSize).round().subScalar(1).sub(this.offset)
+    private mapToMap(vec: { x: number, y: number }): Vector2 {
+        return new Vector2(vec.x, vec.y).multiplyScalar(this.surfaceRectSize / TILESIZE).round().subScalar(1).sub(this.offset)
     }
 }
