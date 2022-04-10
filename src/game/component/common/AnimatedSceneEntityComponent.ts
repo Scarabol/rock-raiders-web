@@ -63,11 +63,7 @@ export class AnimatedSceneEntityComponent implements GameComponent {
         this.sceneEntity.addToScene(worldPosition, radHeading)
     }
 
-    set visible(state: boolean) {
-        this.sceneEntity.visible = state
-    }
-
-    get visible(): boolean {
-        return this.sceneEntity.visible
+    makeVisible() {
+        this.sceneEntity.visible = true
     }
 }

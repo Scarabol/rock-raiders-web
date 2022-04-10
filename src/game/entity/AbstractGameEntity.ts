@@ -15,7 +15,7 @@ export class AbstractGameEntity {
         return component
     }
 
-    getComponent<T extends GameComponent>(constr: Generic<T>): T | null {
+    getComponent<T extends GameComponent>(constr: Generic<T>): T {
         for (const c of this.components) {
             if (c instanceof constr) {
                 return c as T

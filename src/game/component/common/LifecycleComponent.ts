@@ -17,7 +17,7 @@ export class LifecycleComponent implements GameComponent {
         this.entity.worldMgr.markDead(this.entity)
     }
 
-    isDead() {
+    isDead(): boolean {
         return this.dead
     }
 }

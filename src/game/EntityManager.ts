@@ -212,7 +212,7 @@ export class EntityManager {
             const pos = e.getComponent(PositionComponent).getPosition2D()
             const discovered = pos.x >= minX && pos.x < maxX && pos.y >= minZ && pos.y < maxZ
             if (discovered) {
-                e.getComponent(AnimatedSceneEntityComponent).visible = true
+                e.getComponent(AnimatedSceneEntityComponent).makeVisible()
                 onRemove(e)
             }
             return !discovered
@@ -258,7 +258,7 @@ export class EntityManager {
     }
 
     addEntity(entity: AbstractGameEntity) {
-        const discovered = entity.getComponent(AnimatedSceneEntityComponent).visible
+        const discovered = entity.getComponent(PositionComponent).isDiscovered()
         switch (entity.entityType) {
             case EntityType.BAT:
                 if (discovered) this.bats.add(entity)

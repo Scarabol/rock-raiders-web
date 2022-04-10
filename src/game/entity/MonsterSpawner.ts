@@ -22,41 +22,37 @@ export class MonsterSpawner {
     }
 
     private static addMonsterComponents(entityType: MonsterEntityType, entity: AbstractGameEntity, worldMgr: WorldManager) {
+        entity.addComponent(new PositionComponent())
         switch (entityType) {
             case EntityType.SMALL_SPIDER:
-                entity.addComponent(new PositionComponent())
                 entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/SpiderSB/SpiderSB.ae', 1))
                 entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.SmallSpider))
                 entity.addComponent(new SpiderMovementComponent())
                 entity.addComponent(new LifecycleComponent())
                 break
             case EntityType.BAT:
-                entity.addComponent(new PositionComponent())
                 entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/bat/bat.ae', TILESIZE / 2))
                 entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.Bat))
                 entity.addComponent(new BatMovementComponent())
                 entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
                 break
             case EntityType.ICE_MONSTER:
-                entity.addComponent(new PositionComponent())
-                entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/IceMonster/IceMonster.ae'))
-                entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
-                entity.addComponent(new LifecycleComponent())
+                this.addRockyComponents(entity, worldMgr, 'Creatures/IceMonster/IceMonster.ae')
                 break
             case EntityType.LAVA_MONSTER:
-                entity.addComponent(new PositionComponent())
-                entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/LavaMonster/LavaMonster.ae'))
-                entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
-                entity.addComponent(new LifecycleComponent())
+                this.addRockyComponents(entity, worldMgr, 'Creatures/LavaMonster/LavaMonster.ae')
                 break
             case EntityType.ROCK_MONSTER:
-                entity.addComponent(new PositionComponent())
-                entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/RMonster/RMonster.ae'))
-                entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
-                entity.addComponent(new LifecycleComponent())
+                this.addRockyComponents(entity, worldMgr, 'Creatures/RMonster/RMonster.ae')
                 break
             default:
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
         }
+    }
+
+    private static addRockyComponents(entity: AbstractGameEntity, worldMgr: WorldManager, aeFilename: string) {
+        entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, aeFilename))
+        entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
+        entity.addComponent(new LifecycleComponent())
     }
 }
