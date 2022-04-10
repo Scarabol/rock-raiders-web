@@ -64,6 +64,38 @@ export class Surface {
         this.x = x
         this.y = y
         this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
+        if (this.surfaceType === SurfaceType.LAVA) {
+            const maxTear = 0.1
+            const uv = this.mesh.geometry.attributes.uv
+            const uvArray = [0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1] // topRight, topLeft, bottomLeft, topRight, bottomLeft, bottomRight
+            const targets = uvArray.map((n) => n + Math.random() * maxTear)
+            console.log(targets)
+            const uvTearingSpeed = 0.01
+            const uvTearingStep = 2 * uvTearingSpeed
+            setInterval(() => {
+                for (let c = 0; c < uv.count; c++) {
+                    let u = uv.getX(c)
+                    let v = uv.getY(c)
+                    const du = targets[c] - u
+                    const dv = targets[c + 1] - v
+                    const isAtU = Math.abs(du) < uvTearingStep
+                    const isAtV = Math.abs(dv) < uvTearingStep
+                    if (isAtU && isAtV) {
+                        targets[c] = uvArray[c] + Math.random() * maxTear
+                        targets[c + 1] = uvArray[c + 1] + Math.random() * maxTear
+                    } else {
+                        if (!isAtU) {
+                            u += Math.sign(du) * uvTearingSpeed
+                        }
+                        if (!isAtV) {
+                            v += Math.sign(targets[c] - v) * uvTearingSpeed
+                        }
+                    }
+                    uv.setXY(c, u, v)
+                }
+                uv.needsUpdate = true
+            }, 100)
+        }
         this.terrain.floorGroup.add(this.mesh)
         if (surfaceType === SurfaceType.RUBBLE4 || surfaceType === SurfaceType.RUBBLE3 || surfaceType === SurfaceType.RUBBLE2 || surfaceType === SurfaceType.RUBBLE1) {
             this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
