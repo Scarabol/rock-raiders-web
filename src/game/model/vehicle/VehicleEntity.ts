@@ -134,7 +134,8 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Dispo
                 this.currentPath.locations.shift()
                 return this.determineStep(elapsedMs)
             }
-        } else if (stepLengthSq <= entitySpeedSq + this.currentPath.target.radiusSq) {
+        }
+        if (this.currentPath.target.targetLocation.distanceToSquared(this.sceneEntity.position2D) <= entitySpeedSq + this.currentPath.target.radiusSq) {
             step.targetReached = true
         }
         step.vec.clampLength(0, entitySpeed)
