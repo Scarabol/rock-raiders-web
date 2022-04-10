@@ -1,6 +1,9 @@
+import { Sample } from '../audio/Sample'
+import { SoundManager } from '../audio/SoundManager'
 import { MenuLabelItemCfg } from '../cfg/MenuLabelItemCfg'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
+import { UiElementCallback } from './UiElementState'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {
     labelImgLo: SpriteImage = null
@@ -16,6 +19,13 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
         this.y = layer.cfg.position[1] + cfg.y
         this.actionName = cfg.actionName
         if (this.actionName === 'Next') this.targetIndex = Number(cfg.target.substring('menu'.length)) - 1
+    }
+
+    set onPressed(callback: UiElementCallback) {
+        super.onPressed = () => {
+            SoundManager.playSample(Sample.SFX_ButtonPressed)
+            callback()
+        }
     }
 
     draw(context: SpriteContext) {
