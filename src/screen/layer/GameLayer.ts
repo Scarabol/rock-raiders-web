@@ -50,7 +50,7 @@ export class GameLayer extends ScreenLayer {
         const terrainIntersectionPoint = this.sceneMgr.getTerrainIntersectionPoint(rx, ry)
         const buildMarker = this.sceneMgr.buildMarker
         if (event.eventEnum === POINTER_EVENT.MOVE) {
-            if (terrainIntersectionPoint) this.sceneMgr.setTorchPosition(terrainIntersectionPoint)
+            if (terrainIntersectionPoint) this.sceneMgr.setCursorFloorPosition(terrainIntersectionPoint)
             buildMarker.updatePosition(terrainIntersectionPoint)
             this.entityMgr.selection.doubleSelect?.sceneEntity.pointLaserAt(terrainIntersectionPoint)
         } else if (event.eventEnum === POINTER_EVENT.UP) {

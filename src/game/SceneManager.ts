@@ -1,9 +1,12 @@
-import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, MOUSE, Object3D, PerspectiveCamera, PointLight, Raycaster, Scene, SpotLight, Vector2, Vector3, WebGLRenderer } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { cloneContext } from '../core/ImageHelper'
 import { SpriteImage } from '../core/Sprite'
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
-import { CAMERA_FOV, CAMERA_MAX_DISTANCE, DEV_MODE, KEY_PAN_SPEED, TILESIZE } from '../params'
+import { EventBus } from '../event/EventBus'
+import { EventKey } from '../event/EventKeyEnum'
+import { ToggleAlarmEvent } from '../event/WorldEvents'
+import { ALARM_LIGHT_ROTATION_SPEED, CAMERA_FOV, CAMERA_MAX_DISTANCE, DEV_MODE, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { DebugHelper } from '../screen/DebugHelper'
 import { CustomCameraControls } from './CustomCameraControls'
@@ -33,9 +36,12 @@ export class SceneManager {
     light: PointLight
     terrain: Terrain
     controls: CustomCameraControls
+    cursorFloorPosition: Object3D
     cursorTorchlight: PointLight
     buildMarker: BuildPlacementMarker
     screenshotCallback: (canvas: HTMLCanvasElement) => any
+    alarmLights: SpotLight[] = []
+    alarmLightInterval: NodeJS.Timeout
 
     constructor(canvas: SpriteImage) {
         this.renderer = new WebGLRenderer({antialias: true, canvas: canvas})
@@ -51,6 +57,19 @@ export class SceneManager {
             this.controls.minDistance = ResourceManager.configuration.main.minDist
             this.controls.maxDistance = ResourceManager.configuration.main.maxDist
         }
+        EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
+            if (event.alarmState) {
+                this.alarmLights.forEach((l) => l.visible = true)
+                this.alarmLightInterval = setInterval(() => {
+                    this.alarmLights.forEach((l) => {
+                        l.target.position.applyAxisAngle(new Vector3(0, 1, 0), ALARM_LIGHT_ROTATION_SPEED)
+                    })
+                }, NATIVE_UPDATE_INTERVAL)
+            } else if (this.alarmLightInterval) {
+                this.alarmLights.forEach((l) => l.visible = false)
+                this.alarmLightInterval = clearIntervalSafe(this.alarmLightInterval)
+            }
+        })
     }
 
     getSelectionByRay(rx: number, ry: number): GameSelection {
@@ -186,12 +205,27 @@ export class SceneManager {
         const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
         const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
         const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])
-        this.ambientLight = new AmbientLight(ambientColor, 0.4) // range [0.1 to 0.4]
+        this.ambientLight = new AmbientLight(ambientColor, 0.4) // range from 0.1 to 0.4
         this.scene.add(this.ambientLight)
+
+        this.cursorFloorPosition = new Object3D()
+        this.scene.add(this.cursorFloorPosition)
 
         this.cursorTorchlight = new PointLight(0xffffff, 1.5, 4, 1)
         this.cursorTorchlight.distance *= TILESIZE
-        this.scene.add(this.cursorTorchlight)
+        this.cursorTorchlight.position.y = 2 * TILESIZE // XXX actually show torchlight at TILESIZE / 2?
+        this.cursorFloorPosition.add(this.cursorTorchlight)
+
+        this.alarmLights = [-1, 1].map((c) => {
+            const alarmLight = new SpotLight(0xff0000, 0.5, 0, Math.PI / 4, 0.25)
+            alarmLight.position.set(0, TILESIZE / 2, 0)
+            alarmLight.target = new Object3D()
+            alarmLight.target.position.set(c * TILESIZE / 8, 0, 0)
+            alarmLight.add(alarmLight.target)
+            alarmLight.visible = false
+            this.cursorFloorPosition.add(alarmLight)
+            return alarmLight
+        })
 
         this.buildMarker = new BuildPlacementMarker(this.worldMgr)
         this.scene.add(this.buildMarker.group)
@@ -240,6 +274,7 @@ export class SceneManager {
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null
+        this.alarmLightInterval = clearIntervalSafe(this.alarmLightInterval)
     }
 
     resize(width: number, height: number) {
@@ -254,9 +289,8 @@ export class SceneManager {
         return intersects.length > 0 ? new Vector2(intersects[0].point.x, intersects[0].point.z) : null
     }
 
-    setTorchPosition(position: Vector2) {
-        this.cursorTorchlight.position.copy(this.getFloorPosition(position))
-        this.cursorTorchlight.position.y += 2 * TILESIZE
+    setCursorFloorPosition(position: Vector2) {
+        this.cursorFloorPosition.position.copy(this.getFloorPosition(position))
     }
 
     getFloorPosition(world: Vector2) {

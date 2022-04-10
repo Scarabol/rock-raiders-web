@@ -39,7 +39,7 @@ export class ObjectListLoader {
                     sceneMgr.camera.position.copy(cameraPos)
                     sceneMgr.controls.target.copy(sceneMgr.getFloorPosition(worldPos))
                     sceneMgr.controls.update()
-                    sceneMgr.setTorchPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
+                    sceneMgr.setCursorFloorPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))
                     break
                 case EntityType.PILOT:
                     const raider = new Raider(worldMgr)

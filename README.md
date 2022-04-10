@@ -42,7 +42,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Near (v0.6.0)
 
-- turn all lights red, when alarm mode is active
 - switch all raider with weapon from work to defend
 - let raider in defend mode target any known slug or rock monster
 - make raider flee from nearby monsters and ticking dynamite
