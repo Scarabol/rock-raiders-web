@@ -90,7 +90,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
         this.job.setActualWorkplace(this.currentPath?.target)
         if (result === MoveState.MOVED) {
             this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
-                if (this.sceneEntity.position.distanceToSquared(spider.getComponent(PositionComponent).getPosition()) < SPIDER_SLIP_RANGE_SQ) {
+                if (this.sceneEntity.position2D.distanceToSquared(spider.getComponent(PositionComponent).getPosition2D()) < SPIDER_SLIP_RANGE_SQ) {
                     this.slip()
                     spider.getComponent(LifecycleComponent).markDead()
                     return true
