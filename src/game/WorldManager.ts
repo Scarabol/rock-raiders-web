@@ -3,7 +3,7 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearTimeoutSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
+import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged, ToggleAlarmEvent } from '../event/WorldEvents'
 import { NerpRunner } from '../nerp/NerpRunner'
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -66,6 +66,7 @@ export class WorldManager {
             }
         })
         EventBus.registerEventListener(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
+        EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => GameState.alarmMode = event.alarmState)
     }
 
     setup(levelConf: LevelEntryCfg) {

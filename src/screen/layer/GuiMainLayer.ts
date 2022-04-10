@@ -1,3 +1,5 @@
+import { EventBus } from '../../event/EventBus'
+import { ToggleAlarmEvent } from '../../event/WorldEvents'
 import { GuiMainSystem } from '../../gui/GuiMainSystem'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
@@ -20,7 +22,9 @@ export class GuiMainLayer extends OffscreenLayer {
     }
 
     onMessage(msg: WorkerResponse): boolean {
-        if (msg.type === WorkerMessageType.SHOW_OPTIONS) {
+        if (msg.type === WorkerMessageType.TOGGLE_ALARM) {
+            EventBus.publishEvent(new ToggleAlarmEvent(msg.messageState))
+        } else if (msg.type === WorkerMessageType.SHOW_OPTIONS) {
             this.onOptionsShow()
         } else {
             return false

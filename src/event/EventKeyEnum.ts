@@ -66,4 +66,5 @@ export enum EventKey {
     UNPAUSE_GAME,
     UPDATE_PRIORITIES,
     TAKE_SCREENSHOT,
+    TOGGLE_ALARM,
 }

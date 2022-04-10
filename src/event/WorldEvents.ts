@@ -79,3 +79,9 @@ export class OreFoundEvent extends WorldEvent {
         super(EventKey.ORE_FOUND)
     }
 }
+
+export class ToggleAlarmEvent extends WorldEvent {
+    constructor(readonly alarmState: boolean) {
+        super(EventKey.TOGGLE_ALARM)
+    }
+}

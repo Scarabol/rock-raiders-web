@@ -18,6 +18,7 @@ export class GameState {
     static totalCaverns: number = 0
     static discoveredCaverns: number = 0
     static hiddenObjectsFound: number = 0
+    static alarmMode: boolean = false
 
     static reset() {
         this.gameResult = GameResultState.UNDECIDED
@@ -34,6 +35,7 @@ export class GameState {
         this.totalCaverns = 0
         this.discoveredCaverns = 0
         this.hiddenObjectsFound = 0
+        this.alarmMode = false
     }
 
     static changeUsedCrystals(changedCrystals: number) {

@@ -44,6 +44,9 @@ export class GuiMainSystem extends AbstractGuiSystem {
         this.panelMessages = this.addPanel(new MessagePanel(this.rootElement, panelsCfg.panelMessages, OffscreenCache.configuration.textMessagesWithImages))
         this.panelRadar = this.addPanel(new RadarPanel(this.rootElement, panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         // link panels
+        this.panelTopPanel.btnCallToArms.onClick = () => {
+            this.sendResponse({type: WorkerMessageType.TOGGLE_ALARM, messageState: this.panelTopPanel.btnCallToArms.toggleState})
+        }
         this.panelTopPanel.btnOptions.onClick = () => {
             this.sendResponse({type: WorkerMessageType.SHOW_OPTIONS})
         }

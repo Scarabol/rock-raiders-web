@@ -17,6 +17,7 @@ export enum WorkerMessageType {
     RESPONSE_EVENT,
     OVERLAY_SETUP,
     SPACE_TO_CONTINUE,
+    TOGGLE_ALARM,
     SHOW_OPTIONS,
     GAME_ABORT,
     GAME_RESTART,
