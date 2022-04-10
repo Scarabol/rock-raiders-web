@@ -2,6 +2,7 @@ import { TILESIZE } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from '../component/common/AnimatedSceneEntityComponent'
 import { EntityMapMarkerComponent, MAP_MARKER_TYPE } from '../component/common/EntityMapMarkerComponent'
+import { LifecycleComponent } from '../component/common/LifecycleComponent'
 import { MovableEntityStatsComponent } from '../component/common/MovableEntityStatsComponent'
 import { PositionComponent } from '../component/common/PositionComponent'
 import { BatMovementComponent } from '../component/monster/BatMovementComponent'
@@ -27,6 +28,7 @@ export class MonsterSpawner {
                 entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/SpiderSB/SpiderSB.ae', 1))
                 entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.SmallSpider))
                 entity.addComponent(new SpiderMovementComponent())
+                entity.addComponent(new LifecycleComponent())
                 break
             case EntityType.BAT:
                 entity.addComponent(new PositionComponent())
@@ -39,16 +41,19 @@ export class MonsterSpawner {
                 entity.addComponent(new PositionComponent())
                 entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/IceMonster/IceMonster.ae'))
                 entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
+                entity.addComponent(new LifecycleComponent())
                 break
             case EntityType.LAVA_MONSTER:
                 entity.addComponent(new PositionComponent())
                 entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/LavaMonster/LavaMonster.ae'))
                 entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
+                entity.addComponent(new LifecycleComponent())
                 break
             case EntityType.ROCK_MONSTER:
                 entity.addComponent(new PositionComponent())
                 entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/RMonster/RMonster.ae'))
                 entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
+                entity.addComponent(new LifecycleComponent())
                 break
             default:
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)

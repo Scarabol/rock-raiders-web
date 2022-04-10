@@ -7,6 +7,7 @@ import { NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } f
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
+import { LifecycleComponent } from '../../component/common/LifecycleComponent'
 import { PositionComponent } from '../../component/common/PositionComponent'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity } from '../activities/AnimEntityActivity'
@@ -91,7 +92,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
             this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
                 if (this.sceneEntity.position.distanceToSquared(spider.getComponent(PositionComponent).getPosition()) < SPIDER_SLIP_RANGE_SQ) {
                     this.slip()
-                    spider.markDead()
+                    spider.getComponent(LifecycleComponent).markDead()
                     return true
                 }
             })

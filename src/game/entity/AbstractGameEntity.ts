@@ -32,8 +32,4 @@ export class AbstractGameEntity {
     disposeEntity() {
         this.components.forEach((c) => c.disposeComponent())
     }
-
-    markDead() {
-        this.worldMgr.markDead(this)
-    }
 }
