@@ -92,7 +92,6 @@ export class ObjectListLoader {
                     const sceneEntity = monster.getComponent(AnimatedSceneEntityComponent)
                     sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
                     sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
-                    worldMgr.registerEntity(monster)
                     break
                 case EntityType.HOVERBOARD:
                 case EntityType.SMALL_DIGGER:

@@ -16,6 +16,7 @@ export class AbstractGameEntity {
     }
 
     getComponent<T extends GameComponent>(constr: Generic<T>): T {
+        if (!this.worldMgr) throw new Error('This entity is not yet setup!')
         for (const c of this.components) {
             if (c instanceof constr) {
                 return c as T
@@ -25,6 +26,7 @@ export class AbstractGameEntity {
     }
 
     setupEntity(worldMgr: WorldManager) {
+        if (this.worldMgr) throw new Error('This entity is already setup!')
         this.worldMgr = worldMgr
         this.components.forEach((c) => c.setupComponent(this))
     }
