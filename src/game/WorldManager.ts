@@ -38,6 +38,7 @@ export class WorldManager {
     requestedVehicleTypes: EntityType[] = []
     spawnVehicleTimer: number = 0
     deadEntities: AbstractGameEntity[] = []
+    started: boolean = false
 
     constructor() {
         this.systems.push(new SceneEntitySubSystem())
@@ -45,7 +46,9 @@ export class WorldManager {
         this.systems.push(new MapMarkerSubSystem())
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
-        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.startLoop(UPDATE_INTERVAL_MS))
+        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
+            if (this.started) this.startLoop(UPDATE_INTERVAL_MS)
+        })
         EventBus.registerEventListener(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
             const requestedChange = event.numRequested - this.requestedVehicleTypes.count((e) => e === event.vehicle)
             for (let c = 0; c < -requestedChange; c++) {
@@ -76,9 +79,11 @@ export class WorldManager {
 
     start() {
         this.startLoop(UPDATE_INTERVAL_MS)
+        this.started = true
     }
 
     stop() {
+        this.started = false
         this.stopLoop()
         this.systems.forEach((s) => s.reset())
     }
