@@ -7,6 +7,6 @@ export class MovementSubSystem extends AbstractSubSystem<MovementGameComponent> 
     }
 
     update(elapsedMs: number) {
-        this.components.forEach((c) => c.update(elapsedMs))
+        this.forEachComponent((c) => c.update(elapsedMs))
     }
 }

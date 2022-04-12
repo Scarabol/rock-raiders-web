@@ -7,6 +7,6 @@ export class SceneEntitySubSystem extends AbstractSubSystem<AnimatedSceneEntityC
     }
 
     update(elapsedMs: number) {
-        this.components.forEach((c) => c.update(elapsedMs))
+        this.forEachComponent((c) => c.update(elapsedMs))
     }
 }

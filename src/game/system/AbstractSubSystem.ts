@@ -3,13 +3,13 @@ import { GameComponent } from '../model/GameComponent'
 import { Updatable } from '../model/Updateable'
 
 export abstract class AbstractSubSystem<T extends GameComponent> implements Updatable {
-    protected readonly components: T[] = []
+    private readonly components: T[] = []
 
     protected constructor(readonly type: Generic<T>) {
     }
 
     reset() {
-        this.components.forEach((c) => c.disposeComponent())
+        this.forEachComponent((c) => c.disposeComponent())
         this.components.length = 0
     }
 
@@ -23,5 +23,18 @@ export abstract class AbstractSubSystem<T extends GameComponent> implements Upda
     unregisterComponent(component: GameComponent) {
         if (!(component instanceof this.type)) return
         this.components.remove(component)
+    }
+
+    protected forEachComponent(callback: (component) => any) {
+        const faulty: T[] = []
+        this.components.forEach((c) => {
+            try {
+                callback(c)
+            } catch (e) {
+                console.error(`Fatal Component Error!`, e)
+                faulty.push(c)
+            }
+        })
+        faulty.forEach((c) => this.components.remove(c))
     }
 }
