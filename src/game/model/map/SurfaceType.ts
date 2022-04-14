@@ -70,7 +70,19 @@ export class SurfaceType {
     static readonly SLUG_HOLE = new SurfaceType({
         name: 'slug hole', floor: true, matIndex: '30', mapSurfaceColor: '#280048',
     })
-    static readonly LAVA = new SurfaceType({
+    static readonly LAVA1 = new SurfaceType({
+        name: 'lava', floor: true, matIndex: '06', selectable: true, mapSurfaceColor: '#280048',
+    })
+    static readonly LAVA2 = new SurfaceType({
+        name: 'lava', floor: true, matIndex: '16', selectable: true, mapSurfaceColor: '#280048',
+    })
+    static readonly LAVA3 = new SurfaceType({
+        name: 'lava', floor: true, matIndex: '26', selectable: true, mapSurfaceColor: '#280048',
+    })
+    static readonly LAVA4 = new SurfaceType({
+        name: 'lava', floor: true, matIndex: '36', selectable: true, mapSurfaceColor: '#280048',
+    })
+    static readonly LAVA5 = new SurfaceType({
         name: 'lava', floor: true, matIndex: '46', mapSurfaceColor: '#fa5700',
     })
     static readonly ORE_SEAM = new SurfaceType({
@@ -173,7 +185,7 @@ export class SurfaceType {
             case 5: // soil(5) was removed pre-release, so replace it with dirt(4)
                 return SurfaceType.DIRT
             case 6:
-                return SurfaceType.LAVA
+                return SurfaceType.LAVA5
             case 8:
                 return SurfaceType.ORE_SEAM
             case 9:

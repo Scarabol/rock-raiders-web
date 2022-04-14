@@ -217,3 +217,9 @@ export class TakeScreenshot extends GuiCommand {
         super(EventKey.TAKE_SCREENSHOT)
     }
 }
+
+export class RepairLava extends GuiCommand {
+    constructor() {
+        super(EventKey.COMMAND_REPAIR_LAVA)
+    }
+}

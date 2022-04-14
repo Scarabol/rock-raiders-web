@@ -8,6 +8,8 @@ import { PathFinder } from './PathFinder'
 import { PowerGrid } from './PowerGrid'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
+import { LavaErosion } from './LavaErosion'
+import { LevelEntryCfg } from '../../../cfg/LevelsCfg'
 
 export class Terrain {
     heightOffset: number[][] = [[]]
@@ -20,14 +22,17 @@ export class Terrain {
     pathFinder: PathFinder = new PathFinder()
     fallIns: FallIn[] = []
     powerGrid: PowerGrid = new PowerGrid()
+    erodeTriggerTimeMs: number = 0
+    lavaErodes: LavaErosion[] = []
 
-    constructor(readonly worldMgr: WorldManager) {
+    constructor(readonly worldMgr: WorldManager, readonly levelConf: LevelEntryCfg) {
         this.worldMgr.sceneMgr.terrain = this
         this.worldMgr.sceneMgr.scene.add(this.floorGroup)
         this.floorGroup.scale.setScalar(TILESIZE)
+        if (DEV_MODE) this.floorGroup.add(new AxesHelper())
         this.roofGroup.scale.setScalar(TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
-        if (DEV_MODE) this.floorGroup.add(new AxesHelper())
+        this.erodeTriggerTimeMs = levelConf.erodeTriggerTime * 1000
     }
 
     getSurfaceFromWorld(worldPosition: Vector3): Surface | null {
@@ -144,7 +149,18 @@ export class Terrain {
         this.fallIns = this.fallIns.filter((f) => f.source !== surface)
     }
 
+    addLavaErosion(x: number, y: number, erosionLevel: number) {
+        this.lavaErodes.push(new LavaErosion(this.getSurface(x, y), erosionLevel, this.levelConf.erodeErodeTime * 1000, this.levelConf.erodeLockTime * 1000))
+    }
+
     update(elapsedMs: number) {
         this.fallIns.forEach((f) => updateSafe(f, elapsedMs))
+        if (this.erodeTriggerTimeMs > elapsedMs) {
+            this.erodeTriggerTimeMs -= elapsedMs
+        } else {
+            this.lavaErodes = this.lavaErodes.filter((e) => e.surface.surfaceType !== SurfaceType.LAVA5)
+            this.lavaErodes.forEach((e) => updateSafe(e, elapsedMs - this.erodeTriggerTimeMs))
+            this.erodeTriggerTimeMs = 0
+        }
     }
 }

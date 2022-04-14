@@ -1,27 +1,26 @@
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { Surface } from '../../map/Surface'
-import { SurfaceType } from '../../map/SurfaceType'
 import { MaterialEntity } from '../../material/MaterialEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
+import { SurfaceType } from '../../map/SurfaceType'
 
-export class CompletePowerPathJob extends ShareableJob {
-    placedItems: MaterialEntity[]
+export class CompleteSurfaceJob extends ShareableJob {
     workplaces: PathTarget[]
 
-    constructor(surface: Surface, placedItems: MaterialEntity[]) {
+    constructor(surface: Surface, readonly placedItems: MaterialEntity[]) {
         super()
         this.surface = surface
-        this.placedItems = placedItems
         this.workplaces = [new PathTarget(surface.getRandomPosition())]
     }
 
     onJobComplete() {
         super.onJobComplete()
         this.placedItems.forEach((placed) => placed.sceneEntity.disposeFromScene())
-        this.surface.setSurfaceType(SurfaceType.POWER_PATH)
+        const targetSurfaceType = this.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE ? SurfaceType.POWER_PATH : SurfaceType.GROUND
+        this.surface.setSurfaceType(targetSurfaceType)
         this.surface.site = null
     }
 

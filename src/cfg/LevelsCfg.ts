@@ -63,9 +63,9 @@ export class LevelEntryCfg extends BaseConfig {
     nerpMessageFile: string = ''
     objectiveText: string = ''
     objectiveImage640x480: ObjectiveImageCfg = null
-    erodeTriggerTime: number = 0
-    erodeErodeTime: number = 0
-    erodeLockTime: number = 0
+    erodeTriggerTime: number = 0 // 1, 20, 40, 60, 120 time in seconds until erosion starts after level start
+    erodeErodeTime: number = 0 // 1, 5, 7, 20, 30, 40, 60 time in seconds until next erosion level is reached
+    erodeLockTime: number = 0 // 1, 300, 500, 600 grace time no erosion happens on surface with power path
     nextLevel: any = ''
     levelLinks: any = ''
     frontEndX: number = 0

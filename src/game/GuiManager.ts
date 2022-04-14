@@ -11,6 +11,7 @@ import { GetToolJob } from './model/job/raider/GetToolJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
 import { UpgradeRaiderJob } from './model/job/raider/UpgradeRaiderJob'
 import { WorldManager } from './WorldManager'
+import { RepairLavaBuildingSite } from './model/building/RepairLavaBuildingSite'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -29,6 +30,7 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_POWER_PATH, () => {
             new PowerPathBuildingSite(worldMgr, entityMgr.selection.surface)
+            EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_MAKE_RUBBLE, () => {
             entityMgr.selection.surface?.makeRubble(2)
@@ -154,6 +156,10 @@ export class GuiManager {
             if (event.rotationIndex >= 0) {
                 cameraControls.rotate(event.rotationIndex)
             }
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_REPAIR_LAVA, () => {
+            new RepairLavaBuildingSite(worldMgr, entityMgr.selection.surface)
+            EventBus.publishEvent(new DeselectAll())
         })
     }
 }

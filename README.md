@@ -64,7 +64,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Mid (v0.7.0)
 
 - Introduce surface health property for multi and pause/continue drill jobs
-- Lava erosion not implemented (test with level 14)
 - Bricks and brick refinery
 - First-Person and shoulder camera
 
@@ -78,7 +77,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Fix all remaining bugs
 
-## Known Bugs
+## Known Issues
 
 ### Important
 
@@ -110,6 +109,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Show loading screen when starting a level
 - Add rockfall transition when switching in main menu
 - Two buttons in priority list can be hovered/pressed/released at the same time
+- Implement random lava particle emitter
 
 ## Technical Debt
 

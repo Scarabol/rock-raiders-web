@@ -44,7 +44,7 @@ export class SpiderMovementComponent extends MonsterMovementComponent {
             const targetX = Math.randomInclusive(currentCenter.x - (TILESIZE + TILESIZE / 2), currentCenter.x + TILESIZE + TILESIZE / 2)
             const targetZ = Math.randomInclusive(currentCenter.z - TILESIZE / 2, currentCenter.z + TILESIZE / 2)
             const surfaceType = this.terrain.getSurfaceFromWorldXZ(targetX, targetZ).surfaceType
-            if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA) { // TODO evaluate CrossLand, CrossLava, CrossWater from stats
+            if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA5) { // TODO evaluate CrossLand, CrossLava, CrossWater from stats
                 return new PathTarget(new Vector2(targetX, targetZ))
             }
         }

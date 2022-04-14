@@ -10,7 +10,7 @@ export class TerrainLoader {
     static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
         const tileSize = levelConf.blockSize
         if (tileSize !== TILESIZE) console.error(`Unexpected tile size in level configuration: ${tileSize}`)
-        const terrain = new Terrain(worldMgr)
+        const terrain = new Terrain(worldMgr, levelConf)
         terrain.textureSet = ResourceManager.configuration.textures.textureSetByName.get(levelConf.textureSet)
 
         const terrainMap = ResourceManager.getResource(levelConf.terrainMap)
@@ -36,7 +36,7 @@ export class TerrainLoader {
                         || surfaceType === SurfaceType.SOLID_ROCK || surfaceType === SurfaceType.HARD_ROCK // as seen in level 14
                         || surfaceType === SurfaceType.POWER_PATH_BUILDING) { // used by mods
                         surfaceType = SurfaceType.GROUND
-                    } else if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA) {
+                    } else if (surfaceType !== SurfaceType.WATER && surfaceType !== SurfaceType.LAVA5) {
                         console.warn(`Unexpected cavern surface type: ${surfaceType.name}`)
                     }
                 } else if (predugLevel === PredugMap.SLUG_HOLE_EXPOSED || predugLevel === PredugMap.SLUG_HOLE_HIDDEN) {
@@ -109,8 +109,15 @@ export class TerrainLoader {
             }
         }
 
-        if (erodeMap) { // TODO implement lava erosion
-            console.warn('Lucky you! Lava erosion not yet implemented')
+        if (erodeMap) {
+            for (let x = 0; x < terrain.width; x++) {
+                for (let y = 0; y < terrain.height; y++) {
+                    const erosion = erodeMap[y][x]
+                    if (erosion > 0) {
+                        terrain.addLavaErosion(x, y, erosion) // rows (y) before columns (x) used in maps
+                    }
+                }
+            }
         }
 
         if (blockMap) { // TODO implement tutorial blocks map

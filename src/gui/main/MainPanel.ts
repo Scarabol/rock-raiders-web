@@ -21,6 +21,7 @@ import { SelectVehicleManedPanel } from './select/SelectVehicleManedPanel'
 import { SelectWallPanel } from './select/SelectWallPanel'
 import { TrainRaiderPanel } from './TrainRaiderPanel'
 import { LargeVehiclePanel, SmallVehiclePanel } from './VehiclePanel'
+import { SelectLavaErosionPanel } from './select/SelectLavaErosionPanel'
 
 export class MainPanel extends Panel {
     subPanels: IconSubPanel[] = []
@@ -29,6 +30,7 @@ export class MainPanel extends Panel {
     selectFloorPanel: SelectFloorPanel
     selectRubblePanel: SelectRubblePanel
     selectSitePanel: SelectSitePanel
+    selectLavaErosionPanel: SelectLavaErosionPanel
 
     numRequestedRaiders: number = 0
     hasRaiderTeleport: boolean = false
@@ -52,6 +54,7 @@ export class MainPanel extends Panel {
         this.selectFloorPanel = this.addSubPanel(new SelectFloorPanel(this, this.mainPanel))
         this.selectRubblePanel = this.addSubPanel(new SelectRubblePanel(this, this.mainPanel))
         this.selectSitePanel = this.addSubPanel(new SelectSitePanel(this, this.mainPanel))
+        this.selectLavaErosionPanel = this.addSubPanel(new SelectLavaErosionPanel(this, this.mainPanel))
         const selectBuildingPanel = this.addSubPanel(new SelectBuildingPanel(this, this.mainPanel))
         const selectRaiderPanel = this.addSubPanel(new SelectRaiderPanel(this, this.mainPanel))
         const trainRaiderPanel = this.addSubPanel(new TrainRaiderPanel(this, selectRaiderPanel))
@@ -91,7 +94,7 @@ export class MainPanel extends Panel {
             if (event.selectPanelType === SelectPanelType.RAIDER) this.selectSubPanel(selectRaiderPanel)
             else if (event.selectPanelType === SelectPanelType.VEHICLE) this.selectSubPanel(event.noVehicleWithDriver ? selectVehicleEmptyPanel : selectVehicleManedPanel)
             else if (event.selectPanelType === SelectPanelType.BUILDING) this.selectSubPanel(selectBuildingPanel)
-            else if (event.selectPanelType === SelectPanelType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.isSite, event.hasRubble)
+            else if (event.selectPanelType === SelectPanelType.SURFACE) this.onSelectedSurfaceChange(event.isFloor, event.hasRubble, event.isSite, event.isLava)
             else if (event.selectPanelType === SelectPanelType.FENCE) this.selectSubPanel(selectFencePanel)
             else this.selectSubPanel(this.mainPanel)
         })
@@ -132,10 +135,12 @@ export class MainPanel extends Panel {
         targetPanel.setMovedIn(false)
     }
 
-    onSelectedSurfaceChange(isFloor: boolean, isSite: boolean, hasRubble: boolean) {
+    onSelectedSurfaceChange(isFloor: boolean, hasRubble: boolean, isSite: boolean, isLava: boolean) {
         if (isFloor) {
             if (hasRubble) {
                 this.selectSubPanel(this.selectRubblePanel)
+            } else if (isLava) {
+                this.selectSubPanel(this.selectLavaErosionPanel)
             } else if (isSite) {
                 this.selectSubPanel(this.selectSitePanel)
             } else {

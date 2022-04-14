@@ -4,7 +4,7 @@ import { DeselectAll } from '../../../event/LocalEvents'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
-import { CompletePowerPathJob } from '../job/surface/CompletePowerPathJob'
+import { CompleteSurfaceJob } from '../job/surface/CompleteSurfaceJob'
 import { Surface } from '../map/Surface'
 import { SurfaceType } from '../map/SurfaceType'
 import { MaterialEntity } from '../material/MaterialEntity'
@@ -12,11 +12,7 @@ import { BuildingEntity } from './BuildingEntity'
 import { BuildingType } from './BuildingType'
 
 export class BuildingSite {
-    primarySurface: Surface = null
-    secondarySurface: Surface = null
-    primaryPathSurface: Surface = null
     surfaces: Surface[] = []
-    buildingType: BuildingType
     heading: number = 0
     neededByType: Map<EntityType, number> = new Map()
     assignedByType: Map<EntityType, MaterialEntity[]> = new Map()
@@ -26,17 +22,14 @@ export class BuildingSite {
     placeDownTimer: number = 0
     isEmptyTimer: number = 0
 
-    constructor(readonly worldMgr: WorldManager, primarySurface: Surface, secondarySurface: Surface, primaryPathSurface: Surface, secondaryPathSurface: Surface, buildingType: BuildingType) {
-        this.primarySurface = primarySurface
+    constructor(readonly worldMgr: WorldManager, readonly primarySurface: Surface, readonly secondarySurface: Surface, readonly primaryPathSurface: Surface, secondaryPathSurface: Surface, readonly buildingType: BuildingType) {
         this.primarySurface.site = this
         this.surfaces.push(this.primarySurface)
-        this.secondarySurface = secondarySurface
         if (this.secondarySurface) {
             this.secondarySurface.site = this
             this.secondarySurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
             this.surfaces.push(this.secondarySurface)
         }
-        this.primaryPathSurface = primaryPathSurface
         if (this.primaryPathSurface) {
             this.primaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
             this.surfaces.push(this.primaryPathSurface)
@@ -45,7 +38,6 @@ export class BuildingSite {
             secondaryPathSurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
             this.surfaces.push(secondaryPathSurface)
         }
-        this.buildingType = buildingType
     }
 
     getRandomDropPosition(): Vector2 {
@@ -82,7 +74,7 @@ export class BuildingSite {
         if (!this.buildingType) {
             const items: MaterialEntity[] = []
             this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
-            EventBus.publishEvent(new JobCreateEvent(new CompletePowerPathJob(this.primarySurface, items)))
+            EventBus.publishEvent(new JobCreateEvent(new CompleteSurfaceJob(this.primarySurface, items)))
         } else {
             this.worldMgr.entityMgr.completedBuildingSites.push(this)
         }
@@ -113,7 +105,9 @@ export class BuildingSite {
         this.canceled = true
         this.surfaces.forEach((s) => {
             s.site = null
-            s.setSurfaceType(SurfaceType.GROUND)
+            if (s.surfaceType === SurfaceType.POWER_PATH_BUILDING || s.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE) {
+                s.setSurfaceType(SurfaceType.GROUND)
+            }
         })
         this.onSiteByType.forEach((materials) => materials.forEach((item) => {
             this.worldMgr.entityMgr.placeMaterial(item, item.sceneEntity.position2D.clone())
