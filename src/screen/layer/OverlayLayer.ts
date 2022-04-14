@@ -13,7 +13,7 @@ export class OverlayLayer extends OffscreenLayer {
     onRestartGame: () => any = () => console.log('restart the game')
 
     createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage> {
-        const worker = new Worker(new URL('../../worker/OverlayWorker', import.meta.url)) // webpack does not allow to extract the URL
+        const worker = new Worker(new URL('../../worker/OverlayWorker', import.meta.url), {type: 'module'})
         return new TypedWorkerFrontend(worker, (response) => this.onResponseFromWorker(response))
     }
 

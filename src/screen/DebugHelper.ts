@@ -1,4 +1,4 @@
-const Stats = require('stats.js')
+import * as Stats from 'stats.js'
 
 export class DebugHelper {
     stats

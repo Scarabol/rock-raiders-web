@@ -9,7 +9,7 @@ export class GuiMainLayer extends OffscreenLayer {
     onOptionsShow: () => any = () => console.log('Show options triggered')
 
     createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage> {
-        const worker = new Worker(new URL('../../worker/GuiMainWorker', import.meta.url)) // webpack does not allow to extract the URL
+        const worker = new Worker(new URL('../../worker/GuiMainWorker', import.meta.url), {type: 'module'})
         return new TypedWorkerFrontend(worker, (r) => this.onResponseFromWorker(r))
     }
 

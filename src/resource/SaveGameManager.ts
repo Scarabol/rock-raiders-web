@@ -7,7 +7,7 @@ export class SaveGameManager {
 
     private static saveGames: SaveGame[] = [] // this gets serialized
 
-    static {
+    static loadAllSaveGames() {
         console.log('Loading save games...')
         this.saveGames = JSON.parse(localStorage.getItem('savegames') || '[]')
         Promise.all(this.saveGames.map((s, index) => {

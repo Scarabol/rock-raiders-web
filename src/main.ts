@@ -14,11 +14,13 @@ import { RewardScreen } from './screen/RewardScreen'
 import { ScreenMaster } from './screen/ScreenMaster'
 
 if (DEV_MODE) console.warn('DEV MODE ACTIVE')
-else console.log(`Rock Raider Web v${require('../package.json').version}`)
-console.time('Total asset loading time')
+console.log(`Rock Raider Web v${require('../package.json').version}`)
 
 // setup and link all components
+console.time('Total asset loading time')
 
+ResourceManager.initWorker()
+SaveGameManager.loadAllSaveGames()
 const screenMaster = new ScreenMaster()
 const loadingLayer = screenMaster.addLayer(new LoadingLayer())
 const cursorLayer = screenMaster.addLayer(new CursorLayer(), 1000)

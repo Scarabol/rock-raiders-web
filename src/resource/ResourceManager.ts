@@ -17,18 +17,18 @@ import { WorkerMessageType } from './wadworker/WorkerMessageType'
 
 export class ResourceManager extends ResourceCache {
     static worker: TypedWorker<InitLoadingMessage>
-    static {
+    static lwoCache: Map<string, SceneMesh> = new Map()
+    static tooltipSpriteCache: Map<string, SpriteImage> = new Map()
+
+    static initWorker() {
         try {
-            this.worker = new TypedWorkerFrontend(new Worker(new URL('./wadworker/WadWorker', import.meta.url)), (msg) => this.onWadLoaderMessage(msg))
+            this.worker = new TypedWorkerFrontend(new Worker(new URL('./wadworker/WadWorker', import.meta.url), {type: 'module'}), (msg) => this.onWadLoaderMessage(msg))
         } catch (e) {
             console.warn('Could not setup threaded worker!\nUsing fallback to main thread, which might has bad performance.', e)
             this.worker = new TypedWorkerFallback<InitLoadingMessage>((r) => this.onWadLoaderMessage(r))
             new WadSystem(this.worker as TypedWorkerFallback<InitLoadingMessage>)
         }
     }
-
-    static lwoCache: Map<string, SceneMesh> = new Map()
-    static tooltipSpriteCache: Map<string, SpriteImage> = new Map()
 
     static startLoadingFromCache() {
         return this.worker.sendMessage(null)
