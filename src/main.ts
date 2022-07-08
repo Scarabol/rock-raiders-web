@@ -1,5 +1,7 @@
+import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
 import { GithubBox } from '../site/github/github-box'
+import '../site/main.css'
 import { WadFileSelectionModal } from '../site/wadModal/WadFileSelectionModal'
 import { GameState } from './game/model/GameState'
 import { ObjectListLoader } from './game/ObjectListLoader'
@@ -14,7 +16,7 @@ import { RewardScreen } from './screen/RewardScreen'
 import { ScreenMaster } from './screen/ScreenMaster'
 
 if (DEV_MODE) console.warn('DEV MODE ACTIVE')
-console.log(`Rock Raider Web v${require('../package.json').version}`)
+console.log(`Rock Raider Web v${APP_VERSION}`)
 
 // setup and link all components
 console.time('Total asset loading time')

@@ -1,4 +1,4 @@
-export const DEV_MODE = process.env.WEBPACK_MODE === 'development'
+export const DEV_MODE = import.meta.env.MODE === 'development'
 export const ASSET_CACHE_DB_NAME = 'RockRaidersWeb'
 export const ASSET_CACHE_VERSION = 2
 export const JOB_SCHEDULE_INTERVAL = 1000 // milliseconds

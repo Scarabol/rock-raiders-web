@@ -13,16 +13,14 @@ jobs:
       - name: Build
         run: |
           npm install
-          npm run prod
+          npm run build
       - name: Package
         run: |
           cp -r "dist/" "rock-raiders-web-${{ github.ref_name }}"
-          zip -FSr "rock-raiders-web-${{ github.ref_name }}.zip" "rock-raiders-web-${{ github.ref_name }}" -x "*.map"
-          zip -FSr "rock-raiders-web-${{ github.ref_name }}-debug.zip" "rock-raiders-web-${{ github.ref_name }}"
-          tar --exclude="*.map" -czf "rock-raiders-web-${{ github.ref_name }}.tar.gz" "rock-raiders-web-${{ github.ref_name }}"
-          tar -czf "rock-raiders-web-${{ github.ref_name }}-debug.tar.gz" "rock-raiders-web-${{ github.ref_name }}"
+          zip -FSr "rock-raiders-web-${{ github.ref_name }}.zip" "rock-raiders-web-${{ github.ref_name }}"
+          tar -czf "rock-raiders-web-${{ github.ref_name }}.tar.gz" "rock-raiders-web-${{ github.ref_name }}"
       - name: Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "rock-raiders-web-${{ github.ref_name }}.zip,rock-raiders-web-${{ github.ref_name }}-debug.zip,rock-raiders-web-${{ github.ref_name }}.tar.gz,rock-raiders-web-${{ github.ref_name }}-debug.tar.gz"
+          artifacts: "rock-raiders-web-${{ github.ref_name }}.zip,rock-raiders-web-${{ github.ref_name }}.tar.gz"
           allowUpdates: true

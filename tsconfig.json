@@ -2,10 +2,18 @@
   "compilerOptions": {
     "outDir": "./dist/",
     "target": "ES2021",
+    "useDefineForClassFields": true,
     "module": "ESNext",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "moduleResolution": "Node",
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
+    "esModuleInterop": true,
+    "noEmit": true,
     "skipLibCheck": true
   },
   "exclude": [
