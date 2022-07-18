@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./dist/",
-    "target": "ES6",
+    "target": "ES2021",
     "module": "ESNext",
     "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
