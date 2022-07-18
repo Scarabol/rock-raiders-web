@@ -1,5 +1,6 @@
 import { Vector2 } from 'three'
 import { createContext } from '../../core/ImageHelper'
+import { SpriteContext } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
 import { UpdateRadarEntities, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { MAP_MARKER_TYPE } from '../../game/component/common/EntityMapMarkerComponent'

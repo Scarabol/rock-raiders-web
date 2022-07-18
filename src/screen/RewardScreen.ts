@@ -1,5 +1,6 @@
 import { RewardCfg } from '../cfg/RewardCfg'
 import { BitmapFont } from '../core/BitmapFont'
+import { SpriteImage } from '../core/Sprite'
 import { clearTimeoutSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GameResult, GameResultState } from '../game/model/GameResult'

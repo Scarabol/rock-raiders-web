@@ -1,5 +1,6 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { BitmapFont } from '../../core/BitmapFont'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'

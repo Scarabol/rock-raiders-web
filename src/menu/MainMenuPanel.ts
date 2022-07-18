@@ -1,5 +1,6 @@
 import { MenuPanelCfg } from '../cfg/MenuCfg'
 import { createContext } from '../core/ImageHelper'
+import { SpriteContext } from '../core/Sprite'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 

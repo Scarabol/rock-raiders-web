@@ -1,4 +1,5 @@
 import { ButtonCfg } from '../../cfg/ButtonCfg'
+import { SpriteContext } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
 
 export class SideBarLabel extends BaseElement {
@@ -30,4 +31,3 @@ export class SideBarLabel extends BaseElement {
         super.onRedraw(context)
     }
 }
-

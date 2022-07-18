@@ -1,4 +1,5 @@
 import { MenuItemCfg } from '../../cfg/ButtonCfg'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { GuiClickEvent } from '../event/GuiEvent'

@@ -1,5 +1,6 @@
 import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { MenuSliderItemCfg } from '../../cfg/MenuSliderItemCfg'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'

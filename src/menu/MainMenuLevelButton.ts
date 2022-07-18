@@ -1,4 +1,5 @@
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'

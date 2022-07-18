@@ -1,5 +1,6 @@
 import { Sample } from '../../audio/Sample'
 import { BitmapFont } from '../../core/BitmapFont'
+import { SpriteImage } from '../../core/Sprite'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { TextInfoMessageEntryConfig } from './TextInfoMessageEntryConfig'
 

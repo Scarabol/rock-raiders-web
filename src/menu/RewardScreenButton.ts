@@ -1,4 +1,5 @@
 import { RewardButtonCfg } from '../cfg/RewardCfg'
+import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { EventBus } from '../event/EventBus'
 import { ChangeTooltip } from '../event/LocalEvents'
 import { ResourceManager } from '../resource/ResourceManager'

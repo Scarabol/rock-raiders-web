@@ -1,4 +1,5 @@
 import { BitmapFont } from '../core/BitmapFont'
+import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 
 export class MainMenuWindow extends MainMenuBaseItem {

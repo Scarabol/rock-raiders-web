@@ -1,5 +1,6 @@
 import { ButtonCrystalSideBarCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
 import { NeededCrystalsChanged } from '../../event/LocalEvents'
 import { MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'

@@ -1,5 +1,6 @@
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { BitmapFont } from '../core/BitmapFont'
+import { SpriteImage } from '../core/Sprite'
 import { clearIntervalSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GamePointerEvent } from '../event/GamePointerEvent'

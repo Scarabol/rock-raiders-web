@@ -1,3 +1,3 @@
-type SpriteImage = HTMLCanvasElement | OffscreenCanvas
+export type SpriteImage = HTMLCanvasElement | OffscreenCanvas
 
-type SpriteContext = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D
+export type SpriteContext = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D

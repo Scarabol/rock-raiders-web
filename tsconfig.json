@@ -3,9 +3,10 @@
     "outDir": "./dist/",
     "target": "ES6",
     "module": "ESNext",
+    "sourceMap": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
-    "sourceMap": true
+    "isolatedModules": true,
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules"

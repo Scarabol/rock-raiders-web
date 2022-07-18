@@ -1,4 +1,5 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
 import { AirLevelChanged, NerpMessage, PlaySoundEvent, RaiderTrainingCompleteEvent } from '../../event/LocalEvents'

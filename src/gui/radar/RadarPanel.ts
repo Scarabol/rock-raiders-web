@@ -1,5 +1,6 @@
 import { ButtonRadarCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
+import { SpriteContext } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'

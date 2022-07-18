@@ -1,4 +1,5 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
 import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../params'
 import { OffscreenCache } from '../../worker/OffscreenCache'

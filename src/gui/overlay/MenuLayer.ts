@@ -1,5 +1,6 @@
 import { MenuEntryCfg } from '../../cfg/MenuEntryCfg'
 import { BitmapFont } from '../../core/BitmapFont'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'

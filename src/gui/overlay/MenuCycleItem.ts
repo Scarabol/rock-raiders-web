@@ -1,4 +1,5 @@
 import { MenuCycleItemCfg } from '../../cfg/MenuCycleItemCfg'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { MenuLayer } from './MenuLayer'

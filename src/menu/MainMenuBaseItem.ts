@@ -1,3 +1,4 @@
+import { SpriteContext } from '../core/Sprite'
 import { UiElementCallback, UiElementState } from './UiElementState'
 
 export class MainMenuBaseItem {

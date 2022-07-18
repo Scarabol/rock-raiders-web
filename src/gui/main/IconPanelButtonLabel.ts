@@ -1,3 +1,4 @@
+import { SpriteContext } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
 
 export class IconPanelButtonLabel extends BaseElement {

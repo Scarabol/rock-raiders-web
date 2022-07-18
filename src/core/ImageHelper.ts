@@ -4,6 +4,8 @@
  * @param height: the desired height of the new context
  * @returns RenderingContext the newly created canvas
  */
+import { SpriteContext } from './Sprite'
+
 export function createContext(width: number, height: number): SpriteContext {
     if (width < 1 || height < 1) {
         console.error(`Can't create context with size ${width} x ${height}`)

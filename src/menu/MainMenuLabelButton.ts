@@ -1,6 +1,7 @@
 import { Sample } from '../audio/Sample'
 import { SoundManager } from '../audio/SoundManager'
 import { MenuLabelItemCfg } from '../cfg/MenuLabelItemCfg'
+import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { UiElementCallback } from './UiElementState'

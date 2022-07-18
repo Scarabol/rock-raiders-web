@@ -1,5 +1,6 @@
 import { Sample } from '../../audio/Sample'
 import { BaseButtonCfg } from '../../cfg/ButtonCfg'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { PlaySoundEvent } from '../../event/LocalEvents'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'

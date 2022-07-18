@@ -1,4 +1,5 @@
 import { createContext, createDummyImgData, getPixel, setPixel } from './ImageHelper'
+import { SpriteImage } from './Sprite'
 
 export class BitmapFontData {
     charHeight: number

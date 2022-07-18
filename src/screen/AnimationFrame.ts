@@ -1,3 +1,5 @@
+import { SpriteContext } from '../core/Sprite'
+
 type AnimationFrameRedrawCallback = (context: SpriteContext) => any
 
 export class AnimationFrame {

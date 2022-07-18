@@ -1,4 +1,5 @@
 import { InfoButtonCfg } from '../../cfg/ButtonCfg'
+import { SpriteContext } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
 import { WorldEvent } from '../../event/WorldEvents'

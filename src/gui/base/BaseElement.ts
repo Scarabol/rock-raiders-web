@@ -1,4 +1,5 @@
 import { Sample } from '../../audio/Sample'
+import { SpriteContext } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
 import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { GameEvent } from '../../event/GameEvent'

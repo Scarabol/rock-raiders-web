@@ -1,6 +1,7 @@
 import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, MOUSE, PerspectiveCamera, PointLight, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { cloneContext } from '../core/ImageHelper'
+import { SpriteImage } from '../core/Sprite'
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
 import { CAMERA_FOV, CAMERA_MAX_DISTANCE, DEV_MODE, KEY_PAN_SPEED, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'

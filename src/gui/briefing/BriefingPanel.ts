@@ -1,4 +1,5 @@
 import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
