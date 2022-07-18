@@ -166,6 +166,10 @@ export class Surface implements Selectable {
         }
         // update meshes
         this.terrain.updateSurfaceMeshes()
+        // add crumble animation
+        const wallNeighbor = this.neighbors.filter((n) => !!n.wallType).random()
+        const crumbleAngle = !!wallNeighbor ? Math.atan2(wallNeighbor.x - this.x, wallNeighbor.y - this.y) : 0 // XXX why is x/y swapped here?
+        this.worldMgr.entityMgr.addMiscAnim('MiscAnims/RockFall/Rock3Sides.lws', this.worldMgr.sceneMgr, this.getCenterWorld(), crumbleAngle)
         this.playPositionalSample(Sample.SFX_RockBreak)
     }
 
