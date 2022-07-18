@@ -71,18 +71,7 @@ export class MainMenuLayer extends ScaledLayer {
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
-            let needsRedraw = false
-            let hovered = false
-            this.items.forEach((item) => {
-                if (!hovered) {
-                    const absY = sy + (item.scrollAffected ? this.scrollY : 0)
-                    hovered = item.isHovered(sx, absY)
-                    needsRedraw = item.setHovered(hovered) || needsRedraw
-                } else {
-                    item.setHovered(false)
-                }
-            })
-            if (needsRedraw) this.animationFrame.redraw()
+            this.updateItemsHoveredState(sx, sy)
             if (this.cfg.canScroll) {
                 const scrollAreaHeight = 100
                 if (sy < scrollAreaHeight) {
@@ -123,7 +112,24 @@ export class MainMenuLayer extends ScaledLayer {
     handleWheelEvent(event: GameWheelEvent): boolean {
         if (!this.cfg.canScroll) return false
         this.setScrollY(event.deltaY)
+        const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
+        this.updateItemsHoveredState(sx, sy)
         return true
+    }
+
+    private updateItemsHoveredState(sx: number, sy: number) {
+        let needsRedraw = false
+        let hovered = false
+        this.items.forEach((item) => {
+            if (!hovered) {
+                const absY = sy + (item.scrollAffected ? this.scrollY : 0)
+                hovered = item.isHovered(sx, absY)
+                needsRedraw = item.setHovered(hovered) || needsRedraw
+            } else {
+                item.setHovered(false)
+            }
+        })
+        if (needsRedraw) this.animationFrame.redraw()
     }
 
     private setScrollY(deltaY: number) {
