@@ -39,6 +39,7 @@ export class WorldManager {
     spawnVehicleTimer: number = 0
     deadEntities: AbstractGameEntity[] = []
     started: boolean = false
+    firstUnpause: boolean = true
 
     constructor() {
         this.systems.push(new SceneEntitySubSystem())
@@ -48,6 +49,12 @@ export class WorldManager {
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
             if (this.started) this.startLoop(UPDATE_INTERVAL_MS)
+            if (this.firstUnpause) {
+                this.firstUnpause = false
+                this.sceneMgr.terrain.forEachSurface((s) => {
+                    if (s.isUnstable()) s.collapse() // crumble unsupported walls
+                })
+            }
         })
         EventBus.registerEventListener(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
             const requestedChange = event.numRequested - this.requestedVehicleTypes.count((e) => e === event.vehicle)
@@ -75,6 +82,7 @@ export class WorldManager {
         // load nerp script
         this.nerpRunner = NerpParser.parse(this.entityMgr, ResourceManager.getResource(levelConf.nerpFile))
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
+        this.firstUnpause = true
     }
 
     start() {

@@ -99,11 +99,6 @@ export class TerrainLoader {
         // generate path finding weights
         terrain.pathFinder.initWeights(terrain)
 
-        // crumble unsupported walls
-        terrain.forEachSurface((s) => {
-            if (s.isUnstable()) s.collapse()
-        })
-
         terrain.updateSurfaceMeshes(true)
 
         if (fallinMap) {
