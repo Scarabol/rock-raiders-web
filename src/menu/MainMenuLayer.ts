@@ -70,14 +70,13 @@ export class MainMenuLayer extends ScaledLayer {
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (event.eventEnum === POINTER_EVENT.MOVE) {
-            const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
-            this.updateItemsHoveredState(sx, sy)
+            this.updateItemsHoveredState(event.canvasX, event.canvasY)
             if (this.cfg.canScroll) {
                 const scrollAreaHeight = 100
-                if (sy < scrollAreaHeight) {
-                    this.setScrollSpeedY(-(scrollAreaHeight - sy))
-                } else if (sy > this.fixedHeight - scrollAreaHeight) {
-                    this.setScrollSpeedY(sy - (this.fixedHeight - scrollAreaHeight))
+                if (event.canvasY < scrollAreaHeight) {
+                    this.setScrollSpeedY(-(scrollAreaHeight - event.canvasY))
+                } else if (event.canvasY > this.fixedHeight - scrollAreaHeight) {
+                    this.setScrollSpeedY(event.canvasY - (this.fixedHeight - scrollAreaHeight))
                 } else {
                     this.setScrollSpeedY(0)
                 }
@@ -112,8 +111,7 @@ export class MainMenuLayer extends ScaledLayer {
     handleWheelEvent(event: GameWheelEvent): boolean {
         if (!this.cfg.canScroll) return false
         this.setScrollY(event.deltaY)
-        const [sx, sy] = this.toScaledCoords(event.clientX, event.clientY)
-        this.updateItemsHoveredState(sx, sy)
+        this.updateItemsHoveredState(event.canvasX, event.canvasY)
         return true
     }
 

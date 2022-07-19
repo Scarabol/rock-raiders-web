@@ -78,9 +78,8 @@ export class CursorLayer extends ScreenLayer {
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             if (this.sceneMgr) {
-                const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
-                this.cursorCanvasPos = {x: cx, y: cy}
-                this.cursorRelativePos = {x: (cx / this.canvas.width) * 2 - 1, y: -(cy / this.canvas.height) * 2 + 1}
+                this.cursorCanvasPos = {x: event.canvasX, y: event.canvasY}
+                this.cursorRelativePos = {x: (event.canvasX / this.canvas.width) * 2 - 1, y: -(event.canvasY / this.canvas.height) * 2 + 1}
                 this.changeCursor(this.determineCursor())
             }
             this.animationFrame.onRedraw = (context) => {

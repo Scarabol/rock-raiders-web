@@ -30,9 +30,8 @@ export class GameLayer extends ScreenLayer {
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
-        const [cx, cy] = this.toCanvasCoords(event.clientX, event.clientY)
-        const rx = (cx / this.canvas.width) * 2 - 1
-        const ry = -(cy / this.canvas.height) * 2 + 1
+        const rx = (event.canvasX / this.canvas.width) * 2 - 1
+        const ry = -(event.canvasY / this.canvas.height) * 2 + 1
         const terrainIntersectionPoint = this.sceneMgr.getTerrainIntersectionPoint(rx, ry)
         const buildMarker = this.sceneMgr.buildMarker
         if (event.eventEnum === POINTER_EVENT.MOVE) {
@@ -43,7 +42,7 @@ export class GameLayer extends ScreenLayer {
             if (event.button === MOUSE_BUTTON.MAIN) {
                 buildMarker.createBuildingSite()
             } else if (event.button === MOUSE_BUTTON.SECONDARY) {
-                const downUpDistance = Math.abs(event.clientX - this.rightDown.x) + Math.abs(event.clientY - this.rightDown.y)
+                const downUpDistance = Math.abs(event.canvasX - this.rightDown.x) + Math.abs(event.canvasY - this.rightDown.y)
                 if (downUpDistance < 3) {
                     if (this.sceneMgr.hasBuildModeSelection()) {
                         this.sceneMgr.setBuildModeSelection(null)
@@ -54,8 +53,8 @@ export class GameLayer extends ScreenLayer {
             }
         } else if (event.eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.SECONDARY) {
-                this.rightDown.x = event.clientX
-                this.rightDown.y = event.clientY
+                this.rightDown.x = event.canvasX
+                this.rightDown.y = event.canvasY
             }
         }
         return this.sceneMgr.controls.handlePointerEvent(event)

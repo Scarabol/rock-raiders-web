@@ -46,14 +46,15 @@ export class ScreenLayer {
         return this.active
     }
 
-    toCanvasCoords(windowX: number, windowY: number) {
-        const clientRect = this.canvas.getBoundingClientRect()
-        return [windowX - clientRect.left, windowY - clientRect.top]
-    }
-
     pushPointerEvent(event: GamePointerEvent): Promise<boolean> {
+        [event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
         const eventConsumed = this.handlePointerEvent(event)
         return new Promise((resolve) => resolve(eventConsumed))
+    }
+
+    protected transformCoords(clientX: number, clientY: number) {
+        const clientRect = this.canvas.getBoundingClientRect()
+        return [clientX - clientRect.left, clientY - clientRect.top]
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
@@ -70,6 +71,7 @@ export class ScreenLayer {
     }
 
     pushWheelEvent(event: GameWheelEvent): Promise<boolean> {
+        [event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
         const eventConsumed = this.handleWheelEvent(event)
         return new Promise((resolve) => resolve(eventConsumed))
     }
@@ -110,8 +112,14 @@ export class ScaledLayer extends ScreenLayer {
         this.scaleY = this.canvas.height / this.fixedHeight
     }
 
-    toScaledCoords(windowX: number, windowY: number) {
-        const [cx, cy] = this.toCanvasCoords(windowX, windowY)
+    pushPointerEvent(event: GamePointerEvent): Promise<boolean> {
+        [event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
+        const eventConsumed = this.handlePointerEvent(event)
+        return new Promise((resolve) => resolve(eventConsumed))
+    }
+
+    protected transformCoords(clientX: number, clientY: number) {
+        const [cx, cy] = super.transformCoords(clientX, clientY)
         return [cx / this.scaleX, cy / this.scaleY].map((c) => Math.round(c))
     }
 
