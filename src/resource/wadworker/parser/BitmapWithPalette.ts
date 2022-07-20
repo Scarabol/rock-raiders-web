@@ -460,7 +460,7 @@ class BmpDecoder implements IBitmapImage {
 
                 if (x * 2 + 1 >= this.width) {
                     // throw new Error('Something');
-                    return false
+                    return
                 }
 
                 const last4 = b & 0x0f

@@ -818,5 +818,6 @@ export class GameStatsCfg extends BaseConfig {
             this[objKey].setFromCfgObj(cfgValue)
             return true
         }
+        return false
     }
 }

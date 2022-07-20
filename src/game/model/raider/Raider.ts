@@ -95,6 +95,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
                     spider.getComponent(LifecycleComponent).markDead()
                     return true
                 }
+                return false
             })
         } else if (result === MoveState.TARGET_UNREACHABLE) {
             console.log('Entity could not move to job target, stopping job')

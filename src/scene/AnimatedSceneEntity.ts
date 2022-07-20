@@ -162,6 +162,7 @@ export class AnimatedSceneEntity extends SceneEntity {
                 carryJoint.add(entity.group)
                 return true
             }
+            return false
         })
         if (!foundCarryJoint) {
             console.warn('Could not find empty carry joint to attach carried entity')

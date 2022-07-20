@@ -37,6 +37,7 @@ export class NerpMsgParser {
                             e.snd = sndMatch[2].replace(/\\/g, '/')
                             return true
                         }
+                        return false
                     })
                 } else {
                     throw new Error('Line in nerp message file did not match anything')

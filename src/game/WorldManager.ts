@@ -189,6 +189,7 @@ export class WorldManager {
                             teleportBuilding.teleport.teleportIn(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam, worldPosition, heading, null)
                             return true
                         }
+                        return false
                     })
                     if (spawnedVehicleType) {
                         this.requestedVehicleTypes.remove(spawnedVehicleType)

@@ -55,7 +55,7 @@ export class ScreenMaster {
 
     createScreenshot(): Promise<HTMLCanvasElement> {
         const activeLayers = this.getActiveLayersSorted().reverse()
-        if (activeLayers.length < 1) return
+        if (activeLayers.length < 1) return new Promise((_, reject) => reject())
         const context = cloneContext(activeLayers[0].canvas)
         return new Promise<HTMLCanvasElement>((resolve) => {
             Promise.all(activeLayers.map((l) => l.takeScreenshotFromLayer())).then((layers) => {

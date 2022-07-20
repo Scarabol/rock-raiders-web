@@ -536,7 +536,7 @@ export class LWOLoader {
 
         if (view.getUint32(0) !== LWO_FORM) {
             console.error('LWOLoader.parse: Cannot find header.')
-            return
+            return null
         }
 
         const fileSize = view.getUint32(ID4_SIZE)
@@ -548,7 +548,7 @@ export class LWOLoader {
         if (view.getUint32(magicOffset) !== LWO_MAGIC) {
             const magic = decodeString(new Uint8Array(buffer, magicOffset, ID4_SIZE))
             console.error(`LWOLoader.parse: Invalid magic ID (${magic}) in LWO header.`)
-            return
+            return null
         }
 
         let cursor = 12

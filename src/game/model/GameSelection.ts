@@ -140,6 +140,7 @@ export class GameSelection {
         } else if (this.fence) {
             return SelectPanelType.FENCE
         }
+        return SelectPanelType.NONE
     }
 
     assignSurfaceJob(job: Job) {
@@ -176,6 +177,7 @@ export class GameSelection {
                 v.setJob(job)
                 return true
             }
+            return false
         })
         if (doneByVehicle) return
         this.raiders.some((r) => {
@@ -183,6 +185,7 @@ export class GameSelection {
                 r.setJob(job)
                 return true
             }
+            return false
         })
     }
 
