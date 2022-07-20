@@ -1,9 +1,8 @@
 import { Modal } from 'bootstrap'
 import { getElementByIdOrThrow } from '../../src/core/Util'
+import { ResourceManager } from '../../src/resource/ResourceManager'
 
 export class WadFileSelectionModal {
-    public onStart: (wad0Url: string, wad1Url: string) => any = null
-
     private readonly modal: Modal
     private readonly startButtons: HTMLButtonElement[] = []
     private readonly progressGroup: HTMLDivElement
@@ -114,9 +113,9 @@ export class WadFileSelectionModal {
         btnStartFile.addEventListener('click', () => {
             this.setButtonsDisabled(true)
             try {
-                const wad0FileUrl = URL.createObjectURL(wad0File.files[0])
-                const wad1FileUrl = URL.createObjectURL(wad1File.files[0])
-                this.onStart(wad0FileUrl, wad1FileUrl)
+                const wad0Url = URL.createObjectURL(wad0File.files[0])
+                const wad1Url = URL.createObjectURL(wad1File.files[0])
+                ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
             } catch (e) {
                 console.error(e)
                 this.setButtonsDisabled(false)
@@ -153,7 +152,7 @@ export class WadFileSelectionModal {
         btnStartUrl.addEventListener('click', () => {
             this.setButtonsDisabled(true)
             this.progressGroup.style.display = 'block'
-            this.onStart(wad0Url, wad1Url)
+            ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
         })
     }
 

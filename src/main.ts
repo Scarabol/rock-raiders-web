@@ -30,9 +30,6 @@ const wadFileSelectModal = new WadFileSelectionModal('game-container')
 const githubBox = new GithubBox('game-container')
 const clearCacheButton = new ClearCacheButton('game-container')
 
-wadFileSelectModal.onStart = (wad0Url, wad1Url) => {
-    ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
-}
 ResourceManager.onLoadingMessage = (msg: string) => {
     wadFileSelectModal.hide()
     loadingLayer.setLoadingMessage(msg)
@@ -99,7 +96,6 @@ ResourceManager.onLoadDone = () => {
     }
 }
 
-// start the game engine with loading resources
-
+// start the game by loading resources
 loadingLayer.show()
 ResourceManager.startLoadingFromCache()
