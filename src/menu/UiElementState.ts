@@ -53,17 +53,16 @@ export class UiElementState {
         return true
     }
 
-    setHovered(hovered: boolean): boolean {
+    setHovered(hovered: boolean) {
         this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
-        if (this.disabled || this.hidden) return false
+        if (this.disabled || this.hidden) return
         if (hovered && !this.tooltipTimeout && this.onShowTooltip) {
             this.tooltipTimeout = setTimeout(() => this.onShowTooltip(), this.tooltipDelay)
         }
-        if (this.hovered === hovered) return false
+        if (this.hovered === hovered) return
         this.stateChanged = true
         this.hovered = hovered
         if (this.onHoverChanged) this.onHoverChanged()
-        return true
     }
 
     setDisabled(disabled: boolean) {

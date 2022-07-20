@@ -20,8 +20,8 @@ export class MainMenuBaseItem {
         return sx >= this.x && sx < this.x + this.width && sy >= this.y && sy < this.y + this.height
     }
 
-    setHovered(hovered: boolean): boolean {
-        return this.state.setHovered(hovered)
+    setHovered(hovered: boolean) {
+        this.state.setHovered(hovered)
     }
 
     set onHoverChange(callback: UiElementCallback) {

@@ -117,15 +117,16 @@ export class MainMenuLayer extends ScaledLayer {
 
     private updateItemsHoveredState(sx: number, sy: number) {
         let needsRedraw = false
-        let hovered = false
+        let hasHovered = false
         this.items.forEach((item) => {
-            if (!hovered) {
+            if (!hasHovered) {
                 const absY = sy + (item.scrollAffected ? this.scrollY : 0)
-                hovered = item.isHovered(sx, absY)
-                needsRedraw = item.setHovered(hovered) || needsRedraw
+                hasHovered = item.isHovered(sx, absY)
+                item.setHovered(hasHovered)
             } else {
                 item.setHovered(false)
             }
+            needsRedraw = needsRedraw || item.needsRedraw
         })
         if (needsRedraw) this.animationFrame.redraw()
     }

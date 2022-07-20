@@ -86,9 +86,8 @@ export class RewardScreen {
         }
         this.btnLayer.handlePointerEvent = ((event) => {
             if (event.eventEnum === POINTER_EVENT.MOVE) {
-                let needsRedraw = this.btnSave.setHovered(this.btnSave.isHovered(event.canvasX, event.canvasY))
-                needsRedraw = this.btnAdvance.setHovered(this.btnAdvance.isHovered(event.canvasX, event.canvasY)) || needsRedraw
-                if (needsRedraw) this.btnLayer.animationFrame.redraw()
+                this.btnSave.setHovered(this.btnSave.isHovered(event.canvasX, event.canvasY))
+                this.btnAdvance.setHovered(this.btnAdvance.isHovered(event.canvasX, event.canvasY))
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {
                 if (event.button === MOUSE_BUTTON.MAIN) {
                     this.btnSave.onMouseDown()
