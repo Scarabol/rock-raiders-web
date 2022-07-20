@@ -31,7 +31,7 @@ export class MainMenuScreen {
                 layer = new MainMenuLayer(menuCfg)
             }
             layer.onItemAction = (item: MainMenuBaseItem) => this.onItemAction(item)
-            this.menuLayers.push(screenMaster.addLayer(layer))
+            this.menuLayers.push(screenMaster.addLayer(layer, 0))
         })
     }
 

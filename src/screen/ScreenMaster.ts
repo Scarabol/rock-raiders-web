@@ -24,7 +24,7 @@ export class ScreenMaster {
         EventBus.registerEventListener(EventKey.TAKE_SCREENSHOT, () => this.takeScreenshot())
     }
 
-    addLayer<T extends ScreenLayer>(layer: T, zIndex: number = 0): T {
+    addLayer<T extends ScreenLayer>(layer: T, zIndex: number): T {
         layer.resize(this.width, this.height)
         layer.setZIndex(zIndex)
         this.layers.push(layer)

@@ -42,7 +42,7 @@ export class RewardScreen {
         this.cfg = ResourceManager.configuration.reward
         this.titleFont = ResourceManager.getBitmapFont(this.cfg.titleFont)
         const backgroundImg = ResourceManager.getImage(this.cfg.wallpaper)
-        this.backgroundLayer = screenMaster.addLayer(new ScaledLayer())
+        this.backgroundLayer = screenMaster.addLayer(new ScaledLayer(), 0)
         this.backgroundLayer.animationFrame.onRedraw = (context) => context.drawImage(backgroundImg, 0, 0)
         this.cfg.images.forEach((img) => {
             this.images.push({img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y})
@@ -57,7 +57,7 @@ export class RewardScreen {
             const labelFont = index < 9 ? font : ResourceManager.getBitmapFont(this.cfg.backFont)
             this.texts.push(labelFont.createTextImage(txt.text))
         })
-        this.resultsLayer = screenMaster.addLayer(new ScaledLayer())
+        this.resultsLayer = screenMaster.addLayer(new ScaledLayer(), 10)
         this.resultsLayer.handlePointerEvent = ((event) => {
             if (event.eventEnum === POINTER_EVENT.UP) {
                 this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
