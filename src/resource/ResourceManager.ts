@@ -7,7 +7,7 @@ import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { DEV_MODE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
 import { AnimEntityLoader } from './AnimEntityLoader'
-import { LWOLoader } from './LWOLoader'
+import { LWOBParser, LWOBTextureLoader } from './LWOBParser'
 import { ResourceCache } from './ResourceCache'
 
 export class ResourceManager extends ResourceCache {
@@ -89,7 +89,8 @@ export class ResourceManager extends ResourceCache {
         return this.lwoCache.getOrUpdate(lwoFilepath.toLowerCase(), () => {
             const lwoBuffer = ResourceManager.getResource(lwoFilepath)
             if (!lwoBuffer) return null
-            const result = new LWOLoader(getPath(lwoFilepath), entityPath).parse(lwoBuffer)
+            const textureLoader = new ResourceManagerTextureLoader(getPath(lwoFilepath), entityPath)
+            const result = new LWOBParser(lwoBuffer, textureLoader).parse()
             result.name = lwoFilepath
             return result
         })?.clone()
@@ -112,5 +113,26 @@ export class ResourceManager extends ResourceCache {
             context.drawImage(tooltipTextImage, margin + padding, margin + padding)
             return context.canvas
         })
+    }
+}
+
+class ResourceManagerTextureLoader extends LWOBTextureLoader {
+
+    load(textureFilename: string, onLoad: (textures: Texture[]) => any): void {
+        return onLoad(this.loadFromResourceManager(textureFilename))
+    }
+
+    private loadFromResourceManager(textureFilename: string): Texture[] {
+        if (!textureFilename || textureFilename === '(none)') return []
+        const hasSequence = textureFilename.endsWith('(sequence)')
+        const sequenceBaseFilepath = textureFilename.substring(0, textureFilename.length - '(sequence)'.length).trim()
+        if (hasSequence) {
+            const match = sequenceBaseFilepath.match(/(.+\D)0+(\d+)\..+/i)
+            return ResourceManager.getTexturesBySequenceName(this.meshPath + match[1])
+        } else {
+            const texture = ResourceManager.getMeshTexture(textureFilename, this.meshPath, this.entityPath)
+            if (!texture) console.warn(`Could get mesh texture "${textureFilename}" from mesh path "${this.meshPath}" or entity path "${this.entityPath}"`)
+            return texture ? [texture] : []
+        }
     }
 }
