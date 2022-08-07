@@ -5,6 +5,9 @@ import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { SceneMesh } from '../SceneMesh'
 import { VehicleSceneEntity } from './VehicleSceneEntity'
 
+/**
+ * @deprecated
+ */
 export class WalkerDiggerSceneEntity extends VehicleSceneEntity {
     body: AnimatedSceneEntity = null
 

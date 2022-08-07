@@ -1,8 +1,8 @@
-import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { AbstractGameComponent } from '../ECS'
+import { AnimatedMeshGroup } from '../../scene/AnimatedMeshGroup'
 
 export class SceneEntityComponent extends AbstractGameComponent {
-    constructor(readonly sceneEntity: AnimatedSceneEntity) {
+    constructor(readonly sceneEntity: AnimatedMeshGroup) {
         super()
     }
 }

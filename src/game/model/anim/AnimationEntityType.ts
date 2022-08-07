@@ -3,6 +3,9 @@ import { SceneMesh } from '../../../scene/SceneMesh'
 import { AnimationEntityUpgrade } from './AnimationEntityUpgrade'
 import { AnimClip } from './AnimClip'
 
+/**
+ * @deprecated
+ */
 export class AnimationEntityType {
     scale: number = 1
     carryNullName: string = ''

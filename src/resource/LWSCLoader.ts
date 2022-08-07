@@ -14,6 +14,9 @@ import { AnimSubObj } from '../game/model/anim/AnimSubObj'
 import { SceneMesh } from '../scene/SceneMesh'
 import { ResourceManager } from './ResourceManager'
 
+/**
+ * @deprecated
+ */
 export class LWSCLoader {
     animationClip: AnimClip
     verbose: boolean = false

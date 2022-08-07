@@ -8,6 +8,9 @@ import { RaiderActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 import { VehicleEntity } from './VehicleEntity'
 
+/**
+ * @deprecated
+ */
 export class VehicleFactory {
     static createVehicleFromType(entityType: EntityType, worldMgr: WorldManager): VehicleEntity {
         switch (entityType) {

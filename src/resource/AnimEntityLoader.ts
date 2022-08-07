@@ -8,6 +8,9 @@ import { SceneMesh } from '../scene/SceneMesh'
 import { LWSCLoader } from './LWSCLoader'
 import { ResourceManager } from './ResourceManager'
 
+/**
+ * @deprecated
+ */
 export class AnimEntityLoader {
     aeFilename: string
     path: string
@@ -152,7 +155,7 @@ export class AnimEntityLoader {
         if (!match) return false
         const upgradesByLevel: AnimationEntityUpgrade[] = []
         Object.entries<unknown[]>(upgradesCfg).forEach(([upgradeTypeName, upgradeEntry]) => {
-            const upgradeFilepath = ResourceManager.cfg('UpgradeTypes', upgradeTypeName) || this.path + upgradeTypeName
+            const upgradeFilepath = ResourceManager.configuration.upgradeTypesCfg.get(upgradeTypeName.toLowerCase()) || this.path + upgradeTypeName
             const upgradeEntries = Array.isArray(upgradeEntry[0]) ? upgradeEntry : [upgradeEntry]
             upgradeEntries.forEach((upgradeTypeEntry) => {
                 upgradesByLevel.push(new AnimationEntityUpgrade(upgradeFilepath, upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))

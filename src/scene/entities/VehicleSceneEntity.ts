@@ -3,6 +3,9 @@ import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { SceneEntity } from '../SceneEntity'
 
+/**
+ * @deprecated
+ */
 export class VehicleSceneEntity extends AnimatedSceneEntity {
     driver: AnimatedSceneEntity
     speed: number

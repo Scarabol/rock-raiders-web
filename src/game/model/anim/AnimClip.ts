@@ -4,6 +4,9 @@ import { updateSafe } from '../Updateable'
 import { AnimSubObj } from './AnimSubObj'
 import { SaveGameManager } from '../../../resource/SaveGameManager'
 
+/**
+ * @deprecated
+ */
 export class AnimClip {
     lwsFilepath: string = null
     looping: boolean = false

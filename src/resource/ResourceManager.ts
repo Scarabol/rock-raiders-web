@@ -9,9 +9,13 @@ import { LWOBParser, LWOBTextureLoader } from './LWOBParser'
 import { ResourceCache } from './ResourceCache'
 import { RaiderTool, RaiderTools } from '../game/model/raider/RaiderTool'
 import { RaiderTraining, RaiderTrainings } from '../game/model/raider/RaiderTraining'
+import { LWSCData, LWSCParser } from './LWSCParser'
+import { AnimEntityData, AnimEntityParser } from './AnimEntityParser'
 
 export class ResourceManager extends ResourceCache {
     static lwoCache: Map<string, SceneMesh> = new Map()
+    static lwscCache: Map<string, LWSCData> = new Map()
+    static aeCache: Map<string, AnimEntityData> = new Map()
     static tooltipSpriteCache: Map<string, SpriteImage> = new Map()
 
     static getLevelEntryCfg(levelName: string): LevelEntryCfg {
@@ -87,12 +91,39 @@ export class ResourceManager extends ResourceCache {
         }
         return this.lwoCache.getOrUpdate(lwoFilepath.toLowerCase(), () => {
             const lwoBuffer = ResourceManager.getResource(lwoFilepath)
-            if (!lwoBuffer) return null
+            if (!lwoBuffer) {
+                const sharedLwoFilepath = `world/shared/${getFilename(lwoFilepath)}`
+                return this.lwoCache.getOrUpdate(sharedLwoFilepath.toLowerCase(), () => {
+                    const sharedLwoBuffer = ResourceManager.getResource(sharedLwoFilepath)
+                    if (!sharedLwoBuffer) throw new Error(`Could not find lwo file neither at ${lwoFilepath} nor at ${sharedLwoFilepath}`)
+                    const textureLoader = new ResourceManagerTextureLoader(getPath(sharedLwoFilepath), entityPath)
+                    const result = new LWOBParser(sharedLwoBuffer, textureLoader).parse()
+                    result.name = sharedLwoFilepath
+                    return result
+                })
+            }
             const textureLoader = new ResourceManagerTextureLoader(getPath(lwoFilepath), entityPath)
             const result = new LWOBParser(lwoBuffer, textureLoader).parse()
             result.name = lwoFilepath
             return result
         })?.clone()
+    }
+
+    static getLwscData(lwscFilepath: string): LWSCData {
+        return this.lwscCache.getOrUpdate(lwscFilepath.toLowerCase(), () => {
+            const lwscContent = ResourceManager.getResource(lwscFilepath)
+            if (!lwscContent) throw new Error(`Could not get LWSC data for '${lwscFilepath}'`)
+            return new LWSCParser(lwscContent).parse()
+        })
+    }
+
+    static getAnimatedData(aeName: string): AnimEntityData {
+        return this.aeCache.getOrUpdate(aeName.toLowerCase(), () => {
+            const aeFilename = `${aeName}/${aeName.split('/').last()}.ae`
+            const cfgRoot = ResourceManager.getResource(aeFilename)
+            if (!cfgRoot) throw new Error(`Could not get animation data for: ${aeFilename}`)
+            return new AnimEntityParser(cfgRoot, `${aeName}/`).parse()
+        })
     }
 
     static getTooltipSprite(tooltipText: string): SpriteImage {

@@ -1,3 +1,6 @@
+/**
+ * @deprecated
+ */
 export class AnimationEntityUpgrade {
     upgradeFilepath: string
     upgradeNullName: string

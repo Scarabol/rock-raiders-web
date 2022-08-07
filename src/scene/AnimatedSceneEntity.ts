@@ -9,6 +9,9 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { SceneEntity } from './SceneEntity'
 import { SceneMesh } from './SceneMesh'
 
+/**
+ * @deprecated
+ */
 export class AnimatedSceneEntity extends SceneEntity {
     readonly animationEntityType: AnimationEntityType = null
     readonly upgrades: SceneMesh[] = []

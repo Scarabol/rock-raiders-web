@@ -45,7 +45,7 @@ export class GameConfig extends BaseConfig {
     // vehicleTypes: VehicleTypesCfg = new VehicleTypesCfg()
     // rockMonsterTypes: RockMonsterTypesCfg = new RockMonsterTypesCfg()
     // buildingTypes: BuildingTypesCfg = new BuildingTypesCfg()
-    // upgradeTypes: UpgradeTypesCfg = new UpgradeTypesCfg()
+    upgradeTypesCfg: Map<string, string> = new Map()
     infoMessages: InfoMessagesCfg = new InfoMessagesCfg()
     stats: GameStatsCfg = new GameStatsCfg()
     // dependencies: DependenciesCfg = new DependenciesCfg()
@@ -104,8 +104,8 @@ export class GameConfig extends BaseConfig {
         //     this.rockMonsterTypes.setFromCfgObj(cfgValue)
         // } else if ('BuildingTypes'.equalsIgnoreCase(unifiedKey)) {
         //     this.buildingTypes.setFromCfgObj(cfgValue)
-        // } else if ('UpgradeTypes'.equalsIgnoreCase(unifiedKey)) {
-        //     this.upgradeTypes.setFromCfgObj(cfgValue)
+        } else if ('UpgradeTypes'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.upgradeTypesCfg.set(cfgKey.toLowerCase(), value as string))
         } else if ('InfoMessages'.equalsIgnoreCase(unifiedKey)) {
             this.infoMessages.setFromCfgObj(cfgValue)
         } else if ('Stats'.equalsIgnoreCase(unifiedKey)) {

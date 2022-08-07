@@ -2,6 +2,9 @@ import { Euler, MathUtils, Vector3 } from 'three'
 import { SceneMesh } from '../../../scene/SceneMesh'
 import degToRad = MathUtils.degToRad
 
+/**
+ * @deprecated
+ */
 export class AnimSubObj {
     lowerName: string = ''
     pivot: Vector3 = new Vector3(0, 0, 0)

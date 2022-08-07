@@ -3,6 +3,9 @@ import { Group } from 'three'
 import { LWSCLoader } from '../../../resource/LWSCLoader'
 import { AnimClip } from './AnimClip'
 
+/**
+ * @deprecated
+ */
 export class AnimationGroup extends Group {
     animation: AnimClip
 
