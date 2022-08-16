@@ -150,6 +150,7 @@ export class Surface implements Selectable {
         this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
         this.containedOres += SURFACE_NUM_CONTAINED_ORE
         this.needsMeshUpdate = true
+        this.reinforced = false
         const caveFound = this.discover()
         if (caveFound) EventBus.publishEvent(new CavernDiscovered())
         // drop contained ores and crystals
