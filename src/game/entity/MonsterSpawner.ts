@@ -26,13 +26,13 @@ export class MonsterSpawner {
         switch (entityType) {
             case EntityType.SMALL_SPIDER:
                 entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/SpiderSB/SpiderSB.ae', 1))
-                entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.SmallSpider))
+                entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.smallSpider))
                 entity.addComponent(new SpiderMovementComponent())
                 entity.addComponent(new LifecycleComponent())
                 break
             case EntityType.BAT:
                 entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/bat/bat.ae', TILESIZE / 2))
-                entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.Bat))
+                entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.bat))
                 entity.addComponent(new BatMovementComponent())
                 entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
                 break

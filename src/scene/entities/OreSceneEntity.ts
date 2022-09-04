@@ -6,6 +6,6 @@ export class OreSceneEntity extends SceneEntity {
     constructor(sceneMgr: SceneManager) {
         super(sceneMgr)
         this.add(ResourceManager.getLwoModel('MiscAnims/Ore/Ore1st.lwo'))
-        this.addPickSphere(ResourceManager.configuration.stats.Ore.PickSphere)
+        this.addPickSphere(ResourceManager.configuration.stats.ore.PickSphere)
     }
 }

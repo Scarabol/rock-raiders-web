@@ -50,7 +50,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
     }
 
     get stats() {
-        return ResourceManager.configuration.stats.Pilot
+        return ResourceManager.configuration.stats.pilot
     }
 
     update(elapsedMs: number) {

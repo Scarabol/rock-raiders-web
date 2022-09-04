@@ -24,32 +24,32 @@ export class BuildingType {
     static from(entityType: EntityType): BuildingType {
         switch (entityType) {
             case EntityType.TOOLSTATION:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.Toolstation, 'Buildings/Toolstation/Toolstation.ae')
+                return new BuildingType(entityType, ResourceManager.configuration.stats.toolStation, 'Buildings/Toolstation/Toolstation.ae')
                     .addTeleport(EntityType.PILOT)
             case EntityType.TELEPORT_PAD:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.TeleportPad, 'Buildings/Teleports/Teleports.ae')
+                return new BuildingType(entityType, ResourceManager.configuration.stats.teleportPad, 'Buildings/Teleports/Teleports.ae')
                     .addTeleport(EntityType.PILOT, EntityType.HOVERBOARD, EntityType.SMALL_TRUCK, EntityType.SMALL_CAT, EntityType.SMALL_DIGGER, EntityType.SMALL_MLP, EntityType.SMALL_HELI) // TODO evaluate stats UseSmallTeleporter
             case EntityType.DOCKS:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.Docks, 'Buildings/Docks/Docks.ae')
+                return new BuildingType(entityType, ResourceManager.configuration.stats.docks, 'Buildings/Docks/Docks.ae')
                     .setPrimaryPowerPath(0, -1).setWaterPathSurface(0, 1)
             case EntityType.POWER_STATION:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.Powerstation, 'Buildings/Powerstation/Powerstation.ae')
+                return new BuildingType(entityType, ResourceManager.configuration.stats.powerStation, 'Buildings/Powerstation/Powerstation.ae')
                     .setSecondaryBuildingPart(-1, 0).setDropAction(RaiderActivity.Deposit)
             case EntityType.BARRACKS:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.Barracks, 'Buildings/Barracks/Barracks.ae')
+                return new BuildingType(entityType, ResourceManager.configuration.stats.barracks, 'Buildings/Barracks/Barracks.ae')
             case EntityType.UPGRADE:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.Upgrade, 'Buildings/Upgrade/Upgrade.ae')
+                return new BuildingType(entityType, ResourceManager.configuration.stats.upgrade, 'Buildings/Upgrade/Upgrade.ae')
             case EntityType.GEODOME:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.Geodome, 'Buildings/Geo-dome/Geo-dome.ae')
+                return new BuildingType(entityType, ResourceManager.configuration.stats.geoDome, 'Buildings/Geo-dome/Geo-dome.ae')
                     .removePrimaryPowerPath().setSecondaryBuildingPart(0, 1)
             case EntityType.ORE_REFINERY:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.OreRefinery, 'Buildings/OreRefinery/OreRefinery.ae')
+                return new BuildingType(entityType, ResourceManager.configuration.stats.oreRefinery, 'Buildings/OreRefinery/OreRefinery.ae')
                     .setPrimaryPowerPath(0, 2).setSecondaryBuildingPart(0, 1).setDropAction(RaiderActivity.Deposit)
             case EntityType.GUNSTATION:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.GunStation, 'Buildings/gunstation/gunstation.ae')
+                return new BuildingType(entityType, ResourceManager.configuration.stats.gunStation, 'Buildings/gunstation/gunstation.ae')
                     .removePrimaryPowerPath()
             case EntityType.TELEPORT_BIG:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.TeleportBIG, 'Buildings/BIGTeleport/BIGTeleport.ae')
+                return new BuildingType(entityType, ResourceManager.configuration.stats.teleportBig, 'Buildings/BIGTeleport/BIGTeleport.ae')
                     .setSecondaryBuildingPart(0, 1).setPrimaryPowerPath(-1, 0).setSecondaryPowerPath(-1, 1)
                     .addTeleport(EntityType.BULLDOZER, EntityType.WALKER_DIGGER, EntityType.LARGE_MLP, EntityType.LARGE_DIGGER, EntityType.LARGE_CAT) // TODO evaluate stats UseLargeTeleporter
             default:
