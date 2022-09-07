@@ -11,27 +11,26 @@ import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
+import { NerpScript } from './NerpScript'
+import { NerpParser } from './NerpParser'
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
-    entityMgr: EntityManager
+    readonly script: NerpScript
     debug = false
 
     timer: number = 0
     registers = new Array(8).fill(0)
     timers = new Array(4).fill(0)
-    scriptLines: string[] = [] // contains human readable script strings
-    statements: any[] = [] // contains parsed statements for execution
-    macrosByName: Map<string, { args: string[], lines: string[] }> = new Map()
-    labelsByName: Map<string, number> = new Map()
     halted = false
     programCounter = 0
     messages: { txt: string, snd: string }[] = []
     // more state variables and switches
     messagePermit: boolean = null
 
-    constructor(entityMgr: EntityManager) {
-        this.entityMgr = entityMgr
+    constructor(nerpScriptFile: string, readonly entityMgr: EntityManager) {
+        this.script = NerpParser.parse(nerpScriptFile)
+        this.checkSyntax()
     }
 
     update(elapsedMs: number) {
@@ -138,7 +137,7 @@ export class NerpRunner {
      * End the level as failure and show the score screen.
      */
     setLevelFail() {
-        console.log(`NerpRunner marks level as failed; at line: ${this.scriptLines[this.programCounter]}`)
+        console.log(`NerpRunner marks level as failed; at line: ${this.script.lines[this.programCounter]}`)
         this.halted = true
         GameState.gameResult = GameResultState.FAILED
     }
@@ -384,7 +383,7 @@ export class NerpRunner {
         } else if (!isNaN(expression)) { // just a number
             return expression
         } else if (expression.jump) {
-            this.programCounter = this.labelsByName.get(expression.jump)
+            this.programCounter = this.script.labelsByName.get(expression.jump)
             if (this.programCounter === undefined) {
                 throw new Error(`Label '${expression.jump}' is unknown!`)
             }
@@ -401,13 +400,13 @@ export class NerpRunner {
         if (this.halted) return
         try {
             if (this.debug) {
-                console.log(`Executing following script\\n${this.scriptLines.join('\n')}`)
+                console.log(`Executing following script\\n${this.script.lines.join('\n')}`)
                 console.log(`Registers: ${this.registers}`)
             }
-            for (this.programCounter = 0; this.programCounter < this.statements.length && !this.halted; this.programCounter++) {
-                const statement = this.statements[this.programCounter]
+            for (this.programCounter = 0; this.programCounter < this.script.statements.length && !this.halted; this.programCounter++) {
+                const statement = this.script.statements[this.programCounter]
                 if (this.debug) {
-                    console.log(`${this.programCounter}: ${this.scriptLines[this.programCounter]}`)
+                    console.log(`${this.programCounter}: ${this.script.lines[this.programCounter]}`)
                     console.log(statement)
                 }
                 if (!statement.label) { // do nothing for label markers
@@ -425,7 +424,7 @@ export class NerpRunner {
     }
 
     checkSyntax() {
-        this.statements.forEach((statement) => {
+        this.script.statements.forEach((statement) => {
             const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.equalsIgnoreCase(statement.invoke))
             if (!statement.label && !statement.jump && !this[memberName] && statement.invoke !== 'Stop' && !statement.invoke?.startsWith('AddR') && !statement.invoke?.startsWith('SubR') && !statement.invoke?.startsWith('SetR') && !statement.invoke?.startsWith('SetTimer')) {
                 console.warn(`Unknown statement ${statement.invoke} found, NERP execution may fail!`)

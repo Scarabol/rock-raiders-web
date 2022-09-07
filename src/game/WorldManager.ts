@@ -1,7 +1,6 @@
 import { Vector2 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { NerpParser } from '../core/NerpParser'
-import { NerpRunner } from '../core/NerpRunner'
+import { NerpRunner } from '../nerp/NerpRunner'
 import { clearTimeoutSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
@@ -80,7 +79,7 @@ export class WorldManager {
         this.requestedVehicleTypes = []
         this.spawnVehicleTimer = 0
         // load nerp script
-        this.nerpRunner = NerpParser.parse(this.entityMgr, ResourceManager.getResource(levelConf.nerpFile))
+        this.nerpRunner = new NerpRunner(levelConf.nerpFile, this.entityMgr)
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
         this.firstUnpause = true
     }

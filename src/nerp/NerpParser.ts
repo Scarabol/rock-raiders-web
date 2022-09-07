@@ -1,11 +1,14 @@
-import { EntityManager } from '../game/EntityManager'
 import { ResourceManager } from '../resource/ResourceManager'
-import { NerpRunner } from './NerpRunner'
+import { NerpScript } from './NerpScript'
 
 export class NerpParser {
-    static parse(entityMgr: EntityManager, nerpScript: string): NerpRunner {
-        const nerpRunner = new NerpRunner(entityMgr)
-        const lines = nerpScript.split('\n').map(l => l
+    static parse(nerpScriptFile: string): NerpScript {
+        const nerpScriptContent = ResourceManager.getResource(nerpScriptFile)
+        if (!nerpScriptContent) {
+            throw new Error(`Can't parse unknown nerp script: ${nerpScriptFile}`)
+        }
+        const result = new NerpScript()
+        const lines = nerpScriptContent.split('\n').map(l => l
             .split('//')[0].trim() // before comment starts
             .split(';')[0].trim() // before preprocessor comment starts
             .replace(/_/g, '') // some preprocessor macros use this prefix
@@ -24,14 +27,14 @@ export class NerpParser {
                     // see https://github.com/jgrip/legorr/blob/master/nerpdef.h
                     continue
                 }
-                const includedRunner = NerpParser.parse(entityMgr, ResourceManager.getResource(`Levels/${includeName}`))
-                if (!includedRunner || !includedRunner.scriptLines || includedRunner.scriptLines.length < 1) {
+                const includedScript = NerpParser.parse(`Levels/${includeName}`)
+                if (!includedScript || !includedScript.lines || includedScript.lines.length < 1) {
                     throw new Error(`Can't include unknown nerp script: ${line}`)
                 }
-                nerpRunner.scriptLines = nerpRunner.scriptLines.concat(includedRunner.scriptLines)
+                result.lines = result.lines.concat(includedScript.lines)
                 // copy macros from included file to current file
-                nerpRunner.macrosByName = new Map([...nerpRunner.macrosByName, ...includedRunner.macrosByName])
-            } else if (line.startsWith('#define ')) { // parse C++ preprocessor macro
+                result.macrosByName = new Map([...result.macrosByName, ...includedScript.macrosByName])
+            } else if (line.startsWith('#define ')) { // parse C++ style preprocessor macro
                 const firstLine = line.replace(/^#define /, '').split(' ')
                 const macroLines = [firstLine.splice(1).join(' ').replace(/\\$/, '').trim()]
                 let mLine = line
@@ -53,39 +56,38 @@ export class NerpParser {
                     }
                 }
                 const macroCall = firstLine[0].split('(')
-                nerpRunner.macrosByName.set(macroCall[0], {
+                result.macrosByName.set(macroCall[0], {
                     args: macroCall[1].replace(/\)$/, '').split(','),
                     lines: macroLines,
                 })
             } else {
-                nerpRunner.scriptLines = nerpRunner.scriptLines.concat(this.replaceMacros(nerpRunner.macrosByName, line))
+                result.lines = result.lines.concat(this.replaceMacros(result.macrosByName, line))
             }
         }
         // somewhat precompile the script and create syntax tree
         // must be done in separate block to make sure the script is complete, and we can refer/rely on line-numbers for label jumps
-        for (let c = 0; c < nerpRunner.scriptLines.length; c++) {
-            const line = nerpRunner.scriptLines[c]
-            nerpRunner.statements[c] = line.replace(/\(\)/g, '') // now the macros are applied and obsolete empty "()" can be removed
+        for (let c = 0; c < result.lines.length; c++) {
+            const line = result.lines[c]
+            result.statements[c] = line
+                .replace(/\(\)/g, '') // now the macros are applied and obsolete empty "()" can be removed
                 .split(' ? ')
             const labelMatch = line.match(/(\S+):/)
-            if (nerpRunner.statements[c].length === 2) { // line contains condition (primary operator)
-                nerpRunner.statements[c] = {
+            if (result.statements[c].length === 2) { // line contains condition (primary operator)
+                result.statements[c] = {
                     invoke: 'conditional',
-                    args: [this.preProcess(nerpRunner.statements[c][0]), this.preProcess(nerpRunner.statements[c][1])],
+                    args: [this.preProcess(result.statements[c][0]), this.preProcess(result.statements[c][1])],
                 }
             } else if (labelMatch) { // keep label line number for later usage
                 const labelName = labelMatch[1].toLowerCase()
-                nerpRunner.labelsByName.set(labelName, c)
-                nerpRunner.statements[c] = {label: labelName}
-            } else if (nerpRunner.statements[c].length === 1) { // just a call
-                nerpRunner.statements[c] = this.preProcess(nerpRunner.statements[c][0])
+                result.labelsByName.set(labelName, c)
+                result.statements[c] = {label: labelName}
+            } else if (result.statements[c].length === 1) { // just a call
+                result.statements[c] = this.preProcess(result.statements[c][0])
             } else { // line contains more than 1 condition statement
                 throw new Error(`Can't deal with line: ${line}`)
             }
         }
-        // perform basic syntax check
-        nerpRunner.checkSyntax()
-        return nerpRunner
+        return result
     }
 
     private static replaceMacros(macrosByName: Map<string, { args: string[], lines: string[] }>, line: string): string[] {
