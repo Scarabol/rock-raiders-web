@@ -84,7 +84,7 @@ ResourceManager.onLoadDone = () => {
     if (DEV_MODE && entry) {
         GameState.numOre = Number(params.get('numOre')) || 0
         GameState.numCrystal = Number(params.get('numCrystal')) || 0
-        ObjectListLoader.numTestRaider = Number(params.get('numTestRaider')) || 0
+        ObjectListLoader.numRaider = Number(params.get('numRaider')) || 0
         const loadGame = params.get('loadGame')
         if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))
         if (entry === 'level') mainMenuScreen.showLevelSelection()

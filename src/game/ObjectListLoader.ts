@@ -19,7 +19,7 @@ import { WorldManager } from './WorldManager'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
-    static numTestRaider: number = 0
+    static numRaider: number = 0
 
     static loadObjectList(objectList: Map<string, ObjectListEntryCfg>, disableStartTeleport: boolean, worldMgr: WorldManager) {
         const sceneMgr = worldMgr.sceneMgr
@@ -68,7 +68,7 @@ export class ObjectListLoader {
                     const entity = new BuildingEntity(worldMgr, buildingType)
                     entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
                     if (entityType === EntityType.TOOLSTATION) {
-                        for (let c = 0; c < this.numTestRaider; c++) {
+                        for (let c = 0; c < this.numRaider; c++) {
                             const raider = new Raider(worldMgr)
                             raider.sceneEntity.changeActivity()
                             raider.sceneEntity.makeSelectable(raider)
