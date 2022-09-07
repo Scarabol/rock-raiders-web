@@ -19,10 +19,12 @@ export class GameResult {
     numRaiders: number
     numMaxRaiders: number
     gameTimeSeconds: number
-    rewardConfig: LevelRewardConfig = null
+    defencePercent: number
+    airLevelPercent: number
     score: number
     screenshot: HTMLCanvasElement = null
     // fields below are only used to debug score calculations
+    rewardConfig: LevelRewardConfig = null
     scoreCrystals: number = 0
     scoreTimer: number = 0
     scoreCaverns: number = 0
@@ -38,6 +40,8 @@ export class GameResult {
         this.numRaiders = entityMgr.raiders.length
         this.numMaxRaiders = entityMgr.getMaxRaiders()
         this.gameTimeSeconds = Math.round(worldMgr.elapsedGameTimeMs / 1000)
+        this.defencePercent = 100 // TODO defence report is either 0% or 100%
+        this.airLevelPercent = GameState.airLevel * 100
         this.rewardConfig = levelConf?.reward
         if (this.rewardConfig) {
             const quota = this.rewardConfig.quota

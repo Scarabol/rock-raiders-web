@@ -145,8 +145,8 @@ export class RewardScreen {
         this.resultValues.push(this.fonts['constructions'].createTextImage(result.numBuildings.toString()))
         this.resultValues.push(this.fonts['caverns'].createTextImage(this.percentString(GameState.discoveredCaverns, GameState.totalCaverns)))
         this.resultValues.push(this.fonts['figures'].createTextImage(this.percentString(result.numRaiders, result.numMaxRaiders)))
-        this.resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(1))) // TODO defence report is either 0% or 100%
-        this.resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(GameState.airLevel)))
+        this.resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(result.defencePercent, 100)))
+        this.resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(result.airLevelPercent, 100)))
         this.resultValues.push(this.fonts['timer'].createTextImage(this.timeString(result.gameTimeSeconds)))
         this.resultValues.push(this.fonts['score'].createTextImage(`${result.score}%`))
         this.score = result.score
@@ -192,7 +192,7 @@ export class RewardScreen {
         this.btnLayer.show()
     }
 
-    percentString(actual: number, max = 1, lessIsMore: boolean = false) {
+    percentString(actual: number, max: number, lessIsMore: boolean = false) {
         if (max === 0) max = 1
         let value = Math.round(Math.max(Math.min(actual / max, 1), 0) * 100)
         if (lessIsMore) value = 100 - value
