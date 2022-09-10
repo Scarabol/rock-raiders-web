@@ -136,7 +136,7 @@ export class Terrain {
     createFallIn(source: Surface, target: Surface) {
         const fallinPosition = target.getCenterWorld()
         const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
-        this.worldMgr.entityMgr.addMiscAnim('MiscAnims/RockFall/Rock3Sides.lws', fallinPosition, heading)
+        this.worldMgr.addMiscAnim('MiscAnims/RockFall/Rock3Sides.lws', fallinPosition, heading)
         target.makeRubble()
     }
 

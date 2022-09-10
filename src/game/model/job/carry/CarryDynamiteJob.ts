@@ -24,7 +24,7 @@ export class CarryDynamiteJob extends CarryJob<Dynamite> {
             this.item.worldMgr.entityMgr.tickingDynamite.remove(position)
             this.item.sceneEntity.disposeFromScene()
             this.item.targetSurface.collapse()
-            this.item.worldMgr.entityMgr.addMiscAnim('MiscAnims/Effects/Mockup_explode3.lws', this.item.sceneEntity.position, this.item.sceneEntity.getHeading())
+            this.item.worldMgr.addMiscAnim('MiscAnims/Effects/Mockup_explode3.lws', this.item.sceneEntity.position, this.item.sceneEntity.getHeading())
             this.item.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Dynamite], false)
             // TODO damage raider, vehicle, buildings
         })

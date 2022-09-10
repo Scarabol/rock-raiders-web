@@ -23,10 +23,8 @@ import { Raider } from './model/raider/Raider'
 import { RaiderTraining } from './model/raider/RaiderTraining'
 import { updateSafe } from './model/Updateable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
-import { SceneManager } from './SceneManager'
 
 export class EntityManager {
-    sceneMgr: SceneManager
     selection: GameSelection = new GameSelection()
     buildings: BuildingEntity[] = []
     buildingsUndiscovered: BuildingEntity[] = []
@@ -240,19 +238,6 @@ export class EntityManager {
 
     findTeleportBuilding(entityType: EntityType): BuildingEntity {
         return this.buildings.find((b) => b.canTeleportIn(entityType))
-    }
-
-    addMiscAnim(lwsFilename: string, position: Vector3, heading: number): AnimationGroup {
-        const grp = new AnimationGroup(lwsFilename, this.sceneMgr.listener)
-        grp.position.copy(position)
-        grp.rotateOnAxis(new Vector3(0, 1, 0), heading)
-        this.sceneMgr.scene.add(grp)
-        this.miscAnims.push(grp)
-        grp.startAnimation(() => {
-            this.sceneMgr.scene.remove(grp)
-            this.miscAnims.remove(grp)
-        })
-        return grp
     }
 
     hasProfessional(training: RaiderTraining) {

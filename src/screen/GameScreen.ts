@@ -40,7 +40,6 @@ export class GameScreen {
         this.entityMgr = new EntityManager()
         this.worldMgr = new WorldManager()
         this.sceneMgr = new SceneManager(this.gameLayer.canvas)
-        this.entityMgr.sceneMgr = this.sceneMgr
         this.sceneMgr.worldMgr = this.worldMgr
         this.worldMgr.sceneMgr = this.sceneMgr
         this.worldMgr.entityMgr = this.entityMgr

@@ -1,4 +1,4 @@
-import { Vector2 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { NerpRunner } from '../nerp/NerpRunner'
 import { clearTimeoutSafe } from '../core/Util'
@@ -21,6 +21,7 @@ import { AbstractSubSystem } from './system/AbstractSubSystem'
 import { MapMarkerSubSystem } from './system/MapMarkerSubSystem'
 import { MovementSubSystem } from './system/MovementSubSystem'
 import { SceneEntitySubSystem } from './system/SceneEntitySubSystem'
+import { AnimationGroup } from './model/anim/AnimationGroup'
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
@@ -211,5 +212,18 @@ export class WorldManager {
         entity.components.forEach((c) => this.systems.forEach((s) => s.unregisterComponent(c)))
         this.entityMgr.removeEntity(entity)
         entity.disposeEntity()
+    }
+
+    addMiscAnim(lwsFilename: string, position: Vector3, heading: number): AnimationGroup {
+        const grp = new AnimationGroup(lwsFilename, this.sceneMgr.listener)
+        grp.position.copy(position)
+        grp.rotateOnAxis(new Vector3(0, 1, 0), heading)
+        this.sceneMgr.scene.add(grp)
+        this.entityMgr.miscAnims.push(grp)
+        grp.startAnimation(() => {
+            this.sceneMgr.scene.remove(grp)
+            this.entityMgr.miscAnims.remove(grp)
+        })
+        return grp
     }
 }
