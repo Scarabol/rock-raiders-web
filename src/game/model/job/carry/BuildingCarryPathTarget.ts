@@ -8,8 +8,11 @@ import { EntityType } from '../../EntityType'
 import { GameState } from '../../GameState'
 import { MaterialEntity } from '../../material/MaterialEntity'
 import { CarryPathTarget } from './CarryPathTarget'
+import { CarryJob } from './CarryJob'
 
 export class BuildingCarryPathTarget extends CarryPathTarget {
+    private gatherReservedBy: CarryJob<any> = null
+
     constructor(readonly building: BuildingEntity) {
         super(building.getDropPosition2D())
     }
@@ -18,8 +21,17 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
         return this.building.sceneEntity.position2D
     }
 
-    canGatherItem(): boolean {
-        return this.building.sceneEntity.activity.activityKey === this.building.sceneEntity.getDefaultActivity().activityKey
+    reserveGatherSlot(carryJob: CarryJob<any>): boolean {
+        if (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY) {
+            if (!this.gatherReservedBy && this.building.sceneEntity.activity.activityKey === this.building.sceneEntity.getDefaultActivity().activityKey) {
+                this.gatherReservedBy = carryJob // TODO how to avoid deadlock between reserve and gather?
+                return true
+            } else {
+                return this.gatherReservedBy === carryJob
+            }
+        } else {
+            return true
+        }
     }
 
     gatherItem(item: MaterialEntity) {
@@ -28,14 +40,14 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
             this.building.sceneEntity.changeActivity(BuildingActivity.Deposit, () => {
                 this.building.sceneEntity.changeActivity()
                 this.building.sceneEntity.dropAllEntities()
-                BuildingCarryPathTarget.addItemToStorage(item)
+                this.addItemToStorage(item)
             })
         } else {
-            BuildingCarryPathTarget.addItemToStorage(item)
+            this.addItemToStorage(item)
         }
     }
 
-    private static addItemToStorage(item: MaterialEntity) {
+    private addItemToStorage(item: MaterialEntity) {
         switch (item.entityType) {
             case EntityType.CRYSTAL:
                 GameState.numCrystal++
@@ -46,6 +58,7 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
         }
         EventBus.publishEvent(new MaterialAmountChanged())
         item.sceneEntity.disposeFromScene()
+        this.gatherReservedBy = null
     }
 
     getDropAction(): RaiderActivity {

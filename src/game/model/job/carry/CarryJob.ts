@@ -40,7 +40,7 @@ export class CarryJob<I extends MaterialEntity> extends ShareableJob {
     }
 
     isReadyToComplete(): boolean {
-        return this.actualTarget.canGatherItem()
+        return this.actualTarget.reserveGatherSlot(this)
     }
 
     onJobComplete() {
