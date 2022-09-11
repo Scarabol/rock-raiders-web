@@ -5,7 +5,7 @@ export class GetToolPathTarget extends PathTarget {
     building: BuildingEntity
 
     constructor(building: BuildingEntity) {
-        super(building.sceneEntity.position2D.clone())
+        super(building.getDropPosition2D())
         this.building = building
     }
 
