@@ -102,6 +102,7 @@ export class Supervisor {
                 const hasRequiredTool = raider.hasTool(requiredTool)
                 const hasTraining = raider.hasTraining(requiredTraining)
                 if (raider.isPrepared(job)) {
+                    // TODO path to job is actually path to item, if exists
                     const pathToJob = job.getWorkplaces().map((b) => raider.findPathToTarget(b))
                         .filter((t) => !!t)
                         .sort((l, r) => l.lengthSq - r.lengthSq)[0]
