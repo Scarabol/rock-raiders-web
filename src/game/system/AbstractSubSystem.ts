@@ -25,7 +25,7 @@ export abstract class AbstractSubSystem<T extends GameComponent> implements Upda
         this.components.remove(component)
     }
 
-    protected forEachComponent(callback: (component) => any) {
+    protected forEachComponent(callback: (component: T) => any) {
         const faulty: T[] = []
         this.components.forEach((c) => {
             try {
