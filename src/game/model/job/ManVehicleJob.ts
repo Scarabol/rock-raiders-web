@@ -39,11 +39,6 @@ export class ManVehicleJob extends RaiderJob implements SupervisedJob {
         return this.vehicle.getRequiredTraining()
     }
 
-    cancel() {
-        this.jobState = JobState.CANCELED
-        this.raider?.stopJob()
-    }
-
     getPriorityIdentifier(): PriorityIdentifier {
         return PriorityIdentifier.GET_IN
     }
