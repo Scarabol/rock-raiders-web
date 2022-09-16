@@ -72,9 +72,9 @@ export class GameLayer extends ScreenLayer {
                     } else {
                         const requiredTraining = manVehicleJob.getRequiredTraining()
                         const closestTrainingSite = this.entityMgr.getTrainingSiteTargets(requiredTraining)
-                        .map((b) => r.findPathToTarget(b))
-                        .filter((p) => !!p)
-                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                            .map((b) => r.findPathToTarget(b))
+                            .filter((p) => !!p)
+                            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
                         if (!closestTrainingSite) return false
                         r.setJob(new TrainRaiderJob(r.worldMgr.entityMgr, requiredTraining, (closestTrainingSite.target as BuildingPathTarget).building), manVehicleJob)
                     }
