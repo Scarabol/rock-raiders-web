@@ -1,9 +1,9 @@
+import { Sample } from '../../../audio/Sample'
 import { DynamiteSceneEntity } from '../../../scene/entities/DynamiteSceneEntity'
 import { WorldManager } from '../../WorldManager'
+import { DynamiteActivity } from '../activities/DynamiteActivity'
 import { EntityType } from '../EntityType'
-import { CarryDynamiteJob } from '../job/carry/CarryDynamiteJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
-import { JobState } from '../job/JobState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { RaiderTraining } from '../raider/RaiderTraining'
@@ -23,10 +23,18 @@ export class Dynamite extends MaterialEntity {
         }
     }
 
-    setupCarryJob(): CarryDynamiteJob {
-        if (!this.carryJob || this.carryJob.jobState === JobState.CANCELED) {
-            this.carryJob = new CarryDynamiteJob(this)
-        }
-        return this.carryJob as CarryDynamiteJob
+    onCarryJobComplete(): void {
+        super.onCarryJobComplete()
+        const position = this.sceneEntity.position2D
+        this.worldMgr.entityMgr.tickingDynamite.push(position)
+        this.sceneEntity.headTowards(this.targetSurface.getCenterWorld2D())
+        this.sceneEntity.changeActivity(DynamiteActivity.TickDown, () => {
+            this.worldMgr.entityMgr.tickingDynamite.remove(position)
+            this.sceneEntity.disposeFromScene()
+            this.targetSurface.collapse()
+            this.worldMgr.addMiscAnim('MiscAnims/Effects/Mockup_explode3.lws', this.sceneEntity.position, this.sceneEntity.getHeading())
+            this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Dynamite], false)
+            // TODO damage raider, vehicle, buildings
+        })
     }
 }

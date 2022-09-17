@@ -22,7 +22,7 @@ export abstract class MaterialEntity implements Disposable {
 
     abstract findCarryTargets(): CarryPathTarget[]
 
-    setupCarryJob(): CarryJob<MaterialEntity> {
+    setupCarryJob(): CarryJob<this> {
         if (!this.carryJob || this.carryJob.jobState === JobState.CANCELED) {
             this.carryJob = new CarryJob(this)
             EventBus.publishEvent(new JobCreateEvent(this.carryJob))
@@ -46,5 +46,8 @@ export abstract class MaterialEntity implements Disposable {
 
     update(elapsedMs: number) {
         this.sceneEntity.update(elapsedMs)
+    }
+
+    onCarryJobComplete(): void {
     }
 }

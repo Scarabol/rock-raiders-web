@@ -10,7 +10,7 @@ import { WorldManager } from '../../WorldManager'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
-import { CarryDynamiteJob } from '../job/carry/CarryDynamiteJob'
+import { CarryJob } from '../job/carry/CarryJob'
 import { ClearRubbleJob } from '../job/surface/ClearRubbleJob'
 import { DrillJob } from '../job/surface/DrillJob'
 import { ReinforceJob } from '../job/surface/ReinforceJob'
@@ -39,7 +39,7 @@ export class Surface implements Selectable {
     reinforced: boolean = false
     drillJob: DrillJob = null
     reinforceJob: ReinforceJob = null
-    dynamiteJob: CarryDynamiteJob = null
+    dynamiteJob: CarryJob<Dynamite> = null
     clearRubbleJob: ClearRubbleJob = null
     seamLevel: number = 0
 
@@ -198,7 +198,7 @@ export class Surface implements Selectable {
         this.updateJobColor()
     }
 
-    private static safeRemoveJob(job: DrillJob | ReinforceJob | CarryDynamiteJob | ClearRubbleJob): null {
+    private static safeRemoveJob(job: DrillJob | ReinforceJob | CarryJob<Dynamite> | ClearRubbleJob): null {
         job?.cancel()
         return null
     }

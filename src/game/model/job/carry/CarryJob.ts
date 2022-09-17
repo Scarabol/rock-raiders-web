@@ -56,5 +56,6 @@ export class CarryJob<I extends MaterialEntity> extends ShareableJob {
             this.item.sceneEntity.position.copy(this.item.worldMgr.sceneMgr.getFloorPosition(this.actualTarget.targetLocation))
         })
         this.actualTarget.gatherItem(this.item)
+        this.item.onCarryJobComplete()
     }
 }

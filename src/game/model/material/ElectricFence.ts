@@ -3,10 +3,7 @@ import { ElectricFenceSceneEntity } from '../../../scene/entities/ElectricFenceS
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
-import { CarryFenceJob } from '../job/carry/CarryFenceJob'
-import { CarryJob } from '../job/carry/CarryJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
-import { JobState } from '../job/JobState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { RaiderTraining } from '../raider/RaiderTraining'
@@ -39,11 +36,13 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
         }
     }
 
-    setupCarryJob(): CarryJob<MaterialEntity> {
-        if (!this.carryJob || this.carryJob.jobState === JobState.CANCELED) {
-            this.carryJob = new CarryFenceJob(this)
-        }
-        return this.carryJob
+    onCarryJobComplete(): void {
+        super.onCarryJobComplete()
+        this.sceneEntity.addToScene(null, null)
+        this.sceneEntity.makeSelectable(this, this.stats.PickSphere / 4)
+        this.targetSurface.fence = this
+        this.targetSurface.fenceRequested = false
+        this.worldMgr.entityMgr.placedFences.add(this)
     }
 
     isSelectable(): boolean {
