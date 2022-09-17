@@ -171,7 +171,7 @@ export class GameSelection {
 
     assignCarryJob(material: MaterialEntity) {
         if (!material) return
-        const job = material.createCarryJob()
+        const job = material.setupCarryJob()
         const doneByVehicle = this.vehicles.some((v) => {
             if (v.isPrepared(job)) {
                 v.setJob(job)

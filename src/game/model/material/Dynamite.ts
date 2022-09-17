@@ -3,6 +3,7 @@ import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { CarryDynamiteJob } from '../job/carry/CarryDynamiteJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
+import { JobState } from '../job/JobState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { MaterialEntity } from './MaterialEntity'
@@ -21,7 +22,10 @@ export class Dynamite extends MaterialEntity {
         }
     }
 
-    createCarryJob(): CarryDynamiteJob {
-        return new CarryDynamiteJob(this)
+    setupCarryJob(): CarryDynamiteJob {
+        if (!this.carryJob || this.carryJob.jobState === JobState.CANCELED) {
+            this.carryJob = new CarryDynamiteJob(this)
+        }
+        return this.carryJob as CarryDynamiteJob
     }
 }

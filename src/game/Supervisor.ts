@@ -179,7 +179,7 @@ export class Supervisor {
                     for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
                         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
                         if (!(surface?.hasRubble()) || !surface?.discovered) continue
-                        const clearRubbleJob = surface.createClearRubbleJob()
+                        const clearRubbleJob = surface.setupClearRubbleJob()
                         if (!clearRubbleJob || clearRubbleJob.hasFulfiller()) continue
                         const requiredTool = clearRubbleJob.getRequiredTool()
                         if (raider.hasTool(requiredTool)) {

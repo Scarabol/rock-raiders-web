@@ -1,3 +1,5 @@
+import { EventBus } from '../../../event/EventBus'
+import { JobCreateEvent } from '../../../event/WorldEvents'
 import { ITEM_ACTION_RANGE_SQ } from '../../../params'
 import { SceneEntity } from '../../../scene/SceneEntity'
 import { WorldManager } from '../../WorldManager'
@@ -5,10 +7,12 @@ import { Disposable } from '../Disposable'
 import { EntityType } from '../EntityType'
 import { CarryJob } from '../job/carry/CarryJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
+import { JobState } from '../job/JobState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 
 export abstract class MaterialEntity implements Disposable {
+    carryJob: CarryJob<any> = null
     sceneEntity: SceneEntity = null
     positionAsPathTargets: PathTarget[] = []
 
@@ -17,8 +21,12 @@ export abstract class MaterialEntity implements Disposable {
 
     abstract findCarryTargets(): CarryPathTarget[]
 
-    createCarryJob(): CarryJob<MaterialEntity> {
-        return new CarryJob(this) // TODO better create only one job per item?
+    setupCarryJob(): CarryJob<MaterialEntity> {
+        if (!this.carryJob || this.carryJob.jobState === JobState.CANCELED) {
+            this.carryJob = new CarryJob(this)
+            EventBus.publishEvent(new JobCreateEvent(this.carryJob))
+        }
+        return this.carryJob
     }
 
     getPositionAsPathTargets(): PathTarget[] {

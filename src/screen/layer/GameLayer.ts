@@ -88,10 +88,10 @@ export class GameLayer extends ScreenLayer {
             if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
         } else if (selection.surface) {
             if (this.entityMgr.selection.canDrill(selection.surface)) {
-                const drillJob = selection.surface.createDrillJob()
+                const drillJob = selection.surface.setupDrillJob()
                 this.entityMgr.selection.assignSurfaceJob(drillJob)
             } else if (this.entityMgr.selection.canClear() && selection.surface.hasRubble()) {
-                const clearJob = selection.surface.createClearRubbleJob()
+                const clearJob = selection.surface.setupClearRubbleJob()
                 this.entityMgr.selection.assignSurfaceJob(clearJob)
             } else if (this.entityMgr.selection.canMove() && selection.surface.isWalkable()) {
                 this.entityMgr.selection.assignMoveJob(terrainIntersectionPoint)

@@ -463,47 +463,39 @@ export class Surface implements Selectable {
         return !!this.fence || (this === this.building?.primarySurface || this === this.building?.secondarySurface)
     }
 
-    createDrillJob(): DrillJob {
+    setupDrillJob(): DrillJob {
         if (!this.isDigable()) return null
-        if (!this.drillJob) {
-            this.drillJob = new DrillJob(this)
-            this.updateJobColor()
-            EventBus.publishEvent(new JobCreateEvent(this.drillJob))
-        }
+        if (this.drillJob) return this.drillJob
+        this.drillJob = new DrillJob(this)
+        EventBus.publishEvent(new JobCreateEvent(this.drillJob))
+        this.updateJobColor()
         return this.drillJob
     }
 
-    createReinforceJob(): ReinforceJob {
-        if (!this.isReinforcable()) return null
-        if (!this.reinforceJob) {
-            this.reinforceJob = new ReinforceJob(this)
-            this.updateJobColor()
-            EventBus.publishEvent(new JobCreateEvent(this.reinforceJob))
-        }
-        return this.reinforceJob
+    setupReinforceJob(): void {
+        if (!this.isReinforcable() || this.reinforceJob) return
+        this.reinforceJob = new ReinforceJob(this)
+        EventBus.publishEvent(new JobCreateEvent(this.reinforceJob))
+        this.updateJobColor()
     }
 
-    createDynamiteJob(): CarryDynamiteJob {
-        if (!this.isDigable()) return null
-        if (!this.dynamiteJob) {
-            const targetBuilding = this.worldMgr.entityMgr.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
-            if (!targetBuilding) throw new Error('Could not find toolstation to spawn dynamite')
-            const dynamite = new Dynamite(this.worldMgr, this)
-            dynamite.sceneEntity.addToScene(targetBuilding.getDropPosition2D(), targetBuilding.sceneEntity.getHeading())
-            this.dynamiteJob = dynamite.createCarryJob()
-            this.updateJobColor()
-            EventBus.publishEvent(new JobCreateEvent(this.dynamiteJob))
-        }
-        return this.dynamiteJob
+    setupDynamiteJob(): void {
+        if (!this.isDigable() || this.dynamiteJob) return
+        const targetBuilding = this.worldMgr.entityMgr.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
+        if (!targetBuilding) throw new Error('Could not find toolstation to spawn dynamite')
+        const dynamite = new Dynamite(this.worldMgr, this)
+        dynamite.sceneEntity.addToScene(targetBuilding.getDropPosition2D(), targetBuilding.sceneEntity.getHeading())
+        this.dynamiteJob = dynamite.setupCarryJob()
+        EventBus.publishEvent(new JobCreateEvent(this.dynamiteJob))
+        this.updateJobColor()
     }
 
-    createClearRubbleJob(): ClearRubbleJob {
+    setupClearRubbleJob(): ClearRubbleJob {
         if (!this.hasRubble()) return null
-        if (!this.clearRubbleJob) {
-            this.clearRubbleJob = new ClearRubbleJob(this)
-            this.updateJobColor()
-            EventBus.publishEvent(new JobCreateEvent(this.clearRubbleJob))
-        }
+        if (this.clearRubbleJob) return this.clearRubbleJob
+        this.clearRubbleJob = new ClearRubbleJob(this)
+        this.updateJobColor()
+        EventBus.publishEvent(new JobCreateEvent(this.clearRubbleJob))
         return this.clearRubbleJob
     }
 

@@ -4,6 +4,7 @@ import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaid
 import { DeselectAll, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { PowerPathBuildingSite } from './model/building/PowerPathBuildingSite'
+import { RepairLavaBuildingSite } from './model/building/RepairLavaBuildingSite'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
 import { EatJob } from './model/job/raider/EatJob'
@@ -11,7 +12,6 @@ import { GetToolJob } from './model/job/raider/GetToolJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
 import { UpgradeRaiderJob } from './model/job/raider/UpgradeRaiderJob'
 import { WorldManager } from './WorldManager'
-import { RepairLavaBuildingSite } from './model/building/RepairLavaBuildingSite'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -56,15 +56,15 @@ export class GuiManager {
             EventBus.publishEvent(new RequestedRaidersChanged(worldMgr.requestedRaiders))
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_DRILL_JOB, () => {
-            entityMgr.selection.surface?.createDrillJob()
+            entityMgr.selection.surface?.setupDrillJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_REINFORCE_JOB, () => {
-            entityMgr.selection.surface?.createReinforceJob()
+            entityMgr.selection.surface?.setupReinforceJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_DYNAMITE_JOB, () => {
-            entityMgr.selection.surface?.createDynamiteJob()
+            entityMgr.selection.surface?.setupDynamiteJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CANCEL_SURFACE_JOBS, () => {
@@ -72,7 +72,7 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_CLEAR_RUBBLE_JOB, () => {
-            entityMgr.selection.surface?.createClearRubbleJob()
+            entityMgr.selection.surface?.setupClearRubbleJob()
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_BUILDING, () => {

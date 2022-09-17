@@ -4,7 +4,9 @@ import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { CarryFenceJob } from '../job/carry/CarryFenceJob'
+import { CarryJob } from '../job/carry/CarryJob'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
+import { JobState } from '../job/JobState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
 import { Selectable } from '../Selectable'
@@ -36,8 +38,11 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
         }
     }
 
-    createCarryJob(): CarryFenceJob {
-        return new CarryFenceJob(this)
+    setupCarryJob(): CarryJob<MaterialEntity> {
+        if (!this.carryJob || this.carryJob.jobState === JobState.CANCELED) {
+            this.carryJob = new CarryFenceJob(this)
+        }
+        return this.carryJob
     }
 
     isSelectable(): boolean {

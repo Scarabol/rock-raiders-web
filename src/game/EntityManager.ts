@@ -2,7 +2,6 @@ import { Vector2, Vector3 } from 'three'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged } from '../event/LocalEvents'
-import { JobCreateEvent } from '../event/WorldEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
 import { AnimatedSceneEntityComponent } from './component/common/AnimatedSceneEntityComponent'
@@ -169,7 +168,7 @@ export class EntityManager {
         })
         this.materialsUndiscovered = EntityManager.removeInRect(this.materialsUndiscovered, minX, maxX, minZ, maxZ, (m) => {
             m.worldMgr.entityMgr.materials.push(m)
-            EventBus.publishEvent(new JobCreateEvent(m.createCarryJob()))
+            m.setupCarryJob()
         })
         this.vehiclesUndiscovered = EntityManager.removeInRect(this.vehiclesUndiscovered, minX, maxX, minZ, maxZ, (v) => {
             v.worldMgr.entityMgr.vehicles.push(v)
@@ -220,7 +219,7 @@ export class EntityManager {
         item.sceneEntity.addToScene(worldPosition, null)
         if (item.sceneEntity.visible) {
             this.materials.push(item)
-            EventBus.publishEvent(new JobCreateEvent(item.createCarryJob()))
+            item.setupCarryJob()
         } else {
             this.materialsUndiscovered.push(item)
         }
