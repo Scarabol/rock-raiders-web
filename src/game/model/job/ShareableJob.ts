@@ -1,9 +1,9 @@
 import { SupervisedJob } from '../../Supervisor'
-import { AbstractJob, JobFulfiller } from './Job'
+import { AbstractJob, CancelableJob, JobFulfiller } from './Job'
 import { JobState } from './JobState'
 import { PriorityIdentifier } from './PriorityIdentifier'
 
-export abstract class ShareableJob extends AbstractJob implements SupervisedJob {
+export abstract class ShareableJob extends AbstractJob implements SupervisedJob, CancelableJob {
     protected fulfiller: JobFulfiller[] = []
 
     abstract getPriorityIdentifier(): PriorityIdentifier

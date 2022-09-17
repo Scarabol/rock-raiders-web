@@ -1,12 +1,15 @@
+import { SupervisedJob } from '../../../Supervisor'
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { MaterialEntity } from '../../material/MaterialEntity'
 import { RaiderTraining } from '../../raider/RaiderTraining'
+import { AbstractJob, CancelableJob, JobFulfiller } from '../Job'
+import { JobState } from '../JobState'
 import { PriorityIdentifier } from '../PriorityIdentifier'
-import { ShareableJob } from '../ShareableJob'
 import { CarryPathTarget } from './CarryPathTarget'
 import { SiteCarryPathTarget } from './SiteCarryPathTarget'
 
-export class CarryJob extends ShareableJob {
+export class CarryJob extends AbstractJob implements SupervisedJob, CancelableJob {
+    fulfiller: JobFulfiller = null
     targets: CarryPathTarget[] = []
     actualTarget: CarryPathTarget = null
 
@@ -50,12 +53,30 @@ export class CarryJob extends ShareableJob {
 
     onJobComplete() {
         super.onJobComplete()
-        this.fulfiller.forEach((f) => {
-            f.sceneEntity.headTowards(this.actualTarget.targetLocation)
-            f.dropCarried()
-            this.item.sceneEntity.position.copy(this.item.worldMgr.sceneMgr.getFloorPosition(this.actualTarget.targetLocation))
-        })
+        this.fulfiller.sceneEntity.headTowards(this.actualTarget.targetLocation)
+        this.fulfiller.dropCarried()
+        this.item.sceneEntity.position.copy(this.item.worldMgr.sceneMgr.getFloorPosition(this.actualTarget.targetLocation))
         this.actualTarget.gatherItem(this.item)
         this.item.onCarryJobComplete()
+    }
+
+    assign(fulfiller: JobFulfiller) {
+        if (this.fulfiller !== fulfiller) this.fulfiller?.stopJob()
+        this.fulfiller = fulfiller
+    }
+
+    unAssign(fulfiller: JobFulfiller) {
+        if (this.fulfiller !== fulfiller) return
+        this.fulfiller = fulfiller
+    }
+
+    hasFulfiller(): boolean {
+        return !!this.fulfiller
+    }
+
+    cancel() {
+        this.jobState = JobState.CANCELED
+        this.fulfiller?.stopJob()
+        this.fulfiller = null
     }
 }

@@ -11,6 +11,7 @@ import { BuildingEntity } from '../building/BuildingEntity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
 import { CarryJob } from '../job/carry/CarryJob'
+import { CancelableJob } from '../job/Job'
 import { ClearRubbleJob } from '../job/surface/ClearRubbleJob'
 import { DrillJob } from '../job/surface/DrillJob'
 import { ReinforceJob } from '../job/surface/ReinforceJob'
@@ -198,7 +199,7 @@ export class Surface implements Selectable {
         this.updateJobColor()
     }
 
-    private static safeRemoveJob(job: DrillJob | ReinforceJob | CarryJob | ClearRubbleJob): null {
+    private static safeRemoveJob(job: CancelableJob): null {
         job?.cancel()
         return null
     }
