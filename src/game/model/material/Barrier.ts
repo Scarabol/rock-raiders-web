@@ -11,19 +11,16 @@ import { BarrierLocation } from './BarrierLocation'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Barrier extends MaterialEntity {
-    targets: SiteCarryPathTarget[]
-
-    constructor(worldMgr: WorldManager, location: BarrierLocation, site: BuildingSite) {
+    constructor(worldMgr: WorldManager, readonly location: BarrierLocation, readonly site: BuildingSite) {
         super(worldMgr, EntityType.BARRIER, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
         this.sceneEntity = new BarrierSceneEntity(this.worldMgr.sceneMgr)
-        this.targets = [new SiteCarryPathTarget(site, location.position, location.heading)]
     }
 
     findCarryTargets(): CarryPathTarget[] {
-        if (this.targets.every((t) => t.isInvalid())) {
+        if (this.site.complete || this.site.canceled) {
             return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
         } else {
-            return this.targets
+            return [new SiteCarryPathTarget(this.site, this.location.position, this.location.heading)]
         }
     }
 

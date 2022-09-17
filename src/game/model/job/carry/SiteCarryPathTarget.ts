@@ -18,8 +18,4 @@ export class SiteCarryPathTarget extends CarryPathTarget {
         }
         this.site.addItem(item)
     }
-
-    isInvalid(): boolean {
-        return this.site.complete || this.site.canceled
-    }
 }
