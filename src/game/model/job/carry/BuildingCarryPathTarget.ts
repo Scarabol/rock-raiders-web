@@ -7,11 +7,11 @@ import { BuildingEntity } from '../../building/BuildingEntity'
 import { EntityType } from '../../EntityType'
 import { GameState } from '../../GameState'
 import { MaterialEntity } from '../../material/MaterialEntity'
+import { Job } from '../Job'
 import { CarryPathTarget } from './CarryPathTarget'
-import { CarryJob } from './CarryJob'
 
 export class BuildingCarryPathTarget extends CarryPathTarget {
-    private gatherReservedBy: CarryJob<any> = null
+    private gatherReservedBy: Job = null
 
     constructor(readonly building: BuildingEntity) {
         super(building.getDropPosition2D())
@@ -21,7 +21,7 @@ export class BuildingCarryPathTarget extends CarryPathTarget {
         return this.building.sceneEntity.position2D
     }
 
-    reserveGatherSlot(carryJob: CarryJob<any>): boolean {
+    reserveGatherSlot(carryJob: Job): boolean {
         if (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY) {
             if (!this.gatherReservedBy && this.building.sceneEntity.activity.activityKey === this.building.sceneEntity.getDefaultActivity().activityKey) {
                 this.gatherReservedBy = carryJob // TODO how to avoid deadlock between reserve and gather?
