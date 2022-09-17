@@ -8,12 +8,9 @@ import { Surface } from '../map/Surface'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Dynamite extends MaterialEntity {
-    targetSurface: Surface
-
-    constructor(worldMgr: WorldManager, surface: Surface) {
+    constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
         super(worldMgr, EntityType.DYNAMITE, PriorityIdentifier.DESTRUCTION)
         this.sceneEntity = new DynamiteSceneEntity(this.worldMgr.sceneMgr)
-        this.targetSurface = surface
     }
 
     findCarryTargets(): CarryPathTarget[] {
