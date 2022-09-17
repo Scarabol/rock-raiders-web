@@ -4,12 +4,6 @@ import { Dynamite } from '../../material/Dynamite'
 import { CarryJob } from './CarryJob'
 
 export class CarryDynamiteJob extends CarryJob<Dynamite> {
-    color: number = 0xa06060
-
-    constructor(dynamite: Dynamite) {
-        super(dynamite)
-    }
-
     onJobComplete() {
         super.onJobComplete()
         const position = this.item.sceneEntity.position2D

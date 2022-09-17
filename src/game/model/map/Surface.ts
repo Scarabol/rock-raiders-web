@@ -364,7 +364,14 @@ export class Surface implements Selectable {
 
     updateJobColor() {
         if (this.selected) return
-        const color = this.dynamiteJob?.color || this.reinforceJob?.color || this.drillJob?.color || 0xffffff
+        let color = 0xffffff
+        if (this.dynamiteJob) {
+            color = 0xa06060
+        } else if (this.reinforceJob) {
+            color = 0x60a060
+        } else if (this.drillJob) {
+            color = 0xa0a0a0
+        }
         this.mesh.setHighlightColor(color)
     }
 

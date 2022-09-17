@@ -7,7 +7,6 @@ import { ShareableJob } from '../ShareableJob'
 import { SurfacePathTarget } from './SurfacePathTarget'
 
 export class DrillJob extends ShareableJob {
-    color: number = 0xa0a0a0
     digPositions: PathTarget[]
 
     constructor(surface: Surface) {
