@@ -8,7 +8,6 @@ import { GameResult, GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { ObjectListLoader } from '../game/ObjectListLoader'
 import { SceneManager } from '../game/SceneManager'
-import { Supervisor } from '../game/Supervisor'
 import { WorldManager } from '../game/WorldManager'
 import { DEV_MODE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -43,7 +42,6 @@ export class GameScreen {
         this.sceneMgr.worldMgr = this.worldMgr
         this.worldMgr.sceneMgr = this.sceneMgr
         this.worldMgr.entityMgr = this.entityMgr
-        this.worldMgr.jobSupervisor = new Supervisor(this.worldMgr)
         this.worldMgr.onLevelEnd = (result) => this.onLevelEnd(new GameResult(this.levelName, this.levelConf, result, this.entityMgr, this.worldMgr))
         this.gameLayer.sceneMgr = this.sceneMgr
         this.gameLayer.entityMgr = this.entityMgr
@@ -72,10 +70,9 @@ export class GameScreen {
     }
 
     private setupAndStartLevel() {
-        this.worldMgr.jobSupervisor.reset()
+        console.log(`Starting level ${this.levelName} - ${this.levelConf.fullName}`)
         this.entityMgr.reset()
         this.guiLayer.reset()
-        console.log(`Starting level ${this.levelName} - ${this.levelConf.fullName}`)
         this.worldMgr.setup(this.levelConf)
         this.sceneMgr.setupScene(this.levelConf)
         // setup GUI

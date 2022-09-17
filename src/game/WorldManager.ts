@@ -1,14 +1,15 @@
 import { Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { NerpRunner } from '../nerp/NerpRunner'
 import { clearTimeoutSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
+import { NerpRunner } from '../nerp/NerpRunner'
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { AbstractGameEntity } from './entity/AbstractGameEntity'
 import { EntityManager } from './EntityManager'
+import { AnimationGroup } from './model/anim/AnimationGroup'
 import { EntityType } from './model/EntityType'
 import { GameResultState } from './model/GameResult'
 import { GameState } from './model/GameState'
@@ -21,15 +22,14 @@ import { AbstractSubSystem } from './system/AbstractSubSystem'
 import { MapMarkerSubSystem } from './system/MapMarkerSubSystem'
 import { MovementSubSystem } from './system/MovementSubSystem'
 import { SceneEntitySubSystem } from './system/SceneEntitySubSystem'
-import { AnimationGroup } from './model/anim/AnimationGroup'
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
     readonly systems: AbstractSubSystem<any>[] = []
+    readonly jobSupervisor: Supervisor = new Supervisor(this)
     sceneMgr: SceneManager
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
-    jobSupervisor: Supervisor = null
     gameLoopTimeout: NodeJS.Timeout = null
     oxygenRate: number = 0
     elapsedGameTimeMs: number = 0
@@ -69,7 +69,8 @@ export class WorldManager {
     }
 
     setup(levelConf: LevelEntryCfg) {
-        this.systems.forEach((s) => s.reset()) // TODO needed here?
+        this.systems.forEach((s) => s.reset())
+        this.jobSupervisor.reset()
         GameState.gameResult = GameResultState.UNDECIDED
         GameState.changeNeededCrystals(levelConf.reward?.quota?.crystals || 0)
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
