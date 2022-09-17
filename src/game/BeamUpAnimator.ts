@@ -18,7 +18,7 @@ export class BeamUpAnimator {
         this.entity = entity
         this.counter = 6 * TILESIZE
         EventBus.publishEvent(new DeselectAll())
-        this.entity.worldMgr.entityMgr.addMiscAnim('Mini-Figures/Pilot/VLP_TelepUp.lws', this.entity.worldMgr.sceneMgr, this.entity.sceneEntity.position, this.entity.sceneEntity.getHeading())
+        this.entity.worldMgr.entityMgr.addMiscAnim('Mini-Figures/Pilot/VLP_TelepUp.lws', this.entity.sceneEntity.position, this.entity.sceneEntity.getHeading())
     }
 
     update(elapsedMs: number) {

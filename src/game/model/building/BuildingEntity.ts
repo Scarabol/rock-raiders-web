@@ -127,7 +127,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.level++
         EventBus.publishEvent(new DeselectAll())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
-        this.worldMgr.entityMgr.addMiscAnim('MiscAnims/Effects/UPGRADE_SPARKS.lws', this.worldMgr.sceneMgr, this.primarySurface.getCenterWorld(), this.sceneEntity.getHeading())
+        this.worldMgr.entityMgr.addMiscAnim('MiscAnims/Effects/UPGRADE_SPARKS.lws', this.primarySurface.getCenterWorld(), this.sceneEntity.getHeading())
     }
 
     setLevel(level: number) {
