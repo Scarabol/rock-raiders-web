@@ -9,7 +9,7 @@ export class CarryPathTarget extends PathTarget {
         super(location, radiusSq)
     }
 
-    reserveGatherSlot(job: CarryJob<any>): boolean {
+    reserveGatherSlot(job: CarryJob): boolean {
         return true
     }
 

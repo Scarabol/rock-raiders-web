@@ -6,11 +6,11 @@ import { ShareableJob } from '../ShareableJob'
 import { CarryPathTarget } from './CarryPathTarget'
 import { SiteCarryPathTarget } from './SiteCarryPathTarget'
 
-export class CarryJob<I extends MaterialEntity> extends ShareableJob {
+export class CarryJob extends ShareableJob {
     targets: CarryPathTarget[] = []
     actualTarget: CarryPathTarget = null
 
-    constructor(readonly item: I) {
+    constructor(readonly item: MaterialEntity) {
         super()
     }
 
@@ -36,7 +36,7 @@ export class CarryJob<I extends MaterialEntity> extends ShareableJob {
         (this.actualTarget as SiteCarryPathTarget)?.site?.assign(this.item)
     }
 
-    getCarryItem(): I {
+    getCarryItem(): MaterialEntity {
         return this.item
     }
 

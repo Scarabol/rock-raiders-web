@@ -39,7 +39,7 @@ export class Surface implements Selectable {
     reinforced: boolean = false
     drillJob: DrillJob = null
     reinforceJob: ReinforceJob = null
-    dynamiteJob: CarryJob<Dynamite> = null
+    dynamiteJob: CarryJob = null
     clearRubbleJob: ClearRubbleJob = null
     seamLevel: number = 0
 
@@ -198,7 +198,7 @@ export class Surface implements Selectable {
         this.updateJobColor()
     }
 
-    private static safeRemoveJob(job: DrillJob | ReinforceJob | CarryJob<Dynamite> | ClearRubbleJob): null {
+    private static safeRemoveJob(job: DrillJob | ReinforceJob | CarryJob | ClearRubbleJob): null {
         job?.cancel()
         return null
     }

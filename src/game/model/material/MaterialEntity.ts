@@ -13,7 +13,7 @@ import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 
 export abstract class MaterialEntity implements Disposable {
-    carryJob: CarryJob<any> = null
+    carryJob: CarryJob = null
     sceneEntity: SceneEntity = null
     positionAsPathTargets: PathTarget[] = []
 
@@ -22,7 +22,7 @@ export abstract class MaterialEntity implements Disposable {
 
     abstract findCarryTargets(): CarryPathTarget[]
 
-    setupCarryJob(): CarryJob<this> {
+    setupCarryJob(): CarryJob {
         if (!this.carryJob || this.carryJob.jobState === JobState.CANCELED) {
             this.carryJob = new CarryJob(this)
             EventBus.publishEvent(new JobCreateEvent(this.carryJob))
