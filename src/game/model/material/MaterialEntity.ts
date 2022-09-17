@@ -10,13 +10,14 @@ import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { JobState } from '../job/JobState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
+import { RaiderTraining } from '../raider/RaiderTraining'
 
 export abstract class MaterialEntity implements Disposable {
     carryJob: CarryJob<any> = null
     sceneEntity: SceneEntity = null
     positionAsPathTargets: PathTarget[] = []
 
-    protected constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType, readonly priorityIdentifier: PriorityIdentifier) {
+    protected constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType, readonly priorityIdentifier: PriorityIdentifier, readonly requiredTraining: RaiderTraining) {
     }
 
     abstract findCarryTargets(): CarryPathTarget[]

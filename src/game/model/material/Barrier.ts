@@ -1,19 +1,20 @@
 import { BarrierSceneEntity } from '../../../scene/entities/BarrierSceneEntity'
 import { WorldManager } from '../../WorldManager'
+import { BarrierActivity } from '../activities/BarrierActivity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
+import { RaiderTraining } from '../raider/RaiderTraining'
 import { BarrierLocation } from './BarrierLocation'
 import { MaterialEntity } from './MaterialEntity'
-import { BarrierActivity } from '../activities/BarrierActivity'
 
 export class Barrier extends MaterialEntity {
     targets: SiteCarryPathTarget[]
 
     constructor(worldMgr: WorldManager, location: BarrierLocation, site: BuildingSite) {
-        super(worldMgr, EntityType.BARRIER, PriorityIdentifier.CONSTRUCTION)
+        super(worldMgr, EntityType.BARRIER, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
         this.sceneEntity = new BarrierSceneEntity(this.worldMgr.sceneMgr)
         this.targets = [new SiteCarryPathTarget(site, location.position, location.heading)]
     }

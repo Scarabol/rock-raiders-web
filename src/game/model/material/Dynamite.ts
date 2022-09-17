@@ -6,11 +6,12 @@ import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { JobState } from '../job/JobState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
+import { RaiderTraining } from '../raider/RaiderTraining'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Dynamite extends MaterialEntity {
     constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
-        super(worldMgr, EntityType.DYNAMITE, PriorityIdentifier.DESTRUCTION)
+        super(worldMgr, EntityType.DYNAMITE, PriorityIdentifier.DESTRUCTION, RaiderTraining.DEMOLITION)
         this.sceneEntity = new DynamiteSceneEntity(this.worldMgr.sceneMgr)
     }
 

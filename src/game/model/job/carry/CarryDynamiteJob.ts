@@ -1,7 +1,6 @@
 import { Sample } from '../../../../audio/Sample'
 import { DynamiteActivity } from '../../activities/DynamiteActivity'
 import { Dynamite } from '../../material/Dynamite'
-import { RaiderTraining } from '../../raider/RaiderTraining'
 import { CarryJob } from './CarryJob'
 
 export class CarryDynamiteJob extends CarryJob<Dynamite> {
@@ -9,10 +8,6 @@ export class CarryDynamiteJob extends CarryJob<Dynamite> {
 
     constructor(dynamite: Dynamite) {
         super(dynamite)
-    }
-
-    getRequiredTraining(): RaiderTraining {
-        return RaiderTraining.DEMOLITION
     }
 
     onJobComplete() {

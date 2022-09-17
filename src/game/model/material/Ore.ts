@@ -4,11 +4,12 @@ import { EntityType } from '../EntityType'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
+import { RaiderTraining } from '../raider/RaiderTraining'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Ore extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
-        super(worldMgr, EntityType.ORE, PriorityIdentifier.ORE)
+        super(worldMgr, EntityType.ORE, PriorityIdentifier.ORE, RaiderTraining.NONE)
         this.sceneEntity = new OreSceneEntity(this.worldMgr.sceneMgr)
         this.sceneEntity.pickSphere.userData = {entityType: EntityType.ORE, materialEntity: this}
     }

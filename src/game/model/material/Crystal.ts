@@ -4,11 +4,12 @@ import { EntityType } from '../EntityType'
 import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
+import { RaiderTraining } from '../raider/RaiderTraining'
 import { MaterialEntity } from './MaterialEntity'
 
 export class Crystal extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
-        super(worldMgr, EntityType.CRYSTAL, PriorityIdentifier.CRYSTAL)
+        super(worldMgr, EntityType.CRYSTAL, PriorityIdentifier.CRYSTAL, RaiderTraining.NONE)
         this.sceneEntity = new CrystalSceneEntity(this.worldMgr.sceneMgr)
         this.sceneEntity.pickSphere.userData = {entityType: EntityType.CRYSTAL, materialEntity: this}
     }

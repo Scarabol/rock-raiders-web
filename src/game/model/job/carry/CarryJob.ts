@@ -1,5 +1,6 @@
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { MaterialEntity } from '../../material/MaterialEntity'
+import { RaiderTraining } from '../../raider/RaiderTraining'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
 import { CarryPathTarget } from './CarryPathTarget'
@@ -22,6 +23,10 @@ export class CarryJob<I extends MaterialEntity> extends ShareableJob {
 
     getPriorityIdentifier(): PriorityIdentifier {
         return this.item.priorityIdentifier
+    }
+
+    getRequiredTraining(): RaiderTraining {
+        return this.item.requiredTraining
     }
 
     setActualWorkplace(target: CarryPathTarget) {

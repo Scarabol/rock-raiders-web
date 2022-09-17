@@ -9,6 +9,7 @@ import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { JobState } from '../job/JobState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
+import { RaiderTraining } from '../raider/RaiderTraining'
 import { Selectable } from '../Selectable'
 import { MaterialEntity } from './MaterialEntity'
 
@@ -20,7 +21,7 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
     beamUpAnimator: BeamUpAnimator = null
 
     constructor(worldMgr: WorldManager, targetSurface: Surface) {
-        super(worldMgr, EntityType.ELECTRIC_FENCE, PriorityIdentifier.CONSTRUCTION)
+        super(worldMgr, EntityType.ELECTRIC_FENCE, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
         this.sceneEntity = new ElectricFenceSceneEntity(this.worldMgr.sceneMgr)
         this.targetSurface = targetSurface
         this.target = [new CarryPathTarget(targetSurface.getCenterWorld2D())]
