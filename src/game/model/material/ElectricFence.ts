@@ -11,17 +11,13 @@ import { Selectable } from '../Selectable'
 import { MaterialEntity } from './MaterialEntity'
 
 export class ElectricFence extends MaterialEntity implements Selectable, BeamUpEntity {
-    targetSurface: Surface
-    target: CarryPathTarget[]
     selected: boolean = false
     inBeam: boolean = false
     beamUpAnimator: BeamUpAnimator = null
 
-    constructor(worldMgr: WorldManager, targetSurface: Surface) {
+    constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
         super(worldMgr, EntityType.ELECTRIC_FENCE, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
         this.sceneEntity = new ElectricFenceSceneEntity(this.worldMgr.sceneMgr)
-        this.targetSurface = targetSurface
-        this.target = [new CarryPathTarget(targetSurface.getCenterWorld2D())]
     }
 
     get stats() {
@@ -29,10 +25,10 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
     }
 
     findCarryTargets(): CarryPathTarget[] {
-        if (this.target.every((t) => t.isInvalid())) {
+        if (!this.targetSurface.isWalkable()) {
             return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
         } else {
-            return this.target
+            return [new CarryPathTarget(this.targetSurface.getCenterWorld2D())]
         }
     }
 
