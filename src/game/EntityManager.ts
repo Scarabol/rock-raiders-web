@@ -243,11 +243,14 @@ export class EntityManager {
 
     addMiscAnim(lwsFilename: string, sceneMgr: SceneManager, position: Vector3, heading: number): AnimationGroup {
         const grp = new AnimationGroup(lwsFilename, sceneMgr.listener)
-        this.miscAnims.push(grp)
         grp.position.copy(position)
         grp.rotateOnAxis(new Vector3(0, 1, 0), heading)
         sceneMgr.scene.add(grp)
-        grp.startAnimation(() => sceneMgr.scene.remove(grp))
+        this.miscAnims.push(grp)
+        grp.startAnimation(() => {
+            sceneMgr.scene.remove(grp)
+            this.miscAnims.remove(grp)
+        })
         return grp
     }
 
