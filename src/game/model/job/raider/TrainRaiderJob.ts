@@ -9,15 +9,11 @@ import { RaiderTraining } from '../../raider/RaiderTraining'
 import { RaiderJob } from './RaiderJob'
 
 export class TrainRaiderJob extends RaiderJob {
-    entityMgr: EntityManager
-    training: RaiderTraining
     building: BuildingEntity
     workplaces: PathTarget[]
 
-    constructor(entityMgr: EntityManager, training: RaiderTraining, building: BuildingEntity) {
+    constructor(readonly entityMgr: EntityManager, readonly training: RaiderTraining, building: BuildingEntity) {
         super()
-        this.entityMgr = entityMgr
-        this.training = training
         this.building = building
         this.workplaces = this.building?.getTrainingTargets()
     }
