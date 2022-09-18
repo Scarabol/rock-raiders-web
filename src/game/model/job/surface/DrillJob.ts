@@ -9,9 +9,8 @@ import { SurfacePathTarget } from './SurfacePathTarget'
 export class DrillJob extends ShareableJob {
     digPositions: PathTarget[]
 
-    constructor(surface: Surface) {
+    constructor(readonly surface: Surface) {
         super()
-        this.surface = surface
         this.digPositions = this.surface.getDigPositions().map((p) => new SurfacePathTarget(p, this.surface))
     }
 
@@ -20,6 +19,7 @@ export class DrillJob extends ShareableJob {
     }
 
     getWorkplaces(): PathTarget[] { // TODO optimize performance and code duplication
+        if (!this.surface.isDigable()) return []
         const surfaceDigPositions = this.surface.getDigPositions()
         if (!this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
             !surfaceDigPositions.every((p) => this.digPositions.some((d) => p.equals(d.targetLocation)))) {

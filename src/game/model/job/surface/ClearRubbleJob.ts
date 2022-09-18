@@ -8,9 +8,8 @@ import { ShareableJob } from '../ShareableJob'
 export class ClearRubbleJob extends ShareableJob {
     lastRubblePositions: PathTarget[]
 
-    constructor(surface: Surface) {
+    constructor(readonly surface: Surface) {
         super()
-        this.surface = surface
         this.lastRubblePositions = this.surface.rubblePositions.map((p) => new PathTarget(p))
     }
 
@@ -19,6 +18,7 @@ export class ClearRubbleJob extends ShareableJob {
     }
 
     getWorkplaces(): PathTarget[] { // TODO optimize performance and code duplication
+        if (!this.surface.hasRubble()) return []
         const surfaceRubblePositions = this.surface.rubblePositions
         if (!this.lastRubblePositions.every((d) => surfaceRubblePositions.some((p) => p.equals(d.targetLocation))) ||
             !surfaceRubblePositions.every((p) => this.lastRubblePositions.some((d) => p.equals(d.targetLocation)))) {

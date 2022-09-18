@@ -1,18 +1,17 @@
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { Surface } from '../../map/Surface'
+import { SurfaceType } from '../../map/SurfaceType'
 import { MaterialEntity } from '../../material/MaterialEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
-import { SurfaceType } from '../../map/SurfaceType'
 
 export class CompleteSurfaceJob extends ShareableJob {
-    workplaces: PathTarget[]
+    readonly workplaces: PathTarget[]
 
-    constructor(surface: Surface, readonly placedItems: MaterialEntity[]) {
+    constructor(readonly surface: Surface, readonly placedItems: MaterialEntity[]) {
         super()
-        this.surface = surface
         this.workplaces = [new PathTarget(surface.getRandomPosition())]
     }
 
@@ -33,7 +32,7 @@ export class CompleteSurfaceJob extends ShareableJob {
     }
 
     getWorkplaces(): PathTarget[] {
-        return this.workplaces
+        return this.workplaces // TODO return empty array, if surface cannot be repaired
     }
 
     getWorkActivity(): RaiderActivity {
