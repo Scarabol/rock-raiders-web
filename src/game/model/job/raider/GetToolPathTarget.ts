@@ -8,8 +8,4 @@ export class GetToolPathTarget extends PathTarget {
         super(building.getDropPosition2D())
         this.building = building
     }
-
-    isInvalid(): boolean {
-        return !this.building.isPowered()
-    }
 }

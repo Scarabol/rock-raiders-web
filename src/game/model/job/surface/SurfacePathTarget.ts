@@ -13,8 +13,4 @@ export class SurfacePathTarget extends PathTarget {
     getFocusPoint(): Vector2 {
         return this.surface.getCenterWorld2D()
     }
-
-    isInvalid(): boolean {
-        return !this.surface.isDigable()
-    }
 }

@@ -13,8 +13,4 @@ export class BuildingPathTarget extends PathTarget {
     getFocusPoint(): Vector2 {
         return this.building.primarySurface.getCenterWorld2D()
     }
-
-    isInvalid(): boolean {
-        return !this.building.isPowered()
-    }
 }
