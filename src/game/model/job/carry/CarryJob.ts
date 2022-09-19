@@ -6,7 +6,6 @@ import { RaiderTraining } from '../../raider/RaiderTraining'
 import { AbstractJob, CancelableJob, JobFulfiller } from '../Job'
 import { JobState } from '../JobState'
 import { PriorityIdentifier } from '../PriorityIdentifier'
-import { SiteCarryPathTarget } from './SiteCarryPathTarget'
 
 export class CarryJob extends AbstractJob implements SupervisedJob, CancelableJob {
     fulfiller: JobFulfiller = null
@@ -34,9 +33,9 @@ export class CarryJob extends AbstractJob implements SupervisedJob, CancelableJo
 
     setActualWorkplace(target: PathTarget) {
         if (this.actualTarget === target) return
-        (this.actualTarget as SiteCarryPathTarget)?.site?.unAssign(this.item)
-        this.actualTarget = target;
-        (this.actualTarget as SiteCarryPathTarget)?.site?.assign(this.item)
+        this.actualTarget?.site?.unAssign(this.item)
+        this.actualTarget = target
+        this.actualTarget?.site?.assign(this.item)
     }
 
     getCarryItem(): MaterialEntity {

@@ -1,7 +1,6 @@
 import { CrystalSceneEntity } from '../../../scene/entities/CrystalSceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
-import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
@@ -16,7 +15,7 @@ export class Crystal extends MaterialEntity {
 
     findCarryTargets(): PathTarget[] {
         const sites = this.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(this.entityType))
-        if (sites.length > 0) return sites.map((s) => new SiteCarryPathTarget(s.getRandomDropPosition(), s))
+        if (sites.length > 0) return sites.map((s) => PathTarget.fromSite(s.getRandomDropPosition(), s))
         const powerStations = this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.POWER_STATION)
         if (powerStations.length > 0) return powerStations
         return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)

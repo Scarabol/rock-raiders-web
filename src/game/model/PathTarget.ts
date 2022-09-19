@@ -1,6 +1,10 @@
 import { Vector2 } from 'three'
+import { ITEM_ACTION_RANGE_SQ } from '../../params'
+import { BarrierActivity } from './activities/BarrierActivity'
 import { RaiderActivity } from './activities/RaiderActivity'
 import { BuildingEntity } from './building/BuildingEntity'
+import { BuildingSite } from './building/BuildingSite'
+import { EntityType } from './EntityType'
 import { CarryJob } from './job/carry/CarryJob'
 import { Surface } from './map/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
@@ -10,19 +14,25 @@ export class PathTarget {
         readonly targetLocation: Vector2,
         readonly building: BuildingEntity = null,
         readonly surface: Surface = null,
-        readonly radiusSq: number = 0) {
+        readonly site: BuildingSite = null,
+        readonly radiusSq: number = 0,
+        readonly headingOnSite: number = null) {
     }
 
     static fromLocation(targetLocation: Vector2, radiusSq: number = 0) {
-        return new PathTarget(targetLocation, null, null, radiusSq)
+        return new PathTarget(targetLocation, null, null, null, radiusSq)
     }
 
     static fromBuilding(targetLocation: Vector2, building: BuildingEntity) {
-        return new PathTarget(targetLocation, building, null, 0)
+        return new PathTarget(targetLocation, building, null, null, 0)
     }
 
     static fromSurface(targetLocation: Vector2, surface: Surface) {
-        return new PathTarget(targetLocation, null, surface, 0)
+        return new PathTarget(targetLocation, null, surface, null, 0)
+    }
+
+    static fromSite(targetLocation: Vector2, site: BuildingSite, headingOnSite: number = 0) {
+        return new PathTarget(targetLocation, null, null, site, ITEM_ACTION_RANGE_SQ, headingOnSite)
     }
 
     getFocusPoint(): Vector2 {
@@ -31,7 +41,7 @@ export class PathTarget {
     }
 
     isInvalid(): boolean {
-        return (this.building && !this.building.isPowered()) || (this.surface && !this.surface.isWalkable())
+        return (this.building && !this.building.isPowered()) || (this.surface && !this.surface.isWalkable()) || (this.site && (this.site.complete || this.site.canceled))
     }
 
     reserveGatherSlot(job: CarryJob): boolean {
@@ -39,7 +49,11 @@ export class PathTarget {
     }
 
     gatherItem(item: MaterialEntity) {
-        item.sceneEntity.addToScene(null, null)
+        item.sceneEntity.addToScene(null, this.headingOnSite)
+        if (item.entityType === EntityType.BARRIER) {
+            item.sceneEntity.changeActivity(BarrierActivity.Expand, () => item.sceneEntity.changeActivity(BarrierActivity.Long))
+        }
+        this.site?.addItem(item)
     }
 
     getDropAction(): RaiderActivity {

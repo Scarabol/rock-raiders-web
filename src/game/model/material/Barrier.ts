@@ -3,7 +3,6 @@ import { WorldManager } from '../../WorldManager'
 import { BarrierActivity } from '../activities/BarrierActivity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
-import { SiteCarryPathTarget } from '../job/carry/SiteCarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
@@ -20,7 +19,7 @@ export class Barrier extends MaterialEntity {
         if (this.site.complete || this.site.canceled) {
             return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
         } else {
-            return [new SiteCarryPathTarget(this.location.position, this.site, this.location.heading)]
+            return [PathTarget.fromSite(this.location.position, this.site, this.location.heading)]
         }
     }
 
