@@ -7,7 +7,7 @@ export class MoveJob extends RaiderJob {
 
     constructor(target: Vector2) {
         super()
-        this.target = [new PathTarget(target)]
+        this.target = [PathTarget.fromLocation(target)]
     }
 
     getWorkplaces(): PathTarget[] {

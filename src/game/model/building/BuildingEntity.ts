@@ -284,7 +284,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
             if (surface.surfaceType.connectsPath) surface.neighbors.forEach((n) => n.updateTexture())
             surface.terrain.powerGrid.onPathChange(surface)
         })
-        this.getToolPathTarget = new PathTarget(this.getDropPosition2D(), this)
+        this.getToolPathTarget = PathTarget.fromBuilding(this.getDropPosition2D(), this)
         this.carryPathTarget = new BuildingCarryPathTarget(this)
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
@@ -297,7 +297,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         return [new Vector2(-1, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(0, -1)]
             .map((v) => {
                 const location = v.multiplyScalar(TILESIZE / 2).add(this.primarySurface.getCenterWorld2D())
-                return new PathTarget(location, this)
+                return PathTarget.fromBuilding(location, this)
             })
     }
 

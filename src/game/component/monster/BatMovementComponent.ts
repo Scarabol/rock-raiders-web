@@ -20,7 +20,7 @@ export class BatMovementComponent extends MonsterMovementComponent {
             const targetX = Math.randomInclusive(currentCenter.x - (TILESIZE + TILESIZE / 2), currentCenter.x + TILESIZE + TILESIZE / 2)
             const targetZ = Math.randomInclusive(currentCenter.z - TILESIZE / 2, currentCenter.z + TILESIZE / 2)
             if (this.terrain.getSurfaceFromWorldXZ(targetX, targetZ).surfaceType.floor) {
-                return new PathTarget(new Vector2(targetX, targetZ))
+                return PathTarget.fromLocation(new Vector2(targetX, targetZ))
             }
         }
         console.warn('Could not find a target')

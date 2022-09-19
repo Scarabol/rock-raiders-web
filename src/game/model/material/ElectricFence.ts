@@ -28,7 +28,7 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
         if (!this.targetSurface.isWalkable()) {
             return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
         } else {
-            return [new PathTarget(this.targetSurface.getCenterWorld2D())]
+            return [PathTarget.fromLocation(this.targetSurface.getCenterWorld2D())]
         }
     }
 

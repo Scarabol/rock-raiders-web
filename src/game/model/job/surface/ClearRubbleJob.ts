@@ -10,7 +10,7 @@ export class ClearRubbleJob extends ShareableJob {
 
     constructor(readonly surface: Surface) {
         super()
-        this.lastRubblePositions = this.surface.rubblePositions.map((p) => new PathTarget(p))
+        this.lastRubblePositions = this.surface.rubblePositions.map((p) => PathTarget.fromLocation(p))
     }
 
     getRequiredTool(): RaiderTool {
@@ -22,7 +22,7 @@ export class ClearRubbleJob extends ShareableJob {
         const surfaceRubblePositions = this.surface.rubblePositions
         if (!this.lastRubblePositions.every((d) => surfaceRubblePositions.some((p) => p.equals(d.targetLocation))) ||
             !surfaceRubblePositions.every((p) => this.lastRubblePositions.some((d) => p.equals(d.targetLocation)))) {
-            this.lastRubblePositions = surfaceRubblePositions.map((p) => new PathTarget(p))
+            this.lastRubblePositions = surfaceRubblePositions.map((p) => PathTarget.fromLocation(p))
         }
         return this.lastRubblePositions
     }

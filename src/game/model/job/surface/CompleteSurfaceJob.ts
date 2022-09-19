@@ -12,7 +12,7 @@ export class CompleteSurfaceJob extends ShareableJob {
 
     constructor(readonly surface: Surface, readonly placedItems: MaterialEntity[]) {
         super()
-        this.workplaces = [new PathTarget(surface.getRandomPosition())]
+        this.workplaces = [PathTarget.fromLocation(surface.getRandomPosition())]
     }
 
     onJobComplete() {

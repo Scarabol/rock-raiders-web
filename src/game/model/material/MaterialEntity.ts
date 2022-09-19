@@ -32,7 +32,7 @@ export abstract class MaterialEntity implements Disposable {
     getPositionAsPathTargets(): PathTarget[] {
         const position = this.sceneEntity.position2D
         if (this.positionAsPathTargets.length < 1 || !this.positionAsPathTargets[0].targetLocation.equals(position)) {
-            this.positionAsPathTargets = [new PathTarget(position, null, null, ITEM_ACTION_RANGE_SQ)] // XXX becomes obsolete when using setter to change position
+            this.positionAsPathTargets = [PathTarget.fromLocation(position, ITEM_ACTION_RANGE_SQ)] // XXX becomes obsolete when using setter to change position
         }
         return this.positionAsPathTargets
     }

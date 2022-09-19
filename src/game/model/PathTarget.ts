@@ -13,6 +13,18 @@ export class PathTarget {
         readonly radiusSq: number = 0) {
     }
 
+    static fromLocation(targetLocation: Vector2, radiusSq: number = 0) {
+        return new PathTarget(targetLocation, null, null, radiusSq)
+    }
+
+    static fromBuilding(targetLocation: Vector2, building: BuildingEntity) {
+        return new PathTarget(targetLocation, building, null, 0)
+    }
+
+    static fromSurface(targetLocation: Vector2, surface: Surface) {
+        return new PathTarget(targetLocation, null, surface, 0)
+    }
+
     getFocusPoint(): Vector2 {
         if (this.building) return this.building.primarySurface.getCenterWorld2D()
         return this.targetLocation
