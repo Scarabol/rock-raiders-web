@@ -7,7 +7,7 @@ import { MaterialEntity } from '../../material/MaterialEntity'
 import { PathTarget } from '../../PathTarget'
 
 export class SiteCarryPathTarget extends PathTarget {
-    constructor(readonly site: BuildingSite, location: Vector2, readonly headingOnSite: number = null) {
+    constructor(location: Vector2, readonly site: BuildingSite, readonly headingOnSite: number = null) {
         super(location, null, null, ITEM_ACTION_RANGE_SQ)
     }
 

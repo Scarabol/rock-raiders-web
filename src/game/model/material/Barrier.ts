@@ -20,7 +20,7 @@ export class Barrier extends MaterialEntity {
         if (this.site.complete || this.site.canceled) {
             return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
         } else {
-            return [new SiteCarryPathTarget(this.site, this.location.position, this.location.heading)]
+            return [new SiteCarryPathTarget(this.location.position, this.site, this.location.heading)]
         }
     }
 
