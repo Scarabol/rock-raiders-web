@@ -9,7 +9,6 @@ import { PositionComponent } from './component/common/PositionComponent'
 import { AbstractGameEntity } from './entity/AbstractGameEntity'
 import { AnimationGroup } from './model/anim/AnimationGroup'
 import { BuildingEntity } from './model/building/BuildingEntity'
-import { BuildingPathTarget } from './model/building/BuildingPathTarget'
 import { BuildingSite } from './model/building/BuildingSite'
 import { Disposable } from './model/Disposable'
 import { EntityType } from './model/EntityType'
@@ -18,6 +17,7 @@ import { BuildingCarryPathTarget } from './model/job/carry/BuildingCarryPathTarg
 import { Surface } from './model/map/Surface'
 import { ElectricFence } from './model/material/ElectricFence'
 import { MaterialEntity } from './model/material/MaterialEntity'
+import { PathTarget } from './model/PathTarget'
 import { Raider } from './model/raider/Raider'
 import { RaiderTraining } from './model/raider/RaiderTraining'
 import { updateSafe } from './model/Updateable'
@@ -117,7 +117,7 @@ export class EntityManager {
         return EntityManager.getClosestBuilding(this.getBuildingsByType(...buildingTypes), position)
     }
 
-    getGetToolTargets(): BuildingPathTarget[] {
+    getGetToolTargets(): PathTarget[] {
         return this.getBuildingsByType(EntityType.TOOLSTATION).map((b) => b.getToolPathTarget)
     }
 
@@ -125,8 +125,8 @@ export class EntityManager {
         return this.getBuildingsByType(entityType).map((b) => b.carryPathTarget)
     }
 
-    getTrainingSiteTargets(training: RaiderTraining): BuildingPathTarget[] {
-        const targets: BuildingPathTarget[] = []
+    getTrainingSiteTargets(training: RaiderTraining): PathTarget[] {
+        const targets: PathTarget[] = []
         this.buildings.filter((b) => b.isTrainingSite(training)).map((b) => b.getTrainingTargets().forEach((t) => targets.push(t)))
         return targets
     }

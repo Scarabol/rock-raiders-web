@@ -14,16 +14,15 @@ import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { BuildingCarryPathTarget } from '../job/carry/BuildingCarryPathTarget'
-import { GetToolPathTarget } from '../job/raider/GetToolPathTarget'
 import { Surface } from '../map/Surface'
 import { Barrier } from '../material/Barrier'
 import { BarrierLocation } from '../material/BarrierLocation'
 import { Crystal } from '../material/Crystal'
 import { ElectricFence } from '../material/ElectricFence'
 import { Ore } from '../material/Ore'
+import { PathTarget } from '../PathTarget'
 import { RaiderTraining, RaiderTrainings } from '../raider/RaiderTraining'
 import { Selectable } from '../Selectable'
-import { BuildingPathTarget } from './BuildingPathTarget'
 import { BuildingSite } from './BuildingSite'
 import { BuildingType } from './BuildingType'
 import { Teleport } from './Teleport'
@@ -41,7 +40,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     energized: boolean = false
     inBeam: boolean = false
     beamUpAnimator: BeamUpAnimator = null
-    getToolPathTarget: GetToolPathTarget = null
+    getToolPathTarget: PathTarget = null
     carryPathTarget: BuildingCarryPathTarget = null
     engineSound: PositionalAudio
     surfaces: Surface[] = []
@@ -285,7 +284,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
             if (surface.surfaceType.connectsPath) surface.neighbors.forEach((n) => n.updateTexture())
             surface.terrain.powerGrid.onPathChange(surface)
         })
-        this.getToolPathTarget = new GetToolPathTarget(this)
+        this.getToolPathTarget = new PathTarget(this.getDropPosition2D(), this)
         this.carryPathTarget = new BuildingCarryPathTarget(this)
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
@@ -298,7 +297,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         return [new Vector2(-1, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(0, -1)]
             .map((v) => {
                 const location = v.multiplyScalar(TILESIZE / 2).add(this.primarySurface.getCenterWorld2D())
-                return new BuildingPathTarget(location, this)
+                return new PathTarget(location, this)
             })
     }
 

@@ -3,7 +3,6 @@ import { RaiderTrainingCompleteEvent } from '../../../../event/LocalEvents'
 import { EntityManager } from '../../../EntityManager'
 import { RaiderActivity } from '../../activities/RaiderActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
-import { BuildingPathTarget } from '../../building/BuildingPathTarget'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTraining } from '../../raider/RaiderTraining'
 import { RaiderJob } from './RaiderJob'
@@ -23,7 +22,7 @@ export class TrainRaiderJob extends RaiderJob {
         return this.workplaces
     }
 
-    setActualWorkplace(target: BuildingPathTarget) {
+    setActualWorkplace(target: PathTarget) {
         super.setActualWorkplace(target)
         this.building = target.building
     }
