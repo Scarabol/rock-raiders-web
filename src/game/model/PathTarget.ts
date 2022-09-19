@@ -1,8 +1,13 @@
 import { Vector2 } from 'three'
 import { BuildingEntity } from './building/BuildingEntity'
+import { Surface } from './map/Surface'
 
 export class PathTarget {
-    constructor(readonly targetLocation: Vector2, readonly building: BuildingEntity = null, readonly radiusSq: number = 0) {
+    constructor(
+        readonly targetLocation: Vector2,
+        readonly building: BuildingEntity = null,
+        readonly surface: Surface = null,
+        readonly radiusSq: number = 0) {
     }
 
     getFocusPoint(): Vector2 {

@@ -6,7 +6,7 @@ import { CarryJob } from './CarryJob'
 
 export class CarryPathTarget extends PathTarget {
     constructor(location: Vector2, radiusSq: number = 0) {
-        super(location, null, radiusSq)
+        super(location, null, null, radiusSq)
     }
 
     reserveGatherSlot(job: CarryJob): boolean {
