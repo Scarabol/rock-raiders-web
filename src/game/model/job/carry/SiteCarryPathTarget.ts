@@ -4,11 +4,11 @@ import { BarrierActivity } from '../../activities/BarrierActivity'
 import { BuildingSite } from '../../building/BuildingSite'
 import { EntityType } from '../../EntityType'
 import { MaterialEntity } from '../../material/MaterialEntity'
-import { CarryPathTarget } from './CarryPathTarget'
+import { PathTarget } from '../../PathTarget'
 
-export class SiteCarryPathTarget extends CarryPathTarget {
+export class SiteCarryPathTarget extends PathTarget {
     constructor(readonly site: BuildingSite, location: Vector2, readonly headingOnSite: number = null) {
-        super(location, ITEM_ACTION_RANGE_SQ)
+        super(location, null, null, ITEM_ACTION_RANGE_SQ)
     }
 
     gatherItem(item: MaterialEntity) {

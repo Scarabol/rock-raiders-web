@@ -41,7 +41,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     inBeam: boolean = false
     beamUpAnimator: BeamUpAnimator = null
     getToolPathTarget: PathTarget = null
-    carryPathTarget: BuildingCarryPathTarget = null
+    carryPathTarget: PathTarget = null
     engineSound: PositionalAudio
     surfaces: Surface[] = []
     pathSurfaces: Surface[] = []

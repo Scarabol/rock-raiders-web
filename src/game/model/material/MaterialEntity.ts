@@ -6,7 +6,6 @@ import { WorldManager } from '../../WorldManager'
 import { Disposable } from '../Disposable'
 import { EntityType } from '../EntityType'
 import { CarryJob } from '../job/carry/CarryJob'
-import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { JobState } from '../job/JobState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
@@ -20,7 +19,7 @@ export abstract class MaterialEntity implements Disposable {
     protected constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType, readonly priorityIdentifier: PriorityIdentifier, readonly requiredTraining: RaiderTraining) {
     }
 
-    abstract findCarryTargets(): CarryPathTarget[]
+    abstract findCarryTargets(): PathTarget[]
 
     setupCarryJob(): CarryJob {
         if (!this.carryJob || this.carryJob.jobState === JobState.CANCELED) {

@@ -3,9 +3,9 @@ import { DynamiteSceneEntity } from '../../../scene/entities/DynamiteSceneEntity
 import { WorldManager } from '../../WorldManager'
 import { DynamiteActivity } from '../activities/DynamiteActivity'
 import { EntityType } from '../EntityType'
-import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
+import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { MaterialEntity } from './MaterialEntity'
 
@@ -15,9 +15,9 @@ export class Dynamite extends MaterialEntity {
         this.sceneEntity = new DynamiteSceneEntity(this.worldMgr.sceneMgr)
     }
 
-    findCarryTargets(): CarryPathTarget[] {
+    findCarryTargets(): PathTarget[] {
         if (this.targetSurface?.isDigable()) {
-            return this.targetSurface.getDigPositions().map((p) => new CarryPathTarget(p, this.sceneEntity.getRadiusSquare() / 4))
+            return this.targetSurface.getDigPositions().map((p) => new PathTarget(p, null, null, this.sceneEntity.getRadiusSquare() / 4))
         } else {
             return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
         }

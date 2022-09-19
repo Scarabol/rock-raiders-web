@@ -7,10 +7,10 @@ import { BuildingEntity } from '../../building/BuildingEntity'
 import { EntityType } from '../../EntityType'
 import { GameState } from '../../GameState'
 import { MaterialEntity } from '../../material/MaterialEntity'
+import { PathTarget } from '../../PathTarget'
 import { Job } from '../Job'
-import { CarryPathTarget } from './CarryPathTarget'
 
-export class BuildingCarryPathTarget extends CarryPathTarget {
+export class BuildingCarryPathTarget extends PathTarget {
     private gatherReservedBy: Job = null
 
     constructor(readonly building: BuildingEntity) {

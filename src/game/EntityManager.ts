@@ -13,7 +13,6 @@ import { BuildingSite } from './model/building/BuildingSite'
 import { Disposable } from './model/Disposable'
 import { EntityType } from './model/EntityType'
 import { GameSelection } from './model/GameSelection'
-import { BuildingCarryPathTarget } from './model/job/carry/BuildingCarryPathTarget'
 import { Surface } from './model/map/Surface'
 import { ElectricFence } from './model/material/ElectricFence'
 import { MaterialEntity } from './model/material/MaterialEntity'
@@ -121,7 +120,7 @@ export class EntityManager {
         return this.getBuildingsByType(EntityType.TOOLSTATION).map((b) => b.getToolPathTarget)
     }
 
-    getBuildingCarryPathTargets(entityType: EntityType): BuildingCarryPathTarget[] {
+    getBuildingCarryPathTargets(entityType: EntityType): PathTarget[] {
         return this.getBuildingsByType(entityType).map((b) => b.carryPathTarget)
     }
 

@@ -3,9 +3,9 @@ import { ElectricFenceSceneEntity } from '../../../scene/entities/ElectricFenceS
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
-import { CarryPathTarget } from '../job/carry/CarryPathTarget'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'
+import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { Selectable } from '../Selectable'
 import { MaterialEntity } from './MaterialEntity'
@@ -24,11 +24,11 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
         return ResourceManager.configuration.stats.electricFence
     }
 
-    findCarryTargets(): CarryPathTarget[] {
+    findCarryTargets(): PathTarget[] {
         if (!this.targetSurface.isWalkable()) {
             return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
         } else {
-            return [new CarryPathTarget(this.targetSurface.getCenterWorld2D())]
+            return [new PathTarget(this.targetSurface.getCenterWorld2D())]
         }
     }
 

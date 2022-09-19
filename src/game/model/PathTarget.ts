@@ -1,6 +1,9 @@
 import { Vector2 } from 'three'
+import { RaiderActivity } from './activities/RaiderActivity'
 import { BuildingEntity } from './building/BuildingEntity'
+import { CarryJob } from './job/carry/CarryJob'
 import { Surface } from './map/Surface'
+import { MaterialEntity } from './material/MaterialEntity'
 
 export class PathTarget {
     constructor(
@@ -17,5 +20,17 @@ export class PathTarget {
 
     isInvalid(): boolean {
         return false
+    }
+
+    reserveGatherSlot(job: CarryJob): boolean {
+        return true
+    }
+
+    gatherItem(item: MaterialEntity) {
+        item.sceneEntity.addToScene(null, null)
+    }
+
+    getDropAction(): RaiderActivity {
+        return RaiderActivity.Place
     }
 }
