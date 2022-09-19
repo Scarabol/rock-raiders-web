@@ -19,7 +19,7 @@ export class PathTarget {
     }
 
     isInvalid(): boolean {
-        return false
+        return (this.building && !this.building.isPowered()) || (this.surface && !this.surface.isWalkable())
     }
 
     reserveGatherSlot(job: CarryJob): boolean {
