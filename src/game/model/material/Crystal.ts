@@ -15,7 +15,7 @@ export class Crystal extends MaterialEntity {
 
     findCarryTargets(): PathTarget[] {
         const sites = this.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(this.entityType))
-        if (sites.length > 0) return sites.map((s) => PathTarget.fromSite(s.getRandomDropPosition(), s))
+        if (sites.length > 0) return sites.map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
         const powerStations = this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.POWER_STATION)
         if (powerStations.length > 0) return powerStations
         return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)

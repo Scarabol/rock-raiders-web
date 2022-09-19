@@ -23,15 +23,15 @@ export class PathTarget {
         return new PathTarget(targetLocation, null, null, null, radiusSq)
     }
 
-    static fromBuilding(targetLocation: Vector2, building: BuildingEntity) {
+    static fromBuilding(building: BuildingEntity, targetLocation: Vector2) {
         return new PathTarget(targetLocation, building, null, null, 0)
     }
 
-    static fromSurface(targetLocation: Vector2, surface: Surface) {
+    static fromSurface(surface: Surface, targetLocation: Vector2) {
         return new PathTarget(targetLocation, null, surface, null, 0)
     }
 
-    static fromSite(targetLocation: Vector2, site: BuildingSite, headingOnSite: number = 0) {
+    static fromSite(site: BuildingSite, targetLocation: Vector2, headingOnSite: number = 0) {
         return new PathTarget(targetLocation, null, null, site, ITEM_ACTION_RANGE_SQ, headingOnSite)
     }
 

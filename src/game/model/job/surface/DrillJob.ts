@@ -10,7 +10,7 @@ export class DrillJob extends ShareableJob {
 
     constructor(readonly surface: Surface) {
         super()
-        this.digPositions = this.surface.getDigPositions().map((p) => PathTarget.fromSurface(p, this.surface))
+        this.digPositions = this.surface.getDigPositions().map((p) => PathTarget.fromSurface(this.surface, p))
     }
 
     getRequiredTool(): RaiderTool {
@@ -22,7 +22,7 @@ export class DrillJob extends ShareableJob {
         const surfaceDigPositions = this.surface.getDigPositions()
         if (!this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
             !surfaceDigPositions.every((p) => this.digPositions.some((d) => p.equals(d.targetLocation)))) {
-            this.digPositions = surfaceDigPositions.map((p) => PathTarget.fromSurface(p, this.surface))
+            this.digPositions = surfaceDigPositions.map((p) => PathTarget.fromSurface(this.surface, p))
         }
         return this.digPositions
     }
