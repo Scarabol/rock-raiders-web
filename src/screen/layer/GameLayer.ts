@@ -17,6 +17,12 @@ export class GameLayer extends ScreenLayer {
     sceneMgr: SceneManager
     entityMgr: EntityManager
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
+    private readonly beforeUnloadListener = (event: BeforeUnloadEvent): string => {
+        if (DEV_MODE) return undefined
+        // TODO save complete game state in local storage and allow page reload
+        event.preventDefault()
+        return event.returnValue = 'Level progress will be lost!'
+    }
 
     constructor() {
         super()
@@ -26,6 +32,16 @@ export class GameLayer extends ScreenLayer {
     reset() {
         super.reset()
         this.rightDown = {x: 0, y: 0}
+    }
+
+    show() {
+        super.show()
+        window.addEventListener('beforeunload', this.beforeUnloadListener)
+    }
+
+    hide() {
+        super.hide()
+        window.removeEventListener('beforeunload', this.beforeUnloadListener)
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
