@@ -1,16 +1,23 @@
 import { Vector2 } from 'three'
+import { EventBus } from '../../event/EventBus'
+import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { ITEM_ACTION_RANGE_SQ } from '../../params'
 import { BarrierActivity } from './activities/BarrierActivity'
+import { BuildingActivity } from './activities/BuildingActivity'
 import { RaiderActivity } from './activities/RaiderActivity'
 import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
 import { EntityType } from './EntityType'
+import { GameState } from './GameState'
 import { CarryJob } from './job/carry/CarryJob'
+import { Job } from './job/Job'
 import { Surface } from './map/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
 
 export class PathTarget {
-    constructor(
+    private gatherReservedBy: Job = null
+
+    protected constructor(
         readonly targetLocation: Vector2,
         readonly building: BuildingEntity = null,
         readonly surface: Surface = null,
@@ -45,18 +52,53 @@ export class PathTarget {
     }
 
     reserveGatherSlot(job: CarryJob): boolean {
+        if (this.building?.entityType === EntityType.POWER_STATION || this.building?.entityType === EntityType.ORE_REFINERY) {
+            if (!this.gatherReservedBy && this.building.sceneEntity.activity.activityKey === this.building.sceneEntity.getDefaultActivity().activityKey) {
+                this.gatherReservedBy = job // TODO how to avoid deadlock between reserve and gather?
+                return true
+            } else {
+                return this.gatherReservedBy === job
+            }
+        }
         return true
     }
 
     gatherItem(item: MaterialEntity) {
-        item.sceneEntity.addToScene(null, this.headingOnSite)
-        if (item.entityType === EntityType.BARRIER) {
-            item.sceneEntity.changeActivity(BarrierActivity.Expand, () => item.sceneEntity.changeActivity(BarrierActivity.Long))
+        if (this.building) {
+            if (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY) {
+                this.building.sceneEntity.pickupEntity(item.sceneEntity)
+                this.building.sceneEntity.changeActivity(BuildingActivity.Deposit, () => {
+                    this.building.sceneEntity.changeActivity()
+                    this.building.sceneEntity.dropAllEntities()
+                    this.addItemToStorage(item)
+                })
+            } else {
+                this.addItemToStorage(item)
+            }
+        } else {
+            item.sceneEntity.addToScene(null, this.headingOnSite)
+            if (item.entityType === EntityType.BARRIER) {
+                item.sceneEntity.changeActivity(BarrierActivity.Expand, () => item.sceneEntity.changeActivity(BarrierActivity.Long))
+            }
+            this.site?.addItem(item)
         }
-        this.site?.addItem(item)
+    }
+
+    private addItemToStorage(item: MaterialEntity) {
+        switch (item.entityType) {
+            case EntityType.CRYSTAL:
+                GameState.numCrystal++
+                break
+            case EntityType.ORE:
+                GameState.numOre++
+                break
+        }
+        EventBus.publishEvent(new MaterialAmountChanged())
+        item.sceneEntity.disposeFromScene()
+        this.gatherReservedBy = null
     }
 
     getDropAction(): RaiderActivity {
-        return RaiderActivity.Place
+        return this.building?.getDropAction() || RaiderActivity.Place
     }
 }

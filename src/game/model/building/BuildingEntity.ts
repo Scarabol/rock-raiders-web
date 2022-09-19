@@ -13,7 +13,6 @@ import { BuildingActivity } from '../activities/BuildingActivity'
 import { RaiderActivity } from '../activities/RaiderActivity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
-import { BuildingCarryPathTarget } from '../job/carry/BuildingCarryPathTarget'
 import { Surface } from '../map/Surface'
 import { Barrier } from '../material/Barrier'
 import { BarrierLocation } from '../material/BarrierLocation'
@@ -285,7 +284,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
             surface.terrain.powerGrid.onPathChange(surface)
         })
         this.getToolPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D())
-        this.carryPathTarget = new BuildingCarryPathTarget(this)
+        this.carryPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
