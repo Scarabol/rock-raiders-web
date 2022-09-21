@@ -1,11 +1,11 @@
-import { SupervisedJob } from '../../../Supervisor'
-import { RaiderActivity } from '../../activities/RaiderActivity'
-import { MaterialEntity } from '../../material/MaterialEntity'
-import { PathTarget } from '../../PathTarget'
-import { RaiderTraining } from '../../raider/RaiderTraining'
-import { AbstractJob, CancelableJob, JobFulfiller } from '../Job'
-import { JobState } from '../JobState'
-import { PriorityIdentifier } from '../PriorityIdentifier'
+import { SupervisedJob } from '../../Supervisor'
+import { RaiderActivity } from '../activities/RaiderActivity'
+import { MaterialEntity } from '../material/MaterialEntity'
+import { PathTarget } from '../PathTarget'
+import { RaiderTraining } from '../raider/RaiderTraining'
+import { AbstractJob, CancelableJob, JobFulfiller } from './Job'
+import { JobState } from './JobState'
+import { PriorityIdentifier } from './PriorityIdentifier'
 
 export class CarryJob extends AbstractJob implements SupervisedJob, CancelableJob {
     fulfiller: JobFulfiller = null

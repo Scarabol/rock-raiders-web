@@ -9,7 +9,7 @@ import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
 import { EntityType } from './EntityType'
 import { GameState } from './GameState'
-import { CarryJob } from './job/carry/CarryJob'
+import { CarryJob } from './job/CarryJob'
 import { Job } from './job/Job'
 import { Surface } from './map/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
@@ -19,27 +19,27 @@ export class PathTarget {
 
     protected constructor(
         readonly targetLocation: Vector2,
+        readonly radiusSq: number = 0,
         readonly building: BuildingEntity = null,
         readonly surface: Surface = null,
         readonly site: BuildingSite = null,
-        readonly radiusSq: number = 0,
-        readonly headingOnSite: number = null) {
+        private readonly headingOnSite: number = null) {
     }
 
     static fromLocation(targetLocation: Vector2, radiusSq: number = 0) {
-        return new PathTarget(targetLocation, null, null, null, radiusSq)
+        return new PathTarget(targetLocation, radiusSq, null, null, null)
     }
 
     static fromBuilding(building: BuildingEntity, targetLocation: Vector2) {
-        return new PathTarget(targetLocation, building, null, null, 0)
+        return new PathTarget(targetLocation, 0, building, null, null)
     }
 
     static fromSurface(surface: Surface, targetLocation: Vector2) {
-        return new PathTarget(targetLocation, null, surface, null, 0)
+        return new PathTarget(targetLocation, 0, null, surface, null)
     }
 
     static fromSite(site: BuildingSite, targetLocation: Vector2, headingOnSite: number = 0) {
-        return new PathTarget(targetLocation, null, null, site, ITEM_ACTION_RANGE_SQ, headingOnSite)
+        return new PathTarget(targetLocation, ITEM_ACTION_RANGE_SQ, null, null, site, headingOnSite)
     }
 
     getFocusPoint(): Vector2 {

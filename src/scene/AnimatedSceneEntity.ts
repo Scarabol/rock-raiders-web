@@ -54,11 +54,11 @@ export class AnimatedSceneEntity extends SceneEntity {
             this.bodiesByName.clear()
         }
         this.animation = animation
-        this.animation.nullJoints.forEach((j, lName) => { // TODO vehicles: using this name is super hacky
+        this.animation.nullJoints.forEach((j, lName) => {
             if (lName) j.forEach((m) => this.bodiesByName.set(lName, m))
         })
         this.animation.polyList.forEach((m) => {
-            if (m.name) this.bodiesByName.set(m.name, m) // TODO vehicles: using this name is super hacky
+            if (m.name) this.bodiesByName.set(m.name, m)
         })
         this.applyDefaultUpgrades(activity)
         this.add(this.animation.polyRootGroup)
@@ -66,7 +66,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.addCarriedToJoints() // keep carried items
     }
 
-    private disposeUpgrades() { // TODO vehicles: create each mesh/upgrade/animation only once and re-use it
+    private disposeUpgrades() {
         this.upgrades.forEach((u) => {
             u.parent?.remove(u)
             u.dispose()
@@ -78,8 +78,8 @@ export class AnimatedSceneEntity extends SceneEntity {
 
     private applyDefaultUpgrades(activity: AnimEntityActivity) {
         const upgrades0000 = this.animationEntityType.upgradesByLevel.get('0000')
-        if (upgrades0000) { // TODO vehicles: check for other upgrade levels
-            upgrades0000.forEach((upgrade) => { // TODO vehicles: parse upgrades only once
+        if (upgrades0000) {
+            upgrades0000.forEach((upgrade) => {
                 const joint = this.getNullJointForUpgrade(upgrade)
                 if (joint) {
                     const lwoModel = ResourceManager.getLwoModel(`${upgrade.upgradeFilepath}.lwo`)
@@ -129,7 +129,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             xPivot.getWorldPosition(pivotWorldPos)
             const worldTarget = this.sceneMgr.getFloorPosition(terrainIntersectionPoint).setY(0)
             const diff = worldTarget.sub(pivotWorldPos)
-            const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI - Math.PI / 20 // TODO Does not compute!
+            const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI - Math.PI / 20
             const lAngle = this.limitAngle(angle)
             xPivot.setRotationFromAxisAngle(new Vector3(1, 0, 0), lAngle) // XXX use rotation speed and smooth movement
         }

@@ -59,7 +59,7 @@ export class EntityManager {
 
     reset() {
         this.selection = new GameSelection()
-        this.buildings = [] // TODO separate from entities and move to BuildingManager or BaseManager
+        this.buildings = []
         this.buildingsUndiscovered = []
         this.raiders = []
         this.raidersUndiscovered = []
