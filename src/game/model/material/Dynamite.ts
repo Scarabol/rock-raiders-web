@@ -25,11 +25,10 @@ export class Dynamite extends MaterialEntity {
 
     onCarryJobComplete(): void {
         super.onCarryJobComplete()
-        const position = this.sceneEntity.position2D
-        this.worldMgr.entityMgr.tickingDynamite.push(position)
+        this.worldMgr.entityMgr.tickingDynamite.push(this)
         this.sceneEntity.headTowards(this.targetSurface.getCenterWorld2D())
         this.sceneEntity.changeActivity(DynamiteActivity.TickDown, () => {
-            this.worldMgr.entityMgr.tickingDynamite.remove(position)
+            this.worldMgr.entityMgr.tickingDynamite.remove(this)
             this.sceneEntity.disposeFromScene()
             this.targetSurface.collapse()
             this.worldMgr.addMiscAnim('MiscAnims/Effects/Mockup_explode3.lws', this.sceneEntity.position, this.sceneEntity.getHeading())
