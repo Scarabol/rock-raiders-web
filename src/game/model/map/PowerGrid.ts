@@ -1,18 +1,18 @@
-import { BuildingEntity } from '../building/BuildingEntity'
 import { Surface } from './Surface'
 
 export class PowerGrid {
-    energySources: Set<BuildingEntity> = new Set()
+    energySources: Set<Surface> = new Set()
     energizedSurfaces: Set<Surface> = new Set()
 
-    addEnergySource(powerStation: BuildingEntity) {
-        if (this.energySources.has(powerStation)) return
-        this.energySources.add(powerStation)
-        powerStation.surfaces.forEach((s) => this.markEnergized(s))
+    addEnergySource(energySources: Surface[]) {
+        energySources.forEach((s) => {
+            this.energySources.add(s)
+            this.markEnergized(s)
+        })
     }
 
-    removeEnergySource(powerStation: BuildingEntity) {
-        this.energySources.delete(powerStation)
+    removeEnergySource(energySources: Surface[]) {
+        energySources.forEach((s) => this.energySources.delete(s))
         this.rebuild()
     }
 
@@ -26,10 +26,10 @@ export class PowerGrid {
         }
     }
 
-    rebuild() {
+    private rebuild() {
         const addedToGrid = new Set<Surface>()
         const removedFromGrid = new Set<Surface>(this.energizedSurfaces)
-        this.energySources.forEach((b) => b.surfaces.forEach((s) => PowerGrid.partitionPathGrid(s, addedToGrid, removedFromGrid)))
+        this.energySources.forEach((s) => PowerGrid.partitionPathGrid(s, addedToGrid, removedFromGrid))
         addedToGrid.forEach((s) => this.markEnergized(s))
         removedFromGrid.forEach((s) => this.unmarkEnergized(s))
     }

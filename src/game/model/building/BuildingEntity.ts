@@ -211,7 +211,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         if (this.energized) return
         this.energized = true
         GameState.changeUsedCrystals(this.crystalDrain)
-        if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this)
+        if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this.surfaces)
         if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
     }
 
@@ -219,7 +219,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         if (!this.energized) return
         this.energized = false
         GameState.changeUsedCrystals(-this.crystalDrain)
-        if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.removeEnergySource(this)
+        if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.removeEnergySource(this.surfaces)
         this.engineSound = resetAudioSafe(this.engineSound)
     }
 
