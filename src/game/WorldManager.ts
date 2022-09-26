@@ -162,7 +162,7 @@ export class WorldManager {
                         EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
                         const raider = new Raider(this)
                         const heading = teleportBuilding.sceneEntity.getHeading()
-                        const worldPosition = new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleportBuilding.sceneEntity.position2D.clone())
+                        const worldPosition = new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleportBuilding.sceneEntity.position2D)
                         const walkOutPos = teleportBuilding.primaryPathSurface.getRandomPosition()
                         teleportBuilding.teleport.teleportIn(raider, this.entityMgr.raiders, this.entityMgr.raidersInBeam, worldPosition, heading, walkOutPos)
                     }

@@ -28,7 +28,7 @@ export class DrillJob extends ShareableJob {
     }
 
     onJobComplete() {
-        if (this.surface.onDrillComplete(this.fulfiller.last().sceneEntity.position2D.clone())) super.onJobComplete()
+        if (this.surface.onDrillComplete(this.fulfiller.last().sceneEntity.position2D)) super.onJobComplete()
     }
 
     getPriorityIdentifier(): PriorityIdentifier {

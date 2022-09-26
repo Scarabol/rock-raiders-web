@@ -6,7 +6,7 @@ export class EatJob extends RaiderJob {
     target: PathTarget[] = []
 
     getWorkplaces(): PathTarget[] {
-        if (this.target.length < 1) this.target = [PathTarget.fromLocation(this.raider.sceneEntity.position2D.clone())]
+        if (this.target.length < 1) this.target = [PathTarget.fromLocation(this.raider.sceneEntity.position2D)]
         return this.target
     }
 

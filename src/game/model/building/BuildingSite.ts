@@ -110,7 +110,7 @@ export class BuildingSite {
             }
         })
         this.onSiteByType.forEach((materials) => materials.forEach((item) => {
-            this.worldMgr.entityMgr.placeMaterial(item, item.sceneEntity.position2D.clone())
+            this.worldMgr.entityMgr.placeMaterial(item, item.sceneEntity.position2D)
         }))
         this.onSiteByType.clear()
         this.assignedByType.clear()

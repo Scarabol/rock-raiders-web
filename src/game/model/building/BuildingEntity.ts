@@ -98,7 +98,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
             this.sceneEntity.animation.depositJoint.getWorldPosition(worldPos)
             return new Vector2(worldPos.x, worldPos.z)
         } else {
-            return this.sceneEntity.position2D.clone()
+            return this.sceneEntity.position2D
         }
     }
 

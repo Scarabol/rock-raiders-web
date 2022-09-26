@@ -14,7 +14,7 @@ export class ManVehicleJob extends RaiderJob implements SupervisedJob {
         super()
         this.vehicle = vehicle
         this.vehicle.callManJob = this
-        this.workplaces = [PathTarget.fromLocation(this.vehicle.sceneEntity.position2D.clone(), this.vehicle.sceneEntity.getRadiusSquare())]
+        this.workplaces = [PathTarget.fromLocation(this.vehicle.sceneEntity.position2D, this.vehicle.sceneEntity.getRadiusSquare())]
     }
 
     getWorkplaces(): PathTarget[] {
