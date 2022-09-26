@@ -34,6 +34,8 @@ export interface Job {
     getWorkActivity(): RaiderActivity
 
     getExpectedTimeLeft(): number
+
+    addProgress(fulfiller: JobFulfiller, elapsedMs: number): void
 }
 
 export interface CancelableJob extends Job {
@@ -76,5 +78,8 @@ export abstract class AbstractJob implements Job {
 
     getExpectedTimeLeft(): number {
         return null
+    }
+
+    addProgress(fulfiller: JobFulfiller, elapsedMs: number) {
     }
 }

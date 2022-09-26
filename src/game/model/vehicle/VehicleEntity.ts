@@ -208,6 +208,7 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Dispo
         this.sceneEntity.changeActivity(workActivity, () => {
             this.completeJob()
         }, this.job.getExpectedTimeLeft())
+        this.job?.addProgress(this, elapsedMs)
     }
 
     private completeJob() {

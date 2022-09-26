@@ -259,6 +259,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
         this.sceneEntity.changeActivity(workActivity, () => {
             this.completeJob()
         }, this.job.getExpectedTimeLeft())
+        this.job?.addProgress(this, elapsedMs)
     }
 
     private completeJob() {
