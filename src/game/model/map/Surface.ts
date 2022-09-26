@@ -248,7 +248,6 @@ export class Surface implements Selectable {
         this.updateWallType(topLeftVertex, topRightVertex, bottomRightVertex, bottomLeftVertex)
         this.updateTexture()
         this.updateJobColor()
-        this.terrain.pathFinder.updateSurface(this)
     }
 
     private getVertex(x: number, y: number, s1: Surface, s2: Surface, s3: Surface): SurfaceVertex {
@@ -444,7 +443,6 @@ export class Surface implements Selectable {
 
     setBuilding(building: BuildingEntity) {
         this.building = building
-        this.terrain.pathFinder.updateSurface(this)
         this.setSurfaceType(this.building ? SurfaceType.POWER_PATH_BUILDING : SurfaceType.GROUND)
     }
 
@@ -457,6 +455,7 @@ export class Surface implements Selectable {
         if (oldSurfaceType.connectsPath || this.surfaceType.connectsPath) this.neighbors.forEach((n) => n.updateTexture())
         EventBus.publishEvent(new UpdateRadarSurface(this))
         if (wasPath !== this.isPath()) this.terrain.powerGrid.onPathChange(this)
+        this.terrain.pathFinder.updateSurface(this)
     }
 
     canPlaceFence(): boolean {
