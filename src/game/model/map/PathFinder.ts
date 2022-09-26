@@ -30,9 +30,9 @@ export class PathFinder {
             const colSwim: number[] = []
             for (let y = 0; y < terrain.height; y++) {
                 const surface = terrain.getSurfaceOrNull(x, y)
-                const w = PathFinder.getPathfindingWalkWeight(surface)
+                const w = PathFinder.getPathFindingWalkWeight(surface)
                 colWalk.push(w, w, w)
-                colDrive.push(PathFinder.getPathfindingDriveWeight(surface))
+                colDrive.push(PathFinder.getPathFindingDriveWeight(surface))
                 colFly.push(PathFinder.getPathFindingFlyWeight(surface))
                 colSwim.push(PathFinder.getPathFindingSwimWeight(surface))
             }
@@ -48,22 +48,22 @@ export class PathFinder {
     }
 
     updateSurface(surface: Surface) {
-        const weight = PathFinder.getPathfindingWalkWeight(surface)
+        const weight = PathFinder.getPathFindingWalkWeight(surface)
         for (let x = 0; x < 3; x++) {
             for (let y = 0; y < 3; y++) {
                 this.graphWalk.grid[surface.x * 3 + x][surface.y * 3 + y].weight = weight
             }
         }
-        this.graphDrive.grid[surface.x][surface.y].weight = PathFinder.getPathfindingDriveWeight(surface)
+        this.graphDrive.grid[surface.x][surface.y].weight = PathFinder.getPathFindingDriveWeight(surface)
         this.graphFly.grid[surface.x][surface.y].weight = PathFinder.getPathFindingFlyWeight(surface)
         this.graphSwim.grid[surface.x][surface.y].weight = PathFinder.getPathFindingSwimWeight(surface)
     }
 
-    static getPathfindingWalkWeight(surface: Surface): number {
+    static getPathFindingWalkWeight(surface: Surface): number {
         return surface.isWalkable() ? surface.hasRubble() ? 4 : 1 : 0
     }
 
-    static getPathfindingDriveWeight(surface: Surface): number {
+    static getPathFindingDriveWeight(surface: Surface): number {
         return surface.isWalkable() ? 1 : 0
     }
 
