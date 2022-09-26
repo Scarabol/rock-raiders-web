@@ -13,21 +13,25 @@ export class PathFinder {
     graphDrive: Graph = null
     graphFly: Graph = null
     graphSwim: Graph = null
+    graphLava: Graph = null
     cachedWalkPaths = new Map<string, Vector2[]>()
     cachedDrivePaths = new Map<string, Vector2[]>()
     cachedFlyPaths = new Map<string, Vector2[]>()
     cachedSwimPaths = new Map<string, Vector2[]>()
+    cachedLavaPaths = new Map<string, Vector2[]>()
 
     initWeights(terrain: Terrain) {
         const weightsWalk: number[][] = []
         const weightsDrive: number[][] = []
         const weightsFly: number[][] = []
         const weightsSwim: number[][] = []
+        const weightsLava: number[][] = []
         for (let x = 0; x < terrain.width; x++) {
             const colWalk: number[] = []
             const colDrive: number[] = []
             const colFly: number[] = []
             const colSwim: number[] = []
+            const colLava: number[] = []
             for (let y = 0; y < terrain.height; y++) {
                 const surface = terrain.getSurfaceOrNull(x, y)
                 const w = PathFinder.getPathFindingWalkWeight(surface)
@@ -35,16 +39,19 @@ export class PathFinder {
                 colDrive.push(PathFinder.getPathFindingDriveWeight(surface))
                 colFly.push(PathFinder.getPathFindingFlyWeight(surface))
                 colSwim.push(PathFinder.getPathFindingSwimWeight(surface))
+                colLava.push(PathFinder.getPathFindingLavaWeight(surface))
             }
             weightsWalk.push(colWalk, colWalk, colWalk)
             weightsDrive.push(colDrive)
             weightsFly.push(colFly)
             weightsSwim.push(colSwim)
+            weightsLava.push(colLava)
         }
         this.graphWalk = new Graph(weightsWalk, {diagonal: true})
         this.graphDrive = new Graph(weightsDrive, {diagonal: true})
         this.graphFly = new Graph(weightsFly, {diagonal: true})
         this.graphSwim = new Graph(weightsSwim, {diagonal: true})
+        this.graphLava = new Graph(weightsLava, {diagonal: true})
     }
 
     updateSurface(surface: Surface) {
@@ -57,6 +64,7 @@ export class PathFinder {
         this.graphDrive.grid[surface.x][surface.y].weight = PathFinder.getPathFindingDriveWeight(surface)
         this.graphFly.grid[surface.x][surface.y].weight = PathFinder.getPathFindingFlyWeight(surface)
         this.graphSwim.grid[surface.x][surface.y].weight = PathFinder.getPathFindingSwimWeight(surface)
+        this.graphLava.grid[surface.x][surface.y].weight = PathFinder.getPathFindingLavaWeight(surface)
     }
 
     static getPathFindingWalkWeight(surface: Surface): number {
@@ -75,6 +83,10 @@ export class PathFinder {
         return surface.surfaceType === SurfaceType.WATER ? 1 : 0
     }
 
+    static getPathFindingLavaWeight(surface: Surface): number {
+        return surface.isWalkable() || surface.surfaceType === SurfaceType.LAVA5 ? 1 : 0
+    }
+
     findPath(start: Vector2, target: PathTarget, stats: MovableEntityStats, highPrecision: boolean): TerrainPath {
         // const canEnterToolstore = !!iGet(stats, 'EnterToolStore') // TODO consider enter toolstore in path finding
         if (highPrecision) {
@@ -85,7 +97,9 @@ export class PathFinder {
             return this.findSwimPath(start, target)
         } else if (stats.CrossLand && stats.CrossWater && stats.CrossLava) {
             return this.findFlyPath(start, target)
-        } else { // TODO at least path finding for LavaMonster missing
+        } else if (stats.CrossLand && !stats.CrossWater && stats.CrossLava) {
+            return this.findLavaPath(start, target)
+        } else {
             console.error(`Unexpected path finding combination (${(stats.CrossLand)}, ${(stats.CrossWater)}, ${(stats.CrossLava)}) found. No graph available returning direct path`)
             return new TerrainPath(target, target.targetLocation)
         }
@@ -105,6 +119,10 @@ export class PathFinder {
 
     private findSwimPath(start: Vector2, target: PathTarget): TerrainPath {
         return PathFinder.getPath(start, target, this.cachedSwimPaths, this.graphSwim, TILESIZE, 0)
+    }
+
+    private findLavaPath(start: Vector2, target: PathTarget): TerrainPath {
+        return PathFinder.getPath(start, target, this.cachedLavaPaths, this.graphLava, TILESIZE, 0)
     }
 
     private static getPath(start: Vector2, target: PathTarget, cachedPaths: Map<string, Vector2[]>, graph: Graph, gridSize: number, maxRandomOffset: number): TerrainPath {
@@ -130,10 +148,12 @@ export class PathFinder {
         this.graphDrive.init()
         this.graphFly.init()
         this.graphSwim.init()
+        this.graphLava.init()
         this.cachedWalkPaths.clear()
         this.cachedDrivePaths.clear()
         this.cachedFlyPaths.clear()
         this.cachedSwimPaths.clear()
+        this.cachedLavaPaths.clear()
         console.log('Cached paths cleared')
     }
 }
