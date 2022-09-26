@@ -12,34 +12,30 @@ export class CarryJob extends AbstractJob implements SupervisedJob, CancelableJo
     targets: PathTarget[] = []
     actualTarget: PathTarget = null
 
-    constructor(readonly item: MaterialEntity) {
+    constructor(readonly carryItem: MaterialEntity) {
         super()
     }
 
     getWorkplaces(): PathTarget[] {
         if (this.targets.length < 1 || this.actualTarget?.isInvalid()) {
-            this.targets = this.item.findCarryTargets()
+            this.targets = this.carryItem.findCarryTargets()
         }
         return this.targets
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return this.item.priorityIdentifier
+        return this.carryItem.priorityIdentifier
     }
 
     getRequiredTraining(): RaiderTraining {
-        return this.item.requiredTraining
+        return this.carryItem.requiredTraining
     }
 
     setActualWorkplace(target: PathTarget) {
         if (this.actualTarget === target) return
-        this.actualTarget?.site?.unAssign(this.item)
+        this.actualTarget?.site?.unAssign(this.carryItem)
         this.actualTarget = target
-        this.actualTarget?.site?.assign(this.item)
-    }
-
-    getCarryItem(): MaterialEntity {
-        return this.item
+        this.actualTarget?.site?.assign(this.carryItem)
     }
 
     getWorkActivity(): RaiderActivity {
@@ -54,9 +50,9 @@ export class CarryJob extends AbstractJob implements SupervisedJob, CancelableJo
         super.onJobComplete()
         this.fulfiller.sceneEntity.headTowards(this.actualTarget.targetLocation)
         this.fulfiller.dropCarried()
-        this.item.sceneEntity.position.copy(this.item.worldMgr.sceneMgr.getFloorPosition(this.actualTarget.targetLocation))
-        this.actualTarget.gatherItem(this.item)
-        this.item.onCarryJobComplete()
+        this.carryItem.sceneEntity.position.copy(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.actualTarget.targetLocation))
+        this.actualTarget.gatherItem(this.carryItem)
+        this.carryItem.onCarryJobComplete()
     }
 
     assign(fulfiller: JobFulfiller) {

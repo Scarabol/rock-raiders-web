@@ -244,8 +244,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
             this.stopJob()
             return
         }
-        const carryItem = this.job.getCarryItem()
-        const grabbedJobItem = !carryItem || this.grabJobItem(elapsedMs, carryItem)
+        const grabbedJobItem = this.grabJobItem(elapsedMs, this.job.carryItem)
         if (!grabbedJobItem) return
         const workplaceReached = this.moveToClosestTarget(this.job.getWorkplaces(), elapsedMs) === MoveState.TARGET_REACHED
         if (!workplaceReached) return
@@ -275,6 +274,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
     private grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
         if (this.carries === carryItem) return true
         this.dropCarried()
+        if (!carryItem) return true
         if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets(), elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.changeActivity(RaiderActivity.Collect, () => {
                 this.carries = carryItem

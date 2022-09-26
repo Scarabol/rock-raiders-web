@@ -193,8 +193,7 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Dispo
             this.stopJob()
             return
         }
-        const carryItem = this.job.getCarryItem()
-        const grabbedJobItem = !carryItem || this.grabJobItem(elapsedMs, carryItem)
+        const grabbedJobItem = this.grabJobItem(elapsedMs, this.job.carryItem)
         if (!grabbedJobItem) return
         const workplaceReached = this.moveToClosestTarget(this.job.getWorkplaces(), elapsedMs) === MoveState.TARGET_REACHED
         if (!workplaceReached) return
@@ -237,7 +236,7 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Dispo
     }
 
     grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
-        if (this.carriedItems.has(carryItem)) return true
+        if (!carryItem || this.carriedItems.has(carryItem)) return true
         if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets(), elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.changeActivity(AnimEntityActivity.Stand, () => {
                 this.carriedItems.add(carryItem)
@@ -287,7 +286,7 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Dispo
     }
 
     isPrepared(job: Job): boolean {
-        const carryType = job.getCarryItem()?.entityType
+        const carryType = job.carryItem?.entityType
         return (job.getRequiredTool() === RaiderTool.DRILL && this.canDrill(job.surface))
             || (job.getRequiredTool() === RaiderTool.SHOVEL && this.canClear())
             || ((carryType === EntityType.ORE || carryType === EntityType.CRYSTAL || carryType === EntityType.ELECTRIC_FENCE) && this.hasCapacity())

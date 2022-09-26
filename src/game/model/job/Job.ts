@@ -13,6 +13,7 @@ export type JobFulfiller = Raider | VehicleEntity
 export interface Job {
     jobState: JobState
     surface: Surface
+    carryItem: MaterialEntity
 
     assign(fulfiller: JobFulfiller): void
 
@@ -30,8 +31,6 @@ export interface Job {
 
     setActualWorkplace(target: PathTarget): void
 
-    getCarryItem(): MaterialEntity
-
     getWorkActivity(): RaiderActivity
 
     getExpectedTimeLeft(): number
@@ -44,6 +43,7 @@ export interface CancelableJob extends Job {
 export abstract class AbstractJob implements Job {
     jobState: JobState = JobState.INCOMPLETE
     surface: Surface = null
+    carryItem: MaterialEntity = null
 
     abstract assign(fulfiller: JobFulfiller): void
 
@@ -68,10 +68,6 @@ export abstract class AbstractJob implements Job {
     abstract getWorkplaces(): PathTarget[]
 
     setActualWorkplace(target: PathTarget) {
-    }
-
-    getCarryItem(): MaterialEntity {
-        return null
     }
 
     getWorkActivity(): RaiderActivity {
