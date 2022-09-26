@@ -32,6 +32,7 @@ export class PositionComponent implements GameComponent {
 
     setPosition2D(position: Vector2) {
         this.position.set(position.x, 0, position.y)
+        this.surface = this.terrain.getSurfaceFromWorld(this.position)
     }
 
     getPosition2D(): Vector2 {
@@ -44,5 +45,21 @@ export class PositionComponent implements GameComponent {
 
     isDiscovered(): boolean {
         return this.surface.discovered
+    }
+
+    isOnPath(): boolean {
+        return this.surface.isPath()
+    }
+
+    isOnRubble(): boolean {
+        return this.surface.hasRubble()
+    }
+
+    isNotFloor(): boolean {
+        return !this.surface.surfaceType.floor
+    }
+
+    surfaceCenter2D(): Vector2 {
+        return this.surface.getCenterWorld2D()
     }
 }
