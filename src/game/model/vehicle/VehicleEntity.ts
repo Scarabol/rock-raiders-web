@@ -221,7 +221,7 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Dispo
         this.followUpJob = null
     }
 
-    getDrillTime(surface: Surface): number {
+    getDrillTimeSeconds(surface: Surface): number {
         if (!surface) return 0
         return (this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0)
     }
@@ -301,7 +301,7 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Dispo
     }
 
     canDrill(surface: Surface): boolean {
-        return this.getDrillTime(surface) > 0
+        return this.getDrillTimeSeconds(surface) > 0
     }
 
     canClear(): boolean {

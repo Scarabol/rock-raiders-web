@@ -41,7 +41,7 @@ export class DrillJob extends ShareableJob {
 
     getExpectedTimeLeft(): number {
         // TODO refactor this with surface "health" or "stability", which is reduced by drilling
-        const drillPerSecond = this.fulfiller.map((f) => f.getDrillTime(this.surface))
+        const drillPerSecond = this.fulfiller.map((f) => f.getDrillTimeSeconds(this.surface))
             .map((drillTime) => drillTime > 0 ? 1 / drillTime : 0).reduce((l, r) => l + r, 0)
         if (!drillPerSecond) {
             console.warn(`Unexpected drill per second ${drillPerSecond}`)

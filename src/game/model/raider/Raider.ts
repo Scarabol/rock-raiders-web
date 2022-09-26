@@ -211,7 +211,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
         if (this.followUpJob) this.followUpJob.assign(this)
     }
 
-    getDrillTime(surface: Surface): number {
+    getDrillTimeSeconds(surface: Surface): number {
         if (!surface) return 0
         return (this.stats[surface.surfaceType.statsDrillName]?.[this.level] || 0)
     }
@@ -306,7 +306,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
     }
 
     canDrill(surface: Surface): boolean {
-        return this.getDrillTime(surface) > 0 && this.hasTool(RaiderTool.DRILL)
+        return this.getDrillTimeSeconds(surface) > 0 && this.hasTool(RaiderTool.DRILL)
     }
 
     hasCapacity(): boolean {
