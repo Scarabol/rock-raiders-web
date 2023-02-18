@@ -8,7 +8,7 @@ export class AnimationFrame {
     private redrawCallback: AnimationFrameRedrawCallback = null
 
     constructor(canvas: HTMLCanvasElement | OffscreenCanvas) {
-        this.context = canvas.getContext('2d')
+        this.context = canvas.getContext('2d') as SpriteContext
     }
 
     set onRedraw(callback: AnimationFrameRedrawCallback) {
