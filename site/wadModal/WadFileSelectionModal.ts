@@ -1,6 +1,5 @@
 import { Modal } from 'bootstrap'
 import { getElementByIdOrThrow } from '../../src/core/Util'
-import { ResourceManager } from '../../src/resource/ResourceManager'
 
 export class WadFileSelectionModal {
     private readonly modal: Modal
@@ -8,7 +7,7 @@ export class WadFileSelectionModal {
     private readonly progressGroup: HTMLDivElement
     private readonly progressBars: HTMLDivElement[] = []
 
-    constructor(parentId: string) {
+    constructor(parentId: string, readonly onLoadFromUrl: (wad0Url: string, wad1Url: string) => unknown) {
         const rootElement = getElementByIdOrThrow(parentId).appendChild(document.createElement('div'))
         rootElement.classList.add('modal')
         rootElement.tabIndex = -1
@@ -115,7 +114,7 @@ export class WadFileSelectionModal {
             try {
                 const wad0Url = URL.createObjectURL(wad0File.files[0])
                 const wad1Url = URL.createObjectURL(wad1File.files[0])
-                ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
+                this.onLoadFromUrl(wad0Url, wad1Url)
             } catch (e) {
                 console.error(e)
                 this.setButtonsDisabled(false)
@@ -152,7 +151,7 @@ export class WadFileSelectionModal {
         btnStartUrl.addEventListener('click', () => {
             this.setButtonsDisabled(true)
             this.progressGroup.style.display = 'block'
-            ResourceManager.startLoadingFromUrl(wad0Url, wad1Url)
+            this.onLoadFromUrl(wad0Url, wad1Url)
         })
     }
 
