@@ -13,7 +13,7 @@ export class BuildingSceneEntity extends AnimatedSceneEntity {
     constructor(sceneMgr: SceneManager, aeFilename: string) {
         super(sceneMgr, aeFilename)
         this.flipXAxis()
-        this.add(this.powerBubble)
+        this.addUpdatable(this.powerBubble)
     }
 
     setInBeam(state: boolean) {
@@ -30,10 +30,5 @@ export class BuildingSceneEntity extends AnimatedSceneEntity {
 
     getDefaultActivity(): BuildingActivity {
         return !this.powered ? BuildingActivity.Unpowered : AnimEntityActivity.Stand
-    }
-
-    update(elapsedMs: number) {
-        super.update(elapsedMs)
-        this.powerBubble.update(elapsedMs)
     }
 }

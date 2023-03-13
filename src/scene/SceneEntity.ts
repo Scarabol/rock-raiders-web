@@ -4,11 +4,13 @@ import { PickSphereStats } from '../cfg/GameStatsCfg'
 import { AnimEntityActivity } from '../game/model/activities/AnimEntityActivity'
 import { Surface } from '../game/model/map/Surface'
 import { Selectable } from '../game/model/Selectable'
+import { Updatable } from '../game/model/Updateable'
 import { SceneManager } from '../game/SceneManager'
 import { TILESIZE } from '../params'
 import { SelectionFrameSprite } from './SelectionFrameSprite'
 
 export class SceneEntity {
+    readonly updatableChildren: Updatable[] = []
     floorOffset: number = 0.1
 
     sceneMgr: SceneManager
@@ -51,6 +53,11 @@ export class SceneEntity {
     remove(other: Object3D) {
         this.group.remove(other)
         this.lastRadiusSquare = null
+    }
+
+    addUpdatable(other: Object3D & Updatable) {
+        this.add(other)
+        this.updatableChildren.add(other)
     }
 
     getRadiusSquare(): number {
@@ -150,5 +157,6 @@ export class SceneEntity {
     }
 
     update(elapsedMs: number) {
+        this.updatableChildren.forEach((c) => c.update(elapsedMs))
     }
 }
