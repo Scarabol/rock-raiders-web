@@ -1,9 +1,9 @@
+import { EventKey } from '../../../event/EventKeyEnum'
+import { RepairLava } from '../../../event/GuiCommand'
+import { SelectionChanged } from '../../../event/LocalEvents'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
-import { RepairLava } from '../../../event/GuiCommand'
-import { EventKey } from '../../../event/EventKeyEnum'
-import { SelectionChanged } from '../../../event/LocalEvents'
 
 export class SelectLavaErosionPanel extends SelectBasePanel {
     private hasRepairLava: boolean = false

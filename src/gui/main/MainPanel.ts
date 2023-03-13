@@ -13,6 +13,7 @@ import { IconSubPanel } from './IconSubPanel'
 import { SelectBuildingPanel } from './select/SelectBuildingPanel'
 import { SelectFencePanel } from './select/SelectFencePanel'
 import { SelectFloorPanel } from './select/SelectFloorPanel'
+import { SelectLavaErosionPanel } from './select/SelectLavaErosionPanel'
 import { SelectRaiderPanel } from './select/SelectRaiderPanel'
 import { SelectRubblePanel } from './select/SelectRubblePanel'
 import { SelectSitePanel } from './select/SelectSitePanel'
@@ -21,7 +22,6 @@ import { SelectVehicleManedPanel } from './select/SelectVehicleManedPanel'
 import { SelectWallPanel } from './select/SelectWallPanel'
 import { TrainRaiderPanel } from './TrainRaiderPanel'
 import { LargeVehiclePanel, SmallVehiclePanel } from './VehiclePanel'
-import { SelectLavaErosionPanel } from './select/SelectLavaErosionPanel'
 
 export class MainPanel extends Panel {
     subPanels: IconSubPanel[] = []

@@ -11,8 +11,8 @@ import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
-import { NerpScript } from './NerpScript'
 import { NerpParser } from './NerpParser'
+import { NerpScript } from './NerpScript'
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {

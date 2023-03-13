@@ -1,5 +1,5 @@
-import { Surface } from './Surface'
 import { Updatable } from '../Updateable'
+import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 
 export class LavaErosion implements Updatable {
