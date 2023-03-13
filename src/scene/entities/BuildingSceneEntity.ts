@@ -9,7 +9,6 @@ export class BuildingSceneEntity extends AnimatedSceneEntity {
     inBeam: boolean = false
     powered: boolean = false
     powerBubble: BubbleSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
-    powerBubbleFlashTimer: number = 0
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
         super(sceneMgr, aeFilename)
@@ -19,11 +18,13 @@ export class BuildingSceneEntity extends AnimatedSceneEntity {
 
     setInBeam(state: boolean) {
         this.inBeam = state
+        this.powerBubble.setEnabled(!this.inBeam && !this.powered)
     }
 
     setPowered(state: boolean) {
         if (this.powered === state) return
         this.powered = state
+        this.powerBubble.setEnabled(!this.inBeam && !this.powered)
         this.changeActivity()
     }
 
@@ -33,7 +34,6 @@ export class BuildingSceneEntity extends AnimatedSceneEntity {
 
     update(elapsedMs: number) {
         super.update(elapsedMs)
-        this.powerBubbleFlashTimer = (this.powerBubbleFlashTimer + elapsedMs) % 1000
-        this.powerBubble.visible = !this.inBeam && !this.powered && this.powerBubbleFlashTimer < 500
+        this.powerBubble.update(elapsedMs)
     }
 }
