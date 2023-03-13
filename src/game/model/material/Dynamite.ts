@@ -1,5 +1,5 @@
 import { Sample } from '../../../audio/Sample'
-import { DynamiteSceneEntity } from '../../../scene/entities/DynamiteSceneEntity'
+import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { DynamiteActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
@@ -12,7 +12,8 @@ import { MaterialEntity } from './MaterialEntity'
 export class Dynamite extends MaterialEntity {
     constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
         super(worldMgr, EntityType.DYNAMITE, PriorityIdentifier.DESTRUCTION, RaiderTraining.DEMOLITION)
-        this.sceneEntity = new DynamiteSceneEntity(this.worldMgr.sceneMgr)
+        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, 'MiscAnims/Dynamite/Dynamite.ae')
+        this.sceneEntity.changeActivity()
     }
 
     findCarryTargets(): PathTarget[] {

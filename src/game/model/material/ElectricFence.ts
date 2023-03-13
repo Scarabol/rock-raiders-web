@@ -1,5 +1,5 @@
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { ElectricFenceSceneEntity } from '../../../scene/entities/ElectricFenceSceneEntity'
+import { SceneEntity } from '../../../scene/SceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
@@ -17,7 +17,8 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
 
     constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
         super(worldMgr, EntityType.ELECTRIC_FENCE, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
-        this.sceneEntity = new ElectricFenceSceneEntity(this.worldMgr.sceneMgr)
+        this.sceneEntity = new SceneEntity(this.worldMgr.sceneMgr)
+        this.sceneEntity.add(ResourceManager.getLwoModel('Buildings/E-Fence/E-Fence4.lwo'))
     }
 
     get stats() {

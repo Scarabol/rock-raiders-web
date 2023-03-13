@@ -1,4 +1,5 @@
-import { OreSceneEntity } from '../../../scene/entities/OreSceneEntity'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { SceneEntity } from '../../../scene/SceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
@@ -9,7 +10,9 @@ import { MaterialEntity } from './MaterialEntity'
 export class Ore extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
         super(worldMgr, EntityType.ORE, PriorityIdentifier.ORE, RaiderTraining.NONE)
-        this.sceneEntity = new OreSceneEntity(this.worldMgr.sceneMgr)
+        this.sceneEntity = new SceneEntity(this.worldMgr.sceneMgr)
+        this.sceneEntity.add(ResourceManager.getLwoModel('MiscAnims/Ore/Ore1st.lwo'))
+        this.sceneEntity.addPickSphere(ResourceManager.configuration.stats.ore.PickSphere)
         this.sceneEntity.pickSphere.userData = {entityType: EntityType.ORE, materialEntity: this}
     }
 
