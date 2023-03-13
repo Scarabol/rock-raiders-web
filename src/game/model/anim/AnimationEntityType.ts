@@ -27,4 +27,5 @@ export class AnimationEntityType {
     fPPolyBodies: Map<string, SceneMesh> = new Map()
     animations: Map<string, AnimClip> = new Map()
     upgradesByLevel: Map<string, AnimationEntityUpgrade[]> = new Map()
+    firstAnimationName: string = null
 }

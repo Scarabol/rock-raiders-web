@@ -134,6 +134,7 @@ export class AnimEntityLoader {
             animation.transcoef = Number(transcoef) || animation.transcoef
             if (lActivityName.startsWith('!')) lActivityName = lActivityName.substring(1) // XXX What's the meaning of leading ! for activities???
             this.entityType.animations.set(lActivityName, animation)
+            this.entityType.firstAnimationName = this.entityType.firstAnimationName || lActivityName
         } else {
             console.error('Found activity which is not an LWS file')
         }

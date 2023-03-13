@@ -1,5 +1,5 @@
 import { Matrix4, Vector2, Vector3 } from 'three'
-import { AnimationActivity, AnimEntityActivity } from '../game/model/anim/AnimationActivity'
+import { AnimationActivity } from '../game/model/anim/AnimationActivity'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
@@ -36,16 +36,17 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.upgrades.forEach((u) => u.update(elapsedMs))
     }
 
+    getDefaultActivity(): AnimationActivity {
+        return this.animationEntityType.firstAnimationName
+    }
+
     changeActivity(activity: AnimationActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
         if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone) return
         this.activity = activity
         const lActivityKey = activity.toLowerCase()
         let animation = this.animationEntityType.animations.get(lActivityKey)
-        if (!animation) { // fallback to stand
-            animation = this.animationEntityType.animations.get(AnimEntityActivity.Stand.toLowerCase())
-        }
         if (!animation) {
-            console.warn(`Activity ${activity} unknown or has no animation defined`)
+            console.warn(`Activity ${activity} unknown or has no animation; Possible options are: ${Array.from(this.animationEntityType.animations.keys())}`)
             console.log(this.animationEntityType.animations)
             return
         }
