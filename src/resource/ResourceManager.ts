@@ -1,12 +1,10 @@
-import { AudioListener, RepeatWrapping, Texture } from 'three'
+import { RepeatWrapping, Texture } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { createContext } from '../core/ImageHelper'
 import { SpriteImage } from '../core/Sprite'
 import { getFilename, getPath } from '../core/Util'
-import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { DEV_MODE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
-import { AnimEntityLoader } from './AnimEntityLoader'
 import { LWOBParser, LWOBTextureLoader } from './LWOBParser'
 import { ResourceCache } from './ResourceCache'
 
@@ -77,12 +75,6 @@ export class ResourceManager extends ResourceCache {
         const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
         texture.needsUpdate = true // without everything is just dark
         return texture
-    }
-
-    static getAnimationEntityType(aeFilename: string, audioListener: AudioListener): AnimationEntityType {
-        let cfgRoot = this.getResource(aeFilename)
-        if (!cfgRoot) throw new Error(`Could not get animation entity type for: ${aeFilename}`)
-        return new AnimEntityLoader(aeFilename, cfgRoot, audioListener).loadModels()
     }
 
     static getLwoModel(lwoFilepath: string, entityPath: string = null): SceneMesh {

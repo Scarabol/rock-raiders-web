@@ -5,6 +5,7 @@ import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
 import { SceneManager } from '../game/SceneManager'
+import { AnimEntityLoader } from '../resource/AnimEntityLoader'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneEntity } from './SceneEntity'
 import { SceneMesh } from './SceneMesh'
@@ -20,7 +21,9 @@ export class AnimatedSceneEntity extends SceneEntity {
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
         super(sceneMgr)
-        this.animationEntityType = ResourceManager.getAnimationEntityType(aeFilename, this.sceneMgr.listener)
+        let cfgRoot = ResourceManager.getResource(aeFilename)
+        if (!cfgRoot) throw new Error(`Could not get animation entity type for: ${aeFilename}`)
+        this.animationEntityType = new AnimEntityLoader(aeFilename, cfgRoot, this.sceneMgr.listener).loadModels()
     }
 
     disposeFromScene() {
