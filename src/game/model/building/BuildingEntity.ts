@@ -6,6 +6,7 @@ import { BuildingsChangedEvent, DeselectAll, SelectionChanged } from '../../../e
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { BubbleSprite } from '../../../scene/BubbleSprite'
 import { BuildingSceneEntity } from '../../../scene/entities/BuildingSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
@@ -29,6 +30,7 @@ import { Teleport } from './Teleport'
 export class BuildingEntity implements Selectable, BeamUpEntity {
     buildingType: BuildingType
     sceneEntity: BuildingSceneEntity
+    powerOffSprite: BubbleSprite
     level: number = 0
     selected: boolean
     powerSwitch: boolean = true
@@ -49,6 +51,8 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     constructor(readonly worldMgr: WorldManager, buildingType: BuildingType) {
         this.buildingType = buildingType
         this.sceneEntity = new BuildingSceneEntity(this.worldMgr.sceneMgr, this.buildingType.aeFilename)
+        this.powerOffSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
+        this.sceneEntity.add(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
     }
 
@@ -138,7 +142,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.inBeam = true
         this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
         this.turnEnergyOff()
-        this.sceneEntity.setInBeam(this.inBeam)
+        this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
         for (let c = 0; c < this.stats.CostOre; c++) {
             this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), this.primarySurface.getRandomPosition())
         }
@@ -201,6 +205,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
             this.turnEnergyOff()
         }
         this.sceneEntity.setPowered(this.isPowered())
+        this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
         this.surfaces.forEach((s) => s.updateTexture())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
@@ -263,10 +268,10 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         if (this.surfaces.some((s) => s.selected)) EventBus.publishEvent(new DeselectAll())
         if (this.sceneEntity.visible && !disableTeleportIn) {
             this.inBeam = true
-            this.sceneEntity.setInBeam(this.inBeam)
+            this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
             this.sceneEntity.changeActivity(BuildingActivity.Teleport, () => {
                 this.inBeam = false
-                this.sceneEntity.setInBeam(this.inBeam)
+                this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
                 this.onPlaceDown()
             })
         } else {
@@ -315,5 +320,6 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     update(elapsedMs: number) {
         this.sceneEntity.update(elapsedMs)
         this.beamUpAnimator?.update(elapsedMs)
+        this.powerOffSprite.update(elapsedMs)
     }
 }
