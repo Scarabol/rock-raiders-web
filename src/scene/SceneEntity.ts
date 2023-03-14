@@ -1,7 +1,7 @@
 import { Box3, Group, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../audio/SoundManager'
 import { PickSphereStats } from '../cfg/GameStatsCfg'
-import { AnimEntityActivity } from '../game/model/activities/AnimEntityActivity'
+import { AnimationActivity, AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 import { Surface } from '../game/model/map/Surface'
 import { Selectable } from '../game/model/Selectable'
 import { Updatable } from '../game/model/Updateable'
@@ -145,11 +145,11 @@ export class SceneEntity {
         // TODO dispose scene meshes, use on-remove event trigger?
     }
 
-    getDefaultActivity(): AnimEntityActivity {
+    getDefaultActivity(): AnimationActivity {
         return AnimEntityActivity.Stand
     }
 
-    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
+    changeActivity(activity: AnimationActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
     }
 
     headTowards(location: Vector2) {

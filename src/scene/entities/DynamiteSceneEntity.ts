@@ -1,5 +1,4 @@
-import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivity'
-import { DynamiteActivity } from '../../game/model/activities/DynamiteActivity'
+import { AnimationActivity, DynamiteActivity } from '../../game/model/anim/AnimationActivity'
 import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 
@@ -9,7 +8,7 @@ export class DynamiteSceneEntity extends AnimatedSceneEntity {
         this.changeActivity()
     }
 
-    getDefaultActivity(): AnimEntityActivity {
+    getDefaultActivity(): AnimationActivity {
         return DynamiteActivity.Normal
     }
 }

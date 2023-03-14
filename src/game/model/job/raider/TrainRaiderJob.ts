@@ -1,7 +1,7 @@
 import { EventBus } from '../../../../event/EventBus'
 import { RaiderTrainingCompleteEvent } from '../../../../event/LocalEvents'
 import { EntityManager } from '../../../EntityManager'
-import { RaiderActivity } from '../../activities/RaiderActivity'
+import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTraining } from '../../raider/RaiderTraining'
@@ -33,7 +33,7 @@ export class TrainRaiderJob extends RaiderJob {
         EventBus.publishEvent(new RaiderTrainingCompleteEvent(this.training))
     }
 
-    getWorkActivity(): RaiderActivity {
+    getWorkActivity(): AnimationActivity {
         return RaiderActivity.Train
     }
 

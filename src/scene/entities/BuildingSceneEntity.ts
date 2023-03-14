@@ -1,5 +1,4 @@
-import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivity'
-import { BuildingActivity } from '../../game/model/activities/BuildingActivity'
+import { AnimationActivity, AnimEntityActivity, BuildingActivity } from '../../game/model/anim/AnimationActivity'
 import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 
@@ -17,7 +16,7 @@ export class BuildingSceneEntity extends AnimatedSceneEntity {
         this.changeActivity()
     }
 
-    getDefaultActivity(): BuildingActivity {
+    getDefaultActivity(): AnimationActivity {
         return !this.powered ? BuildingActivity.Unpowered : AnimEntityActivity.Stand
     }
 }

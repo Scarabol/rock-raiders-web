@@ -1,5 +1,4 @@
-import { BaseActivity } from '../../game/model/activities/BaseActivity'
-import { RaiderActivity } from '../../game/model/activities/RaiderActivity'
+import { AnimationActivity, RaiderActivity } from '../../game/model/anim/AnimationActivity'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { SceneEntity } from '../SceneEntity'
 
@@ -11,7 +10,7 @@ export class RaiderSceneEntity extends AnimatedSceneEntity {
         return dropped
     }
 
-    getDefaultActivity(): BaseActivity {
+    getDefaultActivity(): AnimationActivity {
         return this.carriedByIndex.size > 0 ? RaiderActivity.CarryStand : super.getDefaultActivity()
     }
 }

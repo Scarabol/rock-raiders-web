@@ -1,4 +1,4 @@
-import { RaiderActivity } from '../../activities/RaiderActivity'
+import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { Surface } from '../../map/Surface'
 import { SurfaceType } from '../../map/SurfaceType'
 import { MaterialEntity } from '../../material/MaterialEntity'
@@ -35,7 +35,7 @@ export class CompleteSurfaceJob extends ShareableJob {
         return this.workplaces // TODO return empty array, if surface cannot be repaired
     }
 
-    getWorkActivity(): RaiderActivity {
+    getWorkActivity(): AnimationActivity {
         return RaiderActivity.Clear
     }
 }

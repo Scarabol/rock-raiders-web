@@ -1,6 +1,5 @@
 import { Matrix4, Vector2, Vector3 } from 'three'
-import { AnimEntityActivity } from '../game/model/activities/AnimEntityActivity'
-import { BaseActivity } from '../game/model/activities/BaseActivity'
+import { AnimationActivity, AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
@@ -13,7 +12,7 @@ import { SceneMesh } from './SceneMesh'
 export class AnimatedSceneEntity extends SceneEntity {
     animationEntityType: AnimationEntityType = null
     animation: AnimClip = null
-    activity: BaseActivity = null
+    activity: AnimationActivity = null
     upgrades: SceneMesh[] = []
     animatedUpgrades: AnimatedSceneEntity[] = []
     bodiesByName: Map<string, SceneMesh> = new Map()
@@ -37,16 +36,16 @@ export class AnimatedSceneEntity extends SceneEntity {
         this.upgrades.forEach((u) => u.update(elapsedMs))
     }
 
-    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
+    changeActivity(activity: AnimationActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
         if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone) return
         this.activity = activity
-        const lActivityKey = activity.activityKey.toLowerCase()
+        const lActivityKey = activity.toLowerCase()
         let animation = this.animationEntityType.animations.get(lActivityKey)
         if (!animation) { // fallback to stand
-            animation = this.animationEntityType.animations.get(AnimEntityActivity.Stand.activityKey.toLowerCase())
+            animation = this.animationEntityType.animations.get(AnimEntityActivity.Stand.toLowerCase())
         }
         if (!animation) {
-            console.warn(`Activity ${activity.activityKey} unknown or has no animation defined`)
+            console.warn(`Activity ${activity} unknown or has no animation defined`)
             console.log(this.animationEntityType.animations)
             return
         }
@@ -79,7 +78,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         })
     }
 
-    private applyDefaultUpgrades(activity: AnimEntityActivity) {
+    private applyDefaultUpgrades(activity: AnimationActivity) {
         const upgrades0000 = this.animationEntityType.upgradesByLevel.get('0000')
         if (upgrades0000) {
             upgrades0000.forEach((upgrade) => {

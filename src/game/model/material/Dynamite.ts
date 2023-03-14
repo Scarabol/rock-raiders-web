@@ -1,7 +1,7 @@
 import { Sample } from '../../../audio/Sample'
 import { DynamiteSceneEntity } from '../../../scene/entities/DynamiteSceneEntity'
 import { WorldManager } from '../../WorldManager'
-import { DynamiteActivity } from '../activities/DynamiteActivity'
+import { DynamiteActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { Surface } from '../map/Surface'

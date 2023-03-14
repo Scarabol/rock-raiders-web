@@ -1,4 +1,4 @@
-import { RaiderActivity } from '../../activities/RaiderActivity'
+import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
@@ -32,7 +32,7 @@ export class ReinforceJob extends ShareableJob {
         return PriorityIdentifier.REINFORCE
     }
 
-    getWorkActivity(): RaiderActivity {
+    getWorkActivity(): AnimationActivity {
         return RaiderActivity.Reinforce
     }
 

@@ -1,4 +1,4 @@
-import { BarrierActivity } from '../../game/model/activities/BarrierActivity'
+import { BarrierActivity } from '../../game/model/anim/AnimationActivity'
 import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 

@@ -1,7 +1,7 @@
 import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { RaiderActivity } from '../activities/RaiderActivity'
+import { RaiderActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 
 export class BuildingType {

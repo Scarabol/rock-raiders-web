@@ -1,4 +1,4 @@
-import { RaiderActivity } from '../../activities/RaiderActivity'
+import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { BuildingEntity } from '../../building/BuildingEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
@@ -22,7 +22,7 @@ export class UpgradeRaiderJob extends RaiderJob {
         if (this.raider.level < this.raider.stats.Levels) this.raider.level++
     }
 
-    getWorkActivity(): RaiderActivity {
+    getWorkActivity(): AnimationActivity {
         return RaiderActivity.Train
     }
 

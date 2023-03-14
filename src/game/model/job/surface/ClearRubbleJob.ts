@@ -1,4 +1,4 @@
-import { RaiderActivity } from '../../activities/RaiderActivity'
+import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { Surface } from '../../map/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
@@ -39,7 +39,7 @@ export class ClearRubbleJob extends ShareableJob {
         return PriorityIdentifier.CLEARING
     }
 
-    getWorkActivity(): RaiderActivity {
+    getWorkActivity(): AnimationActivity {
         return RaiderActivity.Clear
     }
 }

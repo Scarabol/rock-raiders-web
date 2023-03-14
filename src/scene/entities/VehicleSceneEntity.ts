@@ -1,4 +1,4 @@
-import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivity'
+import { AnimationActivity, AnimEntityActivity } from '../../game/model/anim/AnimationActivity'
 import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
 import { SceneEntity } from '../SceneEntity'
@@ -25,7 +25,7 @@ export class VehicleSceneEntity extends AnimatedSceneEntity {
         this.animation.driverJoint.remove(this.driver.group)
     }
 
-    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
+    changeActivity(activity: AnimationActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
         if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation.onAnimationDone) return
         super.changeActivity(activity, onAnimationDone, durationTimeMs)
         this.addDriverToJoint() // keep driver

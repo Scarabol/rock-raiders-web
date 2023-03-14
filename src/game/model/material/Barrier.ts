@@ -1,6 +1,6 @@
 import { BarrierSceneEntity } from '../../../scene/entities/BarrierSceneEntity'
 import { WorldManager } from '../../WorldManager'
-import { BarrierActivity } from '../activities/BarrierActivity'
+import { BarrierActivity } from '../anim/AnimationActivity'
 import { BuildingSite } from '../building/BuildingSite'
 import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'

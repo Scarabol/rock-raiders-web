@@ -1,4 +1,4 @@
-import { RaiderActivity } from '../activities/RaiderActivity'
+import { AnimationActivity } from '../anim/AnimationActivity'
 import { Surface } from '../map/Surface'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
@@ -31,7 +31,7 @@ export interface Job {
 
     setActualWorkplace(target: PathTarget): void
 
-    getWorkActivity(): RaiderActivity
+    getWorkActivity(): AnimationActivity
 
     getExpectedTimeLeft(): number
 
@@ -72,7 +72,7 @@ export abstract class AbstractJob implements Job {
     setActualWorkplace(target: PathTarget) {
     }
 
-    getWorkActivity(): RaiderActivity {
+    getWorkActivity(): AnimationActivity {
         return null
     }
 

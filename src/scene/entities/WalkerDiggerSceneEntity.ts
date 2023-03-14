@@ -1,4 +1,4 @@
-import { AnimEntityActivity } from '../../game/model/activities/AnimEntityActivity'
+import { AnimationActivity } from '../../game/model/anim/AnimationActivity'
 import { AnimationEntityUpgrade } from '../../game/model/anim/AnimationEntityUpgrade'
 import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
@@ -14,7 +14,7 @@ export class WalkerDiggerSceneEntity extends VehicleSceneEntity {
         this.add(this.body.group)
     }
 
-    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
+    changeActivity(activity: AnimationActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
         if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone) return
         this.body.changeActivity(activity, onAnimationDone, durationTimeMs)
         super.changeActivity(activity)

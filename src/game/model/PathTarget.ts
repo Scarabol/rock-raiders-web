@@ -2,9 +2,7 @@ import { Vector2 } from 'three'
 import { EventBus } from '../../event/EventBus'
 import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { ITEM_ACTION_RANGE_SQ } from '../../params'
-import { BarrierActivity } from './activities/BarrierActivity'
-import { BuildingActivity } from './activities/BuildingActivity'
-import { RaiderActivity } from './activities/RaiderActivity'
+import { BarrierActivity, BuildingActivity, RaiderActivity } from './anim/AnimationActivity'
 import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
 import { EntityType } from './EntityType'
@@ -53,7 +51,7 @@ export class PathTarget {
 
     reserveGatherSlot(job: CarryJob): boolean {
         if (this.building?.entityType === EntityType.POWER_STATION || this.building?.entityType === EntityType.ORE_REFINERY) {
-            if (!this.gatherReservedBy && this.building.sceneEntity.activity.activityKey === this.building.sceneEntity.getDefaultActivity().activityKey) {
+            if (!this.gatherReservedBy && this.building.sceneEntity.activity === this.building.sceneEntity.getDefaultActivity()) {
                 this.gatherReservedBy = job // TODO how to avoid deadlock between reserve and gather?
                 return true
             } else {

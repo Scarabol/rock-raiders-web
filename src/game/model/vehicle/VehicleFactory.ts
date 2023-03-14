@@ -4,7 +4,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
 import { WalkerDiggerSceneEntity } from '../../../scene/entities/WalkerDiggerSceneEntity'
 import { WorldManager } from '../../WorldManager'
-import { RaiderActivity } from '../activities/RaiderActivity'
+import { RaiderActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 import { VehicleEntity } from './VehicleEntity'
 

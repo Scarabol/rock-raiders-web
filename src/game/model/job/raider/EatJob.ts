@@ -1,4 +1,4 @@
-import { RaiderActivity } from '../../activities/RaiderActivity'
+import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
 
@@ -15,7 +15,7 @@ export class EatJob extends RaiderJob {
         super.onJobComplete()
     }
 
-    getWorkActivity(): RaiderActivity {
+    getWorkActivity(): AnimationActivity {
         return RaiderActivity.Eat
     }
 }

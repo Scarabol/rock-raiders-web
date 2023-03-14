@@ -1,7 +1,7 @@
 import { Vector2, Vector3 } from 'three'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
-import { AnimEntityActivity } from '../../model/activities/AnimEntityActivity'
+import { AnimationActivity, AnimEntityActivity } from '../../model/anim/AnimationActivity'
 import { GameComponent } from '../../model/GameComponent'
 import { Surface } from '../../model/map/Surface'
 import { SceneManager } from '../../SceneManager'
@@ -47,11 +47,11 @@ export class AnimatedSceneEntityComponent implements GameComponent {
         return targetWorld.sub(this.sceneEntity.position)
     }
 
-    changeActivity(activity: AnimEntityActivity = this.getDefaultActivity()) {
+    changeActivity(activity: AnimationActivity = this.getDefaultActivity()) {
         this.sceneEntity.changeActivity(activity)
     }
 
-    getDefaultActivity(): AnimEntityActivity {
+    getDefaultActivity(): AnimationActivity {
         return this.sceneEntity.getDefaultActivity()
     }
 

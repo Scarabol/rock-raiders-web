@@ -10,9 +10,7 @@ import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { LifecycleComponent } from '../../component/common/LifecycleComponent'
 import { PositionComponent } from '../../component/common/PositionComponent'
 import { WorldManager } from '../../WorldManager'
-import { AnimEntityActivity } from '../activities/AnimEntityActivity'
-import { BaseActivity } from '../activities/BaseActivity'
-import { RaiderActivity } from '../activities/RaiderActivity'
+import { AnimationActivity, AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { Disposable } from '../Disposable'
 import { EntityStep } from '../EntityStep'
 import { Job } from '../job/Job'
@@ -148,7 +146,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
         return this.stats.RouteSpeed[this.level] * (this.isOnPath() ? this.stats.PathCoef : 1) * (this.isOnRubble() ? this.stats.RubbleCoef : 1) * (!!this.carries ? RAIDER_CARRY_SLOWDOWN : 1)
     }
 
-    private getRouteActivity(): BaseActivity {
+    private getRouteActivity(): AnimationActivity {
         if (this.isOnRubble()) {
             return !!this.carries ? RaiderActivity.CarryRubble : RaiderActivity.routeRubble
         } else {

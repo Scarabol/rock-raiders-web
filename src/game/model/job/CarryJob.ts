@@ -1,5 +1,5 @@
 import { SupervisedJob } from '../../Supervisor'
-import { RaiderActivity } from '../activities/RaiderActivity'
+import { AnimationActivity } from '../anim/AnimationActivity'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
@@ -38,7 +38,7 @@ export class CarryJob extends AbstractJob implements SupervisedJob, CancelableJo
         this.actualTarget?.site?.assign(this.carryItem)
     }
 
-    getWorkActivity(): RaiderActivity {
+    getWorkActivity(): AnimationActivity {
         return this.actualTarget.getDropAction()
     }
 
