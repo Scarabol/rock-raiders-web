@@ -13,6 +13,7 @@ export enum DynamiteActivity {
 }
 
 export enum BuildingActivity {
+    Stand = 'Activity_Stand',
     Teleport = 'Activity_Teleport',
     Deposit = 'Activity_Deposit',
     Explode = 'Activity_Explode',

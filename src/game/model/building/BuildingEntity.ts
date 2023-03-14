@@ -280,7 +280,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     }
 
     private onPlaceDown() {
-        this.sceneEntity.changeActivity()
+        this.sceneEntity.changeActivity(BuildingActivity.Stand)
         this.updateEnergyState()
         this.surfaces.forEach((surface) => {
             surface.updateTexture()
