@@ -5,19 +5,19 @@ import { SurfaceType } from '../../model/map/SurfaceType'
 import { TerrainPath } from '../../model/map/TerrainPath'
 import { MoveState } from '../../model/MoveState'
 import { PathTarget } from '../../model/PathTarget'
-import { LifecycleComponent } from '../common/LifecycleComponent'
+import { HealthComponent } from '../common/HealthComponent'
 import { MonsterMovementComponent } from './MonsterMovementComponent'
 
 export class SpiderMovementComponent extends MonsterMovementComponent {
     entity: AbstractGameEntity
     target: PathTarget[] = []
     idleTimer: number = 0
-    lifecycleComponent: LifecycleComponent
+    lifecycleComponent: HealthComponent
 
     setupComponent(entity: AbstractGameEntity) {
         super.setupComponent(entity)
         this.entity = entity
-        this.lifecycleComponent = this.entity.getComponent(LifecycleComponent)
+        this.lifecycleComponent = this.entity.getComponent(HealthComponent)
     }
 
     findPathToTarget(target: PathTarget): TerrainPath { // TODO consider stats: random move and random enter wall
@@ -34,7 +34,7 @@ export class SpiderMovementComponent extends MonsterMovementComponent {
             this.target = [this.findTarget()]
             this.idleTimer = 1000 + Math.randomInclusive(9000)
         } else if (this.position.isNotFloor()) {
-            this.lifecycleComponent.markDead()
+            this.lifecycleComponent.changeHealth(0)
         }
     }
 

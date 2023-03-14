@@ -244,20 +244,19 @@ export class EntityManager {
     }
 
     addEntity(entity: AbstractGameEntity) {
-        const discovered = entity.getComponent(PositionComponent).isDiscovered()
         switch (entity.entityType) {
             case EntityType.BAT:
-                if (discovered) this.bats.add(entity)
+                if (entity.getComponent(PositionComponent).isDiscovered()) this.bats.add(entity)
                 else this.undiscoveredBats.add(entity)
                 break
             case EntityType.SMALL_SPIDER:
-                if (discovered) this.spiders.add(entity)
+                if (entity.getComponent(PositionComponent).isDiscovered()) this.spiders.add(entity)
                 else this.undiscoveredSpiders.add(entity)
                 break
             case EntityType.ROCK_MONSTER:
             case EntityType.ICE_MONSTER:
             case EntityType.LAVA_MONSTER:
-                if (discovered) this.rockMonsters.add(entity)
+                if (entity.getComponent(PositionComponent).isDiscovered()) this.rockMonsters.add(entity)
                 else this.undiscoveredRockMonsters.add(entity)
                 break
         }

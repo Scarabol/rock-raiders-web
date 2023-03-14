@@ -2,7 +2,7 @@ import { TILESIZE } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from '../component/common/AnimatedSceneEntityComponent'
 import { EntityMapMarkerComponent, MAP_MARKER_TYPE } from '../component/common/EntityMapMarkerComponent'
-import { LifecycleComponent } from '../component/common/LifecycleComponent'
+import { HealthComponent } from '../component/common/HealthComponent'
 import { MovableEntityStatsComponent } from '../component/common/MovableEntityStatsComponent'
 import { PositionComponent } from '../component/common/PositionComponent'
 import { BatMovementComponent } from '../component/monster/BatMovementComponent'
@@ -28,7 +28,7 @@ export class MonsterSpawner {
                 entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/SpiderSB/SpiderSB.ae', 1))
                 entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.smallSpider))
                 entity.addComponent(new SpiderMovementComponent())
-                entity.addComponent(new LifecycleComponent())
+                entity.addComponent(new HealthComponent()).addOnDeathListener(() => entity.worldMgr.markDead(entity))
                 break
             case EntityType.BAT:
                 entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/bat/bat.ae', TILESIZE / 2))
@@ -53,6 +53,6 @@ export class MonsterSpawner {
     private static addRockyComponents(entity: AbstractGameEntity, worldMgr: WorldManager, aeFilename: string) {
         entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, aeFilename))
         entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
-        entity.addComponent(new LifecycleComponent())
+        entity.addComponent(new HealthComponent())
     }
 }

@@ -7,7 +7,7 @@ import { NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } f
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
-import { LifecycleComponent } from '../../component/common/LifecycleComponent'
+import { HealthComponent } from '../../component/common/HealthComponent'
 import { PositionComponent } from '../../component/common/PositionComponent'
 import { WorldManager } from '../../WorldManager'
 import { AnimationActivity, AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
@@ -25,8 +25,11 @@ import { Updatable } from '../Updateable'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { RaiderTool } from './RaiderTool'
 import { RaiderTraining } from './RaiderTraining'
+import { AbstractGameEntity } from "../../entity/AbstractGameEntity"
+import { EntityType } from "../EntityType"
+import { HealthBarSpriteComponent } from "../../component/common/HealthBarSpriteComponent"
 
-export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
+export class Raider extends AbstractGameEntity implements Selectable, BeamUpEntity, Updatable, Disposable {
     currentPath: TerrainPath = null
     level: number = 0
     selected: boolean
@@ -42,9 +45,13 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
     hungerLevel: number = 1
     vehicle: VehicleEntity = null
 
-    constructor(readonly worldMgr: WorldManager) {
+    constructor(worldMgr: WorldManager) {
+        super(EntityType.PILOT)
         this.tools.set(RaiderTool.DRILL, true)
-        this.sceneEntity = new RaiderSceneEntity(this.worldMgr.sceneMgr, 'mini-figures/pilot/pilot.ae')
+        this.sceneEntity = new RaiderSceneEntity(worldMgr.sceneMgr, 'mini-figures/pilot/pilot.ae')
+        this.addComponent(new HealthComponent()).addOnDeathListener(() => this.beamUp())
+        this.addComponent(new HealthBarSpriteComponent(16, 10, this.sceneEntity.group, true))
+        worldMgr.registerEntity(this)
     }
 
     get stats() {
@@ -73,6 +80,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
         this.worldMgr.entityMgr.raiders.remove(this)
         this.worldMgr.entityMgr.raidersUndiscovered.remove(this)
         this.worldMgr.entityMgr.raidersInBeam.remove(this)
+        this.worldMgr.markDead(this)
     }
 
     /*
@@ -90,7 +98,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
             this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
                 if (this.sceneEntity.position2D.distanceToSquared(spider.getComponent(PositionComponent).getPosition2D()) < SPIDER_SLIP_RANGE_SQ) {
                     this.slip()
-                    spider.getComponent(LifecycleComponent).markDead()
+                    spider.getComponent(HealthComponent).changeHealth(0)
                     return true
                 }
                 return false

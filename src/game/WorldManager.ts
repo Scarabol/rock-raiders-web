@@ -22,10 +22,12 @@ import { AbstractSubSystem } from './system/AbstractSubSystem'
 import { MapMarkerSubSystem } from './system/MapMarkerSubSystem'
 import { MovementSubSystem } from './system/MovementSubSystem'
 import { SceneEntitySubSystem } from './system/SceneEntitySubSystem'
+import { HealthBarSpriteSystem } from "./system/HealthBarSpriteSystem";
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
     readonly systems: AbstractSubSystem<any>[] = []
+    readonly healthBarSpriteSystem: HealthBarSpriteSystem
     readonly jobSupervisor: Supervisor = new Supervisor(this)
     sceneMgr: SceneManager
     entityMgr: EntityManager
@@ -45,6 +47,8 @@ export class WorldManager {
         this.systems.push(new SceneEntitySubSystem())
         this.systems.push(new MovementSubSystem())
         this.systems.push(new MapMarkerSubSystem())
+        this.healthBarSpriteSystem = new HealthBarSpriteSystem()
+        this.systems.push(this.healthBarSpriteSystem)
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
