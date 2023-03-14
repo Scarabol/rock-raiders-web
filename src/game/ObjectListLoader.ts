@@ -6,7 +6,7 @@ import { TILESIZE } from '../params'
 import { AnimatedSceneEntityComponent } from './component/common/AnimatedSceneEntityComponent'
 import { PositionComponent } from './component/common/PositionComponent'
 import { MonsterSpawner } from './entity/MonsterSpawner'
-import { RockMonsterActivity } from './model/anim/AnimationActivity'
+import { AnimationActivity, AnimEntityActivity, RockMonsterActivity } from './model/anim/AnimationActivity'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingType } from './model/building/BuildingType'
 import { EntityType, getEntityTypeByName } from './model/EntityType'
@@ -90,7 +90,11 @@ export class ObjectListLoader {
                     const monster = MonsterSpawner.createMonster(entityType, worldMgr)
                     monster.getComponent(PositionComponent).setPosition2D(worldPos)
                     const sceneEntity = monster.getComponent(AnimatedSceneEntityComponent)
-                    sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
+                    let startActivity: AnimationActivity = AnimEntityActivity.Stand
+                    if (entityType === EntityType.ICE_MONSTER || entityType === EntityType.LAVA_MONSTER || entityType === EntityType.ROCK_MONSTER) {
+                        startActivity = RockMonsterActivity.Unpowered
+                    }
+                    sceneEntity.changeActivity(startActivity)
                     sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
                     break
                 case EntityType.HOVERBOARD:
