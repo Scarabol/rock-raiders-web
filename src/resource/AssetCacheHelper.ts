@@ -5,7 +5,7 @@
  - No need for npm dependency and some unused functions
  */
 
-import { ASSET_CACHE_DB_NAME, ASSET_CACHE_VERSION } from '../../params'
+import { ASSET_CACHE_DB_NAME, ASSET_CACHE_VERSION } from '../params'
 
 export function promisifyRequest<T = undefined>(
     request: IDBRequest<T> | IDBTransaction,

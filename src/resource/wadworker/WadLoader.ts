@@ -1,7 +1,7 @@
 import { GameConfig } from '../../cfg/GameConfig'
 import { BitmapFontData } from '../../core/BitmapFont'
 import { getFilename } from '../../core/Util'
-import { cacheGetData, cachePutData } from '../assets/AssetCacheHelper'
+import { cacheGetData, cachePutData } from '../AssetCacheHelper'
 import { FlhParser } from '../FlhParser'
 import { BitmapWithPalette } from './parser/BitmapWithPalette'
 import { CfgFileParser } from './parser/CfgFileParser'

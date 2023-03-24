@@ -5,7 +5,7 @@ import { createContext, createDummyImgData, imgDataToContext } from '../core/Ima
 import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { iGet } from '../core/Util'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
-import { cacheGetData, cachePutData } from './assets/AssetCacheHelper'
+import { cacheGetData, cachePutData } from './AssetCacheHelper'
 
 export class ResourceCache {
     static configuration: GameConfig = new GameConfig()
