@@ -3,7 +3,6 @@ import { GameEvent } from '../event/GameEvent'
 import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
-import { IEventHandler } from '../event/IEventHandler'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { OffscreenCache } from './OffscreenCache'
 import { OffscreenWorkerMessage } from './OffscreenWorkerMessage'
@@ -12,7 +11,7 @@ import { WorkerEventResponse } from './WorkerEventResponse'
 import { WorkerPublishEvent } from './WorkerPublishEvent'
 import { WorkerResponse } from './WorkerResponse'
 
-export abstract class OffscreenSystem implements IEventHandler {
+export abstract class OffscreenSystem {
     readonly eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
     canvas: HTMLCanvasElement | OffscreenCanvas = null
 
