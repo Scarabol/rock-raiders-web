@@ -11,7 +11,7 @@ export class Ore extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
         super(worldMgr, EntityType.ORE, PriorityIdentifier.ORE, RaiderTraining.NONE)
         this.sceneEntity = new SceneEntity(this.worldMgr.sceneMgr)
-        this.sceneEntity.add(ResourceManager.getLwoModel('MiscAnims/Ore/Ore1st.lwo'))
+        this.sceneEntity.addToMeshGroup(ResourceManager.getLwoModel('MiscAnims/Ore/Ore1st.lwo'))
         this.sceneEntity.addPickSphere(ResourceManager.configuration.stats.ore.PickSphere)
         this.sceneEntity.pickSphere.userData = {entityType: EntityType.ORE, materialEntity: this}
     }

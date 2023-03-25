@@ -52,7 +52,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         }
         if (this.animation) {
             this.disposeUpgrades()
-            this.remove(this.animation.polyRootGroup)
+            this.removeFromMeshGroup(this.animation.polyRootGroup)
             this.animation.stop()
             this.bodiesByName.clear()
         }
@@ -64,7 +64,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             if (m.name) this.bodiesByName.set(m.name, m)
         })
         this.applyDefaultUpgrades(activity)
-        this.add(this.animation.polyRootGroup)
+        this.addToMeshGroup(this.animation.polyRootGroup)
         this.animation.start(onAnimationDone, durationTimeMs)
         this.addCarriedToJoints() // keep carried items
     }

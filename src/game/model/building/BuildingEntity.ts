@@ -51,7 +51,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.buildingType = buildingType
         this.sceneEntity = new BuildingSceneEntity(this.worldMgr.sceneMgr, this.buildingType.aeFilename)
         this.powerOffSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
-        this.sceneEntity.add(this.powerOffSprite)
+        this.sceneEntity.addChild(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
     }
 

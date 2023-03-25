@@ -11,7 +11,7 @@ export class WalkerDiggerSceneEntity extends VehicleSceneEntity {
     constructor(sceneMgr: SceneManager) {
         super(sceneMgr, 'Vehicles/WalkerLegs/WalkerLegs.ae')
         this.body = new AnimatedSceneEntity(sceneMgr, 'Vehicles/WalkerBody/WalkerBody.ae')
-        this.add(this.body.group)
+        this.addToMeshGroup(this.body.group)
     }
 
     changeActivity(activity: AnimationActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {

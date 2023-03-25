@@ -15,6 +15,7 @@ export class SceneEntity {
 
     sceneMgr: SceneManager
     group: Group = new Group()
+    meshGroup: Group = new Group()
     pickSphere: Mesh = null
     selectionFrame: Sprite = null
     selectionFrameDouble: Sprite = null
@@ -23,6 +24,7 @@ export class SceneEntity {
 
     constructor(sceneMgr: SceneManager) {
         this.sceneMgr = sceneMgr
+        this.group.add(this.meshGroup)
     }
 
     set visible(state: boolean) {
@@ -45,24 +47,32 @@ export class SceneEntity {
         return new Vector2(this.group.position.x, this.group.position.z)
     }
 
-    add(other: Object3D) {
+    addChild(other: Object3D) {
         this.group.add(other)
+    }
+
+    removeChild(other: Object3D) {
+        this.group.remove(other)
+    }
+
+    addToMeshGroup(other: Object3D) {
+        this.meshGroup.add(other)
         this.lastRadiusSquare = null
     }
 
-    remove(other: Object3D) {
-        this.group.remove(other)
+    removeFromMeshGroup(other: Object3D) {
+        this.meshGroup.remove(other)
         this.lastRadiusSquare = null
     }
 
     addUpdatable(other: Object3D & Updatable) {
-        this.add(other)
+        this.addToMeshGroup(other)
         this.updatableChildren.add(other)
     }
 
     getRadiusSquare(): number {
         if (!this.lastRadiusSquare) {
-            new Box3().setFromObject(this.group).getBoundingSphere(this.boundingSphere)
+            new Box3().setFromObject(this.meshGroup).getBoundingSphere(this.boundingSphere)
             this.lastRadiusSquare = this.boundingSphere.radius * this.boundingSphere.radius
         }
         return this.lastRadiusSquare
@@ -80,9 +90,9 @@ export class SceneEntity {
         this.addPickSphere(entity.stats.PickSphere, pickSphereHeightOffset)
         this.pickSphere.userData = {selectable: entity}
         this.selectionFrame = SceneEntity.createSelectionFrame(entity.stats.PickSphere, this.pickSphere.position, '#0f0')
-        this.add(this.selectionFrame)
+        this.addChild(this.selectionFrame)
         this.selectionFrameDouble = SceneEntity.createSelectionFrame(entity.stats.PickSphere, this.pickSphere.position, '#f00')
-        this.add(this.selectionFrameDouble)
+        this.addChild(this.selectionFrameDouble)
     }
 
     addPickSphere(pickSphereDiameter: number, pickSphereHeightOffset: number = null) {
@@ -92,12 +102,12 @@ export class SceneEntity {
         const material = new MeshBasicMaterial({color: 0xa0a000, visible: false, wireframe: true}) // change visible to true for debugging
         this.pickSphere = new Mesh(geometry, material)
         this.pickSphere.position.y = pickSphereHeightOffset ?? (this.getBoundingSphereCenter().y - this.position.y)
-        this.add(this.pickSphere)
+        this.addChild(this.pickSphere)
     }
 
     private getBoundingSphereCenter(): Vector3 {
         const center = new Vector3()
-        new Box3().setFromObject(this.group).getCenter(center)
+        new Box3().setFromObject(this.meshGroup).getCenter(center)
         return center
     }
 
@@ -118,12 +128,12 @@ export class SceneEntity {
         const audio = new PositionalAudio(this.sceneMgr.listener)
         audio.setRefDistance(TILESIZE * 2)
         audio.loop = loop
-        this.add(audio)
+        this.addChild(audio)
         SoundManager.getSoundBuffer(sfxName).then((audioBuffer) => {
             audio.setBuffer(audioBuffer).play() // TODO retry playing sound for looped ones, when audio context fails
-            if (!audio.loop) audio.onEnded = () => this.remove(audio)
+            if (!audio.loop) audio.onEnded = () => this.removeChild(audio)
         }).catch(() => {
-            this.remove(audio)
+            this.removeChild(audio)
         })
         return audio
     }
