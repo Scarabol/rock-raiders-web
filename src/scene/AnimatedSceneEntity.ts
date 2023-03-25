@@ -10,13 +10,13 @@ import { SceneEntity } from './SceneEntity'
 import { SceneMesh } from './SceneMesh'
 
 export class AnimatedSceneEntity extends SceneEntity {
-    animationEntityType: AnimationEntityType = null
+    readonly animationEntityType: AnimationEntityType = null
+    readonly upgrades: SceneMesh[] = []
+    readonly animatedUpgrades: AnimatedSceneEntity[] = []
+    readonly bodiesByName: Map<string, SceneMesh> = new Map()
+    readonly carriedByIndex: Map<number, SceneEntity> = new Map()
     animation: AnimClip = null
     activity: AnimationActivity = null
-    upgrades: SceneMesh[] = []
-    animatedUpgrades: AnimatedSceneEntity[] = []
-    bodiesByName: Map<string, SceneMesh> = new Map()
-    carriedByIndex: Map<number, SceneEntity> = new Map()
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
         super(sceneMgr)
