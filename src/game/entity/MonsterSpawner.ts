@@ -10,6 +10,7 @@ import { SpiderMovementComponent } from '../component/monster/SpiderMovementComp
 import { EntityType } from '../model/EntityType'
 import { WorldManager } from '../WorldManager'
 import { AbstractGameEntity } from './AbstractGameEntity'
+import { HealthBarSpriteComponent } from "../component/common/HealthBarSpriteComponent"
 
 type MonsterEntityType = EntityType.SMALL_SPIDER | EntityType.BAT | EntityType.ICE_MONSTER | EntityType.LAVA_MONSTER | EntityType.ROCK_MONSTER
 
@@ -54,5 +55,6 @@ export class MonsterSpawner {
         entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, aeFilename))
         entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
         entity.addComponent(new HealthComponent())
+        entity.addComponent(new HealthBarSpriteComponent(24, 10, null, false))
     }
 }

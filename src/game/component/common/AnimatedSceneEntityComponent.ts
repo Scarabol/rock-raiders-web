@@ -1,4 +1,4 @@
-import { Vector2, Vector3 } from 'three'
+import { Object3D, Vector2, Vector3 } from 'three'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
 import { AnimationActivity, AnimEntityActivity } from '../../model/anim/AnimationActivity'
@@ -65,5 +65,9 @@ export class AnimatedSceneEntityComponent implements GameComponent {
 
     makeVisible() {
         this.sceneEntity.visible = true
+    }
+
+    addChild(other: Object3D) {
+        this.sceneEntity.addChild(other)
     }
 }
