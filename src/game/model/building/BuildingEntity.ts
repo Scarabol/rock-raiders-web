@@ -25,8 +25,11 @@ import { Selectable } from '../Selectable'
 import { BuildingSite } from './BuildingSite'
 import { BuildingType } from './BuildingType'
 import { Teleport } from './Teleport'
+import { AbstractGameEntity } from "../../entity/AbstractGameEntity"
+import { HealthComponent } from "../../component/common/HealthComponent"
+import { HealthBarSpriteComponent } from "../../component/common/HealthBarSpriteComponent"
 
-export class BuildingEntity implements Selectable, BeamUpEntity {
+export class BuildingEntity extends AbstractGameEntity implements Selectable, BeamUpEntity {
     buildingType: BuildingType
     sceneEntity: BuildingSceneEntity
     powerOffSprite: BubbleSprite
@@ -47,16 +50,16 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     pathSurfaces: Surface[] = []
     teleport: Teleport = null
 
-    constructor(readonly worldMgr: WorldManager, buildingType: BuildingType) {
+    constructor(worldMgr: WorldManager, buildingType: BuildingType) {
+        super(buildingType.entityType)
         this.buildingType = buildingType
-        this.sceneEntity = new BuildingSceneEntity(this.worldMgr.sceneMgr, this.buildingType.aeFilename)
+        this.sceneEntity = new BuildingSceneEntity(worldMgr.sceneMgr, this.buildingType.aeFilename)
         this.powerOffSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
         this.sceneEntity.addChild(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
-    }
-
-    get entityType(): EntityType {
-        return this.buildingType.entityType
+        this.addComponent(new HealthComponent()).addOnDeathListener(() => this.beamUp())
+        this.addComponent(new HealthBarSpriteComponent(24, 14, this.sceneEntity.group, false))
+        worldMgr.registerEntity(this)
     }
 
     get stats(): BuildingEntityStats {
@@ -158,6 +161,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         this.engineSound = resetAudioSafe(this.engineSound)
         this.worldMgr.entityMgr.buildings.remove(this)
         this.worldMgr.entityMgr.buildingsUndiscovered.remove(this)
+        this.worldMgr.markDead(this)
     }
 
     canUpgrade() {

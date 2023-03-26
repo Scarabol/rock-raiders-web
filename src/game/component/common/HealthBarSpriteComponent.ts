@@ -11,12 +11,12 @@ export class HealthBarSpriteComponent implements GameComponent {
     actualStatus: number = 1
     targetStatus: number = 1
 
-    constructor(readonly yOffset: number, readonly scale: number, readonly parent: Object3D) {
+    constructor(readonly yOffset: number, readonly scale: number, readonly parent: Object3D, readonly canBeShownPermanently: boolean) {
     }
 
     setupComponent(entity: AbstractGameEntity) {
         this.sprite = new HealthBarSprite(this.yOffset, this.scale)
-        this.sprite.visible = !entity.worldMgr.healthBarSpriteSystem.showOnlyOnChange
+        this.sprite.visible = !entity.worldMgr.healthBarSpriteSystem.showOnlyOnChange && this.canBeShownPermanently
         this.parent.add(this.sprite) // XXX add to animated scene entity after raider is made of components
         entity.getComponent(HealthComponent).addOnChangeListener((health) => {
             this.targetStatus = health

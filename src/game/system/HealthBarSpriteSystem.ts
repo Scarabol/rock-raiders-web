@@ -33,7 +33,7 @@ export class HealthBarSpriteSystem extends AbstractSubSystem<HealthBarSpriteComp
     setShowOnlyOnChange(showOnlyOnChange: boolean) {
         this.showOnlyOnChange = showOnlyOnChange
         this.forEachComponent((c) => {
-            c.sprite.visible = !this.showOnlyOnChange || c.hideAfterChangeTimeout > 0
+            c.sprite.visible = (!this.showOnlyOnChange && c.canBeShownPermanently) || c.hideAfterChangeTimeout > 0
         })
     }
 
