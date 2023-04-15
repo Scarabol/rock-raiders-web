@@ -125,7 +125,7 @@ export class SceneEntity {
     }
 
     playPositionalAudio(sfxName: string, loop: boolean): PositionalAudio {
-        const audio = new PositionalAudio(this.sceneMgr.listener)
+        const audio = new PositionalAudio(this.sceneMgr.audioListener)
         audio.setRefDistance(TILESIZE * 2)
         audio.loop = loop
         this.addChild(audio)

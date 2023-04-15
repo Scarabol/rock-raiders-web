@@ -507,7 +507,7 @@ export class Surface implements Selectable {
     }
 
     playPositionalSample(sample: Sample): PositionalAudio { // TODO merge with AnimEntity code (at least in SceneEntity maybe)
-        const audio = new PositionalAudio(this.worldMgr.sceneMgr.listener)
+        const audio = new PositionalAudio(this.worldMgr.sceneMgr.audioListener)
         audio.setRefDistance(TILESIZE * 6)
         audio.position.setScalar(0.5)
         this.mesh.add(audio)

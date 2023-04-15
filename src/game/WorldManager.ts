@@ -221,7 +221,7 @@ export class WorldManager {
     }
 
     addMiscAnim(lwsFilename: string, position: Vector3, heading: number): AnimationGroup {
-        const grp = new AnimationGroup(lwsFilename, this.sceneMgr.listener)
+        const grp = new AnimationGroup(lwsFilename, this.sceneMgr.audioListener)
         grp.position.copy(position)
         grp.rotateOnAxis(new Vector3(0, 1, 0), heading)
         this.sceneMgr.scene.add(grp)

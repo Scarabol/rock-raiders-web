@@ -22,7 +22,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         super(sceneMgr)
         let cfgRoot = ResourceManager.getResource(aeFilename)
         if (!cfgRoot) throw new Error(`Could not get animation entity type for: ${aeFilename}`)
-        this.animationEntityType = new AnimEntityLoader(aeFilename, cfgRoot, this.sceneMgr.listener).loadModels()
+        this.animationEntityType = new AnimEntityLoader(aeFilename, cfgRoot, this.sceneMgr.audioListener).loadModels()
     }
 
     disposeFromScene() {

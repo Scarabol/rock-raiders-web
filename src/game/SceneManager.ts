@@ -1,15 +1,9 @@
-import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, MOUSE, Object3D, PerspectiveCamera, PointLight, Raycaster, Scene, SpotLight, Vector2, Vector3, WebGLRenderer } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, Raycaster, Scene, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { cloneContext } from '../core/ImageHelper'
 import { SpriteImage } from '../core/Sprite'
-import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
-import { EventBus } from '../event/EventBus'
-import { EventKey } from '../event/EventKeyEnum'
-import { ToggleAlarmEvent } from '../event/WorldEvents'
-import { ALARM_LIGHT_ROTATION_SPEED, CAMERA_FOV, CAMERA_MAX_DISTANCE, DEV_MODE, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
+import { TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
-import { DebugHelper } from '../screen/DebugHelper'
-import { CustomCameraControls } from './CustomCameraControls'
+import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
 import { EntityType } from './model/EntityType'
 import { GameSelection } from './model/GameSelection'
@@ -21,55 +15,28 @@ import { Selectable } from './model/Selectable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { TerrainLoader } from './TerrainLoader'
 import { WorldManager } from './WorldManager'
+import { BirdViewCamera } from "../scene/BirdViewCamera"
+import { TorchLightCursor } from "../scene/TorchLightCursor"
+import { SceneRenderer } from "../scene/SceneRenderer"
 
 export class SceneManager {
+    readonly audioListener: AudioListener
+    readonly camera: BirdViewCamera
+    readonly renderer: SceneRenderer
+    readonly controls: BirdViewControls
     worldMgr: WorldManager
-    maxFps: number = 30 // animations have only 25 fps
-    renderer: WebGLRenderer
-    debugHelper: DebugHelper = new DebugHelper()
-    renderInterval: NodeJS.Timeout
-    lastAnimationRequest: number
     scene: Scene
-    listener: AudioListener
-    camera: PerspectiveCamera
     ambientLight: AmbientLight
-    light: PointLight
     terrain: Terrain
-    controls: CustomCameraControls
-    cursorFloorPosition: Object3D
-    cursorTorchlight: PointLight
+    cursor: TorchLightCursor
     buildMarker: BuildPlacementMarker
-    screenshotCallback: (canvas: HTMLCanvasElement) => any
-    alarmLights: SpotLight[] = []
-    alarmLightInterval: NodeJS.Timeout
 
     constructor(canvas: SpriteImage) {
-        this.renderer = new WebGLRenderer({antialias: true, canvas: canvas})
-        this.listener = new AudioListener()
-        this.camera = new PerspectiveCamera(CAMERA_FOV, canvas.width / canvas.height, 0.1, CAMERA_MAX_DISTANCE)
-        this.camera.add(this.listener)
-        this.controls = new CustomCameraControls(this.camera, this.renderer.domElement)
-        this.controls.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
-        // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
-        this.controls.listenToKeyEvents(this.renderer.domElement)
-        this.controls.keyPanSpeed = this.controls.keyPanSpeed * KEY_PAN_SPEED
-        if (!DEV_MODE) {
-            this.controls.minDistance = ResourceManager.configuration.main.minDist
-            this.controls.maxDistance = ResourceManager.configuration.main.maxDist
-        }
-        EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
-            if (event.alarmState) {
-                this.alarmLights.forEach((l) => l.visible = true)
-                this.alarmLightInterval = setInterval(() => {
-                    this.alarmLights.forEach((l) => {
-                        l.target.position.applyAxisAngle(new Vector3(0, 1, 0), ALARM_LIGHT_ROTATION_SPEED)
-                    })
-                }, NATIVE_UPDATE_INTERVAL)
-            } else if (this.alarmLightInterval) {
-                this.alarmLights.forEach((l) => l.visible = false)
-                this.alarmLightInterval = clearIntervalSafe(this.alarmLightInterval)
-            }
-        })
+        this.audioListener = new AudioListener()
+        this.camera = new BirdViewCamera(canvas.width / canvas.height)
+        this.camera.add(this.audioListener)
+        this.renderer = new SceneRenderer(canvas, this.camera)
+        this.controls = new BirdViewControls(this.camera, this.renderer.domElement)
     }
 
     getSelectionByRay(rx: number, ry: number): GameSelection {
@@ -208,24 +175,8 @@ export class SceneManager {
         this.ambientLight = new AmbientLight(ambientColor, 0.4) // range from 0.1 to 0.4
         this.scene.add(this.ambientLight)
 
-        this.cursorFloorPosition = new Object3D()
-        this.scene.add(this.cursorFloorPosition)
-
-        this.cursorTorchlight = new PointLight(0xffffff, 1.5, 4, 1)
-        this.cursorTorchlight.distance *= TILESIZE
-        this.cursorTorchlight.position.y = 2 * TILESIZE // XXX actually show torchlight at TILESIZE / 2?
-        this.cursorFloorPosition.add(this.cursorTorchlight)
-
-        this.alarmLights = [-1, 1].map((c) => {
-            const alarmLight = new SpotLight(0xff0000, 0.5, 0, Math.PI / 4, 0.25)
-            alarmLight.position.set(0, TILESIZE / 2, 0)
-            alarmLight.target = new Object3D()
-            alarmLight.target.position.set(c * TILESIZE / 8, 0, 0)
-            alarmLight.add(alarmLight.target)
-            alarmLight.visible = false
-            this.cursorFloorPosition.add(alarmLight)
-            return alarmLight
-        })
+        this.cursor = new TorchLightCursor()
+        this.scene.add(this.cursor)
 
         this.buildMarker = new BuildPlacementMarker(this.worldMgr)
         this.scene.add(this.buildMarker.group)
@@ -241,44 +192,24 @@ export class SceneManager {
     }
 
     startScene() {
-        this.debugHelper.show()
-        this.renderInterval = setInterval(() => {
-            this.lastAnimationRequest = requestAnimationFrame(() => {
-                this.debugHelper.renderStart()
-                this.renderer.render(this.scene, this.camera)
-                this.debugHelper.renderDone()
-                this.checkForScreenshot()
-            })
-        }, 1000 / this.maxFps)
-    }
-
-    private checkForScreenshot() {
-        if (!this.screenshotCallback) return
-        const callback = this.screenshotCallback
-        this.screenshotCallback = null
-        this.renderer.domElement.toBlob((blob) => {
-            const img = document.createElement('img')
-            img.onload = () => {
-                const context = cloneContext(this.renderer.domElement)
-                context.drawImage(img, 0, 0)
-                callback(context.canvas)
-            }
-            img.src = URL.createObjectURL(blob)
-        })
+        if (!this.scene) {
+            console.error("No scene to render")
+            return
+        }
+        this.renderer.startRendering(this.scene)
     }
 
     disposeScene() {
-        this.debugHelper.hide()
-        this.renderInterval = clearIntervalSafe(this.renderInterval)
-        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
+        this.renderer.dispose()
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null
-        this.alarmLightInterval = clearIntervalSafe(this.alarmLightInterval)
+        this.cursor?.dispose()
     }
 
     resize(width: number, height: number) {
         this.renderer.setSize(width, height)
+        this.camera.aspect = width / height
     }
 
     getTerrainIntersectionPoint(rx: number, ry: number): Vector2 {
@@ -290,7 +221,7 @@ export class SceneManager {
     }
 
     setCursorFloorPosition(position: Vector2) {
-        this.cursorFloorPosition.position.copy(this.getFloorPosition(position))
+        this.cursor.position.copy(this.getFloorPosition(position))
     }
 
     getFloorPosition(world: Vector2) {

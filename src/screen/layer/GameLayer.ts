@@ -142,7 +142,7 @@ export class GameLayer extends ScreenLayer {
 
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {
         return new Promise<HTMLCanvasElement>((resolve) => {
-            this.sceneMgr.screenshotCallback = resolve
+            this.sceneMgr.renderer.screenshotCallback = resolve
         })
     }
 
