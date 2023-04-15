@@ -28,8 +28,11 @@ import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { Selectable } from '../Selectable'
 import { Updatable } from '../Updateable'
+import { AbstractGameEntity } from "../../entity/AbstractGameEntity"
+import { HealthComponent } from "../../component/common/HealthComponent"
+import { HealthBarSpriteComponent } from "../../component/common/HealthBarSpriteComponent"
 
-export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Disposable {
+export class VehicleEntity extends AbstractGameEntity implements Selectable, BeamUpEntity, Updatable, Disposable {
     currentPath: TerrainPath = null
     level: number = 0
     selected: boolean
@@ -44,10 +47,14 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Dispo
     engineSound: PositionalAudio = null
     carriedItems: Set<MaterialEntity> = new Set()
 
-    constructor(readonly worldMgr: WorldManager, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity, readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
+    constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity, readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
+        super(entityType)
         this.stats = stats
         this.sceneEntity = sceneEntity
         this.sceneEntity.speed = this.getSpeed() // TODO update speed on entity upgrade
+        this.addComponent(new HealthComponent()).addOnDeathListener(() => this.beamUp())
+        this.addComponent(new HealthBarSpriteComponent(24, 14, this.sceneEntity.group, true))
+        worldMgr.registerEntity(this)
     }
 
     update(elapsedMs: number) {
@@ -81,6 +88,7 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Dispo
         this.worldMgr.entityMgr.vehicles.remove(this)
         this.worldMgr.entityMgr.vehiclesUndiscovered.remove(this)
         this.worldMgr.entityMgr.vehiclesInBeam.remove(this)
+        this.worldMgr.markDead(this)
     }
 
     /*
