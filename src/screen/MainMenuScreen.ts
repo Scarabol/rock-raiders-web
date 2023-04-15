@@ -41,8 +41,9 @@ export class MainMenuScreen {
         } else if (item.actionName.equalsIgnoreCase('selectlevel')) {
             this.selectLevel((item as MainMenuLevelButton).levelKey)
         } else if (item.actionName.toLowerCase().startsWith('load_game')) {
-            SaveGameManager.loadGame(item.targetIndex)
-            this.showMainMenu()
+            if (SaveGameManager.loadGame(item.targetIndex)) {
+                this.showMainMenu()
+            }
         } else if (item.actionName) {
             console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
         }

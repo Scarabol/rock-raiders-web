@@ -15,6 +15,8 @@ export class MenuLayer extends BaseElement {
     hiFont: BitmapFont
     itemsTrigger: MenuLabelItem[] = []
     itemsNext: MenuLabelItem[] = []
+    itemsCycle: MenuCycleItem[] = []
+    itemsSlider: MenuSliderItem[] = []
 
     constructor(parent: BaseElement, menuCfg: MenuEntryCfg) {
         super(parent)
@@ -32,8 +34,8 @@ export class MenuLayer extends BaseElement {
                 this.itemsNext.push(item)
             }
         })
-        menuCfg.itemsCycle.forEach((itemCfg) => this.addChild(new MenuCycleItem(this, itemCfg)))
-        menuCfg.itemsSlider.forEach((itemCfg) => this.addChild(new MenuSliderItem(this, itemCfg)))
+        this.itemsCycle = menuCfg.itemsCycle.map((itemCfg) => this.addChild(new MenuCycleItem(this, itemCfg)))
+        this.itemsSlider = menuCfg.itemsSlider.map((itemCfg) => this.addChild(new MenuSliderItem(this, itemCfg)))
         this.hidden = true
     }
 

@@ -14,6 +14,7 @@ export class MenuCycleItem extends BaseElement {
 
     labelX: number = 0
     state: boolean = false
+    onStateChanged: (state: boolean) => any = (state) => console.log(`TODO: cycle item clicked; state: ${state}`)
 
     constructor(parent: MenuLayer, itemCfg: MenuCycleItemCfg) {
         super(parent)
@@ -30,8 +31,12 @@ export class MenuCycleItem extends BaseElement {
         this.height = this.imgTextNormal.height
         this.onClick = () => {
             this.state = !this.state
-            console.log(`TODO: cycle item clicked; state: ${this.state}`)
+            this.onStateChanged(this.state)
         }
+    }
+
+    setState(state: boolean) {
+        this.state = state
     }
 
     checkHover(event: GuiHoverEvent): void {

@@ -18,7 +18,7 @@ export class MenuSliderItem extends BaseElement {
     min: number = 0
     max: number = 1
     value: number = 0
-    onValueChanged: (value: number) => any = (value) => console.log(`value changed to: ${value}`)
+    onValueChanged: (value: number) => any = (value) => console.log(`TODO: Slider value changed; value: ${value}`)
 
     constructor(parent: MenuLayer, itemCfg: MenuSliderItemCfg) {
         super(parent)
@@ -58,10 +58,14 @@ export class MenuSliderItem extends BaseElement {
         this.width = itemCfg.width + leftBtn.imgHover.width + this.imgLeft.width + this.imgNormal.width + this.imgRight.width * 2 + rightBtn.imgHover.width
         this.min = itemCfg.min
         this.max = itemCfg.max || 1
-        this.value = this.min // TODO set default value
+        this.value = this.min
         this.imgTextNormal = parent.loFont.createTextImage(itemCfg.description)
         this.imgTextHover = parent.hiFont.createTextImage(itemCfg.description)
         this.height = this.imgTextNormal.height
+    }
+
+    setValue(value: number) {
+        this.value = value
     }
 
     checkHover(event: GuiHoverEvent): void {
