@@ -1,4 +1,4 @@
-import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, Raycaster, Scene, Vector2, Vector3 } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, Scene, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { SpriteImage } from '../core/Sprite'
 import { TILESIZE } from '../params'
@@ -15,9 +15,9 @@ import { Selectable } from './model/Selectable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { TerrainLoader } from './TerrainLoader'
 import { WorldManager } from './WorldManager'
-import { BirdViewCamera } from "../scene/BirdViewCamera"
-import { TorchLightCursor } from "../scene/TorchLightCursor"
-import { SceneRenderer } from "../scene/SceneRenderer"
+import { BirdViewCamera } from '../scene/BirdViewCamera'
+import { TorchLightCursor } from '../scene/TorchLightCursor'
+import { SceneRenderer } from '../scene/SceneRenderer'
 
 export class SceneManager {
     readonly audioListener: AudioListener
@@ -40,8 +40,7 @@ export class SceneManager {
     }
 
     getSelectionByRay(rx: number, ry: number): GameSelection {
-        const raycaster = new Raycaster()
-        raycaster.setFromCamera({x: rx, y: ry}, this.camera)
+        const raycaster = this.camera.createRaycaster({x: rx, y: ry})
         const selection = new GameSelection()
         selection.raiders.push(...SceneManager.getSelection(raycaster.intersectObjects(this.worldMgr.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere)), false))
         if (selection.isEmpty()) selection.vehicles.push(...SceneManager.getSelection(raycaster.intersectObjects(this.worldMgr.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)), true))
@@ -63,8 +62,7 @@ export class SceneManager {
     }
 
     getFirstByRay(rx: number, ry: number): { vehicle?: VehicleEntity, material?: MaterialEntity, surface?: Surface } {
-        const raycaster = new Raycaster()
-        raycaster.setFromCamera({x: rx, y: ry}, this.camera)
+        const raycaster = this.camera.createRaycaster({x: rx, y: ry})
         const vehicle = SceneManager.getSelectable(raycaster.intersectObjects(this.worldMgr.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
         if (vehicle) return {vehicle: vehicle}
         const materialEntity = SceneManager.getMaterialEntity(raycaster.intersectObjects(this.worldMgr.entityMgr.materials.map((m) => m.sceneEntity.pickSphere).filter((p) => !!p)))
@@ -193,7 +191,7 @@ export class SceneManager {
 
     startScene() {
         if (!this.scene) {
-            console.error("No scene to render")
+            console.error('No scene to render')
             return
         }
         this.renderer.startRendering(this.scene)
@@ -214,8 +212,7 @@ export class SceneManager {
 
     getTerrainIntersectionPoint(rx: number, ry: number): Vector2 {
         if (!this.terrain) return null
-        const raycaster = new Raycaster()
-        raycaster.setFromCamera({x: rx, y: ry}, this.camera)
+        const raycaster = this.camera.createRaycaster({x: rx, y: ry})
         const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children)
         return intersects.length > 0 ? new Vector2(intersects[0].point.x, intersects[0].point.z) : null
     }

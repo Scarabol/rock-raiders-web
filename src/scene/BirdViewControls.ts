@@ -2,9 +2,9 @@ import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
 import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
-import { Camera, MOUSE } from "three"
-import { DEV_MODE, KEY_PAN_SPEED } from "../params"
-import { ResourceManager } from "../resource/ResourceManager"
+import { Camera, MOUSE } from 'three'
+import { DEV_MODE, KEY_PAN_SPEED } from '../params'
+import { ResourceManager } from '../resource/ResourceManager'
 
 export class BirdViewControls extends MapControls {
 

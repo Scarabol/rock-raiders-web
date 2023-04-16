@@ -1,4 +1,4 @@
-import { Intersection, Raycaster } from 'three'
+import { Intersection } from 'three'
 import { Cursor } from '../../cfg/PointerCfg'
 import { cloneContext } from '../../core/ImageHelper'
 import { Rect } from '../../core/Rect'
@@ -97,8 +97,7 @@ export class CursorLayer extends ScreenLayer {
             return this.sceneMgr.buildMarker.lastCheck ? 'pointerCanBuild' : 'pointerCannotBuild'
         }
         // TODO use sceneManager.getFirstByRay here too?!
-        const raycaster = new Raycaster()
-        raycaster.setFromCamera(this.cursorRelativePos, this.sceneMgr.camera)
+        const raycaster = this.sceneMgr.camera.createRaycaster(this.cursorRelativePos)
         const intersectsRaider = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
         if (intersectsRaider.length > 0) return 'pointerSelected'
         const intersectsVehicle = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
