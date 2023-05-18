@@ -5,7 +5,7 @@ import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, OreFoundEvent } from '../../../event/WorldEvents'
 import { CrystalFoundEvent } from '../../../event/WorldLocationEvent'
-import { SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../../params'
+import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
 import { BuildingEntity } from '../building/BuildingEntity'
 import { BuildingSite } from '../building/BuildingSite'
@@ -356,6 +356,7 @@ export class Surface implements Selectable {
         this.mesh.setHighlightColor(0x6060a0)
         if (this.surfaceType.floor) SoundManager.playSample(Sample.SFX_Floor)
         else if (this.surfaceType.shaping) SoundManager.playSample(Sample.SFX_Wall)
+        if (DEV_MODE) console.log(`Surface selected ${this.x}/${this.y}`)
         return true
     }
 
