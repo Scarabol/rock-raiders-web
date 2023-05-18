@@ -32,7 +32,7 @@ export class Crystal extends MaterialEntity {
         })
         this.sceneEntity.addUpdatable(highPolyMesh)
         this.sceneEntity.addPickSphere(ResourceManager.configuration.stats.powerCrystal.PickSphere)
-        this.sceneEntity.pickSphere.userData = {entityType: EntityType.CRYSTAL, materialEntity: this}
+        this.sceneEntity.pickSphere.userData = {entityType: this.entityType, materialEntity: this}
     }
 
     findCarryTargets(): PathTarget[] {

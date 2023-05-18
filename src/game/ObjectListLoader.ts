@@ -16,6 +16,8 @@ import { RaiderTrainings } from './model/raider/RaiderTraining'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { WorldManager } from './WorldManager'
+import { Ore } from "./model/material/Ore"
+import { Brick } from "./model/material/Brick"
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -81,6 +83,12 @@ export class ObjectListLoader {
                     break
                 case EntityType.CRYSTAL:
                     entityMgr.placeMaterial(new Crystal(worldMgr), worldPos)
+                    break
+                case EntityType.ORE:
+                    entityMgr.placeMaterial(new Ore(worldMgr), worldPos)
+                    break
+                case EntityType.BRICK:
+                    entityMgr.placeMaterial(new Brick(worldMgr), worldPos)
                     break
                 case EntityType.SMALL_SPIDER:
                 case EntityType.BAT:

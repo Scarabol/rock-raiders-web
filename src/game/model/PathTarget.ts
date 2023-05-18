@@ -55,12 +55,12 @@ export class PathTarget {
     gatherItem(item: MaterialEntity) {
         if (this.building) {
             if (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY) {
-                this.building.sceneEntity.pickupEntity(item.sceneEntity)
+                this.building.pickupItem(item)
                 if (this.building.sceneEntity.carriedByIndex.size >= this.building.getMaxCarry()) {
                     this.building.sceneEntity.changeActivity(BuildingActivity.Deposit, () => {
                         this.building.sceneEntity.changeActivity()
                         this.building.sceneEntity.dropAllEntities()
-                        item.onDeposit()
+                        this.building.depositItems()
                     })
                 }
             } else {

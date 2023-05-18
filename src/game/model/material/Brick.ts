@@ -10,26 +10,24 @@ import { GameState } from "../GameState"
 import { EventBus } from "../../../event/EventBus"
 import { MaterialAmountChanged } from "../../../event/WorldEvents"
 
-export class Ore extends MaterialEntity {
+export class Brick extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
-        super(worldMgr, EntityType.ORE, PriorityIdentifier.ORE, RaiderTraining.NONE)
+        super(worldMgr, EntityType.BRICK, PriorityIdentifier.ORE, RaiderTraining.NONE)
         this.sceneEntity = new SceneEntity(this.worldMgr.sceneMgr)
-        this.sceneEntity.addToMeshGroup(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Ore))
-        this.sceneEntity.addPickSphere(ResourceManager.configuration.stats.ore.PickSphere)
+        this.sceneEntity.addToMeshGroup(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ProcessedOre))
+        this.sceneEntity.addPickSphere(ResourceManager.configuration.stats.processedOre.PickSphere)
         this.sceneEntity.pickSphere.userData = {entityType: this.entityType, materialEntity: this}
     }
 
     findCarryTargets(): PathTarget[] {
         const sites = this.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(this.entityType))
         if (sites.length > 0) return sites.map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
-        const oreRefineries = this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.ORE_REFINERY)
-        if (oreRefineries.length > 0) return oreRefineries
         return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
     }
 
     onDeposit() {
         super.onDeposit()
-        GameState.numOre++
+        GameState.numBrick++
         EventBus.publishEvent(new MaterialAmountChanged())
     }
 }

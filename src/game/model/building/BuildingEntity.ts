@@ -28,8 +28,11 @@ import { Teleport } from './Teleport'
 import { AbstractGameEntity } from "../../entity/AbstractGameEntity"
 import { HealthComponent } from "../../component/common/HealthComponent"
 import { HealthBarSpriteComponent } from "../../component/common/HealthBarSpriteComponent"
+import { MaterialEntity } from "../material/MaterialEntity"
+import { Brick } from "../material/Brick"
 
 export class BuildingEntity extends AbstractGameEntity implements Selectable, BeamUpEntity {
+    readonly carriedItems: MaterialEntity[] = []
     buildingType: BuildingType
     sceneEntity: BuildingSceneEntity
     powerOffSprite: BubbleSprite
@@ -151,6 +154,7 @@ export class BuildingEntity extends AbstractGameEntity implements Selectable, Be
         for (let c = 0; c < this.stats.CostCrystal; c++) {
             this.worldMgr.entityMgr.placeMaterial(new Crystal(this.worldMgr), this.primarySurface.getRandomPosition())
         }
+        this.carriedItems.forEach((m) => this.worldMgr.entityMgr.placeMaterial(m, this.primarySurface.getRandomPosition()))
         this.surfaces.forEach((s) => s.setBuilding(null))
         this.beamUpAnimator = new BeamUpAnimator(this)
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
@@ -328,5 +332,20 @@ export class BuildingEntity extends AbstractGameEntity implements Selectable, Be
 
     getMaxCarry(): number {
         return this.stats.MaxCarry[this.level] ?? 0
+    }
+
+    pickupItem(item: MaterialEntity): void {
+        this.sceneEntity.pickupEntity(item.sceneEntity)
+        this.carriedItems.push(item)
+    }
+
+    depositItems(): void {
+        if (this.entityType === EntityType.ORE_REFINERY) {
+            this.carriedItems.forEach((m) => m.disposeFromWorld())
+            this.worldMgr.entityMgr.placeMaterial(new Brick(this.worldMgr), this.getDropPosition2D())
+        } else {
+            this.carriedItems.forEach((m) => m.onDeposit())
+        }
+        this.carriedItems.length = 0
     }
 }
