@@ -32,7 +32,7 @@ export class Dynamite extends MaterialEntity {
             this.worldMgr.entityMgr.tickingDynamite.remove(this)
             this.sceneEntity.disposeFromScene()
             this.targetSurface.collapse()
-            this.worldMgr.addMiscAnim('MiscAnims/Effects/Mockup_explode3.lws', this.sceneEntity.position, this.sceneEntity.getHeading())
+            this.worldMgr.addMiscAnim('MiscAnims/Effects/Mockup_explode3', this.sceneEntity.position, this.sceneEntity.getHeading())
             this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Dynamite], false)
             // TODO damage raider, vehicle, buildings
         })

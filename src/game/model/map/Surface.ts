@@ -170,7 +170,7 @@ export class Surface implements Selectable {
         // add crumble animation
         const wallNeighbor = this.neighbors.filter((n) => !!n.wallType).random()
         const crumbleAngle = !!wallNeighbor ? Math.atan2(wallNeighbor.x - this.x, wallNeighbor.y - this.y) : 0 // XXX why is x/y swapped here?
-        this.worldMgr.addMiscAnim('MiscAnims/RockFall/Rock3Sides.lws', this.getCenterWorld(), crumbleAngle)
+        this.worldMgr.addMiscAnim('MiscAnims/RockFall/Rock3Sides', this.getCenterWorld(), crumbleAngle)
         this.playPositionalSample(Sample.SFX_RockBreak)
     }
 
