@@ -85,7 +85,7 @@ export class AnimatedSceneEntity extends SceneEntity {
             upgrades0000.forEach((upgrade) => {
                 const joint = this.getNullJointForUpgrade(upgrade)
                 if (joint) {
-                    const lwoModel = ResourceManager.getLwoModel(`${upgrade.upgradeFilepath}.lwo`)
+                    const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath)
                     if (lwoModel) {
                         joint.add(lwoModel)
                         this.upgrades.push(lwoModel)

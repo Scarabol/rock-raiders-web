@@ -78,6 +78,9 @@ export class ResourceManager extends ResourceCache {
     }
 
     static getLwoModel(lwoFilepath: string, entityPath: string = null): SceneMesh {
+        if (!lwoFilepath.endsWith('.lwo')) {
+            lwoFilepath += '.lwo'
+        }
         return this.lwoCache.getOrUpdate(lwoFilepath.toLowerCase(), () => {
             const lwoBuffer = ResourceManager.getResource(lwoFilepath)
             if (!lwoBuffer) return null

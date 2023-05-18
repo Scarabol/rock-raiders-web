@@ -103,7 +103,7 @@ export class AnimEntityLoader {
     private parsePolyBodies(value, polyBodies: Map<string, SceneMesh>) {
         Object.keys(value).forEach((key) => {
             const polyKey = key.startsWith('!') ? key.slice(1) : key
-            const mesh = ResourceManager.getLwoModel(`${this.path + value[key]}.lwo`)
+            const mesh = ResourceManager.getLwoModel(this.path + value[key])
             polyBodies.set(polyKey.toLowerCase(), mesh)
         })
     }

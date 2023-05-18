@@ -16,7 +16,7 @@ export class Crystal extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
         super(worldMgr, EntityType.CRYSTAL, PriorityIdentifier.CRYSTAL, RaiderTraining.NONE)
         this.sceneEntity = new SceneEntity(this.worldMgr.sceneMgr)
-        const animGlowMesh = ResourceManager.getLwoModel('MiscAnims/Crystal/vlp_greencrystal.lwo')
+        const animGlowMesh = ResourceManager.getLwoModel('MiscAnims/Crystal/vlp_greencrystal')
         animGlowMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
             mat.blending = AdditiveBlending
             mat.depthWrite = false // otherwise, transparent parts "carve out" objects behind
@@ -24,7 +24,7 @@ export class Crystal extends MaterialEntity {
         })
         animGlowMesh.scale.set(1.75, 1.75, 1.75) // XXX derive from texture scale?
         this.sceneEntity.addUpdatable(animGlowMesh)
-        const highPolyMesh = ResourceManager.getLwoModel('World/Shared/Crystal.lwo') // high poly version
+        const highPolyMesh = ResourceManager.getLwoModel('World/Shared/Crystal') // high poly version
         highPolyMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
             mat.emissive = new Color(0, 8, 0) // XXX read from LWO file?
             mat.color = new Color(0, 0, 0) // XXX read from LWO file?

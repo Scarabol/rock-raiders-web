@@ -103,8 +103,8 @@ export class LWSCLoader {
             if (key === 'LoadObject') {
                 const filename = getFilename(value)
                 subObj.lowerName = filename.slice(0, filename.length - '.lwo'.length).toLowerCase()
-                subObj.filename = getPath(this.animationClip.lwsFilepath) + filename
-                subObj.model = ResourceManager.getLwoModel(subObj.filename)
+                const lwoFilename = getPath(this.animationClip.lwsFilepath) + subObj.lowerName
+                subObj.model = ResourceManager.getLwoModel(lwoFilename)
                 subObj.model.name = subObj.lowerName
             } else if (key === 'AddNullObject') {
                 const nameParts = value.split(',')
