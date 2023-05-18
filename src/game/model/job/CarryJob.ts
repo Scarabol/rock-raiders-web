@@ -43,7 +43,7 @@ export class CarryJob extends AbstractJob implements SupervisedJob, CancelableJo
     }
 
     isReadyToComplete(): boolean {
-        return this.actualTarget.reserveGatherSlot(this)
+        return this.actualTarget.canGatherItem()
     }
 
     onJobComplete() {

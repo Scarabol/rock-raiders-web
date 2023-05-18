@@ -7,14 +7,10 @@ import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
 import { EntityType } from './EntityType'
 import { GameState } from './GameState'
-import { CarryJob } from './job/CarryJob'
-import { Job } from './job/Job'
 import { Surface } from './map/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
 
 export class PathTarget {
-    private gatherReservedBy: Job = null
-
     protected constructor(
         readonly targetLocation: Vector2,
         readonly radiusSq: number = 0,
@@ -49,14 +45,9 @@ export class PathTarget {
         return (this.building && !this.building.isPowered()) || (this.surface && !this.surface.isWalkable()) || (this.site && (this.site.complete || this.site.canceled))
     }
 
-    reserveGatherSlot(job: CarryJob): boolean {
+    canGatherItem(): boolean {
         if (this.building?.entityType === EntityType.POWER_STATION || this.building?.entityType === EntityType.ORE_REFINERY) {
-            if (!this.gatherReservedBy && this.building.sceneEntity.activity === this.building.sceneEntity.getDefaultActivity()) {
-                this.gatherReservedBy = job // TODO how to avoid deadlock between reserve and gather?
-                return true
-            } else {
-                return this.gatherReservedBy === job
-            }
+            return this.building.sceneEntity.activity === this.building.sceneEntity.getDefaultActivity()
         }
         return true
     }
@@ -65,11 +56,13 @@ export class PathTarget {
         if (this.building) {
             if (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY) {
                 this.building.sceneEntity.pickupEntity(item.sceneEntity)
-                this.building.sceneEntity.changeActivity(BuildingActivity.Deposit, () => {
-                    this.building.sceneEntity.changeActivity()
-                    this.building.sceneEntity.dropAllEntities()
-                    this.addItemToStorage(item)
-                })
+                if (this.building.sceneEntity.carriedByIndex.size >= this.building.getMaxCarry()) {
+                    this.building.sceneEntity.changeActivity(BuildingActivity.Deposit, () => {
+                        this.building.sceneEntity.changeActivity()
+                        this.building.sceneEntity.dropAllEntities()
+                        this.addItemToStorage(item)
+                    })
+                }
             } else {
                 this.addItemToStorage(item)
             }
@@ -93,7 +86,6 @@ export class PathTarget {
         }
         EventBus.publishEvent(new MaterialAmountChanged())
         item.sceneEntity.disposeFromScene()
-        this.gatherReservedBy = null
     }
 
     getDropAction(): RaiderActivity {

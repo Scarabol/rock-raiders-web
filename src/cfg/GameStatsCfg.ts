@@ -48,6 +48,7 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
     OxygenCoef: number = 0
     EngineSound: string = null
     CanDoubleSelect: boolean = false
+    MaxCarry: number[] = []
 }
 
 export class MonsterEntityStats extends BaseConfig implements MovableEntityStats {

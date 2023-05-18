@@ -325,4 +325,8 @@ export class BuildingEntity extends AbstractGameEntity implements Selectable, Be
         this.beamUpAnimator?.update(elapsedMs)
         this.powerOffSprite.update(elapsedMs)
     }
+
+    getMaxCarry(): number {
+        return this.stats.MaxCarry[this.level] ?? 0
+    }
 }
