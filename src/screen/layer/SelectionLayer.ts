@@ -88,4 +88,10 @@ class AnimationFrameSelection extends AnimationFrame {
         this.context.strokeStyle = 'rgba(128, 192, 192, 0.5)'
         this.context.lineWidth = 2
     }
+
+    redraw() {
+        super.redraw()
+        // TODO Without this console logging the selection frame may become sticky
+        console.log('TODO Fix AnimationFrameSelection.redraw becomes sticky')
+    }
 }
