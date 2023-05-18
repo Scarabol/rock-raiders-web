@@ -8,6 +8,9 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { MaterialEntity } from './MaterialEntity'
+import { GameState } from "../GameState"
+import { EventBus } from "../../../event/EventBus"
+import { MaterialAmountChanged } from "../../../event/WorldEvents"
 
 export class Crystal extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
@@ -38,5 +41,11 @@ export class Crystal extends MaterialEntity {
         const powerStations = this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.POWER_STATION)
         if (powerStations.length > 0) return powerStations
         return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+    }
+
+    onDeposit() {
+        super.onDeposit()
+        GameState.numCrystal++
+        EventBus.publishEvent(new MaterialAmountChanged())
     }
 }

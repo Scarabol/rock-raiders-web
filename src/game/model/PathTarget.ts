@@ -60,11 +60,11 @@ export class PathTarget {
                     this.building.sceneEntity.changeActivity(BuildingActivity.Deposit, () => {
                         this.building.sceneEntity.changeActivity()
                         this.building.sceneEntity.dropAllEntities()
-                        this.addItemToStorage(item)
+                        item.onDeposit()
                     })
                 }
             } else {
-                this.addItemToStorage(item)
+                item.onDeposit()
             }
         } else {
             item.sceneEntity.addToScene(null, this.headingOnSite)
@@ -73,19 +73,6 @@ export class PathTarget {
             }
             this.site?.addItem(item)
         }
-    }
-
-    private addItemToStorage(item: MaterialEntity) {
-        switch (item.entityType) {
-            case EntityType.CRYSTAL:
-                GameState.numCrystal++
-                break
-            case EntityType.ORE:
-                GameState.numOre++
-                break
-        }
-        EventBus.publishEvent(new MaterialAmountChanged())
-        item.sceneEntity.disposeFromScene()
     }
 
     getDropAction(): RaiderActivity {

@@ -49,4 +49,8 @@ export abstract class MaterialEntity implements Disposable {
 
     onCarryJobComplete(): void {
     }
+
+    onDeposit(): void {
+        this.sceneEntity.disposeFromScene()
+    }
 }
