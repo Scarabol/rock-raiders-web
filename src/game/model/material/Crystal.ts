@@ -16,7 +16,7 @@ export class Crystal extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
         super(worldMgr, EntityType.CRYSTAL, PriorityIdentifier.CRYSTAL, RaiderTraining.NONE)
         this.sceneEntity = new SceneEntity(this.worldMgr.sceneMgr)
-        const animGlowMesh = ResourceManager.getLwoModel('MiscAnims/Crystal/vlp_greencrystal')
+        const animGlowMesh = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Crystal)
         animGlowMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
             mat.blending = AdditiveBlending
             mat.depthWrite = false // otherwise, transparent parts "carve out" objects behind

@@ -131,7 +131,7 @@ export class BuildingEntity extends AbstractGameEntity implements Selectable, Be
         this.level++
         EventBus.publishEvent(new DeselectAll())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
-        this.worldMgr.addMiscAnim('MiscAnims/Effects/UPGRADE_SPARKS', this.primarySurface.getCenterWorld(), this.sceneEntity.getHeading())
+        this.worldMgr.addMiscAnim(ResourceManager.configuration.miscObjects.UpgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.getHeading())
     }
 
     setLevel(level: number) {

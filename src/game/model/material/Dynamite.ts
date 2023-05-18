@@ -8,11 +8,12 @@ import { Surface } from '../map/Surface'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { MaterialEntity } from './MaterialEntity'
+import { ResourceManager } from "../../../resource/ResourceManager"
 
 export class Dynamite extends MaterialEntity {
     constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
         super(worldMgr, EntityType.DYNAMITE, PriorityIdentifier.DESTRUCTION, RaiderTraining.DEMOLITION)
-        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, 'MiscAnims/Dynamite')
+        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, ResourceManager.configuration.miscObjects.Dynamite)
         this.sceneEntity.changeActivity()
     }
 
@@ -32,7 +33,7 @@ export class Dynamite extends MaterialEntity {
             this.worldMgr.entityMgr.tickingDynamite.remove(this)
             this.sceneEntity.disposeFromScene()
             this.targetSurface.collapse()
-            this.worldMgr.addMiscAnim('MiscAnims/Effects/Mockup_explode3', this.sceneEntity.position, this.sceneEntity.getHeading())
+            this.worldMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.sceneEntity.position, this.sceneEntity.getHeading())
             this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Dynamite], false)
             // TODO damage raider, vehicle, buildings
         })

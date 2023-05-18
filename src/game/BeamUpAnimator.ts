@@ -4,6 +4,7 @@ import { NATIVE_FRAMERATE, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SceneEntity } from '../scene/SceneEntity'
 import { Disposable } from './model/Disposable'
 import { WorldManager } from './WorldManager'
+import { ResourceManager } from "../resource/ResourceManager"
 
 export interface BeamUpEntity extends Disposable {
     worldMgr: WorldManager
@@ -18,7 +19,7 @@ export class BeamUpAnimator {
         this.entity = entity
         this.counter = 6 * TILESIZE
         EventBus.publishEvent(new DeselectAll())
-        this.entity.worldMgr.addMiscAnim('Mini-Figures/Pilot/VLP_TelepUp', this.entity.sceneEntity.position, this.entity.sceneEntity.getHeading())
+        this.entity.worldMgr.addMiscAnim(ResourceManager.configuration.miscObjects.MiniTeleportUp, this.entity.sceneEntity.position, this.entity.sceneEntity.getHeading())
     }
 
     update(elapsedMs: number) {

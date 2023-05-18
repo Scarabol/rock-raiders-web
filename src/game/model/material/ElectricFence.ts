@@ -18,7 +18,7 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
     constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
         super(worldMgr, EntityType.ELECTRIC_FENCE, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
         this.sceneEntity = new SceneEntity(this.worldMgr.sceneMgr)
-        this.sceneEntity.addToMeshGroup(ResourceManager.getLwoModel('Buildings/E-Fence/E-Fence4'))
+        this.sceneEntity.addToMeshGroup(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ElectricFence))
     }
 
     get stats() {

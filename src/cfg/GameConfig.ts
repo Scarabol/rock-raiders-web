@@ -16,6 +16,7 @@ import { PointerCfg } from './PointerCfg'
 import { PrioritiesImagePositionsCfg, PriorityButtonsCfg } from './PriorityButtonsCfg'
 import { RewardCfg } from './RewardCfg'
 import { TexturesCfg } from './TexturesCfg'
+import { MiscObjectsCfg } from "./MiscObjectsCfg"
 
 export class GameConfig extends BaseConfig {
     main: MainCfg = new MainCfg()
@@ -32,7 +33,7 @@ export class GameConfig extends BaseConfig {
     // interfaceSurroundImages: InterfaceSurroundImagesCfg = new InterfaceSurroundImagesCfg()
     priorityImages: PriorityButtonsCfg = new PriorityButtonsCfg()
     prioritiesImagePositions: PrioritiesImagePositionsCfg = new PrioritiesImagePositionsCfg()
-    // miscObjects: MiscObjectsCfg = new MiscObjectsCfg()
+    miscObjects: MiscObjectsCfg = new MiscObjectsCfg()
     bubbles: BubblesCfg = new BubblesCfg()
     textMessagesWithImages: TextInfoMessageCfg = new TextInfoMessageCfg()
     // samples: SamplesCfg = new SamplesCfg()

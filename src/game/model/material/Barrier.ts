@@ -8,11 +8,12 @@ import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { BarrierLocation } from './BarrierLocation'
 import { MaterialEntity } from './MaterialEntity'
+import { ResourceManager } from "../../../resource/ResourceManager"
 
 export class Barrier extends MaterialEntity {
     constructor(worldMgr: WorldManager, readonly location: BarrierLocation, readonly site: BuildingSite) {
         super(worldMgr, EntityType.BARRIER, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
-        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, 'MiscAnims/Barrier')
+        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, ResourceManager.configuration.miscObjects.Barrier)
         this.sceneEntity.changeActivity()
     }
 
