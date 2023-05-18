@@ -21,6 +21,8 @@ export class SelectionLayer extends ScreenLayer {
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             if (!this.selectionRect) return
+            context.strokeStyle = 'rgba(128, 192, 192, 0.5)'
+            context.lineWidth = 2
             context.strokeRect(this.selectionRect.x, this.selectionRect.y, this.selectionRect.w, this.selectionRect.h)
         }
     }
@@ -83,12 +85,6 @@ export class SelectionLayer extends ScreenLayer {
 }
 
 class AnimationFrameSelection extends AnimationFrame {
-    constructor(canvas: HTMLCanvasElement) {
-        super(canvas)
-        this.context.strokeStyle = 'rgba(128, 192, 192, 0.5)'
-        this.context.lineWidth = 2
-    }
-
     redraw() {
         super.redraw()
         // TODO Without this console logging the selection frame may become sticky
