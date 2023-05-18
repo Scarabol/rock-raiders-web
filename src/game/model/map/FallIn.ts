@@ -5,7 +5,7 @@ export class FallIn {
     terrain: Terrain
     source: Surface
     target: Surface
-    fallinTimeout: number
+    fallInTimeout: number
     timer: number = 0
 
     constructor(terrain: Terrain, source: Surface, target: Surface) {
@@ -17,13 +17,13 @@ export class FallIn {
 
     update(elapsedMs: number) {
         this.timer += elapsedMs
-        if (this.timer < this.fallinTimeout) return
+        if (this.timer < this.fallInTimeout) return
         if (this.source.discovered) this.terrain.createFallIn(this.source, this.target)
-        this.timer -= this.fallinTimeout
+        this.timer -= this.fallInTimeout
         this.restartTimeout()
     }
 
     private restartTimeout() {
-        this.fallinTimeout = (30 + Math.randomInclusive(60)) * 1000 // TODO adapt timer to level multiplier and fallin value
+        this.fallInTimeout = (30 + Math.randomInclusive(60)) * 1000 // TODO adapt timer to level multiplier and fallIn value
     }
 }

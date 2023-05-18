@@ -10,10 +10,13 @@ import { PathFinder } from './PathFinder'
 import { PowerGrid } from './PowerGrid'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
+import { ResourceManager } from "../../../resource/ResourceManager"
+import { Sample } from "../../../audio/Sample"
 
 export class Terrain {
     heightOffset: number[][] = [[]]
     textureSet: TextureEntryCfg = null
+    rockFallStyle: string = null
     width: number = 0
     height: number = 0
     surfaces: Surface[][] = []
@@ -109,8 +112,8 @@ export class Terrain {
         return totalOres
     }
 
-    setFallinLevel(x: number, y: number, fallinLevel: number) {
-        if (fallinLevel < 1) return
+    setFallInLevel(x: number, y: number, fallInLevel: number) {
+        if (fallInLevel < 1) return
         const surface = this.getSurface(x, y)
         let originPos: Surface = null
         let targetPos: Surface = null
@@ -139,9 +142,11 @@ export class Terrain {
     }
 
     createFallIn(source: Surface, target: Surface) {
-        const fallinPosition = target.getCenterWorld()
+        const fallInPosition = target.getCenterWorld()
         const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
-        this.worldMgr.addMiscAnim('MiscAnims/RockFall/Rock3Sides', fallinPosition, heading)
+        const rockFallAnimName = ResourceManager.configuration.rockFallStyles[this.rockFallStyle][3] // TODO not always pick "tunnel"
+        this.worldMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading)
+        source.playPositionalSample(Sample.SFX_RockBreak)
         target.makeRubble()
     }
 

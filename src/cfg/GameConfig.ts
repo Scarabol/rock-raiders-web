@@ -17,6 +17,7 @@ import { PrioritiesImagePositionsCfg, PriorityButtonsCfg } from './PriorityButto
 import { RewardCfg } from './RewardCfg'
 import { TexturesCfg } from './TexturesCfg'
 import { MiscObjectsCfg } from "./MiscObjectsCfg"
+import { RockFallStylesCfg } from "./RockFallStylesCfg"
 
 export class GameConfig extends BaseConfig {
     main: MainCfg = new MainCfg()
@@ -35,6 +36,7 @@ export class GameConfig extends BaseConfig {
     prioritiesImagePositions: PrioritiesImagePositionsCfg = new PrioritiesImagePositionsCfg()
     miscObjects: MiscObjectsCfg = new MiscObjectsCfg()
     bubbles: BubblesCfg = new BubblesCfg()
+    rockFallStyles: RockFallStylesCfg = new RockFallStylesCfg()
     textMessagesWithImages: TextInfoMessageCfg = new TextInfoMessageCfg()
     // samples: SamplesCfg = new SamplesCfg()
     textures: TexturesCfg = new TexturesCfg()
@@ -81,6 +83,8 @@ export class GameConfig extends BaseConfig {
         //     this.miscObjects.setFromCfgObj(cfgValue)
         } else if ('Bubbles'.equalsIgnoreCase(unifiedKey)) {
             this.bubbles.setFromCfgObj(cfgValue)
+        } else if ('RockFallStyles'.equalsIgnoreCase(unifiedKey)) {
+            this.rockFallStyles.setFromCfgObj(cfgValue)
         } else if ('TextMessagesWithImages'.equalsIgnoreCase(unifiedKey)) {
             this.textMessagesWithImages.setFromCfgObj(cfgValue)
             // } else if ('Samples'.equalsIgnoreCase(unifiedKey)) {

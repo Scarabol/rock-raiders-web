@@ -25,6 +25,7 @@ import { SurfaceMesh } from './SurfaceMesh'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
 import { WALL_TYPE } from './WallType'
+import { ResourceManager } from "../../../resource/ResourceManager"
 import degToRad = MathUtils.degToRad
 
 export class Surface implements Selectable {
@@ -170,7 +171,8 @@ export class Surface implements Selectable {
         // add crumble animation
         const wallNeighbor = this.neighbors.filter((n) => !!n.wallType).random()
         const crumbleAngle = !!wallNeighbor ? Math.atan2(wallNeighbor.x - this.x, wallNeighbor.y - this.y) : 0 // XXX why is x/y swapped here?
-        this.worldMgr.addMiscAnim('MiscAnims/RockFall/Rock3Sides', this.getCenterWorld(), crumbleAngle)
+        const rockFallAnimName = ResourceManager.configuration.rockFallStyles[this.terrain.rockFallStyle][3] // TODO not always pick "tunnel"
+        this.worldMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle)
         this.playPositionalSample(Sample.SFX_RockBreak)
     }
 

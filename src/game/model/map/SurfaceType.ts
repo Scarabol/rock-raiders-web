@@ -1,7 +1,7 @@
 import { Cursor } from '../../../cfg/PointerCfg'
 
 export class SurfaceType {
-    name: string // human readable, maybe used as label later on
+    name: string // human-readable, maybe used as label later on
     shaping: boolean = false
     matIndex: string = '00'
     floor: boolean = false

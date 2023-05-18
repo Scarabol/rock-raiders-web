@@ -103,11 +103,19 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addTextureFolder('MiscAnims/Crystal/')
         this.addAsset(this.wadLoader.loadLWOFile, 'World/Shared/Crystal.lwo') // high-poly version
         this.addAsset(this.wadLoader.loadWadTexture, 'MiscAnims/Ore/Ore.bmp')
-        this.addTextureFolder('MiscAnims/RockFall/')
-        this.addLWSFile('MiscAnims/RockFall/Rock3Sides.lws')
         const miscObjects = iGet(gameConfig, 'MiscObjects')
         Object.values<string>(miscObjects).forEach((mType) => {
             this.addMeshObjects(mType)
+        })
+        const rockFallStyles = iGet(gameConfig, 'RockFallStyles')
+        Object.values<string[]>(rockFallStyles).forEach((entry) => {
+            const falls = entry.slice(1) // first entry is always "Item_Null"
+            falls.forEach((shape) => {
+                const textureFolder = shape.split("/").slice(0, -1).join("/")
+                this.addTextureFolder(textureFolder)
+                const lwsFilename = `${shape}.lws`
+                this.addLWSFile(lwsFilename)
+            })
         })
         // spaces
         this.addTextureFolder('World/WorldTextures/IceSplit/Ice')
