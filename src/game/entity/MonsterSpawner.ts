@@ -26,25 +26,25 @@ export class MonsterSpawner {
         entity.addComponent(new PositionComponent())
         switch (entityType) {
             case EntityType.SMALL_SPIDER:
-                entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/SpiderSB/SpiderSB.ae', 1))
+                entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/SpiderSB', 1))
                 entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.smallSpider))
                 entity.addComponent(new SpiderMovementComponent())
                 entity.addComponent(new HealthComponent()).addOnDeathListener(() => entity.worldMgr.markDead(entity))
                 break
             case EntityType.BAT:
-                entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/bat/bat.ae', TILESIZE / 2))
+                entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/bat', TILESIZE / 2))
                 entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.bat))
                 entity.addComponent(new BatMovementComponent())
                 entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
                 break
             case EntityType.ICE_MONSTER:
-                this.addRockyComponents(entity, worldMgr, 'Creatures/IceMonster/IceMonster.ae')
+                this.addRockyComponents(entity, worldMgr, 'Creatures/IceMonster')
                 break
             case EntityType.LAVA_MONSTER:
-                this.addRockyComponents(entity, worldMgr, 'Creatures/LavaMonster/LavaMonster.ae')
+                this.addRockyComponents(entity, worldMgr, 'Creatures/LavaMonster')
                 break
             case EntityType.ROCK_MONSTER:
-                this.addRockyComponents(entity, worldMgr, 'Creatures/RMonster/RMonster.ae')
+                this.addRockyComponents(entity, worldMgr, 'Creatures/RMonster')
                 break
             default:
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)

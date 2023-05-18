@@ -9,8 +9,8 @@ export class WalkerDiggerSceneEntity extends VehicleSceneEntity {
     body: AnimatedSceneEntity = null
 
     constructor(sceneMgr: SceneManager) {
-        super(sceneMgr, 'Vehicles/WalkerLegs/WalkerLegs.ae')
-        this.body = new AnimatedSceneEntity(sceneMgr, 'Vehicles/WalkerBody/WalkerBody.ae')
+        super(sceneMgr, 'Vehicles/WalkerLegs')
+        this.body = new AnimatedSceneEntity(sceneMgr, 'Vehicles/WalkerBody')
         this.addToMeshGroup(this.body.group)
     }
 

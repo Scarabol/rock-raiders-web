@@ -12,7 +12,7 @@ import { MaterialEntity } from './MaterialEntity'
 export class Dynamite extends MaterialEntity {
     constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
         super(worldMgr, EntityType.DYNAMITE, PriorityIdentifier.DESTRUCTION, RaiderTraining.DEMOLITION)
-        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, 'MiscAnims/Dynamite/Dynamite.ae')
+        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, 'MiscAnims/Dynamite')
         this.sceneEntity.changeActivity()
     }
 

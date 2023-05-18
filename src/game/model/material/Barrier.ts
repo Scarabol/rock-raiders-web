@@ -12,7 +12,7 @@ import { MaterialEntity } from './MaterialEntity'
 export class Barrier extends MaterialEntity {
     constructor(worldMgr: WorldManager, readonly location: BarrierLocation, readonly site: BuildingSite) {
         super(worldMgr, EntityType.BARRIER, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
-        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, 'MiscAnims/Barrier/Barrier.ae')
+        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, 'MiscAnims/Barrier')
         this.sceneEntity.changeActivity()
     }
 

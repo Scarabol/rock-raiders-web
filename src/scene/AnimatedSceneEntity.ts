@@ -18,8 +18,9 @@ export class AnimatedSceneEntity extends SceneEntity {
     animation: AnimClip = null
     activity: AnimationActivity = null
 
-    constructor(sceneMgr: SceneManager, aeFilename: string) {
+    constructor(sceneMgr: SceneManager, aeName: string) {
         super(sceneMgr)
+        const aeFilename =`${aeName}/${aeName.split('/').last()}.ae`
         let cfgRoot = ResourceManager.getResource(aeFilename)
         if (!cfgRoot) throw new Error(`Could not get animation entity type for: ${aeFilename}`)
         this.animationEntityType = new AnimEntityLoader(aeFilename, cfgRoot, this.sceneMgr.audioListener).loadModels()
@@ -90,7 +91,7 @@ export class AnimatedSceneEntity extends SceneEntity {
                         joint.add(lwoModel)
                         this.upgrades.push(lwoModel)
                     } else {
-                        const animatedUpgrade = new AnimatedSceneEntity(this.sceneMgr, `${upgrade.upgradeFilepath}/${upgrade.upgradeFilepath.split('/').last()}.ae`)
+                        const animatedUpgrade = new AnimatedSceneEntity(this.sceneMgr, upgrade.upgradeFilepath)
                         animatedUpgrade.changeActivity(activity)
                         joint.add(animatedUpgrade.group)
                         this.animatedUpgrades.push(animatedUpgrade)

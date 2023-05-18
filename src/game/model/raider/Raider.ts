@@ -48,7 +48,7 @@ export class Raider extends AbstractGameEntity implements Selectable, BeamUpEnti
     constructor(worldMgr: WorldManager) {
         super(EntityType.PILOT)
         this.tools.set(RaiderTool.DRILL, true)
-        this.sceneEntity = new RaiderSceneEntity(worldMgr.sceneMgr, 'mini-figures/pilot/pilot.ae')
+        this.sceneEntity = new RaiderSceneEntity(worldMgr.sceneMgr, 'mini-figures/pilot')
         this.addComponent(new HealthComponent()).addOnDeathListener(() => this.beamUp())
         this.addComponent(new HealthBarSpriteComponent(16, 10, this.sceneEntity.group, true))
         worldMgr.registerEntity(this)
