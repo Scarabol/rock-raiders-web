@@ -40,6 +40,14 @@ export class BuildingSite {
         }
     }
 
+    static createImproveSurfaceSite(worldMgr: WorldManager, surface: Surface): BuildingSite {
+        const site = new BuildingSite(worldMgr, surface, null, null, null, null)
+        site.neededByType.set(EntityType.ORE, 2)
+        worldMgr.entityMgr.buildingSites.push(site)
+        worldMgr.entityMgr.getClosestBuildingByType(surface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnMaterials(EntityType.ORE, 2)
+        return site
+    }
+
     getRandomDropPosition(): Vector2 {
         return this.primarySurface.getRandomPosition()
     }

@@ -3,8 +3,6 @@ import { EventKey } from '../event/EventKeyEnum'
 import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
 import { DeselectAll, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
-import { PowerPathBuildingSite } from './model/building/PowerPathBuildingSite'
-import { RepairLavaBuildingSite } from './model/building/RepairLavaBuildingSite'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
 import { EatJob } from './model/job/raider/EatJob'
@@ -12,6 +10,8 @@ import { GetToolJob } from './model/job/raider/GetToolJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
 import { UpgradeRaiderJob } from './model/job/raider/UpgradeRaiderJob'
 import { WorldManager } from './WorldManager'
+import { SurfaceType } from "./model/map/SurfaceType"
+import { BuildingSite } from "./model/building/BuildingSite"
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -29,7 +29,8 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_POWER_PATH, () => {
-            new PowerPathBuildingSite(worldMgr, entityMgr.selection.surface)
+            entityMgr.selection.surface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING_SITE)
+            BuildingSite.createImproveSurfaceSite(worldMgr, entityMgr.selection.surface)
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_MAKE_RUBBLE, () => {
@@ -158,7 +159,7 @@ export class GuiManager {
             }
         })
         EventBus.registerEventListener(EventKey.COMMAND_REPAIR_LAVA, () => {
-            new RepairLavaBuildingSite(worldMgr, entityMgr.selection.surface)
+            BuildingSite.createImproveSurfaceSite(worldMgr, entityMgr.selection.surface)
             EventBus.publishEvent(new DeselectAll())
         })
     }
