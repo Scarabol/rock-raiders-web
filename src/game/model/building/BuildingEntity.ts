@@ -184,6 +184,11 @@ export class BuildingEntity extends AbstractGameEntity implements Selectable, Be
                 GameState.numOre--
                 material.push(new Ore(this.worldMgr))
             }
+        } else if (type === EntityType.BRICK) {
+            while (GameState.numBrick > 0 && material.length < quantity) {
+                GameState.numBrick--
+                material.push(new Brick(this.worldMgr))
+            }
         } else {
             console.error(`Material drop not implemented for: ${type}`)
         }

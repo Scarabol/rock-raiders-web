@@ -85,20 +85,23 @@ export class BuildPlacementMarker {
         const barrierLocations = this.getBarrierLocations()
         const stats = this.buildingType.stats
         const neededCrystals = stats?.CostCrystal || 0
-        const neededOre = stats?.CostOre || 0
+        const neededOres = stats?.CostOre || 0
+        const neededBricks = stats?.CostRefinedOre || 0
         const primarySurface = this.buildingMarkerPrimary.surface
         const site = new BuildingSite(this.worldMgr, primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, this.buildingType)
         primarySurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         site.heading = this.heading
         site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
         site.neededByType.set(EntityType.CRYSTAL, neededCrystals)
-        site.neededByType.set(EntityType.ORE, neededOre)
+        site.neededByType.set(EntityType.ORE, neededOres)
+        // TODO register needed bricks with building site
         this.worldMgr.entityMgr.buildingSites.push(site)
         const closestToolstation = this.worldMgr.entityMgr.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
         if (closestToolstation) {
             closestToolstation.spawnBarriers(barrierLocations, site)
             closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)
-            closestToolstation.spawnMaterials(EntityType.ORE, neededOre)
+            closestToolstation.spawnMaterials(EntityType.ORE, neededOres)
+            closestToolstation.spawnMaterials(EntityType.BRICK, neededBricks)
         }
         EventBus.publishEvent(new DeselectAll())
         EventBus.publishEvent(new CancelBuildMode())

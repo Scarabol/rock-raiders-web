@@ -44,9 +44,9 @@ export class BuildingSite {
         return this.primarySurface.getRandomPosition()
     }
 
-    needs(EntityType: EntityType): boolean {
-        const needed = this.neededByType.getOrUpdate(EntityType, () => 0)
-        const assigned = this.assignedByType.getOrUpdate(EntityType, () => []).length
+    needs(entityType: EntityType): boolean {
+        const needed = this.neededByType.getOrUpdate(entityType, () => 0)
+        const assigned = this.assignedByType.getOrUpdate(entityType, () => []).length
         return needed > assigned
     }
 
