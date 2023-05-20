@@ -14,6 +14,7 @@ export class ScreenMaster {
     width: number = NATIVE_SCREEN_WIDTH
     height: number = NATIVE_SCREEN_HEIGHT
     ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
+    focusedLayer: ScreenLayer = null
 
     constructor() {
         this.gameContainer = getElementByIdOrThrow('game-container')
@@ -50,6 +51,7 @@ export class ScreenMaster {
     }
 
     getActiveLayersSorted(): ScreenLayer[] {
+        if (this.focusedLayer) return [this.focusedLayer]
         return this.layers.filter(l => l.isActive()).sort((a, b) => ScreenLayer.compareZ(a, b))
     }
 
