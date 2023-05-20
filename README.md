@@ -42,7 +42,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.6.0 - Complete Base Systems
 
-- Fix selection layer getting stuck when over other layers
+- Tooltips for all buttons and actions
 - Use new animation system with keyframes
 - Complete ECS systems integration
 - Refactor job system to allow multi-carry jobs
