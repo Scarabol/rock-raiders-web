@@ -109,7 +109,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add rockfall transition when switching in main menu
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Implement random lava particle emitter
-- Raider beam-up does not have beam sound
 
 ## Technical Debt
 
