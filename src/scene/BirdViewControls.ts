@@ -1,4 +1,4 @@
-import { MapControls } from 'three/examples/jsm/controls/OrbitControls'
+import { MapControls } from 'three/examples/jsm/controls/MapControls'
 import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'

@@ -20,14 +20,14 @@
   "devDependencies": {
     "@popperjs/core": "^2.11.7",
     "@types/bootstrap": "^5.2.6",
-    "@types/node": "^18.15.11",
+    "@types/node": "^20.2.1",
     "@types/offscreencanvas": "^2019.7.0",
     "@types/stats.js": "^0.17.0",
-    "@types/three": "^0.150.1",
+    "@types/three": "^0.152.0",
     "bootstrap": "^5.2.3",
     "stats.js": "^0.17.0",
-    "three": "^0.150.1",
+    "three": "^0.152.2",
     "typescript": "^5.0.4",
-    "vite": "^4.2.1"
+    "vite": "^4.3.8"
   }
 }

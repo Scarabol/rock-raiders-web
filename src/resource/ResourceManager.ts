@@ -1,4 +1,4 @@
-import { RepeatWrapping, Texture } from 'three'
+import { RepeatWrapping, SRGBColorSpace, Texture } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { createContext } from '../core/ImageHelper'
 import { SpriteImage } from '../core/Sprite'
@@ -51,6 +51,7 @@ export class ResourceManager extends ResourceCache {
         // without repeat wrapping some entities are not fully textured
         const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
         texture.needsUpdate = true // without everything is just dark
+        texture.colorSpace = SRGBColorSpace
         return texture
     }
 
@@ -74,6 +75,7 @@ export class ResourceManager extends ResourceCache {
         // without repeat wrapping some entities are not fully textured
         const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
         texture.needsUpdate = true // without everything is just dark
+        texture.colorSpace = SRGBColorSpace
         return texture
     }
 
