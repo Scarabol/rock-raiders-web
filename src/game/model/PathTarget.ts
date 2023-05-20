@@ -1,12 +1,9 @@
 import { Vector2 } from 'three'
-import { EventBus } from '../../event/EventBus'
-import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { ITEM_ACTION_RANGE_SQ } from '../../params'
 import { BarrierActivity, BuildingActivity, RaiderActivity } from './anim/AnimationActivity'
 import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
 import { EntityType } from './EntityType'
-import { GameState } from './GameState'
 import { Surface } from './map/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
 

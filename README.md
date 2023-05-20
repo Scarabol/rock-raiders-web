@@ -40,7 +40,17 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Development Roadmap
 
-### Near (v0.6.0)
+### v0.6.0 - Complete Base Systems
+
+- Fix selection layer getting stuck when over other layers
+- Use new animation system with keyframes
+- Complete ECS systems integration
+- Refactor job system to allow multi-carry jobs
+- Refactor upgrade system and make vehicles upgradeable
+- Raider get tired while carrying and eat at barracks
+- Raider scatter on right-click move
+
+### v0.7.0 - Rockies, Slugs And Damage
 
 - switch all raider with weapon from work to defend
 - let raider in defend mode target any known slug or rock monster
@@ -60,16 +70,14 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - make rock monster pick up nearby raider and shake them upside down
 - make rock monster punch vehicles passing by
 
-### Mid (v0.7.0)
+### v0.8.0 - Late game features
 
-- Bricks and brick refinery
+- Bricks can be used to build
 - First-Person and shoulder camera
-
-### Far (v0.8.0)
-
-- Background music and soundtrack
 - Geologists and scanner
+- Background music and soundtrack
 - Tutorial levels
+- Fix lighting and finalize game atmosphere
 
 ### Polishing (v0.9.0)
 
@@ -77,17 +85,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Known Issues
 
-### Important
-
-- Selection layer has bad performance and behaves funny when hovering GUI
-- Refactor job system to allow multi-carry jobs
-- Refactor upgrade system and make vehicles upgradeable
-
 ### Nice to have
 
 - Dependency tooltips for buildings/vehicles not shown
 - Camera can glitch through terrain
-- Provide resources explicit to workers with messaging
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Large digger and walker digger moving into wall for drilling
 - Beamup animation sequence missing on successful level end
@@ -108,6 +109,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add rockfall transition when switching in main menu
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Implement random lava particle emitter
+- Raider beam-up does not have beam sound
 
 ## Technical Debt
 
