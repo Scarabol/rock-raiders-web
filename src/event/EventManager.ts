@@ -13,6 +13,7 @@ export class EventManager {
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],
             ['pointerup', POINTER_EVENT.UP],
+            ['pointerleave', POINTER_EVENT.LEAVE]
         ]).forEach((eventEnum, eventType) => {
             screenMaster.gameCanvasContainer.addEventListener(eventType, (event: Event) => {
                 event.preventDefault()
@@ -32,9 +33,6 @@ export class EventManager {
         screenMaster.gameCanvasContainer.addEventListener('wheel', (event: WheelEvent) => {
             EventManager.publishWheelEvent(screenMaster.getActiveLayersSorted(), new GameWheelEvent(event))
         })
-        screenMaster.gameCanvasContainer.addEventListener('mouseleave', () => {
-            EventManager.publishMouseLeaveEvent(screenMaster.getActiveLayersSorted())
-        })
     }
 
     private static publishPointerEvent(activeLayers: ScreenLayer[], event: GamePointerEvent) {
@@ -52,12 +50,6 @@ export class EventManager {
     private static publishWheelEvent(activeLayers: ScreenLayer[], event: GameWheelEvent) {
         activeLayers.shift()?.pushWheelEvent(event).then((consumed) => {
             if (!consumed) this.publishWheelEvent(activeLayers, event)
-        })
-    }
-
-    private static publishMouseLeaveEvent(activeLayers: ScreenLayer[]) {
-        activeLayers.shift()?.pushMouseLeaveEvent().then((consumed) => {
-            if (!consumed) this.publishMouseLeaveEvent(activeLayers)
         })
     }
 }

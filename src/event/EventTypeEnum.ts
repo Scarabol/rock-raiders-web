@@ -9,6 +9,7 @@ export enum POINTER_EVENT {
     MOVE,
     DOWN,
     UP,
+    LEAVE,
 }
 
 export enum KEY_EVENT {

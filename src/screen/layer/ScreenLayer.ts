@@ -80,15 +80,6 @@ export class ScreenLayer {
         return false
     }
 
-    pushMouseLeaveEvent(): Promise<boolean> {
-        const eventConsumed = this.handleMouseLeaveEvent()
-        return new Promise((resolve) => resolve(eventConsumed))
-    }
-
-    handleMouseLeaveEvent(): boolean {
-        return false
-    }
-
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {
         return new Promise<HTMLCanvasElement>((resolve) => resolve(this.canvas))
     }

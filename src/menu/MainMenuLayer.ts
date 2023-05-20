@@ -99,6 +99,9 @@ export class MainMenuLayer extends ScaledLayer {
                     return true
                 }
             }
+        } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
+            this.scrollSpeedY = 0
+            return true
         }
         if (this.needsRedraw()) this.animationFrame.redraw()
         return false
@@ -139,11 +142,6 @@ export class MainMenuLayer extends ScaledLayer {
 
     needsRedraw(): boolean {
         return this.items.some((item) => item.needsRedraw)
-    }
-
-    handleMouseLeaveEvent(): boolean {
-        this.scrollSpeedY = 0
-        return true
     }
 
     set onItemAction(callback: (item: MainMenuBaseItem) => any) {
