@@ -88,8 +88,9 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
                 const params = new URLSearchParams(window.location.search)
                 const entry = params.get('entry')
                 if (DEV_MODE && entry) {
-                    GameState.numOre = Number(params.get('numOre')) || 0
                     GameState.numCrystal = Number(params.get('numCrystal')) || 0
+                    GameState.numOre = Number(params.get('numOre')) || 0
+                    GameState.numBrick = Number(params.get('numBrick')) || 0
                     ObjectListLoader.numRaider = Number(params.get('numRaider')) || 0
                     const loadGame = params.get('loadGame')
                     if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))

@@ -72,7 +72,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Bricks can be used to build
 - First-Person and shoulder camera
 - Geologists and scanner
 - Background music and soundtrack
@@ -108,7 +107,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Show loading screen when starting a level
 - Add rockfall transition when switching in main menu
 - Two buttons in priority list can be hovered/pressed/released at the same time
-- Implement random lava particle emitter
+- Show misc anim LavaErosionSmoke over lava
 
 ## Technical Debt
 

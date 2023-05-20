@@ -42,8 +42,10 @@ export class BuildingSite {
 
     static createImproveSurfaceSite(worldMgr: WorldManager, surface: Surface): BuildingSite {
         const site = new BuildingSite(worldMgr, surface, null, null, null, null)
+        site.neededByType.set(EntityType.BRICK, 1)
         site.neededByType.set(EntityType.ORE, 2)
         worldMgr.entityMgr.buildingSites.push(site)
+        worldMgr.entityMgr.getClosestBuildingByType(surface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnMaterials(EntityType.BRICK, 1)
         worldMgr.entityMgr.getClosestBuildingByType(surface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnMaterials(EntityType.ORE, 2)
         return site
     }
@@ -53,6 +55,16 @@ export class BuildingSite {
     }
 
     needs(entityType: EntityType): boolean {
+        if (entityType === EntityType.ORE) {
+            return this.isNeeded(entityType) && (this.isNeeded(EntityType.BRICK) || this.neededByType.getOrUpdate(EntityType.BRICK, () => 0) < 1)
+        } else if (entityType === EntityType.BRICK) {
+            return this.isNeeded(entityType) && (this.isNeeded(EntityType.ORE) || this.neededByType.getOrUpdate(EntityType.ORE, () => 0) < 1)
+        } else {
+            return this.isNeeded(entityType)
+        }
+    }
+
+    private isNeeded(entityType: EntityType) {
         const needed = this.neededByType.getOrUpdate(entityType, () => 0)
         const assigned = this.assignedByType.getOrUpdate(entityType, () => []).length
         return needed > assigned
@@ -73,10 +85,17 @@ export class BuildingSite {
 
     checkComplete() {
         if (this.complete || this.canceled) return
-        this.complete = true
+        let oreBrickComplete = true
+        let othersComplete = true
         this.neededByType.forEach((needed, neededType) => {
-            this.complete = this.complete && this.onSiteByType.getOrUpdate(neededType, () => []).length >= needed
+            const neededTypeComplete = this.onSiteByType.getOrUpdate(neededType, () => []).length >= needed
+            if (neededType === EntityType.ORE || neededType === EntityType.BRICK) {
+                oreBrickComplete = oreBrickComplete && neededTypeComplete
+            } else {
+                othersComplete = othersComplete && neededTypeComplete
+            }
         })
+        this.complete = oreBrickComplete && othersComplete
         if (!this.complete) return
         this.worldMgr.entityMgr.buildingSites.remove(this)
         if (!this.buildingType) {
