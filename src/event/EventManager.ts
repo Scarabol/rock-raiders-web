@@ -16,16 +16,16 @@ export class EventManager {
         ]).forEach((eventEnum, eventType) => {
             screenMaster.gameCanvasContainer.addEventListener(eventType, (event: Event) => {
                 event.preventDefault()
-                screenMaster.gameCanvasContainer.focus()
                 EventManager.publishPointerEvent(screenMaster.getActiveLayersSorted(), new GamePointerEvent(eventEnum, event as PointerEvent))
             })
         })
+        screenMaster.gameCanvasContainer.addEventListener('pointerdown', () => screenMaster.gameCanvasContainer.focus())
         new Map<string, KEY_EVENT>([
             ['keydown', KEY_EVENT.DOWN],
             ['keyup', KEY_EVENT.UP],
         ]).forEach((eventEnum, eventType) => {
             screenMaster.gameCanvasContainer.addEventListener(eventType, (event: Event) => {
-                if (!DEV_MODE) event.preventDefault()
+                if (!DEV_MODE) event.preventDefault() // Blocks F5 page reload
                 EventManager.publishKeyEvent(screenMaster.getActiveLayersSorted(), new GameKeyboardEvent(eventEnum, event as KeyboardEvent))
             })
         })
