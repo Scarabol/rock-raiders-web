@@ -1,4 +1,4 @@
-import { AnimationActivity } from '../../game/model/anim/AnimationActivity'
+import { AnimationActivity, AnimEntityActivity } from '../../game/model/anim/AnimationActivity'
 import { AnimationEntityUpgrade } from '../../game/model/anim/AnimationEntityUpgrade'
 import { SceneManager } from '../../game/SceneManager'
 import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
@@ -18,6 +18,10 @@ export class WalkerDiggerSceneEntity extends VehicleSceneEntity {
         if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone) return
         this.body.changeActivity(activity, onAnimationDone, durationTimeMs)
         super.changeActivity(activity)
+    }
+
+    getDefaultActivity(): AnimationActivity {
+        return AnimEntityActivity.Stand
     }
 
     update(elapsedMs: number) {
