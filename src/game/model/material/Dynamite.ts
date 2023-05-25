@@ -27,10 +27,8 @@ export class Dynamite extends MaterialEntity {
 
     onCarryJobComplete(): void {
         super.onCarryJobComplete()
-        this.worldMgr.entityMgr.tickingDynamite.push(this)
         this.sceneEntity.headTowards(this.targetSurface.getCenterWorld2D())
         this.sceneEntity.changeActivity(DynamiteActivity.TickDown, () => {
-            this.worldMgr.entityMgr.tickingDynamite.remove(this)
             this.sceneEntity.disposeFromScene()
             this.targetSurface.collapse()
             this.worldMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.sceneEntity.position, this.sceneEntity.getHeading())

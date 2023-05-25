@@ -146,11 +146,11 @@ export class SceneEntity {
             this.setHeading(radHeading)
         }
         this.visible = this.surfaces.some((s) => s.discovered)
-        this.sceneMgr.scene.add(this.group)
+        this.sceneMgr.addEntity(this)
     }
 
     disposeFromScene() {
-        this.sceneMgr.scene.remove(this.group)
+        this.sceneMgr.removeEntity(this)
         // TODO dispose scene meshes, use on-remove event trigger?
     }
 

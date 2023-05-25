@@ -60,7 +60,6 @@ export class Raider extends AbstractGameEntity implements Selectable, BeamUpEnti
 
     update(elapsedMs: number) {
         this.work(elapsedMs)
-        this.sceneEntity.update(elapsedMs)
         this.beamUpAnimator?.update(elapsedMs)
     }
 

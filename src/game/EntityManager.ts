@@ -31,7 +31,6 @@ export class EntityManager {
     raidersInBeam: Raider[] = []
     materials: MaterialEntity[] = []
     materialsUndiscovered: MaterialEntity[] = []
-    tickingDynamite: MaterialEntity[] = []
     placedFences: ElectricFence[] = []
     buildingSites: BuildingSite[] = []
     spiders: AbstractGameEntity[] = []
@@ -66,7 +65,6 @@ export class EntityManager {
         this.raidersInBeam = []
         this.materials = []
         this.materialsUndiscovered = []
-        this.tickingDynamite = []
         this.placedFences = []
         this.buildingSites = []
         this.spiders = []
@@ -86,8 +84,6 @@ export class EntityManager {
         this.buildings.forEach((b) => updateSafe(b, elapsedMs))
         this.raiders.forEach((r) => updateSafe(r, elapsedMs))
         this.raidersInBeam.forEach((r) => updateSafe(r, elapsedMs))
-        this.materials.forEach((m) => updateSafe(m, elapsedMs))
-        this.tickingDynamite.forEach((d) => updateSafe(d, elapsedMs))
         this.placedFences.forEach((f) => updateSafe(f, elapsedMs))
         this.vehicles.forEach((v) => updateSafe(v, elapsedMs))
         this.vehiclesInBeam.forEach((v) => updateSafe(v, elapsedMs))

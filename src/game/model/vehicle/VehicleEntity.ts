@@ -59,7 +59,6 @@ export class VehicleEntity extends AbstractGameEntity implements Selectable, Bea
 
     update(elapsedMs: number) {
         this.work(elapsedMs)
-        this.sceneEntity.update(elapsedMs)
         this.beamUpAnimator?.update(elapsedMs)
     }
 

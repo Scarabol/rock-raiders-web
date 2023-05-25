@@ -77,7 +77,6 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
     }
 
     update(elapsedMs: number) {
-        super.update(elapsedMs)
         this.beamUpAnimator?.update(elapsedMs)
     }
 

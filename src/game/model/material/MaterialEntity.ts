@@ -43,10 +43,6 @@ export abstract class MaterialEntity implements Disposable {
         this.worldMgr.entityMgr.materialsUndiscovered.remove(this)
     }
 
-    update(elapsedMs: number) {
-        this.sceneEntity.update(elapsedMs)
-    }
-
     onCarryJobComplete(): void {
     }
 

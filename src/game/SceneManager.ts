@@ -18,12 +18,15 @@ import { WorldManager } from './WorldManager'
 import { BirdViewCamera } from '../scene/BirdViewCamera'
 import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
+import { Updatable, updateSafe } from "./model/Updateable"
+import { SceneEntity } from "../scene/SceneEntity"
 
-export class SceneManager {
+export class SceneManager implements Updatable {
     readonly audioListener: AudioListener
     readonly camera: BirdViewCamera
     readonly renderer: SceneRenderer
     readonly controls: BirdViewControls
+    readonly entities: SceneEntity[] = []
     worldMgr: WorldManager
     scene: Scene
     ambientLight: AmbientLight
@@ -197,12 +200,18 @@ export class SceneManager {
         this.renderer.startRendering(this.scene)
     }
 
+    update(elapsedMs: number) {
+        this.terrain.update(elapsedMs)
+        this.entities.forEach((e) => updateSafe(e, elapsedMs))
+    }
+
     disposeScene() {
         this.renderer.dispose()
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null
         this.cursor?.dispose()
+        this.entities.length = 0
     }
 
     resize(width: number, height: number) {
@@ -237,5 +246,15 @@ export class SceneManager {
 
     setBuildModeSelection(entityType: EntityType) {
         this.buildMarker.setBuildMode(entityType)
+    }
+
+    addEntity(sceneEntity: SceneEntity): void {
+        this.scene.add(sceneEntity.group)
+        this.entities.add(sceneEntity)
+    }
+
+    removeEntity(sceneEntity: SceneEntity): void {
+        this.entities.remove(sceneEntity)
+        this.scene.remove(sceneEntity.group)
     }
 }

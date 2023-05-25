@@ -330,7 +330,6 @@ export class BuildingEntity extends AbstractGameEntity implements Selectable, Be
     }
 
     update(elapsedMs: number) {
-        this.sceneEntity.update(elapsedMs)
         this.beamUpAnimator?.update(elapsedMs)
         this.powerOffSprite.update(elapsedMs)
     }

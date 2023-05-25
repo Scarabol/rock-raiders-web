@@ -32,10 +32,6 @@ export class AnimatedSceneEntityComponent implements GameComponent {
         this.sceneEntity.disposeFromScene()
     }
 
-    update(elapsedMs: number) {
-        this.sceneEntity.update(elapsedMs)
-    }
-
     focus(focus: Vector2) {
         this.sceneEntity.headTowards(focus)
     }

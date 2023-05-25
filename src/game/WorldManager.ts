@@ -21,7 +21,6 @@ import { Supervisor } from './Supervisor'
 import { AbstractSubSystem } from './system/AbstractSubSystem'
 import { MapMarkerSubSystem } from './system/MapMarkerSubSystem'
 import { MovementSubSystem } from './system/MovementSubSystem'
-import { SceneEntitySubSystem } from './system/SceneEntitySubSystem'
 import { HealthBarSpriteSystem } from "./system/HealthBarSpriteSystem";
 
 export class WorldManager {
@@ -44,7 +43,6 @@ export class WorldManager {
     firstUnpause: boolean = true
 
     constructor() {
-        this.systems.push(new SceneEntitySubSystem())
         this.systems.push(new MovementSubSystem())
         this.systems.push(new MapMarkerSubSystem())
         this.healthBarSpriteSystem = new HealthBarSpriteSystem()
@@ -132,7 +130,7 @@ export class WorldManager {
         this.checkSpawnVehicles(elapsedMs)
         this.systems.forEach((s) => updateSafe(s, elapsedMs))
         updateSafe(this.entityMgr, elapsedMs)
-        updateSafe(this.sceneMgr.terrain, elapsedMs)
+        updateSafe(this.sceneMgr, elapsedMs)
         updateSafe(this.jobSupervisor, elapsedMs)
         updateSafe(this.nerpRunner, elapsedMs)
     }
