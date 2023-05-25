@@ -11,8 +11,7 @@ export class AnimatedSceneEntityComponent implements GameComponent {
     protected sceneEntity: AnimatedSceneEntity = null
 
     constructor(protected readonly sceneMgr: SceneManager, aeFilename: string, floorOffset?: number) {
-        this.sceneEntity = new AnimatedSceneEntity(sceneMgr, aeFilename)
-        if (floorOffset) this.sceneEntity.floorOffset = floorOffset
+        this.sceneEntity = new AnimatedSceneEntity(sceneMgr, aeFilename, floorOffset)
     }
 
     setupComponent(entity: AbstractGameEntity) {

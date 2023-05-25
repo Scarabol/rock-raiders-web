@@ -18,8 +18,8 @@ export class AnimatedSceneEntity extends SceneEntity {
     animation: AnimClip = null
     activity: AnimationActivity = null
 
-    constructor(sceneMgr: SceneManager, aeName: string) {
-        super(sceneMgr)
+    constructor(sceneMgr: SceneManager, aeName: string, floorOffset: number = 0.1) {
+        super(sceneMgr, floorOffset)
         const aeFilename =`${aeName}/${aeName.split('/').last()}.ae`
         let cfgRoot = ResourceManager.getResource(aeFilename)
         if (!cfgRoot) throw new Error(`Could not get animation entity type for: ${aeFilename}`)

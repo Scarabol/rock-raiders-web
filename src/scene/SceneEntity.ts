@@ -11,7 +11,6 @@ import { SelectionFrameSprite } from './SelectionFrameSprite'
 
 export class SceneEntity {
     readonly updatableChildren: Updatable[] = []
-    floorOffset: number = 0.1
 
     sceneMgr: SceneManager
     group: Group = new Group()
@@ -22,7 +21,7 @@ export class SceneEntity {
     boundingSphere: Sphere = new Sphere()
     lastRadiusSquare: number = null
 
-    constructor(sceneMgr: SceneManager) {
+    constructor(sceneMgr: SceneManager, readonly floorOffset: number = 0.1) {
         this.sceneMgr = sceneMgr
         this.group.add(this.meshGroup)
     }
