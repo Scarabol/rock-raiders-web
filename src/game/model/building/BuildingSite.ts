@@ -85,12 +85,12 @@ export class BuildingSite {
 
     checkComplete() {
         if (this.complete || this.canceled) return
-        let oreBrickComplete = true
+        let oreBrickComplete = false
         let othersComplete = true
         this.neededByType.forEach((needed, neededType) => {
             const neededTypeComplete = this.onSiteByType.getOrUpdate(neededType, () => []).length >= needed
             if (neededType === EntityType.ORE || neededType === EntityType.BRICK) {
-                oreBrickComplete = oreBrickComplete && neededTypeComplete
+                oreBrickComplete = oreBrickComplete || neededTypeComplete
             } else {
                 othersComplete = othersComplete && neededTypeComplete
             }
