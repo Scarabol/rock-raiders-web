@@ -1,12 +1,9 @@
 import { EventKey } from './EventKeyEnum'
 
 export class GameEvent {
-    eventKey: EventKey
-    isLocal: boolean
-    guiForward: boolean
+    logEvent: boolean = false
+    guiForward: boolean = true
 
-    constructor(eventKey: EventKey) {
-        this.eventKey = eventKey
-        this.guiForward = true
+    constructor(readonly eventKey: EventKey) {
     }
 }

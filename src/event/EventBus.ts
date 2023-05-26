@@ -1,29 +1,31 @@
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
-export class EventBus {
-    static eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
-    static workerListener: ((event: GameEvent) => any)[] = []
-    static blockedEvents: EventKey[] = []
+class GenericEventBus<T extends GameEvent> {
+    eventListener = new Map<EventKey, ((event: T) => any)[]>()
+    workerListener: ((event: T) => any)[] = []
+    blockedEvents: EventKey[] = []
 
-    static publishEvent(event: GameEvent) {
+    publishEvent(event: T) {
         if (this.blockedEvents.includes(event.eventKey)) return // event is currently blocked from publishing
-        if (!event.isLocal) console.log(`Event published: ${EventKey[event.eventKey]}`)
+        if (event.logEvent) console.log(`Event published: ${EventKey[event.eventKey]}`)
         this.blockedEvents.push(event.eventKey)
         this.workerListener.forEach((callback) => callback(event))
         this.getListener(event.eventKey).forEach((callback) => callback(event))
         this.blockedEvents.remove(event.eventKey)
     }
 
-    static registerEventListener(eventKey: EventKey, callback: (event: GameEvent) => any) {
+    registerEventListener(eventKey: EventKey, callback: (event: T) => any) {
         this.getListener(eventKey).push(callback)
     }
 
-    private static getListener(eventKey: EventKey) {
+    private getListener(eventKey: EventKey) {
         return this.eventListener.getOrUpdate(eventKey, () => [])
     }
 
-    static registerWorkerListener(callback: (event: GameEvent) => any) {
+    registerWorkerListener(callback: (event: T) => any) {
         this.workerListener.push(callback)
     }
 }
+
+export const EventBus = new GenericEventBus()

@@ -8,7 +8,7 @@ import { GameEvent } from './GameEvent'
 export class WorldEvent extends GameEvent {
     constructor(entityKey: EventKey) {
         super(entityKey)
-        this.isLocal = false
+        this.logEvent = true
     }
 }
 

@@ -3,7 +3,7 @@ import { SpriteContext } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
 import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { GameEvent } from '../../event/GameEvent'
-import { ChangeCursor, LocalEvent, PlaySoundEvent } from '../../event/LocalEvents'
+import { ChangeCursor, GuiCommand, PlaySoundEvent } from '../../event/GuiCommand'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 
 export class BaseElement {
@@ -21,7 +21,7 @@ export class BaseElement {
     pressedByButton: MOUSE_BUTTON = null
     onClick: (cx?: number, cy?: number) => any = null
     onClickSecondary: (cx?: number, cy?: number) => any = null
-    onPublishEvent: (event: LocalEvent) => any = (event) => console.log(`TODO publish event: ${EventKey[event.eventKey]}`)
+    onPublishEvent: (event: GuiCommand) => any = (event) => console.log(`TODO publish event: ${EventKey[event.eventKey]}`)
     tooltipTimeout: NodeJS.Timeout = null
 
     constructor(parent: BaseElement) {
@@ -157,7 +157,7 @@ export class BaseElement {
         this.parent?.notifyRedraw()
     }
 
-    publishEvent(event: LocalEvent) {
+    publishEvent(event: GuiCommand) {
         if (this.parent) this.parent.publishEvent(event)
         else this.onPublishEvent(event)
     }

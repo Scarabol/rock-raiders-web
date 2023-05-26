@@ -1,6 +1,5 @@
 import { Group, Vector2 } from 'three'
 import { EventBus } from '../../../event/EventBus'
-import { CancelBuildMode } from '../../../event/GuiCommand'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
@@ -104,7 +103,7 @@ export class BuildPlacementMarker {
             closestToolstation.spawnMaterials(EntityType.ORE, neededOres)
         }
         EventBus.publishEvent(new DeselectAll())
-        EventBus.publishEvent(new CancelBuildMode())
+        this.worldMgr.sceneMgr.setBuildModeSelection(null)
     }
 
     getBarrierLocations(): BarrierLocation[] {

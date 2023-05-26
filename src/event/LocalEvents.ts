@@ -1,6 +1,4 @@
 import { Vector3 } from 'three'
-import { Sample } from '../audio/Sample'
-import { Cursor } from '../cfg/PointerCfg'
 import { MAP_MARKER_TYPE } from '../game/component/common/EntityMapMarkerComponent'
 import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
@@ -17,10 +15,6 @@ import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
 export class LocalEvent extends GameEvent {
-    constructor(eventKey: EventKey) {
-        super(eventKey)
-        this.isLocal = true
-    }
 }
 
 export enum SelectPanelType {
@@ -87,6 +81,12 @@ export class DeselectAll extends LocalEvent {
     }
 }
 
+export class TakeScreenshot extends LocalEvent {
+    constructor() {
+        super(EventKey.TAKE_SCREENSHOT)
+    }
+}
+
 export class AirLevelChanged extends LocalEvent {
     airLevel: number
 
@@ -102,26 +102,6 @@ export class NerpMessage extends LocalEvent {
     constructor(text: string) {
         super(EventKey.NERP_MESSAGE)
         this.text = text
-    }
-}
-
-export class ChangeCursor extends LocalEvent {
-    cursor: Cursor
-    timeout: number
-
-    constructor(cursor: Cursor, timeout: number = null) {
-        super(EventKey.CHANGE_CURSOR)
-        this.cursor = cursor
-        this.timeout = timeout
-    }
-}
-
-export class ChangeTooltip extends LocalEvent {
-    tooltipKey: string
-
-    constructor(tooltipKey: string) {
-        super(EventKey.CHANGE_TOOLTIP)
-        this.tooltipKey = tooltipKey.toLowerCase()
     }
 }
 
@@ -178,15 +158,6 @@ export class RaiderTrainingCompleteEvent extends LocalEvent {
     constructor(training: RaiderTraining) {
         super(EventKey.RAIDER_TRAINING_COMPLETE)
         this.training = training
-    }
-}
-
-export class PlaySoundEvent extends LocalEvent {
-    sample: Sample
-
-    constructor(sample: Sample) {
-        super(EventKey.PLAY_SOUND)
-        this.sample = sample
     }
 }
 

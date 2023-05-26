@@ -10,6 +10,7 @@ import { TypedWorkerBackend } from './TypedWorker'
 import { WorkerEventResponse } from './WorkerEventResponse'
 import { WorkerPublishEvent } from './WorkerPublishEvent'
 import { WorkerResponse } from './WorkerResponse'
+import { GuiCommand } from '../event/GuiCommand'
 
 export abstract class OffscreenSystem {
     readonly eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
@@ -89,7 +90,7 @@ export abstract class OffscreenSystem {
         this.sendResponse(response)
     }
 
-    publishEvent(event: GameEvent): void {
+    publishEvent(event: GuiCommand): void {
         this.sendResponse(new WorkerPublishEvent(event))
     }
 

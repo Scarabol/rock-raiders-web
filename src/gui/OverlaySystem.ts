@@ -4,7 +4,7 @@ import { EventKey } from '../event/EventKeyEnum'
 import { KEY_EVENT } from '../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
-import { LocalEvent } from '../event/LocalEvents'
+import { GuiCommand } from '../event/GuiCommand'
 import { DEV_MODE } from '../params'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { OffscreenCache } from '../worker/OffscreenCache'
@@ -58,7 +58,7 @@ export class OverlaySystem extends AbstractGuiSystem {
     setActivePanel(panel: Panel) {
         this.panels.forEach(p => p !== panel && p.hide())
         panel?.show()
-        this.publishEvent(new LocalEvent(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
+        this.publishEvent(new GuiCommand(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
         this.animationFrame.redraw()
     }
 

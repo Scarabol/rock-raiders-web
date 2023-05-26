@@ -1,6 +1,6 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
+import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
 import { DeselectAll, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
@@ -10,8 +10,9 @@ import { GetToolJob } from './model/job/raider/GetToolJob'
 import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
 import { UpgradeRaiderJob } from './model/job/raider/UpgradeRaiderJob'
 import { WorldManager } from './WorldManager'
-import { SurfaceType } from "./model/map/SurfaceType"
-import { BuildingSite } from "./model/building/BuildingSite"
+import { SurfaceType } from './model/map/SurfaceType'
+import { BuildingSite } from './model/building/BuildingSite'
+import { SoundManager } from '../audio/SoundManager'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -160,6 +161,12 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_REPAIR_LAVA, () => {
             BuildingSite.createImproveSurfaceSite(worldMgr, entityMgr.selection.surface)
+            EventBus.publishEvent(new DeselectAll())
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_PLAY_SOUND, (event: PlaySoundEvent) => {
+            SoundManager.playSample(event.sample)
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_REMOVE_SELECTION, () => {
             EventBus.publishEvent(new DeselectAll())
         })
     }

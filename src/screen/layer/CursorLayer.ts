@@ -8,8 +8,8 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { TakeScreenshot } from '../../event/GuiCommand'
-import { ChangeCursor, ChangeTooltip } from '../../event/LocalEvents'
+import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
+import { TakeScreenshot } from '../../event/LocalEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/model/map/Surface'
@@ -36,13 +36,13 @@ export class CursorLayer extends ScreenLayer {
     constructor() {
         super()
         this.animationFrame = new AnimationFrame(this.canvas)
-        EventBus.registerEventListener(EventKey.CHANGE_CURSOR, (event: ChangeCursor) => {
+        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_CURSOR, (event: ChangeCursor) => {
             if (this.active) this.changeCursor(event.cursor, event.timeout)
         })
         EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
             if (this.active) this.changeCursor(this.determineCursor())
         })
-        EventBus.registerEventListener(EventKey.CHANGE_TOOLTIP, (event: ChangeTooltip) => {
+        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_TOOLTIP, (event: ChangeTooltip) => {
             if (this.active) this.changeTooltip(event.tooltipKey)
         })
     }

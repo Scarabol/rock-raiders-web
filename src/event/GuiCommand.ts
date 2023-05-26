@@ -3,9 +3,46 @@ import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { RaiderTool } from '../game/model/raider/RaiderTool'
 import { RaiderTraining } from '../game/model/raider/RaiderTraining'
 import { EventKey } from './EventKeyEnum'
-import { LocalEvent } from './LocalEvents'
+import { GameEvent } from './GameEvent'
+import { Cursor } from '../cfg/PointerCfg'
+import { Sample } from '../audio/Sample'
 
-export class GuiCommand extends LocalEvent {
+export class GuiCommand extends GameEvent {
+}
+
+export class ChangeCursor extends GuiCommand {
+    cursor: Cursor
+    timeout: number
+
+    constructor(cursor: Cursor, timeout: number = null) {
+        super(EventKey.COMMAND_CHANGE_CURSOR)
+        this.cursor = cursor
+        this.timeout = timeout
+    }
+}
+
+export class ChangeTooltip extends GuiCommand {
+    tooltipKey: string
+
+    constructor(tooltipKey: string) {
+        super(EventKey.COMMAND_CHANGE_TOOLTIP)
+        this.tooltipKey = tooltipKey.toLowerCase()
+    }
+}
+
+export class PlaySoundEvent extends GuiCommand {
+    sample: Sample
+
+    constructor(sample: Sample) {
+        super(EventKey.COMMAND_PLAY_SOUND)
+        this.sample = sample
+    }
+}
+
+export class RemoveSelection extends GuiCommand {
+    constructor() {
+        super(EventKey.COMMAND_REMOVE_SELECTION)
+    }
 }
 
 export class CancelBuildMode extends GuiCommand {
@@ -209,12 +246,6 @@ export class CameraControl extends GuiCommand {
         this.zoom = zoom
         this.cycleBuilding = cycleBuilding
         this.rotationIndex = rotationIndex
-    }
-}
-
-export class TakeScreenshot extends GuiCommand {
-    constructor() {
-        super(EventKey.TAKE_SCREENSHOT)
     }
 }
 

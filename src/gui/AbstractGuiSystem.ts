@@ -4,7 +4,7 @@ import { GameEvent } from '../event/GameEvent'
 import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
-import { ChangeCursor, LocalEvent } from '../event/LocalEvents'
+import { ChangeCursor, GuiCommand } from '../event/GuiCommand'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { AnimationFrameScaled } from '../screen/AnimationFrame'
 import { OffscreenSystem } from '../worker/OffscreenSystem'
@@ -25,7 +25,7 @@ export abstract class AbstractGuiSystem extends OffscreenSystem {
             this.rootElement.onRedraw(context)
         }
         this.rootElement.notifyRedraw = () => this.animationFrame.redraw()
-        this.rootElement.publishEvent = (event: LocalEvent) => {
+        this.rootElement.publishEvent = (event: GuiCommand) => {
             this.publishEvent(event)
         }
         this.rootElement.registerEventListener = (eventKey: EventKey, callback: (event: GameEvent) => any) => {
