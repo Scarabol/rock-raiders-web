@@ -16,8 +16,8 @@ import { PointerCfg } from './PointerCfg'
 import { PrioritiesImagePositionsCfg, PriorityButtonsCfg } from './PriorityButtonsCfg'
 import { RewardCfg } from './RewardCfg'
 import { TexturesCfg } from './TexturesCfg'
-import { MiscObjectsCfg } from "./MiscObjectsCfg"
-import { RockFallStylesCfg } from "./RockFallStylesCfg"
+import { MiscObjectsCfg } from './MiscObjectsCfg'
+import { RockFallStylesCfg } from './RockFallStylesCfg'
 
 export class GameConfig extends BaseConfig {
     main: MainCfg = new MainCfg()

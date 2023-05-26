@@ -1,9 +1,9 @@
-import { Object3D, PointLight, SpotLight, Vector3 } from "three"
-import { EventBus } from "../event/EventBus"
-import { EventKey } from "../event/EventKeyEnum"
-import { ToggleAlarmEvent } from "../event/WorldEvents"
-import { ALARM_LIGHT_ROTATION_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE } from "../params"
-import { clearIntervalSafe } from "../core/Util"
+import { Object3D, PointLight, SpotLight, Vector3 } from 'three'
+import { EventBus } from '../event/EventBus'
+import { EventKey } from '../event/EventKeyEnum'
+import { ToggleAlarmEvent } from '../event/WorldEvents'
+import { ALARM_LIGHT_ROTATION_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
+import { clearIntervalSafe } from '../core/Util'
 
 export class TorchLightCursor extends Object3D {
     alarmLights: SpotLight[] = []

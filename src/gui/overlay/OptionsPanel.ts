@@ -1,7 +1,7 @@
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { BaseElement } from '../base/BaseElement'
 import { MenuBasePanel } from './MenuBasePanel'
-import { SaveGameManager } from "../../resource/SaveGameManager"
+import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class OptionsPanel extends MenuBasePanel {
     onRepeatBriefing: () => any = () => console.log('repeat mission briefing')

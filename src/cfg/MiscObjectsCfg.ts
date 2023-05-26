@@ -1,4 +1,4 @@
-import { BaseConfig } from "./BaseConfig"
+import { BaseConfig } from './BaseConfig'
 
 export class MiscObjectsCfg extends BaseConfig {
     Boulder: string

@@ -16,8 +16,8 @@ import { RaiderTrainings } from './model/raider/RaiderTraining'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { WorldManager } from './WorldManager'
-import { Ore } from "./model/material/Ore"
-import { Brick } from "./model/material/Brick"
+import { Ore } from './model/material/Ore'
+import { Brick } from './model/material/Brick'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {

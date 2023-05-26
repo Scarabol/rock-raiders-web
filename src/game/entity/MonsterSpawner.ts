@@ -10,7 +10,7 @@ import { SpiderMovementComponent } from '../component/monster/SpiderMovementComp
 import { EntityType } from '../model/EntityType'
 import { WorldManager } from '../WorldManager'
 import { AbstractGameEntity } from './AbstractGameEntity'
-import { HealthBarSpriteComponent } from "../component/common/HealthBarSpriteComponent"
+import { HealthBarSpriteComponent } from '../component/common/HealthBarSpriteComponent'
 
 type MonsterEntityType = EntityType.SMALL_SPIDER | EntityType.BAT | EntityType.ICE_MONSTER | EntityType.LAVA_MONSTER | EntityType.ROCK_MONSTER
 

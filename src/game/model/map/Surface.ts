@@ -25,7 +25,7 @@ import { SurfaceMesh } from './SurfaceMesh'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
 import { WALL_TYPE } from './WallType'
-import { ResourceManager } from "../../../resource/ResourceManager"
+import { ResourceManager } from '../../../resource/ResourceManager'
 import degToRad = MathUtils.degToRad
 
 export class Surface implements Selectable {

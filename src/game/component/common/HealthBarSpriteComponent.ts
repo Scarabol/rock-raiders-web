@@ -1,10 +1,10 @@
-import { GameComponent } from "../../model/GameComponent"
-import { AbstractGameEntity } from "../../entity/AbstractGameEntity"
-import { HealthBarSprite } from "../../../scene/HealthBarSprite"
-import { HealthComponent } from "./HealthComponent"
-import { Object3D } from "three"
-import { HealthBarSpriteSystem } from "../../system/HealthBarSpriteSystem"
-import { AnimatedSceneEntityComponent } from "./AnimatedSceneEntityComponent"
+import { GameComponent } from '../../model/GameComponent'
+import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
+import { HealthBarSprite } from '../../../scene/HealthBarSprite'
+import { HealthComponent } from './HealthComponent'
+import { Object3D } from 'three'
+import { HealthBarSpriteSystem } from '../../system/HealthBarSpriteSystem'
+import { AnimatedSceneEntityComponent } from './AnimatedSceneEntityComponent'
 
 export class HealthBarSpriteComponent implements GameComponent {
     sprite: HealthBarSprite = null

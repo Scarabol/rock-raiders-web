@@ -10,8 +10,8 @@ import { PathFinder } from './PathFinder'
 import { PowerGrid } from './PowerGrid'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
-import { ResourceManager } from "../../../resource/ResourceManager"
-import { Sample } from "../../../audio/Sample"
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { Sample } from '../../../audio/Sample'
 
 export class Terrain {
     heightOffset: number[][] = [[]]

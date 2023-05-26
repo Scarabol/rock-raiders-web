@@ -1,5 +1,5 @@
-import { AbstractSubSystem } from "./AbstractSubSystem"
-import { HealthBarSpriteComponent } from "../component/common/HealthBarSpriteComponent"
+import { AbstractSubSystem } from './AbstractSubSystem'
+import { HealthBarSpriteComponent } from '../component/common/HealthBarSpriteComponent'
 
 export class HealthBarSpriteSystem extends AbstractSubSystem<HealthBarSpriteComponent> {
     static readonly STATUS_CHANGE_SPEED = 0.0001

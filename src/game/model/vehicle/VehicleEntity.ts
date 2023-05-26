@@ -28,9 +28,9 @@ import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { Selectable } from '../Selectable'
 import { Updatable } from '../Updateable'
-import { AbstractGameEntity } from "../../entity/AbstractGameEntity"
-import { HealthComponent } from "../../component/common/HealthComponent"
-import { HealthBarSpriteComponent } from "../../component/common/HealthBarSpriteComponent"
+import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
+import { HealthComponent } from '../../component/common/HealthComponent'
+import { HealthBarSpriteComponent } from '../../component/common/HealthBarSpriteComponent'
 
 export class VehicleEntity extends AbstractGameEntity implements Selectable, BeamUpEntity, Updatable, Disposable {
     currentPath: TerrainPath = null

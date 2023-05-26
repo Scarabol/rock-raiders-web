@@ -25,11 +25,11 @@ import { Selectable } from '../Selectable'
 import { BuildingSite } from './BuildingSite'
 import { BuildingType } from './BuildingType'
 import { Teleport } from './Teleport'
-import { AbstractGameEntity } from "../../entity/AbstractGameEntity"
-import { HealthComponent } from "../../component/common/HealthComponent"
-import { HealthBarSpriteComponent } from "../../component/common/HealthBarSpriteComponent"
-import { MaterialEntity } from "../material/MaterialEntity"
-import { Brick } from "../material/Brick"
+import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
+import { HealthComponent } from '../../component/common/HealthComponent'
+import { HealthBarSpriteComponent } from '../../component/common/HealthBarSpriteComponent'
+import { MaterialEntity } from '../material/MaterialEntity'
+import { Brick } from '../material/Brick'
 
 export class BuildingEntity extends AbstractGameEntity implements Selectable, BeamUpEntity {
     readonly carriedItems: MaterialEntity[] = []

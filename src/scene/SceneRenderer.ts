@@ -1,8 +1,8 @@
-import { Camera, Scene, WebGLRenderer } from "three"
-import { DebugHelper } from "../screen/DebugHelper"
-import { SpriteImage } from "../core/Sprite"
-import { cancelAnimationFrameSafe, clearIntervalSafe } from "../core/Util"
-import { cloneContext } from "../core/ImageHelper"
+import { Camera, Scene, WebGLRenderer } from 'three'
+import { DebugHelper } from '../screen/DebugHelper'
+import { SpriteImage } from '../core/Sprite'
+import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
+import { cloneContext } from '../core/ImageHelper'
 
 export class SceneRenderer extends WebGLRenderer {
     readonly debugHelper: DebugHelper = new DebugHelper()

@@ -8,7 +8,7 @@ import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { BarrierLocation } from './BarrierLocation'
 import { MaterialEntity } from './MaterialEntity'
-import { ResourceManager } from "../../../resource/ResourceManager"
+import { ResourceManager } from '../../../resource/ResourceManager'
 
 export class Barrier extends MaterialEntity {
     constructor(worldMgr: WorldManager, readonly location: BarrierLocation, readonly site: BuildingSite) {

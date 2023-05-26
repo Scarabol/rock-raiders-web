@@ -21,7 +21,7 @@ import { Supervisor } from './Supervisor'
 import { AbstractSubSystem } from './system/AbstractSubSystem'
 import { MapMarkerSubSystem } from './system/MapMarkerSubSystem'
 import { MovementSubSystem } from './system/MovementSubSystem'
-import { HealthBarSpriteSystem } from "./system/HealthBarSpriteSystem";
+import { HealthBarSpriteSystem } from './system/HealthBarSpriteSystem'
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)

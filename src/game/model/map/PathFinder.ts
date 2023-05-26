@@ -154,6 +154,5 @@ export class PathFinder {
         this.cachedFlyPaths.clear()
         this.cachedSwimPaths.clear()
         this.cachedLavaPaths.clear()
-        console.log('Cached paths cleared')
     }
 }

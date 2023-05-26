@@ -8,9 +8,9 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { MaterialEntity } from './MaterialEntity'
-import { GameState } from "../GameState"
-import { EventBus } from "../../../event/EventBus"
-import { MaterialAmountChanged } from "../../../event/WorldEvents"
+import { GameState } from '../GameState'
+import { EventBus } from '../../../event/EventBus'
+import { MaterialAmountChanged } from '../../../event/WorldEvents'
 
 export class Crystal extends MaterialEntity {
     constructor(worldMgr: WorldManager) {

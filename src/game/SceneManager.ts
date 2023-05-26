@@ -1,7 +1,6 @@
 import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, Scene, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { SpriteImage } from '../core/Sprite'
-import { TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
@@ -18,8 +17,8 @@ import { WorldManager } from './WorldManager'
 import { BirdViewCamera } from '../scene/BirdViewCamera'
 import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
-import { Updatable, updateSafe } from "./model/Updateable"
-import { SceneEntity } from "../scene/SceneEntity"
+import { Updatable, updateSafe } from './model/Updateable'
+import { SceneEntity } from '../scene/SceneEntity'
 
 export class SceneManager implements Updatable {
     readonly audioListener: AudioListener
