@@ -172,7 +172,7 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PREFERENCES, (event: ChangePreferences) => {
             SaveGameManager.currentPreferences = event.preferences
-            // TODO persist preferences on current savegame or global savegame?
+            SaveGameManager.savePreferences()
             SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx
         })
     }

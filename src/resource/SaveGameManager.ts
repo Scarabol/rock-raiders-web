@@ -17,6 +17,12 @@ export class SaveGameManager {
     private static saveGames: SaveGame[] = [] // this gets serialized
 
     static loadAllSaveGames() {
+        console.log('Loading default preferences...')
+        const preferences = localStorage.getItem('preferences')
+        if (preferences) {
+            this.currentPreferences = JSON.parse(preferences)
+            console.log(`Preferences loaded`, this.currentPreferences)
+        }
         console.log('Loading save games...')
         this.saveGames = JSON.parse(localStorage.getItem('savegames') || '[]')
         Promise.all(this.saveGames.map((s, index) => {
@@ -98,6 +104,11 @@ export class SaveGameManager {
         } else {
             return ''
         }
+    }
+
+    static savePreferences() {
+        localStorage.setItem('preferences', JSON.stringify(this.currentPreferences))
+        console.log('Preferences saved', this.currentPreferences)
     }
 }
 
