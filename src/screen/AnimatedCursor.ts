@@ -2,12 +2,10 @@ import { clearIntervalSafe } from '../core/Util'
 import { NATIVE_FRAMERATE } from '../params'
 
 export class AnimatedCursor {
-    cursorUrls: string[] = []
     animationInterval: NodeJS.Timeout = null
     animationIndex: number = 0
 
-    constructor(cursorUrls: string[]) {
-        this.cursorUrls = cursorUrls
+    constructor(readonly cursorUrls: string[], readonly maxHeight: number) {
     }
 
     enableAnimation(cssTarget: CSSStyleDeclaration) {

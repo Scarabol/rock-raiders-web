@@ -77,17 +77,22 @@ export class ResourceCache {
             const cursor = objKey as Cursor
             if (Array.isArray(cursorCfg)) {
                 const cursorImageName = cursorCfg[0]
-                return cacheGetData(cursorImageName).then((cursorDataUrls) => {
-                    if (!cursorDataUrls) {
+                return cacheGetData(cursorImageName).then((animatedCursorData) => {
+                    if (!animatedCursorData) {
+                        let maxHeight = 0
                         const cursorImages = (this.getResource(cursorImageName) as ImageData[]).map((imgData) => {
                             const context = imgDataToContext(blankPointerImageData)
                             context.drawImage(imgDataToContext(imgData).canvas, Math.round((blankPointerImageData.width - imgData.width) / 2), Math.round((blankPointerImageData.height - imgData.height) / 2))
+                            maxHeight = Math.max(maxHeight, context.canvas.height)
                             return context.canvas
                         })
-                        cursorDataUrls = this.cursorToDataUrl(cursorImages)
-                        cachePutData(cursorImageName, cursorDataUrls).then()
+                        animatedCursorData = {
+                            dataUrls: this.cursorToDataUrl(cursorImages),
+                            maxHeight: maxHeight,
+                        }
+                        cachePutData(cursorImageName, animatedCursorData).then()
                     }
-                    this.cursorToUrl.set(cursor, new AnimatedCursor(cursorDataUrls))
+                    this.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls, animatedCursorData.maxHeight))
                 })
             } else {
                 return this.loadCursor(cursorCfg, cursor)
@@ -96,13 +101,16 @@ export class ResourceCache {
     }
 
     private static async loadCursor(cursorImageName: string, cursor: Cursor) {
-        return cacheGetData(cursorImageName).then((cursorDataUrls) => {
-            if (!cursorDataUrls) {
+        return cacheGetData(cursorImageName).then((animatedCursorData) => {
+            if (!animatedCursorData) {
                 const imgData = this.getImageData(cursorImageName)
-                cursorDataUrls = this.cursorToDataUrl(imgDataToContext(imgData).canvas)
-                cachePutData(cursorImageName, cursorDataUrls).then()
+                animatedCursorData = {
+                    dataUrls: this.cursorToDataUrl(imgDataToContext(imgData).canvas),
+                    maxHeight: imgData.height,
+                }
+                cachePutData(cursorImageName, animatedCursorData).then()
             }
-            this.cursorToUrl.set(cursor, new AnimatedCursor(cursorDataUrls))
+            this.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls, animatedCursorData.maxHeight))
         })
     }
 

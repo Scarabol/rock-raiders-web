@@ -177,7 +177,7 @@ export class CursorLayer extends ScreenLayer {
     private changeTooltip(tooltipKey: string) {
         const tooltipImg = ResourceManager.getTooltip(tooltipKey)
         if (!tooltipImg) return
-        const posY = this.cursorCanvasPos.y + 32 // TODO consider dynamic cursor height
+        const posY = this.cursorCanvasPos.y + this.activeCursor.maxHeight
         const tooltipWidth = Math.round(tooltipImg.width * this.canvas.width / NATIVE_SCREEN_WIDTH)
         const tooltipHeight = Math.round(tooltipImg.height * this.canvas.height / NATIVE_SCREEN_HEIGHT)
         this.tooltipRect = new Rect(this.cursorCanvasPos.x, posY, tooltipWidth, tooltipHeight)
