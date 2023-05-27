@@ -75,6 +75,7 @@ export class GameScreen {
         this.guiLayer.reset()
         this.worldMgr.setup(this.levelConf)
         this.sceneMgr.setupScene(this.levelConf)
+        this.worldMgr.movementSystem.terrain = this.sceneMgr.terrain // TODO find a better place for this
         // setup GUI
         this.guiMgr.buildingCycleIndex = 0
         const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(this.levelConf.objectiveText), this.levelName)

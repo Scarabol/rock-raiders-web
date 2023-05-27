@@ -1,5 +1,5 @@
 import { Vector3 } from 'three'
-import { MAP_MARKER_TYPE } from '../game/component/common/EntityMapMarkerComponent'
+import { MapMarkerType } from '../game/component/EntityMapMarkerComponent'
 import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameState } from '../game/model/GameState'
@@ -204,7 +204,7 @@ export class NeededCrystalsChanged extends LocalEvent {
 }
 
 export class UpdateRadarEntities extends LocalEvent {
-    entitiesByOrder: Map<MAP_MARKER_TYPE, { x: number, y: number }[]> = new Map() // no Vectors, because of serialization
+    entitiesByOrder: Map<MapMarkerType, { x: number, y: number }[]> = new Map() // no Vectors, because of serialization
 
     constructor() {
         super(EventKey.UPDATE_RADAR_ENTITIES)

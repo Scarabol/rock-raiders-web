@@ -3,12 +3,10 @@ import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent } from '../../../event/LocalEvents'
-import { NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
+import { NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
-import { HealthComponent } from '../../component/common/HealthComponent'
-import { PositionComponent } from '../../component/common/PositionComponent'
 import { WorldManager } from '../../WorldManager'
 import { AnimationActivity, AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { Disposable } from '../Disposable'
@@ -25,11 +23,15 @@ import { Updatable } from '../Updateable'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { RaiderTool } from './RaiderTool'
 import { RaiderTraining } from './RaiderTraining'
-import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
 import { EntityType } from '../EntityType'
-import { HealthBarSpriteComponent } from '../../component/common/HealthBarSpriteComponent'
+import { GameEntity } from '../../ECS'
+import { HealthComponent } from '../../component/HealthComponent'
+import { HealthBarComponent } from '../../component/HealthBarComponent'
 
-export class Raider extends AbstractGameEntity implements Selectable, BeamUpEntity, Updatable, Disposable {
+export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
+    readonly entityType: EntityType = EntityType.PILOT
+    readonly entity: GameEntity
+    worldMgr: WorldManager
     currentPath: TerrainPath = null
     level: number = 0
     selected: boolean
@@ -46,12 +48,13 @@ export class Raider extends AbstractGameEntity implements Selectable, BeamUpEnti
     vehicle: VehicleEntity = null
 
     constructor(worldMgr: WorldManager) {
-        super(EntityType.PILOT)
+        this.worldMgr = worldMgr
         this.tools.set(RaiderTool.DRILL, true)
         this.sceneEntity = new RaiderSceneEntity(worldMgr.sceneMgr, 'mini-figures/pilot')
-        this.addComponent(new HealthComponent()).addOnDeathListener(() => this.beamUp())
-        this.addComponent(new HealthBarSpriteComponent(16, 10, this.sceneEntity.group, true))
-        worldMgr.registerEntity(this)
+        this.entity = this.worldMgr.ecs.addEntity()
+        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent()) // TODO trigger beam-up on death
+        this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(16, 10, this.sceneEntity.group, true))
+        this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
     get stats() {
@@ -79,7 +82,8 @@ export class Raider extends AbstractGameEntity implements Selectable, BeamUpEnti
         this.worldMgr.entityMgr.raiders.remove(this)
         this.worldMgr.entityMgr.raidersUndiscovered.remove(this)
         this.worldMgr.entityMgr.raidersInBeam.remove(this)
-        this.worldMgr.markDead(this)
+        this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
+        this.worldMgr.ecs.removeEntity(this.entity)
     }
 
     /*
@@ -94,14 +98,14 @@ export class Raider extends AbstractGameEntity implements Selectable, BeamUpEnti
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
         this.job.setActualWorkplace(this.currentPath?.target)
         if (result === MoveState.MOVED) {
-            this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
-                if (this.sceneEntity.position2D.distanceToSquared(spider.getComponent(PositionComponent).getPosition2D()) < SPIDER_SLIP_RANGE_SQ) {
-                    this.slip()
-                    spider.getComponent(HealthComponent).changeHealth(0)
-                    return true
-                }
-                return false
-            })
+            // this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
+            //     if (this.sceneEntity.position2D.distanceToSquared(spider.getComponent(PositionComponent).getPosition2D()) < SPIDER_SLIP_RANGE_SQ) {
+            //         this.slip()
+            //         spider.getComponent(HealthComponent).changeHealth(0)
+            //         return true
+            //     }
+            //     return false
+            // })
         } else if (result === MoveState.TARGET_UNREACHABLE) {
             console.log('Entity could not move to job target, stopping job')
             this.stopJob()

@@ -165,10 +165,6 @@ export class SceneEntity {
         this.group.lookAt(new Vector3(location.x, this.group.position.y, location.y)) // XXX externalize look at vector
     }
 
-    lookAt(location: Vector3) {
-        this.group.lookAt(new Vector3(location.x, this.group.position.y, location.z)) // XXX externalize look at vector
-    }
-
     update(elapsedMs: number) {
         this.updatableChildren.forEach((c) => c.update(elapsedMs))
     }

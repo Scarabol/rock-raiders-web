@@ -3,7 +3,7 @@ import { createContext } from '../../core/ImageHelper'
 import { SpriteContext } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
 import { UpdateRadarEntities, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
-import { MAP_MARKER_TYPE } from '../../game/component/common/EntityMapMarkerComponent'
+import { MapMarkerType } from '../../game/component/EntityMapMarkerComponent'
 import { TILESIZE } from '../../params'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
@@ -85,17 +85,17 @@ export class MapPanel extends Panel {
     private redrawMapEntities(event: UpdateRadarEntities) {
         this.entityContext.clearRect(0, 0, this.entityContext.canvas.width, this.entityContext.canvas.height)
         this.entityContext.fillStyle = '#edd20c'
-        event.entitiesByOrder.getOrDefault(MAP_MARKER_TYPE.NORMAL, [])
+        event.entitiesByOrder.getOrDefault(MapMarkerType.DEFAULT, [])
             .map((v) => this.mapToMap(v)).forEach((p) => {
             this.entityContext.fillRect(p.x, p.y, 3, 3)
         })
         this.entityContext.fillStyle = '#f00'
-        event.entitiesByOrder.getOrDefault(MAP_MARKER_TYPE.MONSTER, [])
+        event.entitiesByOrder.getOrDefault(MapMarkerType.MONSTER, [])
             .map((v) => this.mapToMap(v)).forEach((p) => {
             this.entityContext.fillRect(p.x, p.y, 3, 3)
         })
         this.entityContext.fillStyle = '#0f0'
-        event.entitiesByOrder.getOrDefault(MAP_MARKER_TYPE.MATERIAL, [])
+        event.entitiesByOrder.getOrDefault(MapMarkerType.MATERIAL, [])
             .map((v) => this.mapToMap(v)).forEach((p) => {
             this.entityContext.fillRect(p.x, p.y, 2, 2)
         })

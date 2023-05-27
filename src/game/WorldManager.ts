@@ -7,7 +7,6 @@ import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChange
 import { NerpRunner } from '../nerp/NerpRunner'
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
-import { AbstractGameEntity } from './entity/AbstractGameEntity'
 import { EntityManager } from './EntityManager'
 import { AnimationGroup } from './model/anim/AnimationGroup'
 import { EntityType } from './model/EntityType'
@@ -18,15 +17,17 @@ import { updateSafe } from './model/Updateable'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { SceneManager } from './SceneManager'
 import { Supervisor } from './Supervisor'
-import { AbstractSubSystem } from './system/AbstractSubSystem'
-import { MapMarkerSubSystem } from './system/MapMarkerSubSystem'
-import { MovementSubSystem } from './system/MovementSubSystem'
-import { HealthBarSpriteSystem } from './system/HealthBarSpriteSystem'
+import { ECS } from './ECS'
+import { MovementSystem } from './system/MovementSystem'
+import { SceneEntityPositionSystem } from './system/SceneEntityPositionSystem'
+import { SceneEntityHeadingSystem } from './system/SceneEntityHeadingSystem'
+import { RandomMoveBehaviorSystem } from './system/RandomMoveBehaviorSystem'
+import { EntityHealthSystem } from './system/EntityHealthSystem'
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
-    readonly systems: AbstractSubSystem<any>[] = []
-    readonly healthBarSpriteSystem: HealthBarSpriteSystem
+    readonly ecs: ECS = new ECS()
+    readonly movementSystem: MovementSystem
     readonly jobSupervisor: Supervisor = new Supervisor(this)
     sceneMgr: SceneManager
     entityMgr: EntityManager
@@ -38,15 +39,15 @@ export class WorldManager {
     spawnRaiderTimer: number = 0
     requestedVehicleTypes: EntityType[] = []
     spawnVehicleTimer: number = 0
-    deadEntities: AbstractGameEntity[] = []
     started: boolean = false
     firstUnpause: boolean = true
 
     constructor() {
-        this.systems.push(new MovementSubSystem())
-        this.systems.push(new MapMarkerSubSystem())
-        this.healthBarSpriteSystem = new HealthBarSpriteSystem()
-        this.systems.push(this.healthBarSpriteSystem)
+        this.movementSystem = this.ecs.addSystem(new MovementSystem())
+        this.ecs.addSystem(new SceneEntityPositionSystem())
+        this.ecs.addSystem(new SceneEntityHeadingSystem())
+        this.ecs.addSystem(new RandomMoveBehaviorSystem())
+        this.ecs.addSystem(new EntityHealthSystem())
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
@@ -72,7 +73,8 @@ export class WorldManager {
     }
 
     setup(levelConf: LevelEntryCfg) {
-        this.systems.forEach((s) => s.reset())
+        this.entityMgr.ecs = this.ecs
+        this.ecs.reset()
         this.jobSupervisor.reset()
         GameState.gameResult = GameResultState.UNDECIDED
         GameState.changeNeededCrystals(levelConf.reward?.quota?.crystals || 0)
@@ -97,7 +99,6 @@ export class WorldManager {
     stop() {
         this.started = false
         this.stopLoop()
-        this.systems.forEach((s) => s.reset())
     }
 
     private startLoop(timeout: number) {
@@ -113,7 +114,6 @@ export class WorldManager {
         const startUpdate = window.performance.now()
         this.elapsedGameTimeMs += UPDATE_INTERVAL_MS
         this.update(elapsedMs)
-        this.removeDeadEntities()
         if (GameState.gameResult !== GameResultState.UNDECIDED) {
             this.onLevelEnd(GameState.gameResult)
             return
@@ -128,20 +128,11 @@ export class WorldManager {
         this.updateOxygen(elapsedMs)
         this.checkSpawnRaiders(elapsedMs)
         this.checkSpawnVehicles(elapsedMs)
-        this.systems.forEach((s) => updateSafe(s, elapsedMs))
+        this.ecs.update(elapsedMs)
         updateSafe(this.entityMgr, elapsedMs)
         updateSafe(this.sceneMgr, elapsedMs)
         updateSafe(this.jobSupervisor, elapsedMs)
         updateSafe(this.nerpRunner, elapsedMs)
-    }
-
-    private removeDeadEntities() {
-        this.deadEntities.forEach((e) => this.unregisterEntity(e))
-        this.deadEntities.length = 0
-    }
-
-    markDead(entity: AbstractGameEntity) {
-        this.deadEntities.add(entity)
     }
 
     private updateOxygen(elapsedMs: number) {
@@ -204,18 +195,6 @@ export class WorldManager {
         } catch (e) {
             console.error(e)
         }
-    }
-
-    registerEntity(entity: AbstractGameEntity) {
-        entity.setupEntity(this)
-        this.entityMgr.addEntity(entity)
-        entity.components.forEach((c) => this.systems.forEach((s) => s.registerComponent(c)))
-    }
-
-    unregisterEntity(entity: AbstractGameEntity) {
-        entity.components.forEach((c) => this.systems.forEach((s) => s.unregisterComponent(c)))
-        this.entityMgr.removeEntity(entity)
-        entity.disposeEntity()
     }
 
     addMiscAnim(lwsFilename: string, position: Vector3, heading: number): AnimationGroup {

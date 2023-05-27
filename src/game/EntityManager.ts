@@ -4,9 +4,6 @@ import { EventKey } from '../event/EventKeyEnum'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged } from '../event/LocalEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
-import { AnimatedSceneEntityComponent } from './component/common/AnimatedSceneEntityComponent'
-import { PositionComponent } from './component/common/PositionComponent'
-import { AbstractGameEntity } from './entity/AbstractGameEntity'
 import { AnimationGroup } from './model/anim/AnimationGroup'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingSite } from './model/building/BuildingSite'
@@ -21,8 +18,13 @@ import { Raider } from './model/raider/Raider'
 import { RaiderTraining } from './model/raider/RaiderTraining'
 import { updateSafe } from './model/Updateable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
+import { ECS, GameEntity } from './ECS'
+import { PositionComponent } from './component/PositionComponent'
+import { SceneEntityComponent } from './component/SceneEntityComponent'
+import { DiscoveredComponent } from './component/DiscoveredComponent'
 
 export class EntityManager {
+    ecs: ECS
     selection: GameSelection = new GameSelection()
     buildings: BuildingEntity[] = []
     buildingsUndiscovered: BuildingEntity[] = []
@@ -33,12 +35,12 @@ export class EntityManager {
     materialsUndiscovered: MaterialEntity[] = []
     placedFences: ElectricFence[] = []
     buildingSites: BuildingSite[] = []
-    spiders: AbstractGameEntity[] = []
-    undiscoveredSpiders: AbstractGameEntity[] = []
-    bats: AbstractGameEntity[] = []
-    undiscoveredBats: AbstractGameEntity[] = []
-    rockMonsters: AbstractGameEntity[] = []
-    undiscoveredRockMonsters: AbstractGameEntity[] = []
+    spiders: GameEntity[] = []
+    undiscoveredSpiders: GameEntity[] = []
+    bats: GameEntity[] = []
+    undiscoveredBats: GameEntity[] = []
+    rockMonsters: GameEntity[] = []
+    undiscoveredRockMonsters: GameEntity[] = []
     vehicles: VehicleEntity[] = []
     vehiclesUndiscovered: VehicleEntity[] = []
     vehiclesInBeam: VehicleEntity[] = []
@@ -181,13 +183,13 @@ export class EntityManager {
                 EventBus.publishEvent(new RaiderDiscoveredEvent(driver.sceneEntity.position.clone()))
             }
         })
-        this.undiscoveredSpiders = EntityManager.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
+        this.undiscoveredSpiders = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
             this.spiders.push(m)
         })
-        this.undiscoveredBats = EntityManager.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
+        this.undiscoveredBats = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
             this.bats.push(m)
         })
-        this.undiscoveredRockMonsters = EntityManager.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
+        this.undiscoveredRockMonsters = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
             this.rockMonsters.push(m)
         })
     }
@@ -204,12 +206,13 @@ export class EntityManager {
         })
     }
 
-    private static removeInRectNew(listing: AbstractGameEntity[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: AbstractGameEntity) => any) {
+    private removeInRectNew(listing: GameEntity[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: GameEntity) => any) {
         return listing.filter((e) => {
-            const pos = e.getComponent(PositionComponent).getPosition2D()
-            const discovered = pos.x >= minX && pos.x < maxX && pos.y >= minZ && pos.y < maxZ
+            const pos = this.ecs.getComponents(e).get(PositionComponent).position
+            const discovered = pos.x >= minX && pos.x < maxX && pos.z >= minZ && pos.z < maxZ
             if (discovered) {
-                e.getComponent(AnimatedSceneEntityComponent).makeVisible()
+                this.ecs.addComponent(e, new DiscoveredComponent())
+                this.ecs.getComponents(e).get(SceneEntityComponent).sceneEntity.visible = true
                 onRemove(e)
             }
             return !discovered
@@ -244,27 +247,28 @@ export class EntityManager {
         return this.raiders.some((r) => r.hasTraining(training))
     }
 
-    addEntity(entity: AbstractGameEntity) {
-        switch (entity.entityType) {
+    addEntity(entity: GameEntity, entityType: EntityType) {
+        const discovered = this.ecs.getComponents(entity).has(DiscoveredComponent)
+        switch (entityType) {
             case EntityType.BAT:
-                if (entity.getComponent(PositionComponent).isDiscovered()) this.bats.add(entity)
+                if (discovered) this.bats.add(entity)
                 else this.undiscoveredBats.add(entity)
                 break
             case EntityType.SMALL_SPIDER:
-                if (entity.getComponent(PositionComponent).isDiscovered()) this.spiders.add(entity)
+                if (discovered) this.spiders.add(entity)
                 else this.undiscoveredSpiders.add(entity)
                 break
             case EntityType.ROCK_MONSTER:
             case EntityType.ICE_MONSTER:
             case EntityType.LAVA_MONSTER:
-                if (entity.getComponent(PositionComponent).isDiscovered()) this.rockMonsters.add(entity)
+                if (discovered) this.rockMonsters.add(entity)
                 else this.undiscoveredRockMonsters.add(entity)
                 break
         }
     }
 
-    removeEntity(entity: AbstractGameEntity) {
-        switch (entity.entityType) {
+    removeEntity(entity: GameEntity, entityType: EntityType) {
+        switch (entityType) {
             case EntityType.BAT:
                 this.bats.remove(entity)
                 this.undiscoveredBats.remove(entity)

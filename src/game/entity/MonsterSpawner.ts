@@ -1,60 +1,67 @@
 import { TILESIZE } from '../../params'
-import { ResourceManager } from '../../resource/ResourceManager'
-import { AnimatedSceneEntityComponent } from '../component/common/AnimatedSceneEntityComponent'
-import { EntityMapMarkerComponent, MAP_MARKER_TYPE } from '../component/common/EntityMapMarkerComponent'
-import { HealthComponent } from '../component/common/HealthComponent'
-import { MovableEntityStatsComponent } from '../component/common/MovableEntityStatsComponent'
-import { PositionComponent } from '../component/common/PositionComponent'
-import { BatMovementComponent } from '../component/monster/BatMovementComponent'
-import { SpiderMovementComponent } from '../component/monster/SpiderMovementComponent'
 import { EntityType } from '../model/EntityType'
 import { WorldManager } from '../WorldManager'
-import { AbstractGameEntity } from './AbstractGameEntity'
-import { HealthBarSpriteComponent } from '../component/common/HealthBarSpriteComponent'
+import { PositionComponent } from '../component/PositionComponent'
+import { SceneEntityComponent } from '../component/SceneEntityComponent'
+import { HealthComponent } from '../component/HealthComponent'
+import { EntityMapMarkerComponent, MapMarkerType } from '../component/EntityMapMarkerComponent'
+import { HealthBarComponent } from '../component/HealthBarComponent'
+import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
+import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
+import { Vector2 } from 'three'
+import { RandomMoveComponent } from '../component/RandomMoveComponent'
+import { ResourceManager } from '../../resource/ResourceManager'
+import { MovableStatsComponent } from '../component/MovableStatsComponent'
 
 type MonsterEntityType = EntityType.SMALL_SPIDER | EntityType.BAT | EntityType.ICE_MONSTER | EntityType.LAVA_MONSTER | EntityType.ROCK_MONSTER
 
 export class MonsterSpawner {
-    static createMonster(entityType: MonsterEntityType, worldMgr: WorldManager): AbstractGameEntity {
-        const entity = new AbstractGameEntity(entityType)
-        this.addMonsterComponents(entityType, entity, worldMgr)
-        worldMgr.registerEntity(entity)
-        return entity
-    }
-
-    private static addMonsterComponents(entityType: MonsterEntityType, entity: AbstractGameEntity, worldMgr: WorldManager) {
-        entity.addComponent(new PositionComponent())
+    static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, radHeading: number): void {
+        const entity = worldMgr.ecs.addEntity()
+        const floorPosition = worldMgr.sceneMgr.getFloorPosition(worldPos)
+        const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
+        const positionComponent = worldMgr.ecs.addComponent(entity, new PositionComponent(floorPosition, surface))
+        let sceneEntity: AnimatedSceneEntity = null
         switch (entityType) {
             case EntityType.SMALL_SPIDER:
-                entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/SpiderSB', 1))
-                entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.smallSpider))
-                entity.addComponent(new SpiderMovementComponent())
-                entity.addComponent(new HealthComponent()).addOnDeathListener(() => entity.worldMgr.markDead(entity))
+                positionComponent.floorOffset = 1
+                sceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr, 'Creatures/SpiderSB', 1)
+                sceneEntity.changeActivity(AnimEntityActivity.Stand)
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.smallSpider))
+                worldMgr.ecs.addComponent(entity, new HealthComponent())
+                worldMgr.ecs.addComponent(entity, new RandomMoveComponent(ResourceManager.configuration.stats.smallSpider, 10000))
                 break
-            case EntityType.BAT:
-                entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, 'Creatures/bat', TILESIZE / 2))
-                entity.addComponent(new MovableEntityStatsComponent(ResourceManager.configuration.stats.bat))
-                entity.addComponent(new BatMovementComponent())
-                entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
+            case EntityType.BAT: // TODO make bats appear in flocks
+                positionComponent.floorOffset = TILESIZE / 2
+                sceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr, 'Creatures/bat', TILESIZE / 2)
+                sceneEntity.changeActivity(AnimEntityActivity.Route)
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.bat))
+                worldMgr.ecs.addComponent(entity, new EntityMapMarkerComponent(MapMarkerType.MONSTER))
+                worldMgr.ecs.addComponent(entity, new RandomMoveComponent(ResourceManager.configuration.stats.bat, 0))
                 break
             case EntityType.ICE_MONSTER:
-                this.addRockyComponents(entity, worldMgr, 'Creatures/IceMonster')
+                sceneEntity = this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster')
                 break
             case EntityType.LAVA_MONSTER:
-                this.addRockyComponents(entity, worldMgr, 'Creatures/LavaMonster')
+                sceneEntity = this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/LavaMonster')
                 break
             case EntityType.ROCK_MONSTER:
-                this.addRockyComponents(entity, worldMgr, 'Creatures/RMonster')
+                sceneEntity = this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster')
                 break
             default:
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
         }
+        sceneEntity.addToScene(worldPos, radHeading)
+        worldMgr.ecs.addComponent(entity, new SceneEntityComponent(sceneEntity))
+        worldMgr.entityMgr.addEntity(entity, entityType)
     }
 
-    private static addRockyComponents(entity: AbstractGameEntity, worldMgr: WorldManager, aeFilename: string) {
-        entity.addComponent(new AnimatedSceneEntityComponent(worldMgr.sceneMgr, aeFilename))
-        entity.addComponent(new EntityMapMarkerComponent(MAP_MARKER_TYPE.MONSTER))
-        entity.addComponent(new HealthComponent())
-        entity.addComponent(new HealthBarSpriteComponent(24, 10, null, false))
+    private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string) {
+        sceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr, aeName)
+        sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
+        worldMgr.ecs.addComponent(entity, new EntityMapMarkerComponent(MapMarkerType.MONSTER))
+        worldMgr.ecs.addComponent(entity, new HealthComponent())
+        worldMgr.ecs.addComponent(entity, new HealthBarComponent(24, 10, null, false))
+        return sceneEntity
     }
 }

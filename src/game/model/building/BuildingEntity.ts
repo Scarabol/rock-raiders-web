@@ -25,14 +25,16 @@ import { Selectable } from '../Selectable'
 import { BuildingSite } from './BuildingSite'
 import { BuildingType } from './BuildingType'
 import { Teleport } from './Teleport'
-import { AbstractGameEntity } from '../../entity/AbstractGameEntity'
-import { HealthComponent } from '../../component/common/HealthComponent'
-import { HealthBarSpriteComponent } from '../../component/common/HealthBarSpriteComponent'
+import { GameEntity } from '../../ECS'
+import { HealthComponent } from '../../component/HealthComponent'
+import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { Brick } from '../material/Brick'
 
-export class BuildingEntity extends AbstractGameEntity implements Selectable, BeamUpEntity {
+export class BuildingEntity implements Selectable, BeamUpEntity {
+    readonly entityType: EntityType
     readonly carriedItems: MaterialEntity[] = []
+    readonly entity: GameEntity
     buildingType: BuildingType
     sceneEntity: BuildingSceneEntity
     powerOffSprite: BubbleSprite
@@ -53,16 +55,17 @@ export class BuildingEntity extends AbstractGameEntity implements Selectable, Be
     pathSurfaces: Surface[] = []
     teleport: Teleport = null
 
-    constructor(worldMgr: WorldManager, buildingType: BuildingType) {
-        super(buildingType.entityType)
+    constructor(readonly worldMgr: WorldManager, buildingType: BuildingType) {
+        this.entityType = buildingType.entityType
         this.buildingType = buildingType
         this.sceneEntity = new BuildingSceneEntity(worldMgr.sceneMgr, this.buildingType.aeFilename)
         this.powerOffSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
         this.sceneEntity.addChild(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
-        this.addComponent(new HealthComponent()).addOnDeathListener(() => this.beamUp())
-        this.addComponent(new HealthBarSpriteComponent(24, 14, this.sceneEntity.group, false))
-        worldMgr.registerEntity(this)
+        this.entity = this.worldMgr.ecs.addEntity()
+        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent()) // TODO trigger beam-up on death
+        this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(24, 14, this.sceneEntity.group, false))
+        this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
     get stats(): BuildingEntityStats {
@@ -165,7 +168,8 @@ export class BuildingEntity extends AbstractGameEntity implements Selectable, Be
         this.engineSound = resetAudioSafe(this.engineSound)
         this.worldMgr.entityMgr.buildings.remove(this)
         this.worldMgr.entityMgr.buildingsUndiscovered.remove(this)
-        this.worldMgr.markDead(this)
+        this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
+        this.worldMgr.ecs.removeEntity(this.entity)
     }
 
     canUpgrade() {

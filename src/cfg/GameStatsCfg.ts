@@ -57,6 +57,8 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
     RouteSpeed: number[] = []
     PathCoef: number = 1
     RubbleCoef: number = 1
+    RandomEnterWall: boolean = false
+    RandomMoveTime: number = 1
     CrossLand: boolean = false
     CrossLava: boolean = false
     CrossWater: boolean = false
