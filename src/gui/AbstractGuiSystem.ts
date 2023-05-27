@@ -67,7 +67,7 @@ export abstract class AbstractGuiSystem extends OffscreenSystem {
             } else if (event.eventEnum === POINTER_EVENT.UP) {
                 this.rootElement.checkRelease(new GuiReleaseEvent(sx, sy, event.button))
             }
-        } else if (event.eventEnum === POINTER_EVENT.MOVE) {
+        } else if (event.eventEnum === POINTER_EVENT.MOVE || event.eventEnum === POINTER_EVENT.LEAVE) {
             this.rootElement.release()
         }
         return hit

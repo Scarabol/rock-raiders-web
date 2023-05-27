@@ -85,7 +85,7 @@ export class RewardScreen {
             this.onAdvance()
         }
         this.btnLayer.handlePointerEvent = ((event) => {
-            if (event.eventEnum === POINTER_EVENT.MOVE) {
+            if (event.eventEnum === POINTER_EVENT.MOVE || event.eventEnum === POINTER_EVENT.LEAVE) {
                 this.btnSave.setHovered(this.btnSave.isHovered(event.canvasX, event.canvasY))
                 this.btnAdvance.setHovered(this.btnAdvance.isHovered(event.canvasX, event.canvasY))
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {
