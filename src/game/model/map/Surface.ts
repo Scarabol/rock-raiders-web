@@ -250,6 +250,7 @@ export class Surface implements Selectable {
         this.updateWallType(topLeftVertex, topRightVertex, bottomRightVertex, bottomLeftVertex)
         this.updateTexture()
         this.updateJobColor()
+        this.terrain.pathFinder.updateSurface(this)
     }
 
     private getVertex(x: number, y: number, s1: Surface, s2: Surface, s3: Surface): SurfaceVertex {
