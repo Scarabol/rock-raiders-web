@@ -8,6 +8,7 @@ import { Panel } from '../base/Panel'
 import { InfoDockButton } from './InfoDockButton'
 import { InfoMessagesCfg } from './InfoMessagesCfg'
 import { InformationPanel } from './InformationPanel'
+import { CameraControl } from '../../event/GuiCommand'
 
 export class InfoDockPanel extends Panel {
     stackButtons: InfoDockButton[] = []
@@ -39,7 +40,7 @@ export class InfoDockPanel extends Panel {
         const btn = this.stackButtons[0]
         if (btn.messages.length < 1) return
         const msg = btn.messages[0] as WorldLocationEvent
-        console.log('TODO force move camera to', msg.location) // TODO force move camera
+        this.publishEvent(new CameraControl(0, false, -1, msg.location))
     }
 
     private dropLatestMessage() {

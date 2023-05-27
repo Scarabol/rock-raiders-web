@@ -151,14 +151,10 @@ export class GuiManager {
             if (event.cycleBuilding) {
                 this.buildingCycleIndex = (this.buildingCycleIndex + 1) % entityMgr.buildings.length
                 const target = entityMgr.buildings[this.buildingCycleIndex].primarySurface.getCenterWorld()
-                const offsetTargetToCamera = sceneMgr.camera.position.clone().sub(cameraControls.target)
-                sceneMgr.camera.position.copy(target.clone().add(offsetTargetToCamera))
-                cameraControls.target.copy(target)
-                cameraControls.update()
+                cameraControls.jumpTo(target)
             }
-            if (event.rotationIndex >= 0) {
-                cameraControls.rotate(event.rotationIndex)
-            }
+            if (event.rotationIndex >= 0) cameraControls.rotate(event.rotationIndex)
+            if (event.jumpToWorld) cameraControls.jumpTo(event.jumpToWorld)
         })
         EventBus.registerEventListener(EventKey.COMMAND_REPAIR_LAVA, () => {
             BuildingSite.createImproveSurfaceSite(worldMgr, entityMgr.selection.surface)

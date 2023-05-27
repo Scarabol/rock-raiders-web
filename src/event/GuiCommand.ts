@@ -238,15 +238,13 @@ export class VehicleUnload extends GuiCommand {
 }
 
 export class CameraControl extends GuiCommand {
-    zoom: number
-    cycleBuilding: boolean
-    rotationIndex: number
-
-    constructor(zoom: number, cycleBuilding: boolean, rotationIndex: number) {
+    constructor(
+        readonly zoom: number,
+        readonly cycleBuilding: boolean,
+        readonly rotationIndex: number,
+        readonly jumpToWorld: {x: number, y: number, z: number},
+    ) {
         super(EventKey.COMMAND_CAMERA_CONTROL)
-        this.zoom = zoom
-        this.cycleBuilding = cycleBuilding
-        this.rotationIndex = rotationIndex
     }
 }
 

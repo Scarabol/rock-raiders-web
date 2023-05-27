@@ -31,6 +31,13 @@ export class BirdViewControls extends MapControls {
         // rotation can not be implemented with events, because valid pointer id is required by MapControls/OrbitControls
     }
 
+    jumpTo(location: {x: number, y: number, z: number}) {
+        const offsetTargetToCamera = this.object.position.clone().sub(this.target)
+        this.object.position.set(location.x, location.y, location.z).add(offsetTargetToCamera)
+        this.target.set(location.x, location.y, location.z)
+        this.update()
+    }
+
     handlePointerEvent(event: GamePointerEvent): boolean {
         this.domElement.dispatchEvent(new PointerEvent(event.type, event))
         return true

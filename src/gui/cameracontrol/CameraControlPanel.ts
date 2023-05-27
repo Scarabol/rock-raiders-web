@@ -10,13 +10,13 @@ export class CameraControlPanel extends Panel {
     constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonCameraControlCfg, panelRotationControlCfg: PanelRotationControlCfg) {
         super(parent, panelCfg)
         this.addChild(new Button(this, buttonsCfg.panelButtonCameraControlZoomIn)).onClick = () => {
-            this.publishEvent(new CameraControl(-1, false, -1))
+            this.publishEvent(new CameraControl(-1, false, -1, null))
         }
         this.addChild(new Button(this, buttonsCfg.panelButtonCameraControlZoomOut)).onClick = () => {
-            this.publishEvent(new CameraControl(1, false, -1))
+            this.publishEvent(new CameraControl(1, false, -1, null))
         }
         this.addChild(new Button(this, buttonsCfg.panelButtonCameraControlCycleBuildings)).onClick = () => {
-            this.publishEvent(new CameraControl(0, true, -1))
+            this.publishEvent(new CameraControl(0, true, -1, null))
         }
         this.addControlImage(panelRotationControlCfg.leftImage, 0)
         this.addControlImage(panelRotationControlCfg.upImage, 1)
@@ -30,7 +30,7 @@ export class CameraControlPanel extends Panel {
             relX: cfg.x - this.relX,
             relY: cfg.y - this.relY,
         })).onClick = () => {
-            this.publishEvent(new CameraControl(0, false, index))
+            this.publishEvent(new CameraControl(0, false, index, null))
         }
     }
 }
