@@ -65,6 +65,11 @@ export class ResourceCache {
         return this.getBitmapFont('Interface/Fonts/tooltipfont.bmp')
     }
 
+    static getTooltipText(tooltipKey: string): string {
+        if (!tooltipKey) return ''
+        return this.configuration.tooltips.get(tooltipKey.toLowerCase())
+    }
+
     static async loadDefaultCursor() {
         const cursorImageName = this.configuration.pointers.pointerStandard
         await this.loadCursor(cursorImageName, 'pointerStandard')

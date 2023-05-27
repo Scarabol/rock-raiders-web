@@ -13,13 +13,15 @@ export class PriorityButtonsCfg extends BaseConfig {
     aiPriorityReinforce: ButtonCfg = null
     aiPriorityRecharge: ButtonCfg = null
 
-    parseValue(unifiedKey: string, cfgValue: any): any {
+    parseValue(unifiedKey: string, cfgValue: any): ButtonCfg {
+        const [tooltipText, tooltipSfx] = Array.ensure(cfgValue[0])
         return {
-            buttonType: cfgValue[0],
             normalFile: cfgValue[1],
             highlightFile: cfgValue[1],
             pressedFile: cfgValue[2],
             disabledFile: cfgValue[3],
+            tooltipText: tooltipText,
+            tooltipSfx: tooltipSfx,
         }
     }
 }

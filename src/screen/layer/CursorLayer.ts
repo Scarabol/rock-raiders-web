@@ -43,7 +43,7 @@ export class CursorLayer extends ScreenLayer {
             if (this.active) this.changeCursor(this.determineCursor())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_TOOLTIP, (event: ChangeTooltip) => {
-            if (this.active) this.changeTooltip(event.tooltipKey)
+            if (this.active) this.changeTooltip(event.tooltipText)
         })
     }
 
@@ -174,8 +174,8 @@ export class CursorLayer extends ScreenLayer {
         this.activeCursor.enableAnimation(this.canvas.style)
     }
 
-    private changeTooltip(tooltipKey: string) {
-        const tooltipImg = ResourceManager.getTooltip(tooltipKey)
+    private changeTooltip(tooltipText: string) {
+        const tooltipImg = ResourceManager.getTooltipSprite(tooltipText)
         if (!tooltipImg) return
         const tooltipWidth = Math.round(tooltipImg.width * this.canvas.width / NATIVE_SCREEN_WIDTH)
         const tooltipHeight = Math.round(tooltipImg.height * this.canvas.height / NATIVE_SCREEN_HEIGHT)

@@ -1,9 +1,10 @@
 import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
+import { ChangeTooltip, PlaySoundEvent } from '../../event/GuiCommand'
+import { Sample } from '../../audio/Sample'
 
 export class IconPanelButton extends Button {
-    tooltipSfx: string = null
     tooltipDisabled: string = null
     tooltipDisabledSfx: string = null
     hotkey: string = null
@@ -15,12 +16,17 @@ export class IconPanelButton extends Button {
         this.relX = parentWidth - 59
         this.relY = 9 + this.height * menuIndex
         this.hoverFrame = true
-        this.tooltipSfx = menuItemCfg.tooltipSfx
         this.tooltipDisabled = menuItemCfg.tooltipDisabled
         this.tooltipDisabledSfx = menuItemCfg.tooltipDisabledSfx
         this.hotkey = menuItemCfg.hotkey
         this.disabled = true
         this.onClick = () => console.log(`menu item pressed: ${this.buttonType}`)
+    }
+
+    showTooltipDisabled() {
+        super.showTooltipDisabled()
+        if (this.tooltipDisabled) this.publishEvent(new ChangeTooltip(this.tooltipDisabled))
+        if (this.tooltipDisabledSfx) this.publishEvent(new PlaySoundEvent(Sample[this.tooltipDisabledSfx]))
     }
 
     reset() {

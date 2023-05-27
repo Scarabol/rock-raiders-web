@@ -21,7 +21,8 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.imgDisabled = ResourceManager.getImage(conf.imgDisabledFilepath)
         this.width = this.imgNormal.width
         this.height = this.imgNormal.height
-        this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipKey))
+        const tooltipText = ResourceManager.getTooltipText(tooltipKey)
+        this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText))
     }
 
     draw(context: SpriteContext) {

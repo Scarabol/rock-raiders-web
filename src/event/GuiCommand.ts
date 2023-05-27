@@ -22,11 +22,11 @@ export class ChangeCursor extends GuiCommand {
 }
 
 export class ChangeTooltip extends GuiCommand {
-    tooltipKey: string
+    tooltipText: string
 
-    constructor(tooltipKey: string) {
+    constructor(tooltipText: string) {
         super(EventKey.COMMAND_CHANGE_TOOLTIP)
-        this.tooltipKey = tooltipKey.toLowerCase()
+        this.tooltipText = tooltipText
     }
 }
 

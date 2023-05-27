@@ -19,7 +19,8 @@ export class MainMenuIconButton extends MainMenuBaseItem {
         this.imgNormal = ResourceManager.getImage(cfg.imgNormal)
         this.imgHover = ResourceManager.getImage(cfg.imgHover)
         this.imgPressed = ResourceManager.getImage(cfg.imgPressed)
-        this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(cfg.tooltip))
+        const tooltipText = ResourceManager.getTooltipText(cfg.tooltipKey)
+        this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText))
         this.width = Math.max(this.imgNormal.width, this.imgHover.width, this.imgPressed.width)
         this.height = Math.max(this.imgNormal.height, this.imgHover.height, this.imgPressed.height)
         this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x

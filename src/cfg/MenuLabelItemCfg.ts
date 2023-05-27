@@ -8,7 +8,7 @@ export class MenuLabelItemCfg {
     imgNormal: string
     imgHover: string
     imgPressed: string
-    tooltip: string
+    tooltipKey: string
     target: string
     flag: string // usage unclear
 
@@ -17,7 +17,7 @@ export class MenuLabelItemCfg {
             [this.actionName, this.x, this.y, this.label, this.target, this.flag] = cfgObj
             this.label = parseLabel(this.label)
         } else if (cfgObj.length === 8) {
-            [this.actionName, this.x, this.y, this.imgNormal, this.imgHover, this.imgPressed, this.tooltip, this.target] = cfgObj
+            [this.actionName, this.x, this.y, this.imgNormal, this.imgHover, this.imgPressed, this.tooltipKey, this.target] = cfgObj
         } else {
             console.warn(`Unexpected cfg object length: ${cfgObj.length}`)
             console.log(cfgObj)

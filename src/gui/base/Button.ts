@@ -1,25 +1,24 @@
 import { Sample } from '../../audio/Sample'
 import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
-import { PlaySoundEvent } from '../../event/GuiCommand'
+import { ChangeTooltip, PlaySoundEvent } from '../../event/GuiCommand'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { BaseElement } from './BaseElement'
 
 export class Button extends BaseElement {
     buttonType: string = null
-    sfxName: string = null
     imgNormal: SpriteImage = null
     imgHover: SpriteImage = null
     imgPressed: SpriteImage = null
     imgDisabled: SpriteImage = null
     tooltip: string = null
-    sfxTooltip: string = null
+    tooltipSfx: string = null
     hoverFrame: boolean = false
 
     constructor(parent: BaseElement, btnCfg: BaseButtonCfg) {
-        super(parent);
-        [this.buttonType, this.sfxName] = Array.ensure(btnCfg.buttonType)
+        super(parent)
+        this.buttonType = btnCfg.buttonType
         this.imgNormal = OffscreenCache.getImageOrNull(btnCfg.normalFile)
         this.imgHover = OffscreenCache.getImageOrNull(btnCfg.highlightFile)
         this.imgPressed = OffscreenCache.getImageOrNull(btnCfg.pressedFile)
@@ -28,12 +27,8 @@ export class Button extends BaseElement {
         this.relY = btnCfg.relY
         this.width = Button.ignoreUndefinedMax(btnCfg.width, this.imgNormal?.width, this.imgPressed?.width, this.imgHover?.width)
         this.height = Button.ignoreUndefinedMax(btnCfg.height, this.imgNormal?.height, this.imgPressed?.height, this.imgHover?.height)
-        if (Array.isArray(btnCfg.tooltip)) {
-            [this.tooltip, this.sfxTooltip] = btnCfg.tooltip
-        } else {
-            this.tooltip = btnCfg.tooltip
-        }
-        this.tooltip = this.tooltip?.replace(/_/g, ' ')
+        this.tooltip = OffscreenCache.getTooltipText(btnCfg.tooltipKey) || btnCfg.tooltipText
+        this.tooltipSfx = btnCfg.tooltipSfx
         this.updatePosition()
         this.onClick = () => console.log(`button pressed: ${this.buttonType}`)
     }
@@ -43,9 +38,15 @@ export class Button extends BaseElement {
     }
 
     showTooltip() {
-        // TODO show tooltip rendering
-        if (this.sfxName) this.publishEvent(new PlaySoundEvent(Sample[this.sfxName]))
-        if (this.sfxTooltip) this.publishEvent(new PlaySoundEvent(Sample[this.sfxTooltip]))
+        if (this.isInactive()) {
+            this.showTooltipDisabled()
+        } else {
+            if (this.tooltip) this.publishEvent(new ChangeTooltip(this.tooltip))
+            if (this.tooltipSfx) this.publishEvent(new PlaySoundEvent(Sample[this.tooltipSfx]))
+        }
+    }
+
+    showTooltipDisabled() {
     }
 
     checkHover(event: GuiHoverEvent): void {

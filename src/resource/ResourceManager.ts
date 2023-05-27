@@ -93,10 +93,12 @@ export class ResourceManager extends ResourceCache {
         })?.clone()
     }
 
-    static getTooltip(tooltipKey: string): SpriteImage {
-        return this.tooltipSpriteCache.getOrUpdate(tooltipKey, () => {
-            const tooltipText = this.configuration.tooltips.get(tooltipKey)
-            if (!tooltipText) return null
+    static getTooltipSprite(tooltipText: string): SpriteImage {
+        if (!tooltipText) return null
+        if (tooltipText.toLowerCase().startsWith('tooltip')) {
+            console.error(`Found key instead of tooltip text ${tooltipText}`)
+        }
+        return this.tooltipSpriteCache.getOrUpdate(tooltipText, () => {
             const tooltipTextImage = this.getTooltipFont().createTextImage(tooltipText)
             const margin = 2
             const padding = 2
