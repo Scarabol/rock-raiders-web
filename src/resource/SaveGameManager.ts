@@ -1,4 +1,4 @@
-import { DEFAULT_GAME_BRIGHTNESS, DEFAULT_GAME_SPEED_MULTIPLIER, DEFAULT_MUSIC_VOLUME, DEFAULT_SFX_VOLUME, DEFAULT_SHOW_HELP_WINDOW, NUM_OF_LEVELS_TO_COMPLETE_GAME, SAVE_GAME_SCREENSHOT_HEIGHT, SAVE_GAME_SCREENSHOT_WIDTH } from '../params'
+import { DEFAULT_AUTO_GAME_SPEED, DEFAULT_GAME_BRIGHTNESS, DEFAULT_GAME_SPEED_MULTIPLIER, DEFAULT_MUSIC_TOGGLE, DEFAULT_MUSIC_VOLUME, DEFAULT_SFX_TOGGLE, DEFAULT_SFX_VOLUME, DEFAULT_SHOW_HELP_WINDOW, DEFAULT_WALL_DETAILS, NUM_OF_LEVELS_TO_COMPLETE_GAME, SAVE_GAME_SCREENSHOT_HEIGHT, SAVE_GAME_SCREENSHOT_WIDTH } from '../params'
 import { EventBus } from '../event/EventBus'
 import { ChangePreferences } from '../event/GuiCommand'
 
@@ -8,6 +8,10 @@ export class SaveGamePreferences { // this gets serialized
     volumeMusic: number = DEFAULT_MUSIC_VOLUME
     gameBrightness: number = DEFAULT_GAME_BRIGHTNESS
     showHelpWindow: boolean = DEFAULT_SHOW_HELP_WINDOW
+    wallDetails: boolean = DEFAULT_WALL_DETAILS
+    toggleMusic: boolean = DEFAULT_MUSIC_TOGGLE
+    toggleSfx: boolean = DEFAULT_SFX_TOGGLE
+    autoGameSpeed: boolean = DEFAULT_AUTO_GAME_SPEED
 }
 
 export class SaveGameManager {
@@ -22,7 +26,7 @@ export class SaveGameManager {
         console.log('Loading default preferences...')
         const preferences = localStorage.getItem('preferences')
         if (preferences) {
-            this.currentPreferences = JSON.parse(preferences)
+            this.currentPreferences = {...this.currentPreferences, ...JSON.parse(preferences)}
             console.log(`Preferences loaded`, this.currentPreferences)
         }
         console.log('Loading save games...')

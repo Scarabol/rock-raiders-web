@@ -30,6 +30,10 @@ export const DEFAULT_SFX_VOLUME = 0.5
 export const DEFAULT_MUSIC_VOLUME = 0
 export const DEFAULT_GAME_BRIGHTNESS = 0.5
 export const DEFAULT_SHOW_HELP_WINDOW = false
+export const DEFAULT_WALL_DETAILS = true
+export const DEFAULT_MUSIC_TOGGLE = false
+export const DEFAULT_SFX_TOGGLE = true
+export const DEFAULT_AUTO_GAME_SPEED = false
 
 // native constants (do not change)
 
