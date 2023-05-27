@@ -1,4 +1,4 @@
-import { Vector2 } from 'three'
+import { Intersection, Vector2 } from 'three'
 import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
@@ -12,6 +12,12 @@ import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
 import { SceneManager } from '../../game/SceneManager'
 import { DEV_MODE } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
+import { Cursor } from '../../cfg/PointerCfg'
+import { VehicleEntity } from '../../game/model/vehicle/VehicleEntity'
+import { EntityType } from '../../game/model/EntityType'
+import { Surface } from '../../game/model/map/Surface'
+import { EventKey } from '../../event/EventKeyEnum'
+import { ChangeCursor } from '../../event/GuiCommand'
 
 export class GameLayer extends ScreenLayer {
     sceneMgr: SceneManager
@@ -23,10 +29,14 @@ export class GameLayer extends ScreenLayer {
         event.preventDefault()
         return event.returnValue = 'Level progress will be lost!'
     }
+    cursorRelativePos: { x: number, y: number } = {x: 0, y: 0}
 
     constructor() {
         super()
         this.canvas.style.cursor = 'none' // this cursor is effective, when OrbitControls captures the pointer during movements
+        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
+            if (this.active) EventBus.publishEvent(new ChangeCursor(this.determineCursor()))
+        })
     }
 
     reset() {
@@ -50,6 +60,8 @@ export class GameLayer extends ScreenLayer {
         const terrainIntersectionPoint = this.sceneMgr.getTerrainIntersectionPoint(rx, ry)
         const buildMarker = this.sceneMgr.buildMarker
         if (event.eventEnum === POINTER_EVENT.MOVE) {
+            this.cursorRelativePos = {x: (event.canvasX / this.canvas.width) * 2 - 1, y: -(event.canvasY / this.canvas.height) * 2 + 1}
+            EventBus.publishEvent(new ChangeCursor(this.determineCursor()))
             if (terrainIntersectionPoint) this.sceneMgr.setCursorFloorPosition(terrainIntersectionPoint)
             buildMarker.updatePosition(terrainIntersectionPoint)
             this.entityMgr.selection.doubleSelect?.sceneEntity.pointLaserAt(terrainIntersectionPoint)
@@ -149,5 +161,65 @@ export class GameLayer extends ScreenLayer {
     resize(width: number, height: number) {
         super.resize(width, height)
         this.sceneMgr?.resize(width, height)
+    }
+
+    determineCursor(): Cursor {
+        if (this.sceneMgr.hasBuildModeSelection()) {
+            return this.sceneMgr.buildMarker.lastCheck ? 'pointerCanBuild' : 'pointerCannotBuild'
+        }
+        // TODO use sceneManager.getFirstByRay here too?!
+        const raycaster = this.sceneMgr.camera.createRaycaster(this.cursorRelativePos)
+        const intersectsRaider = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
+        if (intersectsRaider.length > 0) return 'pointerSelected'
+        const intersectsVehicle = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
+        if (intersectsVehicle.length > 0) {
+            const vehicle = intersectsVehicle[0].object.userData?.selectable as VehicleEntity
+            if (!vehicle?.driver && this.entityMgr.selection.raiders.length > 0) {
+                return 'pointerGetIn'
+            }
+            return 'pointerSelected'
+        }
+        const intersectsBuilding = raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere))
+        if (intersectsBuilding.length > 0) return 'pointerSelected'
+        const intersectsMaterial = raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere).filter((p) => !!p))
+        if (intersectsMaterial.length > 0) {
+            return this.determineMaterialCursor(intersectsMaterial)
+        }
+        const surfaces = this.sceneMgr.terrain?.floorGroup?.children
+        if (surfaces) {
+            const intersectsSurface = raycaster.intersectObjects(surfaces)
+            if (intersectsSurface.length > 0) {
+                return this.determineSurfaceCursor(intersectsSurface[0].object.userData?.surface)
+            }
+        }
+        return 'pointerStandard'
+    }
+
+    private determineMaterialCursor(intersectsMaterial: Intersection[]): Cursor {
+        if (this.entityMgr.selection.canPickup()) {
+            if (intersectsMaterial[0].object.userData?.entityType === EntityType.ORE) {
+                return 'pointerPickUpOre'
+            } else {
+                return 'pointerPickUp'
+            }
+        }
+        return 'pointerSelected'
+    }
+
+    private determineSurfaceCursor(surface: Surface): Cursor {
+        if (!surface) return 'pointerStandard'
+        if (this.entityMgr.selection.canMove()) {
+            if (surface.surfaceType.digable) {
+                if (this.entityMgr.selection.canDrill(surface)) {
+                    return 'pointerDrill'
+                }
+            } else if (surface.surfaceType.floor) {
+                if (surface.hasRubble() && this.entityMgr.selection.canClear()) {
+                    return 'pointerClear'
+                }
+                return 'pointerLegoManGo'
+            }
+        }
+        return surface.surfaceType.cursor
     }
 }
