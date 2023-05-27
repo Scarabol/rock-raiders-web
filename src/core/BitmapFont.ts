@@ -31,20 +31,22 @@ export class BitmapFontData {
         const maxCharWidth = fontImageData.width / cols
         this.charHeight = fontImageData.height / rows
 
+        function isLimiterColor(imgData: ImageData, index: number): boolean {
+            // Last pixel in the first row defines the end of char limiter color (e.g. 255,39,0)
+            return imgData.data[index] === imgData.data[(imgData.width - 1) * 4]
+                && imgData.data[index + 1] === imgData.data[(imgData.width - 1) * 4 + 1]
+                && imgData.data[index + 2] === imgData.data[(imgData.width - 1) * 4 + 2]
+        }
+
         function getActualCharacterWidth(imgData: ImageData) {
-            for (let y = 0; y < imgData.height / rows; y++) { // find non-empty row first
-                let rowPixelIndex = y * 4 * imgData.width
-                if (imgData.data[rowPixelIndex] !== 255 && imgData.data[rowPixelIndex + 2] !== 255) { // red/blue pixels indicate end of character
-                    for (let x = 0; x < maxCharWidth; x++) {
-                        let colPixelIndex = x * 4
-                        if (imgData.data[colPixelIndex] === 255 || imgData.data[colPixelIndex + 2] === 255) { // red/blue pixels indicate end of character
-                            return x
-                        }
-                    }
-                    return maxCharWidth
+            for (let y = 0; y < imgData.height / rows; y++) {
+                if (isLimiterColor(imgData, y * 4 * imgData.width)) continue // find non-empty row first
+                for (let x = 0; x < maxCharWidth; x++) {
+                    if (isLimiterColor(imgData, x * 4)) return x
                 }
+                return maxCharWidth
             }
-            return 0
+            return imgData.width
         }
 
         for (let i = 0; i < chars.length; i++) {
