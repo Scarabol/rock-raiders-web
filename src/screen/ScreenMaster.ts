@@ -52,7 +52,7 @@ export class ScreenMaster {
 
     getActiveLayersSorted(): ScreenLayer[] {
         if (this.focusedLayer) return [this.focusedLayer]
-        return this.layers.filter(l => l.isActive()).sort((a, b) => ScreenLayer.compareZ(a, b))
+        return this.layers.filter(l => l.isActive()).sort((a, b) => b.zIndex - a.zIndex)
     }
 
     createScreenshot(): Promise<HTMLCanvasElement> {

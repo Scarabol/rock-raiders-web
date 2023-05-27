@@ -6,6 +6,7 @@ import { AnimationFrameScaled } from '../AnimationFrame'
 
 export class ScreenLayer {
     canvas: HTMLCanvasElement
+    zIndex: number = 0
     active: boolean = true
 
     constructor() {
@@ -18,13 +19,8 @@ export class ScreenLayer {
     }
 
     setZIndex(zIndex: number) {
+        this.zIndex = zIndex
         this.canvas.style.zIndex = String(zIndex)
-    }
-
-    static compareZ(layerA: ScreenLayer, layerB: ScreenLayer) {
-        let aIndex = layerA?.canvas?.style?.zIndex || 0
-        const bIndex = layerB?.canvas?.style?.zIndex || 0
-        return aIndex === bIndex ? 0 : aIndex > bIndex ? -1 : 1
     }
 
     resize(width: number, height: number) {
