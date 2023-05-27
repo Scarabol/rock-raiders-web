@@ -48,6 +48,7 @@ export abstract class OffscreenSystem {
             this.canvas = msg.canvas
             OffscreenCache.resourceByName = msg.resourceByName
             OffscreenCache.configuration = msg.cfg
+            OffscreenCache.offscreenPreferences = msg.currentPreferences
             this.onCacheReady()
         } else if (msg.type === WorkerMessageType.RESIZE) {
             this.resizeCanvas(msg.canvasWidth, msg.canvasHeight)

@@ -15,6 +15,7 @@ import { WorkerEventResponse } from '../../worker/WorkerEventResponse'
 import { WorkerPublishEvent } from '../../worker/WorkerPublishEvent'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { ScreenLayer } from './ScreenLayer'
+import { SaveGameManager } from '../../resource/SaveGameManager'
 import generateUUID = MathUtils.generateUUID
 
 export abstract class OffscreenLayer extends ScreenLayer {
@@ -36,11 +37,12 @@ export abstract class OffscreenLayer extends ScreenLayer {
     }
 
     private initWorker() {
-        const msgInit = {
+        const msgInit: OffscreenWorkerMessage = {
             type: WorkerMessageType.INIT,
             canvas: this.canvas as HTMLCanvasElement | OffscreenCanvas,
             resourceByName: ResourceManager.resourceByName,
             cfg: ResourceManager.configuration,
+            currentPreferences: SaveGameManager.currentPreferences,
         }
         if ('transferControlToOffscreen' in this.canvas) {
             try {

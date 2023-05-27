@@ -3,6 +3,7 @@ import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
+import { SaveGamePreferences } from '../resource/SaveGameManager'
 
 export class OffscreenWorkerMessage {
     cfg?: any = undefined
@@ -15,6 +16,7 @@ export class OffscreenWorkerMessage {
     eventId?: string = undefined
     inputEvent?: GamePointerEvent | GameKeyboardEvent | GameWheelEvent = undefined
     gameEvent?: GameEvent = undefined
+    currentPreferences?: SaveGamePreferences = undefined
 
     constructor(readonly type: WorkerMessageType) {
     }

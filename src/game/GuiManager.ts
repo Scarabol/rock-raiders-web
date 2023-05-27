@@ -1,6 +1,6 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
+import { CameraControl, ChangeBuildingPowerState, ChangePreferences, ChangePriorityList, ChangeRaiderSpawnRequest, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
 import { DeselectAll, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
@@ -13,6 +13,7 @@ import { WorldManager } from './WorldManager'
 import { SurfaceType } from './model/map/SurfaceType'
 import { BuildingSite } from './model/building/BuildingSite'
 import { SoundManager } from '../audio/SoundManager'
+import { SaveGameManager } from '../resource/SaveGameManager'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -168,6 +169,11 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_REMOVE_SELECTION, () => {
             EventBus.publishEvent(new DeselectAll())
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PREFERENCES, (event: ChangePreferences) => {
+            SaveGameManager.currentPreferences = event.preferences
+            // TODO persist preferences on current savegame or global savegame?
+            SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx
         })
     }
 }

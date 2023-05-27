@@ -1,7 +1,8 @@
 import { MenuCfg } from '../../cfg/MenuCfg'
 import { BaseElement } from '../base/BaseElement'
 import { MenuBasePanel } from './MenuBasePanel'
-import { SaveGameManager } from '../../resource/SaveGameManager'
+import { OffscreenCache } from '../../worker/OffscreenCache'
+import { ChangePreferences } from '../../event/GuiCommand'
 
 export class OptionsPanel extends MenuBasePanel {
     onRepeatBriefing: () => any = () => console.log('repeat mission briefing')
@@ -13,39 +14,36 @@ export class OptionsPanel extends MenuBasePanel {
         this.height = height
         const menu1 = this.layersByKey.get('menu1')
         const gameSpeedSlider = menu1.itemsSlider[0]
-        gameSpeedSlider.setValue(SaveGameManager.currentPreferences.gameSpeed)
+        gameSpeedSlider.setValue(OffscreenCache.offscreenPreferences.gameSpeed)
         gameSpeedSlider.onValueChanged = (value) => {
-            // TODO Actually change game speed
-            console.error(`TODO Implement change game speed to ${value}`)
-            SaveGameManager.currentPreferences.gameSpeed = value
+            OffscreenCache.offscreenPreferences.gameSpeed = value
+            this.publishEvent(new ChangePreferences(OffscreenCache.offscreenPreferences))
         }
         const volumeSfxSlider = menu1.itemsSlider[1]
-        volumeSfxSlider.setValue(SaveGameManager.currentPreferences.volumeSfx)
+        volumeSfxSlider.setValue(OffscreenCache.offscreenPreferences.volumeSfx)
         volumeSfxSlider.onValueChanged = (value) => {
-            // TODO Actually change SFX volume
-            console.error(`TODO Implement change sfx volume to ${value}`)
-            SaveGameManager.currentPreferences.volumeSfx = value
+            OffscreenCache.offscreenPreferences.volumeSfx = value
+            this.publishEvent(new ChangePreferences(OffscreenCache.offscreenPreferences))
         }
         const volumeMusicSlider = menu1.itemsSlider[2]
-        volumeMusicSlider.setValue(SaveGameManager.currentPreferences.volumeMusic)
+        volumeMusicSlider.disabled = true // TODO Implement background music
+        volumeMusicSlider.setValue(OffscreenCache.offscreenPreferences.volumeMusic)
         volumeMusicSlider.onValueChanged = (value) => {
-            // TODO Actually change music volume
-            console.error(`TODO Implement change music volume to ${value}`)
-            SaveGameManager.currentPreferences.volumeMusic = value
+            OffscreenCache.offscreenPreferences.volumeMusic = value
+            this.publishEvent(new ChangePreferences(OffscreenCache.offscreenPreferences))
         }
         const gameBrightnessSlider = menu1.itemsSlider[3]
-        gameBrightnessSlider.setValue(SaveGameManager.currentPreferences.gameBrightness)
+        gameBrightnessSlider.setValue(OffscreenCache.offscreenPreferences.gameBrightness)
         gameBrightnessSlider.onValueChanged = (value) => {
-            // TODO Actually change game brightness
-            console.error(`TODO Implement change game brightness to ${value}`)
-            SaveGameManager.currentPreferences.gameBrightness = value
+            OffscreenCache.offscreenPreferences.gameBrightness = value
+            this.publishEvent(new ChangePreferences(OffscreenCache.offscreenPreferences))
         }
         const showHelpWindowCycle = menu1.itemsCycle[0]
-        showHelpWindowCycle.setState(SaveGameManager.currentPreferences.showHelpWindow)
+        showHelpWindowCycle.disabled = true // TODO Implement help window
+        showHelpWindowCycle.setState(OffscreenCache.offscreenPreferences.showHelpWindow)
         showHelpWindowCycle.onStateChanged = (state) => {
-            // TODO Actually change help window setting
-            console.error(`TODO Implement change show help window to ${state}`)
-            SaveGameManager.currentPreferences.showHelpWindow = state
+            OffscreenCache.offscreenPreferences.showHelpWindow = state
+            this.publishEvent(new ChangePreferences(OffscreenCache.offscreenPreferences))
         }
         menu1.itemsTrigger[0].onClick = () => this.onRepeatBriefing()
         menu1.itemsTrigger[1].onClick = () => this.onContinueMission()

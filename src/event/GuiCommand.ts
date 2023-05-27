@@ -6,6 +6,7 @@ import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 import { Cursor } from '../cfg/PointerCfg'
 import { Sample } from '../audio/Sample'
+import { SaveGamePreferences } from '../resource/SaveGameManager'
 
 export class GuiCommand extends GameEvent {
 }
@@ -252,5 +253,11 @@ export class CameraControl extends GuiCommand {
 export class RepairLava extends GuiCommand {
     constructor() {
         super(EventKey.COMMAND_REPAIR_LAVA)
+    }
+}
+
+export class ChangePreferences extends GuiCommand {
+    constructor(readonly preferences: SaveGamePreferences) {
+        super(EventKey.COMMAND_CHANGE_PREFERENCES)
     }
 }

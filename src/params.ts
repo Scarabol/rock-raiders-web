@@ -27,9 +27,9 @@ export const SURFACE_NUM_CONTAINED_ORE = 4
 export const ALARM_LIGHT_ROTATION_SPEED = Math.PI / 180 * 5
 export const DEFAULT_GAME_SPEED_MULTIPLIER = 0.6
 export const DEFAULT_SFX_VOLUME = 0.5
-export const DEFAULT_MUSIC_VOLUME = 0.5
+export const DEFAULT_MUSIC_VOLUME = 0
 export const DEFAULT_GAME_BRIGHTNESS = 0.5
-export const DEFAULT_SHOW_HELP_WINDOW = true
+export const DEFAULT_SHOW_HELP_WINDOW = false
 
 // native constants (do not change)
 
