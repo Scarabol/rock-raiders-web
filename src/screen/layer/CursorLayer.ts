@@ -177,10 +177,11 @@ export class CursorLayer extends ScreenLayer {
     private changeTooltip(tooltipKey: string) {
         const tooltipImg = ResourceManager.getTooltip(tooltipKey)
         if (!tooltipImg) return
-        const posY = this.cursorCanvasPos.y + this.activeCursor.maxHeight
         const tooltipWidth = Math.round(tooltipImg.width * this.canvas.width / NATIVE_SCREEN_WIDTH)
         const tooltipHeight = Math.round(tooltipImg.height * this.canvas.height / NATIVE_SCREEN_HEIGHT)
-        this.tooltipRect = new Rect(this.cursorCanvasPos.x, posY, tooltipWidth, tooltipHeight)
+        const posX = Math.min(this.cursorCanvasPos.x + tooltipWidth, this.canvas.width) - tooltipWidth
+        const posY = Math.min(this.cursorCanvasPos.y + this.activeCursor.maxHeight + tooltipHeight, this.canvas.height) - tooltipHeight
+        this.tooltipRect = new Rect(posX, posY, tooltipWidth, tooltipHeight)
         this.animationFrame.onRedraw = (context) => context.drawImage(tooltipImg, this.tooltipRect.x, this.tooltipRect.y, this.tooltipRect.w, this.tooltipRect.h)
         this.animationFrame.redraw()
     }
