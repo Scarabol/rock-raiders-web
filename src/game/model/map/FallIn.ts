@@ -5,13 +5,15 @@ export class FallIn {
     terrain: Terrain
     source: Surface
     target: Surface
-    fallInTimeout: number
+    maxTimerMs: number
+    fallInTimeout: number = 0
     timer: number = 0
 
-    constructor(terrain: Terrain, source: Surface, target: Surface) {
+    constructor(terrain: Terrain, source: Surface, target: Surface, maxTimerSeconds: number) {
         this.terrain = terrain
         this.source = source
         this.target = target
+        this.maxTimerMs = maxTimerSeconds * 1000
         this.restartTimeout()
     }
 
@@ -24,6 +26,6 @@ export class FallIn {
     }
 
     private restartTimeout() {
-        this.fallInTimeout = (30 + Math.randomInclusive(60)) * 1000 // TODO adapt timer to level multiplier and fallIn value
+        this.fallInTimeout = Math.randomInclusive(this.maxTimerMs)
     }
 }

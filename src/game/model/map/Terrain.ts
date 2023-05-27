@@ -115,8 +115,8 @@ export class Terrain {
         return totalOres
     }
 
-    setFallInLevel(x: number, y: number, fallInLevel: number) {
-        if (fallInLevel < 1) return
+    setFallInLevel(x: number, y: number, maxTimerSeconds: number) {
+        if (maxTimerSeconds < 1) return
         const surface = this.getSurface(x, y)
         let originPos: Surface = null
         let targetPos: Surface = null
@@ -128,7 +128,7 @@ export class Terrain {
             targetPos = this.findFallInTarget(surface)
         }
         if (originPos && targetPos) {
-            this.fallIns.push(new FallIn(this, originPos, targetPos))
+            this.fallIns.push(new FallIn(this, originPos, targetPos, maxTimerSeconds))
         }
     }
 
