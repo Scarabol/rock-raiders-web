@@ -43,8 +43,12 @@ export class SelectionLayer extends ScreenLayer {
             if (event.button === MOUSE_BUTTON.MAIN) return this.startSelection(event.canvasX, event.canvasY)
         } else if (event.eventEnum === POINTER_EVENT.MOVE) {
             return this.changeSelection(event.canvasX, event.canvasY)
-        } else if ((event.eventEnum === POINTER_EVENT.UP && event.button === MOUSE_BUTTON.MAIN) || event.eventEnum === POINTER_EVENT.LEAVE) {
+        } else if (event.eventEnum === POINTER_EVENT.UP && event.button === MOUSE_BUTTON.MAIN) {
             return this.selectEntities(event.canvasX, event.canvasY)
+        } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
+            this.selectionRect = null
+            this.animationFrame.redraw()
+            return true
         }
         return false
     }
