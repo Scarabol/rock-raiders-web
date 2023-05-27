@@ -17,14 +17,19 @@ export class ToggleButton extends Button {
     }
 
     checkHover(event: GuiHoverEvent): void {
-        if (this.isInactive()) return
         const inRect = this.isInRect(event.sx, event.sy)
-        event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
-        this.hover = inRect
-        if (!this.hover && !this.toggleState) this.pressedByButton = null
-        // TODO start tooltip timeout (if not already started)
+        if (inRect) {
+            if (!this.tooltipTimeout) this.tooltipTimeout = setTimeout(() => this.showTooltip(), 1000)
+        } else if (this.tooltipTimeout) {
+            clearTimeout(this.tooltipTimeout)
+            this.tooltipTimeout = null
+        }
+        if (!this.isInactive()) {
+            event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
+            this.hover = inRect
+            if (!this.hover && !this.toggleState) this.pressedByButton = null
+        }
         this.children.forEach((child) => child.checkHover(event))
-        if (event.hoverStateChanged) this.notifyRedraw()
     }
 
     checkClick(event: GuiClickEvent): boolean {
@@ -67,4 +72,3 @@ export class ToggleButton extends Button {
         return false
     }
 }
-
