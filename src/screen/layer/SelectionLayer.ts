@@ -10,14 +10,14 @@ import { AnimationFrame } from '../AnimationFrame'
 import { ScreenLayer } from './ScreenLayer'
 
 export class SelectionLayer extends ScreenLayer {
-    readonly animationFrame: AnimationFrameSelection
+    readonly animationFrame: AnimationFrame
     sceneMgr: SceneManager
     entityMgr: EntityManager
     selectionRect: Rect = null
 
     constructor() {
         super()
-        this.animationFrame = new AnimationFrameSelection(this.canvas)
+        this.animationFrame = new AnimationFrame(this.canvas)
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             if (!this.selectionRect) return
@@ -81,13 +81,5 @@ export class SelectionLayer extends ScreenLayer {
         this.selectionRect = null
         this.animationFrame.redraw()
         return true
-    }
-}
-
-class AnimationFrameSelection extends AnimationFrame {
-    redraw() {
-        super.redraw()
-        // TODO Without this console logging the selection frame may become sticky
-        console.log('TODO Fix AnimationFrameSelection.redraw becomes sticky')
     }
 }

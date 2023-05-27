@@ -83,9 +83,9 @@ export class CursorLayer extends ScreenLayer {
                 this.changeCursor(this.determineCursor())
             }
             this.animationFrame.onRedraw = (context) => {
-                if (!this.tooltipRect) return
-                context.clearRect(this.tooltipRect.x, this.tooltipRect.y, this.tooltipRect.w, this.tooltipRect.h)
+                if (this.tooltipRect) context.clearRect(this.tooltipRect.x, this.tooltipRect.y, this.tooltipRect.w, this.tooltipRect.h)
                 this.tooltipRect = null
+                this.animationFrame.onRedraw = null
             }
             this.animationFrame.redraw()
         }
