@@ -5,6 +5,7 @@ import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { GameEvent } from '../../event/GameEvent'
 import { ChangeCursor, GuiCommand, PlaySoundEvent } from '../../event/GuiCommand'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
+import { clearTimeoutSafe } from '../../core/Util'
 
 export class BaseElement {
     parent: BaseElement = null
@@ -87,8 +88,7 @@ export class BaseElement {
         if (inRect) {
             if (!this.tooltipTimeout) this.tooltipTimeout = setTimeout(() => this.showTooltip(), 1000)
         } else if (this.tooltipTimeout) {
-            clearTimeout(this.tooltipTimeout)
-            this.tooltipTimeout = null
+            this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
         }
         if (!this.isInactive()) {
             event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
@@ -150,6 +150,7 @@ export class BaseElement {
         let stateChanged = this.pressedByButton !== null || this.hover
         this.pressedByButton = null
         this.hover = false
+        this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
         this.children.forEach((child) => stateChanged = child.release() || stateChanged)
         return stateChanged
     }
