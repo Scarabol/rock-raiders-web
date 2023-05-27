@@ -175,7 +175,8 @@ export class SceneManager implements Updatable {
         const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
         const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
         const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])
-        this.ambientLight = new AmbientLight(ambientColor, 0.4) // range from 0.1 to 0.4
+        this.ambientLight = new AmbientLight(ambientColor)
+        this.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
         this.scene.add(this.ambientLight)
 
         this.cursor = new TorchLightCursor()
@@ -266,5 +267,9 @@ export class SceneManager implements Updatable {
             if (autoPlay) audio.play() // TODO retry playing sound for looped ones, when audio context fails
         })
         return audio
+    }
+
+    setLightLevel(lightLevel: number) {
+        this.ambientLight.intensity = 0.05 + Math.max(0, Math.min(1, lightLevel)) * 0.4
     }
 }
