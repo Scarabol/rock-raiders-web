@@ -38,8 +38,8 @@ export class MenuSliderItem extends BaseElement {
         leftBtn.updatePosition()
         leftBtn.onClick = () => {
             if (this.value > this.min) {
-                this.value--
-                this.onValueChanged(this.value)
+                this.value = Math.max(this.value - 1, this.min)
+                this.onValueChanged(this.value / this.max)
             }
         }
         const rightBtn = this.addChild(new Button(this, new BaseButtonCfg()))
@@ -51,8 +51,8 @@ export class MenuSliderItem extends BaseElement {
         rightBtn.updatePosition()
         rightBtn.onClick = () => {
             if (this.value < this.max) {
-                this.value++
-                this.onValueChanged(this.value)
+                this.value = Math.min(this.value + 1, this.max)
+                this.onValueChanged(this.value / this.max)
             }
         }
         this.width = itemCfg.width + leftBtn.imgHover.width + this.imgLeft.width + this.imgNormal.width + this.imgRight.width * 2 + rightBtn.imgHover.width
@@ -65,7 +65,7 @@ export class MenuSliderItem extends BaseElement {
     }
 
     setValue(value: number) {
-        this.value = value
+        this.value = Math.max(0, Math.min(1, value)) * this.max
     }
 
     checkHover(event: GuiHoverEvent): void {
