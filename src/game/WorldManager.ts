@@ -201,7 +201,7 @@ export class WorldManager {
         if (!lwsFilename.endsWith('.lws')) {
             lwsFilename += '.lws'
         }
-        const grp = new AnimationGroup(lwsFilename, this.sceneMgr.audioListener)
+        const grp = new AnimationGroup(lwsFilename, this.sceneMgr)
         grp.position.copy(position)
         grp.rotateOnAxis(new Vector3(0, 1, 0), heading)
         this.sceneMgr.scene.add(grp)

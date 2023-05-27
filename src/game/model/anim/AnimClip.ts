@@ -2,6 +2,7 @@ import { Group, PositionalAudio } from 'three'
 import { SceneMesh } from '../../../scene/SceneMesh'
 import { updateSafe } from '../Updateable'
 import { AnimSubObj } from './AnimSubObj'
+import { SaveGameManager } from '../../../resource/SaveGameManager'
 
 export class AnimClip {
     lwsFilepath: string = null
@@ -85,6 +86,7 @@ export class AnimClip {
     private playAudio() {
         this.sfxAudioByFrame.getOrUpdate(this.currentFrame, () => []).forEach((a) => {
             if (a.isPlaying) a.stop()
+            a.setVolume(SaveGameManager.currentPreferences.volumeSfx)
             a.play()
         })
     }

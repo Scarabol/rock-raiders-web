@@ -1,10 +1,9 @@
-import { AudioListener, PositionalAudio } from 'three'
-import { SoundManager } from '../audio/SoundManager'
+import { SceneManager } from '../game/SceneManager'
 import { getPath, iGet, iSet } from '../core/Util'
 import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
 import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
 import { AnimClip } from '../game/model/anim/AnimClip'
-import { DEV_MODE, TILESIZE } from '../params'
+import { DEV_MODE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
 import { LWSCLoader } from './LWSCLoader'
 import { ResourceManager } from './ResourceManager'
@@ -13,16 +12,16 @@ export class AnimEntityLoader {
     aeFilename: string
     path: string
     cfgRoot: any
-    audioListener: AudioListener
+    sceneMgr: SceneManager
     verbose: boolean
     entityType: AnimationEntityType = new AnimationEntityType()
     knownAnimations: string[] = []
 
-    constructor(aeFilename: string, cfgRoot: any, audioListener: AudioListener, verbose: boolean = false) {
+    constructor(aeFilename: string, cfgRoot: any, sceneMgr: SceneManager, verbose: boolean = false) {
         this.aeFilename = aeFilename
         this.path = getPath(aeFilename)
         this.cfgRoot = cfgRoot
-        this.audioListener = audioListener
+        this.sceneMgr = sceneMgr
         this.verbose = verbose
     }
 
@@ -215,17 +214,9 @@ export class AnimEntityLoader {
                     animation.yPivot = polyModel
                 }
             }
-            if (body.sfxName) {
-                const audio = new PositionalAudio(this.audioListener)
-                audio.setRefDistance(TILESIZE * 6) // TODO optimize ref distance for SFX sounds
-                audio.loop = false
-                polyModel.add(audio)
-                if (!body.sfxName.equalsIgnoreCase('snd_music')) {
-                    SoundManager.getSoundBuffer(body.sfxName)?.then((audioBuffer) => {
-                        audio.setBuffer(audioBuffer)
-                    })
-                    body.sfxFrames.forEach((frame) => animation.sfxAudioByFrame.getOrUpdate(frame, () => []).push(audio))
-                }
+            if (body.sfxName && !body.sfxName.equalsIgnoreCase('snd_music')) {
+                const audio = this.sceneMgr.addPositionalAudio(polyModel, body.sfxName, false)
+                body.sfxFrames.forEach((frame) => animation.sfxAudioByFrame.getOrUpdate(frame, () => []).push(audio))
             }
         })
         if (!animation.driverJoint) {

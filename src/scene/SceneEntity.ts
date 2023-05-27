@@ -1,12 +1,10 @@
 import { Box3, Group, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, Vector2, Vector3 } from 'three'
-import { SoundManager } from '../audio/SoundManager'
 import { PickSphereStats } from '../cfg/GameStatsCfg'
 import { AnimationActivity, AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 import { Surface } from '../game/model/map/Surface'
 import { Selectable } from '../game/model/Selectable'
 import { Updatable } from '../game/model/Updateable'
 import { SceneManager } from '../game/SceneManager'
-import { TILESIZE } from '../params'
 import { SelectionFrameSprite } from './SelectionFrameSprite'
 
 export class SceneEntity {
@@ -124,17 +122,7 @@ export class SceneEntity {
     }
 
     playPositionalAudio(sfxName: string, loop: boolean): PositionalAudio {
-        const audio = new PositionalAudio(this.sceneMgr.audioListener)
-        audio.setRefDistance(TILESIZE * 2)
-        audio.loop = loop
-        this.addChild(audio)
-        SoundManager.getSoundBuffer(sfxName).then((audioBuffer) => {
-            audio.setBuffer(audioBuffer).play() // TODO retry playing sound for looped ones, when audio context fails
-            if (!audio.loop) audio.onEnded = () => this.removeChild(audio)
-        }).catch(() => {
-            this.removeChild(audio)
-        })
-        return audio
+        return this.sceneMgr.addPositionalAudio(this.group, sfxName, true, loop)
     }
 
     addToScene(worldPosition: Vector2, radHeading: number) {

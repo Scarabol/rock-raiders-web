@@ -510,16 +510,8 @@ export class Surface implements Selectable {
         return this.clearRubbleJob
     }
 
-    playPositionalSample(sample: Sample): PositionalAudio { // TODO merge with AnimEntity code (at least in SceneEntity maybe)
-        const audio = new PositionalAudio(this.worldMgr.sceneMgr.audioListener)
-        audio.setRefDistance(TILESIZE * 6)
-        audio.position.setScalar(0.5)
-        this.mesh.add(audio)
-        SoundManager.getSoundBuffer(Sample[sample]).then((audioBuffer) => {
-            audio.setBuffer(audioBuffer)
-            audio.play()
-        })
-        return audio
+    playPositionalSample(sample: Sample): PositionalAudio {
+        return this.worldMgr.sceneMgr.addPositionalAudio(this.mesh, Sample[sample], true)
     }
 
     isBlockedByVehicle() {

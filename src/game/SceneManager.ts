@@ -1,4 +1,4 @@
-import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, Scene, Vector2, Vector3 } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, Object3D, PositionalAudio, Scene, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { SpriteImage } from '../core/Sprite'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -19,6 +19,9 @@ import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
 import { Updatable, updateSafe } from './model/Updateable'
 import { SceneEntity } from '../scene/SceneEntity'
+import { TILESIZE } from '../params'
+import { SaveGameManager } from '../resource/SaveGameManager'
+import { SoundManager } from '../audio/SoundManager'
 
 export class SceneManager implements Updatable {
     readonly audioListener: AudioListener
@@ -249,5 +252,19 @@ export class SceneManager implements Updatable {
     removeEntity(sceneEntity: SceneEntity): void {
         this.entities.remove(sceneEntity)
         this.scene.remove(sceneEntity.group)
+    }
+
+    addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean = false): PositionalAudio {
+        const audio = new PositionalAudio(this.audioListener)
+        audio.setRefDistance(TILESIZE * 2)
+        audio.setVolume(SaveGameManager.currentPreferences.volumeSfx)
+        audio.loop = loop
+        if (!audio.loop) audio.onEnded = () => parent.remove(audio)
+        SoundManager.getSoundBuffer(sfxName).then((audioBuffer) => {
+            audio.setBuffer(audioBuffer)
+            parent.add(audio)
+            if (autoPlay) audio.play() // TODO retry playing sound for looped ones, when audio context fails
+        })
+        return audio
     }
 }
