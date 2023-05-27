@@ -1,4 +1,6 @@
 import { DEFAULT_GAME_BRIGHTNESS, DEFAULT_GAME_SPEED_MULTIPLIER, DEFAULT_MUSIC_VOLUME, DEFAULT_SFX_VOLUME, DEFAULT_SHOW_HELP_WINDOW, NUM_OF_LEVELS_TO_COMPLETE_GAME, SAVE_GAME_SCREENSHOT_HEIGHT, SAVE_GAME_SCREENSHOT_WIDTH } from '../params'
+import { EventBus } from '../event/EventBus'
+import { ChangePreferences } from '../event/GuiCommand'
 
 export class SaveGamePreferences { // this gets serialized
     gameSpeed: number = DEFAULT_GAME_SPEED_MULTIPLIER
@@ -93,6 +95,7 @@ export class SaveGameManager {
         }
         this.currentLevels = saveGame.levels
         this.currentPreferences = saveGame.preferences
+        EventBus.publishEvent(new ChangePreferences(this.currentPreferences))
         console.log('game progress loaded', this.currentLevels)
         return true
     }
