@@ -12,6 +12,9 @@ import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { Sample } from '../../../audio/Sample'
+import { EventBus } from '../../../event/EventBus'
+import { LandslideEvent } from '../../../event/WorldLocationEvent'
+import { SoundManager } from '../../../audio/SoundManager'
 
 export class Terrain {
     heightOffset: number[][] = [[]]
@@ -148,6 +151,8 @@ export class Terrain {
         this.worldMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading)
         source.playPositionalSample(Sample.SFX_RockBreak)
         target.makeRubble()
+        EventBus.publishEvent(new LandslideEvent(target.getCenterWorld()))
+        SoundManager.playSample(Sample.InfoSFX_Landslide)
     }
 
     removeFallInOrigin(surface: Surface) {

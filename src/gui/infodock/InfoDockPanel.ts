@@ -1,7 +1,7 @@
 import { ButtonInfoDockCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { EventKey } from '../../event/EventKeyEnum'
-import { LandslideEvent } from '../../event/WorldLocationEvent'
+import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
@@ -38,7 +38,7 @@ export class InfoDockPanel extends Panel {
         if (this.stackButtons.length < 1) return
         const btn = this.stackButtons[0]
         if (btn.messages.length < 1) return
-        const msg = btn.messages[0] as LandslideEvent
+        const msg = btn.messages[0] as WorldLocationEvent
         console.log('TODO force move camera to', msg.location) // TODO force move camera
     }
 
@@ -108,4 +108,3 @@ export class InfoDockPanel extends Panel {
         })
     }
 }
-
