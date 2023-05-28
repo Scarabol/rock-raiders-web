@@ -3,6 +3,7 @@ import { BaseElement } from '../base/BaseElement'
 import { MenuBasePanel } from './MenuBasePanel'
 import { ChangePreferences } from '../../event/GuiCommand'
 import { OffscreenCache } from '../../worker/OffscreenCache'
+import { setupOptionsLayer } from './OptionsLayerUtil'
 
 export class PausePanel extends MenuBasePanel {
     onContinueGame: () => any = () => console.log('continue mission')
@@ -15,7 +16,7 @@ export class PausePanel extends MenuBasePanel {
         this.width = width
         this.height = height
         this.layersByKey.get('menu1').itemsTrigger[0].onClick = () => this.onContinueGame()
-        this.layersByKey.get('menu2').itemsTrigger[0].onClick = () => this.onRepeatBriefing()
+        setupOptionsLayer(this.layersByKey.get('menu2'), () => this.onRepeatBriefing())
         this.layersByKey.get('menu3').itemsTrigger[0].onClick = () => this.onAbortGame()
         this.layersByKey.get('menu4').itemsTrigger[0].onClick = () => this.onRestartGame()
         const advOptions = this.layersByKey.get('menu5')

@@ -30,11 +30,13 @@ export class GameMenuCfg extends BaseConfig {
             this.levelText.setFromCfgObj(cfgValue)
         } else if ('PausedMenu'.equalsIgnoreCase(unifiedKey)) {
             this.pausedMenu.setFromCfgObj(cfgValue)
+            const helpWindowCycle = this.pausedMenu.menus[1].itemsCycle[0]
+            ;[helpWindowCycle.labelOn, helpWindowCycle.labelOff] = [helpWindowCycle.labelOff, helpWindowCycle.labelOn] // XXX uplift config parsing workaround
         } else if ('MainMenuFull'.equalsIgnoreCase(unifiedKey)) {
             this.mainMenuFull.setFromCfgObj(cfgValue)
         } else if ('OptionsMenu'.equalsIgnoreCase(unifiedKey)) {
             this.optionsMenu.setFromCfgObj(cfgValue)
-            const helpWindowCycle = (this.optionsMenu.menus[0].itemsCycle)[0]
+            const helpWindowCycle = this.optionsMenu.menus[0].itemsCycle[0]
             ;[helpWindowCycle.labelOn, helpWindowCycle.labelOff] = [helpWindowCycle.labelOff, helpWindowCycle.labelOn] // XXX uplift config parsing workaround
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)

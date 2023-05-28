@@ -77,8 +77,8 @@ export class OverlaySystem extends AbstractGuiSystem {
         const lEventKey = event.key.toLowerCase()
         if (event.eventEnum === KEY_EVENT.UP) {
             if (lEventKey === 'escape') {
-                if (this.panelBriefing.hidden && this.panelOptions.hidden) {
-                    this.setActivePanel(this.panelPause.hidden ? this.panelPause : null)
+                if (this.panelBriefing.hidden) {
+                    this.setActivePanel(this.panelPause.hidden && this.panelOptions.hidden ? this.panelPause : null)
                     result = true
                 }
             } else if (lEventKey === ' ') { // space
