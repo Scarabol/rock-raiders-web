@@ -1,7 +1,7 @@
 import { Cursor } from '../../../cfg/PointerCfg'
 
 export class SurfaceType {
-    name: string // human-readable, maybe used as label later on
+    name: string // human-readable config name
     shaping: boolean = false
     matIndex: string = '00'
     floor: boolean = false
@@ -20,7 +20,7 @@ export class SurfaceType {
     }
 
     static readonly GROUND = new SurfaceType({
-        name: 'ground',
+        name: 'surfaceTypeTunnel',
         floor: true,
         selectable: true,
         canHaveFence: true,
@@ -28,14 +28,14 @@ export class SurfaceType {
         rubbleResilient: false,
     })
     static readonly SOLID_ROCK = new SurfaceType({
-        name: 'solid rock',
+        name: 'surfaceTypeImmovable',
         shaping: true,
         matIndex: '5',
         cursor: 'pointerSurfaceTypeImmovable',
         mapSurfaceColor: '#500090',
     })
     static readonly HARD_ROCK = new SurfaceType({
-        name: 'hard rock',
+        name: 'surfaceTypeHard',
         shaping: true,
         matIndex: '4',
         selectable: true,
@@ -46,7 +46,7 @@ export class SurfaceType {
         mapSurfaceColor: '#7000B0',
     })
     static readonly LOOSE_ROCK = new SurfaceType({
-        name: 'loose rock',
+        name: 'surfaceTypeMedium',
         shaping: true,
         matIndex: '3',
         selectable: true,
@@ -57,7 +57,7 @@ export class SurfaceType {
         mapSurfaceColor: '#9000D0',
     })
     static readonly DIRT = new SurfaceType({
-        name: 'dirt',
+        name: 'surfaceTypeLoose',
         shaping: true,
         matIndex: '2',
         selectable: true,
@@ -68,25 +68,25 @@ export class SurfaceType {
         mapSurfaceColor: '#B000F0',
     })
     static readonly SLUG_HOLE = new SurfaceType({
-        name: 'slug hole', floor: true, matIndex: '30', mapSurfaceColor: '#280048',
+        name: 'surfaceTypeSlugHole', floor: true, matIndex: '30', mapSurfaceColor: '#280048',
     })
     static readonly LAVA1 = new SurfaceType({
-        name: 'lava', floor: true, matIndex: '06', selectable: true, mapSurfaceColor: '#280048',
+        name: 'lava 1', floor: true, matIndex: '06', selectable: true, mapSurfaceColor: '#280048',
     })
     static readonly LAVA2 = new SurfaceType({
-        name: 'lava', floor: true, matIndex: '16', selectable: true, mapSurfaceColor: '#280048',
+        name: 'lava 2', floor: true, matIndex: '16', selectable: true, mapSurfaceColor: '#280048',
     })
     static readonly LAVA3 = new SurfaceType({
-        name: 'lava', floor: true, matIndex: '26', selectable: true, mapSurfaceColor: '#280048',
+        name: 'lava 3', floor: true, matIndex: '26', selectable: true, mapSurfaceColor: '#280048',
     })
     static readonly LAVA4 = new SurfaceType({
-        name: 'lava', floor: true, matIndex: '36', selectable: true, mapSurfaceColor: '#280048',
+        name: 'lava 4', floor: true, matIndex: '36', selectable: true, mapSurfaceColor: '#280048',
     })
     static readonly LAVA5 = new SurfaceType({
-        name: 'lava', floor: true, matIndex: '46', mapSurfaceColor: '#fa5700',
+        name: 'surfaceTypeLava', floor: true, matIndex: '46', mapSurfaceColor: '#fa5700',
     })
     static readonly ORE_SEAM = new SurfaceType({
-        name: 'ore seam',
+        name: 'surfaceTypeOreSeam',
         matIndex: '40',
         selectable: true,
         digable: true,
@@ -95,10 +95,10 @@ export class SurfaceType {
         statsDrillName: 'SeamDrillTime',
     })
     static readonly WATER = new SurfaceType({
-        name: 'water', floor: true, matIndex: '45', mapSurfaceColor: '#000080',
+        name: 'surfaceTypeWater', floor: true, matIndex: '45', mapSurfaceColor: '#000080',
     })
     static readonly CRYSTAL_SEAM = new SurfaceType({
-        name: 'energy crystal seam',
+        name: 'surfaceTypeCrystalSeam',
         matIndex: '20',
         selectable: true,
         digable: true,
@@ -107,12 +107,12 @@ export class SurfaceType {
         statsDrillName: 'SeamDrillTime',
     })
     static readonly RECHARGE_SEAM = new SurfaceType({
-        name: 'recharge seam',
+        name: 'surfaceTypeRechargeSeam',
         matIndex: '67',
         cursor: 'pointerSurfaceTypeRechargeSeam',
     })
     static readonly POWER_PATH = new SurfaceType({
-        name: 'power path all',
+        name: 'surfaceTypePath',
         floor: true,
         matIndex: '60',
         selectable: true,
@@ -136,7 +136,7 @@ export class SurfaceType {
         mapSurfaceColor: '#B8BBB8',
     })
     static readonly RUBBLE1 = new SurfaceType({
-        name: 'rubble 1',
+        name: 'surfaceTypeRubble',
         floor: true,
         matIndex: '13',
         selectable: true,
@@ -145,7 +145,7 @@ export class SurfaceType {
         rubbleResilient: false,
     })
     static readonly RUBBLE2 = new SurfaceType({
-        name: 'rubble 2',
+        name: 'surfaceTypeRubble',
         floor: true,
         matIndex: '12',
         selectable: true,
@@ -154,7 +154,7 @@ export class SurfaceType {
         rubbleResilient: false,
     })
     static readonly RUBBLE3 = new SurfaceType({
-        name: 'rubble 3',
+        name: 'surfaceTypeRubble',
         floor: true,
         matIndex: '11',
         selectable: true,
@@ -163,7 +163,7 @@ export class SurfaceType {
         rubbleResilient: false,
     })
     static readonly RUBBLE4 = new SurfaceType({
-        name: 'rubble 4',
+        name: 'surfaceTypeRubble',
         floor: true,
         matIndex: '10',
         selectable: true,

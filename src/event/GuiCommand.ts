@@ -7,6 +7,8 @@ import { GameEvent } from './GameEvent'
 import { Cursor } from '../cfg/PointerCfg'
 import { Sample } from '../audio/Sample'
 import { SaveGamePreferences } from '../resource/SaveGameManager'
+import { Raider } from '../game/model/raider/Raider'
+import { BuildingSite } from '../game/model/building/BuildingSite'
 
 export class GuiCommand extends GameEvent {
 }
@@ -23,8 +25,39 @@ export class ChangeCursor extends GuiCommand {
 }
 
 export class ChangeTooltip extends GuiCommand {
-    constructor(readonly tooltipText: string, readonly tooltipSfx?: string) {
+    readonly numToolSlots?: number
+    readonly tools?: RaiderTool[]
+    readonly trainings?: RaiderTraining[]
+    readonly crystals?: { actual: number, needed: number }
+    readonly ores?: { actual: number, needed: number }
+    readonly bricks?: { actual: number, needed: number }
+
+    constructor(
+        readonly tooltipText: string,
+        readonly tooltipSfx?: string,
+        raider?: Raider,
+        site?: BuildingSite,
+    ) {
         super(EventKey.COMMAND_CHANGE_TOOLTIP)
+        if (raider) {
+            this.numToolSlots = raider.maxTools()
+            this.tools = Array.from(raider.tools.keys())
+            this.trainings = Array.from(raider.trainings.keys())
+        }
+        if (site) {
+            this.crystals = {
+                actual: site.onSiteByType.get(EntityType.CRYSTAL)?.length || 0,
+                needed: site.neededByType.get(EntityType.CRYSTAL),
+            }
+            this.ores = {
+                actual: site.onSiteByType.get(EntityType.ORE)?.length || 0,
+                needed: site.neededByType.get(EntityType.ORE),
+            }
+            this.bricks = {
+                actual: site.onSiteByType.get(EntityType.BRICK)?.length || 0,
+                needed: site.neededByType.get(EntityType.BRICK),
+            }
+        }
     }
 }
 

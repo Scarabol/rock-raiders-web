@@ -1,6 +1,6 @@
 export enum EntityType {
     // RAIDER
-    PILOT,
+    PILOT = 1, // start with 1 otherwise entity type may fail truthiness test
 
     // BUILDING
     TOOLSTATION,

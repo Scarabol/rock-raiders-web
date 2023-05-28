@@ -10,6 +10,7 @@ import { SceneManager } from '../game/SceneManager'
 import { BuildingEntity } from '../game/model/building/BuildingEntity'
 import { Raider } from '../game/model/raider/Raider'
 import { SceneEntity } from './SceneEntity'
+import { BuildingSite } from '../game/model/building/BuildingSite'
 
 export interface CursorTarget {
     raider?: Raider
@@ -18,6 +19,7 @@ export interface CursorTarget {
     material?: MaterialEntity
     surface?: Surface
     intersectionPoint?: Vector2
+    buildingSite?: BuildingSite
 }
 
 export class SelectionRaycaster {

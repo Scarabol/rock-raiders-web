@@ -34,7 +34,7 @@ export const DEFAULT_WALL_DETAILS = true
 export const DEFAULT_MUSIC_TOGGLE = false
 export const DEFAULT_SFX_TOGGLE = true
 export const DEFAULT_AUTO_GAME_SPEED = false
-export const TOOLTIP_DELAY = 1500
+export const TOOLTIP_DELAY = 1000
 
 // native constants (do not change)
 

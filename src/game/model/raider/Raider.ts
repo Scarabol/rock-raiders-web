@@ -326,4 +326,8 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
     isReadyToTakeAJob(): boolean {
         return !this.job && !this.selected && !this.beamUpAnimator && !this.slipped
     }
+
+    maxTools(): number {
+        return this.level + 2
+    }
 }

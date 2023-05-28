@@ -15,6 +15,7 @@ import { AnimatedCursor } from '../AnimatedCursor'
 import { AnimationFrame } from '../AnimationFrame'
 import { ScreenLayer } from './ScreenLayer'
 import { SoundManager } from '../../audio/SoundManager'
+import { SpriteImage } from '../../core/Sprite'
 
 export class CursorLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame
@@ -38,7 +39,7 @@ export class CursorLayer extends ScreenLayer {
             this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
             if (this.active && (event.tooltipText || event.tooltipSfx)) {
                 this.tooltipTimeout = setTimeout(() => {
-                    if (event.tooltipText) this.changeTooltip(event.tooltipText)
+                    if (event.tooltipText) this.changeTooltip(event)
                     if (event.tooltipSfx) SoundManager.playSound(event.tooltipSfx)
                 }, TOOLTIP_DELAY)
             }
@@ -115,9 +116,21 @@ export class CursorLayer extends ScreenLayer {
         this.activeCursor.enableAnimation(this.canvas.style)
     }
 
-    private changeTooltip(tooltipText: string) {
-        const tooltipImg = ResourceManager.getTooltipSprite(tooltipText)
-        if (!tooltipImg) return
+    private changeTooltip(event: ChangeTooltip) {
+        if (event.numToolSlots || event.tools || event.trainings) {
+            const tooltipImg = ResourceManager.getRaiderTooltipSprite(event.tooltipText || '',
+                event.numToolSlots || 0, event.tools || [], event.trainings || [])
+            this.setTooltipImg(tooltipImg)
+        } else if (event.crystals || event.ores || event.bricks) {
+            const tooltipImg = ResourceManager.getBuildingSiteTooltipSprite(event.tooltipText, event.crystals, event.ores, event.bricks)
+            this.setTooltipImg(tooltipImg)
+        } else if (event.tooltipText) {
+            const tooltipImg = ResourceManager.getTooltipSprite(event.tooltipText)
+            this.setTooltipImg(tooltipImg)
+        }
+    }
+
+    private setTooltipImg(tooltipImg: SpriteImage) {
         const tooltipWidth = Math.round(tooltipImg.width * this.canvas.width / NATIVE_SCREEN_WIDTH)
         const tooltipHeight = Math.round(tooltipImg.height * this.canvas.height / NATIVE_SCREEN_HEIGHT)
         const posX = Math.min(this.cursorCanvasPos.x + tooltipWidth, this.canvas.width) - tooltipWidth

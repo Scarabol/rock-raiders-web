@@ -24,6 +24,7 @@ export class GameConfig extends BaseConfig {
     dialog: DialogCfg = new DialogCfg()
     reward: RewardCfg = new RewardCfg()
     menu: GameMenuCfg = new GameMenuCfg()
+    surfaceTypeDescriptions: Map<string, string[]> = new Map()
     pointers: PointerCfg = new PointerCfg()
     // interfaceImages: InterfaceImagesCfg = new InterfaceImagesCfg()
     panelRotationControl: PanelRotationControlCfg = new PanelRotationControlCfg()
@@ -40,6 +41,7 @@ export class GameConfig extends BaseConfig {
     textMessagesWithImages: TextInfoMessageCfg = new TextInfoMessageCfg()
     // samples: SamplesCfg = new SamplesCfg()
     textures: TexturesCfg = new TexturesCfg()
+    objectNamesCfg: Map<string, string> = new Map()
     // vehicleTypes: VehicleTypesCfg = new VehicleTypesCfg()
     // rockMonsterTypes: RockMonsterTypesCfg = new RockMonsterTypesCfg()
     // buildingTypes: BuildingTypesCfg = new BuildingTypesCfg()
@@ -49,6 +51,7 @@ export class GameConfig extends BaseConfig {
     // dependencies: DependenciesCfg = new DependenciesCfg()
     levels: LevelsCfg = new LevelsCfg()
     tooltips: Map<string, string> = new Map()
+    tooltipIcons: Map<string, string> = new Map()
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if ('Main'.equalsIgnoreCase(unifiedKey)) {
@@ -59,6 +62,8 @@ export class GameConfig extends BaseConfig {
             this.reward.setFromCfgObj(cfgValue)
         } else if ('Menu'.equalsIgnoreCase(unifiedKey)) {
             this.menu.setFromCfgObj(cfgValue)
+        } else if ('SurfaceTypeDescriptions'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), value as string[]))
         } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {
             this.pointers.setFromCfgObj(cfgValue)
         // } else if ('InterfaceImages'.equalsIgnoreCase(unifiedKey)) {
@@ -91,6 +96,8 @@ export class GameConfig extends BaseConfig {
             //     this.samples.setFromCfgObj(cfgValue)
         } else if ('Textures'.equalsIgnoreCase(unifiedKey)) {
             this.textures.setFromCfgObj(cfgValue)
+        } else if ('ObjectNames'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objectNamesCfg.set(cfgKey.toLowerCase(), parseLabel(value as string)))
         // } else if ('VehicleTypes'.equalsIgnoreCase(unifiedKey)) {
         //     this.vehicleTypes.setFromCfgObj(cfgValue)
         // } else if ('RockMonsterTypes'.equalsIgnoreCase(unifiedKey)) {
@@ -109,9 +116,21 @@ export class GameConfig extends BaseConfig {
             this.levels.setFromCfgObj(cfgValue)
         } else if ('ToolTips'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltips.set(cfgKey.toLowerCase(), parseLabel(value as string)))
+        } else if ('ToolTipIcons'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltipIcons.set(this.stripKey(cfgKey), parseLabel(value as string)))
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
         }
         return true
+    }
+
+    stripKey(cfgKey: string) {
+        const keyParts = cfgKey.split('_')
+        if (keyParts.length > 1) {
+            keyParts.shift()
+            return keyParts.join('').toLowerCase()
+        } else {
+            return cfgKey.toLowerCase()
+        }
     }
 }

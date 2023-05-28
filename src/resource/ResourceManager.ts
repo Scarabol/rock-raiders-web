@@ -7,6 +7,8 @@ import { DEV_MODE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
 import { LWOBParser, LWOBTextureLoader } from './LWOBParser'
 import { ResourceCache } from './ResourceCache'
+import { RaiderTool, RaiderTools } from '../game/model/raider/RaiderTool'
+import { RaiderTraining, RaiderTrainings } from '../game/model/raider/RaiderTraining'
 
 export class ResourceManager extends ResourceCache {
     static lwoCache: Map<string, SceneMesh> = new Map()
@@ -94,24 +96,73 @@ export class ResourceManager extends ResourceCache {
     }
 
     static getTooltipSprite(tooltipText: string): SpriteImage {
-        if (!tooltipText) return null
         if (tooltipText.toLowerCase().startsWith('tooltip')) {
             console.error(`Found key instead of tooltip text ${tooltipText}`)
         }
         return this.tooltipSpriteCache.getOrUpdate(tooltipText, () => {
             const tooltipTextImage = this.getTooltipFont().createTextImage(tooltipText)
-            const margin = 2
-            const padding = 2
-            const context = createContext(tooltipTextImage.width + 2 * margin + 2 * padding, tooltipTextImage.height + 2 * margin + 2 * padding)
-            context.fillStyle = '#001600'
-            context.fillRect(0, 0, context.canvas.width, context.canvas.height)
-            context.fillStyle = '#006400' // TODO read ToolTipRGB from config
-            context.fillRect(0, 0, tooltipTextImage.width + margin + 2 * padding, tooltipTextImage.height + margin + 2 * padding)
-            context.fillStyle = '#003200'
-            context.fillRect(margin, margin, tooltipTextImage.width + 2 * padding, tooltipTextImage.height + 2 * padding)
-            context.drawImage(tooltipTextImage, margin + padding, margin + padding)
-            return context.canvas
+            return this.wrapTooltipSprite([tooltipTextImage])
         })
+    }
+
+    static getRaiderTooltipSprite(tooltipText: string, numToolSlots: number, tools: RaiderTool[], trainings: RaiderTraining[]): SpriteImage {
+        const tooltipTextImage = this.getTooltipFont().createTextImage(tooltipText)
+        const toolIcons = tools.map((t) => {
+            return ResourceManager.getImage(ResourceManager.configuration.tooltipIcons.get(RaiderTools.toToolTipIconName(t)))
+        })
+        const trainingIcons = trainings.map((t) => {
+            return ResourceManager.getImage(ResourceManager.configuration.tooltipIcons.get(RaiderTrainings.toToolTipIconName(t)))
+        })
+        return this.wrapTooltipSprite([tooltipTextImage], toolIcons, trainingIcons)
+    }
+
+    static getBuildingSiteTooltipSprite(tooltipText: string, crystals: { actual: number, needed: number }, ores: { actual: number, needed: number }, bricks: { actual: number, needed: number }): SpriteImage {
+        const tooltipTextImage = this.getTooltipFont().createTextImage(tooltipText)
+        const crystalsTextImage = crystals?.needed ? [this.getTooltipFont().createTextImage(`${ResourceManager.configuration.objectNamesCfg.get('crystal')}: ${crystals.actual}/${crystals.needed}`)] : []
+        const oresTextImage = ores?.needed ? [this.getTooltipFont().createTextImage(`${ResourceManager.configuration.objectNamesCfg.get('ore')}: ${ores.actual}/${ores.needed}`)] : []
+        const bricksTextImage = bricks?.needed ? [this.getTooltipFont().createTextImage(`${ResourceManager.configuration.objectNamesCfg.get('processedore')}: ${bricks.actual}/${bricks.needed}`)] : []
+        return this.wrapTooltipSprite([tooltipTextImage], crystalsTextImage, oresTextImage, bricksTextImage)
+    }
+
+    private static wrapTooltipSprite(...rowsThenCols: SpriteImage[][]): SpriteImage {
+        const margin = 2
+        const padding = 2
+        const [contentWidth, contentHeight] = ResourceManager.getTooltipContentSize(rowsThenCols)
+        const context = createContext(contentWidth + 2 * margin + 2 * padding, contentHeight + 2 * margin + 2 * padding)
+        context.fillStyle = '#001600'
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height)
+        context.fillStyle = '#006400' // TODO read ToolTipRGB from config
+        context.fillRect(0, 0, context.canvas.width - margin, context.canvas.height - margin)
+        context.fillStyle = '#003200'
+        context.fillRect(margin, margin, context.canvas.width - 2 * margin, context.canvas.height - 2 * margin)
+        let posY = margin + padding
+        for (const cols of rowsThenCols) {
+            let posX = 0
+            let maxHeight = 0
+            for (const img of cols) {
+                context.drawImage(img, margin + padding + posX, posY)
+                posX += img.width
+                maxHeight = Math.max(maxHeight, img.height)
+            }
+            posY += maxHeight
+        }
+        return context.canvas
+    }
+
+    private static getTooltipContentSize(rowsThenCols: SpriteImage[][]): number[] {
+        let contentWidth = 0
+        let contentHeight = 0
+        for (const cols of rowsThenCols) {
+            let rowWidth = 0
+            let maxHeight = 0
+            for (const img of cols) {
+                rowWidth += img.width
+                maxHeight = Math.max(maxHeight, img.height)
+            }
+            contentWidth = Math.max(contentWidth, rowWidth)
+            contentHeight += maxHeight
+        }
+        return [contentWidth, contentHeight]
     }
 }
 

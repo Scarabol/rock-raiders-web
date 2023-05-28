@@ -3,7 +3,7 @@ import { DEV_MODE } from '../params'
 export class BaseConfig {
     setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
         Object.entries(cfgObj).forEach(([cfgKey, value]) => {
-            const unifiedKey = BaseConfig.unifyKey(cfgKey)
+            const unifiedKey = this.unifyKey(cfgKey)
             const found = Object.keys(this).some((objKey) => {
                 return this.assignValue(objKey, unifiedKey, value)
             })
@@ -18,7 +18,7 @@ export class BaseConfig {
         return this
     }
 
-    static unifyKey(cfgKey: string): string {
+    unifyKey(cfgKey: string): string {
         return (cfgKey.startsWith('!') ? cfgKey.substring(1) : cfgKey)
             .replace(/_/g, '') // Activity_Stand
             .replace(/-/g, '') // Geo-dome

@@ -16,7 +16,8 @@ import { Cursor } from '../../cfg/PointerCfg'
 import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/model/map/Surface'
 import { EventKey } from '../../event/EventKeyEnum'
-import { ChangeCursor } from '../../event/GuiCommand'
+import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
+import { ResourceManager } from '../../resource/ResourceManager'
 import { CursorTarget, SelectionRaycaster } from '../../scene/SelectionRaycaster'
 import { MaterialEntity } from '../../game/model/material/MaterialEntity'
 import { BuildPlacementMarker } from '../../game/model/building/BuildPlacementMarker'
@@ -66,6 +67,24 @@ export class GameLayer extends ScreenLayer {
             const cursorTarget = new SelectionRaycaster(this.sceneMgr, this.entityMgr).getFirstCursorTarget(this.cursorRelativePos, true)
             EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
             if (cursorTarget.intersectionPoint) this.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
+            if (cursorTarget.surface) {
+                const tooltip = ResourceManager.configuration.surfaceTypeDescriptions.get(cursorTarget.surface.surfaceType.name.toLowerCase())
+                if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], tooltip[1]))
+                else {
+                    const site = cursorTarget.surface.site
+                    if (site?.buildingType) {
+                        const objectKey = EntityType[site.buildingType.entityType].toString().replace('_', '').toLowerCase()
+                        const tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
+                        if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, null, null, site))
+                    }
+                }
+            }
+            const targetEntityType = cursorTarget.raider?.entityType || cursorTarget.vehicle?.entityType || cursorTarget.building?.entityType
+            if (targetEntityType) {
+                const objectKey = EntityType[targetEntityType].toString().replace('_', '').toLowerCase()
+                const tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
+                if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, null, cursorTarget.raider))
+            }
             this.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
             this.entityMgr.selection.doubleSelect?.sceneEntity.pointLaserAt(cursorTarget.intersectionPoint)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
