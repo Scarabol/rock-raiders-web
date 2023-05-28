@@ -1,7 +1,7 @@
 import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
-import { ChangeTooltip, PlaySoundEvent } from '../../event/GuiCommand'
+import { ChangeTooltip } from '../../event/GuiCommand'
 import { Sample } from '../../audio/Sample'
 
 export class IconPanelButton extends Button {
@@ -25,8 +25,9 @@ export class IconPanelButton extends Button {
 
     showTooltipDisabled() {
         super.showTooltipDisabled()
-        if (this.tooltipDisabled) this.publishEvent(new ChangeTooltip(this.tooltipDisabled))
-        if (this.tooltipDisabledSfx) this.publishEvent(new PlaySoundEvent(Sample[this.tooltipDisabledSfx]))
+        if (this.tooltipDisabled || this.tooltipDisabledSfx) {
+            this.publishEvent(new ChangeTooltip(this.tooltipDisabled, this.tooltipDisabledSfx))
+        }
     }
 
     reset() {

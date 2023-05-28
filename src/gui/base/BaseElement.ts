@@ -5,7 +5,6 @@ import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { GameEvent } from '../../event/GameEvent'
 import { ChangeCursor, GuiCommand, PlaySoundEvent } from '../../event/GuiCommand'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
-import { clearTimeoutSafe } from '../../core/Util'
 
 export class BaseElement {
     parent: BaseElement = null
@@ -23,7 +22,6 @@ export class BaseElement {
     onClick: (cx?: number, cy?: number) => any = null
     onClickSecondary: (cx?: number, cy?: number) => any = null
     onPublishEvent: (event: GuiCommand) => any = (event) => console.log(`TODO publish event: ${EventKey[event.eventKey]}`)
-    tooltipTimeout: NodeJS.Timeout = null
 
     constructor(parent: BaseElement) {
         this.parent = parent
@@ -85,11 +83,7 @@ export class BaseElement {
 
     checkHover(event: GuiHoverEvent): void {
         const inRect = this.isInRect(event.sx, event.sy)
-        if (inRect) {
-            if (!this.tooltipTimeout) this.tooltipTimeout = setTimeout(() => this.showTooltip(), 1000)
-        } else if (this.tooltipTimeout) {
-            this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
-        }
+        if (inRect) this.onHoverInRect()
         if (!this.isInactive()) {
             event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
             this.hover = inRect
@@ -98,7 +92,7 @@ export class BaseElement {
         this.children.forEach((child) => child.checkHover(event))
     }
 
-    showTooltip() {
+    onHoverInRect(): void {
     }
 
     checkClick(event: GuiClickEvent): boolean {
@@ -150,7 +144,6 @@ export class BaseElement {
         let stateChanged = this.pressedByButton !== null || this.hover
         this.pressedByButton = null
         this.hover = false
-        this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
         this.children.forEach((child) => stateChanged = child.release() || stateChanged)
         return stateChanged
     }

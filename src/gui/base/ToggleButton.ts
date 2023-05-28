@@ -3,7 +3,6 @@ import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { BaseElement } from './BaseElement'
 import { Button } from './Button'
-import { clearTimeoutSafe } from '../../core/Util'
 
 export class ToggleButton extends Button {
     toggleState: boolean = false
@@ -19,11 +18,7 @@ export class ToggleButton extends Button {
 
     checkHover(event: GuiHoverEvent): void {
         const inRect = this.isInRect(event.sx, event.sy)
-        if (inRect) {
-            if (!this.tooltipTimeout) this.tooltipTimeout = setTimeout(() => this.showTooltip(), 1000)
-        } else if (this.tooltipTimeout) {
-            this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
-        }
+        if (inRect) this.onHoverInRect()
         if (!this.isInactive()) {
             event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
             this.hover = inRect

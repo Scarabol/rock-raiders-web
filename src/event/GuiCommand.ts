@@ -23,11 +23,8 @@ export class ChangeCursor extends GuiCommand {
 }
 
 export class ChangeTooltip extends GuiCommand {
-    tooltipText: string
-
-    constructor(tooltipText: string) {
+    constructor(readonly tooltipText: string, readonly tooltipSfx?: string) {
         super(EventKey.COMMAND_CHANGE_TOOLTIP)
-        this.tooltipText = tooltipText
     }
 }
 
@@ -242,7 +239,7 @@ export class CameraControl extends GuiCommand {
         readonly zoom: number,
         readonly cycleBuilding: boolean,
         readonly rotationIndex: number,
-        readonly jumpToWorld: {x: number, y: number, z: number},
+        readonly jumpToWorld: { x: number, y: number, z: number },
     ) {
         super(EventKey.COMMAND_CAMERA_CONTROL)
     }

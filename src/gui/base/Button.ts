@@ -1,7 +1,7 @@
 import { Sample } from '../../audio/Sample'
 import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
-import { ChangeTooltip, PlaySoundEvent } from '../../event/GuiCommand'
+import { ChangeTooltip } from '../../event/GuiCommand'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { BaseElement } from './BaseElement'
@@ -37,12 +37,11 @@ export class Button extends BaseElement {
         return Math.max(...numbers.map((n) => n || 0))
     }
 
-    showTooltip() {
+    onHoverInRect() {
         if (this.isInactive()) {
             this.showTooltipDisabled()
-        } else {
-            if (this.tooltip) this.publishEvent(new ChangeTooltip(this.tooltip))
-            if (this.tooltipSfx) this.publishEvent(new PlaySoundEvent(Sample[this.tooltipSfx]))
+        } else if (this.tooltip || this.tooltipSfx) {
+            this.publishEvent(new ChangeTooltip(this.tooltip, this.tooltipSfx))
         }
     }
 
