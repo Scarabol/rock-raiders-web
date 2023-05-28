@@ -170,6 +170,7 @@ export class GuiManager {
             SaveGameManager.currentPreferences = event.preferences
             SaveGameManager.savePreferences()
             SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx
+            SoundManager.toggleSfx()
             sceneMgr.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
         })
     }
