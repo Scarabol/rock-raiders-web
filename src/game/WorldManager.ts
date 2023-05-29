@@ -27,7 +27,6 @@ import { EntityHealthSystem } from './system/EntityHealthSystem'
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
     readonly ecs: ECS = new ECS()
-    readonly movementSystem: MovementSystem
     readonly jobSupervisor: Supervisor = new Supervisor(this)
     sceneMgr: SceneManager
     entityMgr: EntityManager
@@ -43,7 +42,8 @@ export class WorldManager {
     firstUnpause: boolean = true
 
     constructor() {
-        this.movementSystem = this.ecs.addSystem(new MovementSystem())
+        this.ecs.worldMgr = this
+        this.ecs.addSystem(new MovementSystem())
         this.ecs.addSystem(new SceneEntityPositionSystem())
         this.ecs.addSystem(new SceneEntityHeadingSystem())
         this.ecs.addSystem(new RandomMoveBehaviorSystem())

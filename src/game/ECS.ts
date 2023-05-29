@@ -5,6 +5,8 @@
  - With start/stop and interval to call systems.update()
  */
 
+import { WorldManager } from './WorldManager'
+
 export type GameEntity = number
 
 export abstract class AbstractGameComponent {
@@ -54,6 +56,7 @@ export class ComponentContainer {
 }
 
 export class ECS {
+    worldMgr: WorldManager
     private entities = new Map<GameEntity, ComponentContainer>()
     private systems = new Map<AbstractGameSystem, Set<GameEntity>>()
     private nextEntityID = 0
