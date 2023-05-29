@@ -42,8 +42,11 @@ export class BuildingSite {
 
     static createImproveSurfaceSite(worldMgr: WorldManager, surface: Surface): BuildingSite {
         const site = new BuildingSite(worldMgr, surface, null, null, null, null)
-        site.neededByType.set(EntityType.BRICK, 1)
-        site.neededByType.set(EntityType.ORE, 2)
+        if (worldMgr.entityMgr.hasBuilding(EntityType.ORE_REFINERY)) {
+            site.neededByType.set(EntityType.BRICK, 1)
+        } else {
+            site.neededByType.set(EntityType.ORE, 2)
+        }
         worldMgr.entityMgr.buildingSites.push(site)
         worldMgr.entityMgr.getClosestBuildingByType(surface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnMaterials(EntityType.BRICK, 1)
         worldMgr.entityMgr.getClosestBuildingByType(surface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnMaterials(EntityType.ORE, 2)
@@ -85,17 +88,10 @@ export class BuildingSite {
 
     checkComplete() {
         if (this.complete || this.canceled) return
-        let oreBrickComplete = false
-        let othersComplete = true
+        this.complete = true
         this.neededByType.forEach((needed, neededType) => {
-            const neededTypeComplete = this.onSiteByType.getOrUpdate(neededType, () => []).length >= needed
-            if (neededType === EntityType.ORE || neededType === EntityType.BRICK) {
-                oreBrickComplete = oreBrickComplete || neededTypeComplete
-            } else {
-                othersComplete = othersComplete && neededTypeComplete
-            }
+            this.complete = this.complete && this.onSiteByType.getOrUpdate(neededType, () => []).length >= needed
         })
-        this.complete = oreBrickComplete && othersComplete
         if (!this.complete) return
         this.worldMgr.entityMgr.buildingSites.remove(this)
         if (!this.buildingType) {

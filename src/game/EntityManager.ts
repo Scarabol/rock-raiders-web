@@ -128,6 +128,10 @@ export class EntityManager {
         return this.getBuildingsByType(entityType).map((b) => b.carryPathTarget)
     }
 
+    hasBuilding(buildingType: EntityType): boolean {
+        return this.buildings.some((b) => b.buildingType.entityType === buildingType)
+    }
+
     getTrainingSiteTargets(training: RaiderTraining): PathTarget[] {
         const targets: PathTarget[] = []
         this.buildings.filter((b) => b.isTrainingSite(training)).map((b) => b.getTrainingTargets().forEach((t) => targets.push(t)))

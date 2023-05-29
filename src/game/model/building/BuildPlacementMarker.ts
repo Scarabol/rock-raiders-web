@@ -92,8 +92,11 @@ export class BuildPlacementMarker {
         site.heading = this.heading
         site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
         site.neededByType.set(EntityType.CRYSTAL, neededCrystals)
-        site.neededByType.set(EntityType.BRICK, neededBricks)
-        site.neededByType.set(EntityType.ORE, neededOres)
+        if (this.worldMgr.entityMgr.hasBuilding(EntityType.ORE_REFINERY)) {
+            site.neededByType.set(EntityType.BRICK, neededBricks)
+        } else {
+            site.neededByType.set(EntityType.ORE, neededOres)
+        }
         this.worldMgr.entityMgr.buildingSites.push(site)
         const closestToolstation = this.worldMgr.entityMgr.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
         if (closestToolstation) {
