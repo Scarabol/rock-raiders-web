@@ -6,12 +6,12 @@ import { SceneEntityComponent } from '../component/SceneEntityComponent'
 import { HealthComponent } from '../component/HealthComponent'
 import { EntityMapMarkerComponent, MapMarkerType } from '../component/EntityMapMarkerComponent'
 import { HealthBarComponent } from '../component/HealthBarComponent'
-import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
-import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
+import { AnimatedMeshGroup } from '../../scene/AnimatedMeshGroup'
 import { Vector2 } from 'three'
 import { RandomMoveComponent } from '../component/RandomMoveComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
+import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
 
 type MonsterEntityType = EntityType.SMALL_SPIDER | EntityType.BAT | EntityType.ICE_MONSTER | EntityType.LAVA_MONSTER | EntityType.ROCK_MONSTER
 
@@ -21,20 +21,20 @@ export class MonsterSpawner {
         const floorPosition = worldMgr.sceneMgr.getFloorPosition(worldPos)
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
         const positionComponent = worldMgr.ecs.addComponent(entity, new PositionComponent(floorPosition, surface))
-        let sceneEntity: AnimatedSceneEntity = null
+        let sceneEntity: AnimatedMeshGroup = new AnimatedMeshGroup()
         switch (entityType) {
             case EntityType.SMALL_SPIDER:
                 positionComponent.floorOffset = 1
-                sceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr, 'Creatures/SpiderSB', 1)
-                sceneEntity.changeActivity(AnimEntityActivity.Stand)
+                sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/SpiderSB'))
+                sceneEntity.setAnimation(AnimEntityActivity.Stand)
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.smallSpider))
                 worldMgr.ecs.addComponent(entity, new HealthComponent())
                 worldMgr.ecs.addComponent(entity, new RandomMoveComponent(ResourceManager.configuration.stats.smallSpider, 10000))
                 break
             case EntityType.BAT: // TODO make bats appear in flocks
                 positionComponent.floorOffset = TILESIZE / 2
-                sceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr, 'Creatures/bat', TILESIZE / 2)
-                sceneEntity.changeActivity(AnimEntityActivity.Route)
+                sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/bat'))
+                sceneEntity.setAnimation(AnimEntityActivity.Route)
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.bat))
                 worldMgr.ecs.addComponent(entity, new EntityMapMarkerComponent(MapMarkerType.MONSTER))
                 worldMgr.ecs.addComponent(entity, new RandomMoveComponent(ResourceManager.configuration.stats.bat, 0))
@@ -51,14 +51,22 @@ export class MonsterSpawner {
             default:
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
         }
-        sceneEntity.addToScene(worldPos, radHeading)
+        if (worldPos) {
+            sceneEntity.position.copy(worldMgr.sceneMgr.getFloorPosition(worldPos))
+            sceneEntity.position.y += positionComponent.floorOffset
+        }
+        if (radHeading !== undefined && radHeading !== null) {
+            sceneEntity.rotation.y = radHeading
+        }
+        sceneEntity.visible = surface.discovered
+        worldMgr.sceneMgr.addMeshGroup(sceneEntity)
         worldMgr.ecs.addComponent(entity, new SceneEntityComponent(sceneEntity))
         worldMgr.entityMgr.addEntity(entity, entityType)
     }
 
-    private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string) {
-        sceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr, aeName)
-        sceneEntity.changeActivity(RockMonsterActivity.Unpowered)
+    private static addRockMonsterComponents(sceneEntity: AnimatedMeshGroup, worldMgr: WorldManager, entity: number, aeName: string) {
+        sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
+        sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
         worldMgr.ecs.addComponent(entity, new EntityMapMarkerComponent(MapMarkerType.MONSTER))
         worldMgr.ecs.addComponent(entity, new HealthComponent())
         worldMgr.ecs.addComponent(entity, new HealthBarComponent(24, 10, null, false))

@@ -4,6 +4,8 @@ import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { HealthComponent } from '../component/HealthComponent'
+import { SceneEntityComponent } from '../component/SceneEntityComponent'
+import { AnimEntityActivity } from '../model/anim/AnimationActivity'
 
 export class MovementSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([PositionComponent, WorldTargetComponent, MovableStatsComponent])
@@ -24,6 +26,8 @@ export class MovementSystem extends AbstractGameSystem {
                 const entitySpeedSq = entitySpeed * entitySpeed * entitySpeed
                 if (targetWorld.distanceToSquared(positionComponent.position) <= entitySpeedSq + worldTargetComponent.radiusSq) {
                     this.ecs.removeComponent(entity, WorldTargetComponent)
+                    const sceneEntityComponent = components.get(SceneEntityComponent)
+                    if (sceneEntityComponent) sceneEntityComponent.sceneEntity.setAnimation(AnimEntityActivity.Stand)
                 } else if (entitySpeed > 0) {
                     step.clampLength(0, entitySpeed)
                     positionComponent.position.add(step)

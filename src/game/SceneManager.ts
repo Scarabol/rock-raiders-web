@@ -18,13 +18,14 @@ import { SceneEntity } from '../scene/SceneEntity'
 import { TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
+import { AnimatedMeshGroup } from '../scene/AnimatedMeshGroup'
 
 export class SceneManager implements Updatable {
     readonly audioListener: AudioListener
     readonly camera: BirdViewCamera
     readonly renderer: SceneRenderer
     readonly controls: BirdViewControls
-    readonly entities: SceneEntity[] = []
+    readonly entities: (SceneEntity | AnimatedMeshGroup)[] = []
     worldMgr: WorldManager
     scene: Scene
     ambientLight: AmbientLight
@@ -199,6 +200,16 @@ export class SceneManager implements Updatable {
     removeEntity(sceneEntity: SceneEntity): void {
         this.entities.remove(sceneEntity)
         this.scene.remove(sceneEntity.group)
+    }
+
+    addMeshGroup(meshGroup: AnimatedMeshGroup): void {
+        this.entities.add(meshGroup)
+        this.scene.add(meshGroup)
+    }
+
+    removeMeshGroup(meshGroup: AnimatedMeshGroup): void {
+        this.entities.remove(meshGroup)
+        this.scene.remove(meshGroup)
     }
 
     addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean = false): PositionalAudio {
