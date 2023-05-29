@@ -357,7 +357,7 @@ export class Surface implements Selectable {
         this.mesh.setHighlightColor(0x6060a0)
         if (this.surfaceType.floor) SoundManager.playSample(Sample.SFX_Floor)
         else if (this.surfaceType.shaping) SoundManager.playSample(Sample.SFX_Wall)
-        if (DEV_MODE) console.log(`Surface selected ${this.x}/${this.y}`)
+        if (DEV_MODE) console.log(`Surface selected ${this.x}/${this.y}`, this)
         return true
     }
 
