@@ -42,7 +42,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.6.0 - Complete Base Systems
 
-- Use new animation system with keyframes
+- Use new animation system with keyframes for rock monsters, slimes and others
 - Complete ECS systems integration
 - Refactor job system to allow multi-carry jobs
 - Refactor upgrade system and make vehicles upgradeable

@@ -8,6 +8,8 @@ export class HealthBarComponent extends AbstractGameComponent {
     actualStatus: number = 1
     targetStatus: number = 1
 
+    // TODO Replace with info element, see ObjInfo in cfg
+
     constructor(readonly yOffset: number, readonly scale: number, readonly parent: Object3D, readonly canBeShownPermanently: boolean) {
         super()
         this.sprite = new HealthBarSprite(this.yOffset, this.scale)

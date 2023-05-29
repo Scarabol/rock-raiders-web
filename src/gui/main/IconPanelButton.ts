@@ -2,7 +2,6 @@ import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { ChangeTooltip } from '../../event/GuiCommand'
-import { Sample } from '../../audio/Sample'
 
 export class IconPanelButton extends Button {
     tooltipDisabled: string = null
