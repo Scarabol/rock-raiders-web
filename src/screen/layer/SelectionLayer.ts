@@ -8,6 +8,8 @@ import { GameSelection } from '../../game/model/GameSelection'
 import { SceneManager } from '../../game/SceneManager'
 import { AnimationFrame } from '../AnimationFrame'
 import { ScreenLayer } from './ScreenLayer'
+import { SelectionRaycaster } from '../../scene/SelectionRaycaster'
+import { Vector2 } from 'three'
 
 export class SelectionLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame
@@ -72,7 +74,7 @@ export class SelectionLayer extends ScreenLayer {
         if (Math.abs(screenX - this.selectionRect.x) < 5 && Math.abs(screenY - this.selectionRect.y) < 5) {
             const x = (this.selectionRect.x + screenX) / this.canvas.width - 1
             const y = -(this.selectionRect.y + screenY) / this.canvas.height + 1
-            entities = this.sceneMgr.getSelectionByRay(x, y)
+            entities = new SelectionRaycaster(this.sceneMgr, this.entityMgr).getSelectionByRay(new Vector2(x, y))
         } else {
             const r1x = (this.selectionRect.x / this.canvas.width) * 2 - 1
             const r1y = -(this.selectionRect.y / this.canvas.height) * 2 + 1

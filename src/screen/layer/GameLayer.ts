@@ -1,4 +1,4 @@
-import { Intersection, Vector2 } from 'three'
+import { Vector2 } from 'three'
 import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
@@ -13,11 +13,13 @@ import { SceneManager } from '../../game/SceneManager'
 import { DEV_MODE } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
 import { Cursor } from '../../cfg/PointerCfg'
-import { VehicleEntity } from '../../game/model/vehicle/VehicleEntity'
 import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/model/map/Surface'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeCursor } from '../../event/GuiCommand'
+import { CursorTarget, SelectionRaycaster } from '../../scene/SelectionRaycaster'
+import { MaterialEntity } from '../../game/model/material/MaterialEntity'
+import { BuildPlacementMarker } from '../../game/model/building/BuildPlacementMarker'
 
 export class GameLayer extends ScreenLayer {
     sceneMgr: SceneManager
@@ -29,13 +31,16 @@ export class GameLayer extends ScreenLayer {
         event.preventDefault()
         return event.returnValue = 'Level progress will be lost!'
     }
-    cursorRelativePos: { x: number, y: number } = {x: 0, y: 0}
+    cursorRelativePos: Vector2 = new Vector2()
 
     constructor() {
         super()
         this.canvas.style.cursor = 'none' // this cursor is effective, when OrbitControls captures the pointer during movements
         EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
-            if (this.active) EventBus.publishEvent(new ChangeCursor(this.determineCursor()))
+            if (this.active) {
+                const cursorTarget = new SelectionRaycaster(this.sceneMgr, this.entityMgr).getFirstCursorTarget(this.cursorRelativePos, true)
+                EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
+            }
         })
     }
 
@@ -55,29 +60,16 @@ export class GameLayer extends ScreenLayer {
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
-        const rx = (event.canvasX / this.canvas.width) * 2 - 1
-        const ry = -(event.canvasY / this.canvas.height) * 2 + 1
-        const terrainIntersectionPoint = this.sceneMgr.getTerrainIntersectionPoint(rx, ry)
-        const buildMarker = this.sceneMgr.buildMarker
+        this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
+        this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
         if (event.eventEnum === POINTER_EVENT.MOVE) {
-            this.cursorRelativePos = {x: (event.canvasX / this.canvas.width) * 2 - 1, y: -(event.canvasY / this.canvas.height) * 2 + 1}
-            EventBus.publishEvent(new ChangeCursor(this.determineCursor()))
-            if (terrainIntersectionPoint) this.sceneMgr.setCursorFloorPosition(terrainIntersectionPoint)
-            buildMarker.updatePosition(terrainIntersectionPoint)
-            this.entityMgr.selection.doubleSelect?.sceneEntity.pointLaserAt(terrainIntersectionPoint)
+            const cursorTarget = new SelectionRaycaster(this.sceneMgr, this.entityMgr).getFirstCursorTarget(this.cursorRelativePos, true)
+            EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
+            if (cursorTarget.intersectionPoint) this.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
+            this.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
+            this.entityMgr.selection.doubleSelect?.sceneEntity.pointLaserAt(cursorTarget.intersectionPoint)
         } else if (event.eventEnum === POINTER_EVENT.UP) {
-            if (event.button === MOUSE_BUTTON.MAIN) {
-                buildMarker.createBuildingSite()
-            } else if (event.button === MOUSE_BUTTON.SECONDARY) {
-                const downUpDistance = Math.abs(event.canvasX - this.rightDown.x) + Math.abs(event.canvasY - this.rightDown.y)
-                if (downUpDistance < 3) {
-                    if (this.sceneMgr.hasBuildModeSelection()) {
-                        this.sceneMgr.setBuildModeSelection(null)
-                    } else if (this.entityMgr.selection.raiders.length > 0 || this.entityMgr.selection.vehicles.length > 0) {
-                        this.handleSecondaryClickForSelection(rx, ry, terrainIntersectionPoint)
-                    }
-                }
-            }
+            this.handlePointerUpEvent(event, this.sceneMgr.buildMarker)
         } else if (event.eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.SECONDARY) {
                 this.rightDown.x = event.canvasX
@@ -87,29 +79,26 @@ export class GameLayer extends ScreenLayer {
         return this.sceneMgr.controls.handlePointerEvent(event)
     }
 
-    handleSecondaryClickForSelection(rx: number, ry: number, terrainIntersectionPoint: Vector2) {
-        const selection = this.sceneMgr.getFirstByRay(rx, ry)
-        if (selection.vehicle) {
-            const selectedRaiders = this.entityMgr.selection.raiders
-            if (selectedRaiders.length > 0) {
-                const manVehicleJob = new ManVehicleJob(selection.vehicle)
-                selectedRaiders.some((r) => {
-                    if (r.isPrepared(manVehicleJob)) {
-                        r.setJob(manVehicleJob)
-                    } else {
-                        const requiredTraining = manVehicleJob.getRequiredTraining()
-                        const closestTrainingSite = this.entityMgr.getTrainingSiteTargets(requiredTraining)
-                            .map((b) => r.findPathToTarget(b))
-                            .filter((p) => !!p)
-                            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
-                        if (!closestTrainingSite) return false
-                        r.setJob(new TrainRaiderJob(r.worldMgr.entityMgr, requiredTraining, closestTrainingSite.target.building), manVehicleJob)
-                    }
-                    EventBus.publishEvent(new DeselectAll())
-                    return true
-                })
-                EventBus.publishEvent(new JobCreateEvent(manVehicleJob))
+    private handlePointerUpEvent(event: GamePointerEvent, buildMarker: BuildPlacementMarker) {
+        if (event.button === MOUSE_BUTTON.MAIN) {
+            buildMarker.createBuildingSite()
+        } else if (event.button === MOUSE_BUTTON.SECONDARY) {
+            const downUpDistance = Math.abs(event.canvasX - this.rightDown.x) + Math.abs(event.canvasY - this.rightDown.y)
+            if (downUpDistance < 3) {
+                if (this.sceneMgr.hasBuildModeSelection()) {
+                    this.sceneMgr.setBuildModeSelection(null)
+                } else if (this.entityMgr.selection.raiders.length > 0 || this.entityMgr.selection.vehicles.length > 0) {
+                    const selection = new SelectionRaycaster(this.sceneMgr, this.entityMgr)
+                        .getFirstCursorTarget(this.cursorRelativePos, false)
+                    this.handleSecondaryClickForSelection(selection)
+                }
             }
+        }
+    }
+
+    handleSecondaryClickForSelection(selection: CursorTarget) {
+        if (selection.vehicle) {
+            this.handleSecondaryClickForVehicle(selection)
         } else if (selection.material) {
             this.entityMgr.selection.assignCarryJob(selection.material)
             if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
@@ -121,9 +110,32 @@ export class GameLayer extends ScreenLayer {
                 const clearJob = selection.surface.setupClearRubbleJob()
                 this.entityMgr.selection.assignSurfaceJob(clearJob)
             } else if (this.entityMgr.selection.canMove() && selection.surface.isWalkable()) {
-                this.entityMgr.selection.assignMoveJob(terrainIntersectionPoint)
+                this.entityMgr.selection.assignMoveJob(selection.intersectionPoint)
             }
             if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
+        }
+    }
+
+    private handleSecondaryClickForVehicle(selection: CursorTarget) {
+        const selectedRaiders = this.entityMgr.selection.raiders
+        if (selectedRaiders.length > 0) {
+            const manVehicleJob = new ManVehicleJob(selection.vehicle)
+            selectedRaiders.some((r) => {
+                if (r.isPrepared(manVehicleJob)) {
+                    r.setJob(manVehicleJob)
+                } else {
+                    const requiredTraining = manVehicleJob.getRequiredTraining()
+                    const closestTrainingSite = this.entityMgr.getTrainingSiteTargets(requiredTraining)
+                        .map((b) => r.findPathToTarget(b))
+                        .filter((p) => !!p)
+                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                    if (!closestTrainingSite) return false
+                    r.setJob(new TrainRaiderJob(r.worldMgr.entityMgr, requiredTraining, closestTrainingSite.target.building), manVehicleJob)
+                }
+                EventBus.publishEvent(new DeselectAll())
+                return true
+            })
+            EventBus.publishEvent(new JobCreateEvent(manVehicleJob))
         }
     }
 
@@ -163,41 +175,26 @@ export class GameLayer extends ScreenLayer {
         this.sceneMgr?.resize(width, height)
     }
 
-    determineCursor(): Cursor {
+    determineCursor(cursorTarget: CursorTarget): Cursor {
         if (this.sceneMgr.hasBuildModeSelection()) {
             return this.sceneMgr.buildMarker.lastCheck ? 'pointerCanBuild' : 'pointerCannotBuild'
         }
-        // TODO use sceneManager.getFirstByRay here too?!
-        const raycaster = this.sceneMgr.camera.createRaycaster(this.cursorRelativePos)
-        const intersectsRaider = raycaster.intersectObjects(this.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere))
-        if (intersectsRaider.length > 0) return 'pointerSelected'
-        const intersectsVehicle = raycaster.intersectObjects(this.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere))
-        if (intersectsVehicle.length > 0) {
-            const vehicle = intersectsVehicle[0].object.userData?.selectable as VehicleEntity
-            if (!vehicle?.driver && this.entityMgr.selection.raiders.length > 0) {
+        if (cursorTarget.raider) return 'pointerSelected'
+        if (cursorTarget.vehicle) {
+            if (!cursorTarget.vehicle.driver && this.entityMgr.selection.raiders.length > 0) {
                 return 'pointerGetIn'
             }
             return 'pointerSelected'
         }
-        const intersectsBuilding = raycaster.intersectObjects(this.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere))
-        if (intersectsBuilding.length > 0) return 'pointerSelected'
-        const intersectsMaterial = raycaster.intersectObjects(this.entityMgr.materials.map((m) => m.sceneEntity.pickSphere).filter((p) => !!p))
-        if (intersectsMaterial.length > 0) {
-            return this.determineMaterialCursor(intersectsMaterial)
-        }
-        const surfaces = this.sceneMgr.terrain?.floorGroup?.children
-        if (surfaces) {
-            const intersectsSurface = raycaster.intersectObjects(surfaces)
-            if (intersectsSurface.length > 0) {
-                return this.determineSurfaceCursor(intersectsSurface[0].object.userData?.surface)
-            }
-        }
+        if (cursorTarget.building) return 'pointerSelected'
+        if (cursorTarget.material) return this.determineMaterialCursor(cursorTarget.material)
+        if (cursorTarget.surface) return this.determineSurfaceCursor(cursorTarget.surface)
         return 'pointerStandard'
     }
 
-    private determineMaterialCursor(intersectsMaterial: Intersection[]): Cursor {
+    private determineMaterialCursor(material: MaterialEntity): Cursor {
         if (this.entityMgr.selection.canPickup()) {
-            if (intersectsMaterial[0].object.userData?.entityType === EntityType.ORE) {
+            if (material.entityType === EntityType.ORE) {
                 return 'pointerPickUpOre'
             } else {
                 return 'pointerPickUp'
@@ -207,7 +204,6 @@ export class GameLayer extends ScreenLayer {
     }
 
     private determineSurfaceCursor(surface: Surface): Cursor {
-        if (!surface) return 'pointerStandard'
         if (this.entityMgr.selection.canMove()) {
             if (surface.surfaceType.digable) {
                 if (this.entityMgr.selection.canDrill(surface)) {

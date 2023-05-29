@@ -1,4 +1,4 @@
-import { AmbientLight, AudioListener, Color, Frustum, Intersection, Mesh, Object3D, PositionalAudio, Scene, Vector2, Vector3 } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, Mesh, Object3D, PositionalAudio, Scene, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { SpriteImage } from '../core/Sprite'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -7,11 +7,7 @@ import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
 import { EntityType } from './model/EntityType'
 import { GameSelection } from './model/GameSelection'
 import { GameState } from './model/GameState'
-import { Surface } from './model/map/Surface'
 import { Terrain } from './model/map/Terrain'
-import { MaterialEntity } from './model/material/MaterialEntity'
-import { Selectable } from './model/Selectable'
-import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { TerrainLoader } from './TerrainLoader'
 import { WorldManager } from './WorldManager'
 import { BirdViewCamera } from '../scene/BirdViewCamera'
@@ -42,49 +38,6 @@ export class SceneManager implements Updatable {
         this.camera.add(this.audioListener)
         this.renderer = new SceneRenderer(canvas, this.camera)
         this.controls = new BirdViewControls(this.camera, this.renderer.domElement)
-    }
-
-    getSelectionByRay(rx: number, ry: number): GameSelection {
-        const raycaster = this.camera.createRaycaster({x: rx, y: ry})
-        const selection = new GameSelection()
-        selection.raiders.push(...SceneManager.getSelection(raycaster.intersectObjects(this.worldMgr.entityMgr.raiders.map((r) => r.sceneEntity.pickSphere)), false))
-        if (selection.isEmpty()) selection.vehicles.push(...SceneManager.getSelection(raycaster.intersectObjects(this.worldMgr.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)), true))
-        if (selection.isEmpty()) selection.building = SceneManager.getSelection(raycaster.intersectObjects(this.worldMgr.entityMgr.buildings.map((b) => b.sceneEntity.pickSphere)), true)[0]
-        if (selection.isEmpty()) selection.fence = SceneManager.getSelection(raycaster.intersectObjects(this.worldMgr.entityMgr.placedFences.map((f) => f.sceneEntity.pickSphere)), false)[0]
-        if (selection.isEmpty() && this.terrain) selection.surface = SceneManager.getSelection(raycaster.intersectObjects(this.terrain.floorGroup.children), false)[0]
-        return selection
-    }
-
-    private static getSelection(intersects: Intersection[], allowDoubleSelection: boolean): any[] {
-        if (intersects.length < 1) return []
-        const selection = []
-        const userData = intersects[0].object.userData
-        if (userData && userData.hasOwnProperty('selectable')) {
-            const selectable = userData['selectable'] as Selectable
-            if (selectable?.isInSelection() || (selectable?.selected && allowDoubleSelection)) selection.push(selectable)
-        }
-        return selection
-    }
-
-    getFirstByRay(rx: number, ry: number): { vehicle?: VehicleEntity, material?: MaterialEntity, surface?: Surface } {
-        const raycaster = this.camera.createRaycaster({x: rx, y: ry})
-        const vehicle = SceneManager.getSelectable(raycaster.intersectObjects(this.worldMgr.entityMgr.vehicles.map((v) => v.sceneEntity.pickSphere)))
-        if (vehicle) return {vehicle: vehicle}
-        const materialEntity = SceneManager.getMaterialEntity(raycaster.intersectObjects(this.worldMgr.entityMgr.materials.map((m) => m.sceneEntity.pickSphere).filter((p) => !!p)))
-        if (materialEntity) return {material: materialEntity}
-        if (this.terrain) {
-            const surface = SceneManager.getSelectable(raycaster.intersectObjects(this.terrain.floorGroup.children))
-            if (surface) return {surface: surface}
-        }
-        return null
-    }
-
-    private static getSelectable(intersects: Intersection[]) {
-        return intersects[0]?.object?.userData?.selectable || null
-    }
-
-    private static getMaterialEntity(intersects: Intersection[]): MaterialEntity {
-        return intersects[0]?.object?.userData?.materialEntity || null
     }
 
     getEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number): GameSelection {
@@ -220,13 +173,6 @@ export class SceneManager implements Updatable {
     resize(width: number, height: number) {
         this.renderer.setSize(width, height)
         this.camera.aspect = width / height
-    }
-
-    getTerrainIntersectionPoint(rx: number, ry: number): Vector2 {
-        if (!this.terrain) return null
-        const raycaster = this.camera.createRaycaster({x: rx, y: ry})
-        const intersects = raycaster.intersectObjects(this.terrain.floorGroup.children)
-        return intersects.length > 0 ? new Vector2(intersects[0].point.x, intersects[0].point.z) : null
     }
 
     setCursorFloorPosition(position: Vector2) {
