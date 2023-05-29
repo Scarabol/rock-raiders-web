@@ -9,8 +9,6 @@ import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
 import { TakeScreenshot } from '../../event/LocalEvents'
-import { EntityManager } from '../../game/EntityManager'
-import { SceneManager } from '../../game/SceneManager'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH, TOOLTIP_DELAY } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedCursor } from '../AnimatedCursor'
@@ -20,8 +18,6 @@ import { SoundManager } from '../../audio/SoundManager'
 
 export class CursorLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
     currentCursor: Cursor = null
     timedCursor: Cursor = null
     cursorTimeout: NodeJS.Timeout = null

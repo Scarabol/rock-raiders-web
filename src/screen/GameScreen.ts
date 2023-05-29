@@ -31,7 +31,7 @@ export class GameScreen {
     levelName: string
     levelConf: LevelEntryCfg
 
-    constructor(screenMaster: ScreenMaster) {
+    constructor(readonly screenMaster: ScreenMaster) {
         this.gameLayer = screenMaster.addLayer(new GameLayer(), 0)
         this.selectionLayer = screenMaster.addLayer(new SelectionLayer(), 10)
         this.guiLayer = screenMaster.addLayer(new GuiMainLayer(), 20)
@@ -42,7 +42,7 @@ export class GameScreen {
         this.sceneMgr.worldMgr = this.worldMgr
         this.worldMgr.sceneMgr = this.sceneMgr
         this.worldMgr.entityMgr = this.entityMgr
-        this.worldMgr.onLevelEnd = (result) => this.onLevelEnd(new GameResult(this.levelName, this.levelConf, result, this.entityMgr, this.worldMgr))
+        this.worldMgr.onLevelEnd = (result) => this.onGameResult(result)
         this.gameLayer.sceneMgr = this.sceneMgr
         this.gameLayer.entityMgr = this.entityMgr
         this.selectionLayer.sceneMgr = this.sceneMgr
@@ -53,11 +53,12 @@ export class GameScreen {
         // link layer
         this.guiLayer.onOptionsShow = () => this.overlayLayer.showOptions()
         this.overlayLayer.onSetSpaceToContinue = (state: boolean) => this.guiLayer.setSpaceToContinue(state)
-        this.overlayLayer.onAbortGame = () => this.onLevelEnd(new GameResult(this.levelName, this.levelConf, GameResultState.QUIT, this.entityMgr, this.worldMgr))
+        this.overlayLayer.onAbortGame = () => this.onGameResult(GameResultState.QUIT)
         this.overlayLayer.onRestartGame = () => this.restartLevel()
     }
 
-    startLevel(levelName: string, levelConf: LevelEntryCfg) {
+    startLevel(levelName: string) {
+        const levelConf = ResourceManager.getLevelEntryCfg(levelName)
         this.levelName = levelName
         this.levelConf = levelConf
         this.setupAndStartLevel()
@@ -106,5 +107,14 @@ export class GameScreen {
         this.guiLayer.hide()
         this.selectionLayer.hide()
         this.gameLayer.hide()
+    }
+
+    onGameResult(resultState: GameResultState) {
+        const gameTimeSeconds = Math.round(this.worldMgr.elapsedGameTimeMs / 1000)
+        this.screenMaster.createScreenshot().then((canvas) => {
+            const result = new GameResult(this.levelName, this.levelConf, resultState, this.entityMgr, gameTimeSeconds, canvas)
+            this.hide()
+            this.onLevelEnd(result)
+        })
     }
 }

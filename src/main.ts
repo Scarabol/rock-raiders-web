@@ -56,26 +56,17 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
                 const mainMenuScreen = new MainMenuScreen(screenMaster)
                 const gameScreen = new GameScreen(screenMaster)
                 const rewardScreen = new RewardScreen(screenMaster)
-                cursorLayer.sceneMgr = gameScreen.sceneMgr
-                cursorLayer.entityMgr = gameScreen.entityMgr
 
                 mainMenuScreen.onLevelSelected = (levelName) => {
                     try {
-                        const levelConf = ResourceManager.getLevelEntryCfg(levelName)
-                        gameScreen.startLevel(levelName, levelConf)
+                        gameScreen.startLevel(levelName)
                     } catch (e) {
                         console.error(`Could not load level: ${levelName}`, e)
                         gameScreen.hide()
                         mainMenuScreen.showLevelSelection()
                     }
                 }
-                gameScreen.onLevelEnd = (result) => {
-                    screenMaster.createScreenshot().then((canvas) => {
-                        result.screenshot = canvas
-                        gameScreen.hide()
-                        rewardScreen.showGameResult(result)
-                    })
-                }
+                gameScreen.onLevelEnd = (result) => rewardScreen.showGameResult(result)
                 rewardScreen.onAdvance = () => {
                     GameState.reset()
                     mainMenuScreen.showLevelSelection()

@@ -1,7 +1,6 @@
 import { LevelEntryCfg, LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { ADDITIONAL_RAIDER_PER_SUPPORT } from '../../params'
 import { EntityManager } from '../EntityManager'
-import { WorldManager } from '../WorldManager'
 import { GameState } from './GameState'
 
 export enum GameResultState {
@@ -12,17 +11,13 @@ export enum GameResultState {
 }
 
 export class GameResult {
-    levelName: string
     levelFullName: string
-    state: GameResultState
     numBuildings: number
     numRaiders: number
     numMaxRaiders: number
-    gameTimeSeconds: number
     defencePercent: number
     airLevelPercent: number
     score: number
-    screenshot: HTMLCanvasElement = null
     // fields below are only used to debug score calculations
     rewardConfig: LevelRewardConfig = null
     scoreCrystals: number = 0
@@ -32,14 +27,18 @@ export class GameResult {
     scoreOxygen: number = 0
     scoreFigures: number = 0
 
-    constructor(levelName: string, levelConf: LevelEntryCfg, state: GameResultState, entityMgr: EntityManager, worldMgr: WorldManager) {
-        this.levelName = levelName
+    constructor(
+        readonly levelName: string,
+        levelConf: LevelEntryCfg,
+        readonly state: GameResultState,
+        entityMgr: EntityManager,
+        readonly gameTimeSeconds: number,
+        readonly screenshot: HTMLCanvasElement
+    ) {
         this.levelFullName = levelConf.fullName
-        this.state = state
         this.numBuildings = entityMgr.buildings.length
         this.numRaiders = entityMgr.raiders.length
         this.numMaxRaiders = entityMgr.getMaxRaiders()
-        this.gameTimeSeconds = Math.round(worldMgr.elapsedGameTimeMs / 1000)
         this.defencePercent = 100 // TODO defence report is either 0% or 100%
         this.airLevelPercent = GameState.airLevel * 100
         this.rewardConfig = levelConf?.reward
