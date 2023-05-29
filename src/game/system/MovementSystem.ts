@@ -15,7 +15,7 @@ export class MovementSystem extends AbstractGameSystem {
             try {
                 const components = this.ecs.getComponents(entity)
                 const positionComponent = components.get(PositionComponent)
-                if (!positionComponent.isDiscovered()) return
+                if (!positionComponent.isDiscovered()) continue
                 const worldTargetComponent = components.get(WorldTargetComponent)
                 const statsComponent = components.get(MovableStatsComponent)
                 const targetWorld = this.terrain.getFloorPosition(worldTargetComponent.position)

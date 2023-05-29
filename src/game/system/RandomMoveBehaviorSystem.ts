@@ -15,7 +15,7 @@ export class RandomMoveBehaviorSystem extends AbstractGameSystem {
                 if (randomMoveComponent.isOnIdleTimer(elapsedMs)) continue
                 if (components.has(WorldTargetComponent)) continue // TODO possible performance issue?
                 const positionComponent = components.get(PositionComponent)
-                if (!positionComponent.isDiscovered()) return
+                if (!positionComponent.isDiscovered()) continue
                 const targetSurface = [...positionComponent.surface.neighbors.filter((n) =>
                     (!n.wallType || randomMoveComponent.enterWall)
                     && (!n.surfaceType.floor || randomMoveComponent.crossLand)
