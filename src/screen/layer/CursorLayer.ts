@@ -1,6 +1,5 @@
 import { Cursor } from '../../resource/Cursor'
 import { cloneContext } from '../../core/ImageHelper'
-import { Rect } from '../../core/Rect'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -24,7 +23,6 @@ export class CursorLayer extends ScreenLayer {
     cursorTimeout: NodeJS.Timeout = null
     activeCursor: AnimatedCursor = null
     cursorCanvasPos: { x: number, y: number } = {x: 0, y: 0}
-    tooltipRect: Rect = null
     tooltipTimeoutText: NodeJS.Timeout = null
     tooltipTimeoutSfx: NodeJS.Timeout = null
     cursorLeft: boolean = false
@@ -94,8 +92,7 @@ export class CursorLayer extends ScreenLayer {
             this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
             this.cursorCanvasPos = {x: event.canvasX, y: event.canvasY}
             this.animationFrame.onRedraw = (context) => {
-                if (this.tooltipRect) context.clearRect(this.tooltipRect.x, this.tooltipRect.y, this.tooltipRect.w, this.tooltipRect.h)
-                this.tooltipRect = null
+                context.clearRect(0, 0, context.canvas.width, context.canvas.height)
                 this.animationFrame.onRedraw = null
             }
             this.animationFrame.redraw()
@@ -149,8 +146,7 @@ export class CursorLayer extends ScreenLayer {
         const tooltipHeight = Math.round(tooltipImg.height * this.canvas.height / NATIVE_SCREEN_HEIGHT)
         const posX = Math.min(this.cursorCanvasPos.x + tooltipWidth, this.canvas.width) - tooltipWidth
         const posY = Math.min(this.cursorCanvasPos.y + this.activeCursor.maxHeight + tooltipHeight, this.canvas.height) - tooltipHeight
-        this.tooltipRect = new Rect(posX, posY, tooltipWidth, tooltipHeight)
-        this.animationFrame.onRedraw = (context) => context.drawImage(tooltipImg, this.tooltipRect.x, this.tooltipRect.y, this.tooltipRect.w, this.tooltipRect.h)
+        this.animationFrame.onRedraw = (context) => context.drawImage(tooltipImg, posX, posY, tooltipWidth, tooltipHeight)
         this.animationFrame.redraw()
     }
 
