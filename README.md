@@ -42,14 +42,16 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.6.0 - Complete Base Systems
 
+- Load game even if parser error in SaveGames
 - Refactor upgrade system and make vehicles upgradeable
+- Add tooltips for buildings with dependencies
 - Large digger and walker digger moving into wall for drilling
 - Implement buildings with improved ECS and animation system
 - Implement raiders with improved ECS and animation system
 - Refactor job system to allow multi-carry jobs
 - Raider get tired while carrying and eat at barracks
 - Raider scatter on right-click move
-
+ 
 ### v0.7.0 - Rockies, Slugs And Damage
 
 - switch all raider with weapon from work to defend
@@ -86,6 +88,9 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Show misc anim LavaErosionSmoke over lava
 - Add water and lava animation (texture UV coords tearing)
 - Change cursor to X when over disabled IconPanelButtons
+- Unlock levels only after linked levels are completed
+- Overwrite Main Menu Logo with "Nuke Saves & Assets Cache" and "Nuke ALL Caches"
+- Move camera with click on mini map
 
 ### Polishing (v0.9.0)
 
