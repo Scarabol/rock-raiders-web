@@ -31,8 +31,10 @@ export class SaveGameManager {
         }
         console.log('Loading save games...')
         this.saveGames = JSON.parse(localStorage.getItem('savegames') || '[]')
+        console.log('Loading save game screenshots...')
         Promise.all(this.saveGames.map((s, index) => {
-            if (!s.screenshot) return null
+            const screenshot = localStorage.getItem(`screenshot${index}`)
+            if (!screenshot) return null
             const img = new Image()
             img.onload = () => {
                 const canvas = document.createElement('canvas')
@@ -41,7 +43,7 @@ export class SaveGameManager {
                 canvas.getContext('2d').drawImage(img, 0, 0)
                 this.screenshots[index] = canvas
             }
-            img.src = s.screenshot
+            img.src = screenshot
         })).then(() => {
             console.log('All save games loaded', this.saveGames)
         })
@@ -68,10 +70,10 @@ export class SaveGameManager {
         this.screenshots[index] = screenshot
         const saveGame = this.saveGames[index] || new SaveGame()
         saveGame.levels = this.currentLevels
-        saveGame.screenshot = this.encodeScreenshot(screenshot)
         saveGame.preferences = this.currentPreferences
         this.saveGames[index] = saveGame
         localStorage.setItem('savegames', JSON.stringify(this.saveGames))
+        localStorage.setItem(`screenshot${index}`, this.encodeScreenshot(screenshot))
         console.log('game progress saved', this.saveGames)
     }
 
@@ -128,7 +130,6 @@ export class SaveGameManager {
 
 export class SaveGame { // this gets serialized
     levels: SaveGameLevel[] = []
-    screenshot: string = ''
     preferences: SaveGamePreferences = new SaveGamePreferences()
 }
 
