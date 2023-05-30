@@ -19,33 +19,51 @@ export class SaveGameManager {
     static currentPreferences: SaveGamePreferences = new SaveGamePreferences()
     private static currentLevels: SaveGameLevel[] = []
     private static screenshots: HTMLCanvasElement[] = []
-
     private static saveGames: SaveGame[] = [] // this gets serialized
 
-    static loadAllSaveGames() {
-        console.log('Loading default preferences...')
-        const preferences = localStorage.getItem('preferences')
-        if (preferences) {
-            this.currentPreferences = {...this.currentPreferences, ...JSON.parse(preferences)}
-            console.log(`Preferences loaded`, this.currentPreferences)
+    static loadPreferences() {
+        try {
+            console.log('Loading preferences...')
+            const preferences = localStorage.getItem('preferences')
+            if (preferences) {
+                this.currentPreferences = {...this.currentPreferences, ...JSON.parse(preferences)}
+                EventBus.publishEvent(new ChangePreferences(this.currentPreferences))
+                console.log(`Preferences loaded`, this.currentPreferences)
+            }
+        } catch (e) {
+            console.error('Could not load preferences', e)
         }
-        console.log('Loading save games...')
-        this.saveGames = JSON.parse(localStorage.getItem('savegames') || '[]')
+    }
+
+    static loadSaveGames() {
+        try {
+            console.log('Loading save games...')
+            this.saveGames = JSON.parse(localStorage.getItem('savegames') || '[]')
+            console.log('All save games loaded', this.saveGames)
+        } catch (e) {
+            console.error('Could not load save games', e)
+        }
+    }
+
+    static loadSaveGameScreenshots() {
         console.log('Loading save game screenshots...')
         Promise.all(this.saveGames.map((s, index) => {
-            const screenshot = localStorage.getItem(`screenshot${index}`)
-            if (!screenshot) return null
-            const img = new Image()
-            img.onload = () => {
-                const canvas = document.createElement('canvas')
-                canvas.width = SAVE_GAME_SCREENSHOT_WIDTH
-                canvas.height = SAVE_GAME_SCREENSHOT_HEIGHT
-                canvas.getContext('2d').drawImage(img, 0, 0)
-                this.screenshots[index] = canvas
-            }
-            img.src = screenshot
-        })).then(() => {
-            console.log('All save games loaded', this.saveGames)
+            return new Promise<void>((resolve) => {
+                const screenshot = localStorage.getItem(`screenshot${index}`)
+                if (!screenshot) return null
+                const img = new Image()
+                img.onload = () => {
+                    const canvas = document.createElement('canvas')
+                    canvas.width = SAVE_GAME_SCREENSHOT_WIDTH
+                    canvas.height = SAVE_GAME_SCREENSHOT_HEIGHT
+                    canvas.getContext('2d').drawImage(img, 0, 0)
+                    this.screenshots[index] = canvas
+                    resolve()
+                }
+                img.src = screenshot
+            })
+        })).catch((e) => {
+            console.error('Could not load save game screenshot', e)
         })
     }
 
@@ -70,7 +88,6 @@ export class SaveGameManager {
         this.screenshots[index] = screenshot
         const saveGame = this.saveGames[index] || new SaveGame()
         saveGame.levels = this.currentLevels
-        saveGame.preferences = this.currentPreferences
         this.saveGames[index] = saveGame
         localStorage.setItem('savegames', JSON.stringify(this.saveGames))
         localStorage.setItem(`screenshot${index}`, this.encodeScreenshot(screenshot))
@@ -92,8 +109,6 @@ export class SaveGameManager {
             return false
         }
         this.currentLevels = saveGame.levels
-        this.currentPreferences = saveGame.preferences
-        EventBus.publishEvent(new ChangePreferences(this.currentPreferences))
         console.log('game progress loaded', this.currentLevels)
         return true
     }
@@ -130,7 +145,6 @@ export class SaveGameManager {
 
 export class SaveGame { // this gets serialized
     levels: SaveGameLevel[] = []
-    preferences: SaveGamePreferences = new SaveGamePreferences()
 }
 
 export class SaveGameLevel { // this gets serialized

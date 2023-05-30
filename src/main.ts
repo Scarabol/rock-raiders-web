@@ -105,7 +105,9 @@ try {
     wadWorker = new TypedWorkerFallback<InitLoadingMessage>((r) => onWadLoaderMessage(r))
     new WadSystem(wadWorker as TypedWorkerFallback<InitLoadingMessage>)
 }
-SaveGameManager.loadAllSaveGames()
+SaveGameManager.loadPreferences()
+SaveGameManager.loadSaveGames()
+SaveGameManager.loadSaveGameScreenshots()
 const screenMaster = new ScreenMaster()
 const loadingLayer = screenMaster.addLayer(new LoadingLayer(), 0)
 const cursorLayer = screenMaster.addLayer(new CursorLayer(), 1000)

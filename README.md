@@ -42,7 +42,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.6.0 - Complete Base Systems
 
-- Load game even if parser error in SaveGames
 - Refactor upgrade system and make vehicles upgradeable
 - Add tooltips for buildings with dependencies
 - Large digger and walker digger moving into wall for drilling
