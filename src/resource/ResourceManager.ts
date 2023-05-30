@@ -149,7 +149,7 @@ export class ResourceManager extends ResourceCache {
 
     static getBuildingSiteTooltipSprite(tooltipText: string, crystals: { actual: number, needed: number }, ores: { actual: number, needed: number }, bricks: { actual: number, needed: number }): SpriteImage {
         const tooltipTextImage = this.getTooltipFont().createTextImage(tooltipText)
-        const crystalsTextImage = crystals?.needed ? [this.getTooltipFont().createTextImage(`${ResourceManager.configuration.objectNamesCfg.get('crystal')}: ${crystals.actual}/${crystals.needed}`)] : []
+        const crystalsTextImage = crystals?.needed ? [this.getTooltipFont().createTextImage(`${ResourceManager.configuration.objectNamesCfg.get('powercrystal')}: ${crystals.actual}/${crystals.needed}`)] : []
         const oresTextImage = ores?.needed ? [this.getTooltipFont().createTextImage(`${ResourceManager.configuration.objectNamesCfg.get('ore')}: ${ores.actual}/${ores.needed}`)] : []
         const bricksTextImage = bricks?.needed ? [this.getTooltipFont().createTextImage(`${ResourceManager.configuration.objectNamesCfg.get('processedore')}: ${bricks.actual}/${bricks.needed}`)] : []
         return this.wrapTooltipSprite([tooltipTextImage], crystalsTextImage, oresTextImage, bricksTextImage)
