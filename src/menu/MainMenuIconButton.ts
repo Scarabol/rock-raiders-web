@@ -8,6 +8,7 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { UiElementCallback } from './UiElementState'
+import { TOOLTIP_DELAY_TEXT_MENU } from '../params'
 
 export class MainMenuIconButton extends MainMenuBaseItem {
     imgNormal: SpriteImage = null
@@ -20,7 +21,7 @@ export class MainMenuIconButton extends MainMenuBaseItem {
         this.imgHover = ResourceManager.getImage(cfg.imgHover)
         this.imgPressed = ResourceManager.getImage(cfg.imgPressed)
         const tooltipText = ResourceManager.getTooltipText(cfg.tooltipKey)
-        this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText))
+        this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
         this.width = Math.max(this.imgNormal.width, this.imgHover.width, this.imgPressed.width)
         this.height = Math.max(this.imgNormal.height, this.imgHover.height, this.imgPressed.height)
         this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x

@@ -29,7 +29,9 @@ export class ChangeTooltip extends GuiCommand {
 
     constructor(
         readonly tooltipText: string,
+        readonly timeoutText: number,
         readonly tooltipSfx?: string,
+        readonly timeoutSfx?: number,
         raider?: Raider,
         site?: BuildingSite,
     ) {

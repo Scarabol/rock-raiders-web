@@ -10,7 +10,7 @@ import { EntityManager } from '../../game/EntityManager'
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
 import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
 import { SceneManager } from '../../game/SceneManager'
-import { DEV_MODE } from '../../params'
+import { DEV_MODE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
 import { Cursor } from '../../resource/Cursor'
 import { EntityType } from '../../game/model/EntityType'
@@ -69,13 +69,13 @@ export class GameLayer extends ScreenLayer {
             if (cursorTarget.intersectionPoint) this.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
             if (cursorTarget.surface) {
                 const tooltip = ResourceManager.configuration.surfaceTypeDescriptions.get(cursorTarget.surface.surfaceType.name.toLowerCase())
-                if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], tooltip[1]))
+                if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
                 else {
                     const site = cursorTarget.surface.site
                     if (site?.buildingType) {
                         const objectKey = EntityType[site.buildingType.entityType].toString().replace('_', '').toLowerCase()
                         const tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
-                        if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, null, null, site))
+                        if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, null, site))
                     }
                 }
             }
@@ -83,7 +83,7 @@ export class GameLayer extends ScreenLayer {
             if (targetEntityType) {
                 const objectKey = EntityType[targetEntityType].toString().replace('_', '').toLowerCase()
                 const tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
-                if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, null, cursorTarget.raider))
+                if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null,  cursorTarget.raider))
             }
             this.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
             this.entityMgr.selection.doubleSelect?.sceneEntity.pointLaserAt(cursorTarget.intersectionPoint)

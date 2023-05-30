@@ -4,6 +4,7 @@ import { EventBus } from '../event/EventBus'
 import { ChangeTooltip } from '../event/GuiCommand'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
+import { TOOLTIP_DELAY_TEXT_MENU } from '../params'
 
 export class RewardScreenButton extends MainMenuBaseItem {
     imgNormal: SpriteImage
@@ -22,7 +23,7 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.width = this.imgNormal.width
         this.height = this.imgNormal.height
         const tooltipText = ResourceManager.getTooltipText(tooltipKey)
-        this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText))
+        this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
     }
 
     draw(context: SpriteContext) {

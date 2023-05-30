@@ -2,6 +2,7 @@ import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { ChangeTooltip } from '../../event/GuiCommand'
+import { TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_MENU } from '../../params'
 
 export class IconPanelButton extends Button {
     tooltipDisabled: string = null
@@ -25,7 +26,7 @@ export class IconPanelButton extends Button {
     showTooltipDisabled() {
         super.showTooltipDisabled()
         if (this.tooltipDisabled || this.tooltipDisabledSfx) {
-            this.publishEvent(new ChangeTooltip(this.tooltipDisabled, this.tooltipDisabledSfx))
+            this.publishEvent(new ChangeTooltip(this.tooltipDisabled, TOOLTIP_DELAY_TEXT_MENU, this.tooltipDisabledSfx, TOOLTIP_DELAY_SFX))
         }
     }
 

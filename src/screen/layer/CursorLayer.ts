@@ -9,7 +9,7 @@ import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
 import { TakeScreenshot } from '../../event/LocalEvents'
-import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH, TOOLTIP_DELAY } from '../../params'
+import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedCursor } from '../AnimatedCursor'
 import { AnimationFrame } from '../AnimationFrame'
@@ -25,7 +25,8 @@ export class CursorLayer extends ScreenLayer {
     activeCursor: AnimatedCursor = null
     cursorCanvasPos: { x: number, y: number } = {x: 0, y: 0}
     tooltipRect: Rect = null
-    tooltipTimeout: NodeJS.Timeout = null
+    tooltipTimeoutText: NodeJS.Timeout = null
+    tooltipTimeoutSfx: NodeJS.Timeout = null
     cursorLeft: boolean = false
 
     constructor() {
@@ -36,12 +37,21 @@ export class CursorLayer extends ScreenLayer {
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_TOOLTIP, (event: ChangeTooltip) => {
             if (this.cursorLeft) return
-            this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
-            if (this.active && (event.tooltipText || event.tooltipSfx)) {
-                this.tooltipTimeout = setTimeout(() => {
-                    if (event.tooltipText) this.changeTooltip(event)
-                    if (event.tooltipSfx) SoundManager.playSound(event.tooltipSfx)
-                }, TOOLTIP_DELAY)
+            if (event.tooltipText) {
+                this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
+                if (this.active) {
+                    this.tooltipTimeoutText = setTimeout(() => {
+                        if (event.tooltipText) this.changeTooltip(event)
+                    }, event.timeoutText)
+                }
+            }
+            if (event.tooltipSfx) {
+                this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
+                if (this.active) {
+                    this.tooltipTimeoutSfx = setTimeout(() => {
+                        if (event.tooltipSfx) SoundManager.playSound(event.tooltipSfx)
+                    }, event.timeoutSfx)
+                }
             }
         })
     }
@@ -63,7 +73,8 @@ export class CursorLayer extends ScreenLayer {
         this.cursorTimeout = clearTimeoutSafe(this.cursorTimeout)
         this.activeCursor?.disableAnimation()
         this.activeCursor = null
-        this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
+        this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
+        this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
         this.cursorLeft = false
     }
 
@@ -79,7 +90,8 @@ export class CursorLayer extends ScreenLayer {
     handlePointerEvent(event: GamePointerEvent): boolean {
         this.cursorLeft = false
         if (event.eventEnum === POINTER_EVENT.MOVE) {
-            this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
+            this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
+            this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
             this.cursorCanvasPos = {x: event.canvasX, y: event.canvasY}
             this.animationFrame.onRedraw = (context) => {
                 if (this.tooltipRect) context.clearRect(this.tooltipRect.x, this.tooltipRect.y, this.tooltipRect.w, this.tooltipRect.h)
@@ -89,7 +101,8 @@ export class CursorLayer extends ScreenLayer {
             this.animationFrame.redraw()
         } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
             this.cursorLeft = true
-            this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
+            this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
+            this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
         }
         return super.handlePointerEvent(event)
     }

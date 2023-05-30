@@ -4,6 +4,7 @@ import { ChangeTooltip } from '../../event/GuiCommand'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { BaseElement } from './BaseElement'
+import { TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_MENU } from '../../params'
 
 export class Button extends BaseElement {
     buttonType: string = null
@@ -40,7 +41,7 @@ export class Button extends BaseElement {
         if (this.isInactive()) {
             this.showTooltipDisabled()
         } else if (this.tooltip || this.tooltipSfx) {
-            this.publishEvent(new ChangeTooltip(this.tooltip, this.tooltipSfx))
+            this.publishEvent(new ChangeTooltip(this.tooltip, TOOLTIP_DELAY_TEXT_MENU, this.tooltipSfx, TOOLTIP_DELAY_SFX))
         }
     }
 
