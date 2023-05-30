@@ -206,9 +206,13 @@ export class NeededCrystalsChanged extends LocalEvent {
 }
 
 export class UpdateRadarEntities extends LocalEvent {
-    entitiesByOrder: Map<MapMarkerType, { x: number, y: number }[]> = new Map() // no Vectors, because of serialization
+    entitiesByOrder: Map<MapMarkerType, { x: number, z: number }[]> = new Map() // no Vectors, because of serialization
 
-    constructor() {
+    constructor(entityMgr: EntityManager) {
         super(EventKey.UPDATE_RADAR_ENTITIES)
+        const raiders = entityMgr.raiders.map((r) => ({x: r.sceneEntity.position.x, z: r.sceneEntity.position.z}))
+        this.entitiesByOrder.set(MapMarkerType.DEFAULT, raiders)
+        const materials = entityMgr.materials.map((m) => ({x: m.sceneEntity.position.x, z: m.sceneEntity.position.z}))
+        this.entitiesByOrder.set(MapMarkerType.MATERIAL, materials)
     }
 }

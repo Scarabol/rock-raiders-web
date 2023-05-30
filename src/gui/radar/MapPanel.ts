@@ -84,7 +84,7 @@ export class MapPanel extends Panel {
 
     private redrawMapEntities(event: UpdateRadarEntities) {
         this.entityContext.clearRect(0, 0, this.entityContext.canvas.width, this.entityContext.canvas.height)
-        this.entityContext.fillStyle = '#edd20c'
+        this.entityContext.fillStyle = '#e8d400'
         event.entitiesByOrder.getOrDefault(MapMarkerType.DEFAULT, [])
             .map((v) => this.mapToMap(v)).forEach((p) => {
             this.entityContext.fillRect(p.x, p.y, 3, 3)
@@ -105,7 +105,7 @@ export class MapPanel extends Panel {
         this.notifyRedraw()
     }
 
-    private mapToMap(vec: { x: number, y: number }): Vector2 {
-        return new Vector2(vec.x, vec.y).multiplyScalar(this.surfaceRectSize / TILESIZE).round().subScalar(1).sub(this.offset)
+    private mapToMap(vec: { x: number, z: number }): Vector2 {
+        return new Vector2(vec.x, vec.z).multiplyScalar(this.surfaceRectSize / TILESIZE).round().subScalar(1).sub(this.offset)
     }
 }

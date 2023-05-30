@@ -2,7 +2,7 @@ import { PositionalAudio } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
-import { RaidersAmountChangedEvent } from '../../../event/LocalEvents'
+import { RaidersAmountChangedEvent, UpdateRadarEntities } from '../../../event/LocalEvents'
 import { NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
@@ -129,6 +129,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.sceneEntity.position.add(step.vec)
             this.sceneEntity.changeActivity(this.getRouteActivity())
+            EventBus.publishEvent(new UpdateRadarEntities(this.worldMgr.entityMgr)) // TODO only send map updates not all
             return MoveState.MOVED
         }
     }
