@@ -64,15 +64,7 @@ export class SaveGameManager {
         return this.screenshots[index] || null
     }
 
-    static saveGame(index: number, levelName: string, score: number, screenshot: HTMLCanvasElement) {
-        const previousAttempt = this.currentLevels.find((l) => l.levelName.equalsIgnoreCase(levelName))
-        if (previousAttempt) {
-            if (previousAttempt.levelScore < score) {
-                previousAttempt.levelScore = score
-            }
-        } else {
-            this.currentLevels.add(new SaveGameLevel(levelName, score))
-        }
+    static saveGame(index: number, screenshot: HTMLCanvasElement) {
         this.screenshots[index] = screenshot
         const saveGame = this.saveGames[index] || new SaveGame()
         saveGame.levels = this.currentLevels
@@ -102,6 +94,17 @@ export class SaveGameManager {
         EventBus.publishEvent(new ChangePreferences(this.currentPreferences))
         console.log('game progress loaded', this.currentLevels)
         return true
+    }
+
+    static setLevelScore(levelName: string, score: number) {
+        const previousAttempt = this.currentLevels.find((l) => l.levelName.equalsIgnoreCase(levelName))
+        if (previousAttempt) {
+            if (previousAttempt.levelScore < score) {
+                previousAttempt.levelScore = score
+            }
+        } else {
+            this.currentLevels.add(new SaveGameLevel(levelName, score))
+        }
     }
 
     static getLevelScoreString(levelName: string) {

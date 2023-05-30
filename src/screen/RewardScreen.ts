@@ -31,8 +31,6 @@ export class RewardScreen {
     uncoverTimeout: NodeJS.Timeout = null
     btnSave: RewardScreenButton
     btnAdvance: RewardScreenButton
-    score: number = 0
-    levelName: string = ''
     levelFullNameImg: SpriteImage
     resultText: string
     resultValues: SpriteImage[] = []
@@ -114,9 +112,9 @@ export class RewardScreen {
             } else if (item.actionName.toLowerCase().startsWith('save_game_')) {
                 if (SaveGameManager.hasSaveGame(item.targetIndex)) {
                     console.warn('Overwrite window not yet implemented') // TODO show overwrite warning window
-                    SaveGameManager.saveGame(item.targetIndex, this.levelName, this.score, this.screenshot)
+                    SaveGameManager.saveGame(item.targetIndex, this.screenshot)
                 } else {
-                    SaveGameManager.saveGame(item.targetIndex, this.levelName, this.score, this.screenshot)
+                    SaveGameManager.saveGame(item.targetIndex, this.screenshot)
                 }
                 this.saveGameLayer.hide()
             } else {
@@ -127,7 +125,6 @@ export class RewardScreen {
 
     showGameResult(result: GameResult) {
         console.log('Your game result', result)
-        this.levelName = result.levelName
         this.levelFullNameImg = this.titleFont.createTextImage(result.levelFullName)
         this.btnSave.disabled = result.state !== GameResultState.COMPLETE
         this.resultText = this.cfg.quitText
@@ -135,6 +132,7 @@ export class RewardScreen {
         if (result.state === GameResultState.COMPLETE) {
             this.resultText = this.cfg.completeText
             this.resultLastIndex = this.images.length - 1
+            SaveGameManager.setLevelScore(result.levelName, result.score)
         } else if (result.state === GameResultState.FAILED) {
             this.resultText = this.cfg.failedText
         }
@@ -149,7 +147,6 @@ export class RewardScreen {
         this.resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(result.airLevelPercent, 100)))
         this.resultValues.push(this.fonts['timer'].createTextImage(this.timeString(result.gameTimeSeconds)))
         this.resultValues.push(this.fonts['score'].createTextImage(`${result.score}%`))
-        this.score = result.score
         this.screenshot = result.screenshot
         this.show()
     }
