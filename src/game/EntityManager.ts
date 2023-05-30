@@ -21,7 +21,6 @@ import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { ECS, GameEntity } from './ECS'
 import { PositionComponent } from './component/PositionComponent'
 import { SceneEntityComponent } from './component/SceneEntityComponent'
-import { DiscoveredComponent } from './component/DiscoveredComponent'
 
 export class EntityManager {
     ecs: ECS
@@ -215,7 +214,6 @@ export class EntityManager {
             const pos = this.ecs.getComponents(e).get(PositionComponent).position
             const discovered = pos.x >= minX && pos.x < maxX && pos.z >= minZ && pos.z < maxZ
             if (discovered) {
-                this.ecs.addComponent(e, new DiscoveredComponent())
                 this.ecs.getComponents(e).get(SceneEntityComponent).sceneEntity.visible = true
                 onRemove(e)
             }
@@ -252,7 +250,7 @@ export class EntityManager {
     }
 
     addEntity(entity: GameEntity, entityType: EntityType) {
-        const discovered = this.ecs.getComponents(entity).has(DiscoveredComponent)
+        const discovered = this.ecs.getComponents(entity).get(PositionComponent)?.isDiscovered()
         switch (entityType) {
             case EntityType.BAT:
                 if (discovered) this.bats.add(entity)

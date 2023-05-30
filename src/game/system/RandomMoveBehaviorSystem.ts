@@ -12,8 +12,7 @@ export class RandomMoveBehaviorSystem extends AbstractGameSystem {
             try {
                 const components = this.ecs.getComponents(entity)
                 const randomMoveComponent = components.get(RandomMoveComponent)
-                if (randomMoveComponent.isOnIdleTimer(elapsedMs)) continue
-                if (components.has(WorldTargetComponent)) continue // TODO possible performance issue?
+                if (randomMoveComponent.isOnIdleTimer(elapsedMs) || components.has(WorldTargetComponent)) continue
                 const positionComponent = components.get(PositionComponent)
                 if (!positionComponent.isDiscovered()) continue
                 const targetSurface = [...positionComponent.surface.neighbors.filter((n) =>
