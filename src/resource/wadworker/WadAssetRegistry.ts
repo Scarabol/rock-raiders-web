@@ -49,7 +49,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addAlphaImageFolder('Interface/InfoImages/')
         this.addAssetFolder(this.wadLoader.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_')
         this.addAssetFolder(this.wadLoader.loadWadImageAsset, 'Interface/FrontEnd/lp_')
-        this.addAssetFolder(this.wadLoader.loadWadImageAsset, 'Interface/ToolTipIcons/')
+        this.addAssetFolder(this.wadLoader.loadAlphaImageAsset, 'Interface/ToolTipIcons/')
         this.addAsset(this.wadLoader.loadAlphaImageAsset, 'Interface/FrontEnd/LowerPanel.bmp')
         // level files
         this.addAsset(this.wadLoader.loadNerpAsset, 'Levels/nerpnrn.h')

@@ -170,11 +170,11 @@ export class ResourceManager extends ResourceCache {
         const padding = 2
         const [contentWidth, contentHeight] = ResourceManager.getTooltipContentSize(rowsThenCols)
         const context = createContext(contentWidth + 2 * margin + 2 * padding, contentHeight + 2 * margin + 2 * padding)
-        context.fillStyle = '#001600'
+        context.fillStyle = '#004000'
         context.fillRect(0, 0, context.canvas.width, context.canvas.height)
-        context.fillStyle = '#006400' // TODO read ToolTipRGB from config
+        context.fillStyle = '#188418'
         context.fillRect(0, 0, context.canvas.width - margin, context.canvas.height - margin)
-        context.fillStyle = '#003200'
+        context.fillStyle = '#006400' // TODO read ToolTipRGB from config
         context.fillRect(margin, margin, context.canvas.width - 2 * margin, context.canvas.height - 2 * margin)
         let posY = margin + padding
         for (const cols of rowsThenCols) {
