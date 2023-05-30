@@ -12,7 +12,6 @@ import { MainCfg } from './MainCfg'
 import { GameMenuCfg } from './MenuCfg'
 import { PanelsCfg } from './PanelCfg'
 import { PanelRotationControlCfg } from './PanelRotationControlCfg'
-import { PointerCfg } from './PointerCfg'
 import { PrioritiesImagePositionsCfg, PriorityButtonsCfg } from './PriorityButtonsCfg'
 import { RewardCfg } from './RewardCfg'
 import { TexturesCfg } from './TexturesCfg'
@@ -25,7 +24,7 @@ export class GameConfig extends BaseConfig {
     reward: RewardCfg = new RewardCfg()
     menu: GameMenuCfg = new GameMenuCfg()
     surfaceTypeDescriptions: Map<string, string[]> = new Map()
-    pointers: PointerCfg = new PointerCfg()
+    pointers: Map<string, string | string[]> = new Map()
     // interfaceImages: InterfaceImagesCfg = new InterfaceImagesCfg()
     panelRotationControl: PanelRotationControlCfg = new PanelRotationControlCfg()
     panels: PanelsCfg = new PanelsCfg()
@@ -65,7 +64,7 @@ export class GameConfig extends BaseConfig {
         } else if ('SurfaceTypeDescriptions'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), value as string[]))
         } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {
-            this.pointers.setFromCfgObj(cfgValue)
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.pointers.set(this.stripKey(cfgKey), value as string[]))
         // } else if ('InterfaceImages'.equalsIgnoreCase(unifiedKey)) {
         //     this.interfaceImages.setFromCfgObj(cfgValue)
         } else if ('PanelRotationControl'.equalsIgnoreCase(unifiedKey)) {

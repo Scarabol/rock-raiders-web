@@ -12,7 +12,7 @@ import { TrainRaiderJob } from '../../game/model/job/raider/TrainRaiderJob'
 import { SceneManager } from '../../game/SceneManager'
 import { DEV_MODE } from '../../params'
 import { ScreenLayer } from './ScreenLayer'
-import { Cursor } from '../../cfg/PointerCfg'
+import { Cursor } from '../../resource/Cursor'
 import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/model/map/Surface'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -196,43 +196,43 @@ export class GameLayer extends ScreenLayer {
 
     determineCursor(cursorTarget: CursorTarget): Cursor {
         if (this.sceneMgr.hasBuildModeSelection()) {
-            return this.sceneMgr.buildMarker.lastCheck ? 'pointerCanBuild' : 'pointerCannotBuild'
+            return this.sceneMgr.buildMarker.lastCheck ? Cursor.CAN_BUILD : Cursor.CANNOT_BUILD
         }
-        if (cursorTarget.raider) return 'pointerSelected'
+        if (cursorTarget.raider) return Cursor.SELECTED
         if (cursorTarget.vehicle) {
             if (!cursorTarget.vehicle.driver && this.entityMgr.selection.raiders.length > 0) {
-                return 'pointerGetIn'
+                return Cursor.GETIN
             }
-            return 'pointerSelected'
+            return Cursor.SELECTED
         }
-        if (cursorTarget.building) return 'pointerSelected'
+        if (cursorTarget.building) return Cursor.SELECTED
         if (cursorTarget.material) return this.determineMaterialCursor(cursorTarget.material)
         if (cursorTarget.surface) return this.determineSurfaceCursor(cursorTarget.surface)
-        return 'pointerStandard'
+        return Cursor.STANDARD
     }
 
     private determineMaterialCursor(material: MaterialEntity): Cursor {
         if (this.entityMgr.selection.canPickup()) {
             if (material.entityType === EntityType.ORE) {
-                return 'pointerPickUpOre'
+                return Cursor.PICK_UP_ORE
             } else {
-                return 'pointerPickUp'
+                return Cursor.PICK_UP
             }
         }
-        return 'pointerSelected'
+        return Cursor.SELECTED
     }
 
     private determineSurfaceCursor(surface: Surface): Cursor {
         if (this.entityMgr.selection.canMove()) {
             if (surface.surfaceType.digable) {
                 if (this.entityMgr.selection.canDrill(surface)) {
-                    return 'pointerDrill'
+                    return Cursor.DRILL
                 }
             } else if (surface.surfaceType.floor) {
                 if (surface.hasRubble() && this.entityMgr.selection.canClear()) {
-                    return 'pointerClear'
+                    return Cursor.CLEAR
                 }
-                return 'pointerLegoManGo'
+                return Cursor.MAN_GO
             }
         }
         return surface.surfaceType.cursor

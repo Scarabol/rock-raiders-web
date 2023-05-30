@@ -11,6 +11,7 @@ import { WadParser } from './parser/WadParser'
 import { WadAssetRegistry } from './WadAssetRegistry'
 import { WadFile } from './WadFile'
 import { grayscaleToGreen } from './WadUtil'
+import { Cursor } from '../Cursor'
 
 export class WadLoader {
     wad0File: WadFile = null
@@ -266,7 +267,7 @@ export class WadLoader {
                 })
             }),
             new Promise<void>((resolve) => {
-                const name = cfg.pointers.pointerStandard
+                const name = cfg.pointers.get(Cursor.STANDARD) as string
                 this.loadAlphaImageAsset(name, (assetNames: string[], imgData) => {
                     this.onAssetLoaded(0, assetNames, imgData)
                     resolve()

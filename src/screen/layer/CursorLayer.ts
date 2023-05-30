@@ -1,4 +1,4 @@
-import { Cursor } from '../../cfg/PointerCfg'
+import { Cursor } from '../../resource/Cursor'
 import { cloneContext } from '../../core/ImageHelper'
 import { Rect } from '../../core/Rect'
 import { clearTimeoutSafe } from '../../core/Util'
@@ -47,7 +47,7 @@ export class CursorLayer extends ScreenLayer {
     }
 
     reset() {
-        this.changeCursor('pointerStandard')
+        this.changeCursor(Cursor.STANDARD)
     }
 
     show() {

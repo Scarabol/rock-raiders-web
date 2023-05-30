@@ -1,5 +1,5 @@
 import { GameConfig } from '../cfg/GameConfig'
-import { Cursor } from '../cfg/PointerCfg'
+import { Cursor } from './Cursor'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 import { createContext, createDummyImgData, imgDataToContext } from '../core/ImageHelper'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
@@ -71,38 +71,40 @@ export class ResourceCache {
     }
 
     static async loadDefaultCursor() {
-        const cursorImageName = this.configuration.pointers.pointerStandard
-        await this.loadCursor(cursorImageName, 'pointerStandard')
+        const cursorImageName = this.configuration.pointers.get(Cursor.STANDARD) as string
+        await this.loadCursor(cursorImageName, Cursor.STANDARD)
     }
 
     static async loadAllCursor() {
-        const blankPointerFilename = this.configuration.pointers.pointerBlank
+        const blankPointerFilename = this.configuration.pointers.get(Cursor.BLANK) as string
         const blankPointerImageData = this.getImageData(blankPointerFilename)
-        await Promise.all(Object.entries(this.configuration.pointers).map(([objKey, cursorCfg]) => {
+        const loadingCursors: Promise<void>[] = []
+        this.configuration.pointers.forEach((cursorCfg, objKey) => {
             const cursor = objKey as Cursor
-            if (Array.isArray(cursorCfg)) {
-                const cursorImageName = cursorCfg[0]
-                return cacheGetData(cursorImageName).then((animatedCursorData) => {
-                    if (!animatedCursorData) {
-                        let maxHeight = 0
-                        const cursorImages = (this.getResource(cursorImageName) as ImageData[]).map((imgData) => {
-                            const context = imgDataToContext(blankPointerImageData)
-                            context.drawImage(imgDataToContext(imgData).canvas, Math.round((blankPointerImageData.width - imgData.width) / 2), Math.round((blankPointerImageData.height - imgData.height) / 2))
-                            maxHeight = Math.max(maxHeight, context.canvas.height)
-                            return context.canvas
-                        })
-                        animatedCursorData = {
-                            dataUrls: this.cursorToDataUrl(cursorImages),
-                            maxHeight: maxHeight,
-                        }
-                        cachePutData(cursorImageName, animatedCursorData).then()
-                    }
-                    this.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls, animatedCursorData.maxHeight))
-                })
-            } else {
-                return this.loadCursor(cursorCfg, cursor)
+            if (!Array.isArray(cursorCfg)) {
+                loadingCursors.push(this.loadCursor(cursorCfg, cursor))
+                return
             }
-        }))
+            const cursorImageName = cursorCfg[0]
+            loadingCursors.push(cacheGetData(cursorImageName).then((animatedCursorData) => {
+                if (!animatedCursorData) {
+                    let maxHeight = 0
+                    const cursorImages = (this.getResource(cursorImageName) as ImageData[]).map((imgData) => {
+                        const context = imgDataToContext(blankPointerImageData)
+                        context.drawImage(imgDataToContext(imgData).canvas, Math.round((blankPointerImageData.width - imgData.width) / 2), Math.round((blankPointerImageData.height - imgData.height) / 2))
+                        maxHeight = Math.max(maxHeight, context.canvas.height)
+                        return context.canvas
+                    })
+                    animatedCursorData = {
+                        dataUrls: this.cursorToDataUrl(cursorImages),
+                        maxHeight: maxHeight,
+                    }
+                    cachePutData(cursorImageName, animatedCursorData).then()
+                }
+                this.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls, animatedCursorData.maxHeight))
+            }))
+        })
+        await Promise.all(loadingCursors)
     }
 
     private static async loadCursor(cursorImageName: string, cursor: Cursor) {
@@ -124,6 +126,8 @@ export class ResourceCache {
     }
 
     static getCursor(cursor: Cursor): AnimatedCursor {
-        return this.cursorToUrl.get(cursor)
+        const result = this.cursorToUrl.get(cursor)
+        if (!result) throw new Error(`Cursor ${cursor} not found`)
+        return result
     }
 }

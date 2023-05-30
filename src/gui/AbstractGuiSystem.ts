@@ -11,6 +11,7 @@ import { OffscreenSystem } from '../worker/OffscreenSystem'
 import { BaseElement } from './base/BaseElement'
 import { Panel } from './base/Panel'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from './event/GuiEvent'
+import { Cursor } from '../resource/Cursor'
 
 export abstract class AbstractGuiSystem extends OffscreenSystem {
     animationFrame: AnimationFrameScaled
@@ -59,7 +60,7 @@ export abstract class AbstractGuiSystem extends OffscreenSystem {
             .map((c) => Math.round(c))
         const hit = context.getImageData(cx, cy, 1, 1).data[3] > 0
         if (hit) {
-            this.publishEvent(new ChangeCursor('pointerStandard')) // TODO don't spam so many events?!
+            this.publishEvent(new ChangeCursor(Cursor.STANDARD)) // TODO don't spam so many events?!
             if (event.eventEnum === POINTER_EVENT.MOVE) {
                 this.rootElement.checkHover(new GuiHoverEvent(sx, sy))
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {
