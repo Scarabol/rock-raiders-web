@@ -227,6 +227,7 @@ export class SceneManager implements Updatable {
     }
 
     setLightLevel(lightLevel: number) {
+        if (!this.ambientLight) return
         this.ambientLight.intensity = 0.05 + Math.max(0, Math.min(1, lightLevel)) * 0.4
     }
 }
