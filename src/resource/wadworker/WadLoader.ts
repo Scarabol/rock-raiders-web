@@ -203,8 +203,8 @@ export class WadLoader {
 
     /**
      * Private helper method, which combines file loading and waits for them to become ready before continuing
-     * @param wad0Url Url to parse the LegoRR0.wad file from
-     * @param wad1Url Url to parse the LegoRR1.wad file from
+     * @param wad0Url Url to parse first ...RR0.wad file from
+     * @param wad1Url Url to parse second ...RR1.wad file from
      */
     loadWadFiles(wad0Url: string, wad1Url: string) {
         Promise.all<WadFile>([
@@ -243,7 +243,10 @@ export class WadLoader {
      */
     startLoadingProcess() {
         this.onMessage('Loading configuration...')
-        const cfg = CfgFileParser.parse(this.wad1File.getEntryData('Lego.cfg'))
+        const cfgFiles = this.wad1File.filterEntryNames('\\.cfg')
+        if (cfgFiles.length < 1) throw new Error('Invalid second WAD file given! No config file present at root level.')
+        if (cfgFiles.length > 1) console.warn(`Found multiple config files ${cfgFiles} will proceed with first one ${cfgFiles[0]} only`)
+        const cfg = CfgFileParser.parse(this.wad1File.getEntryData(cfgFiles[0]))
         // dynamically register all assets from config
         this.assetRegistry.registerAllAssets(cfg)
         this.onMessage('Loading initial assets...')

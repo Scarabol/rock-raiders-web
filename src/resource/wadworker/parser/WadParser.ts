@@ -22,7 +22,7 @@ export class WadParser {
             const line = lines[c].trim()
             const objectStartMatch = line.match(/(.+)\s+{/)
             const drivingMatch = line.match(/driving\s+(.+)/i)
-            if (line.length < 1 || line.startsWith(';') || line.startsWith('Lego*')) {
+            if (line.length < 1 || line.startsWith(';') || line.match(/\S\*\s*\{/)) {
                 // ignore empty lines, comments and the root object
             } else if (objectStartMatch) {
                 currentObject = new ObjectListEntryCfg()

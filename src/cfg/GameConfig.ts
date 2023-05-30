@@ -128,7 +128,9 @@ export class GameConfig extends BaseConfig {
         const keyParts = cfgKey.split('_')
         if (keyParts.length > 1) {
             keyParts.shift()
-            return keyParts.join('').toLowerCase()
+            return keyParts.flatMap((s) => s.split(/(?<!^)(?=[A-Z])/)) // split with camel case
+                .filter((s) => s.toLowerCase().hashCode() !== 3317793)
+                .join('').toLowerCase()
         } else {
             return cfgKey.toLowerCase()
         }

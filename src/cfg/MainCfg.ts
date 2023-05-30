@@ -64,7 +64,7 @@ export class MainCfg extends BaseConfig {
     // DynamiteDamageRadius = 75.0
     // DynamiteMaxDamage = 150.0
     // BirdScarerRadius = 100.0
-    // StartMessage = LEGO_Rock_Raiders
+    // StartMessage = Rock_Raiders
     // Version = V.0.121
     // StreamNERPSSpeach = TRUE
     // FrontEnd = TRUE
@@ -75,7 +75,7 @@ export class MainCfg extends BaseConfig {
     // AllowEditMode = FALSE
     // DontPlayAvis = FALSE
     // RRAvi = avi/intro.avi
-    // LegoAvi = avi/lmi640.avi
+    // Avi = avi/lmi640.avi
     // DDILogo = Languages/DDI_Logo.bmp
     // DDILogoTime = 4.0
     // HelpWindowOn = TRUE

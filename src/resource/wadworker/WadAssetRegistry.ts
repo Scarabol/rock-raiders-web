@@ -178,7 +178,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
 
     addAnimatedEntity(aeFile: string) {
         const content = this.wadLoader.wad0File.getEntryText(aeFile)
-        const cfgRoot = iGet(RonFileParser.parse(content), 'Lego*')
+        const cfgRoot = RonFileParser.parse(aeFile, content)
         this.wadLoader.onAssetLoaded(0, [aeFile], cfgRoot)
         const path = getPath(aeFile)
         // load all textures for this type

@@ -102,7 +102,7 @@ export class PilotStats extends BaseConfig implements MovableEntityStats {
     RubbleCoef: number = 0.5
     PathCoef: number = 2.0
     RouteAvoidance: boolean = true
-    UseLegoManTeleporter: boolean = true
+    UseManTeleporter: boolean = true
     AwarenessRange: number = 10.0
     OxygenCoef: number = -1.0
     CanStrafe: boolean = true
@@ -138,7 +138,7 @@ export class RockMonsterStats extends MonsterEntityStats {
     Capacity: number = 6 // How many crystals it can eat
     PathCoef: number = 0.5
     // Statistics about the weapons
-    CanBeShotAt: boolean = true // Can this monster be shot at by lego men
+    CanBeShotAt: boolean = true // Can this monster be shot at
     CanFreeze: boolean = true // Can this object be frozen
     FreezerTime: number = 25.0 // Time this object is frozen for
     FreezerDamage: number = 5.0 // Damage that freezing causes
@@ -183,7 +183,7 @@ export class BatStats extends MonsterEntityStats {
     ScaredByBigBangs: boolean = true
     // Flock parameters.
     Flocks: boolean = true // Set this to create a flock for this object.
-    FlocksDebug: boolean = false // If this is set the actual lego objects animation is displayed at the "lego" position.
+    FlocksDebug: boolean = false // If this is set the actual objects animation is displayed at the debug position.
     FlocksSmooth: boolean = true // Smooths out the orientation of the flocks elements.
     FlocksSize: number = 8 // Number of the given item in the flock.  (Default 5)
     FlocksTurn: number = 0.6 // Turning speed of the bat. (0.6 default)
@@ -283,7 +283,7 @@ export class LavaMonsterStats extends MonsterEntityStats {
     PathCoef: number = 0.5
     CrossLava: boolean = true
     // Statistics about the weapons
-    CanBeShotAt: boolean = true // Can this monster be shot at by lego men
+    CanBeShotAt: boolean = true // Can this monster be shot at
     CanFreeze: boolean = true // Can this object be frozen
     FreezerTime: number = 75.0 // Time this object is frozen for
     FreezerDamage: number = 40.0 // Damage that freezing causes
@@ -326,7 +326,7 @@ export class IceMonsterStats extends MonsterEntityStats {
     CanBeHitByFence: boolean = true
     PathCoef: number = 0.5
     // Statistics about the weapons
-    CanBeShotAt: boolean = true // Can this monster be shot at by lego men
+    CanBeShotAt: boolean = true // Can this monster be shot at
     CanFreeze: boolean = false // Can this object be frozen
     FreezerTime: number = 0.0 // Time this object is frozen for
     FreezerDamage: number = 0.0 // Damage that freezing causes

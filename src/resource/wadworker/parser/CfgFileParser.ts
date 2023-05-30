@@ -1,5 +1,6 @@
 import { GameConfig } from '../../../cfg/GameConfig'
 import { encodeChar } from './EncodingHelper'
+import { DEV_MODE } from '../../../params'
 
 const enum PARSING_STATE {
     LOOKING_FOR_KEY,
@@ -10,9 +11,9 @@ const enum PARSING_STATE {
 
 export class CfgFileParser {
     static parse(buffer: Uint8Array): GameConfig {
-        const result = {}
+        const root = {}
         const ancestry = []
-        let activeObject = result
+        let activeObject = root
         let isComment = false
         let parsingState: PARSING_STATE = PARSING_STATE.LOOKING_FOR_KEY
         let key = ''
@@ -69,7 +70,7 @@ export class CfgFileParser {
             }
         }
 
-        const stack = [result]
+        const stack = [root]
         while (stack.length > 0) {
             const obj = stack.pop()
             Object.keys(obj).forEach((key) => {
@@ -86,8 +87,12 @@ export class CfgFileParser {
             })
         }
 
+        const entries = Object.values(root)
+        if (entries.length > 1 && !DEV_MODE) console.warn(`Config file contains more than one object! Will proceed with first object only`)
+        const result = entries[0]
+
         // apply some patches here
-        Object.values(result['Lego*']['Levels']).forEach((levelConf) => {
+        Object.values(result['Levels']).forEach((levelConf) => {
             if (levelConf['CryoreMap']) {
                 levelConf['CryOreMap'] = levelConf['CryoreMap']  // typos... typos everywhere
                 delete levelConf['CryoreMap']
@@ -104,7 +109,7 @@ export class CfgFileParser {
                 levelConf['TextureSet'] = textureSet[1]
             }
         })
-        const dependencies = result['Lego*']['Dependencies']
+        const dependencies = result['Dependencies']
         Object.keys(dependencies).forEach((key) => {
             const flatDeps = []
             dependencies[key].forEach((d) => {
@@ -121,7 +126,7 @@ export class CfgFileParser {
             }, [])
         })
 
-        return new GameConfig().setFromCfgObj(result['Lego*'], true) // TODO do not create missing
+        return new GameConfig().setFromCfgObj(result, true) // TODO do not create missing
     }
 
     static parseValue(val) {

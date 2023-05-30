@@ -1,14 +1,18 @@
 // The RockRaidersObjectNotation (RON) format is related to JSON
 
+import { DEV_MODE } from '../../../params'
+
 export class RonFileParser {
-    static parse(content: string) {
+    static parse(filename: string, content: string) {
         const lines: string[] = content.split(/[\r\n]+/g).map((l) => l
             .replace(/;.*|\/\/.*/, '') // strip comments from each line
             .trim(), // remove whitespace at start/end of lines
         )
         const root = {}
         this.parseObj(root, lines, 0)
-        return root
+        const entries = Object.values(root)
+        if (entries.length > 1 && !DEV_MODE) console.warn(`File '${filename}' contains more than one object! Will proceed with first object only`)
+        return entries[0]
     }
 
     private static parseObj(obj: {}, lines: string[], start: number): number {
