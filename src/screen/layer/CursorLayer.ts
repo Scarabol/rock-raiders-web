@@ -36,9 +36,10 @@ export class CursorLayer extends ScreenLayer {
             if (this.active) this.changeCursor(event.cursor, event.timeout)
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_TOOLTIP, (event: ChangeTooltip) => {
+            this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
+            this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
             if (this.cursorLeft) return
             if (event.tooltipText) {
-                this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
                 if (this.active) {
                     this.tooltipTimeoutText = setTimeout(() => {
                         if (event.tooltipText) this.changeTooltip(event)
@@ -46,7 +47,6 @@ export class CursorLayer extends ScreenLayer {
                 }
             }
             if (event.tooltipSfx) {
-                this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
                 if (this.active) {
                     this.tooltipTimeoutSfx = setTimeout(() => {
                         if (event.tooltipSfx) SoundManager.playSound(event.tooltipSfx)
