@@ -89,7 +89,7 @@ export class AnimClip {
     private playAudio() {
         this.sfxAudioByFrame.getOrUpdate(this.currentFrame, () => []).forEach((a) => {
             if (a.isPlaying) a.stop()
-            a.setVolume(SaveGameManager.currentPreferences.volumeSfx)
+            a.setVolume(SaveGameManager.getSfxVolume())
             a.play()
         })
     }

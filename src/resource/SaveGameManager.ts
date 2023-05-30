@@ -117,6 +117,10 @@ export class SaveGameManager {
         localStorage.setItem('preferences', JSON.stringify(this.currentPreferences))
         console.log('Preferences saved', this.currentPreferences)
     }
+
+    static getSfxVolume(): number {
+        return SaveGameManager.currentPreferences.toggleSfx ? SaveGameManager.currentPreferences.volumeSfx : 0
+    }
 }
 
 export class SaveGame { // this gets serialized
