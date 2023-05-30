@@ -29,10 +29,10 @@ export class ObjectListLoader {
             const entityType = getEntityTypeByName(olEntry.type ? olEntry.type.toLowerCase() : olEntry.type)
             // all object positions are off by one tile, because they start at 1 not 0
             const worldPos = new Vector2(olEntry.xPos, olEntry.yPos).addScalar(-1).multiplyScalar(TILESIZE) // TODO assert that world pos is over terrain otherwise drop item
-            const radHeading = degToRad(olEntry.heading)
+            const headingRad = degToRad(olEntry.heading)
             switch (entityType) {
                 case EntityType.TV_CAMERA:
-                    const cameraOffset = new Vector2(6, 0).rotateAround(new Vector2(0, 0), radHeading + Math.PI / 2)
+                    const cameraOffset = new Vector2(6, 0).rotateAround(new Vector2(0, 0), headingRad + Math.PI / 2)
                     const cameraPos = sceneMgr.getFloorPosition(cameraOffset.multiplyScalar(TILESIZE).add(worldPos))
                     cameraPos.y += 4 * TILESIZE
                     sceneMgr.camera.position.copy(cameraPos)
@@ -44,7 +44,7 @@ export class ObjectListLoader {
                     const raider = new Raider(worldMgr)
                     raider.sceneEntity.changeActivity()
                     raider.sceneEntity.makeSelectable(raider)
-                    raider.sceneEntity.addToScene(worldPos, radHeading - Math.PI / 2)
+                    raider.sceneEntity.addToScene(worldPos, headingRad - Math.PI / 2)
                     if (raider.sceneEntity.visible) {
                         entityMgr.raiders.push(raider)
                         EventBus.publishEvent(new RaidersAmountChangedEvent(entityMgr))
@@ -65,13 +65,13 @@ export class ObjectListLoader {
                 case EntityType.TELEPORT_BIG:
                     const buildingType = BuildingType.from(entityType)
                     const entity = new BuildingEntity(worldMgr, buildingType)
-                    entity.placeDown(worldPos, -radHeading - Math.PI, disableStartTeleport)
+                    entity.placeDown(worldPos, -headingRad - Math.PI, disableStartTeleport)
                     if (entityType === EntityType.TOOLSTATION) {
                         for (let c = 0; c < this.numRaider; c++) {
                             const raider = new Raider(worldMgr)
                             raider.sceneEntity.changeActivity()
                             raider.sceneEntity.makeSelectable(raider)
-                            raider.sceneEntity.addToScene(entity.primaryPathSurface.getRandomPosition(), radHeading - Math.PI)
+                            raider.sceneEntity.addToScene(entity.primaryPathSurface.getRandomPosition(), headingRad - Math.PI)
                             RaiderTrainings.values.forEach((t) => raider.addTraining(t))
                             entityMgr.raiders.push(raider)
                             EventBus.publishEvent(new RaidersAmountChangedEvent(entityMgr))
@@ -92,7 +92,7 @@ export class ObjectListLoader {
                 case EntityType.ICE_MONSTER:
                 case EntityType.LAVA_MONSTER:
                 case EntityType.ROCK_MONSTER:
-                    MonsterSpawner.spawnMonster(worldMgr, entityType, worldPos, radHeading - Math.PI / 2)
+                    MonsterSpawner.spawnMonster(worldMgr, entityType, worldPos, headingRad - Math.PI / 2)
                     break
                 case EntityType.HOVERBOARD:
                 case EntityType.SMALL_DIGGER:
@@ -108,7 +108,7 @@ export class ObjectListLoader {
                     const vehicle = VehicleFactory.createVehicleFromType(entityType, worldMgr)
                     vehicle.sceneEntity.changeActivity()
                     vehicle.sceneEntity.makeSelectable(vehicle)
-                    vehicle.sceneEntity.addToScene(worldPos, radHeading + Math.PI)
+                    vehicle.sceneEntity.addToScene(worldPos, headingRad + Math.PI)
                     if (vehicle.sceneEntity.visible) {
                         entityMgr.vehicles.push(vehicle)
                     } else {

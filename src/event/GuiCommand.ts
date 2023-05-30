@@ -14,13 +14,8 @@ export class GuiCommand extends GameEvent {
 }
 
 export class ChangeCursor extends GuiCommand {
-    cursor: Cursor
-    timeout: number
-
-    constructor(cursor: Cursor, timeout: number = null) {
+    constructor(readonly cursor: Cursor, readonly timeout: number = null) {
         super(EventKey.COMMAND_CHANGE_CURSOR)
-        this.cursor = cursor
-        this.timeout = timeout
     }
 }
 

@@ -241,7 +241,7 @@ export class NerpRunner {
         }
         const msg = this.messages[messageNumber - 1]
         if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt))
-        if (msg.snd) console.log(msg.snd) // TODO snd files reside in sounds/streamed/ which is currently not loaded :(
+        if (msg.snd) console.log(`TODO Load sounds from DATA and play message`, msg.snd) // TODO snd files reside in sounds/streamed/ which is not included in WAD files :(
     }
 
     setCameraGotoTutorial(arg1) {

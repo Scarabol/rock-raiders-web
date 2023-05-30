@@ -42,9 +42,11 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.6.0 - Complete Base Systems
 
-- Complete ECS systems integration
-- Refactor job system to allow multi-carry jobs
 - Refactor upgrade system and make vehicles upgradeable
+- Large digger and walker digger moving into wall for drilling
+- Implement buildings with improved ECS and animation system
+- Implement raiders with improved ECS and animation system
+- Refactor job system to allow multi-carry jobs
 - Raider get tired while carrying and eat at barracks
 - Raider scatter on right-click move
 
@@ -73,8 +75,17 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - First-Person and shoulder camera
 - Geologists and scanner
 - Background music and soundtrack
-- Tutorial levels
-- Fix lighting and finalize game atmosphere
+- Tutorial levels and helper features
+- Show mini-figure with mission briefing
+- Show dependencies as tooltip for buildings/vehicles
+- Add Beam-up animation sequence on successful level end
+- Add screen shake for exploding dynamites
+- Add Work sounds for jobs
+- Show loading screen when starting a level
+- Add rockfall transition when switching in main menu
+- Show misc anim LavaErosionSmoke over lava
+- Add water and lava animation (texture UV coords tearing)
+- Change cursor to X when over disabled IconPanelButtons
 
 ### Polishing (v0.9.0)
 
@@ -84,36 +95,19 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Nice to have
 
-- Dependency tooltips for buildings/vehicles not shown
+- Seams do not show tear down progress while drilling
 - Camera can glitch through terrain
 - Add rotation speed to entities and play turnLeft, turnRight animations
-- Large digger and walker digger moving into wall for drilling
-- Beamup animation sequence missing on successful level end
-- Screen shake missing for exploding dynamites
 
 ### Cosmetics
 
-- Cursor may not react on targeted object
-- Add water and lava animation (texture UV coords tearing)
-- Change cursor to X when over disabled IconPanelButtons
-- Add captain flh animation to mission briefing
-- Seams do not show tear down progress while drilling
-- Driver may sit wrong way around on vehicle
-- Numbers above dynamite not shown as sprite (same issue as with sleeping rockies?)
 - Level 11 spams console with unreachable jobs
-- Work sounds missing for most of the jobs
-- Show loading screen when starting a level
-- Add rockfall transition when switching in main menu
 - Two buttons in priority list can be hovered/pressed/released at the same time
-- Show misc anim LavaErosionSmoke over lava
 
 ## Technical Debt
 
 - Uplift configuration parsing into loading process for type safety and error resilience
-- Make animated meshes cloneable and move their creation into ResourceManager within loading screen for performance
-- Make AnimClip cloneable (requires separation too, because classes mixes state and type of animations)
-- Cleanup meshes and scene after level ends (currently leaks resources)
-- Move threejs rendering to separate worker (blocked until [worker support for audio](https://github.com/WebAudio/web-audio-api/issues/2423) is solved, so [AudioContext](https://github.com/mrdoob/three.js/blob/master/src/audio/AudioContext.js) does not need _window_ anymore)
+- Move three.js rendering to separate worker (blocked until [worker support for audio](https://github.com/WebAudio/web-audio-api/issues/2423) is solved, so [AudioContext](https://github.com/mrdoob/three.js/blob/master/src/audio/AudioContext.js) does not need _window_ anymore)
 
 ## Development
 

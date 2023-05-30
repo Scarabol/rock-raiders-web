@@ -16,12 +16,13 @@ import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/Animation
 type MonsterEntityType = EntityType.SMALL_SPIDER | EntityType.BAT | EntityType.ICE_MONSTER | EntityType.LAVA_MONSTER | EntityType.ROCK_MONSTER
 
 export class MonsterSpawner {
-    static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, radHeading: number): void {
+    static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): void {
         const entity = worldMgr.ecs.addEntity()
         const floorPosition = worldMgr.sceneMgr.getFloorPosition(worldPos)
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
         const positionComponent = worldMgr.ecs.addComponent(entity, new PositionComponent(floorPosition, surface))
-        let sceneEntity: AnimatedMeshGroup = new AnimatedMeshGroup()
+        const sceneEntity: AnimatedMeshGroup = new AnimatedMeshGroup()
+        worldMgr.ecs.addComponent(entity, new SceneEntityComponent(sceneEntity))
         switch (entityType) {
             case EntityType.SMALL_SPIDER:
                 positionComponent.floorOffset = 1
@@ -40,13 +41,13 @@ export class MonsterSpawner {
                 worldMgr.ecs.addComponent(entity, new RandomMoveComponent(ResourceManager.configuration.stats.bat, 0))
                 break
             case EntityType.ICE_MONSTER:
-                sceneEntity = this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster')
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster')
                 break
             case EntityType.LAVA_MONSTER:
-                sceneEntity = this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/LavaMonster')
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/LavaMonster')
                 break
             case EntityType.ROCK_MONSTER:
-                sceneEntity = this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster')
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster')
                 break
             default:
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
@@ -55,12 +56,11 @@ export class MonsterSpawner {
             sceneEntity.position.copy(worldMgr.sceneMgr.getFloorPosition(worldPos))
             sceneEntity.position.y += positionComponent.floorOffset
         }
-        if (radHeading !== undefined && radHeading !== null) {
-            sceneEntity.rotation.y = radHeading
+        if (headingRad !== undefined && headingRad !== null) {
+            sceneEntity.rotation.y = headingRad
         }
         sceneEntity.visible = surface.discovered
         worldMgr.sceneMgr.addMeshGroup(sceneEntity)
-        worldMgr.ecs.addComponent(entity, new SceneEntityComponent(sceneEntity))
         worldMgr.entityMgr.addEntity(entity, entityType)
     }
 
@@ -70,6 +70,5 @@ export class MonsterSpawner {
         worldMgr.ecs.addComponent(entity, new EntityMapMarkerComponent(MapMarkerType.MONSTER))
         worldMgr.ecs.addComponent(entity, new HealthComponent())
         worldMgr.ecs.addComponent(entity, new HealthBarComponent(24, 10, null, false))
-        return sceneEntity
     }
 }
