@@ -27,7 +27,7 @@ export class AnimationEntityType {
     lowPolyBodies: Map<string, SceneMesh> = new Map()
     mediumPolyBodies: Map<string, SceneMesh> = new Map()
     highPolyBodies: Map<string, SceneMesh> = new Map()
-    fPPolyBodies: Map<string, SceneMesh> = new Map()
+    fPPolyBodies: Map<string, Map<string, SceneMesh>> = new Map()
     animations: Map<string, AnimClip> = new Map()
     upgradesByLevel: Map<string, AnimationEntityUpgrade[]> = new Map()
     firstAnimationName: string = null

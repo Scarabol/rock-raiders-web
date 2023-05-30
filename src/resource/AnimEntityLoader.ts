@@ -69,7 +69,9 @@ export class AnimEntityLoader {
             } else if (rootKey.equalsIgnoreCase('LowPoly')) {
                 this.parsePolyBodies(value, this.entityType.lowPolyBodies)
             } else if (rootKey.equalsIgnoreCase('FPPoly')) {
-                this.parsePolyBodies(value, this.entityType.fPPolyBodies)
+                ['Camera1', 'Camera2'].forEach((cameraName) => {
+                    this.parsePolyBodies(iGet(value, cameraName), this.entityType.fPPolyBodies.getOrUpdate(cameraName, () => new Map()))
+                })
             } else if (rootKey.equalsIgnoreCase('Activities')) {
                 this.parseActivities(value)
             } else if (rootKey.equalsIgnoreCase('Upgrades')) {
@@ -105,7 +107,9 @@ export class AnimEntityLoader {
     private parsePolyBodies(value, polyBodies: Map<string, SceneMesh>) {
         Object.keys(value).forEach((key) => {
             const polyKey = key.startsWith('!') ? key.slice(1) : key
-            const mesh = ResourceManager.getLwoModel(this.path + value[key])
+            const fileName = value[key]
+            if ('NULL'.equalsIgnoreCase(fileName)) return
+            const mesh = ResourceManager.getLwoModel(this.path + fileName)
             polyBodies.set(polyKey.toLowerCase(), mesh)
         })
     }
