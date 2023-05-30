@@ -34,6 +34,7 @@ export class ChangeTooltip extends GuiCommand {
         readonly timeoutSfx?: number,
         raider?: Raider,
         site?: BuildingSite,
+        readonly buildingMissingOreForUpgrade?: number,
     ) {
         super(EventKey.COMMAND_CHANGE_TOOLTIP)
         if (raider) {

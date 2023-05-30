@@ -130,17 +130,18 @@ export class CursorLayer extends ScreenLayer {
     }
 
     private changeTooltip(event: ChangeTooltip) {
+        let tooltipImg = null
         if (event.numToolSlots || event.tools || event.trainings) {
-            const tooltipImg = ResourceManager.getRaiderTooltipSprite(event.tooltipText || '',
+            tooltipImg = ResourceManager.getRaiderTooltipSprite(event.tooltipText || '',
                 event.numToolSlots || 0, event.tools || [], event.trainings || [])
-            this.setTooltipImg(tooltipImg)
         } else if (event.crystals || event.ores || event.bricks) {
-            const tooltipImg = ResourceManager.getBuildingSiteTooltipSprite(event.tooltipText, event.crystals, event.ores, event.bricks)
-            this.setTooltipImg(tooltipImg)
+            tooltipImg = ResourceManager.getBuildingSiteTooltipSprite(event.tooltipText, event.crystals, event.ores, event.bricks)
+        } else if (event.buildingMissingOreForUpgrade) {
+            tooltipImg = ResourceManager.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, event.buildingMissingOreForUpgrade)
         } else if (event.tooltipText) {
-            const tooltipImg = ResourceManager.getTooltipSprite(event.tooltipText)
-            this.setTooltipImg(tooltipImg)
+            tooltipImg = ResourceManager.getTooltipSprite(event.tooltipText)
         }
+        if (tooltipImg) this.setTooltipImg(tooltipImg)
     }
 
     private setTooltipImg(tooltipImg: SpriteImage) {

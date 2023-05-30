@@ -176,6 +176,10 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         return !this.hasMaxLevel() && (GameState.numOre >= ResourceManager.configuration.main.buildingUpgradeCostOre || GameState.numBrick >= ResourceManager.configuration.main.buildingUpgradeCostStuds)
     }
 
+    missingOreForUpgrade(): number {
+        return Math.max(0, ResourceManager.configuration.main.buildingUpgradeCostOre - GameState.numOre)
+    }
+
     spawnMaterials(type: EntityType, quantity: number) {
         const material = []
         if (type === EntityType.CRYSTAL) {

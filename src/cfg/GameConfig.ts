@@ -23,6 +23,7 @@ export class GameConfig extends BaseConfig {
     dialog: DialogCfg = new DialogCfg()
     reward: RewardCfg = new RewardCfg()
     menu: GameMenuCfg = new GameMenuCfg()
+    toolTipInfo: Map<string, string> = new Map()
     surfaceTypeDescriptions: Map<string, string[]> = new Map()
     pointers: Map<string, string | string[]> = new Map()
     // interfaceImages: InterfaceImagesCfg = new InterfaceImagesCfg()
@@ -61,6 +62,8 @@ export class GameConfig extends BaseConfig {
             this.reward.setFromCfgObj(cfgValue)
         } else if ('Menu'.equalsIgnoreCase(unifiedKey)) {
             this.menu.setFromCfgObj(cfgValue)
+        } else if ('ToolTipInfo'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.toolTipInfo.set(cfgKey.toLowerCase(), parseLabel(value as string)))
         } else if ('SurfaceTypeDescriptions'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), value as string[]))
         } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {

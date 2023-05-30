@@ -155,6 +155,16 @@ export class ResourceManager extends ResourceCache {
         return this.wrapTooltipSprite([tooltipTextImage], crystalsTextImage, oresTextImage, bricksTextImage)
     }
 
+    static getBuildingMissingOreForUpgradeTooltipSprite(tooltipText: string, buildingMissingOreForUpgrade: number): SpriteImage {
+        const tooltipTextImage = this.getTooltipFont().createTextImage(ResourceManager.configuration.toolTipInfo.get('orerequiredtext') + ':')
+        const oresTextImage = []
+        const oreImg = ResourceManager.getImage(ResourceManager.configuration.tooltipIcons.get('ore'))
+        for (let c = 0; c < buildingMissingOreForUpgrade; c++) {
+            oresTextImage.push(oreImg)
+        }
+        return this.wrapTooltipSprite([tooltipTextImage], oresTextImage)
+    }
+
     private static wrapTooltipSprite(...rowsThenCols: SpriteImage[][]): SpriteImage {
         const margin = 2
         const padding = 2

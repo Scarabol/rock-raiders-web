@@ -43,6 +43,7 @@ export class SelectionChanged extends LocalEvent {
     canDoTraining: Map<RaiderTraining, boolean> = new Map()
     everyHasTool: Map<RaiderTool, boolean> = new Map()
     buildingCanUpgrade: boolean
+    buildingMissingOreForUpgrade: number
     buildingCanSwitchPower: boolean
     buildingPowerSwitchState: boolean
     vehicleHasCallManJob: boolean
@@ -67,6 +68,7 @@ export class SelectionChanged extends LocalEvent {
         RaiderTrainings.values.forEach((training) => this.canDoTraining.set(training, entityMgr.hasTrainingSite(training) && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
         RaiderTools.values.forEach((tool) => this.everyHasTool.set(tool, !!entityMgr.selection.raiders.every((r) => r.hasTool(tool))))
         this.buildingCanUpgrade = entityMgr.selection.building?.canUpgrade()
+        this.buildingMissingOreForUpgrade = entityMgr.selection.building?.missingOreForUpgrade()
         this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.SelfPowered && !entityMgr.selection.building?.stats.PowerBuilding
         this.buildingPowerSwitchState = entityMgr.selection.building?.powerSwitch
         this.vehicleHasCallManJob = entityMgr.selection.vehicles.every((v) => !!v.callManJob)
