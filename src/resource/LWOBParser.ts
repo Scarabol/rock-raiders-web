@@ -176,7 +176,7 @@ export class LWOBParser {
                     indices[currentIndex++] = faceIndices[3]
                     break
                 default:
-                    console.warn(`Expected face with 3 or 4 indices but got ${numIndices} instead`)
+                    if (!DEV_MODE) console.warn(`Expected face with 3 or 4 indices but got ${numIndices} instead`)
             }
             offset += 2 + (numIndices * 2) + 2
         }

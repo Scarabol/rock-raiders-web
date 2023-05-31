@@ -13,6 +13,7 @@ import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpParser } from './NerpParser'
 import { NerpScript } from './NerpScript'
+import { DEV_MODE } from '../params'
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
@@ -225,7 +226,7 @@ export class NerpRunner {
     }
 
     getMessageTimer() {
-        console.warn('getMessageTimer not implemented, immediately returning 0')
+        if (!DEV_MODE) console.warn('getMessageTimer not implemented, immediately returning 0')
         return 0 // TODO return remaining amount of time needed to fully play WAV message
     }
 
@@ -241,7 +242,7 @@ export class NerpRunner {
         }
         const msg = this.messages[messageNumber - 1]
         if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt))
-        if (msg.snd) console.log(`TODO Load sounds from DATA and play message`, msg.snd) // TODO snd files reside in sounds/streamed/ which is not included in WAD files :(
+        if (msg.snd && !DEV_MODE) console.log(`TODO Load sounds from DATA and play message`, msg.snd) // TODO snd files reside in sounds/streamed/ which is not included in WAD files :(
     }
 
     setCameraGotoTutorial(arg1) {
