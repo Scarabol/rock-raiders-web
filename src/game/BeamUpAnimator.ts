@@ -2,14 +2,15 @@ import { EventBus } from '../event/EventBus'
 import { DeselectAll } from '../event/LocalEvents'
 import { NATIVE_FRAMERATE, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SceneEntity } from '../scene/SceneEntity'
-import { Disposable } from './model/Disposable'
 import { WorldManager } from './WorldManager'
 import { ResourceManager } from '../resource/ResourceManager'
 import { Sample } from '../audio/Sample'
 
-export interface BeamUpEntity extends Disposable {
+export interface BeamUpEntity {
     worldMgr: WorldManager
     sceneEntity: SceneEntity
+
+    disposeFromWorld()
 }
 
 export class BeamUpAnimator {

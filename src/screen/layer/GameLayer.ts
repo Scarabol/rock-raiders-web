@@ -28,7 +28,7 @@ export class GameLayer extends ScreenLayer {
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
     private readonly beforeUnloadListener = (event: BeforeUnloadEvent): string => {
         if (DEV_MODE) return undefined
-        // TODO save complete game state in local storage and allow page reload
+        // XXX save complete game state in local storage and allow page reload
         event.preventDefault()
         return event.returnValue = 'Level progress will be lost!'
     }
@@ -83,7 +83,7 @@ export class GameLayer extends ScreenLayer {
             if (targetEntityType) {
                 const objectKey = EntityType[targetEntityType].toString().replace('_', '').toLowerCase()
                 const tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
-                if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null,  cursorTarget.raider))
+                if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, cursorTarget.raider))
             }
             this.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
             this.entityMgr.selection.doubleSelect?.sceneEntity.pointLaserAt(cursorTarget.intersectionPoint)

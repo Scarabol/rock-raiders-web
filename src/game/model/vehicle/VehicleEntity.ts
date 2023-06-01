@@ -9,7 +9,6 @@ import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
-import { Disposable } from '../Disposable'
 import { EntityStep } from '../EntityStep'
 import { EntityType } from '../EntityType'
 import { Job } from '../job/Job'
@@ -32,7 +31,7 @@ import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { GameEntity } from '../../ECS'
 
-export class VehicleEntity implements Selectable, BeamUpEntity, Updatable, Disposable {
+export class VehicleEntity implements Selectable, BeamUpEntity, Updatable {
     readonly entityType: EntityType
     readonly worldMgr: WorldManager
     readonly entity: GameEntity

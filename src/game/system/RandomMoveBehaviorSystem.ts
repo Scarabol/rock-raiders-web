@@ -21,9 +21,7 @@ export class RandomMoveBehaviorSystem extends AbstractGameSystem {
                     && (n.surfaceType !== SurfaceType.LAVA5 || randomMoveComponent.crossLava)
                     && (n.surfaceType !== SurfaceType.WATER || randomMoveComponent.crossWater))
                     , positionComponent.surface].random()
-                const worldTargetComponent = new WorldTargetComponent()
-                worldTargetComponent.position.copy(targetSurface.getRandomPosition())
-                worldTargetComponent.radiusSq = 1
+                const worldTargetComponent = new WorldTargetComponent(targetSurface.getRandomPosition(), 1)
                 this.ecs.addComponent(entity, worldTargetComponent)
             } catch (e) {
                 console.error(e)

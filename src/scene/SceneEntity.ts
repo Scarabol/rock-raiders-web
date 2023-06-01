@@ -7,9 +7,6 @@ import { Updatable } from '../game/model/Updateable'
 import { SceneManager } from '../game/SceneManager'
 import { SelectionFrameSprite } from './SelectionFrameSprite'
 
-/**
- * @deprecated
- */
 export class SceneEntity {
     readonly updatableChildren: Updatable[] = []
 

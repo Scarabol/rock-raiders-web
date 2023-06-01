@@ -1,5 +1,5 @@
 export enum RaiderTool {
-    NONE,
+    NONE = 0, // useful for truthiness checks
     DRILL,
     HAMMER,
     SHOVEL,

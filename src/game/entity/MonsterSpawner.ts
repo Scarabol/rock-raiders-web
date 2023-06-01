@@ -52,13 +52,9 @@ export class MonsterSpawner {
             default:
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
         }
-        if (worldPos) {
-            sceneEntity.position.copy(worldMgr.sceneMgr.getFloorPosition(worldPos))
-            sceneEntity.position.y += positionComponent.floorOffset
-        }
-        if (headingRad !== undefined && headingRad !== null) {
-            sceneEntity.rotation.y = headingRad
-        }
+        sceneEntity.position.copy(worldMgr.sceneMgr.getFloorPosition(worldPos))
+        sceneEntity.position.y += positionComponent.floorOffset
+        sceneEntity.rotation.y = headingRad
         sceneEntity.visible = surface.discovered
         worldMgr.sceneMgr.addMeshGroup(sceneEntity)
         worldMgr.entityMgr.addEntity(entity, entityType)

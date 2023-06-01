@@ -9,7 +9,6 @@ import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
 import { AnimationActivity, AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
-import { Disposable } from '../Disposable'
 import { EntityStep } from '../EntityStep'
 import { Job } from '../job/Job'
 import { JobState } from '../job/JobState'
@@ -28,7 +27,7 @@ import { GameEntity } from '../../ECS'
 import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
 
-export class Raider implements Selectable, BeamUpEntity, Updatable, Disposable {
+export class Raider implements Selectable, BeamUpEntity, Updatable {
     readonly entityType: EntityType = EntityType.PILOT
     readonly entity: GameEntity
     worldMgr: WorldManager

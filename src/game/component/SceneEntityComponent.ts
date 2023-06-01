@@ -4,6 +4,8 @@ import { Vector2, Vector3 } from 'three'
 import { AnimEntityActivity } from '../model/anim/AnimationActivity'
 
 export class SceneEntityComponent extends AbstractGameComponent {
+    readonly lookAt: Vector3 = new Vector3()
+
     constructor(readonly sceneEntity: AnimatedMeshGroup) {
         super()
     }
@@ -15,6 +17,7 @@ export class SceneEntityComponent extends AbstractGameComponent {
     }
 
     headTowards(location: Vector2) {
-        this.sceneEntity.lookAt(new Vector3(location.x, this.sceneEntity.position.y, location.y)) // XXX externalize look at vector
+        this.lookAt.set(location.x, this.sceneEntity.position.y, location.y)
+        this.sceneEntity.lookAt(this.lookAt)
     }
 }

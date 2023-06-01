@@ -90,6 +90,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Unlock levels only after linked levels are completed
 - Overwrite Main Menu Logo with "Nuke Saves & Assets Cache" and "Nuke ALL Caches"
 - Move camera with click on mini map
+- Use same team for all missions and add names to raiders
 
 ### Polishing (v0.9.0)
 

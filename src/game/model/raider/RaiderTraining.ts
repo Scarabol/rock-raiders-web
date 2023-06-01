@@ -1,5 +1,5 @@
 export enum RaiderTraining {
-    NONE,
+    NONE = 0, // useful for truthiness checks
     DRIVER,
     ENGINEER,
     GEOLOGIST,

@@ -6,7 +6,6 @@ import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingSite } from './model/building/BuildingSite'
-import { Disposable } from './model/Disposable'
 import { EntityType } from './model/EntityType'
 import { GameSelection } from './model/GameSelection'
 import { Surface } from './model/map/Surface'
@@ -106,7 +105,7 @@ export class EntityManager {
         this.disposeEntities(this.undiscoveredSpiders)
     }
 
-    private static disposeAll(list: Disposable[]) {
+    private static disposeAll(list: {disposeFromWorld: () => unknown}[]) {
         const copy = [...list]
         copy.forEach((e) => e.disposeFromWorld())
         list.length = 0
