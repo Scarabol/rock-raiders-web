@@ -4,23 +4,30 @@ import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
 import { ResourceManager } from '../resource/ResourceManager'
 import { getPath } from '../core/Util'
+import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 
 export class AnimatedMeshGroup extends Group implements Updatable {
     readonly animationData: AnimEntityData[] = []
     readonly animationMixers: AnimationMixer[] = []
     readonly meshesByLName: Map<string, SceneMesh[]> = new Map()
     readonly installedUpgrades: { parent: Object3D, child: AnimatedMeshGroup }[] = []
+    readonly animationParent: Group = new Group()
     upgradeLevel: string = '0000'
     currentAnimation: string
-    driverParent: SceneMesh = null
-    driver: SceneMesh = null
+    driverParent: Object3D = null
+    driver: Object3D = null
+
+    constructor() {
+        super()
+        this.add(this.animationParent)
+    }
 
     addAnimated(animatedData: AnimEntityData) {
         this.animationData.add(animatedData)
-        this.scale.setScalar(this.animationData.reduce((prev, b) => prev * (b.scale || 1), 1))
+        this.animationParent.scale.setScalar(this.animationData.reduce((prev, b) => prev * (b.scale || 1), 1))
     }
 
-    addDriver(driver: SceneMesh) {
+    addDriver(driver: Object3D) {
         if (!this.driverParent) return
         if (this.driver !== driver) this.removeDriver()
         this.driver = driver
@@ -37,29 +44,24 @@ export class AnimatedMeshGroup extends Group implements Updatable {
         this.driver = null
     }
 
-    clear(): this {
-        super.clear()
+    removeAll() {
+        this.animationParent.clear()
         this.animationMixers.length = 0
         this.meshesByLName.clear()
         this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
         this.installedUpgrades.length = 0
         this.removeDriver()
         this.driverParent = null
-        return this
     }
 
     setAnimation(animationName: string, onAnimationDone?: () => unknown) {
         if (this.currentAnimation === animationName) return
-        const previousAnimationName = this.currentAnimation
         this.currentAnimation = animationName
-        if (this.animationData.length > 0) this.clear()
+        if (this.animationData.length > 0) this.removeAll()
+        this.driverParent = this.animationParent
         this.animationData.forEach((animEntityData) => {
-            let animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
-            if (!animData) {
-                console.warn(`Could not find animation with name '${animationName}'. Possible options are: ${animEntityData.animations.map((a) => a.name)}`)
-                if (!previousAnimationName) throw new Error(`Unknown animation '${animationName}' and no previous animation either`)
-                animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(previousAnimationName))
-            }
+            const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
+                ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
             const lwscData = ResourceManager.getLwscData(animData.file)
             const meshList = lwscData.objects.map((obj) => {
                 let mesh: SceneMesh
@@ -71,17 +73,14 @@ export class AnimatedMeshGroup extends Group implements Updatable {
                 mesh.name = obj.lowerName
                 const meshes = this.meshesByLName.getOrUpdate(mesh.name.toLowerCase(), () => [])
                 meshes.add(mesh)
-                if (mesh.name.equalsIgnoreCase(animEntityData.driverNullName)) {
-                    console.log(`Driver seat ${animEntityData.driverNullName} found!`)
-                    this.driverParent = mesh
-                }
+                if (mesh.name.equalsIgnoreCase(animEntityData.driverNullName)) this.driverParent = mesh
                 return mesh
             })
             // associate child meshes with parents
             lwscData.objects.forEach((obj, index) => {
                 const mesh = meshList[index]
                 if (obj.parentObjInd === 0) { // index is 1 based, 0 means no parent
-                    this.add(mesh)
+                    this.animationParent.add(mesh)
                 } else {
                     meshList[obj.parentObjInd - 1].add(mesh)
                 }
@@ -101,13 +100,13 @@ export class AnimatedMeshGroup extends Group implements Updatable {
             if (animEntityData.wheelMesh && animEntityData.wheelNullName) {
                 const wheelParentMesh = this.meshesByLName.getOrUpdate(animEntityData.wheelNullName, () => [])
                 if (wheelParentMesh.length < 1) {
-                    console.error(`Could not find wheel parent ${animEntityData.wheelNullName} in ${this.meshesByLName.keys()}`)
+                    console.error(`Could not find wheel parent ${animEntityData.wheelNullName} in ${Array.from(this.meshesByLName.keys())}`)
                     return
                 }
                 wheelParentMesh.forEach((p) => p.add(ResourceManager.getLwoModel(animEntityData.wheelMesh)))
             }
         })
-        if (this.driver) this.driverParent?.add(this.driver)
+        if (this.driver) this.driverParent.add(this.driver)
         this.reinstallAllUpgrades()
     }
 
@@ -121,7 +120,7 @@ export class AnimatedMeshGroup extends Group implements Updatable {
 
     reinstallAllUpgrades() {
         this.animationData.forEach((animEntityData) => {
-            const upgrades = animEntityData.upgradesByLevel.get(this.upgradeLevel) ?? []
+            const upgrades = animEntityData.upgradesByLevel.get(this.upgradeLevel) ?? animEntityData.upgradesByLevel.get('0000') ?? []
             upgrades.forEach((upgrade) => {
                 const parent = this.meshesByLName.get(upgrade.parentNullName.toLowerCase())?.[upgrade.parentNullIndex]
                 if (!parent) {
@@ -139,7 +138,7 @@ export class AnimatedMeshGroup extends Group implements Updatable {
                     if (!mesh) {
                         console.error(`Could not get mesh for ${upgrade.lNameType}`)
                     } else {
-                        upgradeMesh.add(mesh)
+                        upgradeMesh.animationParent.add(mesh)
                     }
                 }
                 upgradeMesh.upgradeLevel = this.upgradeLevel
