@@ -86,9 +86,7 @@ export class ResourceManager extends ResourceCache {
     }
 
     static getLwoModel(lwoFilepath: string, entityPath: string = null): SceneMesh {
-        if (!lwoFilepath.endsWith('.lwo')) {
-            lwoFilepath += '.lwo'
-        }
+        if (!lwoFilepath.endsWith('.lwo')) lwoFilepath += '.lwo'
         return this.lwoCache.getOrUpdate(lwoFilepath.toLowerCase(), () => {
             const lwoBuffer = ResourceManager.getResource(lwoFilepath)
             if (!lwoBuffer) {
@@ -110,6 +108,7 @@ export class ResourceManager extends ResourceCache {
     }
 
     static getLwscData(lwscFilepath: string): LWSCData {
+        if (!lwscFilepath.endsWith('.lws')) lwscFilepath += '.lws'
         return this.lwscCache.getOrUpdate(lwscFilepath.toLowerCase(), () => {
             const lwscContent = ResourceManager.getResource(lwscFilepath)
             if (!lwscContent) throw new Error(`Could not get LWSC data for '${lwscFilepath}'`)
