@@ -3,9 +3,8 @@ import { EventBus } from '../../event/EventBus'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { DeselectAll, SelectionChanged } from '../../event/LocalEvents'
-import { EntityManager } from '../../game/EntityManager'
+import { WorldManager } from '../../game/WorldManager'
 import { GameSelection } from '../../game/model/GameSelection'
-import { SceneManager } from '../../game/SceneManager'
 import { AnimationFrame } from '../AnimationFrame'
 import { ScreenLayer } from './ScreenLayer'
 import { SelectionRaycaster } from '../../scene/SelectionRaycaster'
@@ -13,8 +12,7 @@ import { Vector2 } from 'three'
 
 export class SelectionLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame
-    sceneMgr: SceneManager
-    entityMgr: EntityManager
+    worldMgr: WorldManager
     selectionRect: Rect = null
 
     constructor() {
@@ -40,7 +38,7 @@ export class SelectionLayer extends ScreenLayer {
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
-        if (this.sceneMgr.hasBuildModeSelection()) return false
+        if (this.worldMgr.sceneMgr.hasBuildModeSelection()) return false
         if (event.eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.MAIN) return this.startSelection(event.canvasX, event.canvasY)
         } else if (event.eventEnum === POINTER_EVENT.MOVE) {
@@ -74,16 +72,16 @@ export class SelectionLayer extends ScreenLayer {
         if (Math.abs(screenX - this.selectionRect.x) < 5 && Math.abs(screenY - this.selectionRect.y) < 5) {
             const x = (this.selectionRect.x + screenX) / this.canvas.width - 1
             const y = -(this.selectionRect.y + screenY) / this.canvas.height + 1
-            entities = new SelectionRaycaster(this.sceneMgr, this.entityMgr).getSelectionByRay(new Vector2(x, y))
+            entities = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y))
         } else {
             const r1x = (this.selectionRect.x / this.canvas.width) * 2 - 1
             const r1y = -(this.selectionRect.y / this.canvas.height) * 2 + 1
             const r2x = (screenX / this.canvas.width) * 2 - 1
             const r2y = -(screenY / this.canvas.height) * 2 + 1
-            entities = this.sceneMgr.getEntitiesInFrustum(r1x, r1y, r2x, r2y)
+            entities = this.worldMgr.sceneMgr.getEntitiesInFrustum(r1x, r1y, r2x, r2y)
         }
-        this.entityMgr.selection.set(entities)
-        EventBus.publishEvent(this.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.entityMgr))
+        this.worldMgr.entityMgr.selection.set(entities)
+        EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
         this.selectionRect = null
         this.animationFrame.redraw()
         return true

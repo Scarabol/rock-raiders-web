@@ -43,10 +43,10 @@ export class GameScreen {
         this.worldMgr.sceneMgr = this.sceneMgr
         this.worldMgr.entityMgr = this.entityMgr
         this.worldMgr.onLevelEnd = (result) => this.onGameResult(result)
+        this.gameLayer.worldMgr = this.worldMgr
         this.gameLayer.sceneMgr = this.sceneMgr
         this.gameLayer.entityMgr = this.entityMgr
-        this.selectionLayer.sceneMgr = this.sceneMgr
-        this.selectionLayer.entityMgr = this.entityMgr
+        this.selectionLayer.worldMgr = this.worldMgr
         this.guiLayer.entityMgr = this.entityMgr
         this.overlayLayer.entityMgr = this.entityMgr
         this.guiMgr = new GuiManager(this.worldMgr)

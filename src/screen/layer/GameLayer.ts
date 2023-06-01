@@ -21,8 +21,10 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { CursorTarget, SelectionRaycaster } from '../../scene/SelectionRaycaster'
 import { MaterialEntity } from '../../game/model/material/MaterialEntity'
 import { BuildPlacementMarker } from '../../game/model/building/BuildPlacementMarker'
+import { WorldManager } from '../../game/WorldManager'
 
 export class GameLayer extends ScreenLayer {
+    worldMgr: WorldManager
     sceneMgr: SceneManager
     entityMgr: EntityManager
     private rightDown: { x: number, y: number } = {x: 0, y: 0}
@@ -39,7 +41,7 @@ export class GameLayer extends ScreenLayer {
         this.canvas.style.cursor = 'none' // this cursor is effective, when OrbitControls captures the pointer during movements
         EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
             if (this.active) {
-                const cursorTarget = new SelectionRaycaster(this.sceneMgr, this.entityMgr).getFirstCursorTarget(this.cursorRelativePos, true)
+                const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, true)
                 EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
             }
         })
@@ -64,7 +66,7 @@ export class GameLayer extends ScreenLayer {
         this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
         this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
         if (event.eventEnum === POINTER_EVENT.MOVE) {
-            const cursorTarget = new SelectionRaycaster(this.sceneMgr, this.entityMgr).getFirstCursorTarget(this.cursorRelativePos, true)
+            const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, true)
             EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
             if (cursorTarget.intersectionPoint) this.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
             if (cursorTarget.surface) {
@@ -79,9 +81,8 @@ export class GameLayer extends ScreenLayer {
                     }
                 }
             }
-            const targetEntityType = cursorTarget.raider?.entityType || cursorTarget.vehicle?.entityType || cursorTarget.building?.entityType
-            if (targetEntityType) {
-                const objectKey = EntityType[targetEntityType].toString().replace('_', '').toLowerCase()
+            if (cursorTarget.entityType) {
+                const objectKey = EntityType[cursorTarget.entityType].toString().replace('_', '').toLowerCase()
                 const tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
                 if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, cursorTarget.raider))
             }
@@ -107,29 +108,28 @@ export class GameLayer extends ScreenLayer {
                 if (this.sceneMgr.hasBuildModeSelection()) {
                     this.sceneMgr.setBuildModeSelection(null)
                 } else if (this.entityMgr.selection.raiders.length > 0 || this.entityMgr.selection.vehicles.length > 0) {
-                    const selection = new SelectionRaycaster(this.sceneMgr, this.entityMgr)
-                        .getFirstCursorTarget(this.cursorRelativePos, false)
-                    this.handleSecondaryClickForSelection(selection)
+                    this.handleSecondaryClickWithSelection()
                 }
             }
         }
     }
 
-    handleSecondaryClickForSelection(selection: CursorTarget) {
-        if (selection.vehicle) {
-            this.handleSecondaryClickForVehicle(selection)
-        } else if (selection.material) {
-            this.entityMgr.selection.assignCarryJob(selection.material)
+    handleSecondaryClickWithSelection() {
+        const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, false)
+        if (cursorTarget.vehicle) {
+            this.handleSecondaryClickForVehicle(cursorTarget)
+        } else if (cursorTarget.material) {
+            this.entityMgr.selection.assignCarryJob(cursorTarget.material)
             if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
-        } else if (selection.surface) {
-            if (this.entityMgr.selection.canDrill(selection.surface)) {
-                const drillJob = selection.surface.setupDrillJob()
+        } else if (cursorTarget.surface) {
+            if (this.entityMgr.selection.canDrill(cursorTarget.surface)) {
+                const drillJob = cursorTarget.surface.setupDrillJob()
                 this.entityMgr.selection.assignSurfaceJob(drillJob)
-            } else if (this.entityMgr.selection.canClear() && selection.surface.hasRubble()) {
-                const clearJob = selection.surface.setupClearRubbleJob()
+            } else if (this.entityMgr.selection.canClear() && cursorTarget.surface.hasRubble()) {
+                const clearJob = cursorTarget.surface.setupClearRubbleJob()
                 this.entityMgr.selection.assignSurfaceJob(clearJob)
-            } else if (this.entityMgr.selection.canMove() && selection.surface.isWalkable()) {
-                this.entityMgr.selection.assignMoveJob(selection.intersectionPoint)
+            } else if (this.entityMgr.selection.canMove() && cursorTarget.surface.isWalkable()) {
+                this.entityMgr.selection.assignMoveJob(cursorTarget.intersectionPoint)
             }
             if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
         }
