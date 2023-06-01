@@ -1,4 +1,4 @@
-import { Cursor } from '../../../resource/Cursor'
+import { Cursor } from '../../resource/Cursor'
 
 export class SurfaceType {
     name: string // human-readable config name

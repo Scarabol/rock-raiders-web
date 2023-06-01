@@ -1,6 +1,6 @@
 import { AbstractGameComponent } from '../ECS'
 import { Vector3 } from 'three'
-import { Surface } from '../model/map/Surface'
+import { Surface } from '../terrain/Surface'
 
 export class PositionComponent extends AbstractGameComponent {
     readonly position: Vector3 = new Vector3()

@@ -4,7 +4,7 @@ import { BarrierActivity, BuildingActivity, RaiderActivity } from './anim/Animat
 import { BuildingEntity } from './building/BuildingEntity'
 import { BuildingSite } from './building/BuildingSite'
 import { EntityType } from './EntityType'
-import { Surface } from './map/Surface'
+import { Surface } from '../terrain/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
 
 export class PathTarget {

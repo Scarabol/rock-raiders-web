@@ -1,5 +1,5 @@
 import { Vector2 } from 'three'
-import { PathTarget } from '../PathTarget'
+import { PathTarget } from '../model/PathTarget'
 
 export class TerrainPath {
     target: PathTarget = null

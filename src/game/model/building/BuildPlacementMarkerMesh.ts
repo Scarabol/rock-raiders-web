@@ -1,7 +1,7 @@
 import { BufferGeometry, Mesh, MeshPhongMaterial, Vector2 } from 'three'
 import { TILESIZE } from '../../../params'
 import { SceneManager } from '../../SceneManager'
-import { Surface } from '../map/Surface'
+import { Surface } from '../../terrain/Surface'
 
 export class BuildPlacementMarkerMesh extends Mesh {
     sceneMgr: SceneManager

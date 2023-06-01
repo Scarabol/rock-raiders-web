@@ -1,5 +1,5 @@
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
-import { Surface } from '../../map/Surface'
+import { Surface } from '../../../terrain/Surface'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'

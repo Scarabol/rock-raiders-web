@@ -14,7 +14,7 @@ import { DEV_MODE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../par
 import { ScreenLayer } from './ScreenLayer'
 import { Cursor } from '../../resource/Cursor'
 import { EntityType } from '../../game/model/EntityType'
-import { Surface } from '../../game/model/map/Surface'
+import { Surface } from '../../game/terrain/Surface'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
 import { ResourceManager } from '../../resource/ResourceManager'

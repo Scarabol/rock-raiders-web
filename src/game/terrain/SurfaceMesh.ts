@@ -1,5 +1,5 @@
 import { Mesh, MeshPhongMaterial } from 'three'
-import { ResourceManager } from '../../../resource/ResourceManager'
+import { ResourceManager } from '../../resource/ResourceManager'
 import { SurfaceGeometry, SurfaceVertex } from './SurfaceGeometry'
 import { WALL_TYPE } from './WallType'
 

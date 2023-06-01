@@ -1,9 +1,9 @@
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { HEIGHT_MULTIPLIER, TILESIZE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
-import { Surface } from './model/map/Surface'
-import { SurfaceType } from './model/map/SurfaceType'
-import { Terrain } from './model/map/Terrain'
+import { Surface } from './terrain/Surface'
+import { SurfaceType } from './terrain/SurfaceType'
+import { Terrain } from './terrain/Terrain'
 import { WorldManager } from './WorldManager'
 
 export class TerrainLoader {

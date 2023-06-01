@@ -1,4 +1,4 @@
-import { Surface } from '../../game/model/map/Surface'
+import { Surface } from '../../game/terrain/Surface'
 
 export class MapSurfaceRect {
     x: number

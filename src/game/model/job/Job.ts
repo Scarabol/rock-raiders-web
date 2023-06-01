@@ -1,5 +1,5 @@
 import { AnimationActivity } from '../anim/AnimationActivity'
-import { Surface } from '../map/Surface'
+import { Surface } from '../../terrain/Surface'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
 import { Raider } from '../raider/Raider'

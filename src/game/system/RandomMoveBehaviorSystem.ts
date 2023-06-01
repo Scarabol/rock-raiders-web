@@ -2,7 +2,7 @@ import { AbstractGameSystem, GameEntity } from '../ECS'
 import { RandomMoveComponent } from '../component/RandomMoveComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { PositionComponent } from '../component/PositionComponent'
-import { SurfaceType } from '../model/map/SurfaceType'
+import { SurfaceType } from '../terrain/SurfaceType'
 
 export class RandomMoveBehaviorSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([RandomMoveComponent, PositionComponent])

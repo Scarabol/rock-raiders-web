@@ -1,4 +1,4 @@
-import { Updatable } from '../Updateable'
+import { Updatable } from '../model/Updateable'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 

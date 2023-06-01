@@ -1,7 +1,7 @@
 import { Box3, Group, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, Vector2, Vector3 } from 'three'
 import { PickSphereStats } from '../cfg/GameStatsCfg'
 import { AnimationActivity, AnimEntityActivity } from '../game/model/anim/AnimationActivity'
-import { Surface } from '../game/model/map/Surface'
+import { Surface } from '../game/terrain/Surface'
 import { Selectable } from '../game/model/Selectable'
 import { Updatable } from '../game/model/Updateable'
 import { SceneManager } from '../game/SceneManager'

@@ -1,6 +1,6 @@
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
-import { Surface } from '../../map/Surface'
-import { SurfaceType } from '../../map/SurfaceType'
+import { Surface } from '../../../terrain/Surface'
+import { SurfaceType } from '../../../terrain/SurfaceType'
 import { MaterialEntity } from '../../material/MaterialEntity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
