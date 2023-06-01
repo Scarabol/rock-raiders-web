@@ -59,14 +59,14 @@ export class ECS {
     worldMgr: WorldManager
     private entities = new Map<GameEntity, ComponentContainer>()
     private systems = new Map<AbstractGameSystem, Set<GameEntity>>()
-    private nextEntityID = 0
+    private nextEntityID = 1
     private entitiesToDestroy = new Array<GameEntity>()
     private dirtySystemsCare = new Map<Function, Set<AbstractGameSystem>>()
     private dirtyEntities = new Map<AbstractGameSystem, Set<GameEntity>>()
 
     public reset(): void {
         this.entities.clear()
-        this.nextEntityID = 0
+        this.nextEntityID = 1
         this.entitiesToDestroy.length = 0
         this.dirtyEntities.forEach((m) => m.clear())
     }
