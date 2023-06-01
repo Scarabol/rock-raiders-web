@@ -28,13 +28,13 @@ export class Teleport {
         entity.sceneEntity.addToScene(worldPosition, heading)
         entity.sceneEntity.playPositionalAudio(Sample[Sample.SND_teleport], false)
         entity.sceneEntity.changeActivity(RaiderActivity.TeleportIn, () => {
-            this.operating = false
             entity.sceneEntity.changeActivity()
             entity.sceneEntity.makeSelectable(entity)
             if (walkOutPos) entity.setJob(new MoveJob(walkOutPos))
             beamListing.remove(entity)
             listing.push(entity)
             EventBus.publishEvent(new RaidersAmountChangedEvent(entity.worldMgr.entityMgr))
+            this.operating = false
         })
         beamListing.push(entity)
     }
