@@ -19,6 +19,7 @@ import { TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { AnimatedMeshGroup } from '../scene/AnimatedMeshGroup'
+import { AnimationGroup } from '../scene/AnimationGroup'
 
 export class SceneManager implements Updatable {
     readonly audioListener: AudioListener
@@ -26,6 +27,7 @@ export class SceneManager implements Updatable {
     readonly renderer: SceneRenderer
     readonly controls: BirdViewControls
     readonly entities: (SceneEntity | AnimatedMeshGroup)[] = []
+    readonly miscAnims: AnimationGroup[] = []
     worldMgr: WorldManager
     scene: Scene
     ambientLight: AmbientLight
@@ -160,6 +162,7 @@ export class SceneManager implements Updatable {
     update(elapsedMs: number) {
         this.terrain.update(elapsedMs)
         this.entities.forEach((e) => updateSafe(e, elapsedMs))
+        this.miscAnims.forEach((a) => updateSafe(a, elapsedMs))
     }
 
     disposeScene() {
@@ -169,6 +172,8 @@ export class SceneManager implements Updatable {
         this.terrain = null
         this.cursor?.dispose()
         this.entities.length = 0
+        this.miscAnims.forEach((a) => a.dispose())
+        this.miscAnims.length = 0
     }
 
     resize(width: number, height: number) {
@@ -210,6 +215,16 @@ export class SceneManager implements Updatable {
     removeMeshGroup(meshGroup: AnimatedMeshGroup): void {
         this.entities.remove(meshGroup)
         this.scene.remove(meshGroup)
+    }
+
+    addMiscAnim(lwsFilename: string, position: Vector3, heading: number) {
+        const group = new AnimationGroup(lwsFilename, position, heading, () => {
+            this.miscAnims.remove(group)
+            this.scene.remove(group)
+            group.dispose()
+        })
+        this.miscAnims.add(group)
+        this.scene.add(group)
     }
 
     addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean = false): PositionalAudio {

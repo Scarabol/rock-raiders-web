@@ -31,7 +31,7 @@ export class Dynamite extends MaterialEntity {
         this.sceneEntity.changeActivity(DynamiteActivity.TickDown, () => {
             this.sceneEntity.disposeFromScene()
             this.targetSurface.collapse()
-            this.worldMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.sceneEntity.position, this.sceneEntity.getHeading())
+            this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.sceneEntity.position, this.sceneEntity.getHeading())
             this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Dynamite], false)
             // TODO damage raider, vehicle, buildings
         })

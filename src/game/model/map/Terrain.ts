@@ -148,7 +148,7 @@ export class Terrain {
         const fallInPosition = target.getCenterWorld()
         const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
         const rockFallAnimName = ResourceManager.configuration.rockFallStyles[this.rockFallStyle][3] // TODO not always pick "tunnel"
-        this.worldMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading)
+        this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading)
         source.playPositionalSample(Sample.SFX_RockBreak)
         target.makeRubble()
         EventBus.publishEvent(new LandslideEvent(target.getCenterWorld()))

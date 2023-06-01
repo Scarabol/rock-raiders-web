@@ -20,7 +20,7 @@ export class BeamUpAnimator {
         this.entity = entity
         this.counter = 6 * TILESIZE
         EventBus.publishEvent(new DeselectAll())
-        this.entity.worldMgr.addMiscAnim(ResourceManager.configuration.miscObjects.MiniTeleportUp, this.entity.sceneEntity.position, this.entity.sceneEntity.getHeading())
+        this.entity.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.MiniTeleportUp, this.entity.sceneEntity.position, this.entity.sceneEntity.getHeading())
         this.entity.sceneEntity.playPositionalAudio(Sample[Sample.SND_TeleUp], false)
     }
 

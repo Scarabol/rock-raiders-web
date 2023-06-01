@@ -4,7 +4,6 @@ import { EventKey } from '../event/EventKeyEnum'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged } from '../event/LocalEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
-import { AnimationGroup } from './model/anim/AnimationGroup'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingSite } from './model/building/BuildingSite'
 import { Disposable } from './model/Disposable'
@@ -44,7 +43,6 @@ export class EntityManager {
     vehiclesUndiscovered: VehicleEntity[] = []
     vehiclesInBeam: VehicleEntity[] = []
     completedBuildingSites: BuildingSite[] = []
-    miscAnims: AnimationGroup[] = []
 
     constructor() {
         // event handler must be placed here, because only this class knows the "actual" selection instance
@@ -78,7 +76,6 @@ export class EntityManager {
         this.vehiclesUndiscovered = []
         this.vehiclesInBeam = []
         this.completedBuildingSites = []
-        this.miscAnims = []
     }
 
     update(elapsedMs: number) {
@@ -89,7 +86,6 @@ export class EntityManager {
         this.vehicles.forEach((v) => updateSafe(v, elapsedMs))
         this.vehiclesInBeam.forEach((v) => updateSafe(v, elapsedMs))
         this.completedBuildingSites.forEach((b) => updateSafe(b, elapsedMs))
-        this.miscAnims.forEach((m) => updateSafe(m, elapsedMs))
     }
 
     stop() {
@@ -102,7 +98,6 @@ export class EntityManager {
         EntityManager.disposeAll(this.placedFences)
         EntityManager.disposeAll(this.vehicles)
         EntityManager.disposeAll(this.vehiclesInBeam)
-        EntityManager.disposeAll(this.miscAnims)
         this.disposeEntities(this.rockMonsters)
         this.disposeEntities(this.undiscoveredRockMonsters)
         this.disposeEntities(this.bats)

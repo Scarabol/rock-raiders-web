@@ -1,4 +1,4 @@
-import { Vector2, Vector3 } from 'three'
+import { Vector2 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearTimeoutSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
@@ -8,7 +8,6 @@ import { NerpRunner } from '../nerp/NerpRunner'
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
-import { AnimationGroup } from './model/anim/AnimationGroup'
 import { EntityType } from './model/EntityType'
 import { GameResultState } from './model/GameResult'
 import { GameState } from './model/GameState'
@@ -195,21 +194,5 @@ export class WorldManager {
         } catch (e) {
             console.error(e)
         }
-    }
-
-    addMiscAnim(lwsFilename: string, position: Vector3, heading: number): AnimationGroup {
-        if (!lwsFilename.endsWith('.lws')) {
-            lwsFilename += '.lws'
-        }
-        const grp = new AnimationGroup(lwsFilename, this.sceneMgr)
-        grp.position.copy(position)
-        grp.rotateOnAxis(new Vector3(0, 1, 0), heading)
-        this.sceneMgr.scene.add(grp)
-        this.entityMgr.miscAnims.push(grp)
-        grp.startAnimation(() => {
-            this.sceneMgr.scene.remove(grp)
-            this.entityMgr.miscAnims.remove(grp)
-        })
-        return grp
     }
 }
