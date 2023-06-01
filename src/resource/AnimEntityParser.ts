@@ -99,27 +99,27 @@ export class AnimEntityParser {
             if (rootKey.equalsIgnoreCase('Scale')) {
                 this.entityType.scale = Number(value)
             } else if (rootKey.equalsIgnoreCase('CarryNullName')) {
-                this.entityType.carryNullName = value
+                this.entityType.carryNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('CarryNullFrames')) {
                 this.entityType.carryNullFrames = Number(value)
             } else if (rootKey.equalsIgnoreCase('Shape')) {
                 if (this.verbose) console.warn('TODO Derive buildings shape from this value') // XXX derive buildings surfaces shape from this value
             } else if (rootKey.equalsIgnoreCase('DepositNullName')) {
-                this.entityType.depositNullName = value
+                this.entityType.depositNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('ToolNullName')) {
-                this.entityType.toolNullName = value
+                this.entityType.toolNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('WheelMesh')) {
                 if (!'NULL_OBJECT'.equalsIgnoreCase(value)) this.entityType.wheelMesh = this.path + value
             } else if (rootKey.equalsIgnoreCase('WheelRadius')) {
                 this.entityType.wheelRadius = Number(value)
             } else if (rootKey.equalsIgnoreCase('WheelNullName')) {
-                this.entityType.wheelNullName = value
+                this.entityType.wheelNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('DrillNullName')) {
-                this.entityType.drillNullName = value
+                this.entityType.drillNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('DriverNullName')) {
-                this.entityType.driverNullName = value
+                this.entityType.driverNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('CameraNullName')) {
-                this.entityType.cameraNullName = value
+                this.entityType.cameraNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('CameraNullFrames')) {
                 this.entityType.cameraNullFrames = Number(value)
             } else if (rootKey.equalsIgnoreCase('CameraFlipDir')) {
@@ -144,7 +144,7 @@ export class AnimEntityParser {
                         if (rootKey.equalsIgnoreCase('stand')) { // XXX workaround for walkerlegs.ae
                             this.parseActivityEntry(value, AnimEntityActivity.Stand)
                         } else {
-                            console.warn(`Parsing unlisted activity '${rootKey}'`)
+                            if (!DEV_MODE) console.warn(`Parsing unlisted activity '${rootKey}'`)
                             this.parseActivityEntry(value, rootKey)
                         }
                     } catch (e) {
@@ -154,7 +154,7 @@ export class AnimEntityParser {
             } else if (this.parseUpgradeEntry(rootKey, value)) {
                 if (!DEV_MODE) console.warn(`Entity has upgrade defined outside of Upgrades group`, value)
             } else if (rootKey.equalsIgnoreCase('FireNullName')) {
-                this.entityType.fireNullName = value
+                this.entityType.fireNullName = value.toLowerCase()
             } else if (rootKey.match(/^[xy]Pivot$/i)) {
                 iSet(this.entityType, rootKey, value)
             } else if (rootKey.equalsIgnoreCase('PivotMaxZ')) {
