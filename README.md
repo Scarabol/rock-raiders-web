@@ -92,7 +92,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Move camera with click on mini map
 - Use same team for all missions and add names to raiders
 
-### Polishing (v0.9.0)
+### v0.9.0 - Polishing
 
 - Fix all remaining bugs
 

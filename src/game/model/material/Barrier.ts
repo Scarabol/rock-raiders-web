@@ -1,4 +1,4 @@
-import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
+import { LegacyAnimatedSceneEntity } from '../../../scene/LegacyAnimatedSceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { BarrierActivity } from '../anim/AnimationActivity'
 import { BuildingSite } from '../building/BuildingSite'
@@ -13,7 +13,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 export class Barrier extends MaterialEntity {
     constructor(worldMgr: WorldManager, readonly location: BarrierLocation, readonly site: BuildingSite) {
         super(worldMgr, EntityType.BARRIER, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
-        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, ResourceManager.configuration.miscObjects.Barrier)
+        this.sceneEntity = new LegacyAnimatedSceneEntity(this.worldMgr.sceneMgr, ResourceManager.configuration.miscObjects.Barrier)
         this.sceneEntity.changeActivity()
     }
 

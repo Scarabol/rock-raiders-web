@@ -18,7 +18,7 @@ import { SceneEntity } from '../scene/SceneEntity'
 import { TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
-import { AnimatedMeshGroup } from '../scene/AnimatedMeshGroup'
+import { AnimatedSceneEntity } from '../scene/AnimatedSceneEntity'
 import { AnimationGroup } from '../scene/AnimationGroup'
 
 export class SceneManager implements Updatable {
@@ -26,7 +26,7 @@ export class SceneManager implements Updatable {
     readonly camera: BirdViewCamera
     readonly renderer: SceneRenderer
     readonly controls: BirdViewControls
-    readonly entities: (SceneEntity | AnimatedMeshGroup)[] = []
+    readonly entities: (SceneEntity | AnimatedSceneEntity)[] = []
     readonly miscAnims: AnimationGroup[] = []
     worldMgr: WorldManager
     scene: Scene
@@ -207,12 +207,12 @@ export class SceneManager implements Updatable {
         this.scene.remove(sceneEntity.group)
     }
 
-    addMeshGroup(meshGroup: AnimatedMeshGroup): void {
+    addMeshGroup(meshGroup: AnimatedSceneEntity): void {
         this.entities.add(meshGroup)
         this.scene.add(meshGroup)
     }
 
-    removeMeshGroup(meshGroup: AnimatedMeshGroup): void {
+    removeMeshGroup(meshGroup: AnimatedSceneEntity): void {
         this.entities.remove(meshGroup)
         this.scene.remove(meshGroup)
     }

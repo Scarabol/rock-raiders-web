@@ -27,7 +27,7 @@ import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { PositionComponent } from '../../component/PositionComponent'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
-import { SceneEntityComponent } from '../../component/SceneEntityComponent'
+import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 
 export class Raider implements Selectable, Updatable {
     readonly entityType: EntityType = EntityType.PILOT
@@ -109,7 +109,7 @@ export class Raider implements Selectable, Updatable {
                     this.slip()
                     this.worldMgr.entityMgr.removeEntity(spider, EntityType.SMALL_SPIDER)
                     this.worldMgr.ecs.removeEntity(spider)
-                    const sceneEntityComponent = components.get(SceneEntityComponent)
+                    const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                     if (sceneEntityComponent) {
                         this.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
                         sceneEntityComponent.sceneEntity.dispose()

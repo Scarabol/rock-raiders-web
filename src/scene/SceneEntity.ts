@@ -48,10 +48,6 @@ export class SceneEntity {
         this.group.add(other)
     }
 
-    removeChild(other: Object3D) {
-        this.group.remove(other)
-    }
-
     addToMeshGroup(other: Object3D) {
         this.meshGroup.add(other)
         this.lastRadiusSquare = null

@@ -1,7 +1,7 @@
 import { AnimationActivity, AnimEntityActivity } from '../../game/model/anim/AnimationActivity'
 import { AnimationEntityUpgrade } from '../../game/model/anim/AnimationEntityUpgrade'
 import { SceneManager } from '../../game/SceneManager'
-import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
+import { LegacyAnimatedSceneEntity } from '../LegacyAnimatedSceneEntity'
 import { SceneMesh } from '../SceneMesh'
 import { VehicleSceneEntity } from './VehicleSceneEntity'
 
@@ -9,11 +9,11 @@ import { VehicleSceneEntity } from './VehicleSceneEntity'
  * @deprecated
  */
 export class WalkerDiggerSceneEntity extends VehicleSceneEntity {
-    body: AnimatedSceneEntity = null
+    body: LegacyAnimatedSceneEntity = null
 
     constructor(sceneMgr: SceneManager) {
         super(sceneMgr, 'Vehicles/WalkerLegs')
-        this.body = new AnimatedSceneEntity(sceneMgr, 'Vehicles/WalkerBody')
+        this.body = new LegacyAnimatedSceneEntity(sceneMgr, 'Vehicles/WalkerBody')
         this.addToMeshGroup(this.body.group)
     }
 

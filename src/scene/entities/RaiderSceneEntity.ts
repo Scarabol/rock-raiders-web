@@ -1,8 +1,11 @@
 import { AnimationActivity, RaiderActivity } from '../../game/model/anim/AnimationActivity'
-import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
+import { LegacyAnimatedSceneEntity } from '../LegacyAnimatedSceneEntity'
 import { SceneEntity } from '../SceneEntity'
 
-export class RaiderSceneEntity extends AnimatedSceneEntity {
+/**
+ * @deprecated
+ */
+export class RaiderSceneEntity extends LegacyAnimatedSceneEntity {
     dropAllEntities(): SceneEntity[] {
         const dropped = super.dropAllEntities()
         dropped.forEach((d) => d.addToScene(d.position2D, null))

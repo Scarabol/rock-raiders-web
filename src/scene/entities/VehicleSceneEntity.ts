@@ -1,13 +1,13 @@
 import { AnimationActivity, AnimEntityActivity } from '../../game/model/anim/AnimationActivity'
 import { SceneManager } from '../../game/SceneManager'
-import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
+import { LegacyAnimatedSceneEntity } from '../LegacyAnimatedSceneEntity'
 import { SceneEntity } from '../SceneEntity'
 
 /**
  * @deprecated
  */
-export class VehicleSceneEntity extends AnimatedSceneEntity {
-    driver: AnimatedSceneEntity
+export class VehicleSceneEntity extends LegacyAnimatedSceneEntity {
+    driver: LegacyAnimatedSceneEntity
     speed: number
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
@@ -15,7 +15,7 @@ export class VehicleSceneEntity extends AnimatedSceneEntity {
         this.flipXAxis()
     }
 
-    addDriver(driver: AnimatedSceneEntity) {
+    addDriver(driver: LegacyAnimatedSceneEntity) {
         if (this.driver && this.driver !== driver) throw new Error('Cannot add two drivers to the same vehicle entity')
         this.driver = driver
         this.driver.position.set(0, 0, 0)

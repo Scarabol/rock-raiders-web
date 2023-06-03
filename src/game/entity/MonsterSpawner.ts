@@ -2,11 +2,11 @@ import { TILESIZE } from '../../params'
 import { EntityType } from '../model/EntityType'
 import { WorldManager } from '../WorldManager'
 import { PositionComponent } from '../component/PositionComponent'
-import { SceneEntityComponent } from '../component/SceneEntityComponent'
+import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { HealthComponent } from '../component/HealthComponent'
 import { EntityMapMarkerComponent, MapMarkerType } from '../component/EntityMapMarkerComponent'
 import { HealthBarComponent } from '../component/HealthBarComponent'
-import { AnimatedMeshGroup } from '../../scene/AnimatedMeshGroup'
+import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Vector2 } from 'three'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
@@ -20,8 +20,8 @@ export class MonsterSpawner {
         const floorPosition = worldMgr.sceneMgr.getFloorPosition(worldPos)
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
         const positionComponent = worldMgr.ecs.addComponent(entity, new PositionComponent(floorPosition, surface))
-        const sceneEntity: AnimatedMeshGroup = new AnimatedMeshGroup()
-        worldMgr.ecs.addComponent(entity, new SceneEntityComponent(sceneEntity))
+        const sceneEntity: AnimatedSceneEntity = new AnimatedSceneEntity()
+        worldMgr.ecs.addComponent(entity, new AnimatedSceneEntityComponent(sceneEntity))
         switch (entityType) {
             case EntityType.SMALL_SPIDER:
                 positionComponent.floorOffset = 1
@@ -56,7 +56,7 @@ export class MonsterSpawner {
         worldMgr.entityMgr.addEntity(entity, entityType)
     }
 
-    private static addRockMonsterComponents(sceneEntity: AnimatedMeshGroup, worldMgr: WorldManager, entity: number, aeName: string) {
+    private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string) {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
         worldMgr.ecs.addComponent(entity, new EntityMapMarkerComponent(MapMarkerType.MONSTER))

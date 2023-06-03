@@ -18,7 +18,7 @@ import { updateSafe } from './model/Updateable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { ECS, GameEntity } from './ECS'
 import { PositionComponent } from './component/PositionComponent'
-import { SceneEntityComponent } from './component/SceneEntityComponent'
+import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityComponent'
 
 export class EntityManager {
     ecs: ECS
@@ -219,7 +219,7 @@ export class EntityManager {
             const pos = this.ecs.getComponents(e).get(PositionComponent).position
             const discovered = pos.x >= minX && pos.x < maxX && pos.z >= minZ && pos.z < maxZ
             if (discovered) {
-                this.ecs.getComponents(e).get(SceneEntityComponent).sceneEntity.visible = true
+                this.ecs.getComponents(e).get(AnimatedSceneEntityComponent).sceneEntity.visible = true
                 onRemove(e)
             }
             return !discovered

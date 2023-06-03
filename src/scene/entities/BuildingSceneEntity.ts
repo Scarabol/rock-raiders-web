@@ -1,8 +1,11 @@
 import { AnimationActivity, AnimEntityActivity, BuildingActivity } from '../../game/model/anim/AnimationActivity'
 import { SceneManager } from '../../game/SceneManager'
-import { AnimatedSceneEntity } from '../AnimatedSceneEntity'
+import { LegacyAnimatedSceneEntity } from '../LegacyAnimatedSceneEntity'
 
-export class BuildingSceneEntity extends AnimatedSceneEntity {
+/**
+ * @deprecated
+ */
+export class BuildingSceneEntity extends LegacyAnimatedSceneEntity {
     powered: boolean = false
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {

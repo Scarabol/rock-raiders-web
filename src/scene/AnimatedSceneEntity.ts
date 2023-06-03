@@ -1,169 +1,162 @@
-import { Matrix4, Vector2, Vector3 } from 'three'
-import { AnimationActivity } from '../game/model/anim/AnimationActivity'
-import { AnimationEntityType } from '../game/model/anim/AnimationEntityType'
-import { AnimationEntityUpgrade } from '../game/model/anim/AnimationEntityUpgrade'
-import { AnimClip } from '../game/model/anim/AnimClip'
-import { SceneManager } from '../game/SceneManager'
-import { AnimEntityLoader } from '../resource/AnimEntityLoader'
-import { ResourceManager } from '../resource/ResourceManager'
-import { SceneEntity } from './SceneEntity'
+import { Group, Matrix4, Object3D } from 'three'
+import { Updatable } from '../game/model/Updateable'
 import { SceneMesh } from './SceneMesh'
+import { AnimEntityData } from '../resource/AnimEntityParser'
+import { ResourceManager } from '../resource/ResourceManager'
+import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
+import { AnimationGroup } from './AnimationGroup'
+import { SceneEntity } from './SceneEntity'
 
-/**
- * @deprecated
- */
-export class AnimatedSceneEntity extends SceneEntity {
-    readonly animationEntityType: AnimationEntityType = null
-    readonly upgrades: SceneMesh[] = []
-    readonly animatedUpgrades: AnimatedSceneEntity[] = []
-    readonly bodiesByName: Map<string, SceneMesh> = new Map()
+export class AnimatedSceneEntity extends Group implements Updatable {
+    readonly animationData: AnimEntityData[] = []
+    readonly animationGroups: AnimationGroup[] = []
+    readonly meshesByLName: Map<string, SceneMesh[]> = new Map()
+    readonly installedUpgrades: { parent: Object3D, child: AnimatedSceneEntity }[] = []
+    readonly animationParent: Group = new Group()
+    readonly carryJoints: SceneMesh[] = []
     readonly carriedByIndex: Map<number, SceneEntity> = new Map()
-    animation: AnimClip = null
-    activity: AnimationActivity = null
+    upgradeLevel: string = '0000'
+    currentAnimation: string
+    driverParent: Object3D = null
+    driver: Object3D = null
 
-    constructor(sceneMgr: SceneManager, aeName: string, floorOffset: number = 0.1) {
-        super(sceneMgr, floorOffset)
-        const aeFilename =`${aeName}/${aeName.split('/').last()}.ae`
-        let cfgRoot = ResourceManager.getResource(aeFilename)
-        if (!cfgRoot) throw new Error(`Could not get animation entity type for: ${aeFilename}`)
-        this.animationEntityType = new AnimEntityLoader(aeFilename, cfgRoot, this.sceneMgr).loadModels()
+    constructor() {
+        super()
+        this.add(this.animationParent)
     }
 
-    disposeFromScene() {
-        super.disposeFromScene()
-        this.animation?.stop()
+    addAnimated(animatedData: AnimEntityData) {
+        this.animationData.add(animatedData)
+        this.animationParent.scale.setScalar(this.animationData.reduce((prev, b) => prev * (b.scale || 1), 1))
+    }
+
+    addDriver(driver: Object3D) {
+        if (!this.driverParent) return
+        if (this.driver !== driver) this.removeDriver()
+        this.driver = driver
+        this.driver.position.set(0, 0, 0)
+        this.driver.rotation.set(0, 0, 0)
+        this.driverParent?.add(this.driver)
+    }
+
+    removeDriver() {
+        if (!this.driver) return
+        this.driverParent?.remove(this.driver)
+        this.driver.position.copy(this.driverParent.position)
+        this.driver.rotation.copy(this.driverParent.rotation)
+        this.driver = null
+    }
+
+    setAnimation(animationName: string, onAnimationDone?: () => unknown) {
+        if (this.currentAnimation === animationName) return
+        this.currentAnimation = animationName
+        if (this.animationData.length > 0) this.removeAll()
+        this.driverParent = this.animationParent
+        this.animationData.forEach((animEntityData) => {
+            const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
+                ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
+            const animatedGroup = new AnimationGroup(animData.file, onAnimationDone)
+            animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
+            this.animationParent.add(animatedGroup)
+            this.animationGroups.push(animatedGroup)
+            // add carry joints
+            if (animEntityData.carryNullName) {
+                this.carryJoints.push(...animatedGroup.meshList.filter((a) => animEntityData.carryNullName.equalsIgnoreCase(a.name)))
+            }
+            // add driver joints
+            if (animEntityData.driverNullName) {
+                this.driverParent = animatedGroup.meshList.find((mesh) => mesh.name.equalsIgnoreCase(animEntityData.driverNullName)) || this.driverParent
+            }
+            // add wheels
+            if (animEntityData.wheelMesh && animEntityData.wheelNullName) {
+                const wheelParentMesh = this.meshesByLName.getOrUpdate(animEntityData.wheelNullName, () => [])
+                if (wheelParentMesh.length < 1) {
+                    console.error(`Could not find wheel parent ${animEntityData.wheelNullName} in ${Array.from(this.meshesByLName.keys())}`)
+                    return
+                }
+                wheelParentMesh.forEach((p) => p.add(ResourceManager.getLwoModel(animEntityData.wheelMesh)))
+            }
+        })
+        if (this.driver) this.driverParent.add(this.driver)
+        this.reinstallAllUpgrades()
+        this.addCarriedToJoints()
+    }
+
+    private removeAll() {
+        this.animationParent.clear()
+        this.animationGroups.forEach((a) => a.dispose())
+        this.animationGroups.length = 0
+        this.meshesByLName.clear()
+        this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
+        this.installedUpgrades.length = 0
+        this.removeDriver()
+        this.driverParent = null
+        this.carryJoints.length = 0
+    }
+
+    setUpgradeLevel(upgradeLevel: string) {
+        if (this.upgradeLevel === upgradeLevel) return
+        this.upgradeLevel = upgradeLevel
+        this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
+        this.installedUpgrades.length = 0
+        this.reinstallAllUpgrades()
+        this.addCarriedToJoints()
+    }
+
+    reinstallAllUpgrades() {
+        this.animationData.forEach((animEntityData) => {
+            const upgrades = animEntityData.upgradesByLevel.get(this.upgradeLevel) ?? animEntityData.upgradesByLevel.get('0000') ?? []
+            upgrades.forEach((upgrade) => {
+                const parent = this.meshesByLName.get(upgrade.parentNullName.toLowerCase())?.[upgrade.parentNullIndex]
+                if (!parent) {
+                    console.error(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}'`)
+                    return
+                }
+                const upgradeMesh = new AnimatedSceneEntity()
+                upgradeMesh.name = upgrade.lNameType
+                const upgradeFilename = ResourceManager.configuration.upgradeTypesCfg.get(upgrade.lNameType) || upgrade.lNameType
+                try {
+                    const upgradeAnimData = ResourceManager.getAnimatedData(upgradeFilename)
+                    upgradeMesh.addAnimated(upgradeAnimData)
+                } catch (e) {
+                    const mesh = ResourceManager.getLwoModel(upgradeFilename)
+                    if (!mesh) {
+                        console.error(`Could not get mesh for ${upgrade.lNameType}`)
+                    } else {
+                        upgradeMesh.animationParent.add(mesh)
+                    }
+                }
+                upgradeMesh.upgradeLevel = this.upgradeLevel
+                upgradeMesh.setAnimation(this.currentAnimation)
+                parent.add(upgradeMesh)
+                this.installedUpgrades.add({parent: parent, child: upgradeMesh})
+            })
+        })
     }
 
     update(elapsedMs: number) {
-        super.update(elapsedMs)
-        this.animation?.update(elapsedMs)
-        this.upgrades.forEach((u) => u.update(elapsedMs))
-    }
-
-    getDefaultActivity(): AnimationActivity {
-        return this.animationEntityType.firstAnimationName
-    }
-
-    changeActivity(activity: AnimationActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
-        if ((this.activity === activity || this.animationEntityType === null) && !!onAnimationDone === !!this.animation?.onAnimationDone) return
-        this.activity = activity
-        const lActivityKey = activity.toLowerCase()
-        let animation = this.animationEntityType.animations.get(lActivityKey)
-        if (!animation) {
-            console.warn(`Activity ${activity} unknown or has no animation; Possible options are: ${Array.from(this.animationEntityType.animations.keys())}`)
-            console.log(this.animationEntityType.animations)
-            return
-        }
-        if (this.animation) {
-            this.disposeUpgrades()
-            this.removeFromMeshGroup(this.animation.polyRootGroup)
-            this.animation.stop()
-            this.bodiesByName.clear()
-        }
-        this.animation = animation
-        this.animation.nullJoints.forEach((j, lName) => {
-            if (lName) j.forEach((m) => this.bodiesByName.set(lName, m))
-        })
-        this.animation.polyList.forEach((m) => {
-            if (m.name) this.bodiesByName.set(m.name, m)
-        })
-        this.applyDefaultUpgrades(activity)
-        this.addToMeshGroup(this.animation.polyRootGroup)
-        this.animation.start(onAnimationDone, durationTimeMs)
-        this.addCarriedToJoints() // keep carried items
-    }
-
-    private disposeUpgrades() {
-        this.upgrades.forEach((u) => {
-            u.parent?.remove(u)
-            u.dispose()
-        })
-        this.animatedUpgrades.forEach((u) => {
-            u.group.parent?.remove(u.group)
-        })
-    }
-
-    private applyDefaultUpgrades(activity: AnimationActivity) {
-        const upgrades0000 = this.animationEntityType.upgradesByLevel.get('0000')
-        if (upgrades0000) {
-            upgrades0000.forEach((upgrade) => {
-                const joint = this.getNullJointForUpgrade(upgrade)
-                if (joint) {
-                    const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath)
-                    if (lwoModel) {
-                        joint.add(lwoModel)
-                        this.upgrades.push(lwoModel)
-                    } else {
-                        const animatedUpgrade = new AnimatedSceneEntity(this.sceneMgr, upgrade.upgradeFilepath)
-                        animatedUpgrade.changeActivity(activity)
-                        joint.add(animatedUpgrade.group)
-                        this.animatedUpgrades.push(animatedUpgrade)
-                        animatedUpgrade.bodiesByName.forEach((mesh, name) => {
-                            this.bodiesByName.set(name, mesh)
-                        })
-                    }
-                } else { // this may happen for some animations
-                    // console.warn(`Could not find null joint ${upgrade.upgradeNullName} and index ${upgrade.upgradeNullIndex} to attach upgrade: ${upgrade.upgradeFilepath}`)
-                }
-            })
-        }
-    }
-
-    protected getNullJointForUpgrade(upgrade: AnimationEntityUpgrade): SceneMesh | undefined {
-        return this.animation.nullJoints.get(upgrade.upgradeNullName.toLowerCase())?.[upgrade.upgradeNullIndex]
+        this.animationGroups.forEach((a) => a.update(elapsedMs))
+        this.meshesByLName.forEach((meshes) => meshes.forEach((m) => m.update(elapsedMs)))
+        this.installedUpgrades.forEach((c) => c.child.update(elapsedMs))
     }
 
     private addCarriedToJoints() {
         this.carriedByIndex.forEach((item, index) => {
-            const carryJoint = this.animation.carryJoints[index]
+            const carryJoint = this.carryJoints[index]
             if (carryJoint) {
                 carryJoint.add(item.group)
             } else {
-                console.warn(`Could not find carry joint with index ${index} in ${this.animation.carryJoints}`)
+                console.warn(`Could not find carry joint with index ${index} in ${this.carryJoints}`)
             }
         })
     }
 
     flipXAxis() {
-        this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
-    }
-
-    pointLaserAt(terrainIntersectionPoint: Vector2) {
-        if (!terrainIntersectionPoint) return
-        const xPivot = this.bodiesByName.get(this.animationEntityType.xPivot?.toLowerCase())
-        if (xPivot) {
-            const pivotWorldPos = new Vector3()
-            xPivot.getWorldPosition(pivotWorldPos)
-            const worldTarget = this.sceneMgr.getFloorPosition(terrainIntersectionPoint).setY(0)
-            const diff = worldTarget.sub(pivotWorldPos)
-            const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI - Math.PI / 20
-            const lAngle = this.limitAngle(angle)
-            xPivot.setRotationFromAxisAngle(new Vector3(1, 0, 0), lAngle) // XXX use rotation speed and smooth movement
-        }
-        const yPivot = this.bodiesByName.get(this.animationEntityType.yPivot?.toLowerCase())
-        if (yPivot) {
-            const pivotWorldPos = new Vector3()
-            yPivot.getWorldPosition(pivotWorldPos)
-            const angle = terrainIntersectionPoint.clone().sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() + Math.PI / 2
-            yPivot.setRotationFromAxisAngle(new Vector3(0, 1, 0), angle) // XXX use rotation speed and smooth movement
-        }
-    }
-
-    private limitAngle(angle: number): number {
-        let result = angle
-        const min = this.animationEntityType.PivotMinZ
-        if (min !== null && min !== undefined && result < min) {
-            result = min
-        }
-        const max = this.animationEntityType.PivotMaxZ
-        if (max !== null && max !== undefined && result > max) {
-            result = max
-        }
-        return result
+        this.animationParent.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
     }
 
     pickupEntity(entity: SceneEntity) {
-        const foundCarryJoint = this.animation.carryJoints.some((carryJoint, index) => {
+        const foundCarryJoint = this.carryJoints.some((carryJoint, index) => {
             if (carryJoint.children.length < 1) {
                 this.carriedByIndex.set(index, entity)
                 carryJoint.add(entity.group)
@@ -181,7 +174,7 @@ export class AnimatedSceneEntity extends SceneEntity {
         const dropped = Array.from(this.carriedByIndex.values())
         const position = this.position.clone()
         this.carriedByIndex.forEach((item, index) => {
-            const carryJoint = this.animation.carryJoints[index]
+            const carryJoint = this.carryJoints[index]
             if (carryJoint) {
                 carryJoint.remove(item.group)
                 carryJoint.getWorldPosition(position)
@@ -190,5 +183,10 @@ export class AnimatedSceneEntity extends SceneEntity {
         })
         this.carriedByIndex.clear()
         return dropped
+    }
+
+    dispose() {
+        this.animationGroups.forEach((a) => a.dispose())
+        this.animationGroups.length = 0
     }
 }

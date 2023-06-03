@@ -3,7 +3,7 @@ import { PositionComponent } from '../component/PositionComponent'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
-import { SceneEntityComponent } from '../component/SceneEntityComponent'
+import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity } from '../model/anim/AnimationActivity'
 import { EntityType } from '../model/EntityType'
 
@@ -26,7 +26,7 @@ export class MovementSystem extends AbstractGameSystem {
                 const entitySpeedSq = entitySpeed * entitySpeed * entitySpeed
                 if (targetWorld.distanceToSquared(positionComponent.position) <= entitySpeedSq + worldTargetComponent.radiusSq) {
                     this.ecs.removeComponent(entity, WorldTargetComponent)
-                    const sceneEntityComponent = components.get(SceneEntityComponent)
+                    const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
                         this.ecs.worldMgr.entityMgr.removeEntity(entity, EntityType.SMALL_SPIDER) // TODO remove other entity types from entity manager too
                         this.ecs.removeEntity(entity)

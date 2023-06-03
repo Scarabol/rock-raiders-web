@@ -1,12 +1,12 @@
 import { AbstractGameComponent } from '../ECS'
-import { AnimatedMeshGroup } from '../../scene/AnimatedMeshGroup'
+import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Vector2, Vector3 } from 'three'
 import { AnimEntityActivity } from '../model/anim/AnimationActivity'
 
-export class SceneEntityComponent extends AbstractGameComponent {
+export class AnimatedSceneEntityComponent extends AbstractGameComponent {
     readonly lookAt: Vector3 = new Vector3()
 
-    constructor(readonly sceneEntity: AnimatedMeshGroup) {
+    constructor(readonly sceneEntity: AnimatedSceneEntity) {
         super()
     }
 

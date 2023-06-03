@@ -1,5 +1,5 @@
 import { Sample } from '../../../audio/Sample'
-import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
+import { LegacyAnimatedSceneEntity } from '../../../scene/LegacyAnimatedSceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { DynamiteActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
@@ -15,7 +15,7 @@ import { DynamiteExplosionEvent } from '../../../event/WorldEvents'
 export class Dynamite extends MaterialEntity {
     constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
         super(worldMgr, EntityType.DYNAMITE, PriorityIdentifier.DESTRUCTION, RaiderTraining.DEMOLITION)
-        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr, ResourceManager.configuration.miscObjects.Dynamite)
+        this.sceneEntity = new LegacyAnimatedSceneEntity(this.worldMgr.sceneMgr, ResourceManager.configuration.miscObjects.Dynamite)
         this.sceneEntity.changeActivity()
     }
 
