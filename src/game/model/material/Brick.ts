@@ -6,9 +6,6 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { MaterialEntity } from './MaterialEntity'
-import { GameState } from '../GameState'
-import { EventBus } from '../../../event/EventBus'
-import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 
 export class Brick extends MaterialEntity {
@@ -23,11 +20,5 @@ export class Brick extends MaterialEntity {
         const sites = this.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(this.entityType))
         if (sites.length > 0) return sites.map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
         return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
-    }
-
-    onDeposit() {
-        super.onDeposit()
-        GameState.numBrick++
-        EventBus.publishEvent(new MaterialAmountChanged())
     }
 }

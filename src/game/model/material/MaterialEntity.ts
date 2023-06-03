@@ -47,8 +47,4 @@ export abstract class MaterialEntity {
 
     onCarryJobComplete(): void {
     }
-
-    onDeposit(): void {
-        this.sceneEntity.disposeFromScene()
-    }
 }

@@ -6,9 +6,6 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { MaterialEntity } from './MaterialEntity'
-import { GameState } from '../GameState'
-import { EventBus } from '../../../event/EventBus'
-import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 
 export class Ore extends MaterialEntity {
@@ -25,11 +22,5 @@ export class Ore extends MaterialEntity {
         const oreRefineries = this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.ORE_REFINERY)
         if (oreRefineries.length > 0) return oreRefineries
         return this.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
-    }
-
-    onDeposit() {
-        super.onDeposit()
-        GameState.numOre++
-        EventBus.publishEvent(new MaterialAmountChanged())
     }
 }

@@ -352,11 +352,11 @@ export class BuildingEntity implements Selectable {
 
     depositItems(): void {
         if (this.entityType === EntityType.ORE_REFINERY) {
-            this.carriedItems.forEach((m) => m.disposeFromWorld())
             this.worldMgr.entityMgr.placeMaterial(new Brick(this.worldMgr), this.getDropPosition2D())
         } else {
-            this.carriedItems.forEach((m) => m.onDeposit())
+            this.carriedItems.forEach((m) => GameState.depositItem(m))
         }
+        this.carriedItems.forEach((m) => m.disposeFromWorld())
         this.carriedItems.length = 0
     }
 }

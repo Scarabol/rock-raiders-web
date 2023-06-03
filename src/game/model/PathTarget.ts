@@ -6,6 +6,7 @@ import { BuildingSite } from './building/BuildingSite'
 import { EntityType } from './EntityType'
 import { Surface } from '../terrain/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
+import { GameState } from './GameState'
 
 export class PathTarget {
     protected constructor(
@@ -61,7 +62,8 @@ export class PathTarget {
                     })
                 }
             } else {
-                item.onDeposit()
+                GameState.depositItem(item)
+                item.disposeFromWorld()
             }
         } else {
             item.sceneEntity.addToScene(null, this.headingOnSite)

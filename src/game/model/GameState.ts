@@ -1,7 +1,9 @@
 import { EventBus } from '../../event/EventBus'
 import { AirLevelChanged, NeededCrystalsChanged } from '../../event/LocalEvents'
-import { UsedCrystalsChanged } from '../../event/WorldEvents'
+import { MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'
 import { GameResultState } from './GameResult'
+import { MaterialEntity } from './material/MaterialEntity'
+import { EntityType } from './EntityType'
 
 export class GameState {
     static gameResult: GameResultState = GameResultState.UNDECIDED
@@ -55,5 +57,14 @@ export class GameState {
     static changeNeededCrystals(crystals: number) {
         this.neededCrystals = crystals
         EventBus.publishEvent(new NeededCrystalsChanged())
+    }
+
+    static depositItem(item: MaterialEntity) {
+        if (item.entityType === EntityType.ORE || item.entityType === EntityType.CRYSTAL || item.entityType === EntityType.BRICK) {
+            if (item.entityType === EntityType.ORE) GameState.numOre++
+            else if (item.entityType === EntityType.CRYSTAL) GameState.numCrystal++
+            else if (item.entityType === EntityType.BRICK) GameState.numBrick++
+            EventBus.publishEvent(new MaterialAmountChanged())
+        }
     }
 }
