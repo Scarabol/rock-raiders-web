@@ -1,12 +1,10 @@
 import { Vector2 } from 'three'
 import { MovableEntityStats } from '../../cfg/GameStatsCfg'
 import { TILESIZE } from '../../params'
-import { PathTarget } from '../model/PathTarget'
 import { astar, Graph } from './astar'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
-import { TerrainPath } from './TerrainPath'
 
 export class PathFinder {
     graphWalk: Graph = null
@@ -87,48 +85,48 @@ export class PathFinder {
         return surface.isWalkable() || surface.surfaceType === SurfaceType.LAVA5 ? 1 : 0
     }
 
-    findPath(start: Vector2, target: PathTarget, stats: MovableEntityStats, highPrecision: boolean): TerrainPath {
+    findPath(start: Vector2, targetLocation: Vector2, stats: MovableEntityStats, highPrecision: boolean): Vector2[] {
         // const canEnterToolstore = !!iGet(stats, 'EnterToolStore') // TODO consider enter toolstore in path finding
         if (highPrecision) {
-            return this.findWalkPath(start, target)
+            return this.findWalkPath(start, targetLocation)
         } else if (stats.CrossLand && !stats.CrossWater && !stats.CrossLava) {
-            return this.findDrivePath(start, target)
+            return this.findDrivePath(start, targetLocation)
         } else if (!stats.CrossLand && stats.CrossWater && !stats.CrossLava) {
-            return this.findSwimPath(start, target)
+            return this.findSwimPath(start, targetLocation)
         } else if (stats.CrossLand && stats.CrossWater && stats.CrossLava) {
-            return this.findFlyPath(start, target)
+            return this.findFlyPath(start, targetLocation)
         } else if (stats.CrossLand && !stats.CrossWater && stats.CrossLava) {
-            return this.findLavaPath(start, target)
+            return this.findLavaPath(start, targetLocation)
         } else {
             console.error(`Unexpected path finding combination (${(stats.CrossLand)}, ${(stats.CrossWater)}, ${(stats.CrossLava)}) found. No graph available returning direct path`)
-            return new TerrainPath(target, target.targetLocation)
+            return [targetLocation]
         }
     }
 
-    private findWalkPath(start: Vector2, target: PathTarget): TerrainPath {
+    private findWalkPath(start: Vector2, target: Vector2): Vector2[] {
         return PathFinder.getPath(start, target, this.cachedWalkPaths, this.graphWalk, TILESIZE / 3, 0.25)
     }
 
-    private findDrivePath(start: Vector2, target: PathTarget): TerrainPath {
+    private findDrivePath(start: Vector2, target: Vector2): Vector2[] {
         return PathFinder.getPath(start, target, this.cachedDrivePaths, this.graphDrive, TILESIZE, 0)
     }
 
-    private findFlyPath(start: Vector2, target: PathTarget): TerrainPath {
+    private findFlyPath(start: Vector2, target: Vector2): Vector2[] {
         return PathFinder.getPath(start, target, this.cachedFlyPaths, this.graphFly, TILESIZE, 0)
     }
 
-    private findSwimPath(start: Vector2, target: PathTarget): TerrainPath {
+    private findSwimPath(start: Vector2, target: Vector2): Vector2[] {
         return PathFinder.getPath(start, target, this.cachedSwimPaths, this.graphSwim, TILESIZE, 0)
     }
 
-    private findLavaPath(start: Vector2, target: PathTarget): TerrainPath {
+    private findLavaPath(start: Vector2, target: Vector2): Vector2[] {
         return PathFinder.getPath(start, target, this.cachedLavaPaths, this.graphLava, TILESIZE, 0)
     }
 
-    private static getPath(start: Vector2, target: PathTarget, cachedPaths: Map<string, Vector2[]>, graph: Graph, gridSize: number, maxRandomOffset: number): TerrainPath {
+    private static getPath(start: Vector2, targetLocation: Vector2, cachedPaths: Map<string, Vector2[]>, graph: Graph, gridSize: number, maxRandomOffset: number): Vector2[] {
         const gridStart = start.clone().divideScalar(gridSize).floor()
-        const gridEnd = target.targetLocation.clone().divideScalar(gridSize).floor()
-        if (gridStart.x === gridEnd.x && gridStart.y === gridEnd.y) return new TerrainPath(target, target.targetLocation)
+        const gridEnd = targetLocation.clone().divideScalar(gridSize).floor()
+        if (gridStart.x === gridEnd.x && gridStart.y === gridEnd.y) return [targetLocation]
         const cacheIdentifier = `${gridStart.x}/${gridStart.y} -> ${gridEnd.x}/${gridEnd.y}`
         const resultPath = cachedPaths.getOrUpdate(cacheIdentifier, () => {
             const startNode = graph.grid[gridStart.x][gridStart.y]
@@ -140,7 +138,7 @@ export class PathFinder {
             return freshPath
         })
         if (!resultPath) return null
-        return new TerrainPath(target, [...resultPath, target.targetLocation]) // return shallow copy to avoid interference
+        return [...resultPath, targetLocation] // return shallow copy to avoid interference
     }
 
     resetGraphsAndCaches() {

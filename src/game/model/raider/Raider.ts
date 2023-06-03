@@ -1,4 +1,4 @@
-import { PositionalAudio } from 'three'
+import { PositionalAudio, Vector2 } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
@@ -91,7 +91,11 @@ export class Raider implements Selectable, BeamUpEntity, Updatable {
      */
 
     findPathToTarget(target: PathTarget): TerrainPath {
-        return this.worldMgr.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, target, this.stats, true)
+        return new TerrainPath(target, this.findPath(target.targetLocation))
+    }
+
+    findPath(targetLocation: Vector2): Vector2[] {
+        return this.worldMgr.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, targetLocation, this.stats, true)
     }
 
     private moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
