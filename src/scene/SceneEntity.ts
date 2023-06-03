@@ -1,11 +1,8 @@
-import { Box3, Group, Mesh, MeshBasicMaterial, Object3D, PositionalAudio, Sphere, SphereGeometry, Sprite, Vector2, Vector3 } from 'three'
-import { PickSphereStats } from '../cfg/GameStatsCfg'
+import { Box3, Group, Object3D, PositionalAudio, Sphere, Vector2, Vector3 } from 'three'
 import { AnimationActivity, AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 import { Surface } from '../game/terrain/Surface'
-import { Selectable } from '../game/model/Selectable'
 import { Updatable } from '../game/model/Updateable'
 import { SceneManager } from '../game/SceneManager'
-import { SelectionFrameSprite } from './SelectionFrameSprite'
 
 export class SceneEntity {
     readonly updatableChildren: Updatable[] = []
@@ -13,9 +10,6 @@ export class SceneEntity {
     sceneMgr: SceneManager
     group: Group = new Group()
     meshGroup: Group = new Group()
-    pickSphere: Mesh = null
-    selectionFrame: Sprite = null
-    selectionFrameDouble: Sprite = null
     boundingSphere: Sphere = new Sphere()
     lastRadiusSquare: number = null
 
@@ -77,40 +71,6 @@ export class SceneEntity {
 
     setHeading(heading: number) {
         this.group.rotation.y = heading
-    }
-
-    makeSelectable(entity: { stats: PickSphereStats } & Selectable, pickSphereHeightOffset: number = null) {
-        this.addPickSphere(entity.stats.PickSphere, pickSphereHeightOffset)
-        this.pickSphere.userData = {selectable: entity}
-        this.selectionFrame = SceneEntity.createSelectionFrame(entity.stats.PickSphere, this.pickSphere.position, '#0f0')
-        this.addChild(this.selectionFrame)
-        this.selectionFrameDouble = SceneEntity.createSelectionFrame(entity.stats.PickSphere, this.pickSphere.position, '#f00')
-        this.addChild(this.selectionFrameDouble)
-    }
-
-    addPickSphere(pickSphereDiameter: number, pickSphereHeightOffset: number = null) {
-        if (this.pickSphere) return
-        const pickSphereRadius = pickSphereDiameter / 2
-        const geometry = new SphereGeometry(pickSphereRadius, pickSphereRadius, pickSphereRadius)
-        const material = new MeshBasicMaterial({color: 0xa0a000, visible: false, wireframe: true}) // change visible to true for debugging
-        this.pickSphere = new Mesh(geometry, material)
-        this.pickSphere.position.y = pickSphereHeightOffset ?? (this.getBoundingSphereCenter().y - this.position.y)
-        this.addChild(this.pickSphere)
-    }
-
-    private getBoundingSphereCenter(): Vector3 {
-        const center = new Vector3()
-        new Box3().setFromObject(this.meshGroup).getCenter(center)
-        return center
-    }
-
-    private static createSelectionFrame(pickSphereDiameter: number, pickSphereCenter: Vector3, hexColor: string) {
-        const selectionFrame = new SelectionFrameSprite(pickSphereDiameter, hexColor)
-        selectionFrame.position.copy(pickSphereCenter)
-        const selectionFrameSize = pickSphereDiameter * 3 / 4
-        selectionFrame.scale.set(selectionFrameSize, selectionFrameSize, selectionFrameSize)
-        selectionFrame.visible = false
-        return selectionFrame
     }
 
     get surfaces(): Surface[] {

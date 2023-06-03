@@ -30,6 +30,8 @@ import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { Brick } from '../material/Brick'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
+import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
+import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 
 export class BuildingEntity implements Selectable {
     readonly entityType: EntityType
@@ -81,21 +83,19 @@ export class BuildingEntity implements Selectable {
 
     select(): boolean {
         if (!this.isSelectable()) return false
-        this.sceneEntity.selectionFrame.visible = true
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).select()
         this.selected = true
         return true
     }
 
     doubleSelect(): boolean {
         if (!this.selected) return false
-        this.sceneEntity.selectionFrame.visible = false
-        this.sceneEntity.selectionFrameDouble.visible = true
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).doubleSelect()
         return true
     }
 
     deselect() {
-        this.sceneEntity.selectionFrame.visible = false
-        this.sceneEntity.selectionFrameDouble.visible = false
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).deselect()
         this.selected = false
     }
 
@@ -277,7 +277,8 @@ export class BuildingEntity implements Selectable {
             this.pathSurfaces.push(this.secondaryPathSurface)
         }
         this.surfaces.forEach((s) => s.setBuilding(this))
-        this.sceneEntity.makeSelectable(this, this.stats.PickSphere / 4)
+        const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity.group, {gameEntity: this.entity, entityType: this.entityType}, this.stats, this.stats.PickSphere / 4))
+        this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
         this.addToScene(worldPosition, radHeading)
         if (this.sceneEntity.visible) {
             this.worldMgr.entityMgr.buildings.push(this)

@@ -20,6 +20,7 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { AnimatedSceneEntity } from '../scene/AnimatedSceneEntity'
 import { AnimationGroup } from '../scene/AnimationGroup'
+import { SceneSelectionComponent } from './component/SceneSelectionComponent'
 
 export class SceneManager implements Updatable {
     readonly audioListener: AudioListener
@@ -110,10 +111,19 @@ export class SceneManager implements Updatable {
         planes[5].normal.multiplyScalar(-1)
 
         const selection = new GameSelection()
-        selection.raiders.push(...this.worldMgr.entityMgr.raiders.filter((r) => r.isInSelection() && SceneManager.isInFrustum(r.sceneEntity.pickSphere, frustum)))
+        selection.raiders.push(...this.worldMgr.entityMgr.raiders.filter((r) => {
+            const pickSphere = this.worldMgr.ecs.getComponents(r.entity).get(SceneSelectionComponent).pickSphere
+            return r.isInSelection() && SceneManager.isInFrustum(pickSphere, frustum)
+        }))
         const hasRaiderSelected = selection.raiders.length > 0
-        selection.vehicles.push(...this.worldMgr.entityMgr.vehicles.filter((v) => v.isInSelection() && (!hasRaiderSelected || v.driver) && SceneManager.isInFrustum(v.sceneEntity.pickSphere, frustum)))
-        if (selection.isEmpty()) selection.building = this.worldMgr.entityMgr.buildings.find((b) => SceneManager.isInFrustum(b.sceneEntity.pickSphere, frustum))
+        selection.vehicles.push(...this.worldMgr.entityMgr.vehicles.filter((v) => {
+            const pickSphere = this.worldMgr.ecs.getComponents(v.entity).get(SceneSelectionComponent).pickSphere
+            return v.isInSelection() && (!hasRaiderSelected || v.driver) && SceneManager.isInFrustum(pickSphere, frustum)
+        }))
+        if (selection.isEmpty()) selection.building = this.worldMgr.entityMgr.buildings.find((b) => {
+            const pickSphere = this.worldMgr.ecs.getComponents(b.entity).get(SceneSelectionComponent).pickSphere
+            return SceneManager.isInFrustum(pickSphere, frustum)
+        })
         return selection
     }
 

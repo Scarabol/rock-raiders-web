@@ -11,12 +11,14 @@ import { MaterialEntity } from './MaterialEntity'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { EventBus } from '../../../event/EventBus'
 import { DynamiteExplosionEvent } from '../../../event/WorldEvents'
+import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 
 export class Dynamite extends MaterialEntity {
     constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
         super(worldMgr, EntityType.DYNAMITE, PriorityIdentifier.DESTRUCTION, RaiderTraining.DEMOLITION)
         this.sceneEntity = new LegacyAnimatedSceneEntity(this.worldMgr.sceneMgr, ResourceManager.configuration.miscObjects.Dynamite)
         this.sceneEntity.changeActivity()
+        this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity.group, {gameEntity: this.entity, entityType: this.entityType}, {PickSphere: 8})) // XXX find any constant for pick sphere?
     }
 
     findCarryTargets(): PathTarget[] {

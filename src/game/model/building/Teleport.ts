@@ -7,6 +7,8 @@ import { EntityType } from '../EntityType'
 import { MoveJob } from '../job/raider/MoveJob'
 import { Raider } from '../raider/Raider'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
+import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
+import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 
 type TeleportEntity = Raider | VehicleEntity
 
@@ -29,7 +31,8 @@ export class Teleport {
         entity.sceneEntity.playPositionalAudio(Sample[Sample.SND_teleport], false)
         entity.sceneEntity.changeActivity(RaiderActivity.TeleportIn, () => {
             entity.sceneEntity.changeActivity()
-            entity.sceneEntity.makeSelectable(entity)
+            const sceneSelectionComponent = entity.worldMgr.ecs.addComponent(entity.entity, new SceneSelectionComponent(entity.sceneEntity.group, {gameEntity: entity.entity, entityType: entity.entityType}, entity.stats))
+            entity.worldMgr.ecs.addComponent(entity.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, entity.stats))
             if (walkOutPos) entity.setJob(new MoveJob(walkOutPos))
             beamListing.remove(entity)
             listing.push(entity)

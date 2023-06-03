@@ -28,6 +28,7 @@ import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { PositionComponent } from '../../component/PositionComponent'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
+import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 
 export class Raider implements Selectable, Updatable {
     readonly entityType: EntityType = EntityType.PILOT
@@ -205,15 +206,14 @@ export class Raider implements Selectable, Updatable {
 
     select(): boolean {
         if (!this.isSelectable()) return false
-        this.sceneEntity.selectionFrame.visible = true
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).select()
         this.selected = true
         this.sceneEntity.changeActivity()
         return true
     }
 
     deselect() {
-        this.sceneEntity.selectionFrame.visible = false
-        this.sceneEntity.selectionFrameDouble.visible = false
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).deselect()
         this.selected = false
     }
 

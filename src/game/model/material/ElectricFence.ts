@@ -9,10 +9,12 @@ import { RaiderTraining } from '../raider/RaiderTraining'
 import { Selectable } from '../Selectable'
 import { MaterialEntity } from './MaterialEntity'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
-import { GameEntity } from '../../ECS'
+import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
+import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
+import { Object3D } from 'three'
 
 export class ElectricFence extends MaterialEntity implements Selectable {
-    entity: GameEntity
+    readonly selectionFrameParent: Object3D
     selected: boolean = false
     inBeam: boolean = false
 
@@ -20,7 +22,7 @@ export class ElectricFence extends MaterialEntity implements Selectable {
         super(worldMgr, EntityType.ELECTRIC_FENCE, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
         this.sceneEntity = new SceneEntity(this.worldMgr.sceneMgr)
         this.sceneEntity.addToMeshGroup(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ElectricFence))
-        this.entity = this.worldMgr.ecs.addEntity()
+        this.selectionFrameParent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity.group, {gameEntity: this.entity, entityType: this.entityType}, ResourceManager.configuration.stats.electricFence, ResourceManager.configuration.stats.electricFence.PickSphere / 3)).pickSphere
     }
 
     get stats() {
@@ -38,7 +40,7 @@ export class ElectricFence extends MaterialEntity implements Selectable {
     onCarryJobComplete(): void {
         super.onCarryJobComplete()
         this.sceneEntity.addToScene(null, null)
-        this.sceneEntity.makeSelectable(this, this.stats.PickSphere / 4)
+        this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(this.selectionFrameParent, this.stats))
         this.targetSurface.fence = this
         this.targetSurface.fenceRequested = false
         this.worldMgr.entityMgr.placedFences.add(this)
@@ -58,14 +60,13 @@ export class ElectricFence extends MaterialEntity implements Selectable {
 
     select(): boolean {
         if (!this.isSelectable()) return false
-        this.sceneEntity.selectionFrame.visible = true
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).select()
         this.selected = true
         return true
     }
 
     deselect() {
-        this.sceneEntity.selectionFrame.visible = false
-        this.sceneEntity.selectionFrameDouble.visible = false
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).deselect()
         this.selected = false
     }
 

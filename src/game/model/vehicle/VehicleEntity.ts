@@ -30,6 +30,7 @@ import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { GameEntity } from '../../ECS'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
+import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 
 export class VehicleEntity implements Selectable, Updatable {
     readonly entityType: EntityType
@@ -169,15 +170,14 @@ export class VehicleEntity implements Selectable, Updatable {
 
     select(): boolean {
         if (!this.isSelectable()) return false
-        this.sceneEntity.selectionFrame.visible = true
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).select()
         this.selected = true
         this.sceneEntity.changeActivity()
         return true
     }
 
     deselect() {
-        this.sceneEntity.selectionFrame.visible = false
-        this.sceneEntity.selectionFrameDouble.visible = false
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).deselect()
         this.selected = false
     }
 
@@ -312,8 +312,7 @@ export class VehicleEntity implements Selectable, Updatable {
 
     doubleSelect(): boolean {
         if (!this.selected || !this.stats.CanDoubleSelect || !this.driver) return false
-        this.sceneEntity.selectionFrame.visible = false
-        this.sceneEntity.selectionFrameDouble.visible = true
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).doubleSelect()
         return true
     }
 

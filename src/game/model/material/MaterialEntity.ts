@@ -9,13 +9,16 @@ import { JobState } from '../job/JobState'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
+import { GameEntity } from '../../ECS'
 
 export abstract class MaterialEntity {
+    entity: GameEntity
     carryJob: CarryJob = null
     sceneEntity: SceneEntity = null
     positionAsPathTargets: PathTarget[] = []
 
     protected constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType, readonly priorityIdentifier: PriorityIdentifier, readonly requiredTraining: RaiderTraining) {
+        this.entity = this.worldMgr.ecs.addEntity()
     }
 
     abstract findCarryTargets(): PathTarget[]

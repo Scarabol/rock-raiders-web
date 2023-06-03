@@ -9,14 +9,14 @@ import { MaterialEntity } from './MaterialEntity'
 import { GameState } from '../GameState'
 import { EventBus } from '../../../event/EventBus'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
+import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 
 export class Brick extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
         super(worldMgr, EntityType.BRICK, PriorityIdentifier.ORE, RaiderTraining.NONE)
         this.sceneEntity = new SceneEntity(this.worldMgr.sceneMgr)
         this.sceneEntity.addToMeshGroup(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ProcessedOre))
-        this.sceneEntity.addPickSphere(ResourceManager.configuration.stats.processedOre.PickSphere)
-        this.sceneEntity.pickSphere.userData = {entityType: this.entityType, materialEntity: this}
+        this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity.group, {gameEntity: this.entity, entityType: this.entityType}, ResourceManager.configuration.stats.processedOre))
     }
 
     findCarryTargets(): PathTarget[] {

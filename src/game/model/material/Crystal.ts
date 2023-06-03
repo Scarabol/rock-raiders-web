@@ -11,6 +11,7 @@ import { MaterialEntity } from './MaterialEntity'
 import { GameState } from '../GameState'
 import { EventBus } from '../../../event/EventBus'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
+import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 
 export class Crystal extends MaterialEntity {
     constructor(worldMgr: WorldManager) {
@@ -31,8 +32,7 @@ export class Crystal extends MaterialEntity {
             mat.setOpacity(0.9) // XXX read from LWO file?
         })
         this.sceneEntity.addUpdatable(highPolyMesh)
-        this.sceneEntity.addPickSphere(ResourceManager.configuration.stats.powerCrystal.PickSphere)
-        this.sceneEntity.pickSphere.userData = {entityType: this.entityType, materialEntity: this}
+        this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity.group, {gameEntity: this.entity, entityType: this.entityType}, ResourceManager.configuration.stats.powerCrystal))
     }
 
     findCarryTargets(): PathTarget[] {
