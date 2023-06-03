@@ -1,5 +1,5 @@
 import { AbstractGameComponent } from '../ECS'
-import { Vector3 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { Surface } from '../terrain/Surface'
 
 export class PositionComponent extends AbstractGameComponent {
@@ -15,5 +15,9 @@ export class PositionComponent extends AbstractGameComponent {
 
     isDiscovered(): boolean {
         return this.surface.discovered
+    }
+
+    getPosition2D(): Vector2 {
+        return new Vector2(this.position.x, this.position.z)
     }
 }

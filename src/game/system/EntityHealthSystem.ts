@@ -13,7 +13,8 @@ export class EntityHealthSystem extends AbstractGameSystem {
                 const healthComponent = components.get(HealthComponent)
                 if (healthComponent.isDead()) {
                     const sceneEntityComponent = components.get(SceneEntityComponent)
-                    this.ecs.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
+                    if (sceneEntityComponent) this.ecs.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
+                    // this.ecs.worldMgr.entityMgr.removeEntity(entity, entityType) // FIXME remove dead entities from entity manager
                     this.ecs.removeEntity(entity)
                 }
             } catch (e) {

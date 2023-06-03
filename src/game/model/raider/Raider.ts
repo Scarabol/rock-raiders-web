@@ -3,7 +3,7 @@ import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent, UpdateRadarEntities } from '../../../event/LocalEvents'
-import { NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN } from '../../../params'
+import { NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
 import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
@@ -26,6 +26,7 @@ import { EntityType } from '../EntityType'
 import { GameEntity } from '../../ECS'
 import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
+import { PositionComponent } from '../../component/PositionComponent'
 
 export class Raider implements Selectable, BeamUpEntity, Updatable {
     readonly entityType: EntityType = EntityType.PILOT
@@ -97,14 +98,18 @@ export class Raider implements Selectable, BeamUpEntity, Updatable {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
         this.job.setActualWorkplace(this.currentPath?.target)
         if (result === MoveState.MOVED) {
-            // this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
-            //     if (this.sceneEntity.position2D.distanceToSquared(spider.getComponent(PositionComponent).getPosition2D()) < SPIDER_SLIP_RANGE_SQ) {
-            //         this.slip()
-            //         spider.getComponent(HealthComponent).changeHealth(0)
-            //         return true
-            //     }
-            //     return false
-            // })
+            this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
+                const raiderPosition2D = this.sceneEntity.position2D
+                const components = this.worldMgr.ecs.getComponents(spider)
+                if (!components) return false // FIXME this should not happen if dead entities are removed from entityMgr
+                const spiderPosition2D = components.get(PositionComponent).getPosition2D()
+                if (raiderPosition2D.distanceToSquared(spiderPosition2D) < SPIDER_SLIP_RANGE_SQ) {
+                    this.slip()
+                    components.get(HealthComponent).markDead()
+                    return true
+                }
+                return false
+            })
         } else if (result === MoveState.TARGET_UNREACHABLE) {
             console.log('Entity could not move to job target, stopping job')
             this.stopJob()
