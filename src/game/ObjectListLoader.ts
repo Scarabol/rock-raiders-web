@@ -6,17 +6,15 @@ import { TILESIZE } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingType } from './model/building/BuildingType'
 import { EntityType, getEntityTypeByName } from './model/EntityType'
-import { Crystal } from './model/material/Crystal'
 import { Raider } from './model/raider/Raider'
 import { RaiderTrainings } from './model/raider/RaiderTraining'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { VehicleFactory } from './model/vehicle/VehicleFactory'
 import { WorldManager } from './WorldManager'
-import { Ore } from './model/material/Ore'
-import { Brick } from './model/material/Brick'
 import { MonsterSpawner } from './entity/MonsterSpawner'
 import { SceneSelectionComponent } from './component/SceneSelectionComponent'
 import { SelectionFrameComponent } from './component/SelectionFrameComponent'
+import { MaterialSpawner } from './entity/MaterialSpawner'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -83,13 +81,9 @@ export class ObjectListLoader {
                     }
                     break
                 case EntityType.CRYSTAL:
-                    entityMgr.placeMaterial(new Crystal(worldMgr), worldPos)
-                    break
                 case EntityType.ORE:
-                    entityMgr.placeMaterial(new Ore(worldMgr), worldPos)
-                    break
                 case EntityType.BRICK:
-                    entityMgr.placeMaterial(new Brick(worldMgr), worldPos)
+                    MaterialSpawner.spawnMaterial(worldMgr, entityType, worldPos, headingRad)
                     break
                 case EntityType.SMALL_SPIDER:
                 case EntityType.BAT:

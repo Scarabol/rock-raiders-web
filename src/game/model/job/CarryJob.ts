@@ -2,16 +2,10 @@ import { SupervisedJob } from '../../Supervisor'
 import { AnimationActivity, DynamiteActivity } from '../anim/AnimationActivity'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
-import { RaiderTraining } from '../raider/RaiderTraining'
+import { RaiderTraining, RaiderTrainings } from '../raider/RaiderTraining'
 import { AbstractJob, JobFulfiller } from './Job'
-import { PriorityIdentifier } from './PriorityIdentifier'
+import { PriorityIdentifier, priorityIdentifierFromMaterialType } from './PriorityIdentifier'
 import { EntityType } from '../EntityType'
-import { Barrier } from '../material/Barrier'
-import { ElectricFence } from '../material/ElectricFence'
-import { Dynamite } from '../material/Dynamite'
-import { Brick } from '../material/Brick'
-import { Crystal } from '../material/Crystal'
-import { Ore } from '../material/Ore'
 import { Raider } from '../raider/Raider'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -43,54 +37,48 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
     private findWorkplaces() {
         switch (this.carryItem.entityType) {
             case EntityType.ORE:
-                const ore = this.carryItem as Ore
-                const oreSites = ore.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(ore.entityType))
+                const oreSites = this.carryItem.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(this.carryItem.entityType))
                 if (oreSites.length > 0) return oreSites.map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
-                const oreRefineries = ore.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.ORE_REFINERY)
+                const oreRefineries = this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.ORE_REFINERY)
                 if (oreRefineries.length > 0) return oreRefineries
-                return ore.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
             case EntityType.CRYSTAL:
-                const crystal = this.carryItem as Crystal
-                const crystalSites = crystal.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(crystal.entityType))
+                const crystalSites = this.carryItem.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(this.carryItem.entityType))
                 if (crystalSites.length > 0) return crystalSites.map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
-                const powerStations = crystal.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.POWER_STATION)
+                const powerStations = this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.POWER_STATION)
                 if (powerStations.length > 0) return powerStations
-                return crystal.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
             case EntityType.BRICK:
-                const brick = this.carryItem as Brick
-                const sites = brick.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(brick.entityType))
+                const sites = this.carryItem.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(this.carryItem.entityType))
                 if (sites.length > 0) return sites.map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
-                return brick.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
             case EntityType.BARRIER:
-                const barrier = this.carryItem as Barrier
-                if (barrier.site.complete || barrier.site.canceled) {
-                    return barrier.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                if (this.carryItem.targetSite.complete || this.carryItem.targetSite.canceled) {
+                    return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
                 } else {
-                    return [PathTarget.fromSite(barrier.site, barrier.location.position, barrier.location.heading)]
+                    return [PathTarget.fromSite(this.carryItem.targetSite, this.carryItem.location.position, this.carryItem.location.heading)]
                 }
             case EntityType.DYNAMITE:
-                const dynamite = this.carryItem as Dynamite
-                if (dynamite.targetSurface?.isDigable()) {
-                    return dynamite.targetSurface.getDigPositions().map((p) => PathTarget.fromLocation(p, dynamite.sceneEntity.getRadiusSquare() / 4))
+                if (this.carryItem.targetSurface?.isDigable()) {
+                    return this.carryItem.targetSurface.getDigPositions().map((p) => PathTarget.fromLocation(p, this.carryItem.sceneEntity.getRadiusSquare() / 4))
                 } else {
-                    return dynamite.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                    return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
                 }
             case EntityType.ELECTRIC_FENCE:
-                const fence = this.carryItem as ElectricFence
-                if (!fence.targetSurface.isWalkable()) {
-                    return fence.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                if (!this.carryItem.targetSurface.isWalkable()) {
+                    return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
                 } else {
-                    return [PathTarget.fromLocation(fence.targetSurface.getCenterWorld2D())]
+                    return [PathTarget.fromLocation(this.carryItem.targetSurface.getCenterWorld2D())]
                 }
         }
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
-        return this.carryItem.priorityIdentifier
+        return priorityIdentifierFromMaterialType(this.carryItem.entityType)
     }
 
     getRequiredTraining(): RaiderTraining {
-        return this.carryItem.requiredTraining
+        return RaiderTrainings.fromMaterialEntityType(this.carryItem.entityType)
     }
 
     getWorkActivity(): AnimationActivity {

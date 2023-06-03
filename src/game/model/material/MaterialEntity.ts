@@ -5,27 +5,24 @@ import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { CarryJob } from '../job/CarryJob'
 import { JobState } from '../job/JobState'
-import { PriorityIdentifier } from '../job/PriorityIdentifier'
-import { RaiderTraining } from '../raider/RaiderTraining'
 import { GameEntity } from '../../ECS'
 import { BarrierActivity } from '../anim/AnimationActivity'
 import { Surface } from '../../terrain/Surface'
 import { BuildingSite } from '../building/BuildingSite'
 import { BarrierLocation } from './BarrierLocation'
+import { MaterialEntityType } from '../../entity/MaterialSpawner'
 
-type MaterialEntityType = EntityType.ORE | EntityType.CRYSTAL | EntityType.BRICK | EntityType.BARRIER | EntityType.DYNAMITE | EntityType.ELECTRIC_FENCE
-
-export abstract class MaterialEntity {
+export class MaterialEntity {
     entity: GameEntity
     carryJob: CarryJob = null
     sceneEntity: SceneEntity = null
 
-    protected constructor(
+    constructor(
         readonly worldMgr: WorldManager,
         readonly entityType: MaterialEntityType,
-        readonly priorityIdentifier: PriorityIdentifier,
-        readonly requiredTraining: RaiderTraining,
         readonly targetSurface: Surface,
+        readonly targetSite: BuildingSite,
+        readonly location: BarrierLocation,
     ) {
         this.entity = this.worldMgr.ecs.addEntity()
     }

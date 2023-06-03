@@ -1,3 +1,6 @@
+import { MaterialEntityType } from '../../entity/MaterialSpawner'
+import { EntityType } from '../EntityType'
+
 export enum RaiderTraining {
     NONE = 0, // useful for truthiness checks
     DRIVER,
@@ -9,6 +12,9 @@ export enum RaiderTraining {
 }
 
 export class RaiderTrainings {
+    constructor() {
+    }
+
     static values: RaiderTraining[] = [
         RaiderTraining.DRIVER,
         RaiderTraining.ENGINEER,
@@ -62,5 +68,14 @@ export class RaiderTrainings {
                 throw new Error(`Unexpected training value given: ${training} (${RaiderTraining[training]})`)
         }
         return result.replace('_', '').toLowerCase()
+    }
+
+    static fromMaterialEntityType(entityType: MaterialEntityType): RaiderTraining {
+        switch (entityType) {
+            case EntityType.DYNAMITE:
+                return RaiderTraining.DEMOLITION
+            default:
+                return RaiderTraining.NONE
+        }
     }
 }

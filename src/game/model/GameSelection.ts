@@ -7,18 +7,18 @@ import { Job } from './job/Job'
 import { GetToolJob } from './job/raider/GetToolJob'
 import { MoveJob } from './job/raider/MoveJob'
 import { Surface } from '../terrain/Surface'
-import { ElectricFence } from './material/ElectricFence'
 import { MaterialEntity } from './material/MaterialEntity'
 import { Raider } from './raider/Raider'
 import { RaiderTool } from './raider/RaiderTool'
 import { VehicleEntity } from './vehicle/VehicleEntity'
+import { SelectionFrameComponent } from '../component/SelectionFrameComponent'
 
 export class GameSelection {
     surface: Surface = null
     building: BuildingEntity = null
     raiders: Raider[] = []
     vehicles: VehicleEntity[] = []
-    fence: ElectricFence = null
+    fence: MaterialEntity = null
     doubleSelect: BuildingEntity | VehicleEntity = null
 
     isEmpty(): boolean {
@@ -35,7 +35,7 @@ export class GameSelection {
         this.surface?.deselect()
         this.surface = null
         this.doubleSelect = null
-        this.fence?.deselect()
+        this.fence?.worldMgr.ecs.getComponents(this.fence.entity).get(SelectionFrameComponent)?.deselect()
         this.fence = null
     }
 
@@ -63,12 +63,12 @@ export class GameSelection {
             }
         }
         if (this.fence !== selection.fence) {
-            this.fence?.deselect()
-            if (selection.fence?.isInSelection()) {
-                this.fence = selection.fence
-                if (this.fence.select()) added = true
-            } else {
-                this.fence = null
+            this.fence?.worldMgr.ecs.getComponents(this.fence.entity).get(SelectionFrameComponent)?.deselect()
+            this.fence = selection.fence
+            if (selection.fence) {
+                const selectionFrameComponent = selection.fence.worldMgr.ecs.getComponents(selection.fence.entity).get(SelectionFrameComponent)
+                added = !selectionFrameComponent.isSelected()
+                selectionFrameComponent.select()
             }
         }
         if (this.surface !== selection.surface) {

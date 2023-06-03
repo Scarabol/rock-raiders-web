@@ -16,23 +16,21 @@ import { ManVehicleJob } from '../job/ManVehicleJob'
 import { MoveJob } from '../job/raider/MoveJob'
 import { Surface } from '../../terrain/Surface'
 import { TerrainPath } from '../../terrain/TerrainPath'
-import { Crystal } from '../material/Crystal'
 import { MaterialEntity } from '../material/MaterialEntity'
-import { Ore } from '../material/Ore'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
 import { Raider } from '../raider/Raider'
 import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
-import { Selectable } from '../Selectable'
 import { Updatable } from '../Updateable'
 import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { GameEntity } from '../../ECS'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
+import { MaterialSpawner } from '../../entity/MaterialSpawner'
 
-export class VehicleEntity implements Selectable, Updatable {
+export class VehicleEntity implements Updatable {
     readonly entityType: EntityType
     readonly worldMgr: WorldManager
     readonly entity: GameEntity
@@ -69,10 +67,10 @@ export class VehicleEntity implements Selectable, Updatable {
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         const surface = this.sceneEntity.surfaces[0]
         for (let c = 0; c < this.stats.CostOre; c++) {
-            this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), surface.getRandomPosition())
+            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, surface.getRandomPosition())
         }
         for (let c = 0; c < this.stats.CostCrystal; c++) {
-            this.worldMgr.entityMgr.placeMaterial(new Crystal(this.worldMgr), surface.getRandomPosition())
+            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, surface.getRandomPosition())
         }
         this.worldMgr.entityMgr.vehicles.remove(this)
         this.worldMgr.entityMgr.vehiclesInBeam.add(this)

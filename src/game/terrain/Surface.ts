@@ -14,11 +14,7 @@ import { CarryJob } from '../model/job/CarryJob'
 import { ClearRubbleJob } from '../model/job/surface/ClearRubbleJob'
 import { DrillJob } from '../model/job/surface/DrillJob'
 import { ReinforceJob } from '../model/job/surface/ReinforceJob'
-import { Crystal } from '../model/material/Crystal'
-import { Dynamite } from '../model/material/Dynamite'
 import { GameEntity } from '../ECS'
-import { Ore } from '../model/material/Ore'
-import { Selectable } from '../model/Selectable'
 import { SurfaceVertex } from './SurfaceGeometry'
 import { SurfaceMesh } from './SurfaceMesh'
 import { SurfaceType } from './SurfaceType'
@@ -27,9 +23,10 @@ import { WALL_TYPE } from './WallType'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Job } from '../model/job/Job'
 import { JobState } from '../model/job/JobState'
+import { MaterialSpawner } from '../entity/MaterialSpawner'
 import degToRad = MathUtils.degToRad
 
-export class Surface implements Selectable {
+export class Surface {
     terrain: Terrain
     worldMgr: WorldManager
     surfaceType: SurfaceType
@@ -125,10 +122,10 @@ export class Surface implements Selectable {
                 .rotateAround(new Vector2(0, 0), degToRad(-10 + Math.randomInclusive(20)))
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                const crystal = this.worldMgr.entityMgr.placeMaterial(new Crystal(this.worldMgr), vec)
+                const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, vec)
                 EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
-                this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), vec)
+                MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, vec)
                 EventBus.publishEvent(new OreFoundEvent())
             }
         }
@@ -180,11 +177,11 @@ export class Surface implements Selectable {
     private dropContainedMaterials(droppedOre: number, droppedCrystals: number) {
         for (let c = 0; c < droppedOre && this.containedOres > 0; c++) {
             this.containedOres--
-            this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), this.getRandomPosition())
+            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, this.getRandomPosition())
             EventBus.publishEvent(new OreFoundEvent())
         }
         for (let c = 0; c < droppedCrystals; c++) {
-            const crystal = this.worldMgr.entityMgr.placeMaterial(new Crystal(this.worldMgr), this.getRandomPosition())
+            const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, this.getRandomPosition())
             EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
         }
     }
@@ -495,10 +492,8 @@ export class Surface implements Selectable {
         if (!this.isDigable() || this.dynamiteJob) return
         const targetBuilding = this.worldMgr.entityMgr.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
         if (!targetBuilding) throw new Error('Could not find toolstation to spawn dynamite')
-        const dynamite = new Dynamite(this.worldMgr, this)
-        dynamite.sceneEntity.addToScene(targetBuilding.getDropPosition2D(), targetBuilding.sceneEntity.getHeading())
-        this.dynamiteJob = dynamite.setupCarryJob()
-        EventBus.publishEvent(new JobCreateEvent(this.dynamiteJob))
+        const material = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.DYNAMITE, targetBuilding.getDropPosition2D(), targetBuilding.sceneEntity.getHeading(), this)
+        this.dynamiteJob = material.carryJob
         this.updateJobColor()
     }
 

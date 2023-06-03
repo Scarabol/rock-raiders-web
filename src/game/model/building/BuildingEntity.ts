@@ -13,14 +13,9 @@ import { BuildingActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../../terrain/Surface'
-import { Barrier } from '../material/Barrier'
 import { BarrierLocation } from '../material/BarrierLocation'
-import { Crystal } from '../material/Crystal'
-import { ElectricFence } from '../material/ElectricFence'
-import { Ore } from '../material/Ore'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining, RaiderTrainings } from '../raider/RaiderTraining'
-import { Selectable } from '../Selectable'
 import { BuildingSite } from './BuildingSite'
 import { BuildingType } from './BuildingType'
 import { Teleport } from './Teleport'
@@ -28,12 +23,12 @@ import { GameEntity } from '../../ECS'
 import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { MaterialEntity } from '../material/MaterialEntity'
-import { Brick } from '../material/Brick'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
+import { MaterialSpawner } from '../../entity/MaterialSpawner'
 
-export class BuildingEntity implements Selectable {
+export class BuildingEntity {
     readonly entityType: EntityType
     readonly carriedItems: MaterialEntity[] = []
     readonly entity: GameEntity
@@ -157,10 +152,10 @@ export class BuildingEntity implements Selectable {
         this.turnEnergyOff()
         this.powerOffSprite.setEnabled(false)
         for (let c = 0; c < this.stats.CostOre; c++) {
-            this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), this.primarySurface.getRandomPosition())
+            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, this.primarySurface.getRandomPosition())
         }
         for (let c = 0; c < this.stats.CostCrystal; c++) {
-            this.worldMgr.entityMgr.placeMaterial(new Crystal(this.worldMgr), this.primarySurface.getRandomPosition())
+            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, this.primarySurface.getRandomPosition())
         }
         this.carriedItems.forEach((m) => this.worldMgr.entityMgr.placeMaterial(m, this.primarySurface.getRandomPosition()))
         this.surfaces.forEach((s) => s.setBuilding(null))
@@ -186,35 +181,36 @@ export class BuildingEntity implements Selectable {
     }
 
     spawnMaterials(type: EntityType, quantity: number) {
-        const material = []
+        const material = [] // XXX actually this does not require a list
         if (type === EntityType.CRYSTAL) {
             while (GameState.numCrystal > 0 && material.length < quantity) {
                 GameState.numCrystal--
-                material.push(new Crystal(this.worldMgr))
+                material.push(MaterialSpawner.spawnMaterial(this.worldMgr, type, this.getDropPosition2D()))
             }
         } else if (type === EntityType.ORE) {
             while (GameState.numOre > 0 && material.length < quantity) {
                 GameState.numOre--
-                material.push(new Ore(this.worldMgr))
+                material.push(MaterialSpawner.spawnMaterial(this.worldMgr, type, this.getDropPosition2D()))
             }
         } else if (type === EntityType.BRICK) {
             while (GameState.numBrick > 0 && material.length < quantity) {
                 GameState.numBrick--
-                material.push(new Brick(this.worldMgr))
+                material.push(MaterialSpawner.spawnMaterial(this.worldMgr, type, this.getDropPosition2D()))
             }
         } else {
             console.error(`Material drop not implemented for: ${type}`)
         }
         if (material.length > 0) EventBus.publishEvent(new MaterialAmountChanged())
-        material.forEach((m) => this.worldMgr.entityMgr.placeMaterial(m, this.getDropPosition2D()))
     }
 
     spawnBarriers(barrierLocations: BarrierLocation[], site: BuildingSite) {
-        barrierLocations.map((l) => new Barrier(this.worldMgr, l, site)).forEach((b) => this.worldMgr.entityMgr.placeMaterial(b, this.getDropPosition2D()))
+        barrierLocations.forEach((l) => {
+            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.BARRIER, this.getDropPosition2D(), null, null, l, site)
+        })
     }
 
     spawnFence(targetSurface: Surface) {
-        this.worldMgr.entityMgr.placeMaterial(new ElectricFence(this.worldMgr, targetSurface), this.getDropPosition2D())
+        MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ELECTRIC_FENCE, this.getDropPosition2D(), null, targetSurface)
     }
 
     setPowerSwitch(state: boolean) {
@@ -357,7 +353,7 @@ export class BuildingEntity implements Selectable {
 
     depositItems(): void {
         if (this.entityType === EntityType.ORE_REFINERY) {
-            this.worldMgr.entityMgr.placeMaterial(new Brick(this.worldMgr), this.getDropPosition2D())
+            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.BRICK, this.getDropPosition2D())
         } else {
             this.carriedItems.forEach((m) => GameState.depositItem(m))
         }

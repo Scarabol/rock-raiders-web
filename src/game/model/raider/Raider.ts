@@ -16,7 +16,6 @@ import { TerrainPath } from '../../terrain/TerrainPath'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { MoveState } from '../MoveState'
 import { PathTarget } from '../PathTarget'
-import { Selectable } from '../Selectable'
 import { Updatable } from '../Updateable'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { RaiderTool } from './RaiderTool'
@@ -30,7 +29,7 @@ import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 
-export class Raider implements Selectable, Updatable {
+export class Raider implements Updatable {
     readonly entityType: EntityType = EntityType.PILOT
     readonly entity: GameEntity
     worldMgr: WorldManager
