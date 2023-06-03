@@ -183,4 +183,8 @@ export class AnimatedMeshGroup extends Group implements Updatable {
         this.carriedByIndex.clear()
         return dropped
     }
+
+    dispose() {
+        this.animationGroups.forEach((a) => a.dispose())
+    }
 }

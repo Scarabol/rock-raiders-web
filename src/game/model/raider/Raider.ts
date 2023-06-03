@@ -110,7 +110,10 @@ export class Raider implements Selectable, Updatable {
                     this.worldMgr.entityMgr.removeEntity(spider, EntityType.SMALL_SPIDER)
                     this.worldMgr.ecs.removeEntity(spider)
                     const sceneEntityComponent = components.get(SceneEntityComponent)
-                    if (sceneEntityComponent) this.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
+                    if (sceneEntityComponent) {
+                        this.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
+                        sceneEntityComponent.sceneEntity.dispose()
+                    }
                     return true
                 }
                 return false
