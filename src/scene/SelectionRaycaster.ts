@@ -1,6 +1,5 @@
 import { Object3D, Raycaster, Vector2 } from 'three'
 import { GameSelection } from '../game/model/GameSelection'
-import { Selectable } from '../game/model/Selectable'
 import { VehicleEntity } from '../game/model/vehicle/VehicleEntity'
 import { MaterialEntity } from '../game/model/material/MaterialEntity'
 import { Surface } from '../game/terrain/Surface'
@@ -13,6 +12,7 @@ import { BuildingSite } from '../game/model/building/BuildingSite'
 import { EntityType } from '../game/model/EntityType'
 import { SceneSelectionComponent, SceneSelectionUserData } from '../game/component/SceneSelectionComponent'
 import { GameEntity } from '../game/ECS'
+import { SelectionFrameComponent } from '../game/component/SelectionFrameComponent'
 
 export interface CursorTarget {
     raider?: Raider
@@ -73,15 +73,20 @@ class SceneRaycaster {
         this.raycaster.setFromCamera(origin, this.worldMgr.sceneMgr.camera)
     }
 
-    getEntities<T extends Selectable & { entity: GameEntity }>(entities: T[], allowDoubleSelection: boolean): any[] {
+    getEntities<T extends { entity: GameEntity }>(entities: T[], allowDoubleSelection: boolean): any[] {
         const objects = entities.map((m) => this.worldMgr.ecs.getComponents(m.entity).get(SceneSelectionComponent).pickSphere).filter((p) => !!p)
         const intersection = this.raycaster.intersectObjects(objects, false)
         if (intersection.length < 1) return []
         const selection = []
-        const userData = intersection[0].object.userData as SceneSelectionUserData
-        if (userData) {
-            const selectable = entities.find((e) => e.entity === userData.gameEntity)
-            if (selectable?.isInSelection() || (selectable?.selected && allowDoubleSelection)) selection.push(selectable)
+        const gameEntity = (intersection[0].object.userData as SceneSelectionUserData)?.gameEntity
+        if (gameEntity) {
+            const selectionFrameComponent = this.worldMgr.ecs.getComponents(gameEntity).get(SelectionFrameComponent)
+            if (!!selectionFrameComponent && (!selectionFrameComponent.isSelected() || allowDoubleSelection)) {
+                const selectable = entities.find((e) => e.entity === gameEntity)
+                if (selectable) {
+                    selection.push(selectable)
+                }
+            }
         }
         return selection
     }

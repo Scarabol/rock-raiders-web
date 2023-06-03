@@ -16,7 +16,7 @@ import { DrillJob } from '../model/job/surface/DrillJob'
 import { ReinforceJob } from '../model/job/surface/ReinforceJob'
 import { Crystal } from '../model/material/Crystal'
 import { Dynamite } from '../model/material/Dynamite'
-import { ElectricFence } from '../model/material/ElectricFence'
+import { GameEntity } from '../ECS'
 import { Ore } from '../model/material/Ore'
 import { Selectable } from '../model/Selectable'
 import { SurfaceVertex } from './SurfaceGeometry'
@@ -55,7 +55,7 @@ export class Surface implements Selectable {
     building: BuildingEntity = null
     pathBlockedByBuilding: boolean = false
     site: BuildingSite = null
-    fence: ElectricFence = null
+    fence: GameEntity = null
     fenceRequested: boolean = false
     energized: boolean = false
 

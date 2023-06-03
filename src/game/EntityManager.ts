@@ -9,7 +9,6 @@ import { BuildingSite } from './model/building/BuildingSite'
 import { EntityType } from './model/EntityType'
 import { GameSelection } from './model/GameSelection'
 import { Surface } from './terrain/Surface'
-import { ElectricFence } from './model/material/ElectricFence'
 import { MaterialEntity } from './model/material/MaterialEntity'
 import { PathTarget } from './model/PathTarget'
 import { Raider } from './model/raider/Raider'
@@ -30,7 +29,7 @@ export class EntityManager {
     raidersInBeam: Raider[] = []
     materials: MaterialEntity[] = []
     materialsUndiscovered: MaterialEntity[] = []
-    placedFences: ElectricFence[] = []
+    placedFences: MaterialEntity[] = []
     buildingSites: BuildingSite[] = []
     spiders: GameEntity[] = []
     undiscoveredSpiders: GameEntity[] = []

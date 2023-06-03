@@ -52,7 +52,6 @@ export class LegacyAnimatedSceneEntity extends SceneEntity {
         if (!animation) {
             console.warn(`Activity ${activity} unknown or has no animation; Possible options are: ${Array.from(this.animationEntityType.animations.keys())}`)
             console.log(this.animationEntityType.animations)
-            return
         }
         if (this.animation) {
             this.disposeUpgrades()

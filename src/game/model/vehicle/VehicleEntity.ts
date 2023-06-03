@@ -4,7 +4,7 @@ import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
-import { NATIVE_UPDATE_INTERVAL } from '../../../params'
+import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL } from '../../../params'
 import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
@@ -38,7 +38,6 @@ export class VehicleEntity implements Selectable, Updatable {
     readonly entity: GameEntity
     currentPath: TerrainPath = null
     level: number = 0
-    selected: boolean
     job: Job = null
     followUpJob: Job = null
     workAudio: PositionalAudio
@@ -163,21 +162,24 @@ export class VehicleEntity implements Selectable, Updatable {
     Selection
      */
 
+    get selected(): boolean {
+        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)
+        return selectionFrameComponent?.isSelected()
+    }
+
     isInSelection(): boolean {
         return this.isSelectable() || this.selected
     }
 
     select(): boolean {
         if (!this.isSelectable()) return false
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).select()
-        this.selected = true
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
         this.sceneEntity.changeActivity()
         return true
     }
 
     deselect() {
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).deselect()
-        this.selected = false
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
     }
 
     isSelectable(): boolean {
@@ -252,9 +254,10 @@ export class VehicleEntity implements Selectable, Updatable {
         if (this.followUpJob) this.followUpJob.assign(this)
     }
 
-    grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
+    private grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
         if (!carryItem || this.carriedItems.has(carryItem)) return true
-        if (this.moveToClosestTarget(carryItem.getPositionAsPathTarget(), elapsedMs) === MoveState.TARGET_REACHED) {
+        const positionAsPathTarget = PathTarget.fromLocation(carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)
+        if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.changeActivity(AnimEntityActivity.Stand, () => {
                 this.carriedItems.add(carryItem)
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
@@ -311,7 +314,7 @@ export class VehicleEntity implements Selectable, Updatable {
 
     doubleSelect(): boolean {
         if (!this.selected || !this.stats.CanDoubleSelect || !this.driver) return false
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).doubleSelect()
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.doubleSelect()
         return true
     }
 

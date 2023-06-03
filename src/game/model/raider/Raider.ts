@@ -3,7 +3,7 @@ import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent, UpdateRadarEntities } from '../../../event/LocalEvents'
-import { NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
+import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
 import { WorldManager } from '../../WorldManager'
@@ -36,7 +36,6 @@ export class Raider implements Selectable, Updatable {
     worldMgr: WorldManager
     currentPath: TerrainPath = null
     level: number = 0
-    selected: boolean
     job: Job = null
     followUpJob: Job = null
     workAudio: PositionalAudio
@@ -199,21 +198,24 @@ export class Raider implements Selectable, Updatable {
     Selection
      */
 
+    get selected(): boolean {
+        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)
+        return selectionFrameComponent?.isSelected()
+    }
+
     isInSelection(): boolean {
         return this.isSelectable() || this.selected
     }
 
     select(): boolean {
         if (!this.isSelectable()) return false
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).select()
-        this.selected = true
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
         this.sceneEntity.changeActivity()
         return true
     }
 
     deselect() {
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).deselect()
-        this.selected = false
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
     }
 
     isSelectable(): boolean {
@@ -301,7 +303,8 @@ export class Raider implements Selectable, Updatable {
         if (this.carries === carryItem) return true
         this.dropCarried()
         if (!carryItem) return true
-        if (this.moveToClosestTarget(carryItem.getPositionAsPathTarget(), elapsedMs) === MoveState.TARGET_REACHED) {
+        const positionAsPathTarget = PathTarget.fromLocation(carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)
+        if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.changeActivity(RaiderActivity.Collect, () => {
                 this.carries = carryItem
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)

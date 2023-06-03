@@ -41,14 +41,12 @@ export class BuildingEntity implements Selectable {
     sceneEntity: BuildingSceneEntity
     powerOffSprite: BubbleSprite
     level: number = 0
-    selected: boolean
     powerSwitch: boolean = true
     primarySurface: Surface = null
     secondarySurface: Surface = null
     primaryPathSurface: Surface = null
     secondaryPathSurface: Surface = null
     energized: boolean = false
-    inBeam: boolean = false
     getToolPathTarget: PathTarget = null
     carryPathTarget: PathTarget = null
     engineSound: PositionalAudio
@@ -73,6 +71,15 @@ export class BuildingEntity implements Selectable {
         return this.buildingType.stats
     }
 
+    get inBeam(): boolean {
+        return !this.worldMgr.ecs.getComponents(this.entity).has(SelectionFrameComponent)
+    }
+
+    get selected(): boolean {
+        const selectionFrameComponent = this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)
+        return selectionFrameComponent?.isSelected()
+    }
+
     isSelectable(): boolean {
         return !this.selected && !this.inBeam
     }
@@ -83,20 +90,18 @@ export class BuildingEntity implements Selectable {
 
     select(): boolean {
         if (!this.isSelectable()) return false
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).select()
-        this.selected = true
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
         return true
     }
 
     doubleSelect(): boolean {
         if (!this.selected) return false
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).doubleSelect()
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.doubleSelect()
         return true
     }
 
     deselect() {
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent).deselect()
-        this.selected = false
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
     }
 
     getDropPosition2D(): Vector2 {
@@ -146,10 +151,11 @@ export class BuildingEntity implements Selectable {
     }
 
     beamUp() {
-        this.inBeam = true
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
         this.turnEnergyOff()
-        this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
+        this.powerOffSprite.setEnabled(false)
         for (let c = 0; c < this.stats.CostOre; c++) {
             this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), this.primarySurface.getRandomPosition())
         }
@@ -278,7 +284,6 @@ export class BuildingEntity implements Selectable {
         }
         this.surfaces.forEach((s) => s.setBuilding(this))
         const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity.group, {gameEntity: this.entity, entityType: this.entityType}, this.stats, this.stats.PickSphere / 4))
-        this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
         this.addToScene(worldPosition, radHeading)
         if (this.sceneEntity.visible) {
             this.worldMgr.entityMgr.buildings.push(this)
@@ -287,14 +292,14 @@ export class BuildingEntity implements Selectable {
         }
         if (this.surfaces.some((s) => s.selected)) EventBus.publishEvent(new DeselectAll())
         if (this.sceneEntity.visible && !disableTeleportIn) {
-            this.inBeam = true
             this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
             this.sceneEntity.changeActivity(BuildingActivity.Teleport, () => {
-                this.inBeam = false
-                this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
+                this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
+                this.powerOffSprite.setEnabled(!this.isPowered())
                 this.onPlaceDown()
             })
         } else {
+            this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
             this.onPlaceDown()
         }
         this.worldMgr.sceneMgr.terrain.pathFinder.resetGraphsAndCaches()

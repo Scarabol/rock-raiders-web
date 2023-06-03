@@ -14,6 +14,8 @@ import { SurfaceType } from './terrain/SurfaceType'
 import { BuildingSite } from './model/building/BuildingSite'
 import { SoundManager } from '../audio/SoundManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
+import { SelectionFrameComponent } from './component/SelectionFrameComponent'
+import { BeamUpComponent } from './component/BeamUpComponent'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -48,7 +50,14 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_FENCE_BEAMUP, () => {
-            entityMgr.selection.fence?.beamUp()
+            const fence = entityMgr.selection.fence
+            fence.worldMgr.ecs.getComponents(fence.entity).get(SelectionFrameComponent)?.deselect()
+            fence.worldMgr.ecs.removeComponent(fence.entity, SelectionFrameComponent)
+            fence.targetSurface.fence = null
+            fence.targetSurface.fenceRequested = false
+            // TODO stop spawning lightning animations
+            fence.worldMgr.ecs.addComponent(fence.entity, new BeamUpComponent(fence))
+            // TODO update defence grid
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_RAIDER_SPAWN_REQUEST, (event: ChangeRaiderSpawnRequest) => {
             if (event.increase) {

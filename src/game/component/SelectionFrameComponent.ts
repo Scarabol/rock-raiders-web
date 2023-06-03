@@ -39,4 +39,8 @@ export class SelectionFrameComponent extends AbstractGameComponent {
         this.selectionFrame.visible = false
         this.selectionFrameDouble.visible = false
     }
+
+    isSelected(): boolean {
+        return this.selectionFrame.visible || this.selectionFrameDouble.visible
+    }
 }
