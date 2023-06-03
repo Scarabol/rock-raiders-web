@@ -52,7 +52,7 @@ export class Raider implements Selectable, Updatable {
         this.tools.set(RaiderTool.DRILL, true)
         this.sceneEntity = new RaiderSceneEntity(worldMgr.sceneMgr, 'mini-figures/pilot')
         this.entity = this.worldMgr.ecs.addEntity()
-        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent()) // TODO trigger beam-up on death
+        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent())
         this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(16, 10, this.sceneEntity.group, true))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }

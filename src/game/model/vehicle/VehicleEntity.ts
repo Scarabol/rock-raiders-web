@@ -55,7 +55,7 @@ export class VehicleEntity implements Selectable, Updatable {
         this.sceneEntity = sceneEntity
         this.sceneEntity.speed = this.getSpeed() // TODO update speed on entity upgrade
         this.entity = this.worldMgr.ecs.addEntity()
-        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent()) // TODO trigger beam-up on death
+        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent())
         this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(24, 14, this.sceneEntity.group, true))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }

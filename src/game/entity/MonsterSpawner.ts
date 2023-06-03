@@ -28,7 +28,6 @@ export class MonsterSpawner {
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/SpiderSB'))
                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.smallSpider, 10000))
-                worldMgr.ecs.addComponent(entity, new HealthComponent())
                 break
             case EntityType.BAT: // TODO make bats appear in flocks
                 positionComponent.floorOffset = TILESIZE / 2

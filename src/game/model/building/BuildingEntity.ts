@@ -62,7 +62,7 @@ export class BuildingEntity implements Selectable {
         this.sceneEntity.addChild(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
         this.entity = this.worldMgr.ecs.addEntity()
-        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent()) // TODO trigger beam-up on death
+        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent())
         this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(24, 14, this.sceneEntity.group, false))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }

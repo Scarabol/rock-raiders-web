@@ -69,4 +69,5 @@ export enum EventKey {
     UPDATE_PRIORITIES,
     TAKE_SCREENSHOT,
     TOGGLE_ALARM,
+    DYNAMITE_EXPLOSION,
 }

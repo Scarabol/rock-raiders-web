@@ -61,8 +61,8 @@ export class MainCfg extends BaseConfig {
     // AlwaysRockFall = TRUE
     // SelectionArrow = arrow.bmp
     // MinEnergyForEat = 25.0
-    // DynamiteDamageRadius = 75.0
-    // DynamiteMaxDamage = 150.0
+    DynamiteDamageRadius = 75.0
+    DynamiteMaxDamage = 150.0
     // BirdScarerRadius = 100.0
     // StartMessage = Rock_Raiders
     // Version = V.0.121

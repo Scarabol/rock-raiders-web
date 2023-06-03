@@ -4,6 +4,7 @@ import { SupervisedJob } from '../game/Supervisor'
 import { BRICK_ORE_VALUE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
+import { Vector2 } from 'three'
 
 export class WorldEvent extends GameEvent {
     constructor(entityKey: EventKey) {
@@ -83,5 +84,11 @@ export class OreFoundEvent extends WorldEvent {
 export class ToggleAlarmEvent extends WorldEvent {
     constructor(readonly alarmState: boolean) {
         super(EventKey.TOGGLE_ALARM)
+    }
+}
+
+export class DynamiteExplosionEvent extends WorldEvent {
+    constructor(readonly position: Vector2) {
+        super(EventKey.DYNAMITE_EXPLOSION)
     }
 }
