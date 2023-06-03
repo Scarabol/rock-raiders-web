@@ -11,7 +11,6 @@ import { BuildingEntity } from '../model/building/BuildingEntity'
 import { BuildingSite } from '../model/building/BuildingSite'
 import { EntityType } from '../model/EntityType'
 import { CarryJob } from '../model/job/CarryJob'
-import { CancelableJob } from '../model/job/Job'
 import { ClearRubbleJob } from '../model/job/surface/ClearRubbleJob'
 import { DrillJob } from '../model/job/surface/DrillJob'
 import { ReinforceJob } from '../model/job/surface/ReinforceJob'
@@ -26,6 +25,8 @@ import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
 import { WALL_TYPE } from './WallType'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { Job } from '../model/job/Job'
+import { JobState } from '../model/job/JobState'
 import degToRad = MathUtils.degToRad
 
 export class Surface implements Selectable {
@@ -201,8 +202,8 @@ export class Surface implements Selectable {
         this.updateJobColor()
     }
 
-    private static safeRemoveJob(job: CancelableJob): null {
-        job?.cancel()
+    private static safeRemoveJob(job: Job): null {
+        if (job) job.jobState = JobState.CANCELED
         return null
     }
 

@@ -3,11 +3,10 @@ import { AnimationActivity } from '../anim/AnimationActivity'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
-import { AbstractJob, CancelableJob, JobFulfiller } from './Job'
-import { JobState } from './JobState'
+import { AbstractJob, JobFulfiller } from './Job'
 import { PriorityIdentifier } from './PriorityIdentifier'
 
-export class CarryJob extends AbstractJob implements SupervisedJob, CancelableJob {
+export class CarryJob extends AbstractJob implements SupervisedJob {
     fulfiller: JobFulfiller = null
     targets: PathTarget[] = []
     actualTarget: PathTarget = null
@@ -67,11 +66,5 @@ export class CarryJob extends AbstractJob implements SupervisedJob, CancelableJo
 
     hasFulfiller(): boolean {
         return !!this.fulfiller
-    }
-
-    cancel() {
-        this.jobState = JobState.CANCELED
-        this.fulfiller?.stopJob()
-        this.fulfiller = null
     }
 }

@@ -1,9 +1,8 @@
 import { SupervisedJob } from '../../Supervisor'
-import { AbstractJob, CancelableJob, JobFulfiller } from './Job'
-import { JobState } from './JobState'
+import { AbstractJob, JobFulfiller } from './Job'
 import { PriorityIdentifier } from './PriorityIdentifier'
 
-export abstract class ShareableJob extends AbstractJob implements SupervisedJob, CancelableJob {
+export abstract class ShareableJob extends AbstractJob implements SupervisedJob {
     protected fulfiller: JobFulfiller[] = []
 
     abstract getPriorityIdentifier(): PriorityIdentifier
@@ -21,12 +20,5 @@ export abstract class ShareableJob extends AbstractJob implements SupervisedJob,
 
     hasFulfiller(): boolean {
         return this.fulfiller.length > 0
-    }
-
-    cancel() {
-        this.jobState = JobState.CANCELED
-        const fulfiller = this.fulfiller // ensure consistency while processing
-        this.fulfiller = []
-        fulfiller.forEach((fulfiller) => fulfiller.stopJob())
     }
 }

@@ -38,10 +38,6 @@ export interface Job {
     addProgress(fulfiller: JobFulfiller, elapsedMs: number): void
 }
 
-export interface CancelableJob extends Job {
-    cancel(): void
-}
-
 export abstract class AbstractJob implements Job {
     jobState: JobState = JobState.INCOMPLETE
     surface: Surface = null
