@@ -3,9 +3,9 @@ import { PositionComponent } from '../component/PositionComponent'
 import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
-import { HealthComponent } from '../component/HealthComponent'
 import { SceneEntityComponent } from '../component/SceneEntityComponent'
 import { AnimEntityActivity } from '../model/anim/AnimationActivity'
+import { EntityType } from '../model/EntityType'
 
 export class MovementSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([PositionComponent, WorldTargetComponent, MovableStatsComponent])
@@ -27,18 +27,17 @@ export class MovementSystem extends AbstractGameSystem {
                 if (targetWorld.distanceToSquared(positionComponent.position) <= entitySpeedSq + worldTargetComponent.radiusSq) {
                     this.ecs.removeComponent(entity, WorldTargetComponent)
                     const sceneEntityComponent = components.get(SceneEntityComponent)
-                    if (sceneEntityComponent) sceneEntityComponent.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    if (positionComponent.surface.wallType && statsComponent.enterWall) {
+                        this.ecs.worldMgr.entityMgr.removeEntity(entity, EntityType.SMALL_SPIDER) // TODO remove other entity types from entity manager too
+                        this.ecs.removeEntity(entity)
+                        if (sceneEntityComponent) this.ecs.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
+                    } else if (sceneEntityComponent) {
+                        sceneEntityComponent.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    }
                 } else if (entitySpeed > 0) {
                     step.clampLength(0, entitySpeed)
                     positionComponent.position.add(step)
-                    const nextSurface = terrain.getSurfaceFromWorld(positionComponent.position)
-                    if (positionComponent.surface !== nextSurface) {
-                        positionComponent.surface = nextSurface
-                        if (positionComponent.surface.wallType && statsComponent.enterWall) {
-                            const healthComponent = components.get(HealthComponent)
-                            if (healthComponent) healthComponent.markDead()
-                        }
-                    }
+                    positionComponent.surface = terrain.getSurfaceFromWorld(positionComponent.position)
                     positionComponent.markDirty()
                 } else {
                     console.warn(`Entity ${entity} speed (${entitySpeed}) is zero or less`)

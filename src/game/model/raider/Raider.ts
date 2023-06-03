@@ -27,6 +27,7 @@ import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { PositionComponent } from '../../component/PositionComponent'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
+import { SceneEntityComponent } from '../../component/SceneEntityComponent'
 
 export class Raider implements Selectable, Updatable {
     readonly entityType: EntityType = EntityType.PILOT
@@ -103,11 +104,13 @@ export class Raider implements Selectable, Updatable {
             this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
                 const raiderPosition2D = this.sceneEntity.position2D
                 const components = this.worldMgr.ecs.getComponents(spider)
-                if (!components) return false // FIXME this should not happen if dead entities are removed from entityMgr
                 const spiderPosition2D = components.get(PositionComponent).getPosition2D()
                 if (raiderPosition2D.distanceToSquared(spiderPosition2D) < SPIDER_SLIP_RANGE_SQ) {
                     this.slip()
-                    components.get(HealthComponent).markDead()
+                    this.worldMgr.entityMgr.removeEntity(spider, EntityType.SMALL_SPIDER)
+                    this.worldMgr.ecs.removeEntity(spider)
+                    const sceneEntityComponent = components.get(SceneEntityComponent)
+                    if (sceneEntityComponent) this.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
                     return true
                 }
                 return false
