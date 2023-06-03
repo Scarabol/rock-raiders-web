@@ -22,6 +22,7 @@ import { SceneEntityPositionSystem } from './system/SceneEntityPositionSystem'
 import { SceneEntityHeadingSystem } from './system/SceneEntityHeadingSystem'
 import { RandomMoveBehaviorSystem } from './system/RandomMoveBehaviorSystem'
 import { EntityHealthSystem } from './system/EntityHealthSystem'
+import { BeamUpSystem } from './system/BeamUpSystem'
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
@@ -47,6 +48,7 @@ export class WorldManager {
         this.ecs.addSystem(new SceneEntityHeadingSystem())
         this.ecs.addSystem(new RandomMoveBehaviorSystem())
         this.ecs.addSystem(new EntityHealthSystem())
+        this.ecs.addSystem(new BeamUpSystem())
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {

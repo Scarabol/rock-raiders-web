@@ -8,7 +8,6 @@ import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BubbleSprite } from '../../../scene/BubbleSprite'
 import { BuildingSceneEntity } from '../../../scene/entities/BuildingSceneEntity'
-import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
 import { BuildingActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
@@ -30,8 +29,9 @@ import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { Brick } from '../material/Brick'
+import { BeamUpComponent } from '../../component/BeamUpComponent'
 
-export class BuildingEntity implements Selectable, BeamUpEntity {
+export class BuildingEntity implements Selectable {
     readonly entityType: EntityType
     readonly carriedItems: MaterialEntity[] = []
     readonly entity: GameEntity
@@ -47,7 +47,6 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     secondaryPathSurface: Surface = null
     energized: boolean = false
     inBeam: boolean = false
-    beamUpAnimator: BeamUpAnimator = null
     getToolPathTarget: PathTarget = null
     carryPathTarget: PathTarget = null
     engineSound: PositionalAudio
@@ -159,7 +158,7 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
         }
         this.carriedItems.forEach((m) => this.worldMgr.entityMgr.placeMaterial(m, this.primarySurface.getRandomPosition()))
         this.surfaces.forEach((s) => s.setBuilding(null))
-        this.beamUpAnimator = new BeamUpAnimator(this)
+        this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
@@ -338,7 +337,6 @@ export class BuildingEntity implements Selectable, BeamUpEntity {
     }
 
     update(elapsedMs: number) {
-        this.beamUpAnimator?.update(elapsedMs)
         this.powerOffSprite.update(elapsedMs)
     }
 

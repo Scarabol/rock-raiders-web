@@ -1,6 +1,5 @@
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { SceneEntity } from '../../../scene/SceneEntity'
-import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
@@ -9,16 +8,19 @@ import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { Selectable } from '../Selectable'
 import { MaterialEntity } from './MaterialEntity'
+import { BeamUpComponent } from '../../component/BeamUpComponent'
+import { GameEntity } from '../../ECS'
 
-export class ElectricFence extends MaterialEntity implements Selectable, BeamUpEntity {
+export class ElectricFence extends MaterialEntity implements Selectable {
+    entity: GameEntity
     selected: boolean = false
     inBeam: boolean = false
-    beamUpAnimator: BeamUpAnimator = null
 
     constructor(worldMgr: WorldManager, readonly targetSurface: Surface) {
         super(worldMgr, EntityType.ELECTRIC_FENCE, PriorityIdentifier.CONSTRUCTION, RaiderTraining.NONE)
         this.sceneEntity = new SceneEntity(this.worldMgr.sceneMgr)
         this.sceneEntity.addToMeshGroup(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ElectricFence))
+        this.entity = this.worldMgr.ecs.addEntity()
     }
 
     get stats() {
@@ -72,12 +74,8 @@ export class ElectricFence extends MaterialEntity implements Selectable, BeamUpE
         this.targetSurface.fence = null
         this.targetSurface.fenceRequested = false
         // TODO stop spawning lightning animations
-        this.beamUpAnimator = new BeamUpAnimator(this)
+        this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         // TODO update defence grid
-    }
-
-    update(elapsedMs: number) {
-        this.beamUpAnimator?.update(elapsedMs)
     }
 
     disposeFromWorld() {

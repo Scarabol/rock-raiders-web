@@ -6,7 +6,6 @@ import { RaidersAmountChangedEvent, UpdateRadarEntities } from '../../../event/L
 import { NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
-import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
 import { AnimationActivity, AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
@@ -27,8 +26,9 @@ import { GameEntity } from '../../ECS'
 import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { PositionComponent } from '../../component/PositionComponent'
+import { BeamUpComponent } from '../../component/BeamUpComponent'
 
-export class Raider implements Selectable, BeamUpEntity, Updatable {
+export class Raider implements Selectable, Updatable {
     readonly entityType: EntityType = EntityType.PILOT
     readonly entity: GameEntity
     worldMgr: WorldManager
@@ -37,7 +37,6 @@ export class Raider implements Selectable, BeamUpEntity, Updatable {
     selected: boolean
     job: Job = null
     followUpJob: Job = null
-    beamUpAnimator: BeamUpAnimator = null
     workAudio: PositionalAudio
     sceneEntity: RaiderSceneEntity
     tools: Map<RaiderTool, boolean> = new Map()
@@ -63,7 +62,6 @@ export class Raider implements Selectable, BeamUpEntity, Updatable {
 
     update(elapsedMs: number) {
         this.work(elapsedMs)
-        this.beamUpAnimator?.update(elapsedMs)
     }
 
     isDriving(): boolean {
@@ -72,7 +70,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable {
 
     beamUp() {
         this.stopJob()
-        this.beamUpAnimator = new BeamUpAnimator(this)
+        this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         EventBus.publishEvent(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
     }
 
@@ -214,7 +212,11 @@ export class Raider implements Selectable, BeamUpEntity, Updatable {
     }
 
     isSelectable(): boolean {
-        return !this.selected && !this.beamUpAnimator && !this.slipped && !this.vehicle
+        return !this.selected && !this.isInBeam() && !this.slipped && !this.vehicle
+    }
+
+    private isInBeam(): boolean {
+        return this.worldMgr.ecs.getComponents(this.entity).has(BeamUpComponent)
     }
 
     /*
@@ -257,7 +259,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable {
             this.sceneEntity.changeActivity(this.vehicle.getDriverActivity())
             return
         }
-        if (!this.job || this.selected || !!this.beamUpAnimator) return
+        if (!this.job || this.selected || this.isInBeam()) return
         if (this.job.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
             return
@@ -333,7 +335,7 @@ export class Raider implements Selectable, BeamUpEntity, Updatable {
     }
 
     isReadyToTakeAJob(): boolean {
-        return !this.job && !this.selected && !this.beamUpAnimator && !this.slipped
+        return !this.job && !this.selected && !this.isInBeam() && !this.slipped
     }
 
     maxTools(): number {

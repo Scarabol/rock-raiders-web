@@ -227,6 +227,7 @@ export class SceneManager implements Updatable {
         group.rotateOnAxis(new Vector3(0, 1, 0), heading)
         this.miscAnims.add(group)
         this.scene.add(group)
+        return group
     }
 
     addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean = false): PositionalAudio {

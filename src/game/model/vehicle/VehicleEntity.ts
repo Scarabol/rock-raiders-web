@@ -6,7 +6,6 @@ import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { NATIVE_UPDATE_INTERVAL } from '../../../params'
 import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
-import { BeamUpAnimator, BeamUpEntity } from '../../BeamUpAnimator'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
@@ -30,8 +29,9 @@ import { Updatable } from '../Updateable'
 import { HealthComponent } from '../../component/HealthComponent'
 import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { GameEntity } from '../../ECS'
+import { BeamUpComponent } from '../../component/BeamUpComponent'
 
-export class VehicleEntity implements Selectable, BeamUpEntity, Updatable {
+export class VehicleEntity implements Selectable, Updatable {
     readonly entityType: EntityType
     readonly worldMgr: WorldManager
     readonly entity: GameEntity
@@ -40,7 +40,6 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable {
     selected: boolean
     job: Job = null
     followUpJob: Job = null
-    beamUpAnimator: BeamUpAnimator = null
     workAudio: PositionalAudio
     stats: VehicleEntityStats
     sceneEntity: VehicleSceneEntity
@@ -63,12 +62,11 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable {
 
     update(elapsedMs: number) {
         this.work(elapsedMs)
-        this.beamUpAnimator?.update(elapsedMs)
     }
 
     beamUp() {
         this.dropDriver()
-        this.beamUpAnimator = new BeamUpAnimator(this)
+        this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         const surface = this.sceneEntity.surfaces[0]
         for (let c = 0; c < this.stats.CostOre; c++) {
             this.worldMgr.entityMgr.placeMaterial(new Ore(this.worldMgr), surface.getRandomPosition())
@@ -184,7 +182,11 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable {
     }
 
     isSelectable(): boolean {
-        return !this.selected && !this.beamUpAnimator
+        return !this.selected && !this.isInBeam()
+    }
+
+    isInBeam(): boolean {
+        return this.worldMgr.ecs.getComponents(this.entity).has(BeamUpComponent)
     }
 
     /*
@@ -203,7 +205,7 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable {
     }
 
     private work(elapsedMs: number) {
-        if (!this.job || this.selected || !!this.beamUpAnimator) return
+        if (!this.job || this.selected || this.isInBeam()) return
         if (this.job.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
             return
@@ -328,7 +330,7 @@ export class VehicleEntity implements Selectable, BeamUpEntity, Updatable {
     }
 
     isReadyToTakeAJob(): boolean {
-        return !this.job && !this.selected && !this.beamUpAnimator && !!this.driver
+        return !this.job && !this.selected && !this.isInBeam() && !!this.driver
     }
 
     getCarryCapacity(): number {
