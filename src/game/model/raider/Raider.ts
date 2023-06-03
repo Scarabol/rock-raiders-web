@@ -333,6 +333,6 @@ export class Raider implements Selectable, BeamUpEntity, Updatable {
     }
 
     maxTools(): number {
-        return this.level + 2
+        return this.stats.NumOfToolsCanCarry[this.level] ?? 2
     }
 }
