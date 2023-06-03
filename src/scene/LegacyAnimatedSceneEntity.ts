@@ -23,7 +23,7 @@ export class LegacyAnimatedSceneEntity extends SceneEntity {
 
     constructor(sceneMgr: SceneManager, aeName: string, floorOffset: number = 0.1) {
         super(sceneMgr, floorOffset)
-        const aeFilename =`${aeName}/${aeName.split('/').last()}.ae`
+        const aeFilename = `${aeName}/${aeName.split('/').last()}.ae`
         let cfgRoot = ResourceManager.getResource(aeFilename)
         if (!cfgRoot) throw new Error(`Could not get animation entity type for: ${aeFilename}`)
         this.animationEntityType = new AnimEntityLoader(aeFilename, cfgRoot, this.sceneMgr).loadModels()
@@ -89,11 +89,11 @@ export class LegacyAnimatedSceneEntity extends SceneEntity {
             upgrades0000.forEach((upgrade) => {
                 const joint = this.getNullJointForUpgrade(upgrade)
                 if (joint) {
-                    const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath)
-                    if (lwoModel) {
+                    try {
+                        const lwoModel = ResourceManager.getLwoModel(upgrade.upgradeFilepath)
                         joint.add(lwoModel)
                         this.upgrades.push(lwoModel)
-                    } else {
+                    } catch (e) {
                         const animatedUpgrade = new LegacyAnimatedSceneEntity(this.sceneMgr, upgrade.upgradeFilepath)
                         animatedUpgrade.changeActivity(activity)
                         joint.add(animatedUpgrade.group)
