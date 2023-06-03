@@ -17,6 +17,7 @@ export interface MovableEntityStats extends PickSphereStats {
     CrossLand: boolean
     CrossWater: boolean
     CrossLava: boolean
+    RandomEnterWall: boolean
 }
 
 export class VehicleEntityStats extends BaseConfig implements MovableEntityStats, DoubleSelectStats {
@@ -30,6 +31,7 @@ export class VehicleEntityStats extends BaseConfig implements MovableEntityStats
     RouteSpeed: number[] = []
     PathCoef: number = 1
     RubbleCoef: number = 1
+    RandomEnterWall: boolean = false
     CrossLand: boolean = false
     CrossWater: boolean = false
     CrossLava: boolean = false
@@ -96,6 +98,7 @@ export class PilotStats extends BaseConfig implements MovableEntityStats {
     EnergyDecayRate: number = 0.25
     CanClearRubble: boolean = true
     NumOfToolsCanCarry: number[] = [2, 3, 4, 5]
+    RandomEnterWall: boolean = false
     CrossLand: boolean = true
     CrossWater: boolean = false
     CrossLava: boolean = false

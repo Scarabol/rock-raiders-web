@@ -34,7 +34,7 @@ export class MovementSystem extends AbstractGameSystem {
                     const nextSurface = terrain.getSurfaceFromWorld(positionComponent.position)
                     if (positionComponent.surface !== nextSurface) {
                         positionComponent.surface = nextSurface
-                        if (positionComponent.surface.wallType) {
+                        if (positionComponent.surface.wallType && statsComponent.enterWall) {
                             const healthComponent = components.get(HealthComponent)
                             if (healthComponent) healthComponent.markDead()
                         }

@@ -8,7 +8,6 @@ import { EntityMapMarkerComponent, MapMarkerType } from '../component/EntityMapM
 import { HealthBarComponent } from '../component/HealthBarComponent'
 import { AnimatedMeshGroup } from '../../scene/AnimatedMeshGroup'
 import { Vector2 } from 'three'
-import { RandomMoveComponent } from '../component/RandomMoveComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
@@ -28,17 +27,15 @@ export class MonsterSpawner {
                 positionComponent.floorOffset = 1
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/SpiderSB'))
                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.smallSpider))
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.smallSpider, 10000))
                 worldMgr.ecs.addComponent(entity, new HealthComponent())
-                worldMgr.ecs.addComponent(entity, new RandomMoveComponent(ResourceManager.configuration.stats.smallSpider, 10000))
                 break
             case EntityType.BAT: // TODO make bats appear in flocks
                 positionComponent.floorOffset = TILESIZE / 2
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/bat'))
                 sceneEntity.setAnimation(AnimEntityActivity.Route)
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.bat))
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.bat, 0))
                 worldMgr.ecs.addComponent(entity, new EntityMapMarkerComponent(MapMarkerType.MONSTER))
-                worldMgr.ecs.addComponent(entity, new RandomMoveComponent(ResourceManager.configuration.stats.bat, 0))
                 break
             case EntityType.ICE_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster')
