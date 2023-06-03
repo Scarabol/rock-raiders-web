@@ -6,13 +6,15 @@ import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
+import { Raider } from '../../raider/Raider'
+import { VehicleEntity } from '../../vehicle/VehicleEntity'
 
 export class CompleteSurfaceJob extends ShareableJob {
-    readonly workplaces: PathTarget[]
+    readonly workplace: PathTarget
 
     constructor(readonly surface: Surface, readonly placedItems: MaterialEntity[]) {
         super()
-        this.workplaces = [PathTarget.fromLocation(surface.getRandomPosition())]
+        this.workplace = PathTarget.fromLocation(surface.getRandomPosition())
     }
 
     onJobComplete() {
@@ -31,8 +33,8 @@ export class CompleteSurfaceJob extends ShareableJob {
         return PriorityIdentifier.CONSTRUCTION
     }
 
-    getWorkplaces(): PathTarget[] {
-        return this.workplaces // TODO return empty array, if surface cannot be repaired
+    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+        return this.workplace // TODO return empty array, if surface cannot be repaired
     }
 
     getWorkActivity(): AnimationActivity {

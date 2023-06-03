@@ -69,9 +69,7 @@ export class Supervisor {
             let closestVehicleDistance: number = null
             unemployedVehicles.forEach((vehicle) => {
                 if (vehicle.isPrepared(job)) {
-                    const pathToJob = job.getWorkplaces().map((b) => vehicle.findPathToTarget(b))
-                        .filter((t) => !!t)
-                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                    const pathToJob = vehicle.findPathToTarget(job.getWorkplace(vehicle))
                     if (pathToJob) {
                         const dist = pathToJob.lengthSq
                         if (closestVehicleDistance === null || dist < closestVehicleDistance) {
@@ -101,9 +99,7 @@ export class Supervisor {
                 const hasTraining = raider.hasTraining(requiredTraining)
                 if (raider.isPrepared(job)) {
                     // TODO path to job is actually path to item, if exists
-                    const pathToJob = job.getWorkplaces().map((b) => raider.findPathToTarget(b))
-                        .filter((t) => !!t)
-                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                    const pathToJob = raider.findPathToTarget(job.getWorkplace(raider))
                     if (pathToJob) {
                         const dist = pathToJob.lengthSq
                         if (minDistance === null || dist < minDistance) {

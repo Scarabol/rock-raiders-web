@@ -15,7 +15,7 @@ export abstract class MaterialEntity {
     entity: GameEntity
     carryJob: CarryJob = null
     sceneEntity: SceneEntity = null
-    positionAsPathTargets: PathTarget[] = []
+    positionAsPathTarget: PathTarget
 
     protected constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType, readonly priorityIdentifier: PriorityIdentifier, readonly requiredTraining: RaiderTraining) {
         this.entity = this.worldMgr.ecs.addEntity()
@@ -31,12 +31,12 @@ export abstract class MaterialEntity {
         return this.carryJob
     }
 
-    getPositionAsPathTargets(): PathTarget[] {
+    getPositionAsPathTarget(): PathTarget {
         const position = this.sceneEntity.position2D
-        if (this.positionAsPathTargets.length < 1 || !this.positionAsPathTargets[0].targetLocation.equals(position)) {
-            this.positionAsPathTargets = [PathTarget.fromLocation(position, ITEM_ACTION_RANGE_SQ)] // XXX becomes obsolete when using setter to change position
+        if (!this.positionAsPathTarget || !this.positionAsPathTarget.targetLocation.equals(position)) {
+            this.positionAsPathTarget = PathTarget.fromLocation(position, ITEM_ACTION_RANGE_SQ)
         }
-        return this.positionAsPathTargets
+        return this.positionAsPathTarget
     }
 
     disposeFromWorld() {

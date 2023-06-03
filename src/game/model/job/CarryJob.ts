@@ -5,21 +5,25 @@ import { PathTarget } from '../PathTarget'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { AbstractJob, JobFulfiller } from './Job'
 import { PriorityIdentifier } from './PriorityIdentifier'
+import { Raider } from '../raider/Raider'
+import { VehicleEntity } from '../vehicle/VehicleEntity'
 
 export class CarryJob extends AbstractJob implements SupervisedJob {
     fulfiller: JobFulfiller = null
-    targets: PathTarget[] = []
-    actualTarget: PathTarget = null
+    target: PathTarget
 
     constructor(readonly carryItem: MaterialEntity) {
         super()
     }
 
-    getWorkplaces(): PathTarget[] {
-        if (this.targets.length < 1 || this.actualTarget?.isInvalid()) {
-            this.targets = this.carryItem.findCarryTargets()
+    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+        if (!this.target || this.target?.isInvalid()) {
+            this.target = this.carryItem.findCarryTargets()
+                .map((b) => entity.findPathToTarget(b))
+                .filter((t) => !!t)
+                .sort((l, r) => l.lengthSq - r.lengthSq)[0].target
         }
-        return this.targets
+        return this.target
     }
 
     getPriorityIdentifier(): PriorityIdentifier {
@@ -30,27 +34,20 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
         return this.carryItem.requiredTraining
     }
 
-    setActualWorkplace(target: PathTarget) {
-        if (this.actualTarget === target) return
-        this.actualTarget?.site?.unAssign(this.carryItem)
-        this.actualTarget = target
-        this.actualTarget?.site?.assign(this.carryItem)
-    }
-
     getWorkActivity(): AnimationActivity {
-        return this.actualTarget.getDropAction()
+        return this.target?.getDropAction()
     }
 
     isReadyToComplete(): boolean {
-        return this.actualTarget.canGatherItem()
+        return !!(this.target?.canGatherItem())
     }
 
     onJobComplete() {
         super.onJobComplete()
-        this.fulfiller.sceneEntity.headTowards(this.actualTarget.targetLocation)
+        this.fulfiller.sceneEntity.headTowards(this.target.targetLocation)
         this.fulfiller.dropCarried()
-        this.carryItem.sceneEntity.position.copy(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.actualTarget.targetLocation))
-        this.actualTarget.gatherItem(this.carryItem)
+        this.carryItem.sceneEntity.position.copy(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
+        this.target.gatherItem(this.carryItem)
         this.carryItem.onCarryJobComplete()
     }
 

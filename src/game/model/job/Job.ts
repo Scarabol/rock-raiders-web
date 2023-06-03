@@ -27,9 +27,7 @@ export interface Job {
 
     onJobComplete(): void
 
-    getWorkplaces(): PathTarget[]
-
-    setActualWorkplace(target: PathTarget): void
+    getWorkplace(entity: Raider | VehicleEntity): PathTarget
 
     getWorkActivity(): AnimationActivity
 
@@ -63,10 +61,7 @@ export abstract class AbstractJob implements Job {
         this.jobState = JobState.COMPLETE
     }
 
-    abstract getWorkplaces(): PathTarget[]
-
-    setActualWorkplace(target: PathTarget) {
-    }
+    abstract getWorkplace(entity: Raider | VehicleEntity): PathTarget
 
     getWorkActivity(): AnimationActivity {
         return null

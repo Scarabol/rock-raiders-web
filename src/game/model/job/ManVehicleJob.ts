@@ -5,27 +5,28 @@ import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { JobState } from './JobState'
 import { PriorityIdentifier } from './PriorityIdentifier'
 import { RaiderJob } from './raider/RaiderJob'
+import { Raider } from '../raider/Raider'
 
 export class ManVehicleJob extends RaiderJob implements SupervisedJob {
     vehicle: VehicleEntity
-    workplaces: PathTarget[]
+    workplace: PathTarget
 
     constructor(vehicle: VehicleEntity) {
         super()
         this.vehicle = vehicle
         this.vehicle.callManJob = this
-        this.workplaces = [PathTarget.fromLocation(this.vehicle.sceneEntity.position2D, this.vehicle.sceneEntity.getRadiusSquare())]
+        this.workplace = PathTarget.fromLocation(this.vehicle.sceneEntity.position2D, this.vehicle.sceneEntity.getRadiusSquare())
     }
 
-    getWorkplaces(): PathTarget[] {
+    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         if (this.vehicle.isInBeam()) {
             this.jobState = JobState.CANCELED
-            return []
+            return null
         } else if (this.vehicle.driver) {
             this.jobState = JobState.COMPLETE
-            return []
+            return null
         }
-        return this.workplaces
+        return this.workplace
     }
 
     onJobComplete() {

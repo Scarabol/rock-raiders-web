@@ -4,6 +4,8 @@ import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
+import { Raider } from '../../raider/Raider'
+import { VehicleEntity } from '../../vehicle/VehicleEntity'
 
 export class ClearRubbleJob extends ShareableJob {
     lastRubblePositions: PathTarget[]
@@ -17,14 +19,17 @@ export class ClearRubbleJob extends ShareableJob {
         return RaiderTool.SHOVEL
     }
 
-    getWorkplaces(): PathTarget[] { // TODO optimize performance and code duplication
-        if (!this.surface.hasRubble()) return []
+    getWorkplace(entity: Raider | VehicleEntity): PathTarget { // TODO optimize performance and code duplication
+        if (!this.surface.hasRubble()) return null
         const surfaceRubblePositions = this.surface.rubblePositions
         if (!this.lastRubblePositions.every((d) => surfaceRubblePositions.some((p) => p.equals(d.targetLocation))) ||
             !surfaceRubblePositions.every((p) => this.lastRubblePositions.some((d) => p.equals(d.targetLocation)))) {
             this.lastRubblePositions = surfaceRubblePositions.map((p) => PathTarget.fromLocation(p))
         }
         return this.lastRubblePositions
+            .map((b) => entity.findPathToTarget(b))
+            .filter((t) => !!t)
+            .sort((l, r) => l.lengthSq - r.lengthSq)[0].target
     }
 
     onJobComplete() {

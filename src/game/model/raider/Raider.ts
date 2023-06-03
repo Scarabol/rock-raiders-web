@@ -91,6 +91,7 @@ export class Raider implements Selectable, Updatable {
      */
 
     findPathToTarget(target: PathTarget): TerrainPath {
+        if (!target) return null
         return new TerrainPath(target, this.findPath(target.targetLocation))
     }
 
@@ -98,9 +99,8 @@ export class Raider implements Selectable, Updatable {
         return this.worldMgr.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, targetLocation, this.stats, true)
     }
 
-    private moveToClosestTarget(target: PathTarget[], elapsedMs: number): MoveState {
+    private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
-        this.job.setActualWorkplace(this.currentPath?.target)
         if (result === MoveState.MOVED) {
             this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
                 const raiderPosition2D = this.sceneEntity.position2D
@@ -126,12 +126,11 @@ export class Raider implements Selectable, Updatable {
         return result
     }
 
-    private moveToClosestTargetInternal(target: PathTarget[], elapsedMs: number): MoveState {
-        if (!target || target.length < 1) return MoveState.TARGET_UNREACHABLE
-        if (!this.currentPath || !target.some((t) => t.targetLocation.equals(this.currentPath.target.targetLocation))) {
-            const paths = target.map((t) => this.findPathToTarget(t)).filter((p) => !!p)
-                .sort((l, r) => l.lengthSq - r.lengthSq)
-            this.currentPath = paths.length > 0 ? paths[0] : null
+    private moveToClosestTargetInternal(target: PathTarget, elapsedMs: number): MoveState {
+        if (!target) return MoveState.TARGET_UNREACHABLE
+        if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
+            const path = this.findPathToTarget(target)
+            this.currentPath = path.locations.length > 0 ? path : null
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
         const step = this.determineStep(elapsedMs)
@@ -272,7 +271,7 @@ export class Raider implements Selectable, Updatable {
         }
         const grabbedJobItem = this.grabJobItem(elapsedMs, this.job.carryItem)
         if (!grabbedJobItem) return
-        const workplaceReached = this.moveToClosestTarget(this.job.getWorkplaces(), elapsedMs) === MoveState.TARGET_REACHED
+        const workplaceReached = this.moveToClosestTarget(this.job.getWorkplace(this), elapsedMs) === MoveState.TARGET_REACHED
         if (!workplaceReached) return
         if (!this.job.isReadyToComplete()) {
             this.sceneEntity.changeActivity()
@@ -302,7 +301,7 @@ export class Raider implements Selectable, Updatable {
         if (this.carries === carryItem) return true
         this.dropCarried()
         if (!carryItem) return true
-        if (this.moveToClosestTarget(carryItem.getPositionAsPathTargets(), elapsedMs) === MoveState.TARGET_REACHED) {
+        if (this.moveToClosestTarget(carryItem.getPositionAsPathTarget(), elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.changeActivity(RaiderActivity.Collect, () => {
                 this.carries = carryItem
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)

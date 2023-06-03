@@ -1,12 +1,14 @@
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
+import { Raider } from '../../raider/Raider'
+import { VehicleEntity } from '../../vehicle/VehicleEntity'
 
 export class EatJob extends RaiderJob {
-    target: PathTarget[] = []
+    target: PathTarget = null
 
-    getWorkplaces(): PathTarget[] {
-        if (this.target.length < 1) this.target = [PathTarget.fromLocation(this.raider.sceneEntity.position2D)]
+    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+        if (!this.target) this.target = PathTarget.fromLocation(this.raider.sceneEntity.position2D)
         return this.target
     }
 

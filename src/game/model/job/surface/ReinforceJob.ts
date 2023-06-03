@@ -4,6 +4,8 @@ import { PathTarget } from '../../PathTarget'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
+import { Raider } from '../../raider/Raider'
+import { VehicleEntity } from '../../vehicle/VehicleEntity'
 
 export class ReinforceJob extends ShareableJob {
     digPositions: PathTarget[]
@@ -13,14 +15,17 @@ export class ReinforceJob extends ShareableJob {
         this.digPositions = this.surface.getDigPositions().map((p) => PathTarget.fromSurface(this.surface, p))
     }
 
-    getWorkplaces(): PathTarget[] { // TODO optimize performance and code duplication
-        if (!this.surface.isReinforcable()) return []
+    getWorkplace(entity: Raider | VehicleEntity): PathTarget { // TODO optimize performance and code duplication
+        if (!this.surface.isReinforcable()) return null
         const surfaceDigPositions = this.surface.getDigPositions()
         if (!this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
             !surfaceDigPositions.every((p) => this.digPositions.some((d) => p.equals(d.targetLocation)))) {
             this.digPositions = surfaceDigPositions.map((p) => PathTarget.fromSurface(this.surface, p))
         }
         return this.digPositions
+            .map((b) => entity.findPathToTarget(b))
+            .filter((t) => !!t)
+            .sort((l, r) => l.lengthSq - r.lengthSq)[0].target
     }
 
     onJobComplete() {
