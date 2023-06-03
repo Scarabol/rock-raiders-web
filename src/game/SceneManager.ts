@@ -218,11 +218,13 @@ export class SceneManager implements Updatable {
     }
 
     addMiscAnim(lwsFilename: string, position: Vector3, heading: number) {
-        const group = new AnimationGroup(lwsFilename, position, heading, () => {
+        const group = new AnimationGroup(lwsFilename, () => {
             this.miscAnims.remove(group)
             this.scene.remove(group)
             group.dispose()
         })
+        group.position.copy(position)
+        group.rotateOnAxis(new Vector3(0, 1, 0), heading)
         this.miscAnims.add(group)
         this.scene.add(group)
     }

@@ -1,14 +1,14 @@
-import { AnimationClip, AnimationMixer, Group, LoopOnce, Object3D } from 'three'
+import { Group, Object3D } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
 import { ResourceManager } from '../resource/ResourceManager'
-import { getPath } from '../core/Util'
 import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
+import { AnimationGroup } from './AnimationGroup'
 
 export class AnimatedMeshGroup extends Group implements Updatable {
     readonly animationData: AnimEntityData[] = []
-    readonly animationMixers: AnimationMixer[] = []
+    readonly animationGroups: AnimationGroup[] = []
     readonly meshesByLName: Map<string, SceneMesh[]> = new Map()
     readonly installedUpgrades: { parent: Object3D, child: AnimatedMeshGroup }[] = []
     readonly animationParent: Group = new Group()
@@ -44,16 +44,6 @@ export class AnimatedMeshGroup extends Group implements Updatable {
         this.driver = null
     }
 
-    removeAll() {
-        this.animationParent.clear()
-        this.animationMixers.length = 0
-        this.meshesByLName.clear()
-        this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
-        this.installedUpgrades.length = 0
-        this.removeDriver()
-        this.driverParent = null
-    }
-
     setAnimation(animationName: string, onAnimationDone?: () => unknown) {
         if (this.currentAnimation === animationName) return
         this.currentAnimation = animationName
@@ -62,40 +52,14 @@ export class AnimatedMeshGroup extends Group implements Updatable {
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
-            const lwscData = ResourceManager.getLwscData(animData.file)
-            const meshList = lwscData.objects.map((obj) => {
-                let mesh: SceneMesh
-                if (obj.isNull) {
-                    mesh = new SceneMesh()
-                } else {
-                    mesh = ResourceManager.getLwoModel(getPath(animData.file) + obj.lowerName)
-                }
-                mesh.name = obj.lowerName
-                const meshes = this.meshesByLName.getOrUpdate(mesh.name.toLowerCase(), () => [])
-                meshes.add(mesh)
-                if (mesh.name.equalsIgnoreCase(animEntityData.driverNullName)) this.driverParent = mesh
-                return mesh
-            })
-            // associate child meshes with parents
-            lwscData.objects.forEach((obj, index) => {
-                const mesh = meshList[index]
-                if (obj.parentObjInd === 0) { // index is 1 based, 0 means no parent
-                    this.animationParent.add(mesh)
-                } else {
-                    meshList[obj.parentObjInd - 1].add(mesh)
-                }
-                // setup animation clip
-                const clip = new AnimationClip(animData.name, lwscData.durationSeconds, obj.keyframeTracks)
-                const mixer = new AnimationMixer(mesh) // mixer needs to recreate after each group change
-                const animationAction = mixer.clipAction(clip)
-                if (onAnimationDone) {
-                    mixer.addEventListener('finished', () => onAnimationDone())
-                    animationAction.setLoop(LoopOnce, 0)
-                    animationAction.clampWhenFinished = true
-                }
-                animationAction.play()
-                this.animationMixers.push(mixer)
-            })
+            const animatedGroup = new AnimationGroup(animData.file, onAnimationDone)
+            animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
+            this.animationParent.add(animatedGroup)
+            this.animationGroups.push(animatedGroup)
+            // add driver joints
+            if (animEntityData.driverNullName) {
+                this.driverParent = animatedGroup.meshList.find((mesh) => mesh.name.equalsIgnoreCase(animEntityData.driverNullName)) || this.driverParent
+            }
             // add wheels
             if (animEntityData.wheelMesh && animEntityData.wheelNullName) {
                 const wheelParentMesh = this.meshesByLName.getOrUpdate(animEntityData.wheelNullName, () => [])
@@ -108,6 +72,16 @@ export class AnimatedMeshGroup extends Group implements Updatable {
         })
         if (this.driver) this.driverParent.add(this.driver)
         this.reinstallAllUpgrades()
+    }
+
+    private removeAll() {
+        this.animationParent.clear()
+        this.animationGroups.length = 0
+        this.meshesByLName.clear()
+        this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
+        this.installedUpgrades.length = 0
+        this.removeDriver()
+        this.driverParent = null
     }
 
     setUpgradeLevel(upgradeLevel: string) {
@@ -147,11 +121,10 @@ export class AnimatedMeshGroup extends Group implements Updatable {
                 this.installedUpgrades.add({parent: parent, child: upgradeMesh})
             })
         })
-        this.update(0)
     }
 
     update(elapsedMs: number) {
-        this.animationMixers.forEach((m) => m.update(elapsedMs / 1000))
+        this.animationGroups.forEach((a) => a.update(elapsedMs))
         this.meshesByLName.forEach((meshes) => meshes.forEach((m) => m.update(elapsedMs)))
         this.installedUpgrades.forEach((c) => c.child.update(elapsedMs))
     }
