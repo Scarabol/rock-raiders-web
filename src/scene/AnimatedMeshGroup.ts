@@ -1,10 +1,11 @@
-import { Group, Object3D } from 'three'
+import { Group, Matrix4, Object3D } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
 import { ResourceManager } from '../resource/ResourceManager'
 import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 import { AnimationGroup } from './AnimationGroup'
+import { SceneEntity } from './SceneEntity'
 
 export class AnimatedMeshGroup extends Group implements Updatable {
     readonly animationData: AnimEntityData[] = []
@@ -12,6 +13,8 @@ export class AnimatedMeshGroup extends Group implements Updatable {
     readonly meshesByLName: Map<string, SceneMesh[]> = new Map()
     readonly installedUpgrades: { parent: Object3D, child: AnimatedMeshGroup }[] = []
     readonly animationParent: Group = new Group()
+    readonly carryJoints: SceneMesh[] = []
+    readonly carriedByIndex: Map<number, SceneEntity> = new Map()
     upgradeLevel: string = '0000'
     currentAnimation: string
     driverParent: Object3D = null
@@ -56,6 +59,10 @@ export class AnimatedMeshGroup extends Group implements Updatable {
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
             this.animationParent.add(animatedGroup)
             this.animationGroups.push(animatedGroup)
+            // add carry joints
+            if (animEntityData.carryNullName) {
+                this.carryJoints.push(...animatedGroup.meshList.filter((a) => animEntityData.carryNullName.equalsIgnoreCase(a.name)))
+            }
             // add driver joints
             if (animEntityData.driverNullName) {
                 this.driverParent = animatedGroup.meshList.find((mesh) => mesh.name.equalsIgnoreCase(animEntityData.driverNullName)) || this.driverParent
@@ -72,6 +79,7 @@ export class AnimatedMeshGroup extends Group implements Updatable {
         })
         if (this.driver) this.driverParent.add(this.driver)
         this.reinstallAllUpgrades()
+        this.addCarriedToJoints()
     }
 
     private removeAll() {
@@ -82,6 +90,7 @@ export class AnimatedMeshGroup extends Group implements Updatable {
         this.installedUpgrades.length = 0
         this.removeDriver()
         this.driverParent = null
+        this.carryJoints.length = 0
     }
 
     setUpgradeLevel(upgradeLevel: string) {
@@ -90,6 +99,7 @@ export class AnimatedMeshGroup extends Group implements Updatable {
         this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
         this.installedUpgrades.length = 0
         this.reinstallAllUpgrades()
+        this.addCarriedToJoints()
     }
 
     reinstallAllUpgrades() {
@@ -127,5 +137,50 @@ export class AnimatedMeshGroup extends Group implements Updatable {
         this.animationGroups.forEach((a) => a.update(elapsedMs))
         this.meshesByLName.forEach((meshes) => meshes.forEach((m) => m.update(elapsedMs)))
         this.installedUpgrades.forEach((c) => c.child.update(elapsedMs))
+    }
+
+    private addCarriedToJoints() {
+        this.carriedByIndex.forEach((item, index) => {
+            const carryJoint = this.carryJoints[index]
+            if (carryJoint) {
+                carryJoint.add(item.group)
+            } else {
+                console.warn(`Could not find carry joint with index ${index} in ${this.carryJoints}`)
+            }
+        })
+    }
+
+    flipXAxis() {
+        this.animationParent.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
+    }
+
+    pickupEntity(entity: SceneEntity) {
+        const foundCarryJoint = this.carryJoints.some((carryJoint, index) => {
+            if (carryJoint.children.length < 1) {
+                this.carriedByIndex.set(index, entity)
+                carryJoint.add(entity.group)
+                return true
+            }
+            return false
+        })
+        if (!foundCarryJoint) {
+            console.warn('Could not find empty carry joint to attach carried entity')
+        }
+        entity.position.set(0, 0, 0)
+    }
+
+    dropAllEntities(): SceneEntity[] {
+        const dropped = Array.from(this.carriedByIndex.values())
+        const position = this.position.clone()
+        this.carriedByIndex.forEach((item, index) => {
+            const carryJoint = this.carryJoints[index]
+            if (carryJoint) {
+                carryJoint.remove(item.group)
+                carryJoint.getWorldPosition(position)
+            }
+            item.position.copy(position)
+        })
+        this.carriedByIndex.clear()
+        return dropped
     }
 }
