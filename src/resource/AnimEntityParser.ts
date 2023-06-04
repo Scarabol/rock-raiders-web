@@ -221,7 +221,7 @@ export class AnimEntityParser {
         Object.entries<unknown[]>(upgradesCfg).forEach(([upgradeTypeName, upgradeEntry]) => {
             const upgradeEntries = Array.isArray(upgradeEntry[0]) ? upgradeEntry : [upgradeEntry]
             upgradeEntries.forEach((upgradeTypeEntry) => {
-                upgradesByLevel.push(new AnimEntityUpgradeData(upgradeTypeName.toLowerCase(), upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))
+                upgradesByLevel.push(new AnimEntityUpgradeData(this.path + upgradeTypeName.toLowerCase(), upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))
             })
         })
         this.entityType.upgradesByLevel.set(match[1], upgradesByLevel)
