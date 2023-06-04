@@ -5,7 +5,6 @@ import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL } from '../../../params'
-import { VehicleSceneEntity } from '../../../scene/entities/VehicleSceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
@@ -29,6 +28,10 @@ import { GameEntity } from '../../ECS'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { MaterialSpawner } from '../../entity/MaterialSpawner'
+import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
+import { PositionComponent } from '../../component/PositionComponent'
+import { ResourceManager } from '../../../resource/ResourceManager'
+import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 
 export class VehicleEntity implements Updatable {
     readonly entityType: EntityType
@@ -40,21 +43,22 @@ export class VehicleEntity implements Updatable {
     followUpJob: Job = null
     workAudio: PositionalAudio
     stats: VehicleEntityStats
-    sceneEntity: VehicleSceneEntity
+    sceneEntity: AnimatedSceneEntity
     driver: Raider = null
     callManJob: ManVehicleJob = null
     engineSound: PositionalAudio = null
     carriedItems: Set<MaterialEntity> = new Set()
 
-    constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, sceneEntity: VehicleSceneEntity, readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
+    constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
         this.entityType = entityType
         this.worldMgr = worldMgr
         this.stats = stats
-        this.sceneEntity = sceneEntity
-        this.sceneEntity.speed = this.getSpeed() // TODO update speed on entity upgrade
         this.entity = this.worldMgr.ecs.addEntity()
+        this.sceneEntity = new AnimatedSceneEntity()
+        aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
+        this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent())
-        this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(24, 14, this.sceneEntity.group, true))
+        this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(24, 14, this.sceneEntity, true))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
@@ -65,7 +69,7 @@ export class VehicleEntity implements Updatable {
     beamUp() {
         this.dropDriver()
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
-        const surface = this.sceneEntity.surfaces[0]
+        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
         for (let c = 0; c < this.stats.CostOre; c++) {
             MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, surface.getRandomPosition())
         }
@@ -77,7 +81,8 @@ export class VehicleEntity implements Updatable {
     }
 
     disposeFromWorld() {
-        this.sceneEntity.disposeFromScene()
+        this.disposeFromScene()
+        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.workAudio = resetAudioSafe(this.workAudio)
         this.engineSound = resetAudioSafe(this.engineSound)
         this.worldMgr.entityMgr.vehicles.remove(this)
@@ -89,6 +94,22 @@ export class VehicleEntity implements Updatable {
         this.worldMgr.entityMgr.vehiclesInBeam.remove(this)
         this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
         this.worldMgr.ecs.removeEntity(this.entity)
+    }
+
+    disposeFromScene() {
+        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
+        this.sceneEntity.dispose()
+    }
+
+    addToScene(worldPosition: Vector2, headingRad: number) {
+        if (worldPosition) {
+            this.sceneEntity.position.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPosition))
+        }
+        if (headingRad !== undefined && headingRad !== null) {
+            this.sceneEntity.rotation.y = headingRad
+        }
+        this.sceneEntity.visible = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).discovered
+        this.worldMgr.sceneMgr.addMeshGroup(this.sceneEntity)
     }
 
     /*
@@ -127,14 +148,16 @@ export class VehicleEntity implements Updatable {
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.sceneEntity.position.add(step.vec)
-            this.sceneEntity.changeActivity()
+            this.sceneEntity.setAnimation(AnimEntityActivity.Route)
+            const angle = elapsedMs * this.getSpeed() / 1000 * 2 * Math.PI
+            this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
             return MoveState.MOVED
         }
     }
 
     private determineStep(elapsedMs: number): EntityStep {
         const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
-        targetWorld.y += this.sceneEntity.floorOffset
+        targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
         const step = new EntityStep(targetWorld.sub(this.sceneEntity.position))
         const stepLengthSq = step.vec.lengthSq()
         const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // TODO use average speed between current and target position
@@ -172,7 +195,7 @@ export class VehicleEntity implements Updatable {
     select(): boolean {
         if (!this.isSelectable()) return false
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
-        this.sceneEntity.changeActivity()
+        this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         return true
     }
 
@@ -200,7 +223,7 @@ export class VehicleEntity implements Updatable {
         if (this.followUpJob) this.followUpJob.unAssign(this)
         this.job = null
         this.followUpJob = null
-        this.sceneEntity.changeActivity()
+        this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
     }
 
     private work(elapsedMs: number) {
@@ -214,14 +237,14 @@ export class VehicleEntity implements Updatable {
         const workplaceReached = this.moveToClosestTarget(this.job.getWorkplace(this), elapsedMs) === MoveState.TARGET_REACHED
         if (!workplaceReached) return
         if (!this.job.isReadyToComplete()) {
-            this.sceneEntity.changeActivity()
+            this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             return
         }
-        const workActivity = this.job.getWorkActivity() || this.sceneEntity.getDefaultActivity()
+        const workActivity = this.job.getWorkActivity() || AnimEntityActivity.Stand
         if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
-            this.workAudio = this.sceneEntity.sceneMgr.addPositionalAudio(this.sceneEntity.group, Sample[Sample.SFX_Drill], true, true)
+            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SFX_Drill], true, true)
         }
-        this.sceneEntity.changeActivity(workActivity, () => {
+        this.sceneEntity.setAnimation(workActivity, () => {
             this.completeJob()
         }, this.job.getExpectedTimeLeft())
         this.job?.addProgress(this, elapsedMs)
@@ -230,7 +253,7 @@ export class VehicleEntity implements Updatable {
     private completeJob() {
         this.workAudio = resetAudioSafe(this.workAudio)
         this.job?.onJobComplete()
-        this.sceneEntity.changeActivity()
+        this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
@@ -255,7 +278,7 @@ export class VehicleEntity implements Updatable {
         if (!carryItem || this.carriedItems.has(carryItem)) return true
         const positionAsPathTarget = PathTarget.fromLocation(carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)
         if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
-            this.sceneEntity.changeActivity(AnimEntityActivity.Stand, () => {
+            this.sceneEntity.setAnimation(AnimEntityActivity.Stand, () => {
                 this.carriedItems.add(carryItem)
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
             })
@@ -275,9 +298,9 @@ export class VehicleEntity implements Updatable {
         if (!this.stats.InvisibleDriver) {
             this.sceneEntity.addDriver(this.driver.sceneEntity)
         } else {
-            this.driver.disposeFromScene()
+            this.worldMgr.sceneMgr.removeMeshGroup(this.driver.sceneEntity)
         }
-        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.sceneMgr.addPositionalAudio(this.sceneEntity.group, this.stats.EngineSound, true, true)
+        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
@@ -291,6 +314,10 @@ export class VehicleEntity implements Updatable {
         this.driver = null
         this.engineSound = resetAudioSafe(this.engineSound)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
+    }
+
+    getDefaultAnimationName() {
+        return AnimEntityActivity.Stand
     }
 
     getRequiredTraining(): RaiderTraining {
@@ -336,14 +363,15 @@ export class VehicleEntity implements Updatable {
     }
 
     unblockTeleporter() {
-        const blockedTeleporter = this.sceneEntity.surfaces.find((s) => !!s.building?.teleport && s.building?.primaryPathSurface === s)
+        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
+        const blockedTeleporter = !!surface.building?.teleport && surface.building?.primaryPathSurface === surface
         if (blockedTeleporter) {
-            const walkableNeighbor = blockedTeleporter.neighbors.find((n) => !n.site && n.isWalkable() && !n.building?.teleport)
+            const walkableNeighbor = surface.neighbors.find((n) => !n.site && n.isWalkable() && !n.building?.teleport)
             if (walkableNeighbor) this.setJob(new MoveJob(walkableNeighbor.getCenterWorld2D()))
         }
     }
 
     getDriverActivity() {
-        return this.sceneEntity.activity === AnimEntityActivity.Stand ? this.driverActivityStand : this.driverActivityRoute
+        return this.sceneEntity.currentAnimation === AnimEntityActivity.Stand ? this.driverActivityStand : this.driverActivityRoute
     }
 }

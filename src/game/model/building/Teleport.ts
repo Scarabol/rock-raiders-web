@@ -8,8 +8,9 @@ import { MoveJob } from '../job/raider/MoveJob'
 import { Raider } from '../raider/Raider'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
+import { VehicleEntity } from '../vehicle/VehicleEntity'
 
-type TeleportEntity = Raider
+type TeleportEntity = Raider | VehicleEntity
 
 export class Teleport {
     teleportedEntityTypes: EntityType[] = []

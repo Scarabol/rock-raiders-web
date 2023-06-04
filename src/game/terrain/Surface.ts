@@ -511,7 +511,7 @@ export class Surface {
     }
 
     isBlockedByVehicle() {
-        return this.worldMgr.entityMgr.vehicles.some((v) => v.sceneEntity.surfaces.includes(this))
+        return this.worldMgr.entityMgr.vehicles.some((v) => this.terrain.getSurfaceFromWorld(v.sceneEntity.position) === this)
     }
 
     isBlockedByRaider() {

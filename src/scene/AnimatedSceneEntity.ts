@@ -17,6 +17,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     readonly animationParent: Group = new Group()
     readonly carryJoints: SceneMesh[] = []
     readonly carriedByIndex: Map<number, SceneEntity> = new Map()
+    readonly wheelJoints: { mesh: Object3D, radius: number }[] = []
     upgradeLevel: string = '0000'
     currentAnimation: string
     driverParent: Object3D = null
@@ -44,12 +45,12 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.driver = driver
         this.driver.position.set(0, 0, 0)
         this.driver.rotation.set(0, 0, 0)
-        this.driverParent?.add(this.driver)
+        this.driverParent.add(this.driver)
     }
 
     removeDriver() {
         if (!this.driver) return
-        this.driverParent?.remove(this.driver)
+        this.driverParent.remove(this.driver)
         this.driver.position.copy(this.driverParent.position)
         this.driver.rotation.copy(this.driverParent.rotation)
         this.driver = null
@@ -72,20 +73,25 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             if (animEntityData.wheelMesh && animEntityData.wheelNullName) {
                 const wheelParentMesh = this.meshesByLName.getOrUpdate(animEntityData.wheelNullName, () => [])
                 if (wheelParentMesh.length < 1) {
-                    console.error(`Could not find wheel parent ${animEntityData.wheelNullName} in ${Array.from(this.meshesByLName.keys())}`)
+                    if (!DEV_MODE) console.warn(`Could not find wheel parent ${animEntityData.wheelNullName} in ${Array.from(this.meshesByLName.keys())}`)
                     return
                 }
-                wheelParentMesh.forEach((p) => p.add(ResourceManager.getLwoModel(animEntityData.wheelMesh)))
+                wheelParentMesh.forEach((p) => {
+                    const wheelMesh = ResourceManager.getLwoModel(animEntityData.wheelMesh)
+                    p.add(wheelMesh)
+                    this.wheelJoints.add({mesh: wheelMesh, radius: animEntityData.wheelRadius})
+                })
             }
         })
         this.reinstallAllUpgrades()
+        this.driverParent = this.animationParent
         this.animationData.forEach((animEntityData) => {
             if (animEntityData.carryNullName) this.carryJoints.push(...this.meshesByLName.getOrDefault(animEntityData.carryNullName, []))
-            if (animEntityData.driverNullName) this.driverParent = this.meshesByLName.get(animEntityData.driverNullName)?.last() || this.animationParent
-            if (animEntityData.toolNullName) this.toolParent = this.meshesByLName.get(animEntityData.toolNullName)?.last()
-            if (animEntityData.depositNullName) this.depositParent = this.meshesByLName.get(animEntityData.depositNullName)?.last()
-            if (animEntityData.xPivotName) this.xPivotObj = this.meshesByLName.get(animEntityData.xPivotName)?.last()
-            if (animEntityData.yPivotName) this.yPivotObj = this.meshesByLName.get(animEntityData.yPivotName)?.last()
+            if (animEntityData.driverNullName) this.driverParent = this.meshesByLName.get(animEntityData.driverNullName)?.last() || this.driverParent
+            if (animEntityData.toolNullName) this.toolParent = this.meshesByLName.get(animEntityData.toolNullName)?.last() || this.toolParent
+            if (animEntityData.depositNullName) this.depositParent = this.meshesByLName.get(animEntityData.depositNullName)?.last() || this.depositParent
+            if (animEntityData.xPivotName) this.xPivotObj = this.meshesByLName.get(animEntityData.xPivotName)?.last() || this.xPivotObj
+            if (animEntityData.yPivotName) this.yPivotObj = this.meshesByLName.get(animEntityData.yPivotName)?.last() || this.yPivotObj
         })
         this.addCarriedToJoints()
         if (this.driver) this.driverParent.add(this.driver)
@@ -98,13 +104,14 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.meshesByLName.clear()
         this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
         this.installedUpgrades.length = 0
-        this.removeDriver()
+        this.wheelJoints.length = 0
+        this.carryJoints.length = 0
+        if (this.driverParent && this.driver) this.driverParent.remove(this.driver)
         this.driverParent = null
         this.toolParent = null
         this.depositParent = null
         this.xPivotObj = null
         this.yPivotObj = null
-        this.carryJoints.length = 0
     }
 
     setUpgradeLevel(upgradeLevel: string) {
@@ -122,7 +129,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             upgrades.forEach((upgrade) => {
                 const parent = this.meshesByLName.get(upgrade.parentNullName.toLowerCase())?.[upgrade.parentNullIndex]
                 if (!parent) {
-                    console.error(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}' in ${Array.from(this.meshesByLName.keys())}`)
+                    if (!DEV_MODE) console.warn(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}' in ${Array.from(this.meshesByLName.keys())}`)
                     return
                 }
                 const upgradeMesh = new AnimatedSceneEntity()
@@ -181,9 +188,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             }
             return false
         })
-        if (!foundCarryJoint) {
-            console.warn('Could not find empty carry joint to attach carried entity')
-        }
+        if (!foundCarryJoint && !DEV_MODE) console.warn('Could not find empty carry joint to attach carried entity')
         entity.position.set(0, 0, 0)
     }
 

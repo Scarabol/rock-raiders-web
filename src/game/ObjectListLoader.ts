@@ -15,7 +15,7 @@ import { MonsterSpawner } from './entity/MonsterSpawner'
 import { SceneSelectionComponent } from './component/SceneSelectionComponent'
 import { SelectionFrameComponent } from './component/SelectionFrameComponent'
 import { MaterialSpawner } from './entity/MaterialSpawner'
-import { RaiderActivity } from './model/anim/AnimationActivity'
+import { AnimEntityActivity, RaiderActivity } from './model/anim/AnimationActivity'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -105,10 +105,10 @@ export class ObjectListLoader {
                 case EntityType.LARGE_DIGGER:
                 case EntityType.LARGE_CAT:
                     const vehicle = VehicleFactory.createVehicleFromType(entityType, worldMgr)
-                    vehicle.sceneEntity.changeActivity()
-                    const vehicleSceneSelection = worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity.group, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats))
+                    vehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    const vehicleSceneSelection = worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats))
                     worldMgr.ecs.addComponent(vehicle.entity, new SelectionFrameComponent(vehicleSceneSelection.pickSphere, vehicle.stats))
-                    vehicle.sceneEntity.addToScene(worldPos, headingRad + Math.PI)
+                    vehicle.addToScene(worldPos, headingRad + Math.PI)
                     if (vehicle.sceneEntity.visible) {
                         entityMgr.vehicles.push(vehicle)
                     } else {

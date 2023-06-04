@@ -182,8 +182,7 @@ export class WorldManager {
                             const vehicle = VehicleFactory.createVehicleFromType(vType, this)
                             const worldPosition = teleportBuilding.primaryPathSurface.getCenterWorld2D()
                             const heading = teleportBuilding.sceneEntity.getHeading()
-                            // FIXME enable vehicle teleport
-                            // teleportBuilding.teleport.teleportIn(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam, worldPosition, heading, null)
+                            teleportBuilding.teleport.teleportIn(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam, worldPosition, heading, null)
                             return true
                         }
                         return false
