@@ -5,7 +5,6 @@ import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent, UpdateRadarEntities } from '../../../event/LocalEvents'
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { RaiderSceneEntity } from '../../../scene/entities/RaiderSceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { AnimationActivity, AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
@@ -28,6 +27,7 @@ import { PositionComponent } from '../../component/PositionComponent'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
+import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 
 export class Raider implements Updatable {
     readonly entityType: EntityType = EntityType.PILOT
@@ -38,7 +38,7 @@ export class Raider implements Updatable {
     job: Job = null
     followUpJob: Job = null
     workAudio: PositionalAudio
-    sceneEntity: RaiderSceneEntity
+    sceneEntity: AnimatedSceneEntity
     tools: Map<RaiderTool, boolean> = new Map()
     trainings: Map<RaiderTraining, boolean> = new Map()
     carries: MaterialEntity = null
@@ -49,10 +49,12 @@ export class Raider implements Updatable {
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
         this.tools.set(RaiderTool.DRILL, true)
-        this.sceneEntity = new RaiderSceneEntity(worldMgr.sceneMgr, 'mini-figures/pilot')
         this.entity = this.worldMgr.ecs.addEntity()
+        this.sceneEntity = new AnimatedSceneEntity()
+        this.sceneEntity.addAnimated(ResourceManager.getAnimatedData('mini-figures/pilot'))
+        this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent())
-        this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(16, 10, this.sceneEntity.group, true))
+        this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(16, 10, this.sceneEntity, true))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
@@ -75,13 +77,29 @@ export class Raider implements Updatable {
     }
 
     disposeFromWorld() {
-        this.sceneEntity.disposeFromScene()
+        this.disposeFromScene()
         this.workAudio = resetAudioSafe(this.workAudio)
         this.worldMgr.entityMgr.raiders.remove(this)
         this.worldMgr.entityMgr.raidersUndiscovered.remove(this)
         this.worldMgr.entityMgr.raidersInBeam.remove(this)
         this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
         this.worldMgr.ecs.removeEntity(this.entity)
+    }
+
+    disposeFromScene() {
+        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
+        this.sceneEntity.dispose()
+    }
+
+    addToScene(worldPosition: Vector2, headingRad: number) {
+        if (worldPosition) {
+            this.sceneEntity.position.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPosition))
+        }
+        if (headingRad !== undefined && headingRad !== null) {
+            this.sceneEntity.rotation.y = headingRad
+        }
+        this.sceneEntity.visible = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).discovered
+        this.worldMgr.sceneMgr.addMeshGroup(this.sceneEntity)
     }
 
     /*
@@ -138,7 +156,7 @@ export class Raider implements Updatable {
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.sceneEntity.position.add(step.vec)
-            this.sceneEntity.changeActivity(this.getRouteActivity())
+            this.sceneEntity.setAnimation(this.getRouteActivity())
             EventBus.publishEvent(new UpdateRadarEntities(this.worldMgr.entityMgr)) // TODO only send map updates not all
             return MoveState.MOVED
         }
@@ -146,7 +164,7 @@ export class Raider implements Updatable {
 
     private determineStep(elapsedMs: number): EntityStep {
         const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
-        targetWorld.y += this.sceneEntity.floorOffset
+        targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
         const step = new EntityStep(targetWorld.sub(this.sceneEntity.position))
         const stepLengthSq = step.vec.lengthSq()
         const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // TODO use average speed between current and target position
@@ -188,7 +206,7 @@ export class Raider implements Updatable {
         if (Math.randomInclusive(0, 100) < 10) this.stopJob()
         this.dropCarried()
         this.slipped = true
-        this.sceneEntity.changeActivity(RaiderActivity.Slip, () => {
+        this.sceneEntity.setAnimation(RaiderActivity.Slip, () => {
             this.slipped = false
         })
     }
@@ -209,8 +227,12 @@ export class Raider implements Updatable {
     select(): boolean {
         if (!this.isSelectable()) return false
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
-        this.sceneEntity.changeActivity()
+        this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         return true
+    }
+
+    getDefaultAnimationName(): AnimationActivity {
+        return this.carries ? RaiderActivity.CarryStand : RaiderActivity.Stand
     }
 
     deselect() {
@@ -250,7 +272,7 @@ export class Raider implements Updatable {
         if (this.followUpJob) this.followUpJob.unAssign(this)
         this.job = null
         this.followUpJob = null
-        this.sceneEntity.changeActivity()
+        this.sceneEntity.setAnimation(this.getDefaultAnimationName())
     }
 
     dropCarried(): void {
@@ -262,7 +284,7 @@ export class Raider implements Updatable {
     private work(elapsedMs: number) {
         if (this.slipped) return
         if (this.vehicle) {
-            this.sceneEntity.changeActivity(this.vehicle.getDriverActivity())
+            this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
             return
         }
         if (!this.job || this.selected || this.isInBeam()) return
@@ -275,14 +297,14 @@ export class Raider implements Updatable {
         const workplaceReached = this.moveToClosestTarget(this.job.getWorkplace(this), elapsedMs) === MoveState.TARGET_REACHED
         if (!workplaceReached) return
         if (!this.job.isReadyToComplete()) {
-            this.sceneEntity.changeActivity()
+            this.sceneEntity.setAnimation(this.getDefaultAnimationName())
             return
         }
-        const workActivity = this.job.getWorkActivity() || this.sceneEntity.getDefaultActivity()
+        const workActivity = this.job.getWorkActivity() || this.getDefaultAnimationName()
         if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
-            this.workAudio = this.sceneEntity.sceneMgr.addPositionalAudio(this.sceneEntity.group, Sample[Sample.SFX_Drill], true, true)
+            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SFX_Drill], true, true)
         }
-        this.sceneEntity.changeActivity(workActivity, () => {
+        this.sceneEntity.setAnimation(workActivity, () => {
             this.completeJob()
         }, this.job.getExpectedTimeLeft())
         this.job?.addProgress(this, elapsedMs)
@@ -291,7 +313,7 @@ export class Raider implements Updatable {
     private completeJob() {
         this.workAudio = resetAudioSafe(this.workAudio)
         this.job?.onJobComplete()
-        this.sceneEntity.changeActivity()
+        this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
@@ -304,7 +326,7 @@ export class Raider implements Updatable {
         if (!carryItem) return true
         const positionAsPathTarget = PathTarget.fromLocation(carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)
         if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
-            this.sceneEntity.changeActivity(RaiderActivity.Collect, () => {
+            this.sceneEntity.setAnimation(RaiderActivity.Collect, () => {
                 this.carries = carryItem
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
             })

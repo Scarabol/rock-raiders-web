@@ -245,4 +245,8 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         }
         return result
     }
+
+    headTowards(location: Vector2) {
+        this.lookAt(new Vector3(location.x, this.position.y, location.y))
+    }
 }

@@ -6,11 +6,10 @@ import { RaiderActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 import { MoveJob } from '../job/raider/MoveJob'
 import { Raider } from '../raider/Raider'
-import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 
-type TeleportEntity = Raider | VehicleEntity
+type TeleportEntity = Raider
 
 export class Teleport {
     teleportedEntityTypes: EntityType[] = []
@@ -27,11 +26,11 @@ export class Teleport {
 
     teleportIn(entity: TeleportEntity, listing: TeleportEntity[], beamListing: TeleportEntity[], worldPosition: Vector2, heading: number, walkOutPos: Vector2) {
         this.operating = true
-        entity.sceneEntity.addToScene(worldPosition, heading)
-        entity.sceneEntity.sceneMgr.addPositionalAudio(entity.sceneEntity.group, Sample[Sample.SND_teleport], true, false)
-        entity.sceneEntity.changeActivity(RaiderActivity.TeleportIn, () => {
-            entity.sceneEntity.changeActivity()
-            const sceneSelectionComponent = entity.worldMgr.ecs.addComponent(entity.entity, new SceneSelectionComponent(entity.sceneEntity.group, {gameEntity: entity.entity, entityType: entity.entityType}, entity.stats))
+        entity.addToScene(worldPosition, heading)
+        entity.worldMgr.sceneMgr.addPositionalAudio(entity.sceneEntity, Sample[Sample.SND_teleport], true, false)
+        entity.sceneEntity.setAnimation(RaiderActivity.TeleportIn, () => {
+            entity.sceneEntity.setAnimation(entity.getDefaultAnimationName())
+            const sceneSelectionComponent = entity.worldMgr.ecs.addComponent(entity.entity, new SceneSelectionComponent(entity.sceneEntity, {gameEntity: entity.entity, entityType: entity.entityType}, entity.stats))
             entity.worldMgr.ecs.addComponent(entity.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, entity.stats))
             if (walkOutPos) entity.setJob(new MoveJob(walkOutPos))
             beamListing.remove(entity)

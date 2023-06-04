@@ -15,6 +15,7 @@ import { MonsterSpawner } from './entity/MonsterSpawner'
 import { SceneSelectionComponent } from './component/SceneSelectionComponent'
 import { SelectionFrameComponent } from './component/SelectionFrameComponent'
 import { MaterialSpawner } from './entity/MaterialSpawner'
+import { RaiderActivity } from './model/anim/AnimationActivity'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -42,10 +43,10 @@ export class ObjectListLoader {
                     break
                 case EntityType.PILOT:
                     const raider = new Raider(worldMgr)
-                    raider.sceneEntity.changeActivity()
-                    const raiderSceneSelection = worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity.group, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
+                    raider.sceneEntity.setAnimation(RaiderActivity.Stand)
+                    const raiderSceneSelection = worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
                     worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(raiderSceneSelection.pickSphere, raider.stats))
-                    raider.sceneEntity.addToScene(worldPos, headingRad - Math.PI / 2)
+                    raider.addToScene(worldPos, headingRad - Math.PI / 2)
                     if (raider.sceneEntity.visible) {
                         entityMgr.raiders.push(raider)
                         EventBus.publishEvent(new RaidersAmountChangedEvent(entityMgr))
@@ -70,10 +71,10 @@ export class ObjectListLoader {
                     if (entityType === EntityType.TOOLSTATION) {
                         for (let c = 0; c < this.numRaider; c++) {
                             const raider = new Raider(worldMgr)
-                            raider.sceneEntity.changeActivity()
-                            const sceneSelectionComponent = worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity.group, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
+                            raider.sceneEntity.setAnimation(RaiderActivity.Stand)
+                            const sceneSelectionComponent = worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
                             worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, raider.stats))
-                            raider.sceneEntity.addToScene(entity.primaryPathSurface.getRandomPosition(), headingRad - Math.PI)
+                            raider.addToScene(entity.primaryPathSurface.getRandomPosition(), headingRad - Math.PI)
                             RaiderTrainings.values.forEach((t) => raider.addTraining(t))
                             entityMgr.raiders.push(raider)
                             EventBus.publishEvent(new RaidersAmountChangedEvent(entityMgr))

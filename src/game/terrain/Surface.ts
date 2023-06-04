@@ -515,7 +515,7 @@ export class Surface {
     }
 
     isBlockedByRaider() {
-        return this.worldMgr.entityMgr.raiders.some((r) => r.sceneEntity.surfaces.includes(this))
+        return this.worldMgr.entityMgr.raiders.some((r) => this.terrain.getSurfaceFromWorld(r.sceneEntity.position) === this)
     }
 
     isBlocked(): boolean {

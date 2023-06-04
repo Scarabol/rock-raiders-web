@@ -2,12 +2,13 @@ import { AnimationActivity, AnimEntityActivity } from '../../game/model/anim/Ani
 import { SceneManager } from '../../game/SceneManager'
 import { LegacyAnimatedSceneEntity } from '../LegacyAnimatedSceneEntity'
 import { SceneEntity } from '../SceneEntity'
+import { Object3D } from 'three'
 
 /**
  * @deprecated
  */
 export class VehicleSceneEntity extends LegacyAnimatedSceneEntity {
-    driver: LegacyAnimatedSceneEntity
+    driver: Object3D
     speed: number
 
     constructor(sceneMgr: SceneManager, aeFilename: string) {
@@ -15,17 +16,17 @@ export class VehicleSceneEntity extends LegacyAnimatedSceneEntity {
         this.flipXAxis()
     }
 
-    addDriver(driver: LegacyAnimatedSceneEntity) {
+    addDriver(driver: Object3D) {
         if (this.driver && this.driver !== driver) throw new Error('Cannot add two drivers to the same vehicle entity')
         this.driver = driver
         this.driver.position.set(0, 0, 0)
-        this.driver.setHeading(0)
+        this.driver.rotation.y = 0
         this.addDriverToJoint()
     }
 
     removeDriver() {
         if (!this.driver) return
-        this.animation.driverJoint.remove(this.driver.group)
+        this.animation.driverJoint.remove(this.driver)
     }
 
     changeActivity(activity: AnimationActivity = this.getDefaultActivity(), onAnimationDone: () => any = null, durationTimeMs: number = null) {
@@ -36,7 +37,7 @@ export class VehicleSceneEntity extends LegacyAnimatedSceneEntity {
 
     private addDriverToJoint() {
         if (!this.driver) return
-        this.animation.driverJoint.add(this.driver.group)
+        this.animation.driverJoint.add(this.driver)
     }
 
     update(elapsedMs: number) {

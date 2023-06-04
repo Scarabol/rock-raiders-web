@@ -275,7 +275,7 @@ export class VehicleEntity implements Updatable {
         if (!this.stats.InvisibleDriver) {
             this.sceneEntity.addDriver(this.driver.sceneEntity)
         } else {
-            this.driver.sceneEntity.disposeFromScene()
+            this.driver.disposeFromScene()
         }
         if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.sceneMgr.addPositionalAudio(this.sceneEntity.group, this.stats.EngineSound, true, true)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
@@ -286,8 +286,8 @@ export class VehicleEntity implements Updatable {
         if (!this.driver) return
         this.sceneEntity.removeDriver()
         this.driver.vehicle = null
-        this.driver.sceneEntity.addToScene(this.sceneEntity.position2D, this.sceneEntity.getHeading())
-        this.driver.sceneEntity.changeActivity()
+        this.driver.addToScene(this.sceneEntity.position2D, this.sceneEntity.getHeading())
+        this.driver.sceneEntity.setAnimation(this.driver.getDefaultAnimationName())
         this.driver = null
         this.engineSound = resetAudioSafe(this.engineSound)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))

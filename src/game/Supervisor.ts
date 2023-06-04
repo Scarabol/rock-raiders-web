@@ -147,8 +147,8 @@ export class Supervisor {
             }
         })
         unemployedRaider.forEach((raider) => {
-            const blockedSite = raider.sceneEntity.surfaces.find((s) => !!s.site)
-            if (blockedSite) raider.setJob(new MoveJob(blockedSite.site.getWalkOutSurface().getRandomPosition()))
+            const blockedSite = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raider.sceneEntity.position)?.site
+            if (blockedSite) raider.setJob(new MoveJob(blockedSite.getWalkOutSurface().getRandomPosition()))
         })
         unemployedVehicles.forEach((vehicle) => {
             const blockedSite = vehicle.sceneEntity.surfaces.find((s) => !!s.site && !s.building?.teleport)
@@ -167,7 +167,7 @@ export class Supervisor {
         if (!this.isEnabled(PriorityIdentifier.CLEARING)) return
         this.worldMgr.entityMgr.raiders.forEach((raider) => {
             if (!raider.isReadyToTakeAJob()) return
-            const startSurface = raider.sceneEntity.surfaces[0]
+            const startSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raider.sceneEntity.position)
             for (let rad = 0; rad < 10; rad++) {
                 for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                     for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
