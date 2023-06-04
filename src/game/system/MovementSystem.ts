@@ -30,7 +30,10 @@ export class MovementSystem extends AbstractGameSystem {
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
                         this.ecs.worldMgr.entityMgr.removeEntity(entity, EntityType.SMALL_SPIDER) // TODO remove other entity types from entity manager too
                         this.ecs.removeEntity(entity)
-                        if (sceneEntityComponent) this.ecs.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
+                        if (sceneEntityComponent) {
+                            this.ecs.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)
+                            sceneEntityComponent.sceneEntity.dispose()
+                        }
                     } else if (sceneEntityComponent) {
                         sceneEntityComponent.sceneEntity.setAnimation(AnimEntityActivity.Stand)
                     }

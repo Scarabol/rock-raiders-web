@@ -244,7 +244,6 @@ export class VehicleEntity implements Updatable {
 
     setJob(job: Job, followUpJob: Job = null) {
         if (!this.driver) return
-        if (!this.driver) return
         if (this.job !== job) this.stopJob()
         this.job = job
         if (this.job) this.job.assign(this)

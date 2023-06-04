@@ -7,7 +7,6 @@ import { WorldManager } from '../game/WorldManager'
 import { Terrain } from '../game/terrain/Terrain'
 import { BuildingEntity } from '../game/model/building/BuildingEntity'
 import { Raider } from '../game/model/raider/Raider'
-import { SceneEntity } from './SceneEntity'
 import { BuildingSite } from '../game/model/building/BuildingSite'
 import { EntityType } from '../game/model/EntityType'
 import { SceneSelectionComponent, SceneSelectionUserData } from '../game/component/SceneSelectionComponent'
@@ -91,7 +90,7 @@ class SceneRaycaster {
         return selection
     }
 
-    getFirstEntity<T extends { sceneEntity: SceneEntity, entity: GameEntity }>(entities: T[]): T {
+    getFirstEntity<T extends { entity: GameEntity }>(entities: T[]): T {
         const objects = entities.map((m) => this.worldMgr.ecs.getComponents(m.entity).get(SceneSelectionComponent).pickSphere).filter((p) => !!p)
         const intersection = this.raycaster.intersectObjects(objects, false)[0]
         const selectionUserData = intersection?.object?.userData as SceneSelectionUserData
