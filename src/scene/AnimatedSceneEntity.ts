@@ -49,7 +49,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.driver = null
     }
 
-    setAnimation(animationName: string, onAnimationDone?: () => unknown) {
+    setAnimation(animationName: string, onAnimationDone?: () => unknown, durationTimeoutMs: number = 0) {
         if (this.currentAnimation === animationName) return
         this.currentAnimation = animationName
         if (this.animationData.length > 0) this.removeAll()
@@ -57,7 +57,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
-            const animatedGroup = new AnimationQualityGroup(animEntityData, animData, onAnimationDone).start()
+            const animatedGroup = new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs).start()
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
             this.animationParent.add(animatedGroup)
             this.animationGroups.push(animatedGroup)

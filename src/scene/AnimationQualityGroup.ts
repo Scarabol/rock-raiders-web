@@ -6,8 +6,8 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { DEV_MODE } from '../params'
 
 export class AnimationQualityGroup extends AnimationGroup {
-    constructor(readonly animEntityData: AnimEntityData, animData: AnimEntityAnimationData, readonly onAnimationDone: () => unknown) {
-        super(animData.file, onAnimationDone)
+    constructor(readonly animEntityData: AnimEntityData, animData: AnimEntityAnimationData, onAnimationDone: () => unknown, durationTimeoutMs: number = 0) {
+        super(animData.file, onAnimationDone, durationTimeoutMs)
         this.animationTransCoef = 1 / (animData.transcoef || 1)
     }
 

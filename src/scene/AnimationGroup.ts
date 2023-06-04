@@ -11,8 +11,9 @@ export class AnimationGroup extends Group implements Updatable {
     readonly animationMixers: AnimationMixer[] = []
     isDone: boolean = false
     animationTransCoef: number = 1
+    animationTime: number = 0
 
-    constructor(readonly lwsFilepath: string, readonly onAnimationDone: () => unknown) {
+    constructor(readonly lwsFilepath: string, readonly onAnimationDone: () => unknown, readonly durationTimeoutMs: number = 0) {
         super()
     }
 
@@ -61,7 +62,7 @@ export class AnimationGroup extends Group implements Updatable {
             const clip = new AnimationClip(lwsFilepath, lwscData.durationSeconds, obj.keyframeTracks)
             const mixer = new AnimationMixer(mesh) // mixer needs to recreate after each group change
             const animationAction = mixer.clipAction(clip)
-            if (this.onAnimationDone) {
+            if (this.onAnimationDone && !this.durationTimeoutMs) {
                 animationAction.setLoop(LoopOnce, 0)
                 animationAction.clampWhenFinished = true
                 mixer.addEventListener('finished', () => {
@@ -78,6 +79,15 @@ export class AnimationGroup extends Group implements Updatable {
 
     update(elapsedMs: number) {
         this.animationMixers.forEach((m) => m.update(elapsedMs / 1000 * this.animationTransCoef))
+        if (this.durationTimeoutMs) {
+            this.animationTime += elapsedMs
+            if (this.animationTime >= this.durationTimeoutMs) {
+                this.animationMixers.forEach((a) => a.stopAllAction())
+                if (this.onAnimationDone) {
+                    this.onAnimationDone() // XXX ensure this is not triggered more than once
+                }
+            }
+        }
     }
 
     dispose() {
