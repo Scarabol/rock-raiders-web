@@ -6,6 +6,7 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 import { AnimationGroup } from './AnimationGroup'
 import { SceneEntity } from './SceneEntity'
+import { DEV_MODE } from '../params'
 
 export class AnimatedSceneEntity extends Group implements Updatable {
     readonly animationData: AnimEntityData[] = []
@@ -109,16 +110,18 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             upgrades.forEach((upgrade) => {
                 const parent = this.meshesByLName.get(upgrade.parentNullName.toLowerCase())?.[upgrade.parentNullIndex]
                 if (!parent) {
-                    console.error(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}'`)
+                    console.error(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}' in ${Array.from(this.meshesByLName.keys())}`)
                     return
                 }
                 const upgradeMesh = new AnimatedSceneEntity()
                 upgradeMesh.name = upgrade.lNameType
-                const upgradeFilename = ResourceManager.configuration.upgradeTypesCfg.get(upgrade.lNameType) || upgrade.lNameType
+                const upgradeFilename = ResourceManager.configuration.upgradeTypesCfg.get(upgrade.lNameType) || upgrade.lUpgradeFilepath
+                console.log(`Upgrade filename ${upgradeFilename}`)
                 try {
                     const upgradeAnimData = ResourceManager.getAnimatedData(upgradeFilename)
                     upgradeMesh.addAnimated(upgradeAnimData)
                 } catch (e) {
+                    if (!DEV_MODE) console.warn(e)
                     const mesh = ResourceManager.getLwoModel(upgradeFilename)
                     if (!mesh) {
                         console.error(`Could not get mesh for ${upgrade.lNameType}`)

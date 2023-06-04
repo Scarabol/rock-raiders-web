@@ -36,6 +36,7 @@ export class AnimEntityAnimationData {
 export class AnimEntityUpgradeData {
     constructor(
         readonly lNameType: string,
+        readonly lUpgradeFilepath: string,
         readonly parentNullName: string,
         readonly parentNullIndex: number,
     ) {
@@ -221,7 +222,8 @@ export class AnimEntityParser {
         Object.entries<unknown[]>(upgradesCfg).forEach(([upgradeTypeName, upgradeEntry]) => {
             const upgradeEntries = Array.isArray(upgradeEntry[0]) ? upgradeEntry : [upgradeEntry]
             upgradeEntries.forEach((upgradeTypeEntry) => {
-                upgradesByLevel.push(new AnimEntityUpgradeData(this.path + upgradeTypeName.toLowerCase(), upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))
+                const lNameType = upgradeTypeName.toLowerCase()
+                upgradesByLevel.push(new AnimEntityUpgradeData(lNameType, this.path + lNameType, upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))
             })
         })
         this.entityType.upgradesByLevel.set(match[1], upgradesByLevel)
