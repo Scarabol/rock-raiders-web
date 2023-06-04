@@ -129,7 +129,7 @@ export class GameLayer extends ScreenLayer {
                 const clearJob = cursorTarget.surface.setupClearRubbleJob()
                 this.entityMgr.selection.assignSurfaceJob(clearJob)
             } else if (this.entityMgr.selection.canMove() && cursorTarget.surface.isWalkable()) {
-                this.entityMgr.selection.assignMoveJob(cursorTarget.intersectionPoint)
+                this.entityMgr.selection.assignMoveJob(cursorTarget.surface)
             }
             if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
         }

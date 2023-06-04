@@ -1,8 +1,6 @@
-import { Vector2 } from 'three'
 import { Sample } from '../../audio/Sample'
 import { SoundManager } from '../../audio/SoundManager'
 import { SelectPanelType } from '../../event/LocalEvents'
-import { TILESIZE } from '../../params'
 import { BuildingEntity } from './building/BuildingEntity'
 import { EntityType } from './EntityType'
 import { Job } from './job/Job'
@@ -159,14 +157,10 @@ export class GameSelection {
         })
     }
 
-    assignMoveJob(target: Vector2) {
-        if (!target) return
-        const raiderGridSize = TILESIZE / 3
-        const raiderTarget = target.clone().divideScalar(raiderGridSize).floor().addScalar(0.5).multiplyScalar(raiderGridSize)
-        this.raiders.forEach((r) => r.setJob(new MoveJob(raiderTarget)))
-        const vehicleGridSize = TILESIZE
-        const vehicleTarget = target.clone().divideScalar(vehicleGridSize).floor().addScalar(0.5).multiplyScalar(vehicleGridSize)
-        this.vehicles.forEach((v) => v.setJob(new MoveJob(vehicleTarget)))
+    assignMoveJob(surface: Surface) {
+        if (!surface) return
+        this.raiders.forEach((r) => r.setJob(new MoveJob(surface.getRandomPosition())))
+        this.vehicles.forEach((v) => v.setJob(new MoveJob(surface.getRandomPosition())))
     }
 
     assignCarryJob(material: MaterialEntity) {

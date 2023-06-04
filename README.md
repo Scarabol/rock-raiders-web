@@ -49,7 +49,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Implement raiders with improved ECS and animation system
 - Refactor job system to allow multi-carry jobs
 - Raider get tired while carrying and eat at barracks
-- Raider scatter on right-click move
  
 ### v0.7.0 - Rockies, Slugs And Damage
 
