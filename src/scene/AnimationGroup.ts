@@ -10,6 +10,7 @@ export class AnimationGroup extends Group implements Updatable {
     readonly meshList: SceneMesh[] = []
     readonly animationMixers: AnimationMixer[] = []
     isDone: boolean = false
+    animationTransCoef: number = 1
 
     constructor(readonly lwsFilepath: string, readonly onAnimationDone: () => unknown) {
         super()
@@ -76,7 +77,7 @@ export class AnimationGroup extends Group implements Updatable {
     }
 
     update(elapsedMs: number) {
-        this.animationMixers.forEach((m) => m.update(elapsedMs / 1000))
+        this.animationMixers.forEach((m) => m.update(elapsedMs / 1000 * this.animationTransCoef))
     }
 
     dispose() {

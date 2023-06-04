@@ -1,13 +1,14 @@
 import { getPath } from '../core/Util'
-import { AnimEntityData } from '../resource/AnimEntityParser'
+import { AnimEntityAnimationData, AnimEntityData } from '../resource/AnimEntityParser'
 import { AnimationGroup } from './AnimationGroup'
 import { SceneMesh } from './SceneMesh'
 import { ResourceManager } from '../resource/ResourceManager'
 import { DEV_MODE } from '../params'
 
 export class AnimationQualityGroup extends AnimationGroup {
-    constructor(readonly animEntityData: AnimEntityData, lwsFilepath: string, readonly onAnimationDone: () => unknown) {
-        super(lwsFilepath, onAnimationDone)
+    constructor(readonly animEntityData: AnimEntityData, animData: AnimEntityAnimationData, readonly onAnimationDone: () => unknown) {
+        super(animData.file, onAnimationDone)
+        this.animationTransCoef = 1 / (animData.transcoef || 1)
     }
 
     protected resolveMesh(lowerName: string): SceneMesh { // TODO support other mesh quality levels and FPP cameras
