@@ -45,7 +45,7 @@ export class PathTarget {
 
     canGatherItem(): boolean {
         if (this.building?.entityType === EntityType.POWER_STATION || this.building?.entityType === EntityType.ORE_REFINERY) {
-            return this.building.sceneEntity.activity === this.building.sceneEntity.getDefaultActivity()
+            return this.building.sceneEntity.currentAnimation === (this.building.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
         }
         return true
     }
@@ -55,8 +55,8 @@ export class PathTarget {
             if (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY) {
                 this.building.pickupItem(item)
                 if (this.building.sceneEntity.carriedByIndex.size >= this.building.getMaxCarry()) {
-                    this.building.sceneEntity.changeActivity(BuildingActivity.Deposit, () => {
-                        this.building.sceneEntity.changeActivity()
+                    this.building.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
+                        this.building.sceneEntity.setAnimation(this.building.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
                         this.building.sceneEntity.dropAllEntities()
                         this.building.depositItems()
                     })

@@ -1,4 +1,4 @@
-import { iGet, iSet } from '../core/Util'
+import { iGet } from '../core/Util'
 import { DEV_MODE } from '../params'
 import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 
@@ -20,6 +20,8 @@ export class AnimEntityData {
     readonly lowPolyBodies: Map<string, string> = new Map()
     readonly fPPolyBodies: Map<string, Map<string, string>> = new Map()
     fireNullName: string
+    xPivotName?: string
+    yPivotName?: string
     pivotMaxZ?: number
     pivotMinZ?: number
     readonly animations: AnimEntityAnimationData[] = []
@@ -156,8 +158,10 @@ export class AnimEntityParser {
                 if (!DEV_MODE) console.warn(`Entity has upgrade defined outside of Upgrades group`, value)
             } else if (rootKey.equalsIgnoreCase('FireNullName')) {
                 this.entityType.fireNullName = value.toLowerCase()
-            } else if (rootKey.match(/^[xy]Pivot$/i)) {
-                iSet(this.entityType, rootKey, value)
+            } else if (rootKey.equalsIgnoreCase('xPivot')) {
+                this.entityType.xPivotName = value.toLowerCase()
+            } else if (rootKey.equalsIgnoreCase('yPivot')) {
+                this.entityType.yPivotName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('PivotMaxZ')) {
                 this.entityType.pivotMaxZ = value
             } else if (rootKey.equalsIgnoreCase('PivotMinZ')) {

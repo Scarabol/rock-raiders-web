@@ -1,4 +1,4 @@
-import { Group, Matrix4, Object3D } from 'three'
+import { Group, Matrix4, Object3D, Vector2, Vector3 } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
@@ -21,6 +21,12 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     currentAnimation: string
     driverParent: Object3D = null
     driver: Object3D = null
+    toolParent: Object3D = null
+    depositParent: Object3D = null
+    xPivotObj: Object3D = null
+    pivotMinZ: number = null
+    pivotMaxZ: number = null
+    yPivotObj: Object3D = null
 
     constructor() {
         super()
@@ -53,7 +59,6 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         if (this.currentAnimation === animationName) return
         this.currentAnimation = animationName
         if (this.animationData.length > 0) this.removeAll()
-        this.driverParent = this.animationParent
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
@@ -61,14 +66,8 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
             this.animationParent.add(animatedGroup)
             this.animationGroups.push(animatedGroup)
-            // add carry joints
-            if (animEntityData.carryNullName) {
-                this.carryJoints.push(...animatedGroup.meshList.filter((a) => animEntityData.carryNullName.equalsIgnoreCase(a.name)))
-            }
-            // add driver joints
-            if (animEntityData.driverNullName) {
-                this.driverParent = animatedGroup.meshList.find((mesh) => mesh.name.equalsIgnoreCase(animEntityData.driverNullName)) || this.driverParent
-            }
+            this.pivotMaxZ = animEntityData.pivotMinZ ?? this.pivotMaxZ
+            this.pivotMinZ = animEntityData.pivotMinZ ?? this.pivotMinZ
             // add wheels
             if (animEntityData.wheelMesh && animEntityData.wheelNullName) {
                 const wheelParentMesh = this.meshesByLName.getOrUpdate(animEntityData.wheelNullName, () => [])
@@ -79,9 +78,17 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                 wheelParentMesh.forEach((p) => p.add(ResourceManager.getLwoModel(animEntityData.wheelMesh)))
             }
         })
-        if (this.driver) this.driverParent.add(this.driver)
         this.reinstallAllUpgrades()
+        this.animationData.forEach((animEntityData) => {
+            if (animEntityData.carryNullName) this.carryJoints.push(...this.meshesByLName.getOrDefault(animEntityData.carryNullName, []))
+            if (animEntityData.driverNullName) this.driverParent = this.meshesByLName.get(animEntityData.driverNullName)?.last() || this.animationParent
+            if (animEntityData.toolNullName) this.toolParent = this.meshesByLName.get(animEntityData.toolNullName)?.last()
+            if (animEntityData.depositNullName) this.depositParent = this.meshesByLName.get(animEntityData.depositNullName)?.last()
+            if (animEntityData.xPivotName) this.xPivotObj = this.meshesByLName.get(animEntityData.xPivotName)?.last()
+            if (animEntityData.yPivotName) this.yPivotObj = this.meshesByLName.get(animEntityData.yPivotName)?.last()
+        })
         this.addCarriedToJoints()
+        if (this.driver) this.driverParent.add(this.driver)
     }
 
     private removeAll() {
@@ -93,6 +100,10 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.installedUpgrades.length = 0
         this.removeDriver()
         this.driverParent = null
+        this.toolParent = null
+        this.depositParent = null
+        this.xPivotObj = null
+        this.yPivotObj = null
         this.carryJoints.length = 0
     }
 
@@ -117,7 +128,6 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                 const upgradeMesh = new AnimatedSceneEntity()
                 upgradeMesh.name = upgrade.lNameType
                 const upgradeFilename = ResourceManager.configuration.upgradeTypesCfg.get(upgrade.lNameType) || upgrade.lUpgradeFilepath
-                console.log(`Upgrade filename ${upgradeFilename}`)
                 try {
                     const upgradeAnimData = ResourceManager.getAnimatedData(upgradeFilename)
                     upgradeMesh.addAnimated(upgradeAnimData)
@@ -127,11 +137,14 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                     if (!mesh) {
                         console.error(`Could not get mesh for ${upgrade.lNameType}`)
                     } else {
+                        mesh.name = upgrade.lNameType
                         upgradeMesh.animationParent.add(mesh)
+                        this.meshesByLName.getOrUpdate(mesh.name, () => []).push(mesh)
                     }
                 }
                 upgradeMesh.upgradeLevel = this.upgradeLevel
                 upgradeMesh.setAnimation(this.currentAnimation)
+                upgradeMesh.meshesByLName.forEach((mesh, lName) => this.meshesByLName.getOrUpdate(lName, () => []).push(...mesh))
                 parent.add(upgradeMesh)
                 this.installedUpgrades.add({parent: parent, child: upgradeMesh})
             })
@@ -156,7 +169,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     }
 
     flipXAxis() {
-        this.animationParent.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
+        this.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
     }
 
     pickupEntity(entity: SceneEntity) {
@@ -192,5 +205,44 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     dispose() {
         this.animationGroups.forEach((a) => a.dispose())
         this.animationGroups.length = 0
+    }
+
+    getHeading(): number {
+        return this.rotation.y
+    }
+
+    get position2D(): Vector2 {
+        return new Vector2(this.position.x, this.position.z)
+    }
+
+    pointLaserAt(worldTarget: Vector3) {
+        if (!worldTarget) return
+        if (this.xPivotObj) {
+            const pivotWorldPos = new Vector3()
+            this.xPivotObj.getWorldPosition(pivotWorldPos)
+            const diff = worldTarget.clone().sub(pivotWorldPos)
+            const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI - Math.PI / 20
+            const lAngle = this.limitAngle(angle)
+            this.xPivotObj.setRotationFromAxisAngle(new Vector3(1, 0, 0), lAngle) // XXX use rotation speed and smooth movement
+        }
+        if (this.yPivotObj) {
+            const pivotWorldPos = new Vector3()
+            this.yPivotObj.getWorldPosition(pivotWorldPos)
+            const angle = new Vector2(worldTarget.x, worldTarget.z).sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() - Math.PI / 2
+            this.yPivotObj.setRotationFromAxisAngle(new Vector3(0, 1, 0), angle) // XXX use rotation speed and smooth movement
+        }
+    }
+
+    private limitAngle(angle: number): number {
+        let result = angle
+        const min = this.pivotMinZ
+        if (min !== null && min !== undefined && result < min) {
+            result = min
+        }
+        const max = this.pivotMaxZ
+        if (max !== null && max !== undefined && result > max) {
+            result = max
+        }
+        return result
     }
 }

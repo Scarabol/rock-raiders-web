@@ -127,13 +127,12 @@ export class LegacyAnimatedSceneEntity extends SceneEntity {
         this.group.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
     }
 
-    pointLaserAt(terrainIntersectionPoint: Vector2) {
-        if (!terrainIntersectionPoint) return
+    pointLaserAt(worldTarget: Vector3) {
+        if (!worldTarget) return
         const xPivot = this.bodiesByName.get(this.animationEntityType.xPivot?.toLowerCase())
         if (xPivot) {
             const pivotWorldPos = new Vector3()
             xPivot.getWorldPosition(pivotWorldPos)
-            const worldTarget = this.sceneMgr.getFloorPosition(terrainIntersectionPoint).setY(0)
             const diff = worldTarget.sub(pivotWorldPos)
             const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI - Math.PI / 20
             const lAngle = this.limitAngle(angle)
@@ -143,7 +142,7 @@ export class LegacyAnimatedSceneEntity extends SceneEntity {
         if (yPivot) {
             const pivotWorldPos = new Vector3()
             yPivot.getWorldPosition(pivotWorldPos)
-            const angle = terrainIntersectionPoint.clone().sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() + Math.PI / 2
+            const angle = new Vector2(worldTarget.x, worldTarget.z).sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() + Math.PI / 2
             yPivot.setRotationFromAxisAngle(new Vector3(0, 1, 0), angle) // XXX use rotation speed and smooth movement
         }
     }

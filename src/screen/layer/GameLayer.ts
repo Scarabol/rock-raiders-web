@@ -87,7 +87,11 @@ export class GameLayer extends ScreenLayer {
                 if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, cursorTarget.raider))
             }
             this.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
-            this.entityMgr.selection.doubleSelect?.sceneEntity.pointLaserAt(cursorTarget.intersectionPoint)
+            const doubleSelection = this.entityMgr.selection.doubleSelect
+            if (cursorTarget.intersectionPoint && doubleSelection) {
+                const worldPos = this.sceneMgr.getFloorPosition(cursorTarget.intersectionPoint)
+                doubleSelection.sceneEntity.pointLaserAt(worldPos)
+            }
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             this.handlePointerUpEvent(event, this.sceneMgr.buildMarker)
         } else if (event.eventEnum === POINTER_EVENT.DOWN) {

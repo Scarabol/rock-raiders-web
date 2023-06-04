@@ -1,4 +1,4 @@
-import { PositionalAudio, Vector2, Vector3 } from 'three'
+import { PositionalAudio, Vector2 } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
@@ -7,7 +7,6 @@ import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BubbleSprite } from '../../../scene/BubbleSprite'
-import { BuildingSceneEntity } from '../../../scene/entities/BuildingSceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { BuildingActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
@@ -27,13 +26,14 @@ import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { MaterialSpawner } from '../../entity/MaterialSpawner'
+import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 
 export class BuildingEntity {
     readonly entityType: EntityType
     readonly carriedItems: MaterialEntity[] = []
     readonly entity: GameEntity
     buildingType: BuildingType
-    sceneEntity: BuildingSceneEntity
+    sceneEntity: AnimatedSceneEntity
     powerOffSprite: BubbleSprite
     level: number = 0
     powerSwitch: boolean = true
@@ -52,13 +52,15 @@ export class BuildingEntity {
     constructor(readonly worldMgr: WorldManager, buildingType: BuildingType) {
         this.entityType = buildingType.entityType
         this.buildingType = buildingType
-        this.sceneEntity = new BuildingSceneEntity(worldMgr.sceneMgr, this.buildingType.aeFilename)
+        this.sceneEntity = new AnimatedSceneEntity()
+        this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(buildingType.aeFilename))
+        this.sceneEntity.flipXAxis()
         this.powerOffSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
-        this.sceneEntity.addChild(this.powerOffSprite)
+        this.sceneEntity.add(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
         this.entity = this.worldMgr.ecs.addEntity()
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent())
-        this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(24, 14, this.sceneEntity.group, false))
+        this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(24, 14, this.sceneEntity, false))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
@@ -100,17 +102,13 @@ export class BuildingEntity {
     }
 
     getDropPosition2D(): Vector2 {
-        if (this.sceneEntity.animation?.getToolJoint) {
-            const worldPos = new Vector3()
-            this.sceneEntity.animation.getToolJoint.getWorldPosition(worldPos)
-            return new Vector2(worldPos.x, worldPos.z)
-        } else if (this.sceneEntity.animation?.depositJoint) {
-            const worldPos = new Vector3()
-            this.sceneEntity.animation.depositJoint.getWorldPosition(worldPos)
-            return new Vector2(worldPos.x, worldPos.z)
-        } else {
-            return this.sceneEntity.position2D
+        const worldPos = this.sceneEntity.position.clone()
+        if (this.sceneEntity.toolParent) {
+            this.sceneEntity.toolParent.getWorldPosition(worldPos)
+        } else if (this.sceneEntity.depositParent) {
+            this.sceneEntity.depositParent.getWorldPosition(worldPos)
         }
+        return new Vector2(worldPos.x, worldPos.z)
     }
 
     isReady(): boolean {
@@ -164,7 +162,8 @@ export class BuildingEntity {
     }
 
     disposeFromWorld() {
-        this.sceneEntity.disposeFromScene()
+        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
+        this.sceneEntity.dispose()
         this.engineSound = resetAudioSafe(this.engineSound)
         this.worldMgr.entityMgr.buildings.remove(this)
         this.worldMgr.entityMgr.buildingsUndiscovered.remove(this)
@@ -225,7 +224,9 @@ export class BuildingEntity {
         } else {
             this.turnEnergyOff()
         }
-        this.sceneEntity.setPowered(this.isPowered())
+        if (this.sceneEntity.currentAnimation === BuildingActivity.Stand || this.sceneEntity.currentAnimation === BuildingActivity.Unpowered) {
+            this.sceneEntity.setAnimation(this.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
+        }
         this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
         this.surfaces.forEach((s) => s.updateTexture())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
@@ -238,7 +239,7 @@ export class BuildingEntity {
         this.energized = true
         GameState.changeUsedCrystals(this.crystalDrain)
         if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this.surfaces)
-        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.sceneMgr.addPositionalAudio(this.sceneEntity.group, this.stats.EngineSound, true, true)
+        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
     }
 
     private turnEnergyOff() {
@@ -279,7 +280,7 @@ export class BuildingEntity {
             this.pathSurfaces.push(this.secondaryPathSurface)
         }
         this.surfaces.forEach((s) => s.setBuilding(this))
-        const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity.group, {gameEntity: this.entity, entityType: this.entityType}, this.stats, this.stats.PickSphere / 4))
+        const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity, {gameEntity: this.entity, entityType: this.entityType}, this.stats, this.stats.PickSphere / 4))
         this.addToScene(worldPosition, radHeading)
         if (this.sceneEntity.visible) {
             this.worldMgr.entityMgr.buildings.push(this)
@@ -289,7 +290,7 @@ export class BuildingEntity {
         if (this.surfaces.some((s) => s.selected)) EventBus.publishEvent(new DeselectAll())
         if (this.sceneEntity.visible && !disableTeleportIn) {
             this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
-            this.sceneEntity.changeActivity(BuildingActivity.Teleport, () => {
+            this.sceneEntity.setAnimation(BuildingActivity.Teleport, () => {
                 this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
                 this.powerOffSprite.setEnabled(!this.isPowered())
                 this.onPlaceDown()
@@ -302,7 +303,7 @@ export class BuildingEntity {
     }
 
     private onPlaceDown() {
-        this.sceneEntity.changeActivity(BuildingActivity.Stand)
+        this.sceneEntity.setAnimation(BuildingActivity.Stand)
         this.updateEnergyState()
         this.surfaces.forEach((surface) => {
             surface.updateTexture()
@@ -326,8 +327,15 @@ export class BuildingEntity {
             })
     }
 
-    addToScene(worldPosition: Vector2, radHeading: number) {
-        this.sceneEntity.addToScene(worldPosition, radHeading)
+    addToScene(worldPosition: Vector2, headingRad: number) {
+        if (worldPosition) {
+            this.sceneEntity.position.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPosition))
+        }
+        if (headingRad !== undefined && headingRad !== null) {
+            this.sceneEntity.rotation.y = headingRad
+        }
+        this.sceneEntity.visible = this.surfaces.some((s) => s.discovered)
+        this.worldMgr.sceneMgr.addMeshGroup(this.sceneEntity)
     }
 
     isTrainingSite(training: RaiderTraining): boolean {
