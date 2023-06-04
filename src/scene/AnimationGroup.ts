@@ -9,6 +9,7 @@ import { DEV_MODE } from '../params'
 export class AnimationGroup extends Group implements Updatable {
     readonly meshList: SceneMesh[] = []
     readonly animationMixers: AnimationMixer[] = []
+    isDone: boolean = false
 
     constructor(readonly lwsFilepath: string, readonly onAnimationDone: () => unknown) {
         super()
@@ -63,7 +64,10 @@ export class AnimationGroup extends Group implements Updatable {
                 animationAction.setLoop(LoopOnce, 0)
                 animationAction.clampWhenFinished = true
                 mixer.addEventListener('finished', () => {
-                    this.onAnimationDone()
+                    if (!this.isDone) {
+                        this.isDone = true
+                        this.onAnimationDone()
+                    }
                 })
             }
             animationAction.play()
