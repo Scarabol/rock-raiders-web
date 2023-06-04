@@ -28,7 +28,7 @@ export class Teleport {
     teleportIn(entity: TeleportEntity, listing: TeleportEntity[], beamListing: TeleportEntity[], worldPosition: Vector2, heading: number, walkOutPos: Vector2) {
         this.operating = true
         entity.sceneEntity.addToScene(worldPosition, heading)
-        entity.sceneEntity.playPositionalAudio(Sample[Sample.SND_teleport], false)
+        entity.sceneEntity.sceneMgr.addPositionalAudio(entity.sceneEntity.group, Sample[Sample.SND_teleport], true, false)
         entity.sceneEntity.changeActivity(RaiderActivity.TeleportIn, () => {
             entity.sceneEntity.changeActivity()
             const sceneSelectionComponent = entity.worldMgr.ecs.addComponent(entity.entity, new SceneSelectionComponent(entity.sceneEntity.group, {gameEntity: entity.entity, entityType: entity.entityType}, entity.stats))

@@ -238,7 +238,7 @@ export class BuildingEntity {
         this.energized = true
         GameState.changeUsedCrystals(this.crystalDrain)
         if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this.surfaces)
-        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
+        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.sceneMgr.addPositionalAudio(this.sceneEntity.group, this.stats.EngineSound, true, true)
     }
 
     private turnEnergyOff() {

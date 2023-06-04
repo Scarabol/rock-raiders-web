@@ -105,7 +105,7 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
             this.carryItem.sceneEntity.disposeFromScene()
             this.carryItem.targetSurface.collapse()
             this.carryItem.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.carryItem.sceneEntity.position, this.carryItem.sceneEntity.getHeading())
-            this.carryItem.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Dynamite], false)
+            this.carryItem.sceneEntity.sceneMgr.addPositionalAudio(this.carryItem.sceneEntity.group, Sample[Sample.SFX_Dynamite], true, false)
             EventBus.publishEvent(new DynamiteExplosionEvent(this.carryItem.sceneEntity.position2D))
         })
     }

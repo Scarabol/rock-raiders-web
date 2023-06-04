@@ -219,7 +219,7 @@ export class VehicleEntity implements Updatable {
         }
         const workActivity = this.job.getWorkActivity() || this.sceneEntity.getDefaultActivity()
         if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
-            this.workAudio = this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Drill], true)
+            this.workAudio = this.sceneEntity.sceneMgr.addPositionalAudio(this.sceneEntity.group, Sample[Sample.SFX_Drill], true, true)
         }
         this.sceneEntity.changeActivity(workActivity, () => {
             this.completeJob()
@@ -278,7 +278,7 @@ export class VehicleEntity implements Updatable {
         } else {
             this.driver.sceneEntity.disposeFromScene()
         }
-        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.playPositionalAudio(this.stats.EngineSound, true)
+        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.sceneEntity.sceneMgr.addPositionalAudio(this.sceneEntity.group, this.stats.EngineSound, true, true)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
     }
 

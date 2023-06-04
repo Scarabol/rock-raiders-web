@@ -280,7 +280,7 @@ export class Raider implements Updatable {
         }
         const workActivity = this.job.getWorkActivity() || this.sceneEntity.getDefaultActivity()
         if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
-            this.workAudio = this.sceneEntity.playPositionalAudio(Sample[Sample.SFX_Drill], true)
+            this.workAudio = this.sceneEntity.sceneMgr.addPositionalAudio(this.sceneEntity.group, Sample[Sample.SFX_Drill], true, true)
         }
         this.sceneEntity.changeActivity(workActivity, () => {
             this.completeJob()

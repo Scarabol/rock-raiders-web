@@ -1,4 +1,4 @@
-import { Box3, Group, Object3D, PositionalAudio, Sphere, Vector2, Vector3 } from 'three'
+import { Box3, Group, Object3D, Sphere, Vector2, Vector3 } from 'three'
 import { AnimationActivity, AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 import { Surface } from '../game/terrain/Surface'
 import { Updatable } from '../game/model/Updateable'
@@ -75,10 +75,6 @@ export class SceneEntity {
 
     get surfaces(): Surface[] {
         return [this.sceneMgr.terrain.getSurfaceFromWorld(this.group.position)]
-    }
-
-    playPositionalAudio(sfxName: string, loop: boolean): PositionalAudio {
-        return this.sceneMgr.addPositionalAudio(this.group, sfxName, true, loop)
     }
 
     addToScene(worldPosition: Vector2, radHeading: number) {
