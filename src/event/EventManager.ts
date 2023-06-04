@@ -43,18 +43,24 @@ export class EventManager {
         currentLayer?.pushPointerEvent(event).then((consumed) => {
             if (!consumed) this.publishPointerEvent(activeLayers, event)
             else if (event.eventEnum === POINTER_EVENT.DOWN) this.screenMaster.focusedLayer = currentLayer
+        }).catch((e) => {
+            console.error(e)
         })
     }
 
     private publishKeyEvent(activeLayers: ScreenLayer[], event: GameKeyboardEvent) {
         activeLayers.shift()?.pushKeyEvent(event).then((consumed) => {
             if (!consumed) this.publishKeyEvent(activeLayers, event)
+        }).catch((e) => {
+            console.error(e)
         })
     }
 
     private publishWheelEvent(activeLayers: ScreenLayer[], event: GameWheelEvent) {
         activeLayers.shift()?.pushWheelEvent(event).then((consumed) => {
             if (!consumed) this.publishWheelEvent(activeLayers, event)
+        }).catch((e) => {
+            console.error(e)
         })
     }
 }
