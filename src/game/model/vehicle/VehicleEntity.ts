@@ -107,7 +107,7 @@ export class VehicleEntity implements Updatable {
     private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
         if (result === MoveState.TARGET_UNREACHABLE) {
-            console.log('Entity could not move to job target, stopping job')
+            console.warn('Entity could not move to job target, stopping job')
             this.stopJob()
         }
         return result

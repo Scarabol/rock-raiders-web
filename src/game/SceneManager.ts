@@ -232,7 +232,7 @@ export class SceneManager implements Updatable {
             this.miscAnims.remove(group)
             this.scene.remove(group)
             group.dispose()
-        })
+        }).start()
         group.position.copy(position)
         group.rotateOnAxis(new Vector3(0, 1, 0), heading)
         this.miscAnims.add(group)

@@ -4,34 +4,50 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from './SceneMesh'
 import { getPath } from '../core/Util'
 import { LWSCData } from '../resource/LWSCParser'
+import { DEV_MODE } from '../params'
 
 export class AnimationGroup extends Group implements Updatable {
     readonly meshList: SceneMesh[] = []
     readonly animationMixers: AnimationMixer[] = []
 
-    constructor(lwsFilepath: string, readonly onAnimationDone: () => unknown) {
+    constructor(readonly lwsFilepath: string, readonly onAnimationDone: () => unknown) {
         super()
-        const lwscData = ResourceManager.getLwscData(lwsFilepath)
-        this.meshList = this.createMeshList(lwscData, getPath(lwsFilepath))
-        this.animationMixers = this.createAnimationMixers(lwscData, lwsFilepath)
-        this.update(0)
     }
 
-    private createMeshList(lwscData: LWSCData, lwsFilepath: string) {
-        return lwscData.objects.map((obj) => {
+    start(): this {
+        const lwscData = ResourceManager.getLwscData(this.lwsFilepath)
+        this.createMeshList(lwscData)
+        this.createAnimationMixers(lwscData, this.lwsFilepath)
+        this.update(0)
+        return this
+    }
+
+    protected resolveMesh(lowerName: string): SceneMesh {
+        try {
+            return ResourceManager.getLwoModel(getPath(this.lwsFilepath) + lowerName)
+        } catch (e) {
+            if (!DEV_MODE) console.warn(e)
+            return new SceneMesh()
+        }
+    }
+
+    private createMeshList(lwscData: LWSCData) {
+        this.meshList.length = 0
+        lwscData.objects.forEach((obj) => {
             let mesh: SceneMesh
             if (obj.isNull) {
                 mesh = new SceneMesh()
             } else {
-                mesh = ResourceManager.getLwoModel(getPath(lwsFilepath) + obj.lowerName)
+                mesh = this.resolveMesh(obj.lowerName)
             }
             mesh.name = obj.lowerName
-            return mesh
+            this.meshList.push(mesh)
         })
     }
 
     private createAnimationMixers(lwscData: LWSCData, lwsFilepath: string) {
-        return lwscData.objects.map((obj, index) => {
+        this.animationMixers.length = 0
+        lwscData.objects.forEach((obj, index) => {
             const mesh = this.meshList[index]
             // associate child meshes with parents
             if (obj.parentObjInd === 0) { // index is 1 based, 0 means no parent
@@ -51,7 +67,7 @@ export class AnimationGroup extends Group implements Updatable {
                 })
             }
             animationAction.play()
-            return mixer
+            this.animationMixers.push(mixer)
         })
     }
 

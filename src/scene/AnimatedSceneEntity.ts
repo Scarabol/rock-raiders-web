@@ -7,6 +7,7 @@ import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 import { AnimationGroup } from './AnimationGroup'
 import { SceneEntity } from './SceneEntity'
 import { DEV_MODE } from '../params'
+import { AnimationQualityGroup } from './AnimationQualityGroup'
 
 export class AnimatedSceneEntity extends Group implements Updatable {
     readonly animationData: AnimEntityData[] = []
@@ -56,7 +57,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
-            const animatedGroup = new AnimationGroup(animData.file, onAnimationDone)
+            const animatedGroup = new AnimationQualityGroup(animEntityData, animData.file, onAnimationDone).start()
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
             this.animationParent.add(animatedGroup)
             this.animationGroups.push(animatedGroup)
