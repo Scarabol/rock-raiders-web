@@ -103,7 +103,7 @@ export class EntityManager {
         this.disposeEntities(this.undiscoveredSpiders)
     }
 
-    private static disposeAll(list: {disposeFromWorld: () => unknown}[]) {
+    private static disposeAll(list: { disposeFromWorld: () => unknown }[]) {
         const copy = [...list]
         copy.forEach((e) => e.disposeFromWorld())
         list.length = 0
@@ -131,6 +131,13 @@ export class EntityManager {
         return this.getBuildingsByType(entityType).map((b) => b.carryPathTarget)
     }
 
+    getUpgradePathTargets(): PathTarget[] {
+        return this.getBuildingsByType(EntityType.UPGRADE).map((b) => {
+            // TODO can use drop/deposit target from upgrade building here?
+            return PathTarget.fromBuilding(b, b.primaryPathSurface.getCenterWorld2D())
+        })
+    }
+
     hasBuilding(buildingType: EntityType): boolean {
         return this.buildings.some((b) => b.buildingType.entityType === buildingType)
     }
@@ -143,6 +150,10 @@ export class EntityManager {
 
     hasTrainingSite(training: RaiderTraining): boolean {
         return this.buildings.some((b) => b.isTrainingSite(training))
+    }
+
+    hasUpgradeSite(): boolean {
+        return this.buildings.some((b) => b.isPowered() && b.entityType === EntityType.UPGRADE)
     }
 
     private static getClosestBuilding(buildings: BuildingEntity[], position: Vector3) {

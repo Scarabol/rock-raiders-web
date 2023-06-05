@@ -1,4 +1,4 @@
-import { Group, Matrix4, Object3D, Vector2, Vector3 } from 'three'
+import { Box3, Group, Matrix4, Object3D, Sphere, Vector2, Vector3 } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
@@ -125,6 +125,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
 
     reinstallAllUpgrades() {
         this.animationData.forEach((animEntityData) => {
+            // XXX what if an upgrade level is not defined for an upgrade, but a compatible one is, like 0110 and 0100
             const upgrades = animEntityData.upgradesByLevel.get(this.upgradeLevel) ?? animEntityData.upgradesByLevel.get('0000') ?? []
             upgrades.forEach((upgrade) => {
                 const parent = this.meshesByLName.get(upgrade.parentNullName.toLowerCase())?.[upgrade.parentNullIndex]
@@ -253,5 +254,11 @@ export class AnimatedSceneEntity extends Group implements Updatable {
 
     headTowards(location: Vector2) {
         this.lookAt(new Vector3(location.x, this.position.y, location.y))
+    }
+
+    getRadiusSquare(): number {
+        const boundingSphere = new Sphere()
+        new Box3().setFromObject(this).getBoundingSphere(boundingSphere)
+        return boundingSphere.radius * boundingSphere.radius
     }
 }

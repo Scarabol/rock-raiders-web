@@ -22,6 +22,7 @@ import { SelectVehicleManedPanel } from './select/SelectVehicleManedPanel'
 import { SelectWallPanel } from './select/SelectWallPanel'
 import { TrainRaiderPanel } from './TrainRaiderPanel'
 import { LargeVehiclePanel, SmallVehiclePanel } from './VehiclePanel'
+import { UpgradeVehiclePanel } from './UpgradeVehiclePanel'
 
 export class MainPanel extends Panel {
     subPanels: IconSubPanel[] = []
@@ -63,6 +64,8 @@ export class MainPanel extends Panel {
         selectRaiderPanel.getToolItem.onClick = () => selectRaiderPanel.toggleState(() => getToolPanel.toggleState())
         const selectVehicleEmptyPanel = this.addSubPanel(new SelectVehicleEmptyPanel(this, this.mainPanel))
         const selectVehicleManedPanel = this.addSubPanel(new SelectVehicleManedPanel(this, this.mainPanel))
+        const upgradeVehiclePanel = this.addSubPanel(new UpgradeVehiclePanel(this, selectVehicleManedPanel))
+        selectVehicleManedPanel.upgradeItem.onClick = () => selectVehicleManedPanel.toggleState(() => upgradeVehiclePanel.toggleState())
         const selectFencePanel = this.addSubPanel(new SelectFencePanel(this, this.mainPanel))
 
         const teleportRaider = this.mainPanel.addMenuItem('InterfaceImages', 'Interface_MenuItem_TeleportMan')

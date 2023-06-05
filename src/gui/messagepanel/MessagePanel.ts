@@ -43,6 +43,7 @@ export class MessagePanel extends Panel {
         this.msgGameCompleted = new TextInfoMessage(font, textInfoMessageConfig.textGameCompleted, this.img.width)
         this.msgManTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
         this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(this.msgManTrained))
+        this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(this.msgUnitUpgraded))
         this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
         this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, (event: AirLevelChanged) => {
             this.airLevel = event.airLevel

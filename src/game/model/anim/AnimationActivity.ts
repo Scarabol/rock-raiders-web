@@ -18,6 +18,7 @@ export enum BuildingActivity {
     Deposit = 'Activity_Deposit',
     Explode = 'Activity_Explode',
     Unpowered = 'Activity_Unpowered',
+    Upgrade = 'Activity_Upgrade',
 }
 
 export enum AnimEntityActivity {

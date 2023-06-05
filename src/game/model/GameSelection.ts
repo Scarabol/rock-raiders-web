@@ -12,6 +12,8 @@ import { Raider } from './raider/Raider'
 import { RaiderTool } from './raider/RaiderTool'
 import { VehicleEntity } from './vehicle/VehicleEntity'
 import { SelectionFrameComponent } from '../component/SelectionFrameComponent'
+import { VehicleUpgrade } from './vehicle/VehicleUpgrade'
+import { VehicleUpgradeJob } from './job/VehicleUpgradeJob'
 
 export class GameSelection {
     surface: Surface = null
@@ -181,6 +183,11 @@ export class GameSelection {
             }
             return false
         })
+    }
+
+    assignUpgradeJob(upgrade: VehicleUpgrade) {
+        if (!upgrade) return
+        this.vehicles.forEach((v) => v.canUpgrade(upgrade) && v.setJob(new VehicleUpgradeJob(v.worldMgr.entityMgr, v, upgrade)))
     }
 
     canDrill(surface: Surface): boolean {

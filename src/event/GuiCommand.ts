@@ -9,6 +9,7 @@ import { Sample } from '../audio/Sample'
 import { SaveGamePreferences } from '../resource/SaveGameManager'
 import { Raider } from '../game/model/raider/Raider'
 import { BuildingSite } from '../game/model/building/BuildingSite'
+import { VehicleUpgrade } from '../game/model/vehicle/VehicleUpgrade'
 
 export class GuiCommand extends GameEvent {
 }
@@ -285,5 +286,11 @@ export class RepairLava extends GuiCommand {
 export class ChangePreferences extends GuiCommand {
     constructor(readonly preferences: SaveGamePreferences) {
         super(EventKey.COMMAND_CHANGE_PREFERENCES)
+    }
+}
+
+export class UpgradeVehicle extends GuiCommand {
+    constructor(readonly upgrade: VehicleUpgrade) {
+        super(EventKey.COMMAND_UPGRADE_VEHICLE)
     }
 }

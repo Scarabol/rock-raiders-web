@@ -1,6 +1,6 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { CameraControl, ChangeBuildingPowerState, ChangePreferences, ChangePriorityList, ChangeRaiderSpawnRequest, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider } from '../event/GuiCommand'
+import { CameraControl, ChangeBuildingPowerState, ChangePreferences, ChangePriorityList, ChangeRaiderSpawnRequest, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
 import { DeselectAll, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
@@ -181,6 +181,10 @@ export class GuiManager {
             SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx
             SoundManager.toggleSfx()
             sceneMgr.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {
+            entityMgr.selection.assignUpgradeJob(event.upgrade)
+            EventBus.publishEvent(new DeselectAll())
         })
     }
 }

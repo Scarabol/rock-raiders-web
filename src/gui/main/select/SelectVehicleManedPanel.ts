@@ -4,10 +4,13 @@ import { SelectionChanged } from '../../../event/LocalEvents'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
+import { IconPanelButton } from '../IconPanelButton'
 
 export class SelectVehicleManedPanel extends SelectBasePanel {
+    readonly upgradeItem: IconPanelButton
     noVehicleWithDriver: boolean = false
     noVehicleWithCarriedItems: boolean = false
+    hasUpgradeSite: boolean = false
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 7, onBackPanel)
@@ -15,7 +18,8 @@ export class SelectVehicleManedPanel extends SelectBasePanel {
         unloadVehicleItem.isDisabled = () => this.noVehicleWithCarriedItems
         unloadVehicleItem.onClick = () => this.publishEvent(new VehicleUnload())
         this.addMenuItem('InterfaceImages', 'Interface_MenuItem_VehiclePickUp')
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeVehicle')
+        this.upgradeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeVehicle')
+        this.upgradeItem.isDisabled = () => !this.hasUpgradeSite
         const leaveVehicleItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GetOut')
         leaveVehicleItem.isDisabled = () => this.noVehicleWithDriver
         leaveVehicleItem.onClick = () => this.publishEvent(new VehicleDriverGetOut())
@@ -28,6 +32,14 @@ export class SelectVehicleManedPanel extends SelectBasePanel {
             this.noVehicleWithDriver = event.noVehicleWithDriver
             this.noVehicleWithCarriedItems = !event.vehicleWithCarriedItems
             leaveVehicleItem.updateState()
+            this.hasUpgradeSite = event.hasUpgradeSite
         })
+    }
+
+    reset() {
+        super.reset()
+        this.noVehicleWithCarriedItems = false
+        this.noVehicleWithCarriedItems = false
+        this.hasUpgradeSite = false
     }
 }

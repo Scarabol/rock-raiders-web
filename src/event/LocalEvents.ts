@@ -13,6 +13,7 @@ import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { TILESIZE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
+import { VehicleUpgrade, VehicleUpgrades } from '../game/model/vehicle/VehicleUpgrade'
 
 export class LocalEvent extends GameEvent {
 }
@@ -41,6 +42,8 @@ export class SelectionChanged extends LocalEvent {
     someCarries: boolean
     everyHasMaxLevel: boolean
     canDoTraining: Map<RaiderTraining, boolean> = new Map()
+    canInstallUpgrade: Map<VehicleUpgrade, boolean> = new Map()
+    hasUpgradeSite: boolean
     everyHasTool: Map<RaiderTool, boolean> = new Map()
     buildingCanUpgrade: boolean
     buildingMissingOreForUpgrade: number
@@ -67,6 +70,8 @@ export class SelectionChanged extends LocalEvent {
         this.everyHasMaxLevel = !!entityMgr.selection.raiders.every((r) => r.level >= r.stats.Levels)
         RaiderTrainings.values.forEach((training) => this.canDoTraining.set(training, entityMgr.hasTrainingSite(training) && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
         RaiderTools.values.forEach((tool) => this.everyHasTool.set(tool, !!entityMgr.selection.raiders.every((r) => r.hasTool(tool))))
+        VehicleUpgrades.values.forEach((upgrade) => this.canInstallUpgrade.set(upgrade, entityMgr.selection.vehicles.some((v) => v.canUpgrade(upgrade))))
+        this.hasUpgradeSite = entityMgr.hasUpgradeSite()
         this.buildingCanUpgrade = entityMgr.selection.building?.canUpgrade()
         this.buildingMissingOreForUpgrade = entityMgr.selection.building?.missingOreForUpgrade()
         this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.SelfPowered && !entityMgr.selection.building?.stats.PowerBuilding
@@ -157,6 +162,12 @@ export class RaidersAmountChangedEvent extends LocalEvent {
 export class RaiderTrainingCompleteEvent extends LocalEvent {
     constructor(readonly training: RaiderTraining) {
         super(EventKey.RAIDER_TRAINING_COMPLETE)
+    }
+}
+
+export class VehicleUpgradeCompleteEvent extends LocalEvent {
+    constructor() {
+        super(EventKey.VEHICLE_UPGRADE_COMPLETE)
     }
 }
 

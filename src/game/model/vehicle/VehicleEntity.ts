@@ -32,6 +32,7 @@ import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { PositionComponent } from '../../component/PositionComponent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
+import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
 
 export class VehicleEntity implements Updatable {
     readonly entityType: EntityType
@@ -48,6 +49,7 @@ export class VehicleEntity implements Updatable {
     callManJob: ManVehicleJob = null
     engineSound: PositionalAudio = null
     carriedItems: Set<MaterialEntity> = new Set()
+    upgrades: Set<VehicleUpgrade> = new Set()
 
     constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
         this.entityType = entityType
@@ -242,7 +244,7 @@ export class VehicleEntity implements Updatable {
         }
         const workActivity = this.job.getWorkActivity() || AnimEntityActivity.Stand
         if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
-            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SFX_Drill], true, true)
+            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SND_BIGDIGDRILL], true, true)
         }
         this.sceneEntity.setAnimation(workActivity, () => {
             this.completeJob()
@@ -373,5 +375,19 @@ export class VehicleEntity implements Updatable {
 
     getDriverActivity() {
         return this.sceneEntity.currentAnimation === AnimEntityActivity.Stand ? this.driverActivityStand : this.driverActivityRoute
+    }
+
+    canUpgrade(upgrade: VehicleUpgrade): boolean {
+        if (this.upgrades.has(upgrade)) return false
+        const upgraded = new Set([...this.upgrades, upgrade])
+        const nextUpgradeLevel = VehicleUpgrades.toUpgradeString(upgraded)
+        return this.sceneEntity.animationData.some((animEntityData) => animEntityData.upgradesByLevel.get(nextUpgradeLevel))
+    }
+
+    addUpgrade(upgrade: VehicleUpgrade) {
+        this.upgrades.add(upgrade)
+        const upgradeLevel = VehicleUpgrades.toUpgradeString(this.upgrades)
+        this.sceneEntity.setUpgradeLevel(upgradeLevel)
+        this.level = parseInt(upgradeLevel, 2)
     }
 }

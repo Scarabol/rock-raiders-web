@@ -15,7 +15,7 @@ export class ManVehicleJob extends RaiderJob implements SupervisedJob {
         super()
         this.vehicle = vehicle
         this.vehicle.callManJob = this
-        this.workplace = PathTarget.fromLocation(this.vehicle.sceneEntity.position2D, 10) // FIXME use radius square
+        this.workplace = PathTarget.fromLocation(this.vehicle.sceneEntity.position2D, this.vehicle.sceneEntity.getRadiusSquare() / 4)
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
