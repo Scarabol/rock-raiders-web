@@ -7,6 +7,7 @@ import { EntityType } from './EntityType'
 import { Surface } from '../terrain/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
 import { GameState } from './GameState'
+import { Sample } from '../../audio/Sample'
 
 export class PathTarget {
     protected constructor(
@@ -55,6 +56,7 @@ export class PathTarget {
             if (this.building.entityType === EntityType.POWER_STATION || this.building.entityType === EntityType.ORE_REFINERY) {
                 this.building.pickupItem(item)
                 if (this.building.sceneEntity.carriedByIndex.size >= this.building.getMaxCarry()) {
+                    if (this.building.entityType === EntityType.POWER_STATION) this.building.worldMgr.sceneMgr.addPositionalAudio(this.building.sceneEntity, Sample[Sample.SND_Refine], true, false)
                     this.building.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
                         this.building.sceneEntity.setAnimation(this.building.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
                         this.building.sceneEntity.dropAllEntities()

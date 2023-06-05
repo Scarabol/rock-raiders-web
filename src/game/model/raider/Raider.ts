@@ -301,8 +301,21 @@ export class Raider implements Updatable {
             return
         }
         const workActivity = this.job.getWorkActivity() || this.getDefaultAnimationName()
-        if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
-            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SFX_Drill], true, true)
+        if (!this.workAudio) {
+            if (workActivity === RaiderActivity.Drill) { // TODO implement work audio
+                this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SFX_Drill], true, true)
+            } else if (workActivity === RaiderActivity.Place) {
+                let sample = Sample.SFX_Place
+                const carriedEntityType = this.job.carryItem.entityType
+                if (carriedEntityType === EntityType.ORE || carriedEntityType === EntityType.BRICK) {
+                    sample = Sample.SFX_PlaceOre
+                } else if (carriedEntityType === EntityType.CRYSTAL) {
+                    sample = Sample.SFX_PlaceCrystal
+                }
+                this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[sample], true, false)
+            } else if (workActivity === RaiderActivity.Clear) {
+                this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SND_dig], true, true)
+            }
         }
         this.sceneEntity.setAnimation(workActivity, () => {
             this.completeJob()
@@ -311,7 +324,8 @@ export class Raider implements Updatable {
     }
 
     private completeJob() {
-        this.workAudio = resetAudioSafe(this.workAudio)
+        if (this.workAudio?.loop) this.workAudio = resetAudioSafe(this.workAudio)
+        else this.workAudio = null
         this.job?.onJobComplete()
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         if (this.job?.jobState === JobState.INCOMPLETE) return
