@@ -19,6 +19,7 @@ export class AnimationQualityGroup extends AnimationGroup {
     }
 
     private meshOrNull(lowerName: string) {
+        if (!lowerName) return null
         try {
             return ResourceManager.getLwoModel(lowerName)
         } catch (e) {

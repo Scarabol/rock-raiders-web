@@ -11,7 +11,7 @@ export class BaseConfig {
                 if (createMissing) {
                     this[cfgKey] = value
                 } else {
-                    if (!DEV_MODE) console.warn(`cfg key: ${cfgKey} does not exist in cfg: ${this?.constructor?.name}`)
+                    if (!DEV_MODE) console.warn(`cfg key: ${cfgKey} does not exist in cfg and will be ignored`)
                 }
             }
         })

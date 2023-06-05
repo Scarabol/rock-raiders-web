@@ -88,7 +88,7 @@ export class CfgFileParser {
         }
 
         const entries = Object.values(root)
-        if (entries.length > 1 && !DEV_MODE) console.warn(`Config file contains more than one object! Will proceed with first object only`)
+        if (entries.length > 1 && !DEV_MODE) console.warn(`Config file contains (${entries.length}) objects! Will proceed with first object '${Object.keys(root)[0]}' only`)
         const result = entries[0]
 
         // apply some patches here

@@ -33,7 +33,7 @@ export class SoundManager {
         const cachedSound = SoundManager.audioBufferCache.get(sfxName)
         if (cachedSound) return cachedSound
         const sfxContent = this.sfxByKey.get(sfxName)
-        if (!sfxContent) return Promise.reject(`Could not find ${sfxName} in: ${Array.from(this.sfxByKey.keys())}`)
+        if (!sfxContent) return Promise.reject(`Could not find SFX with name '${sfxName}' in: ${Array.from(this.sfxByKey.keys())}`)
         const data = sfxContent.slice(0) // slice used to create copy, because array gets auto detached after decode
         SoundManager.audioContext = SoundManager.audioContext || new (window['AudioContext'] || window['webkitAudioContext'])()
         SoundManager.sfxAudioTarget = SoundManager.sfxAudioTarget || SoundManager.audioContext.createGain()

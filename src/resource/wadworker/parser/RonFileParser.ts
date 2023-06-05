@@ -11,7 +11,7 @@ export class RonFileParser {
         const root = {}
         this.parseObj(root, lines, 0)
         const entries = Object.values(root)
-        if (entries.length > 1 && !DEV_MODE) console.warn(`File '${filename}' contains more than one object! Will proceed with first object only`)
+        if (entries.length > 1 && !DEV_MODE) console.warn(`Ron file '${filename}' contains (${entries.length}) objects! Will proceed with first object '${Object.keys(root)[0]}' only`)
         return entries[0]
     }
 
