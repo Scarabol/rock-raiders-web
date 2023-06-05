@@ -4,7 +4,7 @@ import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged } from '../../../event/LocalEvents'
-import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL } from '../../../params'
+import { DEV_MODE, ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL } from '../../../params'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
@@ -300,7 +300,7 @@ export class VehicleEntity implements Updatable {
         } else {
             this.worldMgr.sceneMgr.removeMeshGroup(this.driver.sceneEntity)
         }
-        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
+        if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
     }
 

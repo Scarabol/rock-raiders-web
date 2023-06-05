@@ -4,7 +4,7 @@ import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
 import { BuildingsChangedEvent, DeselectAll, SelectionChanged } from '../../../event/LocalEvents'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
-import { TILESIZE } from '../../../params'
+import { DEV_MODE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BubbleSprite } from '../../../scene/BubbleSprite'
 import { WorldManager } from '../../WorldManager'
@@ -239,7 +239,7 @@ export class BuildingEntity {
         this.energized = true
         GameState.changeUsedCrystals(this.crystalDrain)
         if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this.surfaces)
-        if (this.stats.EngineSound && !this.engineSound) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
+        if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
     }
 
     private turnEnergyOff() {
