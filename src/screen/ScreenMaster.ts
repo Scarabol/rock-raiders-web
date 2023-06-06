@@ -9,17 +9,15 @@ import { ScreenLayer } from './layer/ScreenLayer'
 export class ScreenMaster {
     gameContainer: HTMLElement
     gameCanvasContainer: HTMLElement
-    eventMgr: EventManager
     layers: ScreenLayer[] = []
     width: number = NATIVE_SCREEN_WIDTH
     height: number = NATIVE_SCREEN_HEIGHT
     ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
-    focusedLayer: ScreenLayer = null
 
     constructor() {
         this.gameContainer = getElementByIdOrThrow('game-container')
         this.gameCanvasContainer = getElementByIdOrThrow('game-canvas-container')
-        this.eventMgr = new EventManager(this)
+        new EventManager(this)
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
         EventBus.registerEventListener(EventKey.TAKE_SCREENSHOT, () => this.takeScreenshot())
@@ -51,7 +49,6 @@ export class ScreenMaster {
     }
 
     getActiveLayersSorted(): ScreenLayer[] {
-        if (this.focusedLayer) return [this.focusedLayer]
         return this.layers.filter(l => l.isActive()).sort((a, b) => b.zIndex - a.zIndex)
     }
 
