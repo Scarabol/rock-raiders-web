@@ -40,10 +40,11 @@ export class UiElementState {
     }
 
     onMouseUp(): boolean {
-        if (!this.down || this.disabled || this.hidden) return false
+        if (!this.hovered || !this.down || this.disabled || this.hidden) return false
         this.stateChanged = true
-        this.down = false
         if (this.hovered && this.onPressed) this.onPressed()
+        this.hovered = false
+        this.down = false
         return true
     }
 
