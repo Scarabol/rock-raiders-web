@@ -22,6 +22,7 @@ export class MainMenuLayer extends ScaledLayer {
     scrollY: number = 0
     scrollSpeedY: number = 0
     scrollInterval: NodeJS.Timeout = null
+    lastDown: number = 0
 
     constructor(menuCfg: MenuEntryCfg) {
         super()
@@ -82,6 +83,7 @@ export class MainMenuLayer extends ScaledLayer {
                 }
             }
         } else if (event.eventEnum === POINTER_EVENT.DOWN) {
+            this.updateItemsHoveredState(event.canvasX, event.canvasY)
             if (event.button === MOUSE_BUTTON.MAIN) {
                 let needsRedraw = false
                 this.items.forEach((item) => needsRedraw = item.onMouseDown() || needsRedraw)
@@ -89,8 +91,10 @@ export class MainMenuLayer extends ScaledLayer {
                     this.animationFrame.redraw()
                     return true
                 }
+                this.doubleTapToFullscreen()
             }
         } else if (event.eventEnum === POINTER_EVENT.UP) {
+            this.updateItemsHoveredState(event.canvasX, event.canvasY)
             if (event.button === MOUSE_BUTTON.MAIN) {
                 let needsRedraw = false
                 this.items.forEach((item) => needsRedraw = item.onMouseUp() || needsRedraw)
@@ -109,6 +113,16 @@ export class MainMenuLayer extends ScaledLayer {
 
     private setScrollSpeedY(deltaY: number) {
         this.scrollSpeedY = Math.sign(deltaY) * Math.pow(Math.round(deltaY / 20), 2)
+    }
+
+    private doubleTapToFullscreen() {
+        const now = new Date().getTime() // XXX use time from event to be more precise
+        if (this.lastDown && now - this.lastDown < 400) {
+            this.lastDown = 0
+            document.getElementById('game-canvas-container')?.requestFullscreen().then()
+        } else {
+            this.lastDown = now
+        }
     }
 
     handleWheelEvent(event: GameWheelEvent): boolean {

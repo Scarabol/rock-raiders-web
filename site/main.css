@@ -1,7 +1,6 @@
 body {
     margin: 0;
     padding: 0;
-    overflow: hidden;
     background: #333;
 }
 
@@ -9,6 +8,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
+    touch-action: manipulation;
 }
 
 #game-canvas-container {

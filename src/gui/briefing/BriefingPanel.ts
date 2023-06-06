@@ -23,6 +23,7 @@ export class BriefingPanel extends Panel {
     constructor(parent: BaseElement) {
         super(parent)
         this.cfg = new BriefingPanelCfg()
+        this.onClick = () => this.nextParagraph() // fallback for touch displays without keyboard like mobile browsers
         this.imgTitle = this.cfg.titleFont.createTextImage(this.cfg.title)
         this.titleRelX = this.cfg.titleWindow.x + (this.cfg.titleWindow.w - this.imgTitle.width) / 2
         this.titleRelY = this.cfg.titleWindow.y
