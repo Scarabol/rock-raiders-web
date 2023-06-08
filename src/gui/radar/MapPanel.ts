@@ -10,13 +10,13 @@ import { Panel } from '../base/Panel'
 import { MapSurfaceRect } from './MapSurfaceRect'
 
 export class MapPanel extends Panel {
-    combinedContext: SpriteContext
-    surfaceContext: SpriteContext
-    entityContext: SpriteContext
-    offset: Vector2 = new Vector2()
-    surfaceRectSize: number = 10
-    surfaceRectMargin: number = 1
-    surfaceMap: MapSurfaceRect[][] = []
+    readonly combinedContext: SpriteContext
+    readonly surfaceContext: SpriteContext
+    readonly entityContext: SpriteContext
+    readonly offset: Vector2 = new Vector2()
+    readonly surfaceRectSize: number = 10
+    readonly surfaceRectMargin: number = 1
+    readonly surfaceMap: MapSurfaceRect[][] = []
 
     constructor(parent: BaseElement) {
         super(parent, null)
@@ -36,7 +36,7 @@ export class MapPanel extends Panel {
             this.redrawMapSurfaces(true)
         }
         this.registerEventListener(EventKey.UPDATE_RADAR_TERRAIN, (event: UpdateRadarTerrain) => {
-            this.surfaceMap = []
+            this.surfaceMap.length = 0
             event.surfaces.forEach((s) => {
                 this.surfaceMap[s.x] = this.surfaceMap[s.x] || []
                 this.surfaceMap[s.x][s.y] = s
@@ -71,14 +71,12 @@ export class MapPanel extends Panel {
     private redrawSurface(surfaceRect: MapSurfaceRect) {
         const surfaceX = Math.round(surfaceRect.x * this.surfaceRectSize - this.offset.x)
         const surfaceY = Math.round(surfaceRect.y * this.surfaceRectSize - this.offset.y)
+        const rectSize = this.surfaceRectSize - this.surfaceRectMargin
+        this.surfaceContext.fillStyle = surfaceRect.borderColor ? surfaceRect.borderColor : surfaceRect.surfaceColor
+        this.surfaceContext.fillRect(surfaceX, surfaceY, rectSize, rectSize)
         if (surfaceRect.borderColor) {
-            this.surfaceContext.fillStyle = surfaceRect.borderColor
-            this.surfaceContext.fillRect(surfaceX, surfaceY, this.surfaceRectSize - this.surfaceRectMargin, this.surfaceRectSize - this.surfaceRectMargin)
             this.surfaceContext.fillStyle = surfaceRect.surfaceColor
-            this.surfaceContext.fillRect(surfaceX + 1, surfaceY + 1, this.surfaceRectSize - this.surfaceRectMargin - 2, this.surfaceRectSize - this.surfaceRectMargin - 2)
-        } else {
-            this.surfaceContext.fillStyle = surfaceRect.surfaceColor
-            this.surfaceContext.fillRect(surfaceX, surfaceY, this.surfaceRectSize - this.surfaceRectMargin, this.surfaceRectSize - this.surfaceRectMargin)
+            this.surfaceContext.fillRect(surfaceX + 1, surfaceY + 1, rectSize - 2, rectSize - 2)
         }
     }
 

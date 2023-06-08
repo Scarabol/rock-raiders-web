@@ -60,6 +60,5 @@ export class IconPanelToggleButton extends IconPanelButton {
         if (img) context.drawImage(img, this.x, this.y)
         this.children.forEach((child) => child.onRedraw(context))
         this.children.forEach((child) => child.drawHover(context))
-        this.children.forEach((child) => child.drawTooltip(context))
     }
 }

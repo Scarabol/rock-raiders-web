@@ -43,8 +43,7 @@ export abstract class DependencyCheckPanel extends IconSubPanel {
         if (type === EntityType.PILOT) {
             return this.hasRaider
         } else {
-            const currentMaxLevel = this.discoveredBuildingsMaxLevel.getOrDefault(type, -1)
-            return currentMaxLevel >= minLevel
+            return this.discoveredBuildingsMaxLevel.getOrDefault(type, -1) >= minLevel
         }
     }
 }

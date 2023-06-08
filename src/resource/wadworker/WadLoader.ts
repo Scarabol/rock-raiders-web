@@ -274,14 +274,7 @@ export class WadLoader {
                 })
             }),
             new Promise<void>((resolve) => {
-                const name = 'Interface/Fonts/Font5_Hi.bmp'
-                this.loadFontImageAsset(name, (assetNames: string[], imgData) => {
-                    this.onAssetLoaded(0, assetNames, imgData)
-                    resolve()
-                })
-            }),
-            new Promise<void>((resolve) => { // TODO load somewhere else, or load all fonts in general
-                const name = 'Interface/Fonts/ToolTipFont.bmp'
+                const name = 'Interface/Fonts/Font5_Hi.bmp' // loading bar label font
                 this.loadFontImageAsset(name, (assetNames: string[], imgData) => {
                     this.onAssetLoaded(0, assetNames, imgData)
                     resolve()

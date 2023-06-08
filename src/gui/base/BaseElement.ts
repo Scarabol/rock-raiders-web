@@ -47,14 +47,9 @@ export class BaseElement {
         if (this.hidden) return
         this.children.forEach((child) => child.onRedraw(context))
         this.children.forEach((child) => child.drawHover(context))
-        this.children.forEach((child) => child.drawTooltip(context))
     }
 
     drawHover(context: SpriteContext) {
-    }
-
-    // noinspection JSUnusedLocalSymbols
-    drawTooltip(context: SpriteContext) {
     }
 
     isInactive(): boolean {

@@ -25,6 +25,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.wadLoader.wad0File.filterEntryNames(`Interface/Pointers/.+\\.flh`).forEach((assetPath) => {
             this.addAsset(this.wadLoader.loadFlhAsset, assetPath)
         })
+        this.addAsset(this.wadLoader.loadFontImageAsset, 'Interface/Fonts/ToolTipFont.bmp')
         // add menu assets
         this.addMenuWithAssets(gameConfig.menu.mainMenuFull, false)
         this.addMenuWithAssets(gameConfig.menu.pausedMenu)

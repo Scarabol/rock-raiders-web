@@ -36,20 +36,12 @@ export class CursorLayer extends ScreenLayer {
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_TOOLTIP, (event: ChangeTooltip) => {
             this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
             this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
-            if (this.cursorLeft) return
-            if (event.tooltipText) {
-                if (this.active) {
-                    this.tooltipTimeoutText = setTimeout(() => {
-                        if (event.tooltipText) this.changeTooltip(event)
-                    }, event.timeoutText)
-                }
+            if (this.cursorLeft || !this.active) return
+            if (event.tooltipText && event.timeoutText > 0) {
+                this.tooltipTimeoutText = setTimeout(() => this.changeTooltipImg(event), event.timeoutText)
             }
-            if (event.tooltipSfx) {
-                if (this.active) {
-                    this.tooltipTimeoutSfx = setTimeout(() => {
-                        if (event.tooltipSfx) SoundManager.playSound(event.tooltipSfx)
-                    }, event.timeoutSfx)
-                }
+            if (event.tooltipSfx && event.timeoutSfx > 0) {
+                this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(event.tooltipSfx), event.timeoutSfx)
             }
         })
     }
@@ -126,7 +118,7 @@ export class CursorLayer extends ScreenLayer {
         this.activeCursor.enableAnimation(this.canvas.style)
     }
 
-    private changeTooltip(event: ChangeTooltip) {
+    private changeTooltipImg(event: ChangeTooltip) {
         let tooltipImg = null
         if (event.numToolSlots || event.tools || event.trainings) {
             tooltipImg = ResourceManager.getRaiderTooltipSprite(event.tooltipText || '',

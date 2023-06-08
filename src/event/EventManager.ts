@@ -18,7 +18,7 @@ export class EventManager {
             ['pointerleave', POINTER_EVENT.LEAVE],
         ]).forEach((eventEnum, eventType) => {
             screenMaster.gameCanvasContainer.addEventListener(eventType, (event: PointerEvent) => {
-                event.preventDefault() // XXX Only prevent default for consumed events?
+                event.preventDefault()
                 this.publishPointerEvent(this.getActiveLayersSorted(screenMaster), new GamePointerEvent(eventEnum, event))
                 if (eventEnum === POINTER_EVENT.UP || eventEnum === POINTER_EVENT.LEAVE) this.focusedLayer = null
             })
