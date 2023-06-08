@@ -43,7 +43,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### v0.6.0 - Complete Base Systems
 
 - Add tooltips for buildings with dependencies
-- Large digger and walker digger moving into wall for drilling
 - Implement buildings with improved ECS and animation system
 - Implement raiders with improved ECS and animation system
 - Refactor job system to allow multi-carry jobs

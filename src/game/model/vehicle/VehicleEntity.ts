@@ -170,7 +170,7 @@ export class VehicleEntity implements Updatable {
                 return this.determineStep(elapsedMs)
             }
         }
-        if (this.currentPath.target.targetLocation.distanceToSquared(this.sceneEntity.position2D) <= entitySpeedSq + this.currentPath.target.radiusSq) {
+        if (this.currentPath.target.targetLocation.distanceToSquared(this.sceneEntity.position2D) <= entitySpeedSq + this.currentPath.target.radiusSq + this.sceneEntity.getRadiusSquare() / 4) {
             step.targetReached = true
         }
         step.vec.clampLength(0, entitySpeed)
