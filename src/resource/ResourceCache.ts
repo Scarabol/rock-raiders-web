@@ -10,10 +10,11 @@ import { EntityType } from '../game/model/EntityType'
 import { EntityDependencyChecked } from '../gui/main/IconPanelButton'
 
 export class ResourceCache {
+    static readonly fontCache: Map<string, BitmapFont> = new Map()
+    static readonly cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
+    static readonly imageCache: Map<string, SpriteImage> = new Map()
     static configuration: GameConfig = new GameConfig()
     static resourceByName: Map<string, any> = new Map()
-    static fontCache: Map<string, BitmapFont> = new Map()
-    static cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
 
     static cfg(...keys: string[]): any {
         return iGet(this.configuration, ...keys)
@@ -32,7 +33,7 @@ export class ResourceCache {
         })
     }
 
-    static getImage(imageName: string): SpriteImage {
+    static createImage(imageName: string): SpriteImage {
         const imgData = this.getImageData(imageName)
         const context = createContext(imgData.width, imgData.height)
         context.putImageData(imgData, 0, 0)
@@ -40,6 +41,12 @@ export class ResourceCache {
             this.drawCopyrightCover(context)
         }
         return context.canvas
+    }
+
+    static getImage(imageName: string): SpriteImage {
+        return this.imageCache.getOrUpdate(imageName, () => {
+            return this.createImage(imageName)
+        })
     }
 
     private static drawCopyrightCover(context: SpriteContext) {
