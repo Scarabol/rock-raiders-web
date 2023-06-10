@@ -11,6 +11,8 @@ import { TextInfoMessage } from './TextInfoMessage'
 import { TextInfoMessageCfg } from './TextInfoMessageCfg'
 
 export class MessagePanel extends Panel {
+    private readonly maxAirLevelWidth = 236
+
     imgAir: SpriteImage = null
     currentMessage: TextInfoMessage = null
     messageTimeout: NodeJS.Timeout = null
@@ -22,7 +24,7 @@ export class MessagePanel extends Panel {
     msgManTrained: TextInfoMessage
     msgUnitUpgraded: TextInfoMessage
 
-    airLevel: number = 1
+    airLevelWidth: number = this.maxAirLevelWidth
 
     constructor(parent: BaseElement, panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageCfg) {
         super(parent, panelCfg)
@@ -46,8 +48,13 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(this.msgUnitUpgraded))
         this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
         this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, (event: AirLevelChanged) => {
-            this.airLevel = event.airLevel
-            this.notifyRedraw()
+            if (event.airLevel > 0) {
+                const nextAirLevelWidth = Math.round(this.maxAirLevelWidth * event.airLevel)
+                if (this.airLevelWidth !== nextAirLevelWidth) {
+                    this.airLevelWidth = nextAirLevelWidth
+                    this.notifyRedraw()
+                }
+            }
         })
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessage) => {
             this.setMessage(new TextInfoMessage(font, {text: event.text}, this.img.width))
@@ -56,7 +63,7 @@ export class MessagePanel extends Panel {
 
     reset() {
         super.reset()
-        this.airLevel = 1
+        this.airLevelWidth = this.maxAirLevelWidth
     }
 
     setMessage(textInfoMessage: TextInfoMessage, timeout: number = 3000) {
@@ -82,10 +89,7 @@ export class MessagePanel extends Panel {
 
     onRedraw(context: SpriteContext) {
         super.onRedraw(context)
-        if (this.airLevel > 0) {
-            const width = Math.round(236 * this.airLevel)
-            context.drawImage(this.imgAir, this.x + 85, this.y + 6, width, 8)
-        }
+        context.drawImage(this.imgAir, this.x + 85, this.y + 6, this.airLevelWidth, 8)
         const textImage = this.currentMessage?.textImage
         const infoImage = this.currentMessage?.infoImage
         if (textImage) {
