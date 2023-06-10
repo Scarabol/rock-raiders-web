@@ -9,7 +9,7 @@ import { NerpMsgParser } from './parser/NerpMsgParser'
 import { ObjectiveTextParser } from './parser/ObjectiveTextParser'
 import { WadParser } from './parser/WadParser'
 import { WadAssetRegistry } from './WadAssetRegistry'
-import { WadFile } from './WadFile'
+import { WadData, WadFile } from './WadFile'
 import { grayscaleToGreen } from './WadUtil'
 import { Cursor } from '../Cursor'
 
@@ -181,12 +181,12 @@ export class WadLoader {
     startWithCachedFiles() {
         console.time('WAD files loaded from cache')
         this.onMessage('Loading WAD files from cache...')
-        Promise.all<WadFile>([
+        Promise.all<WadData>([
             cacheGetData('wad0'),
             cacheGetData('wad1'),
         ]).then((wadData) => {
-            this.wad0File = WadLoader.createWadFile(wadData[0])
-            this.wad1File = WadLoader.createWadFile(wadData[1])
+            this.wad0File = WadFile.fromCache(wadData[0])
+            this.wad1File = WadFile.fromCache(wadData[1])
             console.timeEnd('WAD files loaded from cache')
             this.startLoadingProcess()
         }).catch((e: Error) => {
@@ -194,16 +194,6 @@ export class WadLoader {
             this.onMessage('WAD file not found in cache')
             this.onCacheMiss(e.message) // Firefox 98 is not able to transfer Error
         })
-    }
-
-    private static createWadFile(wadData: WadFile) {
-        const wadFile = new WadFile()
-        for (let prop in wadData) { // class info are runtime info and not stored in cache => use copy constructor
-            if (wadData.hasOwnProperty(prop)) {
-                wadFile[prop] = wadData[prop]
-            }
-        }
-        return wadFile
     }
 
     /**
@@ -234,9 +224,7 @@ export class WadLoader {
             fetch(url).then((response) => {
                 if (response.ok) {
                     response.arrayBuffer().then((buffer) => {
-                        const wadFile = new WadFile()
-                        wadFile.parseWadFile(buffer)
-                        resolve(wadFile)
+                        resolve(WadFile.parseWadFile(buffer))
                     })
                 }
             }).catch((e) => console.error(e))

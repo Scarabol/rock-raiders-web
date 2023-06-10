@@ -1,9 +1,16 @@
 import { encodeChar } from './parser/EncodingHelper'
 
+export interface WadData {
+    buffer: Int8Array
+    entryIndexByName: Map<string, number>
+    fLength: number[]
+    fStart: number[]
+}
+
 /**
  * Handles the extraction of single files from a bigger WAD data blob
  */
-export class WadFile {
+export class WadFile implements WadData {
     buffer: Int8Array = null
     entryIndexByName: Map<string, number> = new Map()
     fLength: number[] = []
@@ -14,11 +21,12 @@ export class WadFile {
      * @param data binary blob
      * @param debug enable/disable debug output while parsing
      */
-    parseWadFile(data: ArrayBufferLike, debug = false) {
+    static parseWadFile(data: ArrayBufferLike, debug = false): WadFile {
+        const result = new WadFile()
         const dataView = new DataView(data)
-        this.buffer = new Int8Array(data)
+        result.buffer = new Int8Array(data)
         let pos = 0
-        if (String.fromCharCode.apply(null, this.buffer.slice(pos, 4)) !== 'WWAD') {
+        if (String.fromCharCode.apply(null, result.buffer.slice(pos, 4)) !== 'WWAD') {
             throw new Error('Invalid WAD0 file provided')
         }
         if (debug) {
@@ -33,19 +41,19 @@ export class WadFile {
 
         let bufferStart = pos
         for (let i = 0; i < numberOfEntries; pos++) {
-            if (this.buffer[pos] === 0) {
-                this.entryIndexByName.set(String.fromCharCode.apply(null, this.buffer.slice(bufferStart, pos)).replace(/\\/g, '/').toLowerCase(), i)
+            if (result.buffer[pos] === 0) {
+                result.entryIndexByName.set(String.fromCharCode.apply(null, result.buffer.slice(bufferStart, pos)).replace(/\\/g, '/').toLowerCase(), i)
                 bufferStart = pos + 1
                 i++
             }
         }
 
         if (debug) {
-            console.log(this.entryIndexByName)
+            console.log(result.entryIndexByName)
         }
 
         for (let i = 0; i < numberOfEntries; pos++) {
-            if (this.buffer[pos] === 0) {
+            if (result.buffer[pos] === 0) {
                 bufferStart = pos + 1
                 i++
             }
@@ -56,15 +64,26 @@ export class WadFile {
         }
 
         for (let i = 0; i < numberOfEntries; i++) {
-            this.fLength[i] = dataView.getInt32(pos + 8, true)
-            this.fStart[i] = dataView.getInt32(pos + 12, true)
+            result.fLength[i] = dataView.getInt32(pos + 8, true)
+            result.fStart[i] = dataView.getInt32(pos + 12, true)
             pos += 16
         }
 
         if (debug) {
-            console.log(this.fLength)
-            console.log(this.fStart)
+            console.log(result.fLength)
+            console.log(result.fStart)
         }
+        return result
+    }
+
+    static fromCache(cachedWadData: WadData): WadFile {
+        const wadFile = new WadFile()
+        for (let prop in cachedWadData) { // class info are runtime info and not stored in cache => use copy constructor
+            if (cachedWadData.hasOwnProperty(prop)) {
+                wadFile[prop] = cachedWadData[prop]
+            }
+        }
+        return wadFile
     }
 
     /**
