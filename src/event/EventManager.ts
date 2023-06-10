@@ -20,7 +20,10 @@ export class EventManager {
             screenMaster.gameCanvasContainer.addEventListener(eventType, (event: PointerEvent) => {
                 event.preventDefault()
                 this.publishPointerEvent(this.getActiveLayersSorted(screenMaster), new GamePointerEvent(eventEnum, event))
-                if (eventEnum === POINTER_EVENT.UP || eventEnum === POINTER_EVENT.LEAVE) this.focusedLayer = null
+                if (eventEnum === POINTER_EVENT.UP || eventEnum === POINTER_EVENT.LEAVE) {
+                    if (eventEnum === POINTER_EVENT.UP && !this.focusedLayer) console.warn('Input lag detected') // TODO Fix "up" event being processed before "down" event is complete
+                    this.focusedLayer = null
+                }
             })
         })
         new Map<string, KEY_EVENT>([
