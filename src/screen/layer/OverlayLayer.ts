@@ -12,13 +12,13 @@ export class OverlayLayer extends OffscreenLayer {
     onAbortGame: () => any = () => console.log('abort the game')
     onRestartGame: () => any = () => console.log('restart the game')
 
-    createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage> {
+    createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage, WorkerResponse> {
         const worker = new Worker(new URL('../../worker/OverlayWorker', import.meta.url), {type: 'module'})
-        return new TypedWorkerFrontend(worker, (response) => this.onResponseFromWorker(response))
+        return new TypedWorkerFrontend(worker, (response: WorkerResponse) => this.onResponseFromWorker(response))
     }
 
-    createFallbackWorker(): TypedWorker<OffscreenWorkerMessage> {
-        const worker = new TypedWorkerFallback((r) => this.onResponseFromWorker(r))
+    createFallbackWorker(): TypedWorker<OffscreenWorkerMessage, WorkerResponse> {
+        const worker = new TypedWorkerFallback((r: WorkerResponse) => this.onResponseFromWorker(r))
         new OverlaySystem(worker)
         return worker
     }

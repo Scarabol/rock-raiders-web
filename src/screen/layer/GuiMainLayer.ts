@@ -10,13 +10,13 @@ import { OffscreenLayer } from './OffscreenLayer'
 export class GuiMainLayer extends OffscreenLayer {
     onOptionsShow: () => any = () => console.log('Show options triggered')
 
-    createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage> {
+    createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage, WorkerResponse> {
         const worker = new Worker(new URL('../../worker/GuiMainWorker', import.meta.url), {type: 'module'})
-        return new TypedWorkerFrontend(worker, (r) => this.onResponseFromWorker(r))
+        return new TypedWorkerFrontend(worker, (r: WorkerResponse) => this.onResponseFromWorker(r))
     }
 
-    createFallbackWorker(): TypedWorker<OffscreenWorkerMessage> {
-        const worker = new TypedWorkerFallback((r) => this.onResponseFromWorker(r))
+    createFallbackWorker(): TypedWorker<OffscreenWorkerMessage, WorkerResponse> {
+        const worker = new TypedWorkerFallback((r: WorkerResponse) => this.onResponseFromWorker(r))
         new GuiMainSystem(worker)
         return worker
     }

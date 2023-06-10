@@ -1,11 +1,9 @@
-import { WorkerResponse } from './WorkerResponse'
-
-export interface TypedWorker<M> {
+export interface TypedWorker<M, R> {
     sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[])
 }
 
-export class TypedWorkerFrontend<M> implements TypedWorker<M> {
-    constructor(readonly worker: Worker, onResponseFromWorker: (response: WorkerResponse) => any) {
+export class TypedWorkerFrontend<M, R> implements TypedWorker<M, R> {
+    constructor(readonly worker: Worker, onResponseFromWorker: (response: R) => any) {
         worker.onmessage = (event) => {
             onResponseFromWorker(event?.data)
         }
@@ -16,35 +14,35 @@ export class TypedWorkerFrontend<M> implements TypedWorker<M> {
     }
 }
 
-export interface TypedWorkerBackend<M> {
+export interface TypedWorkerBackend<M, R> {
     onMessageFromFrontend: (message: M) => any
 
-    sendResponse(response: WorkerResponse)
+    sendResponse(response: R)
 }
 
-export class TypedWorkerThreaded<M> implements TypedWorkerBackend<M> {
+export class TypedWorkerThreaded<M, R> implements TypedWorkerBackend<M, R> {
     onMessageFromFrontend: (message: M) => any
 
     constructor(readonly worker: Worker) {
         worker.addEventListener('message', (event) => this.onMessageFromFrontend(event?.data))
     }
 
-    sendResponse(response: WorkerResponse) {
+    sendResponse(response: R) {
         this.worker.postMessage(response)
     }
 }
 
-export class TypedWorkerFallback<M> implements TypedWorker<M>, TypedWorkerBackend<M> {
+export class TypedWorkerFallback<M, R> implements TypedWorker<M, R>, TypedWorkerBackend<M, R> {
     onMessageFromFrontend: (message: M) => any
 
-    constructor(readonly onResponseFromWorker: (response: WorkerResponse) => any) {
+    constructor(readonly onResponseFromWorker: (response: R) => any) {
     }
 
     sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[]) {
         this.onMessageFromFrontend(message)
     }
 
-    sendResponse(response: WorkerResponse) {
+    sendResponse(response: R) {
         this.onResponseFromWorker(response)
     }
 }

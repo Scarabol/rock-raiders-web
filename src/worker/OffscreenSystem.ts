@@ -16,7 +16,7 @@ export abstract class OffscreenSystem {
     readonly eventListener = new Map<EventKey, ((event: GameEvent) => any)[]>()
     canvas: HTMLCanvasElement | OffscreenCanvas = null
 
-    constructor(readonly worker: TypedWorkerBackend<OffscreenWorkerMessage>) {
+    constructor(readonly worker: TypedWorkerBackend<OffscreenWorkerMessage, WorkerResponse>) {
         this.worker.onMessageFromFrontend = (msg) => this.processMessage(msg)
     }
 

@@ -20,7 +20,7 @@ import generateUUID = MathUtils.generateUUID
 
 export abstract class OffscreenLayer extends ScreenLayer {
     readonly resolveCallbackByEventId: Map<string, ((consumed: boolean) => any)> = new Map()
-    worker: TypedWorker<OffscreenWorkerMessage>
+    worker: TypedWorker<OffscreenWorkerMessage, WorkerResponse>
     entityMgr: EntityManager
 
     constructor() {
@@ -75,9 +75,9 @@ export abstract class OffscreenLayer extends ScreenLayer {
         }
     }
 
-    abstract createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage>
+    abstract createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage, WorkerResponse>
 
-    abstract createFallbackWorker(): TypedWorker<OffscreenWorkerMessage>
+    abstract createFallbackWorker(): TypedWorker<OffscreenWorkerMessage, WorkerResponse>
 
     abstract onMessage(msg: WorkerResponse): boolean
 

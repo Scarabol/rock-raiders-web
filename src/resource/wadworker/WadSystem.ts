@@ -3,9 +3,10 @@ import { TypedWorkerBackend } from '../../worker/TypedWorker'
 import { InitLoadingMessage } from './InitLoadingMessage'
 import { WadLoader } from './WadLoader'
 import { WadWorkerMessage } from './WadWorkerMessage'
+import { WorkerResponse } from '../../worker/WorkerResponse'
 
 export class WadSystem {
-    constructor(worker: TypedWorkerBackend<InitLoadingMessage>) {
+    constructor(worker: TypedWorkerBackend<InitLoadingMessage, WorkerResponse>) {
         const wadLoader = new WadLoader()
         // set callbacks on wad loader
         wadLoader.onMessage = (text: string) => worker.sendResponse(WadWorkerMessage.createTextMessage(text))
