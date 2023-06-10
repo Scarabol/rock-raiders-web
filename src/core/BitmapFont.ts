@@ -2,10 +2,9 @@ import { createContext, createDummyImgData, getPixel, setPixel } from './ImageHe
 import { SpriteImage } from './Sprite'
 
 export class BitmapFontData {
-    charHeight: number
     letterMap: Map<string, ImageData> = new Map()
 
-    constructor(fontImageData: ImageData, cols = 10, rows = 19) { // font images always consist of 10 columns and 19 rows with last row empty
+    constructor(fontImageData: ImageData, maxCharWidth: number, readonly charHeight: number) {
         // actually chars are font dependent and have to be externalized in future
         // maybe CP850 was used... not sure, doesn't fit...
         const chars = [' ', '!', '"', '#', '$', '%', '⌵', '`', '(', ')',
@@ -28,9 +27,6 @@ export class BitmapFontData {
             '',
         ] // XXX complete this character list
 
-        const maxCharWidth = fontImageData.width / cols
-        this.charHeight = fontImageData.height / rows
-
         function isLimiterColor(imgData: ImageData, index: number): boolean {
             // Last pixel in the first row defines the end of char limiter color (e.g. 255,39,0)
             return imgData.data[index] === imgData.data[(imgData.width - 1) * 4]
@@ -39,7 +35,7 @@ export class BitmapFontData {
         }
 
         function getActualCharacterWidth(imgData: ImageData) {
-            for (let y = 0; y < imgData.height / rows; y++) {
+            for (let y = 0; y < imgData.height; y++) {
                 if (isLimiterColor(imgData, y * 4 * imgData.width)) continue // find non-empty row first
                 for (let x = 0; x < maxCharWidth; x++) {
                     if (isLimiterColor(imgData, x * 4)) return x
@@ -51,7 +47,7 @@ export class BitmapFontData {
 
         for (let i = 0; i < chars.length; i++) {
             let imgData = this.extractData(fontImageData, (i % 10) * maxCharWidth, Math.floor(i / 10) * this.charHeight, maxCharWidth, this.charHeight)
-            let actualWidth = getActualCharacterWidth(imgData)
+            const actualWidth = getActualCharacterWidth(imgData)
             if (actualWidth > 0) {
                 imgData = this.extractData(imgData, 0, 0, actualWidth, this.charHeight)
             } else {

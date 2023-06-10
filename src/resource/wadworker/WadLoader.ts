@@ -70,7 +70,11 @@ export class WadLoader {
     loadFontImageAsset(name: string, callback: (assetNames: string[], obj: BitmapFontData) => any) {
         const data = this.wad0File.getEntryData(name)
         const imgData = BitmapWithPalette.decode(data)
-        const bitmapFontData = new BitmapFontData(imgData)
+        const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
+        // XXX find better way to detect char dimensions
+        const maxCharWidth = imgData.width / cols
+        const charHeight = imgData.height / rows
+        const bitmapFontData = new BitmapFontData(imgData, maxCharWidth, charHeight)
         callback([name], bitmapFontData)
     }
 
