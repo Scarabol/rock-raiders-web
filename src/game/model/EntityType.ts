@@ -1,4 +1,5 @@
 export enum EntityType {
+    NONE = 0,
     // RAIDER
     PILOT = 1, // start with 1 otherwise entity type may fail truthiness test
 
@@ -13,6 +14,8 @@ export enum EntityType {
     ORE_REFINERY,
     GUNSTATION,
     TELEPORT_BIG,
+
+    POWER_PATH,
 
     // MONSTER
     BAT,
@@ -72,6 +75,8 @@ export function getEntityTypeByName(type: string): EntityType {
         return EntityType.GUNSTATION
     } else if ('TeleportBIG'.equalsIgnoreCase(type)) {
         return EntityType.TELEPORT_BIG
+    } else if ('Path'.equalsIgnoreCase(type)) {
+        return EntityType.POWER_PATH
     } else if ('Bat'.equalsIgnoreCase(type)) {
         return EntityType.BAT
     } else if ('SmallSpider'.equalsIgnoreCase(type)) {
@@ -119,7 +124,6 @@ export function getEntityTypeByName(type: string): EntityType {
     } else if ('LargeHeli'.equalsIgnoreCase(type)) {
         return EntityType.LARGE_HELI
     } else {
-        console.error(`Could not identify entity type from string: ${type}`)
-        return null
+        return EntityType.NONE
     }
 }

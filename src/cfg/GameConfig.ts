@@ -17,6 +17,9 @@ import { RewardCfg } from './RewardCfg'
 import { TexturesCfg } from './TexturesCfg'
 import { MiscObjectsCfg } from './MiscObjectsCfg'
 import { RockFallStylesCfg } from './RockFallStylesCfg'
+import { EntityType, getEntityTypeByName } from '../game/model/EntityType'
+
+export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
 
 export class GameConfig extends BaseConfig {
     main: MainCfg = new MainCfg()
@@ -48,9 +51,10 @@ export class GameConfig extends BaseConfig {
     upgradeTypesCfg: Map<string, string> = new Map()
     infoMessages: InfoMessagesCfg = new InfoMessagesCfg()
     stats: GameStatsCfg = new GameStatsCfg()
-    // dependencies: DependenciesCfg = new DependenciesCfg()
+    dependencies: Map<EntityType, EntityDependency[]> = new Map()
     levels: LevelsCfg = new LevelsCfg()
     tooltips: Map<string, string> = new Map()
+    upgradeNames: string[] = []
     tooltipIcons: Map<string, string> = new Map()
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
@@ -112,12 +116,23 @@ export class GameConfig extends BaseConfig {
             this.infoMessages.setFromCfgObj(cfgValue)
         } else if ('Stats'.equalsIgnoreCase(unifiedKey)) {
             this.stats.setFromCfgObj(cfgValue)
-        // } else if ('Dependencies'.equalsIgnoreCase(unifiedKey)) {
-        //     this.dependencies.setFromCfgObj(cfgValue)
+        } else if ('Dependencies'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
+                if (!cfgKey.toLowerCase().startsWith('AlwaysCheck:'.toLowerCase())) {
+                    console.warn(`Ignoring unexpected dependency check '${cfgKey}'`)
+                    return
+                }
+                const entityType: EntityType = getEntityTypeByName(cfgKey.split(':')[1])
+                const deps: EntityDependency[] = (value as unknown[])
+                    .map((d): EntityDependency => ({entityType: getEntityTypeByName(d[0]), minLevel: d[1] as number, itemKey: d[0]}))
+                this.dependencies.set(entityType, deps)
+            })
         } else if ('Levels'.equalsIgnoreCase(unifiedKey)) {
             this.levels.setFromCfgObj(cfgValue)
         } else if ('ToolTips'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltips.set(cfgKey.toLowerCase(), parseLabel(value as string)))
+        } else if ('UpgradeNames'.equalsIgnoreCase(unifiedKey)) {
+            this.upgradeNames = Object.values(cfgValue)
         } else if ('ToolTipIcons'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.tooltipIcons.set(this.stripKey(cfgKey), parseLabel(value as string)))
         } else {

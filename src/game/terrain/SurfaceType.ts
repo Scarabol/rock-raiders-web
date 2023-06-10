@@ -129,7 +129,7 @@ export class SurfaceType {
         canHaveFence: true,
     })
     static readonly POWER_PATH_BUILDING = new SurfaceType({
-        name: 'power path building',
+        name: 'surfaceTypePath',
         floor: true,
         matIndex: '76',
         connectsPath: true,

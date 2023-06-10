@@ -41,8 +41,12 @@ export class Button extends BaseElement {
         if (this.isInactive()) {
             this.showTooltipDisabled()
         } else if (this.tooltip || this.tooltipSfx) {
-            this.publishEvent(new ChangeTooltip(this.tooltip, TOOLTIP_DELAY_TEXT_MENU, this.tooltipSfx, TOOLTIP_DELAY_SFX))
+            this.showTooltip()
         }
+    }
+
+    showTooltip() {
+        this.publishEvent(new ChangeTooltip(this.tooltip, TOOLTIP_DELAY_TEXT_MENU, this.tooltipSfx, TOOLTIP_DELAY_SFX))
     }
 
     showTooltipDisabled() {

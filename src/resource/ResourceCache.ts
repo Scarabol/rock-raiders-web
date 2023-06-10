@@ -6,6 +6,8 @@ import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { iGet } from '../core/Util'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
+import { EntityType } from '../game/model/EntityType'
+import { EntityDependencyChecked } from '../gui/main/IconPanelButton'
 
 export class ResourceCache {
     static configuration: GameConfig = new GameConfig()
@@ -129,5 +131,44 @@ export class ResourceCache {
         const result = this.cursorToUrl.get(cursor)
         if (!result) throw new Error(`Cursor ${cursor} not found`)
         return result
+    }
+
+    static createDependenciesSprite(dependencies: EntityDependencyChecked[]): SpriteImage {
+        let totalWidth = 0
+        let totalHeight = 0
+        const deps = dependencies.map((dep) => {
+            let cfg
+            if (dep.entityType === EntityType.PILOT) {
+                cfg = this.cfg('InterfaceImages', 'Interface_MenuItem_TeleportMan')
+            } else {
+                cfg = this.cfg('InterfaceBuildImages', dep.itemKey)
+            }
+            const imageName = dep.isOk ? cfg[0] : cfg[1]
+            const depImg = this.getImage(imageName)
+            totalWidth += depImg.width
+            totalHeight = Math.max(totalHeight, depImg.height)
+            return {img: depImg, level: dep.minLevel}
+        })
+        const plusSignImg = this.getImage('Interface/Dependencies/+.bmp')
+        totalWidth += plusSignImg.width * (deps.length - 1)
+        const equalsSignImg = this.getImage('Interface/Dependencies/=.bmp')
+        totalWidth += equalsSignImg.width * 2
+        const dependencySprite = createContext(totalWidth, totalHeight)
+        let posX = 0
+        deps.forEach((s, index) => {
+            dependencySprite.drawImage(s.img, posX, (totalHeight - s.img.height) / 2)
+            if (s.level) {
+                const upgradeName = this.configuration.upgradeNames[s.level - 1]
+                if (upgradeName) {
+                    const minLevelImg = this.getTooltipFont().createTextImage(upgradeName)
+                    dependencySprite.drawImage(minLevelImg, posX + 3, (totalHeight - s.img.height) / 2 + 3)
+                }
+            }
+            posX += s.img.width
+            const signImg = index === deps.length - 1 ? equalsSignImg : plusSignImg
+            dependencySprite.drawImage(signImg, posX, (totalHeight - signImg.height) / 2)
+            posX += signImg.width
+        })
+        return dependencySprite.canvas
     }
 }

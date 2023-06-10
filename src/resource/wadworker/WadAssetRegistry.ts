@@ -118,6 +118,8 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
                 this.addLWSFile(lwsFilename)
             })
         })
+        this.addAsset(this.wadLoader.loadAlphaImageAsset, 'Interface/Dependencies/+.bmp')
+        this.addAsset(this.wadLoader.loadAlphaImageAsset, 'Interface/Dependencies/=.bmp')
         // spaces
         this.addTextureFolder('World/WorldTextures/IceSplit/Ice')
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')

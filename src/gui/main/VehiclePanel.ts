@@ -4,10 +4,12 @@ import { RequestedVehiclesChanged } from '../../event/WorldEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
-import { DependencyCheckPanel } from './DependencyCheckPanel'
 import { IconPanelButtonLabel } from './IconPanelButtonLabel'
+import { OffscreenCache } from '../../worker/OffscreenCache'
+import { Sample } from '../../audio/Sample'
+import { IconSubPanel } from './IconSubPanel'
 
-abstract class VehiclePanel extends DependencyCheckPanel {
+abstract class VehiclePanel extends IconSubPanel {
     requestedVehiclesByType: Map<EntityType, number> = new Map()
     btnLabelByType: Map<EntityType, IconPanelButtonLabel> = new Map()
 
@@ -19,13 +21,15 @@ abstract class VehiclePanel extends DependencyCheckPanel {
         })
     }
 
-    addVehicleMenuItem(itemKey: string, entityType: EntityType) {
-        const item = this.addDependencyMenuItem(itemKey)
+    addVehicleMenuItem(itemKey: string, entityType: EntityType, tooltipSfx: Sample) {
+        const item = super.addMenuItem('InterfaceBuildImages', itemKey)
         item.onClick = () => this.publishEvent(new RequestVehicleSpawn(entityType, this.requestedVehiclesByType.getOrDefault(entityType, 0) + 1))
         item.onClickSecondary = () => {
             const numRequested = this.requestedVehiclesByType.getOrDefault(entityType, 0)
             if (numRequested > 0) this.publishEvent(new RequestVehicleSpawn(entityType, numRequested - 1))
         }
+        item.tooltip = OffscreenCache.configuration.objectNamesCfg.get(itemKey.toLowerCase())
+        item.tooltipSfx = Sample[tooltipSfx]
         this.btnLabelByType.set(entityType, item.addChild(new IconPanelButtonLabel(item)))
     }
 }
@@ -33,22 +37,22 @@ abstract class VehiclePanel extends DependencyCheckPanel {
 export class SmallVehiclePanel extends VehiclePanel {
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 6, onBackPanel)
-        this.addVehicleMenuItem('Hoverboard', EntityType.HOVERBOARD)
-        this.addVehicleMenuItem('SmallDigger', EntityType.SMALL_DIGGER)
-        this.addVehicleMenuItem('SmallTruck', EntityType.SMALL_TRUCK)
-        this.addVehicleMenuItem('SmallCat', EntityType.SMALL_CAT)
-        this.addVehicleMenuItem('SmallMLP', EntityType.SMALL_MLP)
-        this.addVehicleMenuItem('SmallHeli', EntityType.SMALL_HELI)
+        this.addVehicleMenuItem('Hoverboard', EntityType.HOVERBOARD, Sample.ObjSFX_Hoverboard)
+        this.addVehicleMenuItem('SmallDigger', EntityType.SMALL_DIGGER, Sample.ObjSFX_SmallDigger)
+        this.addVehicleMenuItem('SmallTruck', EntityType.SMALL_TRUCK, Sample.ObjSFX_SmallTruck)
+        this.addVehicleMenuItem('SmallCat', EntityType.SMALL_CAT, Sample.ObjSFX_SmallCat)
+        this.addVehicleMenuItem('SmallMLP', EntityType.SMALL_MLP, Sample.ObjSFX_SmallMLP)
+        this.addVehicleMenuItem('SmallHeli', EntityType.SMALL_HELI, Sample.ObjSFX_SmallHeli)
     }
 }
 
 export class LargeVehiclePanel extends VehiclePanel {
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 5, onBackPanel)
-        this.addVehicleMenuItem('BullDozer', EntityType.BULLDOZER)
-        this.addVehicleMenuItem('WalkerDigger', EntityType.WALKER_DIGGER)
-        this.addVehicleMenuItem('LargeMLP', EntityType.LARGE_MLP)
-        this.addVehicleMenuItem('LargeDigger', EntityType.LARGE_DIGGER)
-        this.addVehicleMenuItem('LargeCat', EntityType.LARGE_CAT)
+        this.addVehicleMenuItem('BullDozer', EntityType.BULLDOZER, Sample.ObjSFX_BullDozer)
+        this.addVehicleMenuItem('WalkerDigger', EntityType.WALKER_DIGGER, Sample.ObjSFX_WalkerDigger)
+        this.addVehicleMenuItem('LargeMLP', EntityType.LARGE_MLP, Sample.ObjSFX_LargeMLP)
+        this.addVehicleMenuItem('LargeDigger', EntityType.LARGE_DIGGER, Sample.ObjSFX_LargeDigger)
+        this.addVehicleMenuItem('LargeCat', EntityType.LARGE_CAT, Sample.ObjSFX_LargeCat)
     }
 }
