@@ -26,6 +26,9 @@ import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
 
 function onWadLoaderMessage(msg: WadWorkerMessage) {
     switch (msg.type) {
+        case WorkerMessageType.DOWNLOAD_PROGRESS:
+            wadFileSelectModal.setProgress(msg.wadFileIndex, msg.loadedBytes, msg.totalBytes)
+            break
         case WorkerMessageType.ASSET:
             msg.assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), msg.assetObj))
             msg.sfxKeys?.forEach((sfxKey) => SoundManager.sfxByKey.set(sfxKey, msg.assetObj))

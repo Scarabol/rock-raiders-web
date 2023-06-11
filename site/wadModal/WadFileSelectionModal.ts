@@ -77,9 +77,10 @@ export class WadFileSelectionModal {
     }
 
     public setProgress(progressBar: number, progress: number, total: number) {
-        const progressLabel = `${Math.round(progress * 100 / total)}%`
-        this.progressBars[progressBar].innerText = progressLabel
-        this.progressBars[progressBar].style.width = progressLabel
+        const progressValue = Math.round(progress / total * 100).toString()
+        this.progressBars[progressBar].setAttribute('aria-valuenow', progressValue)
+        this.progressBars[progressBar].innerText = `${progressValue}%`
+        this.progressBars[progressBar].style.width = `${progressValue}%`
     }
 
     private static appendNavButton(parent: HTMLDivElement, active: boolean, id: string, controlTarget: string, innerText: string) {

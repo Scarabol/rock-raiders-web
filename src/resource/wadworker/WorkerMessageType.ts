@@ -5,6 +5,7 @@ export enum WorkerMessageType {
     CACHE_MISS,
     SFX,
     ASSET,
+    DOWNLOAD_PROGRESS,
     DONE,
 
     // gui/scene worker

@@ -37,6 +37,9 @@ export class WadLoader {
     onLoadDone: (totalResources: number) => any = (totalResources: number) => {
         console.log(`Loading of about ${totalResources} assets complete!`)
     }
+    onDownloadProgress: (wadFileIndex: number, loadedBytes: number, totalBytes: number) => unknown = (wadFileIndex: number, loadedBytes: number, totalBytes: number): void => {
+        console.log(`Download of WAD${wadFileIndex} in progress ${Math.round(loadedBytes / totalBytes * 100)}%`)
+    }
 
     loadWadImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
@@ -213,8 +216,8 @@ export class WadLoader {
 
     loadWadFiles(wad0Url: string, wad1Url: string) {
         Promise.all<ArrayBuffer>([
-            this.loadWadFile(wad0Url),
-            this.loadWadFile(wad1Url),
+            this.loadWadFile(0, wad0Url),
+            this.loadWadFile(1, wad1Url),
         ]).then((wadFileBuffer) => {
             cachePutData('wad0Buffer', wadFileBuffer[0]).then()
             cachePutData('wad1Buffer', wadFileBuffer[1]).then()
@@ -222,14 +225,16 @@ export class WadLoader {
         })
     }
 
-    loadWadFile(url: string) {
+    loadWadFile(wadFileIndex: number, url: string) {
         return new Promise<ArrayBuffer>(resolve => {
             console.log(`Loading WAD file from ${url}`)
-            fetch(url).then((response) => {
-                if (response.ok) {
-                    response.arrayBuffer().then((buffer) => resolve(buffer))
-                }
-            }).catch((e) => console.error(e))
+            const xhr = new XMLHttpRequest()
+            xhr.open('GET', url)
+            xhr.responseType = 'arraybuffer'
+            xhr.onprogress = (event) => this.onDownloadProgress(wadFileIndex, event.loaded, event.total)
+            xhr.onerror = (event) => console.error(event)
+            xhr.onload = (event) => resolve(xhr.response)
+            xhr.send()
         })
     }
 

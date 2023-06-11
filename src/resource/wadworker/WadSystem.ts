@@ -18,6 +18,9 @@ export class WadSystem {
         wadLoader.onLoadDone = (totalResources: number) => {
             worker.sendResponse(WadWorkerMessage.createLoadDone(totalResources))
         }
+        wadLoader.onDownloadProgress = (wadFileIndex: number, loadedBytes: number, totalBytes: number) => {
+            worker.sendResponse(WadWorkerMessage.createDownloadProgress(wadFileIndex, loadedBytes, totalBytes))
+        }
         worker.onMessageFromFrontend = (msg) => {
             // start loading
             if (msg) {

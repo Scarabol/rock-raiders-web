@@ -9,6 +9,10 @@ export class WadWorkerMessage {
     assetNames?: string[]
     assetObj?: any
     sfxKeys?: string[]
+    cacheIdentifier?: string
+    wadFileIndex?: number
+    loadedBytes?: number
+    totalBytes?: number
 
     constructor(type: WorkerMessageType) {
         this.type = type
@@ -34,7 +38,11 @@ export class WadWorkerMessage {
         return {type: WorkerMessageType.DONE, totalResources: totalResources}
     }
 
-    static createCacheMissed(cacheIdentifier: string) {
+    static createCacheMissed(cacheIdentifier: string): WadWorkerMessage {
         return {type: WorkerMessageType.CACHE_MISS, cacheIdentifier: cacheIdentifier}
+    }
+
+    static createDownloadProgress(wadFileIndex: number, loadedBytes: number, totalBytes: number): WadWorkerMessage {
+        return {type: WorkerMessageType.DOWNLOAD_PROGRESS, wadFileIndex: wadFileIndex, loadedBytes: loadedBytes, totalBytes: totalBytes}
     }
 }
