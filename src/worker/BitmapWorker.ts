@@ -19,16 +19,16 @@ export class BitmapWorkerResponse {
 }
 
 export class BitmapSystem extends AbstractWorkerSystem<BitmapWorkerRequest, BitmapWorkerResponse> {
-    onMessageFromFrontend(workerRequestId: number, request: BitmapWorkerRequest): BitmapWorkerResponse {
+    onMessageFromFrontend(workerRequestHash: string, request: BitmapWorkerRequest): BitmapWorkerResponse {
         switch (request.type) {
             case BitmapWorkerRequestType.DECODE_BITMAP:
-                this.sendResponse(workerRequestId, {decoded: BitmapWithPalette.decode(request.bitmapData)})
+                this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData)})
                 break
             case BitmapWorkerRequestType.DECODE_BITMAP_ALPHA:
-                this.sendResponse(workerRequestId, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlpha()})
+                this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlpha()})
                 break
             case BitmapWorkerRequestType.DECODE_BITMAP_ALPHA_INDEX:
-                this.sendResponse(workerRequestId, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlphaByIndex(request.alphaIndex)})
+                this.sendResponse(workerRequestHash, {decoded: BitmapWithPalette.decode(request.bitmapData).applyAlphaByIndex(request.alphaIndex)})
                 break
         }
         return null

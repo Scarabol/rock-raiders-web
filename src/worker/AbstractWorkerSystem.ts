@@ -3,13 +3,13 @@ import { TypedWorkerBackend, WorkerRequestMessage, WorkerResponseMessage } from 
 export abstract class AbstractWorkerSystem<M, R> {
     constructor(readonly worker: TypedWorkerBackend<WorkerRequestMessage<M>, WorkerResponseMessage<R>>) {
         worker.onMessageFromFrontend = (msg) => {
-            this.onMessageFromFrontend(msg.workerRequestId, msg.request)
+            this.onMessageFromFrontend(msg.workerRequestHash, msg.request)
         }
     }
 
-    abstract onMessageFromFrontend(workerRequestId: number, request: M): void
+    abstract onMessageFromFrontend(workerRequestHash: string, request: M): void
 
-    sendResponse(workerRequestId: number, response: R, transfer?: Transferable[]) {
-        this.worker.sendResponse({workerRequestId: workerRequestId, response: response}, transfer)
+    sendResponse(workerRequestHash: string, response: R, transfer?: Transferable[]) {
+        this.worker.sendResponse({workerRequestHash: workerRequestHash, response: response}, transfer)
     }
 }

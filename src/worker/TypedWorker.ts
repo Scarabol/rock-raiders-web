@@ -1,10 +1,10 @@
 export class WorkerRequestMessage<T> {
-    workerRequestId: number
+    workerRequestHash: string
     request: T
 }
 
 export class WorkerResponseMessage<T> {
-    workerRequestId: number
+    workerRequestHash: string
     response: T
 }
 

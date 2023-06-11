@@ -13,7 +13,8 @@ export class DependencySpriteWorkerPool extends AbstractWorkerPool<DependencySpr
     }
 
     async createDependenciesSprite(dependencies: EntityDependencyChecked[]): Promise<ImageData> {
-        const message = {type: DependencySpriteWorkerRequestType.CREATE_SPRITE, dependencies: dependencies}
+        const depHash = dependencies.map((d) => `${d.itemKey}:${d.minLevel}=${d.isOk}`).join(';')
+        const message = {type: DependencySpriteWorkerRequestType.CREATE_SPRITE, dependencies: dependencies, hash: depHash}
         const response = await this.processMessage(message)
         return response.dependencyImage
     }

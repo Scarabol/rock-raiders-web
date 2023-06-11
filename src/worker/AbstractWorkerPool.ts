@@ -3,7 +3,7 @@ import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend, WorkerRequestMes
 export abstract class AbstractWorkerPool<M, R> {
     private readonly allWorkers: Set<TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>> = new Set()
     private readonly idleWorkers: TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>[] = []
-    private readonly openRequests: Map<number, (response: R) => unknown> = new Map()
+    private readonly openRequests: Map<string, ((response: R) => unknown)[]> = new Map()
     private readonly messageBacklog: WorkerRequestMessage<M>[] = []
     private lastRequestId: number = 1
 
@@ -18,9 +18,9 @@ export abstract class AbstractWorkerPool<M, R> {
                 this.allWorkers.add(worker)
                 if (setupMessage) {
                     this.lastRequestId++
-                    const message = {workerRequestId: this.lastRequestId, request: setupMessage}
+                    const message = {workerRequestHash: `message-${this.lastRequestId}`, request: setupMessage}
                     worker.sendMessage(message)
-                    this.openRequests.set(message.workerRequestId, () => this.processNextMessage(worker))
+                    this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(() => this.processNextMessage(worker))
                 } else {
                     this.processNextMessage(worker)
                 }
@@ -48,37 +48,39 @@ export abstract class AbstractWorkerPool<M, R> {
     }
 
     protected processMessage(request: M) {
-        if (this.allWorkers.size < 1) console.warn(`Worker pool '${this.constructor.name}' received message, but has not worker threads`)
-        this.lastRequestId++
-        const message = {workerRequestId: this.lastRequestId, request: request}
+        let workerRequestHash = request?.['hash']
+        if (!workerRequestHash) {
+            this.lastRequestId++
+            workerRequestHash = `message-${this.lastRequestId}`
+        }
+        const message = {workerRequestHash: workerRequestHash, request: request}
         const idleWorker = this.idleWorkers.shift()
         if (idleWorker) {
             idleWorker.sendMessage(message)
         } else {
-            this.messageBacklog.push(message) // TODO avoid duplicates here, especially when the thread pool is not yet started
+            const duplicates = this.openRequests.getOrUpdate(message.workerRequestHash, () => [])
+            if (duplicates.length < 1) this.messageBacklog.push(message)
         }
-        return new Promise<R>((resolve) => this.openRequests.set(message.workerRequestId, resolve))
+        return new Promise<R>((resolve) => this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(resolve))
     }
 
     protected broadcast(broadcast: M) {
-        if (this.allWorkers.size < 1) console.warn(`Worker pool '${this.constructor.name}' received broadcast, but has not worker threads`)
         this.allWorkers.forEach((worker) => {
             this.lastRequestId++
-            const message = {workerRequestId: this.lastRequestId, request: broadcast}
+            const message = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
             worker.sendMessage(message)
-            this.openRequests.set(message.workerRequestId, () => {
-            })
+            this.openRequests.getOrUpdate(message.workerRequestHash, () => [])
         })
     }
 
     private onWorkerResponse(worker, response: WorkerResponseMessage<R>) {
-        if (response.workerRequestId) {
-            const request = this.openRequests.get(response.workerRequestId)
-            if (request) {
-                this.openRequests.delete(response.workerRequestId)
-                request(response.response)
+        if (response.workerRequestHash) {
+            const requests = this.openRequests.get(response.workerRequestHash)
+            if (requests) {
+                requests.forEach((r) => r(response.response))
+                this.openRequests.set(response.workerRequestHash, [])
             } else {
-                console.warn(`Received response for unknown request ${response.workerRequestId}`)
+                console.warn(`Received response for unknown request ${response.workerRequestHash}`)
             }
         } else {
             console.warn(`Received unexpected worker response`, response)

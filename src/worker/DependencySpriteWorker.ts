@@ -34,7 +34,7 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
     plusSignImg: SpriteImage
     equalsSignImg: SpriteImage
 
-    onMessageFromFrontend(workerRequestId: number, request: DependencySpriteWorkerRequest): DependencySpriteWorkerResponse {
+    onMessageFromFrontend(workerRequestHash: string, request: DependencySpriteWorkerRequest): DependencySpriteWorkerResponse {
         if (!request) return null // TODO all worker receive the same messages
         switch (request.type) {
             case DependencySpriteWorkerRequestType.SETUP:
@@ -46,7 +46,7 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                     .set(key.toLowerCase(), imgData.map((imgData) => imgDataToContext(imgData).canvas)))
                 request.interfaceBuildImageData.forEach((imgData, key) => this.interfaceBuildImages
                     .set(key.toLowerCase(), imgData.map((imgData) => imgDataToContext(imgData).canvas)))
-                this.sendResponse(workerRequestId, null)
+                this.sendResponse(workerRequestHash, null)
                 break
             case DependencySpriteWorkerRequestType.CREATE_SPRITE:
                 let totalWidth = 0
@@ -81,7 +81,7 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                     dependencySprite.drawImage(signImg, posX, (totalHeight - signImg.height) / 2)
                     posX += signImg.width
                 })
-                this.sendResponse(workerRequestId, {dependencyImage: dependencySprite.getImageData(0, 0, dependencySprite.canvas.width, dependencySprite.canvas.height)})
+                this.sendResponse(workerRequestHash, {dependencyImage: dependencySprite.getImageData(0, 0, dependencySprite.canvas.width, dependencySprite.canvas.height)})
                 break
         }
         return null
