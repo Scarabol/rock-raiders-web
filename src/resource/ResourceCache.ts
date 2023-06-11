@@ -1,4 +1,4 @@
-import { GameConfig } from '../cfg/GameConfig'
+import { EntityDependencyChecked, GameConfig } from '../cfg/GameConfig'
 import { Cursor } from './Cursor'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 import { createContext, createDummyImgData, imgDataToContext } from '../core/ImageHelper'
@@ -7,7 +7,6 @@ import { iGet } from '../core/Util'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { EntityType } from '../game/model/EntityType'
-import { EntityDependencyChecked } from '../gui/main/IconPanelButton'
 import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME } from '../params'
 import { MenuItemCfg } from '../cfg/ButtonCfg'
 

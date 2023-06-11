@@ -8,9 +8,7 @@ import { EntityType, getEntityTypeByName } from '../../game/model/EntityType'
 import { EventKey } from '../../event/EventKeyEnum'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent } from '../../event/LocalEvents'
 import { OffscreenCache } from '../../worker/OffscreenCache'
-import { EntityDependency } from '../../cfg/GameConfig'
-
-export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
+import { EntityDependency, EntityDependencyChecked } from '../../cfg/GameConfig'
 
 export class IconPanelButton extends Button {
     tooltipDisabled: string = null

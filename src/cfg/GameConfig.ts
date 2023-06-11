@@ -20,6 +20,7 @@ import { RockFallStylesCfg } from './RockFallStylesCfg'
 import { EntityType, getEntityTypeByName } from '../game/model/EntityType'
 
 export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
+export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
 
 export class GameConfig extends BaseConfig {
     main: MainCfg = new MainCfg()
