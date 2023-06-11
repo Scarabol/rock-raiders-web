@@ -2,7 +2,7 @@ import { GameConfig } from '../cfg/GameConfig'
 import { Cursor } from './Cursor'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 import { createContext, createDummyImgData, imgDataToContext } from '../core/ImageHelper'
-import { SpriteContext, SpriteImage } from '../core/Sprite'
+import { SpriteImage } from '../core/Sprite'
 import { iGet } from '../core/Util'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
@@ -38,7 +38,8 @@ export class ResourceCache {
         const context = createContext(imgData.width, imgData.height)
         context.putImageData(imgData, 0, 0)
         if (imageName.toLowerCase().endsWith('/loading.bmp') || imageName.toLowerCase().endsWith('/menubgpic.bmp')) {
-            this.drawCopyrightCover(context)
+            context.fillStyle = '#f00'
+            context.fillRect(38, 9, 131, 131)
         }
         return context.canvas
     }
@@ -47,11 +48,6 @@ export class ResourceCache {
         return this.imageCache.getOrUpdate(imageName, () => {
             return this.createImage(imageName)
         })
-    }
-
-    private static drawCopyrightCover(context: SpriteContext) {
-        context.fillStyle = '#f00'
-        context.fillRect(38, 9, 131, 131)
     }
 
     static getImageOrNull(imageName: string): SpriteImage | null {

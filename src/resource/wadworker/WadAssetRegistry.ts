@@ -12,11 +12,9 @@ interface WadAsset {
 }
 
 export class WadAssetRegistry extends Map<string, WadAsset> {
-    wadLoader: WadLoader
 
-    constructor(wadLoader: WadLoader) {
+    constructor(readonly wadLoader: WadLoader) {
         super()
-        this.wadLoader = wadLoader
     }
 
     registerAllAssets(gameConfig: GameConfig) {
@@ -112,7 +110,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         Object.values<string[]>(rockFallStyles).forEach((entry) => {
             const falls = entry.slice(1) // first entry is always "Item_Null"
             falls.forEach((shape) => {
-                const textureFolder = shape.split("/").slice(0, -1).join("/")
+                const textureFolder = shape.split('/').slice(0, -1).join('/')
                 this.addTextureFolder(textureFolder)
                 const lwsFilename = `${shape}.lws`
                 this.addLWSFile(lwsFilename)
