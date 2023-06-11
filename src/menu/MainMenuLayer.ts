@@ -54,17 +54,11 @@ export class MainMenuLayer extends ScaledLayer {
         this.items.forEach((item) => item.reset())
         this.scrollY = 0
         this.scrollSpeedY = 0
-    }
-
-    show() {
-        super.show()
-        this.scrollInterval = setInterval(() => {
-            if (this.scrollSpeedY === 0) return
-            this.setScrollY(this.scrollSpeedY)
-        }, NATIVE_UPDATE_INTERVAL)
+        this.scrollInterval = clearIntervalSafe(this.scrollInterval)
     }
 
     hide() {
+        this.scrollSpeedY = 0
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
         super.hide()
     }
@@ -105,6 +99,7 @@ export class MainMenuLayer extends ScaledLayer {
             }
         } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
             this.scrollSpeedY = 0
+            this.scrollInterval = clearIntervalSafe(this.scrollInterval)
             return true
         }
         if (this.needsRedraw()) this.animationFrame.redraw()
@@ -112,7 +107,16 @@ export class MainMenuLayer extends ScaledLayer {
     }
 
     private setScrollSpeedY(deltaY: number) {
-        this.scrollSpeedY = Math.sign(deltaY) * Math.pow(Math.round(deltaY / 20), 2)
+        const nextScrollSpeedY = Math.sign(deltaY) * Math.pow(Math.round(deltaY / 20), 2)
+        if (nextScrollSpeedY === this.scrollSpeedY) return
+        this.scrollSpeedY = nextScrollSpeedY
+        if (!this.scrollSpeedY) {
+            this.scrollInterval = clearIntervalSafe(this.scrollInterval)
+        } else if (!this.scrollInterval) {
+            this.scrollInterval = setInterval(() => {
+                this.setScrollY(this.scrollSpeedY)
+            }, NATIVE_UPDATE_INTERVAL)
+        }
     }
 
     private doubleTapToFullscreen() {
