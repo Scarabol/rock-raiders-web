@@ -2,7 +2,7 @@ import { InfoMessagesCfg } from '../gui/infodock/InfoMessagesCfg'
 import { TextInfoMessageCfg } from '../gui/messagepanel/TextInfoMessageCfg'
 import { BaseConfig } from './BaseConfig'
 import { BubblesCfg } from './BubblesCfg'
-import { IconPanelBackButtonCfg } from './ButtonCfg'
+import { IconPanelBackButtonCfg, MenuItemCfg } from './ButtonCfg'
 import { ButtonsCfg } from './ButtonsCfg'
 import { parseLabel } from './CfgHelper'
 import { DialogCfg } from './DialogCfg'
@@ -29,12 +29,12 @@ export class GameConfig extends BaseConfig {
     toolTipInfo: Map<string, string> = new Map()
     surfaceTypeDescriptions: Map<string, string[]> = new Map()
     pointers: Map<string, string | string[]> = new Map()
-    // interfaceImages: InterfaceImagesCfg = new InterfaceImagesCfg()
+    interfaceImages: Map<string, MenuItemCfg> = new Map()
     panelRotationControl: PanelRotationControlCfg = new PanelRotationControlCfg()
     panels: PanelsCfg = new PanelsCfg()
     buttons: ButtonsCfg = new ButtonsCfg()
     interfaceBackButton: IconPanelBackButtonCfg = null
-    // interfaceBuildImages: InterfaceBuildImagesCfg = new InterfaceBuildImagesCfg()
+    interfaceBuildImages: Map<string, MenuItemCfg> = new Map()
     // interfaceSurroundImages: InterfaceSurroundImagesCfg = new InterfaceSurroundImagesCfg()
     priorityImages: PriorityButtonsCfg = new PriorityButtonsCfg()
     prioritiesImagePositions: PrioritiesImagePositionsCfg = new PrioritiesImagePositionsCfg()
@@ -72,8 +72,8 @@ export class GameConfig extends BaseConfig {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), value as string[]))
         } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.pointers.set(this.stripKey(cfgKey), value as string[]))
-        // } else if ('InterfaceImages'.equalsIgnoreCase(unifiedKey)) {
-        //     this.interfaceImages.setFromCfgObj(cfgValue)
+        } else if ('InterfaceImages'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.interfaceImages.set(cfgKey.toLowerCase(), new MenuItemCfg(value)))
         } else if ('PanelRotationControl'.equalsIgnoreCase(unifiedKey)) {
             this.panelRotationControl.setFromCfgObj(cfgValue)
         } else if ('Panels640x480'.equalsIgnoreCase(unifiedKey)) {
@@ -82,8 +82,8 @@ export class GameConfig extends BaseConfig {
             this.buttons.setFromCfgObj(cfgValue)
         } else if ('InterfaceBackButton'.equalsIgnoreCase(unifiedKey)) {
             this.interfaceBackButton = new IconPanelBackButtonCfg(cfgValue)
-        // } else if ('InterfaceBuildImages'.equalsIgnoreCase(unifiedKey)) {
-        //     this.interfaceBuildImages.setFromCfgObj(cfgValue)
+        } else if ('InterfaceBuildImages'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.interfaceBuildImages.set(cfgKey.toLowerCase(), new MenuItemCfg(value)))
         // } else if ('InterfaceSurroundImages'.equalsIgnoreCase(unifiedKey)) {
         //     this.interfaceSurroundImages.setFromCfgObj(cfgValue)
         } else if ('PriorityImages'.equalsIgnoreCase(unifiedKey)) {

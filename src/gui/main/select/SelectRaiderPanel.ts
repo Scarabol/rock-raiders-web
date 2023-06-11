@@ -6,6 +6,7 @@ import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { IconPanelButton } from '../IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
+import { OffscreenCache } from '../../../worker/OffscreenCache'
 
 export class SelectRaiderPanel extends SelectBasePanel {
     getToolItem: IconPanelButton
@@ -17,24 +18,24 @@ export class SelectRaiderPanel extends SelectBasePanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 10, onBackPanel)
-        const feedItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GoFeed')
+        const feedItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_GoFeed')
         feedItem.isDisabled = () => false
         feedItem.onClick = () => this.publishEvent(new RaiderEat())
-        const unloadItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UnLoadMinifigure')
+        const unloadItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_UnLoadMinifigure')
         unloadItem.isDisabled = () => !this.someCarries
         unloadItem.onClick = () => this.publishEvent(new RaiderDrop())
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_MinifigurePickUp')
-        this.getToolItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GetTool')
+        this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_MinifigurePickUp')
+        this.getToolItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_GetTool')
         this.getToolItem.isDisabled = () => false
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DropBirdScarer')
-        const upgradeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeMan')
+        this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_DropBirdScarer')
+        const upgradeItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_UpgradeMan')
         upgradeItem.isDisabled = () => this.everyHasMaxLevel || !this.hasToolstation
         upgradeItem.onClick = () => this.publishEvent(new RaiderUpgrade())
-        this.trainItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_TrainSkill')
+        this.trainItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_TrainSkill')
         this.trainItem.isDisabled = () => false
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GotoFirstPerson')
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_GotoSecondPerson')
-        const deleteRaiderItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteMan')
+        this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_GotoFirstPerson')
+        this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_GotoSecondPerson')
+        const deleteRaiderItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_DeleteMan')
         deleteRaiderItem.isDisabled = () => false
         deleteRaiderItem.onClick = () => this.publishEvent(new RaiderBeamUp())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

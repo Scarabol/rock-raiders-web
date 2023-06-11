@@ -6,6 +6,7 @@ import { RaiderTraining } from '../../../game/model/raider/RaiderTraining'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
+import { OffscreenCache } from '../../../worker/OffscreenCache'
 
 export class SelectWallPanel extends SelectBasePanel {
     isDrillable: boolean = false
@@ -16,16 +17,16 @@ export class SelectWallPanel extends SelectBasePanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 4, onBackPanel)
-        const itemDrill = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Dig')
+        const itemDrill = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_Dig')
         itemDrill.isDisabled = () => !this.isDrillable
         itemDrill.onClick = () => this.publishEvent(new CreateDrillJob())
-        const itemReinforce = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Reinforce')
+        const itemReinforce = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_Reinforce')
         itemReinforce.isDisabled = () => !this.isReinforcable
         itemReinforce.onClick = () => this.publishEvent(new CreateReinforceJob())
-        const itemDynamite = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Dynamite')
+        const itemDynamite = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_Dynamite')
         itemDynamite.isDisabled = () => !(this.hasDemolition && this.hasToolstation) && !this.hasToolstationLevel2
         itemDynamite.onClick = () => this.publishEvent(new CreateDynamiteJob())
-        const itemDeselect = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeselectDig')
+        const itemDeselect = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_DeselectDig')
         itemDeselect.isDisabled = () => false
         itemDeselect.onClick = () => this.publishEvent(new CancelSurfaceJobs())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

@@ -22,8 +22,8 @@ export class IconSubPanel extends Panel {
         this.xOut = -this.img.width
     }
 
-    addMenuItem(menuItemGroup: string, itemKey: string) {
-        const menuItemCfg = new MenuItemCfg(OffscreenCache.cfg(menuItemGroup, itemKey))
+    addMenuItem(menuItemGroup: Map<string, MenuItemCfg>, itemKey: string) {
+        const menuItemCfg = menuItemGroup.get(itemKey.toLowerCase())
         const menuItem = this.addChild(new IconPanelButton(this, menuItemCfg, itemKey, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(menuItem)
         return menuItem

@@ -26,7 +26,7 @@ export class BuildingPanel extends IconSubPanel {
     }
 
     addBuildMenuItem(itemKey: string, entityType: EntityType, tooltipSfx: Sample) {
-        const item = super.addMenuItem('InterfaceBuildImages', itemKey)
+        const item = super.addMenuItem(OffscreenCache.configuration.interfaceBuildImages, itemKey)
         item.onClick = () => this.publishEvent(new SelectBuildMode(entityType))
         item.tooltip = OffscreenCache.configuration.objectNamesCfg.get(itemKey.toLowerCase())
         item.tooltipSfx = Sample[tooltipSfx]

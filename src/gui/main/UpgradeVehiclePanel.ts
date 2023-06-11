@@ -5,6 +5,7 @@ import { Panel } from '../base/Panel'
 import { EventKey } from '../../event/EventKeyEnum'
 import { SelectionChanged } from '../../event/LocalEvents'
 import { UpgradeVehicle } from '../../event/GuiCommand'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 
 export class UpgradeVehiclePanel extends IconSubPanel {
     canInstallUpgrade: Map<VehicleUpgrade, boolean> = new Map()
@@ -22,7 +23,7 @@ export class UpgradeVehiclePanel extends IconSubPanel {
     }
 
     private addUpgradeItem(itemKey: string, upgrade: VehicleUpgrade) {
-        const upgradeItem = this.addMenuItem('InterfaceImages', itemKey)
+        const upgradeItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, itemKey)
         upgradeItem.isDisabled = () => !this.canInstallUpgrade.get(upgrade)
         upgradeItem.onClick = () => this.publishEvent(new UpgradeVehicle(upgrade))
     }

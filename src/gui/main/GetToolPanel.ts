@@ -7,6 +7,7 @@ import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { IconSubPanel } from './IconSubPanel'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 
 export class GetToolPanel extends IconSubPanel {
     hasToolstation: boolean = false
@@ -14,14 +15,14 @@ export class GetToolPanel extends IconSubPanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 8, onBackPanel)
-        this.addGetToolItem('InterfaceImages', 'Interface_MenuItem_GetDrill', RaiderTool.DRILL)
-        this.addGetToolItem('InterfaceImages', 'Interface_MenuItem_GetSpade', RaiderTool.SHOVEL)
-        this.addGetToolItem('InterfaceImages', 'Interface_MenuItem_GetHammer', RaiderTool.HAMMER)
-        this.addGetToolItem('InterfaceImages', 'Interface_MenuItem_GetSpanner', RaiderTool.SPANNER)
-        this.addGetToolItem('InterfaceImages', 'Interface_MenuItem_GetFreezerGun', RaiderTool.FREEZERGUN)
-        this.addGetToolItem('InterfaceImages', 'Interface_MenuItem_GetLaser', RaiderTool.LASER)
-        this.addGetToolItem('InterfaceImages', 'Interface_MenuItem_GetPusherGun', RaiderTool.PUSHERGUN)
-        this.addGetToolItem('InterfaceImages', 'Interface_MenuItem_GetBirdScarer', RaiderTool.BIRDSCARER)
+        this.addGetToolItem('Interface_MenuItem_GetDrill', RaiderTool.DRILL)
+        this.addGetToolItem('Interface_MenuItem_GetSpade', RaiderTool.SHOVEL)
+        this.addGetToolItem('Interface_MenuItem_GetHammer', RaiderTool.HAMMER)
+        this.addGetToolItem('Interface_MenuItem_GetSpanner', RaiderTool.SPANNER)
+        this.addGetToolItem('Interface_MenuItem_GetFreezerGun', RaiderTool.FREEZERGUN)
+        this.addGetToolItem('Interface_MenuItem_GetLaser', RaiderTool.LASER)
+        this.addGetToolItem('Interface_MenuItem_GetPusherGun', RaiderTool.PUSHERGUN)
+        this.addGetToolItem('Interface_MenuItem_GetBirdScarer', RaiderTool.BIRDSCARER)
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
             this.hasToolstation = BuildingsChangedEvent.hasUsable(event, EntityType.TOOLSTATION)
             this.updateAllButtonStates()
@@ -32,8 +33,8 @@ export class GetToolPanel extends IconSubPanel {
         })
     }
 
-    addGetToolItem(menuItemGroup: string, itemKey: string, tool: RaiderTool): IconPanelButton {
-        const menuItem = super.addMenuItem(menuItemGroup, itemKey)
+    addGetToolItem(itemKey: string, tool: RaiderTool): IconPanelButton {
+        const menuItem = super.addMenuItem(OffscreenCache.configuration.interfaceImages, itemKey)
         menuItem.isDisabled = () => !this.hasToolstation || !!this.everyHasTool.get(tool)
         menuItem.onClick = () => this.publishEvent(new SelectedRaiderPickTool(tool))
         return menuItem

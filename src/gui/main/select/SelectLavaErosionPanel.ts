@@ -4,13 +4,14 @@ import { SelectionChanged } from '../../../event/LocalEvents'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
+import { OffscreenCache } from '../../../worker/OffscreenCache'
 
 export class SelectLavaErosionPanel extends SelectBasePanel {
     private hasRepairLava: boolean = false
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 1, onBackPanel)
-        const cancelBuilding = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_RepairLava')
+        const cancelBuilding = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_RepairLava')
         cancelBuilding.isDisabled = () => this.hasRepairLava
         cancelBuilding.onClick = () => this.publishEvent(new RepairLava())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

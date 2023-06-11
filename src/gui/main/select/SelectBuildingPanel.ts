@@ -1,8 +1,6 @@
-import { MenuItemCfg } from '../../../cfg/ButtonCfg'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { BeamUpBuilding, ChangeBuildingPowerState, ChangeTooltip, UpgradeBuilding } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
-import { MaterialAmountChanged } from '../../../event/WorldEvents'
 import { OffscreenCache } from '../../../worker/OffscreenCache'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
@@ -18,21 +16,21 @@ export class SelectBuildingPanel extends SelectBasePanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 4, onBackPanel)
-        this.addMenuItem('InterfaceImages', 'Interface_MenuItem_Repair') // TODO implement repair buildings
-        const menuItemOffCfg = new MenuItemCfg(OffscreenCache.cfg('InterfaceImages', 'Interface_MenuItem_PowerOff'))
-        const menuItemOnCfg = new MenuItemCfg(OffscreenCache.cfg('InterfaceImages', 'Interface_MenuItem_PowerOn'))
+        this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_Repair') // TODO implement repair buildings
+        const menuItemOffCfg = OffscreenCache.configuration.interfaceImages.get('Interface_MenuItem_PowerOff'.toLowerCase())
+        const menuItemOnCfg = OffscreenCache.configuration.interfaceImages.get('Interface_MenuItem_PowerOn'.toLowerCase())
         const powerSwitchItem = this.addChild(new IconPanelToggleButton(this, menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(powerSwitchItem)
         powerSwitchItem.isDisabled = () => !this.buildingCanSwitchPower
         powerSwitchItem.isToggled = () => !this.buildingPowerSwitchState
         powerSwitchItem.onClick = () => this.publishEvent(new ChangeBuildingPowerState(!powerSwitchItem.toggleState))
-        const upgradeItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_UpgradeBuilding')
+        const upgradeItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_UpgradeBuilding')
         upgradeItem.isDisabled = () => !this.buildingCanUpgrade
         upgradeItem.onClick = () => this.publishEvent(new UpgradeBuilding())
         upgradeItem.showTooltipDisabled = () => {
             this.publishEvent(new ChangeTooltip(upgradeItem.tooltipDisabled, TOOLTIP_DELAY_TEXT_MENU, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, null, null, this.buildingMissingOreForUpgrade))
         }
-        const deleteBuildingItem = this.addMenuItem('InterfaceImages', 'Interface_MenuItem_DeleteBuilding')
+        const deleteBuildingItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_DeleteBuilding')
         deleteBuildingItem.isDisabled = () => false
         deleteBuildingItem.onClick = () => this.publishEvent(new BeamUpBuilding())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

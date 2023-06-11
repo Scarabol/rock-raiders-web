@@ -9,6 +9,7 @@ import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { EntityType } from '../game/model/EntityType'
 import { EntityDependencyChecked } from '../gui/main/IconPanelButton'
 import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME } from '../params'
+import { MenuItemCfg } from '../cfg/ButtonCfg'
 
 export class ResourceCache {
     static readonly fontCache: Map<string, BitmapFont> = new Map()
@@ -141,13 +142,13 @@ export class ResourceCache {
         let totalWidth = 0
         let totalHeight = 0
         const deps = dependencies.map((dep) => {
-            let cfg
+            let cfg: MenuItemCfg
             if (dep.entityType === EntityType.PILOT) {
-                cfg = this.cfg('InterfaceImages', 'Interface_MenuItem_TeleportMan')
+                cfg = this.configuration.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase())
             } else {
-                cfg = this.cfg('InterfaceBuildImages', dep.itemKey)
+                cfg = this.configuration.interfaceBuildImages.get(dep.itemKey.toLowerCase())
             }
-            const imageName = dep.isOk ? cfg[0] : cfg[1]
+            const imageName = dep.isOk ? cfg.normalFile : cfg.disabledFile
             const depImg = this.getImage(imageName)
             totalWidth += depImg.width
             totalHeight = Math.max(totalHeight, depImg.height)
