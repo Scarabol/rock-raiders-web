@@ -11,7 +11,7 @@ export abstract class AbstractWorkerPool<M, R> {
 
     protected abstract attachFallbackSystem(worker: TypedWorkerFallback<WorkerRequestMessage<M>, WorkerResponseMessage<R>>)
 
-    createPool(poolSize: number, setupMessage: WorkerRequestMessage<M>): this {
+    startPool(poolSize: number, setupMessage: WorkerRequestMessage<M>): this {
         for (let c = 0; c < poolSize; c++) {
             setTimeout(() => {
                 const worker = this.createTypedWorker()

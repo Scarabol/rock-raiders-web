@@ -15,7 +15,7 @@ import { Cursor } from '../Cursor'
 import { DEFAULT_FONT_NAME } from '../../params'
 
 export class WadLoader {
-    static readonly bitmapWorkerPool = new BitmapWorkerPool().createPool(16, null)
+    static readonly bitmapWorkerPool = new BitmapWorkerPool().startPool(16, null)
 
     wad0File: WadFile = null
     wad1File: WadFile = null
