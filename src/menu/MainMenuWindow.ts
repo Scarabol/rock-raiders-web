@@ -17,11 +17,11 @@ export class MainMenuWindow extends MainMenuBaseItem {
     }
 
     setFirstLine(text: string) {
-        this.imgFirstLine = !!text ? this.font.createTextImage(text) : null
+        this.imgFirstLine = this.font.createTextImage(text)
     }
 
     setSecondLine(text: string) {
-        this.imgSecondLine = !!text ? this.font.createTextImage(text) : null
+        this.imgSecondLine = this.font.createTextImage(text)
     }
 
     draw(context: SpriteContext) {

@@ -79,10 +79,7 @@ export class BitmapFont {
     }
 
     createTextImage(text: string, maxWidth?: number, autoCenter: boolean = true): SpriteImage {
-        if (text === undefined || text === null || text.length < 1) {
-            // empty text requested, context with width 0 is not allowed, but 1 with alpha is close enough
-            return createContext(1, 1).canvas
-        }
+        if (!text) return null
         text = text.replace(/_/g, ' ')
         const rows = this.determineRows(text, maxWidth)
         const width = Math.max(...(rows.map(r => r.width)))

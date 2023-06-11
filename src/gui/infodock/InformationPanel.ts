@@ -15,7 +15,7 @@ export class InformationPanel extends Panel {
     }
 
     setText(text?: string) {
-        this.textImage = text ? this.font.createTextImage(text, this.img.width - 80) : null
+        this.textImage = this.font.createTextImage(text, this.img.width - 80)
         this.notifyRedraw()
     }
 
