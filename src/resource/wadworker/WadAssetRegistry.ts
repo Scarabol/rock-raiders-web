@@ -1,6 +1,6 @@
 import { GameConfig } from '../../cfg/GameConfig'
 import { MenuCfg } from '../../cfg/MenuCfg'
-import { getFilename, getPath, iGet } from '../../core/Util'
+import { getFilename, getPath, iGet, yieldToMainThread } from '../../core/Util'
 import { RonFileParser } from './parser/RonFileParser'
 import { WadLoader } from './WadLoader'
 
@@ -12,12 +12,13 @@ interface WadAsset {
 }
 
 export class WadAssetRegistry extends Map<string, WadAsset> {
+    readonly inProgress: Promise<void>[] = []
 
     constructor(readonly wadLoader: WadLoader) {
         super()
     }
 
-    registerAllAssets(gameConfig: GameConfig) {
+    async registerAllAssets(gameConfig: GameConfig) {
         // add fonts and cursors
         this.addAssetFolder(this.wadLoader.loadAlphaImageAsset, 'Interface/Pointers/')
         this.wadLoader.wad0File.filterEntryNames(`Interface/Pointers/.+\\.flh`).forEach((assetPath) => {
@@ -87,6 +88,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         Object.values<string>(rockMonsterTypes).forEach((mType) => {
             this.addMeshObjects(mType)
         })
+        await yieldToMainThread()
         // load vehicles
         const vehicleTypes = iGet(gameConfig, 'VehicleTypes')
         Object.values<string>(vehicleTypes).forEach((v) => {
@@ -160,6 +162,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         sndPathToKeys.forEach((sndKeys, sndPath) => {
             this.addAsset(this.wadLoader.loadWavAsset, sndPath, false, sndKeys)
         })
+        await Promise.all(this.inProgress)
     }
 
     addMeshObjects(basePath: string) {
@@ -197,24 +200,29 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
             }
         })
         Object.keys(cfgRoot).forEach((cfgKey) => {
-            try {
-                const value = cfgRoot[cfgKey]
-                const isLws = iGet(value, 'LWSFILE') === true
-                if (isLws) {
-                    const file = iGet(value, 'FILE')
-                    this.addLWSFile(`${path + file}.lws`)
-                }
-            } catch (e) {
-                // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/...
+            const value = cfgRoot[cfgKey]
+            const isLws = iGet(value, 'LWSFILE') === true
+            if (isLws) {
+                const file = iGet(value, 'FILE')
+                this.addLWSFile(`${path + file}.lws`)
             }
         })
     }
 
     addLWSFile(lwsFilepath: string) {
-        const content = this.wadLoader.wad0File.getEntryText(lwsFilepath)
-        this.wadLoader.onAssetLoaded(0, [lwsFilepath], content)
-        const lwoFiles: string[] = this.extractLwoFiles(getPath(lwsFilepath), content)
-        lwoFiles.forEach((lwoFile) => this.addAsset(this.wadLoader.loadLWOFile, lwoFile))
+        this.inProgress.push(new Promise((resolve) => {
+            setTimeout(() => {
+                try {
+                    const content = this.wadLoader.wad0File.getEntryText(lwsFilepath)
+                    this.wadLoader.onAssetLoaded(0, [lwsFilepath], content)
+                    const lwoFiles: string[] = this.extractLwoFiles(getPath(lwsFilepath), content)
+                    lwoFiles.forEach((lwoFile) => this.addAsset(this.wadLoader.loadLWOFile, lwoFile))
+                } catch (e) {
+                    // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/...
+                }
+                resolve()
+            })
+        }))
     }
 
     extractLwoFiles(path: string, content: string): string[] {

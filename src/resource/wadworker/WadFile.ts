@@ -76,16 +76,6 @@ export class WadFile implements WadData {
         return result
     }
 
-    static fromCache(cachedWadData: WadData): WadFile {
-        const wadFile = new WadFile()
-        for (let prop in cachedWadData) { // class info are runtime info and not stored in cache => use copy constructor
-            if (cachedWadData.hasOwnProperty(prop)) {
-                wadFile[prop] = cachedWadData[prop]
-            }
-        }
-        return wadFile
-    }
-
     /**
      * Returns the entries content extracted by name from the managed WAD file
      * @param entryName Entry name to be extracted

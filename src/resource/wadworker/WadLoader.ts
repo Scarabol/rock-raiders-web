@@ -1,6 +1,6 @@
 import { GameConfig } from '../../cfg/GameConfig'
 import { BitmapFontData } from '../../core/BitmapFont'
-import { getFilename } from '../../core/Util'
+import { getFilename, yieldToMainThread } from '../../core/Util'
 import { cacheGetData, cachePutData } from '../AssetCacheHelper'
 import { FlhParser } from '../FlhParser'
 import { BitmapWithPalette } from './parser/BitmapWithPalette'
@@ -9,7 +9,7 @@ import { NerpMsgParser } from './parser/NerpMsgParser'
 import { ObjectiveTextParser } from './parser/ObjectiveTextParser'
 import { WadParser } from './parser/WadParser'
 import { WadAssetRegistry } from './WadAssetRegistry'
-import { WadData, WadFile } from './WadFile'
+import { WadFile } from './WadFile'
 import { grayscaleToGreen } from './WadUtil'
 import { Cursor } from '../Cursor'
 
@@ -161,18 +161,20 @@ export class WadLoader {
         const that = this
         this.assetRegistry.forEach((asset) => {
             promises.push(new Promise<void>((resolve) => {
-                try {
-                    asset.method(asset.assetPath, (assetNames, assetObj) => {
+                setTimeout(() => {
+                    try {
+                        asset.method(asset.assetPath, (assetNames, assetObj) => {
+                            this.assetIndex++
+                            that.onAssetLoaded(this.assetIndex, assetNames, assetObj, asset.sfxKeys)
+                            resolve()
+                        })
+                    } catch (e) {
+                        if (!asset.optional) console.error(e)
                         this.assetIndex++
-                        that.onAssetLoaded(this.assetIndex, assetNames, assetObj, asset.sfxKeys)
+                        that.onAssetLoaded(this.assetIndex, [asset.assetPath], null, asset.sfxKeys)
                         resolve()
-                    })
-                } catch (e) {
-                    if (!asset.optional) console.error(e)
-                    this.assetIndex++
-                    that.onAssetLoaded(this.assetIndex, [asset.assetPath], null, asset.sfxKeys)
-                    resolve()
-                }
+                    }
+                })
             }))
         })
         Promise.all(promises).then(() => this.onLoadDone(this.totalResources))
@@ -181,69 +183,60 @@ export class WadLoader {
     startWithCachedFiles() {
         console.time('WAD files loaded from cache')
         this.onMessage('Loading WAD files from cache...')
-        Promise.all<WadData>([
-            cacheGetData('wad0'),
-            cacheGetData('wad1'),
-        ]).then((wadData) => {
-            this.wad0File = WadFile.fromCache(wadData[0])
-            this.wad1File = WadFile.fromCache(wadData[1])
-            console.timeEnd('WAD files loaded from cache')
-            this.startLoadingProcess()
+        Promise.all<ArrayBuffer>([
+            cacheGetData('wad0Buffer'),
+            cacheGetData('wad1Buffer'),
+        ]).then(async (wadFileBuffer) => {
+            if (wadFileBuffer && wadFileBuffer[0] && wadFileBuffer[1]) {
+                await yieldToMainThread()
+                console.timeEnd('WAD files loaded from cache')
+                this.startLoadingProcess(wadFileBuffer).then()
+            } else {
+                this.onMessage('WAD files not found in cache')
+                this.onCacheMiss('WAD file buffers')
+            }
         }).catch((e: Error) => {
             console.error(e)
-            this.onMessage('WAD file not found in cache')
+            this.onMessage('Could not read WAD file buffer from cache')
             this.onCacheMiss(e.message) // Firefox 98 is not able to transfer Error
         })
     }
 
-    /**
-     * Private helper method, which combines file loading and waits for them to become ready before continuing
-     * @param wad0Url Url to parse first ...RR0.wad file from
-     * @param wad1Url Url to parse second ...RR1.wad file from
-     */
     loadWadFiles(wad0Url: string, wad1Url: string) {
-        Promise.all<WadFile>([
+        Promise.all<ArrayBuffer>([
             this.loadWadFile(wad0Url),
             this.loadWadFile(wad1Url),
-        ]).then((wadFiles) => {
-            this.wad0File = wadFiles[0]
-            this.wad1File = wadFiles[1]
-            cachePutData('wad0', this.wad0File).then()
-            cachePutData('wad1', this.wad1File).then()
-            this.startLoadingProcess()
+        ]).then((wadFileBuffer) => {
+            cachePutData('wad0Buffer', wadFileBuffer[0]).then()
+            cachePutData('wad1Buffer', wadFileBuffer[1]).then()
+            this.startLoadingProcess(wadFileBuffer).then()
         })
     }
 
-    /**
-     * Read WAD file as binary blob from the given URL and parse it on success
-     * @param url the url to the WAD file, can be local file url (file://...) too
-     */
     loadWadFile(url: string) {
-        return new Promise<WadFile>(resolve => {
+        return new Promise<ArrayBuffer>(resolve => {
             console.log(`Loading WAD file from ${url}`)
             fetch(url).then((response) => {
                 if (response.ok) {
-                    response.arrayBuffer().then((buffer) => {
-                        resolve(WadFile.parseWadFile(buffer))
-                    })
+                    response.arrayBuffer().then((buffer) => resolve(buffer))
                 }
             }).catch((e) => console.error(e))
         })
     }
 
-    /**
-     * Load essential files, to begin the chain of asset loading
-     */
-    startLoadingProcess() {
+    async startLoadingProcess(wadFileBuffer: ArrayBuffer[]) {
+        this.wad0File = WadFile.parseWadFile(wadFileBuffer[0])
+        this.wad1File = WadFile.parseWadFile(wadFileBuffer[1])
         this.onMessage('Loading configuration...')
         const cfgFiles = this.wad1File.filterEntryNames('\\.cfg')
         if (cfgFiles.length < 1) throw new Error('Invalid second WAD file given! No config file present at root level.')
         if (cfgFiles.length > 1) console.warn(`Found multiple config files ${cfgFiles} will proceed with first one ${cfgFiles[0]} only`)
-        const cfg = CfgFileParser.parse(this.wad1File.getEntryData(cfgFiles[0]))
-        // dynamically register all assets from config
-        this.assetRegistry.registerAllAssets(cfg)
+        await yieldToMainThread()
+        const cfg = await CfgFileParser.parse(this.wad1File.getEntryData(cfgFiles[0]))
+        await yieldToMainThread()
+        await this.assetRegistry.registerAllAssets(cfg) // dynamically register all assets from config
         this.onMessage('Loading initial assets...')
-        Promise.all([
+        await Promise.all([
             new Promise<void>((resolve) => {
                 const name = cfg.main.loadScreen // loading screen image
                 this.loadWadImageAsset(name, (assetNames: string[], imgData) => {
@@ -272,12 +265,12 @@ export class WadLoader {
                     resolve()
                 })
             }),
-        ]).then(() => {
-            this.onMessage('Start loading assets...')
-            this.totalResources = this.assetRegistry.size
-            this.onInitialLoad(this.totalResources, cfg)
-            this.assetIndex = 0
-            this.loadAssetsParallel()
-        })
+        ])
+        await yieldToMainThread()
+        this.onMessage('Start loading assets...')
+        this.totalResources = this.assetRegistry.size
+        this.onInitialLoad(this.totalResources, cfg)
+        this.assetIndex = 0
+        this.loadAssetsParallel()
     }
 }

@@ -61,7 +61,6 @@ export function getElementByIdOrThrow(elementId: string): HTMLElement {
     return element
 }
 
-export interface Generic<T = object> {
-    new (...args: any[]): T;
-    prototype: T;
+export function yieldToMainThread(): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve))
 }

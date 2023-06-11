@@ -21,6 +21,7 @@ import { RewardScreen } from './screen/RewardScreen'
 import { ScreenMaster } from './screen/ScreenMaster'
 import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from './worker/TypedWorker'
 import { WorkerResponse } from './worker/WorkerResponse'
+import { yieldToMainThread } from './core/Util'
 
 if (DEV_MODE) console.warn('DEV MODE ACTIVE')
 console.log(`Rock Raider Web v${APP_VERSION}`)
@@ -50,13 +51,16 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
             wadFileSelectModal.show()
             break
         case WorkerMessageType.DONE:
-            ResourceManager.loadAllCursor().then(() => {
+            ResourceManager.loadAllCursor().then(async () => {
                 console.timeEnd('Total asset loading time')
                 console.log(`Loading of about ${msg.totalResources} assets complete!`)
                 // complete setup
                 const mainMenuScreen = new MainMenuScreen(screenMaster)
+                await yieldToMainThread()
                 const gameScreen = new GameScreen(screenMaster)
+                await yieldToMainThread()
                 const rewardScreen = new RewardScreen(screenMaster)
+                await yieldToMainThread()
 
                 mainMenuScreen.onLevelSelected = (levelName) => {
                     try {

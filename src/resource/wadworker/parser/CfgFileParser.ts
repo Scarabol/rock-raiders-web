@@ -1,6 +1,7 @@
 import { GameConfig } from '../../../cfg/GameConfig'
 import { encodeChar } from './EncodingHelper'
 import { DEV_MODE } from '../../../params'
+import { yieldToMainThread } from '../../../core/Util'
 
 const enum PARSING_STATE {
     LOOKING_FOR_KEY,
@@ -10,7 +11,7 @@ const enum PARSING_STATE {
 }
 
 export class CfgFileParser {
-    static parse(buffer: Uint8Array): GameConfig {
+    static async parse(buffer: Uint8Array): Promise<GameConfig> {
         const root = {}
         const ancestry = []
         let activeObject = root
@@ -126,6 +127,7 @@ export class CfgFileParser {
             }, [])
         })
 
+        await yieldToMainThread()
         return new GameConfig().setFromCfgObj(result, true) // TODO do not create missing
     }
 
