@@ -1,15 +1,15 @@
 import { BitmapFont } from '../core/BitmapFont'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
+import { ResourceManager } from '../resource/ResourceManager'
 
 export class MainMenuWindow extends MainMenuBaseItem {
     font: BitmapFont
     imgFirstLine: SpriteImage = null
     imgSecondLine: SpriteImage = null
 
-    constructor(font: BitmapFont, area: { x: number, y: number, w: number, h: number }) {
+    constructor(area: { x: number; y: number; w: number; h: number }) {
         super()
-        this.font = font
         this.x = area.x
         this.y = area.y
         this.width = area.w
@@ -17,11 +17,11 @@ export class MainMenuWindow extends MainMenuBaseItem {
     }
 
     setFirstLine(text: string) {
-        this.imgFirstLine = this.font.createTextImage(text)
+        this.imgFirstLine = ResourceManager.getDefaultFont().createTextImage(text)
     }
 
     setSecondLine(text: string) {
-        this.imgSecondLine = this.font.createTextImage(text)
+        this.imgSecondLine = ResourceManager.getDefaultFont().createTextImage(text)
     }
 
     draw(context: SpriteContext) {

@@ -21,7 +21,7 @@ export class LoadSaveLayer extends MainMenuLayer {
         this.addButton(2, saveImage.Pos3[0], saveImage.Pos3[1])
         this.addButton(3, saveImage.Pos4[0], saveImage.Pos4[1])
         this.addButton(4, saveImage.Pos5[0], saveImage.Pos5[1])
-        this.loadSaveTextWindow = new MainMenuWindow(ResourceManager.getDefaultFont(), this.menuCfg.saveText.window)
+        this.loadSaveTextWindow = new MainMenuWindow(this.menuCfg.saveText.window)
         this.items.push(this.loadSaveTextWindow)
         this.setMode(loading)
     }

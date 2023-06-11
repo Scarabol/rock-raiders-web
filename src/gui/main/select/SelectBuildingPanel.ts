@@ -39,10 +39,10 @@ export class SelectBuildingPanel extends SelectBasePanel {
             this.buildingCanSwitchPower = event.buildingCanSwitchPower
             this.buildingPowerSwitchState = event.buildingPowerSwitchState
             this.buildingCanUpgrade = event.buildingCanUpgrade
-            this.buildingMissingOreForUpgrade =  event.buildingMissingOreForUpgrade
+            this.buildingMissingOreForUpgrade = event.buildingMissingOreForUpgrade
             this.updateAllButtonStates()
         })
-        this.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
+        this.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
             this.updateAllButtonStates()
         })
     }
