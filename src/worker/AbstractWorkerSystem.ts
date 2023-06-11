@@ -3,7 +3,12 @@ import { TypedWorkerBackend, WorkerRequestMessage, WorkerResponseMessage } from 
 export abstract class AbstractWorkerSystem<M, R> {
     constructor(readonly worker: TypedWorkerBackend<WorkerRequestMessage<M>, WorkerResponseMessage<R>>) {
         worker.onMessageFromFrontend = (msg) => {
-            this.onMessageFromFrontend(msg.workerRequestHash, msg.request)
+            try {
+                this.onMessageFromFrontend(msg.workerRequestHash, msg.request)
+            } catch (e) {
+                console.error(e)
+                this.worker.sendResponse({workerRequestHash: msg.workerRequestHash, response: null}) // XXX improve error handling
+            }
         }
     }
 

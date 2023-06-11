@@ -34,8 +34,8 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
     plusSignImg: SpriteImage
     equalsSignImg: SpriteImage
 
-    onMessageFromFrontend(workerRequestHash: string, request: DependencySpriteWorkerRequest): DependencySpriteWorkerResponse {
-        if (!request) return null // TODO all worker receive the same messages
+    onMessageFromFrontend(workerRequestHash: string, request: DependencySpriteWorkerRequest): void {
+        if (!request) return // TODO all worker receive the same messages
         switch (request.type) {
             case DependencySpriteWorkerRequestType.SETUP:
                 this.upgradeNames = request.upgradeNames
@@ -84,7 +84,6 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
                 this.sendResponse(workerRequestHash, {dependencyImage: dependencySprite.getImageData(0, 0, dependencySprite.canvas.width, dependencySprite.canvas.height)})
                 break
         }
-        return null
     }
 }
 
