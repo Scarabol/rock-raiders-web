@@ -19,7 +19,7 @@ import { LoadingLayer } from './screen/layer/LoadingLayer'
 import { MainMenuScreen } from './screen/MainMenuScreen'
 import { RewardScreen } from './screen/RewardScreen'
 import { ScreenMaster } from './screen/ScreenMaster'
-import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from './worker/TypedWorker'
+import { TypedWorker, TypedWorkerFallback } from './worker/TypedWorker'
 import { WorkerResponse } from './worker/WorkerResponse'
 import { yieldToMainThread } from './core/Util'
 
@@ -103,13 +103,13 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
 }
 
 let wadWorker: TypedWorker<InitLoadingMessage, WorkerResponse>
-try {
-    wadWorker = new TypedWorkerFrontend(new Worker(new URL('./resource/wadworker/WadWorker', import.meta.url), {type: 'module'}), (msg: WorkerResponse) => onWadLoaderMessage(msg))
-} catch (e) {
-    console.warn('Could not setup threaded worker!\nUsing fallback to main thread, expect reduced performance.', e)
-    wadWorker = new TypedWorkerFallback<InitLoadingMessage, WorkerResponse>((r) => onWadLoaderMessage(r))
-    new WadSystem(wadWorker as TypedWorkerFallback<InitLoadingMessage, WorkerResponse>)
-}
+// try {
+//     wadWorker = new TypedWorkerFrontend(new Worker(new URL('./resource/wadworker/WadWorker', import.meta.url), {type: 'module'}), (msg: WorkerResponse) => onWadLoaderMessage(msg))
+// } catch (e) {
+//     console.warn('Could not setup threaded worker!\nUsing fallback to main thread, expect reduced performance.', e)
+wadWorker = new TypedWorkerFallback<InitLoadingMessage, WorkerResponse>((r) => onWadLoaderMessage(r))
+new WadSystem(wadWorker as TypedWorkerFallback<InitLoadingMessage, WorkerResponse>)
+// }
 SaveGameManager.loadPreferences()
 SaveGameManager.loadSaveGames()
 SaveGameManager.loadSaveGameScreenshots()
