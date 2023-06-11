@@ -44,21 +44,21 @@ export abstract class OffscreenLayer extends ScreenLayer {
             cfg: ResourceManager.configuration,
             currentPreferences: SaveGameManager.currentPreferences,
         }
-        // if ('transferControlToOffscreen' in this.canvas) {
-        //     try {
-        //         this.worker = this.createOffscreenWorker()
-        //         msgInit.canvas = this.canvas.transferControlToOffscreen()
-        //         this.sendMessage(msgInit, [msgInit.canvas])
-        //     } catch (e) {
-        //         console.warn('Could not setup threaded worker!\nUsing fallback to main thread, which might has bad performance.', e)
-        //         this.worker = this.createFallbackWorker()
-        //         this.sendMessage(msgInit)
-        //     }
-        // } else {
-        //     console.warn('Your Browser does not support WebGL in workers!\nUsing fallback to main thread, which might has bad performance.\nTo solve this issue for Firefox set gfx.offscreencanvas.enabled to true in about:config or use https://www.chromium.org/')
+        if ('transferControlToOffscreen' in this.canvas) {
+            try {
+                this.worker = this.createOffscreenWorker()
+                msgInit.canvas = this.canvas.transferControlToOffscreen()
+                this.sendMessage(msgInit, [msgInit.canvas])
+            } catch (e) {
+                console.warn('Could not setup threaded worker!\nUsing fallback to main thread, which might has bad performance.', e)
+                this.worker = this.createFallbackWorker()
+                this.sendMessage(msgInit)
+            }
+        } else {
+            console.warn('Your Browser does not support WebGL in workers!\nUsing fallback to main thread, which might has bad performance.\nTo solve this issue for Firefox set gfx.offscreencanvas.enabled to true in about:config or use https://www.chromium.org/')
             this.worker = this.createFallbackWorker()
             this.sendMessage(msgInit)
-        // }
+        }
     }
 
     protected onResponseFromWorker(response: WorkerResponse) {

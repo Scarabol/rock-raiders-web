@@ -1,6 +1,6 @@
 import { EventBus } from '../../event/EventBus'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
-import { GuiMainSystem } from '../../gui/GuiMainSystem'
+import { GuiMainSystem } from '../../worker/GuiMainWorker'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
 import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../worker/TypedWorker'
