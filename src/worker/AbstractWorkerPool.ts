@@ -11,17 +11,18 @@ export abstract class AbstractWorkerPool<M, R> {
 
     protected abstract attachFallbackSystem(worker: TypedWorkerFallback<WorkerRequestMessage<M>, WorkerResponseMessage<R>>)
 
-    startPool(poolSize: number, setupMessage: WorkerRequestMessage<M>): this {
+    startPool(poolSize: number, setupMessage: M): this {
         for (let c = 0; c < poolSize; c++) {
             setTimeout(() => {
                 const worker = this.createTypedWorker()
                 this.allWorkers.add(worker)
-                if (setupMessage) worker.sendMessage(setupMessage)
-                const nextMessage = this.messageBacklog.shift()
-                if (nextMessage) {
-                    worker.sendMessage(nextMessage)
+                if (setupMessage) {
+                    this.lastRequestId++
+                    const message = {workerRequestId: this.lastRequestId, request: setupMessage}
+                    worker.sendMessage(message)
+                    this.openRequests.set(message.workerRequestId, () => this.processNextMessage(worker))
                 } else {
-                    this.idleWorkers.push(worker)
+                    this.processNextMessage(worker)
                 }
             })
         }
@@ -47,18 +48,20 @@ export abstract class AbstractWorkerPool<M, R> {
     }
 
     protected processMessage(request: M) {
+        if (this.allWorkers.size < 1) console.warn(`Worker pool '${this.constructor.name}' received message, but has not worker threads`)
         this.lastRequestId++
         const message = {workerRequestId: this.lastRequestId, request: request}
         const idleWorker = this.idleWorkers.shift()
         if (idleWorker) {
             idleWorker.sendMessage(message)
         } else {
-            this.messageBacklog.push(message)
+            this.messageBacklog.push(message) // TODO avoid duplicates here, especially when the thread pool is not yet started
         }
         return new Promise<R>((resolve) => this.openRequests.set(message.workerRequestId, resolve))
     }
 
     protected broadcast(broadcast: M) {
+        if (this.allWorkers.size < 1) console.warn(`Worker pool '${this.constructor.name}' received broadcast, but has not worker threads`)
         this.allWorkers.forEach((worker) => {
             this.lastRequestId++
             const message = {workerRequestId: this.lastRequestId, request: broadcast}
@@ -80,11 +83,15 @@ export abstract class AbstractWorkerPool<M, R> {
         } else {
             console.warn(`Received unexpected worker response`, response)
         }
+        this.processNextMessage(worker)
+    }
+
+    private processNextMessage(worker: TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>) {
         const nextMessage = this.messageBacklog.shift()
         if (nextMessage) {
             worker.sendMessage(nextMessage)
         } else {
-            this.idleWorkers.add(worker)
+            this.idleWorkers.push(worker)
         }
     }
 }

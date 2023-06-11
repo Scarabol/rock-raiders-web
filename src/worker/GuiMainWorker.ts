@@ -58,6 +58,7 @@ export class GuiMainSystem extends AbstractGuiSystem {
                 this.panelPriorityList.setMovedIn(true, () => this.panelMain.setMovedIn(false))
             }
         }
+        OffscreenCache.startDependencySpriteRenderPool()
     }
 
     onProcessMessage(msg: GuiWorkerMessage): boolean {

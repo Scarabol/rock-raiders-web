@@ -60,7 +60,7 @@ export class IconPanelButton extends Button {
                 || (this.discoveredBuildingsMaxLevel.getOrDefault(d.entityType, -1) >= d.minLevel),
         }))
         this.disabled = !DEV_MODE && checked.every((d) => d.isOk)
-        this.dependencyTooltipImage = OffscreenCache.createDependenciesSprite(checked)
+        OffscreenCache.createDependenciesSprite(checked).then((dependencySprite) => this.dependencyTooltipImage = dependencySprite)
     }
 
     showTooltipDisabled() {

@@ -74,9 +74,14 @@ export function getPixel(imgData: ImageData, x: number, y: number): { r: number;
 }
 
 export function imgDataToContext(imgData: ImageData): CanvasRenderingContext2D {
-    const canvas = document.createElement('canvas')
-    canvas.width = imgData.width
-    canvas.height = imgData.height
+    let canvas
+    if (typeof document !== 'undefined') {
+        canvas = document.createElement('canvas')
+        canvas.width = imgData.width
+        canvas.height = imgData.height
+    } else {
+        canvas = new OffscreenCanvas(imgData.width, imgData.height)
+    }
     const context = canvas.getContext('2d')
     context.putImageData(imgData, 0, 0)
     return context

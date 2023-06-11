@@ -6,14 +6,16 @@ import { SpriteImage } from '../core/Sprite'
 import { iGet } from '../core/Util'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
-import { EntityType } from '../game/model/EntityType'
 import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME } from '../params'
-import { MenuItemCfg } from '../cfg/ButtonCfg'
+import { DependencySpriteWorkerPool } from '../worker/DependencySpriteWorkerPool'
+import { DependencySpriteWorkerRequestType } from '../worker/DependencySpriteWorker'
 
 export class ResourceCache {
     static readonly fontCache: Map<string, BitmapFont> = new Map()
     static readonly cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
     static readonly imageCache: Map<string, SpriteImage> = new Map()
+    static readonly dependencySpriteWorkerPool: DependencySpriteWorkerPool = new DependencySpriteWorkerPool()
+    static readonly dependencySpriteCache: Map<string, SpriteImage> = new Map()
     static configuration: GameConfig = new GameConfig()
     static resourceByName: Map<string, any> = new Map()
 
@@ -137,42 +139,33 @@ export class ResourceCache {
         return result
     }
 
-    static createDependenciesSprite(dependencies: EntityDependencyChecked[]): SpriteImage {
-        let totalWidth = 0
-        let totalHeight = 0
-        const deps = dependencies.map((dep) => {
-            let cfg: MenuItemCfg
-            if (dep.entityType === EntityType.PILOT) {
-                cfg = this.configuration.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase())
-            } else {
-                cfg = this.configuration.interfaceBuildImages.get(dep.itemKey.toLowerCase())
-            }
-            const imageName = dep.isOk ? cfg.normalFile : cfg.disabledFile
-            const depImg = this.getImage(imageName)
-            totalWidth += depImg.width
-            totalHeight = Math.max(totalHeight, depImg.height)
-            return {img: depImg, level: dep.minLevel}
+    static startDependencySpriteRenderPool() {
+        const depInterfaceImageData: Map<string, ImageData[]> = new Map()
+        const teleportManConfig = this.configuration.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase())
+        depInterfaceImageData.set('Interface_MenuItem_TeleportMan'.toLowerCase(),
+            [this.getImageData(teleportManConfig.normalFile), this.getImageData(teleportManConfig.disabledFile)])
+        const depInterfaceBuildImageData: Map<string, ImageData[]> = new Map()
+        this.configuration.interfaceBuildImages.forEach((cfg, key) => {
+            depInterfaceBuildImageData.set(key, [this.getImageData(cfg.normalFile), this.getImageData(cfg.disabledFile)])
         })
-        const plusSignImg = this.getImage('Interface/Dependencies/+.bmp')
-        totalWidth += plusSignImg.width * (deps.length - 1)
-        const equalsSignImg = this.getImage('Interface/Dependencies/=.bmp')
-        totalWidth += equalsSignImg.width * 2
-        const dependencySprite = createContext(totalWidth, totalHeight)
-        let posX = 0
-        deps.forEach((s, index) => {
-            dependencySprite.drawImage(s.img, posX, (totalHeight - s.img.height) / 2)
-            if (s.level) {
-                const upgradeName = this.configuration.upgradeNames[s.level - 1]
-                if (upgradeName) {
-                    const minLevelImg = this.getTooltipFont().createTextImage(upgradeName)
-                    dependencySprite.drawImage(minLevelImg, posX + 3, (totalHeight - s.img.height) / 2 + 3)
-                }
-            }
-            posX += s.img.width
-            const signImg = index === deps.length - 1 ? equalsSignImg : plusSignImg
-            dependencySprite.drawImage(signImg, posX, (totalHeight - signImg.height) / 2)
-            posX += signImg.width
+        this.dependencySpriteWorkerPool.startPool(4, {
+            type: DependencySpriteWorkerRequestType.SETUP,
+            upgradeNames: this.configuration.upgradeNames,
+            tooltipFontData: this.getResource(TOOLTIP_FONT_NAME) as BitmapFontData,
+            plusSignImgData: this.getImageData('Interface/Dependencies/+.bmp'),
+            equalSignImgData: this.getImageData('Interface/Dependencies/=.bmp'),
+            interfaceImageData: depInterfaceImageData,
+            interfaceBuildImageData: depInterfaceBuildImageData,
         })
-        return dependencySprite.canvas
+    }
+
+    static async createDependenciesSprite(dependencies: EntityDependencyChecked[]): Promise<SpriteImage> {
+        const depHash = dependencies.map((d) => `${d.itemKey}:${d.minLevel}=${d.isOk}`).join(';')
+        const fromCache = this.dependencySpriteCache.get(depHash)
+        if (fromCache) return fromCache
+        const imgData = await this.dependencySpriteWorkerPool.createDependenciesSprite(dependencies)
+        const dependencyImage = imgDataToContext(imgData).canvas
+        this.dependencySpriteCache.set(depHash, dependencyImage)
+        return dependencyImage
     }
 }
