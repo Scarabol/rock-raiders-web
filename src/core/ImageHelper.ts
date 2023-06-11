@@ -6,6 +6,13 @@
  */
 import { SpriteContext } from './Sprite'
 
+export function createCanvas(width: number, height: number): HTMLCanvasElement {
+    const canvas = document.createElement('canvas')
+    canvas.width = width
+    canvas.height = height
+    return canvas
+}
+
 export function createContext(width: number, height: number): SpriteContext {
     if (width < 1 || height < 1) {
         console.error(`Can't create context with size ${width} x ${height}`)
@@ -13,9 +20,7 @@ export function createContext(width: number, height: number): SpriteContext {
     }
     let canvas
     if (typeof document !== 'undefined') {
-        canvas = document.createElement('canvas')
-        canvas.width = width
-        canvas.height = height
+        canvas = createCanvas(width, height)
     } else {
         canvas = new OffscreenCanvas(width, height)
     }

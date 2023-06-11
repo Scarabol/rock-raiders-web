@@ -4,7 +4,7 @@ import { WorldManager } from '../WorldManager'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { HealthComponent } from '../component/HealthComponent'
-import { EntityMapMarkerComponent, MapMarkerType } from '../component/EntityMapMarkerComponent'
+import { MapMarkerComponent, MapMarkerType } from '../component/MapMarkerComponent'
 import { HealthBarComponent } from '../component/HealthBarComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Vector2 } from 'three'
@@ -34,7 +34,7 @@ export class MonsterSpawner {
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/bat'))
                 sceneEntity.setAnimation(AnimEntityActivity.Route)
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.bat, 0))
-                worldMgr.ecs.addComponent(entity, new EntityMapMarkerComponent(MapMarkerType.MONSTER))
+                worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
                 break
             case EntityType.ICE_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster')
@@ -59,7 +59,7 @@ export class MonsterSpawner {
     private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string) {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
-        worldMgr.ecs.addComponent(entity, new EntityMapMarkerComponent(MapMarkerType.MONSTER))
+        worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
         worldMgr.ecs.addComponent(entity, new HealthComponent())
         worldMgr.ecs.addComponent(entity, new HealthBarComponent(24, 10, null, false))
     }

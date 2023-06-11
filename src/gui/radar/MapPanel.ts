@@ -1,38 +1,41 @@
-import { createContext } from '../../core/ImageHelper'
-import { SpriteContext } from '../../core/Sprite'
+import { createCanvas } from '../../core/ImageHelper'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
-import { UpdateRadarEntities, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
-import { MapMarkerType } from '../../game/component/EntityMapMarkerComponent'
-import { TILESIZE } from '../../params'
+import { UpdateRadarEntities, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
+import { MapMarkerChange, MapMarkerType } from '../../game/component/MapMarkerComponent'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { MapSurfaceRect } from './MapSurfaceRect'
+import { MapRenderer } from './MapRenderer'
+import { MAP_PANEL_SURFACE_RECT_SIZE } from '../../params'
+import { GameEntity } from '../../game/ECS'
 
 export class MapPanel extends Panel {
-    readonly combinedContext: SpriteContext
-    readonly surfaceContext: SpriteContext
-    readonly entityContext: SpriteContext
+    readonly mapRenderer: MapRenderer
+    readonly surfaceSprite: SpriteImage
+    readonly entitySprite: SpriteImage
+    readonly monsterSprite: SpriteImage
+    readonly materialSprite: SpriteImage
     readonly offset: { x: number, y: number } = {x: 0, y: 0}
-    readonly surfaceRectSize: number = 10
-    readonly surfaceRectMargin: number = 1
     readonly surfaceMap: MapSurfaceRect[][] = []
+    entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number }>> = new Map()
 
     constructor(parent: BaseElement) {
         super(parent, null)
         this.width = 152
         this.height = 149
-        this.combinedContext = createContext(this.width, this.height)
-        this.surfaceContext = createContext(this.width, this.height)
-        this.entityContext = createContext(this.width, this.height)
-        this.img = this.combinedContext.canvas
+        this.surfaceSprite = createCanvas(this.width, this.height)
+        this.entitySprite = createCanvas(this.width, this.height)
+        this.monsterSprite = createCanvas(this.width, this.height)
+        this.materialSprite = createCanvas(this.width, this.height)
+        this.mapRenderer = new MapRenderer(this.surfaceSprite, this.entitySprite, this.monsterSprite, this.materialSprite)
         this.relX = this.xIn = this.xOut = 15
         this.relY = this.yIn = this.yOut = 15
         this.onClick = (cx: number, cy: number) => {
-            const mapX = cx - this.x
-            const mapY = cy - this.y
-            this.offset.x += mapX - this.width / 2
-            this.offset.y += mapY - this.height / 2
-            this.redrawMapSurfaces(true)
+            // TODO limit offsets
+            this.offset.x += cx - this.x - this.width / 2
+            this.offset.y += cy - this.y - this.height / 2
+            this.redrawAll()
         }
         this.registerEventListener(EventKey.UPDATE_RADAR_TERRAIN, (event: UpdateRadarTerrain) => {
             this.surfaceMap.length = 0
@@ -41,71 +44,56 @@ export class MapPanel extends Panel {
                 this.surfaceMap[s.x][s.y] = s
             })
             if (event.focusTile) {
-                this.offset.x = event.focusTile.x * this.surfaceRectSize - this.width / 2
-                this.offset.y = event.focusTile.y * this.surfaceRectSize - this.height / 2
+                this.offset.x = event.focusTile.x * MAP_PANEL_SURFACE_RECT_SIZE - this.width / 2
+                this.offset.y = event.focusTile.y * MAP_PANEL_SURFACE_RECT_SIZE - this.height / 2
+                this.redrawAll()
+            } else {
+                this.mapRenderer.redrawTerrain(this.offset, this.surfaceMap).then(() => this.notifyRedraw())
             }
-            this.redrawMapSurfaces()
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_SURFACE, (event: UpdateRadarSurface) => {
             const s = event.surfaceRect
             this.surfaceMap[s.x] = this.surfaceMap[s.x] || []
             this.surfaceMap[s.x][s.y] = s
-            this.redrawSurface(s)
-            this.notifyRedraw()
+            this.mapRenderer.redrawSurface(this.offset, event.surfaceRect).then(() => this.notifyRedraw())
         })
-        this.registerEventListener(EventKey.UPDATE_RADAR_ENTITIES, (event: UpdateRadarEntities) => {
-            this.redrawMapEntities(event)
+        this.registerEventListener(EventKey.UPDATE_RADAR_LEGACY_ENTITIES, (event: UpdateRadarEntities) => {
+            this.entitiesByOrder = event.entitiesByOrder
+            Promise.all([
+                this.mapRenderer.redrawEntities(this.offset, MapMarkerType.DEFAULT, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.DEFAULT, () => new Map()).values())),
+                this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MATERIAL, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MATERIAL, () => new Map()).values())),
+            ]).then(() => this.notifyRedraw())
+        })
+        this.registerEventListener(EventKey.UPDATE_RADAR_ENTITY, (event: UpdateRadarEntityEvent) => {
+            const entities = this.entitiesByOrder.getOrUpdate(event.mapMarkerType, () => new Map())
+            switch (event.change) {
+                case MapMarkerChange.UPDATE:
+                    entities.set(event.entity, event.position)
+                    break
+                case MapMarkerChange.REMOVE:
+                    entities.delete(event.entity)
+                    break
+            }
+            // TODO check if entity is actually visible
+            this.mapRenderer.redrawEntities(this.offset, event.mapMarkerType, Array.from(entities.values())).then(() => this.notifyRedraw())
         })
     }
 
-    private redrawMapSurfaces(forceRedraw: boolean = false) {
-        this.surfaceContext.fillStyle = '#000'
-        this.surfaceContext.fillRect(0, 0, this.surfaceContext.canvas.width, this.surfaceContext.canvas.height)
-        this.surfaceMap.forEach((r) => r.forEach((s) => this.redrawSurface(s)))
-        this.combinedContext.drawImage(this.surfaceContext.canvas, 0, 0)
-        this.combinedContext.drawImage(this.entityContext.canvas, 0, 0)
-        if (forceRedraw) this.notifyRedraw()
+    private redrawAll() {
+        Promise.all([
+            this.mapRenderer.redrawTerrain(this.offset, this.surfaceMap),
+            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.DEFAULT, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.DEFAULT, () => new Map()).values())),
+            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MONSTER, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MONSTER, () => new Map()).values())),
+            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MATERIAL, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MATERIAL, () => new Map()).values())),
+        ]).then(() => this.notifyRedraw())
     }
 
-    private redrawSurface(surfaceRect: MapSurfaceRect) {
-        const surfaceX = Math.round(surfaceRect.x * this.surfaceRectSize - this.offset.x)
-        const surfaceY = Math.round(surfaceRect.y * this.surfaceRectSize - this.offset.y)
-        const rectSize = this.surfaceRectSize - this.surfaceRectMargin
-        this.surfaceContext.fillStyle = surfaceRect.borderColor ? surfaceRect.borderColor : surfaceRect.surfaceColor
-        this.surfaceContext.fillRect(surfaceX, surfaceY, rectSize, rectSize)
-        if (surfaceRect.borderColor) {
-            this.surfaceContext.fillStyle = surfaceRect.surfaceColor
-            this.surfaceContext.fillRect(surfaceX + 1, surfaceY + 1, rectSize - 2, rectSize - 2)
-        }
-    }
-
-    private redrawMapEntities(event: UpdateRadarEntities) {
-        this.entityContext.clearRect(0, 0, this.entityContext.canvas.width, this.entityContext.canvas.height)
-        this.entityContext.fillStyle = '#e8d400'
-        event.entitiesByOrder.getOrDefault(MapMarkerType.DEFAULT, [])
-            .map((v) => this.mapToMap(v)).forEach((p) => {
-            this.entityContext.fillRect(p.x, p.y, 3, 3)
-        })
-        this.entityContext.fillStyle = '#f00'
-        event.entitiesByOrder.getOrDefault(MapMarkerType.MONSTER, [])
-            .map((v) => this.mapToMap(v)).forEach((p) => {
-            this.entityContext.fillRect(p.x, p.y, 3, 3)
-        })
-        this.entityContext.fillStyle = '#0f0'
-        event.entitiesByOrder.getOrDefault(MapMarkerType.MATERIAL, [])
-            .map((v) => this.mapToMap(v)).forEach((p) => {
-            this.entityContext.fillRect(p.x, p.y, 2, 2)
-        })
-        // TODO only redraw, when visible actually changed position
-        this.combinedContext.drawImage(this.surfaceContext.canvas, 0, 0)
-        this.combinedContext.drawImage(this.entityContext.canvas, 0, 0)
-        this.notifyRedraw()
-    }
-
-    private mapToMap(vec: { x: number, z: number }): { x: number, y: number } {
-        return {
-            x: Math.round(vec.x * this.surfaceRectSize / TILESIZE) - 1 - this.offset.x,
-            y: Math.round(vec.z * this.surfaceRectSize / TILESIZE) - 1 - this.offset.y,
-        }
+    onRedraw(context: SpriteContext) {
+        if (this.hidden) return
+        super.onRedraw(context)
+        context.drawImage(this.surfaceSprite, this.x, this.y)
+        context.drawImage(this.entitySprite, this.x, this.y)
+        context.drawImage(this.monsterSprite, this.x, this.y)
+        context.drawImage(this.materialSprite, this.x, this.y)
     }
 }

@@ -14,6 +14,8 @@ export class RadarPanel extends Panel {
     btnMap: Button
     btnTagged: Button
 
+    // TODO 3D view has no sound and can render scene camera offscreen
+
     constructor(parent: BaseElement, panelCfg: PanelCfg, panelFillCfg: PanelCfg, panelOverlayCfg: PanelCfg, buttonsCfg: ButtonRadarCfg) {
         super(parent, panelCfg)
         this.map = this.addChild(new MapPanel(this))

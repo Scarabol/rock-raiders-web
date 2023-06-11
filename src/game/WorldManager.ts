@@ -25,6 +25,7 @@ import { DamageSystem } from './system/DamageSystem'
 import { BeamUpSystem } from './system/BeamUpSystem'
 import { ShowMissionBriefingEvent } from '../event/LocalEvents'
 import { OxygenSystem } from './system/OxygenSystem'
+import { MapMarkerUpdateSystem } from './system/MapMarkerUpdateSystem'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -50,6 +51,7 @@ export class WorldManager {
         this.ecs.addSystem(new RandomMoveBehaviorSystem())
         this.ecs.addSystem(new DamageSystem())
         this.ecs.addSystem(new BeamUpSystem())
+        this.ecs.addSystem(new MapMarkerUpdateSystem())
         this.oxygenSystem = this.ecs.addSystem(new OxygenSystem())
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())

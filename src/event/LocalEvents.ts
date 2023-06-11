@@ -1,5 +1,5 @@
 import { Vector3 } from 'three'
-import { MapMarkerType } from '../game/component/EntityMapMarkerComponent'
+import { MapMarkerChange, MapMarkerType } from '../game/component/MapMarkerComponent'
 import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameState } from '../game/model/GameState'
@@ -15,6 +15,7 @@ import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 import { VehicleUpgrade, VehicleUpgrades } from '../game/model/vehicle/VehicleUpgrade'
 import { GameResult } from '../game/model/GameResult'
+import { GameEntity } from '../game/ECS'
 
 export class LocalEvent extends GameEvent {
 }
@@ -215,14 +216,22 @@ export class NeededCrystalsChanged extends LocalEvent {
 }
 
 export class UpdateRadarEntities extends LocalEvent {
-    entitiesByOrder: Map<MapMarkerType, { x: number, z: number }[]> = new Map() // no Vectors, because of serialization
+    entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number }>> = new Map() // no Vectors, because of serialization
 
     constructor(entityMgr: EntityManager) {
-        super(EventKey.UPDATE_RADAR_ENTITIES)
-        const raiders = entityMgr.raiders.map((r) => ({x: r.sceneEntity.position.x, z: r.sceneEntity.position.z}))
+        super(EventKey.UPDATE_RADAR_LEGACY_ENTITIES)
+        const raiders = new Map()
+        entityMgr.raiders.forEach((r) => raiders.set(r.entity, {x: r.sceneEntity.position.x, z: r.sceneEntity.position.z}))
         this.entitiesByOrder.set(MapMarkerType.DEFAULT, raiders)
-        const materials = entityMgr.materials.map((m) => ({x: m.sceneEntity.position.x, z: m.sceneEntity.position.z}))
+        const materials = new Map()
+        entityMgr.materials.forEach((m) => materials.set(m.entity, {x: m.sceneEntity.position.x, z: m.sceneEntity.position.z}))
         this.entitiesByOrder.set(MapMarkerType.MATERIAL, materials)
+    }
+}
+
+export class UpdateRadarEntityEvent extends LocalEvent {
+    constructor(readonly mapMarkerType: MapMarkerType, readonly entity: GameEntity, readonly change: MapMarkerChange, readonly position: { x: number, z: number }) {
+        super(EventKey.UPDATE_RADAR_ENTITY)
     }
 }
 

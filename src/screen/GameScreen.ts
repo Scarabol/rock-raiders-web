@@ -1,7 +1,7 @@
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { iGet } from '../core/Util'
 import { EventBus } from '../event/EventBus'
-import { SetupPriorityList, ShowGameResultEvent, UpdateRadarTerrain } from '../event/LocalEvents'
+import { SetupPriorityList, ShowGameResultEvent, UpdateRadarEntities, UpdateRadarTerrain } from '../event/LocalEvents'
 import { EntityManager } from '../game/EntityManager'
 import { GuiManager } from '../game/GuiManager'
 import { GameResult, GameResultState } from '../game/model/GameResult'
@@ -89,6 +89,7 @@ export class GameScreen {
         ObjectListLoader.loadObjectList(objectList, this.levelConf.disableStartTeleport || DEV_MODE, this.worldMgr)
         // finally generate initial radar panel map
         EventBus.publishEvent(new UpdateRadarTerrain(this.sceneMgr.terrain, this.sceneMgr.controls.target.clone()))
+        EventBus.publishEvent(new UpdateRadarEntities(this.entityMgr))
         this.show()
     }
 

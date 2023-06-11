@@ -23,4 +23,10 @@ export enum WorkerMessageType {
     GAME_ABORT,
     GAME_RESTART,
     GAME_EVENT,
+
+    // map renderer worker
+    RESPONSE_MAP_RENDERER,
+    MAP_RENDER_TERRAIN,
+    MAP_RENDER_SURFACE,
+    MAP_RENDER_ENTITIES,
 }
