@@ -3,7 +3,7 @@ import { BitmapFontData } from '../../core/BitmapFont'
 import { getFilename, yieldToMainThread } from '../../core/Util'
 import { cacheGetData, cachePutData } from '../AssetCacheHelper'
 import { FlhParser } from '../FlhParser'
-import { BitmapWithPalette } from './parser/BitmapWithPalette'
+import { BitmapWorkerPool } from '../../worker/BitmapWorkerPool'
 import { CfgFileParser } from './parser/CfgFileParser'
 import { NerpMsgParser } from './parser/NerpMsgParser'
 import { ObjectiveTextParser } from './parser/ObjectiveTextParser'
@@ -14,6 +14,8 @@ import { grayscaleToGreen } from './WadUtil'
 import { Cursor } from '../Cursor'
 
 export class WadLoader {
+    static readonly bitmapWorkerPool = new BitmapWorkerPool().createPool(16, null)
+
     wad0File: WadFile = null
     wad1File: WadFile = null
     assetIndex: number = 0
@@ -37,8 +39,8 @@ export class WadLoader {
 
     loadWadImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
-        const imgData = BitmapWithPalette.decode(data)
-        callback([name], imgData)
+        WadLoader.bitmapWorkerPool.decodeBitmap(data)
+            .then((imgData) => callback([name], imgData))
     }
 
     loadWadTexture(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
@@ -50,32 +52,38 @@ export class WadLoader {
             assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[3])
             alphaIndex = parseInt(alphaIndexMatch[2])
         }
-        const imgData = BitmapWithPalette.decode(data).applyAlphaByIndex(alphaIndex)
-        if (name.toLowerCase().startsWith('miscanims/crystal')) { // XXX fix crystal lwo loading
-            callback(assetNames, grayscaleToGreen(imgData))
-        } else {
-            callback(assetNames, imgData)
-        }
+        WadLoader.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex)
+            .then((imgData) => {
+                if (name.toLowerCase().startsWith('miscanims/crystal')) { // XXX fix crystal lwo loading
+                    callback(assetNames, grayscaleToGreen(imgData))
+                } else {
+                    callback(assetNames, imgData)
+                }
+            })
     }
 
     loadAlphaImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
         const data = this.wad0File.getEntryData(name)
-        const imgData = BitmapWithPalette.decode(data).applyAlpha()
-        const assetNames = [name]
-        const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
-        if (alphaIndexMatch) assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[3])
-        callback(assetNames, imgData)
+        WadLoader.bitmapWorkerPool.decodeBitmapWithAlpha(data)
+            .then((imgData) => {
+                const assetNames = [name]
+                const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
+                if (alphaIndexMatch) assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[3])
+                callback(assetNames, imgData)
+            })
     }
 
     loadFontImageAsset(name: string, callback: (assetNames: string[], obj: BitmapFontData) => any) {
         const data = this.wad0File.getEntryData(name)
-        const imgData = BitmapWithPalette.decode(data)
-        const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
-        // XXX find better way to detect char dimensions
-        const maxCharWidth = imgData.width / cols
-        const charHeight = imgData.height / rows
-        const bitmapFontData = new BitmapFontData(imgData, maxCharWidth, charHeight)
-        callback([name], bitmapFontData)
+        WadLoader.bitmapWorkerPool.decodeBitmap(data)
+            .then((imgData) => {
+                const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
+                // XXX find better way to detect char dimensions
+                const maxCharWidth = imgData.width / cols
+                const charHeight = imgData.height / rows
+                const bitmapFontData = new BitmapFontData(imgData, maxCharWidth, charHeight)
+                callback([name], bitmapFontData)
+            })
     }
 
     loadNerpAsset(name: string, callback: (assetNames: string[], obj: string) => any) {

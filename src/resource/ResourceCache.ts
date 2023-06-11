@@ -25,15 +25,13 @@ export class ResourceCache {
         return this.resourceByName.get(lName) || null
     }
 
-    static getImageData(imageName: string): ImageData {
-        if (!imageName) throw new Error(`imageName must not be undefined, null or empty - was ${imageName}`)
-        return this.resourceByName.getOrUpdate((imageName.toLowerCase()), () => {
-            console.error(`Image '${imageName}' unknown! Using placeholder image instead`)
-            return createDummyImgData(64, 64)
+    static getImage(imageName: string): SpriteImage {
+        return this.imageCache.getOrUpdate(imageName, () => {
+            return this.createImage(imageName)
         })
     }
 
-    static createImage(imageName: string): SpriteImage {
+    private static createImage(imageName: string): SpriteImage {
         const imgData = this.getImageData(imageName)
         const context = createContext(imgData.width, imgData.height)
         context.putImageData(imgData, 0, 0)
@@ -44,9 +42,11 @@ export class ResourceCache {
         return context.canvas
     }
 
-    static getImage(imageName: string): SpriteImage {
-        return this.imageCache.getOrUpdate(imageName, () => {
-            return this.createImage(imageName)
+    static getImageData(imageName: string): ImageData {
+        if (!imageName) throw new Error(`imageName must not be undefined, null or empty - was ${imageName}`)
+        return this.resourceByName.getOrUpdate((imageName.toLowerCase()), () => {
+            console.error(`Image '${imageName}' unknown! Using placeholder image instead`)
+            return createDummyImgData(64, 64)
         })
     }
 

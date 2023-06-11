@@ -22,6 +22,7 @@ import { ScreenMaster } from './screen/ScreenMaster'
 import { TypedWorker, TypedWorkerFallback } from './worker/TypedWorker'
 import { WorkerResponse } from './worker/WorkerResponse'
 import { yieldToMainThread } from './core/Util'
+import { WadLoader } from './resource/wadworker/WadLoader'
 
 if (DEV_MODE) console.warn('DEV MODE ACTIVE')
 console.log(`Rock Raider Web v${APP_VERSION}`)
@@ -51,6 +52,7 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
             wadFileSelectModal.show()
             break
         case WorkerMessageType.DONE:
+            WadLoader.bitmapWorkerPool.terminatePool()
             ResourceManager.loadAllCursor().then(async () => {
                 console.timeEnd('Total asset loading time')
                 console.log(`Loading of about ${msg.totalResources} assets complete!`)

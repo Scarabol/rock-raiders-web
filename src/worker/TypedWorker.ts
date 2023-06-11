@@ -1,3 +1,13 @@
+export class WorkerRequestMessage<T> {
+    workerRequestId: number
+    request: T
+}
+
+export class WorkerResponseMessage<T> {
+    workerRequestId: number
+    response: T
+}
+
 export interface TypedWorker<M, R> {
     sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[])
 
