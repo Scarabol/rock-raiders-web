@@ -118,17 +118,17 @@ export class CursorLayer extends ScreenLayer {
         this.activeCursor.enableAnimation(this.canvas.style)
     }
 
-    private changeTooltipImg(event: ChangeTooltip) {
-        let tooltipImg = null
+    private async changeTooltipImg(event: ChangeTooltip) {
+        let tooltipImg: SpriteImage = null
         if (event.numToolSlots || event.tools || event.trainings) {
-            tooltipImg = ResourceManager.getRaiderTooltipSprite(event.tooltipText || '',
+            tooltipImg = await ResourceManager.getRaiderTooltipSprite(event.tooltipText || '',
                 event.numToolSlots || 0, event.tools || [], event.trainings || [])
         } else if (event.crystals || event.ores || event.bricks) {
-            tooltipImg = ResourceManager.getBuildingSiteTooltipSprite(event.tooltipText, event.crystals, event.ores, event.bricks)
+            tooltipImg = await ResourceManager.getBuildingSiteTooltipSprite(event.tooltipText, event.crystals, event.ores, event.bricks)
         } else if (event.buildingMissingOreForUpgrade) {
-            tooltipImg = ResourceManager.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, event.buildingMissingOreForUpgrade)
+            tooltipImg = await ResourceManager.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, event.buildingMissingOreForUpgrade)
         } else if (event.tooltipText) {
-            tooltipImg = ResourceManager.getTooltipSprite(event.tooltipText)
+            tooltipImg = await ResourceManager.getTooltipSprite(event.tooltipText)
         }
         if (tooltipImg) this.setTooltipImg(tooltipImg)
     }

@@ -32,21 +32,20 @@ export class MessagePanel extends Panel {
         this.relY = this.yOut = this.yIn = 409
         this.imgAir = OffscreenCache.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
 
-        const font = OffscreenCache.getDefaultFont()
-        const crystalFound = new TextInfoMessage(font, textInfoMessageConfig.textCrystalFound, this.img.width)
+        const crystalFound = new TextInfoMessage(textInfoMessageConfig.textCrystalFound, this.img.width)
         this.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(crystalFound))
-        this.msgSpaceToContinue = new TextInfoMessage(font, textInfoMessageConfig.textSpaceToContinue, this.img.width)
-        const cavernDiscovered = new TextInfoMessage(font, textInfoMessageConfig.textCavernDiscovered, this.img.width)
+        this.msgSpaceToContinue = new TextInfoMessage(textInfoMessageConfig.textSpaceToContinue, this.img.width)
+        const cavernDiscovered = new TextInfoMessage(textInfoMessageConfig.textCavernDiscovered, this.img.width)
         this.registerEventListener(EventKey.CAVERN_DISCOVERED, () => this.setMessage(cavernDiscovered))
-        const oreFound = new TextInfoMessage(font, textInfoMessageConfig.textOreFound, this.img.width)
+        const oreFound = new TextInfoMessage(textInfoMessageConfig.textOreFound, this.img.width)
         this.registerEventListener(EventKey.ORE_FOUND, () => this.setMessage(oreFound))
-        this.msgAirSupplyLow = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyLow, this.img.width)
-        this.msgAirSupplyRunningOut = new TextInfoMessage(font, textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
-        this.msgGameCompleted = new TextInfoMessage(font, textInfoMessageConfig.textGameCompleted, this.img.width)
-        this.msgManTrained = new TextInfoMessage(font, textInfoMessageConfig.textManTrained, this.img.width)
+        this.msgAirSupplyLow = new TextInfoMessage(textInfoMessageConfig.textAirSupplyLow, this.img.width)
+        this.msgAirSupplyRunningOut = new TextInfoMessage(textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
+        this.msgGameCompleted = new TextInfoMessage(textInfoMessageConfig.textGameCompleted, this.img.width)
+        this.msgManTrained = new TextInfoMessage(textInfoMessageConfig.textManTrained, this.img.width)
         this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(this.msgManTrained))
         this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(this.msgUnitUpgraded))
-        this.msgUnitUpgraded = new TextInfoMessage(font, textInfoMessageConfig.textUnitUpgraded, this.img.width)
+        this.msgUnitUpgraded = new TextInfoMessage(textInfoMessageConfig.textUnitUpgraded, this.img.width)
         this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, (event: AirLevelChanged) => {
             if (event.airLevel > 0) {
                 const nextAirLevelWidth = Math.round(this.maxAirLevelWidth * event.airLevel)
@@ -57,7 +56,7 @@ export class MessagePanel extends Panel {
             }
         })
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessage) => {
-            this.setMessage(new TextInfoMessage(font, {text: event.text}, this.img.width))
+            this.setMessage(new TextInfoMessage({text: event.text}, this.img.width))
         })
     }
 

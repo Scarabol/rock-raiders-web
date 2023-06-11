@@ -5,6 +5,7 @@ import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { UiElementCallback } from './UiElementState'
+import { ResourceManager } from '../resource/ResourceManager'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {
     labelImgLo: SpriteImage = null
@@ -12,11 +13,15 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
 
     constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()
-        this.labelImgLo = layer.loFont.createTextImage(cfg.label)
-        this.labelImgHi = layer.hiFont.createTextImage(cfg.label)
-        this.width = Math.max(this.labelImgLo.width, this.labelImgHi.width)
-        this.height = Math.max(this.labelImgLo.height, this.labelImgHi.height)
-        this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x
+        Promise.all([
+            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.loFont, cfg.label),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.hiFont, cfg.label),
+        ]).then((textImages) => {
+            [this.labelImgLo, this.labelImgHi] = textImages
+            this.width = Math.max(this.labelImgLo.width, this.labelImgHi.width)
+            this.height = Math.max(this.labelImgLo.height, this.labelImgHi.height)
+            this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x
+        })
         this.y = layer.cfg.position[1] + cfg.y
         this.actionName = cfg.actionName
         if (this.actionName === 'Next') this.targetIndex = Number(cfg.target.substring('menu'.length)) - 1
@@ -32,6 +37,6 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
     draw(context: SpriteContext) {
         super.draw(context)
         const img = this.state.hover && !this.state.pressed ? this.labelImgHi : this.labelImgLo
-        context.drawImage(img, this.x, this.y)
+        if (img) context.drawImage(img, this.x, this.y)
     }
 }

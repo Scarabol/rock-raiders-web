@@ -1,5 +1,6 @@
 import { ResourceManager } from '../../resource/ResourceManager'
 import { ScaledLayer } from './ScreenLayer'
+import { DEFAULT_FONT_NAME } from '../../params'
 
 export class LoadingLayer extends ScaledLayer {
     assetIndex: number = 0
@@ -29,14 +30,16 @@ export class LoadingLayer extends ScaledLayer {
     enableGraphicMode(totalResources: number) {
         const imgBackground = ResourceManager.getImage(ResourceManager.configuration.main.loadScreen)
         const imgProgress = ResourceManager.getImage(ResourceManager.configuration.main.progressBar)
-        const imgLoading = ResourceManager.getDefaultFont().createTextImage(ResourceManager.configuration.main.loadingText)
-        this.animationFrame.onRedraw = (context => {
-            context.drawImage(imgBackground, 0, 0)
-            const loadingBarWidth = Math.round(353 * (this.assetIndex < totalResources ? this.assetIndex / totalResources : 1))
-            context.drawImage(imgProgress, 142, 450, loadingBarWidth, 9)
-            context.drawImage(imgLoading, Math.round(320 - imgLoading.width / 2), Math.round(456 - imgLoading.height / 2))
-        })
-        this.animationFrame.redraw()
+        ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, ResourceManager.configuration.main.loadingText)
+            .then((imgLoading) => {
+                this.animationFrame.onRedraw = (context => {
+                    context.drawImage(imgBackground, 0, 0)
+                    const loadingBarWidth = Math.round(353 * (this.assetIndex < totalResources ? this.assetIndex / totalResources : 1))
+                    context.drawImage(imgProgress, 142, 450, loadingBarWidth, 9)
+                    if (imgLoading) context.drawImage(imgLoading, Math.round(320 - imgLoading.width / 2), Math.round(456 - imgLoading.height / 2))
+                })
+                this.animationFrame.redraw()
+            })
     }
 
     increaseLoadingState() {

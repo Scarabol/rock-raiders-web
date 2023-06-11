@@ -1,5 +1,4 @@
 import { MenuEntryCfg } from '../../cfg/MenuEntryCfg'
-import { BitmapFont } from '../../core/BitmapFont'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { OffscreenCache } from '../../worker/OffscreenCache'
@@ -11,21 +10,18 @@ import { MenuSliderItem } from './MenuSliderItem'
 export class MenuLayer extends BaseElement {
     menuImage: SpriteImage
     titleImage: SpriteImage
-    loFont: BitmapFont
-    hiFont: BitmapFont
     itemsTrigger: MenuLabelItem[] = []
     itemsNext: MenuLabelItem[] = []
     itemsCycle: MenuCycleItem[] = []
     itemsSlider: MenuSliderItem[] = []
 
-    constructor(parent: BaseElement, menuCfg: MenuEntryCfg) {
+    constructor(parent: BaseElement, readonly menuCfg: MenuEntryCfg) {
         super(parent)
         this.relX = menuCfg.position[0]
         this.relY = menuCfg.position[1]
         this.menuImage = OffscreenCache.getImageOrNull(menuCfg.menuImage[0]) // menuImage has 4 parameter here
-        this.titleImage = OffscreenCache.getBitmapFont(menuCfg.menuFont).createTextImage(menuCfg.fullName)
-        this.loFont = OffscreenCache.getBitmapFont(menuCfg.loFont)
-        this.hiFont = OffscreenCache.getBitmapFont(menuCfg.hiFont)
+        OffscreenCache.bitmapFontWorkerPool.createTextImage(menuCfg.menuFont, menuCfg.fullName)
+            .then((textImage) => this.titleImage = textImage)
         menuCfg.itemsLabel.forEach((itemCfg) => {
             const item = this.addChild(new MenuLabelItem(this, itemCfg, menuCfg.autoCenter))
             if (itemCfg.actionName.toLowerCase() === 'trigger') {

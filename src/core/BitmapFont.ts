@@ -78,7 +78,7 @@ export class BitmapFont {
         this.data = data
     }
 
-    createTextImage(text: string, maxWidth?: number, autoCenter: boolean = true): SpriteImage {
+    createTextImageData(text: string, maxWidth?: number, autoCenter: boolean = true): ImageData {
         if (!text) return null
         text = text.replace(/_/g, ' ')
         const rows = this.determineRows(text, maxWidth)
@@ -101,6 +101,12 @@ export class BitmapFont {
                 } // missing letter issue already reported above
             }
         })
+        return result
+    }
+
+    createTextImage(text: string, maxWidth?: number, autoCenter: boolean = true): SpriteImage {
+        if (!text) return null
+        const result = this.createTextImageData(text, maxWidth, autoCenter)
         const img = createContext(result.width, result.height)
         img.putImageData(result, 0, 0)
         return img.canvas

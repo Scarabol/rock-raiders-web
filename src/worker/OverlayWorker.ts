@@ -23,21 +23,26 @@ export class OverlaySystem extends AbstractGuiSystem {
 
     onCacheReady(): void {
         super.onCacheReady()
-        this.panelPause = this.addPanel(new PausePanel(this.rootElement, OffscreenCache.configuration.menu.pausedMenu, this.canvas.width, this.canvas.height))
-        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, OffscreenCache.configuration.menu.optionsMenu, this.canvas.width, this.canvas.height))
-        this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
-        // link items
-        this.panelPause.onContinueGame = () => this.setActivePanel(null)
-        this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
-        this.panelPause.onAbortGame = () => this.sendResponse({type: WorkerMessageType.GAME_ABORT})
-        this.panelPause.onRestartGame = () => this.sendResponse({type: WorkerMessageType.GAME_RESTART})
-        this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
-        this.panelOptions.onContinueMission = () => this.setActivePanel(null)
-        this.panelBriefing.onSetSpaceToContinue = (state: boolean) => this.sendResponse({
-            type: WorkerMessageType.SPACE_TO_CONTINUE,
-            messageState: state,
+        Promise.all([
+            OffscreenCache.addFont('interface/fonts/MbriefFont2.bmp'),
+            OffscreenCache.addFont('interface/fonts/MbriefFont.bmp'),
+        ]).then(() => {
+            this.panelPause = this.addPanel(new PausePanel(this.rootElement, OffscreenCache.configuration.menu.pausedMenu, this.canvas.width, this.canvas.height))
+            this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, OffscreenCache.configuration.menu.optionsMenu, this.canvas.width, this.canvas.height))
+            this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
+            // link items
+            this.panelPause.onContinueGame = () => this.setActivePanel(null)
+            this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
+            this.panelPause.onAbortGame = () => this.sendResponse({type: WorkerMessageType.GAME_ABORT})
+            this.panelPause.onRestartGame = () => this.sendResponse({type: WorkerMessageType.GAME_RESTART})
+            this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
+            this.panelOptions.onContinueMission = () => this.setActivePanel(null)
+            this.panelBriefing.onSetSpaceToContinue = (state: boolean) => this.sendResponse({
+                type: WorkerMessageType.SPACE_TO_CONTINUE,
+                messageState: state,
+            })
+            this.panelBriefing.onStartMission = () => this.setActivePanel(null)
         })
-        this.panelBriefing.onStartMission = () => this.setActivePanel(null)
     }
 
     onProcessMessage(msg: GuiWorkerMessage): boolean {

@@ -1,6 +1,6 @@
 import { EntityDependencyChecked, GameConfig } from '../cfg/GameConfig'
 import { Cursor } from './Cursor'
-import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
+import { BitmapFontData } from '../core/BitmapFont'
 import { createContext, createDummyImgData, imgDataToContext } from '../core/ImageHelper'
 import { SpriteImage } from '../core/Sprite'
 import { iGet } from '../core/Util'
@@ -9,9 +9,11 @@ import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME } from '../params'
 import { DependencySpriteWorkerPool } from '../worker/DependencySpriteWorkerPool'
 import { DependencySpriteWorkerRequestType } from '../worker/DependencySpriteWorker'
+import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
+import { BitmapFontWorkerRequestType } from '../worker/BitmapFontWorker'
 
 export class ResourceCache {
-    static readonly fontCache: Map<string, BitmapFont> = new Map()
+    static readonly bitmapFontWorkerPool: BitmapFontWorkerPool = new BitmapFontWorkerPool()
     static readonly cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
     static readonly imageCache: Map<string, SpriteImage> = new Map()
     static readonly dependencySpriteWorkerPool: DependencySpriteWorkerPool = new DependencySpriteWorkerPool()
@@ -57,20 +59,16 @@ export class ResourceCache {
         return imageName ? this.getImage(imageName) : null
     }
 
-    static getBitmapFont(name: string): BitmapFont {
-        return this.fontCache.getOrUpdate(name, () => {
-            const fontData = this.getResource(name) as BitmapFontData
-            if (!fontData) throw new Error(`Could not load font image data for: ${name}`)
-            return new BitmapFont(fontData)
+    static startBitmapFontRenderPool() {
+        this.bitmapFontWorkerPool.startPool(4, {
+            type: BitmapFontWorkerRequestType.ADD_FONT,
+            fontName: DEFAULT_FONT_NAME,
+            fontData: this.getResource(DEFAULT_FONT_NAME),
         })
     }
 
-    static getDefaultFont(): BitmapFont {
-        return this.getBitmapFont(DEFAULT_FONT_NAME)
-    }
-
-    static getTooltipFont(): BitmapFont {
-        return this.getBitmapFont(TOOLTIP_FONT_NAME)
+    static addFont(fontName: string): Promise<void> {
+        return this.bitmapFontWorkerPool.addFont(fontName, this.getResource(fontName))
     }
 
     static getTooltipText(tooltipKey: string): string {

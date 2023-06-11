@@ -1,5 +1,4 @@
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
-import { BitmapFont } from '../core/BitmapFont'
 import { SpriteImage } from '../core/Sprite'
 import { clearIntervalSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
@@ -14,10 +13,7 @@ import { MainMenuLabelButton } from './MainMenuLabelButton'
 
 export class MainMenuLayer extends ScaledLayer {
     cfg: MenuEntryCfg
-    loFont: BitmapFont
-    hiFont: BitmapFont
     menuImage: SpriteImage
-    titleImage: SpriteImage
     items: MainMenuBaseItem[] = []
     scrollY: number = 0
     scrollSpeedY: number = 0
@@ -27,10 +23,15 @@ export class MainMenuLayer extends ScaledLayer {
     constructor(menuCfg: MenuEntryCfg) {
         super()
         this.cfg = menuCfg
-        this.loFont = menuCfg.loFont ? ResourceManager.getBitmapFont(menuCfg.loFont) : null
-        this.hiFont = menuCfg.hiFont ? ResourceManager.getBitmapFont(menuCfg.hiFont) : null
         this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : null
-        this.titleImage = this.loFont.createTextImage(menuCfg.fullName)
+        ResourceManager.bitmapFontWorkerPool.createTextImage(menuCfg.loFont, menuCfg.fullName)
+            .then((titleImage) => {
+                this.animationFrame.onRedraw = (context) => {
+                    context.drawImage(this.menuImage, 0, -this.scrollY)
+                    if (menuCfg.displayTitle) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position[1])
+                    this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
+                }
+            })
 
         menuCfg.itemsLabel.forEach((item) => {
             if (item.label) {
@@ -41,12 +42,6 @@ export class MainMenuLayer extends ScaledLayer {
         })
 
         this.items.sort((a, b) => MainMenuBaseItem.compareZ(a, b))
-
-        this.animationFrame.onRedraw = (context) => {
-            context.drawImage(this.menuImage, 0, -this.scrollY)
-            if (menuCfg.displayTitle) context.drawImage(this.titleImage, (this.fixedWidth - this.titleImage.width) / 2, this.cfg.position[1])
-            this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
-        }
     }
 
     reset() {

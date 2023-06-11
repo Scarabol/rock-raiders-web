@@ -3,7 +3,7 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { createContext } from '../core/ImageHelper'
 import { SpriteImage } from '../core/Sprite'
 import { getFilename, getPath } from '../core/Util'
-import { DEV_MODE } from '../params'
+import { DEV_MODE, TOOLTIP_FONT_NAME } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
 import { LWOBParser, LWOBTextureLoader } from './LWOBParser'
 import { ResourceCache } from './ResourceCache'
@@ -16,7 +16,6 @@ export class ResourceManager extends ResourceCache {
     static lwoCache: Map<string, SceneMesh> = new Map()
     static lwscCache: Map<string, LWSCData> = new Map()
     static aeCache: Map<string, AnimEntityData> = new Map()
-    static tooltipSpriteCache: Map<string, SpriteImage> = new Map()
 
     static getLevelEntryCfg(levelName: string): LevelEntryCfg {
         const levelConf = this.configuration.levels.levelCfgByName.get(levelName)
@@ -125,18 +124,16 @@ export class ResourceManager extends ResourceCache {
         })
     }
 
-    static getTooltipSprite(tooltipText: string): SpriteImage {
+    static async getTooltipSprite(tooltipText: string): Promise<SpriteImage> {
         if (tooltipText.toLowerCase().startsWith('tooltip')) {
             console.error(`Found key instead of tooltip text ${tooltipText}`)
         }
-        return this.tooltipSpriteCache.getOrUpdate(tooltipText, () => {
-            const tooltipTextImage = this.getTooltipFont().createTextImage(tooltipText)
-            return this.wrapTooltipSprite([tooltipTextImage])
-        })
+        const tooltipTextImage = await this.bitmapFontWorkerPool.createTextImage(TOOLTIP_FONT_NAME, tooltipText)
+        return this.wrapTooltipSprite([tooltipTextImage])
     }
 
-    static getRaiderTooltipSprite(tooltipText: string, numToolSlots: number, tools: RaiderTool[], trainings: RaiderTraining[]): SpriteImage {
-        const tooltipTextImage = this.getTooltipFont().createTextImage(tooltipText)
+    static async getRaiderTooltipSprite(tooltipText: string, numToolSlots: number, tools: RaiderTool[], trainings: RaiderTraining[]): Promise<SpriteImage> {
+        const tooltipTextImage = await this.bitmapFontWorkerPool.createTextImage(TOOLTIP_FONT_NAME, tooltipText)
         const toolIcons = tools.map((t) => {
             return ResourceManager.getImage(ResourceManager.configuration.tooltipIcons.get(RaiderTools.toToolTipIconName(t)))
         })
@@ -146,16 +143,16 @@ export class ResourceManager extends ResourceCache {
         return this.wrapTooltipSprite([tooltipTextImage], toolIcons, trainingIcons)
     }
 
-    static getBuildingSiteTooltipSprite(tooltipText: string, crystals: { actual: number, needed: number }, ores: { actual: number, needed: number }, bricks: { actual: number, needed: number }): SpriteImage {
-        const tooltipTextImage = this.getTooltipFont().createTextImage(tooltipText)
-        const crystalsTextImage = crystals?.needed ? [this.getTooltipFont().createTextImage(`${ResourceManager.configuration.objectNamesCfg.get('powercrystal')}: ${crystals.actual}/${crystals.needed}`)] : []
-        const oresTextImage = ores?.needed ? [this.getTooltipFont().createTextImage(`${ResourceManager.configuration.objectNamesCfg.get('ore')}: ${ores.actual}/${ores.needed}`)] : []
-        const bricksTextImage = bricks?.needed ? [this.getTooltipFont().createTextImage(`${ResourceManager.configuration.objectNamesCfg.get('processedore')}: ${bricks.actual}/${bricks.needed}`)] : []
+    static async getBuildingSiteTooltipSprite(tooltipText: string, crystals: { actual: number, needed: number }, ores: { actual: number, needed: number }, bricks: { actual: number, needed: number }): Promise<SpriteImage> {
+        const tooltipTextImage = await this.bitmapFontWorkerPool.createTextImage(TOOLTIP_FONT_NAME, tooltipText)
+        const crystalsTextImage = crystals?.needed ? [await this.bitmapFontWorkerPool.createTextImage(TOOLTIP_FONT_NAME, `${ResourceManager.configuration.objectNamesCfg.get('powercrystal')}: ${crystals.actual}/${crystals.needed}`)] : []
+        const oresTextImage = ores?.needed ? [await this.bitmapFontWorkerPool.createTextImage(TOOLTIP_FONT_NAME, `${ResourceManager.configuration.objectNamesCfg.get('ore')}: ${ores.actual}/${ores.needed}`)] : []
+        const bricksTextImage = bricks?.needed ? [await this.bitmapFontWorkerPool.createTextImage(TOOLTIP_FONT_NAME, `${ResourceManager.configuration.objectNamesCfg.get('processedore')}: ${bricks.actual}/${bricks.needed}`)] : []
         return this.wrapTooltipSprite([tooltipTextImage], crystalsTextImage, oresTextImage, bricksTextImage)
     }
 
-    static getBuildingMissingOreForUpgradeTooltipSprite(tooltipText: string, buildingMissingOreForUpgrade: number): SpriteImage {
-        const tooltipTextImage = this.getTooltipFont().createTextImage(ResourceManager.configuration.toolTipInfo.get('orerequiredtext') + ':')
+    static async getBuildingMissingOreForUpgradeTooltipSprite(tooltipText: string, buildingMissingOreForUpgrade: number): Promise<SpriteImage> {
+        const tooltipTextImage = await this.bitmapFontWorkerPool.createTextImage(TOOLTIP_FONT_NAME, ResourceManager.configuration.toolTipInfo.get('orerequiredtext') + ':')
         const oresTextImage = []
         const oreImg = ResourceManager.getImage(ResourceManager.configuration.tooltipIcons.get('ore'))
         for (let c = 0; c < buildingMissingOreForUpgrade; c++) {
@@ -164,7 +161,7 @@ export class ResourceManager extends ResourceCache {
         return this.wrapTooltipSprite([tooltipTextImage], oresTextImage)
     }
 
-    private static wrapTooltipSprite(...rowsThenCols: SpriteImage[][]): SpriteImage {
+    static wrapTooltipSprite(...rowsThenCols: SpriteImage[][]): SpriteImage {
         const margin = 2
         const padding = 2
         const [contentWidth, contentHeight] = ResourceManager.getTooltipContentSize(rowsThenCols)

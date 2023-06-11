@@ -3,6 +3,7 @@ import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { MenuLayer } from './MenuLayer'
+import { OffscreenCache } from '../../worker/OffscreenCache'
 
 export class MenuLabelItem extends BaseElement {
     target: string
@@ -12,11 +13,16 @@ export class MenuLabelItem extends BaseElement {
     constructor(parent: MenuLayer, itemCfg: MenuLabelItemCfg, autoCenter: boolean) {
         super(parent)
         this.target = itemCfg.target
-        this.loImg = parent.loFont.createTextImage(itemCfg.label)
-        this.hiImg = parent.hiFont.createTextImage(itemCfg.label)
-        this.width = this.loImg.width
-        this.height = this.loImg.height
-        this.relX = autoCenter ? -parent.relX + (parent.menuImage.width - this.width) / 2 : itemCfg.x
+        Promise.all([
+            OffscreenCache.bitmapFontWorkerPool.createTextImage(parent.menuCfg.loFont, itemCfg.label),
+            OffscreenCache.bitmapFontWorkerPool.createTextImage(parent.menuCfg.hiFont, itemCfg.label),
+        ]).then((textImages) => {
+            [this.loImg, this.hiImg] = textImages
+            this.width = this.loImg.width
+            this.height = this.loImg.height
+            this.relX = autoCenter ? -parent.relX + (parent.menuImage.width - this.width) / 2 : itemCfg.x
+            this.updatePosition()
+        })
         this.relY = itemCfg.y
     }
 

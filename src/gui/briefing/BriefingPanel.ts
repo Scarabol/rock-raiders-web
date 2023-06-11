@@ -24,8 +24,11 @@ export class BriefingPanel extends Panel {
         super(parent)
         this.cfg = new BriefingPanelCfg()
         this.onClick = () => this.nextParagraph() // fallback for touch displays without keyboard like mobile browsers
-        this.imgTitle = this.cfg.titleFont.createTextImage(this.cfg.title)
-        this.titleRelX = this.cfg.titleWindow.x + (this.cfg.titleWindow.w - this.imgTitle.width) / 2
+        OffscreenCache.bitmapFontWorkerPool.createTextImage(this.cfg.titleFontName, this.cfg.title)
+            .then((textImage) => {
+                this.imgTitle = textImage
+                this.titleRelX = this.cfg.titleWindow.x + (this.cfg.titleWindow.w - this.imgTitle.width) / 2
+            })
         this.titleRelY = this.cfg.titleWindow.y
         this.btnNext = this.addChild(new Button(this, this.cfg.nextButtonCfg))
         this.btnNext.onClick = () => this.nextParagraph()
@@ -47,7 +50,9 @@ export class BriefingPanel extends Panel {
         this.width = this.imgBack.width
         this.height = this.imgBack.height
         this.updatePosition()
-        this.imgParagraphList = objectiveText.split('\\a').map(txt => this.cfg.textFont.createTextImage(txt, this.cfg.textWindow.w, false))
+        Promise.all(objectiveText.split('\\a').map((txt) => {
+            return OffscreenCache.bitmapFontWorkerPool.createTextImage(this.cfg.textFontName, txt, this.cfg.textWindow.w, false)
+        })).then((textImages) => this.imgParagraphList = textImages)
     }
 
     setParagraph(paragraph: number) {

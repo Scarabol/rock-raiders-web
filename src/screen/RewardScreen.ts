@@ -1,5 +1,4 @@
 import { RewardCfg } from '../cfg/RewardCfg'
-import { BitmapFont } from '../core/BitmapFont'
 import { SpriteImage } from '../core/Sprite'
 import { clearTimeoutSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
@@ -16,7 +15,6 @@ import { ScreenMaster } from './ScreenMaster'
 export class RewardScreen {
     onAdvance: () => void
     cfg: RewardCfg = null
-    titleFont: BitmapFont
     backgroundLayer: ScaledLayer
     resultsLayer: ScaledLayer
     descriptionTextLayer: ScaledLayer
@@ -26,7 +24,7 @@ export class RewardScreen {
     resultLastIndex: number = 0
     images: { img: SpriteImage, x: number, y: number }[] = []
     boxes: { img: SpriteImage, x: number, y: number }[] = []
-    fonts = {}
+    fontNames: Map<string, string> = new Map()
     texts: SpriteImage[] = []
     uncoverTimeout: NodeJS.Timeout = null
     btnSave: RewardScreenButton
@@ -38,7 +36,6 @@ export class RewardScreen {
 
     constructor(screenMaster: ScreenMaster) {
         this.cfg = ResourceManager.configuration.reward
-        this.titleFont = ResourceManager.getBitmapFont(this.cfg.titleFont)
         const backgroundImg = ResourceManager.getImage(this.cfg.wallpaper)
         this.backgroundLayer = screenMaster.addLayer(new ScaledLayer(), 0)
         this.backgroundLayer.animationFrame.onRedraw = (context) => context.drawImage(backgroundImg, 0, 0)
@@ -48,13 +45,11 @@ export class RewardScreen {
         this.cfg.boxImages.forEach((img) => {
             this.boxes.push({img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y})
         })
-        Object.keys(this.cfg.fonts).forEach((fontKey, index) => {
-            const font = ResourceManager.getBitmapFont(this.cfg.fonts[fontKey])
-            this.fonts[fontKey.toLowerCase()] = font
-            const txt = this.cfg.text[index]
-            const labelFont = index < 9 ? font : ResourceManager.getBitmapFont(this.cfg.backFont)
-            this.texts.push(labelFont.createTextImage(txt.text))
-        })
+        Promise.all(Object.keys(this.cfg.fonts).map((fontKey, index) => {
+            this.fontNames.set(fontKey.toLowerCase(), this.cfg.fonts[fontKey])
+            const labelFontName = index < 9 ? this.cfg.fonts[fontKey] : this.cfg.backFont
+            return ResourceManager.bitmapFontWorkerPool.createTextImage(labelFontName, this.cfg.text[index].text)
+        })).then((textImages) => this.texts = textImages)
         this.resultsLayer = screenMaster.addLayer(new ScaledLayer(), 10)
         this.resultsLayer.handlePointerEvent = ((event) => {
             if (event.eventEnum === POINTER_EVENT.UP) {
@@ -106,7 +101,8 @@ export class RewardScreen {
             context.clearRect(this.btnAdvance.x, this.btnAdvance.y, this.btnAdvance.width, this.btnAdvance.height)
             this.btnAdvance.draw(context)
         }
-        this.levelFullNameImg = this.titleFont.createTextImage('No level selected')
+        ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFont, 'No level selected')
+            .then((textImage) => this.levelFullNameImg = textImage)
         this.saveGameLayer = screenMaster.addLayer(new LoadSaveLayer(ResourceManager.configuration.menu.mainMenuFull.menus[3], false), 60)
         this.saveGameLayer.onItemAction = (item: MainMenuBaseItem) => {
             if (item.actionName.equalsIgnoreCase('next')) {
@@ -127,7 +123,8 @@ export class RewardScreen {
 
     showGameResult(result: GameResult) {
         console.log('Your game result', result)
-        this.levelFullNameImg = this.titleFont.createTextImage(result.levelFullName)
+        ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFont, result.levelFullName)
+            .then((textImage) => this.levelFullNameImg = textImage)
         this.btnSave.disabled = result.state !== GameResultState.COMPLETE
         this.resultText = this.cfg.quitText
         this.resultLastIndex = this.images.length - 2
@@ -138,19 +135,23 @@ export class RewardScreen {
         } else if (result.state === GameResultState.FAILED) {
             this.resultText = this.cfg.failedText
         }
-        this.resultValues = []
-        this.resultValues.push(this.fonts['crystals'].createTextImage(this.percentString(GameState.numCrystal, GameState.neededCrystals)))
-        this.resultValues.push(this.fonts['ore'].createTextImage(this.percentString(GameState.numOre, GameState.totalOres)))
-        this.resultValues.push(this.fonts['diggable'].createTextImage(this.percentString(GameState.remainingDiggables, GameState.totalDiggables, true)))
-        this.resultValues.push(this.fonts['constructions'].createTextImage(result.numBuildings.toString()))
-        this.resultValues.push(this.fonts['caverns'].createTextImage(this.percentString(GameState.discoveredCaverns, GameState.totalCaverns)))
-        this.resultValues.push(this.fonts['figures'].createTextImage(this.percentString(result.numRaiders, result.numMaxRaiders)))
-        this.resultValues.push(this.fonts['rockmonsters'].createTextImage(this.percentString(result.defencePercent, 100)))
-        this.resultValues.push(this.fonts['oxygen'].createTextImage(this.percentString(result.airLevelPercent, 100)))
-        this.resultValues.push(this.fonts['timer'].createTextImage(this.timeString(result.gameTimeSeconds)))
-        this.resultValues.push(this.fonts['score'].createTextImage(`${result.score}%`))
         this.screenshot = result.screenshot
-        this.show()
+        this.resultValues.length = 0
+        Promise.all([
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('crystals'), this.percentString(GameState.numCrystal, GameState.neededCrystals)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('ore'), this.percentString(GameState.numOre, GameState.totalOres)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('diggable'), this.percentString(GameState.remainingDiggables, GameState.totalDiggables, true)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('constructions'), result.numBuildings.toString()),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('caverns'), this.percentString(GameState.discoveredCaverns, GameState.totalCaverns)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('figures'), this.percentString(result.numRaiders, result.numMaxRaiders)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('rockmonsters'), this.percentString(result.defencePercent, 100)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('oxygen'), this.percentString(result.airLevelPercent, 100)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('timer'), this.timeString(result.gameTimeSeconds)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('score'), `${result.score}%`),
+        ]).then((textImages) => {
+            this.resultValues = textImages
+            this.show()
+        })
     }
 
     show() {
@@ -158,37 +159,39 @@ export class RewardScreen {
         this.btnSave.visible = false
         this.btnAdvance.visible = false
         this.uncoverResult()
-        const gameResultTextImg = this.titleFont.createTextImage(this.resultText)
-        this.resultsLayer.animationFrame.onRedraw = (context) => {
-            context.clearRect(0, 0, this.resultsLayer.fixedWidth, this.resultsLayer.fixedHeight)
-            for (let c = 0; c <= this.resultIndex; c++) {
-                const img = this.images[c]
-                if (img) context.drawImage(img.img, img.x, img.y)
-            }
-            for (let c = 0; c <= this.resultIndex; c++) {
-                const box = this.boxes[c]
-                if (box) context.drawImage(box.img, box.x, box.y)
-            }
-            for (let c = 0; c <= this.resultIndex; c++) {
-                const txt = this.cfg.text[c]
-                const text = this.resultValues[c]
-                if (text) context.drawImage(text, txt.x - text.width / 2, txt.y)
-            }
-            context.drawImage(this.levelFullNameImg, this.resultsLayer.fixedWidth / 2 - this.levelFullNameImg.width / 2, this.cfg.vertSpacing - this.levelFullNameImg.height / 2)
-            context.drawImage(gameResultTextImg, this.resultsLayer.fixedWidth / 2 - gameResultTextImg.width / 2, this.cfg.vertSpacing + this.levelFullNameImg.height / 2)
-        }
-        this.descriptionTextLayer.animationFrame.onRedraw = (context) => {
-            const descriptionTextImg = this.texts[this.resultIndex]
-            if (!descriptionTextImg) return
-            context.clearRect(0, 0, this.descriptionTextLayer.fixedWidth, this.descriptionTextLayer.fixedHeight)
-            const tx = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[0] : 305
-            const ty = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[1] : 195
-            context.drawImage(descriptionTextImg, tx - descriptionTextImg.width / 2, ty)
-        }
-        this.backgroundLayer.show()
-        this.resultsLayer.show()
-        this.descriptionTextLayer.show()
-        this.btnLayer.show()
+        ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFont, this.resultText)
+            .then((gameResultTextImg) => {
+                this.resultsLayer.animationFrame.onRedraw = (context) => {
+                    context.clearRect(0, 0, this.resultsLayer.fixedWidth, this.resultsLayer.fixedHeight)
+                    for (let c = 0; c <= this.resultIndex; c++) {
+                        const img = this.images[c]
+                        if (img) context.drawImage(img.img, img.x, img.y)
+                    }
+                    for (let c = 0; c <= this.resultIndex; c++) {
+                        const box = this.boxes[c]
+                        if (box) context.drawImage(box.img, box.x, box.y)
+                    }
+                    for (let c = 0; c <= this.resultIndex; c++) {
+                        const txt = this.cfg.text[c]
+                        const text = this.resultValues[c]
+                        if (text) context.drawImage(text, txt.x - text.width / 2, txt.y)
+                    }
+                    context.drawImage(this.levelFullNameImg, this.resultsLayer.fixedWidth / 2 - this.levelFullNameImg.width / 2, this.cfg.vertSpacing - this.levelFullNameImg.height / 2)
+                    context.drawImage(gameResultTextImg, this.resultsLayer.fixedWidth / 2 - gameResultTextImg.width / 2, this.cfg.vertSpacing + this.levelFullNameImg.height / 2)
+                }
+                this.descriptionTextLayer.animationFrame.onRedraw = (context) => {
+                    const descriptionTextImg = this.texts[this.resultIndex]
+                    if (!descriptionTextImg) return
+                    context.clearRect(0, 0, this.descriptionTextLayer.fixedWidth, this.descriptionTextLayer.fixedHeight)
+                    const tx = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[0] : 305
+                    const ty = this.resultIndex !== this.images.length - 1 ? this.cfg.textPos[1] : 195
+                    context.drawImage(descriptionTextImg, tx - descriptionTextImg.width / 2, ty)
+                }
+                this.backgroundLayer.show()
+                this.resultsLayer.show()
+                this.descriptionTextLayer.show()
+                this.btnLayer.show()
+            })
     }
 
     percentString(actual: number, max: number, lessIsMore: boolean = false) {

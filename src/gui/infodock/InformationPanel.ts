@@ -1,22 +1,23 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
-import { BitmapFont } from '../../core/BitmapFont'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
+import { DEFAULT_FONT_NAME } from '../../params'
 
 export class InformationPanel extends Panel {
-    font: BitmapFont = null
     textImage: SpriteImage = null
 
     constructor(parent: BaseElement, panelCfg: PanelCfg) {
         super(parent, panelCfg)
-        this.font = OffscreenCache.getDefaultFont()
     }
 
     setText(text?: string) {
-        this.textImage = this.font.createTextImage(text, this.img.width - 80)
-        this.notifyRedraw()
+        OffscreenCache.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text, this.img.width - 80)
+            .then((textImage) => {
+                this.textImage = textImage
+                this.notifyRedraw()
+            })
     }
 
     onRedraw(context: SpriteContext) {

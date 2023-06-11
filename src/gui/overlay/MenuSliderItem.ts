@@ -59,9 +59,13 @@ export class MenuSliderItem extends BaseElement {
         this.min = itemCfg.min
         this.max = itemCfg.max || 1
         this.value = this.min
-        this.imgTextNormal = parent.loFont.createTextImage(itemCfg.description)
-        this.imgTextHover = parent.hiFont.createTextImage(itemCfg.description)
-        this.height = this.imgTextNormal.height
+        Promise.all([
+            OffscreenCache.bitmapFontWorkerPool.createTextImage(parent.menuCfg.loFont, itemCfg.description),
+            OffscreenCache.bitmapFontWorkerPool.createTextImage(parent.menuCfg.hiFont, itemCfg.description),
+        ]).then((textImages) => {
+            [this.imgTextNormal, this.imgTextHover] = textImages
+            this.height = this.imgTextNormal.height
+        })
     }
 
     setValue(value: number) {

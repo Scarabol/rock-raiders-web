@@ -24,13 +24,19 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
         const menuCfg = ResourceManager.configuration.menu
         const loadLabel = menuCfg.loadGame
         const btnNum = index + 1
-        this.labelLoadImgLo = layer.loFont.createTextImage(loadLabel + ' ' + btnNum)
-        this.labelLoadImgHi = layer.hiFont.createTextImage(loadLabel + ' ' + btnNum)
+        Promise.all([
+            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.loFont, loadLabel + ' ' + btnNum),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.hiFont, loadLabel + ' ' + btnNum),
+        ]).then((textImages) => {
+            [this.labelLoadImgLo, this.labelLoadImgHi] = textImages
+            this.width = Math.max(this.labelLoadImgLo.width, this.labelLoadImgHi.width) + menuCfg.saveImage.BigWidth
+            this.height = Math.max(this.labelLoadImgLo.height, this.labelLoadImgHi.height)
+        })
         const saveLabel = menuCfg.saveGame
-        this.labelSaveImgLo = layer.loFont.createTextImage(saveLabel + ' ' + btnNum)
-        this.labelSaveImgHi = layer.hiFont.createTextImage(saveLabel + ' ' + btnNum)
-        this.width = Math.max(this.labelLoadImgLo.width, this.labelLoadImgHi.width) + menuCfg.saveImage.BigWidth
-        this.height = Math.max(this.labelLoadImgLo.height, this.labelLoadImgHi.height)
+        ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.loFont, saveLabel + ' ' + btnNum)
+            .then((textImage) => this.labelSaveImgLo = textImage)
+        ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.hiFont, saveLabel + ' ' + btnNum)
+            .then((textImage) => this.labelSaveImgHi = textImage)
         this.x = x
         this.y = y
         this.targetIndex = index
@@ -69,6 +75,6 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
             }
         }
         const img = this.state.hover && !this.state.pressed ? this.labelImgHi : this.labelImgLo
-        context.drawImage(img, this.x + 80, this.y)
+        if (img) context.drawImage(img, this.x + 80, this.y)
     }
 }

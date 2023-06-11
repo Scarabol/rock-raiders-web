@@ -10,7 +10,7 @@ import { yieldToMainThread } from './core/Util'
 import { GameScreen } from './screen/GameScreen'
 import { RewardScreen } from './screen/RewardScreen'
 import { GameState } from './game/model/GameState'
-import { DEV_MODE } from './params'
+import { DEV_MODE, TOOLTIP_FONT_NAME } from './params'
 import { ObjectListLoader } from './game/ObjectListLoader'
 import { SaveGameManager } from './resource/SaveGameManager'
 import { TypedWorker, TypedWorkerFallback } from './worker/TypedWorker'
@@ -40,6 +40,7 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
             break
         case WorkerMessageType.CFG:
             ResourceManager.configuration = msg.cfg
+            ResourceManager.startBitmapFontRenderPool()
             ResourceManager.loadDefaultCursor().then(() => {
                 loadingLayer.enableGraphicMode(msg.totalResources)
                 screenMaster.addLayer(new CursorLayer(), 1000).show()
@@ -50,7 +51,14 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
             break
         case WorkerMessageType.DONE:
             WadLoader.bitmapWorkerPool.terminatePool()
-            ResourceManager.loadAllCursor().then(async () => {
+            Promise.all([
+                ResourceManager.loadAllCursor(),
+                ResourceManager.addFont('Interface/FrontEnd/Menu_Font_Hi.bmp'),
+                ResourceManager.addFont('Interface/FrontEnd/Menu_Font_Lo.bmp'),
+                ResourceManager.addFont('Interface/Fonts/FSFont.bmp'),
+                ResourceManager.addFont('Interface/Fonts/RSWritten.bmp'),
+                ResourceManager.addFont(TOOLTIP_FONT_NAME),
+            ]).then(async () => {
                 console.timeEnd('Total asset loading time')
                 console.log(`Loading of about ${msg.totalResources} assets complete!`)
                 // complete setup

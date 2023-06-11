@@ -12,6 +12,7 @@ import { BaseElement } from './base/BaseElement'
 import { Panel } from './base/Panel'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from './event/GuiEvent'
 import { Cursor } from '../resource/Cursor'
+import { OffscreenCache } from '../worker/OffscreenCache'
 
 export abstract class AbstractGuiSystem extends OffscreenSystem {
     animationFrame: AnimationFrameScaled
@@ -33,6 +34,7 @@ export abstract class AbstractGuiSystem extends OffscreenSystem {
             this.registerEventListener(eventKey, callback)
         }
         this.animationFrame.redraw()
+        OffscreenCache.startBitmapFontRenderPool()
     }
 
     resizeCanvas(width: number, height: number) {
