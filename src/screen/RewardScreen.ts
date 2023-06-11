@@ -101,7 +101,9 @@ export class RewardScreen {
             return false
         })
         this.btnLayer.animationFrame.onRedraw = (context) => {
+            context.clearRect(this.btnSave.x, this.btnSave.y, this.btnSave.width, this.btnSave.height)
             this.btnSave.draw(context)
+            context.clearRect(this.btnAdvance.x, this.btnAdvance.y, this.btnAdvance.width, this.btnAdvance.height)
             this.btnAdvance.draw(context)
         }
         this.levelFullNameImg = this.titleFont.createTextImage('No level selected')
