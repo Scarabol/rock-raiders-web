@@ -70,15 +70,14 @@ export class GameLayer extends ScreenLayer {
             EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
             if (cursorTarget.intersectionPoint) this.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
             if (cursorTarget.surface) {
-                const tooltip = ResourceManager.configuration.surfaceTypeDescriptions.get(cursorTarget.surface.surfaceType.name.toLowerCase())
-                if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
-                else {
-                    const site = cursorTarget.surface.site
-                    if (site?.buildingType) {
-                        const objectKey = EntityType[site.buildingType.entityType].toString().replace('_', '').toLowerCase()
-                        const tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
-                        if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, null, site))
-                    }
+                const site = cursorTarget.surface.site
+                if (site?.buildingType) {
+                    const objectKey = EntityType[site.buildingType.entityType].toString().replace('_', '').toLowerCase()
+                    const tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
+                    if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, null, site))
+                } else {
+                    const tooltip = ResourceManager.configuration.surfaceTypeDescriptions.get(cursorTarget.surface.surfaceType.name.toLowerCase())
+                    if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
                 }
             }
             if (cursorTarget.entityType) {
