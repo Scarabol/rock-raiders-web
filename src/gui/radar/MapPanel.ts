@@ -1,4 +1,3 @@
-import { Vector2 } from 'three'
 import { createContext } from '../../core/ImageHelper'
 import { SpriteContext } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -13,7 +12,7 @@ export class MapPanel extends Panel {
     readonly combinedContext: SpriteContext
     readonly surfaceContext: SpriteContext
     readonly entityContext: SpriteContext
-    readonly offset: Vector2 = new Vector2()
+    readonly offset: { x: number, y: number } = {x: 0, y: 0}
     readonly surfaceRectSize: number = 10
     readonly surfaceRectMargin: number = 1
     readonly surfaceMap: MapSurfaceRect[][] = []
@@ -103,7 +102,10 @@ export class MapPanel extends Panel {
         this.notifyRedraw()
     }
 
-    private mapToMap(vec: { x: number, z: number }): Vector2 {
-        return new Vector2(vec.x, vec.z).multiplyScalar(this.surfaceRectSize / TILESIZE).round().subScalar(1).sub(this.offset)
+    private mapToMap(vec: { x: number, z: number }): { x: number, y: number } {
+        return {
+            x: Math.round(vec.x * this.surfaceRectSize / TILESIZE) - 1 - this.offset.x,
+            y: Math.round(vec.z * this.surfaceRectSize / TILESIZE) - 1 - this.offset.y,
+        }
     }
 }
