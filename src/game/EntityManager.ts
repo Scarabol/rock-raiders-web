@@ -95,24 +95,12 @@ export class EntityManager {
         EntityManager.disposeAll(this.placedFences)
         EntityManager.disposeAll(this.vehicles)
         EntityManager.disposeAll(this.vehiclesInBeam)
-        this.disposeEntities(this.rockMonsters)
-        this.disposeEntities(this.undiscoveredRockMonsters)
-        this.disposeEntities(this.bats)
-        this.disposeEntities(this.undiscoveredBats)
-        this.disposeEntities(this.spiders)
-        this.disposeEntities(this.undiscoveredSpiders)
     }
 
     private static disposeAll(list: { disposeFromWorld: () => unknown }[]) {
         const copy = [...list]
         copy.forEach((e) => e.disposeFromWorld())
         list.length = 0
-    }
-
-    private disposeEntities(list: GameEntity[]) {
-        const copy = [...list]
-        list.length = 0
-        copy.forEach((e) => this.ecs.removeEntity(e))
     }
 
     private getBuildingsByType(...buildingTypes: EntityType[]): BuildingEntity[] {

@@ -68,6 +68,7 @@ export class ECS {
         this.entities.clear()
         this.nextEntityID = 1
         this.entitiesToDestroy.length = 0
+        this.systems.forEach((s) => s.clear())
         this.dirtyEntities.forEach((m) => m.clear())
     }
 
