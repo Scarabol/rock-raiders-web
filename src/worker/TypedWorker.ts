@@ -1,5 +1,7 @@
 export interface TypedWorker<M, R> {
     sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[])
+
+    terminate(): void
 }
 
 export class TypedWorkerFrontend<M, R> implements TypedWorker<M, R> {
@@ -11,6 +13,10 @@ export class TypedWorkerFrontend<M, R> implements TypedWorker<M, R> {
 
     sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[]) {
         this.worker.postMessage(message, transfer)
+    }
+
+    terminate() {
+        this.worker.terminate()
     }
 }
 
@@ -44,5 +50,8 @@ export class TypedWorkerFallback<M, R> implements TypedWorker<M, R>, TypedWorker
 
     sendResponse(response: R) {
         this.onResponseFromWorker(response)
+    }
+
+    terminate() {
     }
 }
