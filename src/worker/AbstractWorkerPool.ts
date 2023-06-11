@@ -5,6 +5,7 @@ export abstract class AbstractWorkerPool<M, R> {
     private readonly idleWorkers: TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>[] = []
     private readonly openRequests: Map<string, ((response: R) => unknown)[]> = new Map()
     private readonly messageBacklog: WorkerRequestMessage<M>[] = []
+    private readonly broadcastHistory: Set<M> = new Set()
     private lastRequestId: number = 1
 
     protected abstract createWorker(): Worker
@@ -20,13 +21,24 @@ export abstract class AbstractWorkerPool<M, R> {
                     this.lastRequestId++
                     const message = {workerRequestHash: `message-${this.lastRequestId}`, request: setupMessage}
                     worker.sendMessage(message)
-                    this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(() => this.processNextMessage(worker))
+                    this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(() => this.sendBroadcasts(worker))
                 } else {
-                    this.processNextMessage(worker)
+                    this.sendBroadcasts(worker)
                 }
             })
         }
         return this
+    }
+
+    private sendBroadcasts(worker) {
+        this.broadcastHistory.forEach((broadcast) => {
+            this.lastRequestId++
+            this.lastRequestId++
+            const message = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
+            worker.sendMessage(message)
+            this.openRequests.getOrUpdate(message.workerRequestHash, () => [])
+        })
+        this.processNextMessage(worker)
     }
 
     terminatePool() {
@@ -65,6 +77,7 @@ export abstract class AbstractWorkerPool<M, R> {
     }
 
     protected broadcast(broadcast: M) {
+        this.broadcastHistory.add(broadcast)
         this.allWorkers.forEach((worker) => {
             this.lastRequestId++
             const message = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
