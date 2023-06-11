@@ -33,7 +33,7 @@ export class TypedWorkerFrontend<M, R> implements TypedWorker<M, R> {
 export interface TypedWorkerBackend<M, R> {
     onMessageFromFrontend: (message: M) => any
 
-    sendResponse(response: R)
+    sendResponse(response: R, transfer?: Transferable[])
 }
 
 export class TypedWorkerThreaded<M, R> implements TypedWorkerBackend<M, R> {
@@ -43,8 +43,8 @@ export class TypedWorkerThreaded<M, R> implements TypedWorkerBackend<M, R> {
         worker.addEventListener('message', (event) => this.onMessageFromFrontend(event?.data))
     }
 
-    sendResponse(response: R) {
-        this.worker.postMessage(response)
+    sendResponse(response: R, transfer?: Transferable[]) {
+        this.worker.postMessage(response, transfer)
     }
 }
 

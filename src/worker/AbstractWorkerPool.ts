@@ -14,7 +14,7 @@ export abstract class AbstractWorkerPool<M, R> {
     createPool(poolSize: number, setupMessage: WorkerRequestMessage<M>): this {
         for (let c = 0; c < poolSize; c++) {
             setTimeout(() => {
-                const worker = this.createWadWorker()
+                const worker = this.createTypedWorker()
                 this.allWorkers.add(worker)
                 if (setupMessage) worker.sendMessage(setupMessage)
                 const nextMessage = this.messageBacklog.shift()
@@ -32,7 +32,7 @@ export abstract class AbstractWorkerPool<M, R> {
         this.allWorkers.forEach((w) => w.terminate())
     }
 
-    private createWadWorker(): TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>> {
+    private createTypedWorker(): TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>> {
         try {
             const wadWorker = new TypedWorkerFrontend(this.createWorker(),
                 (r: WorkerResponseMessage<R>) => this.onWorkerResponse(wadWorker, r))
@@ -56,6 +56,16 @@ export abstract class AbstractWorkerPool<M, R> {
             this.messageBacklog.push(message)
         }
         return new Promise<R>((resolve) => this.openRequests.set(message.workerRequestId, resolve))
+    }
+
+    protected broadcast(broadcast: M) {
+        this.allWorkers.forEach((worker) => {
+            this.lastRequestId++
+            const message = {workerRequestId: this.lastRequestId, request: broadcast}
+            worker.sendMessage(message)
+            this.openRequests.set(message.workerRequestId, () => {
+            })
+        })
     }
 
     private onWorkerResponse(worker, response: WorkerResponseMessage<R>) {
