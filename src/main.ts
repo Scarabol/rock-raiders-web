@@ -1,34 +1,28 @@
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
-import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
-import { GithubBox } from '../site/github/github-box'
 import '../site/main.css'
-import { WadFileSelectionModal } from '../site/wadModal/WadFileSelectionModal'
-import { SoundManager } from './audio/SoundManager'
-import { GameState } from './game/model/GameState'
-import { ObjectListLoader } from './game/ObjectListLoader'
-import { DEV_MODE } from './params'
-import { ResourceManager } from './resource/ResourceManager'
-import { SaveGameManager } from './resource/SaveGameManager'
-import { InitLoadingMessage } from './resource/wadworker/InitLoadingMessage'
-import { WadSystem } from './resource/wadworker/WadSystem'
 import { WadWorkerMessage } from './resource/wadworker/WadWorkerMessage'
 import { WorkerMessageType } from './resource/wadworker/WorkerMessageType'
-import { GameScreen } from './screen/GameScreen'
-import { CursorLayer } from './screen/layer/CursorLayer'
-import { LoadingLayer } from './screen/layer/LoadingLayer'
-import { MainMenuScreen } from './screen/MainMenuScreen'
-import { RewardScreen } from './screen/RewardScreen'
-import { ScreenMaster } from './screen/ScreenMaster'
-import { TypedWorker, TypedWorkerFallback } from './worker/TypedWorker'
-import { WorkerResponse } from './worker/WorkerResponse'
-import { yieldToMainThread } from './core/Util'
+import { ResourceManager } from './resource/ResourceManager'
+import { SoundManager } from './audio/SoundManager'
 import { WadLoader } from './resource/wadworker/WadLoader'
-
-if (DEV_MODE) console.warn('DEV MODE ACTIVE')
-console.log(`Rock Raider Web v${APP_VERSION}`)
-
-// setup and link all components
-console.time('Total asset loading time')
+import { MainMenuScreen } from './screen/MainMenuScreen'
+import { yieldToMainThread } from './core/Util'
+import { GameScreen } from './screen/GameScreen'
+import { RewardScreen } from './screen/RewardScreen'
+import { GameState } from './game/model/GameState'
+import { DEV_MODE } from './params'
+import { ObjectListLoader } from './game/ObjectListLoader'
+import { SaveGameManager } from './resource/SaveGameManager'
+import { TypedWorker, TypedWorkerFallback } from './worker/TypedWorker'
+import { InitLoadingMessage } from './resource/wadworker/InitLoadingMessage'
+import { WorkerResponse } from './worker/WorkerResponse'
+import { WadSystem } from './resource/wadworker/WadSystem'
+import { ScreenMaster } from './screen/ScreenMaster'
+import { LoadingLayer } from './screen/layer/LoadingLayer'
+import { CursorLayer } from './screen/layer/CursorLayer'
+import { WadFileSelectionModal } from '../site/wadModal/WadFileSelectionModal'
+import { GithubBox } from '../site/github/github-box'
+import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
 
 function onWadLoaderMessage(msg: WadWorkerMessage) {
     switch (msg.type) {
@@ -45,7 +39,7 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
             ResourceManager.configuration = msg.cfg
             ResourceManager.loadDefaultCursor().then(() => {
                 loadingLayer.enableGraphicMode(msg.totalResources)
-                cursorLayer.show()
+                screenMaster.addLayer(new CursorLayer(), 1000).show()
             })
             break
         case WorkerMessageType.CACHE_MISS:
@@ -117,7 +111,6 @@ SaveGameManager.loadSaveGames()
 SaveGameManager.loadSaveGameScreenshots()
 const screenMaster = new ScreenMaster()
 const loadingLayer = screenMaster.addLayer(new LoadingLayer(), 0)
-const cursorLayer = screenMaster.addLayer(new CursorLayer(), 1000)
 const wadFileSelectModal = new WadFileSelectionModal('game-container', (wad0Url: string, wad1Url: string) => {
     wadWorker.sendMessage(new InitLoadingMessage(wad0Url, wad1Url))
 })
