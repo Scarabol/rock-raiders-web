@@ -12,6 +12,7 @@ import { WadAssetRegistry } from './WadAssetRegistry'
 import { WadFile } from './WadFile'
 import { grayscaleToGreen } from './WadUtil'
 import { Cursor } from '../Cursor'
+import { DEFAULT_FONT_NAME } from '../../params'
 
 export class WadLoader {
     static readonly bitmapWorkerPool = new BitmapWorkerPool().createPool(16, null)
@@ -267,8 +268,7 @@ export class WadLoader {
                 })
             }),
             new Promise<void>((resolve) => {
-                const name = 'Interface/Fonts/Font5_Hi.bmp' // loading bar label font
-                this.loadFontImageAsset(name, (assetNames: string[], imgData) => {
+                this.loadFontImageAsset(DEFAULT_FONT_NAME, (assetNames: string[], imgData) => {
                     this.onAssetLoaded(0, assetNames, imgData)
                     resolve()
                 })

@@ -3,6 +3,7 @@ import { MenuCfg } from '../../cfg/MenuCfg'
 import { getFilename, getPath, iGet, yieldToMainThread } from '../../core/Util'
 import { RonFileParser } from './parser/RonFileParser'
 import { WadLoader } from './WadLoader'
+import { TOOLTIP_FONT_NAME } from '../../params'
 
 interface WadAsset {
     method: ((name: string, callback: (assetName: string[], assetData: any) => void) => void)
@@ -24,7 +25,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.wadLoader.wad0File.filterEntryNames(`Interface/Pointers/.+\\.flh`).forEach((assetPath) => {
             this.addAsset(this.wadLoader.loadFlhAsset, assetPath)
         })
-        this.addAsset(this.wadLoader.loadFontImageAsset, 'Interface/Fonts/ToolTipFont.bmp')
+        this.addAsset(this.wadLoader.loadFontImageAsset, TOOLTIP_FONT_NAME)
         // add menu assets
         this.addMenuWithAssets(gameConfig.menu.mainMenuFull, false)
         this.addMenuWithAssets(gameConfig.menu.pausedMenu)

@@ -8,6 +8,7 @@ import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { EntityType } from '../game/model/EntityType'
 import { EntityDependencyChecked } from '../gui/main/IconPanelButton'
+import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME } from '../params'
 
 export class ResourceCache {
     static readonly fontCache: Map<string, BitmapFont> = new Map()
@@ -63,11 +64,11 @@ export class ResourceCache {
     }
 
     static getDefaultFont(): BitmapFont {
-        return this.getBitmapFont('Interface/Fonts/Font5_Hi.bmp')
+        return this.getBitmapFont(DEFAULT_FONT_NAME)
     }
 
     static getTooltipFont(): BitmapFont {
-        return this.getBitmapFont('Interface/Fonts/tooltipfont.bmp')
+        return this.getBitmapFont(TOOLTIP_FONT_NAME)
     }
 
     static getTooltipText(tooltipKey: string): string {
