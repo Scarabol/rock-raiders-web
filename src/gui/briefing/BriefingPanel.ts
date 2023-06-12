@@ -16,7 +16,7 @@ export class BriefingPanel extends Panel {
     imgBack: SpriteImage = null
     imgParagraphList: SpriteImage[] = []
     paragraph: number = 0
-    imgParagraph: SpriteImage = null
+    objectiveParagraphs: string[] = []
     onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log(`Message: press space to continue = ${state}`)
     onStartMission: () => any = () => console.log('Start mission')
 
@@ -50,19 +50,22 @@ export class BriefingPanel extends Panel {
         this.width = this.imgBack.width
         this.height = this.imgBack.height
         this.updatePosition()
-        Promise.all(objectiveText.split('\\a').map((txt) => {
+        this.objectiveParagraphs = objectiveText.split('\\a')
+        Promise.all(this.objectiveParagraphs.map((txt) => {
             return OffscreenCache.bitmapFontWorkerPool.createTextImage(this.cfg.textFontName, txt, this.cfg.textWindow.w, false)
-        })).then((textImages) => this.imgParagraphList = textImages)
+        })).then((textImages) => {
+            this.imgParagraphList = textImages
+            this.notifyRedraw()
+        })
     }
 
     setParagraph(paragraph: number) {
         if (paragraph < 0) return
-        if (paragraph > this.imgParagraphList.length - 1) {
+        if (paragraph > 0 && paragraph > this.objectiveParagraphs.length - 1) {
             this.onStartMission()
             return
         }
         this.paragraph = paragraph
-        this.imgParagraph = this.imgParagraphList[this.paragraph]
         this.btnNext.hidden = this.paragraph >= this.imgParagraphList.length - 1
         this.btnBack.hidden = this.paragraph < 1
         this.notifyRedraw()
@@ -81,7 +84,9 @@ export class BriefingPanel extends Panel {
         this.setParagraph(0)
         this.btnNext.hidden = this.paragraph >= this.imgParagraphList.length - 1
         this.btnBack.hidden = this.paragraph < 1
-        this.onSetSpaceToContinue(true)
+        if (this.imgParagraphList.length < 1) {
+            this.onSetSpaceToContinue(true)
+        }
     }
 
     hide() {
@@ -93,7 +98,8 @@ export class BriefingPanel extends Panel {
         if (this.hidden) return
         if (this.imgBack) context.drawImage(this.imgBack, this.x, this.y)
         if (this.imgTitle) context.drawImage(this.imgTitle, this.x + this.titleRelX, this.y + this.titleRelY)
-        if (this.imgParagraph) context.drawImage(this.imgParagraph, this.x + this.cfg.textWindow.x, this.y + this.cfg.textWindow.y)
+        const imgParagraph = this.imgParagraphList[this.paragraph]
+        if (imgParagraph) context.drawImage(imgParagraph, this.x + this.cfg.textWindow.x, this.y + this.cfg.textWindow.y)
         super.onRedraw(context)
     }
 }
