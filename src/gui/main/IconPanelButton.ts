@@ -59,7 +59,7 @@ export class IconPanelButton extends Button {
             isOk: (d.entityType === EntityType.PILOT && this.hasRaider)
                 || (this.discoveredBuildingsMaxLevel.getOrDefault(d.entityType, -1) >= d.minLevel),
         }))
-        this.disabled = !DEV_MODE && checked.every((d) => d.isOk)
+        this.disabled = !DEV_MODE && checked.some((d) => !d.isOk)
         OffscreenCache.createDependenciesSprite(checked).then((dependencySprite) => this.dependencyTooltipImage = dependencySprite)
     }
 
