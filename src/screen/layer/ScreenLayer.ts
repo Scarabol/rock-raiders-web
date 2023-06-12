@@ -7,12 +7,12 @@ import { AnimationFrameScaled } from '../AnimationFrame'
 export class ScreenLayer {
     canvas: HTMLCanvasElement
     zIndex: number = 0
-    active: boolean = true
+    active: boolean = false
 
     constructor() {
         this.canvas = document.createElement('canvas')
         this.canvas.setAttribute('data-layer-class', this.constructor.name)
-        this.hide()
+        this.canvas.style.visibility = 'hidden'
     }
 
     reset() {

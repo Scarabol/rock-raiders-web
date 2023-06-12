@@ -53,6 +53,7 @@ export class MainMenuLayer extends ScaledLayer {
     }
 
     hide() {
+        this.items.forEach((item) => item.reset())
         this.scrollSpeedY = 0
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
         super.hide()
