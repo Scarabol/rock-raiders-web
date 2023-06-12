@@ -1,4 +1,4 @@
-body {
+html, body {
     margin: 0;
     padding: 0;
     background: #333;
@@ -9,13 +9,16 @@ body {
     flex-direction: column;
     height: 100vh;
     touch-action: manipulation;
-}
-
-#game-canvas-container {
-    display: flex;
     justify-content: center;
 }
 
+#game-canvas-container {
+    display: grid;
+    justify-content: center;
+    outline: 0;
+}
+
 #game-canvas-container > canvas {
-    position: absolute;
+    grid-column: 1;
+    grid-row: 1;
 }
