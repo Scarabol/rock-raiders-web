@@ -10,6 +10,7 @@ import { SaveGamePreferences } from '../resource/SaveGameManager'
 import { Raider } from '../game/model/raider/Raider'
 import { BuildingSite } from '../game/model/building/BuildingSite'
 import { VehicleUpgrade } from '../game/model/vehicle/VehicleUpgrade'
+import { CameraRotation } from '../scene/BirdViewControls'
 
 export class GuiCommand extends GameEvent {
 }
@@ -270,7 +271,7 @@ export class CameraControl extends GuiCommand {
     constructor(
         readonly zoom: number,
         readonly cycleBuilding: boolean,
-        readonly rotationIndex: number,
+        readonly rotationIndex: CameraRotation,
         readonly jumpToWorld: { x: number, y: number, z: number },
     ) {
         super(EventKey.COMMAND_CAMERA_CONTROL)

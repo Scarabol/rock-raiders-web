@@ -16,6 +16,7 @@ import { SoundManager } from '../audio/SoundManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SelectionFrameComponent } from './component/SelectionFrameComponent'
 import { BeamUpComponent } from './component/BeamUpComponent'
+import { CameraRotation } from '../scene/BirdViewControls'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -162,7 +163,7 @@ export class GuiManager {
                 const target = entityMgr.buildings[this.buildingCycleIndex].primarySurface.getCenterWorld()
                 cameraControls.jumpTo(target)
             }
-            if (event.rotationIndex >= 0) cameraControls.rotate(event.rotationIndex)
+            if (event.rotationIndex !== CameraRotation.NONE) cameraControls.rotate(event.rotationIndex)
             if (event.jumpToWorld) cameraControls.jumpTo(event.jumpToWorld)
         })
         EventBus.registerEventListener(EventKey.COMMAND_REPAIR_LAVA, () => {

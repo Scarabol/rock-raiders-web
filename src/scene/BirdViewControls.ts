@@ -5,10 +5,17 @@ import { GameWheelEvent } from '../event/GameWheelEvent'
 import { Camera, MOUSE } from 'three'
 import { DEV_MODE, KEY_PAN_SPEED } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
+import { MOUSE_BUTTON } from '../event/EventTypeEnum'
+
+export enum CameraRotation {
+    NONE = -1,
+    LEFT = 0,
+    UP = 1,
+    RIGHT = 2,
+    DOWN = 3,
+}
 
 export class BirdViewControls extends MapControls {
-
-    // TODO implement custom camera controls, which support direct control and especially for rotation
 
     constructor(camera: Camera, domElement: HTMLElement) {
         super(camera, domElement)
@@ -26,12 +33,19 @@ export class BirdViewControls extends MapControls {
         this.domElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 5 * zoom}))
     }
 
-    rotate(rotationIndex: number) {
-        console.log(`TODO implement rotate camera: ${['left', 'up', 'right', 'down'][rotationIndex]}`)
-        // rotation can not be implemented with events, because valid pointer id is required by MapControls/OrbitControls
+    rotate(rotationIndex: CameraRotation) {
+        if (rotationIndex === CameraRotation.NONE) return
+        const dx = rotationIndex === CameraRotation.LEFT ? 1 : (rotationIndex === CameraRotation.RIGHT ? -1 : 0)
+        const dy = rotationIndex === CameraRotation.UP ? 1 : (rotationIndex === CameraRotation.DOWN ? -1 : 0)
+        const px = (this.domElement as HTMLElement).clientWidth / 2
+        const py = (this.domElement as HTMLElement).clientHeight / 2
+        const step = py / 8 // => 16 clicks for a 360 no-scope
+        this.domElement.dispatchEvent(new PointerEvent('pointerdown', {pointerId: 1, button: MOUSE_BUTTON.MIDDLE, clientX: px, clientY: py}))
+        this.domElement.dispatchEvent(new PointerEvent('pointermove', {pointerId: 1, clientX: px + dx * step, clientY: py + dy * step}))
+        this.domElement.dispatchEvent(new PointerEvent('pointerup', {pointerId: 1, button: MOUSE_BUTTON.MIDDLE, clientX: px + dx * step, clientY: py + dy * step}))
     }
 
-    jumpTo(location: {x: number, y: number, z: number}) {
+    jumpTo(location: { x: number, y: number, z: number }) {
         const offsetTargetToCamera = this.object.position.clone().sub(this.target)
         this.object.position.set(location.x, location.y, location.z).add(offsetTargetToCamera)
         this.target.set(location.x, location.y, location.z)
