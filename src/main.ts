@@ -16,7 +16,7 @@ import { SaveGameManager } from './resource/SaveGameManager'
 import { TypedWorker, TypedWorkerFallback } from './worker/TypedWorker'
 import { InitLoadingMessage } from './resource/wadworker/InitLoadingMessage'
 import { WorkerResponse } from './worker/WorkerResponse'
-import { WadSystem } from './resource/wadworker/WadSystem'
+import { WadSystem } from './resource/wadworker/WadWorker'
 import { ScreenMaster } from './screen/ScreenMaster'
 import { LoadingLayer } from './screen/layer/LoadingLayer'
 import { CursorLayer } from './screen/layer/CursorLayer'
@@ -113,7 +113,7 @@ let wadWorker: TypedWorker<InitLoadingMessage, WorkerResponse>
 // try {
 //     wadWorker = new TypedWorkerFrontend(new Worker(new URL('./resource/wadworker/WadWorker', import.meta.url), {type: 'module'}), (msg: WorkerResponse) => onWadLoaderMessage(msg))
 // } catch (e) {
-//     console.warn('Could not setup threaded worker!\nUsing fallback to main thread, expect reduced performance.', e)
+//     console.warn('Could not set up threaded worker!\nUsing fallback to main thread, expect reduced performance.', e)
 wadWorker = new TypedWorkerFallback<InitLoadingMessage, WorkerResponse>((r) => onWadLoaderMessage(r))
 new WadSystem(wadWorker as TypedWorkerFallback<InitLoadingMessage, WorkerResponse>)
 // }
