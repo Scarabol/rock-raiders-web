@@ -98,7 +98,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Nice to have
 
 - Seams do not show tear down progress while drilling
-- Camera can glitch through terrain
 - Add rotation speed to entities and play turnLeft, turnRight animations
 
 ### Cosmetics

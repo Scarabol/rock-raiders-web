@@ -20,7 +20,7 @@ export class BirdViewControls extends MapControls {
     constructor(camera: Camera, domElement: HTMLElement) {
         super(camera, domElement)
         this.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
-        // this.controls.maxPolarAngle = Math.PI * 0.45; // TODO dynamically adapt to terrain height at camera position
+        if (!DEV_MODE) this.maxPolarAngle = Math.PI * 0.45;
         this.listenToKeyEvents(domElement)
         this.keyPanSpeed = this.keyPanSpeed * KEY_PAN_SPEED
         if (!DEV_MODE) {
