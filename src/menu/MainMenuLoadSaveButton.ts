@@ -4,63 +4,35 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 
 export class MainMenuLoadSaveButton extends MainMenuBaseItem {
-    loading: boolean = null
-    labelLoadImgLo: SpriteImage = null
-    labelLoadImgHi: SpriteImage = null
-    labelSaveImgLo: SpriteImage = null
-    labelSaveImgHi: SpriteImage = null
     labelImgLo: SpriteImage = null
     labelImgHi: SpriteImage = null
-    actionNameLoad: string = ''
-    actionNameSave: string = ''
     saveGameImg: SpriteImage = null
     saveGameImgWidthLo: number = 0
     saveGameImgHeightLo: number = 0
     saveGameImgWidthHi: number = 0
     saveGameImgHeightHi: number = 0
 
-    constructor(layer: MainMenuLayer, index: number, x: number, y: number) {
+    constructor(layer: MainMenuLayer, index: number, x: number, y: number, loading: boolean) {
         super()
         const menuCfg = ResourceManager.configuration.menu
-        const loadLabel = menuCfg.loadGame
         const btnNum = index + 1
+        const buttonLabel = loading ? `${menuCfg.loadGame} ${btnNum}` : `${menuCfg.saveGame} ${btnNum}` // yes, even for "load"game the label says savegame
         Promise.all([
-            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.loFont, loadLabel + ' ' + btnNum),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.hiFont, loadLabel + ' ' + btnNum),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.loFont, buttonLabel),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.hiFont, buttonLabel),
         ]).then((textImages) => {
-            [this.labelLoadImgLo, this.labelLoadImgHi] = textImages
-            this.width = Math.max(this.labelLoadImgLo.width, this.labelLoadImgHi.width) + menuCfg.saveImage.BigWidth
-            this.height = Math.max(this.labelLoadImgLo.height, this.labelLoadImgHi.height)
+            [this.labelImgLo, this.labelImgHi] = textImages
+            this.width = Math.max(this.labelImgLo.width, this.labelImgHi.width) + menuCfg.saveImage.BigWidth
+            this.height = Math.max(this.labelImgLo.height, this.labelImgHi.height)
         })
-        const saveLabel = menuCfg.saveGame
-        ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.loFont, saveLabel + ' ' + btnNum)
-            .then((textImage) => this.labelSaveImgLo = textImage)
-        ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.hiFont, saveLabel + ' ' + btnNum)
-            .then((textImage) => this.labelSaveImgHi = textImage)
         this.x = x
         this.y = y
         this.targetIndex = index
-        this.actionNameLoad = 'load_game_' + index
-        this.actionNameSave = 'save_game_' + index
+        this.actionName = loading ? `load_game_${index}` : `save_game_${index}`
         this.saveGameImgWidthLo = menuCfg.saveImage.Width
         this.saveGameImgHeightLo = menuCfg.saveImage.Height
         this.saveGameImgWidthHi = menuCfg.saveImage.BigWidth
         this.saveGameImgHeightHi = menuCfg.saveImage.BigHeight
-        this.setMode(true)
-    }
-
-    setMode(loading: boolean) {
-        if (this.loading === loading) return
-        this.loading = loading
-        if (this.loading) {
-            this.labelImgLo = this.labelLoadImgLo
-            this.labelImgHi = this.labelLoadImgHi
-            this.actionName = this.actionNameLoad
-        } else {
-            this.labelImgLo = this.labelSaveImgLo
-            this.labelImgHi = this.labelSaveImgHi
-            this.actionName = this.actionNameSave
-        }
     }
 
     draw(context: SpriteContext) {
@@ -74,7 +46,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
                 context.drawImage(this.saveGameImg, this.x, this.y, this.saveGameImgWidthLo, this.saveGameImgHeightLo)
             }
         }
-        const img = this.state.hover && !this.state.pressed ? this.labelImgHi : this.labelImgLo
+        const img = (this.state.hover && !this.state.pressed) ? this.labelImgHi : this.labelImgLo
         if (img) context.drawImage(img, this.x + 80, this.y)
     }
 }

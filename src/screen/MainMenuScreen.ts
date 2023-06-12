@@ -49,8 +49,7 @@ export class MainMenuScreen {
         }
     }
 
-    showMainMenu(index: number = 0, loading: boolean = true) {
-        if (index === 3) this.loadSaveLayer.setMode(loading)
+    showMainMenu(index: number = 0) {
         this.menuLayers.forEach((m, i) => i === index ? m.show() : m.hide())
     }
 
