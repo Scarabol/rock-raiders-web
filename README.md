@@ -42,11 +42,9 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.6.0 - Complete Base Systems
 
-- Implement buildings with improved ECS and animation system
-- Implement raiders with improved ECS and animation system
-- Refactor job system to allow multi-carry jobs
+- Refactor job system to allow multi-carry jobs for vehicles
+- Implement touch event listener to support mobile browser
 - Raider get tired while carrying and eat at barracks
-- Input is not processed synchronously, mouse up may be processed before mouse down is done
 
 ### v0.7.0 - Rockies, Slugs And Damage
 
@@ -97,6 +95,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Nice to have
 
+- Input is not always processed correctly, mouse up may be processed before mouse down is done, but sync means input lag
 - Seams do not show tear down progress while drilling
 - Add rotation speed to entities and play turnLeft, turnRight animations
 
