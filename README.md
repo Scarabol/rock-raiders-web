@@ -86,6 +86,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Overwrite Main Menu Logo with "Nuke Saves & Assets Cache" and "Nuke ALL Caches"
 - Move camera with click on mini map
 - Use same team for all missions and add names to raiders
+- Auto switch from portrait to landscape mode in fullscreen
 
 ### v0.9.0 - Polishing
 
@@ -98,6 +99,9 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Input is not always processed correctly, mouse up may be processed before mouse down is done, but sync means input lag
 - Seams do not show tear down progress while drilling
 - Add rotation speed to entities and play turnLeft, turnRight animations
+- Selection layer capturing all touch events prevents camera control on mobile
+- Rendering issue on mobile with icon panel and mission briefing, clearing rect seems to small
+- When switching from loading to main menu layer on mobile the new layer is not shown
 
 ### Cosmetics
 

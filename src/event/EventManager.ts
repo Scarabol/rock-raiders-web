@@ -6,7 +6,7 @@ import { GamePointerEvent } from './GamePointerEvent'
 import { GameWheelEvent } from './GameWheelEvent'
 
 export class EventManager {
-    focusedLayer: ScreenLayer = null
+    focusedLayer: ScreenLayer = null // TODO Use web API setPointerCapture instead
 
     constructor(screenMaster: ScreenMaster) {
         screenMaster.gameCanvasContainer.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault())
