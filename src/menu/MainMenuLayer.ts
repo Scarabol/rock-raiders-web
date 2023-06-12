@@ -18,7 +18,6 @@ export class MainMenuLayer extends ScaledLayer {
     scrollY: number = 0
     scrollSpeedY: number = 0
     scrollInterval: NodeJS.Timeout = null
-    lastDown: number = 0
 
     constructor(menuCfg: MenuEntryCfg) {
         super()
@@ -112,16 +111,6 @@ export class MainMenuLayer extends ScaledLayer {
             this.scrollInterval = setInterval(() => {
                 this.setScrollY(this.scrollSpeedY)
             }, NATIVE_UPDATE_INTERVAL)
-        }
-    }
-
-    private doubleTapToFullscreen() {
-        const now = new Date().getTime() // XXX use time from event to be more precise
-        if (this.lastDown && now - this.lastDown < 400) {
-            this.lastDown = 0
-            document.getElementById('game-canvas-container')?.requestFullscreen().then()
-        } else {
-            this.lastDown = now
         }
     }
 

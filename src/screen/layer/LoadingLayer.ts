@@ -1,6 +1,8 @@
 import { ResourceManager } from '../../resource/ResourceManager'
 import { ScaledLayer } from './ScreenLayer'
 import { DEFAULT_FONT_NAME } from '../../params'
+import { GamePointerEvent } from '../../event/GamePointerEvent'
+import { MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 
 export class LoadingLayer extends ScaledLayer {
     assetIndex: number = 0
@@ -45,5 +47,12 @@ export class LoadingLayer extends ScaledLayer {
     increaseLoadingState() {
         this.assetIndex++
         this.animationFrame.redraw()
+    }
+
+    handlePointerEvent(event: GamePointerEvent): boolean {
+        if (event.eventEnum === POINTER_EVENT.DOWN && event.button === MOUSE_BUTTON.MAIN) {
+            this.doubleTapToFullscreen()
+        }
+        return super.handlePointerEvent(event)
     }
 }

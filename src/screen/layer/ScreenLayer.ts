@@ -87,6 +87,7 @@ export class ScaledLayer extends ScreenLayer {
     fixedHeight: number = NATIVE_SCREEN_HEIGHT
     scaleX: number
     scaleY: number
+    private lastDownTime: number = 0
 
     constructor() {
         super()
@@ -122,5 +123,15 @@ export class ScaledLayer extends ScreenLayer {
     show() {
         super.show()
         this.animationFrame.redraw()
+    }
+
+    protected doubleTapToFullscreen() {
+        const now = new Date().getTime() // XXX use time from event to be more precise
+        if (this.lastDownTime && now - this.lastDownTime < 400) {
+            this.lastDownTime = 0
+            document.getElementById('game-canvas-container')?.requestFullscreen().then()
+        } else {
+            this.lastDownTime = now
+        }
     }
 }
