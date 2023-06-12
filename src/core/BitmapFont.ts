@@ -29,16 +29,16 @@ export class BitmapFontData {
 
         function isLimiterColor(imgData: ImageData, index: number): boolean {
             // Last pixel in the first row defines the end of char limiter color (e.g. 255,39,0)
-            return imgData.data[index] === imgData.data[(imgData.width - 1) * 4]
-                && imgData.data[index + 1] === imgData.data[(imgData.width - 1) * 4 + 1]
-                && imgData.data[index + 2] === imgData.data[(imgData.width - 1) * 4 + 2]
+            return imgData.data[index] === fontImageData.data[(fontImageData.width - 1) * 4]
+                && imgData.data[index + 1] === fontImageData.data[(fontImageData.width - 1) * 4 + 1]
+                && imgData.data[index + 2] === fontImageData.data[(fontImageData.width - 1) * 4 + 2]
         }
 
         function getActualCharacterWidth(imgData: ImageData) {
             for (let y = 0; y < imgData.height; y++) {
                 if (isLimiterColor(imgData, y * 4 * imgData.width)) continue // find non-empty row first
                 for (let x = 0; x < maxCharWidth; x++) {
-                    if (isLimiterColor(imgData, x * 4)) return x
+                    if (isLimiterColor(imgData, y * 4 * imgData.width + x * 4)) return x
                 }
                 return maxCharWidth
             }
@@ -51,6 +51,7 @@ export class BitmapFontData {
             if (actualWidth > 0) {
                 imgData = this.extractData(imgData, 0, 0, actualWidth, this.charHeight)
             } else {
+                console.warn(`Could not determine actual character width for '${chars[i]}'. Adding dummy sprite to letter map`)
                 imgData = createDummyImgData(maxCharWidth, this.charHeight)
             }
             this.letterMap.set(chars[i], imgData)
