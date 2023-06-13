@@ -225,7 +225,7 @@ export class EntityManager {
     }
 
     placeMaterial(item: MaterialEntity, worldPosition: Vector2) {
-        item.sceneEntity.addToScene(worldPosition, null)
+        item.sceneEntity.addToScene(item.worldMgr.sceneMgr, worldPosition, null)
         if (item.sceneEntity.visible) {
             this.materials.push(item) // TODO use game entities within entity manager
             item.setupCarryJob()

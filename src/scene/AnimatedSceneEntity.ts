@@ -5,9 +5,9 @@ import { AnimEntityData } from '../resource/AnimEntityParser'
 import { ResourceManager } from '../resource/ResourceManager'
 import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 import { AnimationGroup } from './AnimationGroup'
-import { SceneEntity } from './SceneEntity'
 import { DEV_MODE } from '../params'
 import { AnimationQualityGroup } from './AnimationQualityGroup'
+import { SceneManager } from '../game/SceneManager'
 
 export class AnimatedSceneEntity extends Group implements Updatable {
     readonly animationData: AnimEntityData[] = []
@@ -16,7 +16,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     readonly installedUpgrades: { parent: Object3D, child: AnimatedSceneEntity }[] = []
     readonly animationParent: Group = new Group()
     readonly carryJoints: SceneMesh[] = []
-    readonly carriedByIndex: Map<number, SceneEntity> = new Map()
+    readonly carriedByIndex: Map<number, Object3D> = new Map()
     readonly wheelJoints: { mesh: Object3D, radius: number }[] = []
     upgradeLevel: string = '0000'
     currentAnimation: string
@@ -169,7 +169,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.carriedByIndex.forEach((item, index) => {
             const carryJoint = this.carryJoints[index]
             if (carryJoint) {
-                carryJoint.add(item.group)
+                carryJoint.add(item)
             } else {
                 console.warn(`Could not find carry joint with index ${index} in ${this.carryJoints}`)
             }
@@ -180,11 +180,11 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
     }
 
-    pickupEntity(entity: SceneEntity) {
+    pickupEntity(entity: Object3D) {
         const foundCarryJoint = this.carryJoints.some((carryJoint, index) => {
             if (carryJoint.children.length < 1) {
                 this.carriedByIndex.set(index, entity)
-                carryJoint.add(entity.group)
+                carryJoint.add(entity)
                 return true
             }
             return false
@@ -193,19 +193,17 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         entity.position.set(0, 0, 0)
     }
 
-    dropAllEntities(): SceneEntity[] {
-        const dropped = Array.from(this.carriedByIndex.values())
+    dropAllEntities(): void {
         const position = this.position.clone()
         this.carriedByIndex.forEach((item, index) => {
             const carryJoint = this.carryJoints[index]
             if (carryJoint) {
-                carryJoint.remove(item.group)
+                carryJoint.remove(item)
                 carryJoint.getWorldPosition(position)
             }
             item.position.copy(position)
         })
         this.carriedByIndex.clear()
-        return dropped
     }
 
     dispose() {
@@ -260,5 +258,16 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         const boundingSphere = new Sphere()
         new Box3().setFromObject(this).getBoundingSphere(boundingSphere)
         return boundingSphere.radius * boundingSphere.radius
+    }
+
+    addToScene(sceneMgr: SceneManager, worldPosition: Vector2, headingRad: number) {
+        if (worldPosition) {
+            this.position.copy(sceneMgr.getFloorPosition(worldPosition))
+        }
+        if (headingRad !== undefined && headingRad !== null) {
+            this.rotation.y = headingRad
+        }
+        this.visible = sceneMgr.terrain.getSurfaceFromWorld(this.position).discovered
+        sceneMgr.addMeshGroup(this)
     }
 }

@@ -1,6 +1,5 @@
 import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
-import { SceneEntity } from '../../../scene/SceneEntity'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { CarryJob } from '../job/CarryJob'
@@ -11,11 +10,12 @@ import { Surface } from '../../terrain/Surface'
 import { BuildingSite } from '../building/BuildingSite'
 import { BarrierLocation } from './BarrierLocation'
 import { MaterialEntityType } from '../../entity/MaterialSpawner'
+import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 
 export class MaterialEntity {
     entity: GameEntity
     carryJob: CarryJob = null
-    sceneEntity: SceneEntity = null
+    sceneEntity: AnimatedSceneEntity = null
 
     constructor(
         readonly worldMgr: WorldManager,
@@ -37,14 +37,17 @@ export class MaterialEntity {
 
     disposeFromWorld() {
         if (this.entityType === EntityType.BARRIER) {
-            this.sceneEntity.changeActivity(BarrierActivity.Teleport, () => this.dispose())
+            this.sceneEntity.setAnimation(BarrierActivity.Teleport, () => {
+                this.dispose()
+            })
         } else {
             this.dispose()
         }
     }
 
     private dispose() {
-        this.sceneEntity.disposeFromScene()
+        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
+        this.sceneEntity.dispose()
         this.worldMgr.entityMgr.materials.remove(this)
         this.worldMgr.entityMgr.materialsUndiscovered.remove(this)
         this.worldMgr.entityMgr.placedFences.remove(this)

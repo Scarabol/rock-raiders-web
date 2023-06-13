@@ -101,17 +101,17 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
 
     private igniteDynamite() {
         this.carryItem.sceneEntity.headTowards(this.carryItem.targetSurface.getCenterWorld2D())
-        this.carryItem.sceneEntity.changeActivity(DynamiteActivity.TickDown, () => {
-            this.carryItem.sceneEntity.disposeFromScene()
+        this.carryItem.sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
             this.carryItem.targetSurface.collapse()
             this.carryItem.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.carryItem.sceneEntity.position, this.carryItem.sceneEntity.getHeading())
-            this.carryItem.sceneEntity.sceneMgr.addPositionalAudio(this.carryItem.sceneEntity.group, Sample[Sample.SFX_Dynamite], true, false)
+            this.carryItem.worldMgr.sceneMgr.addPositionalAudio(this.carryItem.sceneEntity, Sample[Sample.SFX_Dynamite], true, false)
             EventBus.publishEvent(new DynamiteExplosionEvent(this.carryItem.sceneEntity.position2D))
+            this.carryItem.disposeFromWorld()
         })
     }
 
     private placeFence() {
-        this.carryItem.sceneEntity.addToScene(null, null)
+        this.carryItem.sceneEntity.addToScene(this.carryItem.worldMgr.sceneMgr, null, null)
         const stats = ResourceManager.configuration.stats.electricFence
         const pickSphere = this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(SceneSelectionComponent).pickSphere
         this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new SelectionFrameComponent(pickSphere, stats))

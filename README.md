@@ -108,6 +108,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Level 11 spams console with unreachable jobs
 - Two buttons in priority list can be hovered/pressed/released at the same time
+- Numbers above ticking dynamite are not shown correctly sometimes
 
 ## Technical Debt
 

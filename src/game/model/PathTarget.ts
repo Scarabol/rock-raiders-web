@@ -68,9 +68,9 @@ export class PathTarget {
                 item.disposeFromWorld()
             }
         } else {
-            item.sceneEntity.addToScene(null, this.headingOnSite)
+            item.sceneEntity.addToScene(item.worldMgr.sceneMgr, null, this.headingOnSite)
             if (item.entityType === EntityType.BARRIER) {
-                item.sceneEntity.changeActivity(BarrierActivity.Expand, () => item.sceneEntity.changeActivity(BarrierActivity.Long))
+                item.sceneEntity.setAnimation(BarrierActivity.Expand, () => item.sceneEntity.setAnimation(BarrierActivity.Long))
             }
             this.site?.addItem(item)
         }
