@@ -40,6 +40,8 @@ export const TOOLTIP_DELAY_SFX = 1000
 export const DEFAULT_FONT_NAME = 'Interface/Fonts/Font5_Hi.bmp'
 export const TOOLTIP_FONT_NAME = 'Interface/Fonts/tooltipfont.bmp'
 export const MIN_CAMERA_HEIGHT_ABOVE_TERRAIN = 5
+export const AIR_LEVEL_WARNING_STEP = 5 / 100 // % -> each 5 percent down triggers warning
+export const AIR_LEVEL_LEVEL_LOW = 25 / 100 // % -> below 20 percent trigger low level warning
 
 // native constants (do not change)
 

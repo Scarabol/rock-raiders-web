@@ -9,6 +9,7 @@ import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { TextInfoMessage } from './TextInfoMessage'
 import { TextInfoMessageCfg } from './TextInfoMessageCfg'
+import { AIR_LEVEL_LEVEL_LOW, AIR_LEVEL_WARNING_STEP } from '../../params'
 
 export class MessagePanel extends Panel {
     private readonly maxAirLevelWidth = 236
@@ -25,6 +26,7 @@ export class MessagePanel extends Panel {
     msgUnitUpgraded: TextInfoMessage
 
     airLevelWidth: number = this.maxAirLevelWidth
+    nextAirWarning: number = 1 - AIR_LEVEL_WARNING_STEP
 
     constructor(parent: BaseElement, panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageCfg) {
         super(parent, panelCfg)
@@ -50,6 +52,9 @@ export class MessagePanel extends Panel {
             if (event.airLevel > 0) {
                 const nextAirLevelWidth = Math.round(this.maxAirLevelWidth * event.airLevel)
                 if (this.airLevelWidth !== nextAirLevelWidth) {
+                    const nextPercent = nextAirLevelWidth / this.maxAirLevelWidth
+                    if (nextPercent < this.nextAirWarning) this.setMessage(nextPercent > AIR_LEVEL_LEVEL_LOW ? this.msgAirSupplyRunningOut : this.msgAirSupplyLow)
+                    this.nextAirWarning = Math.floor(nextAirLevelWidth / this.maxAirLevelWidth / AIR_LEVEL_WARNING_STEP) * AIR_LEVEL_WARNING_STEP
                     this.airLevelWidth = nextAirLevelWidth
                     this.notifyRedraw()
                 }
@@ -63,6 +68,7 @@ export class MessagePanel extends Panel {
     reset() {
         super.reset()
         this.airLevelWidth = this.maxAirLevelWidth
+        this.nextAirWarning = 1 - AIR_LEVEL_WARNING_STEP
     }
 
     setMessage(textInfoMessage: TextInfoMessage, timeout: number = 3000) {
