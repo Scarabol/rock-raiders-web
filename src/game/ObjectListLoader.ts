@@ -78,6 +78,7 @@ export class ObjectListLoader {
                     entityMgr.raidersUndiscovered.push(raider)
                 }
                 if (olEntry.driving) vehicleKeyToDriver.set(olEntry.driving, raider)
+                entityMgr.recordedEntities.push(raider.entity)
                 break
             case EntityType.TOOLSTATION:
             case EntityType.TELEPORT_PAD:
@@ -139,6 +140,7 @@ export class ObjectListLoader {
                     entityMgr.vehiclesUndiscovered.push(vehicle)
                 }
                 vehicleByKey.set(olKey, vehicle)
+                entityMgr.recordedEntities.push(vehicle.entity)
                 break
             default:
                 console.warn(`Object type ${olEntry.type} not yet implemented`)

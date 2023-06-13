@@ -41,6 +41,7 @@ export class EntityManager {
     vehiclesUndiscovered: VehicleEntity[] = []
     vehiclesInBeam: VehicleEntity[] = []
     completedBuildingSites: BuildingSite[] = []
+    recordedEntities: GameEntity[] = []
 
     constructor() {
         // event handler must be placed here, because only this class knows the "actual" selection instance
@@ -74,6 +75,7 @@ export class EntityManager {
         this.vehiclesUndiscovered.length = 0
         this.vehiclesInBeam.length = 0
         this.completedBuildingSites.length = 0
+        this.recordedEntities.length = 0
     }
 
     update(elapsedMs: number) {

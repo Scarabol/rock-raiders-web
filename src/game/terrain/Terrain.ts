@@ -30,6 +30,7 @@ export class Terrain {
     powerGrid: PowerGrid = new PowerGrid()
     erodeTriggerTimeMs: number = 0
     lavaErodes: LavaErosion[] = []
+    tutoBlocksById: Map<number, Surface[]> = new Map()
 
     constructor(readonly worldMgr: WorldManager, readonly levelConf: LevelEntryCfg) {
         this.worldMgr.sceneMgr.terrain = this

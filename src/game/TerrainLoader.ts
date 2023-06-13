@@ -121,8 +121,15 @@ export class TerrainLoader {
             }
         }
 
-        if (blockMap) { // TODO implement tutorial blocks map
-            // console.log(blockMap)
+        if (blockMap) {
+            for (let x = 0; x < terrain.width; x++) {
+                for (let y = 0; y < terrain.height; y++) {
+                    const tutoBlockId = blockMap[y][x]
+                    if (tutoBlockId) {
+                        terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(terrain.surfaces[x][y])
+                    }
+                }
+            }
         }
     }
 }
