@@ -55,25 +55,25 @@ export class EntityManager {
 
     reset() {
         this.selection = new GameSelection()
-        this.buildings = []
-        this.buildingsUndiscovered = []
-        this.raiders = []
-        this.raidersUndiscovered = []
-        this.raidersInBeam = []
-        this.materials = []
-        this.materialsUndiscovered = []
-        this.placedFences = []
-        this.buildingSites = []
-        this.spiders = []
-        this.undiscoveredSpiders = []
-        this.bats = []
-        this.undiscoveredBats = []
-        this.rockMonsters = []
-        this.undiscoveredRockMonsters = []
-        this.vehicles = []
-        this.vehiclesUndiscovered = []
-        this.vehiclesInBeam = []
-        this.completedBuildingSites = []
+        this.buildings.length = 0
+        this.buildingsUndiscovered.length = 0
+        this.raiders.length = 0
+        this.raidersUndiscovered.length = 0
+        this.raidersInBeam.length = 0
+        this.materials.length = 0
+        this.materialsUndiscovered.length = 0
+        this.placedFences.length = 0
+        this.buildingSites.length = 0
+        this.spiders.length = 0
+        this.undiscoveredSpiders.length = 0
+        this.bats.length = 0
+        this.undiscoveredBats.length = 0
+        this.rockMonsters.length = 0
+        this.undiscoveredRockMonsters.length = 0
+        this.vehicles.length = 0
+        this.vehiclesUndiscovered.length = 0
+        this.vehiclesInBeam.length = 0
+        this.completedBuildingSites.length = 0
     }
 
     update(elapsedMs: number) {

@@ -2,12 +2,12 @@
  *
  * https://kb.rockraidersunited.com/User:Jessietail/NERPs_reference
  * https://web.archive.org/web/20131206122442/http://rru-stuff.org/nerpfuncs.html
- * https://kb.rockraidersunited.com/NERPs_documentation#Labels
+ * https://kb.rockraidersunited.com/NERPs_documentation
  *
  */
 import { EventBus } from '../event/EventBus'
 import { NerpMessage } from '../event/LocalEvents'
-import { EntityManager } from '../game/EntityManager'
+import { WorldManager } from '../game/WorldManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
@@ -29,7 +29,7 @@ export class NerpRunner {
     // more state variables and switches
     messagePermit: boolean = null
 
-    constructor(nerpScriptFile: string, readonly entityMgr: EntityManager) {
+    constructor(readonly worldMgr: WorldManager, nerpScriptFile: string) {
         this.script = NerpParser.parse(nerpScriptFile)
         this.checkSyntax()
     }
@@ -154,7 +154,7 @@ export class NerpRunner {
         // 3 = 0x11 disallow invalid clicks
         // 4095 = 0x111111111111 set all flags? (seen in Tutorial01 level)
         if (value !== 0) { // holds for all known levels
-            console.warn('NERP: setTutorialFlags not yet implemented', value)
+            if (!DEV_MODE) console.warn('NERP: setTutorialFlags not yet implemented', value)
         }
     }
 
@@ -167,7 +167,7 @@ export class NerpRunner {
     }
 
     setBuildingsUpgradeLevel(typeName: EntityType, level: number) {
-        this.entityMgr.buildings.forEach(b => {
+        this.worldMgr.entityMgr.buildings.forEach(b => {
             if (b.entityType === typeName) b.setLevel(level)
         })
     }
@@ -193,7 +193,7 @@ export class NerpRunner {
      * @return {number}
      */
     getToolStoresBuilt() {
-        return this.entityMgr.buildings.count((b) => b.entityType === EntityType.TOOLSTATION)
+        return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.TOOLSTATION)
     }
 
     /**
@@ -201,11 +201,11 @@ export class NerpRunner {
      * @return {number}
      */
     getMinifiguresOnLevel() {
-        return this.entityMgr.raiders.length
+        return this.worldMgr.entityMgr.raiders.length
     }
 
     getMonstersOnLevel() {
-        return this.entityMgr.rockMonsters.length
+        return this.worldMgr.entityMgr.rockMonsters.length
     }
 
     /**
@@ -279,11 +279,11 @@ export class NerpRunner {
     }
 
     getPoweredPowerStationsBuilt() {
-        return this.entityMgr.buildings.count((b) => b.isPowered() && b.entityType === EntityType.POWER_STATION)
+        return this.worldMgr.entityMgr.buildings.count((b) => b.isPowered() && b.entityType === EntityType.POWER_STATION)
     }
 
     getPoweredBarracksBuilt() {
-        return this.entityMgr.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS)
+        return this.worldMgr.entityMgr.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS)
     }
 
     getRecordObjectAtTutorial() {
@@ -295,7 +295,7 @@ export class NerpRunner {
     }
 
     getLevel1PowerStationsBuilt() {
-        return this.entityMgr.buildings.count((b) => b.entityType === EntityType.POWER_STATION && b.level >= 1)
+        return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.POWER_STATION && b.level >= 1)
     }
 
     getRandom100(): number {

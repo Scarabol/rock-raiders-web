@@ -102,6 +102,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Selection layer capturing all touch events prevents camera control on mobile
 - Rendering issue on mobile with icon panel and mission briefing, clearing rect seems to small
 - When switching from loading to main menu layer on mobile the new layer is not shown
+- Clear job from surface, if dynamite cannot reach target
 
 ### Cosmetics
 

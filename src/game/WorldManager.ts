@@ -87,7 +87,7 @@ export class WorldManager {
         this.requestedVehicleTypes = []
         this.spawnVehicleTimer = 0
         // load nerp script
-        this.nerpRunner = new NerpRunner(levelConf.nerpFile, this.entityMgr)
+        this.nerpRunner = new NerpRunner(this, levelConf.nerpFile)
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
         this.firstUnpause = true
     }
