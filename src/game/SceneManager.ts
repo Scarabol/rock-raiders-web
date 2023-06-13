@@ -41,7 +41,7 @@ export class SceneManager implements Updatable {
         this.camera = new BirdViewCamera(canvas.width / canvas.height)
         this.camera.add(this.audioListener)
         this.renderer = new SceneRenderer(canvas, this.camera)
-        this.controls = new BirdViewControls(this.camera, this.renderer.domElement)
+        this.controls = new BirdViewControls(this)
     }
 
     getEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number): GameSelection {
