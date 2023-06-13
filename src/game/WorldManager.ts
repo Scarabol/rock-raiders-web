@@ -23,6 +23,7 @@ import { SceneEntityHeadingSystem } from './system/SceneEntityHeadingSystem'
 import { RandomMoveBehaviorSystem } from './system/RandomMoveBehaviorSystem'
 import { DamageSystem } from './system/DamageSystem'
 import { BeamUpSystem } from './system/BeamUpSystem'
+import { ShowMissionBriefingEvent } from '../event/LocalEvents'
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
@@ -71,6 +72,11 @@ export class WorldManager {
         })
         EventBus.registerEventListener(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
         EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => GameState.alarmMode = event.alarmState)
+        EventBus.registerEventListener(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
+            if (!this.nerpRunner) return
+            this.nerpRunner.objectiveShowing += event.isShowing ? 1 : 0
+            this.nerpRunner.objectiveSwitch = this.nerpRunner.objectiveSwitch && event.isShowing
+        })
     }
 
     setup(levelConf: LevelEntryCfg) {

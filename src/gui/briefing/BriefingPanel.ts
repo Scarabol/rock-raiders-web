@@ -5,6 +5,7 @@ import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { BriefingPanelCfg } from './BriefingPanelCfg'
+import { ShowMissionBriefingEvent } from '../../event/LocalEvents'
 
 export class BriefingPanel extends Panel {
     cfg: BriefingPanelCfg = null
@@ -87,11 +88,13 @@ export class BriefingPanel extends Panel {
         if (this.imgParagraphList.length < 1) {
             this.onSetSpaceToContinue(true)
         }
+        this.publishEvent(new ShowMissionBriefingEvent(true))
     }
 
     hide() {
         super.hide()
         this.onSetSpaceToContinue(false)
+        this.publishEvent(new ShowMissionBriefingEvent(false))
     }
 
     onRedraw(context: SpriteContext) {

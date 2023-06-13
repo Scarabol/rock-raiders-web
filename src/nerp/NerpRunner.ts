@@ -28,6 +28,8 @@ export class NerpRunner {
     messages: { txt: string, snd: string }[] = []
     // more state variables and switches
     messagePermit: boolean = null
+    objectiveSwitch: boolean = true
+    objectiveShowing: number = 0 // FIXME do we need to start with 0 or 1 here?
 
     constructor(readonly worldMgr: WorldManager, nerpScriptFile: string) {
         this.script = NerpParser.parse(nerpScriptFile)
@@ -218,11 +220,6 @@ export class NerpRunner {
         return GameState.numCrystal
     }
 
-    getObjectiveSwitch() {
-        // TODO implement this
-        return false
-    }
-
     setMessageTimerValues(arg1, arg2, arg3) {
         // TODO implement this
     }
@@ -267,9 +264,12 @@ export class NerpRunner {
         return GameState.airLevel * 100
     }
 
-    getObjectiveShowing() {
-        // TODO implement this
-        return false
+    getObjectiveSwitch(): boolean {
+        return this.objectiveSwitch
+    }
+
+    getObjectiveShowing(): number {
+        return this.objectiveShowing
     }
 
     addPoweredCrystals() {

@@ -224,3 +224,9 @@ export class UpdateRadarEntities extends LocalEvent {
         this.entitiesByOrder.set(MapMarkerType.MATERIAL, materials)
     }
 }
+
+export class ShowMissionBriefingEvent extends LocalEvent {
+    constructor(readonly isShowing: boolean) {
+        super(EventKey.SHOW_MISSION_BRIEFING)
+    }
+}
