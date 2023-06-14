@@ -17,10 +17,7 @@ export class UpgradeRaiderJob extends RaiderJob {
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         if (!this.building.isPowered()) return null
-        return this.workplaces
-            .map((b) => entity.findPathToTarget(b))
-            .filter((t) => !!t)
-            .sort((l, r) => l.lengthSq - r.lengthSq)[0].target
+        return entity.findShortestPath(this.workplaces)?.target
     }
 
     onJobComplete() {

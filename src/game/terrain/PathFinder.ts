@@ -5,6 +5,8 @@ import { astar, Graph } from './astar'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
+import { TerrainPath } from './TerrainPath'
+import { PathTarget } from '../model/PathTarget'
 
 export class PathFinder {
     graphWalk: Graph = null
@@ -85,7 +87,20 @@ export class PathFinder {
         return surface.isWalkable() || surface.surfaceType === SurfaceType.LAVA5 ? 1 : 0
     }
 
-    findPath(start: Vector2, targetLocation: Vector2, stats: MovableEntityStats, highPrecision: boolean): Vector2[] {
+    findShortestPath(start: Vector2, targets: PathTarget[] | PathTarget, stats: MovableEntityStats, highPrecision: boolean): TerrainPath {
+        return Array.ensure(targets).map((pathTarget) => this.findTerrainPath(start, pathTarget, stats, highPrecision))
+            .filter((terrainPath) => !!terrainPath)
+            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+    }
+
+    private findTerrainPath(start: Vector2, target: PathTarget, stats: MovableEntityStats, highPrecision: boolean): TerrainPath {
+        if (!target) return null
+        const path = this.findPath(start, target.targetLocation, stats, highPrecision)
+        if (!path) return null
+        return new TerrainPath(target, path)
+    }
+
+    private findPath(start: Vector2, targetLocation: Vector2, stats: MovableEntityStats, highPrecision: boolean): Vector2[] {
         // const canEnterToolstore = !!iGet(stats, 'EnterToolStore') // TODO consider enter toolstore in path finding
         if (highPrecision) {
             return this.findWalkPath(start, targetLocation)

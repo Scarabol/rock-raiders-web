@@ -26,10 +26,7 @@ export class ClearRubbleJob extends ShareableJob {
             !surfaceRubblePositions.every((p) => this.lastRubblePositions.some((d) => p.equals(d.targetLocation)))) {
             this.lastRubblePositions = surfaceRubblePositions.map((p) => PathTarget.fromLocation(p))
         }
-        return this.lastRubblePositions
-            .map((b) => entity.findPathToTarget(b))
-            .filter((t) => !!t)
-            .sort((l, r) => l.lengthSq - r.lengthSq)[0].target
+        return entity.findShortestPath(this.lastRubblePositions)?.target
     }
 
     onJobComplete() {

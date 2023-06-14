@@ -118,13 +118,8 @@ export class VehicleEntity implements Updatable {
     Movement
      */
 
-    findPathToTarget(target: PathTarget): TerrainPath {
-        if (!target) return null
-        return new TerrainPath(target, this.findPath(target.targetLocation))
-    }
-
-    findPath(targetLocation: Vector2): Vector2[] {
-        return this.worldMgr.sceneMgr.terrain.pathFinder.findPath(this.sceneEntity.position2D, targetLocation, this.stats, true)
+    findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath {
+        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.sceneEntity.position2D, targets, this.stats, false)
     }
 
     private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
@@ -139,7 +134,7 @@ export class VehicleEntity implements Updatable {
     private moveToClosestTargetInternal(target: PathTarget, elapsedMs: number): MoveState {
         if (!target) return MoveState.TARGET_UNREACHABLE
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
-            const path = this.findPathToTarget(target)
+            const path = this.findShortestPath(target)
             this.currentPath = path.locations.length > 0 ? path : null
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }

@@ -69,7 +69,7 @@ export class Supervisor {
             let closestVehicleDistance: number = null
             unemployedVehicles.forEach((vehicle) => {
                 if (vehicle.isPrepared(job)) {
-                    const pathToJob = vehicle.findPathToTarget(job.getWorkplace(vehicle))
+                    const pathToJob = vehicle.findShortestPath(job.getWorkplace(vehicle))
                     if (pathToJob) {
                         const dist = pathToJob.lengthSq
                         if (closestVehicleDistance === null || dist < closestVehicleDistance) {
@@ -99,7 +99,7 @@ export class Supervisor {
                 const hasTraining = raider.hasTraining(requiredTraining)
                 if (raider.isPrepared(job)) {
                     // TODO path to job is actually path to item, if exists
-                    const pathToJob = raider.findPathToTarget(job.getWorkplace(raider))
+                    const pathToJob = raider.findShortestPath(job.getWorkplace(raider))
                     if (pathToJob) {
                         const dist = pathToJob.lengthSq
                         if (minDistance === null || dist < minDistance) {
@@ -108,10 +108,7 @@ export class Supervisor {
                         }
                     }
                 } else if (!hasRequiredTool) {
-                    const pathToToolstation = this.worldMgr.entityMgr.getGetToolTargets()
-                        .map((b) => raider.findPathToTarget(b))
-                        .filter((p) => !!p)
-                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                    const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
                     if (pathToToolstation) {
                         const dist = pathToToolstation.lengthSq
                         if (minToolDistance === null || dist < minToolDistance) {
@@ -121,10 +118,7 @@ export class Supervisor {
                         }
                     }
                 } else if (!hasTraining) {
-                    const pathToTrainingSite = this.worldMgr.entityMgr.getTrainingSiteTargets(requiredTraining)
-                        .map((b) => raider.findPathToTarget(b))
-                        .filter((p) => !!p)
-                        .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                    const pathToTrainingSite = raider.findShortestPath(this.worldMgr.entityMgr.getTrainingSiteTargets(requiredTraining))
                     if (pathToTrainingSite) {
                         const dist = pathToTrainingSite.lengthSq
                         if (minTrainingDistance === null || dist < minTrainingDistance) {
@@ -180,10 +174,7 @@ export class Supervisor {
                             raider.setJob(clearRubbleJob)
                             return
                         } else {
-                            const pathToToolstation = this.worldMgr.entityMgr.getGetToolTargets()
-                                .map((b) => raider.findPathToTarget(b))
-                                .filter((p) => !!p)
-                                .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+                            const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
                             if (pathToToolstation) {
                                 raider.setJob(new GetToolJob(this.worldMgr.entityMgr, requiredTool, pathToToolstation.target.building), clearRubbleJob)
                                 return

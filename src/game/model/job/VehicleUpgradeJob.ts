@@ -12,10 +12,7 @@ export class VehicleUpgradeJob extends AbstractJob {
 
     constructor(readonly entityMgr: EntityManager, readonly vehicle: VehicleEntity, readonly upgrade: VehicleUpgrade) {
         super()
-        this.workplace = this.entityMgr.getUpgradePathTargets()
-            .map((b) => vehicle.findPathToTarget(b))
-            .filter((t) => !!t)
-            .sort((l, r) => l.lengthSq - r.lengthSq)?.[0]?.target
+        this.workplace = vehicle.findShortestPath(this.entityMgr.getUpgradePathTargets())?.target
     }
 
     getWorkplace(entity: VehicleEntity): PathTarget {

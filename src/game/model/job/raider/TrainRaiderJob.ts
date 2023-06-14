@@ -19,10 +19,7 @@ export class TrainRaiderJob extends RaiderJob {
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         if (!this.building?.isPowered()) this.workplaces = this.entityMgr.getTrainingSiteTargets(this.training)
-        return this.workplaces
-            .map((b) => entity.findPathToTarget(b))
-            .filter((t) => !!t)
-            .sort((l, r) => l.lengthSq - r.lengthSq)[0].target
+        return entity.findShortestPath(this.workplaces)?.target
     }
 
     onJobComplete() {

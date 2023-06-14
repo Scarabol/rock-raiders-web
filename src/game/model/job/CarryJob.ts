@@ -27,10 +27,7 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
         if (this.target && !this.target?.isInvalid()) {
             return this.target
         }
-        this.target = this.findWorkplaces()
-            .map((b) => entity.findPathToTarget(b))
-            .filter((t) => !!t)
-            .sort((l, r) => l.lengthSq - r.lengthSq)[0].target
+        this.target = entity.findShortestPath(this.findWorkplaces())?.target
         return this.target
     }
 
