@@ -110,11 +110,11 @@ export class BaseElement {
     checkRelease(event: GuiReleaseEvent): boolean {
         if (this.isInactive()) return false
         const inRect = this.isInRect(event.sx, event.sy)
-        if (inRect && this.pressedByButton !== null) {
-            this.clicked(event)
-        }
         let stateChanged = false
         this.children.forEach((child) => stateChanged = child.checkRelease(event) || stateChanged)
+        if (!stateChanged && inRect && this.pressedByButton !== null) {
+            this.clicked(event)
+        }
         stateChanged = this.pressedByButton !== null || stateChanged
         this.pressedByButton = null
         return stateChanged
