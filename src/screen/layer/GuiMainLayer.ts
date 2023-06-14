@@ -1,6 +1,6 @@
 import { EventBus } from '../../event/EventBus'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
-import { GuiMainSystem } from '../../worker/GuiMainWorker'
+import { GuiMainWorker } from '../../worker/GuiMainWorker'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
 import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../worker/TypedWorker'
@@ -17,7 +17,7 @@ export class GuiMainLayer extends OffscreenLayer {
 
     createFallbackWorker(): TypedWorker<OffscreenWorkerMessage, WorkerResponse> {
         const worker = new TypedWorkerFallback((r: WorkerResponse) => this.onResponseFromWorker(r))
-        new GuiMainSystem(worker)
+        new GuiMainWorker(worker)
         return worker
     }
 

@@ -5,7 +5,7 @@ import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
 import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../worker/TypedWorker'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
-import { OverlaySystem } from '../../worker/OverlayWorker'
+import { OverlayWorker } from '../../worker/OverlayWorker'
 
 export class OverlayLayer extends OffscreenLayer {
     onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log(`set space to continue: ${state}`)
@@ -19,7 +19,7 @@ export class OverlayLayer extends OffscreenLayer {
 
     createFallbackWorker(): TypedWorker<OffscreenWorkerMessage, WorkerResponse> {
         const worker = new TypedWorkerFallback((r: WorkerResponse) => this.onResponseFromWorker(r))
-        new OverlaySystem(worker)
+        new OverlayWorker(worker)
         return worker
     }
 

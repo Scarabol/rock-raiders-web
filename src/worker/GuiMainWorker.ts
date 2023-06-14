@@ -16,7 +16,7 @@ import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { GuiWorkerMessage } from '../gui/GuiWorkerMessage'
 import { TOOLTIP_FONT_NAME } from '../params'
 
-export class GuiMainSystem extends AbstractGuiSystem {
+export class GuiMainWorker extends AbstractGuiSystem {
     panelRadar: RadarPanel
     panelMessages: MessagePanel
     panelMessagesSide: Panel
@@ -82,4 +82,4 @@ export class GuiMainSystem extends AbstractGuiSystem {
 }
 
 const worker: Worker = self as any
-new GuiMainSystem(new TypedWorkerThreaded(worker))
+new GuiMainWorker(new TypedWorkerThreaded(worker))

@@ -6,7 +6,7 @@ import { WadLoader } from './WadLoader'
 import { WadWorkerMessage } from './WadWorkerMessage'
 import { GameConfig } from '../../cfg/GameConfig'
 
-export class WadSystem {
+export class WadWorker {
     constructor(worker: TypedWorkerBackend<InitLoadingMessage, WorkerResponse>) {
         const wadLoader = new WadLoader()
         // set callbacks on wad loader
@@ -34,4 +34,4 @@ export class WadSystem {
 }
 
 const worker: Worker = self as any
-new WadSystem(new TypedWorkerThreaded(worker))
+new WadWorker(new TypedWorkerThreaded(worker))

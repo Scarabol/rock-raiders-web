@@ -16,7 +16,7 @@ import { GamePointerEvent } from '../event/GamePointerEvent'
 import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
 import { KEY_EVENT } from '../event/EventTypeEnum'
 
-export class OverlaySystem extends AbstractGuiSystem {
+export class OverlayWorker extends AbstractGuiSystem {
     panelBriefing: BriefingPanel
     panelOptions: OptionsPanel
     panelPause: PausePanel
@@ -99,4 +99,4 @@ export class OverlaySystem extends AbstractGuiSystem {
 }
 
 const worker: Worker = self as any
-new OverlaySystem(new TypedWorkerThreaded(worker))
+new OverlayWorker(new TypedWorkerThreaded(worker))
