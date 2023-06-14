@@ -55,7 +55,6 @@ export class Surface {
     fence: GameEntity = null
     fenceRequested: boolean = false
     energized: boolean = false
-    tutoBlockId: number = 0
 
     constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number) {
         this.terrain = terrain

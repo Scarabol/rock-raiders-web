@@ -42,8 +42,13 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.6.0 - Complete Base Systems
 
-- Refactor job system to allow multi-carry jobs for vehicles
+- Create separate frontend scene without renderer to handle positional audio
+- Offload scene rendering to offscreen thread
+- Move GUI processing to main thread by default
+- Offload GUI rendering to offscreen thread (or fix pricy animation for icon panel)
+
 - Implement touch event listener to support mobile browser
+- Implement raider info bubbles
 - Raider get tired while carrying and eat at barracks
 
 ### v0.7.0 - Rockies, Slugs And Damage
@@ -87,6 +92,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Move camera with click on mini map
 - Use same team for all missions and add names to raiders
 - Auto switch from portrait to landscape mode in fullscreen
+- Refactor job system to allow multi-carry jobs for vehicles
 
 ### v0.9.0 - Polishing
 
@@ -103,12 +109,16 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Rendering issue on mobile with icon panel and mission briefing, clearing rect seems to small
 - When switching from loading to main menu layer on mobile the new layer is not shown
 - Clear job from surface, if dynamite cannot reach target
+- Cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position manipulation
+- Raider can get stuck in toolstation, seems while picking up tools
 
 ### Cosmetics
 
 - Level 11 spams console with unreachable jobs
 - Two buttons in priority list can be hovered/pressed/released at the same time
 - Numbers above ticking dynamite are not shown correctly sometimes
+- Raider not facing walls while drilling
+- Make tooltips stay on screen and follow cursor
 
 ## Technical Debt
 

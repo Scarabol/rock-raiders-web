@@ -29,7 +29,7 @@ export class NerpRunner {
     // more state variables and switches
     messagePermit: boolean = null
     objectiveSwitch: boolean = true
-    objectiveShowing: number = 0 // FIXME do we need to start with 0 or 1 here?
+    objectiveShowing: number = 0
 
     constructor(readonly worldMgr: WorldManager, nerpScriptFile: string) {
         this.script = NerpParser.parse(nerpScriptFile)
