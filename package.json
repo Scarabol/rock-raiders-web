@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview --host",
     "patch": "npm --no-git-tag-version version patch && git add package.json package-lock.json && git commit -m \"Bump version to $(node -p \"require('./package.json').version\")\"",
-    "release": "git checkout master && git tag $(node -p \"require('./package.json').version\") && git push && git checkout dev && npm run patch"
+    "release": "git checkout master && git tag $(node -p \"require('./package.json').version\") && git push --follow-tags && git checkout dev && npm run patch"
   },
   "repository": {
     "type": "git",
