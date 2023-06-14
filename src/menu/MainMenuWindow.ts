@@ -17,12 +17,18 @@ export class MainMenuWindow extends MainMenuBaseItem {
 
     setFirstLine(text: string) {
         ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text)
-            .then((textImage) => this.imgFirstLine = textImage)
+            .then((textImage) => {
+                this.imgFirstLine = textImage
+                this.state.stateChanged = true
+            })
     }
 
     setSecondLine(text: string) {
         ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text)
-            .then((textImage) => this.imgSecondLine = textImage)
+            .then((textImage) => {
+                this.imgSecondLine = textImage
+                this.state.stateChanged = true
+            })
     }
 
     draw(context: SpriteContext) {
