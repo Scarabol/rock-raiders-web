@@ -28,6 +28,7 @@ import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
+import { OxygenComponent } from '../../component/OxygenComponent'
 
 export class Raider implements Updatable {
     readonly entityType: EntityType = EntityType.PILOT
@@ -55,6 +56,7 @@ export class Raider implements Updatable {
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent())
         this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(16, 10, this.sceneEntity, true))
+        this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 

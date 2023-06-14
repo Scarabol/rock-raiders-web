@@ -27,6 +27,7 @@ import { SceneSelectionComponent } from '../../component/SceneSelectionComponent
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { MaterialSpawner } from '../../entity/MaterialSpawner'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
+import { OxygenComponent } from '../../component/OxygenComponent'
 
 export class BuildingEntity {
     readonly entityType: EntityType
@@ -240,6 +241,7 @@ export class BuildingEntity {
         GameState.changeUsedCrystals(this.crystalDrain)
         if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this.surfaces)
         if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
+        if (this.stats.OxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
     }
 
     private turnEnergyOff() {
@@ -248,6 +250,7 @@ export class BuildingEntity {
         GameState.changeUsedCrystals(-this.crystalDrain)
         if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.removeEnergySource(this.surfaces)
         this.engineSound = resetAudioSafe(this.engineSound)
+        this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
     }
 
     get crystalDrain(): number {

@@ -237,11 +237,6 @@ export class EntityManager {
         return item
     }
 
-    getOxygenCoefSum(): number {
-        return this.raiders.map((r) => r.stats.OxygenCoef).reduce((l, r) => l + r, 0) +
-            this.buildings.map((b) => b.isPowered() ? b.stats.OxygenCoef : 0).reduce((l, r) => l + r, 0)
-    }
-
     hasMaxRaiders(): boolean {
         return this.raiders.length >= this.getMaxRaiders()
     }

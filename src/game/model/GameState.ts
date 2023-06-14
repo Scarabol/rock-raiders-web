@@ -1,5 +1,5 @@
 import { EventBus } from '../../event/EventBus'
-import { AirLevelChanged, NeededCrystalsChanged } from '../../event/LocalEvents'
+import { NeededCrystalsChanged } from '../../event/LocalEvents'
 import { MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'
 import { GameResultState } from './GameResult'
 import { MaterialEntity } from './material/MaterialEntity'
@@ -46,14 +46,6 @@ export class GameState {
         if (!changedCrystals) return
         this.usedCrystals += changedCrystals
         EventBus.publishEvent(new UsedCrystalsChanged())
-    }
-
-    static changeAirLevel(diff: number) {
-        const airLevel = Math.min(1, Math.max(0, this.airLevel + diff))
-        if (this.airLevel !== airLevel) {
-            this.airLevel = airLevel
-            EventBus.publishEvent(new AirLevelChanged(this.airLevel))
-        }
     }
 
     static changeNeededCrystals(crystals: number) {

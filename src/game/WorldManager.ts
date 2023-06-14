@@ -24,16 +24,17 @@ import { RandomMoveBehaviorSystem } from './system/RandomMoveBehaviorSystem'
 import { DamageSystem } from './system/DamageSystem'
 import { BeamUpSystem } from './system/BeamUpSystem'
 import { ShowMissionBriefingEvent } from '../event/LocalEvents'
+import { OxygenSystem } from './system/OxygenSystem'
 
 export class WorldManager {
     onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
     readonly ecs: ECS = new ECS()
     readonly jobSupervisor: Supervisor = new Supervisor(this)
+    readonly oxygenSystem: OxygenSystem
     sceneMgr: SceneManager
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
     gameLoopTimeout: NodeJS.Timeout = null
-    oxygenRate: number = 0
     elapsedGameTimeMs: number = 0
     requestedRaiders: number = 0
     spawnRaiderTimer: number = 0
@@ -50,6 +51,7 @@ export class WorldManager {
         this.ecs.addSystem(new RandomMoveBehaviorSystem())
         this.ecs.addSystem(new DamageSystem())
         this.ecs.addSystem(new BeamUpSystem())
+        this.oxygenSystem = this.ecs.addSystem(new OxygenSystem())
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
@@ -86,7 +88,7 @@ export class WorldManager {
         GameState.gameResult = GameResultState.UNDECIDED
         GameState.changeNeededCrystals(levelConf.reward?.quota?.crystals || 0)
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
-        this.oxygenRate = levelConf.oxygenRate / 1000
+        this.oxygenSystem.setLevelOxygenRate(levelConf.oxygenRate)
         this.elapsedGameTimeMs = 0
         this.requestedRaiders = 0
         this.spawnRaiderTimer = 0
@@ -132,7 +134,6 @@ export class WorldManager {
     }
 
     private update(elapsedMs: number) {
-        this.updateOxygen(elapsedMs)
         this.checkSpawnRaiders(elapsedMs)
         this.checkSpawnVehicles(elapsedMs)
         this.ecs.update(elapsedMs)
@@ -140,17 +141,6 @@ export class WorldManager {
         updateSafe(this.sceneMgr, elapsedMs)
         updateSafe(this.jobSupervisor, elapsedMs)
         updateSafe(this.nerpRunner, elapsedMs)
-    }
-
-    private updateOxygen(elapsedMs: number) {
-        try {
-            const coefSum = this.entityMgr.getOxygenCoefSum()
-            const valuePerMs = 1.8 / 100 / 1000
-            const diff = coefSum * this.oxygenRate * valuePerMs * elapsedMs
-            GameState.changeAirLevel(diff)
-        } catch (e) {
-            console.error(e)
-        }
     }
 
     private checkSpawnRaiders(elapsedMs: number) {
