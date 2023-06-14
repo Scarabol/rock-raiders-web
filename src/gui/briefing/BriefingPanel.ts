@@ -67,7 +67,7 @@ export class BriefingPanel extends Panel {
             return
         }
         this.paragraph = paragraph
-        this.btnNext.hidden = this.paragraph >= this.imgParagraphList.length - 1
+        this.btnNext.hidden = this.paragraph >= this.objectiveParagraphs.length - 1
         this.btnBack.hidden = this.paragraph < 1
         this.notifyRedraw()
     }
@@ -83,11 +83,9 @@ export class BriefingPanel extends Panel {
     show() {
         super.show()
         this.setParagraph(0)
-        this.btnNext.hidden = this.paragraph >= this.imgParagraphList.length - 1
+        this.btnNext.hidden = this.paragraph >= this.objectiveParagraphs.length - 1
         this.btnBack.hidden = this.paragraph < 1
-        if (this.imgParagraphList.length < 1) {
-            this.onSetSpaceToContinue(true)
-        }
+        this.onSetSpaceToContinue(true)
         this.publishEvent(new ShowMissionBriefingEvent(true))
     }
 
