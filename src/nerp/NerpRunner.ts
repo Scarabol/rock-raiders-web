@@ -13,7 +13,7 @@ import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpParser } from './NerpParser'
 import { NerpScript } from './NerpScript'
-import { DEV_MODE } from '../params'
+import { DEV_MODE, NERP_EXECUTION_INTERVAL } from '../params'
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
@@ -35,7 +35,9 @@ export class NerpRunner {
     }
 
     update(elapsedMs: number) {
-        for (this.timer += elapsedMs; this.timer >= 2000; this.timer -= 2000) {
+        this.timer += elapsedMs
+        while (this.timer >= 0) {
+            this.timer -= NERP_EXECUTION_INTERVAL
             this.execute()
         }
     }
