@@ -108,7 +108,7 @@ export class SaveGameManager {
             console.log(`No savegame found at index ${index}`)
             return false
         }
-        this.currentLevels = saveGame.levels
+        this.currentLevels = [...saveGame.levels]
         console.log('game progress loaded', this.currentLevels)
         return true
     }
