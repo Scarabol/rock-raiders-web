@@ -9,9 +9,9 @@ export class ScreenLayer {
     zIndex: number = 0
     active: boolean = false
 
-    constructor() {
+    constructor(layerName?: string) {
         this.canvas = document.createElement('canvas')
-        this.canvas.setAttribute('data-layer-class', this.constructor.name)
+        this.canvas.setAttribute('data-layer-class', layerName || this.constructor.name)
         this.canvas.style.visibility = 'hidden'
     }
 
@@ -89,8 +89,8 @@ export class ScaledLayer extends ScreenLayer {
     scaleY: number
     private lastDownTime: number = 0
 
-    constructor() {
-        super()
+    constructor(layerName?: string) {
+        super(layerName)
         this.updateScale()
         this.animationFrame = new AnimationFrameScaled(this.canvas)
     }
