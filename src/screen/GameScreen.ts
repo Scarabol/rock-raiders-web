@@ -112,8 +112,11 @@ export class GameScreen {
     onGameResult(resultState: GameResultState) {
         const gameTimeSeconds = Math.round(this.worldMgr.elapsedGameTimeMs / 1000)
         this.screenMaster.createScreenshot().then((canvas) => {
-            const result = new GameResult(this.levelConf, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, this.entityMgr.getMaxRaiders(), gameTimeSeconds, canvas)
-            SaveGameManager.setLevelScore(this.levelName, result.score)
+            let result: GameResult = null
+            if (this.levelConf.reward) {
+                result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, this.entityMgr.getMaxRaiders(), gameTimeSeconds, canvas)
+                SaveGameManager.setLevelScore(this.levelName, result.score)
+            } // else { // TODO Show briefing panel with outro message for tutorial levels
             this.hide()
             this.onLevelEnd(result)
         })

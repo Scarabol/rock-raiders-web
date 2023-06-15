@@ -1,4 +1,4 @@
-import { LevelEntryCfg, LevelRewardConfig } from '../../cfg/LevelsCfg'
+import { LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { ADDITIONAL_RAIDER_PER_SUPPORT } from '../../params'
 import { GameState } from './GameState'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -11,12 +11,10 @@ export enum GameResultState {
 }
 
 export class GameResult {
-    levelFullName: string
-    defencePercent: number
-    airLevelPercent: number
-    score: number
+    defencePercent: number = 100 // TODO defence report is either 0% or 100%
+    airLevelPercent: number = 100
+    score: number = 100
     // fields below are only used to debug score calculations
-    rewardConfig: LevelRewardConfig = null
     scoreCrystals: number = 0
     scoreTimer: number = 0
     scoreCaverns: number = 0
@@ -25,7 +23,8 @@ export class GameResult {
     scoreFigures: number = 0
 
     constructor(
-        levelConf: LevelEntryCfg,
+        readonly levelFullName: string,
+        readonly rewardConfig: LevelRewardConfig,
         readonly state: GameResultState,
         readonly numBuildings: number,
         readonly numRaiders: number,
@@ -33,10 +32,7 @@ export class GameResult {
         readonly gameTimeSeconds: number,
         readonly screenshot: HTMLCanvasElement
     ) {
-        this.levelFullName = levelConf.fullName
-        this.defencePercent = 100 // TODO defence report is either 0% or 100%
         this.airLevelPercent = GameState.airLevel * 100
-        this.rewardConfig = levelConf?.reward
         if (this.rewardConfig) {
             const quota = this.rewardConfig.quota
             const importance = this.rewardConfig.importance
@@ -52,6 +48,6 @@ export class GameResult {
 
     static random(): GameResult {
         const randomLevelConf = Array.from(ResourceManager.configuration.levels.levelCfgByName.values()).random()
-        return new GameResult(randomLevelConf, GameResultState.COMPLETE, Math.randomInclusive(6), Math.randomInclusive(10), 10, 942, null)
+        return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, Math.randomInclusive(6), Math.randomInclusive(10), 10, 942, null)
     }
 }

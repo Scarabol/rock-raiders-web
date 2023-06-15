@@ -79,7 +79,14 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
                         mainMenuScreen.showLevelSelection()
                     }
                 }
-                gameScreen.onLevelEnd = (result) => rewardScreen.showGameResult(result)
+                gameScreen.onLevelEnd = (result) => {
+                    if (result) {
+                        rewardScreen.showGameResult(result)
+                    } else {
+                        GameState.reset()
+                        mainMenuScreen.showLevelSelection()
+                    }
+                }
                 rewardScreen.onAdvance = () => {
                     GameState.reset()
                     mainMenuScreen.showLevelSelection()
