@@ -2,8 +2,8 @@ import { MenuCfg } from '../../cfg/MenuCfg'
 import { BaseElement } from '../base/BaseElement'
 import { MenuBasePanel } from './MenuBasePanel'
 import { ChangePreferences } from '../../event/GuiCommand'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { setupOptionsLayer } from './OptionsLayerUtil'
+import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export class PausePanel extends MenuBasePanel {
     onContinueGame: () => any = () => console.log('continue mission')
@@ -22,18 +22,18 @@ export class PausePanel extends MenuBasePanel {
         const advOptions = this.layersByKey.get('menu5')
         const wallDetailsToggle = advOptions.itemsCycle[0]
         wallDetailsToggle.disabled = true // TODO Implement wall details
-        wallDetailsToggle.setState(OffscreenCache.offscreenPreferences.wallDetails)
+        wallDetailsToggle.setState(SaveGameManager.currentPreferences.wallDetails)
         const musicToggle = advOptions.itemsCycle[1]
         musicToggle.disabled = true // TODO Implement background music
-        musicToggle.setState(OffscreenCache.offscreenPreferences.toggleMusic)
+        musicToggle.setState(SaveGameManager.currentPreferences.toggleMusic)
         const sfxToggle = advOptions.itemsCycle[2]
-        sfxToggle.setState(OffscreenCache.offscreenPreferences.toggleSfx)
+        sfxToggle.setState(SaveGameManager.currentPreferences.toggleSfx)
         sfxToggle.onStateChanged = (state) => {
-            OffscreenCache.offscreenPreferences.toggleSfx = state
-            this.publishEvent(new ChangePreferences(OffscreenCache.offscreenPreferences))
+            SaveGameManager.currentPreferences.toggleSfx = state
+            this.publishEvent(new ChangePreferences())
         }
         const autoGameSpeedToggle = advOptions.itemsCycle[3]
         autoGameSpeedToggle.disabled = true // TODO Implement auto game speed
-        autoGameSpeedToggle.setState(OffscreenCache.offscreenPreferences.autoGameSpeed)
+        autoGameSpeedToggle.setState(SaveGameManager.currentPreferences.autoGameSpeed)
     }
 }

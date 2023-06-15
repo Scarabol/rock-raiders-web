@@ -1,10 +1,10 @@
 import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { ChangeTooltip } from '../../event/GuiCommand'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { BaseElement } from './BaseElement'
 import { TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_MENU } from '../../params'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class Button extends BaseElement {
     buttonType: string = null
@@ -19,15 +19,15 @@ export class Button extends BaseElement {
     constructor(parent: BaseElement, btnCfg: BaseButtonCfg) {
         super(parent)
         this.buttonType = btnCfg.buttonType
-        this.imgNormal = OffscreenCache.getImageOrNull(btnCfg.normalFile)
-        this.imgHover = OffscreenCache.getImageOrNull(btnCfg.highlightFile)
-        this.imgPressed = OffscreenCache.getImageOrNull(btnCfg.pressedFile)
-        this.imgDisabled = OffscreenCache.getImageOrNull(btnCfg.disabledFile)
+        this.imgNormal = ResourceManager.getImageOrNull(btnCfg.normalFile)
+        this.imgHover = ResourceManager.getImageOrNull(btnCfg.highlightFile)
+        this.imgPressed = ResourceManager.getImageOrNull(btnCfg.pressedFile)
+        this.imgDisabled = ResourceManager.getImageOrNull(btnCfg.disabledFile)
         this.relX = btnCfg.relX
         this.relY = btnCfg.relY
         this.width = Button.ignoreUndefinedMax(btnCfg.width, this.imgNormal?.width, this.imgPressed?.width, this.imgHover?.width)
         this.height = Button.ignoreUndefinedMax(btnCfg.height, this.imgNormal?.height, this.imgPressed?.height, this.imgHover?.height)
-        this.tooltip = OffscreenCache.getTooltipText(btnCfg.tooltipKey) || btnCfg.tooltipText
+        this.tooltip = ResourceManager.getTooltipText(btnCfg.tooltipKey) || btnCfg.tooltipText
         this.tooltipSfx = btnCfg.tooltipSfx
         this.updatePosition()
         this.onClick = () => console.log(`button pressed: ${this.buttonType}`)

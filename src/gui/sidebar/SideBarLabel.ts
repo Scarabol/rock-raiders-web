@@ -1,7 +1,7 @@
 import { ButtonCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
-import { OffscreenCache } from '../../worker/OffscreenCache'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class SideBarLabel extends BaseElement {
     tooltip: string
@@ -13,7 +13,7 @@ export class SideBarLabel extends BaseElement {
         this.relY = btnCfg.relY
         this.width = btnCfg.width
         this.height = btnCfg.height
-        this.tooltip = OffscreenCache.getTooltipText(btnCfg.tooltipKey)
+        this.tooltip = ResourceManager.getTooltipText(btnCfg.tooltipKey)
         this.label = '0'
         this.updatePosition()
     }

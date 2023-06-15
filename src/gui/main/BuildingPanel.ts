@@ -2,9 +2,9 @@ import { CancelBuildMode, SelectBuildMode } from '../../event/GuiCommand'
 import { EntityType } from '../../game/model/EntityType'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { Sample } from '../../audio/Sample'
 import { IconSubPanel } from './IconSubPanel'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class BuildingPanel extends IconSubPanel {
     constructor(parent: BaseElement, onBackPanel: Panel) {
@@ -26,9 +26,9 @@ export class BuildingPanel extends IconSubPanel {
     }
 
     addBuildMenuItem(itemKey: string, entityType: EntityType, tooltipSfx: Sample) {
-        const item = super.addMenuItem(OffscreenCache.configuration.interfaceBuildImages, itemKey)
+        const item = super.addMenuItem(ResourceManager.configuration.interfaceBuildImages, itemKey)
         item.onClick = () => this.publishEvent(new SelectBuildMode(entityType))
-        item.tooltip = OffscreenCache.configuration.objectNamesCfg.get(itemKey.toLowerCase())
+        item.tooltip = ResourceManager.configuration.objectNamesCfg.get(itemKey.toLowerCase())
         item.tooltipSfx = Sample[tooltipSfx]
     }
 }

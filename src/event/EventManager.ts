@@ -46,27 +46,25 @@ export class EventManager {
 
     private publishPointerEvent(activeLayers: ScreenLayer[], event: GamePointerEvent) {
         const currentLayer = activeLayers.shift()
-        currentLayer?.pushPointerEvent(event).then((consumed) => {
-            if (!consumed) this.publishPointerEvent(activeLayers, event)
-            else if (event.eventEnum === POINTER_EVENT.DOWN) this.focusedLayer = currentLayer
-        }).catch((e) => {
-            console.error(e)
-        })
+        if (!currentLayer) return
+        [event.canvasX, event.canvasY] = currentLayer.transformCoords(event.clientX, event.clientY)
+        const consumed = currentLayer.handlePointerEvent(event)
+        if (!consumed) this.publishPointerEvent(activeLayers, event)
+        else if (event.eventEnum === POINTER_EVENT.DOWN) this.focusedLayer = currentLayer
     }
 
     private publishKeyEvent(activeLayers: ScreenLayer[], event: GameKeyboardEvent) {
-        activeLayers.shift()?.pushKeyEvent(event).then((consumed) => {
-            if (!consumed) this.publishKeyEvent(activeLayers, event)
-        }).catch((e) => {
-            console.error(e)
-        })
+        const currentLayer = activeLayers.shift()
+        if (!currentLayer) return
+        const consumed = currentLayer.handleKeyEvent(event)
+        if (!consumed) this.publishKeyEvent(activeLayers, event)
     }
 
     private publishWheelEvent(activeLayers: ScreenLayer[], event: GameWheelEvent) {
-        activeLayers.shift()?.pushWheelEvent(event).then((consumed) => {
-            if (!consumed) this.publishWheelEvent(activeLayers, event)
-        }).catch((e) => {
-            console.error(e)
-        })
+        const currentLayer = activeLayers.shift()
+        if (!currentLayer) return
+        [event.canvasX, event.canvasY] = currentLayer.transformCoords(event.clientX, event.clientY)
+        const consumed = currentLayer.handleWheelEvent(event)
+        if (!consumed) this.publishWheelEvent(activeLayers, event)
     }
 }

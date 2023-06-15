@@ -3,7 +3,7 @@ import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { MenuLayer } from './MenuLayer'
-import { OffscreenCache } from '../../worker/OffscreenCache'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class MenuCycleItem extends BaseElement {
     imgTextNormal: SpriteImage
@@ -23,12 +23,12 @@ export class MenuCycleItem extends BaseElement {
         this.relY = itemCfg.y
         this.labelX = itemCfg.width
         Promise.all([
-            OffscreenCache.bitmapFontWorkerPool.createTextImage(parent.menuCfg.loFont, itemCfg.description),
-            OffscreenCache.bitmapFontWorkerPool.createTextImage(parent.menuCfg.hiFont, itemCfg.description),
-            OffscreenCache.bitmapFontWorkerPool.createTextImage(parent.menuCfg.loFont, itemCfg.labelOff),
-            OffscreenCache.bitmapFontWorkerPool.createTextImage(parent.menuCfg.hiFont, itemCfg.labelOff),
-            OffscreenCache.bitmapFontWorkerPool.createTextImage(parent.menuCfg.loFont, itemCfg.labelOn),
-            OffscreenCache.bitmapFontWorkerPool.createTextImage(parent.menuCfg.hiFont, itemCfg.labelOn),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(parent.menuCfg.loFont, itemCfg.description),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(parent.menuCfg.hiFont, itemCfg.description),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(parent.menuCfg.loFont, itemCfg.labelOff),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(parent.menuCfg.hiFont, itemCfg.labelOff),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(parent.menuCfg.loFont, itemCfg.labelOn),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(parent.menuCfg.hiFont, itemCfg.labelOn),
         ]).then((textImages) => {
             [this.imgTextNormal, this.imgTextHover, this.imgLabelOffNormal, this.imgLabelOffHover, this.imgLabelOnNormal, this.imgLabelOnHover] = textImages
             this.width = itemCfg.width + Math.max(this.imgLabelOnHover.width, this.imgLabelOffHover.width)

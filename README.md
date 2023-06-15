@@ -42,7 +42,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.6.0 - Complete Base Systems
 
-- Make event processing synced
 - Use event listener to publish events
 - Pin events with setPointerTarget to canvases
 - Implement touch event listener to support mobile browser
@@ -101,7 +100,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Nice to have
 
-- Input is not always processed correctly, mouse up may be processed before mouse down is done, but sync means input lag
 - Seams do not show tear down progress while drilling
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Selection layer capturing all touch events prevents camera control on mobile

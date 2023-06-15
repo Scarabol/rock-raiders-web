@@ -6,7 +6,6 @@ import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 import { Cursor } from '../resource/Cursor'
 import { Sample } from '../audio/Sample'
-import { SaveGamePreferences } from '../resource/SaveGameManager'
 import { Raider } from '../game/model/raider/Raider'
 import { BuildingSite } from '../game/model/building/BuildingSite'
 import { VehicleUpgrade } from '../game/model/vehicle/VehicleUpgrade'
@@ -285,7 +284,7 @@ export class RepairLava extends GuiCommand {
 }
 
 export class ChangePreferences extends GuiCommand {
-    constructor(readonly preferences: SaveGamePreferences) {
+    constructor() {
         super(EventKey.COMMAND_CHANGE_PREFERENCES)
     }
 }

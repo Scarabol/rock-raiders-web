@@ -177,7 +177,6 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PREFERENCES, (event: ChangePreferences) => {
-            SaveGameManager.currentPreferences = event.preferences
             SaveGameManager.savePreferences()
             SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx
             SoundManager.toggleSfx()

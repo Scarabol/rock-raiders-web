@@ -5,7 +5,7 @@ import { RaiderTraining } from '../../game/model/raider/RaiderTraining'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconSubPanel } from './IconSubPanel'
-import { OffscreenCache } from '../../worker/OffscreenCache'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class TrainRaiderPanel extends IconSubPanel {
     canDoTraining: Map<RaiderTraining, boolean> = new Map()
@@ -25,7 +25,7 @@ export class TrainRaiderPanel extends IconSubPanel {
     }
 
     private addTrainingItem(itemKey: string, training: RaiderTraining) {
-        const trainingItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, itemKey)
+        const trainingItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, itemKey)
         trainingItem.isDisabled = () => !this.canDoTraining.get(training)
         trainingItem.onClick = () => this.publishEvent(new TrainRaider(training))
     }

@@ -2,8 +2,8 @@ import { PanelCfg } from '../../cfg/PanelCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
 import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../params'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from './BaseElement'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class Panel extends BaseElement {
     img: SpriteImage = null
@@ -17,7 +17,7 @@ export class Panel extends BaseElement {
     constructor(parent: BaseElement, panelCfg?: PanelCfg) {
         super(parent)
         if (panelCfg) {
-            this.img = OffscreenCache.getImage(panelCfg.filename)
+            this.img = ResourceManager.getImage(panelCfg.filename)
             this.xOut = panelCfg.xOut
             this.yOut = panelCfg.yOut
             this.xIn = panelCfg.xIn

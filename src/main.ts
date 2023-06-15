@@ -13,7 +13,7 @@ import { GameState } from './game/model/GameState'
 import { DEV_MODE, TOOLTIP_FONT_NAME } from './params'
 import { ObjectListLoader } from './game/ObjectListLoader'
 import { SaveGameManager } from './resource/SaveGameManager'
-import { TypedWorker, TypedWorkerFallback } from './worker/TypedWorker'
+import { TypedWorkerFallback } from './worker/TypedWorker'
 import { InitLoadingMessage } from './resource/wadworker/InitLoadingMessage'
 import { WorkerResponse } from './worker/WorkerResponse'
 import { WadWorker } from './resource/wadworker/WadWorker'
@@ -97,14 +97,8 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
     }
 }
 
-let wadWorker: TypedWorker<InitLoadingMessage, WorkerResponse>
-// try {
-//     wadWorker = new TypedWorkerFrontend(new Worker(new URL('./resource/wadworker/WadWorker', import.meta.url), {type: 'module'}), (msg: WorkerResponse) => onWadLoaderMessage(msg))
-// } catch (e) {
-//     console.warn('Could not set up threaded worker!\nUsing fallback to main thread, expect reduced performance.', e)
-wadWorker = new TypedWorkerFallback<InitLoadingMessage, WorkerResponse>((r) => onWadLoaderMessage(r))
+const wadWorker = new TypedWorkerFallback<InitLoadingMessage, WorkerResponse>((r) => onWadLoaderMessage(r))
 new WadWorker(wadWorker as TypedWorkerFallback<InitLoadingMessage, WorkerResponse>)
-// }
 SaveGameManager.loadPreferences()
 SaveGameManager.loadSaveGames()
 SaveGameManager.loadSaveGameScreenshots()

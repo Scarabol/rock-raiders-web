@@ -1,9 +1,9 @@
 import { MenuItemCfg } from '../../cfg/ButtonCfg'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class IconSubPanel extends Panel {
     backBtn: Button = null
@@ -12,13 +12,13 @@ export class IconSubPanel extends Panel {
     constructor(parent: BaseElement, numOfItems: number, onBackPanel: Panel = null) {
         super(parent)
         if (onBackPanel) {
-            this.backBtn = this.addChild(new Button(this, OffscreenCache.configuration.interfaceBackButton))
+            this.backBtn = this.addChild(new Button(this, ResourceManager.configuration.interfaceBackButton))
             this.backBtn.onClick = () => this.toggleState(() => onBackPanel.toggleState())
         }
-        const frameImgCfg = OffscreenCache.cfg('InterfaceSurroundImages', numOfItems.toString())
+        const frameImgCfg = ResourceManager.cfg('InterfaceSurroundImages', numOfItems.toString())
         // noinspection JSUnusedLocalSymbols
         const [imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2] = frameImgCfg
-        this.img = onBackPanel ? OffscreenCache.getImage(imgName) : OffscreenCache.getImage(imgNameWoBackName)
+        this.img = onBackPanel ? ResourceManager.getImage(imgName) : ResourceManager.getImage(imgNameWoBackName)
         this.xOut = -this.img.width
     }
 

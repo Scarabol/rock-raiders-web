@@ -7,7 +7,7 @@ import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { IconSubPanel } from './IconSubPanel'
-import { OffscreenCache } from '../../worker/OffscreenCache'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class GetToolPanel extends IconSubPanel {
     hasToolstation: boolean = false
@@ -34,7 +34,7 @@ export class GetToolPanel extends IconSubPanel {
     }
 
     addGetToolItem(itemKey: string, tool: RaiderTool): IconPanelButton {
-        const menuItem = super.addMenuItem(OffscreenCache.configuration.interfaceImages, itemKey)
+        const menuItem = super.addMenuItem(ResourceManager.configuration.interfaceImages, itemKey)
         menuItem.isDisabled = () => !this.hasToolstation || !!this.everyHasTool.get(tool)
         menuItem.onClick = () => this.publishEvent(new SelectedRaiderPickTool(tool))
         return menuItem

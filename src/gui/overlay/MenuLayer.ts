@@ -1,11 +1,11 @@
 import { MenuEntryCfg } from '../../cfg/MenuEntryCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { MenuCycleItem } from './MenuCycleItem'
 import { MenuLabelItem } from './MenuLabelItem'
 import { MenuSliderItem } from './MenuSliderItem'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class MenuLayer extends BaseElement {
     menuImage: SpriteImage
@@ -19,8 +19,8 @@ export class MenuLayer extends BaseElement {
         super(parent)
         this.relX = menuCfg.position[0]
         this.relY = menuCfg.position[1]
-        this.menuImage = OffscreenCache.getImageOrNull(menuCfg.menuImage[0]) // menuImage has 4 parameter here
-        OffscreenCache.bitmapFontWorkerPool.createTextImage(menuCfg.menuFont, menuCfg.fullName)
+        this.menuImage = ResourceManager.getImageOrNull(menuCfg.menuImage[0]) // menuImage has 4 parameter here
+        ResourceManager.bitmapFontWorkerPool.createTextImage(menuCfg.menuFont, menuCfg.fullName)
             .then((textImage) => this.titleImage = textImage)
         menuCfg.itemsLabel.forEach((itemCfg) => {
             const item = this.addChild(new MenuLabelItem(this, itemCfg, menuCfg.autoCenter))

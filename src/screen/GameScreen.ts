@@ -48,8 +48,6 @@ export class GameScreen {
         this.gameLayer.sceneMgr = this.sceneMgr
         this.gameLayer.entityMgr = this.entityMgr
         this.selectionLayer.worldMgr = this.worldMgr
-        this.guiLayer.entityMgr = this.entityMgr
-        this.overlayLayer.entityMgr = this.entityMgr
         this.guiMgr = new GuiManager(this.worldMgr)
         EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => this.takeFinalScreenshot(event.result))
         EventBus.registerEventListener(EventKey.RESTART_GAME, () => this.restartLevel())

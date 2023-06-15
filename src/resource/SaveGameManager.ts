@@ -27,7 +27,7 @@ export class SaveGameManager {
             const preferences = localStorage.getItem('preferences')
             if (preferences) {
                 this.currentPreferences = {...this.currentPreferences, ...JSON.parse(preferences)}
-                EventBus.publishEvent(new ChangePreferences(this.currentPreferences))
+                EventBus.publishEvent(new ChangePreferences())
                 console.log(`Preferences loaded`, this.currentPreferences)
             }
         } catch (e) {

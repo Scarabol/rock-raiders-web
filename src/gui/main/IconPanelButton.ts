@@ -7,8 +7,8 @@ import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EntityType, getEntityTypeByName } from '../../game/model/EntityType'
 import { EventKey } from '../../event/EventKeyEnum'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent } from '../../event/LocalEvents'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { EntityDependency, EntityDependencyChecked } from '../../cfg/GameConfig'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class IconPanelButton extends Button {
     tooltipDisabled: string = null
@@ -37,7 +37,7 @@ export class IconPanelButton extends Button {
     private addDependencyCheck(itemKey: string) {
         const entityType = getEntityTypeByName(itemKey)
         if (!entityType) return
-        const dependencies = OffscreenCache.configuration.dependencies.get(entityType)
+        const dependencies = ResourceManager.configuration.dependencies.get(entityType)
         if (!dependencies) return
         if (dependencies.some((d) => d.entityType === EntityType.PILOT)) {
             this.registerEventListener(EventKey.RAIDER_AMOUNT_CHANGED, (event: RaidersAmountChangedEvent) => {
@@ -60,7 +60,7 @@ export class IconPanelButton extends Button {
                 || (this.discoveredBuildingsMaxLevel.getOrDefault(d.entityType, -1) >= d.minLevel),
         }))
         this.disabled = !DEV_MODE && checked.some((d) => !d.isOk)
-        OffscreenCache.createDependenciesSprite(checked).then((dependencySprite) => this.dependencyTooltipImage = dependencySprite)
+        ResourceManager.createDependenciesSprite(checked).then((dependencySprite) => this.dependencyTooltipImage = dependencySprite)
     }
 
     showTooltipDisabled() {

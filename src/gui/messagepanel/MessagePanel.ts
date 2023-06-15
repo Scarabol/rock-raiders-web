@@ -4,12 +4,12 @@ import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
 import { AirLevelChanged, NerpMessage, RaiderTrainingCompleteEvent } from '../../event/LocalEvents'
 import { PlaySoundEvent } from '../../event/GuiCommand'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { TextInfoMessage } from './TextInfoMessage'
 import { TextInfoMessageCfg } from './TextInfoMessageCfg'
 import { AIR_LEVEL_LEVEL_LOW, AIR_LEVEL_WARNING_STEP } from '../../params'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class MessagePanel extends Panel {
     private readonly maxAirLevelWidth = 236
@@ -32,7 +32,7 @@ export class MessagePanel extends Panel {
         super(parent, panelCfg)
         this.relX = this.xOut = this.xIn = 42
         this.relY = this.yOut = this.yIn = 409
-        this.imgAir = OffscreenCache.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
+        this.imgAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
 
         const crystalFound = new TextInfoMessage(textInfoMessageConfig.textCrystalFound, this.img.width)
         this.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(crystalFound))

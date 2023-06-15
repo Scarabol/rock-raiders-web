@@ -4,7 +4,7 @@ import { SelectionChanged } from '../../../event/LocalEvents'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
-import { OffscreenCache } from '../../../worker/OffscreenCache'
+import { ResourceManager } from '../../../resource/ResourceManager'
 
 export class SelectFloorPanel extends SelectBasePanel {
     isGround: boolean = false
@@ -13,13 +13,13 @@ export class SelectFloorPanel extends SelectBasePanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 3, onBackPanel)
-        const pathItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_LayPath')
+        const pathItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_LayPath')
         pathItem.onClick = () => this.publishEvent(new CreatePowerPath())
         pathItem.isDisabled = () => !this.isGround
-        const removeItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_RemovePath')
+        const removeItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_RemovePath')
         removeItem.onClick = () => this.publishEvent(new MakeRubble())
         removeItem.isDisabled = () => !this.isPowerPath
-        const placeFenceItem = this.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_PlaceFence')
+        const placeFenceItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_PlaceFence')
         placeFenceItem.isDisabled = () => !this.canPlaceFence
         placeFenceItem.onClick = () => this.publishEvent(new PlaceFence())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

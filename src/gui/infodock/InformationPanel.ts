@@ -1,9 +1,9 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { DEFAULT_FONT_NAME } from '../../params'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class InformationPanel extends Panel {
     textImage: SpriteImage = null
@@ -13,7 +13,7 @@ export class InformationPanel extends Panel {
     }
 
     setText(text?: string) {
-        OffscreenCache.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text, this.img.width - 80)
+        ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text, this.img.width - 80)
             .then((textImage) => {
                 this.textImage = textImage
                 this.notifyRedraw()

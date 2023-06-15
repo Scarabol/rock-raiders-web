@@ -5,9 +5,9 @@ import { EntityType } from '../../game/model/EntityType'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { IconPanelButtonLabel } from './IconPanelButtonLabel'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { Sample } from '../../audio/Sample'
 import { IconSubPanel } from './IconSubPanel'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 abstract class VehiclePanel extends IconSubPanel {
     requestedVehiclesByType: Map<EntityType, number> = new Map()
@@ -22,13 +22,13 @@ abstract class VehiclePanel extends IconSubPanel {
     }
 
     addVehicleMenuItem(itemKey: string, entityType: EntityType, tooltipSfx: Sample) {
-        const item = super.addMenuItem(OffscreenCache.configuration.interfaceBuildImages, itemKey)
+        const item = super.addMenuItem(ResourceManager.configuration.interfaceBuildImages, itemKey)
         item.onClick = () => this.publishEvent(new RequestVehicleSpawn(entityType, this.requestedVehiclesByType.getOrDefault(entityType, 0) + 1))
         item.onClickSecondary = () => {
             const numRequested = this.requestedVehiclesByType.getOrDefault(entityType, 0)
             if (numRequested > 0) this.publishEvent(new RequestVehicleSpawn(entityType, numRequested - 1))
         }
-        item.tooltip = OffscreenCache.configuration.objectNamesCfg.get(itemKey.toLowerCase())
+        item.tooltip = ResourceManager.configuration.objectNamesCfg.get(itemKey.toLowerCase())
         item.tooltipSfx = Sample[tooltipSfx]
         this.btnLabelByType.set(entityType, item.addChild(new IconPanelButtonLabel(item)))
     }

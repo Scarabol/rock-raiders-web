@@ -4,10 +4,10 @@ import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
 import { NeededCrystalsChanged } from '../../event/LocalEvents'
 import { MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { SideBarLabel } from './SideBarLabel'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class PanelCrystalSideBar extends Panel {
     labelOre: SideBarLabel
@@ -26,10 +26,10 @@ export class PanelCrystalSideBar extends Panel {
         super(parent, panelCfg)
         this.labelOre = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarOre))
         this.labelCrystal = this.addChild(new SideBarLabel(this, buttonsCfg.panelButtonCrystalSideBarCrystals))
-        this.imgNoCrystal = OffscreenCache.getImage('Interface/RightPanel/NoSmallCrystal.bmp')
-        this.imgSmallCrystal = OffscreenCache.getImage('Interface/RightPanel/SmallCrystal.bmp')
-        this.imgUsedCrystal = OffscreenCache.getImage('Interface/RightPanel/UsedCrystal.bmp')
-        this.imgOre = OffscreenCache.getImage('Interface/RightPanel/CrystalSideBar_Ore.bmp')
+        this.imgNoCrystal = ResourceManager.getImage('Interface/RightPanel/NoSmallCrystal.bmp')
+        this.imgSmallCrystal = ResourceManager.getImage('Interface/RightPanel/SmallCrystal.bmp')
+        this.imgUsedCrystal = ResourceManager.getImage('Interface/RightPanel/UsedCrystal.bmp')
+        this.imgOre = ResourceManager.getImage('Interface/RightPanel/CrystalSideBar_Ore.bmp')
         this.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, (event: MaterialAmountChanged) => {
             this.labelOre.label = event.totalOre.toString()
             this.labelCrystal.label = event.numCrystal.toString()

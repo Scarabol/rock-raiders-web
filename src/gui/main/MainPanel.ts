@@ -23,7 +23,7 @@ import { SelectWallPanel } from './select/SelectWallPanel'
 import { TrainRaiderPanel } from './TrainRaiderPanel'
 import { LargeVehiclePanel, SmallVehiclePanel } from './VehiclePanel'
 import { UpgradeVehiclePanel } from './UpgradeVehiclePanel'
-import { OffscreenCache } from '../../worker/OffscreenCache'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class MainPanel extends Panel {
     subPanels: IconSubPanel[] = []
@@ -69,7 +69,7 @@ export class MainPanel extends Panel {
         selectVehicleManedPanel.upgradeItem.onClick = () => selectVehicleManedPanel.toggleState(() => upgradeVehiclePanel.toggleState())
         const selectFencePanel = this.addSubPanel(new SelectFencePanel(this, this.mainPanel))
 
-        const teleportRaider = this.mainPanel.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_TeleportMan')
+        const teleportRaider = this.mainPanel.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_TeleportMan')
         teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || !this.hasRaiderTeleport
         teleportRaider.updateState()
         teleportRaider.onClick = () => this.publishEvent(new ChangeRaiderSpawnRequest(true))
@@ -84,13 +84,13 @@ export class MainPanel extends Panel {
             this.numRequestedRaiders = event.numRequested
             teleportRaider.updateState()
         })
-        const buildingItem = this.mainPanel.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_BuildBuilding')
+        const buildingItem = this.mainPanel.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_BuildBuilding')
         buildingItem.isDisabled = () => false
         buildingItem.onClick = () => this.mainPanel.toggleState(() => buildingPanel.toggleState())
-        const smallVehicleItem = this.mainPanel.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_BuildSmallVehicle')
+        const smallVehicleItem = this.mainPanel.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_BuildSmallVehicle')
         smallVehicleItem.isDisabled = () => false
         smallVehicleItem.onClick = () => this.mainPanel.toggleState(() => smallVehiclePanel.toggleState())
-        const largeVehicleItem = this.mainPanel.addMenuItem(OffscreenCache.configuration.interfaceImages, 'Interface_MenuItem_BuildLargeVehicle')
+        const largeVehicleItem = this.mainPanel.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_BuildLargeVehicle')
         largeVehicleItem.isDisabled = () => false
         largeVehicleItem.onClick = () => this.mainPanel.toggleState(() => largeVehiclePanel.toggleState())
 

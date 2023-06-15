@@ -1,11 +1,11 @@
 import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
-import { OffscreenCache } from '../../worker/OffscreenCache'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { BriefingPanelCfg } from './BriefingPanelCfg'
 import { ShowMissionBriefingEvent } from '../../event/LocalEvents'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class BriefingPanel extends Panel {
     cfg: BriefingPanelCfg = null
@@ -25,7 +25,7 @@ export class BriefingPanel extends Panel {
         super(parent)
         this.cfg = new BriefingPanelCfg()
         this.onClick = () => this.nextParagraph() // fallback for touch displays without keyboard like mobile browsers
-        OffscreenCache.bitmapFontWorkerPool.createTextImage(this.cfg.titleFontName, this.cfg.title)
+        ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFontName, this.cfg.title)
             .then((textImage) => {
                 this.imgTitle = textImage
                 this.titleRelX = this.cfg.titleWindow.x + (this.cfg.titleWindow.w - this.imgTitle.width) / 2
@@ -45,7 +45,7 @@ export class BriefingPanel extends Panel {
     }
 
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
-        this.imgBack = OffscreenCache.getImageOrNull(objectiveBackImgCfg.filename)
+        this.imgBack = ResourceManager.getImageOrNull(objectiveBackImgCfg.filename)
         this.relX = this.xIn = objectiveBackImgCfg.x
         this.relY = this.yIn = objectiveBackImgCfg.y
         this.width = this.imgBack.width
@@ -53,7 +53,7 @@ export class BriefingPanel extends Panel {
         this.updatePosition()
         this.objectiveParagraphs = objectiveText.split('\\a')
         Promise.all(this.objectiveParagraphs.map((txt) => {
-            return OffscreenCache.bitmapFontWorkerPool.createTextImage(this.cfg.textFontName, txt, this.cfg.textWindow.w, false)
+            return ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.textFontName, txt, this.cfg.textWindow.w, false)
         })).then((textImages) => {
             this.imgParagraphList = textImages
             this.notifyRedraw()
