@@ -28,10 +28,10 @@ export class BitmapFontData {
         ] // XXX complete this character list
 
         function isLimiterColor(imgData: ImageData, index: number): boolean {
-            // Last pixel in the first row defines the end of char limiter color (e.g. 255,39,0)
-            return imgData.data[index] === fontImageData.data[(fontImageData.width - 1) * 4]
-                && imgData.data[index + 1] === fontImageData.data[(fontImageData.width - 1) * 4 + 1]
-                && imgData.data[index + 2] === fontImageData.data[(fontImageData.width - 1) * 4 + 2]
+            // Last pixel in the first row of the first char defines the end of char limiter color (e.g. 255,39,0)
+            return imgData.data[index] === fontImageData.data[(maxCharWidth - 1) * 4]
+                && imgData.data[index + 1] === fontImageData.data[(maxCharWidth - 1) * 4 + 1]
+                && imgData.data[index + 2] === fontImageData.data[(maxCharWidth - 1) * 4 + 2]
         }
 
         function getActualCharacterWidth(imgData: ImageData) {
