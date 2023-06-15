@@ -26,7 +26,7 @@ export class LoadingLayer extends ScaledLayer {
             context.fillStyle = 'white'
             context.fillText(text, 20, this.fixedHeight - 20)
         }
-        this.animationFrame.redraw()
+        this.animationFrame.notifyRedraw()
     }
 
     enableGraphicMode(totalResources: number) {
@@ -40,13 +40,13 @@ export class LoadingLayer extends ScaledLayer {
                     context.drawImage(imgProgress, 142, 450, loadingBarWidth, 9)
                     if (imgLoading) context.drawImage(imgLoading, Math.round(320 - imgLoading.width / 2), Math.round(456 - imgLoading.height / 2))
                 })
-                this.animationFrame.redraw()
+                this.animationFrame.notifyRedraw()
             })
     }
 
     increaseLoadingState() {
         this.assetIndex++
-        this.animationFrame.redraw()
+        this.animationFrame.notifyRedraw()
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {

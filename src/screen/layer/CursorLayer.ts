@@ -87,7 +87,7 @@ export class CursorLayer extends ScreenLayer {
                 context.clearRect(0, 0, context.canvas.width, context.canvas.height)
                 this.animationFrame.onRedraw = null
             }
-            this.animationFrame.redraw()
+            this.animationFrame.notifyRedraw()
         } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
             this.cursorLeft = true
             this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
@@ -139,7 +139,7 @@ export class CursorLayer extends ScreenLayer {
         const posX = Math.min(this.cursorCanvasPos.x + tooltipWidth, this.canvas.width) - tooltipWidth
         const posY = Math.min(this.cursorCanvasPos.y + this.activeCursor.maxHeight + tooltipHeight, this.canvas.height) - tooltipHeight
         this.animationFrame.onRedraw = (context) => context.drawImage(tooltipImg, posX, posY, tooltipWidth, tooltipHeight)
-        this.animationFrame.redraw()
+        this.animationFrame.notifyRedraw()
     }
 
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {

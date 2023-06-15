@@ -77,7 +77,7 @@ export class MainMenuLayer extends ScaledLayer {
                 let needsRedraw = false
                 this.items.forEach((item) => needsRedraw = item.onMouseDown() || needsRedraw)
                 if (needsRedraw) {
-                    this.animationFrame.redraw()
+                    this.animationFrame.notifyRedraw()
                     return true
                 }
                 this.doubleTapToFullscreen()
@@ -88,7 +88,7 @@ export class MainMenuLayer extends ScaledLayer {
                 let needsRedraw = false
                 this.items.forEach((item) => needsRedraw = item.onMouseUp() || needsRedraw)
                 if (needsRedraw) {
-                    this.animationFrame.redraw()
+                    this.animationFrame.notifyRedraw()
                     return true
                 }
             }
@@ -97,7 +97,7 @@ export class MainMenuLayer extends ScaledLayer {
             this.scrollInterval = clearIntervalSafe(this.scrollInterval)
             return true
         }
-        if (this.needsRedraw()) this.animationFrame.redraw()
+        if (this.needsRedraw()) this.animationFrame.notifyRedraw()
         return false
     }
 
@@ -134,13 +134,13 @@ export class MainMenuLayer extends ScaledLayer {
             }
             needsRedraw = needsRedraw || item.needsRedraw
         })
-        if (needsRedraw) this.animationFrame.redraw()
+        if (needsRedraw) this.animationFrame.notifyRedraw()
     }
 
     private setScrollY(deltaY: number) {
         const scrollYBefore = this.scrollY
         this.scrollY = Math.min(Math.max(this.scrollY + deltaY, 0), this.menuImage.height - this.fixedHeight)
-        if (scrollYBefore !== this.scrollY) this.animationFrame.redraw()
+        if (scrollYBefore !== this.scrollY) this.animationFrame.notifyRedraw()
     }
 
     needsRedraw(): boolean {

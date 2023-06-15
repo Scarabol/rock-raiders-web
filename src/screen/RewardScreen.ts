@@ -57,9 +57,9 @@ export class RewardScreen {
                 this.resultIndex = this.resultLastIndex
                 this.btnSave.visible = true
                 this.btnAdvance.visible = true
-                this.resultsLayer.animationFrame.redraw()
-                this.descriptionTextLayer.animationFrame.redraw()
-                this.btnLayer.animationFrame.redraw()
+                this.resultsLayer.animationFrame.notifyRedraw()
+                this.descriptionTextLayer.animationFrame.notifyRedraw()
+                this.btnLayer.animationFrame.notifyRedraw()
                 return true
             }
             return false
@@ -92,7 +92,7 @@ export class RewardScreen {
                     this.btnAdvance.onMouseUp()
                 }
             }
-            if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.animationFrame.redraw()
+            if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.animationFrame.notifyRedraw()
             return false
         })
         this.btnLayer.animationFrame.onRedraw = (context) => {
@@ -218,9 +218,9 @@ export class RewardScreen {
                 this.btnSave.visible = true
                 this.btnAdvance.visible = true
             }
-            this.resultsLayer.animationFrame.redraw()
-            this.descriptionTextLayer.animationFrame.redraw()
-            this.btnLayer.animationFrame.redraw()
+            this.resultsLayer.animationFrame.notifyRedraw()
+            this.descriptionTextLayer.animationFrame.notifyRedraw()
+            this.btnLayer.animationFrame.notifyRedraw()
         }, this.cfg.timer * 1000)
     }
 }

@@ -34,7 +34,7 @@ export class SelectionLayer extends ScreenLayer {
 
     resize(width: number, height: number) {
         super.resize(width, height)
-        this.animationFrame.redraw()
+        this.animationFrame.notifyRedraw()
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
@@ -47,7 +47,7 @@ export class SelectionLayer extends ScreenLayer {
             return this.selectEntities(event.canvasX, event.canvasY)
         } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
             this.selectionRect = null
-            this.animationFrame.redraw()
+            this.animationFrame.notifyRedraw()
             return true
         }
         return false
@@ -62,7 +62,7 @@ export class SelectionLayer extends ScreenLayer {
         if (!this.selectionRect) return false // selection was not started on this layer
         this.selectionRect.w = screenX - this.selectionRect.x
         this.selectionRect.h = screenY - this.selectionRect.y
-        this.animationFrame.redraw()
+        this.animationFrame.notifyRedraw()
         return true
     }
 
@@ -83,7 +83,7 @@ export class SelectionLayer extends ScreenLayer {
         this.worldMgr.entityMgr.selection.set(entities)
         EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
         this.selectionRect = null
-        this.animationFrame.redraw()
+        this.animationFrame.notifyRedraw()
         return true
     }
 }

@@ -26,21 +26,21 @@ export abstract class AbstractGuiSystem extends OffscreenSystem {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             this.rootElement.onRedraw(context)
         }
-        this.rootElement.notifyRedraw = () => this.animationFrame.redraw()
+        this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
         this.rootElement.publishEvent = (event: GuiCommand) => {
             this.publishEvent(event)
         }
         this.rootElement.registerEventListener = (eventKey: EventKey, callback: (event: GameEvent) => any) => {
             this.registerEventListener(eventKey, callback)
         }
-        this.animationFrame.redraw()
+        this.animationFrame.notifyRedraw()
         OffscreenCache.startBitmapFontRenderPool()
     }
 
     resizeCanvas(width: number, height: number) {
         super.resizeCanvas(width, height)
         this.animationFrame.scale(this.canvas.width / NATIVE_SCREEN_WIDTH, this.canvas.height / NATIVE_SCREEN_HEIGHT)
-        this.animationFrame.redraw()
+        this.animationFrame.notifyRedraw()
     }
 
     reset(): void {

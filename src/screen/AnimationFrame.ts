@@ -15,7 +15,7 @@ export class AnimationFrame {
         this.redrawCallback = callback
     }
 
-    redraw() {
+    notifyRedraw() {
         if (!this.redrawCallback) return
         if (this.lastAnimationRequest) cancelAnimationFrame(this.lastAnimationRequest)
         this.lastAnimationRequest = requestAnimationFrame(() => this.redrawCallback(this.context))

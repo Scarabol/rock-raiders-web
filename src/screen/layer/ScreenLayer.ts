@@ -116,13 +116,13 @@ export class ScaledLayer extends ScreenLayer {
         this.updateScale()
         setTimeout(() => {
             this.animationFrame.scale(this.scaleX, this.scaleY)
-            this.animationFrame.redraw()
+            this.animationFrame.notifyRedraw()
         })
     }
 
     show() {
         super.show()
-        this.animationFrame.redraw()
+        this.animationFrame.notifyRedraw()
     }
 
     protected doubleTapToFullscreen() {

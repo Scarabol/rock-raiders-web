@@ -65,7 +65,7 @@ export class OverlayWorker extends AbstractGuiSystem {
         this.panels.forEach(p => p !== panel && p.hide())
         panel?.show()
         this.publishEvent(new GuiCommand(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
-        this.animationFrame.redraw()
+        this.animationFrame.notifyRedraw()
     }
 
     reset(): void {
