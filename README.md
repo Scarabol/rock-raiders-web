@@ -42,11 +42,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.6.0 - Complete Base Systems
 
-- Create separate frontend scene without renderer to handle positional audio
-- Offload scene rendering to offscreen thread
-- Move GUI processing to main thread by default
-- Offload GUI rendering to offscreen thread (or fix pricy animation for icon panel)
-
 - Implement touch event listener to support mobile browser
 - Implement raider info bubbles
 - Raider get tired while carrying and eat at barracks
