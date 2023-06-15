@@ -23,6 +23,7 @@ import { CursorLayer } from './screen/layer/CursorLayer'
 import { WadFileSelectionModal } from '../site/wadModal/WadFileSelectionModal'
 import { GithubBox } from '../site/github/github-box'
 import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
+import { GameResult } from './game/model/GameResult'
 
 function onWadLoaderMessage(msg: WadWorkerMessage) {
     switch (msg.type) {
@@ -98,7 +99,7 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
                     const loadGame = params.get('loadGame')
                     if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))
                     if (entry === 'level') mainMenuScreen.showLevelSelection()
-                    else if (entry === 'reward') rewardScreen.show()
+                    else if (entry === 'reward') rewardScreen.showGameResult(GameResult.random())
                     else if (entry === 'random') mainMenuScreen.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
                     else if (entry) mainMenuScreen.selectLevel(entry)
                 } else {

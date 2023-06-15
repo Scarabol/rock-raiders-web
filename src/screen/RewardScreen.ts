@@ -131,7 +131,6 @@ export class RewardScreen {
         if (result.state === GameResultState.COMPLETE) {
             this.resultText = this.cfg.completeText
             this.resultLastIndex = this.images.length - 1
-            SaveGameManager.setLevelScore(result.levelName, result.score)
         } else if (result.state === GameResultState.FAILED) {
             this.resultText = this.cfg.failedText
         }

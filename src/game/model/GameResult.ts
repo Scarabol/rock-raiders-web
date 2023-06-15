@@ -1,7 +1,7 @@
 import { LevelEntryCfg, LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { ADDITIONAL_RAIDER_PER_SUPPORT } from '../../params'
-import { EntityManager } from '../EntityManager'
 import { GameState } from './GameState'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export enum GameResultState {
     UNDECIDED,
@@ -12,9 +12,6 @@ export enum GameResultState {
 
 export class GameResult {
     levelFullName: string
-    numBuildings: number
-    numRaiders: number
-    numMaxRaiders: number
     defencePercent: number
     airLevelPercent: number
     score: number
@@ -28,17 +25,15 @@ export class GameResult {
     scoreFigures: number = 0
 
     constructor(
-        readonly levelName: string,
         levelConf: LevelEntryCfg,
         readonly state: GameResultState,
-        entityMgr: EntityManager,
+        readonly numBuildings: number,
+        readonly numRaiders: number,
+        readonly numMaxRaiders: number,
         readonly gameTimeSeconds: number,
         readonly screenshot: HTMLCanvasElement
     ) {
         this.levelFullName = levelConf.fullName
-        this.numBuildings = entityMgr.buildings.length
-        this.numRaiders = entityMgr.raiders.length
-        this.numMaxRaiders = entityMgr.getMaxRaiders()
         this.defencePercent = 100 // TODO defence report is either 0% or 100%
         this.airLevelPercent = GameState.airLevel * 100
         this.rewardConfig = levelConf?.reward
@@ -53,5 +48,10 @@ export class GameResult {
             this.scoreFigures = this.numRaiders >= ADDITIONAL_RAIDER_PER_SUPPORT ? importance.figures : 0
             this.score = Math.max(0, Math.min(100, Math.round(this.scoreCrystals + this.scoreTimer + this.scoreCaverns + this.scoreConstructions + this.scoreOxygen + this.scoreFigures)))
         }
+    }
+
+    static random(): GameResult {
+        const randomLevelConf = Array.from(ResourceManager.configuration.levels.levelCfgByName.values()).random()
+        return new GameResult(randomLevelConf, GameResultState.COMPLETE, Math.randomInclusive(6), Math.randomInclusive(10), 10, 942, null)
     }
 }

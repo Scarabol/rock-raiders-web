@@ -17,6 +17,7 @@ import { GuiMainLayer } from './layer/GuiMainLayer'
 import { OverlayLayer } from './layer/OverlayLayer'
 import { SelectionLayer } from './layer/SelectionLayer'
 import { ScreenMaster } from './ScreenMaster'
+import { SaveGameManager } from '../resource/SaveGameManager'
 
 export class GameScreen {
     onLevelEnd: (result: GameResult) => any = (result) => console.log(`Level ended with: ${JSON.stringify(result)}`)
@@ -111,7 +112,8 @@ export class GameScreen {
     onGameResult(resultState: GameResultState) {
         const gameTimeSeconds = Math.round(this.worldMgr.elapsedGameTimeMs / 1000)
         this.screenMaster.createScreenshot().then((canvas) => {
-            const result = new GameResult(this.levelName, this.levelConf, resultState, this.entityMgr, gameTimeSeconds, canvas)
+            const result = new GameResult(this.levelConf, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, this.entityMgr.getMaxRaiders(), gameTimeSeconds, canvas)
+            SaveGameManager.setLevelScore(this.levelName, result.score)
             this.hide()
             this.onLevelEnd(result)
         })
