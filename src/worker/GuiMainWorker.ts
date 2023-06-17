@@ -13,7 +13,7 @@ import { InfoDockPanel } from '../gui/infodock/InfoDockPanel'
 import { OffscreenCache } from './OffscreenCache'
 import { CameraControlPanel } from '../gui/cameracontrol/CameraControlPanel'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
-import { GuiWorkerMessage } from '../gui/GuiWorkerMessage'
+import { OffscreenWorkerMessage } from './OffscreenWorkerMessage'
 import { TOOLTIP_FONT_NAME } from '../params'
 
 export class GuiMainWorker extends AbstractGuiSystem {
@@ -67,7 +67,7 @@ export class GuiMainWorker extends AbstractGuiSystem {
         })
     }
 
-    onProcessMessage(msg: GuiWorkerMessage): boolean {
+    onProcessMessage(msg: OffscreenWorkerMessage): boolean {
         if (msg.type === WorkerMessageType.SPACE_TO_CONTINUE) {
             if (msg.messageState) {
                 this.panelMessages.setMessage(this.panelMessages.msgSpaceToContinue, 0)

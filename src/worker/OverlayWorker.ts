@@ -6,7 +6,7 @@ import { OptionsPanel } from '../gui/overlay/OptionsPanel'
 import { PausePanel } from '../gui/overlay/PausePanel'
 import { OffscreenCache } from './OffscreenCache'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
-import { GuiWorkerMessage } from '../gui/GuiWorkerMessage'
+import { OverlayWorkerMessage } from '../gui/OverlayWorkerMessage'
 import { ObjectiveImageCfg } from '../cfg/LevelsCfg'
 import { DEV_MODE } from '../params'
 import { Panel } from '../gui/base/Panel'
@@ -45,7 +45,7 @@ export class OverlayWorker extends AbstractGuiSystem {
         })
     }
 
-    onProcessMessage(msg: GuiWorkerMessage): boolean {
+    onProcessMessage(msg: OverlayWorkerMessage): boolean {
         if (msg.type === WorkerMessageType.OVERLAY_SETUP) {
             this.setup(msg.objectiveText, msg.objectiveBackImgCfg)
         } else if (msg.type === WorkerMessageType.SHOW_OPTIONS) {
@@ -79,22 +79,20 @@ export class OverlayWorker extends AbstractGuiSystem {
     }
 
     handleKeyEvent(event: GameKeyboardEvent): boolean {
-        let result = false
-        const lEventKey = event.key.toLowerCase()
         if (event.eventEnum === KEY_EVENT.UP) {
-            if (lEventKey === 'escape') {
+            if (event.key === 'Escape') {
                 if (this.panelBriefing.hidden) {
                     this.setActivePanel(this.panelPause.hidden && this.panelOptions.hidden ? this.panelPause : null)
-                    result = true
+                    return true
                 }
-            } else if (lEventKey === ' ') { // space
+            } else if (event.key === ' ') { // space
                 if (!this.panelBriefing.hidden) {
                     this.panelBriefing.nextParagraph()
-                    result = true
+                    return true
                 }
             }
         }
-        return result
+        return false
     }
 }
 

@@ -88,9 +88,9 @@ export class DeselectAll extends LocalEvent {
     }
 }
 
-export class TakeScreenshot extends LocalEvent {
+export class SaveScreenshot extends LocalEvent {
     constructor() {
-        super(EventKey.TAKE_SCREENSHOT)
+        super(EventKey.SAVE_SCREENSHOT)
     }
 }
 

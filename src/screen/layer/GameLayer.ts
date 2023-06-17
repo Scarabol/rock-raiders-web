@@ -160,11 +160,11 @@ export class GameLayer extends ScreenLayer {
 
     handleKeyEvent(event: GameKeyboardEvent): boolean {
         if (DEV_MODE && event.eventEnum === KEY_EVENT.UP && this.entityMgr.selection.surface) {
-            if (event.code === 'KeyC') {
+            if (event.key === 'c') {
                 this.entityMgr.selection.surface.collapse()
                 EventBus.publishEvent(new DeselectAll())
                 return true
-            } else if (event.code === 'KeyF') {
+            } else if (event.key === 'f') {
                 const surface = this.entityMgr.selection.surface
                 if (!surface.surfaceType.floor) {
                     this.sceneMgr.terrain.createFallIn(surface, this.sceneMgr.terrain.findFallInTarget(surface))
@@ -173,9 +173,6 @@ export class GameLayer extends ScreenLayer {
                 return true
             }
         }
-        [['KeyW', 'ArrowUp'], ['KeyA', 'ArrowLeft'], ['KeyS', 'ArrowDown'], ['KeyD', 'ArrowRight']].forEach((pair) => {
-            if (event.code === pair[0]) event.code = pair[1] // rewrite WASD to arrow keys for camera control
-        })
         return this.sceneMgr.controls.handleKeyEvent(event)
     }
 

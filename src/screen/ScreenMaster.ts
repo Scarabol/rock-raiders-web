@@ -20,7 +20,7 @@ export class ScreenMaster {
         new EventManager(this)
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
-        EventBus.registerEventListener(EventKey.TAKE_SCREENSHOT, () => this.takeScreenshot())
+        EventBus.registerEventListener(EventKey.SAVE_SCREENSHOT, () => this.saveScreenshot())
     }
 
     addLayer<T extends ScreenLayer>(layer: T, zIndex: number): T {
@@ -64,7 +64,7 @@ export class ScreenMaster {
         })
     }
 
-    takeScreenshot() {
+    saveScreenshot() {
         this.createScreenshot().then((canvas) => this.downloadCanvasAsImage(canvas))
     }
 

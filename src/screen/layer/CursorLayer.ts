@@ -7,7 +7,7 @@ import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
-import { TakeScreenshot } from '../../event/LocalEvents'
+import { SaveScreenshot } from '../../event/LocalEvents'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { AnimatedCursor } from '../AnimatedCursor'
@@ -70,7 +70,7 @@ export class CursorLayer extends ScreenLayer {
 
     handleKeyEvent(event: GameKeyboardEvent): boolean {
         if (event.key === 'p') {
-            if (event.eventEnum === KEY_EVENT.DOWN) EventBus.publishEvent(new TakeScreenshot())
+            if (event.eventEnum === KEY_EVENT.UP) EventBus.publishEvent(new SaveScreenshot())
             return true
         } else {
             return super.handleKeyEvent(event)

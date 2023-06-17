@@ -23,7 +23,7 @@ export abstract class OffscreenLayer extends ScreenLayer {
     worker: TypedWorker<OffscreenWorkerMessage, WorkerResponse>
     entityMgr: EntityManager
 
-    constructor() {
+    protected constructor() {
         super()
         this.initWorker()
         EventBus.registerWorkerListener((event: GameEvent) => {

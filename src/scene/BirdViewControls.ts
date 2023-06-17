@@ -62,6 +62,9 @@ export class BirdViewControls extends MapControls {
     }
 
     handleKeyEvent(event: GameKeyboardEvent): boolean {
+        [['KeyW', 'ArrowUp'], ['KeyA', 'ArrowLeft'], ['KeyS', 'ArrowDown'], ['KeyD', 'ArrowRight']].forEach((pair) => {
+            if (event.code === pair[0]) event.code = pair[1] // rewrite WASD to arrow keys for camera control
+        })
         this.domElement.dispatchEvent(new KeyboardEvent(event.type, event))
         return true
     }

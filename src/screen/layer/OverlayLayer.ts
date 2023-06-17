@@ -1,5 +1,5 @@
 import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
-import { GuiWorkerMessage } from '../../gui/GuiWorkerMessage'
+import { OverlayWorkerMessage } from '../../gui/OverlayWorkerMessage'
 import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
 import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
 import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../worker/TypedWorker'
@@ -44,7 +44,7 @@ export class OverlayLayer extends OffscreenLayer {
         })
     }
 
-    protected sendMessage(message: GuiWorkerMessage, transfer?: Transferable[]) {
+    protected sendMessage(message: OverlayWorkerMessage, transfer?: Transferable[]) {
         super.sendMessage(message, transfer)
     }
 
