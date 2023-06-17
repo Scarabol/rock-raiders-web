@@ -24,11 +24,11 @@ export class PathTarget {
     }
 
     static fromBuilding(building: BuildingEntity, targetLocation: Vector2) {
-        return new PathTarget(targetLocation, 0, building, null, null)
+        return new PathTarget(targetLocation, 2, building, null, null)
     }
 
     static fromSurface(surface: Surface, targetLocation: Vector2) {
-        return new PathTarget(targetLocation, 0, null, surface, null)
+        return new PathTarget(targetLocation, 2, null, surface, null)
     }
 
     static fromSite(site: BuildingSite, targetLocation: Vector2, headingOnSite: number = 0) {

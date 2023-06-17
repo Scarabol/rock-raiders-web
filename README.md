@@ -109,7 +109,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - When switching from loading to main menu layer on mobile the new layer is not shown
 - Clear job from surface, if dynamite cannot reach target
 - Cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position manipulation
-- Raider can get stuck in toolstation, seems while picking up tools
 
 ### Cosmetics
 
