@@ -65,32 +65,10 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
                 // complete setup
                 const mainMenuScreen = new MainMenuScreen(screenMaster)
                 await yieldToMainThread()
-                const gameScreen = new GameScreen(screenMaster)
+                new GameScreen(screenMaster)
                 await yieldToMainThread()
                 const rewardScreen = new RewardScreen(screenMaster)
                 await yieldToMainThread()
-
-                mainMenuScreen.onLevelSelected = (levelName) => {
-                    try {
-                        gameScreen.startLevel(levelName)
-                    } catch (e) {
-                        console.error(`Could not load level: ${levelName}`, e)
-                        gameScreen.hide()
-                        mainMenuScreen.showLevelSelection()
-                    }
-                }
-                gameScreen.onLevelEnd = (result) => {
-                    if (result) {
-                        rewardScreen.showGameResult(result)
-                    } else {
-                        GameState.reset()
-                        mainMenuScreen.showLevelSelection()
-                    }
-                }
-                rewardScreen.onAdvance = () => {
-                    GameState.reset()
-                    mainMenuScreen.showLevelSelection()
-                }
 
                 // setup complete
                 loadingLayer.hide()

@@ -11,9 +11,11 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { ScaledLayer } from './layer/ScreenLayer'
 import { ScreenMaster } from './ScreenMaster'
+import { EventBus } from '../event/EventBus'
+import { EventKey } from '../event/EventKeyEnum'
+import { ShowGameResultEvent } from '../event/LocalEvents'
 
 export class RewardScreen {
-    onAdvance: () => void
     cfg: RewardCfg = null
     backgroundLayer: ScaledLayer
     resultsLayer: ScaledLayer
@@ -75,7 +77,8 @@ export class RewardScreen {
             this.descriptionTextLayer.hide()
             this.btnLayer.hide()
             this.saveGameLayer.hide()
-            this.onAdvance()
+            GameState.reset()
+            EventBus.publishEvent(new ShowGameResultEvent())
         }
         this.btnLayer.handlePointerEvent = ((event) => {
             if (event.eventEnum === POINTER_EVENT.MOVE || event.eventEnum === POINTER_EVENT.LEAVE) {
@@ -119,6 +122,9 @@ export class RewardScreen {
                 console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
             }
         }
+        EventBus.registerEventListener(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
+            if (event.result) this.showGameResult(event.result)
+        })
     }
 
     showGameResult(result: GameResult) {

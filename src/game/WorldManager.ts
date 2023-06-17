@@ -3,7 +3,7 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearTimeoutSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged, ToggleAlarmEvent } from '../event/WorldEvents'
+import { GameResultEvent, MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged, ToggleAlarmEvent } from '../event/WorldEvents'
 import { NerpRunner } from '../nerp/NerpRunner'
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -27,7 +27,6 @@ import { ShowMissionBriefingEvent } from '../event/LocalEvents'
 import { OxygenSystem } from './system/OxygenSystem'
 
 export class WorldManager {
-    onLevelEnd: (result: GameResultState) => any = (result) => console.log(`Level ended with: ${result}`)
     readonly ecs: ECS = new ECS()
     readonly jobSupervisor: Supervisor = new Supervisor(this)
     readonly oxygenSystem: OxygenSystem
@@ -55,7 +54,7 @@ export class WorldManager {
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
-            if (this.started) this.startLoop(UPDATE_INTERVAL_MS)
+            this.startLoop(UPDATE_INTERVAL_MS)
             if (this.firstUnpause) {
                 this.firstUnpause = false
                 this.sceneMgr.terrain.forEachSurface((s) => {
@@ -79,13 +78,15 @@ export class WorldManager {
             this.nerpRunner.objectiveShowing += event.isShowing ? 1 : 0
             this.nerpRunner.objectiveSwitch = this.nerpRunner.objectiveSwitch && event.isShowing
         })
+        EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
+            if (event.result !== GameResultState.UNDECIDED) this.stop()
+        })
     }
 
     setup(levelConf: LevelEntryCfg) {
         this.entityMgr.ecs = this.ecs
         this.ecs.reset()
         this.jobSupervisor.reset()
-        GameState.gameResult = GameResultState.UNDECIDED
         GameState.changeNeededCrystals(levelConf.reward?.quota?.crystals || 0)
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         this.oxygenSystem.setLevelOxygenRate(levelConf.oxygenRate)
@@ -101,8 +102,8 @@ export class WorldManager {
     }
 
     start() {
-        this.startLoop(UPDATE_INTERVAL_MS)
         this.started = true
+        this.startLoop(UPDATE_INTERVAL_MS)
     }
 
     stop() {
@@ -112,6 +113,7 @@ export class WorldManager {
 
     private startLoop(timeout: number) {
         this.stopLoop() // avoid duplicate timeouts
+        if (!this.started) return
         this.gameLoopTimeout = setTimeout(() => this.mainLoop(UPDATE_INTERVAL_MS), timeout)
     }
 
@@ -123,10 +125,6 @@ export class WorldManager {
         const startUpdate = window.performance.now()
         this.elapsedGameTimeMs += UPDATE_INTERVAL_MS
         this.update(elapsedMs)
-        if (GameState.gameResult !== GameResultState.UNDECIDED) {
-            this.onLevelEnd(GameState.gameResult)
-            return
-        }
         const endUpdate = window.performance.now()
         const updateDurationMs = endUpdate - startUpdate
         const sleepForMs = UPDATE_INTERVAL_MS - Math.round(updateDurationMs)

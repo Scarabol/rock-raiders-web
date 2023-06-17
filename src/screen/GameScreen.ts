@@ -1,7 +1,7 @@
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { iGet } from '../core/Util'
 import { EventBus } from '../event/EventBus'
-import { SetupPriorityList, UpdateRadarTerrain } from '../event/LocalEvents'
+import { SetupPriorityList, ShowGameResultEvent, UpdateRadarTerrain } from '../event/LocalEvents'
 import { EntityManager } from '../game/EntityManager'
 import { GuiManager } from '../game/GuiManager'
 import { GameResult, GameResultState } from '../game/model/GameResult'
@@ -18,9 +18,10 @@ import { OverlayLayer } from './layer/OverlayLayer'
 import { SelectionLayer } from './layer/SelectionLayer'
 import { ScreenMaster } from './ScreenMaster'
 import { SaveGameManager } from '../resource/SaveGameManager'
+import { EventKey } from '../event/EventKeyEnum'
+import { GameResultEvent, LevelSelectedEvent } from '../event/WorldEvents'
 
 export class GameScreen {
-    onLevelEnd: (result: GameResult) => any = (result) => console.log(`Level ended with: ${JSON.stringify(result)}`)
     gameLayer: GameLayer
     selectionLayer: SelectionLayer
     guiLayer: GuiMainLayer
@@ -43,7 +44,6 @@ export class GameScreen {
         this.sceneMgr.worldMgr = this.worldMgr
         this.worldMgr.sceneMgr = this.sceneMgr
         this.worldMgr.entityMgr = this.entityMgr
-        this.worldMgr.onLevelEnd = (result) => this.onGameResult(result)
         this.gameLayer.worldMgr = this.worldMgr
         this.gameLayer.sceneMgr = this.sceneMgr
         this.gameLayer.entityMgr = this.entityMgr
@@ -51,18 +51,22 @@ export class GameScreen {
         this.guiLayer.entityMgr = this.entityMgr
         this.overlayLayer.entityMgr = this.entityMgr
         this.guiMgr = new GuiManager(this.worldMgr)
-        // link layer
-        this.guiLayer.onOptionsShow = () => this.overlayLayer.showOptions()
-        this.overlayLayer.onSetSpaceToContinue = (state: boolean) => this.guiLayer.setSpaceToContinue(state)
-        this.overlayLayer.onAbortGame = () => this.onGameResult(GameResultState.QUIT)
-        this.overlayLayer.onRestartGame = () => this.restartLevel()
+        EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => this.takeFinalScreenshot(event.result))
+        EventBus.registerEventListener(EventKey.RESTART_GAME, () => this.restartLevel())
+        EventBus.registerEventListener(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => this.startLevel(event.levelName))
     }
 
     startLevel(levelName: string) {
-        const levelConf = ResourceManager.getLevelEntryCfg(levelName)
-        this.levelName = levelName
-        this.levelConf = levelConf
-        this.setupAndStartLevel()
+        try {
+            const levelConf = ResourceManager.getLevelEntryCfg(levelName)
+            this.levelName = levelName
+            this.levelConf = levelConf
+            this.setupAndStartLevel()
+        } catch (e) {
+            console.error(`Could not load level: ${levelName}`, e)
+            this.hide()
+            EventBus.publishEvent(new ShowGameResultEvent())
+        }
     }
 
     restartLevel() {
@@ -109,16 +113,19 @@ export class GameScreen {
         this.gameLayer.hide()
     }
 
-    onGameResult(resultState: GameResultState) {
+    takeFinalScreenshot(resultState: GameResultState) {
         const gameTimeSeconds = Math.round(this.worldMgr.elapsedGameTimeMs / 1000)
         this.screenMaster.createScreenshot().then((canvas) => {
             let result: GameResult = null
             if (this.levelConf.reward) {
                 result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, this.entityMgr.getMaxRaiders(), gameTimeSeconds, canvas)
                 SaveGameManager.setLevelScore(this.levelName, result.score)
-            } // else { // TODO Show briefing panel with outro message for tutorial levels
+            } else {
+                // TODO Show briefing panel with outro message for tutorial levels
+                GameState.reset()
+            }
             this.hide()
-            this.onLevelEnd(result)
+            EventBus.publishEvent(new ShowGameResultEvent(result))
         })
     }
 }

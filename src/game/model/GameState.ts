@@ -1,12 +1,10 @@
 import { EventBus } from '../../event/EventBus'
 import { NeededCrystalsChanged } from '../../event/LocalEvents'
 import { MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'
-import { GameResultState } from './GameResult'
 import { MaterialEntity } from './material/MaterialEntity'
 import { EntityType } from './EntityType'
 
 export class GameState {
-    static gameResult: GameResultState = GameResultState.UNDECIDED
     static numCrystal: number = 0
     static numOre: number = 0
     static numBrick: number = 0
@@ -24,7 +22,6 @@ export class GameState {
     static objectiveShowing: number = 1
 
     static reset() {
-        this.gameResult = GameResultState.UNDECIDED
         this.numCrystal = 0
         this.numOre = 0
         this.numBrick = 0

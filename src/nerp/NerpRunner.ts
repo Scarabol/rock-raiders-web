@@ -14,6 +14,7 @@ import { GameState } from '../game/model/GameState'
 import { NerpParser } from './NerpParser'
 import { NerpScript } from './NerpScript'
 import { DEV_MODE, NERP_EXECUTION_INTERVAL } from '../params'
+import { GameResultEvent } from '../event/WorldEvents'
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
@@ -135,7 +136,7 @@ export class NerpRunner {
     setLevelCompleted() {
         console.log('Nerp runner marks level as complete')
         this.halted = true
-        GameState.gameResult = GameResultState.COMPLETE
+        EventBus.publishEvent(new GameResultEvent(GameResultState.COMPLETE))
     }
 
     /**
@@ -144,7 +145,7 @@ export class NerpRunner {
     setLevelFail() {
         console.log(`NerpRunner marks level as failed; at line: ${this.script.lines[this.programCounter]}`)
         this.halted = true
-        GameState.gameResult = GameResultState.FAILED
+        EventBus.publishEvent(new GameResultEvent(GameResultState.FAILED))
     }
 
     /**

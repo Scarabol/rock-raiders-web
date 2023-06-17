@@ -6,9 +6,12 @@ import { MainMenuLevelButton } from '../menu/MainMenuLevelButton'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { ScreenMaster } from './ScreenMaster'
+import { EventBus } from '../event/EventBus'
+import { EventKey } from '../event/EventKeyEnum'
+import { ShowGameResultEvent } from '../event/LocalEvents'
+import { LevelSelectedEvent } from '../event/WorldEvents'
 
 export class MainMenuScreen {
-    onLevelSelected: (levelName: string) => void = null
     menuLayers: MainMenuLayer[] = []
     loadSaveLayer: LoadSaveLayer
 
@@ -32,6 +35,9 @@ export class MainMenuScreen {
             }
             layer.onItemAction = (item: MainMenuBaseItem) => this.onItemAction(item)
             this.menuLayers.push(screenMaster.addLayer(layer, 0))
+        })
+        EventBus.registerEventListener(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
+            if (!event.result) this.showLevelSelection()
         })
     }
 
@@ -59,6 +65,6 @@ export class MainMenuScreen {
 
     selectLevel(levelName: string) {
         this.menuLayers.forEach((m) => m.hide())
-        this.onLevelSelected(levelName)
+        EventBus.publishEvent(new LevelSelectedEvent(levelName))
     }
 }

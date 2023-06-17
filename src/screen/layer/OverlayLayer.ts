@@ -6,11 +6,17 @@ import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../wor
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
 import { OverlayWorker } from '../../worker/OverlayWorker'
+import { EventBus } from '../../event/EventBus'
+import { GameResultEvent, RestartGameEvent } from '../../event/WorldEvents'
+import { GameResultState } from '../../game/model/GameResult'
+import { EventKey } from '../../event/EventKeyEnum'
+import { SetSpaceToContinueEvent } from '../../event/LocalEvents'
 
 export class OverlayLayer extends OffscreenLayer {
-    onSetSpaceToContinue: (state: boolean) => any = (state: boolean) => console.log(`set space to continue: ${state}`)
-    onAbortGame: () => any = () => console.log('abort the game')
-    onRestartGame: () => any = () => console.log('restart the game')
+    constructor() {
+        super()
+        EventBus.registerEventListener(EventKey.SHOW_OPTIONS, () => this.sendMessage({type: WorkerMessageType.SHOW_OPTIONS}))
+    }
 
     createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage, WorkerResponse> {
         const worker = new Worker(new URL('../../worker/OverlayWorker', import.meta.url), {type: 'module'})
@@ -25,11 +31,11 @@ export class OverlayLayer extends OffscreenLayer {
 
     onMessage(msg: WorkerResponse): boolean {
         if (msg.type === WorkerMessageType.SPACE_TO_CONTINUE) {
-            this.onSetSpaceToContinue(msg.messageState)
+            EventBus.publishEvent(new SetSpaceToContinueEvent(msg.messageState))
         } else if (msg.type === WorkerMessageType.GAME_ABORT) {
-            this.onAbortGame()
+            EventBus.publishEvent(new GameResultEvent(GameResultState.QUIT))
         } else if (msg.type === WorkerMessageType.GAME_RESTART) {
-            this.onRestartGame()
+            EventBus.publishEvent(new RestartGameEvent())
         } else {
             return false
         }
@@ -46,9 +52,5 @@ export class OverlayLayer extends OffscreenLayer {
 
     protected sendMessage(message: OverlayWorkerMessage, transfer?: Transferable[]) {
         super.sendMessage(message, transfer)
-    }
-
-    showOptions() {
-        this.sendMessage({type: WorkerMessageType.SHOW_OPTIONS})
     }
 }

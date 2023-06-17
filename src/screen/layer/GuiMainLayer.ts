@@ -6,9 +6,16 @@ import { OffscreenWorkerMessage } from '../../worker/OffscreenWorkerMessage'
 import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../worker/TypedWorker'
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { OffscreenLayer } from './OffscreenLayer'
+import { SetSpaceToContinueEvent, ShowOptionsEvent } from '../../event/LocalEvents'
+import { EventKey } from '../../event/EventKeyEnum'
 
 export class GuiMainLayer extends OffscreenLayer {
-    onOptionsShow: () => any = () => console.log('Show options triggered')
+    constructor() {
+        super()
+        EventBus.registerEventListener(EventKey.SET_SPACE_TO_CONTINUE, (event: SetSpaceToContinueEvent) => {
+            this.sendMessage({type: WorkerMessageType.SPACE_TO_CONTINUE, messageState: event.state})
+        })
+    }
 
     createOffscreenWorker(): TypedWorker<OffscreenWorkerMessage, WorkerResponse> {
         const worker = new Worker(new URL('../../worker/GuiMainWorker', import.meta.url), {type: 'module'})
@@ -25,14 +32,10 @@ export class GuiMainLayer extends OffscreenLayer {
         if (msg.type === WorkerMessageType.TOGGLE_ALARM) {
             EventBus.publishEvent(new ToggleAlarmEvent(msg.messageState))
         } else if (msg.type === WorkerMessageType.SHOW_OPTIONS) {
-            this.onOptionsShow()
+            EventBus.publishEvent(new ShowOptionsEvent())
         } else {
             return false
         }
         return true
-    }
-
-    setSpaceToContinue(state: boolean) {
-        this.sendMessage({type: WorkerMessageType.SPACE_TO_CONTINUE, messageState: state})
     }
 }

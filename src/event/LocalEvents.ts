@@ -14,6 +14,7 @@ import { TILESIZE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 import { VehicleUpgrade, VehicleUpgrades } from '../game/model/vehicle/VehicleUpgrade'
+import { GameResult } from '../game/model/GameResult'
 
 export class LocalEvent extends GameEvent {
 }
@@ -228,5 +229,24 @@ export class UpdateRadarEntities extends LocalEvent {
 export class ShowMissionBriefingEvent extends LocalEvent {
     constructor(readonly isShowing: boolean) {
         super(EventKey.SHOW_MISSION_BRIEFING)
+    }
+}
+
+export class ShowGameResultEvent extends LocalEvent {
+    constructor(readonly result?: GameResult) {
+        super(EventKey.SHOW_GAME_RESULT)
+        this.guiForward = false
+    }
+}
+
+export class ShowOptionsEvent extends LocalEvent {
+    constructor() {
+        super(EventKey.SHOW_OPTIONS)
+    }
+}
+
+export class SetSpaceToContinueEvent extends LocalEvent {
+    constructor(readonly state: boolean) {
+        super(EventKey.SET_SPACE_TO_CONTINUE)
     }
 }

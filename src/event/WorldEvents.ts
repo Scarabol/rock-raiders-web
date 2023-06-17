@@ -5,6 +5,7 @@ import { BRICK_ORE_VALUE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 import { Vector2 } from 'three'
+import { GameResultState } from '../game/model/GameResult'
 
 export class WorldEvent extends GameEvent {
     constructor(entityKey: EventKey) {
@@ -90,5 +91,23 @@ export class ToggleAlarmEvent extends WorldEvent {
 export class DynamiteExplosionEvent extends WorldEvent {
     constructor(readonly position: Vector2) {
         super(EventKey.DYNAMITE_EXPLOSION)
+    }
+}
+
+export class GameResultEvent extends WorldEvent {
+    constructor(readonly result: GameResultState) {
+        super(EventKey.GAME_RESULT_STATE)
+    }
+}
+
+export class RestartGameEvent extends WorldEvent {
+    constructor() {
+        super(EventKey.RESTART_GAME)
+    }
+}
+
+export class LevelSelectedEvent extends WorldEvent{
+    constructor(readonly levelName: string) {
+        super(EventKey.LEVEL_SELECTED)
     }
 }
