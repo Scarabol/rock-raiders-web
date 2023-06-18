@@ -24,6 +24,8 @@ export class ScreenMaster {
     }
 
     addLayer<T extends ScreenLayer>(layer: T, zIndex: number): T {
+        if (!zIndex) throw new Error(`Invalid zIndex ${zIndex} given for layer`)
+        if (this.layers.some((l) => l.zIndex === zIndex)) throw new Error(`The given zIndex is not unique`)
         layer.resize(this.width, this.height)
         layer.setZIndex(zIndex)
         this.layers.push(layer)

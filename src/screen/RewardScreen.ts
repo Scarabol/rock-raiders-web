@@ -39,7 +39,7 @@ export class RewardScreen {
     constructor(screenMaster: ScreenMaster) {
         this.cfg = ResourceManager.configuration.reward
         const backgroundImg = ResourceManager.getImage(this.cfg.wallpaper)
-        this.backgroundLayer = screenMaster.addLayer(new ScaledLayer('RewardBackgroundLayer'), 0)
+        this.backgroundLayer = screenMaster.addLayer(new ScaledLayer('RewardBackgroundLayer'), 600)
         this.backgroundLayer.animationFrame.onRedraw = (context) => context.drawImage(backgroundImg, 0, 0)
         this.cfg.images.forEach((img) => {
             this.images.push({img: ResourceManager.getImage(img.filePath), x: img.x, y: img.y})
@@ -52,7 +52,7 @@ export class RewardScreen {
             const labelFontName = index < 9 ? this.cfg.fonts[fontKey] : this.cfg.backFont
             return ResourceManager.bitmapFontWorkerPool.createTextImage(labelFontName, this.cfg.text[index].text)
         })).then((textImages) => this.texts = textImages)
-        this.resultsLayer = screenMaster.addLayer(new ScaledLayer('RewardResultsLayer'), 10)
+        this.resultsLayer = screenMaster.addLayer(new ScaledLayer('RewardResultsLayer'), 610)
         this.resultsLayer.handlePointerEvent = ((event) => {
             if (event.eventEnum === POINTER_EVENT.UP) {
                 this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
@@ -66,8 +66,8 @@ export class RewardScreen {
             }
             return false
         })
-        this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 20)
-        this.btnLayer = screenMaster.addLayer(new ScaledLayer('RewardButtonLayer'), 50)
+        this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 620)
+        this.btnLayer = screenMaster.addLayer(new ScaledLayer('RewardButtonLayer'), 650)
         this.btnSave = new RewardScreenButton(this.cfg.saveButton, 'ToolTip_Reward_Save')
         this.btnSave.onPressed = () => this.saveGameLayer.show()
         this.btnAdvance = new RewardScreenButton(this.cfg.advanceButton, 'ToolTip_Reward_Advance')
@@ -106,7 +106,7 @@ export class RewardScreen {
         }
         ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFont, 'No level selected')
             .then((textImage) => this.levelFullNameImg = textImage)
-        this.saveGameLayer = screenMaster.addLayer(new LoadSaveLayer(ResourceManager.configuration.menu.mainMenuFull.menus[3], false), 60)
+        this.saveGameLayer = screenMaster.addLayer(new LoadSaveLayer(ResourceManager.configuration.menu.mainMenuFull.menus[3], false), 660)
         this.saveGameLayer.onItemAction = (item: MainMenuBaseItem) => {
             if (item.actionName.equalsIgnoreCase('next')) {
                 this.saveGameLayer.hide()

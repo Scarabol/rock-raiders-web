@@ -108,7 +108,7 @@ SaveGameManager.loadSaveGames()
 SaveGameManager.loadSaveGameScreenshots()
 if (DEV_MODE) SaveGameManager.loadGame(0)
 const screenMaster = new ScreenMaster()
-const loadingLayer = screenMaster.addLayer(new LoadingLayer(), 0)
+const loadingLayer = screenMaster.addLayer(new LoadingLayer(), 100)
 const wadFileSelectModal = new WadFileSelectionModal('game-container', (wad0Url: string, wad1Url: string) => {
     wadWorker.sendMessage(new InitLoadingMessage(wad0Url, wad1Url))
 })

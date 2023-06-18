@@ -34,10 +34,10 @@ export class GameScreen {
     levelConf: LevelEntryCfg
 
     constructor(readonly screenMaster: ScreenMaster) {
-        this.gameLayer = screenMaster.addLayer(new GameLayer(), 0)
-        this.selectionLayer = screenMaster.addLayer(new SelectionLayer(), 10)
-        this.guiLayer = screenMaster.addLayer(new GuiMainLayer(), 20)
-        this.overlayLayer = screenMaster.addLayer(new OverlayLayer(), 30)
+        this.gameLayer = screenMaster.addLayer(new GameLayer(), 500)
+        this.selectionLayer = screenMaster.addLayer(new SelectionLayer(), 510)
+        this.guiLayer = screenMaster.addLayer(new GuiMainLayer(), 520)
+        this.overlayLayer = screenMaster.addLayer(new OverlayLayer(), 530)
         this.entityMgr = new EntityManager()
         this.worldMgr = new WorldManager()
         this.sceneMgr = new SceneManager(this.gameLayer.canvas)

@@ -11,7 +11,7 @@ export class EventManager {
     constructor(screenMaster: ScreenMaster) {
         screenMaster.gameCanvasContainer.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault())
         screenMaster.gameCanvasContainer.addEventListener('pointerdown', () => screenMaster.gameCanvasContainer.focus())
-        new Map<string, POINTER_EVENT>([
+        new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],
             ['pointerup', POINTER_EVENT.UP],
@@ -26,7 +26,7 @@ export class EventManager {
                 }
             })
         })
-        new Map<string, KEY_EVENT>([
+        new Map<keyof HTMLElementEventMap, KEY_EVENT>([
             ['keydown', KEY_EVENT.DOWN],
             ['keyup', KEY_EVENT.UP],
         ]).forEach((eventEnum, eventType) => {

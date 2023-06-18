@@ -34,7 +34,7 @@ export class MainMenuScreen {
                 layer = new MainMenuLayer(menuCfg)
             }
             layer.onItemAction = (item: MainMenuBaseItem) => this.onItemAction(item)
-            this.menuLayers.push(screenMaster.addLayer(layer, 0))
+            this.menuLayers.push(screenMaster.addLayer(layer, 200 + this.menuLayers.length * 10))
         })
         EventBus.registerEventListener(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
             if (!event.result) this.showLevelSelection()
