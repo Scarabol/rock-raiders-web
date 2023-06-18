@@ -88,6 +88,8 @@ export class LevelEntryCfg extends BaseConfig {
             return new ObjectiveImageCfg(cfgValue)
         } else if (unifiedKey === 'textureset') {
             return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
+        } else if (unifiedKey === 'rockfallstyle') { // value given twice for level07
+            return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
         } else {
             return super.parseValue(unifiedKey, cfgValue)
         }
