@@ -47,6 +47,7 @@ export class GameLayer extends ScreenLayer {
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],
             ['pointerup', POINTER_EVENT.UP],
+            ['pointerleave', POINTER_EVENT.LEAVE], // signal to screen master for camera controls listening on canvas for events
         ]).forEach((eventEnum, eventType) => {
             this.addEventListener(eventType, (event: PointerEvent): boolean => {
                 const gameEvent = new GamePointerEvent(eventEnum, event)
@@ -63,10 +64,7 @@ export class GameLayer extends ScreenLayer {
                 return this.handleKeyEvent(gameEvent)
             })
         })
-        this.addEventListener('wheel', (): boolean => {
-            // signal to screen master for camera controls listening on canvas for events
-            return true
-        })
+        this.addEventListener('wheel', (): boolean => true) // signal to screen master for camera controls listening on canvas for events
     }
 
     reset() {

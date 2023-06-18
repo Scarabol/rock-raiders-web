@@ -29,6 +29,7 @@ export class SelectionLayer extends ScreenLayer {
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],
             ['pointerup', POINTER_EVENT.UP],
+            ['pointerleave', POINTER_EVENT.LEAVE],
         ]).forEach((eventEnum, eventType) => {
             this.addEventListener(eventType, (event: PointerEvent): boolean => {
                 const gameEvent = new GamePointerEvent(eventEnum, event)
@@ -50,16 +51,35 @@ export class SelectionLayer extends ScreenLayer {
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (this.worldMgr.sceneMgr.hasBuildModeSelection()) return false
-        if (event.eventEnum === POINTER_EVENT.DOWN) {
-            if (event.button === MOUSE_BUTTON.MAIN) {
-                this.canvas.setPointerCapture(event.pointerId)
-                this.startSelection(event.canvasX, event.canvasY)
-                return true
+        if (event.pointerType === 'mouse') {
+            if (event.eventEnum === POINTER_EVENT.DOWN) {
+                if (event.button === MOUSE_BUTTON.MAIN) {
+                    this.canvas.setPointerCapture(event.pointerId)
+                    this.startSelection(event.canvasX, event.canvasY)
+                    return true
+                }
+            } else if (event.eventEnum === POINTER_EVENT.MOVE) {
+                return this.changeSelection(event.canvasX, event.canvasY)
+            } else if (event.eventEnum === POINTER_EVENT.UP && event.button === MOUSE_BUTTON.MAIN) {
+                return this.selectEntities(event.canvasX, event.canvasY)
             }
-        } else if (event.eventEnum === POINTER_EVENT.MOVE) {
-            return this.changeSelection(event.canvasX, event.canvasY)
-        } else if (event.eventEnum === POINTER_EVENT.UP && event.button === MOUSE_BUTTON.MAIN) {
-            return this.selectEntities(event.canvasX, event.canvasY)
+        } else {
+            if (event.button === MOUSE_BUTTON.MAIN) {
+                if (event.eventEnum === POINTER_EVENT.DOWN) {
+                    this.startSelection(event.canvasX, event.canvasY)
+                } else if (event.eventEnum === POINTER_EVENT.UP || event.eventEnum === POINTER_EVENT.LEAVE) {
+                    if (!this.selectionRect) return false
+                    if (Math.abs(event.canvasX - this.selectionRect.x) < 5 && Math.abs(event.canvasY - this.selectionRect.y) < 5) {
+                        const x = (this.selectionRect.x + event.canvasX) / this.canvas.width - 1
+                        const y = -(this.selectionRect.y + event.canvasY) / this.canvas.height + 1
+                        this.worldMgr.entityMgr.selection.set(new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y)))
+                        EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
+                        this.selectionRect = null
+                        this.animationFrame.notifyRedraw()
+                        return true
+                    }
+                }
+            }
         }
         return false
     }
