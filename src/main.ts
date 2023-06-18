@@ -19,11 +19,14 @@ import { WorkerResponse } from './worker/WorkerResponse'
 import { WadWorker } from './resource/wadworker/WadWorker'
 import { ScreenMaster } from './screen/ScreenMaster'
 import { LoadingLayer } from './screen/layer/LoadingLayer'
-import { CursorLayer } from './screen/layer/CursorLayer'
+import { TooltipLayer } from './screen/layer/TooltipLayer'
 import { WadFileSelectionModal } from '../site/wadModal/WadFileSelectionModal'
 import { GithubBox } from '../site/github/github-box'
 import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
 import { GameResult } from './game/model/GameResult'
+import { EventBus } from './event/EventBus'
+import { ChangeCursor } from './event/GuiCommand'
+import { Cursor } from './resource/Cursor'
 
 function onWadLoaderMessage(msg: WadWorkerMessage) {
     switch (msg.type) {
@@ -42,10 +45,8 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
         case WorkerMessageType.CFG:
             ResourceManager.configuration = msg.cfg
             ResourceManager.startBitmapFontRenderPool()
-            ResourceManager.loadDefaultCursor().then(() => {
-                loadingLayer.enableGraphicMode(msg.totalResources)
-                screenMaster.addLayer(new CursorLayer(), 1000).show()
-            })
+            loadingLayer.enableGraphicMode(msg.totalResources)
+            ResourceManager.loadDefaultCursor().then(() => EventBus.publishEvent(new ChangeCursor(Cursor.STANDARD)))
             break
         case WorkerMessageType.CACHE_MISS:
             wadFileSelectModal.show()
@@ -63,6 +64,7 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
                 console.timeEnd('Total asset loading time')
                 console.log(`Loading of about ${msg.totalResources} assets complete!`)
                 // complete setup
+                screenMaster.addLayer(new TooltipLayer(), 1000).show()
                 const mainMenuScreen = new MainMenuScreen(screenMaster)
                 await yieldToMainThread()
                 new GameScreen(screenMaster)

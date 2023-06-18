@@ -38,7 +38,6 @@ export class GameLayer extends ScreenLayer {
 
     constructor() {
         super()
-        this.canvas.style.cursor = 'none' // this cursor is effective, when OrbitControls captures the pointer during movements
         EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
             if (this.active) {
                 const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, true)

@@ -43,6 +43,7 @@ export const MIN_CAMERA_HEIGHT_ABOVE_TERRAIN = 5
 export const AIR_LEVEL_WARNING_STEP = 5 / 100 // % -> each 5 percent down triggers warning
 export const AIR_LEVEL_LEVEL_LOW = 25 / 100 // % -> below 20 percent trigger low level warning
 export const NERP_EXECUTION_INTERVAL = 2000
+export const CURSOR_MAX_HEIGHT = 32 // px; limited by browsers
 
 // native constants (do not change)
 

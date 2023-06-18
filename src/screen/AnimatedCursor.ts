@@ -5,19 +5,19 @@ export class AnimatedCursor {
     animationInterval: NodeJS.Timeout = null
     animationIndex: number = 0
 
-    constructor(readonly cursorUrls: string[], readonly maxHeight: number) {
+    constructor(readonly cursorUrls: string[]) {
     }
 
-    enableAnimation(cssTarget: CSSStyleDeclaration) {
+    enableAnimation(targetElement: HTMLElement) {
         this.animationIndex = 0
         if (this.cursorUrls.length > 1) {
             this.animationInterval = clearIntervalSafe(this.animationInterval)
             this.animationInterval = setInterval(() => {
                 this.animationIndex = (this.animationIndex + 1) % this.cursorUrls.length
-                cssTarget.cursor = this.cursorUrls[this.animationIndex]
+                targetElement.style.cursor = this.cursorUrls[this.animationIndex]
             }, 1000 / NATIVE_FRAMERATE)
         } else {
-            cssTarget.cursor = this.cursorUrls[this.animationIndex]
+            targetElement.style.cursor = this.cursorUrls[this.animationIndex]
         }
     }
 

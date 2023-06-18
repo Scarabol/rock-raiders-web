@@ -107,7 +107,7 @@ export class ResourceCache {
                     }
                     cachePutData(cursorImageName, animatedCursorData).then()
                 }
-                this.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls, animatedCursorData.maxHeight))
+                this.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls))
             }))
         })
         await Promise.all(loadingCursors)
@@ -123,7 +123,7 @@ export class ResourceCache {
                 }
                 cachePutData(cursorImageName, animatedCursorData).then()
             }
-            this.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls, animatedCursorData.maxHeight))
+            this.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls))
         })
     }
 

@@ -1,27 +1,20 @@
-import { Cursor } from '../../resource/Cursor'
-import { cloneContext } from '../../core/ImageHelper'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
+import { ChangeTooltip } from '../../event/GuiCommand'
 import { SaveScreenshot } from '../../event/LocalEvents'
-import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
+import { CURSOR_MAX_HEIGHT, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { AnimatedCursor } from '../AnimatedCursor'
 import { AnimationFrame } from '../AnimationFrame'
 import { ScreenLayer } from './ScreenLayer'
 import { SoundManager } from '../../audio/SoundManager'
 import { SpriteImage } from '../../core/Sprite'
 
-export class CursorLayer extends ScreenLayer {
+export class TooltipLayer extends ScreenLayer {
     readonly animationFrame: AnimationFrame
-    currentCursor: Cursor = null
-    timedCursor: Cursor = null
-    cursorTimeout: NodeJS.Timeout = null
-    activeCursor: AnimatedCursor = null
     cursorCanvasPos: { x: number, y: number } = {x: 0, y: 0}
     tooltipTimeoutText: NodeJS.Timeout = null
     tooltipTimeoutSfx: NodeJS.Timeout = null
@@ -30,9 +23,6 @@ export class CursorLayer extends ScreenLayer {
     constructor() {
         super()
         this.animationFrame = new AnimationFrame(this.canvas)
-        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_CURSOR, (event: ChangeCursor) => {
-            if (this.active) this.changeCursor(event.cursor, event.timeout)
-        })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_TOOLTIP, (event: ChangeTooltip) => {
             this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
             this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
@@ -46,10 +36,6 @@ export class CursorLayer extends ScreenLayer {
         })
     }
 
-    reset() {
-        this.changeCursor(Cursor.STANDARD)
-    }
-
     show() {
         this.reset()
         super.show()
@@ -57,12 +43,6 @@ export class CursorLayer extends ScreenLayer {
 
     hide() {
         super.hide()
-        this.canvas.style.cursor = null
-        this.currentCursor = null
-        this.timedCursor = null
-        this.cursorTimeout = clearTimeoutSafe(this.cursorTimeout)
-        this.activeCursor?.disableAnimation()
-        this.activeCursor = null
         this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
         this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
         this.cursorLeft = false
@@ -96,28 +76,6 @@ export class CursorLayer extends ScreenLayer {
         return super.handlePointerEvent(event)
     }
 
-    private changeCursor(cursor: Cursor, timeout: number = null) {
-        if (timeout) {
-            this.cursorTimeout = clearTimeoutSafe(this.cursorTimeout)
-            if (this.timedCursor !== cursor) this.setCursor(cursor)
-            const that = this
-            this.cursorTimeout = setTimeout(() => {
-                that.cursorTimeout = null
-                that.setCursor(that.currentCursor)
-            }, timeout)
-        } else if (this.currentCursor !== cursor) {
-            this.currentCursor = cursor
-            if (this.cursorTimeout) return
-            this.setCursor(cursor)
-        }
-    }
-
-    private setCursor(cursor: Cursor) {
-        this.activeCursor?.disableAnimation()
-        this.activeCursor = ResourceManager.getCursor(cursor)
-        this.activeCursor.enableAnimation(this.canvas.style)
-    }
-
     private async changeTooltipImg(event: ChangeTooltip) {
         let tooltipImg: SpriteImage = null
         if (event.numToolSlots || event.tools || event.trainings) {
@@ -137,27 +95,8 @@ export class CursorLayer extends ScreenLayer {
         const tooltipWidth = Math.round(tooltipImg.width * this.canvas.width / NATIVE_SCREEN_WIDTH)
         const tooltipHeight = Math.round(tooltipImg.height * this.canvas.height / NATIVE_SCREEN_HEIGHT)
         const posX = Math.min(this.cursorCanvasPos.x + tooltipWidth, this.canvas.width) - tooltipWidth
-        const posY = Math.min(this.cursorCanvasPos.y + this.activeCursor.maxHeight + tooltipHeight, this.canvas.height) - tooltipHeight
+        const posY = Math.min(this.cursorCanvasPos.y + CURSOR_MAX_HEIGHT + tooltipHeight, this.canvas.height) - tooltipHeight
         this.animationFrame.onRedraw = (context) => context.drawImage(tooltipImg, posX, posY, tooltipWidth, tooltipHeight)
         this.animationFrame.notifyRedraw()
-    }
-
-    takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {
-        const cx = this.cursorCanvasPos.x
-        const cy = this.cursorCanvasPos.y
-        const encoded = this.canvas.style.cursor.match(/"(.+)"/)?.[1]
-        if (!encoded) throw new Error('Could not extract encoded url from layer style attributes')
-        return new Promise<HTMLCanvasElement>((resolve) => {
-            const context = cloneContext(this.canvas)
-            const img = document.createElement('img')
-            img.onload = () => {
-                context.drawImage(img, cx, cy)
-                resolve(context.canvas)
-            }
-            img.onerror = () => {
-                throw new Error('Could decode image for screenshot')
-            }
-            img.src = encoded
-        })
     }
 }

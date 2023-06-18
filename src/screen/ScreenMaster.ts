@@ -5,6 +5,8 @@ import { EventKey } from '../event/EventKeyEnum'
 import { EventManager } from '../event/EventManager'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
+import { CursorManager } from './CursorManager'
+import { ChangeCursor } from '../event/GuiCommand'
 
 export class ScreenMaster {
     gameContainer: HTMLElement
@@ -21,6 +23,10 @@ export class ScreenMaster {
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
         EventBus.registerEventListener(EventKey.SAVE_SCREENSHOT, () => this.saveScreenshot())
+        const cursorManager: CursorManager = new CursorManager(this.gameCanvasContainer)
+        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_CURSOR, (event: ChangeCursor) => {
+            cursorManager.changeCursor(event.cursor, event.timeout)
+        })
     }
 
     addLayer<T extends ScreenLayer>(layer: T, zIndex: number): T {
