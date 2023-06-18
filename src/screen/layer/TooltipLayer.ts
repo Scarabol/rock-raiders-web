@@ -21,7 +21,7 @@ export class TooltipLayer extends ScreenLayer {
 
     constructor() {
         super()
-        this.animationFrame = new AnimationFrame(this.canvas)
+        this.animationFrame = new AnimationFrame(this.canvas, this.readbackCanvas)
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_TOOLTIP, (event: ChangeTooltip) => {
             this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
             this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)

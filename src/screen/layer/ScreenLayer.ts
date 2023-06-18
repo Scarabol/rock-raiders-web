@@ -6,13 +6,20 @@ export class ScreenLayer {
     readonly eventListener: Set<string> = new Set()
     screenMaster: ScreenMaster
     canvas: HTMLCanvasElement
+    readbackCanvas: HTMLCanvasElement
     zIndex: number = 0
     active: boolean = false
 
     constructor(layerName?: string) {
-        this.canvas = document.createElement('canvas')
-        this.canvas.setAttribute('data-layer-class', layerName || this.constructor.name)
-        this.canvas.style.visibility = 'hidden'
+        this.canvas = this.createCanvas(layerName || this.constructor.name)
+        this.readbackCanvas = this.createCanvas(`${layerName || this.constructor.name}-fastread`)
+    }
+
+    createCanvas(layerName: string): HTMLCanvasElement {
+        const canvas = document.createElement('canvas')
+        canvas.setAttribute('data-layer-class', layerName)
+        canvas.style.visibility = 'hidden'
+        return canvas
     }
 
     addEventListener<K extends keyof HTMLElementEventMap>(eventType: K, listener: (event: HTMLElementEventMap[K]) => boolean) {
@@ -37,6 +44,8 @@ export class ScreenLayer {
     resize(width: number, height: number) {
         this.canvas.width = width
         this.canvas.height = height
+        this.readbackCanvas.width = this.canvas.width
+        this.readbackCanvas.height = this.canvas.height
     }
 
     show() {
@@ -73,7 +82,7 @@ export class ScaledLayer extends ScreenLayer {
     constructor(layerName?: string) {
         super(layerName)
         this.updateScale()
-        this.animationFrame = new AnimationFrameScaled(this.canvas)
+        this.animationFrame = new AnimationFrameScaled(this.canvas, this.readbackCanvas)
     }
 
     private updateScale() {

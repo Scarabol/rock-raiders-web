@@ -111,7 +111,7 @@ export class OverlayLayer extends ScaledLayer {
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (this.panels.every(p => p.hidden)) return false
-        const hit = this.animationFrame.context.getImageData(event.clientX, event.clientY, 1, 1).data[3] > 0
+        const hit = this.animationFrame.isOpaque(event.canvasX, event.canvasY)
         if (hit) {
             EventBus.publishEvent(new ChangeCursor(Cursor.STANDARD)) // TODO don't spam so many events?!
             if (event.eventEnum === POINTER_EVENT.MOVE) {

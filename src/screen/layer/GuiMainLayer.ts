@@ -106,7 +106,8 @@ export class GuiMainLayer extends ScaledLayer {
             })
         })
         this.addEventListener('wheel', (event: WheelEvent): boolean => {
-            return this.animationFrame.context.getImageData(event.clientX, event.clientY, 1, 1).data[3] > 0
+            const [canvasX, canvasY] = this.transformCoords(event.clientX, event.clientY)
+            return this.animationFrame.isOpaque(canvasX, canvasY)
         })
     }
 
@@ -123,7 +124,7 @@ export class GuiMainLayer extends ScaledLayer {
     }
 
     handlePointerEvent(event: GamePointerEvent): boolean {
-        const hit = this.animationFrame.context.getImageData(event.clientX, event.clientY, 1, 1).data[3] > 0
+        const hit = this.animationFrame.isOpaque(event.canvasX, event.canvasY)
         if (hit) {
             EventBus.publishEvent(new ChangeCursor(Cursor.STANDARD)) // TODO don't spam so many events?!
             if (event.eventEnum === POINTER_EVENT.MOVE) {

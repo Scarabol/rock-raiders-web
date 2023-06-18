@@ -17,7 +17,7 @@ export class SelectionLayer extends ScreenLayer {
 
     constructor() {
         super()
-        this.animationFrame = new AnimationFrame(this.canvas)
+        this.animationFrame = new AnimationFrame(this.canvas, this.readbackCanvas)
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)
             if (!this.selectionRect) return
