@@ -15,6 +15,7 @@ export class ScreenMaster {
     width: number = NATIVE_SCREEN_WIDTH
     height: number = NATIVE_SCREEN_HEIGHT
     ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
+    lastDownTime: number = 0
 
     constructor() {
         this.gameContainer = getElementByIdOrThrow('game-container')
@@ -32,6 +33,7 @@ export class ScreenMaster {
     addLayer<T extends ScreenLayer>(layer: T, zIndex: number): T {
         if (!zIndex) throw new Error(`Invalid zIndex ${zIndex} given for layer`)
         if (this.layers.some((l) => l.zIndex === zIndex)) throw new Error(`The given zIndex is not unique`)
+        layer.screenMaster = this
         layer.resize(this.width, this.height)
         layer.setZIndex(zIndex)
         this.layers.push(layer)
@@ -85,5 +87,17 @@ export class ScreenMaster {
             link.click()
             link.remove()
         })
+    }
+
+    doubleTapToFullscreen(): boolean {
+        const now = new Date().getTime() // XXX use time from event to be more precise
+        if (this.lastDownTime && now - this.lastDownTime < 400) {
+            this.lastDownTime = 0
+            this.gameContainer?.requestFullscreen().then()
+            return true
+        } else {
+            this.lastDownTime = now
+        }
+        return false
     }
 }

@@ -51,7 +51,7 @@ export class LoadingLayer extends ScaledLayer {
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (event.eventEnum === POINTER_EVENT.DOWN && event.button === MOUSE_BUTTON.MAIN) {
-            this.doubleTapToFullscreen()
+            if (this.screenMaster.doubleTapToFullscreen()) return true
         }
         return super.handlePointerEvent(event)
     }

@@ -80,7 +80,7 @@ export class MainMenuLayer extends ScaledLayer {
                     this.animationFrame.notifyRedraw()
                     return true
                 }
-                this.doubleTapToFullscreen()
+                if (this.screenMaster.doubleTapToFullscreen()) return true
             }
         } else if (event.eventEnum === POINTER_EVENT.UP) {
             this.updateItemsHoveredState(event.canvasX, event.canvasY)
