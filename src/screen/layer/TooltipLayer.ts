@@ -1,8 +1,7 @@
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
-import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
-import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
+import { POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { ChangeTooltip } from '../../event/GuiCommand'
 import { SaveScreenshot } from '../../event/LocalEvents'
@@ -34,6 +33,33 @@ export class TooltipLayer extends ScreenLayer {
                 this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(event.tooltipSfx), event.timeoutSfx)
             }
         })
+        this.addEventListener('pointermove', (event: PointerEvent): boolean => {
+            this.cursorLeft = false
+            const gameEvent = new GamePointerEvent(POINTER_EVENT.MOVE, event)
+            ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(event.clientX, event.clientY)
+            this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
+            this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
+            this.cursorCanvasPos = {x: gameEvent.canvasX, y: gameEvent.canvasY}
+            this.animationFrame.onRedraw = (context) => {
+                context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+                this.animationFrame.onRedraw = null
+            }
+            this.animationFrame.notifyRedraw()
+            return false
+        })
+        this.addEventListener('pointerleave', (): boolean => {
+            this.cursorLeft = true
+            this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
+            this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
+            return false
+        })
+        this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
+            if (event.key === 'p') {
+                EventBus.publishEvent(new SaveScreenshot())
+                return true
+            }
+            return false
+        })
     }
 
     show() {
@@ -46,34 +72,6 @@ export class TooltipLayer extends ScreenLayer {
         this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
         this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
         this.cursorLeft = false
-    }
-
-    handleKeyEvent(event: GameKeyboardEvent): boolean {
-        if (event.key === 'p') {
-            if (event.eventEnum === KEY_EVENT.UP) EventBus.publishEvent(new SaveScreenshot())
-            return true
-        } else {
-            return super.handleKeyEvent(event)
-        }
-    }
-
-    handlePointerEvent(event: GamePointerEvent): boolean {
-        this.cursorLeft = false
-        if (event.eventEnum === POINTER_EVENT.MOVE) {
-            this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
-            this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
-            this.cursorCanvasPos = {x: event.canvasX, y: event.canvasY}
-            this.animationFrame.onRedraw = (context) => {
-                context.clearRect(0, 0, context.canvas.width, context.canvas.height)
-                this.animationFrame.onRedraw = null
-            }
-            this.animationFrame.notifyRedraw()
-        } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
-            this.cursorLeft = true
-            this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
-            this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
-        }
-        return super.handlePointerEvent(event)
     }
 
     private async changeTooltipImg(event: ChangeTooltip) {

@@ -10,10 +10,8 @@ import { GameEvent } from '../../event/GameEvent'
 import { Panel } from '../../gui/base/Panel'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { Cursor } from '../../resource/Cursor'
-import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
+import { POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/GuiEvent'
-import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
-import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { BaseElement } from '../../gui/base/BaseElement'
 import { EventBus } from '../../event/EventBus'
 import { GameResultState } from '../../game/model/GameResult'
@@ -60,6 +58,31 @@ export class OverlayLayer extends ScaledLayer {
         }
         this.animationFrame.notifyRedraw()
         EventBus.registerEventListener(EventKey.SHOW_OPTIONS, () => this.setActivePanel(this.panelOptions))
+        new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
+            ['pointermove', POINTER_EVENT.MOVE],
+            ['pointerdown', POINTER_EVENT.DOWN],
+            ['pointerup', POINTER_EVENT.UP],
+            ['pointerleave', POINTER_EVENT.LEAVE],
+        ]).forEach((eventEnum, eventType) => {
+            this.addEventListener(eventType, (event: PointerEvent): boolean => {
+                const gameEvent = new GamePointerEvent(eventEnum, event)
+                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(event.clientX, event.clientY)
+                return this.handlePointerEvent(gameEvent)
+            })
+        })
+        this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
+            if (event.key === 'Escape' && this.panelBriefing.hidden) {
+                this.setActivePanel(this.panelPause.hidden && this.panelOptions.hidden ? this.panelPause : null)
+                return true
+            } else if (event.key === ' ' && !this.panelBriefing.hidden) { // space
+                this.panelBriefing.nextParagraph()
+                return true
+            }
+            return false
+        })
+        this.addEventListener('wheel', (): boolean => {
+            return this.panels.some((p) => !p.hidden)
+        })
     }
 
     setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
@@ -101,27 +124,6 @@ export class OverlayLayer extends ScaledLayer {
         } else if (event.eventEnum === POINTER_EVENT.MOVE || event.eventEnum === POINTER_EVENT.LEAVE) {
             this.rootElement.release()
         }
-        return hit
-    }
-
-    handleKeyEvent(event: GameKeyboardEvent): boolean {
-        if (event.eventEnum === KEY_EVENT.UP) {
-            if (event.key === 'Escape') {
-                if (this.panelBriefing.hidden) {
-                    this.setActivePanel(this.panelPause.hidden && this.panelOptions.hidden ? this.panelPause : null)
-                    return true
-                }
-            } else if (event.key === ' ') { // space
-                if (!this.panelBriefing.hidden) {
-                    this.panelBriefing.nextParagraph()
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    handleWheelEvent(event: GameWheelEvent): boolean {
-        return this.animationFrame.context.getImageData(event.clientX, event.clientY, 1, 1).data[3] > 0
+        return true
     }
 }

@@ -22,4 +22,5 @@ html, body {
 #game-canvas-container > canvas {
     grid-column: 1;
     grid-row: 1;
+    outline: none;
 }

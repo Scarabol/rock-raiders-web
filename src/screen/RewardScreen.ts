@@ -1,7 +1,7 @@
 import { RewardCfg } from '../cfg/RewardCfg'
 import { SpriteImage } from '../core/Sprite'
 import { clearTimeoutSafe } from '../core/Util'
-import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
+import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { GameResult, GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { LoadSaveLayer } from '../menu/LoadSaveLayer'
@@ -53,18 +53,15 @@ export class RewardScreen {
             return ResourceManager.bitmapFontWorkerPool.createTextImage(labelFontName, this.cfg.text[index].text)
         })).then((textImages) => this.texts = textImages)
         this.resultsLayer = screenMaster.addLayer(new ScaledLayer('RewardResultsLayer'), 610)
-        this.resultsLayer.handlePointerEvent = ((event) => {
-            if (event.eventEnum === POINTER_EVENT.UP) {
-                this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
-                this.resultIndex = this.resultLastIndex
-                this.btnSave.visible = true
-                this.btnAdvance.visible = true
-                this.resultsLayer.animationFrame.notifyRedraw()
-                this.descriptionTextLayer.animationFrame.notifyRedraw()
-                this.btnLayer.animationFrame.notifyRedraw()
-                return true
-            }
-            return false
+        this.resultsLayer.addEventListener('pointerup', (): boolean => {
+            this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
+            this.resultIndex = this.resultLastIndex
+            this.btnSave.visible = true
+            this.btnAdvance.visible = true
+            this.resultsLayer.animationFrame.notifyRedraw()
+            this.descriptionTextLayer.animationFrame.notifyRedraw()
+            this.btnLayer.animationFrame.notifyRedraw()
+            return true
         })
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 620)
         this.btnLayer = screenMaster.addLayer(new ScaledLayer('RewardButtonLayer'), 650)
@@ -80,22 +77,39 @@ export class RewardScreen {
             GameState.reset()
             EventBus.publishEvent(new ShowGameResultEvent())
         }
-        this.btnLayer.handlePointerEvent = ((event) => {
-            if (event.eventEnum === POINTER_EVENT.MOVE || event.eventEnum === POINTER_EVENT.LEAVE) {
-                this.btnSave.setHovered(this.btnSave.isHovered(event.canvasX, event.canvasY))
-                this.btnAdvance.setHovered(this.btnAdvance.isHovered(event.canvasX, event.canvasY))
-            } else if (event.eventEnum === POINTER_EVENT.DOWN) {
-                if (event.button === MOUSE_BUTTON.MAIN) {
-                    this.btnSave.onMouseDown()
-                    this.btnAdvance.onMouseDown()
-                }
-            } else if (event.eventEnum === POINTER_EVENT.UP) {
-                if (event.button === MOUSE_BUTTON.MAIN) {
-                    this.btnSave.onMouseUp()
-                    this.btnAdvance.onMouseUp()
+        this.btnLayer.addEventListener('pointermove', (event: PointerEvent): boolean => {
+            const [canvasX, canvasY] = this.btnLayer.transformCoords(event.clientX, event.clientY)
+            this.btnSave.setHovered(this.btnSave.isHovered(canvasX, canvasY))
+            this.btnAdvance.setHovered(this.btnAdvance.isHovered(canvasX, canvasY))
+            if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.animationFrame.notifyRedraw()
+            return false
+        })
+        this.btnLayer.addEventListener('pointerleave', (): boolean => {
+            this.btnSave.reset()
+            this.btnAdvance.reset()
+            if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.animationFrame.notifyRedraw()
+            return false
+        })
+        this.btnLayer.addEventListener('pointerdown', (event: PointerEvent): boolean => {
+            if (event.button === MOUSE_BUTTON.MAIN) {
+                this.btnSave.onMouseDown()
+                this.btnAdvance.onMouseDown()
+                if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) {
+                    this.btnLayer.animationFrame.notifyRedraw()
+                    return true
                 }
             }
-            if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.animationFrame.notifyRedraw()
+            return false
+        })
+        this.btnLayer.addEventListener('pointerup', (event: PointerEvent): boolean => {
+            if (event.button === MOUSE_BUTTON.MAIN) {
+                this.btnSave.onMouseUp()
+                this.btnAdvance.onMouseUp()
+                if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) {
+                    this.btnLayer.animationFrame.notifyRedraw()
+                    return true
+                }
+            }
             return false
         })
         this.btnLayer.animationFrame.onRedraw = (context) => {

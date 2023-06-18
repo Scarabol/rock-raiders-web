@@ -1,7 +1,4 @@
 import { MapControls } from 'three/examples/jsm/controls/MapControls'
-import { GameKeyboardEvent } from '../event/GameKeyboardEvent'
-import { GamePointerEvent } from '../event/GamePointerEvent'
-import { GameWheelEvent } from '../event/GameWheelEvent'
 import { MOUSE, Raycaster, Vector2, Vector3 } from 'three'
 import { DEV_MODE, KEY_PAN_SPEED, MIN_CAMERA_HEIGHT_ABOVE_TERRAIN } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -31,6 +28,22 @@ export class BirdViewControls extends MapControls {
             this.minDistance = ResourceManager.configuration.main.minDist
             this.maxDistance = ResourceManager.configuration.main.maxDist
         }
+        this.rewriteWASDToArrowKeys()
+    }
+
+    private rewriteWASDToArrowKeys() {
+        [['KeyW', 'ArrowUp'], ['KeyA', 'ArrowLeft'], ['KeyS', 'ArrowDown'], ['KeyD', 'ArrowRight']].forEach((pair) => {
+            this.domElement.addEventListener('keydown', (event: KeyboardEvent) => {
+                if (event.code === pair[0]) {
+                    this.domElement.dispatchEvent(new KeyboardEvent(event.type, {...event, code: pair[1], key: pair[1]}))
+                }
+            })
+            this.domElement.addEventListener('keyup', (event: KeyboardEvent) => {
+                if (event.code === pair[0]) {
+                    this.domElement.dispatchEvent(new KeyboardEvent(event.type, {...event, code: pair[1], key: pair[1]}))
+                }
+            })
+        })
     }
 
     zoom(zoom: number) {
@@ -54,24 +67,6 @@ export class BirdViewControls extends MapControls {
         this.object.position.set(location.x, location.y, location.z).add(offsetTargetToCamera)
         this.target.set(location.x, location.y, location.z)
         this.update()
-    }
-
-    handlePointerEvent(event: GamePointerEvent): boolean {
-        this.domElement.dispatchEvent(new PointerEvent(event.type, event))
-        return true
-    }
-
-    handleKeyEvent(event: GameKeyboardEvent): boolean {
-        [['KeyW', 'ArrowUp'], ['KeyA', 'ArrowLeft'], ['KeyS', 'ArrowDown'], ['KeyD', 'ArrowRight']].forEach((pair) => {
-            if (event.code === pair[0]) event.code = pair[1] // rewrite WASD to arrow keys for camera control
-        })
-        this.domElement.dispatchEvent(new KeyboardEvent(event.type, event))
-        return true
-    }
-
-    handleWheelEvent(event: GameWheelEvent): boolean {
-        this.domElement.dispatchEvent(new WheelEvent(event.type, event))
-        return true
     }
 
     private forceCameraAboveTerrain(sceneMgr: SceneManager) {

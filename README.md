@@ -42,8 +42,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.6.0 - Complete Base Systems
 
-- Use event listener to publish events
-- Pin events with setPointerTarget to canvases
 - Implement touch event listener to support mobile browser
 
 - Implement raider info bubbles

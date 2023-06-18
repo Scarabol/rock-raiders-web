@@ -25,6 +25,17 @@ export class SelectionLayer extends ScreenLayer {
             context.lineWidth = 2
             context.strokeRect(this.selectionRect.x, this.selectionRect.y, this.selectionRect.w, this.selectionRect.h)
         }
+        new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
+            ['pointermove', POINTER_EVENT.MOVE],
+            ['pointerdown', POINTER_EVENT.DOWN],
+            ['pointerup', POINTER_EVENT.UP],
+        ]).forEach((eventEnum, eventType) => {
+            this.addEventListener(eventType, (event: PointerEvent): boolean => {
+                const gameEvent = new GamePointerEvent(eventEnum, event)
+                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(event.clientX, event.clientY)
+                return this.handlePointerEvent(gameEvent)
+            })
+        })
     }
 
     reset() {
@@ -40,22 +51,21 @@ export class SelectionLayer extends ScreenLayer {
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (this.worldMgr.sceneMgr.hasBuildModeSelection()) return false
         if (event.eventEnum === POINTER_EVENT.DOWN) {
-            if (event.button === MOUSE_BUTTON.MAIN) return this.startSelection(event.canvasX, event.canvasY)
+            if (event.button === MOUSE_BUTTON.MAIN) {
+                this.canvas.setPointerCapture(event.pointerId)
+                this.startSelection(event.canvasX, event.canvasY)
+                return true
+            }
         } else if (event.eventEnum === POINTER_EVENT.MOVE) {
             return this.changeSelection(event.canvasX, event.canvasY)
         } else if (event.eventEnum === POINTER_EVENT.UP && event.button === MOUSE_BUTTON.MAIN) {
             return this.selectEntities(event.canvasX, event.canvasY)
-        } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
-            this.selectionRect = null
-            this.animationFrame.notifyRedraw()
-            return true
         }
         return false
     }
 
     private startSelection(screenX: number, screenY: number) {
         this.selectionRect = new Rect(screenX, screenY)
-        return true
     }
 
     private changeSelection(screenX: number, screenY: number) {

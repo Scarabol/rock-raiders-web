@@ -3,7 +3,6 @@ import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { DeselectAll } from '../../event/LocalEvents'
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { EntityManager } from '../../game/EntityManager'
@@ -43,6 +42,30 @@ export class GameLayer extends ScreenLayer {
                 const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, true)
                 EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
             }
+        })
+        new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
+            ['pointermove', POINTER_EVENT.MOVE],
+            ['pointerdown', POINTER_EVENT.DOWN],
+            ['pointerup', POINTER_EVENT.UP],
+        ]).forEach((eventEnum, eventType) => {
+            this.addEventListener(eventType, (event: PointerEvent): boolean => {
+                const gameEvent = new GamePointerEvent(eventEnum, event)
+                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(event.clientX, event.clientY)
+                return this.handlePointerEvent(gameEvent)
+            })
+        })
+        new Map<keyof HTMLElementEventMap, KEY_EVENT>([
+            ['keydown', KEY_EVENT.DOWN],
+            ['keyup', KEY_EVENT.UP],
+        ]).forEach((eventEnum, eventType) => {
+            this.addEventListener(eventType, (event: KeyboardEvent): boolean => {
+                const gameEvent = new GameKeyboardEvent(eventEnum, event)
+                return this.handleKeyEvent(gameEvent)
+            })
+        })
+        this.addEventListener('wheel', (): boolean => {
+            // signal to screen master for camera controls listening on canvas for events
+            return true
         })
     }
 
@@ -98,7 +121,7 @@ export class GameLayer extends ScreenLayer {
                 this.rightDown.y = event.canvasY
             }
         }
-        return this.sceneMgr.controls.handlePointerEvent(event)
+        return false
     }
 
     private handlePointerUpEvent(event: GamePointerEvent, buildMarker: BuildPlacementMarker) {
@@ -172,11 +195,7 @@ export class GameLayer extends ScreenLayer {
                 return true
             }
         }
-        return this.sceneMgr.controls.handleKeyEvent(event)
-    }
-
-    handleWheelEvent(event: GameWheelEvent): boolean {
-        return this.sceneMgr.controls.handleWheelEvent(event)
+        return false
     }
 
     takeScreenshotFromLayer(): Promise<HTMLCanvasElement> {

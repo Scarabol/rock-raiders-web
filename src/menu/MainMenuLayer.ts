@@ -3,7 +3,6 @@ import { SpriteImage } from '../core/Sprite'
 import { clearIntervalSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GamePointerEvent } from '../event/GamePointerEvent'
-import { GameWheelEvent } from '../event/GameWheelEvent'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { ScaledLayer } from '../screen/layer/ScreenLayer'
@@ -41,6 +40,25 @@ export class MainMenuLayer extends ScaledLayer {
         })
 
         this.items.sort((a, b) => MainMenuBaseItem.compareZ(a, b))
+        new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
+            ['pointermove', POINTER_EVENT.MOVE],
+            ['pointerdown', POINTER_EVENT.DOWN],
+            ['pointerup', POINTER_EVENT.UP],
+            ['pointerleave', POINTER_EVENT.LEAVE],
+        ]).forEach((eventEnum, eventType) => {
+            this.addEventListener(eventType, (event: PointerEvent): boolean => {
+                const gameEvent = new GamePointerEvent(eventEnum, event)
+                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(event.clientX, event.clientY)
+                return this.handlePointerEvent(gameEvent)
+            })
+        })
+        this.addEventListener('wheel', (event: WheelEvent): boolean => {
+            if (!this.cfg.canScroll) return false
+            this.setScrollY(event.deltaY)
+            const [canvasX, canvasY] = this.transformCoords(event.clientX, event.clientY)
+            this.updateItemsHoveredState(canvasX, canvasY)
+            return true
+        })
     }
 
     reset() {
@@ -112,13 +130,6 @@ export class MainMenuLayer extends ScaledLayer {
                 this.setScrollY(this.scrollSpeedY)
             }, NATIVE_UPDATE_INTERVAL)
         }
-    }
-
-    handleWheelEvent(event: GameWheelEvent): boolean {
-        if (!this.cfg.canScroll) return false
-        this.setScrollY(event.deltaY)
-        this.updateItemsHoveredState(event.canvasX, event.canvasY)
-        return true
     }
 
     private updateItemsHoveredState(sx: number, sy: number) {

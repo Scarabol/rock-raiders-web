@@ -2,7 +2,6 @@ import { cloneContext } from '../core/ImageHelper'
 import { getElementByIdOrThrow } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { EventManager } from '../event/EventManager'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
 import { CursorManager } from './CursorManager'
@@ -20,7 +19,7 @@ export class ScreenMaster {
     constructor() {
         this.gameContainer = getElementByIdOrThrow('game-container')
         this.gameCanvasContainer = getElementByIdOrThrow('game-canvas-container')
-        new EventManager(this)
+        this.gameCanvasContainer.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault())
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
         EventBus.registerEventListener(EventKey.SAVE_SCREENSHOT, () => this.saveScreenshot())
@@ -28,6 +27,27 @@ export class ScreenMaster {
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_CURSOR, (event: ChangeCursor) => {
             cursorManager.changeCursor(event.cursor, event.timeout)
         })
+        this.gameCanvasContainer.addEventListener('pointerdown', () => {
+            this.getActiveLayersSorted()?.[0]?.canvas?.focus() // always focus topmost
+        })
+        // in case topmost layer (usually cursor layer) does not listen for event, it reaches game-canvas-container as fallback dispatch from here
+        ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'wheel'].forEach((eventType: keyof HTMLElementEventMap) => {
+            this.gameCanvasContainer.addEventListener(eventType, (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                this.dispatchEvent(event)
+            })
+        })
+    }
+
+    dispatchEvent(event: Event, zIndexStart: number = Infinity) {
+        if (event.type === 'pointerleave' && event.target === this.gameCanvasContainer) return // don't dispatch, fired by setPointerCapture
+        const activeLayersSorted = this.getActiveLayersSorted()
+        const nextLayer = activeLayersSorted.find((l) => l.zIndex < zIndexStart && l.eventListener.has(event.type))
+        if (!nextLayer) return
+        // @ts-ignore // XXX maybe there is more elegant way to clone events
+        const eventClone = new event.constructor(event.type, event)
+        nextLayer.canvas.dispatchEvent(eventClone)
     }
 
     addLayer<T extends ScreenLayer>(layer: T, zIndex: number): T {

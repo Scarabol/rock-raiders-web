@@ -17,8 +17,6 @@ import { TOOLTIP_FONT_NAME } from '../../params'
 import { Cursor } from '../../resource/Cursor'
 import { POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/GuiEvent'
-import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
-import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { EventBus } from '../../event/EventBus'
 import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
@@ -95,6 +93,21 @@ export class GuiMainLayer extends ScaledLayer {
                 this.panelMessages.unsetMessage(this.panelMessages.msgSpaceToContinue)
             }
         })
+        new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
+            ['pointermove', POINTER_EVENT.MOVE],
+            ['pointerdown', POINTER_EVENT.DOWN],
+            ['pointerup', POINTER_EVENT.UP],
+            ['pointerleave', POINTER_EVENT.LEAVE],
+        ]).forEach((eventEnum, eventType) => {
+            this.addEventListener(eventType, (event: PointerEvent): boolean => {
+                const gameEvent = new GamePointerEvent(eventEnum, event)
+                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(event.clientX, event.clientY)
+                return this.handlePointerEvent(gameEvent)
+            })
+        })
+        this.addEventListener('wheel', (event: WheelEvent): boolean => {
+            return this.animationFrame.context.getImageData(event.clientX, event.clientY, 1, 1).data[3] > 0
+        })
     }
 
     reset() {
@@ -124,13 +137,5 @@ export class GuiMainLayer extends ScaledLayer {
             this.rootElement.release()
         }
         return hit
-    }
-
-    handleKeyEvent(event: GameKeyboardEvent): boolean {
-        return false
-    }
-
-    handleWheelEvent(event: GameWheelEvent): boolean {
-        return this.animationFrame.context.getImageData(event.clientX, event.clientY, 1, 1).data[3] > 0
     }
 }
