@@ -28,7 +28,7 @@ export class MaterialEntity {
     }
 
     setupCarryJob(): CarryJob {
-        if (!this.carryJob || this.carryJob.jobState === JobState.CANCELED) {
+        if (this.carryJob?.jobState !== JobState.INCOMPLETE) {
             this.carryJob = new CarryJob(this)
             EventBus.publishEvent(new JobCreateEvent(this.carryJob))
         }

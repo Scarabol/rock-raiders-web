@@ -132,8 +132,12 @@ export class BuildingSite {
                 s.setSurfaceType(SurfaceType.GROUND)
             }
         })
-        this.onSiteByType.forEach((materials) => materials.forEach((item) => {
-            this.worldMgr.entityMgr.placeMaterial(item, item.sceneEntity.position2D)
+        this.onSiteByType.forEach((materials, entityType) => materials.forEach((item) => {
+            if (entityType === EntityType.BARRIER) {
+                item.disposeFromWorld()
+            } else {
+                this.worldMgr.entityMgr.placeMaterial(item, item.sceneEntity.position2D)
+            }
         }))
         this.onSiteByType.clear()
         this.assignedByType.clear()
