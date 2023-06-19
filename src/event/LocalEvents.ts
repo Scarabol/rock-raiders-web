@@ -224,7 +224,8 @@ export class UpdateRadarEntities extends LocalEvent {
         entityMgr.raiders.forEach((r) => raiders.set(r.entity, {x: r.sceneEntity.position.x, z: r.sceneEntity.position.z}))
         this.entitiesByOrder.set(MapMarkerType.DEFAULT, raiders)
         const materials = new Map()
-        entityMgr.materials.forEach((m) => materials.set(m.entity, {x: m.sceneEntity.position.x, z: m.sceneEntity.position.z}))
+        entityMgr.materials.filter((m) => m.entityType !== EntityType.BARRIER)
+            .forEach((m) => materials.set(m.entity, {x: m.sceneEntity.position.x, z: m.sceneEntity.position.z}))
         this.entitiesByOrder.set(MapMarkerType.MATERIAL, materials)
     }
 }
