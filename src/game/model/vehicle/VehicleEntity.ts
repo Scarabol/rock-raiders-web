@@ -146,7 +146,7 @@ export class VehicleEntity implements Updatable {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.sceneEntity.position.add(step.vec)
             this.sceneEntity.setAnimation(AnimEntityActivity.Route)
-            const angle = elapsedMs * this.getSpeed() / 1000 * 2 * Math.PI
+            const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
             this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
             return MoveState.MOVED
         }
