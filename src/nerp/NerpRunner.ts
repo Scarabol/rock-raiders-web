@@ -249,8 +249,9 @@ export class NerpRunner {
         // TODO implement this
     }
 
-    getTutorialBlockIsGround(blockNum) {
-        return 0 // TODO return true if given block is ground
+    getTutorialBlockIsGround(tutoBlockId: number): number {
+        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        return tutoBlocks.count((s) => s.discovered && s.surfaceType.floor) // XXX must be non-zero at least, but what meaning exactly?
     }
 
     getTutorialBlockIsPath(blockNum) {
