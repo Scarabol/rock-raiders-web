@@ -306,8 +306,20 @@ export class NerpRunner {
         return GameState.hiddenObjectsFound
     }
 
+    getLevel1TeleportsBuilt() {
+        return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.TELEPORT_PAD && b.level >= 1)
+    }
+
+    getLevel2TeleportsBuilt() {
+        return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.TELEPORT_PAD && b.level >= 2)
+    }
+
     getLevel1PowerStationsBuilt() {
         return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.POWER_STATION && b.level >= 1)
+    }
+
+    getLevel1BarracksBuilt() {
+        return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS && b.level >= 1)
     }
 
     getRandom100(): number {
