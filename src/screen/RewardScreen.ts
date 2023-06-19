@@ -85,8 +85,8 @@ export class RewardScreen {
             return false
         })
         this.btnLayer.addEventListener('pointerleave', (): boolean => {
-            this.btnSave.reset()
-            this.btnAdvance.reset()
+            this.btnSave.setHovered(false)
+            this.btnAdvance.setHovered(false)
             if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) this.btnLayer.animationFrame.notifyRedraw()
             return false
         })
