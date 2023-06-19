@@ -143,7 +143,7 @@ export class Raider implements Updatable {
         if (!target) return MoveState.TARGET_UNREACHABLE
         if (!this.currentPath || !target.targetLocation.equals(this.currentPath.target.targetLocation)) {
             const path = this.findShortestPath(target)
-            this.currentPath = path.locations.length > 0 ? path : null
+            this.currentPath = path && path.locations.length > 0 ? path : null
             if (!this.currentPath) return MoveState.TARGET_UNREACHABLE
         }
         const step = this.determineStep(elapsedMs)
