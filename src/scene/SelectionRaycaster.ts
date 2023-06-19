@@ -34,7 +34,7 @@ export class SelectionRaycaster {
     getSelectionByRay(origin: Vector2): GameSelection {
         const raycaster = new SceneRaycaster(this.worldMgr, origin)
         const selection = new GameSelection()
-        selection.raiders.push(...raycaster.getEntities(this.worldMgr.entityMgr.raiders, false))
+        selection.raiders.push(...raycaster.getEntities(this.worldMgr.entityMgr.raiders.filter((r) => !r.vehicle), false))
         if (selection.isEmpty()) selection.vehicles.push(...raycaster.getEntities(this.worldMgr.entityMgr.vehicles, true))
         if (selection.isEmpty()) selection.building = raycaster.getEntities(this.worldMgr.entityMgr.buildings, true)[0]
         if (selection.isEmpty()) selection.fence = raycaster.getEntities(this.worldMgr.entityMgr.placedFences, false)[0]
