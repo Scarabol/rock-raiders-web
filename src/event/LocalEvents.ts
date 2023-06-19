@@ -220,9 +220,10 @@ export class UpdateRadarEntities extends LocalEvent {
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.UPDATE_RADAR_LEGACY_ENTITIES)
-        const raiders = new Map()
-        entityMgr.raiders.forEach((r) => raiders.set(r.entity, {x: r.sceneEntity.position.x, z: r.sceneEntity.position.z}))
-        this.entitiesByOrder.set(MapMarkerType.DEFAULT, raiders)
+        const entities = new Map()
+        entityMgr.raiders.forEach((r) => entities.set(r.entity, {x: r.sceneEntity.position.x, z: r.sceneEntity.position.z}))
+        entityMgr.vehicles.forEach((v) => entities.set(v.entity, {x: v.sceneEntity.position.x, z: v.sceneEntity.position.z}))
+        this.entitiesByOrder.set(MapMarkerType.DEFAULT, entities)
         const materials = new Map()
         entityMgr.materials.filter((m) => m.entityType !== EntityType.BARRIER)
             .forEach((m) => materials.set(m.entity, {x: m.sceneEntity.position.x, z: m.sceneEntity.position.z}))
