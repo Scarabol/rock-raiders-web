@@ -99,7 +99,6 @@ export class GameScreen {
         this.guiLayer.show()
         this.overlayLayer.show()
         this.sceneMgr.startScene()
-        this.worldMgr.start()
     }
 
     hide() {

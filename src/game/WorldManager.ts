@@ -40,7 +40,6 @@ export class WorldManager {
     spawnRaiderTimer: number = 0
     requestedVehicleTypes: EntityType[] = []
     spawnVehicleTimer: number = 0
-    started: boolean = false
     firstUnpause: boolean = true
 
     constructor() {
@@ -103,19 +102,12 @@ export class WorldManager {
         this.firstUnpause = true
     }
 
-    start() {
-        this.started = true
-        this.startLoop(UPDATE_INTERVAL_MS)
-    }
-
     stop() {
-        this.started = false
         this.stopLoop()
     }
 
     private startLoop(timeout: number) {
         this.stopLoop() // avoid duplicate timeouts
-        if (!this.started) return
         this.gameLoopTimeout = setTimeout(() => this.mainLoop(UPDATE_INTERVAL_MS), timeout)
     }
 
