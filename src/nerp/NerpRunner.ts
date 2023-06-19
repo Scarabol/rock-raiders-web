@@ -18,8 +18,9 @@ import { GameResultEvent } from '../event/WorldEvents'
 
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
+    static debug = false
+
     readonly script: NerpScript
-    debug = false
 
     timer: number = 0
     registers = new Array(8).fill(0)
@@ -375,7 +376,7 @@ export class NerpRunner {
 
     conditional(left, right) {
         const conditionResult = this.executeStatement(left)
-        if (this.debug) {
+        if (NerpRunner.debug) {
             console.log(`Condition evaluated to ${conditionResult}`)
         }
         if (conditionResult) {
@@ -387,7 +388,7 @@ export class NerpRunner {
         if (expression.invoke) {
             const argValues = expression.invoke !== 'conditional' ? expression.args.map(e => this.executeStatement(e)) : expression.args
             const result = this.callMethod(expression.invoke, argValues)
-            if (result !== undefined && this.debug) {
+            if (result !== undefined && NerpRunner.debug) {
                 console.log(`Method ${expression.invoke}(${JSON.stringify(expression.args).slice(1, -1)}) returned: ${result}`)
             }
             return result
@@ -413,7 +414,7 @@ export class NerpRunner {
             if (this.programCounter === undefined) {
                 throw new Error(`Label '${expression.jump}' is unknown!`)
             }
-            if (this.debug) {
+            if (NerpRunner.debug) {
                 console.log(`Jumping to label '${expression.jump}' in line ${this.programCounter}`)
             }
         } else {
@@ -425,13 +426,13 @@ export class NerpRunner {
     execute() {
         if (this.halted) return
         try {
-            if (this.debug) {
+            if (NerpRunner.debug) {
                 console.log(`Executing following script\\n${this.script.lines.join('\n')}`)
                 console.log(`Registers: ${this.registers}`)
             }
             for (this.programCounter = 0; this.programCounter < this.script.statements.length && !this.halted; this.programCounter++) {
                 const statement = this.script.statements[this.programCounter]
-                if (this.debug) {
+                if (NerpRunner.debug) {
                     console.log(`${this.programCounter}: ${this.script.lines[this.programCounter]}`)
                     console.log(statement)
                 }

@@ -6,6 +6,8 @@ import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
 import { CursorManager } from './CursorManager'
 import { ChangeCursor } from '../event/GuiCommand'
+import { NerpRunner } from '../nerp/NerpRunner'
+import { SaveScreenshot } from '../event/LocalEvents'
 
 export class ScreenMaster {
     gameContainer: HTMLElement
@@ -14,7 +16,6 @@ export class ScreenMaster {
     width: number = NATIVE_SCREEN_WIDTH
     height: number = NATIVE_SCREEN_HEIGHT
     ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
-    lastDownTime: number = 0
 
     constructor() {
         this.gameContainer = getElementByIdOrThrow('game-container')
@@ -39,6 +40,53 @@ export class ScreenMaster {
                     this.dispatchEvent(event)
                 })
             })
+        this.setupToolbarButtons()
+    }
+
+    private setupToolbarButtons() {
+        Array.from(document.getElementsByClassName('button-escape')).forEach((btn: HTMLButtonElement) => {
+            btn.style.removeProperty('visibility')
+            btn.onclick = (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                this.dispatchEvent(new KeyboardEvent('keydown', {code: 'Escape', key: 'Escape'}))
+                setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: 'Escape', key: 'Escape'})), 69)
+            }
+        })
+        Array.from(document.getElementsByClassName('button-space')).forEach((btn: HTMLButtonElement) => {
+            btn.style.removeProperty('visibility')
+            btn.onclick = (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                this.dispatchEvent(new KeyboardEvent('keydown', {code: ' ', key: ' '}))
+                setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: ' ', key: ' '})), 69)
+            }
+        })
+        Array.from(document.getElementsByClassName('button-screenshot')).forEach((btn: HTMLButtonElement) => {
+            btn.style.removeProperty('visibility')
+            btn.onclick = (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                EventBus.publishEvent(new SaveScreenshot())
+            }
+        })
+        Array.from(document.getElementsByClassName('button-debug-nerp')).forEach((btn: HTMLButtonElement) => {
+            btn.style.removeProperty('visibility')
+            btn.onclick = (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                NerpRunner.debug = !NerpRunner.debug
+            }
+        })
+        Array.from(document.getElementsByClassName('button-fullscreen')).forEach((btn: HTMLButtonElement) => {
+            btn.style.removeProperty('visibility')
+            btn.onclick = (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                if (document.fullscreenElement === this.gameContainer) document.exitFullscreen().then()
+                else this.gameContainer?.requestFullscreen().then()
+            }
+        })
     }
 
     dispatchEvent(event: Event, zIndexStart: number = Infinity) {
@@ -108,17 +156,5 @@ export class ScreenMaster {
             link.click()
             link.remove()
         })
-    }
-
-    doubleTapToFullscreen(): boolean {
-        const now = new Date().getTime() // XXX use time from event to be more precise
-        if (this.lastDownTime && now - this.lastDownTime < 400) {
-            this.lastDownTime = 0
-            this.gameContainer?.requestFullscreen().then()
-            return true
-        } else {
-            this.lastDownTime = now
-        }
-        return false
     }
 }

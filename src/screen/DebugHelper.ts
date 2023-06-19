@@ -8,10 +8,11 @@ export class DebugHelper {
         this.stats.setMode(0) // 0: fps, 1: ms
 
         this.stats.domElement.style.position = 'absolute'
-        this.stats.domElement.style.left = '0px'
-        this.stats.domElement.style.top = '0px'
+        this.stats.domElement.style.left = 'auto'
+        this.stats.domElement.style.top = '0'
 
-        document.body.appendChild(this.stats.domElement)
+        const parent = document.getElementsByClassName('mobile-helper-toolbar').item(0)
+        parent?.insertBefore(this.stats.domElement, parent.firstChild)
         this.hide()
     }
 
