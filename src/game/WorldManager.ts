@@ -76,7 +76,7 @@ export class WorldManager {
         EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => GameState.alarmMode = event.alarmState)
         EventBus.registerEventListener(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             if (!this.nerpRunner) return
-            this.nerpRunner.objectiveShowing += event.isShowing ? 1 : 0
+            this.nerpRunner.objectiveShowing = event.isShowing ? 1 : 0
             this.nerpRunner.objectiveSwitch = this.nerpRunner.objectiveSwitch && event.isShowing
         })
         EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
