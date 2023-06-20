@@ -1,13 +1,21 @@
-import { AudioContext } from 'three'
+import { AudioContext, PositionalAudio } from 'three'
 import { Sample } from './Sample'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { DEV_MODE } from '../params'
+import { EventBus } from '../event/EventBus'
+import { EventKey } from '../event/EventKeyEnum'
 
 export class SoundManager {
     static sfxByKey: Map<string, any> = new Map()
     static audioBufferCache: Map<string, AudioBuffer> = new Map()
     static audioContext: AudioContext
     static sfxAudioTarget: GainNode
+    static readonly loopedAudio: Set<PositionalAudio> = new Set()
+
+    static {
+        EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.loopedAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
+        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.loopedAudio.forEach((a) => a.play()))
+    }
 
     static playSample(sample: Sample) {
         this.playSound(Sample[sample])

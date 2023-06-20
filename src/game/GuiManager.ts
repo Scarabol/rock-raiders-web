@@ -181,6 +181,8 @@ export class GuiManager {
             SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx
             SoundManager.toggleSfx()
             sceneMgr.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
+            const sfxVolume = SaveGameManager.getSfxVolume()
+            SoundManager.loopedAudio.forEach((a) => a.setVolume(sfxVolume))
         })
         EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {
             entityMgr.selection.assignUpgradeJob(event.upgrade)
