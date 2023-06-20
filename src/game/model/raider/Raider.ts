@@ -1,4 +1,4 @@
-import { PositionalAudio, Vector2 } from 'three'
+import { PositionalAudio } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
@@ -93,17 +93,6 @@ export class Raider implements Updatable {
         this.sceneEntity.dispose()
     }
 
-    addToScene(worldPosition: Vector2, headingRad: number) {
-        if (worldPosition) {
-            this.sceneEntity.position.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPosition))
-        }
-        if (headingRad !== undefined && headingRad !== null) {
-            this.sceneEntity.rotation.y = headingRad
-        }
-        this.sceneEntity.visible = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).discovered
-        this.worldMgr.sceneMgr.addMeshGroup(this.sceneEntity)
-    }
-
     /*
     Movement
      */
@@ -153,6 +142,7 @@ export class Raider implements Updatable {
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.sceneEntity.position.add(step.vec)
+            this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position.copy(this.sceneEntity.position)
             this.sceneEntity.setAnimation(this.getRouteActivity())
             EventBus.publishEvent(new UpdateRadarEntities(this.worldMgr.entityMgr)) // TODO only send map updates not all
             return MoveState.MOVED

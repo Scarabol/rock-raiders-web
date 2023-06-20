@@ -18,6 +18,7 @@ import { MaterialSpawner } from './entity/MaterialSpawner'
 import { AnimEntityActivity, RaiderActivity } from './model/anim/AnimationActivity'
 import { SceneManager } from './SceneManager'
 import { EntityManager } from './EntityManager'
+import { PositionComponent } from './component/PositionComponent'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -25,13 +26,11 @@ export class ObjectListLoader {
 
     static loadObjectList(objectList: Map<string, ObjectListEntryCfg>, disableStartTeleport: boolean, worldMgr: WorldManager) {
         try {
-            const sceneMgr = worldMgr.sceneMgr
-            const entityMgr = worldMgr.entityMgr
             const vehicleKeyToDriver = new Map<string, Raider>()
             const vehicleByKey = new Map<string, VehicleEntity>()
             objectList.forEach((olEntry, olKey) => {
                 try {
-                    this.loadObjectEntry(olEntry, sceneMgr, worldMgr, entityMgr, vehicleKeyToDriver, disableStartTeleport, vehicleByKey, olKey)
+                    this.loadObjectEntry(olEntry, worldMgr.sceneMgr, worldMgr, worldMgr.entityMgr, vehicleKeyToDriver, disableStartTeleport, vehicleByKey, olKey)
                 } catch (e) {
                     console.error(e)
                 }
@@ -54,6 +53,8 @@ export class ObjectListLoader {
         const entityType = getEntityTypeByName(olEntry.type ? olEntry.type.toLowerCase() : olEntry.type)
         // all object positions are off by one tile, because they start at 1 not 0
         const worldPos = new Vector2(olEntry.xPos, olEntry.yPos).addScalar(-1).multiplyScalar(TILESIZE) // TODO assert that world pos is over terrain otherwise drop item
+        const floorPosition = sceneMgr.getFloorPosition(worldPos)
+        const surface = sceneMgr.terrain.getSurfaceFromWorld(floorPosition)
         const headingRad = degToRad(olEntry.heading)
         switch (entityType) {
             case EntityType.TV_CAMERA:
@@ -70,7 +71,11 @@ export class ObjectListLoader {
                 raider.sceneEntity.setAnimation(RaiderActivity.Stand)
                 const raiderSceneSelection = worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
                 worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(raiderSceneSelection.pickSphere, raider.stats))
-                raider.addToScene(worldPos, headingRad - Math.PI / 2)
+                raider.sceneEntity.position.copy(floorPosition)
+                worldMgr.ecs.addComponent(raider.entity, new PositionComponent(floorPosition, surface))
+                raider.sceneEntity.rotation.y = headingRad - Math.PI / 2
+                raider.sceneEntity.visible = surface.discovered
+                sceneMgr.addMeshGroup(raider.sceneEntity)
                 if (raider.sceneEntity.visible) {
                     entityMgr.raiders.push(raider)
                     EventBus.publishEvent(new RaidersAmountChangedEvent(entityMgr))
@@ -99,7 +104,12 @@ export class ObjectListLoader {
                         raider.sceneEntity.setAnimation(RaiderActivity.Stand)
                         const sceneSelectionComponent = worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
                         worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, raider.stats))
-                        raider.addToScene(entity.primaryPathSurface.getRandomPosition(), headingRad - Math.PI)
+                        const randomPosition = sceneMgr.getFloorPosition(entity.primaryPathSurface.getRandomPosition())
+                        raider.sceneEntity.position.copy(randomPosition)
+                        worldMgr.ecs.addComponent(raider.entity, new PositionComponent(randomPosition, entity.primaryPathSurface))
+                        raider.sceneEntity.rotation.y = headingRad - Math.PI
+                        raider.sceneEntity.visible = surface.discovered
+                        sceneMgr.addMeshGroup(raider.sceneEntity)
                         RaiderTrainings.values.forEach((t) => raider.addTraining(t))
                         entityMgr.raiders.push(raider)
                         EventBus.publishEvent(new RaidersAmountChangedEvent(entityMgr))
@@ -133,7 +143,11 @@ export class ObjectListLoader {
                 vehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
                 const vehicleSceneSelection = worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats))
                 worldMgr.ecs.addComponent(vehicle.entity, new SelectionFrameComponent(vehicleSceneSelection.pickSphere, vehicle.stats))
-                vehicle.addToScene(worldPos, headingRad + Math.PI)
+                vehicle.sceneEntity.position.copy(floorPosition)
+                worldMgr.ecs.addComponent(vehicle.entity, new PositionComponent(floorPosition, surface))
+                vehicle.sceneEntity.rotation.y = headingRad + Math.PI
+                vehicle.sceneEntity.visible = surface.discovered
+                sceneMgr.addMeshGroup(vehicle.sceneEntity)
                 if (vehicle.sceneEntity.visible) {
                     entityMgr.vehicles.push(vehicle)
                 } else {

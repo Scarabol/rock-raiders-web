@@ -28,6 +28,7 @@ import { SelectionFrameComponent } from '../../component/SelectionFrameComponent
 import { MaterialSpawner } from '../../entity/MaterialSpawner'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { OxygenComponent } from '../../component/OxygenComponent'
+import { PositionComponent } from '../../component/PositionComponent'
 
 export class BuildingEntity {
     readonly entityType: EntityType
@@ -284,7 +285,12 @@ export class BuildingEntity {
         }
         this.surfaces.forEach((s) => s.setBuilding(this))
         const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity, {gameEntity: this.entity, entityType: this.entityType}, this.stats, this.stats.PickSphere / 4))
-        this.addToScene(worldPosition, radHeading)
+        const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPosition)
+        this.sceneEntity.position.copy(floorPosition)
+        this.worldMgr.ecs.addComponent(this.entity, new PositionComponent(floorPosition, this.primarySurface))
+        this.sceneEntity.rotation.y = radHeading
+        this.sceneEntity.visible = this.surfaces.some((s) => s.discovered)
+        this.worldMgr.sceneMgr.addMeshGroup(this.sceneEntity)
         if (this.sceneEntity.visible) {
             this.worldMgr.entityMgr.buildings.push(this)
         } else {
@@ -328,17 +334,6 @@ export class BuildingEntity {
                 const location = v.multiplyScalar(TILESIZE / 2).add(this.primarySurface.getCenterWorld2D())
                 return PathTarget.fromBuilding(this, location)
             })
-    }
-
-    addToScene(worldPosition: Vector2, headingRad: number) {
-        if (worldPosition) {
-            this.sceneEntity.position.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPosition))
-        }
-        if (headingRad !== undefined && headingRad !== null) {
-            this.sceneEntity.rotation.y = headingRad
-        }
-        this.sceneEntity.visible = this.surfaces.some((s) => s.discovered)
-        this.worldMgr.sceneMgr.addMeshGroup(this.sceneEntity)
     }
 
     isTrainingSite(training: RaiderTraining): boolean {

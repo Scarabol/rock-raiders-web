@@ -9,6 +9,7 @@ import { Raider } from '../raider/Raider'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
+import { PositionComponent } from '../../component/PositionComponent'
 
 type TeleportEntity = Raider | VehicleEntity
 
@@ -27,7 +28,13 @@ export class Teleport {
 
     teleportIn(entity: TeleportEntity, listing: TeleportEntity[], beamListing: TeleportEntity[], worldPosition: Vector2, heading: number, walkOutPos: Vector2) {
         this.operating = true
-        entity.addToScene(worldPosition, heading)
+        const floorPosition = entity.worldMgr.sceneMgr.getFloorPosition(worldPosition)
+        const surface = entity.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(floorPosition)
+        entity.sceneEntity.position.copy(floorPosition)
+        entity.worldMgr.ecs.addComponent(entity.entity, new PositionComponent(floorPosition, surface))
+        entity.sceneEntity.rotation.y = heading
+        entity.sceneEntity.visible = surface.discovered
+        entity.worldMgr.sceneMgr.addMeshGroup(entity.sceneEntity)
         entity.worldMgr.sceneMgr.addPositionalAudio(entity.sceneEntity, Sample[Sample.SND_teleport], true, false)
         entity.sceneEntity.setAnimation(RaiderActivity.TeleportIn, () => {
             entity.sceneEntity.setAnimation(entity.getDefaultAnimationName())

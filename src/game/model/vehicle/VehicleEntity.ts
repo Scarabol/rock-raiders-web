@@ -1,4 +1,4 @@
-import { PositionalAudio, Vector2 } from 'three'
+import { PositionalAudio } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
@@ -103,17 +103,6 @@ export class VehicleEntity implements Updatable {
         this.sceneEntity.dispose()
     }
 
-    addToScene(worldPosition: Vector2, headingRad: number) {
-        if (worldPosition) {
-            this.sceneEntity.position.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPosition))
-        }
-        if (headingRad !== undefined && headingRad !== null) {
-            this.sceneEntity.rotation.y = headingRad
-        }
-        this.sceneEntity.visible = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).discovered
-        this.worldMgr.sceneMgr.addMeshGroup(this.sceneEntity)
-    }
-
     /*
     Movement
      */
@@ -145,6 +134,7 @@ export class VehicleEntity implements Updatable {
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.sceneEntity.position.add(step.vec)
+            this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position.copy(this.sceneEntity.position)
             this.sceneEntity.setAnimation(AnimEntityActivity.Route)
             const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
             this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
@@ -306,7 +296,11 @@ export class VehicleEntity implements Updatable {
         if (!this.driver) return
         this.sceneEntity.removeDriver()
         this.driver.vehicle = null
-        this.driver.addToScene(this.sceneEntity.position2D, this.sceneEntity.getHeading())
+        this.driver.sceneEntity.position.copy(this.driver.worldMgr.sceneMgr.getFloorPosition(this.sceneEntity.position2D))
+        this.driver.worldMgr.ecs.getComponents(this.driver.entity).get(PositionComponent).position.copy(this.driver.sceneEntity.position)
+        this.driver.sceneEntity.rotation.y = this.sceneEntity.getHeading()
+        this.driver.sceneEntity.visible = this.driver.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.driver.sceneEntity.position).discovered
+        this.driver.worldMgr.sceneMgr.addMeshGroup(this.driver.sceneEntity)
         this.driver.sceneEntity.setAnimation(this.driver.getDefaultAnimationName())
         this.driver = null
         this.engineSound = resetAudioSafe(this.engineSound)

@@ -14,6 +14,7 @@ import { EventBus } from '../../../event/EventBus'
 import { DynamiteExplosionEvent } from '../../../event/WorldEvents'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
+import { PositionComponent } from '../../component/PositionComponent'
 
 export class CarryJob extends AbstractJob implements SupervisedJob {
     fulfiller: JobFulfiller = null
@@ -91,6 +92,7 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
         this.fulfiller.sceneEntity.headTowards(this.target.targetLocation)
         this.fulfiller.dropCarried()
         this.carryItem.sceneEntity.position.copy(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
+        this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(PositionComponent).position.copy(this.carryItem.sceneEntity.position)
         this.target.gatherItem(this.carryItem)
         if (this.carryItem.entityType === EntityType.DYNAMITE) this.igniteDynamite()
         else if (this.carryItem.entityType === EntityType.ELECTRIC_FENCE) this.placeFence()
