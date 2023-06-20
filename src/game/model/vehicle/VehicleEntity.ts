@@ -319,7 +319,7 @@ export class VehicleEntity implements Updatable {
     getRequiredTraining(): RaiderTraining {
         if (this.stats.CrossLand && !this.stats.CrossLava && !this.stats.CrossWater) {
             return RaiderTraining.DRIVER
-        } else if (this.stats.CrossWater) {
+        } else if (!this.stats.CrossLand && !this.stats.CrossLava && this.stats.CrossWater) {
             return RaiderTraining.SAILOR
         }
         return RaiderTraining.PILOT
