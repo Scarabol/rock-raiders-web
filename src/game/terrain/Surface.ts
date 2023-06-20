@@ -117,6 +117,11 @@ export class Surface {
     onDrillComplete(drillPosition: Vector2): boolean {
         if (this.seamLevel > 0) {
             this.seamLevel--
+            for (let x = -1; x <= 1; x++) {
+                for (let y = -1; y <= 1; y++) {
+                    this.terrain.getSurface(this.x + x, this.y + y).updateMesh(true)
+                }
+            }
             const vec = new Vector2().copy(drillPosition).sub(this.getCenterWorld2D())
                 .multiplyScalar(0.3 + Math.randomInclusive(3) / 10)
                 .rotateAround(new Vector2(0, 0), degToRad(-10 + Math.randomInclusive(20)))
@@ -253,14 +258,18 @@ export class Surface {
 
     private getVertex(x: number, y: number, s1: Surface, s2: Surface, s3: Surface): SurfaceVertex {
         const high = (!this.discovered || (!this.surfaceType.floor || !this.neighbors.some((s) => s.isGround())) && ![s1, s2, s3].some((s) => s.isGround()))
+        const minSeamProgress = Math.min(this.getSeamProgress(), s1.getSeamProgress(), s2.getSeamProgress(), s3.getSeamProgress())
         const offset = this.terrain.heightOffset[x][y]
-        return new SurfaceVertex(high, offset)
+        return new SurfaceVertex(high, minSeamProgress, offset)
+    }
+
+    private getSeamProgress(): number {
+        return this.seamLevel / SURFACE_NUM_SEAM_LEVELS || 1
     }
 
     private updateWallType(topLeft: SurfaceVertex, topRight: SurfaceVertex, bottomRight: SurfaceVertex, bottomLeft: SurfaceVertex) {
-        let wallType = topLeft.highNum + topRight.highNum + bottomRight.highNum + bottomLeft.highNum
-        if (wallType === WALL_TYPE.WALL && topLeft.highNum === bottomRight.highNum) wallType = WALL_TYPE.WEIRD_CREVICE
-        if (this.wallType === wallType) return
+        let wallType = Number(topLeft.high) + Number(topRight.high) + Number(bottomRight.high) + Number(bottomLeft.high)
+        if (wallType === WALL_TYPE.WALL && topLeft.high === bottomRight.high) wallType = WALL_TYPE.WEIRD_CREVICE
         this.wallType = wallType
         this.mesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
         if (this.wallType !== WALL_TYPE.WALL) this.cancelReinforceJobs()

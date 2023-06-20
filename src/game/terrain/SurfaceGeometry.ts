@@ -120,8 +120,8 @@ export class SurfaceVertex {
     highNum: number
     height: number
 
-    constructor(readonly high: boolean, readonly offset: number) {
-        this.highNum = Number(this.high)
+    constructor(readonly high: boolean, seamProgress: number, readonly offset: number) {
+        this.highNum = Number(this.high) * seamProgress
         this.height = this.highNum + this.offset
     }
 }
