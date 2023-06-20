@@ -5,6 +5,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { DynamiteExplosionEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { HealthBarComponent } from '../component/HealthBarComponent'
 
 export class DamageSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
@@ -29,14 +30,12 @@ export class DamageSystem extends AbstractGameSystem {
                 const position = positionComponent.getPosition2D()
                 this.dynamiteExplosions.forEach((explosion) => {
                     const distanceSq = position.distanceToSquared(explosion.position)
-                    console.log(`distanceSq: ${distanceSq}`)
-                    const inRangeSq = this.dynamiteRadiusSq - distanceSq
+                    const inRangeSq = 1 - distanceSq / this.dynamiteRadiusSq
                     if (inRangeSq > 0) {
-                        console.log(`in range: ${inRangeSq}`)
                         const healthComponent = components.get(HealthComponent)
-                        const dmg = this.dynamiteMaxDamage / inRangeSq
-                        console.log(`Applying ${dmg} damage from dynamite to entity ${entity}`)
-                        healthComponent.health -= dmg
+                        healthComponent.health -= this.dynamiteMaxDamage * Math.pow(inRangeSq, 2)
+                        const healthBarComponent = components.get(HealthBarComponent)
+                        healthBarComponent.setStatus(healthComponent.health / healthComponent.maxHealth)
                         // TODO if dead teleport up (raider, building, vehicle) or move into wall (monster)
                     }
                 })

@@ -1,27 +1,44 @@
 import { AbstractGameComponent } from '../ECS'
 import { HealthBarSprite } from '../../scene/HealthBarSprite'
 import { Object3D } from 'three'
+import { GameState } from '../model/GameState'
 
 export class HealthBarComponent extends AbstractGameComponent {
     sprite: HealthBarSprite = null
-    hideAfterChangeTimeout: number = 0
     actualStatus: number = 1
     targetStatus: number = 1
 
-    // TODO Replace with info element, see ObjInfo in cfg
+    // TODO For raiders replace with info element, see ObjInfo in cfg
 
     constructor(readonly yOffset: number, readonly scale: number, readonly parent: Object3D, readonly canBeShownPermanently: boolean) {
         super()
         this.sprite = new HealthBarSprite(this.yOffset, this.scale)
-        // this.sprite.visible = !entity.worldMgr.healthBarSpriteSystem.showOnlyOnChange && this.canBeShownPermanently
-        // if (this.parent) {
-        //     this.parent.add(this.sprite) // XXX add to animated scene entity after raider is made of components
-        // } else {
-        //     entity.getComponent(AnimatedSceneEntityComponent).addChild(this.sprite)
-        // }
-        // entity.getComponent(HealthComponent).addOnChangeListener((health) => {
-        //     this.targetStatus = health
-        //     entity.worldMgr.healthBarSpriteSystem.markDirtyStatus(this)
-        // })
+        this.sprite.visible = GameState.showObjInfo && this.canBeShownPermanently
+        this.parent.add(this.sprite)
+    }
+
+    setStatus(status: number) {
+        this.targetStatus = Math.max(0, Math.min(1, status))
+        if (this.targetStatus !== this.actualStatus) {
+            this.sprite.visible = true
+            this.updateStatus()
+        }
+    }
+
+    private updateStatus() {
+        if (this.targetStatus === this.actualStatus) {
+            if (!(GameState.showObjInfo && this.canBeShownPermanently)) {
+                setTimeout(() => { // TODO replace with synchronized update from main loop
+                    this.sprite.visible = false
+                }, 3000)
+            }
+            return
+        }
+        setTimeout(() => { // TODO replace with synchronized update from main loop
+            const delta = this.targetStatus - this.actualStatus
+            this.actualStatus += Math.sign(delta) * Math.min(Math.abs(delta), 0.03)
+            this.sprite.setStatus(this.actualStatus)
+            this.updateStatus()
+        }, 30)
     }
 }

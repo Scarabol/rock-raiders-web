@@ -20,6 +20,7 @@ export class GameState {
     static hiddenObjectsFound: number = 0
     static alarmMode: boolean = false
     static objectiveShowing: number = 1
+    static showObjInfo: boolean = false
 
     static reset() {
         this.numCrystal = 0

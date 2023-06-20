@@ -61,6 +61,6 @@ export class MonsterSpawner {
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
         worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
         worldMgr.ecs.addComponent(entity, new HealthComponent())
-        worldMgr.ecs.addComponent(entity, new HealthBarComponent(24, 10, null, false))
+        worldMgr.ecs.addComponent(entity, new HealthBarComponent(24, 10, sceneEntity, false))
     }
 }

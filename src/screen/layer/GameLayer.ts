@@ -21,6 +21,7 @@ import { CursorTarget, SelectionRaycaster } from '../../scene/SelectionRaycaster
 import { MaterialEntity } from '../../game/model/material/MaterialEntity'
 import { BuildPlacementMarker } from '../../game/model/building/BuildPlacementMarker'
 import { WorldManager } from '../../game/WorldManager'
+import { GameState } from '../../game/model/GameState'
 
 export class GameLayer extends ScreenLayer {
     worldMgr: WorldManager
@@ -191,6 +192,9 @@ export class GameLayer extends ScreenLayer {
                 }
                 EventBus.publishEvent(new DeselectAll())
                 return true
+            } else if (event.key === ' ') {
+                GameState.showObjInfo = !GameState.showObjInfo
+                // TODO show hide objInfo components
             }
         }
         return false
