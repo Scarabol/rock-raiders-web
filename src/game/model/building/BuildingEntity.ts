@@ -150,6 +150,7 @@ export class BuildingEntity {
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
         this.turnEnergyOff()
+        this.sceneEntity.setAnimation(BuildingActivity.Stand)
         this.powerOffSprite.setEnabled(false)
         for (let c = 0; c < this.stats.CostOre; c++) {
             MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, this.primarySurface.getRandomPosition())
