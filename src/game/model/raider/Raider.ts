@@ -314,10 +314,14 @@ export class Raider implements Updatable {
                 this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SND_dig], true, true)
             }
         }
-        this.sceneEntity.setAnimation(workActivity, () => {
-            this.completeJob()
-        }, this.job.getExpectedTimeLeft())
-        this.job?.addProgress(this, elapsedMs)
+        if (workActivity === RaiderActivity.Drill) {
+            this.sceneEntity.setAnimation(workActivity)
+            this.job?.addProgress(this, elapsedMs)
+        } else {
+            this.sceneEntity.setAnimation(workActivity, () => {
+                this.completeJob()
+            }, this.job.getExpectedTimeLeft())
+        }
     }
 
     private completeJob() {
