@@ -24,9 +24,9 @@ export class MovementSystem extends AbstractGameSystem {
                 const step = targetWorld.clone().sub(positionComponent.position)
                 const entitySpeed = statsComponent.getSpeed(positionComponent.surface.isPath(), positionComponent.surface.hasRubble()) * elapsedMs / NATIVE_UPDATE_INTERVAL
                 const entitySpeedSq = entitySpeed * entitySpeed * entitySpeed
+                const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                 if (targetWorld.distanceToSquared(positionComponent.position) <= entitySpeedSq + worldTargetComponent.radiusSq) {
                     this.ecs.removeComponent(entity, WorldTargetComponent)
-                    const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
                         this.ecs.worldMgr.entityMgr.removeEntity(entity, EntityType.SMALL_SPIDER) // TODO remove other entity types from entity manager too
                         this.ecs.removeEntity(entity)
@@ -42,6 +42,7 @@ export class MovementSystem extends AbstractGameSystem {
                     positionComponent.position.add(step)
                     positionComponent.surface = terrain.getSurfaceFromWorld(positionComponent.position)
                     positionComponent.markDirty()
+                    sceneEntityComponent.sceneEntity.setAnimation(AnimEntityActivity.Route)
                 } else {
                     console.warn(`Entity ${entity} speed (${entitySpeed}) is zero or less`)
                 }

@@ -12,7 +12,7 @@ export class SceneEntityPositionSystem extends AbstractGameSystem { // TODO repl
                 const components = this.ecs.getComponents(entity)
                 const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                 const positionComponent = components.get(PositionComponent)
-                sceneEntityComponent.move(positionComponent.position, positionComponent.floorOffset)
+                sceneEntityComponent.set(positionComponent.position, positionComponent.floorOffset)
             } catch (e) {
                 console.error(e)
             }
