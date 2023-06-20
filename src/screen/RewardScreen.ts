@@ -92,6 +92,9 @@ export class RewardScreen {
         })
         this.btnLayer.addEventListener('pointerdown', (event: PointerEvent): boolean => {
             if (event.button === MOUSE_BUTTON.MAIN) {
+                const [canvasX, canvasY] = this.btnLayer.transformCoords(event.clientX, event.clientY)
+                this.btnSave.setHovered(this.btnSave.isHovered(canvasX, canvasY))
+                this.btnAdvance.setHovered(this.btnAdvance.isHovered(canvasX, canvasY))
                 this.btnSave.onMouseDown()
                 this.btnAdvance.onMouseDown()
                 if (this.btnSave.needsRedraw || this.btnAdvance.needsRedraw) {
