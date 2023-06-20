@@ -275,7 +275,12 @@ export class VehicleEntity implements Updatable {
 
     dropCarried() {
         if (this.carriedItems.size < 1) return
-        this.sceneEntity.dropAllEntities()
+        this.sceneEntity.removeAllCarried()
+        this.carriedItems.forEach((carried) => {
+            const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.sceneEntity.position2D)
+            carried.sceneEntity.position.copy(floorPosition)
+            carried.worldMgr.sceneMgr.addMeshGroup(carried.sceneEntity)
+        })
         this.carriedItems.clear()
     }
 

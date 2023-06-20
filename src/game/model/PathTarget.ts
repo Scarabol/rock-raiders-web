@@ -59,7 +59,12 @@ export class PathTarget {
                     if (this.building.entityType === EntityType.POWER_STATION) this.building.worldMgr.sceneMgr.addPositionalAudio(this.building.sceneEntity, Sample[Sample.SND_Refine], true, false)
                     this.building.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
                         this.building.sceneEntity.setAnimation(this.building.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
-                        this.building.sceneEntity.dropAllEntities()
+                        this.building.sceneEntity.removeAllCarried()
+                        this.building.carriedItems.forEach((carried) => {
+                            const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.sceneEntity.position2D)
+                            carried.sceneEntity.position.copy(floorPosition)
+                            carried.worldMgr.sceneMgr.addMeshGroup(carried.sceneEntity)
+                        })
                         this.building.depositItems()
                     })
                 }

@@ -193,10 +193,10 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         entity.position.set(0, 0, 0)
     }
 
-    dropAllEntities(): void {
-        const position = this.position.clone()
+    removeAllCarried(): void {
         this.carriedByIndex.forEach((item, index) => {
             const carryJoint = this.carryJoints[index]
+            const position = this.position.clone()
             if (carryJoint) {
                 carryJoint.remove(item)
                 carryJoint.getWorldPosition(position)

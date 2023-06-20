@@ -264,7 +264,10 @@ export class Raider implements Updatable {
 
     dropCarried(): void {
         if (!this.carries) return
-        this.sceneEntity.dropAllEntities()
+        this.sceneEntity.removeAllCarried()
+        const floorPosition = this.carries.worldMgr.sceneMgr.getFloorPosition(this.carries.sceneEntity.position2D)
+        this.carries.sceneEntity.position.copy(floorPosition)
+        this.carries.worldMgr.sceneMgr.addMeshGroup(this.carries.sceneEntity)
         this.carries = null
     }
 
