@@ -13,6 +13,6 @@ export class BeamUpComponent extends AbstractGameComponent {
         super()
         EventBus.publishEvent(new DeselectAll())
         const grp = this.entity.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.MiniTeleportUp, this.entity.sceneEntity.position, this.entity.sceneEntity.getHeading())
-        this.entity.worldMgr.sceneMgr.addPositionalAudio(grp, Sample[Sample.SND_TeleUp], true)
+        this.entity.worldMgr.sceneMgr.addPositionalAudio(grp, Sample[Sample.SND_TeleUp], true, false)
     }
 }

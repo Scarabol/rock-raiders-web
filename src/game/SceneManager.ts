@@ -241,7 +241,7 @@ export class SceneManager implements Updatable {
         return group
     }
 
-    addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean = false): PositionalAudio {
+    addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean): PositionalAudio {
         const audio = new PositionalAudio(this.audioListener)
         audio.setRefDistance(TILESIZE * 2)
         audio.setVolume(SaveGameManager.getSfxVolume())

@@ -507,7 +507,7 @@ export class Surface {
     }
 
     playPositionalSample(sample: Sample): PositionalAudio {
-        return this.worldMgr.sceneMgr.addPositionalAudio(this.mesh, Sample[sample], true)
+        return this.worldMgr.sceneMgr.addPositionalAudio(this.mesh, Sample[sample], true, false)
     }
 
     isBlockedByVehicle() {
