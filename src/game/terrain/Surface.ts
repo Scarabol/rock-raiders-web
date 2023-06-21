@@ -2,7 +2,7 @@ import { MathUtils, PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
 import { Sample } from '../../audio/Sample'
 import { SoundManager } from '../../audio/SoundManager'
 import { EventBus } from '../../event/EventBus'
-import { SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
+import { DeselectAll, SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, OreFoundEvent } from '../../event/WorldEvents'
 import { CrystalFoundEvent } from '../../event/WorldLocationEvent'
 import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, SURFACE_NUM_SEAM_LEVELS, TILESIZE } from '../../params'
@@ -157,6 +157,7 @@ export class Surface {
         this.needsMeshUpdate = true
         const caveFound = this.discover()
         if (caveFound) EventBus.publishEvent(new CavernDiscovered())
+        if (this.selected) EventBus.publishEvent(new DeselectAll())
         // drop contained ores and crystals
         this.dropContainedMaterials(droppedOre, droppedCrystals)
         // check for unsupported neighbors
