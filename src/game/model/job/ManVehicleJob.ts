@@ -15,7 +15,10 @@ export class ManVehicleJob extends RaiderJob implements SupervisedJob {
         super()
         this.vehicle = vehicle
         this.vehicle.callManJob = this
-        this.workplace = PathTarget.fromLocation(this.vehicle.sceneEntity.position2D, this.vehicle.sceneEntity.getRadiusSquare() / 4)
+        const surface = this.vehicle.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.vehicle.sceneEntity.position)
+        const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
+        const hopOnSpot = walkableSurface.getRandomPosition() // XXX find spot close to the possibly non-walkable actual surface
+        this.workplace = PathTarget.fromLocation(hopOnSpot, this.vehicle.sceneEntity.getRadiusSquare() / 4)
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {

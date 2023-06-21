@@ -300,7 +300,10 @@ export class VehicleEntity implements Updatable {
         if (!this.driver) return
         this.sceneEntity.removeDriver()
         this.driver.vehicle = null
-        this.driver.sceneEntity.position.copy(this.driver.worldMgr.sceneMgr.getFloorPosition(this.sceneEntity.position2D))
+        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
+        const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
+        const hopOffSpot = walkableSurface.getRandomPosition() // XXX find spot close to the possibly non-walkable actual surface
+        this.driver.sceneEntity.position.copy(this.driver.worldMgr.sceneMgr.getFloorPosition(hopOffSpot))
         this.driver.worldMgr.ecs.getComponents(this.driver.entity).get(PositionComponent).position.copy(this.driver.sceneEntity.position)
         this.driver.sceneEntity.rotation.y = this.sceneEntity.getHeading()
         this.driver.sceneEntity.visible = this.driver.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.driver.sceneEntity.position).discovered
