@@ -57,7 +57,10 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     }
 
     setAnimation(animationName: string, onAnimationDone?: () => unknown, durationTimeoutMs: number = 0) {
-        if (this.currentAnimation === animationName) return
+        if (this.currentAnimation === animationName) {
+            if (onAnimationDone) onAnimationDone() // TODO is this safe? Should we wait for durationTimeout here?
+            return
+        }
         this.currentAnimation = animationName
         if (this.animationData.length > 0) this.removeAll()
         this.animationData.forEach((animEntityData) => {
