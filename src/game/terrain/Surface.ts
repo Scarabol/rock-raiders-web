@@ -149,6 +149,7 @@ export class Surface {
         }
         this.cancelJobs()
         this.terrain.removeFallInOrigin(this)
+        this.reinforced = false
         const droppedOre = this.containedOres + (this.surfaceType === SurfaceType.ORE_SEAM ? this.seamLevel : 0)
         const droppedCrystals = this.containedCrystals + (this.surfaceType === SurfaceType.CRYSTAL_SEAM ? this.seamLevel : 0)
         this.setSurfaceType(SurfaceType.RUBBLE4)
