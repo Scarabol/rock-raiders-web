@@ -116,11 +116,16 @@ export class ResourceManager extends ResourceCache {
     }
 
     static getAnimatedData(aeName: string): AnimEntityData {
+        const animData = this.getAnimatedDataOrNull(aeName)
+        if (!animData) throw new Error(`Could not get animation data for: ${aeName}`)
+        return animData
+    }
+
+    static getAnimatedDataOrNull(aeName: string): AnimEntityData {
         return this.aeCache.getOrUpdate(aeName.toLowerCase(), () => {
             const aeFilename = `${aeName}/${aeName.split('/').last()}.ae`
             const cfgRoot = ResourceManager.getResource(aeFilename)
-            if (!cfgRoot) throw new Error(`Could not get animation data for: ${aeFilename}`)
-            return new AnimEntityParser(cfgRoot, `${aeName}/`).parse()
+            return !!cfgRoot ? new AnimEntityParser(cfgRoot, `${aeName}/`).parse() : null
         })
     }
 

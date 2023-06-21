@@ -12,9 +12,6 @@ export enum RaiderTraining {
 }
 
 export class RaiderTrainings {
-    constructor() {
-    }
-
     static values: RaiderTraining[] = [
         RaiderTraining.DRIVER,
         RaiderTraining.ENGINEER,

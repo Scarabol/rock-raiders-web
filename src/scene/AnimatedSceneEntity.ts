@@ -136,14 +136,13 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                 const upgradeMesh = new AnimatedSceneEntity()
                 upgradeMesh.name = upgrade.lNameType
                 const upgradeFilename = ResourceManager.configuration.upgradeTypesCfg.get(upgrade.lNameType) || upgrade.lUpgradeFilepath
-                try {
-                    const upgradeAnimData = ResourceManager.getAnimatedData(upgradeFilename)
+                const upgradeAnimData = ResourceManager.getAnimatedDataOrNull(upgradeFilename)
+                if (upgradeAnimData) {
                     upgradeMesh.addAnimated(upgradeAnimData)
-                } catch (e) {
-                    if (!DEV_MODE) console.warn(e)
+                } else {
                     const mesh = ResourceManager.getLwoModel(upgradeFilename)
                     if (!mesh) {
-                        console.error(`Could not get mesh for ${upgrade.lNameType}`)
+                        console.error(`Could not get upgrade mesh for ${upgrade.lNameType}`)
                     } else {
                         mesh.name = upgrade.lNameType
                         upgradeMesh.animationParent.add(mesh)

@@ -33,7 +33,7 @@ export class LoadSaveLayer extends MainMenuLayer {
         const btn = new MainMenuLoadSaveButton(this, index, x, y, loading)
         btn.onHoverChange = () => {
             const percent = SaveGameManager.getOverallGameProgress(index)
-            if (btn.hover) {
+            if (btn.hover && percent) {
                 const slotText = this.menuCfg.saveText.slot
                 this.loadSaveTextWindow.setSecondLine(slotText.replace('%d%', String(percent)))
             } else {

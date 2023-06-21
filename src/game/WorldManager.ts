@@ -5,7 +5,7 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { GameResultEvent, MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged, ToggleAlarmEvent } from '../event/WorldEvents'
 import { NerpRunner } from '../nerp/NerpRunner'
-import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
+import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, DEV_MODE, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
 import { EntityType } from './model/EntityType'
@@ -90,7 +90,7 @@ export class WorldManager {
         this.jobSupervisor.reset()
         GameState.changeNeededCrystals(levelConf.reward?.quota?.crystals || 0)
         GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
-        this.oxygenSystem.setLevelOxygenRate(levelConf.oxygenRate)
+        this.oxygenSystem.setLevelOxygenRate(DEV_MODE ? 0 : levelConf.oxygenRate)
         this.elapsedGameTimeMs = 0
         this.requestedRaiders = 0
         this.spawnRaiderTimer = 0

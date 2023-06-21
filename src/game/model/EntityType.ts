@@ -50,6 +50,8 @@ export enum EntityType {
     TV_CAMERA,
 }
 
+export type VehicleEntityType = EntityType.HOVERBOARD | EntityType.SMALL_DIGGER | EntityType.SMALL_TRUCK | EntityType.SMALL_CAT | EntityType.SMALL_MLP | EntityType.SMALL_HELI | EntityType.BULLDOZER | EntityType.WALKER_DIGGER | EntityType.LARGE_MLP | EntityType.LARGE_DIGGER | EntityType.LARGE_CAT
+
 export function getEntityTypeByName(type: string): EntityType {
     if ('TVCamera'.equalsIgnoreCase(type)) {
         return EntityType.TV_CAMERA

@@ -338,7 +338,9 @@ export class BuildingEntity {
     }
 
     isTrainingSite(training: RaiderTraining): boolean {
-        return this.isPowered() && this.stats[RaiderTrainings.toStatsProperty(training)]?.[this.level]
+        const statsProperty = RaiderTrainings.toStatsProperty(training)
+        const stat: boolean[] = this.stats[statsProperty]
+        return this.isPowered() && stat?.[this.level]
     }
 
     canTeleportIn(entityType: EntityType): boolean {

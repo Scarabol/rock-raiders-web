@@ -1,11 +1,11 @@
-import { MathUtils, Vector2 } from 'three'
+import { MathUtils, Vector2, Vector3 } from 'three'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { EventBus } from '../event/EventBus'
 import { RaidersAmountChangedEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { BuildingType } from './model/building/BuildingType'
-import { EntityType, getEntityTypeByName } from './model/EntityType'
+import { EntityType, getEntityTypeByName, VehicleEntityType } from './model/EntityType'
 import { Raider } from './model/raider/Raider'
 import { RaiderTrainings } from './model/raider/RaiderTraining'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
@@ -19,6 +19,7 @@ import { AnimEntityActivity, RaiderActivity } from './model/anim/AnimationActivi
 import { SceneManager } from './SceneManager'
 import { EntityManager } from './EntityManager'
 import { PositionComponent } from './component/PositionComponent'
+import { Surface } from './terrain/Surface'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -139,20 +140,7 @@ export class ObjectListLoader {
             case EntityType.LARGE_MLP:
             case EntityType.LARGE_DIGGER:
             case EntityType.LARGE_CAT:
-                const vehicle = VehicleFactory.createVehicleFromType(entityType, worldMgr)
-                vehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                const vehicleSceneSelection = worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats))
-                worldMgr.ecs.addComponent(vehicle.entity, new SelectionFrameComponent(vehicleSceneSelection.pickSphere, vehicle.stats))
-                vehicle.sceneEntity.position.copy(floorPosition)
-                worldMgr.ecs.addComponent(vehicle.entity, new PositionComponent(floorPosition, surface))
-                vehicle.sceneEntity.rotation.y = headingRad + Math.PI
-                vehicle.sceneEntity.visible = surface.discovered
-                sceneMgr.addMeshGroup(vehicle.sceneEntity)
-                if (vehicle.sceneEntity.visible) {
-                    entityMgr.vehicles.push(vehicle)
-                } else {
-                    entityMgr.vehiclesUndiscovered.push(vehicle)
-                }
+                const vehicle = this.spawnVehicle(entityType, worldMgr, floorPosition, surface, headingRad, sceneMgr, entityMgr)
                 vehicleByKey.set(olKey, vehicle)
                 entityMgr.recordedEntities.push(vehicle.entity)
                 break
@@ -160,5 +148,23 @@ export class ObjectListLoader {
                 console.warn(`Object type ${olEntry.type} not yet implemented`)
                 break
         }
+    }
+
+    private static spawnVehicle(entityType: VehicleEntityType, worldMgr: WorldManager, floorPosition: Vector3, surface: Surface, headingRad: number, sceneMgr: SceneManager, entityMgr: EntityManager) {
+        const vehicle = VehicleFactory.createVehicleFromType(entityType, worldMgr)
+        vehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        const vehicleSceneSelection = worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats))
+        worldMgr.ecs.addComponent(vehicle.entity, new SelectionFrameComponent(vehicleSceneSelection.pickSphere, vehicle.stats))
+        vehicle.sceneEntity.position.copy(floorPosition)
+        worldMgr.ecs.addComponent(vehicle.entity, new PositionComponent(floorPosition, surface))
+        vehicle.sceneEntity.rotation.y = headingRad + Math.PI
+        vehicle.sceneEntity.visible = surface.discovered
+        sceneMgr.addMeshGroup(vehicle.sceneEntity)
+        if (vehicle.sceneEntity.visible) {
+            entityMgr.vehicles.push(vehicle)
+        } else {
+            entityMgr.vehiclesUndiscovered.push(vehicle)
+        }
+        return vehicle
     }
 }
