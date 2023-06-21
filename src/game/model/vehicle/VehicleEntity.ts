@@ -72,11 +72,10 @@ export class VehicleEntity implements Updatable {
         this.dropDriver()
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
-        for (let c = 0; c < this.stats.CostOre; c++) {
-            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, surface.getRandomPosition())
-        }
-        for (let c = 0; c < this.stats.CostCrystal; c++) {
-            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, surface.getRandomPosition())
+        const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
+        if (spawnSurface) {
+            for (let c = 0; c < this.stats.CostOre; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
+            for (let c = 0; c < this.stats.CostCrystal; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, spawnSurface.getRandomPosition())
         }
         this.worldMgr.entityMgr.vehicles.remove(this)
         this.worldMgr.entityMgr.vehiclesInBeam.add(this)
