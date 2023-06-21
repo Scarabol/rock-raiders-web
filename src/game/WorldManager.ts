@@ -168,7 +168,7 @@ export class WorldManager {
                             GameState.numCrystal -= stats.CostCrystal
                             EventBus.publishEvent(new MaterialAmountChanged())
                             const vehicle = VehicleFactory.createVehicleFromType(vType, this)
-                            const worldPosition = teleportBuilding.primaryPathSurface.getCenterWorld2D()
+                            const worldPosition = (teleportBuilding.waterPathSurface ?? teleportBuilding.primaryPathSurface).getCenterWorld2D()
                             const heading = teleportBuilding.sceneEntity.getHeading()
                             teleportBuilding.teleport.teleportIn(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam, worldPosition, heading, null)
                             return true
