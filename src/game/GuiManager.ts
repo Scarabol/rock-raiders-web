@@ -119,7 +119,7 @@ export class GuiManager {
             return true
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_DROP, () => {
-            entityMgr.selection.raiders.forEach((r) => r.dropCarried())
+            entityMgr.selection.raiders.forEach((r) => r.stopJob())
         })
         EventBus.registerEventListener(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
             sceneMgr.setBuildModeSelection(event.entityType)
@@ -149,7 +149,7 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_UNLOAD, () => {
-            entityMgr.selection.vehicles.forEach((v) => v.dropCarried())
+            entityMgr.selection.vehicles.forEach((v) => v.stopJob())
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {
             EventBus.publishEvent(new UpdatePriorities(event.priorityList))
