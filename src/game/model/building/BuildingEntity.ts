@@ -289,6 +289,7 @@ export class BuildingEntity {
             const pathOffset = this.buildingType.waterPathSurface.clone().multiplyScalar(TILESIZE)
                 .rotateAround(new Vector2(0, 0), -radHeading).add(worldPosition)
             this.waterPathSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(pathOffset)
+            this.pathSurfaces.push(this.waterPathSurface)
         }
         this.surfaces.forEach((s) => s.setBuilding(this))
         const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity, {gameEntity: this.entity, entityType: this.entityType}, this.stats, this.stats.PickSphere / 4))
