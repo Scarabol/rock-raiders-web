@@ -689,7 +689,7 @@ export class DocksStats extends BuildingEntityStats {
     WaterTeleporter: boolean = true
     CrystalDrain: number = 1
     DamageCausesCallToArms: boolean = true
-    TrainSailor: boolean = true
+    TrainSailor: boolean[] = [true]
     EngineSound: string = 'SND_BuildingHum'
     ShowHealthBar: boolean = true
 }
