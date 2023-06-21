@@ -86,11 +86,12 @@ export class BuildPlacementMarker {
         const neededCrystals = stats?.CostCrystal || 0
         const neededBricks = stats?.CostRefinedOre || 0
         const neededOres = stats?.CostOre || 0
+        const needsAnything = neededCrystals || neededOres || neededBricks
         const primarySurface = this.buildingMarkerPrimary.surface
         const site = new BuildingSite(this.worldMgr, primarySurface, this.buildingMarkerSecondary.surface, this.powerPathMarkerPrimary.surface, this.powerPathMarkerSecondary.surface, this.buildingType)
         primarySurface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING)
         site.heading = this.heading
-        site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
+        if (needsAnything) site.neededByType.set(EntityType.BARRIER, barrierLocations.length)
         site.neededByType.set(EntityType.CRYSTAL, neededCrystals)
         if (this.worldMgr.entityMgr.hasBuilding(EntityType.ORE_REFINERY)) {
             site.neededByType.set(EntityType.BRICK, neededBricks)
@@ -98,14 +99,18 @@ export class BuildPlacementMarker {
             site.neededByType.set(EntityType.ORE, neededOres)
         }
         this.worldMgr.entityMgr.buildingSites.push(site)
-        const closestToolstation = this.worldMgr.entityMgr.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
-        if (closestToolstation) {
-            closestToolstation.spawnBarriers(barrierLocations, site)
-            closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)
-            closestToolstation.spawnMaterials(EntityType.BRICK, neededBricks)
-            closestToolstation.spawnMaterials(EntityType.ORE, neededOres)
-        }
         EventBus.publishEvent(new DeselectAll())
+        const closestToolstation = this.worldMgr.entityMgr.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
+        if (needsAnything) {
+            if (closestToolstation) {
+                closestToolstation.spawnBarriers(barrierLocations, site)
+                closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)
+                closestToolstation.spawnMaterials(EntityType.BRICK, neededBricks)
+                closestToolstation.spawnMaterials(EntityType.ORE, neededOres)
+            }
+        } else {
+            site.checkComplete()
+        }
         this.worldMgr.sceneMgr.setBuildModeSelection(null)
     }
 
