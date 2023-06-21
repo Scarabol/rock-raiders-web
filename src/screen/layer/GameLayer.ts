@@ -22,6 +22,7 @@ import { MaterialEntity } from '../../game/model/material/MaterialEntity'
 import { BuildPlacementMarker } from '../../game/model/building/BuildPlacementMarker'
 import { WorldManager } from '../../game/WorldManager'
 import { GameState } from '../../game/model/GameState'
+import { MoveJob } from '../../game/model/job/raider/MoveJob'
 
 export class GameLayer extends ScreenLayer {
     worldMgr: WorldManager
@@ -152,8 +153,11 @@ export class GameLayer extends ScreenLayer {
             } else if (this.entityMgr.selection.canClear() && cursorTarget.surface.hasRubble()) {
                 const clearJob = cursorTarget.surface.setupClearRubbleJob()
                 this.entityMgr.selection.assignSurfaceJob(clearJob)
-            } else if (this.entityMgr.selection.canMove() && cursorTarget.surface.isWalkable()) {
-                this.entityMgr.selection.assignMoveJob(cursorTarget.surface)
+            } else if (this.entityMgr.selection.canMove()) {
+                if (cursorTarget.surface.isWalkable()) {
+                    this.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(cursorTarget.surface.getRandomPosition())))
+                }
+                this.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(cursorTarget.surface.getCenterWorld2D()))) // TODO Move large vehicles to surface center only?
             }
             if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
         }

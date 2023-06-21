@@ -5,7 +5,6 @@ import { BuildingEntity } from './building/BuildingEntity'
 import { EntityType } from './EntityType'
 import { Job } from './job/Job'
 import { GetToolJob } from './job/raider/GetToolJob'
-import { MoveJob } from './job/raider/MoveJob'
 import { Surface } from '../terrain/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
 import { Raider } from './raider/Raider'
@@ -157,12 +156,6 @@ export class GameSelection {
                 v.setJob(job)
             } // do not auto upgrade vehicles
         })
-    }
-
-    assignMoveJob(surface: Surface) {
-        if (!surface) return
-        this.raiders.forEach((r) => r.setJob(new MoveJob(surface.getRandomPosition())))
-        this.vehicles.forEach((v) => v.setJob(new MoveJob(surface.getRandomPosition())))
     }
 
     assignCarryJob(material: MaterialEntity) {
