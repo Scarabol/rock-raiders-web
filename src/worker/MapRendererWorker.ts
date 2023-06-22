@@ -1,7 +1,7 @@
 import { TypedWorkerBackend, TypedWorkerThreaded } from './TypedWorker'
 import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
 import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
-import { MAP_PANEL_SURFACE_RECT_MARGIN, TILESIZE } from '../params'
+import { MAP_MAX_UPDATE_INTERVAL, MAP_PANEL_SURFACE_RECT_MARGIN, TILESIZE } from '../params'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { MapMarkerType } from '../game/component/MapMarkerComponent'
 
@@ -36,6 +36,9 @@ export class MapRendererWorker {
     entityContext: SpriteContext
     monsterContext: SpriteContext
     materialContext: SpriteContext
+    renderDefaultBlocked: NodeJS.Timeout
+    renderMonsterBlocked: NodeJS.Timeout
+    renderMaterialBlocked: NodeJS.Timeout
 
     constructor(readonly worker: TypedWorkerBackend<MapRendererMessage, MapRendererResponse>) {
         this.worker.onMessageFromFrontend = (msg) => this.processMessage(msg)
@@ -58,13 +61,22 @@ export class MapRendererWorker {
                 case WorkerMessageType.MAP_RENDER_ENTITIES:
                     switch (msg.mapMarkerType) {
                         case MapMarkerType.DEFAULT:
-                            this.redrawEntities(this.entityContext, '#e8d400', msg.offset, msg.entities, msg.surfaceRectSize, 4)
+                            if (!this.renderDefaultBlocked) {
+                                this.renderDefaultBlocked = setTimeout(() => this.renderDefaultBlocked = null, MAP_MAX_UPDATE_INTERVAL)
+                                this.redrawEntities(this.entityContext, '#e8d400', msg.offset, msg.entities, msg.surfaceRectSize, 4)
+                            }
                             break
                         case MapMarkerType.MONSTER:
-                            this.redrawEntities(this.monsterContext, '#f00', msg.offset, msg.entities, msg.surfaceRectSize, 3)
+                            if (!this.renderMonsterBlocked) {
+                                this.renderMonsterBlocked = setTimeout(() => this.renderMonsterBlocked = null, MAP_MAX_UPDATE_INTERVAL)
+                                this.redrawEntities(this.monsterContext, '#f00', msg.offset, msg.entities, msg.surfaceRectSize, 3)
+                            }
                             break
                         case MapMarkerType.MATERIAL:
-                            this.redrawEntities(this.materialContext, '#0f0', msg.offset, msg.entities, msg.surfaceRectSize, 2)
+                            if (!this.renderMaterialBlocked) {
+                                this.renderMaterialBlocked = setTimeout(() => this.renderMaterialBlocked = null, MAP_MAX_UPDATE_INTERVAL)
+                                this.redrawEntities(this.materialContext, '#0f0', msg.offset, msg.entities, msg.surfaceRectSize, 2)
+                            }
                             break
                     }
                     break

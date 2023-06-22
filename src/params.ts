@@ -45,6 +45,7 @@ export const AIR_LEVEL_LEVEL_LOW = 25 / 100 // % -> below 20 percent trigger low
 export const NERP_EXECUTION_INTERVAL = 2000
 export const CURSOR_MAX_HEIGHT = 32 // px; limited by browsers
 export const MAP_PANEL_SURFACE_RECT_MARGIN = 1
+export const MAP_MAX_UPDATE_INTERVAL = Math.round(1000 / 15)
 
 // native constants (do not change)
 
