@@ -36,7 +36,6 @@ export class DamageSystem extends AbstractGameSystem {
                         healthComponent.health -= this.dynamiteMaxDamage * Math.pow(inRangeSq, 2)
                         const healthBarComponent = components.get(HealthBarComponent)
                         healthBarComponent.setStatus(healthComponent.health / healthComponent.maxHealth)
-                        // TODO if dead teleport up (raider, building, vehicle) or move into wall (monster)
                     }
                 })
             } catch (e) {

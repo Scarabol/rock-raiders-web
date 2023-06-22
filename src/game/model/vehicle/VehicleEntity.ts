@@ -33,6 +33,7 @@ import { PositionComponent } from '../../component/PositionComponent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
+import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 
 export class VehicleEntity implements Updatable {
     readonly entityType: EntityType
@@ -65,6 +66,14 @@ export class VehicleEntity implements Updatable {
     }
 
     update(elapsedMs: number) {
+        const components = this.worldMgr.ecs.getComponents(this.entity)
+        const health = components.get(HealthComponent).health
+        if (health <= 0 && !components.has(BeamUpComponent)) {
+            EventBus.publishEvent(new GenericDeathEvent(this.sceneEntity.position))
+            this.beamUp()
+            return
+        }
+        if (!this.job || this.selected || this.isInBeam()) return
         this.work(elapsedMs)
     }
 
@@ -213,7 +222,6 @@ export class VehicleEntity implements Updatable {
     }
 
     private work(elapsedMs: number) {
-        if (!this.job || this.selected || this.isInBeam()) return
         if (this.job.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
             return

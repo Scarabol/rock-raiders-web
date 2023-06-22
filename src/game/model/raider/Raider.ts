@@ -29,6 +29,7 @@ import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntit
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { OxygenComponent } from '../../component/OxygenComponent'
+import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 
 export class Raider implements Updatable {
     readonly entityType: EntityType = EntityType.PILOT
@@ -65,6 +66,19 @@ export class Raider implements Updatable {
     }
 
     update(elapsedMs: number) {
+        const components = this.worldMgr.ecs.getComponents(this.entity)
+        const health = components.get(HealthComponent).health
+        if (health <= 0 && !components.has(BeamUpComponent)) {
+            EventBus.publishEvent(new GenericDeathEvent(this.sceneEntity.position))
+            this.beamUp()
+            return
+        }
+        if (this.slipped) return
+        if (this.vehicle) {
+            this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
+            return
+        }
+        if (!this.job || this.selected || this.isInBeam()) return
         this.work(elapsedMs)
     }
 
@@ -272,12 +286,6 @@ export class Raider implements Updatable {
     }
 
     private work(elapsedMs: number) {
-        if (this.slipped) return
-        if (this.vehicle) {
-            this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
-            return
-        }
-        if (!this.job || this.selected || this.isInBeam()) return
         if (this.job.jobState !== JobState.INCOMPLETE) {
             this.stopJob()
             return
