@@ -10,6 +10,8 @@ import { TextInfoMessage } from './TextInfoMessage'
 import { TextInfoMessageCfg } from './TextInfoMessageCfg'
 import { AIR_LEVEL_LEVEL_LOW, AIR_LEVEL_WARNING_STEP } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { GameResultEvent } from '../../event/WorldEvents'
+import { GameResultState } from '../../game/model/GameResult'
 
 export class MessagePanel extends Panel {
     private readonly maxAirLevelWidth = 236
@@ -19,11 +21,6 @@ export class MessagePanel extends Panel {
     messageTimeout: NodeJS.Timeout = null
 
     msgSpaceToContinue: TextInfoMessage
-    msgAirSupplyLow: TextInfoMessage
-    msgAirSupplyRunningOut: TextInfoMessage
-    msgGameCompleted: TextInfoMessage
-    msgManTrained: TextInfoMessage
-    msgUnitUpgraded: TextInfoMessage
 
     airLevelWidth: number = this.maxAirLevelWidth
     nextAirWarning: number = 1 - AIR_LEVEL_WARNING_STEP
@@ -41,27 +38,28 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.CAVERN_DISCOVERED, () => this.setMessage(cavernDiscovered))
         const oreFound = new TextInfoMessage(textInfoMessageConfig.textOreFound, this.img.width)
         this.registerEventListener(EventKey.ORE_FOUND, () => this.setMessage(oreFound))
-        this.msgAirSupplyLow = new TextInfoMessage(textInfoMessageConfig.textAirSupplyLow, this.img.width)
-        this.msgAirSupplyRunningOut = new TextInfoMessage(textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
-        this.msgGameCompleted = new TextInfoMessage(textInfoMessageConfig.textGameCompleted, this.img.width)
-        this.msgManTrained = new TextInfoMessage(textInfoMessageConfig.textManTrained, this.img.width)
-        this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(this.msgManTrained))
-        this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(this.msgUnitUpgraded))
-        this.msgUnitUpgraded = new TextInfoMessage(textInfoMessageConfig.textUnitUpgraded, this.img.width)
+        const msgAirSupplyLow = new TextInfoMessage(textInfoMessageConfig.textAirSupplyLow, this.img.width)
+        const msgAirSupplyRunningOut = new TextInfoMessage(textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
         this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, (event: AirLevelChanged) => {
-            if (event.airLevel > 0) {
-                const nextAirLevelWidth = Math.round(this.maxAirLevelWidth * event.airLevel)
-                if (this.airLevelWidth !== nextAirLevelWidth) {
-                    const nextPercent = nextAirLevelWidth / this.maxAirLevelWidth
-                    if (nextPercent < this.nextAirWarning) this.setMessage(nextPercent > AIR_LEVEL_LEVEL_LOW ? this.msgAirSupplyRunningOut : this.msgAirSupplyLow)
-                    this.nextAirWarning = Math.floor(nextAirLevelWidth / this.maxAirLevelWidth / AIR_LEVEL_WARNING_STEP) * AIR_LEVEL_WARNING_STEP
-                    this.airLevelWidth = nextAirLevelWidth
-                    this.notifyRedraw()
-                }
-            }
+            if (event.airLevel <= 0) return
+            const nextAirLevelWidth = Math.round(this.maxAirLevelWidth * event.airLevel)
+            if (this.airLevelWidth === nextAirLevelWidth) return
+            const nextPercent = nextAirLevelWidth / this.maxAirLevelWidth
+            if (nextPercent < this.nextAirWarning) this.setMessage(nextPercent > AIR_LEVEL_LEVEL_LOW ? msgAirSupplyRunningOut : msgAirSupplyLow)
+            this.nextAirWarning = Math.floor(nextAirLevelWidth / this.maxAirLevelWidth / AIR_LEVEL_WARNING_STEP) * AIR_LEVEL_WARNING_STEP
+            this.airLevelWidth = nextAirLevelWidth
+            this.notifyRedraw()
         })
+        const msgGameCompleted = new TextInfoMessage(textInfoMessageConfig.textGameCompleted, this.img.width)
+        this.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
+            if (event.result === GameResultState.COMPLETE) this.setMessage(msgGameCompleted)
+        })
+        const msgManTrained = new TextInfoMessage(textInfoMessageConfig.textManTrained, this.img.width)
+        this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(msgManTrained))
+        const msgUnitUpgraded = new TextInfoMessage(textInfoMessageConfig.textUnitUpgraded, this.img.width)
+        this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(msgUnitUpgraded))
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessage) => {
-            this.setMessage(new TextInfoMessage({text: event.text}, this.img.width))
+            this.setMessage(new TextInfoMessage({text: event.text}, this.img.width)) // XXX cache this?
         })
     }
 
