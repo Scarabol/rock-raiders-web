@@ -10,9 +10,6 @@ export class RadarPanel extends Panel {
     map: MapPanel
     fill: Panel
     overlay: Panel
-    btnToggle: Button
-    btnMap: Button
-    btnTagged: Button
 
     // TODO 3D view has no sound and can render scene camera offscreen
 
@@ -26,20 +23,24 @@ export class RadarPanel extends Panel {
         this.fill.yOut = 0
         this.fill.updatePosition()
         this.overlay = this.addChild(new Panel(this, panelOverlayCfg))
-        this.btnToggle = this.addChild(new Button(this, buttonsCfg.panelButtonRadarToggle))
-        this.btnToggle.onClick = () => this.toggleState()
-        this.btnMap = this.addChild(new Button(this, buttonsCfg.panelButtonRadarMapView))
-        this.btnMap.onClick = () => {
+        const btnToggle = this.addChild(new Button(this, buttonsCfg.panelButtonRadarToggle))
+        btnToggle.onClick = () => this.toggleState()
+        const btnMap = this.addChild(new Button(this, buttonsCfg.panelButtonRadarMapView))
+        btnMap.onClick = () => {
             this.fill.hide()
             this.overlay.hide()
             this.map.show()
         }
-        this.btnTagged = this.addChild(new Button(this, buttonsCfg.panelButtonRadarTaggedObjectView))
-        this.btnTagged.onClick = () => {
+        const btnTagged = this.addChild(new Button(this, buttonsCfg.panelButtonRadarTaggedObjectView))
+        btnTagged.onClick = () => {
             this.fill.show()
             // this.overlay.show() // TODO only show overlay, when entity selected
             this.map.hide()
         }
+        const btnZoomIn = this.addChild(new Button(this, buttonsCfg.panelButtonRadarZoomIn))
+        btnZoomIn.onClick = () => this.map.zoomIn()
+        const btnZoomOut = this.addChild(new Button(this, buttonsCfg.panelButtonRadarZoomOut))
+        btnZoomOut.onClick = () => this.map.zoomOut()
     }
 
     reset() {

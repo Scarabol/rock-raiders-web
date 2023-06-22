@@ -46,27 +46,27 @@ export class MapRenderer {
         return response.type === WorkerMessageType.RESPONSE_MAP_RENDERER
     }
 
-    redrawTerrain(offset: { x: number, y: number }, surfaceMap: MapSurfaceRect[][]): Promise<void> {
+    redrawTerrain(offset: { x: number, y: number }, surfaceRectSize: number, surfaceMap: MapSurfaceRect[][]): Promise<void> {
         return new Promise((resolve) => {
             const requestId = generateUUID()
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: WorkerMessageType.MAP_RENDER_TERRAIN, requestId: requestId, offset: offset, terrain: surfaceMap})
+            this.worker.sendMessage({type: WorkerMessageType.MAP_RENDER_TERRAIN, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, terrain: surfaceMap})
         })
     }
 
-    redrawSurface(offset: { x: number, y: number }, surface: MapSurfaceRect): Promise<void> {
+    redrawSurface(offset: { x: number, y: number }, surfaceRectSize: number, surface: MapSurfaceRect): Promise<void> {
         return new Promise((resolve) => {
             const requestId = generateUUID()
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: WorkerMessageType.MAP_RENDER_SURFACE, requestId: requestId, offset: offset, surface: surface})
+            this.worker.sendMessage({type: WorkerMessageType.MAP_RENDER_SURFACE, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, surface: surface})
         })
     }
 
-    redrawEntities(offset: { x: number, y: number }, mapMarkerType: MapMarkerType, entities: { x: number, z: number }[]): Promise<void> {
+    redrawEntities(offset: { x: number, y: number }, mapMarkerType: MapMarkerType, surfaceRectSize: number, entities: { x: number, z: number }[]): Promise<void> {
         return new Promise((resolve) => {
             const requestId = generateUUID()
             this.resolveCallbackById.set(requestId, resolve)
-            this.worker.sendMessage({type: WorkerMessageType.MAP_RENDER_ENTITIES, mapMarkerType: mapMarkerType, requestId: requestId, offset: offset, entities: entities})
+            this.worker.sendMessage({type: WorkerMessageType.MAP_RENDER_ENTITIES, mapMarkerType: mapMarkerType, requestId: requestId, offset: offset, surfaceRectSize: surfaceRectSize, entities: entities})
         })
     }
 }

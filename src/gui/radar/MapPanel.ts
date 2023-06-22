@@ -7,7 +7,6 @@ import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
 import { MapSurfaceRect } from './MapSurfaceRect'
 import { MapRenderer } from './MapRenderer'
-import { MAP_PANEL_SURFACE_RECT_SIZE } from '../../params'
 import { GameEntity } from '../../game/ECS'
 
 export class MapPanel extends Panel {
@@ -19,6 +18,9 @@ export class MapPanel extends Panel {
     readonly offset: { x: number, y: number } = {x: 0, y: 0}
     readonly surfaceMap: MapSurfaceRect[][] = []
     entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number }>> = new Map()
+    surfaceRectSizeMin: number = 10
+    surfaceRectSizeMax: number = 15
+    surfaceRectSize: number = 10
 
     constructor(parent: BaseElement) {
         super(parent, null)
@@ -32,9 +34,10 @@ export class MapPanel extends Panel {
         this.relX = this.xIn = this.xOut = 15
         this.relY = this.yIn = this.yOut = 15
         this.onClick = (cx: number, cy: number) => {
+            const surfaceScale = this.surfaceRectSizeMin / this.surfaceRectSize
             // TODO limit offsets
-            this.offset.x += cx - this.x - this.width / 2
-            this.offset.y += cy - this.y - this.height / 2
+            this.offset.x += (cx - this.x - this.width / 2) * surfaceScale
+            this.offset.y += (cy - this.y - this.height / 2) * surfaceScale
             this.redrawAll()
         }
         this.registerEventListener(EventKey.UPDATE_RADAR_TERRAIN, (event: UpdateRadarTerrain) => {
@@ -44,24 +47,24 @@ export class MapPanel extends Panel {
                 this.surfaceMap[s.x][s.y] = s
             })
             if (event.focusTile) {
-                this.offset.x = event.focusTile.x * MAP_PANEL_SURFACE_RECT_SIZE - this.width / 2
-                this.offset.y = event.focusTile.y * MAP_PANEL_SURFACE_RECT_SIZE - this.height / 2
+                this.offset.x = event.focusTile.x * this.surfaceRectSize - this.width / 2
+                this.offset.y = event.focusTile.y * this.surfaceRectSize - this.height / 2
                 this.redrawAll()
             } else {
-                this.mapRenderer.redrawTerrain(this.offset, this.surfaceMap).then(() => this.notifyRedraw())
+                this.mapRenderer.redrawTerrain(this.offset, this.surfaceRectSize, this.surfaceMap).then(() => this.notifyRedraw())
             }
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_SURFACE, (event: UpdateRadarSurface) => {
             const s = event.surfaceRect
             this.surfaceMap[s.x] = this.surfaceMap[s.x] || []
             this.surfaceMap[s.x][s.y] = s
-            this.mapRenderer.redrawSurface(this.offset, event.surfaceRect).then(() => this.notifyRedraw())
+            this.mapRenderer.redrawSurface(this.offset, this.surfaceRectSize, event.surfaceRect).then(() => this.notifyRedraw())
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_LEGACY_ENTITIES, (event: UpdateRadarEntities) => {
             this.entitiesByOrder = event.entitiesByOrder
             Promise.all([
-                this.mapRenderer.redrawEntities(this.offset, MapMarkerType.DEFAULT, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.DEFAULT, () => new Map()).values())),
-                this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MATERIAL, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MATERIAL, () => new Map()).values())),
+                this.mapRenderer.redrawEntities(this.offset, MapMarkerType.DEFAULT, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.DEFAULT, () => new Map()).values())),
+                this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MATERIAL, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MATERIAL, () => new Map()).values())),
             ]).then(() => this.notifyRedraw())
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_ENTITY, (event: UpdateRadarEntityEvent) => {
@@ -75,16 +78,34 @@ export class MapPanel extends Panel {
                     break
             }
             // TODO check if entity is actually visible
-            this.mapRenderer.redrawEntities(this.offset, event.mapMarkerType, Array.from(entities.values())).then(() => this.notifyRedraw())
+            this.mapRenderer.redrawEntities(this.offset, event.mapMarkerType, this.surfaceRectSize, Array.from(entities.values())).then(() => this.notifyRedraw())
         })
+    }
+
+    zoomIn(): void {
+        if (this.surfaceRectSize < this.surfaceRectSizeMax) {
+            this.offset.x += (this.offset.x + this.width / 2) / this.surfaceRectSize
+            this.offset.y += (this.offset.y + this.height / 2) / this.surfaceRectSize
+            this.surfaceRectSize++
+            this.redrawAll()
+        }
+    }
+
+    zoomOut(): void {
+        if (this.surfaceRectSize > this.surfaceRectSizeMin) {
+            this.offset.x -= (this.offset.x + this.width / 2) / this.surfaceRectSize
+            this.offset.y -= (this.offset.y + this.height / 2) / this.surfaceRectSize
+            this.surfaceRectSize--
+            this.redrawAll()
+        }
     }
 
     private redrawAll() {
         Promise.all([
-            this.mapRenderer.redrawTerrain(this.offset, this.surfaceMap),
-            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.DEFAULT, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.DEFAULT, () => new Map()).values())),
-            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MONSTER, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MONSTER, () => new Map()).values())),
-            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MATERIAL, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MATERIAL, () => new Map()).values())),
+            this.mapRenderer.redrawTerrain(this.offset, this.surfaceRectSize, this.surfaceMap),
+            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.DEFAULT, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.DEFAULT, () => new Map()).values())),
+            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MONSTER, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MONSTER, () => new Map()).values())),
+            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MATERIAL, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MATERIAL, () => new Map()).values())),
         ]).then(() => this.notifyRedraw())
     }
 
