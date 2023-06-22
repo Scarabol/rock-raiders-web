@@ -84,7 +84,7 @@ export class BuildingType {
     }
 
     removePrimaryPowerPath(): this {
-        this.setPrimaryPowerPath = null
+        this.primaryPowerPath = null
         return this
     }
 
