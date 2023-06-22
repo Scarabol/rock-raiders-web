@@ -35,7 +35,6 @@ export class ScreenMaster {
         ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'wheel', 'touchstart', 'touchmove', 'touchend']
             .forEach((eventType: keyof HTMLElementEventMap) => {
                 this.gameCanvasContainer.addEventListener(eventType, (event) => {
-                    event.preventDefault()
                     event.stopPropagation()
                     this.dispatchEvent(event)
                 })
@@ -47,7 +46,6 @@ export class ScreenMaster {
         Array.from(document.getElementsByClassName('button-escape')).forEach((btn: HTMLButtonElement) => {
             btn.style.removeProperty('visibility')
             btn.onclick = (event) => {
-                event.preventDefault()
                 event.stopPropagation()
                 this.dispatchEvent(new KeyboardEvent('keydown', {code: 'Escape', key: 'Escape'}))
                 setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: 'Escape', key: 'Escape'})), 69)
@@ -56,7 +54,6 @@ export class ScreenMaster {
         Array.from(document.getElementsByClassName('button-space')).forEach((btn: HTMLButtonElement) => {
             btn.style.removeProperty('visibility')
             btn.onclick = (event) => {
-                event.preventDefault()
                 event.stopPropagation()
                 this.dispatchEvent(new KeyboardEvent('keydown', {code: ' ', key: ' '}))
                 setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: ' ', key: ' '})), 69)
@@ -65,7 +62,6 @@ export class ScreenMaster {
         Array.from(document.getElementsByClassName('button-screenshot')).forEach((btn: HTMLButtonElement) => {
             btn.style.removeProperty('visibility')
             btn.onclick = (event) => {
-                event.preventDefault()
                 event.stopPropagation()
                 EventBus.publishEvent(new SaveScreenshot())
             }
@@ -73,7 +69,6 @@ export class ScreenMaster {
         Array.from(document.getElementsByClassName('button-debug-nerp')).forEach((btn: HTMLButtonElement) => {
             btn.style.removeProperty('visibility')
             btn.onclick = (event) => {
-                event.preventDefault()
                 event.stopPropagation()
                 NerpRunner.debug = !NerpRunner.debug
             }
@@ -81,7 +76,6 @@ export class ScreenMaster {
         Array.from(document.getElementsByClassName('button-fullscreen')).forEach((btn: HTMLButtonElement) => {
             btn.style.removeProperty('visibility')
             btn.onclick = (event) => {
-                event.preventDefault()
                 event.stopPropagation()
                 if (document.fullscreenElement === this.gameContainer) document.exitFullscreen().then()
                 else this.gameContainer?.requestFullscreen().then()

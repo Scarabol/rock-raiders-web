@@ -25,7 +25,6 @@ export class ScreenLayer {
     addEventListener<K extends keyof HTMLElementEventMap>(eventType: K, listener: (event: HTMLElementEventMap[K]) => boolean) {
         this.eventListener.add(eventType)
         this.canvas.addEventListener(eventType, (event) => {
-            event.preventDefault()
             event.stopPropagation()
             const consumed = listener(event)
             if (!consumed) this.screenMaster.dispatchEvent(event, this.zIndex)
