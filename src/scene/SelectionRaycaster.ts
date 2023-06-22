@@ -48,14 +48,14 @@ export class SelectionRaycaster {
             const raider = raycaster.getFirstEntity(this.worldMgr.entityMgr.raiders)
             if (raider) return {raider: raider, entityType: raider.entityType}
         }
+        const material = raycaster.getFirstEntity(this.worldMgr.entityMgr.materials)
+        if (material) return {material: material, entityType: material.entityType}
         const vehicle = raycaster.getFirstEntity(this.worldMgr.entityMgr.vehicles)
         if (vehicle) return {vehicle: vehicle, entityType: vehicle.entityType}
         if (checkAll) {
             const building = raycaster.getFirstEntity(this.worldMgr.entityMgr.buildings)
             if (building) return {building: building, entityType: building.entityType}
         }
-        const material = raycaster.getFirstEntity(this.worldMgr.entityMgr.materials)
-        if (material) return {material: material, entityType: material.entityType}
         if (this.terrain) {
             const surfaceIntersection = raycaster.getSurfaceIntersection(this.terrain.floorGroup.children)
             if (surfaceIntersection) return surfaceIntersection
