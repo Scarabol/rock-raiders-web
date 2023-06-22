@@ -225,8 +225,13 @@ export class UpdateRadarEntities extends LocalEvent {
         entityMgr.vehicles.forEach((v) => entities.set(v.entity, {x: v.sceneEntity.position.x, z: v.sceneEntity.position.z}))
         this.entitiesByOrder.set(MapMarkerType.DEFAULT, entities)
         const materials = new Map()
-        entityMgr.materials.filter((m) => m.entityType !== EntityType.BARRIER)
-            .forEach((m) => materials.set(m.entity, {x: m.sceneEntity.position.x, z: m.sceneEntity.position.z}))
+        const tmpWorldPosition = new Vector3()
+        entityMgr.materials.forEach((m) => {
+            if (m.entityType !== EntityType.BARRIER) {
+                m.sceneEntity.getWorldPosition(tmpWorldPosition)
+                materials.set(m.entity, {x: tmpWorldPosition.x, z: tmpWorldPosition.z})
+            }
+        })
         this.entitiesByOrder.set(MapMarkerType.MATERIAL, materials)
     }
 }

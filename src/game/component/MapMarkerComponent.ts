@@ -12,7 +12,7 @@ export enum MapMarkerChange {
 }
 
 export class MapMarkerComponent extends AbstractGameComponent {
-    constructor(readonly mapMarkerType: MapMarkerType = MapMarkerType.DEFAULT) {
+    constructor(readonly mapMarkerType: MapMarkerType) {
         super()
     }
 }

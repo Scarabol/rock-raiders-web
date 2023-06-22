@@ -57,7 +57,7 @@ export class MapRendererWorker {
                 case WorkerMessageType.MAP_RENDER_ENTITIES:
                     switch (msg.mapMarkerType) {
                         case MapMarkerType.DEFAULT:
-                            this.redrawEntities(this.entityContext, '#e8d400', msg.offset, msg.entities, 3)
+                            this.redrawEntities(this.entityContext, '#e8d400', msg.offset, msg.entities, 4)
                             break
                         case MapMarkerType.MONSTER:
                             this.redrawEntities(this.monsterContext, '#f00', msg.offset, msg.entities, 3)
@@ -107,7 +107,11 @@ export class MapRendererWorker {
     private redrawEntities(entityContext: SpriteContext, color: string, offset: { x: number, y: number }, entities: { x: number, z: number }[], size: number) {
         entityContext.clearRect(0, 0, entityContext.canvas.width, entityContext.canvas.height)
         entityContext.fillStyle = color
-        entities.map((e) => this.mapToMap(offset, e)).forEach((p) => entityContext.fillRect(p.x, p.y, size, size))
+        entities.map((e) => this.mapToMap(offset, e)).forEach((p) => {
+            const x = Math.round(p.x - size / 2)
+            const y = Math.round(p.y - size / 2)
+            entityContext.fillRect(x, y, size, size)
+        })
     }
 
     private mapToMap(offset: { x: number, y: number }, vec: { x: number, z: number }): { x: number, y: number } {
