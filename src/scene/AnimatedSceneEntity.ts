@@ -58,7 +58,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
 
     setAnimation(animationName: string, onAnimationDone?: () => unknown, durationTimeoutMs: number = 0) {
         if (this.currentAnimation === animationName) {
-            if (onAnimationDone) onAnimationDone() // TODO is this safe? Should we wait for durationTimeout here?
+            if (onAnimationDone && !durationTimeoutMs) onAnimationDone()
             return
         }
         this.currentAnimation = animationName
