@@ -303,10 +303,12 @@ export class VehicleEntity implements Updatable {
     addDriver(driver: Raider) {
         this.driver = driver
         this.driver.vehicle = this
-        if (!this.stats.InvisibleDriver) {
-            this.sceneEntity.addDriver(this.driver.sceneEntity)
-        } else {
+        if (this.stats.InvisibleDriver) {
             this.worldMgr.sceneMgr.removeMeshGroup(this.driver.sceneEntity)
+        } else {
+            this.worldMgr.ecs.getComponents(this.driver.entity).get(PositionComponent).position.set(0, 0, 0)
+            this.sceneEntity.addDriver(this.driver.sceneEntity)
+            // TODO sync idle animation of vehicle and driver
         }
         if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
@@ -325,14 +327,10 @@ export class VehicleEntity implements Updatable {
         this.driver.sceneEntity.rotation.y = this.sceneEntity.getHeading()
         this.driver.sceneEntity.visible = this.driver.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.driver.sceneEntity.position).discovered
         this.driver.worldMgr.sceneMgr.addMeshGroup(this.driver.sceneEntity)
-        this.driver.sceneEntity.setAnimation(this.driver.getDefaultAnimationName())
+        this.driver.sceneEntity.setAnimation(RaiderActivity.Stand)
         this.driver = null
         this.engineSound = resetAudioSafe(this.engineSound)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
-    }
-
-    getDefaultAnimationName() {
-        return AnimEntityActivity.Stand
     }
 
     getRequiredTraining(): RaiderTraining {

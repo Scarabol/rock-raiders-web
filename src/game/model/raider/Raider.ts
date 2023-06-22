@@ -257,7 +257,7 @@ export class Raider implements Updatable {
         return true
     }
 
-    getDefaultAnimationName(): AnimationActivity {
+    private getDefaultAnimationName(): AnimationActivity {
         return this.carries ? RaiderActivity.CarryStand : RaiderActivity.Stand
     }
 
