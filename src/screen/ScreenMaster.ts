@@ -32,13 +32,19 @@ export class ScreenMaster {
             this.getActiveLayersSorted()?.[0]?.canvas?.focus() // always focus topmost
         })
         // in case topmost layer (usually cursor layer) does not listen for event, it reaches game-canvas-container as fallback dispatch from here
-        ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'wheel', 'touchstart', 'touchmove', 'touchend']
-            .forEach((eventType: keyof HTMLElementEventMap) => {
-                this.gameCanvasContainer.addEventListener(eventType, (event) => {
-                    event.stopPropagation()
-                    this.dispatchEvent(event)
-                })
+        ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'wheel'].forEach((eventType: keyof HTMLElementEventMap) => {
+            this.gameCanvasContainer.addEventListener(eventType, (event) => {
+                event.stopPropagation()
+                this.dispatchEvent(event)
             })
+        })
+        ;['touchstart', 'touchmove', 'touchend'].forEach((eventType: keyof HTMLElementEventMap) => {
+            this.gameCanvasContainer.addEventListener(eventType, (event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                this.dispatchEvent(event)
+            })
+        })
         this.setupToolbarButtons()
     }
 
