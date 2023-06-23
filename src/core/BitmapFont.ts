@@ -2,31 +2,31 @@ import { createContext, createDummyImgData, getPixel, setPixel } from './ImageHe
 import { SpriteImage } from './Sprite'
 
 export class BitmapFontData {
-    letterMap: Map<string, ImageData> = new Map()
+    // actually chars are font dependent and have to be externalized in future
+    // maybe CP850 was used... not sure, doesn't fit...
+    static readonly chars: string[] = [' ', '!', '"', '#', '$', '%', '⌵', '`', '(', ')',
+        '*', '+', ',', '-', '.', '/', '0', '1', '2', '3',
+        '4', '5', '6', '7', '8', '9', ':', ';', '<', '=',
+        '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+        'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
+        'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[',
+        '\\', ']', '^', '_', '\'', 'a', 'b', 'c', 'd', 'e',
+        'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+        'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
+        'z', 'Ä', 'Å', 'Á', 'À', 'Â', 'Ã', 'Ą', 'ä', 'å',
+        'á', 'à', 'â', 'ã', 'ą', 'Ë', 'E̊', 'É', 'È', 'É',
+        'Ę', 'ë', 'e̊', 'é', 'è', 'e̊', 'ę̊', '', '', '',
+        '', '', '', '', '', 'Ö', '', '', '', '',
+        'ö', '', '', '', '', 'Ü', '', '', '', 'ü',
+        '', '', '', '', '', '', '', '', '', '',
+        '', '', '', '', '', '', '', '', '', '',
+        '', '', '', 'ß', '', '', '', 'Ñ', '', 'ñ',
+        '',
+    ] // XXX complete this character list
+
+    readonly letterMap: Map<string, ImageData> = new Map()
 
     constructor(fontImageData: ImageData, maxCharWidth: number, readonly charHeight: number) {
-        // actually chars are font dependent and have to be externalized in future
-        // maybe CP850 was used... not sure, doesn't fit...
-        const chars = [' ', '!', '"', '#', '$', '%', '⌵', '`', '(', ')',
-            '*', '+', ',', '-', '.', '/', '0', '1', '2', '3',
-            '4', '5', '6', '7', '8', '9', ':', ';', '<', '=',
-            '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
-            'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
-            'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '[',
-            '\\', ']', '^', '_', '\'', 'a', 'b', 'c', 'd', 'e',
-            'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-            'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
-            'z', 'Ä', 'Å', 'Á', 'À', 'Â', 'Ã', 'Ą', 'ä', 'å',
-            'á', 'à', 'â', 'ã', 'ą', 'Ë', 'E̊', 'É', 'È', 'É',
-            'Ę', 'ë', 'e̊', 'é', 'è', 'e̊', 'ę̊', '', '', '',
-            '', '', '', '', '', 'Ö', '', '', '', '',
-            'ö', '', '', '', '', 'Ü', '', '', '', 'ü',
-            '', '', '', '', '', '', '', '', '', '',
-            '', '', '', '', '', '', '', '', '', '',
-            '', '', '', 'ß', '', '', '', 'Ñ', '', 'ñ',
-            '',
-        ] // XXX complete this character list
-
         function isLimiterColor(imgData: ImageData, index: number): boolean {
             // Last pixel in the first row of the first char defines the end of char limiter color (e.g. 255,39,0)
             return imgData.data[index] === fontImageData.data[(maxCharWidth - 1) * 4]
@@ -45,16 +45,16 @@ export class BitmapFontData {
             return imgData.width
         }
 
-        for (let i = 0; i < chars.length; i++) {
+        for (let i = 0; i < BitmapFontData.chars.length; i++) {
             let imgData = this.extractData(fontImageData, (i % 10) * maxCharWidth, Math.floor(i / 10) * this.charHeight, maxCharWidth, this.charHeight)
             const actualWidth = getActualCharacterWidth(imgData)
             if (actualWidth > 0) {
                 imgData = this.extractData(imgData, 0, 0, actualWidth, this.charHeight)
             } else {
-                console.warn(`Could not determine actual character width for '${chars[i]}'. Adding dummy sprite to letter map`)
+                console.warn(`Could not determine actual character width for '${BitmapFontData.chars[i]}'. Adding dummy sprite to letter map`)
                 imgData = createDummyImgData(maxCharWidth, this.charHeight)
             }
-            this.letterMap.set(chars[i], imgData)
+            this.letterMap.set(BitmapFontData.chars[i], imgData)
         }
     }
 
