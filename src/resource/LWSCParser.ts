@@ -147,6 +147,7 @@ export class LWSCParser {
                     const timeFromIndex = (keyframeIndex - (this.firstFrame - 1)) / this.numOfKeyframes * this.lwscData.durationSeconds
                     times.push(timeFromIndex)
                     new Vector3(infos[0], infos[1], infos[2]).toArray(relPos, relPos.length)
+                    if (currentObject.lowerName === 'lpgunpivot') relPos[1] += -42 // TODO Why is this workaround needed? What about upgrade station?
                     new Quaternion().setFromEuler(new Euler(degToRad(infos[4]), degToRad(infos[3]), degToRad(infos[5]), 'YXZ'), true).toArray(relRot, relRot.length) // Heading (Y), Pitch (X), Bank (Z)
                     new Vector3(infos[6], infos[7], infos[8]).toArray(relScale, relScale.length)
                 }
