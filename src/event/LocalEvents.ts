@@ -76,7 +76,7 @@ export class SelectionChanged extends LocalEvent {
         this.hasUpgradeSite = entityMgr.hasUpgradeSite()
         this.buildingCanUpgrade = entityMgr.selection.building?.canUpgrade()
         this.buildingMissingOreForUpgrade = entityMgr.selection.building?.missingOreForUpgrade()
-        this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.SelfPowered && !entityMgr.selection.building?.stats.PowerBuilding && entityMgr.selection.building?.energized
+        this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.SelfPowered && !entityMgr.selection.building?.stats.PowerBuilding && (entityMgr.selection.building?.energized || entityMgr.selection.building?.surfaces.some((s) => s.energized))
         this.buildingPowerSwitchState = entityMgr.selection.building?.powerSwitch
         this.vehicleHasCallManJob = entityMgr.selection.vehicles.every((v) => !!v.callManJob)
         this.noVehicleWithDriver = entityMgr.selection.vehicles.every((v) => !v.driver)
