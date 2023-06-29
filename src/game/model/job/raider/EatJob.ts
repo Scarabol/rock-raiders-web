@@ -14,7 +14,8 @@ export class EatJob extends RaiderJob {
     }
 
     onJobComplete() {
-        this.raider.hungerLevel = 1
+        this.raider.foodLevel = 1
+        this.raider.infoComponent.setHungerIndicator(this.raider.foodLevel)
         super.onJobComplete()
     }
 

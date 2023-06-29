@@ -3,7 +3,7 @@ import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent, UpdateRadarEntities } from '../../../event/LocalEvents'
-import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ } from '../../../params'
+import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimationActivity, AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
@@ -47,7 +47,7 @@ export class Raider implements Updatable {
     trainings: Map<RaiderTraining, boolean> = new Map()
     carries: MaterialEntity = null
     slipped: boolean = false
-    hungerLevel: number = 1
+    foodLevel: number = 1
     vehicle: VehicleEntity = null
 
     constructor(worldMgr: WorldManager) {
@@ -162,6 +162,8 @@ export class Raider implements Updatable {
             this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position.copy(this.sceneEntity.position)
             this.sceneEntity.setAnimation(this.getRouteActivity())
             EventBus.publishEvent(new UpdateRadarEntities(this.worldMgr.entityMgr)) // TODO only send map updates not all
+            if (this.foodLevel > 0) this.foodLevel -= step.vec.lengthSq() / TILESIZE / TILESIZE / 5
+            this.infoComponent.setHungerIndicator(this.foodLevel)
             return MoveState.MOVED
         }
     }

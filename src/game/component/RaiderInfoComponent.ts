@@ -18,7 +18,7 @@ export class RaiderInfoComponent extends AbstractGameComponent {
         this.bubbleSprite.scale.set(9, 9, 0)
         parent.add(this.bubbleSprite)
         this.hungerSprite = new Sprite(new SpriteMaterial({depthTest: false}))
-        this.setHungerLevel(1)
+        this.setHungerIndicator(1)
         this.hungerSprite.center.set(0, 0.75)
         this.hungerSprite.position.y = 16 - ResourceManager.configuration.objInfo.hungerImagesPosition[1] / 4
         this.hungerSprite.scale.setScalar(4)
@@ -34,15 +34,15 @@ export class RaiderInfoComponent extends AbstractGameComponent {
         if (textureName !== 'bubbleIdle') this.showDelayMs = 1000
     }
 
-    setHungerLevel(hungerLevel: number) {
+    setHungerIndicator(hungerLevel: number) {
         this.hungerSprite.material.map = ResourceManager.getTexture(this.getHungerTextureName(hungerLevel))
     }
 
     private getHungerTextureName(hungerLevel: number) {
-        if (hungerLevel >= 1) return ResourceManager.configuration.objInfo.hungerImages.hungerImage4
-        else if (hungerLevel >= 0.75) return ResourceManager.configuration.objInfo.hungerImages.hungerImage3
-        else if (hungerLevel >= 0.5) return ResourceManager.configuration.objInfo.hungerImages.hungerImage2
-        else if (hungerLevel >= 0.25) return ResourceManager.configuration.objInfo.hungerImages.hungerImage1
+        if (hungerLevel >= 0.8) return ResourceManager.configuration.objInfo.hungerImages.hungerImage4
+        else if (hungerLevel >= 0.6) return ResourceManager.configuration.objInfo.hungerImages.hungerImage3
+        else if (hungerLevel >= 0.4) return ResourceManager.configuration.objInfo.hungerImages.hungerImage2
+        else if (hungerLevel >= 0.2) return ResourceManager.configuration.objInfo.hungerImages.hungerImage1
         else return ResourceManager.configuration.objInfo.hungerImages.hungerImage0
     }
 }
