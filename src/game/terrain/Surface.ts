@@ -469,6 +469,7 @@ export class Surface {
         EventBus.publishEvent(new UpdateRadarSurface(this))
         if (wasPath !== this.isPath()) this.terrain.powerGrid.onPathChange(this)
         this.terrain.pathFinder.updateSurface(this)
+        if (this.selected && !this.surfaceType.selectable) EventBus.publishEvent(new DeselectAll())
     }
 
     canPlaceFence(): boolean {
