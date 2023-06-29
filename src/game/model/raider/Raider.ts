@@ -323,6 +323,9 @@ export class Raider implements Updatable {
         if (workActivity === RaiderActivity.Drill) {
             this.sceneEntity.setAnimation(workActivity)
             this.job?.addProgress(this, elapsedMs)
+        } else if (workActivity === RaiderActivity.Stand) {
+            this.sceneEntity.setAnimation(workActivity)
+            this.completeJob()
         } else {
             this.sceneEntity.setAnimation(workActivity, () => {
                 this.completeJob()

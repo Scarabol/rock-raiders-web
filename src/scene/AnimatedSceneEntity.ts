@@ -57,10 +57,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     }
 
     setAnimation(animationName: string, onAnimationDone?: () => unknown, durationTimeoutMs: number = 0) {
-        if (this.currentAnimation === animationName) {
-            if (onAnimationDone && !durationTimeoutMs) onAnimationDone()
-            return
-        }
+        if (this.currentAnimation === animationName) return
         this.currentAnimation = animationName
         if (this.animationData.length > 0) this.removeAll()
         this.animationData.forEach((animEntityData) => {

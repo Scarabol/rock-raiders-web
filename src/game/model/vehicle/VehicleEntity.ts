@@ -238,10 +238,17 @@ export class VehicleEntity implements Updatable {
         if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
             this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SND_BIGDIGDRILL], true, true)
         }
-        this.sceneEntity.setAnimation(workActivity, () => {
+        if (workActivity === RaiderActivity.Drill) {
+            this.sceneEntity.setAnimation(workActivity)
+            this.job?.addProgress(this, elapsedMs)
+        } else if (workActivity === RaiderActivity.Stand) {
+            this.sceneEntity.setAnimation(workActivity)
             this.completeJob()
-        }, this.job.getExpectedTimeLeft())
-        this.job?.addProgress(this, elapsedMs)
+        } else {
+            this.sceneEntity.setAnimation(workActivity, () => {
+                this.completeJob()
+            }, this.job.getExpectedTimeLeft())
+        }
     }
 
     private completeJob() {
