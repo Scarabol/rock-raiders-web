@@ -142,7 +142,9 @@ export class VehicleEntity implements Updatable {
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.sceneEntity.position.add(step.vec)
-            this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position.copy(this.sceneEntity.position)
+            const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+            positionComponent.position.copy(this.sceneEntity.position)
+            positionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
             this.sceneEntity.setAnimation(AnimEntityActivity.Route)
             const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
             this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))

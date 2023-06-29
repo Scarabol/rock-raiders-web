@@ -159,7 +159,9 @@ export class Raider implements Updatable {
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.sceneEntity.position.add(step.vec)
-            this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position.copy(this.sceneEntity.position)
+            const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+            positionComponent.position.copy(this.sceneEntity.position)
+            positionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
             this.sceneEntity.setAnimation(this.getRouteActivity())
             EventBus.publishEvent(new UpdateRadarEntities(this.worldMgr.entityMgr)) // TODO only send map updates not all
             if (this.foodLevel > 0) this.foodLevel -= step.vec.lengthSq() / TILESIZE / TILESIZE / 5
