@@ -104,7 +104,11 @@ export class GameLayer extends ScreenLayer {
             }
             if (cursorTarget.entityType) {
                 const objectKey = EntityType[cursorTarget.entityType].toString().replace('_', '').toLowerCase()
-                const tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
+                let tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
+                if (cursorTarget.building) {
+                    const upgradeName = ResourceManager.configuration.upgradeNames[cursorTarget.building.level - 1]
+                    if (upgradeName) tooltipText += ` (${upgradeName})`
+                }
                 if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, cursorTarget.raider))
             }
             this.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
