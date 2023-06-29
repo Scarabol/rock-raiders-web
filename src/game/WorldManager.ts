@@ -124,7 +124,7 @@ export class WorldManager {
         const endUpdate = window.performance.now()
         const updateDurationMs = endUpdate - startUpdate
         const sleepForMs = UPDATE_INTERVAL_MS - Math.round(updateDurationMs)
-        this.startLoop(sleepForMs)
+        if (this.gameLoopTimeout) this.startLoop(sleepForMs)
     }
 
     private update(elapsedMs: number) {
