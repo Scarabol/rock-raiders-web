@@ -19,7 +19,7 @@ export class SceneSelectionComponent extends AbstractGameComponent {
         this.pickSphere = new Mesh(geometry, material)
         const boundingSphereCenter = new Vector3()
         new Box3().setFromObject(parentObj).getCenter(boundingSphereCenter)
-        this.pickSphere.position.y = pickSphereHeightOffset ?? (boundingSphereCenter.y - parentObj.position.y)
+        this.pickSphere.position.y = pickSphereHeightOffset ?? boundingSphereCenter.y / 2
         this.pickSphere.userData = userData
         parentObj.add(this.pickSphere)
     }

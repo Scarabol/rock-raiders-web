@@ -15,6 +15,7 @@ import { DynamiteExplosionEvent } from '../../../event/WorldEvents'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { PositionComponent } from '../../component/PositionComponent'
+import { BubblesCfg } from '../../../cfg/BubblesCfg'
 
 export class CarryJob extends AbstractJob implements SupervisedJob {
     fulfiller: JobFulfiller = null
@@ -131,5 +132,21 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
 
     hasFulfiller(): boolean {
         return !!this.fulfiller
+    }
+
+    getJobBubble(): keyof BubblesCfg {
+        switch (this.carryItem.entityType) {
+            case EntityType.ORE:
+            case EntityType.BRICK:
+                return 'bubbleCarryOre'
+            case EntityType.CRYSTAL:
+                return 'bubbleCarryCrystal'
+            case EntityType.DYNAMITE:
+                return 'bubbleCarryDynamite'
+            case EntityType.BARRIER:
+                return 'bubbleCarryBarrier'
+            case EntityType.ELECTRIC_FENCE:
+                return 'bubbleCarryElecFence'
+        }
     }
 }

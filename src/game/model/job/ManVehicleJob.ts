@@ -6,6 +6,7 @@ import { JobState } from './JobState'
 import { PriorityIdentifier } from './PriorityIdentifier'
 import { RaiderJob } from './raider/RaiderJob'
 import { Raider } from '../raider/Raider'
+import { BubblesCfg } from '../../../cfg/BubblesCfg'
 
 export class ManVehicleJob extends RaiderJob implements SupervisedJob {
     vehicle: VehicleEntity
@@ -49,5 +50,9 @@ export class ManVehicleJob extends RaiderJob implements SupervisedJob {
 
     hasFulfiller(): boolean {
         return !!this.raider
+    }
+
+    getJobBubble(): keyof BubblesCfg {
+        return 'bubbleDrive'
     }
 }

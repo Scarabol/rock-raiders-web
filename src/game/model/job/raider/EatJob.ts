@@ -3,6 +3,7 @@ import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
+import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class EatJob extends RaiderJob {
     target: PathTarget = null
@@ -19,5 +20,9 @@ export class EatJob extends RaiderJob {
 
     getWorkActivity(): AnimationActivity {
         return RaiderActivity.Eat
+    }
+
+    getJobBubble(): keyof BubblesCfg {
+        return 'bubbleEat'
     }
 }

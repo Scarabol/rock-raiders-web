@@ -7,6 +7,7 @@ import { RaiderTool } from '../raider/RaiderTool'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { JobState } from './JobState'
+import { BubblesCfg } from '../../../cfg/BubblesCfg'
 
 export type JobFulfiller = Raider | VehicleEntity
 
@@ -34,6 +35,8 @@ export interface Job {
     getExpectedTimeLeft(): number
 
     addProgress(fulfiller: JobFulfiller, elapsedMs: number): void
+
+    getJobBubble(): keyof BubblesCfg
 }
 
 export abstract class AbstractJob implements Job {
@@ -72,5 +75,9 @@ export abstract class AbstractJob implements Job {
     }
 
     addProgress(fulfiller: JobFulfiller, elapsedMs: number) {
+    }
+
+    getJobBubble(): keyof BubblesCfg {
+        return null
     }
 }

@@ -3,6 +3,7 @@ import { NeededCrystalsChanged } from '../../event/LocalEvents'
 import { MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'
 import { MaterialEntity } from './material/MaterialEntity'
 import { EntityType } from './EntityType'
+import { DEV_MODE } from '../../params'
 
 export class GameState {
     static numCrystal: number = 0
@@ -20,7 +21,7 @@ export class GameState {
     static hiddenObjectsFound: number = 0
     static alarmMode: boolean = false
     static objectiveShowing: number = 1
-    static showObjInfo: boolean = false
+    static showObjInfo: boolean = DEV_MODE
 
     static reset() {
         this.numCrystal = 0

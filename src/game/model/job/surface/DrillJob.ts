@@ -7,6 +7,7 @@ import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
+import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class DrillJob extends ShareableJob {
     digPositions: PathTarget[]
@@ -63,5 +64,9 @@ export class DrillJob extends ShareableJob {
                 this.onJobComplete()
             }
         }
+    }
+
+    getJobBubble(): keyof BubblesCfg {
+        return 'bubbleDrill'
     }
 }

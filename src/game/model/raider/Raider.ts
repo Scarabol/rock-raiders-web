@@ -30,10 +30,12 @@ import { SelectionFrameComponent } from '../../component/SelectionFrameComponent
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { OxygenComponent } from '../../component/OxygenComponent'
 import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
+import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 
 export class Raider implements Updatable {
     readonly entityType: EntityType = EntityType.PILOT
     readonly entity: GameEntity
+    readonly infoComponent: RaiderInfoComponent
     worldMgr: WorldManager
     currentPath: TerrainPath = null
     level: number = 0
@@ -58,6 +60,7 @@ export class Raider implements Updatable {
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent())
         this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(16, 10, this.sceneEntity, true))
         this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
+        this.infoComponent = this.worldMgr.ecs.addComponent(this.entity, new RaiderInfoComponent(this.sceneEntity))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
@@ -255,6 +258,7 @@ export class Raider implements Updatable {
     setJob(job: Job, followUpJob: Job = null) {
         if (this.job !== job) this.stopJob()
         this.job = job
+        this.infoComponent.setBubbleTexture(this.job.getJobBubble())
         if (this.job) this.job.assign(this)
         this.followUpJob = followUpJob
         if (this.followUpJob) this.followUpJob.assign(this)
@@ -274,6 +278,7 @@ export class Raider implements Updatable {
         this.job = null
         this.followUpJob = null
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
+        this.infoComponent.setBubbleTexture('bubbleIdle')
     }
 
     dropCarried(): void {
@@ -330,6 +335,7 @@ export class Raider implements Updatable {
         else this.workAudio = null
         this.job?.onJobComplete()
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
+        this.infoComponent.setBubbleTexture('bubbleIdle')
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob

@@ -18,6 +18,7 @@ import { TexturesCfg } from './TexturesCfg'
 import { MiscObjectsCfg } from './MiscObjectsCfg'
 import { RockFallStylesCfg } from './RockFallStylesCfg'
 import { EntityType, getEntityTypeByName } from '../game/model/EntityType'
+import { ObjInfoCfg } from './ObjInfoCfg'
 
 export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
 export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
@@ -29,6 +30,7 @@ export class GameConfig extends BaseConfig {
     menu: GameMenuCfg = new GameMenuCfg()
     toolTipInfo: Map<string, string> = new Map()
     surfaceTypeDescriptions: Map<string, string[]> = new Map()
+    objInfo: ObjInfoCfg = new ObjInfoCfg()
     pointers: Map<string, string | string[]> = new Map()
     interfaceImages: Map<string, MenuItemCfg> = new Map()
     panelRotationControl: PanelRotationControlCfg = new PanelRotationControlCfg()
@@ -71,6 +73,8 @@ export class GameConfig extends BaseConfig {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.toolTipInfo.set(cfgKey.toLowerCase(), parseLabel(value as string)))
         } else if ('SurfaceTypeDescriptions'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.surfaceTypeDescriptions.set(this.stripKey(cfgKey), value as string[]))
+        } else if ('ObjInfo'.equalsIgnoreCase(unifiedKey)) {
+            this.objInfo.setFromCfgObj(cfgValue)
         } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.pointers.set(this.stripKey(cfgKey), value as string[]))
         } else if ('InterfaceImages'.equalsIgnoreCase(unifiedKey)) {

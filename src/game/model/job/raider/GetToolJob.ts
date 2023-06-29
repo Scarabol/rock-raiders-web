@@ -5,6 +5,7 @@ import { RaiderTool } from '../../raider/RaiderTool'
 import { RaiderJob } from './RaiderJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
+import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class GetToolJob extends RaiderJob {
     entityMgr: EntityManager
@@ -28,5 +29,27 @@ export class GetToolJob extends RaiderJob {
     onJobComplete() {
         super.onJobComplete()
         this.raider.addTool(this.tool)
+    }
+
+    getJobBubble(): keyof BubblesCfg {
+        switch (this.tool) {
+            case RaiderTool.DRILL:
+                return 'bubbleCollectDrill'
+            case RaiderTool.HAMMER:
+                return 'bubbleCollectHammer'
+            case RaiderTool.SHOVEL:
+                return 'bubbleCollectSpade'
+            case RaiderTool.SPANNER:
+                return 'bubbleCollectSpanner'
+            case RaiderTool.FREEZERGUN:
+                return 'bubbleCollectFreezer'
+            case RaiderTool.LASER:
+                return 'bubbleCollectLaser'
+            case RaiderTool.PUSHERGUN:
+                return 'bubbleCollectPusher'
+            case RaiderTool.BIRDSCARER:
+                return 'bubbleCollectBirdScarer'
+        }
+        return null
     }
 }

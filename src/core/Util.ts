@@ -64,3 +64,8 @@ export function getElementByIdOrThrow(elementId: string): HTMLElement {
 export function yieldToMainThread(): Promise<void> {
     return new Promise(resolve => setTimeout(resolve))
 }
+
+export function rgbToHtmlHex(rgb: number[]): string {
+    if (rgb?.length !== 3) throw new Error(`Invalid rgb array given '${rgb}')`)
+    return `#${rgb.map((v) => v.toString(16).padStart(2, '0')).join('')}`
+}

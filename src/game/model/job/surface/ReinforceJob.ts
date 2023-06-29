@@ -6,6 +6,7 @@ import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
+import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class ReinforceJob extends ShareableJob {
     digPositions: PathTarget[]
@@ -44,5 +45,9 @@ export class ReinforceJob extends ShareableJob {
 
     getRequiredTool(): RaiderTool {
         return RaiderTool.HAMMER
+    }
+
+    getJobBubble(): keyof BubblesCfg {
+        return 'bubbleReinforce'
     }
 }

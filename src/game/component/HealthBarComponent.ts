@@ -8,13 +8,15 @@ export class HealthBarComponent extends AbstractGameComponent {
     actualStatus: number = 1
     targetStatus: number = 1
 
-    // TODO For raiders replace with info element, see ObjInfo in cfg
-
-    constructor(readonly yOffset: number, readonly scale: number, readonly parent: Object3D, readonly canBeShownPermanently: boolean) {
+    constructor(yOffset: number, scale: number, readonly parent: Object3D, readonly canBeShownPermanently: boolean) {
         super()
-        this.sprite = new HealthBarSprite(this.yOffset, this.scale)
-        this.sprite.visible = GameState.showObjInfo && this.canBeShownPermanently
+        this.sprite = new HealthBarSprite(yOffset, scale)
+        this.setVisible(GameState.showObjInfo)
         this.parent.add(this.sprite)
+    }
+
+    setVisible(visible: boolean) {
+        this.sprite.visible = visible && this.canBeShownPermanently
     }
 
     setStatus(status: number) {

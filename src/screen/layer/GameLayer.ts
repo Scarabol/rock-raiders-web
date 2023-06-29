@@ -184,21 +184,22 @@ export class GameLayer extends ScreenLayer {
     }
 
     handleKeyEvent(event: GameKeyboardEvent): boolean {
-        if (DEV_MODE && event.eventEnum === KEY_EVENT.UP && this.entityMgr.selection.surface) {
-            if (event.key === 'c') {
-                this.entityMgr.selection.surface.collapse()
-                EventBus.publishEvent(new DeselectAll())
-                return true
-            } else if (event.key === 'f') {
-                const surface = this.entityMgr.selection.surface
-                if (!surface.surfaceType.floor) {
-                    this.sceneMgr.terrain.createFallIn(surface, this.sceneMgr.terrain.findFallInTarget(surface))
-                }
-                EventBus.publishEvent(new DeselectAll())
-                return true
-            } else if (event.key === ' ') {
+        if (event.eventEnum === KEY_EVENT.UP) {
+            if (event.key === ' ') {
                 GameState.showObjInfo = !GameState.showObjInfo
-                // TODO show hide objInfo components
+            } else if (DEV_MODE && this.entityMgr.selection.surface) {
+                if (event.key === 'c') {
+                    this.entityMgr.selection.surface.collapse()
+                    EventBus.publishEvent(new DeselectAll())
+                    return true
+                } else if (event.key === 'f') {
+                    const surface = this.entityMgr.selection.surface
+                    if (!surface.surfaceType.floor) {
+                        this.sceneMgr.terrain.createFallIn(surface, this.sceneMgr.terrain.findFallInTarget(surface))
+                    }
+                    EventBus.publishEvent(new DeselectAll())
+                    return true
+                }
             }
         }
         return false

@@ -8,6 +8,7 @@ import { RaiderTraining } from '../../raider/RaiderTraining'
 import { RaiderJob } from './RaiderJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
+import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class TrainRaiderJob extends RaiderJob {
     workplaces: PathTarget[]
@@ -34,5 +35,9 @@ export class TrainRaiderJob extends RaiderJob {
 
     getExpectedTimeLeft(): number {
         return 10000 // XXX adjust training time
+    }
+
+    getJobBubble(): keyof BubblesCfg {
+        return 'bubbleTrain'
     }
 }
