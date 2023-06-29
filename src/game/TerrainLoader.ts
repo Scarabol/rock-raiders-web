@@ -102,7 +102,7 @@ export class TerrainLoader {
 
         terrain.updateSurfaceMeshes(true)
 
-        if (fallinMap) {
+        if (fallinMap && !levelConf.noFallins) {
             for (let x = 0; x < terrain.width; x++) {
                 for (let y = 0; y < terrain.height; y++) {
                     terrain.setFallInLevel(x, y, fallinMap[y][x] * levelConf.fallinMultiplier) // rows (y) before columns (x) used in maps
