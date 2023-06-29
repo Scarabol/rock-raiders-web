@@ -93,6 +93,7 @@ export class SurfaceType {
         reinforcable: true,
         cursor: Cursor.SURFACE_TYPE_ORESEAM,
         statsDrillName: 'SeamDrillTime',
+        mapSurfaceColor: '#963c00',
     })
     static readonly WATER = new SurfaceType({
         name: 'surfaceTypeWater', floor: true, matIndex: '45', mapSurfaceColor: '#000080',
@@ -105,11 +106,13 @@ export class SurfaceType {
         reinforcable: true,
         cursor: Cursor.SURFACE_TYPE_CRYSTALSEAM,
         statsDrillName: 'SeamDrillTime',
+        mapSurfaceColor: '#aafa00',
     })
     static readonly RECHARGE_SEAM = new SurfaceType({
         name: 'surfaceTypeRechargeSeam',
         matIndex: '67',
         cursor: Cursor.SURFACE_TYPE_RECHARGESEAM,
+        mapSurfaceColor: '#ffff00',
     })
     static readonly POWER_PATH = new SurfaceType({
         name: 'surfaceTypePath',
@@ -118,7 +121,7 @@ export class SurfaceType {
         selectable: true,
         canHaveFence: true,
         connectsPath: true,
-        mapSurfaceColor: '#FFFF00',
+        mapSurfaceColor: '#ffff00',
         rubbleResilient: false,
     })
     static readonly POWER_PATH_BUILDING_SITE = new SurfaceType({
@@ -127,6 +130,7 @@ export class SurfaceType {
         matIndex: '61',
         selectable: true,
         canHaveFence: true,
+        mapSurfaceColor: '#280048',
     })
     static readonly POWER_PATH_BUILDING = new SurfaceType({
         name: 'surfaceTypePath',
