@@ -140,6 +140,7 @@ export class ObjectListLoader {
             case EntityType.LARGE_MLP:
             case EntityType.LARGE_DIGGER:
             case EntityType.LARGE_CAT:
+            case EntityType.LARGE_HELI:
                 const vehicle = this.spawnVehicle(entityType, worldMgr, floorPosition, surface, headingRad, sceneMgr, entityMgr)
                 vehicleByKey.set(olKey, vehicle)
                 entityMgr.recordedEntities.push(vehicle.entity)

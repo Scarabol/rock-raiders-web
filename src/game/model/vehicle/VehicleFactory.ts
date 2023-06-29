@@ -34,6 +34,8 @@ export class VehicleFactory {
                 return new VehicleEntity(entityType, worldMgr, ResourceManager.configuration.stats.largeDigger, ['Vehicles/LargeDigger'])
             case EntityType.LARGE_CAT:
                 return new VehicleEntity(entityType, worldMgr, ResourceManager.configuration.stats.largeCat, ['Vehicles/LargeCat'], RaiderActivity.StandLARGECAT, RaiderActivity.LARGECAT)
+            case EntityType.LARGE_HELI:
+                return new VehicleEntity(entityType, worldMgr, ResourceManager.configuration.stats.largeHeli, ['Vehicles/LargeHeli'])
             default:
                 throw new Error(`Unexpected vehicle type: ${EntityType[entityType]}`)
         }
