@@ -5,6 +5,8 @@ import { Surface } from './terrain/Surface'
 import { SurfaceType } from './terrain/SurfaceType'
 import { Terrain } from './terrain/Terrain'
 import { WorldManager } from './WorldManager'
+import { getMonsterEntityTypeByName } from './model/EntityType'
+import { EmergeTrigger } from './terrain/EmergeTrigger'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
@@ -13,6 +15,7 @@ export class TerrainLoader {
         const terrain = new Terrain(worldMgr, levelConf)
         terrain.textureSet = ResourceManager.configuration.textures.textureSetByName.get(levelConf.textureSet)
         terrain.rockFallStyle = levelConf.rockFallStyle.toLowerCase()
+        terrain.emergeCreature = getMonsterEntityTypeByName(levelConf.emergeCreature)
 
         const terrainMap = ResourceManager.getResource(levelConf.terrainMap)
         terrain.width = terrainMap.width
@@ -24,6 +27,7 @@ export class TerrainLoader {
         const fallinMap = ResourceManager.getResource(levelConf.fallinMap)?.level
         const erodeMap = ResourceManager.getResource(levelConf.erodeMap)?.level
         const blockMap = ResourceManager.getResource(levelConf.blockPointersMap)?.level
+        const emergeMap = ResourceManager.getResource(levelConf.emergeMap)?.level
 
         // maps parsed from WAD are row-wise saved, which means y (row) comes first and x (column) second
         for (let r = 0; r < terrainMap.level.length; r++) {
@@ -136,6 +140,20 @@ export class TerrainLoader {
                     const tutoBlockId = blockMap[y][x]
                     if (tutoBlockId) {
                         terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => []).push(terrain.surfaces[x][y])
+                    }
+                }
+            }
+        }
+
+        if (emergeMap) {
+            for (let x = 0; x < terrain.width; x++) {
+                for (let y = 0; y < terrain.height; y++) {
+                    const emergeValue = emergeMap[y][x]
+                    if (!emergeValue) continue
+                    if (emergeValue % 2 === 1) {
+                        terrain.emergeTrigger.push(new EmergeTrigger(terrain.surfaces[x][y], emergeValue + 1))
+                    } else {
+                        terrain.emergeSpawns.getOrUpdate(emergeValue, () => []).add(terrain.surfaces[x][y])
                     }
                 }
             }

@@ -13,8 +13,13 @@ import { SurfaceType } from './SurfaceType'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Sample } from '../../audio/Sample'
 import { EventBus } from '../../event/EventBus'
-import { LandslideEvent } from '../../event/WorldLocationEvent'
+import { GenericMonsterEvent, LandslideEvent } from '../../event/WorldLocationEvent'
 import { PositionComponent } from '../component/PositionComponent'
+import { EntityType, MonsterEntityType } from '../model/EntityType'
+import { EmergeTrigger } from './EmergeTrigger'
+import { MonsterSpawner } from '../entity/MonsterSpawner'
+import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
+import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 
 export class Terrain {
     heightOffset: number[][] = [[]]
@@ -31,6 +36,10 @@ export class Terrain {
     erodeTriggerTimeMs: number = 0
     lavaErodes: LavaErosion[] = []
     tutoBlocksById: Map<number, Surface[]> = new Map()
+    emergeCreature: MonsterEntityType = EntityType.NONE
+    emergeTrigger: EmergeTrigger[] = []
+    emergeSpawns: Map<number, Surface[]> = new Map()
+    emergeTimeoutMs: number = 0
 
     constructor(readonly worldMgr: WorldManager, readonly levelConf: LevelEntryCfg) {
         this.worldMgr.sceneMgr.terrain = this
@@ -41,6 +50,7 @@ export class Terrain {
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
         this.powerGrid = new PowerGrid(this.worldMgr)
         this.erodeTriggerTimeMs = levelConf.erodeTriggerTime * 1000
+        this.emergeTimeoutMs = levelConf.emergeTimeOut / 1500 * 60 * 1000 // 1500 specifies 1 minute
     }
 
     getSurfaceFromWorld(worldPosition: Vector3): Surface | null {
@@ -175,6 +185,42 @@ export class Terrain {
             this.lavaErodes.forEach((e) => updateSafe(e, elapsedMs - this.erodeTriggerTimeMs))
             this.erodeTriggerTimeMs = 0
         }
+        if (this.emergeCreature) this.updateEmergeTrigger(elapsedMs)
+    }
+
+    private updateEmergeTrigger(elapsedMs: number) {
+        const failedEmergeTrigger = []
+        this.emergeTrigger.forEach((t) => {
+            try {
+                if (t.emergeDelayMs > 0) t.emergeDelayMs -= elapsedMs
+                if (t.emergeDelayMs > 0) return
+                const isTriggered = [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles]
+                    .some((e) => this.worldMgr.ecs.getComponents(e.entity).get(PositionComponent).surface === t.triggerSurface)
+                if (!isTriggered) return
+                this.emergeSpawns.getOrDefault(t.emergeSpawnId, []).forEach((spawn) => {
+                    const target = spawn.neighbors.find((n) => n.surfaceType.floor && n.discovered)
+                    if (!target) return
+                    t.emergeDelayMs = this.emergeTimeoutMs
+                    const spawnCenter = spawn.getCenterWorld2D()
+                    const targetCenter = target.getCenterWorld2D()
+                    const angle = -targetCenter.clone().sub(spawnCenter).angle() + Math.PI / 2
+                    const monster = MonsterSpawner.spawnMonster(this.worldMgr, this.emergeCreature, spawnCenter.clone().add(targetCenter).divideScalar(2), angle)
+                    const components = this.worldMgr.ecs.getComponents(monster)
+                    const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
+                    const positionComponent = components.get(PositionComponent)
+                    sceneEntity.setAnimation(RockMonsterActivity.Emerge, () => {
+                        sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                        this.worldMgr.entityMgr.raiderScare.push(positionComponent)
+                        // TODO add rock monster behaviour component
+                    })
+                    EventBus.publishEvent(new GenericMonsterEvent(positionComponent))
+                })
+            } catch (e) {
+                console.error(e)
+                failedEmergeTrigger.push(t)
+            }
+        })
+        failedEmergeTrigger.forEach((t) => this.emergeTrigger.remove(t))
     }
 
     getFloorPosition(world: Vector2) {

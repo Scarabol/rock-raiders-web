@@ -93,7 +93,7 @@ export class Raider implements Updatable, JobFulfiller {
         const raider = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
         this.worldMgr.entityMgr.raiderScare.forEach((scare) => {
             const distanceSq = raider.getPosition2D().distanceToSquared(scare.getPosition2D())
-            if (distanceSq >= 80 * 80) return
+            if (distanceSq >= 60 * 60) return
             this.scared = true
             this.dropCarried(true)
             const scareNeighbors = scare.surface.neighbors

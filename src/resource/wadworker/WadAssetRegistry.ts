@@ -68,6 +68,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
             this.addAsset(this.wadLoader.loadMapAsset, level.pathMap, true)
             if (level.fallinMap) this.addAsset(this.wadLoader.loadMapAsset, level.fallinMap)
             if (level.erodeMap) this.addAsset(this.wadLoader.loadMapAsset, level.erodeMap)
+            if (level.emergeMap) this.addAsset(this.wadLoader.loadMapAsset, level.emergeMap, true)
             this.addAsset(this.wadLoader.loadObjectListAsset, level.oListFile)
             this.addAsset(this.wadLoader.loadNerpAsset, level.nerpFile)
             this.addAsset(this.wadLoader.loadNerpMsg, level.nerpMessageFile)

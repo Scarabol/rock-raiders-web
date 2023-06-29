@@ -44,12 +44,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - switch all raider with weapon from work to defend
 - let raider in defend mode target any known slug or rock monster
-- make raider flee from nearby monsters
 - add spawn timer for slugs, only one slug per hole
 - make slugs look for nearby reachable buildings or fences to leech energy
 - spawn a depleted energy crystal, when slug leeched energy
-- wake up rock monsters, when raider are near or by big bangs
-- reset emerge rock monster trigger from walls with EmergeTimeOut from config
+- wake up rock monsters by big bangs
 - make monster attack any nearby buildings
 - make monster create bolder and throw at buildings
 - show lightning beam between electric fences
