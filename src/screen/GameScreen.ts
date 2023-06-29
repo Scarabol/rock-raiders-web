@@ -111,19 +111,18 @@ export class GameScreen {
         this.gameLayer.hide()
     }
 
-    takeFinalScreenshot(resultState: GameResultState) {
+    async takeFinalScreenshot(resultState: GameResultState) {
         const gameTimeSeconds = Math.round(this.worldMgr.elapsedGameTimeMs / 1000)
-        this.screenMaster.createScreenshot().then((canvas) => {
-            let result: GameResult = null
-            if (this.levelConf.reward) {
-                result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, this.entityMgr.getMaxRaiders(), gameTimeSeconds, canvas)
-                if (result.state === GameResultState.COMPLETE) SaveGameManager.setLevelScore(this.levelName, result.score)
-            } else {
-                // TODO Show briefing panel with outro message for tutorial levels
-                GameState.reset()
-            }
-            this.hide()
-            EventBus.publishEvent(new ShowGameResultEvent(result))
-        })
+        const canvas = resultState === GameResultState.COMPLETE ? await this.screenMaster.createScreenshot() : null
+        let result: GameResult = null
+        if (this.levelConf.reward) {
+            result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, this.entityMgr.getMaxRaiders(), gameTimeSeconds, canvas)
+            if (result.state === GameResultState.COMPLETE) SaveGameManager.setLevelScore(this.levelName, result.score)
+        } else {
+            // TODO Show briefing panel with outro message for tutorial levels
+            GameState.reset()
+        }
+        this.hide()
+        EventBus.publishEvent(new ShowGameResultEvent(result))
     }
 }
