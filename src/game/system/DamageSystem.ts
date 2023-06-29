@@ -6,9 +6,10 @@ import { DynamiteExplosionEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { HealthBarComponent } from '../component/HealthBarComponent'
+import { SurfaceType } from '../terrain/SurfaceType'
 
 export class DamageSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
+    componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent, HealthBarComponent])
     readonly dynamiteExplosions: DynamiteExplosionEvent[] = []
     readonly dynamiteRadiusSq: number = 0
     readonly dynamiteMaxDamage: number = 0
@@ -27,17 +28,22 @@ export class DamageSystem extends AbstractGameSystem {
             try {
                 const components = this.ecs.getComponents(entity)
                 const positionComponent = components.get(PositionComponent)
+                const healthComponent = components.get(HealthComponent)
+                const healthBarComponent = components.get(HealthBarComponent)
                 const position = positionComponent.getPosition2D()
                 this.dynamiteExplosions.forEach((explosion) => {
                     const distanceSq = position.distanceToSquared(explosion.position)
                     const inRangeSq = 1 - distanceSq / this.dynamiteRadiusSq
                     if (inRangeSq > 0) {
-                        const healthComponent = components.get(HealthComponent)
                         healthComponent.health -= this.dynamiteMaxDamage * Math.pow(inRangeSq, 2)
-                        const healthBarComponent = components.get(HealthBarComponent)
                         healthBarComponent.setStatus(healthComponent.health / healthComponent.maxHealth)
                     }
                 })
+                const surface = components.get(PositionComponent).surface
+                if (surface.surfaceType === SurfaceType.LAVA5 && healthComponent.health > 0) {
+                    healthComponent.health -= 50 / 1000 * elapsedMs
+                    healthBarComponent.setStatus(healthComponent.health / healthComponent.maxHealth)
+                }
             } catch (e) {
                 console.error(e)
             }
