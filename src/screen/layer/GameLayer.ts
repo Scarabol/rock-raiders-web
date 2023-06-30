@@ -22,7 +22,7 @@ import { MaterialEntity } from '../../game/model/material/MaterialEntity'
 import { BuildPlacementMarker } from '../../game/model/building/BuildPlacementMarker'
 import { WorldManager } from '../../game/WorldManager'
 import { GameState } from '../../game/model/GameState'
-import { MoveJob } from '../../game/model/job/raider/MoveJob'
+import { MoveJob } from '../../game/model/job/MoveJob'
 
 export class GameLayer extends ScreenLayer {
     worldMgr: WorldManager
