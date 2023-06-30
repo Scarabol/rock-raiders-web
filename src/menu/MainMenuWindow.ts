@@ -16,24 +16,23 @@ export class MainMenuWindow extends MainMenuBaseItem {
     }
 
     setFirstLine(text: string) {
-        ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text)
-            .then((textImage) => {
-                this.imgFirstLine = textImage
-                this.state.stateChanged = true
-            })
+        ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text, this.width).then((textImage) => {
+            this.imgFirstLine = textImage
+            this.state.stateChanged = true
+        })
     }
 
     setSecondLine(text: string) {
-        ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text)
-            .then((textImage) => {
-                this.imgSecondLine = textImage
-                this.state.stateChanged = true
-            })
+        ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text, this.width).then((textImage) => {
+            this.imgSecondLine = textImage
+            this.state.stateChanged = true
+        })
     }
 
     draw(context: SpriteContext) {
         super.draw(context)
-        const cx = this.x + this.width / 2, cy = this.y + this.height / 2
+        const totalHeight = (this.imgFirstLine?.height || 0) + (this.imgSecondLine?.height || 0)
+        const cx = this.x + this.width / 2, cy = this.y + this.height * (this.imgFirstLine?.height || 0) / totalHeight
         if (this.imgFirstLine) context.drawImage(this.imgFirstLine, cx - this.imgFirstLine.width / 2, cy - this.imgFirstLine.height)
         if (this.imgSecondLine) context.drawImage(this.imgSecondLine, cx - this.imgSecondLine.width / 2, cy)
     }

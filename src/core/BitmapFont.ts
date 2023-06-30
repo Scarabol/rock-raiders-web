@@ -73,18 +73,15 @@ export class BitmapFontData {
 }
 
 export class BitmapFont {
-    data: BitmapFontData
-
-    constructor(data: BitmapFontData) {
-        this.data = data
+    constructor(readonly data: BitmapFontData) {
     }
 
     createTextImageData(text: string, maxWidth?: number, autoCenter: boolean = true): ImageData {
         if (!text) return null
         text = text.replace(/_/g, ' ')
         const rows = this.determineRows(text, maxWidth)
-        const width = Math.max(...(rows.map(r => r.width)))
-        const result = new ImageData(width, this.data.charHeight * rows.length)
+        const width = Math.max(1, ...(rows.map(r => r.width)))
+        const result = new ImageData(width, this.data.charHeight * (rows.length || 1))
         rows.forEach((row, index) => {
             const rowX = autoCenter ? Math.round((width - row.width) / 2) : 0
             const rowY = index * this.data.charHeight
@@ -118,7 +115,7 @@ export class BitmapFont {
         const rows: { text: string, width: number }[] = []
         let rowText = ''
         let rowWidth = 0
-        text.split(' ').map(word => {
+        text.split(' ').forEach((word) => {
             let wordWidth = 0
             for (let c = 0; c < word.length; c++) {
                 const letter = word.charAt(c)
@@ -142,7 +139,6 @@ export class BitmapFont {
                 rowText += word
                 rowWidth += wordWidth
             }
-            return wordWidth
         })
         if (rowWidth > 0) rows.push({text: rowText, width: rowWidth})
         return rows

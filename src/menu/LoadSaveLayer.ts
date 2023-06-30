@@ -37,7 +37,7 @@ export class LoadSaveLayer extends MainMenuLayer {
                 const slotText = this.menuCfg.saveText.slot
                 this.loadSaveTextWindow.setSecondLine(slotText.replace('%d%', String(percent)))
             } else {
-                this.loadSaveTextWindow.setSecondLine('')
+                this.loadSaveTextWindow.setSecondLine(' ')
             }
         }
         this.buttons.add(btn)

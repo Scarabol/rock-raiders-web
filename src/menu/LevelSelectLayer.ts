@@ -19,7 +19,7 @@ export class LevelSelectLayer extends MainMenuLayer {
             const levelButton = new MainMenuLevelButton(this, levelKey, level)
             levelButton.onHoverChange = () => {
                 const levelScore = SaveGameManager.getLevelScoreString(levelKey)
-                levelTextWindow.setSecondLine(levelButton.hover ? level.fullName + levelScore : '')
+                levelTextWindow.setSecondLine(levelButton.hover ? level.fullName + levelScore : ' ')
             }
             this.items.push(levelButton)
         })
