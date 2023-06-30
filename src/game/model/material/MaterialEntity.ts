@@ -45,7 +45,8 @@ export class MaterialEntity {
         }
     }
 
-    private dispose() {
+    dispose() {
+        if (this.carryJob) this.carryJob.jobState = JobState.CANCELED
         this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.sceneEntity.dispose()
         this.worldMgr.entityMgr.materials.remove(this)
