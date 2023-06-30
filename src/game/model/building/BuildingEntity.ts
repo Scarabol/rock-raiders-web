@@ -296,6 +296,7 @@ export class BuildingEntity {
         this.surfaces.forEach((s) => s.setBuilding(this))
         const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity, {gameEntity: this.entity, entityType: this.entityType}, this.stats, this.stats.PickSphere / 4))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPosition)
+        floorPosition.y = Math.max(...this.surfaces.map((s) => this.worldMgr.sceneMgr.getFloorPosition(s.getCenterWorld2D()).y))
         this.sceneEntity.position.copy(floorPosition)
         this.worldMgr.ecs.addComponent(this.entity, new PositionComponent(floorPosition, this.primarySurface))
         this.sceneEntity.rotation.y = radHeading
