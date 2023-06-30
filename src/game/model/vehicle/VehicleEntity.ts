@@ -6,7 +6,7 @@ import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarEntities } from '../../../event/LocalEvents'
 import { DEV_MODE, ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL } from '../../../params'
 import { WorldManager } from '../../WorldManager'
-import { AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
+import { AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
 import { EntityType } from '../EntityType'
 import { Job, JobFulfiller } from '../job/Job'
@@ -124,7 +124,23 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
-        if (result === MoveState.TARGET_UNREACHABLE) {
+        if (result === MoveState.MOVED) {
+            const vehiclePosition2D = this.sceneEntity.position2D
+            this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
+                const components = this.worldMgr.ecs.getComponents(rocky)
+                const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
+                if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
+                    const positionComponent = components.get(PositionComponent)
+                    const rockyPosition2D = positionComponent.getPosition2D()
+                    if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < 25 * 25) { // TODO Use WakeRadius from monster stats
+                        rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
+                            this.worldMgr.entityMgr.raiderScare.push(positionComponent)
+                            // TODO add rocky behaviour component
+                        })
+                    }
+                }
+            })
+        } else if (result === MoveState.TARGET_UNREACHABLE) {
             console.warn('Vehicle could not move to job target, stopping job', this.job, target)
             this.stopJob()
         }

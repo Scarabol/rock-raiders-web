@@ -6,7 +6,7 @@ import { RaidersAmountChangedEvent, UpdateRadarEntities } from '../../../event/L
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { WorldManager } from '../../WorldManager'
-import { AnimationActivity, AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
+import { AnimationActivity, AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
 import { Job, JobFulfiller } from '../job/Job'
 import { JobState } from '../job/JobState'
@@ -157,6 +157,20 @@ export class Raider implements Updatable, JobFulfiller {
                     return true
                 }
                 return false
+            })
+            this.worldMgr.entityMgr.rockMonsters.forEach((rocky) => {
+                const components = this.worldMgr.ecs.getComponents(rocky)
+                const rockySceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
+                if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
+                    const positionComponent = components.get(PositionComponent)
+                    const rockyPosition2D = positionComponent.getPosition2D()
+                    if (raiderPosition2D.distanceToSquared(rockyPosition2D) < 25 * 25) { // TODO Use WakeRadius from monster stats
+                        rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
+                            this.worldMgr.entityMgr.raiderScare.push(positionComponent)
+                            // TODO add rocky behaviour component
+                        })
+                    }
+                }
             })
         } else if (result === MoveState.TARGET_UNREACHABLE) {
             console.warn('Raider could not move to job target, stopping job', this.job, target)

@@ -73,4 +73,5 @@ export enum RaiderActivity {
 export enum RockMonsterActivity {
     Unpowered = 'Activity_Unpowered',
     Emerge = 'Activity_Emerge',
+    WakeUp = 'Activity_WakeUp',
 }
