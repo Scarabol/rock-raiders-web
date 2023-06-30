@@ -47,6 +47,7 @@ export enum RaiderActivity {
     Eat = 'Activity_Eat',
     Slip = 'Activity_Slip',
     Train = 'Activity_Train',
+    RunPanic = 'Activity_RunPanic',
 
     TeleportIn = 'Activity_TeleportIn',
 

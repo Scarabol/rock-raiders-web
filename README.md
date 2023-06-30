@@ -40,15 +40,11 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Development Roadmap
 
-### v0.6.0 - Complete Base Systems
-
-- Raider get tired while carrying and eat at barracks
-
 ### v0.7.0 - Rockies, Slugs And Damage
 
 - switch all raider with weapon from work to defend
 - let raider in defend mode target any known slug or rock monster
-- make raider flee from nearby monsters and ticking dynamite
+- make raider flee from nearby monsters
 - add spawn timer for slugs, only one slug per hole
 - make slugs look for nearby reachable buildings or fences to leech energy
 - spawn a depleted energy crystal, when slug leeched energy
@@ -63,6 +59,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - make rock monster crumble when reaching a fence or lightning
 - make rock monster pick up nearby raider and shake them upside down
 - make rock monster punch vehicles passing by
+- Raider get tired while carrying and eat at barracks
 
 ### v0.8.0 - Late game features
 

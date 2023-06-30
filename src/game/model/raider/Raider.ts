@@ -31,6 +31,7 @@ import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { OxygenComponent } from '../../component/OxygenComponent'
 import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
+import { RunPanicJob } from '../job/raider/RunPanicJob'
 
 export class Raider implements Updatable {
     readonly entityType: EntityType = EntityType.PILOT
@@ -49,6 +50,7 @@ export class Raider implements Updatable {
     slipped: boolean = false
     foodLevel: number = 1
     vehicle: VehicleEntity = null
+    scared: boolean = false
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
@@ -81,8 +83,24 @@ export class Raider implements Updatable {
             this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
             return
         }
-        if (!this.job || this.selected || this.isInBeam()) return
+        if (this.selected || this.isInBeam()) return
+        this.checkScared()
+        if (!this.job) return
         this.work(elapsedMs)
+    }
+
+    private checkScared() {
+        if (this.scared) return
+        this.worldMgr.entityMgr.raiderScare.forEach((scare) => {
+            const distanceSq = scare.getPosition2D().distanceToSquared(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).getPosition2D())
+            if (distanceSq < 80 * 80) {
+                this.scared = true
+                this.sceneEntity.setAnimation(RaiderActivity.RunPanic)
+                this.dropCarried()
+                const runTarget = this.sceneEntity.position2D.add(this.sceneEntity.position2D.sub(scare.getPosition2D()))
+                this.setJob(new RunPanicJob(runTarget))
+            }
+        })
     }
 
     isDriving(): boolean {

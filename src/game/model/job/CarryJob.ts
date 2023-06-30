@@ -100,8 +100,11 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
     }
 
     private igniteDynamite() {
+        const positionComponent = this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(PositionComponent)
+        this.carryItem.worldMgr.entityMgr.raiderScare.add(positionComponent)
         this.carryItem.sceneEntity.headTowards(this.carryItem.targetSurface.getCenterWorld2D())
         this.carryItem.sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
+            this.carryItem.worldMgr.entityMgr.raiderScare.remove(positionComponent)
             this.carryItem.targetSurface.collapse()
             this.carryItem.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.carryItem.sceneEntity.position, this.carryItem.sceneEntity.getHeading())
             this.carryItem.worldMgr.sceneMgr.addPositionalAudio(this.carryItem.sceneEntity, Sample[Sample.SFX_Dynamite], true, false)
