@@ -90,8 +90,6 @@ export class WorldManager {
         this.entityMgr.ecs = this.ecs
         this.ecs.reset()
         this.jobSupervisor.reset()
-        GameState.changeNeededCrystals(levelConf.reward?.quota?.crystals || 0)
-        GameState.totalCaverns = levelConf.reward?.quota?.caverns || 0
         this.oxygenSystem.setLevelOxygenRate(DEV_MODE ? 0 : levelConf.oxygenRate)
         this.elapsedGameTimeMs = 0
         this.requestedRaiders = 0

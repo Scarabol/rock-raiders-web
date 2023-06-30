@@ -9,7 +9,8 @@ import { ScreenMaster } from './ScreenMaster'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
-import { LevelSelectedEvent } from '../event/WorldEvents'
+import { LevelSelectedEvent, MaterialAmountChanged } from '../event/WorldEvents'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 
 export class MainMenuScreen {
     menuLayers: MainMenuLayer[] = []
@@ -64,7 +65,15 @@ export class MainMenuScreen {
     }
 
     selectLevel(levelName: string) {
+        let levelConf: LevelEntryCfg = null
+        try {
+            levelConf = ResourceManager.getLevelEntryCfg(levelName)
+        } catch (e) {
+            console.error(`Could not load level: ${levelName}`, e)
+            return
+        }
         this.menuLayers.forEach((m) => m.hide())
-        EventBus.publishEvent(new LevelSelectedEvent(levelName))
+        EventBus.publishEvent(new LevelSelectedEvent(levelName, levelConf))
+        EventBus.publishEvent(new MaterialAmountChanged())
     }
 }

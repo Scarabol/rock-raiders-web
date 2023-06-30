@@ -158,7 +158,7 @@ export class SceneManager implements Updatable {
         // gather level start details for game result score calculation
         GameState.totalDiggables = this.terrain.countDiggables()
         GameState.totalCrystals = this.terrain.countCrystals()
-        GameState.totalOres = this.terrain.countOres()
+        GameState.numTotalOres = this.terrain.countOres()
     }
 
     startScene() {

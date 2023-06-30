@@ -6,6 +6,7 @@ import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 import { Vector2 } from 'three'
 import { GameResultState } from '../game/model/GameResult'
+import { LevelEntryCfg } from '../cfg/LevelsCfg'
 
 export class WorldEvent extends GameEvent {
     constructor(entityKey: EventKey) {
@@ -106,8 +107,8 @@ export class RestartGameEvent extends WorldEvent {
     }
 }
 
-export class LevelSelectedEvent extends WorldEvent{
-    constructor(readonly levelName: string) {
+export class LevelSelectedEvent extends WorldEvent {
+    constructor(readonly levelName: string, readonly levelConf: LevelEntryCfg) {
         super(EventKey.LEVEL_SELECTED)
     }
 }

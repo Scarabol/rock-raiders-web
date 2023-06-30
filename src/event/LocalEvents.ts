@@ -2,7 +2,6 @@ import { Vector3 } from 'three'
 import { MapMarkerChange, MapMarkerType } from '../game/component/MapMarkerComponent'
 import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
-import { GameState } from '../game/model/GameState'
 import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/terrain/Surface'
 import { SurfaceType } from '../game/terrain/SurfaceType'
@@ -203,15 +202,6 @@ export class UpdatePriorities extends LocalEvent {
     constructor(priorityList: PriorityEntry[]) {
         super(EventKey.UPDATE_PRIORITIES)
         this.priorityList = priorityList
-    }
-}
-
-export class NeededCrystalsChanged extends LocalEvent {
-    neededCrystals: number
-
-    constructor() {
-        super(EventKey.NEEDED_CRYSTALS_CHANGED)
-        this.neededCrystals = GameState.neededCrystals
     }
 }
 

@@ -51,20 +51,11 @@ export class GameScreen {
         this.guiMgr = new GuiManager(this.worldMgr)
         EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => this.takeFinalScreenshot(event.result))
         EventBus.registerEventListener(EventKey.RESTART_GAME, () => this.restartLevel())
-        EventBus.registerEventListener(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => this.startLevel(event.levelName))
-    }
-
-    startLevel(levelName: string) {
-        try {
-            const levelConf = ResourceManager.getLevelEntryCfg(levelName)
-            this.levelName = levelName
-            this.levelConf = levelConf
+        EventBus.registerEventListener(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
+            this.levelName = event.levelName
+            this.levelConf = event.levelConf
             this.setupAndStartLevel()
-        } catch (e) {
-            console.error(`Could not load level: ${levelName}`, e)
-            this.hide()
-            EventBus.publishEvent(new ShowGameResultEvent())
-        }
+        })
     }
 
     restartLevel() {

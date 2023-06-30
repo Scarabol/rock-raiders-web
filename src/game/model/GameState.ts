@@ -1,5 +1,4 @@
 import { EventBus } from '../../event/EventBus'
-import { NeededCrystalsChanged } from '../../event/LocalEvents'
 import { MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'
 import { MaterialEntity } from './material/MaterialEntity'
 import { EntityType } from './EntityType'
@@ -10,13 +9,11 @@ export class GameState {
     static numOre: number = 0
     static numBrick: number = 0
     static usedCrystals: number = 0
-    static neededCrystals: number = 0
     static airLevel: number = 1 // air level in percent from 0 to 1.0
     static totalCrystals: number = 0
-    static totalOres: number = 0
+    static numTotalOres: number = 0
     static totalDiggables: number = 0
     static remainingDiggables: number = 0
-    static totalCaverns: number = 0
     static discoveredCaverns: number = 0
     static hiddenObjectsFound: number = 0
     static alarmMode: boolean = false
@@ -28,13 +25,11 @@ export class GameState {
         this.numOre = 0
         this.numBrick = 0
         this.usedCrystals = 0
-        this.neededCrystals = 0
         this.airLevel = 1
         this.totalCrystals = 0
-        this.totalOres = 0
+        this.numTotalOres = 0
         this.totalDiggables = 0
         this.remainingDiggables = 0
-        this.totalCaverns = 0
         this.discoveredCaverns = 0
         this.hiddenObjectsFound = 0
         this.alarmMode = false
@@ -45,11 +40,6 @@ export class GameState {
         if (!changedCrystals) return
         this.usedCrystals += changedCrystals
         EventBus.publishEvent(new UsedCrystalsChanged())
-    }
-
-    static changeNeededCrystals(crystals: number) {
-        this.neededCrystals = crystals
-        EventBus.publishEvent(new NeededCrystalsChanged())
     }
 
     static depositItem(item: MaterialEntity) {

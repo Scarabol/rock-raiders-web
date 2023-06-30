@@ -11,6 +11,8 @@ export enum GameResultState {
 }
 
 export class GameResult {
+    quotaCrystals: number = 0
+    quotaCaverns: number = 0
     defencePercent: number = 100 // TODO defence report is either 0% or 100%
     airLevelPercent: number = 100
     score: number = 100
@@ -36,6 +38,8 @@ export class GameResult {
         if (this.rewardConfig) {
             const quota = this.rewardConfig.quota
             const importance = this.rewardConfig.importance
+            this.quotaCrystals = quota.crystals || 0
+            this.quotaCaverns = quota.caverns || 0
             this.scoreCrystals = GameState.numCrystal >= (quota.crystals || Infinity) ? importance.crystals : 0
             this.scoreTimer = this.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
             this.scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0

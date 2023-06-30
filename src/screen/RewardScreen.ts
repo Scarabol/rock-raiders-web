@@ -160,11 +160,11 @@ export class RewardScreen {
         this.screenshot = result.screenshot
         this.resultValues.length = 0
         Promise.all([
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('crystals'), this.percentString(GameState.numCrystal, GameState.neededCrystals)),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('ore'), this.percentString(GameState.numOre, GameState.totalOres)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('crystals'), this.percentString(GameState.numCrystal, result.quotaCrystals)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('ore'), this.percentString(GameState.numOre, GameState.numTotalOres)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('diggable'), this.percentString(GameState.remainingDiggables, GameState.totalDiggables, true)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('constructions'), result.numBuildings.toString()),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('caverns'), this.percentString(GameState.discoveredCaverns, GameState.totalCaverns)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('caverns'), this.percentString(GameState.discoveredCaverns, result.quotaCaverns)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('figures'), this.percentString(result.numRaiders, result.numMaxRaiders)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('rockmonsters'), this.percentString(result.defencePercent, 100)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('oxygen'), this.percentString(result.airLevelPercent, 100)),
