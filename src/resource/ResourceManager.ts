@@ -142,6 +142,9 @@ export class ResourceManager extends ResourceCache {
         const toolIcons = tools.map((t) => {
             return ResourceManager.getImage(ResourceManager.configuration.tooltipIcons.get(RaiderTools.toToolTipIconName(t)))
         })
+        for (let c = toolIcons.length; c < numToolSlots; c++) {
+            toolIcons.push(ResourceManager.getImage(ResourceManager.configuration.tooltipIcons.get('blank')))
+        }
         const trainingIcons = trainings.map((t) => {
             return ResourceManager.getImage(ResourceManager.configuration.tooltipIcons.get(RaiderTrainings.toToolTipIconName(t)))
         })
