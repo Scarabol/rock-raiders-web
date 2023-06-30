@@ -3,13 +3,12 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearTimeoutSafe } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { GameResultEvent, MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged, ToggleAlarmEvent } from '../event/WorldEvents'
+import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged, ToggleAlarmEvent } from '../event/WorldEvents'
 import { NerpRunner } from '../nerp/NerpRunner'
 import { CHECK_SPAWN_RAIDER_TIMER, CHECK_SPAWN_VEHICLE_TIMER, DEV_MODE, TILESIZE, UPDATE_INTERVAL_MS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { EntityManager } from './EntityManager'
 import { EntityType } from './model/EntityType'
-import { GameResultState } from './model/GameResult'
 import { GameState } from './model/GameState'
 import { Raider } from './model/raider/Raider'
 import { updateSafe } from './model/Updateable'
@@ -80,9 +79,6 @@ export class WorldManager {
             if (!this.nerpRunner) return
             this.nerpRunner.objectiveShowing = event.isShowing ? 1 : 0
             this.nerpRunner.objectiveSwitch = this.nerpRunner.objectiveSwitch && event.isShowing
-        })
-        EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
-            if (event.result !== GameResultState.UNDECIDED) this.stop()
         })
     }
 
@@ -184,5 +180,11 @@ export class WorldManager {
         } catch (e) {
             console.error(e)
         }
+    }
+
+    async teleportEnd(): Promise<void> {
+        ;[...this.entityMgr.raiders, ...this.entityMgr.vehicles, ...this.entityMgr.buildings].shuffle()
+            .forEach((e, i) => setTimeout(() => e.beamUp(false), i * 200))
+        return new Promise((resolve) => setTimeout(() => resolve(), 10000))
     }
 }

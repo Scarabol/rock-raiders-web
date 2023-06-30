@@ -146,20 +146,22 @@ export class BuildingEntity {
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
-    beamUp() {
+    beamUp(dropMaterials: boolean) {
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
         this.turnEnergyOff()
         this.sceneEntity.setAnimation(BuildingActivity.Stand)
         this.powerOffSprite.setEnabled(false)
-        for (let c = 0; c < this.stats.CostOre; c++) {
-            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, this.primarySurface.getRandomPosition())
+        if (dropMaterials) {
+            for (let c = 0; c < this.stats.CostOre; c++) {
+                MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, this.primarySurface.getRandomPosition())
+            }
+            for (let c = 0; c < this.stats.CostCrystal; c++) {
+                MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, this.primarySurface.getRandomPosition())
+            }
+            this.carriedItems.forEach((m) => this.worldMgr.entityMgr.placeMaterial(m, this.primarySurface.getRandomPosition()))
         }
-        for (let c = 0; c < this.stats.CostCrystal; c++) {
-            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, this.primarySurface.getRandomPosition())
-        }
-        this.carriedItems.forEach((m) => this.worldMgr.entityMgr.placeMaterial(m, this.primarySurface.getRandomPosition()))
         this.surfaces.forEach((s) => s.setBuilding(null))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))

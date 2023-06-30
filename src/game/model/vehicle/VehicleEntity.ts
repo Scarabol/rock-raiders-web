@@ -70,21 +70,23 @@ export class VehicleEntity implements Updatable {
         const health = components.get(HealthComponent).health
         if (health <= 0 && !components.has(BeamUpComponent)) {
             EventBus.publishEvent(new GenericDeathEvent(this.sceneEntity.position))
-            this.beamUp()
+            this.beamUp(true)
             return
         }
         if (!this.job || this.selected || this.isInBeam()) return
         this.work(elapsedMs)
     }
 
-    beamUp() {
+    beamUp(dropMaterials: boolean) {
         this.dropDriver()
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
-        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
-        const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
-        if (spawnSurface) {
-            for (let c = 0; c < this.stats.CostOre; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
-            for (let c = 0; c < this.stats.CostCrystal; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, spawnSurface.getRandomPosition())
+        if (dropMaterials) {
+            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
+            const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
+            if (spawnSurface) {
+                for (let c = 0; c < this.stats.CostOre; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
+                for (let c = 0; c < this.stats.CostCrystal; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, spawnSurface.getRandomPosition())
+            }
         }
         this.worldMgr.entityMgr.vehicles.remove(this)
         this.worldMgr.entityMgr.vehiclesInBeam.add(this)

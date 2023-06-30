@@ -49,7 +49,7 @@ export class GameScreen {
         this.gameLayer.entityMgr = this.entityMgr
         this.selectionLayer.worldMgr = this.worldMgr
         this.guiMgr = new GuiManager(this.worldMgr)
-        EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => this.takeFinalScreenshot(event.result))
+        EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => this.startEndgameSequence(event.result))
         EventBus.registerEventListener(EventKey.RESTART_GAME, () => this.restartLevel())
         EventBus.registerEventListener(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
             this.levelName = event.levelName
@@ -102,17 +102,23 @@ export class GameScreen {
         this.gameLayer.hide()
     }
 
-    async takeFinalScreenshot(resultState: GameResultState) {
+    async startEndgameSequence(resultState: GameResultState) {
         const gameTimeSeconds = Math.round(this.worldMgr.elapsedGameTimeMs / 1000)
         const canvas = resultState === GameResultState.COMPLETE ? await this.screenMaster.createScreenshot() : null
         let result: GameResult = null
         if (this.levelConf.reward) {
             result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, this.entityMgr.getMaxRaiders(), gameTimeSeconds, canvas)
-            if (result.state === GameResultState.COMPLETE) SaveGameManager.setLevelScore(this.levelName, result.score)
+            if (result.state === GameResultState.COMPLETE) {
+                SaveGameManager.setLevelScore(this.levelName, result.score)
+                if (!this.levelConf.disableEndTeleport) {
+                    await this.worldMgr.teleportEnd()
+                }
+            }
         } else {
             // TODO Show briefing panel with outro message for tutorial levels
-            GameState.reset()
         }
+        this.worldMgr.stop()
+        GameState.reset()
         this.hide()
         EventBus.publishEvent(new ShowGameResultEvent(result))
     }

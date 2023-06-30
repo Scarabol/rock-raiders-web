@@ -15,6 +15,8 @@ declare global {
         partition(filter: (element: T) => boolean): [T[], T[]]
 
         random(): T
+
+        shuffle(): this
     }
 
     // noinspection JSUnusedGlobalSymbols
@@ -57,6 +59,16 @@ Array.prototype.partition = function <T>(filter: (element: T) => boolean): [T[],
 Array.prototype.random = function <T>(): T | undefined {
     if (!this.length) return undefined
     return this[Math.randomInclusive(this.length - 1)]
+}
+
+Array.prototype.shuffle = function <T>(): T[] {
+    let currentIndex = this.length
+    while (currentIndex !== 0) {
+        const randomIndex = Math.floor(Math.random() * currentIndex)
+        currentIndex--;
+        [this[currentIndex], this[randomIndex]] = [this[randomIndex], this[currentIndex]]
+    }
+    return this
 }
 
 Array.ensure = function <T>(value: T | T[]): T[] {

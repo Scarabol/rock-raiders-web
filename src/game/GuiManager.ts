@@ -92,7 +92,7 @@ export class GuiManager {
             entityMgr.selection.building?.upgrade()
         })
         EventBus.registerEventListener(EventKey.COMMAND_BUILDING_BEAMUP, () => {
-            entityMgr.selection.building?.beamUp()
+            entityMgr.selection.building?.beamUp(true)
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_BUILDING_POWER_STATE, (event: ChangeBuildingPowerState) => {
             entityMgr.selection.building?.setPowerSwitch(event.state)
@@ -141,7 +141,7 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
-            entityMgr.selection.vehicles.forEach((v) => v.beamUp())
+            entityMgr.selection.vehicles.forEach((v) => v.beamUp(true))
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT, () => {
