@@ -16,6 +16,8 @@ import { NerpScript } from './NerpScript'
 import { DEV_MODE, NERP_EXECUTION_INTERVAL } from '../params'
 import { GameResultEvent } from '../event/WorldEvents'
 
+window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
+
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
     static debug = false
@@ -36,6 +38,7 @@ export class NerpRunner {
     constructor(readonly worldMgr: WorldManager, nerpScriptFile: string) {
         this.script = NerpParser.parse(nerpScriptFile)
         this.checkSyntax()
+        if (NerpRunner.debug) console.log(`Executing following script\n${this.script.lines.join('\n')}`)
     }
 
     update(elapsedMs: number) {
@@ -426,10 +429,7 @@ export class NerpRunner {
     execute() {
         if (this.halted) return
         try {
-            if (NerpRunner.debug) {
-                console.log(`Executing following script\\n${this.script.lines.join('\n')}`)
-                console.log(`Registers: ${this.registers}`)
-            }
+            if (NerpRunner.debug) console.log(`Starting execution with registers set to ${this.registers}`)
             for (this.programCounter = 0; this.programCounter < this.script.statements.length && !this.halted; this.programCounter++) {
                 const statement = this.script.statements[this.programCounter]
                 if (NerpRunner.debug) {

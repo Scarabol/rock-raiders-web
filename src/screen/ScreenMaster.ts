@@ -6,7 +6,6 @@ import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
 import { CursorManager } from './CursorManager'
 import { ChangeCursor } from '../event/GuiCommand'
-import { NerpRunner } from '../nerp/NerpRunner'
 import { SaveScreenshot } from '../event/LocalEvents'
 
 export class ScreenMaster {
@@ -70,13 +69,6 @@ export class ScreenMaster {
             btn.onclick = (event) => {
                 event.stopPropagation()
                 EventBus.publishEvent(new SaveScreenshot())
-            }
-        })
-        Array.from(document.getElementsByClassName('button-debug-nerp')).forEach((btn: HTMLButtonElement) => {
-            btn.style.removeProperty('visibility')
-            btn.onclick = (event) => {
-                event.stopPropagation()
-                NerpRunner.debug = !NerpRunner.debug
             }
         })
         Array.from(document.getElementsByClassName('button-fullscreen')).forEach((btn: HTMLButtonElement) => {
