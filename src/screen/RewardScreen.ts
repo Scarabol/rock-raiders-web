@@ -116,9 +116,8 @@ export class RewardScreen {
             return false
         })
         this.btnLayer.animationFrame.onRedraw = (context) => {
-            context.clearRect(this.btnSave.x, this.btnSave.y, this.btnSave.width, this.btnSave.height)
+            context.clearRect(0, 0, this.btnLayer.canvas.width, this.btnLayer.canvas.height)
             this.btnSave.draw(context)
-            context.clearRect(this.btnAdvance.x, this.btnAdvance.y, this.btnAdvance.width, this.btnAdvance.height)
             this.btnAdvance.draw(context)
         }
         ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFont, 'No level selected')
