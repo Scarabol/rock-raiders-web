@@ -4,6 +4,7 @@ import { PathTarget } from '../../PathTarget'
 import { RaiderJob } from './RaiderJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
+import { JobFulfiller } from '../Job'
 
 export class UpgradeRaiderJob extends RaiderJob {
     building: BuildingEntity
@@ -20,8 +21,8 @@ export class UpgradeRaiderJob extends RaiderJob {
         return entity.findShortestPath(this.workplaces)?.target
     }
 
-    onJobComplete() {
-        super.onJobComplete()
+    onJobComplete(fulfiller: JobFulfiller): void {
+        super.onJobComplete(fulfiller)
         if (this.raider.level < this.raider.stats.Levels) this.raider.level++
     }
 

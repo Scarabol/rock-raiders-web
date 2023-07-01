@@ -6,6 +6,7 @@ import { RaiderJob } from './RaiderJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
+import { JobFulfiller } from '../Job'
 
 export class GetToolJob extends RaiderJob {
     entityMgr: EntityManager
@@ -26,8 +27,8 @@ export class GetToolJob extends RaiderJob {
         return entity.findShortestPath(this.workplaces)?.target
     }
 
-    onJobComplete() {
-        super.onJobComplete()
+    onJobComplete(fulfiller: JobFulfiller): void {
+        super.onJobComplete(fulfiller)
         this.raider.addTool(this.tool)
     }
 

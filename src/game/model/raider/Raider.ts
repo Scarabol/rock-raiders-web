@@ -358,7 +358,7 @@ export class Raider implements Updatable {
     private completeJob() {
         if (this.workAudio?.loop) this.workAudio = resetAudioSafe(this.workAudio)
         else this.workAudio = null
-        this.job?.onJobComplete()
+        this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
         this.infoComponent.setBubbleTexture('bubbleIdle')
         if (this.job?.jobState === JobState.INCOMPLETE) return

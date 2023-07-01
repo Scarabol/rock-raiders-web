@@ -1,4 +1,4 @@
-import { AbstractJob } from './Job'
+import { AbstractJob, JobFulfiller } from './Job'
 import { VehicleUpgrade } from '../vehicle/VehicleUpgrade'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { PathTarget } from '../PathTarget'
@@ -19,9 +19,9 @@ export class VehicleUpgradeJob extends AbstractJob {
         return this.workplace
     }
 
-    onJobComplete() {
+    onJobComplete(fulfiller: JobFulfiller): void {
         this.workplace.building.sceneEntity.setAnimation(BuildingActivity.Upgrade, () => {
-            super.onJobComplete()
+            super.onJobComplete(fulfiller)
             this.workplace.building.sceneEntity.setAnimation(BuildingActivity.Stand)
             this.vehicle.addUpgrade(this.upgrade)
             EventBus.publishEvent(new VehicleUpgradeCompleteEvent())

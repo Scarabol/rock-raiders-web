@@ -8,6 +8,7 @@ import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
+import { JobFulfiller } from '../Job'
 
 export class CompleteSurfaceJob extends ShareableJob {
     readonly workplace: PathTarget
@@ -17,8 +18,8 @@ export class CompleteSurfaceJob extends ShareableJob {
         this.workplace = PathTarget.fromLocation(surface.getRandomPosition())
     }
 
-    onJobComplete() {
-        super.onJobComplete()
+    onJobComplete(fulfiller: JobFulfiller): void {
+        super.onJobComplete(fulfiller)
         this.placedItems.forEach((placed) => placed.disposeFromWorld())
         const targetSurfaceType = this.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING_SITE ? SurfaceType.POWER_PATH : SurfaceType.GROUND
         this.surface.setSurfaceType(targetSurfaceType)

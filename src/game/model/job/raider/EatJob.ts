@@ -4,6 +4,7 @@ import { RaiderJob } from './RaiderJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
+import { JobFulfiller } from '../Job'
 
 export class EatJob extends RaiderJob {
     target: PathTarget = null
@@ -13,10 +14,10 @@ export class EatJob extends RaiderJob {
         return this.target
     }
 
-    onJobComplete() {
+    onJobComplete(fulfiller: JobFulfiller): void {
         this.raider.foodLevel = 1
         this.raider.infoComponent.setHungerIndicator(this.raider.foodLevel)
-        super.onJobComplete()
+        super.onJobComplete(fulfiller)
     }
 
     getWorkActivity(): AnimationActivity {

@@ -1,4 +1,4 @@
-import { MathUtils, PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
+import { PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
 import { Sample } from '../../audio/Sample'
 import { SoundManager } from '../../audio/SoundManager'
 import { EventBus } from '../../event/EventBus'
@@ -24,7 +24,7 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { Job } from '../model/job/Job'
 import { JobState } from '../model/job/JobState'
 import { MaterialSpawner } from '../entity/MaterialSpawner'
-import degToRad = MathUtils.degToRad
+import { degToRad } from 'three/src/math/MathUtils'
 
 export class Surface {
     terrain: Terrain
@@ -122,15 +122,15 @@ export class Surface {
                     this.terrain.getSurface(this.x + x, this.y + y).updateMesh(true)
                 }
             }
-            const vec = new Vector2().copy(drillPosition).sub(this.getCenterWorld2D())
-                .multiplyScalar(0.3 + Math.randomInclusive(3) / 10)
+            const seamDropPosition = new Vector2().copy(drillPosition).sub(this.getCenterWorld2D())
+                .clampLength(TILESIZE / 10, Math.randomInclusive(TILESIZE / 10, TILESIZE / 2))
                 .rotateAround(new Vector2(0, 0), degToRad(-10 + Math.randomInclusive(20)))
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, vec)
+                const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, seamDropPosition)
                 EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
-                MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, vec)
+                MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, seamDropPosition)
                 EventBus.publishEvent(new OreFoundEvent())
             }
         }

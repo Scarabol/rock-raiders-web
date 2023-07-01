@@ -33,8 +33,8 @@ export class DrillJob extends ShareableJob {
         return entity.findShortestPath(this.digPositions)?.target
     }
 
-    onJobComplete() {
-        if (this.surface.onDrillComplete(this.fulfiller.last().sceneEntity.position2D)) super.onJobComplete()
+    onJobComplete(fulfiller: JobFulfiller): void {
+        if (this.surface.onDrillComplete(this.getWorkplace(fulfiller).targetLocation)) super.onJobComplete(fulfiller)
         else this.progress = 0
     }
 
@@ -62,7 +62,7 @@ export class DrillJob extends ShareableJob {
         if (drillTimeSeconds > 0) {
             this.progress += elapsedMs / (drillTimeSeconds * 1000)
             if (this.progress >= 1) {
-                this.onJobComplete()
+                this.onJobComplete(fulfiller)
             }
         }
     }
