@@ -85,6 +85,7 @@ export class GameScreen {
     }
 
     show() {
+        document.title = `${this.levelName} - ${this.levelConf.fullName} - Rock Raiders Web`
         this.gameLayer.show()
         this.selectionLayer.show()
         this.guiLayer.show()
@@ -100,6 +101,7 @@ export class GameScreen {
         this.guiLayer.hide()
         this.selectionLayer.hide()
         this.gameLayer.hide()
+        document.title = "Rock Raiders Web"
     }
 
     async startEndgameSequence(resultState: GameResultState) {
