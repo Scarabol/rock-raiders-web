@@ -8,6 +8,7 @@ import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
+import { EntityType } from '../../EntityType'
 
 export class ClearRubbleJob extends ShareableJob {
     lastRubblePositions: PathTarget[] = []
@@ -23,19 +24,31 @@ export class ClearRubbleJob extends ShareableJob {
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         if (!this.surface.hasRubble()) return null
-        const surfaceRubblePositions = this.surface.rubblePositions
-        if (!this.lastRubblePositions.every((d) => surfaceRubblePositions.some((p) => p.equals(d.targetLocation))) ||
-            !surfaceRubblePositions.every((p) => this.lastRubblePositions.some((d) => p.equals(d.targetLocation)))) {
-            this.lastRubblePositions = surfaceRubblePositions.map((p) => PathTarget.fromLocation(p))
+        if (entity.entityType === EntityType.BULLDOZER) {
+            return entity.findShortestPath(PathTarget.fromLocation(this.surface.getCenterWorld2D()))?.target
+        } else {
+            const surfaceRubblePositions = this.surface.rubblePositions
+            if (!this.lastRubblePositions.every((d) => surfaceRubblePositions.some((p) => p.equals(d.targetLocation))) ||
+                !surfaceRubblePositions.every((p) => this.lastRubblePositions.some((d) => p.equals(d.targetLocation)))) {
+                this.lastRubblePositions = surfaceRubblePositions.map((p) => PathTarget.fromLocation(p))
+            }
+            return entity.findShortestPath(this.lastRubblePositions)?.target
         }
-        return entity.findShortestPath(this.lastRubblePositions)?.target
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {
-        this.surface.reduceRubble()
-        if (!this.surface.hasRubble()) {
+        if (fulfiller.entityType === EntityType.BULLDOZER) {
+            while (this.surface.hasRubble()) {
+                this.surface.reduceRubble()
+            }
             this.surface.clearRubbleJob = null
             super.onJobComplete(fulfiller)
+        } else {
+            this.surface.reduceRubble()
+            if (!this.surface.hasRubble()) {
+                this.surface.clearRubbleJob = null
+                super.onJobComplete(fulfiller)
+            }
         }
     }
 
