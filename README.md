@@ -49,16 +49,14 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - make slugs look for nearby reachable buildings or fences to leech energy
 - spawn a depleted energy crystal, when slug leeched energy
 - wake up rock monsters, when raider are near or by big bangs
-- show health bar over raider, monster and buildings, when health changes
-- beam up raider or buildings when health is too low
-- emerge rock monster by timer from walls
-- make monster attack any nearby powered buildings
+- reset emerge rock monster trigger from walls with EmergeTimeOut from config
+- make monster attack any nearby buildings
 - make monster create bolder and throw at buildings
-- show lightning between electric fences
+- show lightning beam between electric fences
 - show ElectricFenceStud between electric fences and buildings
 - make rock monster crumble when reaching a fence or lightning
 - make rock monster pick up nearby raider and shake them upside down
-- make rock monster punch vehicles passing by
+- make rock monster punch vehicles passing by and vehicle break boulders
 - Raider get tired while carrying and eat at barracks
 
 ### v0.8.0 - Late game features
@@ -67,24 +65,23 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Geologists and scanner
 - Background music and soundtrack
 - Tutorial levels and helper features
-- Show mini-figure with mission briefing
-- Show dependencies as tooltip for buildings/vehicles
-- Add Beam-up animation sequence on successful level end
+- Show FLT mini-figure animation with mission briefing
 - Add screen shake for exploding dynamites
-- Add Work sounds for jobs
+- Add all work sounds for all jobs
 - Show loading screen when starting a level
 - Add rockfall transition when switching in main menu
 - Show misc anim LavaErosionSmoke over lava
 - Add water and lava animation (texture UV coords tearing)
 - Change cursor to X when over disabled IconPanelButtons
 - Unlock levels only after linked levels are completed
-- Overwrite Main Menu Logo with "Nuke Saves & Assets Cache" and "Nuke ALL Caches"
-- Move camera with click on mini map
+- Move camera with click on mini map and show camera view area as wireframe
 - Use same team for all missions and add names to raiders
 - Auto switch from portrait to landscape mode in fullscreen
 - Refactor job system to allow multi-carry jobs for vehicles
 - Large Cat not usable to carry vehicles in Level 19
 - Lava not placed correctly at start in Level 19
+- Add surface type tooltips for map panel
+- Render last selected entity with rotating camera in radar panel
 
 ### v0.9.0 - Polishing
 
@@ -94,13 +91,14 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Nice to have
 
-- Seams do not show tear down progress while drilling
 - Add rotation speed to entities and play turnLeft, turnRight animations
-- Selection layer capturing all touch events prevents camera control on mobile
 - Rendering issue on mobile with icon panel and mission briefing, clearing rect seems to small
 - When switching from loading to main menu layer on mobile the new layer is not shown
 - Clear job from surface, if dynamite cannot reach target
-- Cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position manipulation
+- Hardware cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position manipulation
+- Use long press on mobile browser to emulate right click
+- Do not allow touch events to move scene camera while build mode selection is active
+- Camera can get stuck on mobile browsers when using multiple pointer gestures
 
 ### Cosmetics
 
@@ -109,6 +107,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Numbers above ticking dynamite are not shown correctly sometimes
 - Raider not facing walls while drilling
 - Make tooltips stay on screen and follow cursor
+- Mesh texture not shown for sleeping lava rockies
 
 ## Technical Debt
 
