@@ -142,7 +142,7 @@ export class GameLayer extends ScreenLayer {
         }
     }
 
-    handleSecondaryClickWithSelection() {
+    private handleSecondaryClickWithSelection() {
         const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, false)
         if (cursorTarget.vehicle) {
             this.handleSecondaryClickForVehicle(cursorTarget)
