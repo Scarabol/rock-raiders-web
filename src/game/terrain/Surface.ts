@@ -474,7 +474,10 @@ export class Surface {
             const materials = [...this.worldMgr.entityMgr.materials] // list will be changed by dispose below
             materials.forEach((m) => { // XXX Optimize performance
                 const materialSurface = this.terrain.getSurfaceFromWorld(m.sceneEntity.position)
-                if (materialSurface === this) m.dispose()
+                if (materialSurface === this) {
+                    m.carryJob?.target?.site?.unAssign(m)
+                    m.dispose()
+                }
             })
         }
     }
