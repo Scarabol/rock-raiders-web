@@ -96,7 +96,7 @@ export class SurfaceType {
         mapSurfaceColor: '#963c00',
     })
     static readonly WATER = new SurfaceType({
-        name: 'surfaceTypeWater', floor: true, matIndex: '45', mapSurfaceColor: '#000080',
+        name: 'surfaceTypeLake', floor: true, matIndex: '45', mapSurfaceColor: '#000080',
     })
     static readonly CRYSTAL_SEAM = new SurfaceType({
         name: 'surfaceTypeCrystalSeam',
