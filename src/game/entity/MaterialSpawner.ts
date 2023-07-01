@@ -59,16 +59,16 @@ export class MaterialSpawner {
             case EntityType.BARRIER:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(ResourceManager.configuration.miscObjects.Barrier))
                 material.sceneEntity.setAnimation(BarrierActivity.Short)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {PickSphere: 10})) // XXX find any constant for pick sphere?
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {PickSphere: 10, CollRadius: 10, CollHeight: 0})) // XXX find any constant for pick sphere?
                 break
             case EntityType.DYNAMITE:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(ResourceManager.configuration.miscObjects.Dynamite))
                 material.sceneEntity.setAnimation(DynamiteActivity.Normal)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {PickSphere: 8})) // XXX find any constant for pick sphere?
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {PickSphere: 8, CollRadius: 8, CollHeight: 0})) // XXX find any constant for pick sphere?
                 break
             case EntityType.ELECTRIC_FENCE:
                 material.sceneEntity.add(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ElectricFence))
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.electricFence, ResourceManager.configuration.stats.electricFence.PickSphere / 3))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.electricFence))
                 break
         }
         material.sceneEntity.addToScene(worldMgr.sceneMgr, worldPos, headingRad)

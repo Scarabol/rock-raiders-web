@@ -4,6 +4,8 @@ import { BaseConfig } from './BaseConfig'
 
 export interface PickSphereStats {
     PickSphere: number
+    CollRadius: number
+    CollHeight: number
 }
 
 export interface DoubleSelectStats {
@@ -22,6 +24,8 @@ export interface MovableEntityStats extends PickSphereStats {
 
 export class VehicleEntityStats extends BaseConfig implements MovableEntityStats, DoubleSelectStats {
     PickSphere: number = 0
+    CollRadius: number = 0
+    CollHeight: number = 0
     CanDoubleSelect: boolean = false
     CostOre: number = 0
     CostCrystal: number = 0
@@ -43,6 +47,8 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
     SelfPowered: boolean = false
     PowerBuilding: boolean = false
     PickSphere: number = 0
+    CollRadius: number = 0
+    CollHeight: number = 0
     TrainDynamite: boolean[] = null
     CostOre: number = 0
     CostRefinedOre: number = 0
@@ -56,6 +62,8 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
 
 export class MonsterEntityStats extends BaseConfig implements MovableEntityStats {
     PickSphere: number = 0
+    CollRadius: number = 0
+    CollHeight: number = 0
     RouteSpeed: number[] = []
     PathCoef: number = 1
     RubbleCoef: number = 1
@@ -766,6 +774,7 @@ export class UpgradeStats extends BuildingEntityStats {
 export class PowerCrystalStats extends BaseConfig {
     Levels: number = 1
     TrackDist: number = 20.0
+    CollRadius: number = 0
     CollHeight: number = 2.0
     PickSphere: number = 6.0
 }
@@ -773,6 +782,7 @@ export class PowerCrystalStats extends BaseConfig {
 export class ProcessedOreStats extends BaseConfig {
     Levels: number = 1
     TrackDist: number = 20.0
+    CollRadius: number = 0
     CollHeight: number = 2.0
     PickSphere: number = 8.0
 }
@@ -780,6 +790,7 @@ export class ProcessedOreStats extends BaseConfig {
 export class OreStats extends BaseConfig {
     Levels: number = 1
     TrackDist: number = 20.0
+    CollRadius: number = 0
     CollHeight: number = 2.0
     PickSphere: number = 6.0
 }
