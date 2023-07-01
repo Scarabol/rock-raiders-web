@@ -19,6 +19,10 @@ export class SurfaceMesh extends Mesh {
 
     setTexture(textureFilepath: string, textureRotation: number) {
         const texture = ResourceManager.getTexture(textureFilepath)
+        if (!texture) { // ice has no lava erosion textures
+            console.warn(`Could not find texture '${textureFilepath}'`)
+            return
+        }
         texture.center.set(0.5, 0.5)
         texture.rotation = textureRotation
         if (this.material.map) this.material.map.dispose()
