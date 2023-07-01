@@ -29,9 +29,7 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
         if (this.target && !this.target?.isInvalid()) {
             return this.target
         }
-        if (this.target?.site) this.target.site.unAssign(this.carryItem)
         this.target = entity.findShortestPath(this.findWorkplaces())?.target
-        if (this.target?.site) this.target.site.assign(this.carryItem)
         return this.target
     }
 
@@ -93,7 +91,7 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         this.fulfiller.sceneEntity.headTowards(this.target.targetLocation)
-        this.fulfiller.dropCarried()
+        this.fulfiller.dropCarried(false)
         this.carryItem.sceneEntity.position.copy(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
         this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(PositionComponent).position.copy(this.carryItem.sceneEntity.position)
         this.target.gatherItem(this.carryItem)

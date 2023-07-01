@@ -216,7 +216,7 @@ export class VehicleEntity implements Updatable {
 
     stopJob() {
         this.workAudio = resetAudioSafe(this.workAudio)
-        this.dropCarried()
+        this.dropCarried(false)
         if (!this.job) return
         this.job.unAssign(this)
         if (this.followUpJob) this.followUpJob.unAssign(this)
@@ -284,6 +284,7 @@ export class VehicleEntity implements Updatable {
         const positionAsPathTarget = PathTarget.fromLocation(carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)
         if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.setAnimation(AnimEntityActivity.Stand, () => {
+                carryItem.carryJob?.target?.site?.assign(carryItem)
                 this.carriedItems.add(carryItem)
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
             })
@@ -291,8 +292,9 @@ export class VehicleEntity implements Updatable {
         return false
     }
 
-    dropCarried() {
+    dropCarried(unAssignFromSite: boolean) {
         if (this.carriedItems.size < 1) return
+        if (unAssignFromSite) this.carriedItems.forEach((i) => i.carryJob?.target?.site?.unAssign(i))
         this.sceneEntity.removeAllCarried()
         this.carriedItems.forEach((carried) => {
             const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.sceneEntity.position2D)

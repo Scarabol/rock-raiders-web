@@ -96,7 +96,7 @@ export class Raider implements Updatable {
             if (distanceSq < 80 * 80) {
                 this.scared = true
                 this.sceneEntity.setAnimation(RaiderActivity.RunPanic)
-                this.dropCarried()
+                this.dropCarried(true)
                 const runTarget = this.sceneEntity.position2D.add(this.sceneEntity.position2D.sub(scare.getPosition2D()))
                 this.setJob(new RunPanicJob(runTarget))
             }
@@ -230,7 +230,7 @@ export class Raider implements Updatable {
 
     private slip() {
         if (Math.randomInclusive(0, 100) < 10) this.stopJob()
-        this.dropCarried()
+        this.dropCarried(true)
         this.slipped = true
         this.sceneEntity.setAnimation(RaiderActivity.Slip, () => {
             this.slipped = false
@@ -292,7 +292,7 @@ export class Raider implements Updatable {
     }
 
     stopJob() {
-        this.dropCarried()
+        this.dropCarried(false)
         this.workAudio = resetAudioSafe(this.workAudio)
         if (!this.job) return
         this.job.unAssign(this)
@@ -303,8 +303,9 @@ export class Raider implements Updatable {
         this.infoComponent.setBubbleTexture('bubbleIdle')
     }
 
-    dropCarried(): void {
+    dropCarried(unAssignFromSite: boolean): void {
         if (!this.carries) return
+        if (unAssignFromSite) this.carries.carryJob?.target?.site?.unAssign(this.carries)
         this.sceneEntity.removeAllCarried()
         const floorPosition = this.carries.worldMgr.sceneMgr.getFloorPosition(this.carries.sceneEntity.position2D)
         this.carries.sceneEntity.position.copy(floorPosition)
@@ -369,11 +370,12 @@ export class Raider implements Updatable {
 
     private grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
         if (this.carries === carryItem) return true
-        this.dropCarried()
+        this.dropCarried(true)
         if (!carryItem) return true
         const positionAsPathTarget = PathTarget.fromLocation(carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)
         if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.setAnimation(RaiderActivity.Collect, () => {
+                carryItem.carryJob?.target?.site?.assign(carryItem)
                 this.carries = carryItem
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
             })
