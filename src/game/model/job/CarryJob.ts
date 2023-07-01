@@ -90,8 +90,8 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
         return !!(this.target?.canGatherItem())
     }
 
-    onJobComplete() {
-        super.onJobComplete()
+    onJobComplete(fulfiller: JobFulfiller): void {
+        super.onJobComplete(fulfiller)
         this.fulfiller.sceneEntity.headTowards(this.target.targetLocation)
         this.fulfiller.dropCarried()
         this.carryItem.sceneEntity.position.copy(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))

@@ -257,7 +257,7 @@ export class VehicleEntity implements Updatable {
 
     private completeJob() {
         this.workAudio = resetAudioSafe(this.workAudio)
-        this.job?.onJobComplete()
+        this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)

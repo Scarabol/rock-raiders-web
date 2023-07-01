@@ -7,6 +7,7 @@ import { ShareableJob } from '../ShareableJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
+import { JobFulfiller } from '../Job'
 
 export class ReinforceJob extends ShareableJob {
     digPositions: PathTarget[] = []
@@ -26,8 +27,8 @@ export class ReinforceJob extends ShareableJob {
         return entity.findShortestPath(this.digPositions)?.target
     }
 
-    onJobComplete() {
-        super.onJobComplete()
+    onJobComplete(fulfiller: JobFulfiller): void {
+        super.onJobComplete(fulfiller)
         this.surface.reinforce()
     }
 

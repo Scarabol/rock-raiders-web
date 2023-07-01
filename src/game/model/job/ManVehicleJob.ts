@@ -7,6 +7,7 @@ import { PriorityIdentifier } from './PriorityIdentifier'
 import { RaiderJob } from './raider/RaiderJob'
 import { Raider } from '../raider/Raider'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
+import { JobFulfiller } from './Job'
 
 export class ManVehicleJob extends RaiderJob implements SupervisedJob {
     vehicle: VehicleEntity
@@ -33,10 +34,10 @@ export class ManVehicleJob extends RaiderJob implements SupervisedJob {
         return this.workplace
     }
 
-    onJobComplete() {
+    onJobComplete(fulfiller: JobFulfiller): void {
         this.vehicle.addDriver(this.raider)
         this.vehicle.callManJob = null
-        super.onJobComplete()
+        super.onJobComplete(fulfiller)
         this.vehicle.unblockTeleporter()
     }
 

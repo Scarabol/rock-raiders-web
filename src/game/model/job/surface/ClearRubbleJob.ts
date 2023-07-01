@@ -7,6 +7,7 @@ import { ShareableJob } from '../ShareableJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
+import { JobFulfiller } from '../Job'
 
 export class ClearRubbleJob extends ShareableJob {
     lastRubblePositions: PathTarget[] = []
@@ -30,11 +31,11 @@ export class ClearRubbleJob extends ShareableJob {
         return entity.findShortestPath(this.lastRubblePositions)?.target
     }
 
-    onJobComplete() {
+    onJobComplete(fulfiller: JobFulfiller): void {
         this.surface.reduceRubble()
         if (!this.surface.hasRubble()) {
             this.surface.clearRubbleJob = null
-            super.onJobComplete()
+            super.onJobComplete(fulfiller)
         }
     }
 

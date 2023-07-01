@@ -26,7 +26,7 @@ export interface Job {
 
     isReadyToComplete(): boolean
 
-    onJobComplete(): void
+    onJobComplete(fulfiller: JobFulfiller): void
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget
 
@@ -60,7 +60,7 @@ export abstract class AbstractJob implements Job {
         return true
     }
 
-    onJobComplete() {
+    onJobComplete(fulfiller: JobFulfiller): void {
         this.jobState = JobState.COMPLETE
     }
 

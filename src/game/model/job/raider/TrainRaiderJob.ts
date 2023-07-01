@@ -9,6 +9,7 @@ import { RaiderJob } from './RaiderJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
+import { JobFulfiller } from '../Job'
 
 export class TrainRaiderJob extends RaiderJob {
     workplaces: PathTarget[]
@@ -23,8 +24,8 @@ export class TrainRaiderJob extends RaiderJob {
         return entity.findShortestPath(this.workplaces)?.target
     }
 
-    onJobComplete() {
-        super.onJobComplete()
+    onJobComplete(fulfiller: JobFulfiller): void {
+        super.onJobComplete(fulfiller)
         this.raider.addTraining(this.training)
         EventBus.publishEvent(new RaiderTrainingCompleteEvent(this.training))
     }
