@@ -50,7 +50,6 @@ export class Panel extends BaseElement {
 
     toggleState(onDone: () => any = null) {
         this.animationTimeout = clearTimeoutSafe(this.animationTimeout)
-        this.hidden = false
         if (this.movedIn) {
             this.movedIn = false
             this.updateAnimation(this.xOut, this.yOut, PANEL_ANIMATION_MULTIPLIER, onDone)
@@ -67,7 +66,6 @@ export class Panel extends BaseElement {
             this.relX = targetX
             this.relY = targetY
             this.animationTimeout = null
-            this.hidden = this.relX === this.xIn
             if (onDone) onDone()
         } else {
             this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * speed)
