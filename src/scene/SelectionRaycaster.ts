@@ -100,7 +100,10 @@ class SceneRaycaster {
 
     getSurfaceIntersection(surfaces: Object3D[]): { surface: Surface, intersectionPoint: Vector2 } {
         const intersection = this.raycaster.intersectObjects(surfaces, false)[0]
-        if (intersection) return {surface: intersection?.object?.userData?.selectable, intersectionPoint: new Vector2(intersection.point.x, intersection.point.z)}
+        if (intersection) {
+            const surface: Surface = intersection?.object?.userData?.selectable
+            return {surface: surface.discovered ? surface : null, intersectionPoint: new Vector2(intersection.point.x, intersection.point.z)}
+        }
         return null
     }
 }
