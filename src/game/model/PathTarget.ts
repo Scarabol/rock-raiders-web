@@ -12,23 +12,23 @@ import { Sample } from '../../audio/Sample'
 export class PathTarget {
     protected constructor(
         readonly targetLocation: Vector2,
-        readonly radiusSq: number = 0,
+        readonly radiusSq: number = 1,
         readonly building: BuildingEntity = null,
         readonly surface: Surface = null,
         readonly site: BuildingSite = null,
         private readonly headingOnSite: number = null) {
     }
 
-    static fromLocation(targetLocation: Vector2, radiusSq: number = 0) {
+    static fromLocation(targetLocation: Vector2, radiusSq: number = 1) {
         return new PathTarget(targetLocation, radiusSq, null, null, null)
     }
 
-    static fromBuilding(building: BuildingEntity, targetLocation: Vector2) {
-        return new PathTarget(targetLocation, 2, building, null, null)
+    static fromBuilding(building: BuildingEntity, targetLocation: Vector2, radiusSq: number = 1) {
+        return new PathTarget(targetLocation, radiusSq, building, null, null)
     }
 
-    static fromSurface(surface: Surface, targetLocation: Vector2) {
-        return new PathTarget(targetLocation, 2, null, surface, null)
+    static fromSurface(surface: Surface, targetLocation: Vector2, radiusSq: number = 1) {
+        return new PathTarget(targetLocation, radiusSq, null, surface, null)
     }
 
     static fromSite(site: BuildingSite, targetLocation: Vector2, headingOnSite: number = 0) {

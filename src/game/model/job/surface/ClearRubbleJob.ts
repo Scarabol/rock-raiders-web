@@ -9,7 +9,7 @@ import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class ClearRubbleJob extends ShareableJob {
-    lastRubblePositions: PathTarget[]
+    lastRubblePositions: PathTarget[] = []
 
     constructor(readonly surface: Surface) {
         super()
@@ -20,7 +20,7 @@ export class ClearRubbleJob extends ShareableJob {
         return RaiderTool.SHOVEL
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget { // TODO optimize performance and code duplication
+    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         if (!this.surface.hasRubble()) return null
         const surfaceRubblePositions = this.surface.rubblePositions
         if (!this.lastRubblePositions.every((d) => surfaceRubblePositions.some((p) => p.equals(d.targetLocation))) ||

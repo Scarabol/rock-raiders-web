@@ -9,14 +9,14 @@ import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class ReinforceJob extends ShareableJob {
-    digPositions: PathTarget[]
+    digPositions: PathTarget[] = []
 
     constructor(readonly surface: Surface) {
         super()
         this.digPositions = this.surface.getDigPositions().map((p) => PathTarget.fromSurface(this.surface, p))
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget { // TODO optimize performance and code duplication
+    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         if (!this.surface.isReinforcable()) return null
         const surfaceDigPositions = this.surface.getDigPositions()
         if (!this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
