@@ -19,7 +19,6 @@ import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { CursorTarget, SelectionRaycaster } from '../../scene/SelectionRaycaster'
 import { MaterialEntity } from '../../game/model/material/MaterialEntity'
-import { BuildPlacementMarker } from '../../game/model/building/BuildPlacementMarker'
 import { WorldManager } from '../../game/WorldManager'
 import { GameState } from '../../game/model/GameState'
 import { MoveJob } from '../../game/model/job/MoveJob'
@@ -118,7 +117,7 @@ export class GameLayer extends ScreenLayer {
                 doubleSelection.sceneEntity.pointLaserAt(worldPos)
             }
         } else if (event.eventEnum === POINTER_EVENT.UP) {
-            this.handlePointerUpEvent(event, this.sceneMgr.buildMarker)
+            this.handlePointerUpEvent(event)
         } else if (event.eventEnum === POINTER_EVENT.DOWN) {
             if (event.button === MOUSE_BUTTON.SECONDARY) {
                 this.rightDown.x = event.canvasX
@@ -128,9 +127,9 @@ export class GameLayer extends ScreenLayer {
         return false
     }
 
-    private handlePointerUpEvent(event: GamePointerEvent, buildMarker: BuildPlacementMarker) {
+    private handlePointerUpEvent(event: GamePointerEvent) {
         if (event.button === MOUSE_BUTTON.MAIN) {
-            buildMarker.createBuildingSite()
+            this.sceneMgr.buildMarker.createBuildingSite()
         } else if (event.button === MOUSE_BUTTON.SECONDARY) {
             const downUpDistance = Math.abs(event.canvasX - this.rightDown.x) + Math.abs(event.canvasY - this.rightDown.y)
             if (downUpDistance < 3) {
@@ -143,7 +142,7 @@ export class GameLayer extends ScreenLayer {
         }
     }
 
-    handleSecondaryClickWithSelection() {
+    private handleSecondaryClickWithSelection() {
         const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, false)
         if (cursorTarget.vehicle) {
             this.handleSecondaryClickForVehicle(cursorTarget)
