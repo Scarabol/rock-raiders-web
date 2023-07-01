@@ -261,6 +261,14 @@ export class NerpRunner {
         if (msg.snd && !DEV_MODE) console.log(`TODO Load sounds from DATA and play message`, msg.snd) // TODO snd files reside in sounds/streamed/ which is not included in WAD files :(
     }
 
+    setRockMonsterAtTutorial(tutoBlockId: number) {
+        console.warn(`Emerging rock monsters from tuto blocks ${tutoBlockId} not yet implemented`) // TODO implement rock monster
+    }
+
+    setCongregationAtTutorial(tutoBlockId: number) {
+        console.warn(`Moving all rock monsters to tuto block ${tutoBlockId} not yet implemented`) // TODO implement rock monster
+    }
+
     setCameraGotoTutorial(arg1) {
         // TODO implement this
     }
