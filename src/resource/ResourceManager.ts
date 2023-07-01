@@ -76,9 +76,13 @@ export class ResourceManager extends ResourceCache {
             throw new Error(`textureFilepath must not be undefined, null or empty - was ${textureFilepath}`)
         }
         const imgData = this.resourceByName.get(textureFilepath.toLowerCase())
-        if (!imgData) return null
+        if (!imgData) {
+            console.warn(`Could not find texture '${textureFilepath}'`)
+            return null
+        }
         // without repeat wrapping some entities are not fully textured
         const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
+        texture.name = textureFilepath
         texture.needsUpdate = true // without everything is just dark
         texture.colorSpace = SRGBColorSpace
         return texture
