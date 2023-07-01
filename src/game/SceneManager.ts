@@ -253,6 +253,7 @@ export class SceneManager implements Updatable {
             SoundManager.loopedAudio.add(audio)
         }
         SoundManager.getSoundBuffer(sfxName).then((audioBuffer) => {
+            if (!audioBuffer) return
             audio.setBuffer(audioBuffer)
             parent.add(audio)
             if (autoPlay && sfxVolume > 0) audio.play() // TODO retry playing sound for looped ones, when audio context fails

@@ -1,12 +1,12 @@
 import { AudioContext, PositionalAudio } from 'three'
 import { Sample } from './Sample'
 import { SaveGameManager } from '../resource/SaveGameManager'
-import { DEV_MODE } from '../params'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
+import { DEV_MODE } from '../params'
 
 export class SoundManager {
-    static sfxByKey: Map<string, any> = new Map()
+    static sfxByKey: Map<string, ArrayBuffer> = new Map()
     static audioBufferCache: Map<string, AudioBuffer> = new Map()
     static audioContext: AudioContext
     static sfxAudioTarget: GainNode
@@ -24,6 +24,7 @@ export class SoundManager {
     static playSound(sfxName: string) {
         this.getSoundBuffer(sfxName).then((audioBuffer) => {
             try {
+                if (!audioBuffer) return
                 const source = SoundManager.audioContext.createBufferSource()
                 source.buffer = audioBuffer
                 source.connect(SoundManager.sfxAudioTarget)
@@ -31,8 +32,6 @@ export class SoundManager {
             } catch (e) {
                 console.error(e)
             }
-        }).catch((e) => {
-            if (!DEV_MODE) console.warn(e)
         })
     }
 
@@ -40,8 +39,11 @@ export class SoundManager {
         sfxName = sfxName.toLowerCase()
         const cachedSound = SoundManager.audioBufferCache.get(sfxName)
         if (cachedSound) return cachedSound
-        const sfxContent = this.sfxByKey.get(sfxName)
-        if (!sfxContent) return Promise.reject(`Could not find SFX with name '${sfxName}'`)
+        const sfxContent = this.sfxByKey.getOrUpdate(sfxName, () => {
+            if (!DEV_MODE) console.warn(`Could not find SFX with name '${sfxName}'`)
+            return new ArrayBuffer(0)
+        })
+        if (sfxContent.byteLength < 1) return null
         const data = sfxContent.slice(0) // slice used to create copy, because array gets auto detached after decode
         SoundManager.audioContext = SoundManager.audioContext || new (window['AudioContext'] || window['webkitAudioContext'])()
         SoundManager.sfxAudioTarget = SoundManager.sfxAudioTarget || SoundManager.audioContext.createGain()
