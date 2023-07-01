@@ -142,7 +142,7 @@ export class Supervisor {
         })
         unemployedRaider.forEach((raider) => {
             const blockedSite = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raider.sceneEntity.position)?.site
-            if (blockedSite) raider.setJob(new MoveJob(blockedSite.getWalkOutSurface().getRandomPosition()))
+            if (blockedSite?.buildingType) raider.setJob(new MoveJob(blockedSite.getWalkOutSurface().getRandomPosition()))
         })
         unemployedVehicles.forEach((vehicle) => {
             const blockedSite = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(vehicle.sceneEntity.position)?.site
