@@ -201,7 +201,7 @@ export class Raider implements Updatable {
                 return this.determineStep(elapsedMs)
             }
         }
-        if (this.currentPath.target.targetLocation.distanceToSquared(this.sceneEntity.position2D) <= entitySpeedSq + this.currentPath.target.radiusSq + this.sceneEntity.getRadiusSquare() / 4) {
+        if (this.currentPath.target.targetLocation.distanceToSquared(this.sceneEntity.position2D) <= this.currentPath.target.radiusSq) {
             step.targetReached = true
         }
         step.vec.clampLength(0, entitySpeed)

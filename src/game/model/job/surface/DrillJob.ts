@@ -10,24 +10,25 @@ import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class DrillJob extends ShareableJob {
-    digPositions: PathTarget[]
+    digPositions: PathTarget[] = []
     progress: number = 0
 
     constructor(readonly surface: Surface) {
         super()
-        this.digPositions = this.surface.getDigPositions().map((p) => PathTarget.fromSurface(this.surface, p))
     }
 
     getRequiredTool(): RaiderTool {
         return RaiderTool.DRILL
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget { // TODO optimize performance and code duplication
+    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         if (!this.surface.isDigable()) return null
         const surfaceDigPositions = this.surface.getDigPositions()
-        if (!this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
-            !surfaceDigPositions.every((p) => this.digPositions.some((d) => p.equals(d.targetLocation)))) {
-            this.digPositions = surfaceDigPositions.map((p) => PathTarget.fromSurface(this.surface, p))
+        if (this.digPositions.length < 1 ||
+            !this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
+            !surfaceDigPositions.every((p) => this.digPositions.some((d) => p.equals(d.targetLocation)))
+        ) {
+            this.digPositions = surfaceDigPositions.map((p) => PathTarget.fromSurface(this.surface, p, entity.sceneEntity.getRadiusSquare() / 4))
         }
         return entity.findShortestPath(this.digPositions)?.target
     }
