@@ -8,15 +8,11 @@ export class MainMenuPanel extends MainMenuBaseItem {
     context: SpriteContext
 
     constructor(cfg: MenuPanelCfg) {
-        super()
+        super(cfg.rect.x, cfg.rect.y, cfg.rect.w, cfg.rect.h)
         this.zIndex = 50
         const imgData = ResourceManager.getImageData(cfg.imgBackground)
         this.context = createContext(imgData.width, imgData.height)
         this.context.putImageData(imgData, 0, 0)
-        this.x = cfg.rect.x
-        this.y = cfg.rect.y
-        this.width = cfg.rect.w
-        this.height = cfg.rect.h
     }
 
     isHovered(sx: number, sy: number): boolean {

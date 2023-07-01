@@ -8,11 +8,7 @@ export class MainMenuWindow extends MainMenuBaseItem {
     imgSecondLine: SpriteImage = null
 
     constructor(area: { x: number; y: number; w: number; h: number }) {
-        super()
-        this.x = area.x
-        this.y = area.y
-        this.width = area.w
-        this.height = area.h
+        super(area.x, area.y, area.w, area.h)
     }
 
     setFirstLine(text: string) {

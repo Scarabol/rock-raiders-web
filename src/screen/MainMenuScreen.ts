@@ -51,8 +51,12 @@ export class MainMenuScreen {
             if (SaveGameManager.loadGame(item.targetIndex)) {
                 this.showMainMenu()
             }
+        } else if (item.actionName.equalsIgnoreCase('selectrandomlevel')) {
+            this.selectRandomLevel()
         } else if (item.actionName) {
             console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
+        } else {
+            console.warn('Item has no action name', item)
         }
     }
 
@@ -62,6 +66,10 @@ export class MainMenuScreen {
 
     showLevelSelection() {
         this.showMainMenu(1)
+    }
+
+    selectRandomLevel() {
+        this.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
     }
 
     selectLevel(levelName: string) {

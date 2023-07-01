@@ -3,14 +3,18 @@ import { UiElementCallback, UiElementState } from './UiElementState'
 
 export class MainMenuBaseItem {
     protected state: UiElementState = new UiElementState()
-    x: number = 0
-    y: number = 0
-    width: number = 0
-    height: number = 0
     zIndex: number = 100
     scrollAffected = false
-    actionName: string = ''
     targetIndex: number = 0
+
+    constructor(
+        public x: number = 0,
+        public y: number = 0,
+        public width: number = 0,
+        public height: number = 0,
+        public actionName: string = '',
+    ) {
+    }
 
     static compareZ(left: MainMenuBaseItem, right: MainMenuBaseItem) {
         return left.zIndex === right.zIndex ? 0 : left.zIndex > right.zIndex ? -1 : 1

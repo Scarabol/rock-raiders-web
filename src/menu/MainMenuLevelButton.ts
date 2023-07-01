@@ -13,12 +13,10 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
     levelKey: string = ''
 
     constructor(layer: MainMenuLayer, levelKey: string, levelCfg: LevelEntryCfg) {
-        super()
+        super(levelCfg.frontEndX, levelCfg.frontEndY)
         this.layer = layer
         this.actionName = 'selectlevel'
         this.levelKey = levelKey
-        this.x = levelCfg.frontEndX
-        this.y = levelCfg.frontEndY
         this.zIndex = 10
         this.scrollAffected = true
         const [imgActive, imgInactive, imgCross] = levelCfg.menuBMP

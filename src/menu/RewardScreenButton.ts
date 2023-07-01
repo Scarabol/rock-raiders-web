@@ -13,9 +13,7 @@ export class RewardScreenButton extends MainMenuBaseItem {
     imgDisabled: SpriteImage
 
     constructor(conf: RewardButtonCfg, tooltipKey: string) {
-        super()
-        this.x = conf.x
-        this.y = conf.y
+        super(conf.x, conf.y)
         this.imgNormal = ResourceManager.getImage(conf.imgNormalFilepath)
         this.imgHover = ResourceManager.getImage(conf.imgHoverFilepath)
         this.imgPressed = ResourceManager.getImage(conf.imgPressedFilepath)

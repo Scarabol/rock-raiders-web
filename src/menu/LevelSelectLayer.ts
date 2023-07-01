@@ -8,12 +8,12 @@ import { MainMenuPanel } from './MainMenuPanel'
 import { MainMenuWindow } from './MainMenuWindow'
 
 export class LevelSelectLayer extends MainMenuLayer {
-    constructor(menuCfg: MenuEntryCfg, modeLevel: boolean) {
+    constructor(menuCfg: MenuEntryCfg, allLevels: boolean) {
         super(menuCfg)
         const levelTextCfg = ResourceManager.configuration.menu.levelText
         this.items.push(new MainMenuPanel(levelTextCfg.panel))
         const levelTextWindow = new MainMenuWindow(levelTextCfg.window)
-        levelTextWindow.setFirstLine(modeLevel ? levelTextCfg.level : levelTextCfg.tutorial)
+        levelTextWindow.setFirstLine(allLevels ? levelTextCfg.level : levelTextCfg.tutorial)
         this.items.push(levelTextWindow)
         ResourceManager.configuration.levels.levelCfgByName.forEach((level, levelKey) => {
             const levelButton = new MainMenuLevelButton(this, levelKey, level)
@@ -23,6 +23,7 @@ export class LevelSelectLayer extends MainMenuLayer {
             }
             this.items.push(levelButton)
         })
+        this.items.push(new MainMenuBaseItem(517, 11, 36, 36, 'selectrandomlevel'))
         this.items.sort((a, b) => MainMenuBaseItem.compareZ(a, b))
     }
 

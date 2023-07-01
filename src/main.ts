@@ -87,7 +87,7 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
                     if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))
                     if (entry === 'level') mainMenuScreen.showLevelSelection()
                     else if (entry === 'reward') rewardScreen.showGameResult(GameResult.random())
-                    else if (entry === 'random') mainMenuScreen.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
+                    else if (entry === 'random') mainMenuScreen.selectRandomLevel()
                     else if (entry) mainMenuScreen.selectLevel(entry)
                 } else {
                     mainMenuScreen.showMainMenu()

@@ -13,7 +13,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
     saveGameImgHeightHi: number = 0
 
     constructor(layer: MainMenuLayer, index: number, x: number, y: number, loading: boolean) {
-        super()
+        super(x, y)
         const menuCfg = ResourceManager.configuration.menu
         const btnNum = index + 1
         const buttonLabel = loading ? `${menuCfg.loadGame} ${btnNum}` : `${menuCfg.saveGame} ${btnNum}` // yes, even for "load"game the label says savegame
@@ -25,8 +25,6 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
             this.width = Math.max(this.labelImgLo.width, this.labelImgHi.width) + menuCfg.saveImage.BigWidth
             this.height = Math.max(this.labelImgLo.height, this.labelImgHi.height)
         })
-        this.x = x
-        this.y = y
         this.targetIndex = index
         this.actionName = loading ? `load_game_${index}` : `save_game_${index}`
         this.saveGameImgWidthLo = menuCfg.saveImage.Width
