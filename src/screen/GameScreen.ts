@@ -77,7 +77,7 @@ export class GameScreen {
         EventBus.publishEvent(new SetupPriorityList(this.levelConf.priorities))
         // load in non-space objects next
         const objectList = ResourceManager.getResource(this.levelConf.oListFile)
-        ObjectListLoader.loadObjectList(objectList, this.levelConf.disableStartTeleport || DEV_MODE, this.worldMgr)
+        new ObjectListLoader(this.worldMgr, this.levelConf.disableStartTeleport || DEV_MODE).loadObjectList(objectList)
         // finally generate initial radar panel map
         EventBus.publishEvent(new UpdateRadarTerrain(this.sceneMgr.terrain, this.sceneMgr.controls.target.clone()))
         EventBus.publishEvent(new UpdateRadarEntities(this.entityMgr))
