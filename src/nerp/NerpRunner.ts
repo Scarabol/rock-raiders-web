@@ -201,7 +201,7 @@ export class NerpRunner {
      * Gets the number of tool stores currently built. NOT the total ever built.
      * @return {number}
      */
-    getToolStoresBuilt() {
+    getToolStoresBuilt(): number {
         return this.worldMgr.entityMgr.buildings.count((b) => b.entityType === EntityType.TOOLSTATION)
     }
 
@@ -209,12 +209,24 @@ export class NerpRunner {
      * Gets the number of minifigures on the level. XXX it is NOT tested if this ignores minifigures in hidden caverns
      * @return {number}
      */
-    getMinifiguresOnLevel() {
+    getMiniFiguresOnLevel(): number {
         return this.worldMgr.entityMgr.raiders.length
     }
 
-    getMonstersOnLevel() {
+    getMonstersOnLevel(): number {
         return this.worldMgr.entityMgr.rockMonsters.length
+    }
+
+    getSmallHelicoptersOnLevel(): number {
+        return this.worldMgr.entityMgr.vehicles.count((v) => v.entityType === EntityType.SMALL_HELI)
+    }
+
+    getSlugsOnLevel(): number {
+        return this.worldMgr.entityMgr.slugs.length
+    }
+
+    generateSlug() {
+        console.warn('Slugs not yet implemented') // TODO implement slugs
     }
 
     /**
@@ -329,14 +341,6 @@ export class NerpRunner {
 
     getRandom100(): number {
         return Math.randomInclusive(100)
-    }
-
-    getSlugsOnLevel(): number {
-        return 0 // TODO implement slugs
-    }
-
-    generateSlug() {
-        console.warn('Slugs not yet implemented') // TODO implement slugs
     }
 
     callMethod(methodName: string, methodArgs: any[]) {

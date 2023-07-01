@@ -37,6 +37,7 @@ export class EntityManager {
     undiscoveredBats: GameEntity[] = []
     rockMonsters: GameEntity[] = []
     undiscoveredRockMonsters: GameEntity[] = []
+    slugs: GameEntity[] = []
     vehicles: VehicleEntity[] = []
     vehiclesUndiscovered: VehicleEntity[] = []
     vehiclesInBeam: VehicleEntity[] = []
@@ -72,6 +73,7 @@ export class EntityManager {
         this.undiscoveredBats.length = 0
         this.rockMonsters.length = 0
         this.undiscoveredRockMonsters.length = 0
+        this.slugs.length = 0
         this.vehicles.length = 0
         this.vehiclesUndiscovered.length = 0
         this.vehiclesInBeam.length = 0
