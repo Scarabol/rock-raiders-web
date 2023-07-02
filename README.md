@@ -81,6 +81,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Large Cat not usable to carry vehicles in Level 19
 - Add surface type tooltips for map panel
 - Render last selected entity with rotating camera in radar panel
+- Add magnet cursor to map panel to track entities
 
 ### v0.9.0 - Polishing
 
@@ -91,22 +92,20 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Nice to have
 
 - Add rotation speed to entities and play turnLeft, turnRight animations
-- Rendering issue on mobile with icon panel and mission briefing, clearing rect seems to small
-- When switching from loading to main menu layer on mobile the new layer is not shown
 - Clear job from surface, if dynamite cannot reach target
-- Hardware cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position manipulation
 - Use long press on mobile browser to emulate right click
 - Do not allow touch events to move scene camera while build mode selection is active
 - Camera can get stuck on mobile browsers when using multiple pointer gestures
+- Rendering issue on mobile with icon panel and mission briefing, clearing rect seems to small
+- Hardware cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position manipulation
 
 ### Cosmetics
 
-- Level 11 spams console with unreachable jobs
-- Two buttons in priority list can be hovered/pressed/released at the same time
-- Numbers above ticking dynamite are not shown correctly sometimes
+- Mesh texture not shown for sleeping lava rockies
 - Raider not facing walls while drilling
 - Make tooltips stay on screen and follow cursor
-- Mesh texture not shown for sleeping lava rockies
+- Numbers above ticking dynamite are not shown correctly sometimes
+- Two buttons in priority list can be hovered/pressed/released at the same time
 
 ## Technical Debt
 

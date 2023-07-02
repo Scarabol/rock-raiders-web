@@ -95,19 +95,15 @@ export class Supervisor {
             let closestTrainingArea: BuildingEntity = null
             const requiredTraining = job.getRequiredTraining()
             unemployedRaider.forEach((raider) => {
-                const hasRequiredTool = raider.hasTool(requiredTool)
-                const hasTraining = raider.hasTraining(requiredTraining)
+                const pathToJob = raider.findShortestPath(job.getWorkplace(raider))
+                if (!pathToJob) return
                 if (raider.isPrepared(job)) {
-                    // TODO path to job is actually path to item, if exists
-                    const pathToJob = raider.findShortestPath(job.getWorkplace(raider))
-                    if (pathToJob) {
-                        const dist = pathToJob.lengthSq
-                        if (minDistance === null || dist < minDistance) {
-                            closestRaider = raider
-                            minDistance = dist
-                        }
+                    const dist = pathToJob.lengthSq
+                    if (minDistance === null || dist < minDistance) {
+                        closestRaider = raider
+                        minDistance = dist
                     }
-                } else if (!hasRequiredTool) {
+                } else if (!raider.hasTool(requiredTool)) {
                     const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
                     if (pathToToolstation) {
                         const dist = pathToToolstation.lengthSq
@@ -117,7 +113,7 @@ export class Supervisor {
                             closestToolstation = pathToToolstation.target.building
                         }
                     }
-                } else if (!hasTraining) {
+                } else if (!raider.hasTraining(requiredTraining)) {
                     const pathToTrainingSite = raider.findShortestPath(this.worldMgr.entityMgr.getTrainingSiteTargets(requiredTraining))
                     if (pathToTrainingSite) {
                         const dist = pathToTrainingSite.lengthSq
@@ -168,7 +164,7 @@ export class Supervisor {
                         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
                         if (!(surface?.hasRubble()) || !surface?.discovered) continue
                         const clearRubbleJob = surface.setupClearRubbleJob()
-                        if (!clearRubbleJob || clearRubbleJob.hasFulfiller()) continue
+                        if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !raider.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
                         const requiredTool = clearRubbleJob.getRequiredTool()
                         if (raider.hasTool(requiredTool)) {
                             raider.setJob(clearRubbleJob)
