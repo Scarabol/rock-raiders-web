@@ -70,6 +70,7 @@ export class MainPanel extends Panel {
         const selectFencePanel = this.addSubPanel(new SelectFencePanel(this, this.mainPanel))
 
         const teleportRaider = this.mainPanel.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_TeleportMan')
+        teleportRaider.addDependencyCheck(EntityType.PILOT)
         teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || !this.hasRaiderTeleport
         teleportRaider.updateState()
         teleportRaider.onClick = () => this.publishEvent(new ChangeRaiderSpawnRequest(true))

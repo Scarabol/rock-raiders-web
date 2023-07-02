@@ -5,6 +5,7 @@ import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 import { ResourceManager } from '../../../resource/ResourceManager'
+import { EntityType } from '../../../game/model/EntityType'
 
 export class SelectRubblePanel extends SelectBasePanel {
     hasRubble: boolean = false
@@ -16,6 +17,7 @@ export class SelectRubblePanel extends SelectBasePanel {
         clearRubbleItem.isDisabled = () => !this.hasRubble
         clearRubbleItem.onClick = () => this.publishEvent(new CreateClearRubbleJob())
         const placeFenceItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_PlaceFence')
+        placeFenceItem.addDependencyCheck(EntityType.ELECTRIC_FENCE)
         placeFenceItem.isDisabled = () => !this.canPlaceFence
         placeFenceItem.onClick = () => this.publishEvent(new PlaceFence())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

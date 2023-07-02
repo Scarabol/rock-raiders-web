@@ -31,11 +31,10 @@ export class IconPanelButton extends Button {
         this.hotkey = menuItemCfg.hotkey
         this.disabled = true
         this.onClick = () => console.log(`menu item pressed: ${this.buttonType}`)
-        this.addDependencyCheck(itemKey)
+        this.addDependencyCheck(getEntityTypeByName(itemKey))
     }
 
-    private addDependencyCheck(itemKey: string) {
-        const entityType = getEntityTypeByName(itemKey)
+    addDependencyCheck(entityType: EntityType) {
         if (!entityType) return
         const dependencies = ResourceManager.configuration.dependencies.get(entityType)
         if (!dependencies) return
