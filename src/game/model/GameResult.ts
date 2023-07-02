@@ -36,7 +36,7 @@ export class GameResult {
         readonly state: GameResultState,
         readonly numBuildings: number,
         readonly numRaiders: number,
-        readonly numMaxRaiders: number,
+        readonly quotaRaiders: number,
         readonly gameTimeSeconds: number,
         readonly screenshot: HTMLCanvasElement
     ) {

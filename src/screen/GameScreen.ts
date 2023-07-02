@@ -9,7 +9,7 @@ import { GameState } from '../game/model/GameState'
 import { ObjectListLoader } from '../game/ObjectListLoader'
 import { SceneManager } from '../game/SceneManager'
 import { WorldManager } from '../game/WorldManager'
-import { DEV_MODE } from '../params'
+import { ADDITIONAL_RAIDER_PER_SUPPORT, DEV_MODE, MAX_RAIDER_BASE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { LevelObjectiveTextEntry } from '../resource/wadworker/parser/ObjectiveTextParser'
 import { GameLayer } from './layer/GameLayer'
@@ -20,6 +20,7 @@ import { ScreenMaster } from './ScreenMaster'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventKey } from '../event/EventKeyEnum'
 import { GameResultEvent, LevelSelectedEvent } from '../event/WorldEvents'
+import { EntityType } from '../game/model/EntityType'
 
 export class GameScreen {
     gameLayer: GameLayer
@@ -111,7 +112,8 @@ export class GameScreen {
         this.worldMgr.requestedVehicleTypes.length = 0
         let result: GameResult = null
         if (this.levelConf.reward) {
-            result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, this.entityMgr.getMaxRaiders(), gameTimeSeconds, canvas)
+            const quotaRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE
+            result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, quotaRaiders, gameTimeSeconds, canvas)
             if (result.state === GameResultState.COMPLETE) {
                 SaveGameManager.setLevelScore(this.levelName, result.score)
                 if (!this.levelConf.disableEndTeleport) {
