@@ -79,7 +79,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Auto switch from portrait to landscape mode in fullscreen
 - Refactor job system to allow multi-carry jobs for vehicles
 - Large Cat not usable to carry vehicles in Level 19
-- Lava not placed correctly at start in Level 19
 - Add surface type tooltips for map panel
 - Render last selected entity with rotating camera in radar panel
 

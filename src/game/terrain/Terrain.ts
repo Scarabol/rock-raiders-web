@@ -161,7 +161,11 @@ export class Terrain {
     }
 
     addLavaErosion(x: number, y: number, erosionLevel: number) {
-        this.lavaErodes.push(new LavaErosion(this.getSurface(x, y), erosionLevel, this.levelConf.erodeErodeTime * 1000, this.levelConf.erodeLockTime * 1000))
+        const nextErodeTimeMs = this.levelConf.erodeErodeTime * 1000
+        const powerPathLockTimeMs = this.levelConf.erodeLockTime * 1000
+        const lavaErosion = new LavaErosion(this.getSurface(x, y), erosionLevel, nextErodeTimeMs, powerPathLockTimeMs)
+        this.lavaErodes.push(lavaErosion)
+        return lavaErosion
     }
 
     update(elapsedMs: number) {

@@ -115,7 +115,12 @@ export class TerrainLoader {
                 for (let y = 0; y < terrain.height; y++) {
                     const erosion = erodeMap[y][x]
                     if (erosion > 0) {
-                        terrain.addLavaErosion(x, y, erosion) // rows (y) before columns (x) used in maps
+                        const lavaErosion = terrain.addLavaErosion(x, y, erosion)
+                        if (lavaErosion.isSelfEroding) {
+                            for (let c = 0; c < 5; c++) {
+                                lavaErosion.increaseErosionLevel()
+                            }
+                        }
                     }
                 }
             }
