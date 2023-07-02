@@ -18,7 +18,6 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { CursorTarget, SelectionRaycaster } from '../../scene/SelectionRaycaster'
-import { MaterialEntity } from '../../game/model/material/MaterialEntity'
 import { WorldManager } from '../../game/WorldManager'
 import { GameState } from '../../game/model/GameState'
 import { MoveJob } from '../../game/model/job/MoveJob'
@@ -231,20 +230,9 @@ export class GameLayer extends ScreenLayer {
             return Cursor.SELECTED
         }
         if (cursorTarget.building) return Cursor.SELECTED
-        if (cursorTarget.material) return this.determineMaterialCursor(cursorTarget.material)
+        if (cursorTarget.material) return cursorTarget.material.entityType === EntityType.ORE ? Cursor.PICK_UP_ORE : Cursor.PICK_UP
         if (cursorTarget.surface) return this.determineSurfaceCursor(cursorTarget.surface)
         return Cursor.STANDARD
-    }
-
-    private determineMaterialCursor(material: MaterialEntity): Cursor {
-        if (this.entityMgr.selection.canPickup()) {
-            if (material.entityType === EntityType.ORE) {
-                return Cursor.PICK_UP_ORE
-            } else {
-                return Cursor.PICK_UP
-            }
-        }
-        return Cursor.SELECTED
     }
 
     private determineSurfaceCursor(surface: Surface): Cursor {

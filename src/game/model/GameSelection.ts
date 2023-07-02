@@ -3,7 +3,8 @@ import { SoundManager } from '../../audio/SoundManager'
 import { SelectPanelType } from '../../event/LocalEvents'
 import { BuildingEntity } from './building/BuildingEntity'
 import { EntityType } from './EntityType'
-import { Job } from './job/Job'
+import { DrillJob } from './job/surface/DrillJob'
+import { ClearRubbleJob } from './job/surface/ClearRubbleJob'
 import { GetToolJob } from './job/raider/GetToolJob'
 import { Surface } from '../terrain/Surface'
 import { MaterialEntity } from './material/MaterialEntity'
@@ -142,7 +143,7 @@ export class GameSelection {
         return SelectPanelType.NONE
     }
 
-    assignSurfaceJob(job: Job) {
+    assignSurfaceJob(job: DrillJob | ClearRubbleJob) {
         if (!job) return
         this.raiders.forEach((r) => {
             if (r.isPrepared(job)) {
@@ -161,21 +162,9 @@ export class GameSelection {
     assignCarryJob(material: MaterialEntity) {
         if (!material) return
         const job = material.setupCarryJob()
-        const doneByVehicle = this.vehicles.some((v) => {
-            if (v.isPrepared(job)) {
-                v.setJob(job)
-                return true
-            }
-            return false
-        })
-        if (doneByVehicle) return
-        this.raiders.some((r) => {
-            if (r.isPrepared(job)) {
-                r.setJob(job)
-                return true
-            }
-            return false
-        })
+        const entity = [...this.vehicles, ...this.raiders].find((e) => e.hasCapacity())
+            || [...this.vehicles, ...this.raiders].find((e) => e.getCarryCapacity() > 0)
+        entity?.setJob(job)
     }
 
     assignUpgradeJob(upgrade: VehicleUpgrade) {
@@ -189,9 +178,5 @@ export class GameSelection {
 
     canClear(): boolean {
         return this.raiders.some((r) => r.hasTool(RaiderTool.SHOVEL)) || this.vehicles.some((v) => v.canClear())
-    }
-
-    canPickup(): boolean {
-        return this.raiders.some((r) => r.hasCapacity()) || this.vehicles.some((v) => v.hasCapacity())
     }
 }

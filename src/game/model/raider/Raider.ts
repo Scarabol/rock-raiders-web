@@ -412,6 +412,10 @@ export class Raider implements Updatable {
         return !this.carries
     }
 
+    getCarryCapacity(): number {
+        return 1
+    }
+
     isReadyToTakeAJob(): boolean {
         return !this.job && !this.selected && !this.isInBeam() && !this.slipped
     }
