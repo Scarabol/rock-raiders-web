@@ -48,6 +48,13 @@ const ANTIALIASING_BIT = 64
 /*  TFLG DEFINITION END  */
 /*************************/
 
+enum ReflectionMode {
+    BACKDROP = 0,
+    BACKDROP_WITH_RAYTRACING = 1,
+    SPHERICAL = 2,
+    SPHERICAL_WITH_RAYTRACING = 3,
+}
+
 export class LWOBParser {
     readonly lwoReader: LWOBFileReader
     materials: SequenceTextureMaterial[] = []
@@ -205,6 +212,10 @@ export class LWOBParser {
         let textureCenter = new Vector3(0, 0, 0)
         // let textureFalloff = new Vector3(0, 0, 0);
         // let textureVelocity = new Vector3(0, 0, 0);
+        let sequenceOffset = 0
+        let sequenceFlags = 0
+        let sequenceLoopLength = 0
+        let reflectionMode = ReflectionMode.SPHERICAL_WITH_RAYTRACING
 
         while (this.lwoReader.cursor < chunkEnd) {
             const cursor = this.lwoReader.cursor
@@ -282,6 +293,7 @@ export class LWOBParser {
                     }
                     material.reflectivity = reflection
                     if (this.verbose) console.log(`Reflectivity (REFL): ${material.reflectivity}`)
+                    if (!DEV_MODE) console.warn(`Material with reflectivity ${material.reflectivity}, but reflection mode ${reflectionMode} not yet implemented`) // TODO Implement reflection modes
                     break
                 case 'TRAN':
                 case 'VTRN':
@@ -356,8 +368,15 @@ export class LWOBParser {
                     const textureFilepath = this.lwoReader.readString()
                     if (this.verbose) console.log(`Texture filepath (TIMG): ${textureFilepath}`)
                     const lTextureFilename = getFilename(textureFilepath)?.toLowerCase()
+                    if (lTextureFilename.endsWith(' (sequence)') && (sequenceOffset || sequenceFlags || sequenceLoopLength)) { // TODO implement sequence options
+                        console.warn('Sequence options not yet implemented', lTextureFilename, sequenceOffset, sequenceFlags, sequenceLoopLength)
+                    }
                     material.transparent = material.transparent || !!lTextureFilename.match(/(.*a)(\d+)(_.+)/)
                     this.textureLoader.load(lTextureFilename, (t) => material.setTextures(t))
+                    sequenceOffset = 0
+                    sequenceFlags = 0
+                    sequenceLoopLength = 0
+                    reflectionMode = ReflectionMode.SPHERICAL_WITH_RAYTRACING
                     break
                 case 'TWRP':
                     const horizontalWrappingMode = this.parseWrappingMode(this.lwoReader.readUint16())
@@ -370,6 +389,20 @@ export class LWOBParser {
                 case 'TAAS':
                     const antialiasingStrength = this.lwoReader.readFloat32()
                     if (this.verbose) console.log(`Antialiasing strength: ${antialiasingStrength} (not supported by three.js)`)
+                    break
+                case 'IMSQ':
+                    sequenceOffset = this.lwoReader.readUint16()
+                    sequenceFlags = this.lwoReader.readUint16()
+                    sequenceLoopLength = this.lwoReader.readUint16()
+                    break
+                case 'RFLT':
+                    reflectionMode = this.lwoReader.readUint16()
+                    if (this.verbose) console.log(`Reflection Mode (RFLT): ${reflectionMode}`)
+                    break
+                case 'RIMG':
+                    const sceneBackgroundFilepath = this.lwoReader.readString()
+                    if (this.verbose) console.log(`Scene background (RIMG): ${sceneBackgroundFilepath}`)
+                    console.warn('Scene background image not yet implemented', sceneBackgroundFilepath)
                     break
                 default: // TODO implement all LWOB features
                     if (this.verbose || !DEV_MODE) console.warn(`Found unrecognised SURF sub-chunk type ${subChunkType} (${subChunkType}) at ${cursor}; length ${subChunkSize}`)
