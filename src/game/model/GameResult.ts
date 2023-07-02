@@ -15,6 +15,12 @@ export class GameResult {
     quotaCaverns: number = 0
     defencePercent: number = 100 // TODO defence report is either 0% or 100%
     airLevelPercent: number = 100
+    numCrystal: number = 0
+    numOre: number = 0
+    numTotalOres: number = 0
+    remainingDiggables: number = 0
+    totalDiggables: number = 0
+    discoveredCaverns: number = 0
     score: number = 100
     // fields below are only used to debug score calculations
     scoreCrystals: number = 0
@@ -35,6 +41,12 @@ export class GameResult {
         readonly screenshot: HTMLCanvasElement
     ) {
         this.airLevelPercent = GameState.airLevel * 100
+        this.numCrystal = GameState.numCrystal
+        this.numOre = GameState.numOre
+        this.numTotalOres = GameState.numTotalOres
+        this.remainingDiggables = GameState.remainingDiggables
+        this.totalDiggables = GameState.totalDiggables
+        this.discoveredCaverns = GameState.discoveredCaverns
         if (this.rewardConfig) {
             const quota = this.rewardConfig.quota
             const importance = this.rewardConfig.importance
