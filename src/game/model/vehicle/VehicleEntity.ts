@@ -195,6 +195,7 @@ export class VehicleEntity implements Updatable {
         if (!this.isSelectable()) return false
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
         this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        this.workAudio = resetAudioSafe(this.workAudio)
         return true
     }
 

@@ -254,6 +254,7 @@ export class Raider implements Updatable {
         if (!this.isSelectable()) return false
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
+        this.workAudio = resetAudioSafe(this.workAudio)
         return true
     }
 
