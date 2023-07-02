@@ -24,6 +24,7 @@ export enum BuildingActivity {
 export enum AnimEntityActivity {
     Stand = 'Activity_Stand',
     Route = 'Activity_Route',
+    TeleportIn = 'Activity_TeleportIn',
 }
 
 export enum RaiderActivity {
@@ -48,8 +49,6 @@ export enum RaiderActivity {
     Slip = 'Activity_Slip',
     Train = 'Activity_Train',
     RunPanic = 'Activity_RunPanic',
-
-    TeleportIn = 'Activity_TeleportIn',
 
     Hoverboard = 'Activity_Hoverboard',
     Standhoverboard = 'Activity_Standhoverboard',

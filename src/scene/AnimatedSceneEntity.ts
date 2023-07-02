@@ -130,7 +130,9 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             upgrades.forEach((upgrade) => {
                 const parent = this.meshesByLName.get(upgrade.parentNullName.toLowerCase())?.[upgrade.parentNullIndex]
                 if (!parent) {
-                    if (!DEV_MODE) console.warn(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}' in ${Array.from(this.meshesByLName.keys())}`)
+                    if (this.currentAnimation !== AnimEntityActivity.TeleportIn) {
+                        console.warn(`Could not find upgrade parent for '${upgrade.lNameType}' with name '${upgrade.parentNullName}' in  animation '${this.currentAnimation}'`)
+                    }
                     return
                 }
                 const upgradeMesh = new AnimatedSceneEntity()
