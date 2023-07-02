@@ -130,7 +130,7 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
 
     unAssign(fulfiller: JobFulfiller) {
         if (this.fulfiller !== fulfiller) return
-        this.fulfiller = fulfiller
+        this.fulfiller = null
     }
 
     hasFulfiller(): boolean {

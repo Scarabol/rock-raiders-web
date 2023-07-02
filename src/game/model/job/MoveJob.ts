@@ -7,11 +7,10 @@ import { BubblesCfg } from '../../../cfg/BubblesCfg'
 
 export class MoveJob extends AbstractJob {
     readonly target: PathTarget
-    fulfiller: JobFulfiller = null
 
-    constructor(target: Vector2) {
+    constructor(readonly fulfiller: JobFulfiller, readonly location: Vector2) {
         super()
-        this.target = PathTarget.fromLocation(target)
+        this.target = PathTarget.fromLocation(location)
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
@@ -23,12 +22,11 @@ export class MoveJob extends AbstractJob {
     }
 
     assign(fulfiller: JobFulfiller) {
-        if (this.fulfiller !== fulfiller) this.fulfiller?.stopJob()
-        this.fulfiller = fulfiller
+        if (this.fulfiller === fulfiller) return
+        throw new Error('Job already assigned')
     }
 
     unAssign(fulfiller: JobFulfiller) {
-        if (this.fulfiller !== fulfiller) return
-        this.fulfiller = fulfiller
+        // This job should not be unassigned
     }
 }

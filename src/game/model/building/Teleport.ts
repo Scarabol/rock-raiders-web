@@ -40,7 +40,7 @@ export class Teleport {
             entity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             const sceneSelectionComponent = entity.worldMgr.ecs.addComponent(entity.entity, new SceneSelectionComponent(entity.sceneEntity, {gameEntity: entity.entity, entityType: entity.entityType}, entity.stats))
             entity.worldMgr.ecs.addComponent(entity.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, entity.stats))
-            if (walkOutPos) entity.setJob(new MoveJob(walkOutPos))
+            if (walkOutPos) entity.setJob(new MoveJob(entity, walkOutPos))
             beamListing.remove(entity)
             listing.push(entity)
             EventBus.publishEvent(new RaidersAmountChangedEvent(entity.worldMgr.entityMgr))

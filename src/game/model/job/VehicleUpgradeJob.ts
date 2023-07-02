@@ -34,6 +34,6 @@ export class VehicleUpgradeJob extends AbstractJob {
     }
 
     unAssign(vehicle: VehicleEntity): void {
-        if (this.vehicle !== vehicle) return
+        // This job should not be unassigned
     }
 }

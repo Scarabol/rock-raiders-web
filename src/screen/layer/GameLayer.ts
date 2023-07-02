@@ -158,9 +158,9 @@ export class GameLayer extends ScreenLayer {
                 this.entityMgr.selection.assignSurfaceJob(clearJob)
             } else if (this.entityMgr.selection.canMove()) {
                 if (cursorTarget.surface.isWalkable()) {
-                    this.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(cursorTarget.surface.getRandomPosition())))
+                    this.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(r, cursorTarget.surface.getRandomPosition())))
                 }
-                this.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(cursorTarget.surface.getCenterWorld2D()))) // TODO Move large vehicles to surface center only?
+                this.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(v, cursorTarget.surface.getCenterWorld2D()))) // TODO Move large vehicles to surface center only?
             }
             if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
         }

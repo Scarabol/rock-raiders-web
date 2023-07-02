@@ -384,7 +384,7 @@ export class VehicleEntity implements Updatable {
         const blockedTeleporter = !!surface.building?.teleport && surface.building?.primaryPathSurface === surface
         if (blockedTeleporter) {
             const walkableNeighbor = surface.neighbors.find((n) => !n.site && n.isWalkable() && !n.building?.teleport)
-            if (walkableNeighbor) this.setJob(new MoveJob(walkableNeighbor.getCenterWorld2D()))
+            if (walkableNeighbor) this.setJob(new MoveJob(this, walkableNeighbor.getCenterWorld2D()))
         }
     }
 
