@@ -171,7 +171,7 @@ export class GameLayer extends ScreenLayer {
         if (selectedRaiders.length > 0) {
             const manVehicleJob = new ManVehicleJob(selection.vehicle)
             selectedRaiders.some((r) => {
-                if (r.isPrepared(manVehicleJob)) {
+                if (r.hasTraining(manVehicleJob.getRequiredTraining())) {
                     r.setJob(manVehicleJob)
                 } else {
                     const requiredTraining = manVehicleJob.getRequiredTraining()
