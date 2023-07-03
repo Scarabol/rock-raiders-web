@@ -1,4 +1,4 @@
-import { DEFAULT_AUTO_GAME_SPEED, DEFAULT_GAME_BRIGHTNESS, DEFAULT_GAME_SPEED_MULTIPLIER, DEFAULT_MUSIC_TOGGLE, DEFAULT_MUSIC_VOLUME, DEFAULT_SFX_TOGGLE, DEFAULT_SFX_VOLUME, DEFAULT_SHOW_HELP_WINDOW, DEFAULT_WALL_DETAILS, DEV_MODE, NUM_OF_LEVELS_TO_COMPLETE_GAME, SAVE_GAME_SCREENSHOT_HEIGHT, SAVE_GAME_SCREENSHOT_WIDTH } from '../params'
+import { DEFAULT_AUTO_GAME_SPEED, DEFAULT_GAME_BRIGHTNESS, DEFAULT_GAME_SPEED_MULTIPLIER, DEFAULT_MUSIC_TOGGLE, DEFAULT_MUSIC_VOLUME, DEFAULT_SFX_TOGGLE, DEFAULT_SFX_VOLUME, DEFAULT_SHOW_HELP_WINDOW, DEFAULT_WALL_DETAILS, NUM_OF_LEVELS_TO_COMPLETE_GAME, SAVE_GAME_SCREENSHOT_HEIGHT, SAVE_GAME_SCREENSHOT_WIDTH, VERBOSE } from '../params'
 import { EventBus } from '../event/EventBus'
 import { ChangePreferences } from '../event/GuiCommand'
 
@@ -23,7 +23,7 @@ export class SaveGameManager {
 
     static loadPreferences() {
         try {
-            if (!DEV_MODE) console.log('Loading preferences...')
+            if (VERBOSE) console.log('Loading preferences...')
             const preferences = localStorage.getItem('preferences')
             if (preferences) {
                 this.currentPreferences = {...this.currentPreferences, ...JSON.parse(preferences)}
@@ -37,7 +37,7 @@ export class SaveGameManager {
 
     static loadSaveGames() {
         try {
-            if (!DEV_MODE) console.log('Loading save games...')
+            if (VERBOSE) console.log('Loading save games...')
             this.saveGames = JSON.parse(localStorage.getItem('savegames') || '[]')
             console.log('All save games loaded', this.saveGames)
         } catch (e) {
@@ -46,7 +46,7 @@ export class SaveGameManager {
     }
 
     static loadSaveGameScreenshots() {
-        if (!DEV_MODE) console.log('Loading save game screenshots...')
+        if (VERBOSE) console.log('Loading save game screenshots...')
         Promise.all(this.saveGames.map((s, index) => {
             return new Promise<void>((resolve) => {
                 const screenshot = localStorage.getItem(`screenshot${index}`)

@@ -1,6 +1,6 @@
 import { GameConfig } from '../../../cfg/GameConfig'
 import { encodeChar } from './EncodingHelper'
-import { DEV_MODE } from '../../../params'
+import { VERBOSE } from '../../../params'
 import { yieldToMainThread } from '../../../core/Util'
 
 const enum PARSING_STATE {
@@ -89,7 +89,7 @@ export class CfgFileParser {
         }
 
         const entries = Object.values(root)
-        if (entries.length > 1 && !DEV_MODE) console.warn(`Config file contains (${entries.length}) objects! Will proceed with first object '${Object.keys(root)[0]}' only`)
+        if (entries.length > 1 && VERBOSE) console.warn(`Config file contains (${entries.length}) objects! Will proceed with first object '${Object.keys(root)[0]}' only`)
         const result = entries[0]
 
         // apply some patches here

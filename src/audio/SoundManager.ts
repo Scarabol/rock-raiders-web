@@ -3,7 +3,7 @@ import { Sample } from './Sample'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { DEV_MODE } from '../params'
+import { VERBOSE } from '../params'
 
 export class SoundManager {
     static sfxByKey: Map<string, ArrayBuffer> = new Map()
@@ -40,7 +40,7 @@ export class SoundManager {
         const cachedSound = SoundManager.audioBufferCache.get(sfxName)
         if (cachedSound) return cachedSound
         const sfxContent = this.sfxByKey.getOrUpdate(sfxName, () => {
-            if (!DEV_MODE) console.warn(`Could not find SFX with name '${sfxName}'`)
+            if (VERBOSE) console.warn(`Could not find SFX with name '${sfxName}'`)
             return new ArrayBuffer(0)
         })
         if (sfxContent.byteLength < 1) return null

@@ -4,7 +4,7 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from './SceneMesh'
 import { getPath } from '../core/Util'
 import { LWSCData } from '../resource/LWSCParser'
-import { DEV_MODE } from '../params'
+import { VERBOSE } from '../params'
 
 export class AnimationGroup extends Group implements Updatable {
     readonly meshList: SceneMesh[] = []
@@ -29,7 +29,7 @@ export class AnimationGroup extends Group implements Updatable {
         try {
             return ResourceManager.getLwoModel(getPath(this.lwsFilepath) + lowerName)
         } catch (e) {
-            if (!DEV_MODE) console.warn(e)
+            if (VERBOSE) console.warn(e)
             return new SceneMesh()
         }
     }

@@ -1,4 +1,4 @@
-import { DEV_MODE } from '../params'
+import { VERBOSE } from '../params'
 
 export class BaseConfig {
     setFromCfgObj(cfgObj: any, createMissing: boolean = false): this {
@@ -11,7 +11,7 @@ export class BaseConfig {
                 if (createMissing) {
                     this[cfgKey] = value
                 } else {
-                    if (!DEV_MODE) console.warn(`cfg key: ${cfgKey} does not exist in cfg and will be ignored`)
+                    if (VERBOSE) console.warn(`cfg key: ${cfgKey} does not exist in cfg and will be ignored`)
                 }
             }
         })

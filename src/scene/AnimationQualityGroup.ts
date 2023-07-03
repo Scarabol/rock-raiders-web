@@ -3,7 +3,7 @@ import { AnimEntityAnimationData, AnimEntityData } from '../resource/AnimEntityP
 import { AnimationGroup } from './AnimationGroup'
 import { SceneMesh } from './SceneMesh'
 import { ResourceManager } from '../resource/ResourceManager'
-import { DEV_MODE } from '../params'
+import { VERBOSE } from '../params'
 
 export class AnimationQualityGroup extends AnimationGroup {
     constructor(readonly animEntityData: AnimEntityData, animData: AnimEntityAnimationData, onAnimationDone: () => unknown, durationTimeoutMs: number = 0) {
@@ -23,7 +23,7 @@ export class AnimationQualityGroup extends AnimationGroup {
         try {
             return ResourceManager.getLwoModel(lowerName)
         } catch (e) {
-            if (!DEV_MODE) console.warn(e)
+            if (VERBOSE) console.warn(e)
             return null
         }
     }

@@ -3,7 +3,7 @@ import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { createContext } from '../core/ImageHelper'
 import { SpriteImage } from '../core/Sprite'
 import { getFilename, getPath } from '../core/Util'
-import { DEV_MODE, TOOLTIP_FONT_NAME } from '../params'
+import { TOOLTIP_FONT_NAME, VERBOSE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
 import { LWOBParser, LWOBTextureLoader } from './LWOBParser'
 import { ResourceCache } from './ResourceCache'
@@ -65,7 +65,7 @@ export class ResourceManager extends ResourceCache {
         return this.resourceByName.getOrUpdate(ugSharedFilename, () => {
             const worldSharedFilename = `world/shared/${lTextureFilename}`
             return this.resourceByName.getOrUpdate(worldSharedFilename, () => {
-                if (!DEV_MODE) console.warn(`Texture '${textureFilename}' (${lMeshFilepath}, ${lEntityFilepath}, ${worldSharedFilename}) unknown!`)
+                if (VERBOSE) console.warn(`Texture '${textureFilename}' (${lMeshFilepath}, ${lEntityFilepath}, ${worldSharedFilename}) unknown!`)
                 return null
             })
         })

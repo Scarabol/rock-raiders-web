@@ -1,5 +1,5 @@
 import { iGet } from '../core/Util'
-import { DEV_MODE } from '../params'
+import { VERBOSE } from '../params'
 import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 
 export class AnimEntityData {
@@ -147,7 +147,7 @@ export class AnimEntityParser {
                         if (rootKey.equalsIgnoreCase('stand')) { // XXX workaround for walkerlegs.ae
                             this.parseActivityEntry(value, AnimEntityActivity.Stand)
                         } else {
-                            if (!DEV_MODE) console.warn(`Parsing unlisted activity '${rootKey}'`)
+                            if (VERBOSE) console.warn(`Parsing unlisted activity '${rootKey}'`)
                             this.parseActivityEntry(value, rootKey)
                         }
                     } catch (e) {
@@ -155,7 +155,7 @@ export class AnimEntityParser {
                     }
                 }
             } else if (this.parseUpgradeEntry(rootKey, value)) {
-                if (!DEV_MODE) console.warn(`Entity has upgrade defined outside of Upgrades group`, value)
+                if (VERBOSE) console.warn(`Entity has upgrade defined outside of upgrades group`, value)
             } else if (rootKey.equalsIgnoreCase('FireNullName')) {
                 this.entityType.fireNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('xPivot')) {

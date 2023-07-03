@@ -13,7 +13,7 @@ import { GameResultState } from '../game/model/GameResult'
 import { GameState } from '../game/model/GameState'
 import { NerpParser } from './NerpParser'
 import { NerpScript } from './NerpScript'
-import { DEV_MODE, NERP_EXECUTION_INTERVAL } from '../params'
+import { NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
 import { GameResultEvent } from '../event/WorldEvents'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
@@ -163,7 +163,7 @@ export class NerpRunner {
         // 3 = 0x11 disallow invalid clicks
         // 4095 = 0x111111111111 set all flags? (seen in Tutorial01 level)
         if (value !== 0) { // holds for all known levels
-            if (!DEV_MODE) console.warn('NERP: setTutorialFlags not yet implemented', value)
+            if (VERBOSE) console.warn('NERP: setTutorialFlags not yet implemented', value)
         }
     }
 
@@ -242,7 +242,7 @@ export class NerpRunner {
     }
 
     getMessageTimer() {
-        if (!DEV_MODE) console.warn('getMessageTimer not implemented, immediately returning 0')
+        if (VERBOSE) console.warn('getMessageTimer not implemented, immediately returning 0')
         return 0 // TODO return remaining amount of time needed to fully play WAV message
     }
 
@@ -258,7 +258,7 @@ export class NerpRunner {
         }
         const msg = this.messages[messageNumber - 1]
         if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt))
-        if (msg.snd && !DEV_MODE) console.log(`TODO Load sounds from DATA and play message`, msg.snd) // TODO snd files reside in sounds/streamed/ which is not included in WAD files :(
+        if (msg.snd && VERBOSE) console.warn(`Sounds from DATA directory not yet implemented`, msg.snd) // TODO snd files reside in sounds/streamed/ which is not included in WAD files :(
     }
 
     setRockMonsterAtTutorial(tutoBlockId: number) {

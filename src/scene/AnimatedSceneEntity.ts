@@ -5,7 +5,7 @@ import { AnimEntityData } from '../resource/AnimEntityParser'
 import { ResourceManager } from '../resource/ResourceManager'
 import { AnimEntityActivity } from '../game/model/anim/AnimationActivity'
 import { AnimationGroup } from './AnimationGroup'
-import { DEV_MODE } from '../params'
+import { VERBOSE } from '../params'
 import { AnimationQualityGroup } from './AnimationQualityGroup'
 import { SceneManager } from '../game/SceneManager'
 
@@ -73,7 +73,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             if (animEntityData.wheelMesh && animEntityData.wheelNullName) {
                 const wheelParentMesh = this.meshesByLName.getOrUpdate(animEntityData.wheelNullName, () => [])
                 if (wheelParentMesh.length < 1) {
-                    if (!DEV_MODE) console.warn(`Could not find wheel parent ${animEntityData.wheelNullName} in ${Array.from(this.meshesByLName.keys())}`)
+                    if (VERBOSE) console.warn(`Could not find wheel parent ${animEntityData.wheelNullName} in ${Array.from(this.meshesByLName.keys())}`)
                     return
                 }
                 wheelParentMesh.forEach((p) => {
@@ -190,7 +190,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             }
             return false
         })
-        if (!foundCarryJoint && !DEV_MODE) console.warn('Could not find empty carry joint to attach carried entity')
+        if (!foundCarryJoint && VERBOSE) console.warn('Could not find empty carry joint to attach carried entity')
         entity.position.set(0, 0, 0)
     }
 

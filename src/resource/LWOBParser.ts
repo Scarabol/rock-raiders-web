@@ -8,7 +8,7 @@
 
 import { AdditiveBlending, BufferAttribute, BufferGeometry, ClampToEdgeWrapping, Color, DoubleSide, Loader, MirroredRepeatWrapping, RepeatWrapping, Texture, Vector3 } from 'three'
 import { getFilename } from '../core/Util'
-import { DEV_MODE } from '../params'
+import { VERBOSE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
 import { SequenceTextureMaterial } from '../scene/SequenceTextureMaterial'
 
@@ -183,7 +183,7 @@ export class LWOBParser {
                     indices[currentIndex++] = faceIndices[3]
                     break
                 default:
-                    if (!DEV_MODE) console.warn(`Expected face with 3 or 4 indices but got ${numIndices} instead`)
+                    if (VERBOSE) console.warn(`Expected face with 3 or 4 indices but got ${numIndices} instead`)
             }
             offset += 2 + (numIndices * 2) + 2
         }
@@ -404,7 +404,7 @@ export class LWOBParser {
                     console.warn('Scene background image not yet implemented', sceneBackgroundFilepath)
                     break
                 default: // TODO implement all LWOB features
-                    if (this.verbose || !DEV_MODE) console.warn(`Found unrecognised SURF sub-chunk type ${subChunkType} (${subChunkType}) at ${cursor}; length ${subChunkSize}`)
+                    if (this.verbose || VERBOSE) console.warn(`Found unrecognised SURF sub-chunk type ${subChunkType} (${subChunkType}) at ${cursor}; length ${subChunkSize}`)
                     this.lwoReader.skip(subChunkSize)
                     break
             }
