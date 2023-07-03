@@ -163,10 +163,6 @@ export class EntityManager {
         return closest // TODO when using path finding, return path instead
     }
 
-    getMaxRaiders(): number {
-        return MAX_RAIDER_BASE + this.buildings.count((b) => b.isPowered() && b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT
-    }
-
     discoverSurface(surface: Surface) {
         const minX = surface.x * TILESIZE, minZ = surface.y * TILESIZE
         const maxX = minX + TILESIZE, maxZ = minZ + TILESIZE

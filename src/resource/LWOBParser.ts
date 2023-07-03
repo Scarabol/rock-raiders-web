@@ -293,7 +293,6 @@ export class LWOBParser {
                     }
                     material.reflectivity = reflection
                     if (this.verbose) console.log(`Reflectivity (REFL): ${material.reflectivity}`)
-                    if (!DEV_MODE) console.warn(`Material with reflectivity ${material.reflectivity}, but reflection mode ${reflectionMode} not yet implemented`) // TODO Implement reflection modes
                     break
                 case 'TRAN':
                 case 'VTRN':
