@@ -95,8 +95,8 @@ export class Raider implements Updatable {
             const distanceSq = scare.getPosition2D().distanceToSquared(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).getPosition2D())
             if (distanceSq < 80 * 80) {
                 this.scared = true
-                this.sceneEntity.setAnimation(RaiderActivity.RunPanic)
                 this.dropCarried(true)
+                this.sceneEntity.setAnimation(RaiderActivity.RunPanic)
                 const runTarget = this.sceneEntity.position2D.add(this.sceneEntity.position2D.sub(scare.getPosition2D()))
                 this.setJob(new RunPanicJob(runTarget))
             }
