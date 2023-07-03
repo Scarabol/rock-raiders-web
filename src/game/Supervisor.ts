@@ -2,7 +2,7 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent } from '../event/WorldEvents'
-import { CHECK_CLEAR_RUBBLE_INTERVAL, JOB_SCHEDULE_INTERVAL } from '../params'
+import { CHECK_CLEAR_RUBBLE_INTERVAL, ITEM_ACTION_RANGE_SQ, JOB_SCHEDULE_INTERVAL } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { Job } from './model/job/Job'
 import { JobState } from './model/job/JobState'
@@ -14,6 +14,7 @@ import { TrainRaiderJob } from './model/job/raider/TrainRaiderJob'
 import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { WorldManager } from './WorldManager'
+import { PathTarget } from './model/PathTarget'
 
 export interface SupervisedJob extends Job {
     getPriorityIdentifier(): PriorityIdentifier
@@ -68,14 +69,13 @@ export class Supervisor {
             let closestVehicle: VehicleEntity = null
             let closestVehicleDistance: number = null
             unemployedVehicles.forEach((vehicle) => {
+                const pathToJob = job.carryItem ? vehicle.findShortestPath(PathTarget.fromLocation(job.carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)) : vehicle.findShortestPath(job.getWorkplace(vehicle))
+                if (!pathToJob) return
                 if (vehicle.isPrepared(job)) {
-                    const pathToJob = vehicle.findShortestPath(job.getWorkplace(vehicle))
-                    if (pathToJob) {
-                        const dist = pathToJob.lengthSq
-                        if (closestVehicleDistance === null || dist < closestVehicleDistance) {
-                            closestVehicle = vehicle
-                            closestVehicleDistance = dist
-                        }
+                    const dist = pathToJob.lengthSq
+                    if (closestVehicleDistance === null || dist < closestVehicleDistance) {
+                        closestVehicle = vehicle
+                        closestVehicleDistance = dist
                     }
                 }
             })
@@ -95,7 +95,7 @@ export class Supervisor {
             let closestTrainingArea: BuildingEntity = null
             const requiredTraining = job.getRequiredTraining()
             unemployedRaider.forEach((raider) => {
-                const pathToJob = raider.findShortestPath(job.getWorkplace(raider))
+                const pathToJob = job.carryItem ? raider.findShortestPath(PathTarget.fromLocation(job.carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)) : raider.findShortestPath(job.getWorkplace(raider))
                 if (!pathToJob) return
                 if (raider.isPrepared(job)) {
                     const dist = pathToJob.lengthSq
