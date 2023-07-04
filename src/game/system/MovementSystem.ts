@@ -23,7 +23,7 @@ export class MovementSystem extends AbstractGameSystem {
                 targetWorld.y += positionComponent.floorOffset
                 const step = targetWorld.clone().sub(positionComponent.position)
                 const entitySpeed = statsComponent.getSpeed(positionComponent.surface.isPath(), positionComponent.surface.hasRubble()) * elapsedMs / NATIVE_UPDATE_INTERVAL
-                const entitySpeedSq = entitySpeed * entitySpeed * entitySpeed
+                const entitySpeedSq = entitySpeed * entitySpeed
                 const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                 if (targetWorld.distanceToSquared(positionComponent.position) <= entitySpeedSq + worldTargetComponent.radiusSq) {
                     this.ecs.removeComponent(entity, WorldTargetComponent)
@@ -35,14 +35,14 @@ export class MovementSystem extends AbstractGameSystem {
                             sceneEntityComponent.sceneEntity.dispose()
                         }
                     } else if (sceneEntityComponent) {
-                        sceneEntityComponent.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                        sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? AnimEntityActivity.StandCarry : AnimEntityActivity.Stand)
                     }
                 } else if (entitySpeed > 0) {
                     step.clampLength(0, entitySpeed)
                     positionComponent.position.add(step)
                     positionComponent.surface = terrain.getSurfaceFromWorld(positionComponent.position)
                     positionComponent.markDirty()
-                    sceneEntityComponent.sceneEntity.setAnimation(AnimEntityActivity.Route)
+                    sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? AnimEntityActivity.Carry : AnimEntityActivity.Route)
                 } else {
                     console.warn(`Entity ${entity} speed (${entitySpeed}) is zero or less`)
                 }

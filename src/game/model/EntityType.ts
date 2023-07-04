@@ -52,6 +52,8 @@ export enum EntityType {
 
 export type VehicleEntityType = EntityType.HOVERBOARD | EntityType.SMALL_DIGGER | EntityType.SMALL_TRUCK | EntityType.SMALL_CAT | EntityType.SMALL_MLP | EntityType.SMALL_HELI | EntityType.BULLDOZER | EntityType.WALKER_DIGGER | EntityType.LARGE_MLP | EntityType.LARGE_DIGGER | EntityType.LARGE_CAT | EntityType.LARGE_HELI
 
+export type MonsterEntityType = EntityType.NONE | EntityType.SMALL_SPIDER | EntityType.BAT | EntityType.ICE_MONSTER | EntityType.LAVA_MONSTER | EntityType.ROCK_MONSTER
+
 export function getEntityTypeByName(type: string): EntityType {
     if ('TVCamera'.equalsIgnoreCase(type)) {
         return EntityType.TV_CAMERA
@@ -126,6 +128,23 @@ export function getEntityTypeByName(type: string): EntityType {
     } else if ('LargeHeli'.equalsIgnoreCase(type)) {
         return EntityType.LARGE_HELI
     } else {
+        return EntityType.NONE
+    }
+}
+
+export function getMonsterEntityTypeByName(type: string): MonsterEntityType | EntityType.NONE {
+    if ('Bat'.equalsIgnoreCase(type)) {
+        return EntityType.BAT
+    } else if ('SmallSpider'.equalsIgnoreCase(type)) {
+        return EntityType.SMALL_SPIDER
+    } else if ('RockMonster'.equalsIgnoreCase(type)) {
+        return EntityType.ROCK_MONSTER
+    } else if ('IceMonster'.equalsIgnoreCase(type)) {
+        return EntityType.ICE_MONSTER
+    } else if ('LavaMonster'.equalsIgnoreCase(type)) {
+        return EntityType.LAVA_MONSTER
+    } else {
+        console.warn(`Could not find monster entity type for given '${type}'`)
         return EntityType.NONE
     }
 }

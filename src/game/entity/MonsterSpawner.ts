@@ -1,5 +1,5 @@
 import { TILESIZE } from '../../params'
-import { EntityType } from '../model/EntityType'
+import { EntityType, MonsterEntityType } from '../model/EntityType'
 import { WorldManager } from '../WorldManager'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
@@ -11,11 +11,11 @@ import { Vector2 } from 'three'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
-
-type MonsterEntityType = EntityType.SMALL_SPIDER | EntityType.BAT | EntityType.ICE_MONSTER | EntityType.LAVA_MONSTER | EntityType.ROCK_MONSTER
+import { GameEntity } from '../ECS'
+import { RandomMoveComponent } from '../component/RandomMoveComponent'
 
 export class MonsterSpawner {
-    static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): void {
+    static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
         const entity = worldMgr.ecs.addEntity()
         const floorPosition = worldMgr.sceneMgr.getFloorPosition(worldPos)
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
@@ -27,13 +27,17 @@ export class MonsterSpawner {
                 positionComponent.floorOffset = 1
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/SpiderSB'))
                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.smallSpider, 10000))
+                const spiderStats = ResourceManager.configuration.stats.smallSpider
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(spiderStats))
+                if (spiderStats.RandomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - spiderStats.RandomMoveTime) * 1000))
                 break
             case EntityType.BAT: // TODO make bats appear in flocks
                 positionComponent.floorOffset = TILESIZE / 2
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/bat'))
                 sceneEntity.setAnimation(AnimEntityActivity.Route)
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.bat, 0))
+                const batStats = ResourceManager.configuration.stats.bat
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(batStats))
+                if (batStats.RandomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - batStats.RandomMoveTime) * 1000))
                 worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
                 break
             case EntityType.ICE_MONSTER:
@@ -54,6 +58,7 @@ export class MonsterSpawner {
         sceneEntity.visible = surface.discovered
         worldMgr.sceneMgr.addMeshGroup(sceneEntity)
         worldMgr.entityMgr.addEntity(entity, entityType)
+        return entity
     }
 
     private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string) {

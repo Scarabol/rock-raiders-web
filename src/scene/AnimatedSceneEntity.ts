@@ -203,6 +203,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                 carryJoint.getWorldPosition(position)
             }
             item.position.copy(position)
+            item.rotation.copy(this.rotation)
         })
         this.carriedByIndex.clear()
     }

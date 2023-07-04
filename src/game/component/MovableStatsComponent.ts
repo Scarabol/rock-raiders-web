@@ -1,5 +1,5 @@
 import { AbstractGameComponent } from '../ECS'
-import { MovableEntityStats } from '../../cfg/GameStatsCfg'
+import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
 
 export class MovableStatsComponent extends AbstractGameComponent {
     routeSpeed: number[] = [1]
@@ -10,9 +10,8 @@ export class MovableStatsComponent extends AbstractGameComponent {
     crossLand: boolean = false
     crossWater: boolean = false
     crossLava: boolean = false
-    idleTimer: number = 0
 
-    constructor(stats: MovableEntityStats, readonly maxIdleTimer: number) {
+    constructor(stats: MonsterEntityStats) {
         super()
         this.routeSpeed = stats.RouteSpeed
         this.pathCoef = stats.PathCoef
@@ -21,7 +20,6 @@ export class MovableStatsComponent extends AbstractGameComponent {
         this.crossLand = stats.CrossLand
         this.crossWater = stats.CrossWater
         this.crossLava = stats.CrossLava
-        this.resetIdleTimer()
     }
 
     getSpeed(isOnPath: boolean, isOnRubble: boolean): number {
@@ -29,19 +27,5 @@ export class MovableStatsComponent extends AbstractGameComponent {
         const pathCoef = isOnPath ? this.pathCoef : 1
         const rubbleCoef = isOnRubble ? this.rubbleCoef : 1
         return routeSpeed * pathCoef * rubbleCoef
-    }
-
-    isOnIdleTimer(elapsedMs: number): boolean {
-        if (this.idleTimer > 0) {
-            this.idleTimer -= elapsedMs
-            return true
-        }
-        return this.resetIdleTimer()
-    }
-
-    private resetIdleTimer() {
-        if (this.maxIdleTimer <= 0) return false
-        this.idleTimer = Math.randomInclusive(this.maxIdleTimer)
-        return false
     }
 }

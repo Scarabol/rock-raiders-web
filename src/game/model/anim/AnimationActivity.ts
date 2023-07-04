@@ -25,6 +25,8 @@ export enum AnimEntityActivity {
     Stand = 'Activity_Stand',
     Route = 'Activity_Route',
     TeleportIn = 'Activity_TeleportIn',
+    Carry = 'Activity_Carry',
+    StandCarry = 'Activity_CarryStand',
 }
 
 export enum RaiderActivity {

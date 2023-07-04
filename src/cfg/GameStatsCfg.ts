@@ -13,13 +13,9 @@ export interface DoubleSelectStats {
 }
 
 export interface MovableEntityStats extends PickSphereStats {
-    RouteSpeed: number[]
-    PathCoef: number
-    RubbleCoef: number
     CrossLand: boolean
     CrossWater: boolean
     CrossLava: boolean
-    RandomEnterWall: boolean
 }
 
 export class VehicleEntityStats extends BaseConfig implements MovableEntityStats, DoubleSelectStats {
@@ -68,7 +64,8 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
     PathCoef: number = 1
     RubbleCoef: number = 1
     RandomEnterWall: boolean = false
-    RandomMoveTime: number = 1
+    RandomMove: boolean = false
+    RandomMoveTime: number = 0
     CrossLand: boolean = false
     CrossLava: boolean = false
     CrossWater: boolean = false
