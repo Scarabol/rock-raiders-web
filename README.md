@@ -48,8 +48,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - make slugs look for nearby reachable buildings or fences to leech energy
 - spawn a depleted energy crystal, when slug leeched energy
 - wake up rock monsters by big bangs
-- make monster attack any nearby buildings
-- make monster create bolder and throw at buildings
 - show lightning beam between electric fences
 - show ElectricFenceStud between electric fences and buildings
 - make rock monster crumble when reaching a fence or lightning

@@ -108,6 +108,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addTextureFolder('MiscAnims/Crystal/')
         this.addAsset(this.wadLoader.loadLWOFile, 'World/Shared/Crystal.lwo') // high-poly version
         this.addAsset(this.wadLoader.loadWadTexture, 'MiscAnims/Ore/Ore.bmp')
+        this.addAsset(this.wadLoader.loadWadTexture, 'MiscAnims/Effects/rockfall.bmp')
         const miscObjects = iGet(gameConfig, 'MiscObjects')
         Object.values<string>(miscObjects).forEach((mType) => {
             this.addMeshObjects(mType)

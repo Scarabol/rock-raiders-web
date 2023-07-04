@@ -31,6 +31,7 @@ import { OxygenComponent } from '../../component/OxygenComponent'
 import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 import { RunPanicJob } from '../job/raider/RunPanicJob'
+import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -167,7 +168,7 @@ export class Raider implements Updatable, JobFulfiller {
                     if (raiderPosition2D.distanceToSquared(rockyPosition2D) < 25 * 25) { // TODO Use WakeRadius from monster stats
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                             this.worldMgr.entityMgr.raiderScare.push(positionComponent)
-                            // TODO add rocky behaviour component
+                            this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
                         })
                     }
                 }

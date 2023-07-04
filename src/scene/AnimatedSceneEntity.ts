@@ -196,7 +196,10 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             }
             return false
         })
-        if (!foundCarryJoint && VERBOSE) console.warn('Could not find empty carry joint to attach carried entity')
+        if (!foundCarryJoint) {
+            if (VERBOSE) console.warn('Could not find empty carry joint to attach carried entity')
+            this.carriedByIndex.set(this.carriedByIndex.size, entity) // rockies pick item before having a carry joint
+        }
         entity.position.set(0, 0, 0)
     }
 

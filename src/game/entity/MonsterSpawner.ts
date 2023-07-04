@@ -12,6 +12,7 @@ import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
 import { GameEntity } from '../ECS'
 import { RandomMoveComponent } from '../component/RandomMoveComponent'
+import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
@@ -45,12 +46,18 @@ export class MonsterSpawner {
                 break
             case EntityType.ICE_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster')
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.iceMonster))
+                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.iceMonster))
                 break
             case EntityType.LAVA_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/LavaMonster')
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.lavaMonster))
+                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.lavaMonster))
                 break
             case EntityType.ROCK_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster')
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.rockMonster))
+                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.rockMonster))
                 break
             default:
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)

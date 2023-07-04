@@ -87,6 +87,11 @@ export class BuildingSite {
         this.checkComplete()
     }
 
+    removeItem(item: MaterialEntity) {
+        this.unAssign(item)
+        this.onSiteByType.getOrUpdate(item.entityType, () => []).remove(item)
+    }
+
     checkComplete() {
         if (this.complete || this.canceled) return
         this.complete = true

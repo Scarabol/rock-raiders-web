@@ -7,6 +7,7 @@ import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
 import { TerrainPath } from './TerrainPath'
 import { PathTarget } from '../model/PathTarget'
+import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 
 export class PathFinder {
     graphWalk: Graph = null
@@ -98,6 +99,22 @@ export class PathFinder {
         const path = this.findPath(start, target.targetLocation, stats, highPrecision)
         if (!path) return null
         return new TerrainPath(target, path)
+    }
+
+    findClosestObj<T extends { sceneEntity: AnimatedSceneEntity }>(start: Vector2, objects: T[], stats: MovableEntityStats, highPrecision: boolean): { obj: T, locations: Vector2[], lengthSq: number } {
+        return objects.map((obj) => {
+            if (!obj) return null
+            const path = this.findPath(start, obj.sceneEntity.position2D, stats, highPrecision)
+            if (!path) return null
+            let lengthSq = 0
+            for (let c = 0; c < path.length - 1; c++) {
+                const start = path[c]
+                const end = path[c + 1]
+                lengthSq += start.distanceToSquared(end)
+            }
+            return {obj: obj, locations: path, lengthSq: lengthSq}
+        }).filter((terrainPath) => !!terrainPath)
+            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
     }
 
     private findPath(start: Vector2, targetLocation: Vector2, stats: MovableEntityStats, highPrecision: boolean): Vector2[] {

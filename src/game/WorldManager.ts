@@ -26,6 +26,7 @@ import { ShowMissionBriefingEvent } from '../event/LocalEvents'
 import { OxygenSystem } from './system/OxygenSystem'
 import { MapMarkerUpdateSystem } from './system/MapMarkerUpdateSystem'
 import { ObjectInfoSystem } from './system/ObjectInfoSystem'
+import { RockMonsterBehaviorSystem } from './system/RockMonsterBehaviorSystem'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -52,6 +53,7 @@ export class WorldManager {
         this.ecs.addSystem(new BeamUpSystem())
         this.ecs.addSystem(new MapMarkerUpdateSystem())
         this.ecs.addSystem(new ObjectInfoSystem())
+        this.ecs.addSystem(new RockMonsterBehaviorSystem(this))
         this.oxygenSystem = this.ecs.addSystem(new OxygenSystem())
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())

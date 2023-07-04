@@ -20,6 +20,8 @@ import { EmergeTrigger } from './EmergeTrigger'
 import { MonsterSpawner } from '../entity/MonsterSpawner'
 import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
+import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
+import { WALL_TYPE } from './WallType'
 
 export class Terrain {
     heightOffset: number[][] = [[]]
@@ -211,7 +213,7 @@ export class Terrain {
                     sceneEntity.setAnimation(RockMonsterActivity.Emerge, () => {
                         sceneEntity.setAnimation(AnimEntityActivity.Stand)
                         this.worldMgr.entityMgr.raiderScare.push(positionComponent)
-                        // TODO add rock monster behaviour component
+                        this.worldMgr.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
                     })
                     EventBus.publishEvent(new GenericMonsterEvent(positionComponent))
                 })
@@ -231,5 +233,18 @@ export class Terrain {
         const dy1 = interpolate(this.heightOffset[p.x][p.y + 1], this.heightOffset[p.x + 1][p.y + 1], s.x)
         const floorY = interpolate(dy0, dy1, s.y) * TILESIZE
         return new Vector3(world.x, floorY, world.y)
+    }
+
+    findClosestWall(position: Vector2): Surface {
+        const start = this.getSurfaceFromWorld2D(position)
+        const checked: Surface[] = []
+        const toCheck: Surface[] = [start]
+        while (toCheck.length > 0) {
+            const next = toCheck.shift()
+            if (next.wallType === WALL_TYPE.WALL) return next
+            checked.add(next)
+            toCheck.push(...next.neighbors.filter((n) => !checked.includes(n)))
+        }
+        return null
     }
 }

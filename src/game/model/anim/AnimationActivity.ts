@@ -74,4 +74,10 @@ export enum RockMonsterActivity {
     Unpowered = 'Activity_Unpowered',
     Emerge = 'Activity_Emerge',
     WakeUp = 'Activity_WakeUp',
+    Eat = 'Activity_Eat',
+    Stamp = 'Activity_Stamp',
+    Enter = 'Activity_Enter',
+    Gather = 'Activity_Gather',
+    Throw = 'Activity_Throw',
+    Punch = 'Activity_Repair',
 }

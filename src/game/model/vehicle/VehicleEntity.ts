@@ -34,6 +34,7 @@ import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntit
 import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
 import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
+import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -135,7 +136,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                     if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < 25 * 25) { // TODO Use WakeRadius from monster stats
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                             this.worldMgr.entityMgr.raiderScare.push(positionComponent)
-                            // TODO add rocky behaviour component
+                            this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
                         })
                     }
                 }
