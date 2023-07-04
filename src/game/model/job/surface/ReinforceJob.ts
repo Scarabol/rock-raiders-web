@@ -14,7 +14,7 @@ export class ReinforceJob extends ShareableJob {
 
     constructor(readonly surface: Surface) {
         super()
-        this.digPositions = this.surface.getDigPositions().map((p) => PathTarget.fromSurface(this.surface, p))
+        this.digPositions = this.surface.getDigPositions().map((p) => PathTarget.fromLocation(p))
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
@@ -22,7 +22,7 @@ export class ReinforceJob extends ShareableJob {
         const surfaceDigPositions = this.surface.getDigPositions()
         if (!this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
             !surfaceDigPositions.every((p) => this.digPositions.some((d) => p.equals(d.targetLocation)))) {
-            this.digPositions = surfaceDigPositions.map((p) => PathTarget.fromSurface(this.surface, p))
+            this.digPositions = surfaceDigPositions.map((p) => PathTarget.fromLocation(p))
         }
         return entity.findShortestPath(this.digPositions)?.target
     }

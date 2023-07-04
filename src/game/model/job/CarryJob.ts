@@ -1,5 +1,5 @@
 import { SupervisedJob } from '../../Supervisor'
-import { AnimationActivity, DynamiteActivity } from '../anim/AnimationActivity'
+import { AnimationActivity, BarrierActivity, BuildingActivity, DynamiteActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining, RaiderTrainings } from '../raider/RaiderTraining'
@@ -16,6 +16,7 @@ import { SceneSelectionComponent } from '../../component/SceneSelectionComponent
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { PositionComponent } from '../../component/PositionComponent'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
+import { GameState } from '../GameState'
 
 export class CarryJob extends AbstractJob implements SupervisedJob {
     fulfiller: JobFulfiller = null
@@ -26,7 +27,10 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
-        if (this.target && !this.target?.isInvalid()) {
+        if (this.target && !(
+            (this.target.building && !this.target.building.isPowered()) ||
+            (this.target.site && (this.target.site.complete || this.target.site.canceled))
+        )) {
             return this.target
         }
         this.target = entity.findShortestPath(this.findWorkplaces())?.target
@@ -81,11 +85,15 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
     }
 
     getWorkActivity(): AnimationActivity {
-        return this.target?.getDropAction()
+        return this.target.building?.getDropAction() || RaiderActivity.Place
     }
 
     isReadyToComplete(): boolean {
-        return !!(this.target?.canGatherItem())
+        if (!this.target) return false
+        if (this.target.building?.entityType === EntityType.POWER_STATION || this.target.building?.entityType === EntityType.ORE_REFINERY) {
+            return this.target.building.sceneEntity.currentAnimation === (this.target.building.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
+        }
+        return true
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {
@@ -94,7 +102,33 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
         this.fulfiller.dropCarried(false)
         this.carryItem.sceneEntity.position.copy(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
         this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(PositionComponent).position.copy(this.carryItem.sceneEntity.position)
-        this.target.gatherItem(this.carryItem)
+        if (this.target.building) {
+            if (this.target.building.entityType === EntityType.POWER_STATION || this.target.building.entityType === EntityType.ORE_REFINERY) {
+                this.target.building.pickupItem(this.carryItem)
+                if (this.target.building.sceneEntity.carriedByIndex.size >= this.target.building.getMaxCarry()) {
+                    if (this.target.building.entityType === EntityType.POWER_STATION) this.target.building.worldMgr.sceneMgr.addPositionalAudio(this.target.building.sceneEntity, Sample[Sample.SND_Refine], true, false)
+                    this.target.building.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
+                        this.target.building.sceneEntity.setAnimation(this.target.building.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
+                        this.target.building.sceneEntity.removeAllCarried()
+                        this.target.building.carriedItems.forEach((carried) => {
+                            const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.sceneEntity.position2D)
+                            carried.sceneEntity.position.copy(floorPosition)
+                            carried.worldMgr.sceneMgr.addMeshGroup(carried.sceneEntity)
+                        })
+                        this.target.building.depositItems()
+                    })
+                }
+            } else {
+                GameState.depositItem(this.carryItem)
+                this.carryItem.disposeFromWorld()
+            }
+        } else {
+            this.carryItem.sceneEntity.addToScene(this.carryItem.worldMgr.sceneMgr, null, this.target.headingOnSite)
+            if (this.carryItem.entityType === EntityType.BARRIER) {
+                this.carryItem.sceneEntity.setAnimation(BarrierActivity.Expand, () => this.carryItem.sceneEntity.setAnimation(BarrierActivity.Long))
+            }
+            this.target.site?.addItem(this.carryItem)
+        }
         if (this.carryItem.entityType === EntityType.DYNAMITE) this.igniteDynamite()
         else if (this.carryItem.entityType === EntityType.ELECTRIC_FENCE) this.placeFence()
     }

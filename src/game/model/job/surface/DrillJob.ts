@@ -28,7 +28,7 @@ export class DrillJob extends ShareableJob {
             !this.digPositions.every((d) => surfaceDigPositions.some((p) => p.equals(d.targetLocation))) ||
             !surfaceDigPositions.every((p) => this.digPositions.some((d) => p.equals(d.targetLocation)))
         ) {
-            this.digPositions = surfaceDigPositions.map((p) => PathTarget.fromSurface(this.surface, p, entity.sceneEntity.getRadiusSquare() / 4))
+            this.digPositions = surfaceDigPositions.map((p) => PathTarget.fromLocation(p, entity.sceneEntity.getRadiusSquare() / 4))
         }
         return entity.findShortestPath(this.digPositions)?.target
     }
