@@ -7,6 +7,7 @@ export class HealthBarComponent extends AbstractGameComponent {
     sprite: HealthBarSprite = null
     actualStatus: number = 1
     targetStatus: number = 1
+    visibleTimeout: number = 0
 
     constructor(yOffset: number, scale: number, readonly parent: Object3D, readonly canBeShownPermanently: boolean) {
         super()
@@ -19,28 +20,22 @@ export class HealthBarComponent extends AbstractGameComponent {
         this.sprite.visible = visible && this.canBeShownPermanently
     }
 
-    setStatus(status: number) {
-        this.targetStatus = Math.max(0, Math.min(1, status))
-        if (this.targetStatus !== this.actualStatus) {
+    updateStatus(targetStatus: number, elapsedMs: number) {
+        if (this.visibleTimeout > 0) {
+            this.visibleTimeout -= elapsedMs
+        } else {
+            this.sprite.visible = false
+            this.visibleTimeout = 0
+        }
+        const nextStatus = Math.max(0, Math.min(1, targetStatus))
+        if (this.targetStatus !== nextStatus) {
+            this.targetStatus = nextStatus
+            this.visibleTimeout = 3000
             this.sprite.visible = true
-            this.updateStatus()
         }
-    }
-
-    private updateStatus() {
-        if (this.targetStatus === this.actualStatus) {
-            if (!(GameState.showObjInfo && this.canBeShownPermanently)) {
-                setTimeout(() => { // TODO replace with synchronized update from main loop
-                    this.sprite.visible = false
-                }, 3000)
-            }
-            return
-        }
-        setTimeout(() => { // TODO replace with synchronized update from main loop
-            const delta = this.targetStatus - this.actualStatus
-            this.actualStatus += Math.sign(delta) * Math.min(Math.abs(delta), 0.03)
-            this.sprite.setStatus(this.actualStatus)
-            this.updateStatus()
-        }, 30)
+        if (this.targetStatus === this.actualStatus) return
+        const delta = this.targetStatus - this.actualStatus
+        this.actualStatus += Math.sign(delta) * Math.min(Math.abs(delta), 0.03)
+        this.sprite.setStatus(this.actualStatus)
     }
 }

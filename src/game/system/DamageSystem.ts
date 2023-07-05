@@ -29,21 +29,18 @@ export class DamageSystem extends AbstractGameSystem {
                 const components = this.ecs.getComponents(entity)
                 const positionComponent = components.get(PositionComponent)
                 const healthComponent = components.get(HealthComponent)
-                const healthBarComponent = components.get(HealthBarComponent)
                 const position = positionComponent.getPosition2D()
                 this.dynamiteExplosions.forEach((explosion) => {
                     const distanceSq = position.distanceToSquared(explosion.position)
                     const inRangeSq = 1 - distanceSq / this.dynamiteRadiusSq
                     if (inRangeSq > 0) {
                         healthComponent.health -= this.dynamiteMaxDamage * Math.pow(inRangeSq, 2)
-                        healthBarComponent.setStatus(healthComponent.health / healthComponent.maxHealth)
                     }
                 })
-                const surface = components.get(PositionComponent).surface
-                if (surface.surfaceType === SurfaceType.LAVA5 && healthComponent.health > 0) {
+                if (positionComponent.surface.surfaceType === SurfaceType.LAVA5 && healthComponent.health > 0) {
                     healthComponent.health -= 50 / 1000 * elapsedMs
-                    healthBarComponent.setStatus(healthComponent.health / healthComponent.maxHealth)
                 }
+                components.get(HealthBarComponent).updateStatus(healthComponent.health / healthComponent.maxHealth, elapsedMs)
             } catch (e) {
                 console.error(e)
             }
