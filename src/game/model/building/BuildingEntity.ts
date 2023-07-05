@@ -359,6 +359,19 @@ export class BuildingEntity {
 
     update(elapsedMs: number) {
         this.powerOffSprite.update(elapsedMs)
+        const health = this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent).health
+        if (health <= 0) {
+            this.worldMgr.entityMgr.buildings.remove(this)
+            this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
+            this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+            this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
+            this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
+            this.turnEnergyOff()
+            this.sceneEntity.setAnimation(BuildingActivity.Explode, () => this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity))
+            this.powerOffSprite.setEnabled(false)
+            this.surfaces.forEach((s) => s.setBuilding(null))
+            EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+        }
     }
 
     getMaxCarry(): number {
