@@ -13,7 +13,7 @@ export class SceneSelectionComponent extends AbstractGameComponent {
 
     constructor(parentObj: Object3D, userData: SceneSelectionUserData, stats: PickSphereStats) {
         super()
-        const pickSphereRadius = stats.PickSphere / 2
+        const pickSphereRadius = stats.PickSphere / 2 // TODO separate pick spheres from collision and use CollRadius
         const geometry = new SphereGeometry(pickSphereRadius, 8, 8)
         const material = new MeshBasicMaterial({color: 0xa0a000, visible: false, wireframe: true}) // change visible to true for debugging
         this.pickSphere = new Mesh(geometry, material)

@@ -20,7 +20,7 @@ export class VehicleUpgradeJob extends AbstractJob {
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {
-        this.workplace.building.sceneEntity.setAnimation(BuildingActivity.Upgrade, () => {
+        this.workplace.building.sceneEntity.setAnimation(BuildingActivity.Upgrade, () => { // TODO Use FunctionCoef from config as animation speed
             super.onJobComplete(fulfiller)
             this.workplace.building.sceneEntity.setAnimation(BuildingActivity.Stand)
             this.vehicle.addUpgrade(this.upgrade)
