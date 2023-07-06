@@ -10,6 +10,7 @@ import { SurfaceType } from '../../terrain/SurfaceType'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { BuildingEntity } from './BuildingEntity'
 import { BuildingType } from './BuildingType'
+import { BarrierActivity } from '../anim/AnimationActivity'
 
 export class BuildingSite {
     surfaces: Surface[] = []
@@ -118,7 +119,13 @@ export class BuildingSite {
     teleportIn() {
         this.worldMgr.entityMgr.completedBuildingSites.remove(this)
         this.surfaces.forEach((s) => s.site = null)
-        this.onSiteByType.forEach((byType: MaterialEntity[]) => byType.forEach((item: MaterialEntity) => item.disposeFromWorld()))
+        this.onSiteByType.forEach((byType: MaterialEntity[]) => byType.forEach((item: MaterialEntity) => {
+            if (item.entityType === EntityType.BARRIER) {
+                item.sceneEntity.setAnimation(BarrierActivity.Teleport, () => item.disposeFromWorld())
+            } else {
+                item.disposeFromWorld()
+            }
+        }))
         new BuildingEntity(this.worldMgr, this.buildingType)
             .placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
     }
@@ -134,7 +141,7 @@ export class BuildingSite {
         })
         this.onSiteByType.forEach((materials, entityType) => materials.forEach((item) => {
             if (entityType === EntityType.BARRIER) {
-                item.disposeFromWorld()
+                item.sceneEntity.setAnimation(BarrierActivity.Teleport, () => item.disposeFromWorld())
             } else {
                 this.worldMgr.entityMgr.placeMaterial(item, item.sceneEntity.position2D)
             }

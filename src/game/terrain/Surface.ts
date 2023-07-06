@@ -477,7 +477,7 @@ export class Surface {
                 const materialSurface = this.terrain.getSurfaceFromWorld(m.sceneEntity.position)
                 if (materialSurface === this) {
                     m.carryJob?.target?.site?.unAssign(m)
-                    m.dispose()
+                    m.disposeFromWorld()
                 }
             })
         }
