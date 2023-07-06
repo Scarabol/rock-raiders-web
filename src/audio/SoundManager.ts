@@ -10,11 +10,11 @@ export class SoundManager {
     static audioBufferCache: Map<string, AudioBuffer> = new Map()
     static audioContext: AudioContext
     static sfxAudioTarget: GainNode
-    static readonly loopedAudio: Set<PositionalAudio> = new Set()
+    static readonly playingAudio: Set<PositionalAudio> = new Set()
 
     static {
-        EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.loopedAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
-        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.loopedAudio.forEach((a) => a.play()))
+        EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.playingAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
+        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.playingAudio.forEach((a) => a.play()))
     }
 
     static playSample(sample: Sample) {

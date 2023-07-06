@@ -247,10 +247,12 @@ export class SceneManager implements Updatable {
         const sfxVolume = SaveGameManager.getSfxVolume()
         audio.setVolume(sfxVolume)
         audio.loop = loop
+        SoundManager.playingAudio.add(audio)
         if (!audio.loop) {
-            audio.onEnded = () => parent.remove(audio)
-        } else {
-            SoundManager.loopedAudio.add(audio)
+            audio.onEnded = () => {
+                parent.remove(audio)
+                SoundManager.playingAudio.delete(audio)
+            }
         }
         SoundManager.getSoundBuffer(sfxName).then((audioBuffer) => {
             if (!audioBuffer) return
