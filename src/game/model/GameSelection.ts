@@ -179,4 +179,8 @@ export class GameSelection {
     canClear(): boolean {
         return this.raiders.some((r) => r.hasTool(RaiderTool.SHOVEL)) || this.vehicles.some((v) => v.canClear())
     }
+
+    canPickup(): boolean {
+        return this.raiders.some((r) => r.getCarryCapacity() > 0) || this.vehicles.some((v) => v.getCarryCapacity() > 0)
+    }
 }
