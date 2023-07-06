@@ -163,6 +163,10 @@ export class WorldManager {
                         if (teleportBuilding) {
                             GameState.numCrystal -= stats.CostCrystal
                             EventBus.publishEvent(new MaterialAmountChanged())
+                            const energyConsumer = this.entityMgr.buildings.filter((b) => b.energized && b.crystalDrain > 0).reverse()
+                            for (let c = 0; c < energyConsumer.length && GameState.usedCrystals > GameState.numCrystal; c++) {
+                                energyConsumer[c].setEnergized(false)
+                            }
                             const vehicle = VehicleFactory.createVehicleFromType(vType, this)
                             const worldPosition = (teleportBuilding.waterPathSurface ?? teleportBuilding.primaryPathSurface).getCenterWorld2D()
                             const heading = teleportBuilding.sceneEntity.getHeading()
