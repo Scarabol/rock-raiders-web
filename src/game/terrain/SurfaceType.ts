@@ -27,6 +27,11 @@ export class SurfaceType {
         mapSurfaceColor: '#280048',
         rubbleResilient: false,
     })
+    static readonly HIDDEN_CAVERN = new SurfaceType({
+        name: 'surfaceTypeUndiscovered',
+        floor: true,
+        mapSurfaceColor: '#6A0000',
+    })
     static readonly SOLID_ROCK = new SurfaceType({
         name: 'surfaceTypeImmovable',
         shaping: true,

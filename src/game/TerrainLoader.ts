@@ -93,7 +93,7 @@ export class TerrainLoader {
         terrain.forEachSurface((s) => {
             const surface = terrain.getSurfaceOrNull(s.x, s.y)
             if (predugMap[s.y][s.x] === PredugMap.CAVERN_HIDDEN && !surface.discovered && !surface.surfaceType.floor) {
-                surface.surfaceType = SurfaceType.GROUND
+                surface.surfaceType = SurfaceType.HIDDEN_CAVERN
             }
         })
 
