@@ -6,7 +6,7 @@ import { EventKey } from '../event/EventKeyEnum'
 import { VERBOSE } from '../params'
 
 export class SoundManager {
-    static sfxByKey: Map<string, ArrayBuffer> = new Map()
+    static sfxBuffersByKey: Map<string, ArrayBuffer[]> = new Map()
     static audioBufferCache: Map<string, AudioBuffer> = new Map()
     static audioContext: AudioContext
     static sfxAudioTarget: GainNode
@@ -37,14 +37,12 @@ export class SoundManager {
 
     static async getSoundBuffer(sfxName: string): Promise<AudioBuffer> {
         sfxName = sfxName.toLowerCase()
-        const cachedSound = SoundManager.audioBufferCache.get(sfxName)
-        if (cachedSound) return cachedSound
-        const sfxContent = this.sfxByKey.getOrUpdate(sfxName, () => {
+        const sfxBuffers = this.sfxBuffersByKey.getOrUpdate(sfxName, () => {
             if (VERBOSE) console.warn(`Could not find SFX with name '${sfxName}'`)
-            return new ArrayBuffer(0)
+            return []
         })
-        if (sfxContent.byteLength < 1) return null
-        const data = sfxContent.slice(0) // slice used to create copy, because array gets auto detached after decode
+        if (sfxBuffers.length < 1) return null
+        const data = sfxBuffers.random().slice(0) // slice used to create copy, because array gets auto detached after decode
         SoundManager.audioContext = SoundManager.audioContext || new (window['AudioContext'] || window['webkitAudioContext'])()
         SoundManager.sfxAudioTarget = SoundManager.sfxAudioTarget || SoundManager.audioContext.createGain()
         SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx

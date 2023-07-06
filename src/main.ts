@@ -35,7 +35,7 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
             break
         case WorkerMessageType.ASSET:
             msg.assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), msg.assetObj))
-            msg.sfxKeys?.forEach((sfxKey) => SoundManager.sfxByKey.set(sfxKey, msg.assetObj))
+            msg.sfxKeys?.forEach((sfxKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sfxKey, () => []).push(msg.assetObj))
             loadingLayer.increaseLoadingState()
             break
         case WorkerMessageType.MSG:
