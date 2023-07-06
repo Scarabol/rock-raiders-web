@@ -28,6 +28,16 @@ export class Supervisor {
             this.jobs.push(event.job)
         })
         EventBus.registerEventListener(EventKey.UPDATE_PRIORITIES, (event: UpdatePriorities) => {
+            event.priorityList.forEach((p) => {
+                if (!p.enabled) {
+                    this.worldMgr.entityMgr.raiders.forEach((r) => {
+                        if (r.job?.priorityIdentifier === p.key) r.stopJob()
+                    })
+                    this.worldMgr.entityMgr.vehicles.forEach((v) => {
+                        if (v.job?.priorityIdentifier === p.key) v.stopJob()
+                    })
+                }
+            })
             this.priorityList = [...event.priorityList]
             this.priorityIndexList = this.priorityList.map((p) => p.key)
         })
