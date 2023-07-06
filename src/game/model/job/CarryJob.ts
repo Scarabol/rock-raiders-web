@@ -32,7 +32,9 @@ export class CarryJob extends Job {
         )) {
             return this.target
         }
+        if (this.target?.site) this.target.site.unAssign(this.carryItem)
         this.target = entity.findShortestPath(this.findWorkplaces())?.target
+        if (this.target?.site) this.target.site.assign(this.carryItem)
         return this.target
     }
 

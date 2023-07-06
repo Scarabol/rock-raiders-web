@@ -286,7 +286,6 @@ export class VehicleEntity implements Updatable {
         const positionAsPathTarget = PathTarget.fromLocation(carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)
         if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.setAnimation(AnimEntityActivity.Stand, () => {
-                carryItem.carryJob?.target?.site?.assign(carryItem)
                 this.carriedItems.add(carryItem)
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
             })

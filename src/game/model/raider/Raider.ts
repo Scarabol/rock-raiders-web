@@ -377,7 +377,6 @@ export class Raider implements Updatable {
         const positionAsPathTarget = PathTarget.fromLocation(carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)
         if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.setAnimation(RaiderActivity.Collect, () => {
-                carryItem.carryJob?.target?.site?.assign(carryItem)
                 this.carries = carryItem
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
             })
