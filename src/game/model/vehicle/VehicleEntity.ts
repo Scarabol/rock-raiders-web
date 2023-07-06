@@ -349,8 +349,8 @@ export class VehicleEntity implements Updatable {
 
     isPrepared(job: Job): boolean {
         const carryType = job.carryItem?.entityType
-        return (job.getRequiredTool() === RaiderTool.DRILL && this.canDrill(job.surface))
-            || (job.getRequiredTool() === RaiderTool.SHOVEL && this.canClear())
+        return (job.requiredTool === RaiderTool.DRILL && this.canDrill(job.surface))
+            || (job.requiredTool === RaiderTool.SHOVEL && this.canClear())
             || ((carryType === EntityType.ORE || carryType === EntityType.CRYSTAL || carryType === EntityType.ELECTRIC_FENCE) && this.hasCapacity())
     }
 

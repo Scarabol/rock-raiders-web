@@ -1,4 +1,4 @@
-import { AbstractJob, JobFulfiller } from './Job'
+import { Job, JobFulfiller } from './Job'
 import { VehicleUpgrade } from '../vehicle/VehicleUpgrade'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { PathTarget } from '../PathTarget'
@@ -7,7 +7,7 @@ import { BuildingActivity } from '../anim/AnimationActivity'
 import { EventBus } from '../../../event/EventBus'
 import { VehicleUpgradeCompleteEvent } from '../../../event/LocalEvents'
 
-export class VehicleUpgradeJob extends AbstractJob {
+export class VehicleUpgradeJob extends Job {
     readonly workplace: PathTarget
 
     constructor(readonly entityMgr: EntityManager, readonly vehicle: VehicleEntity, readonly upgrade: VehicleUpgrade) {
@@ -35,5 +35,9 @@ export class VehicleUpgradeJob extends AbstractJob {
 
     unAssign(vehicle: VehicleEntity): void {
         // This job should not be unassigned
+    }
+
+    hasFulfiller(): boolean {
+        return !!this.vehicle
     }
 }

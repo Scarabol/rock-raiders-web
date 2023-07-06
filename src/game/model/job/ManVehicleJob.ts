@@ -1,6 +1,4 @@
-import { SupervisedJob } from '../../Supervisor'
 import { PathTarget } from '../PathTarget'
-import { RaiderTraining } from '../raider/RaiderTraining'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { JobState } from './JobState'
 import { PriorityIdentifier } from './PriorityIdentifier'
@@ -9,12 +7,14 @@ import { Raider } from '../raider/Raider'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { JobFulfiller } from './Job'
 
-export class ManVehicleJob extends RaiderJob implements SupervisedJob {
+export class ManVehicleJob extends RaiderJob {
     vehicle: VehicleEntity
     workplace: PathTarget
 
     constructor(vehicle: VehicleEntity) {
         super()
+        this.requiredTraining = vehicle.getRequiredTraining()
+        this.priorityIdentifier = PriorityIdentifier.GET_IN
         this.vehicle = vehicle
         this.vehicle.callManJob = this
         const surface = this.vehicle.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.vehicle.sceneEntity.position)
@@ -39,18 +39,6 @@ export class ManVehicleJob extends RaiderJob implements SupervisedJob {
         this.vehicle.callManJob = null
         super.onJobComplete(fulfiller)
         this.vehicle.unblockTeleporter()
-    }
-
-    getRequiredTraining(): RaiderTraining {
-        return this.vehicle.getRequiredTraining()
-    }
-
-    getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.GET_IN
-    }
-
-    hasFulfiller(): boolean {
-        return !!this.raider
     }
 
     getJobBubble(): keyof BubblesCfg {

@@ -1,11 +1,7 @@
-import { SupervisedJob } from '../../Supervisor'
-import { AbstractJob, JobFulfiller } from './Job'
-import { PriorityIdentifier } from './PriorityIdentifier'
+import { Job, JobFulfiller } from './Job'
 
-export abstract class ShareableJob extends AbstractJob implements SupervisedJob {
+export abstract class ShareableJob extends Job {
     protected fulfiller: JobFulfiller[] = []
-
-    abstract getPriorityIdentifier(): PriorityIdentifier
 
     assign(fulfiller: JobFulfiller) {
         const index = this.fulfiller.indexOf(fulfiller)

@@ -15,6 +15,8 @@ export class ReinforceJob extends ShareableJob {
     constructor(readonly surface: Surface) {
         super()
         this.digPositions = this.surface.getDigPositions().map((p) => PathTarget.fromLocation(p))
+        this.requiredTool = RaiderTool.HAMMER
+        this.priorityIdentifier = PriorityIdentifier.REINFORCE
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
@@ -32,20 +34,12 @@ export class ReinforceJob extends ShareableJob {
         this.surface.reinforce()
     }
 
-    getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.REINFORCE
-    }
-
     getWorkActivity(): AnimationActivity {
         return RaiderActivity.Reinforce
     }
 
     getExpectedTimeLeft(): number {
         return 2700
-    }
-
-    getRequiredTool(): RaiderTool {
-        return RaiderTool.HAMMER
     }
 
     getJobBubble(): keyof BubblesCfg {

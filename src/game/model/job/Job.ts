@@ -8,53 +8,23 @@ import { RaiderTraining } from '../raider/RaiderTraining'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { JobState } from './JobState'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
+import { PriorityIdentifier } from './PriorityIdentifier'
 
 export type JobFulfiller = Raider | VehicleEntity
 
-export interface Job {
-    jobState: JobState
-    surface: Surface
-    carryItem: MaterialEntity
-
-    assign(fulfiller: JobFulfiller): void
-
-    unAssign(fulfiller: JobFulfiller): void
-
-    getRequiredTool(): RaiderTool
-
-    getRequiredTraining(): RaiderTraining
-
-    isReadyToComplete(): boolean
-
-    onJobComplete(fulfiller: JobFulfiller): void
-
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget
-
-    getWorkActivity(): AnimationActivity
-
-    getExpectedTimeLeft(): number
-
-    addProgress(fulfiller: JobFulfiller, elapsedMs: number): void
-
-    getJobBubble(): keyof BubblesCfg
-}
-
-export abstract class AbstractJob implements Job {
+export abstract class Job {
     jobState: JobState = JobState.INCOMPLETE
     surface: Surface = null
     carryItem: MaterialEntity = null
+    requiredTool: RaiderTool = RaiderTool.NONE
+    requiredTraining: RaiderTraining = RaiderTraining.NONE
+    priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
 
     abstract assign(fulfiller: JobFulfiller): void
 
     abstract unAssign(fulfiller: JobFulfiller): void
 
-    getRequiredTool(): RaiderTool {
-        return RaiderTool.NONE
-    }
-
-    getRequiredTraining(): RaiderTraining {
-        return RaiderTraining.NONE
-    }
+    abstract hasFulfiller(): boolean
 
     isReadyToComplete(): boolean {
         return true

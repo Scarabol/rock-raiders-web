@@ -409,8 +409,8 @@ export class Raider implements Updatable {
     }
 
     isPrepared(job: Job): boolean {
-        if (job.getRequiredTool() === RaiderTool.DRILL) return this.canDrill(job.surface)
-        return this.hasTool(job.getRequiredTool()) && this.hasTraining(job.getRequiredTraining()) && this.hasCapacity()
+        if (job.requiredTool === RaiderTool.DRILL) return this.canDrill(job.surface)
+        return this.hasTool(job.requiredTool) && this.hasTraining(job.requiredTraining) && this.hasCapacity()
     }
 
     canDrill(surface: Surface): boolean {

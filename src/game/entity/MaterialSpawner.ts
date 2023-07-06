@@ -11,6 +11,8 @@ import { BarrierLocation } from '../model/material/BarrierLocation'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { BarrierActivity, DynamiteActivity } from '../model/anim/AnimationActivity'
+import { PriorityIdentifier } from '../model/job/PriorityIdentifier'
+import { RaiderTraining } from '../model/raider/RaiderTraining'
 
 export type MaterialEntityType = EntityType.ORE | EntityType.CRYSTAL | EntityType.BRICK | EntityType.BARRIER | EntityType.DYNAMITE | EntityType.ELECTRIC_FENCE
 
@@ -33,6 +35,7 @@ export class MaterialSpawner {
             case EntityType.ORE:
                 material.sceneEntity.add(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Ore))
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.ore))
+                material.priorityIdentifier = PriorityIdentifier.ORE
                 break
             case EntityType.CRYSTAL:
                 const animGlowMesh = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Crystal)
@@ -51,24 +54,30 @@ export class MaterialSpawner {
                 })
                 material.sceneEntity.add(highPolyMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.powerCrystal))
+                material.priorityIdentifier = PriorityIdentifier.CRYSTAL
                 break
             case EntityType.BRICK:
                 material.sceneEntity.add(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ProcessedOre))
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.processedOre))
+                material.priorityIdentifier = PriorityIdentifier.ORE
                 break
             case EntityType.BARRIER:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(ResourceManager.configuration.miscObjects.Barrier))
                 material.sceneEntity.setAnimation(BarrierActivity.Short)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {PickSphere: 10, CollRadius: 10, CollHeight: 0})) // XXX find any constant for pick sphere?
+                material.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
                 break
             case EntityType.DYNAMITE:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(ResourceManager.configuration.miscObjects.Dynamite))
                 material.sceneEntity.setAnimation(DynamiteActivity.Normal)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {PickSphere: 8, CollRadius: 8, CollHeight: 0})) // XXX find any constant for pick sphere?
+                material.priorityIdentifier = PriorityIdentifier.DESTRUCTION
+                material.requiredTraining = RaiderTraining.DEMOLITION
                 break
             case EntityType.ELECTRIC_FENCE:
                 material.sceneEntity.add(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ElectricFence))
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.electricFence))
+                material.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
                 break
         }
         material.sceneEntity.addToScene(worldMgr.sceneMgr, worldPos, headingRad)

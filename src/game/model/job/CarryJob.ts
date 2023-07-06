@@ -1,10 +1,7 @@
-import { SupervisedJob } from '../../Supervisor'
 import { AnimationActivity, BarrierActivity, BuildingActivity, DynamiteActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
-import { RaiderTraining, RaiderTrainings } from '../raider/RaiderTraining'
-import { AbstractJob, JobFulfiller } from './Job'
-import { PriorityIdentifier, priorityIdentifierFromMaterialType } from './PriorityIdentifier'
+import { Job, JobFulfiller } from './Job'
 import { EntityType } from '../EntityType'
 import { Raider } from '../raider/Raider'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
@@ -18,12 +15,14 @@ import { PositionComponent } from '../../component/PositionComponent'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { GameState } from '../GameState'
 
-export class CarryJob extends AbstractJob implements SupervisedJob {
+export class CarryJob extends Job {
     fulfiller: JobFulfiller = null
     target: PathTarget
 
     constructor(readonly carryItem: MaterialEntity) {
         super()
+        this.requiredTraining = this.carryItem.requiredTraining
+        this.priorityIdentifier = this.carryItem.priorityIdentifier
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
@@ -74,14 +73,6 @@ export class CarryJob extends AbstractJob implements SupervisedJob {
                     return [PathTarget.fromLocation(this.carryItem.targetSurface.getCenterWorld2D())]
                 }
         }
-    }
-
-    getPriorityIdentifier(): PriorityIdentifier {
-        return priorityIdentifierFromMaterialType(this.carryItem.entityType)
-    }
-
-    getRequiredTraining(): RaiderTraining {
-        return RaiderTrainings.fromMaterialEntityType(this.carryItem.entityType)
     }
 
     getWorkActivity(): AnimationActivity {

@@ -11,11 +11,15 @@ import { BuildingSite } from '../building/BuildingSite'
 import { BarrierLocation } from './BarrierLocation'
 import { MaterialEntityType } from '../../entity/MaterialSpawner'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
+import { PriorityIdentifier } from '../job/PriorityIdentifier'
+import { RaiderTraining } from '../raider/RaiderTraining'
 
 export class MaterialEntity {
     entity: GameEntity
     carryJob: CarryJob = null
     sceneEntity: AnimatedSceneEntity = null
+    priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
+    requiredTraining: RaiderTraining = RaiderTraining.NONE
 
     constructor(
         readonly worldMgr: WorldManager,

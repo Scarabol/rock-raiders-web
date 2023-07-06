@@ -1,4 +1,3 @@
-import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 import { Surface } from '../../../terrain/Surface'
 import { SurfaceType } from '../../../terrain/SurfaceType'
 import { MaterialEntity } from '../../material/MaterialEntity'
@@ -15,6 +14,8 @@ export class CompleteSurfaceJob extends ShareableJob {
 
     constructor(readonly surface: Surface, readonly placedItems: MaterialEntity[]) {
         super()
+        this.requiredTool = RaiderTool.SHOVEL
+        this.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
         this.workplace = PathTarget.fromLocation(surface.getRandomPosition())
     }
 
@@ -26,19 +27,7 @@ export class CompleteSurfaceJob extends ShareableJob {
         this.surface.site = null
     }
 
-    getRequiredTool(): RaiderTool {
-        return RaiderTool.SHOVEL
-    }
-
-    getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.CONSTRUCTION
-    }
-
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         return this.workplace // TODO return empty array, if surface cannot be repaired
-    }
-
-    getWorkActivity(): AnimationActivity {
-        return RaiderActivity.Clear
     }
 }

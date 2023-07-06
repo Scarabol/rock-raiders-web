@@ -16,10 +16,8 @@ export class ClearRubbleJob extends ShareableJob {
     constructor(readonly surface: Surface) {
         super()
         this.lastRubblePositions = this.surface.rubblePositions.map((p) => PathTarget.fromLocation(p))
-    }
-
-    getRequiredTool(): RaiderTool {
-        return RaiderTool.SHOVEL
+        this.requiredTool = RaiderTool.SHOVEL
+        this.priorityIdentifier = PriorityIdentifier.CLEARING
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
@@ -50,10 +48,6 @@ export class ClearRubbleJob extends ShareableJob {
                 super.onJobComplete(fulfiller)
             }
         }
-    }
-
-    getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.CLEARING
     }
 
     getWorkActivity(): AnimationActivity {

@@ -16,14 +16,8 @@ import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { WorldManager } from './WorldManager'
 import { PathTarget } from './model/PathTarget'
 
-export interface SupervisedJob extends Job {
-    getPriorityIdentifier(): PriorityIdentifier
-
-    hasFulfiller(): boolean
-}
-
 export class Supervisor {
-    jobs: SupervisedJob[] = []
+    jobs: Job[] = []
     priorityIndexList: PriorityIdentifier[] = []
     priorityList: PriorityEntry[] = []
     assignJobsTimer: number = 0
@@ -52,10 +46,10 @@ export class Supervisor {
         this.assignJobsTimer += elapsedMs
         if (this.assignJobsTimer < JOB_SCHEDULE_INTERVAL) return
         this.assignJobsTimer %= JOB_SCHEDULE_INTERVAL
-        const availableJobs: SupervisedJob[] = []
+        const availableJobs: Job[] = []
         this.jobs = this.jobs.filter((j) => {
             const result = j.jobState === JobState.INCOMPLETE
-            if (result && !j.hasFulfiller() && this.isEnabled(j.getPriorityIdentifier())) {
+            if (result && !j.hasFulfiller() && this.isEnabled(j.priorityIdentifier)) {
                 availableJobs.push(j)
             }
             return result
@@ -89,11 +83,11 @@ export class Supervisor {
             let closestToolRaider: Raider = null
             let minToolDistance: number = null
             let closestToolstation: BuildingEntity = null
-            const requiredTool = job.getRequiredTool()
+            const requiredTool = job.requiredTool
             let closestTrainingRaider: Raider = null
             let minTrainingDistance: number = null
             let closestTrainingArea: BuildingEntity = null
-            const requiredTraining = job.getRequiredTraining()
+            const requiredTraining = job.requiredTraining
             unemployedRaider.forEach((raider) => {
                 const pathToJob = job.carryItem ? raider.findShortestPath(PathTarget.fromLocation(job.carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)) : raider.findShortestPath(job.getWorkplace(raider))
                 if (!pathToJob) return
@@ -165,14 +159,13 @@ export class Supervisor {
                         if (!(surface?.hasRubble()) || !surface?.discovered) continue
                         const clearRubbleJob = surface.setupClearRubbleJob()
                         if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !raider.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
-                        const requiredTool = clearRubbleJob.getRequiredTool()
-                        if (raider.hasTool(requiredTool)) {
+                        if (raider.hasTool(clearRubbleJob.requiredTool)) {
                             raider.setJob(clearRubbleJob)
                             return
                         } else {
                             const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
                             if (pathToToolstation) {
-                                raider.setJob(new GetToolJob(this.worldMgr.entityMgr, requiredTool, pathToToolstation.target.building), clearRubbleJob)
+                                raider.setJob(new GetToolJob(this.worldMgr.entityMgr, clearRubbleJob.requiredTool, pathToToolstation.target.building), clearRubbleJob)
                                 return
                             }
                         }
@@ -182,11 +175,11 @@ export class Supervisor {
         })
     }
 
-    getPriority(job: SupervisedJob) {
-        return this.priorityIndexList.indexOf(job.getPriorityIdentifier())
+    private getPriority(job: Job) {
+        return this.priorityIndexList.indexOf(job.priorityIdentifier)
     }
 
-    isEnabled(priorityIdentifier: PriorityIdentifier): boolean {
+    private isEnabled(priorityIdentifier: PriorityIdentifier): boolean {
         return !!this.priorityList.find((p) => p.key === priorityIdentifier)?.enabled
     }
 }

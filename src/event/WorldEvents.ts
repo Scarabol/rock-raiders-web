@@ -1,6 +1,6 @@
 import { EntityType } from '../game/model/EntityType'
 import { GameState } from '../game/model/GameState'
-import { SupervisedJob } from '../game/Supervisor'
+import { Job } from '../game/model/job/Job'
 import { BRICK_ORE_VALUE } from '../params'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
@@ -16,9 +16,9 @@ export class WorldEvent extends GameEvent {
 }
 
 export abstract class JobEvent extends WorldEvent {
-    job: SupervisedJob
+    job: Job
 
-    protected constructor(eventKey: EventKey, job: SupervisedJob) {
+    protected constructor(eventKey: EventKey, job: Job) {
         super(eventKey)
         this.guiForward = false
         this.job = job
@@ -26,7 +26,7 @@ export abstract class JobEvent extends WorldEvent {
 }
 
 export class JobCreateEvent extends JobEvent {
-    constructor(job: SupervisedJob) {
+    constructor(job: Job) {
         super(EventKey.JOB_CREATE, job)
     }
 }

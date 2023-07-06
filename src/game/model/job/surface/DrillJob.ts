@@ -15,10 +15,8 @@ export class DrillJob extends ShareableJob {
 
     constructor(readonly surface: Surface) {
         super()
-    }
-
-    getRequiredTool(): RaiderTool {
-        return RaiderTool.DRILL
+        this.requiredTool = RaiderTool.DRILL
+        this.priorityIdentifier = PriorityIdentifier.DESTRUCTION
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
@@ -36,10 +34,6 @@ export class DrillJob extends ShareableJob {
     onJobComplete(fulfiller: JobFulfiller): void {
         if (this.surface.onDrillComplete(this.getWorkplace(fulfiller).targetLocation)) super.onJobComplete(fulfiller)
         else this.progress = 0
-    }
-
-    getPriorityIdentifier(): PriorityIdentifier {
-        return PriorityIdentifier.DESTRUCTION
     }
 
     getWorkActivity(): AnimationActivity {

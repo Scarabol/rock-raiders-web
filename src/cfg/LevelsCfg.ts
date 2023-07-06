@@ -1,4 +1,4 @@
-import { PriorityIdentifier, priorityIdentifierFromString } from '../game/model/job/PriorityIdentifier'
+import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseConfig } from './BaseConfig'
 
 export class LevelsCfg extends BaseConfig {
@@ -101,8 +101,34 @@ export class LevelPrioritiesEntryConfig {
     enabled: boolean
 
     constructor(name: string, enabled: boolean) {
-        this.key = priorityIdentifierFromString(name)
+        this.key = LevelPrioritiesEntryConfig.priorityIdentifierFromString(name)
         this.enabled = enabled
+    }
+
+    private static priorityIdentifierFromString(name: string) {
+        if (name.equalsIgnoreCase('AI_Priority_Train')) {
+            return PriorityIdentifier.TRAIN
+        } else if (name.equalsIgnoreCase('AI_Priority_GetIn')) {
+            return PriorityIdentifier.GET_IN
+        } else if (name.equalsIgnoreCase('AI_Priority_Crystal')) {
+            return PriorityIdentifier.CRYSTAL
+        } else if (name.equalsIgnoreCase('AI_Priority_Ore')) {
+            return PriorityIdentifier.ORE
+        } else if (name.equalsIgnoreCase('AI_Priority_Repair')) {
+            return PriorityIdentifier.REPAIR
+        } else if (name.equalsIgnoreCase('AI_Priority_Clearing')) {
+            return PriorityIdentifier.CLEARING
+        } else if (name.equalsIgnoreCase('AI_Priority_Destruction')) {
+            return PriorityIdentifier.DESTRUCTION
+        } else if (name.equalsIgnoreCase('AI_Priority_Construction')) {
+            return PriorityIdentifier.CONSTRUCTION
+        } else if (name.equalsIgnoreCase('AI_Priority_Reinforce')) {
+            return PriorityIdentifier.REINFORCE
+        } else if (name.equalsIgnoreCase('AI_Priority_Recharge')) {
+            return PriorityIdentifier.RECHARGE
+        } else {
+            throw new Error(`Unexpected priority identifier ${name}`)
+        }
     }
 }
 

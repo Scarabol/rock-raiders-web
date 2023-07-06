@@ -1,11 +1,11 @@
 import { Vector2 } from 'three'
 import { PathTarget } from '../PathTarget'
-import { AbstractJob, JobFulfiller } from './Job'
+import { Job, JobFulfiller } from './Job'
 import { Raider } from '../raider/Raider'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 
-export class MoveJob extends AbstractJob {
+export class MoveJob extends Job {
     readonly target: PathTarget
 
     constructor(readonly fulfiller: JobFulfiller, readonly location: Vector2) {
@@ -28,5 +28,9 @@ export class MoveJob extends AbstractJob {
 
     unAssign(fulfiller: JobFulfiller) {
         // This job should not be unassigned
+    }
+
+    hasFulfiller(): boolean {
+        return !!this.fulfiller
     }
 }
