@@ -22,7 +22,6 @@ import { RaiderTraining } from './RaiderTraining'
 import { EntityType } from '../EntityType'
 import { GameEntity } from '../../ECS'
 import { HealthComponent } from '../../component/HealthComponent'
-import { HealthBarComponent } from '../../component/HealthBarComponent'
 import { PositionComponent } from '../../component/PositionComponent'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
@@ -60,8 +59,7 @@ export class Raider implements Updatable {
         this.sceneEntity = new AnimatedSceneEntity()
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData('mini-figures/pilot'))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
-        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false))
-        this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(16, 10, this.sceneEntity, true))
+        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false, 16, 10, this.sceneEntity, true))
         this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
         this.infoComponent = this.worldMgr.ecs.addComponent(this.entity, new RaiderInfoComponent(this.sceneEntity))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)

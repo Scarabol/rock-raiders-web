@@ -5,6 +5,7 @@ import { RaiderJob } from './RaiderJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { JobFulfiller } from '../Job'
+import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class UpgradeRaiderJob extends RaiderJob {
     building: BuildingEntity
@@ -32,5 +33,9 @@ export class UpgradeRaiderJob extends RaiderJob {
 
     getExpectedTimeLeft(): number {
         return 30000 // XXX adjust upgrade time
+    }
+
+    getJobBubble(): keyof BubblesCfg {
+        return 'bubbleUpgrade'
     }
 }

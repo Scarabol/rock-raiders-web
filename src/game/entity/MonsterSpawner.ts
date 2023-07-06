@@ -5,7 +5,6 @@ import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { HealthComponent } from '../component/HealthComponent'
 import { MapMarkerComponent, MapMarkerType } from '../component/MapMarkerComponent'
-import { HealthBarComponent } from '../component/HealthBarComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Vector2 } from 'three'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -65,7 +64,6 @@ export class MonsterSpawner {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
         worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
-        worldMgr.ecs.addComponent(entity, new HealthComponent(false))
-        worldMgr.ecs.addComponent(entity, new HealthBarComponent(24, 10, sceneEntity, false))
+        worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false))
     }
 }

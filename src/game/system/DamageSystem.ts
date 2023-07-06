@@ -5,11 +5,10 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { DynamiteExplosionEvent, ToggleAlarmEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { HealthBarComponent } from '../component/HealthBarComponent'
 import { SurfaceType } from '../terrain/SurfaceType'
 
 export class DamageSystem extends AbstractGameSystem {
-    componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent, HealthBarComponent])
+    componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
     readonly dynamiteExplosions: DynamiteExplosionEvent[] = []
     readonly dynamiteRadiusSq: number = 0
     readonly dynamiteMaxDamage: number = 0
@@ -42,7 +41,7 @@ export class DamageSystem extends AbstractGameSystem {
                     healthComponent.health -= 50 / 1000 * elapsedMs
                     if (healthComponent.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
                 }
-                components.get(HealthBarComponent).updateStatus(healthComponent.health / healthComponent.maxHealth, elapsedMs)
+                healthComponent.updateSpriteStatus(healthComponent.health / healthComponent.maxHealth, elapsedMs)
             } catch (e) {
                 console.error(e)
             }

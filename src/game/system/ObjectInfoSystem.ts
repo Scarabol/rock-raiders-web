@@ -1,7 +1,7 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { RaiderInfoComponent } from '../component/RaiderInfoComponent'
 import { GameState } from '../model/GameState'
-import { HealthBarComponent } from '../component/HealthBarComponent'
+import { HealthComponent } from '../component/HealthComponent'
 
 export class ObjectInfoSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([RaiderInfoComponent])
@@ -14,7 +14,7 @@ export class ObjectInfoSystem extends AbstractGameSystem {
                 if (infoComponent.showDelayMs > 0) infoComponent.showDelayMs -= elapsedMs
                 infoComponent.hungerSprite.visible = GameState.showObjInfo
                 infoComponent.bubbleSprite.visible = GameState.showObjInfo || infoComponent.showDelayMs > 0
-                components.get(HealthBarComponent)?.setVisible(GameState.showObjInfo)
+                components.get(HealthComponent)?.setVisible(GameState.showObjInfo)
                 // TODO update obj info with raider hunger level and current task/idea
             } catch (e) {
                 console.error(e)
