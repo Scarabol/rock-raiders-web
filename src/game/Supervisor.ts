@@ -145,6 +145,20 @@ export class Supervisor {
             if (blockedSite?.buildingType) raider.setJob(new MoveJob(raider, blockedSite.getWalkOutSurface().getRandomPosition()))
         })
         unemployedVehicles.forEach((vehicle) => {
+            if (vehicle.isReadyToTakeAJob() && vehicle.canClear()) {
+                const startSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(vehicle.sceneEntity.position)
+                for (let rad = 0; rad < 10; rad++) {
+                    for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
+                        for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
+                            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
+                            if (!(surface?.hasRubble()) || !surface?.discovered) continue
+                            const clearRubbleJob = surface.setupClearRubbleJob()
+                            if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !vehicle.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
+                            vehicle.setJob(clearRubbleJob)
+                        }
+                    }
+                }
+            }
             const blockedSite = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(vehicle.sceneEntity.position)?.site
             if (blockedSite?.buildingType) {
                 vehicle.setJob(new MoveJob(vehicle, blockedSite.getWalkOutSurface().getRandomPosition()))
