@@ -5,18 +5,15 @@ import { Surface } from '../../terrain/Surface'
 
 export class BuildPlacementMarkerMesh extends Mesh {
     sceneMgr: SceneManager
-    standardColor: number
     lastSurfaceMesh: Mesh
 
-    constructor(sceneMgr: SceneManager, standardColor: number) {
+    constructor(sceneMgr: SceneManager) {
         super(new BufferGeometry(), new MeshPhongMaterial({
             shininess: 0,
             transparent: true,
             opacity: 0.4,
-            color: standardColor,
         }))
         this.sceneMgr = sceneMgr
-        this.standardColor = standardColor
         this.visible = false
         this.scale.setScalar(TILESIZE)
     }
@@ -34,9 +31,8 @@ export class BuildPlacementMarkerMesh extends Mesh {
         this.geometry = surfaceMesh.geometry.clone()
     }
 
-    markAsValid(isValid: boolean) {
-        const color = isValid ? this.standardColor : 0x500000;
-        (this.material as MeshPhongMaterial).color.setHex(color)
+    setColor(hexColor: number) {
+        (this.material as MeshPhongMaterial).color.setHex(hexColor)
     }
 
     get surface(): Surface {

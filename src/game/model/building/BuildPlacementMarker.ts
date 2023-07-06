@@ -10,9 +10,11 @@ import { BuildingType } from './BuildingType'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
 
 export class BuildPlacementMarker {
-    static readonly buildingMarkerColor: number = 0x005000
-    static readonly pathMarkerColor: number = 0x505000
-    static readonly waterMarkerColor: number = 0x000050
+    static readonly goodBuildingMarkerColor: number = 0x005000
+    static readonly goodPathMarkerColor: number = 0x505000
+    static readonly goodWaterMarkerColor: number = 0x000050
+    static readonly invalidMarkerColor: number = 0x500000
+    static readonly tooSteepMarkerColor: number = 0x500050
 
     group: Group = new Group()
     markers: BuildPlacementMarkerMesh[] = []
@@ -24,13 +26,16 @@ export class BuildPlacementMarker {
     heading: number = 0
     lastCheck: boolean = false
     buildingType: BuildingType = null
+    buildingMarkerColor: number = BuildPlacementMarker.goodBuildingMarkerColor
+    pathMarkerColor: number = BuildPlacementMarker.goodPathMarkerColor
+    waterMarkerColor: number = BuildPlacementMarker.goodWaterMarkerColor
 
     constructor(readonly worldMgr: WorldManager) {
-        this.buildingMarkerPrimary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
-        this.buildingMarkerSecondary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr, BuildPlacementMarker.buildingMarkerColor)
-        this.powerPathMarkerPrimary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr, BuildPlacementMarker.pathMarkerColor)
-        this.powerPathMarkerSecondary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr, BuildPlacementMarker.pathMarkerColor)
-        this.waterPathMarker = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr, BuildPlacementMarker.waterMarkerColor)
+        this.buildingMarkerPrimary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr)
+        this.buildingMarkerSecondary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr)
+        this.powerPathMarkerPrimary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr)
+        this.powerPathMarkerSecondary = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr)
+        this.waterPathMarker = new BuildPlacementMarkerMesh(this.worldMgr.sceneMgr)
         this.addMarker(this.buildingMarkerPrimary)
         this.addMarker(this.buildingMarkerSecondary)
         this.addMarker(this.powerPathMarkerPrimary)
@@ -47,12 +52,16 @@ export class BuildPlacementMarker {
         if (!worldPosition || !this.buildingType) {
             this.hideAllMarker()
         } else {
-            const isValid = this.updateAllMarker(worldPosition)
-            this.markers.forEach((c) => c.markAsValid(isValid))
+            this.updateAllMarker(worldPosition)
+            this.buildingMarkerPrimary.setColor(this.buildingMarkerColor)
+            this.buildingMarkerSecondary.setColor(this.buildingMarkerColor)
+            this.powerPathMarkerPrimary.setColor(this.pathMarkerColor)
+            this.powerPathMarkerSecondary.setColor(this.pathMarkerColor)
+            this.waterPathMarker.setColor(this.waterMarkerColor)
         }
     }
 
-    private updateAllMarker(worldPosition: Vector2): boolean {
+    private updateAllMarker(worldPosition: Vector2) {
         this.buildingMarkerPrimary.updateMesh(worldPosition, new Vector2(0, 0))
         const sdxv = worldPosition.x - this.buildingMarkerPrimary.position.x - TILESIZE / 2
         const sdzv = worldPosition.y - this.buildingMarkerPrimary.position.z - TILESIZE / 2
@@ -65,17 +74,43 @@ export class BuildPlacementMarker {
         this.waterPathMarker.updateMesh(worldPosition, this.buildingType.waterPathSurface, this.heading)
         const allSurfacesAreGround = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
             .filter((c) => c.visible).map((c) => this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(c.position)).every((s) => s.surfaceType === SurfaceType.GROUND)
-        this.lastCheck = allSurfacesAreGround && (
+        const isGood = allSurfacesAreGround && (
             [this.powerPathMarkerPrimary, this.powerPathMarkerSecondary].some((c) => c.visible && c.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
             (!this.buildingType.primaryPowerPath && (this.buildingMarkerPrimary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH ||
                 (this.buildingMarkerSecondary.visible && this.buildingMarkerSecondary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)))))
         ) && (!this.waterPathMarker.visible || this.waterPathMarker.surface.surfaceType === SurfaceType.WATER)
-        return this.lastCheck
+        if (isGood) {
+            const terrain = this.worldMgr.sceneMgr.terrain
+            const tooSteep = [this.buildingMarkerPrimary?.surface, this.buildingMarkerSecondary?.surface].some((s) => {
+                if (!s) return false
+                const offsets = [terrain.heightOffset[s.x][s.y], terrain.heightOffset[s.x + 1][s.y], terrain.heightOffset[s.x + 1][s.y + 1], terrain.heightOffset[s.x][s.y + 1]]
+                return Math.abs(Math.max(...offsets) - Math.min(...offsets)) > 0.2
+            })
+            if (tooSteep) {
+                this.lastCheck = false
+                this.buildingMarkerColor = BuildPlacementMarker.tooSteepMarkerColor
+                this.pathMarkerColor = BuildPlacementMarker.goodPathMarkerColor
+                this.waterMarkerColor = BuildPlacementMarker.goodWaterMarkerColor
+            } else {
+                this.lastCheck = true
+                this.buildingMarkerColor = BuildPlacementMarker.goodBuildingMarkerColor
+                this.pathMarkerColor = BuildPlacementMarker.goodPathMarkerColor
+                this.waterMarkerColor = BuildPlacementMarker.goodWaterMarkerColor
+            }
+        } else {
+            this.lastCheck = false
+            this.buildingMarkerColor = BuildPlacementMarker.invalidMarkerColor
+            this.pathMarkerColor = BuildPlacementMarker.invalidMarkerColor
+            this.waterMarkerColor = BuildPlacementMarker.invalidMarkerColor
+        }
     }
 
     hideAllMarker() {
         this.markers.forEach((m) => m.visible = false)
         this.lastCheck = false
+        this.buildingMarkerColor = BuildPlacementMarker.invalidMarkerColor
+        this.pathMarkerColor = BuildPlacementMarker.invalidMarkerColor
+        this.waterMarkerColor = BuildPlacementMarker.invalidMarkerColor
     }
 
     createBuildingSite() {
