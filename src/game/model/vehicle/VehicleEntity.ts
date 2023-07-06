@@ -34,6 +34,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
 import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
+import { PriorityIdentifier } from '../job/PriorityIdentifier'
 
 export class VehicleEntity implements Updatable {
     readonly entityType: EntityType
@@ -350,7 +351,7 @@ export class VehicleEntity implements Updatable {
     isPrepared(job: Job): boolean {
         const carryType = job.carryItem?.entityType
         return (job.requiredTool === RaiderTool.DRILL && this.canDrill(job.surface))
-            || (job.requiredTool === RaiderTool.SHOVEL && this.canClear())
+            || (job.priorityIdentifier === PriorityIdentifier.CLEARING && this.canClear())
             || ((carryType === EntityType.ORE || carryType === EntityType.CRYSTAL || carryType === EntityType.ELECTRIC_FENCE) && this.hasCapacity())
     }
 
