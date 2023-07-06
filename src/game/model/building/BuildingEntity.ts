@@ -29,6 +29,7 @@ import { MaterialSpawner } from '../../entity/MaterialSpawner'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { OxygenComponent } from '../../component/OxygenComponent'
 import { PositionComponent } from '../../component/PositionComponent'
+import { Sample } from '../../../audio/Sample'
 
 export class BuildingEntity {
     readonly entityType: EntityType
@@ -316,6 +317,7 @@ export class BuildingEntity {
         if (this.surfaces.some((s) => s.selected)) EventBus.publishEvent(new DeselectAll())
         if (this.sceneEntity.visible && !disableTeleportIn) {
             this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
+            this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SND_teleport], true, false)
             this.sceneEntity.setAnimation(BuildingActivity.Teleport, () => {
                 this.worldMgr.ecs.addComponent(this.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, this.stats))
                 this.powerOffSprite.setEnabled(!this.isPowered())
