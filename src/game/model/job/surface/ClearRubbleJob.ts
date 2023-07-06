@@ -9,6 +9,7 @@ import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
 import { EntityType } from '../../EntityType'
+import { Sample } from '../../../../audio/Sample'
 
 export class ClearRubbleJob extends ShareableJob {
     lastRubblePositions: PathTarget[] = []
@@ -18,6 +19,7 @@ export class ClearRubbleJob extends ShareableJob {
         this.lastRubblePositions = this.surface.rubblePositions.map((p) => PathTarget.fromLocation(p))
         this.requiredTool = RaiderTool.SHOVEL
         this.priorityIdentifier = PriorityIdentifier.CLEARING
+        this.workSound = Sample.SND_dig // TODO this should be played as part of the LWS file with AddNullObject SFX,...
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {

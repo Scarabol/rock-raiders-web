@@ -8,6 +8,7 @@ import { ShareableJob } from '../ShareableJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
+import { Sample } from '../../../../audio/Sample'
 
 export class DrillJob extends ShareableJob {
     digPositions: PathTarget[] = []
@@ -17,6 +18,7 @@ export class DrillJob extends ShareableJob {
         super()
         this.requiredTool = RaiderTool.DRILL
         this.priorityIdentifier = PriorityIdentifier.DESTRUCTION
+        this.workSound = Sample.SFX_Drill
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {

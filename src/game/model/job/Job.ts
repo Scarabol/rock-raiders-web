@@ -9,6 +9,7 @@ import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { JobState } from './JobState'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { PriorityIdentifier } from './PriorityIdentifier'
+import { Sample } from '../../../audio/Sample'
 
 export type JobFulfiller = Raider | VehicleEntity
 
@@ -19,6 +20,7 @@ export abstract class Job {
     requiredTool: RaiderTool = RaiderTool.NONE
     requiredTraining: RaiderTraining = RaiderTraining.NONE
     priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
+    workSound: Sample = null
 
     abstract assign(fulfiller: JobFulfiller): void
 

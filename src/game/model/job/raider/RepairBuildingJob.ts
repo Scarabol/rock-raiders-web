@@ -10,6 +10,7 @@ import { HealthComponent } from '../../../component/HealthComponent'
 import { RaiderTool } from '../../raider/RaiderTool'
 import { RaiderTraining } from '../../raider/RaiderTraining'
 import { PriorityIdentifier } from '../PriorityIdentifier'
+import { Sample } from '../../../../audio/Sample'
 
 export class RepairBuildingJob extends RaiderJob {
     building: BuildingEntity
@@ -22,6 +23,7 @@ export class RepairBuildingJob extends RaiderJob {
         this.requiredTool = RaiderTool.SPANNER
         this.requiredTraining = RaiderTraining.ENGINEER
         this.priorityIdentifier = PriorityIdentifier.REPAIR
+        this.workSound = [Sample.SND_screw1, Sample.SND_screw3, Sample.SND_screw3].random() // TODO this should be played as part of the LWS file with AddNullObject SFX,...
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
