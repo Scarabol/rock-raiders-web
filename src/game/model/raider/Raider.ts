@@ -37,6 +37,8 @@ export class Raider implements Updatable {
     readonly entityType: EntityType = EntityType.PILOT
     readonly entity: GameEntity
     readonly infoComponent: RaiderInfoComponent
+    readonly tools: RaiderTool[] = []
+    readonly trainings: RaiderTraining[] = []
     worldMgr: WorldManager
     currentPath: TerrainPath = null
     level: number = 0
@@ -44,17 +46,16 @@ export class Raider implements Updatable {
     followUpJob: Job = null
     workAudio: PositionalAudio
     sceneEntity: AnimatedSceneEntity
-    tools: Map<RaiderTool, boolean> = new Map()
-    trainings: Map<RaiderTraining, boolean> = new Map()
     carries: MaterialEntity = null
     slipped: boolean = false
     foodLevel: number = 1
     vehicle: VehicleEntity = null
     scared: boolean = false
+    toolsIndex: number = 0
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
-        this.tools.set(RaiderTool.DRILL, true)
+        this.addTool(RaiderTool.DRILL)
         this.entity = this.worldMgr.ecs.addEntity()
         this.sceneEntity = new AnimatedSceneEntity()
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData('mini-figures/pilot'))
@@ -385,19 +386,26 @@ export class Raider implements Updatable {
     }
 
     hasTool(tool: RaiderTool) {
-        return !tool || this.tools.has(tool)
+        return !tool || this.tools.some((t) => t === tool)
     }
 
     hasTraining(training: RaiderTraining) {
-        return !training || this.trainings.has(training)
+        return !training || this.trainings.some((t) => t === training)
     }
 
     addTool(tool: RaiderTool) {
-        this.tools.set(tool, true)
+        if (this.hasTool(tool)) return
+        if (this.tools.length < this.maxTools()) {
+            this.tools.add(tool)
+            this.toolsIndex = this.tools.length % this.maxTools()
+        } else {
+            this.tools[this.toolsIndex] = tool
+            this.toolsIndex = (this.toolsIndex + 1) % this.maxTools()
+        }
     }
 
     addTraining(training: RaiderTraining) {
-        this.trainings.set(training, true)
+        this.trainings.add(training)
     }
 
     isPrepared(job: Job): boolean {

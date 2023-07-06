@@ -40,8 +40,8 @@ export class ChangeTooltip extends GuiCommand {
         super(EventKey.COMMAND_CHANGE_TOOLTIP)
         if (raider) {
             this.numToolSlots = raider.maxTools()
-            this.tools = Array.from(raider.tools.keys())
-            this.trainings = Array.from(raider.trainings.keys())
+            this.tools = [...raider.tools]
+            this.trainings = [...raider.trainings]
         }
         if (site) {
             this.crystals = {
