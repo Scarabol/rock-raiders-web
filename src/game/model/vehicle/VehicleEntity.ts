@@ -57,7 +57,7 @@ export class VehicleEntity implements Updatable {
         this.worldMgr = worldMgr
         this.stats = stats
         this.entity = this.worldMgr.ecs.addEntity()
-        this.sceneEntity = new AnimatedSceneEntity()
+        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr.audioListener)
         aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false, 24, 14, this.sceneEntity, false))

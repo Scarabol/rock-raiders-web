@@ -8,7 +8,6 @@ import { ShareableJob } from '../ShareableJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { JobFulfiller } from '../Job'
-import { Sample } from '../../../../audio/Sample'
 
 export class CompleteSurfaceJob extends ShareableJob {
     readonly workplace: PathTarget
@@ -18,7 +17,6 @@ export class CompleteSurfaceJob extends ShareableJob {
         this.requiredTool = RaiderTool.SHOVEL
         this.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
         this.workplace = PathTarget.fromLocation(surface.getRandomPosition())
-        this.workSound = Sample.SND_dig // TODO this should be played as part of the LWS file with AddNullObject SFX,...
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {

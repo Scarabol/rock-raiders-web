@@ -4,10 +4,11 @@
  * File format description: http://www.martinreddy.net/gfx/3d/LWSC.txt
  */
 
-import { Euler, KeyframeTrack, NumberKeyframeTrack, Quaternion, QuaternionKeyframeTrack, Vector3, VectorKeyframeTrack } from 'three'
+import { Euler, KeyframeTrack, NumberKeyframeTrack, Quaternion, QuaternionKeyframeTrack, StringKeyframeTrack, Vector3, VectorKeyframeTrack } from 'three'
 import { degToRad } from 'three/src/math/MathUtils'
 import { Sample } from '../audio/Sample'
 import { getFilename } from '../core/Util'
+import { VERBOSE } from '../params'
 
 export class LWSCData {
     durationSeconds: number = null
@@ -86,11 +87,11 @@ export class LWSCParser {
             const [key, value] = LWSCParser.parseLine(line)
             if (key === 'FirstFrame') {
                 this.firstFrame = parseInt(value, 10)
-                this.numOfKeyframes = this.lastFrame + 1 - (this.firstFrame - 1)
+                this.numOfKeyframes = this.lastFrame + 1 - this.firstFrame
                 this.lwscData.durationSeconds = this.numOfKeyframes / this.framesPerSecond / this.frameStep
             } else if (key === 'LastFrame') {
-                this.lastFrame = parseInt(value, 10)
-                this.numOfKeyframes = this.lastFrame + 1 - (this.firstFrame - 1)
+                this.lastFrame = parseInt(value, 10) + 1
+                this.numOfKeyframes = this.lastFrame - this.firstFrame
                 this.lwscData.durationSeconds = this.numOfKeyframes / this.framesPerSecond / this.frameStep
             } else if (key === 'FrameStep') {
                 this.frameStep = parseInt(value, 10)
@@ -122,9 +123,19 @@ export class LWSCParser {
                 if (currentObject.lowerName === 'sfx') {
                     currentObject.sfxName = nameParts[1] || null
                     currentObject.sfxFrames = nameParts.slice(2).map((n) => parseInt(n, 10))
+                    const times = []
+                    const sfxNames = []
+                    for (let c = 0; c < this.numOfKeyframes; c++) {
+                        times[c] = c / this.numOfKeyframes * this.lwscData.durationSeconds
+                        sfxNames[c] = currentObject.sfxFrames.includes(c) ? currentObject.sfxName :  ''
+                    }
+                    currentObject.keyframeTracks.push(new StringKeyframeTrack('.userData[sfxName]', times, sfxNames))
                 } else if (currentObject.lowerName === 'snd' && nameParts[1].equalsIgnoreCase('SFX_LANDSLIDE')) {
                     currentObject.sfxName = Sample[Sample.SFX_FallIn]
                     currentObject.sfxFrames = nameParts.slice(2).map((n) => parseInt(n, 10))
+                    // TODO what about keyframe tracks here for SND?
+                } else if (currentObject.lowerName.startsWith('*') || currentObject.lowerName.startsWith(';')) {
+                    if (VERBOSE) console.warn(`Unexpected null object name ${currentObject.lowerName}`)
                 }
                 currentObject.isNull = true
             } else if (key === 'ObjectMotion') {
@@ -144,7 +155,7 @@ export class LWSCParser {
                     if (infos.length !== lenInfos) console.warn(`Number of infos (${infos.length}) does not match with specified count (${lenInfos})`)
                     line = this.lines[this.lineIndex + c * 2 + 1]
                     const keyframeIndex = parseInt(line.split(' ')[0], 10) // other entries in line should be zeros
-                    const timeFromIndex = (keyframeIndex - (this.firstFrame - 1)) / this.numOfKeyframes * this.lwscData.durationSeconds
+                    const timeFromIndex = (keyframeIndex - this.firstFrame) / this.numOfKeyframes * this.lwscData.durationSeconds
                     times.push(timeFromIndex)
                     new Vector3(infos[0], infos[1], infos[2]).toArray(relPos, relPos.length)
                     if (currentObject.lowerName === 'lpgunpivot') relPos[1] += -42 // TODO Why is this workaround needed? What about upgrade station?
@@ -180,7 +191,7 @@ export class LWSCParser {
                         opacities.push(opacity)
                         line = this.lines[this.lineIndex + c * 2 + 1]
                         const keyframeIndex = parseInt(line.split(' ')[0], 10) // other entries in line should be zeros
-                        const timeFromIndex = (keyframeIndex - (this.firstFrame - 1)) / this.numOfKeyframes * this.lwscData.durationSeconds
+                        const timeFromIndex = (keyframeIndex - this.firstFrame) / this.numOfKeyframes * this.lwscData.durationSeconds
                         times.push(timeFromIndex)
                     }
                     this.lineIndex += numOfKeyframes * 2

@@ -233,7 +233,7 @@ export class SceneManager implements Updatable {
             this.miscAnims.remove(group)
             this.scene.remove(group)
             group.dispose()
-        }).start()
+        }).start(this.audioListener)
         group.position.copy(position)
         group.rotateOnAxis(new Vector3(0, 1, 0), heading)
         this.miscAnims.add(group)
@@ -243,7 +243,7 @@ export class SceneManager implements Updatable {
 
     addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean): PositionalAudio {
         const audio = new PositionalAudio(this.audioListener)
-        audio.setRefDistance(TILESIZE * 2)
+        audio.setRefDistance(TILESIZE / 2)
         const sfxVolume = SaveGameManager.getSfxVolume()
         audio.setVolume(sfxVolume)
         audio.loop = loop

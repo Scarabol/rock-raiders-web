@@ -1,10 +1,11 @@
-import { AnimationClip, AnimationMixer, Group, LoopOnce } from 'three'
+import { AnimationClip, AnimationMixer, AudioListener, Group, LoopOnce } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from './SceneMesh'
 import { getPath } from '../core/Util'
 import { LWSCData } from '../resource/LWSCParser'
 import { VERBOSE } from '../params'
+import { SceneAudioMesh } from './SceneAudioMesh'
 
 export class AnimationGroup extends Group implements Updatable {
     readonly meshList: SceneMesh[] = []
@@ -17,9 +18,9 @@ export class AnimationGroup extends Group implements Updatable {
         super()
     }
 
-    start(): this {
+    start(audioListener: AudioListener): this {
         const lwscData = ResourceManager.getLwscData(this.lwsFilepath)
-        this.createMeshList(lwscData)
+        this.createMeshList(lwscData, audioListener)
         this.createAnimationMixers(lwscData, this.lwsFilepath)
         this.update(0)
         return this
@@ -34,12 +35,16 @@ export class AnimationGroup extends Group implements Updatable {
         }
     }
 
-    private createMeshList(lwscData: LWSCData) {
+    private createMeshList(lwscData: LWSCData, audioListener: AudioListener) {
         this.meshList.length = 0
         lwscData.objects.forEach((obj) => {
             let mesh: SceneMesh
             if (obj.isNull) {
-                mesh = new SceneMesh()
+                if (obj.lowerName === 'sfx') {
+                    mesh = new SceneAudioMesh(audioListener)
+                } else {
+                    mesh = new SceneMesh()
+                }
             } else {
                 mesh = this.resolveMesh(obj.lowerName)
             }

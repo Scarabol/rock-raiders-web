@@ -19,7 +19,7 @@ export class MonsterSpawner {
         const floorPosition = worldMgr.sceneMgr.getFloorPosition(worldPos)
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
         const positionComponent = worldMgr.ecs.addComponent(entity, new PositionComponent(floorPosition, surface))
-        const sceneEntity: AnimatedSceneEntity = new AnimatedSceneEntity()
+        const sceneEntity: AnimatedSceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr.audioListener)
         worldMgr.ecs.addComponent(entity, new AnimatedSceneEntityComponent(sceneEntity))
         switch (entityType) {
             case EntityType.SMALL_SPIDER:

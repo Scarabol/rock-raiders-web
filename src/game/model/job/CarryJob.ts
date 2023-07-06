@@ -106,7 +106,6 @@ export class CarryJob extends Job {
             if (this.target.building.entityType === EntityType.POWER_STATION || this.target.building.entityType === EntityType.ORE_REFINERY) {
                 this.target.building.pickupItem(this.carryItem)
                 if (this.target.building.sceneEntity.carriedByIndex.size >= this.target.building.getMaxCarry()) {
-                    if (this.target.building.entityType === EntityType.POWER_STATION) this.target.building.worldMgr.sceneMgr.addPositionalAudio(this.target.building.sceneEntity, Sample[Sample.SND_Refine], true, false)
                     this.target.building.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
                         this.target.building.sceneEntity.setAnimation(this.target.building.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
                         this.target.building.sceneEntity.removeAllCarried()
@@ -142,7 +141,6 @@ export class CarryJob extends Job {
             this.carryItem.worldMgr.entityMgr.raiderScare.remove(positionComponent)
             this.carryItem.targetSurface.collapse()
             this.carryItem.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.carryItem.sceneEntity.position, this.carryItem.sceneEntity.getHeading())
-            this.carryItem.worldMgr.sceneMgr.addPositionalAudio(this.carryItem.sceneEntity, Sample[Sample.SFX_Dynamite], true, false)
             EventBus.publishEvent(new DynamiteExplosionEvent(this.carryItem.sceneEntity.position2D))
             this.carryItem.disposeFromWorld()
         })

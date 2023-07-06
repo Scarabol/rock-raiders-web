@@ -1,4 +1,4 @@
-import { Box3, Group, Matrix4, Object3D, Sphere, Vector2, Vector3 } from 'three'
+import { AudioListener, Box3, Group, Matrix4, Object3D, Sphere, Vector2, Vector3 } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
@@ -29,7 +29,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     pivotMaxZ: number = null
     yPivotObj: Object3D = null
 
-    constructor() {
+    constructor(readonly audioListener: AudioListener) {
         super()
         this.add(this.animationParent)
     }
@@ -63,7 +63,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
-            const animatedGroup = new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs).start()
+            const animatedGroup = new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs).start(this.audioListener)
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
             this.animationParent.add(animatedGroup)
             this.animationGroups.push(animatedGroup)
@@ -135,7 +135,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                     }
                     return
                 }
-                const upgradeMesh = new AnimatedSceneEntity()
+                const upgradeMesh = new AnimatedSceneEntity(this.audioListener)
                 upgradeMesh.name = upgrade.lNameType
                 const upgradeFilename = ResourceManager.configuration.upgradeTypesCfg.get(upgrade.lNameType) || upgrade.lUpgradeFilepath
                 const upgradeAnimData = ResourceManager.getAnimatedDataOrNull(upgradeFilename)

@@ -1,5 +1,4 @@
 import { Vector2 } from 'three'
-import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent } from '../../../event/LocalEvents'
 import { AnimEntityActivity } from '../anim/AnimationActivity'
@@ -35,7 +34,6 @@ export class Teleport {
         entity.sceneEntity.rotation.y = heading
         entity.sceneEntity.visible = surface.discovered
         entity.worldMgr.sceneMgr.addMeshGroup(entity.sceneEntity)
-        entity.worldMgr.sceneMgr.addPositionalAudio(entity.sceneEntity, Sample[Sample.SND_teleport], true, false)
         entity.sceneEntity.setAnimation(AnimEntityActivity.TeleportIn, () => {
             entity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             const sceneSelectionComponent = entity.worldMgr.ecs.addComponent(entity.entity, new SceneSelectionComponent(entity.sceneEntity, {gameEntity: entity.entity, entityType: entity.entityType}, entity.stats))

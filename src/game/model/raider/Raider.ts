@@ -56,7 +56,7 @@ export class Raider implements Updatable {
         this.worldMgr = worldMgr
         this.addTool(RaiderTool.DRILL)
         this.entity = this.worldMgr.ecs.addEntity()
-        this.sceneEntity = new AnimatedSceneEntity()
+        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr.audioListener)
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData('mini-figures/pilot'))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false, 16, 10, this.sceneEntity, true))

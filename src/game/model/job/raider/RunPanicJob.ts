@@ -5,7 +5,6 @@ import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { Vector2 } from 'three'
 import { JobFulfiller } from '../Job'
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
-import { Sample } from '../../../../audio/Sample'
 
 export class RunPanicJob extends RaiderJob {
     runTarget: PathTarget
@@ -13,7 +12,6 @@ export class RunPanicJob extends RaiderJob {
     constructor(runTarget: Vector2) {
         super()
         this.runTarget = PathTarget.fromLocation(runTarget)
-        this.workSound = Sample.SND_Panic // TODO this should be played as part of the LWS file with AddNullObject SFX,...
     }
 
     getWorkplace(entity: Raider): PathTarget {
