@@ -146,7 +146,7 @@ export class Supervisor {
         })
         unemployedVehicles.forEach((vehicle) => {
             const blockedSite = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(vehicle.sceneEntity.position)?.site
-            if (blockedSite) {
+            if (blockedSite?.buildingType) {
                 vehicle.setJob(new MoveJob(vehicle, blockedSite.getWalkOutSurface().getRandomPosition()))
             } else {
                 vehicle.unblockTeleporter()
