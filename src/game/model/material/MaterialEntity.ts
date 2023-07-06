@@ -6,11 +6,11 @@ import { JobState } from '../job/JobState'
 import { GameEntity } from '../../ECS'
 import { Surface } from '../../terrain/Surface'
 import { BuildingSite } from '../building/BuildingSite'
-import { BarrierLocation } from './BarrierLocation'
 import { MaterialEntityType } from '../../entity/MaterialSpawner'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { RaiderTraining } from '../raider/RaiderTraining'
+import { Vector2 } from 'three'
 
 export class MaterialEntity {
     entity: GameEntity
@@ -24,7 +24,7 @@ export class MaterialEntity {
         readonly entityType: MaterialEntityType,
         readonly targetSurface: Surface,
         readonly targetSite: BuildingSite,
-        readonly location: BarrierLocation,
+        readonly location: Vector2,
     ) {
         this.entity = this.worldMgr.ecs.addEntity()
     }

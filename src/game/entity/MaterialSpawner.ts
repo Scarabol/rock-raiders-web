@@ -7,7 +7,6 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { SceneSelectionComponent } from '../component/SceneSelectionComponent'
 import { SequenceTextureMaterial } from '../../scene/SequenceTextureMaterial'
 import { BuildingSite } from '../model/building/BuildingSite'
-import { BarrierLocation } from '../model/material/BarrierLocation'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { BarrierActivity, DynamiteActivity } from '../model/anim/AnimationActivity'
@@ -23,7 +22,7 @@ export class MaterialSpawner {
         worldPos: Vector2,
         headingRad: number = null,
         targetSurface: Surface = null,
-        barrierLocation: BarrierLocation = null,
+        barrierLocation: Vector2 = null,
         targetSite: BuildingSite = null,
     ) {
         const floorPosition = worldMgr.sceneMgr.getFloorPosition(worldPos)

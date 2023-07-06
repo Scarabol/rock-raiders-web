@@ -9,7 +9,6 @@ export class PathTarget {
         readonly radiusSq: number = 1,
         readonly building: BuildingEntity = null,
         readonly site: BuildingSite = null,
-        readonly headingOnSite: number = null,
     ) {
     }
 
@@ -21,8 +20,8 @@ export class PathTarget {
         return new PathTarget(targetLocation, radiusSq, building, null)
     }
 
-    static fromSite(site: BuildingSite, targetLocation: Vector2, headingOnSite: number = 0) {
-        return new PathTarget(targetLocation, ITEM_ACTION_RANGE_SQ, null, site, headingOnSite)
+    static fromSite(site: BuildingSite, targetLocation: Vector2) {
+        return new PathTarget(targetLocation, ITEM_ACTION_RANGE_SQ, null, site)
     }
 
     getFocusPoint(): Vector2 {

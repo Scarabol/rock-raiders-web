@@ -5,7 +5,6 @@ import { TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
 import { EntityType } from '../EntityType'
 import { SurfaceType } from '../../terrain/SurfaceType'
-import { BarrierLocation } from '../material/BarrierLocation'
 import { BuildingSite } from './BuildingSite'
 import { BuildingType } from './BuildingType'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
@@ -114,8 +113,8 @@ export class BuildPlacementMarker {
         this.worldMgr.sceneMgr.setBuildModeSelection(null)
     }
 
-    getBarrierLocations(): BarrierLocation[] {
-        const barrierLocations: BarrierLocation[] = []
+    getBarrierLocations(): Vector2[] {
+        const barrierLocations: Vector2[] = []
         const centerPrimary = this.buildingMarkerPrimary.surface.getCenterWorld2D()
         const barrierOffset = TILESIZE * 9 / 20
         if (this.buildingMarkerSecondary.visible) {
@@ -123,25 +122,25 @@ export class BuildPlacementMarker {
             const dx = Math.sign(centerSecondary.x - centerPrimary.x)
             const dy = Math.sign(centerSecondary.y - centerPrimary.y)
             if (dx !== 0) {
-                barrierLocations.push(new BarrierLocation(new Vector2(centerPrimary.x - dx * barrierOffset, centerPrimary.y), centerPrimary))
-                barrierLocations.push(new BarrierLocation(new Vector2(centerPrimary.x, centerPrimary.y - barrierOffset), centerPrimary))
-                barrierLocations.push(new BarrierLocation(new Vector2(centerPrimary.x, centerPrimary.y + barrierOffset), centerPrimary))
-                barrierLocations.push(new BarrierLocation(new Vector2(centerSecondary.x + dx * barrierOffset, centerSecondary.y), centerSecondary))
-                barrierLocations.push(new BarrierLocation(new Vector2(centerSecondary.x, centerSecondary.y - barrierOffset), centerSecondary))
-                barrierLocations.push(new BarrierLocation(new Vector2(centerSecondary.x, centerSecondary.y + barrierOffset), centerSecondary))
+                barrierLocations.push(new Vector2(centerPrimary.x - dx * barrierOffset, centerPrimary.y))
+                barrierLocations.push(new Vector2(centerPrimary.x, centerPrimary.y - barrierOffset))
+                barrierLocations.push(new Vector2(centerPrimary.x, centerPrimary.y + barrierOffset))
+                barrierLocations.push(new Vector2(centerSecondary.x + dx * barrierOffset, centerSecondary.y))
+                barrierLocations.push(new Vector2(centerSecondary.x, centerSecondary.y - barrierOffset))
+                barrierLocations.push(new Vector2(centerSecondary.x, centerSecondary.y + barrierOffset))
             } else {
-                barrierLocations.push(new BarrierLocation(new Vector2(centerPrimary.x, centerPrimary.y - dy * barrierOffset), centerPrimary))
-                barrierLocations.push(new BarrierLocation(new Vector2(centerPrimary.x - barrierOffset, centerPrimary.y), centerPrimary))
-                barrierLocations.push(new BarrierLocation(new Vector2(centerPrimary.x + barrierOffset, centerPrimary.y), centerPrimary))
-                barrierLocations.push(new BarrierLocation(new Vector2(centerSecondary.x, centerSecondary.y + dy * barrierOffset), centerSecondary))
-                barrierLocations.push(new BarrierLocation(new Vector2(centerSecondary.x - barrierOffset, centerSecondary.y), centerSecondary))
-                barrierLocations.push(new BarrierLocation(new Vector2(centerSecondary.x + barrierOffset, centerSecondary.y), centerSecondary))
+                barrierLocations.push(new Vector2(centerPrimary.x, centerPrimary.y - dy * barrierOffset))
+                barrierLocations.push(new Vector2(centerPrimary.x - barrierOffset, centerPrimary.y))
+                barrierLocations.push(new Vector2(centerPrimary.x + barrierOffset, centerPrimary.y))
+                barrierLocations.push(new Vector2(centerSecondary.x, centerSecondary.y + dy * barrierOffset))
+                barrierLocations.push(new Vector2(centerSecondary.x - barrierOffset, centerSecondary.y))
+                barrierLocations.push(new Vector2(centerSecondary.x + barrierOffset, centerSecondary.y))
             }
         } else {
-            barrierLocations.push(new BarrierLocation(new Vector2(centerPrimary.x - barrierOffset, centerPrimary.y), centerPrimary))
-            barrierLocations.push(new BarrierLocation(new Vector2(centerPrimary.x, centerPrimary.y - barrierOffset), centerPrimary))
-            barrierLocations.push(new BarrierLocation(new Vector2(centerPrimary.x + barrierOffset, centerPrimary.y), centerPrimary))
-            barrierLocations.push(new BarrierLocation(new Vector2(centerPrimary.x, centerPrimary.y + barrierOffset), centerPrimary))
+            barrierLocations.push(new Vector2(centerPrimary.x - barrierOffset, centerPrimary.y))
+            barrierLocations.push(new Vector2(centerPrimary.x, centerPrimary.y - barrierOffset))
+            barrierLocations.push(new Vector2(centerPrimary.x + barrierOffset, centerPrimary.y))
+            barrierLocations.push(new Vector2(centerPrimary.x, centerPrimary.y + barrierOffset))
         }
         return barrierLocations
     }

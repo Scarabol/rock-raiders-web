@@ -12,7 +12,6 @@ import { BuildingActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../../terrain/Surface'
-import { BarrierLocation } from '../material/BarrierLocation'
 import { PathTarget } from '../PathTarget'
 import { RaiderTraining, RaiderTrainings } from '../raider/RaiderTraining'
 import { BuildingSite } from './BuildingSite'
@@ -213,7 +212,7 @@ export class BuildingEntity {
         }
     }
 
-    spawnBarriers(barrierLocations: BarrierLocation[], site: BuildingSite) {
+    spawnBarriers(barrierLocations: Vector2[], site: BuildingSite) {
         barrierLocations.forEach((l) => {
             MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.BARRIER, this.getDropPosition2D(), null, null, l, site)
         })

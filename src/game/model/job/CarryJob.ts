@@ -60,7 +60,7 @@ export class CarryJob extends Job {
                 if (this.carryItem.targetSite.complete || this.carryItem.targetSite.canceled) {
                     return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
                 } else {
-                    return [PathTarget.fromSite(this.carryItem.targetSite, this.carryItem.location.position, this.carryItem.location.heading)]
+                    return [PathTarget.fromSite(this.carryItem.targetSite, this.carryItem.location)]
                 }
             case EntityType.DYNAMITE:
                 if (this.carryItem.targetSurface?.isDigable()) {
@@ -116,9 +116,10 @@ export class CarryJob extends Job {
                 this.carryItem.disposeFromWorld()
             }
         } else {
-            this.carryItem.sceneEntity.addToScene(this.carryItem.worldMgr.sceneMgr, null, this.target.headingOnSite)
+            this.carryItem.sceneEntity.addToScene(this.carryItem.worldMgr.sceneMgr, null, null)
             if (this.carryItem.entityType === EntityType.BARRIER) {
                 this.carryItem.sceneEntity.setAnimation(BarrierActivity.Expand, () => this.carryItem.sceneEntity.setAnimation(BarrierActivity.Long))
+                this.carryItem.sceneEntity.lookAt(this.carryItem.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.carryItem.sceneEntity.position).getCenterWorld())
             }
             this.target.site?.addItem(this.carryItem)
         }
