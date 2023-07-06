@@ -346,8 +346,9 @@ export class Surface {
         return {rotation, suffix}
     }
 
-    setEnergized(state: boolean) {
-        this.energized = state
+    setEnergized(energized: boolean) {
+        if (this.energized === energized) return
+        this.energized = energized
         this.updateTexture()
         this.building?.updateEnergyState()
     }

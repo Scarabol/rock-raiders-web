@@ -1,5 +1,5 @@
 import { EventBus } from '../../event/EventBus'
-import { MaterialAmountChanged, UsedCrystalsChanged } from '../../event/WorldEvents'
+import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { MaterialEntity } from './material/MaterialEntity'
 import { EntityType } from './EntityType'
 import { DEV_MODE } from '../../params'
@@ -34,12 +34,6 @@ export class GameState {
         this.hiddenObjectsFound = 0
         this.alarmMode = false
         this.objectiveShowing = 1
-    }
-
-    static changeUsedCrystals(changedCrystals: number) {
-        if (!changedCrystals) return
-        this.usedCrystals += changedCrystals
-        EventBus.publishEvent(new UsedCrystalsChanged())
     }
 
     static depositItem(item: MaterialEntity) {

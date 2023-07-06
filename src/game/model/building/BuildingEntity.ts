@@ -3,7 +3,7 @@ import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
 import { BuildingsChangedEvent, DeselectAll, SelectionChanged } from '../../../event/LocalEvents'
-import { MaterialAmountChanged } from '../../../event/WorldEvents'
+import { MaterialAmountChanged, UsedCrystalsChanged } from '../../../event/WorldEvents'
 import { DEV_MODE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BubbleSprite } from '../../../scene/BubbleSprite'
@@ -150,7 +150,7 @@ export class BuildingEntity {
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
-        this.turnEnergyOff()
+        this.setEnergized(false)
         this.sceneEntity.setAnimation(BuildingActivity.Stand)
         this.powerOffSprite.setEnabled(false)
         if (dropMaterials) {
@@ -224,42 +224,44 @@ export class BuildingEntity {
     }
 
     updateEnergyState() {
-        if (!this.isReady()) return
-        if (this.powerSwitch && (this.energized || (GameState.usedCrystals + this.crystalDrain <= GameState.numCrystal && GameState.numCrystal > 0)) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.energized))) {
-            this.turnEnergyOn()
+        if (this.isReady() && this.powerSwitch && (this.energized || (GameState.usedCrystals + this.crystalDrain <= GameState.numCrystal && GameState.numCrystal > 0)) && (this.stats.PowerBuilding || this.surfaces.some((s) => s.energized))) {
+            this.setEnergized(true)
         } else {
-            this.turnEnergyOff()
+            this.setEnergized(false)
         }
-        if (this.sceneEntity.currentAnimation === BuildingActivity.Stand || this.sceneEntity.currentAnimation === BuildingActivity.Unpowered) {
-            this.sceneEntity.setAnimation(this.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
+    }
+
+    setEnergized(energized: boolean) {
+        if (this.energized === energized) return
+        this.energized = energized
+        if (this.energized) {
+            this.changeUsedCrystals(this.crystalDrain)
+            if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this.surfaces)
+            if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
+            if (this.stats.OxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
+            if (this.sceneEntity.currentAnimation === BuildingActivity.Unpowered) this.sceneEntity.setAnimation(BuildingActivity.Stand)
+        } else {
+            this.changeUsedCrystals(-this.crystalDrain)
+            if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.removeEnergySource(this.surfaces)
+            this.engineSound = resetAudioSafe(this.engineSound)
+            this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
+            if (this.sceneEntity.currentAnimation === BuildingActivity.Stand) this.sceneEntity.setAnimation(BuildingActivity.Unpowered)
         }
-        this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
+        this.powerOffSprite.setEnabled(!this.energized)
         this.surfaces.forEach((s) => s.updateTexture())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
-        if (this.teleport) this.teleport.powered = this.isPowered()
-    }
-
-    private turnEnergyOn() {
-        if (this.energized) return
-        this.energized = true
-        GameState.changeUsedCrystals(this.crystalDrain)
-        if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this.surfaces)
-        if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
-        if (this.stats.OxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
-    }
-
-    private turnEnergyOff() {
-        if (!this.energized) return
-        this.energized = false
-        GameState.changeUsedCrystals(-this.crystalDrain)
-        if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.removeEnergySource(this.surfaces)
-        this.engineSound = resetAudioSafe(this.engineSound)
-        this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
+        if (this.teleport) this.teleport.powered = this.energized
     }
 
     get crystalDrain(): number {
         return Array.ensure(this.stats.CrystalDrain)[this.level] || 0
+    }
+
+    private changeUsedCrystals(changedCrystals: number) {
+        if (!changedCrystals) return
+        GameState.usedCrystals += changedCrystals
+        EventBus.publishEvent(new UsedCrystalsChanged())
     }
 
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
@@ -366,7 +368,7 @@ export class BuildingEntity {
             this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
             this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
             this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
-            this.turnEnergyOff()
+            this.setEnergized(false)
             this.sceneEntity.setAnimation(BuildingActivity.Explode, () => this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity))
             this.powerOffSprite.setEnabled(false)
             this.surfaces.forEach((s) => s.setBuilding(null))
