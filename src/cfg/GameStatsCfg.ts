@@ -54,6 +54,7 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
     EngineSound: string = null
     CanDoubleSelect: boolean = false
     MaxCarry: number[] = []
+    DamageCausesCallToArms: boolean = false
 }
 
 export class MonsterEntityStats extends BaseConfig implements MovableEntityStats {

@@ -61,7 +61,7 @@ export class VehicleEntity implements Updatable {
         this.sceneEntity = new AnimatedSceneEntity()
         aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
-        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent())
+        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false))
         this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(24, 14, this.sceneEntity, false))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }

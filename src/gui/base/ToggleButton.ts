@@ -66,4 +66,11 @@ export class ToggleButton extends Button {
     release(): boolean {
         return false
     }
+
+    setToggleState(toggleState: boolean) {
+        if (this.toggleState === toggleState) return
+        this.toggleState = toggleState
+        if (this.toggleState) this.pressedByButton = MOUSE_BUTTON.MAIN // XXX improve GUI element state handling and set pressed to true
+        this.notifyRedraw()
+    }
 }

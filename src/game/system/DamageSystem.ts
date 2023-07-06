@@ -2,7 +2,7 @@ import { AbstractGameSystem, GameEntity } from '../ECS'
 import { HealthComponent } from '../component/HealthComponent'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
-import { DynamiteExplosionEvent } from '../../event/WorldEvents'
+import { DynamiteExplosionEvent, ToggleAlarmEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { HealthBarComponent } from '../component/HealthBarComponent'
@@ -35,10 +35,12 @@ export class DamageSystem extends AbstractGameSystem {
                     const inRangeSq = 1 - distanceSq / this.dynamiteRadiusSq
                     if (inRangeSq > 0) {
                         healthComponent.health -= this.dynamiteMaxDamage * Math.pow(inRangeSq, 2)
+                        if (healthComponent.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
                     }
                 })
                 if (positionComponent.surface.surfaceType === SurfaceType.LAVA5 && healthComponent.health > 0) {
                     healthComponent.health -= 50 / 1000 * elapsedMs
+                    if (healthComponent.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
                 }
                 components.get(HealthBarComponent).updateStatus(healthComponent.health / healthComponent.maxHealth, elapsedMs)
             } catch (e) {

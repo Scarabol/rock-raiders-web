@@ -62,7 +62,7 @@ export class BuildingEntity {
         this.sceneEntity.add(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
         this.entity = this.worldMgr.ecs.addEntity()
-        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent())
+        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms))
         this.worldMgr.ecs.addComponent(this.entity, new HealthBarComponent(24, 14, this.sceneEntity, false))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }

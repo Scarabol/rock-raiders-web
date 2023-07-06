@@ -63,6 +63,9 @@ export class GuiMainLayer extends ScaledLayer {
             this.panelTopPanel.btnCallToArms.onClick = () => {
                 EventBus.publishEvent(new ToggleAlarmEvent(this.panelTopPanel.btnCallToArms.toggleState))
             }
+            EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
+                this.panelTopPanel.btnCallToArms.setToggleState(event.alarmState)
+            })
             this.panelTopPanel.btnOptions.onClick = () => {
                 EventBus.publishEvent(new ShowOptionsEvent())
             }
