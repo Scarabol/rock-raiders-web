@@ -3,7 +3,6 @@ import { AnimEntityAnimationData, AnimEntityData } from '../resource/AnimEntityP
 import { AnimationGroup } from './AnimationGroup'
 import { SceneMesh } from './SceneMesh'
 import { ResourceManager } from '../resource/ResourceManager'
-import { VERBOSE } from '../params'
 
 export class AnimationQualityGroup extends AnimationGroup {
     constructor(readonly animEntityData: AnimEntityData, animData: AnimEntityAnimationData, onAnimationDone: () => unknown, durationTimeoutMs: number = 0) {
@@ -16,15 +15,11 @@ export class AnimationQualityGroup extends AnimationGroup {
             || this.meshOrNull(this.animEntityData.mediumPolyBodies.get(lowerName))
             || this.meshOrNull(this.animEntityData.lowPolyBodies.get(lowerName))
             || ResourceManager.getLwoModel(getPath(this.lwsFilepath) + lowerName)
+            || new SceneMesh()
     }
 
     private meshOrNull(lowerName: string) {
         if (!lowerName) return null
-        try {
-            return ResourceManager.getLwoModel(lowerName)
-        } catch (e) {
-            if (VERBOSE) console.warn(e)
-            return null
-        }
+        return ResourceManager.getLwoModel(lowerName)
     }
 }

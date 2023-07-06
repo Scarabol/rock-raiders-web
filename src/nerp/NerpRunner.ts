@@ -242,7 +242,6 @@ export class NerpRunner {
     }
 
     getMessageTimer() {
-        if (VERBOSE) console.warn('getMessageTimer not implemented, immediately returning 0')
         return 0 // TODO return remaining amount of time needed to fully play WAV message
     }
 

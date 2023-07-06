@@ -4,7 +4,6 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from './SceneMesh'
 import { getPath } from '../core/Util'
 import { LWSCData } from '../resource/LWSCParser'
-import { VERBOSE } from '../params'
 import { SceneAudioMesh } from './SceneAudioMesh'
 
 export class AnimationGroup extends Group implements Updatable {
@@ -27,12 +26,7 @@ export class AnimationGroup extends Group implements Updatable {
     }
 
     protected resolveMesh(lowerName: string): SceneMesh {
-        try {
-            return ResourceManager.getLwoModel(getPath(this.lwsFilepath) + lowerName)
-        } catch (e) {
-            if (VERBOSE) console.warn(e)
-            return new SceneMesh()
-        }
+        return ResourceManager.getLwoModel(getPath(this.lwsFilepath) + lowerName) || new SceneMesh()
     }
 
     private createMeshList(lwscData: LWSCData, audioListener: AudioListener) {

@@ -96,7 +96,10 @@ export class ResourceManager extends ResourceCache {
                 const sharedLwoFilepath = `world/shared/${getFilename(lwoFilepath)}`
                 return this.lwoCache.getOrUpdate(sharedLwoFilepath.toLowerCase(), () => {
                     const sharedLwoBuffer = ResourceManager.getResource(sharedLwoFilepath)
-                    if (!sharedLwoBuffer) throw new Error(`Could not find lwo file neither at ${lwoFilepath} nor at ${sharedLwoFilepath}`)
+                    if (!sharedLwoBuffer) {
+                        if (VERBOSE) console.warn(`Could not find lwo file neither at ${lwoFilepath} nor at ${sharedLwoFilepath}`)
+                        return null
+                    }
                     const textureLoader = new ResourceManagerTextureLoader(getPath(sharedLwoFilepath), entityPath)
                     const result = new LWOBParser(sharedLwoBuffer, textureLoader).parse()
                     result.name = sharedLwoFilepath
