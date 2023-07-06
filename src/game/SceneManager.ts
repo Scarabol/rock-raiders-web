@@ -170,9 +170,10 @@ export class SceneManager implements Updatable {
     }
 
     update(elapsedMs: number) {
-        this.terrain.update(elapsedMs)
+        updateSafe(this.terrain, elapsedMs)
         this.entities.forEach((e) => updateSafe(e, elapsedMs))
         this.miscAnims.forEach((a) => updateSafe(a, elapsedMs))
+        updateSafe(this.cursor, elapsedMs)
     }
 
     disposeScene() {
@@ -181,7 +182,6 @@ export class SceneManager implements Updatable {
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null
-        this.cursor?.dispose()
         this.entities.length = 0
         this.miscAnims.forEach((a) => a.dispose())
         this.miscAnims.length = 0
@@ -235,7 +235,7 @@ export class SceneManager implements Updatable {
             group.dispose()
         }).start(this.audioListener)
         group.position.copy(position)
-        group.rotateOnAxis(new Vector3(0, 1, 0), heading)
+        group.rotateOnAxis(Object3D.DEFAULT_UP, heading)
         this.miscAnims.add(group)
         this.scene.add(group)
         return group

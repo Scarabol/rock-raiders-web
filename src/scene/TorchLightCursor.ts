@@ -1,13 +1,11 @@
-import { Object3D, PointLight, SpotLight, Vector3 } from 'three'
+import { Object3D, PointLight, SpotLight } from 'three'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { ToggleAlarmEvent } from '../event/WorldEvents'
-import { ALARM_LIGHT_ROTATION_SPEED, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
-import { clearIntervalSafe } from '../core/Util'
+import { TILESIZE } from '../params'
 
 export class TorchLightCursor extends Object3D {
     alarmLights: SpotLight[] = []
-    alarmLightInterval: NodeJS.Timeout
 
     constructor() {
         super()
@@ -28,21 +26,12 @@ export class TorchLightCursor extends Object3D {
         })
 
         EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
-            if (event.alarmState) {
-                this.alarmLights.forEach((l) => l.visible = true)
-                this.alarmLightInterval = setInterval(() => {
-                    this.alarmLights.forEach((l) => {
-                        l.target.position.applyAxisAngle(new Vector3(0, 1, 0), ALARM_LIGHT_ROTATION_SPEED)
-                    })
-                }, NATIVE_UPDATE_INTERVAL)
-            } else if (this.alarmLightInterval) {
-                this.alarmLights.forEach((l) => l.visible = false)
-                this.alarmLightInterval = clearIntervalSafe(this.alarmLightInterval)
-            }
+            this.alarmLights.forEach((l) => l.visible = event.alarmState)
         })
     }
 
-    dispose() {
-        this.alarmLightInterval = clearIntervalSafe(this.alarmLightInterval)
+    update(elapsedMs: number) {
+        const rotationRad = Math.PI / 1000 * elapsedMs
+        this.alarmLights.forEach((l) => l.target.position.applyAxisAngle(Object3D.DEFAULT_UP, rotationRad))
     }
 }

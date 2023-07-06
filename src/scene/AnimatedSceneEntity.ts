@@ -235,7 +235,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             const pivotWorldPos = new Vector3()
             this.yPivotObj.getWorldPosition(pivotWorldPos)
             const angle = new Vector2(worldTarget.x, worldTarget.z).sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() - Math.PI / 2
-            this.yPivotObj.setRotationFromAxisAngle(new Vector3(0, 1, 0), angle) // XXX use rotation speed and smooth movement
+            this.yPivotObj.setRotationFromAxisAngle(Object3D.DEFAULT_UP, angle) // XXX use rotation speed and smooth movement
         }
     }
 
