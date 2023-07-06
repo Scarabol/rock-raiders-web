@@ -2,7 +2,7 @@ import { AbstractGameSystem, GameEntity } from '../ECS'
 import { HealthComponent } from '../component/HealthComponent'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
-import { DynamiteExplosionEvent, ToggleAlarmEvent } from '../../event/WorldEvents'
+import { DynamiteExplosionEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SurfaceType } from '../terrain/SurfaceType'
@@ -33,13 +33,11 @@ export class DamageSystem extends AbstractGameSystem {
                     const distanceSq = position.distanceToSquared(explosion.position)
                     const inRangeSq = 1 - distanceSq / this.dynamiteRadiusSq
                     if (inRangeSq > 0) {
-                        healthComponent.health -= this.dynamiteMaxDamage * Math.pow(inRangeSq, 2)
-                        if (healthComponent.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
+                        healthComponent.changeHealth(-this.dynamiteMaxDamage * Math.pow(inRangeSq, 2))
                     }
                 })
                 if (positionComponent.surface.surfaceType === SurfaceType.LAVA5 && healthComponent.health > 0) {
-                    healthComponent.health -= 50 / 1000 * elapsedMs
-                    if (healthComponent.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
+                    healthComponent.changeHealth(-50 / 1000 * elapsedMs)
                 }
                 healthComponent.updateSpriteStatus(healthComponent.health / healthComponent.maxHealth, elapsedMs)
             } catch (e) {

@@ -429,4 +429,8 @@ export class Raider implements Updatable {
     maxTools(): number {
         return this.stats.NumOfToolsCanCarry[this.level] ?? 2
     }
+
+    getRepairValue(): number {
+        return this.stats.RepairValue[this.level] || 0
+    }
 }

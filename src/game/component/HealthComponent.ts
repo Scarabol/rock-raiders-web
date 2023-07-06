@@ -2,6 +2,8 @@ import { AbstractGameComponent } from '../ECS'
 import { HealthBarSprite } from '../../scene/HealthBarSprite'
 import { Object3D } from 'three'
 import { GameState } from '../model/GameState'
+import { EventBus } from '../../event/EventBus'
+import { ToggleAlarmEvent } from '../../event/WorldEvents'
 
 export class HealthComponent extends AbstractGameComponent {
     health: number = 100
@@ -20,6 +22,11 @@ export class HealthComponent extends AbstractGameComponent {
 
     setVisible(visible: boolean) {
         this.sprite.visible = visible && this.canBeShownPermanently
+    }
+
+    changeHealth(delta: number) {
+        this.health = Math.max(0, Math.min(this.maxHealth, this.health + delta))
+        if (delta < 0 && this.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
     }
 
     updateSpriteStatus(targetStatus: number, elapsedMs: number) {

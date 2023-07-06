@@ -404,4 +404,8 @@ export class VehicleEntity implements Updatable {
         this.sceneEntity.setUpgradeLevel(upgradeLevel)
         this.level = parseInt(upgradeLevel, 2)
     }
+
+    getRepairValue(): number {
+        return 0
+    }
 }
