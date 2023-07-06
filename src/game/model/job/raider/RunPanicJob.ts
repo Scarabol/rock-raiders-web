@@ -4,6 +4,7 @@ import { PathTarget } from '../../PathTarget'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { Vector2 } from 'three'
 import { JobFulfiller } from '../Job'
+import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
 
 export class RunPanicJob extends RaiderJob {
     runTarget: PathTarget
@@ -24,5 +25,9 @@ export class RunPanicJob extends RaiderJob {
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         if (this.raider) this.raider.scared = false
+    }
+
+    getWorkActivity(): AnimationActivity {
+        return RaiderActivity.RunPanic
     }
 }
