@@ -36,7 +36,8 @@ export class CarryJob extends Job {
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         if (this.target && !(
             (this.target.building && !this.target.building.isPowered()) ||
-            (this.target.site && (this.target.site.complete || this.target.site.canceled))
+            (this.target.site && (this.target.site.complete || this.target.site.canceled)) ||
+            (this.carryItem.targetSurface && this.carryItem.targetSurface.dynamiteJob !== this)
         )) {
             return this.target
         }
@@ -73,7 +74,7 @@ export class CarryJob extends Job {
                     return [PathTarget.fromSite(carryItem.targetSite, carryItem.location)].filter((p) => !!entity.findShortestPath(p))
                 }
             case EntityType.DYNAMITE:
-                if (carryItem.targetSurface?.isDigable()) {
+                if (carryItem.targetSurface?.isDigable() && carryItem.targetSurface?.dynamiteJob === this) {
                     return carryItem.targetSurface.getDigPositions()
                         .map((p) => PathTarget.fromLocation(p, carryItem.sceneEntity.getRadiusSquare() / 4))
                         .filter((p) => !!entity.findShortestPath(p))
@@ -144,7 +145,7 @@ export class CarryJob extends Job {
             }
             this.target.site?.addItem(this.carryItem)
         }
-        if (this.carryItem.entityType === EntityType.DYNAMITE) this.igniteDynamite()
+        if (this.carryItem.entityType === EntityType.DYNAMITE && this.carryItem.targetSurface?.dynamiteJob === this) this.igniteDynamite()
         else if (this.carryItem.entityType === EntityType.ELECTRIC_FENCE) this.placeFence()
     }
 

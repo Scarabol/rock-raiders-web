@@ -202,7 +202,7 @@ export class Surface {
     cancelJobs() {
         this.drillJob = Surface.safeRemoveJob(this.drillJob)
         this.reinforceJob = Surface.safeRemoveJob(this.reinforceJob)
-        this.dynamiteJob = Surface.safeRemoveJob(this.dynamiteJob)
+        this.dynamiteJob = null // Dynamite is carried back to storage
         this.clearRubbleJob = Surface.safeRemoveJob(this.clearRubbleJob)
         this.updateJobColor()
     }
