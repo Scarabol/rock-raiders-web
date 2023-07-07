@@ -10,8 +10,20 @@ import { JobState } from './JobState'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { PriorityIdentifier } from './PriorityIdentifier'
 import { Sample } from '../../../audio/Sample'
+import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
+import { EntityType } from '../EntityType'
+import { TerrainPath } from '../../terrain/TerrainPath'
 
-export type JobFulfiller = Raider | VehicleEntity
+export interface JobFulfiller {
+    entityType: EntityType
+    sceneEntity: AnimatedSceneEntity
+
+    findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath
+    stopJob(): void
+    dropCarried(unAssign: boolean)
+    getDrillTimeSeconds(surface: Surface): number
+    getRepairValue(): number
+}
 
 export abstract class Job {
     jobState: JobState = JobState.INCOMPLETE

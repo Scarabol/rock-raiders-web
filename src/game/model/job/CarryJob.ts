@@ -162,7 +162,7 @@ export class CarryJob extends Job {
     }
 
     private placeFence() {
-        this.carryItem.sceneEntity.addToScene(this.carryItem.worldMgr.sceneMgr, null, null)
+        this.carryItem.worldMgr.sceneMgr.addMeshGroup(this.carryItem.sceneEntity)
         const stats = ResourceManager.configuration.stats.electricFence
         const pickSphere = this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(SceneSelectionComponent).pickSphere
         this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new SelectionFrameComponent(pickSphere, stats))

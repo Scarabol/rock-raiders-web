@@ -5,7 +5,6 @@ import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity } from '../model/anim/AnimationActivity'
-import { EntityType } from '../model/EntityType'
 
 export class MovementSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([PositionComponent, WorldTargetComponent, MovableStatsComponent])
@@ -28,7 +27,7 @@ export class MovementSystem extends AbstractGameSystem {
                 if (targetWorld.distanceToSquared(positionComponent.position) <= entitySpeedSq + worldTargetComponent.radiusSq) {
                     this.ecs.removeComponent(entity, WorldTargetComponent)
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
-                        this.ecs.worldMgr.entityMgr.removeEntity(entity, EntityType.SMALL_SPIDER) // TODO remove other entity types from entity manager too
+                        this.ecs.worldMgr.entityMgr.removeEntity(entity) // TODO remove other entity types from entity manager too
                         this.ecs.removeEntity(entity)
                         if (sceneEntityComponent) {
                             this.ecs.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)

@@ -4,7 +4,6 @@ import { EventBus } from '../event/EventBus'
 import { RaidersAmountChangedEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
-import { BuildingType } from './model/building/BuildingType'
 import { EntityType, getEntityTypeByName, VehicleEntityType } from './model/EntityType'
 import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
@@ -83,8 +82,7 @@ export class ObjectListLoader {
             case EntityType.ORE_REFINERY:
             case EntityType.GUNSTATION:
             case EntityType.TELEPORT_BIG:
-                const buildingType = BuildingType.from(entityType)
-                const entity = new BuildingEntity(this.worldMgr, buildingType)
+                const entity = new BuildingEntity(this.worldMgr, entityType)
                 entity.placeDown(worldPos, -headingRad - Math.PI, this.disableStartTeleport)
                 if (entityType === EntityType.TOOLSTATION) {
                     for (let c = 0; c < ObjectListLoader.numRaider; c++) {

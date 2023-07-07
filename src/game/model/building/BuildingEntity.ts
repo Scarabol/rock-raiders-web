@@ -29,7 +29,6 @@ import { OxygenComponent } from '../../component/OxygenComponent'
 import { PositionComponent } from '../../component/PositionComponent'
 
 export class BuildingEntity {
-    readonly entityType: EntityType
     readonly carriedItems: MaterialEntity[] = []
     readonly entity: GameEntity
     buildingType: BuildingType
@@ -50,11 +49,10 @@ export class BuildingEntity {
     pathSurfaces: Surface[] = []
     teleport: Teleport = null
 
-    constructor(readonly worldMgr: WorldManager, buildingType: BuildingType) {
-        this.entityType = buildingType.entityType
-        this.buildingType = buildingType
+    constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType) {
+        this.buildingType = BuildingType.from(this.entityType)
         this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr.audioListener)
-        this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(buildingType.aeFilename))
+        this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(this.buildingType.aeFilename))
         this.sceneEntity.flipXAxis()
         this.powerOffSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
         this.sceneEntity.add(this.powerOffSprite)
@@ -170,7 +168,7 @@ export class BuildingEntity {
         this.engineSound = resetAudioSafe(this.engineSound)
         this.worldMgr.entityMgr.buildings.remove(this)
         this.worldMgr.entityMgr.buildingsUndiscovered.remove(this)
-        this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
+        this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
 
@@ -363,7 +361,7 @@ export class BuildingEntity {
         const health = this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent).health
         if (health <= 0) {
             this.worldMgr.entityMgr.buildings.remove(this)
-            this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
+            this.worldMgr.entityMgr.removeEntity(this.entity)
             this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
             this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
             this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)

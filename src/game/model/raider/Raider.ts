@@ -8,7 +8,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimationActivity, AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
-import { Job } from '../job/Job'
+import { Job, JobFulfiller } from '../job/Job'
 import { JobState } from '../job/JobState'
 import { Surface } from '../../terrain/Surface'
 import { TerrainPath } from '../../terrain/TerrainPath'
@@ -32,7 +32,7 @@ import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 import { RunPanicJob } from '../job/raider/RunPanicJob'
 
-export class Raider implements Updatable {
+export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
     readonly entity: GameEntity
     readonly infoComponent: RaiderInfoComponent
@@ -119,7 +119,7 @@ export class Raider implements Updatable {
         this.worldMgr.entityMgr.raiders.remove(this)
         this.worldMgr.entityMgr.raidersUndiscovered.remove(this)
         this.worldMgr.entityMgr.raidersInBeam.remove(this)
-        this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
+        this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
 
@@ -145,7 +145,7 @@ export class Raider implements Updatable {
                 const spiderPosition2D = components.get(PositionComponent).getPosition2D()
                 if (raiderPosition2D.distanceToSquared(spiderPosition2D) < SPIDER_SLIP_RANGE_SQ) {
                     this.slip()
-                    this.worldMgr.entityMgr.removeEntity(spider, EntityType.SMALL_SPIDER)
+                    this.worldMgr.entityMgr.removeEntity(spider)
                     this.worldMgr.ecs.removeEntity(spider)
                     const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                     if (sceneEntityComponent) {

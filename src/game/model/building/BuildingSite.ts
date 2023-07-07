@@ -126,7 +126,7 @@ export class BuildingSite {
                 item.disposeFromWorld()
             }
         }))
-        new BuildingEntity(this.worldMgr, this.buildingType)
+        new BuildingEntity(this.worldMgr, this.buildingType.entityType) // TODO Refactor power path building site handling
             .placeDown(this.primarySurface.getCenterWorld2D(), -this.heading + Math.PI / 2, false)
     }
 

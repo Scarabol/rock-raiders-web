@@ -9,7 +9,7 @@ import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
 import { EntityType } from '../EntityType'
-import { Job } from '../job/Job'
+import { Job, JobFulfiller } from '../job/Job'
 import { JobState } from '../job/JobState'
 import { ManVehicleJob } from '../job/ManVehicleJob'
 import { MoveJob } from '../job/MoveJob'
@@ -35,7 +35,7 @@ import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
 import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 
-export class VehicleEntity implements Updatable {
+export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
     readonly worldMgr: WorldManager
     readonly entity: GameEntity
@@ -103,7 +103,7 @@ export class VehicleEntity implements Updatable {
         this.worldMgr.entityMgr.vehicles.remove(this)
         this.worldMgr.entityMgr.vehiclesUndiscovered.remove(this)
         this.worldMgr.entityMgr.vehiclesInBeam.remove(this)
-        this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
+        this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
 

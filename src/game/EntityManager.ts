@@ -273,26 +273,14 @@ export class EntityManager {
         }
     }
 
-    removeEntity(entity: GameEntity, entityType: EntityType) {
-        switch (entityType) {
-            case EntityType.BAT:
-                this.bats.remove(entity)
-                this.undiscoveredBats.remove(entity)
-                break
-            case EntityType.SMALL_SPIDER:
-                this.spiders.remove(entity)
-                this.undiscoveredSpiders.remove(entity)
-                break
-            case EntityType.ROCK_MONSTER:
-            case EntityType.ICE_MONSTER:
-            case EntityType.LAVA_MONSTER:
-                this.rockMonsters.remove(entity)
-                this.undiscoveredRockMonsters.remove(entity)
-                break
-            case EntityType.ORE | EntityType.CRYSTAL | EntityType.BRICK | EntityType.BARRIER | EntityType.DYNAMITE | EntityType.ELECTRIC_FENCE:
-                // if (discovered) this.materials.remove(entity) // TODO use game entities within entity manager
-                // else this.materialsUndiscovered.remove(entity) // TODO use game entities within entity manager
-                break
-        }
+    removeEntity(entity: GameEntity) {
+        this.spiders.remove(entity)
+        this.undiscoveredSpiders.remove(entity)
+        this.bats.remove(entity)
+        this.undiscoveredBats.remove(entity)
+        this.rockMonsters.remove(entity)
+        this.undiscoveredRockMonsters.remove(entity)
+        this.slugs.remove(entity)
+        this.recordedEntities.remove(entity)
     }
 }

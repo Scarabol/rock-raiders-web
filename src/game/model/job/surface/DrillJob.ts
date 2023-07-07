@@ -5,8 +5,6 @@ import { RaiderTool } from '../../raider/RaiderTool'
 import { JobFulfiller } from '../Job'
 import { PriorityIdentifier } from '../PriorityIdentifier'
 import { ShareableJob } from '../ShareableJob'
-import { Raider } from '../../raider/Raider'
-import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { Sample } from '../../../../audio/Sample'
 
@@ -22,7 +20,7 @@ export class DrillJob extends ShareableJob {
         this.workSoundVehicle = Sample.SND_BIGDIGDRILL
     }
 
-    getWorkplace(entity: Raider | VehicleEntity): PathTarget {
+    getWorkplace(entity: JobFulfiller): PathTarget {
         if (!this.surface.isDigable()) return null
         const surfaceDigPositions = this.surface.getDigPositions()
         if (this.digPositions.length < 1 ||

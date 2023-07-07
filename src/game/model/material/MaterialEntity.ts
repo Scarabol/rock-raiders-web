@@ -45,7 +45,7 @@ export class MaterialEntity {
         this.worldMgr.entityMgr.materials.remove(this)
         this.worldMgr.entityMgr.materialsUndiscovered.remove(this)
         this.worldMgr.entityMgr.placedFences.remove(this)
-        this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
+        this.worldMgr.entityMgr.removeEntity(this.entity)
     }
 
     getPosition(): Vector3 {

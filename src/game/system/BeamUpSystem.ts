@@ -16,7 +16,7 @@ export class BeamUpSystem extends AbstractGameSystem {
                     beamUpComponent.entity.setPosition(position)
                 } else {
                     beamUpComponent.entity.disposeFromWorld()
-                    this.ecs.worldMgr.entityMgr.removeEntity(entity, beamUpComponent.entity.entityType)
+                    this.ecs.worldMgr.entityMgr.removeEntity(entity)
                     this.ecs.removeEntity(entity)
                 }
             } catch (e) {
