@@ -90,14 +90,16 @@ export class Raider implements Updatable {
 
     private checkScared() {
         if (this.scared) return
+        const raider = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
         this.worldMgr.entityMgr.raiderScare.forEach((scare) => {
-            const distanceSq = scare.getPosition2D().distanceToSquared(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).getPosition2D())
-            if (distanceSq < 80 * 80) {
-                this.scared = true
-                this.dropCarried(true)
-                const runTarget = this.getPosition2D().add(this.getPosition2D().sub(scare.getPosition2D()))
-                this.setJob(new RunPanicJob(runTarget))
-            }
+            const distanceSq = raider.getPosition2D().distanceToSquared(scare.getPosition2D())
+            if (distanceSq >= 80 * 80) return
+            this.scared = true
+            this.dropCarried(true)
+            const scareNeighbors = scare.surface.neighbors
+            const safeNeighbors = raider.surface.neighbors.filter((s) => s !== scare.surface && !scareNeighbors.includes(s))
+            const runTarget = [...safeNeighbors, ...scareNeighbors, raider.surface].find((s) => s.isWalkable()).getRandomPosition()
+            this.setJob(new RunPanicJob(runTarget))
         })
     }
 
