@@ -20,7 +20,8 @@ export abstract class Job {
     requiredTool: RaiderTool = RaiderTool.NONE
     requiredTraining: RaiderTraining = RaiderTraining.NONE
     priorityIdentifier: PriorityIdentifier = PriorityIdentifier.NONE
-    workSound: Sample = null
+    workSoundRaider: Sample = null
+    workSoundVehicle: Sample = null
 
     abstract assign(fulfiller: JobFulfiller): void
 

@@ -18,7 +18,8 @@ export class DrillJob extends ShareableJob {
         super()
         this.requiredTool = RaiderTool.DRILL
         this.priorityIdentifier = PriorityIdentifier.DESTRUCTION
-        this.workSound = Sample.SFX_Drill
+        this.workSoundRaider = Sample.SFX_Drill
+        this.workSoundVehicle = Sample.SND_BIGDIGDRILL
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {

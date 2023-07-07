@@ -24,12 +24,12 @@ export class CarryJob extends Job {
         super()
         this.requiredTraining = this.carryItem.requiredTraining
         this.priorityIdentifier = this.carryItem.priorityIdentifier
-        this.workSound = Sample.SFX_Place
+        this.workSoundRaider = Sample.SFX_Place
         const carriedEntityType = this.carryItem.entityType
         if (carriedEntityType === EntityType.ORE || carriedEntityType === EntityType.BRICK) {
-            this.workSound = Sample.SFX_PlaceOre
+            this.workSoundRaider = Sample.SFX_PlaceOre
         } else if (carriedEntityType === EntityType.CRYSTAL) {
-            this.workSound = Sample.SFX_PlaceCrystal
+            this.workSoundRaider = Sample.SFX_PlaceCrystal
         }
     }
 

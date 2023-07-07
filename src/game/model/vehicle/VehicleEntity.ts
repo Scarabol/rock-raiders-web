@@ -236,8 +236,8 @@ export class VehicleEntity implements Updatable {
             return
         }
         const workActivity = this.job.getWorkActivity() || AnimEntityActivity.Stand
-        if (!this.workAudio && workActivity === RaiderActivity.Drill) { // TODO implement work audio
-            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[Sample.SND_BIGDIGDRILL], true, true)
+        if (!this.workAudio && this.job.workSoundVehicle) {
+            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[this.job.workSoundVehicle], true, true)
         }
         if (workActivity === RaiderActivity.Drill) {
             this.sceneEntity.setAnimation(workActivity)

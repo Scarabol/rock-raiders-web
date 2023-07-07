@@ -327,8 +327,8 @@ export class Raider implements Updatable {
             return
         }
         const workActivity = this.job.getWorkActivity() || this.getDefaultAnimationName()
-        if (!this.workAudio && this.job.workSound) {
-            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[this.job.workSound], true, this.job.getExpectedTimeLeft() !== null)
+        if (!this.workAudio && this.job.workSoundRaider) {
+            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[this.job.workSoundRaider], true, this.job.getExpectedTimeLeft() !== null)
         }
         if (workActivity === RaiderActivity.Drill) {
             this.sceneEntity.setAnimation(workActivity)
