@@ -20,9 +20,13 @@ export class VehicleUpgradeJob extends Job {
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {
-        this.workplace.building.sceneEntity.setAnimation(BuildingActivity.Upgrade, () => { // TODO Use FunctionCoef from config as animation speed
+        const building = this.workplace.building
+        const upgradeAnimationSpeed = building.stats.FunctionCoef[building.level] || 1
+        building.sceneEntity.setAnimationSpeed(upgradeAnimationSpeed)
+        building.sceneEntity.setAnimation(BuildingActivity.Upgrade, () => {
+            building.sceneEntity.setAnimationSpeed(1)
             super.onJobComplete(fulfiller)
-            this.workplace.building.sceneEntity.setAnimation(BuildingActivity.Stand)
+            building.sceneEntity.setAnimation(BuildingActivity.Stand)
             this.vehicle.addUpgrade(this.upgrade)
             EventBus.publishEvent(new VehicleUpgradeCompleteEvent())
         })

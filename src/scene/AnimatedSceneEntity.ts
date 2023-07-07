@@ -99,6 +99,10 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         if (this.driver) this.driverParent.add(this.driver)
     }
 
+    setAnimationSpeed(multiplier: number) {
+        this.animationGroups.forEach((a) => a.animationMixers.forEach((m) => m.timeScale = multiplier))
+    }
+
     private removeAll() {
         this.animationParent.clear()
         this.animationGroups.forEach((a) => a.dispose())
