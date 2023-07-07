@@ -30,7 +30,8 @@ export class CompleteSurfaceJob extends ShareableJob {
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
-        return this.workplace // TODO return empty array, if surface cannot be repaired
+        if (!this.surface.isWalkable()) return null
+        return this.workplace
     }
 
     getWorkActivity(): AnimationActivity {

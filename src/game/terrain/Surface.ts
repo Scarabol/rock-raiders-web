@@ -473,6 +473,7 @@ export class Surface {
         this.terrain.pathFinder.updateSurface(this)
         if (this.selected && !this.surfaceType.selectable) EventBus.publishEvent(new DeselectAll())
         if (this.surfaceType === SurfaceType.LAVA5) {
+            this.site?.cancelSite()
             const materials = [...this.worldMgr.entityMgr.materials] // list will be changed by dispose below
             materials.forEach((m) => { // XXX Optimize performance
                 const materialSurface = this.terrain.getSurfaceFromWorld(m.sceneEntity.position)
