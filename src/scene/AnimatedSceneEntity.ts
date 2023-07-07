@@ -73,7 +73,9 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             if (animEntityData.wheelMesh && animEntityData.wheelNullName) {
                 const wheelParentMesh = this.meshesByLName.getOrUpdate(animEntityData.wheelNullName, () => [])
                 if (wheelParentMesh.length < 1) {
-                    if (VERBOSE) console.warn(`Could not find wheel parent ${animEntityData.wheelNullName} in ${Array.from(this.meshesByLName.keys())}`)
+                    if (this.currentAnimation !== AnimEntityActivity.TeleportIn) {
+                        console.warn(`Could not find wheel parent ${animEntityData.wheelNullName} in ${Array.from(this.meshesByLName.keys())}`)
+                    }
                     return
                 }
                 wheelParentMesh.forEach((p) => {
