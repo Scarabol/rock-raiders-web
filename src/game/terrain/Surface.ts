@@ -109,8 +109,9 @@ export class Surface {
 
     private markDiscovered() {
         if (this.discovered) return
-        this.worldMgr.entityMgr.discoverSurface(this)
         this.discovered = true
+        this.worldMgr.entityMgr.discoverSurface(this)
+        if (this.surfaceType === SurfaceType.HIDDEN_CAVERN) this.surfaceType = SurfaceType.GROUND
         this.needsMeshUpdate = true
     }
 
