@@ -208,7 +208,9 @@ export class Raider implements Updatable {
     }
 
     private getRouteActivity(): AnimationActivity {
-        if (this.isOnRubble()) {
+        if (this.scared) {
+            return RaiderActivity.RunPanic
+        } else if (this.isOnRubble()) {
             return !!this.carries ? RaiderActivity.CarryRubble : RaiderActivity.routeRubble
         } else {
             return !!this.carries ? RaiderActivity.Carry : AnimEntityActivity.Route
@@ -406,7 +408,7 @@ export class Raider implements Updatable {
     }
 
     isReadyToTakeAJob(): boolean {
-        return !this.job && !this.selected && !this.isInBeam() && !this.slipped
+        return !this.job && !this.selected && !this.isInBeam() && !this.slipped && !this.scared
     }
 
     maxTools(): number {
