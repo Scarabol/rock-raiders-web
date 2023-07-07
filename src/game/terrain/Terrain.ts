@@ -170,6 +170,10 @@ export class Terrain {
         this.fallIns = this.fallIns.filter((f) => f.source !== surface)
     }
 
+    removeEmergeSpawn(surface: Surface) {
+        this.emergeSpawns.forEach((spawns) => spawns.remove(surface))
+    }
+
     addLavaErosion(x: number, y: number, erosionLevel: number) {
         const nextErodeTimeMs = this.levelConf.erodeErodeTime * 1000
         const powerPathLockTimeMs = this.levelConf.erodeLockTime * 1000

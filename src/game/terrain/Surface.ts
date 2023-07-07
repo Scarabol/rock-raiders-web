@@ -289,7 +289,10 @@ export class Surface {
         if (wallType === WALL_TYPE.WALL && topLeft.high === bottomRight.high) wallType = WALL_TYPE.WEIRD_CREVICE
         this.wallType = wallType
         this.mesh.setHeights(wallType, topLeft, topRight, bottomRight, bottomLeft)
-        if (this.wallType !== WALL_TYPE.WALL) this.cancelReinforceJobs()
+        if (this.wallType !== WALL_TYPE.WALL) {
+            this.cancelReinforceJobs()
+            this.terrain.removeEmergeSpawn(this)
+        }
     }
 
     cancelReinforceJobs() {
