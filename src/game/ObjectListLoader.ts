@@ -142,9 +142,10 @@ export class ObjectListLoader {
         const raiderSceneSelection = this.worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
         this.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(raiderSceneSelection.pickSphere, raider.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPos)
-        raider.sceneEntity.position.copy(floorPosition)
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(floorPosition)
-        this.worldMgr.ecs.addComponent(raider.entity, new PositionComponent(floorPosition, surface))
+        const positionComponent = this.worldMgr.ecs.addComponent(raider.entity, new PositionComponent(floorPosition, surface))
+        raider.sceneEntity.position.copy(floorPosition)
+        raider.sceneEntity.position.y += positionComponent.floorOffset
         raider.sceneEntity.rotation.y = headingRad - Math.PI / 2
         raider.sceneEntity.visible = surface.discovered
         this.worldMgr.sceneMgr.addMeshGroup(raider.sceneEntity)
@@ -162,9 +163,10 @@ export class ObjectListLoader {
         const vehicleSceneSelection = this.worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats))
         this.worldMgr.ecs.addComponent(vehicle.entity, new SelectionFrameComponent(vehicleSceneSelection.pickSphere, vehicle.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPos)
-        vehicle.sceneEntity.position.copy(floorPosition)
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(floorPosition)
-        this.worldMgr.ecs.addComponent(vehicle.entity, new PositionComponent(floorPosition, surface))
+        const positionComponent = this.worldMgr.ecs.addComponent(vehicle.entity, new PositionComponent(floorPosition, surface))
+        vehicle.sceneEntity.position.copy(floorPosition)
+        vehicle.sceneEntity.position.y += positionComponent.floorOffset
         vehicle.sceneEntity.rotation.y = headingRad + Math.PI
         vehicle.sceneEntity.visible = surface.discovered
         this.worldMgr.sceneMgr.addMeshGroup(vehicle.sceneEntity)

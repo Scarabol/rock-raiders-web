@@ -12,7 +12,7 @@ export class SceneEntityHeadingSystem extends AbstractGameSystem { // TODO repla
                 const components = this.ecs.getComponents(entity)
                 const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                 const worldTargetComponent = components.get(WorldTargetComponent)
-                sceneEntityComponent.headTowards(worldTargetComponent.position)
+                sceneEntityComponent.sceneEntity.headTowards(worldTargetComponent.position)
             } catch (e) {
                 console.error(e)
             }

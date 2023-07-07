@@ -317,8 +317,8 @@ export class NerpRunner {
         const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         const recordedEntities = this.worldMgr.entityMgr.recordedEntities
         return recordedEntities.count((entity): boolean => {
-            const position = this.worldMgr.entityMgr.raiders.find((r) => r.entity === entity)?.sceneEntity.position
-                ?? this.worldMgr.entityMgr.vehicles.find((v) => v.entity === entity)?.sceneEntity.position
+            const position = this.worldMgr.entityMgr.raiders.find((r) => r.entity === entity)?.getPosition()
+                ?? this.worldMgr.entityMgr.vehicles.find((v) => v.entity === entity)?.getPosition()
             if (!position) return false
             // TODO Use position component to determine entity surface
             const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)

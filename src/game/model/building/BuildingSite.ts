@@ -143,7 +143,7 @@ export class BuildingSite {
             if (entityType === EntityType.BARRIER) {
                 item.sceneEntity.setAnimation(BarrierActivity.Teleport, () => item.disposeFromWorld())
             } else {
-                this.worldMgr.entityMgr.placeMaterial(item, item.sceneEntity.position2D)
+                this.worldMgr.entityMgr.placeMaterial(item, item.getPosition2D())
             }
         }))
         this.onSiteByType.clear()

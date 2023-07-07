@@ -103,7 +103,7 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_UPGRADE, () => {
             entityMgr.selection.raiders.forEach((r) => {
-                const closestToolstation = entityMgr.getClosestBuildingByType(r.sceneEntity.position.clone(), EntityType.TOOLSTATION)
+                const closestToolstation = entityMgr.getClosestBuildingByType(r.getPosition(), EntityType.TOOLSTATION)
                 if (closestToolstation && r.level < r.stats.Levels) {
                     r.setJob(new UpgradeRaiderJob(closestToolstation))
                 }

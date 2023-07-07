@@ -73,7 +73,7 @@ export class Supervisor {
             let closestVehicle: VehicleEntity = null
             let closestVehicleDistance: number = null
             unemployedVehicles.forEach((vehicle) => {
-                const pathToJob = job.carryItem ? vehicle.findShortestPath(PathTarget.fromLocation(job.carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)) : vehicle.findShortestPath(job.getWorkplace(vehicle))
+                const pathToJob = job.carryItem ? vehicle.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : vehicle.findShortestPath(job.getWorkplace(vehicle))
                 if (!pathToJob) return
                 if (vehicle.isPrepared(job)) {
                     const dist = pathToJob.lengthSq
@@ -99,7 +99,7 @@ export class Supervisor {
             let closestTrainingArea: BuildingEntity = null
             const requiredTraining = job.requiredTraining
             unemployedRaider.forEach((raider) => {
-                const pathToJob = job.carryItem ? raider.findShortestPath(PathTarget.fromLocation(job.carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)) : raider.findShortestPath(job.getWorkplace(raider))
+                const pathToJob = job.carryItem ? raider.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : raider.findShortestPath(job.getWorkplace(raider))
                 if (!pathToJob) return
                 if (raider.isPrepared(job)) {
                     const dist = pathToJob.lengthSq
@@ -141,12 +141,12 @@ export class Supervisor {
             }
         })
         unemployedRaider.forEach((raider) => {
-            const blockedSite = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raider.sceneEntity.position)?.site
+            const blockedSite = raider.getSurface().site
             if (blockedSite?.buildingType) raider.setJob(new MoveJob(raider, blockedSite.getWalkOutSurface().getRandomPosition()))
         })
         unemployedVehicles.forEach((vehicle) => {
             if (vehicle.isReadyToTakeAJob() && vehicle.canClear()) {
-                const startSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(vehicle.sceneEntity.position)
+                const startSurface = vehicle.getSurface()
                 for (let rad = 0; rad < 10; rad++) {
                     for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                         for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
@@ -159,7 +159,7 @@ export class Supervisor {
                     }
                 }
             }
-            const blockedSite = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(vehicle.sceneEntity.position)?.site
+            const blockedSite = vehicle.getSurface().site
             if (blockedSite?.buildingType) {
                 vehicle.setJob(new MoveJob(vehicle, blockedSite.getWalkOutSurface().getRandomPosition()))
             } else {
@@ -175,7 +175,7 @@ export class Supervisor {
         if (!this.isEnabled(PriorityIdentifier.CLEARING)) return
         this.worldMgr.entityMgr.raiders.forEach((raider) => {
             if (!raider.isReadyToTakeAJob()) return
-            const startSurface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raider.sceneEntity.position)
+            const startSurface = raider.getSurface()
             for (let rad = 0; rad < 10; rad++) {
                 for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
                     for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {

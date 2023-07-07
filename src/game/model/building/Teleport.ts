@@ -29,8 +29,9 @@ export class Teleport {
         this.operating = true
         const floorPosition = entity.worldMgr.sceneMgr.getFloorPosition(worldPosition)
         const surface = entity.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(floorPosition)
+        const positionComponent = entity.worldMgr.ecs.addComponent(entity.entity, new PositionComponent(floorPosition, surface))
         entity.sceneEntity.position.copy(floorPosition)
-        entity.worldMgr.ecs.addComponent(entity.entity, new PositionComponent(floorPosition, surface))
+        entity.sceneEntity.position.y += positionComponent.floorOffset
         entity.sceneEntity.rotation.y = heading
         entity.sceneEntity.visible = surface.discovered
         entity.worldMgr.sceneMgr.addMeshGroup(entity.sceneEntity)

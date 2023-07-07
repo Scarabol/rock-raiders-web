@@ -14,7 +14,6 @@ import { BirdViewCamera } from '../scene/BirdViewCamera'
 import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
 import { Updatable, updateSafe } from './model/Updateable'
-import { SceneEntity } from '../scene/SceneEntity'
 import { TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
@@ -27,7 +26,7 @@ export class SceneManager implements Updatable {
     readonly camera: BirdViewCamera
     readonly renderer: SceneRenderer
     readonly controls: BirdViewControls
-    readonly entities: (SceneEntity | AnimatedSceneEntity)[] = []
+    readonly entities: AnimatedSceneEntity[] = []
     readonly miscAnims: AnimationGroup[] = []
     worldMgr: WorldManager
     scene: Scene
@@ -206,16 +205,6 @@ export class SceneManager implements Updatable {
 
     setBuildModeSelection(entityType: EntityType) {
         this.buildMarker.setBuildMode(entityType)
-    }
-
-    addEntity(sceneEntity: SceneEntity): void {
-        this.scene.add(sceneEntity.group)
-        this.entities.add(sceneEntity)
-    }
-
-    removeEntity(sceneEntity: SceneEntity): void {
-        this.entities.remove(sceneEntity)
-        this.scene.remove(sceneEntity.group)
     }
 
     addMeshGroup(meshGroup: AnimatedSceneEntity): void {

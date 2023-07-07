@@ -116,8 +116,7 @@ export class CarryJob extends Job {
         super.onJobComplete(fulfiller)
         this.fulfiller.sceneEntity.headTowards(this.target.targetLocation)
         this.fulfiller.dropCarried(false)
-        this.carryItem.sceneEntity.position.copy(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
-        this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(PositionComponent).position.copy(this.carryItem.sceneEntity.position)
+        this.carryItem.setPosition(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
         if (this.target.building) {
             if (this.target.building.entityType === EntityType.POWER_STATION || this.target.building.entityType === EntityType.ORE_REFINERY) {
                 this.target.building.pickupItem(this.carryItem)
@@ -126,8 +125,8 @@ export class CarryJob extends Job {
                         this.target.building.sceneEntity.setAnimation(this.target.building.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
                         this.target.building.sceneEntity.removeAllCarried()
                         this.target.building.carriedItems.forEach((carried) => {
-                            const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.sceneEntity.position2D)
-                            carried.sceneEntity.position.copy(floorPosition)
+                            const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.getPosition2D())
+                            carried.setPosition(floorPosition)
                             carried.worldMgr.sceneMgr.addMeshGroup(carried.sceneEntity)
                         })
                         this.target.building.depositItems()
@@ -141,7 +140,7 @@ export class CarryJob extends Job {
             this.carryItem.sceneEntity.addToScene(this.carryItem.worldMgr.sceneMgr, null, null)
             if (this.carryItem.entityType === EntityType.BARRIER) {
                 this.carryItem.sceneEntity.setAnimation(BarrierActivity.Expand, () => this.carryItem.sceneEntity.setAnimation(BarrierActivity.Long))
-                this.carryItem.sceneEntity.lookAt(this.carryItem.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.carryItem.sceneEntity.position).getCenterWorld())
+                this.carryItem.sceneEntity.lookAt(this.carryItem.getSurface().getCenterWorld())
             }
             this.target.site?.addItem(this.carryItem)
         }
@@ -156,8 +155,8 @@ export class CarryJob extends Job {
         this.carryItem.sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
             this.carryItem.worldMgr.entityMgr.raiderScare.remove(positionComponent)
             this.carryItem.targetSurface.collapse()
-            this.carryItem.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.carryItem.sceneEntity.position, this.carryItem.sceneEntity.getHeading())
-            EventBus.publishEvent(new DynamiteExplosionEvent(this.carryItem.sceneEntity.position2D))
+            this.carryItem.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.carryItem.getPosition(), this.carryItem.sceneEntity.heading)
+            EventBus.publishEvent(new DynamiteExplosionEvent(this.carryItem.getPosition2D()))
             this.carryItem.disposeFromWorld()
         })
     }

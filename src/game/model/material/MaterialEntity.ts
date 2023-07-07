@@ -10,7 +10,8 @@ import { MaterialEntityType } from '../../entity/MaterialSpawner'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { RaiderTraining } from '../raider/RaiderTraining'
-import { Vector2 } from 'three'
+import { Vector2, Vector3 } from 'three'
+import { PositionComponent } from '../../component/PositionComponent'
 
 export class MaterialEntity {
     entity: GameEntity
@@ -45,5 +46,29 @@ export class MaterialEntity {
         this.worldMgr.entityMgr.materialsUndiscovered.remove(this)
         this.worldMgr.entityMgr.placedFences.remove(this)
         this.worldMgr.entityMgr.removeEntity(this.entity, this.entityType)
+    }
+
+    getPosition(): Vector3 {
+        return this.sceneEntity.position.clone()
+    }
+
+    getPosition2D(): Vector2 {
+        return this.sceneEntity.position2D
+    }
+
+    setPosition(position: Vector3) {
+        this.sceneEntity.position.copy(position)
+        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
+        this.sceneEntity.visible = surface.discovered
+        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+        if (positionComponent) {
+            positionComponent.position.copy(position)
+            positionComponent.surface = surface
+            this.sceneEntity.position.y += positionComponent.floorOffset
+        }
+    }
+
+    getSurface(): Surface {
+        return this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.getPosition())
     }
 }

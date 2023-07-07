@@ -20,6 +20,10 @@ export class MonsterSpawner {
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
         const positionComponent = worldMgr.ecs.addComponent(entity, new PositionComponent(floorPosition, surface))
         const sceneEntity: AnimatedSceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr.audioListener)
+        sceneEntity.position.copy(floorPosition)
+        sceneEntity.position.y += positionComponent.floorOffset
+        sceneEntity.rotation.y = headingRad
+        sceneEntity.visible = surface.discovered
         worldMgr.ecs.addComponent(entity, new AnimatedSceneEntityComponent(sceneEntity))
         switch (entityType) {
             case EntityType.SMALL_SPIDER:
@@ -51,10 +55,6 @@ export class MonsterSpawner {
             default:
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
         }
-        sceneEntity.position.copy(worldMgr.sceneMgr.getFloorPosition(worldPos))
-        sceneEntity.position.y += positionComponent.floorOffset
-        sceneEntity.rotation.y = headingRad
-        sceneEntity.visible = surface.discovered
         worldMgr.sceneMgr.addMeshGroup(sceneEntity)
         worldMgr.entityMgr.addEntity(entity, entityType)
         return entity

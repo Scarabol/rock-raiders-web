@@ -10,7 +10,7 @@ export class EatJob extends RaiderJob {
     target: PathTarget = null
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
-        if (!this.target) this.target = PathTarget.fromLocation(this.raider.sceneEntity.position2D)
+        if (!this.target) this.target = PathTarget.fromLocation(this.raider.getPosition2D())
         return this.target
     }
 

@@ -1,4 +1,4 @@
-import { PositionalAudio } from 'three'
+import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
@@ -68,7 +68,7 @@ export class VehicleEntity implements Updatable {
         const components = this.worldMgr.ecs.getComponents(this.entity)
         const health = components.get(HealthComponent).health
         if (health <= 0 && !components.has(BeamUpComponent)) {
-            EventBus.publishEvent(new GenericDeathEvent(this.sceneEntity.position))
+            EventBus.publishEvent(new GenericDeathEvent(this.getPosition()))
             this.beamUp(true)
             return
         }
@@ -80,7 +80,7 @@ export class VehicleEntity implements Updatable {
         this.dropDriver()
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         if (dropMaterials) {
-            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
+            const surface = this.getSurface()
             const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
             if (spawnSurface) {
                 for (let c = 0; c < this.stats.CostOre; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
@@ -117,7 +117,7 @@ export class VehicleEntity implements Updatable {
      */
 
     findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath {
-        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.sceneEntity.position2D, targets, this.stats, false)
+        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, false)
     }
 
     private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
@@ -142,10 +142,7 @@ export class VehicleEntity implements Updatable {
             return MoveState.TARGET_REACHED
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
-            this.sceneEntity.position.add(step.vec)
-            const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
-            positionComponent.position.copy(this.sceneEntity.position)
-            positionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
+            this.setPosition(this.getPosition().add(step.vec))
             this.sceneEntity.setAnimation(AnimEntityActivity.Route)
             const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
             this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
@@ -156,7 +153,7 @@ export class VehicleEntity implements Updatable {
     private determineStep(elapsedMs: number): EntityStep {
         const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
         targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
-        const step = new EntityStep(targetWorld.sub(this.sceneEntity.position))
+        const step = new EntityStep(targetWorld.sub(this.getPosition()))
         const stepLengthSq = step.vec.lengthSq()
         const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // TODO use average speed between current and target position
         const entitySpeedSq = entitySpeed * entitySpeed
@@ -166,7 +163,7 @@ export class VehicleEntity implements Updatable {
                 return this.determineStep(elapsedMs)
             }
         }
-        if (this.currentPath.target.targetLocation.distanceToSquared(this.sceneEntity.position2D) <= this.currentPath.target.radiusSq) {
+        if (this.currentPath.target.targetLocation.distanceToSquared(this.getPosition2D()) <= this.currentPath.target.radiusSq) {
             step.targetReached = true
         }
         step.vec.clampLength(0, entitySpeed)
@@ -281,7 +278,7 @@ export class VehicleEntity implements Updatable {
 
     private grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
         if (!carryItem || this.carriedItems.has(carryItem)) return true
-        const positionAsPathTarget = PathTarget.fromLocation(carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)
+        const positionAsPathTarget = PathTarget.fromLocation(carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)
         if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.setAnimation(AnimEntityActivity.Stand, () => {
                 this.carriedItems.add(carryItem)
@@ -296,8 +293,8 @@ export class VehicleEntity implements Updatable {
         if (unAssignFromSite) this.carriedItems.forEach((i) => i.carryJob?.target?.site?.unAssign(i))
         this.sceneEntity.removeAllCarried()
         this.carriedItems.forEach((carried) => {
-            const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.sceneEntity.position2D)
-            carried.sceneEntity.position.copy(floorPosition)
+            const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.getPosition2D())
+            carried.setPosition(floorPosition)
             carried.worldMgr.sceneMgr.addMeshGroup(carried.sceneEntity)
         })
         this.carriedItems.clear()
@@ -322,13 +319,11 @@ export class VehicleEntity implements Updatable {
         if (!this.driver) return
         this.sceneEntity.removeDriver()
         this.driver.vehicle = null
-        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
+        const surface = this.getSurface()
         const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
         const hopOffSpot = walkableSurface.getRandomPosition() // XXX find spot close to the possibly non-walkable actual surface
-        this.driver.sceneEntity.position.copy(this.driver.worldMgr.sceneMgr.getFloorPosition(hopOffSpot))
-        this.driver.worldMgr.ecs.getComponents(this.driver.entity).get(PositionComponent).position.copy(this.driver.sceneEntity.position)
-        this.driver.sceneEntity.rotation.y = this.sceneEntity.getHeading()
-        this.driver.sceneEntity.visible = this.driver.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.driver.sceneEntity.position).discovered
+        this.driver.setPosition(this.driver.worldMgr.sceneMgr.getFloorPosition(hopOffSpot))
+        this.driver.sceneEntity.rotation.y = this.sceneEntity.heading
         this.driver.worldMgr.sceneMgr.addMeshGroup(this.driver.sceneEntity)
         this.driver.sceneEntity.setAnimation(RaiderActivity.Stand)
         this.driver = null
@@ -379,7 +374,7 @@ export class VehicleEntity implements Updatable {
     }
 
     unblockTeleporter() {
-        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
+        const surface = this.getSurface()
         const blockedTeleporter = !!surface.building?.teleport && surface.building?.primaryPathSurface === surface
         if (blockedTeleporter) {
             const walkableNeighbor = surface.neighbors.find((n) => !n.site && n.isWalkable() && !n.building?.teleport)
@@ -407,5 +402,29 @@ export class VehicleEntity implements Updatable {
 
     getRepairValue(): number {
         return 0
+    }
+
+    getPosition(): Vector3 {
+        return this.sceneEntity.position.clone()
+    }
+
+    getPosition2D(): Vector2 {
+        return this.sceneEntity.position2D
+    }
+
+    setPosition(position: Vector3) {
+        this.sceneEntity.position.copy(position)
+        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
+        this.sceneEntity.visible = surface.discovered
+        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+        if (positionComponent) {
+            positionComponent.position.copy(position)
+            positionComponent.surface = surface
+            this.sceneEntity.position.y += positionComponent.floorOffset
+        }
+    }
+
+    getSurface(): Surface {
+        return this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.getPosition())
     }
 }

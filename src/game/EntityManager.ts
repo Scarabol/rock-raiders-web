@@ -153,7 +153,7 @@ export class EntityManager {
     private static getClosestBuilding(buildings: BuildingEntity[], position: Vector3) {
         let closest: BuildingEntity = null, minDist: number = null
         buildings.forEach((b) => {
-            const bPos = b.sceneEntity.position.clone()
+            const bPos = b.getPosition()
             const dist = position.distanceToSquared(bPos) // TODO better use pathfinding
             if (closest === null || dist < minDist) {
                 closest = b
@@ -169,7 +169,7 @@ export class EntityManager {
         const numRaidersUndiscovered = this.raidersUndiscovered.length
         this.raidersUndiscovered = EntityManager.removeInRect(this.raidersUndiscovered, minX, maxX, minZ, maxZ, (r) => {
             r.worldMgr.entityMgr.raiders.push(r)
-            EventBus.publishEvent(new RaiderDiscoveredEvent(r.sceneEntity.position.clone()))
+            EventBus.publishEvent(new RaiderDiscoveredEvent(r.getPosition()))
         })
         if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBus.publishEvent(new RaidersAmountChangedEvent(this))
         this.buildingsUndiscovered = EntityManager.removeInRect(this.buildingsUndiscovered, minX, maxX, minZ, maxZ, (b) => {
@@ -188,7 +188,7 @@ export class EntityManager {
                 driver.worldMgr.entityMgr.raidersUndiscovered.remove(driver)
                 driver.sceneEntity.visible = true
                 driver.worldMgr.entityMgr.raiders.push(driver)
-                EventBus.publishEvent(new RaiderDiscoveredEvent(driver.sceneEntity.position.clone()))
+                EventBus.publishEvent(new RaiderDiscoveredEvent(driver.getPosition()))
             }
         })
         this.undiscoveredSpiders = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
@@ -204,7 +204,7 @@ export class EntityManager {
 
     private static removeInRect<T extends Raider | BuildingEntity | MaterialEntity | VehicleEntity>(listing: T[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: T) => any) {
         return listing.filter((e) => {
-            const pos = e.sceneEntity.position2D
+            const pos = e.getPosition2D()
             const discovered = pos.x >= minX && pos.x < maxX && pos.y >= minZ && pos.y < maxZ
             if (discovered) {
                 e.sceneEntity.visible = true

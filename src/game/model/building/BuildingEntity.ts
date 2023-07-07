@@ -1,4 +1,4 @@
-import { PositionalAudio, Vector2 } from 'three'
+import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
@@ -102,7 +102,7 @@ export class BuildingEntity {
     }
 
     getDropPosition2D(): Vector2 {
-        const worldPos = this.sceneEntity.position.clone()
+        const worldPos = this.getPosition()
         if (this.sceneEntity.toolParent) {
             this.sceneEntity.toolParent.getWorldPosition(worldPos)
         } else if (this.sceneEntity.depositParent) {
@@ -134,7 +134,7 @@ export class BuildingEntity {
         this.level++
         EventBus.publishEvent(new DeselectAll())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
-        this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.UpgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.getHeading())
+        this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.UpgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.heading)
     }
 
     setLevel(level: number) {
@@ -297,8 +297,9 @@ export class BuildingEntity {
         const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity, {gameEntity: this.entity, entityType: this.entityType}, this.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPosition)
         floorPosition.y = Math.max(...this.surfaces.map((s) => this.worldMgr.sceneMgr.getFloorPosition(s.getCenterWorld2D()).y))
+        const positionComponent = this.worldMgr.ecs.addComponent(this.entity, new PositionComponent(floorPosition, this.primarySurface))
         this.sceneEntity.position.copy(floorPosition)
-        this.worldMgr.ecs.addComponent(this.entity, new PositionComponent(floorPosition, this.primarySurface))
+        this.sceneEntity.position.y += positionComponent.floorOffset
         this.sceneEntity.rotation.y = radHeading
         this.sceneEntity.visible = this.surfaces.some((s) => s.discovered)
         this.worldMgr.sceneMgr.addMeshGroup(this.sceneEntity)
@@ -391,5 +392,25 @@ export class BuildingEntity {
         }
         this.carriedItems.forEach((m) => m.disposeFromWorld())
         this.carriedItems.length = 0
+    }
+
+    getPosition(): Vector3 {
+        return this.sceneEntity.position.clone()
+    }
+
+    getPosition2D(): Vector2 {
+        return this.sceneEntity.position2D
+    }
+
+    setPosition(position: Vector3) {
+        this.sceneEntity.position.copy(position)
+        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
+        this.sceneEntity.visible = surface.discovered
+        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+        if (positionComponent) {
+            positionComponent.position.copy(position)
+            positionComponent.surface = surface
+            this.sceneEntity.position.y += positionComponent.floorOffset
+        }
     }
 }

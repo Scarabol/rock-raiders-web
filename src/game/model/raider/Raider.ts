@@ -1,4 +1,4 @@
-import { PositionalAudio } from 'three'
+import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
@@ -73,7 +73,7 @@ export class Raider implements Updatable {
         const components = this.worldMgr.ecs.getComponents(this.entity)
         const health = components.get(HealthComponent).health
         if (health <= 0 && !components.has(BeamUpComponent)) {
-            EventBus.publishEvent(new GenericDeathEvent(this.sceneEntity.position))
+            EventBus.publishEvent(new GenericDeathEvent(this.getPosition()))
             this.beamUp()
             return
         }
@@ -95,7 +95,7 @@ export class Raider implements Updatable {
             if (distanceSq < 80 * 80) {
                 this.scared = true
                 this.dropCarried(true)
-                const runTarget = this.sceneEntity.position2D.add(this.sceneEntity.position2D.sub(scare.getPosition2D()))
+                const runTarget = this.getPosition2D().add(this.getPosition2D().sub(scare.getPosition2D()))
                 this.setJob(new RunPanicJob(runTarget))
             }
         })
@@ -131,14 +131,14 @@ export class Raider implements Updatable {
      */
 
     findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath {
-        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.sceneEntity.position2D, targets, this.stats, true)
+        return this.worldMgr.sceneMgr.terrain.pathFinder.findShortestPath(this.getPosition2D(), targets, this.stats, true)
     }
 
     private moveToClosestTarget(target: PathTarget, elapsedMs: number): MoveState {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
         if (result === MoveState.MOVED) {
+            const raiderPosition2D = this.getPosition2D()
             this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
-                const raiderPosition2D = this.sceneEntity.position2D
                 const components = this.worldMgr.ecs.getComponents(spider)
                 const spiderPosition2D = components.get(PositionComponent).getPosition2D()
                 if (raiderPosition2D.distanceToSquared(spiderPosition2D) < SPIDER_SLIP_RANGE_SQ) {
@@ -174,10 +174,7 @@ export class Raider implements Updatable {
             return MoveState.TARGET_REACHED
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
-            this.sceneEntity.position.add(step.vec)
-            const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
-            positionComponent.position.copy(this.sceneEntity.position)
-            positionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position)
+            this.setPosition(this.getPosition().add(step.vec))
             this.sceneEntity.setAnimation(this.getRouteActivity())
             EventBus.publishEvent(new UpdateRadarEntities(this.worldMgr.entityMgr)) // TODO only send map updates not all
             if (this.foodLevel > 0) this.foodLevel -= step.vec.lengthSq() / TILESIZE / TILESIZE / 5
@@ -189,7 +186,7 @@ export class Raider implements Updatable {
     private determineStep(elapsedMs: number): EntityStep {
         const targetWorld = this.worldMgr.sceneMgr.getFloorPosition(this.currentPath.firstLocation)
         targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
-        const step = new EntityStep(targetWorld.sub(this.sceneEntity.position))
+        const step = new EntityStep(targetWorld.sub(this.getPosition()))
         const stepLengthSq = step.vec.lengthSq()
         const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // TODO use average speed between current and target position
         const entitySpeedSq = entitySpeed * entitySpeed
@@ -199,7 +196,7 @@ export class Raider implements Updatable {
                 return this.determineStep(elapsedMs)
             }
         }
-        if (this.currentPath.target.targetLocation.distanceToSquared(this.sceneEntity.position2D) <= this.currentPath.target.radiusSq) {
+        if (this.currentPath.target.targetLocation.distanceToSquared(this.getPosition2D()) <= this.currentPath.target.radiusSq) {
             step.targetReached = true
         }
         step.vec.clampLength(0, entitySpeed)
@@ -219,11 +216,11 @@ export class Raider implements Updatable {
     }
 
     private isOnPath(): boolean {
-        return this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).isPath()
+        return this.getSurface().isPath()
     }
 
     private isOnRubble() {
-        return this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.sceneEntity.position).hasRubble()
+        return this.getSurface().hasRubble()
     }
 
     private slip() {
@@ -306,8 +303,8 @@ export class Raider implements Updatable {
         if (!this.carries) return
         if (unAssignFromSite) this.carries.carryJob?.target?.site?.unAssign(this.carries)
         this.sceneEntity.removeAllCarried()
-        const floorPosition = this.carries.worldMgr.sceneMgr.getFloorPosition(this.carries.sceneEntity.position2D)
-        this.carries.sceneEntity.position.copy(floorPosition)
+        const floorPosition = this.carries.worldMgr.sceneMgr.getFloorPosition(this.carries.getPosition2D())
+        this.carries.setPosition(floorPosition)
         this.carries.worldMgr.sceneMgr.addMeshGroup(this.carries.sceneEntity)
         this.carries = null
     }
@@ -358,7 +355,7 @@ export class Raider implements Updatable {
         if (this.carries === carryItem) return true
         this.dropCarried(true)
         if (!carryItem) return true
-        const positionAsPathTarget = PathTarget.fromLocation(carryItem.sceneEntity.position2D, ITEM_ACTION_RANGE_SQ)
+        const positionAsPathTarget = PathTarget.fromLocation(carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)
         if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
             this.sceneEntity.setAnimation(RaiderActivity.Collect, () => {
                 this.carries = carryItem
@@ -418,5 +415,29 @@ export class Raider implements Updatable {
 
     getRepairValue(): number {
         return this.stats.RepairValue[this.level] || 0
+    }
+
+    getPosition(): Vector3 {
+        return this.sceneEntity.position.clone()
+    }
+
+    getPosition2D(): Vector2 {
+        return this.sceneEntity.position2D
+    }
+
+    setPosition(position: Vector3) {
+        this.sceneEntity.position.copy(position)
+        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
+        this.sceneEntity.visible = surface.discovered
+        const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+        if (positionComponent) {
+            positionComponent.position.copy(position)
+            positionComponent.surface = surface
+            this.sceneEntity.position.y += positionComponent.floorOffset
+        }
+    }
+
+    getSurface(): Surface {
+        return this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.getPosition())
     }
 }

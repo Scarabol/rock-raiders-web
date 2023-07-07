@@ -140,8 +140,8 @@ export class WorldManager {
                         this.requestedRaiders--
                         EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
                         const raider = new Raider(this)
-                        const heading = teleportBuilding.sceneEntity.getHeading()
-                        const worldPosition = new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleportBuilding.sceneEntity.position2D)
+                        const heading = teleportBuilding.sceneEntity.heading
+                        const worldPosition = new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleportBuilding.getPosition2D())
                         const walkOutPos = teleportBuilding.primaryPathSurface.getRandomPosition()
                         teleportBuilding.teleport.teleportIn(raider, this.entityMgr.raiders, this.entityMgr.raidersInBeam, worldPosition, heading, walkOutPos)
                     }
@@ -165,7 +165,7 @@ export class WorldManager {
                             EventBus.publishEvent(new MaterialAmountChanged())
                             const vehicle = VehicleFactory.createVehicleFromType(vType, this)
                             const worldPosition = (teleportBuilding.waterPathSurface ?? teleportBuilding.primaryPathSurface).getCenterWorld2D()
-                            const heading = teleportBuilding.sceneEntity.getHeading()
+                            const heading = teleportBuilding.sceneEntity.heading
                             teleportBuilding.teleport.teleportIn(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam, worldPosition, heading, null)
                             return true
                         }

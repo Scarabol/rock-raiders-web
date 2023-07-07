@@ -213,7 +213,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.animationGroups.length = 0
     }
 
-    getHeading(): number {
+    get heading(): number {
         return this.rotation.y
     }
 

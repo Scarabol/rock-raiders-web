@@ -129,7 +129,7 @@ export class Surface {
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
                 const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, seamDropPosition)
-                EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
+                EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
                 MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, seamDropPosition)
                 EventBus.publishEvent(new OreFoundEvent())
@@ -190,7 +190,7 @@ export class Surface {
         }
         for (let c = 0; c < droppedCrystals; c++) {
             const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, this.getRandomPosition())
-            EventBus.publishEvent(new CrystalFoundEvent(crystal.sceneEntity.position.clone()))
+            EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
         }
     }
 
@@ -476,7 +476,7 @@ export class Surface {
             this.site?.cancelSite()
             const materials = [...this.worldMgr.entityMgr.materials] // list will be changed by dispose below
             materials.forEach((m) => { // XXX Optimize performance
-                const materialSurface = this.terrain.getSurfaceFromWorld(m.sceneEntity.position)
+                const materialSurface = m.getSurface()
                 if (materialSurface === this) {
                     m.carryJob?.target?.site?.unAssign(m)
                     m.disposeFromWorld()
@@ -517,7 +517,7 @@ export class Surface {
         if (!this.isDigable() || this.dynamiteJob) return
         const targetBuilding = this.worldMgr.entityMgr.getClosestBuildingByType(this.getCenterWorld(), EntityType.TOOLSTATION) // XXX performance cache this
         if (!targetBuilding) throw new Error('Could not find toolstation to spawn dynamite')
-        const material = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.DYNAMITE, targetBuilding.getDropPosition2D(), targetBuilding.sceneEntity.getHeading(), this)
+        const material = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.DYNAMITE, targetBuilding.getDropPosition2D(), targetBuilding.sceneEntity.heading, this)
         this.dynamiteJob = material.carryJob
         this.updateJobColor()
     }
@@ -536,11 +536,11 @@ export class Surface {
     }
 
     isBlockedByVehicle() {
-        return this.worldMgr.entityMgr.vehicles.some((v) => this.terrain.getSurfaceFromWorld(v.sceneEntity.position) === this)
+        return this.worldMgr.entityMgr.vehicles.some((v) => v.getSurface() === this)
     }
 
     isBlockedByRaider() {
-        return this.worldMgr.entityMgr.raiders.some((r) => this.terrain.getSurfaceFromWorld(r.sceneEntity.position) === this)
+        return this.worldMgr.entityMgr.raiders.some((r) => r.getSurface() === this)
     }
 
     isBlocked(): boolean {

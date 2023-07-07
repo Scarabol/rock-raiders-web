@@ -10,8 +10,10 @@ export class BeamUpSystem extends AbstractGameSystem {
             try {
                 const components = this.ecs.getComponents(entity)
                 const beamUpComponent = components.get(BeamUpComponent)
-                if (beamUpComponent.entity.sceneEntity.position.y < 4 * TILESIZE) {
-                    beamUpComponent.entity.sceneEntity.position.y += 4 * TILESIZE / 122 * elapsedMs * 25 / 1000
+                const position = beamUpComponent.entity.getPosition()
+                if (position.y < 4 * TILESIZE) {
+                    position.y += 4 * TILESIZE / 122 * elapsedMs * 25 / 1000
+                    beamUpComponent.entity.setPosition(position)
                 } else {
                     beamUpComponent.entity.disposeFromWorld()
                     this.ecs.worldMgr.entityMgr.removeEntity(entity, beamUpComponent.entity.entityType)

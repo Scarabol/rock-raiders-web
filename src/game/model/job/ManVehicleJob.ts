@@ -17,7 +17,7 @@ export class ManVehicleJob extends RaiderJob {
         this.priorityIdentifier = PriorityIdentifier.GET_IN
         this.vehicle = vehicle
         this.vehicle.callManJob = this
-        const surface = this.vehicle.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.vehicle.sceneEntity.position)
+        const surface = this.vehicle.getSurface()
         const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
         const hopOnSpot = walkableSurface.getRandomPosition() // XXX find spot close to the possibly non-walkable actual surface
         this.workplace = PathTarget.fromLocation(hopOnSpot, this.vehicle.sceneEntity.getRadiusSquare() / 4)
