@@ -15,6 +15,7 @@ import { PositionComponent } from '../../component/PositionComponent'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { GameState } from '../GameState'
 import { EntityManager } from '../../EntityManager'
+import { SelectionChanged } from '../../../event/LocalEvents'
 
 export class CarryJob extends Job {
     fulfiller: JobFulfiller = null
@@ -164,12 +165,15 @@ export class CarryJob extends Job {
 
     private placeFence() {
         this.carryItem.worldMgr.sceneMgr.addMeshGroup(this.carryItem.sceneEntity)
+        this.carryItem.sceneEntity.rotation.set(0, 0, 0)
         const stats = ResourceManager.configuration.stats.electricFence
         const pickSphere = this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(SceneSelectionComponent).pickSphere
         this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new SelectionFrameComponent(pickSphere, stats))
         this.carryItem.targetSurface.fence = this.carryItem.entity
         this.carryItem.targetSurface.fenceRequested = false
         this.carryItem.worldMgr.entityMgr.placedFences.add(this.carryItem)
+        const neighborsFence = this.carryItem.targetSurface.neighborsFence
+        if (neighborsFence.some((s) => s.selected)) EventBus.publishEvent(new SelectionChanged(this.carryItem.worldMgr.entityMgr))
     }
 
     assign(fulfiller: JobFulfiller) {

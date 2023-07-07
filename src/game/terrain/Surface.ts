@@ -445,8 +445,19 @@ export class Surface {
     }
 
     get neighbors(): Surface[] {
-        return [this.terrain.getSurface(this.x - 1, this.y), this.terrain.getSurface(this.x, this.y - 1),
-            this.terrain.getSurface(this.x + 1, this.y), this.terrain.getSurface(this.x, this.y + 1)]
+        return [
+            this.terrain.getSurface(this.x - 1, this.y), this.terrain.getSurface(this.x, this.y - 1),
+            this.terrain.getSurface(this.x + 1, this.y), this.terrain.getSurface(this.x, this.y + 1),
+        ]
+    }
+
+    get neighborsFence(): Surface[] {
+        return [
+            this.terrain.getSurface(this.x - 1, this.y), this.terrain.getSurface(this.x, this.y - 1),
+            this.terrain.getSurface(this.x + 1, this.y), this.terrain.getSurface(this.x, this.y + 1),
+            this.terrain.getSurface(this.x - 2, this.y), this.terrain.getSurface(this.x, this.y - 2),
+            this.terrain.getSurface(this.x + 2, this.y), this.terrain.getSurface(this.x, this.y + 2),
+        ]
     }
 
     makeRubble(containedOre: number = 0) {
