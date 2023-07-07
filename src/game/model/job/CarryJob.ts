@@ -14,6 +14,7 @@ import { SelectionFrameComponent } from '../../component/SelectionFrameComponent
 import { PositionComponent } from '../../component/PositionComponent'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { GameState } from '../GameState'
+import { EntityManager } from '../../EntityManager'
 
 export class CarryJob extends Job {
     fulfiller: JobFulfiller = null
@@ -40,48 +41,63 @@ export class CarryJob extends Job {
             return this.target
         }
         if (this.target?.site) this.target.site.unAssign(this.carryItem)
-        this.target = entity.findShortestPath(this.findWorkplaces())?.target
+        this.target = entity.findShortestPath(this.findWorkplaces(entity))?.target
         if (this.target?.site) this.target.site.assign(this.carryItem)
         return this.target
     }
 
-    private findWorkplaces() {
-        switch (this.carryItem.entityType) {
+    private findWorkplaces(entity: Raider | VehicleEntity) {
+        const carryItem = this.carryItem
+        const entityMgr = carryItem.worldMgr.entityMgr
+        switch (carryItem.entityType) {
             case EntityType.ORE:
-                const oreSites = this.carryItem.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(this.carryItem.entityType))
-                if (oreSites.length > 0) return oreSites.map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
-                const oreRefineries = this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.ORE_REFINERY)
+                const oreSites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
+                if (oreSites.length > 0) return oreSites
+                const oreRefineries = entityMgr.getBuildingCarryPathTargets(EntityType.ORE_REFINERY)
                 if (oreRefineries.length > 0) return oreRefineries
-                return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
             case EntityType.CRYSTAL:
-                const crystalSites = this.carryItem.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(this.carryItem.entityType))
-                if (crystalSites.length > 0) return crystalSites.map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
-                const powerStations = this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.POWER_STATION)
+                const crystalSites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
+                if (crystalSites.length > 0) return crystalSites
+                const powerStations = entityMgr.getBuildingCarryPathTargets(EntityType.POWER_STATION)
                 if (powerStations.length > 0) return powerStations
-                return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
             case EntityType.BRICK:
-                const sites = this.carryItem.worldMgr.entityMgr.buildingSites.filter((b) => b.needs(this.carryItem.entityType))
-                if (sites.length > 0) return sites.map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
-                return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                const sites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
+                if (sites.length > 0) return sites
+                return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
             case EntityType.BARRIER:
-                if (this.carryItem.targetSite.complete || this.carryItem.targetSite.canceled) {
-                    return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                if (carryItem.targetSite.complete || carryItem.targetSite.canceled) {
+                    return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
                 } else {
-                    return [PathTarget.fromSite(this.carryItem.targetSite, this.carryItem.location)]
+                    return [PathTarget.fromSite(carryItem.targetSite, carryItem.location)].filter((p) => !!entity.findShortestPath(p))
                 }
             case EntityType.DYNAMITE:
-                if (this.carryItem.targetSurface?.isDigable()) {
-                    return this.carryItem.targetSurface.getDigPositions().map((p) => PathTarget.fromLocation(p, this.carryItem.sceneEntity.getRadiusSquare() / 4))
+                if (carryItem.targetSurface?.isDigable()) {
+                    return carryItem.targetSurface.getDigPositions()
+                        .map((p) => PathTarget.fromLocation(p, carryItem.sceneEntity.getRadiusSquare() / 4))
+                        .filter((p) => !!entity.findShortestPath(p))
                 } else {
-                    return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                    return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
                 }
             case EntityType.ELECTRIC_FENCE:
-                if (!this.carryItem.targetSurface.isWalkable()) {
-                    return this.carryItem.worldMgr.entityMgr.getBuildingCarryPathTargets(EntityType.TOOLSTATION)
+                if (!carryItem.targetSurface.isWalkable()) {
+                    return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
                 } else {
-                    return [PathTarget.fromLocation(this.carryItem.targetSurface.getCenterWorld2D())]
+                    return [PathTarget.fromLocation(carryItem.targetSurface.getCenterWorld2D())].filter((p) => !!entity.findShortestPath(p))
                 }
         }
+    }
+
+    private findReachableBuildingSiteWithNeed(entityMgr: EntityManager, carryItem: MaterialEntity, entity: Raider | VehicleEntity) {
+        return entityMgr.buildingSites
+            .filter((b) => b.needs(carryItem.entityType))
+            .map((s) => PathTarget.fromSite(s, s.getRandomDropPosition()))
+            .filter((p) => !!entity.findShortestPath(p))
+    }
+
+    private findReachableBuilding(entityMgr: EntityManager, buildingType: EntityType, entity: Raider | VehicleEntity) {
+        return entityMgr.getBuildingCarryPathTargets(buildingType).filter((p) => !!entity.findShortestPath(p))
     }
 
     getWorkActivity(): AnimationActivity {
