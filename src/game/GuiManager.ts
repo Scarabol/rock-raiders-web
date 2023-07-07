@@ -178,7 +178,7 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PREFERENCES, (event: ChangePreferences) => {
             SaveGameManager.savePreferences()
-            SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx
+            SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx / 10
             SoundManager.toggleSfx()
             sceneMgr.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
             const sfxVolume = SaveGameManager.getSfxVolume()
