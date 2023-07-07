@@ -1,8 +1,25 @@
 import { Surface } from './Surface'
+import { EventBus } from '../../event/EventBus'
+import { EventKey } from '../../event/EventKeyEnum'
+import { GameState } from '../model/GameState'
+import { EntityType } from '../model/EntityType'
+import { WorldManager } from '../WorldManager'
 
 export class PowerGrid {
     energySources: Set<Surface> = new Set()
     energizedSurfaces: Set<Surface> = new Set()
+
+    constructor(worldMgr: WorldManager) {
+        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
+            const energyConsumer = worldMgr.entityMgr.buildings.filter((b) => b.energized && b.crystalDrain > 0).reverse()
+            for (let c = 0; c < energyConsumer.length && GameState.usedCrystals > GameState.numCrystal; c++) {
+                energyConsumer[c].setEnergized(false)
+            }
+            if (GameState.numCrystal <= 0) worldMgr.entityMgr.buildings.forEach((b) => {
+                if (b.entityType === EntityType.POWER_STATION) b.setEnergized(false)
+            })
+        })
+    }
 
     addEnergySource(energySources: Surface[]) {
         energySources.forEach((s) => {

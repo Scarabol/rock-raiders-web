@@ -202,11 +202,6 @@ export class BuildingEntity {
         } else {
             console.error(`Material drop not implemented for: ${type}`)
         }
-        if (material.length > 0) EventBus.publishEvent(new MaterialAmountChanged())
-        const energyConsumer = this.worldMgr.entityMgr.buildings.filter((b) => b.energized && b.crystalDrain > 0).reverse()
-        for (let c = 0; c < energyConsumer.length && GameState.usedCrystals > GameState.numCrystal; c++) {
-            energyConsumer[c].setEnergized(false)
-        }
     }
 
     spawnBarriers(barrierLocations: Vector2[], site: BuildingSite) {

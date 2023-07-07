@@ -27,7 +27,7 @@ export class Terrain {
     roofGroup: Group = new Group()
     pathFinder: PathFinder = new PathFinder()
     fallIns: FallIn[] = []
-    powerGrid: PowerGrid = new PowerGrid()
+    powerGrid: PowerGrid
     erodeTriggerTimeMs: number = 0
     lavaErodes: LavaErosion[] = []
     tutoBlocksById: Map<number, Surface[]> = new Map()
@@ -39,6 +39,7 @@ export class Terrain {
         if (DEV_MODE) this.floorGroup.add(new AxesHelper())
         this.roofGroup.scale.setScalar(TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
+        this.powerGrid = new PowerGrid(this.worldMgr)
         this.erodeTriggerTimeMs = levelConf.erodeTriggerTime * 1000
     }
 
