@@ -49,8 +49,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - spawn a depleted energy crystal, when slug leeched energy
 - wake up rock monsters by big bangs
 - show lightning beam between electric fences
-- show ElectricFenceStud between electric fences and buildings
-- make rock monster crumble when reaching a fence or lightning
 - make rock monster pick up nearby raider and shake them upside down
 - make rock monster punch vehicles passing by and vehicle break boulders
 - Raider get tired while carrying and eat at barracks

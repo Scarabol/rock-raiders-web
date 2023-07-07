@@ -30,6 +30,7 @@ export class EntityManager {
     materials: MaterialEntity[] = []
     materialsUndiscovered: MaterialEntity[] = []
     placedFences: MaterialEntity[] = []
+    surfacesWithStuds: Surface[] = []
     buildingSites: BuildingSite[] = []
     spiders: GameEntity[] = []
     undiscoveredSpiders: GameEntity[] = []
@@ -66,6 +67,7 @@ export class EntityManager {
         this.materials.length = 0
         this.materialsUndiscovered.length = 0
         this.placedFences.length = 0
+        this.surfacesWithStuds.length = 0
         this.buildingSites.length = 0
         this.spiders.length = 0
         this.undiscoveredSpiders.length = 0

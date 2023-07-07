@@ -26,6 +26,7 @@ import { JobState } from '../model/job/JobState'
 import { MaterialSpawner } from '../entity/MaterialSpawner'
 import { degToRad } from 'three/src/math/MathUtils'
 import { PositionComponent } from '../component/PositionComponent'
+import { AnimationGroup } from '../../scene/AnimationGroup'
 
 export class Surface {
     worldMgr: WorldManager
@@ -50,6 +51,7 @@ export class Surface {
     pathBlockedByBuilding: boolean = false
     site: BuildingSite = null
     fence: GameEntity = null
+    stud: AnimationGroup = null
     fenceRequested: boolean = false
     energized: boolean = false
 

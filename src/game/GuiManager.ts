@@ -55,11 +55,10 @@ export class GuiManager {
             const fence = entityMgr.selection.fence
             fence.worldMgr.ecs.getComponents(fence.entity).get(SelectionFrameComponent)?.deselect()
             fence.worldMgr.ecs.removeComponent(fence.entity, SelectionFrameComponent)
+            worldMgr.entityMgr.placedFences.remove(fence)
             fence.targetSurface.fence = null
             fence.targetSurface.fenceRequested = false
-            // TODO stop spawning lightning animations
             fence.worldMgr.ecs.addComponent(fence.entity, new BeamUpComponent(fence))
-            // TODO update defence grid
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_RAIDER_SPAWN_REQUEST, (event: ChangeRaiderSpawnRequest) => {
             if (event.increase) {

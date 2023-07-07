@@ -80,4 +80,5 @@ export enum RockMonsterActivity {
     Gather = 'Activity_Gather',
     Throw = 'Activity_Throw',
     Punch = 'Activity_Repair',
+    Crumble = 'Activity_Crumble',
 }
