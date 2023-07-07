@@ -8,6 +8,8 @@ import { ShareableJob } from '../ShareableJob'
 import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { JobFulfiller } from '../Job'
+import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
+import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 
 export class CompleteSurfaceJob extends ShareableJob {
     readonly workplace: PathTarget
@@ -29,5 +31,13 @@ export class CompleteSurfaceJob extends ShareableJob {
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         return this.workplace // TODO return empty array, if surface cannot be repaired
+    }
+
+    getWorkActivity(): AnimationActivity {
+        return RaiderActivity.Clear
+    }
+
+    getJobBubble(): keyof BubblesCfg {
+        return 'bubbleBuildPath'
     }
 }
