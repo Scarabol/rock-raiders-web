@@ -27,6 +27,7 @@ export class LoadSaveLayer extends MainMenuLayer {
         } else {
             this.loadSaveTextWindow.setFirstLine(this.menuCfg.saveText.save)
         }
+        this.loadSaveTextWindow.setSecondLine(' ')
     }
 
     private addButton(index: number, x: number, y: number, loading: boolean) {

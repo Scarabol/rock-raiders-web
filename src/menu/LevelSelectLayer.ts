@@ -14,6 +14,7 @@ export class LevelSelectLayer extends MainMenuLayer {
         this.items.push(new MainMenuPanel(levelTextCfg.panel))
         const levelTextWindow = new MainMenuWindow(levelTextCfg.window)
         levelTextWindow.setFirstLine(allLevels ? levelTextCfg.level : levelTextCfg.tutorial)
+        levelTextWindow.setSecondLine(' ')
         this.items.push(levelTextWindow)
         ResourceManager.configuration.levels.levelCfgByName.forEach((level, levelKey) => {
             const levelButton = new MainMenuLevelButton(this, levelKey, level)
