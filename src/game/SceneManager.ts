@@ -217,17 +217,19 @@ export class SceneManager implements Updatable {
         this.scene.remove(meshGroup)
     }
 
-    addMiscAnim(lwsFilename: string, position: Vector3, heading: number) {
-        const group = new AnimationGroup(lwsFilename, () => {
-            this.miscAnims.remove(group)
-            this.scene.remove(group)
-            group.dispose()
-        }).start(this.audioListener)
+    addMiscAnim(lwsFilename: string, position: Vector3, heading: number, loop: boolean) {
+        const group = new AnimationGroup(lwsFilename, loop ? null : () => this.removeMiscAnim(group)).start(this.audioListener)
         group.position.copy(position)
         group.rotateOnAxis(Object3D.DEFAULT_UP, heading)
         this.miscAnims.add(group)
         this.scene.add(group)
         return group
+    }
+
+    removeMiscAnim(group: AnimationGroup) {
+        this.miscAnims.remove(group)
+        this.scene.remove(group)
+        group.dispose()
     }
 
     addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean): PositionalAudio {

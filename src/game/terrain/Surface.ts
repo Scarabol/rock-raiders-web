@@ -178,7 +178,7 @@ export class Surface {
         const wallNeighbor = this.neighbors.filter((n) => !!n.wallType).random()
         const crumbleAngle = !!wallNeighbor ? Math.atan2(wallNeighbor.x - this.x, wallNeighbor.y - this.y) : 0 // XXX why is x/y swapped here?
         const rockFallAnimName = ResourceManager.configuration.rockFallStyles[this.terrain.rockFallStyle][3] // TODO not always pick "tunnel"
-        this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle)
+        this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
         this.playPositionalSample(Sample.SFX_RockBreak)
     }
 

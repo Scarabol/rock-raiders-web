@@ -12,7 +12,7 @@ export class BeamUpComponent extends AbstractGameComponent {
     constructor(readonly entity: Raider | VehicleEntity | BuildingEntity | MaterialEntity) {
         super()
         EventBus.publishEvent(new DeselectAll())
-        const grp = this.entity.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.MiniTeleportUp, this.entity.getPosition(), this.entity.sceneEntity.heading)
+        const grp = this.entity.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.MiniTeleportUp, this.entity.getPosition(), this.entity.sceneEntity.heading, false)
         this.entity.worldMgr.sceneMgr.addPositionalAudio(grp, Sample[Sample.SND_TeleUp], true, false)
     }
 }
