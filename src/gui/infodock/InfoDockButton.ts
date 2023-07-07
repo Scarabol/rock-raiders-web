@@ -8,6 +8,8 @@ import { NATIVE_FRAMERATE } from '../../params'
 import { Button } from '../base/Button'
 import { InfoDockPanel } from './InfoDockPanel'
 import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
+import { PlaySoundEvent } from '../../event/GuiCommand'
+import { Sample } from '../../audio/Sample'
 
 export class InfoDockButton extends Button {
     messages: WorldEvent[] = [] // newest message first
@@ -26,11 +28,13 @@ export class InfoDockButton extends Button {
             parent.buttonClicked(this)
         }
 
+        const sample = Sample[infoMessagesEntryConfig.sfxName]
         this.registerEventListener(eventKey, (event: WorldLocationEvent) => {
             this.hidden = false
             while (this.messages.length >= 9) this.messages.pop()
             this.messages.unshift(event)
             parent.showButton(this)
+            if (sample) this.publishEvent(new PlaySoundEvent(sample))
         })
     }
 
