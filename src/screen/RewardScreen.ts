@@ -159,12 +159,12 @@ export class RewardScreen {
         this.screenshot = result.screenshot
         this.resultValues.length = 0
         Promise.all([
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('crystals'), this.percentString(result.numCrystal, result.quotaCrystals)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('crystals'), this.percentString(result.numCrystal, result.rewardConfig?.quota?.crystals || 0)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('ore'), this.percentString(result.numOre, result.numTotalOres)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('diggable'), this.percentString(result.remainingDiggables, result.totalDiggables, true)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('constructions'), result.numBuildings.toString()),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('caverns'), this.percentString(result.discoveredCaverns, result.quotaCaverns)),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('figures'), this.percentString(result.numRaiders, result.quotaRaiders)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('caverns'), this.percentString(result.discoveredCaverns, result.rewardConfig?.quota?.caverns || 0)),
+            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('figures'), this.percentString(result.numRaiders, result.numMaxAirRaiders)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('rockmonsters'), this.percentString(result.defencePercent, 100)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('oxygen'), this.percentString(result.airLevelPercent, 100)),
             ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('timer'), this.timeString(result.gameTimeSeconds)),

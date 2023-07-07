@@ -112,8 +112,8 @@ export class GameScreen {
         this.worldMgr.requestedVehicleTypes.length = 0
         let result: GameResult = null
         if (this.levelConf.reward) {
-            const quotaRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE
-            result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, quotaRaiders, gameTimeSeconds, canvas)
+            const numMaxAirRaiders = this.levelConf.oxygenRate ? this.entityMgr.buildings.count((b) => b.entityType === EntityType.BARRACKS) * ADDITIONAL_RAIDER_PER_SUPPORT : MAX_RAIDER_BASE
+            result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, numMaxAirRaiders, gameTimeSeconds, canvas)
             if (result.state === GameResultState.COMPLETE) {
                 SaveGameManager.setLevelScore(this.levelName, result.score)
                 if (!this.levelConf.disableEndTeleport) {

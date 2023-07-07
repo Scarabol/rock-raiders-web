@@ -11,8 +11,6 @@ export enum GameResultState {
 }
 
 export class GameResult {
-    quotaCrystals: number = 0
-    quotaCaverns: number = 0
     defencePercent: number = 100 // TODO defence report is either 0% or 100%
     airLevelPercent: number = 100
     numCrystal: number = 0
@@ -36,7 +34,7 @@ export class GameResult {
         readonly state: GameResultState,
         readonly numBuildings: number,
         readonly numRaiders: number,
-        readonly quotaRaiders: number,
+        readonly numMaxAirRaiders: number,
         readonly gameTimeSeconds: number,
         readonly screenshot: HTMLCanvasElement
     ) {
@@ -50,14 +48,12 @@ export class GameResult {
         if (this.rewardConfig) {
             const quota = this.rewardConfig.quota
             const importance = this.rewardConfig.importance
-            this.quotaCrystals = quota.crystals || 0
-            this.quotaCaverns = quota.caverns || 0
-            this.scoreCrystals = GameState.numCrystal >= (quota.crystals || Infinity) ? importance.crystals : 0
-            this.scoreTimer = this.gameTimeSeconds <= (quota.timer || 0) ? importance.timer : 0
+            this.scoreCrystals = quota.crystals ? Math.min(1, GameState.numCrystal / quota.crystals) * importance.crystals : 0
+            this.scoreTimer = quota.timer ? Math.min(1, this.gameTimeSeconds / quota.timer) * importance.timer : 0
             this.scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
             this.scoreConstructions = quota.constructions ? Math.min(1, this.numBuildings / quota.constructions) * importance.constructions : 0
             this.scoreOxygen = GameState.airLevel * importance.oxygen
-            this.scoreFigures = this.numRaiders >= ADDITIONAL_RAIDER_PER_SUPPORT ? importance.figures : 0
+            this.scoreFigures = this.numRaiders / ADDITIONAL_RAIDER_PER_SUPPORT * importance.figures
             this.score = Math.max(0, Math.min(100, Math.round(this.scoreCrystals + this.scoreTimer + this.scoreCaverns + this.scoreConstructions + this.scoreOxygen + this.scoreFigures)))
         }
     }
