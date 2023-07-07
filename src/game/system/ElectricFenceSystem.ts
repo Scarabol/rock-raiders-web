@@ -10,11 +10,13 @@ import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityCo
 import { RockMonsterActivity } from '../model/anim/AnimationActivity'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Surface } from '../terrain/Surface'
+import { Vector3 } from 'three'
 
-const FENCE_RANGE_SQ = TILESIZE / 2 * TILESIZE / 2
+const FENCE_RANGE_SQ = TILESIZE / 4 * TILESIZE / 4
 
 export class ElectricFenceSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([PositionComponent, HealthComponent, MonsterStatsComponent, RockMonsterBehaviorComponent])
+    beamDelayMs: number = 0
 
     constructor(readonly worldMgr: WorldManager) {
         super()
@@ -23,8 +25,8 @@ export class ElectricFenceSystem extends AbstractGameSystem {
     update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
         const fenceProtectedSurfaces = this.getFenceProtectedSurfaces()
         const studProtectedSurfaces = this.getStudProtectedSurfaces(fenceProtectedSurfaces)
-        fenceProtectedSurfaces.push(...studProtectedSurfaces)
-        // TODO spawn lightning beams
+        this.addBeamEffect(elapsedMs, studProtectedSurfaces)
+        fenceProtectedSurfaces.add(...studProtectedSurfaces)
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
@@ -35,6 +37,13 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                     components.get(HealthComponent).changeHealth(-100)
                     this.ecs.removeComponent(entity, WorldTargetComponent)
                     this.ecs.removeComponent(entity, RockMonsterBehaviorComponent)
+                    if (!f.fence) {
+                        if (this.worldMgr.sceneMgr.terrain.getSurface(f.x - 1, f.y).fence && this.worldMgr.sceneMgr.terrain.getSurface(f.x + 1, f.y).fence) {
+                            this.addBeamX(f.getCenterWorld(), false)
+                        } else {
+                            this.addBeamZ(f.getCenterWorld(), false)
+                        }
+                    } // XXX else spawn beam to random fence neighbor
                     const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
                     sceneEntity.setAnimation(RockMonsterActivity.Crumble, () => {
                         this.worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
@@ -51,6 +60,18 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         }
     }
 
+    private addBeamX(beamPos: Vector3, short: boolean) {
+        beamPos.x -= TILESIZE
+        const lwsFilename = short ? ResourceManager.configuration.miscObjects.ShortElectricFenceBeam : ResourceManager.configuration.miscObjects.LongElectricFenceBeam
+        this.worldMgr.sceneMgr.addMiscAnim(lwsFilename, beamPos, Math.PI / 2, false)
+    }
+
+    private addBeamZ(beamPos: Vector3, short: boolean) {
+        beamPos.z -= TILESIZE
+        const lwsFilename = short ? ResourceManager.configuration.miscObjects.ShortElectricFenceBeam : ResourceManager.configuration.miscObjects.LongElectricFenceBeam
+        this.worldMgr.sceneMgr.addMiscAnim(lwsFilename, beamPos, 0, false)
+    }
+
     private getFenceProtectedSurfaces(): Surface[] {
         const fenceProtectedSurfaces: Surface[] = []
         const energizedBuildingSurfaces = this.worldMgr.entityMgr.buildings.filter((b) => b.energized)
@@ -63,7 +84,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                 if (next.fence) {
                     const positionComponent = this.ecs.getComponents(next.fence).get(PositionComponent)
                     toCheck.remove(positionComponent)
-                    fenceProtectedSurfaces.push(positionComponent.surface)
+                    fenceProtectedSurfaces.add(positionComponent.surface)
                 }
             })
         })
@@ -74,7 +95,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                     const distance = Math.abs(activeSurface.x - positionComponent.surface.x) + Math.abs(activeSurface.y - positionComponent.surface.y)
                     if (distance <= 2) {
                         toCheck.remove(positionComponent)
-                        fenceProtectedSurfaces.push(positionComponent.surface)
+                        fenceProtectedSurfaces.add(positionComponent.surface)
                         return true
                     }
                     return false
@@ -87,11 +108,14 @@ export class ElectricFenceSystem extends AbstractGameSystem {
     private getStudProtectedSurfaces(fenceProtectedSurfaces: Surface[]): Surface[] {
         const studPositions: Surface[] = []
         const toAdd: Surface[] = []
-        fenceProtectedSurfaces.forEach((p) => {
-            p.neighbors.forEach((n) => {
-                if (!n.fence && !studPositions.includes(n) && n.neighbors.some((n2) => n2 !== p && n2.fence && fenceProtectedSurfaces.includes(n2))) {
-                    studPositions.push(n)
-                    if (!n.stud) toAdd.push(n)
+        fenceProtectedSurfaces.forEach((origin) => {
+            origin.neighbors.forEach((possibleStud) => {
+                if (!possibleStud.fence && !studPositions.includes(possibleStud) &&
+                    possibleStud.neighbors.some((target) => target !== origin && target.fence &&
+                        (target.x === origin.x || target.y === origin.y) && fenceProtectedSurfaces.includes(target))
+                ) {
+                    studPositions.add(possibleStud)
+                    if (!possibleStud.stud) toAdd.add(possibleStud)
                 }
             })
         })
@@ -107,5 +131,22 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             this.worldMgr.entityMgr.surfacesWithStuds.add(s)
         })
         return studPositions
+    }
+
+    addBeamEffect(elapsedMs: number, studProtectedSurfaces: Surface[]) {
+        if (this.beamDelayMs > 0) {
+            this.beamDelayMs -= elapsedMs
+            return
+        }
+        if (studProtectedSurfaces.length < 1) return
+        this.beamDelayMs = Math.randomInclusive(2000, 10000)
+        // TODO add beams between fences and buildings
+        // TODO add short beams between fences and between fences and buildings
+        const f = studProtectedSurfaces.random()
+        if (this.worldMgr.sceneMgr.terrain.getSurface(f.x - 1, f.y).fence && this.worldMgr.sceneMgr.terrain.getSurface(f.x + 1, f.y).fence) {
+            this.addBeamX(f.getCenterWorld(), false)
+        } else {
+            this.addBeamZ(f.getCenterWorld(), false)
+        }
     }
 }
