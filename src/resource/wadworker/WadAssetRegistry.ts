@@ -257,8 +257,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
     addMenuWithAssets(menuCfg: MenuCfg, menuImageAlpha: boolean = true) {
         menuCfg.menus.forEach((menuCfg) => {
             const method = menuImageAlpha ? this.wadLoader.loadAlphaImageAsset : this.wadLoader.loadWadImageAsset
-            const menuImage = Array.isArray(menuCfg.menuImage) ? menuCfg.menuImage[0] : menuCfg.menuImage
-            this.addAsset(method, menuImage)
+            this.addAsset(method, menuCfg.menuImage)
             this.addAsset(this.wadLoader.loadFontImageAsset, menuCfg.menuFont)
             this.addAsset(this.wadLoader.loadFontImageAsset, menuCfg.loFont)
             this.addAsset(this.wadLoader.loadFontImageAsset, menuCfg.hiFont)

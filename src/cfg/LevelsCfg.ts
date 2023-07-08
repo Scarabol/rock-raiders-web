@@ -34,9 +34,9 @@ export class LevelEntryCfg extends BaseConfig {
     roofHeight: number = 40
     useRoof: string = ''
     selBoxHeight: number = 10
-    fpRotLightRGB: any = ''
-    fogColourRGB: any = ''
-    highFogColourRGB: any = ''
+    fpRotLightRGB: number[] = [0, 0, 0]
+    fogColourRGB: number[] = [0, 0, 0]
+    highFogColourRGB: number[] = [0, 0, 0]
     fogRate: number = 0
     fallinMultiplier: number = 0
     numberOfLandSlidesTillCaveIn: number = 0
@@ -67,7 +67,7 @@ export class LevelEntryCfg extends BaseConfig {
     erodeErodeTime: number = 0 // 1, 5, 7, 20, 30, 40, 60 time in seconds until next erosion level is reached
     erodeLockTime: number = 0 // 1, 300, 500, 600 grace time no erosion happens on surface with power path
     nextLevel: any = ''
-    levelLinks: any = ''
+    levelLinks: string[] = []
     frontEndX: number = 0
     frontEndY: number = 0
     frontEndOpen: boolean = false
@@ -89,6 +89,8 @@ export class LevelEntryCfg extends BaseConfig {
         } else if (unifiedKey === 'textureset') {
             return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
         } else if (unifiedKey === 'rockfallstyle') { // value given twice for level07
+            return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
+        } else if (unifiedKey === 'emergecreature') { // value given twice for level20
             return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue).toLowerCase()
         } else {
             return super.parseValue(unifiedKey, cfgValue)

@@ -29,16 +29,18 @@ export class BaseConfig {
         if (objKey.toLowerCase() !== unifiedKey) return false
         const currentValue = this[objKey]
         const currentIsArray = Array.isArray(currentValue)
-        let parsedValue = this.parseValue(unifiedKey, cfgValue)
+        const parsedValue = this.parseValue(unifiedKey, cfgValue)
         const parsedIsArray = Array.isArray(parsedValue)
-        if (currentValue && currentIsArray !== parsedIsArray) {
+        if (currentIsArray !== parsedIsArray) {
             if (currentIsArray) {
-                parsedValue = [parsedValue]
+                this[objKey] = [parsedValue]
             } else {
-                console.warn(`Array overwrite conflict for key ${objKey} with existing value (${currentValue}) and new value (${parsedValue})`)
+                console.warn(`Array overwrite conflict for key ${objKey} with existing value '${currentValue}' and new value '${parsedValue}'. First value wins!`)
+                this[objKey] = parsedValue[0]
             }
+        } else {
+            this[objKey] = parsedValue
         }
-        this[objKey] = parsedValue
         return true
     }
 

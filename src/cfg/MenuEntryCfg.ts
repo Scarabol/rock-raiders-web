@@ -44,8 +44,10 @@ export class MenuEntryCfg extends BaseConfig {
     }
 
     parseValue(unifiedKey: string, cfgValue: any): any {
-        if (unifiedKey === 'fullName'.toLowerCase() || unifiedKey === 'title') {
+        if (unifiedKey === 'fullname' || unifiedKey === 'title') {
             return cfgValue.replace(/_/g, ' ')
+        } else if (unifiedKey === 'menuimage') { // XXX What mean numbers behind the image file name? Like: ...bmp,0,0,1
+            return (Array.isArray(cfgValue) ? cfgValue[0] : cfgValue)?.toLowerCase()
         } else {
             return super.parseValue(unifiedKey, cfgValue)
         }
