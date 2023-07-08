@@ -45,7 +45,6 @@ export class MainMenuLayer extends ScaledLayer {
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],
             ['pointerup', POINTER_EVENT.UP],
-            ['pointerleave', POINTER_EVENT.LEAVE],
         ]).forEach((eventEnum, eventType) => {
             this.addEventListener(eventType, (event: PointerEvent): boolean => {
                 const gameEvent = new GamePointerEvent(eventEnum, event)
@@ -111,10 +110,6 @@ export class MainMenuLayer extends ScaledLayer {
                     return true
                 }
             }
-        } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
-            this.scrollSpeedY = 0
-            this.scrollInterval = clearIntervalSafe(this.scrollInterval)
-            return true
         }
         if (this.needsRedraw()) this.animationFrame.notifyRedraw()
         return false
