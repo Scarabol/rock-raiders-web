@@ -1,7 +1,8 @@
 import { defineConfig } from 'vite'
 
+// noinspection JSUnusedGlobalSymbols
 export default defineConfig({
-    base: '/rock-raiders-web/',
+    base: '',
     define: {
         APP_VERSION: JSON.stringify(process.env.npm_package_version),
     },
