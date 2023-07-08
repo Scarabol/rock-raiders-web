@@ -24,7 +24,7 @@ export class MovementSystem extends AbstractGameSystem {
                 const entitySpeed = statsComponent.getSpeed(positionComponent.surface.isPath(), positionComponent.surface.hasRubble()) * elapsedMs / NATIVE_UPDATE_INTERVAL
                 const entitySpeedSq = entitySpeed * entitySpeed
                 const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
-                if (targetWorld.distanceToSquared(positionComponent.position) <= entitySpeedSq + worldTargetComponent.radiusSq) {
+                if (targetWorld.distanceToSquared(positionComponent.position) <= worldTargetComponent.radiusSq) {
                     this.ecs.removeComponent(entity, WorldTargetComponent)
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
                         this.ecs.worldMgr.entityMgr.removeEntity(entity) // TODO remove other entity types from entity manager too
