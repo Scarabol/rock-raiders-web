@@ -22,6 +22,7 @@ import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
 import { SetSpaceToContinueEvent, ShowOptionsEvent } from '../../event/LocalEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { GameWheelEvent } from '../../event/GameWheelEvent'
 
 export class GuiMainLayer extends ScaledLayer {
     rootElement: BaseElement = new BaseElement(null)
@@ -109,8 +110,9 @@ export class GuiMainLayer extends ScaledLayer {
             })
         })
         this.addEventListener('wheel', (event: WheelEvent): boolean => {
-            const [canvasX, canvasY] = this.transformCoords(event.clientX, event.clientY)
-            return this.animationFrame.isOpaque(canvasX, canvasY)
+            const gameEvent = new GameWheelEvent(event)
+            ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
+            return this.animationFrame.isOpaque(gameEvent.canvasX, gameEvent.canvasY)
         })
     }
 

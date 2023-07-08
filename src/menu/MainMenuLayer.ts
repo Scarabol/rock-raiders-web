@@ -9,6 +9,7 @@ import { ScaledLayer } from '../screen/layer/ScreenLayer'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuIconButton } from './MainMenuIconButton'
 import { MainMenuLabelButton } from './MainMenuLabelButton'
+import { GameWheelEvent } from '../event/GameWheelEvent'
 
 export class MainMenuLayer extends ScaledLayer {
     cfg: MenuEntryCfg
@@ -54,9 +55,10 @@ export class MainMenuLayer extends ScaledLayer {
         })
         this.addEventListener('wheel', (event: WheelEvent): boolean => {
             if (!this.cfg.canScroll) return false
-            this.setScrollY(event.deltaY)
-            const [canvasX, canvasY] = this.transformCoords(event.clientX, event.clientY)
-            this.updateItemsHoveredState(canvasX, canvasY)
+            const gameEvent = new GameWheelEvent(event)
+            ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
+            this.setScrollY(gameEvent.deltaY)
+            this.updateItemsHoveredState(gameEvent.canvasX, gameEvent.canvasY)
             return true
         })
     }
