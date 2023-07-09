@@ -72,18 +72,18 @@ export class BuildPlacementMarker {
         this.powerPathMarkerPrimary.updateMesh(worldPosition, this.buildingType.primaryPowerPath, this.heading)
         this.powerPathMarkerSecondary.updateMesh(worldPosition, this.buildingType.secondaryPowerPath, this.heading)
         this.waterPathMarker.updateMesh(worldPosition, this.buildingType.waterPathSurface, this.heading)
-        const allSurfacesAreGround = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
-            .filter((c) => c.visible).map((c) => this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(c.position)).every((s) => s.surfaceType === SurfaceType.GROUND)
-        const isGood = allSurfacesAreGround && (
+        const allNonWaterPathsAreGround = [this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
+            .filter((c) => c.visible).map((c) => this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(c.position)).every((s) => s.surfaceType === SurfaceType.GROUND && !s.fence && !s.fenceRequested)
+        const isGood = allNonWaterPathsAreGround && (
             [this.powerPathMarkerPrimary, this.powerPathMarkerSecondary].some((c) => c.visible && c.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)) ||
             (!this.buildingType.primaryPowerPath && (this.buildingMarkerPrimary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH ||
                 (this.buildingMarkerSecondary.visible && this.buildingMarkerSecondary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)))))
         ) && (!this.waterPathMarker.visible || this.waterPathMarker.surface.surfaceType === SurfaceType.WATER)
         if (isGood) {
-            const terrain = this.worldMgr.sceneMgr.terrain
+            const heightOffset = this.worldMgr.sceneMgr.terrain.heightOffset
             const tooSteep = [this.buildingMarkerPrimary?.surface, this.buildingMarkerSecondary?.surface].some((s) => {
                 if (!s) return false
-                const offsets = [terrain.heightOffset[s.x][s.y], terrain.heightOffset[s.x + 1][s.y], terrain.heightOffset[s.x + 1][s.y + 1], terrain.heightOffset[s.x][s.y + 1]]
+                const offsets = [heightOffset[s.x][s.y], heightOffset[s.x + 1][s.y], heightOffset[s.x + 1][s.y + 1], heightOffset[s.x][s.y + 1]]
                 return Math.abs(Math.max(...offsets) - Math.min(...offsets)) > 0.2
             })
             if (tooSteep) {
