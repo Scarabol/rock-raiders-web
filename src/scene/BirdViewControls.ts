@@ -1,6 +1,6 @@
 import { MapControls } from 'three/examples/jsm/controls/MapControls'
 import { MOUSE, Raycaster, Vector2, Vector3 } from 'three'
-import { DEV_MODE, KEY_PAN_SPEED, MIN_CAMERA_HEIGHT_ABOVE_TERRAIN } from '../params'
+import { DEV_MODE, KEY_PAN_SPEED, MIN_CAMERA_HEIGHT_ABOVE_TERRAIN, NATIVE_UPDATE_INTERVAL } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { SceneManager } from '../game/SceneManager'
@@ -17,6 +17,7 @@ export class BirdViewControls extends MapControls {
     static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
     readonly lastCameraWorldPos: Vector3 = new Vector3()
     readonly raycaster: Raycaster = new Raycaster()
+    moveTarget: Vector3 = null
 
     constructor(sceneMgr: SceneManager) {
         super(sceneMgr.camera, sceneMgr.renderer.domElement)
@@ -28,7 +29,7 @@ export class BirdViewControls extends MapControls {
             this.minDistance = ResourceManager.configuration.main.minDist
             this.maxDistance = ResourceManager.configuration.main.maxDist
         }
-        this.rewriteWASDToArrowKeys()
+        this.rewriteWASDToArrowKeys() // TODO WASD also used as keyboard shortcuts for icon panels
     }
 
     private rewriteWASDToArrowKeys() {
@@ -82,5 +83,22 @@ export class BirdViewControls extends MapControls {
         const origin = new Vector2(this.target.y, 0)
         const remote = new Vector2(minCameraPosY, centerPosition.distanceTo(groundPosition))
         this.maxPolarAngle = Math.atan2(remote.y - origin.y, remote.x - origin.x)
+    }
+
+    updateForceMove(elapsedMs: number) {
+        if (!this.moveTarget) return
+        if (this.target.distanceToSquared(this.moveTarget) < 1) {
+            this.moveTarget = null
+            this.enabled = true
+        } else {
+            const nextCameraTargetPos = this.target.clone().add(this.moveTarget.clone().sub(this.target)
+                .clampLength(0, ResourceManager.configuration.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
+            this.jumpTo(nextCameraTargetPos)
+        }
+    }
+
+    forceMoveToTarget(target: Vector3) {
+        this.enabled = false
+        this.moveTarget = target
     }
 }

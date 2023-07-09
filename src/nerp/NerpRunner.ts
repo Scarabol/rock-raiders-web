@@ -246,7 +246,7 @@ export class NerpRunner {
     }
 
     cameraUnlock() {
-        // TODO implement this
+        this.worldMgr.sceneMgr.controls.enabled = true
     }
 
     setMessage(messageNumber: number, arrowDisabled) {
@@ -268,8 +268,12 @@ export class NerpRunner {
         console.warn(`Moving all rock monsters to tuto block ${tutoBlockId} not yet implemented`) // TODO implement rock monster
     }
 
-    setCameraGotoTutorial(arg1) {
-        // TODO implement this
+    setCameraGotoTutorial(tutoBlockId: number) {
+        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using first one`)
+        const targetBlock = tutoBlocks[0]
+        if (!targetBlock) return
+        this.worldMgr.sceneMgr.controls.forceMoveToTarget(targetBlock.getCenterWorld())
     }
 
     getTutorialBlockIsGround(tutoBlockId: number): number {
@@ -297,12 +301,10 @@ export class NerpRunner {
         return this.objectiveShowing
     }
 
-    addPoweredCrystals() {
-        // TODO implement this
+    addPoweredCrystals() { // XXX Only used in tutorials
     }
 
-    disallowAll() {
-        // TODO implement this
+    disallowAll() { // XXX Only used in tutorials
     }
 
     getPoweredPowerStationsBuilt() {

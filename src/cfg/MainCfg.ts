@@ -47,7 +47,7 @@ export class MainCfg extends BaseConfig {
     maxDist = 250.0 // maximum camera distance
     // MinTilt = 0.0
     // MaxTilt = 60.0
-    // CameraSpeed = 7.0
+    CameraSpeed = 7.0
     // CameraDropOff = 0.5
     // CameraAcceleration = 0.4
     // MouseScrollIndent = 4

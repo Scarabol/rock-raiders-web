@@ -173,6 +173,11 @@ export class SceneManager implements Updatable {
         this.entities.forEach((e) => updateSafe(e, elapsedMs))
         this.miscAnims.forEach((a) => updateSafe(a, elapsedMs))
         updateSafe(this.cursor, elapsedMs)
+        try {
+            this.controls.updateForceMove(elapsedMs)
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     disposeScene() {
