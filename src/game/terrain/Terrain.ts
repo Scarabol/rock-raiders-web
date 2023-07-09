@@ -14,6 +14,7 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { Sample } from '../../audio/Sample'
 import { EventBus } from '../../event/EventBus'
 import { LandslideEvent } from '../../event/WorldLocationEvent'
+import { PositionComponent } from '../component/PositionComponent'
 
 export class Terrain {
     heightOffset: number[][] = [[]]
@@ -152,7 +153,7 @@ export class Terrain {
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading, false)
         source.playPositionalSample(Sample.SFX_RockBreak)
         target.makeRubble()
-        EventBus.publishEvent(new LandslideEvent(target.getCenterWorld()))
+        EventBus.publishEvent(new LandslideEvent(target.worldMgr.ecs.getComponents(target.entity).get(PositionComponent)))
     }
 
     removeFallInOrigin(surface: Surface) {

@@ -25,13 +25,11 @@ import { Job } from '../model/job/Job'
 import { JobState } from '../model/job/JobState'
 import { MaterialSpawner } from '../entity/MaterialSpawner'
 import { degToRad } from 'three/src/math/MathUtils'
+import { PositionComponent } from '../component/PositionComponent'
 
 export class Surface {
-    terrain: Terrain
     worldMgr: WorldManager
-    surfaceType: SurfaceType
-    x: number
-    y: number
+    entity: GameEntity
     containedOres: number = 0
     containedCrystals: number = 0
     discovered: boolean = false
@@ -56,18 +54,25 @@ export class Surface {
     fenceRequested: boolean = false
     energized: boolean = false
 
-    constructor(terrain: Terrain, surfaceType: SurfaceType, x: number, y: number) {
-        this.terrain = terrain
+    constructor(readonly terrain: Terrain, public surfaceType: SurfaceType, readonly x: number, readonly y: number) {
         this.worldMgr = this.terrain.worldMgr
-        this.surfaceType = surfaceType
-        if (surfaceType === SurfaceType.CRYSTAL_SEAM || surfaceType === SurfaceType.ORE_SEAM) this.seamLevel = SURFACE_NUM_SEAM_LEVELS
-        this.x = x
-        this.y = y
+        this.entity = this.worldMgr.ecs.addEntity()
+        const worldPos = new Vector3(this.x + 0.5, 0, this.y + 0.5).multiplyScalar(TILESIZE)
+        this.worldMgr.ecs.addComponent(this.entity, new PositionComponent(worldPos, this))
+        switch (surfaceType) {
+            case SurfaceType.CRYSTAL_SEAM:
+            case SurfaceType.ORE_SEAM:
+                this.seamLevel = SURFACE_NUM_SEAM_LEVELS
+                break
+            case SurfaceType.RUBBLE4:
+            case SurfaceType.RUBBLE3:
+            case SurfaceType.RUBBLE2:
+            case SurfaceType.RUBBLE1:
+                this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
+                break
+        }
         this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
         this.terrain.floorGroup.add(this.mesh)
-        if (surfaceType === SurfaceType.RUBBLE4 || surfaceType === SurfaceType.RUBBLE3 || surfaceType === SurfaceType.RUBBLE2 || surfaceType === SurfaceType.RUBBLE1) {
-            this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
-        }
     }
 
     /**
@@ -129,7 +134,7 @@ export class Surface {
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
                 MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, seamDropPosition)
-                EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
+                EventBus.publishEvent(new CrystalFoundEvent(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
                 MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, seamDropPosition)
                 EventBus.publishEvent(new OreFoundEvent())
@@ -190,7 +195,7 @@ export class Surface {
         }
         for (let c = 0; c < droppedCrystals; c++) {
             const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, this.getRandomPosition())
-            EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
+            EventBus.publishEvent(new CrystalFoundEvent(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)))
         }
     }
 
@@ -441,6 +446,7 @@ export class Surface {
     }
 
     disposeFromWorld() {
+        this.worldMgr.ecs.removeEntity(this.entity)
         this.mesh?.dispose()
     }
 

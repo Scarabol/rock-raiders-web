@@ -73,7 +73,7 @@ export class Raider implements Updatable, JobFulfiller {
         const components = this.worldMgr.ecs.getComponents(this.entity)
         const health = components.get(HealthComponent).health
         if (health <= 0 && !components.has(BeamUpComponent)) {
-            EventBus.publishEvent(new GenericDeathEvent(this.getPosition()))
+            EventBus.publishEvent(new GenericDeathEvent(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)))
             this.beamUp()
             return
         }

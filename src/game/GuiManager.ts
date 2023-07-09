@@ -164,7 +164,10 @@ export class GuiManager {
                 cameraControls.jumpTo(target)
             }
             if (event.rotationIndex !== CameraRotation.NONE) cameraControls.rotate(event.rotationIndex)
-            if (event.jumpToWorld) cameraControls.jumpTo(event.jumpToWorld)
+            if (event.jumpToWorld) {
+                const jumpTo = worldMgr.sceneMgr.terrain.getFloorPosition(event.jumpToWorld.getPosition2D())
+                cameraControls.jumpTo(jumpTo)
+            }
         })
         EventBus.registerEventListener(EventKey.COMMAND_REPAIR_LAVA, () => {
             BuildingSite.createImproveSurfaceSite(worldMgr, entityMgr.selection.surface)

@@ -169,7 +169,7 @@ export class EntityManager {
         const numRaidersUndiscovered = this.raidersUndiscovered.length
         this.raidersUndiscovered = EntityManager.removeInRect(this.raidersUndiscovered, minX, maxX, minZ, maxZ, (r) => {
             r.worldMgr.entityMgr.raiders.push(r)
-            EventBus.publishEvent(new RaiderDiscoveredEvent(r.getPosition()))
+            EventBus.publishEvent(new RaiderDiscoveredEvent(r.worldMgr.ecs.getComponents(r.entity).get(PositionComponent)))
         })
         if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBus.publishEvent(new RaidersAmountChangedEvent(this))
         this.buildingsUndiscovered = EntityManager.removeInRect(this.buildingsUndiscovered, minX, maxX, minZ, maxZ, (b) => {
@@ -188,7 +188,7 @@ export class EntityManager {
                 driver.worldMgr.entityMgr.raidersUndiscovered.remove(driver)
                 driver.sceneEntity.visible = true
                 driver.worldMgr.entityMgr.raiders.push(driver)
-                EventBus.publishEvent(new RaiderDiscoveredEvent(driver.getPosition()))
+                EventBus.publishEvent(new RaiderDiscoveredEvent(driver.worldMgr.ecs.getComponents(driver.entity).get(PositionComponent)))
             }
         })
         this.undiscoveredSpiders = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
