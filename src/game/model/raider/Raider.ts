@@ -109,6 +109,8 @@ export class Raider implements Updatable, JobFulfiller {
 
     beamUp() {
         this.stopJob()
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         EventBus.publishEvent(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
     }
@@ -270,7 +272,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private isInBeam(): boolean {
-        return this.worldMgr.ecs.getComponents(this.entity).has(BeamUpComponent)
+        return !this.worldMgr.ecs.getComponents(this.entity).has(SelectionFrameComponent)
     }
 
     /*

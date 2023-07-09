@@ -78,6 +78,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     beamUp(dropMaterials: boolean) {
         this.dropDriver()
+        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         if (dropMaterials) {
             const surface = this.getSurface()
@@ -204,7 +206,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     isInBeam(): boolean {
-        return this.worldMgr.ecs.getComponents(this.entity).has(BeamUpComponent)
+        return !this.worldMgr.ecs.getComponents(this.entity).has(SelectionFrameComponent)
     }
 
     /*
