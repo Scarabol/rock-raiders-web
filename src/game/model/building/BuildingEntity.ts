@@ -27,6 +27,7 @@ import { MaterialSpawner } from '../../entity/MaterialSpawner'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { OxygenComponent } from '../../component/OxygenComponent'
 import { PositionComponent } from '../../component/PositionComponent'
+import { LastWillComponent } from '../../component/LastWillComponent'
 
 export class BuildingEntity {
     readonly carriedItems: MaterialEntity[] = []
@@ -60,6 +61,16 @@ export class BuildingEntity {
         this.entity = this.worldMgr.ecs.addEntity()
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
+        this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
+            this.worldMgr.entityMgr.buildings.remove(this)
+            this.worldMgr.entityMgr.removeEntity(this.entity)
+            this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
+            this.setEnergized(false)
+            this.sceneEntity.setAnimation(BuildingActivity.Explode, () => this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity))
+            this.powerOffSprite.setEnabled(false)
+            this.surfaces.forEach((s) => s.setBuilding(null))
+            EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+        }))
     }
 
     get stats(): BuildingEntityStats {
@@ -353,20 +364,7 @@ export class BuildingEntity {
     }
 
     update(elapsedMs: number) {
-        this.powerOffSprite.update(elapsedMs)
-        const health = this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent).health
-        if (health <= 0) {
-            this.worldMgr.entityMgr.buildings.remove(this)
-            this.worldMgr.entityMgr.removeEntity(this.entity)
-            this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
-            this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
-            this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
-            this.setEnergized(false)
-            this.sceneEntity.setAnimation(BuildingActivity.Explode, () => this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity))
-            this.powerOffSprite.setEnabled(false)
-            this.surfaces.forEach((s) => s.setBuilding(null))
-            EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
-        }
+        this.powerOffSprite.update(elapsedMs) // TODO Move sprite updating to scene manager
     }
 
     getMaxCarry(): number {

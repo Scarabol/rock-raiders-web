@@ -12,6 +12,11 @@ import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { BarrierActivity, DynamiteActivity } from '../model/anim/AnimationActivity'
 import { PriorityIdentifier } from '../model/job/PriorityIdentifier'
 import { RaiderTraining } from '../model/raider/RaiderTraining'
+import { HealthComponent } from '../component/HealthComponent'
+import { LastWillComponent } from '../component/LastWillComponent'
+import { EventBus } from '../../event/EventBus'
+import { GenericDeathEvent } from '../../event/WorldLocationEvent'
+import { BeamUpComponent } from '../component/BeamUpComponent'
 
 export class MaterialSpawner {
     static spawnMaterial(
@@ -72,9 +77,18 @@ export class MaterialSpawner {
                 material.requiredTraining = RaiderTraining.DEMOLITION
                 break
             case EntityType.ELECTRIC_FENCE:
+                const statsFence = ResourceManager.configuration.stats.electricFence
                 material.sceneEntity.add(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ElectricFence))
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.electricFence))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, statsFence))
                 material.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
+                material.worldMgr.ecs.addComponent(material.entity, new HealthComponent(statsFence.DamageCausesCallToArms, statsFence.CollHeight, 10, material.sceneEntity, false))
+                material.worldMgr.ecs.addComponent(material.entity, new LastWillComponent(() => {
+                    EventBus.publishEvent(new GenericDeathEvent(material.worldMgr.ecs.getComponents(material.entity).get(PositionComponent)))
+                    material.worldMgr.entityMgr.placedFences.remove(material)
+                    material.targetSurface.fence = null
+                    material.targetSurface.fenceRequested = false
+                    material.worldMgr.ecs.addComponent(material.entity, new BeamUpComponent(material))
+                }))
                 break
         }
         material.sceneEntity.addToScene(worldMgr.sceneMgr, worldPos, headingRad)

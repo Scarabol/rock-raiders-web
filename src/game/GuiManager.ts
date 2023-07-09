@@ -55,7 +55,7 @@ export class GuiManager {
             const fence = entityMgr.selection.fence
             fence.worldMgr.ecs.getComponents(fence.entity).get(SelectionFrameComponent)?.deselect()
             fence.worldMgr.ecs.removeComponent(fence.entity, SelectionFrameComponent)
-            worldMgr.entityMgr.placedFences.remove(fence)
+            fence.worldMgr.entityMgr.placedFences.remove(fence)
             fence.targetSurface.fence = null
             fence.targetSurface.fenceRequested = false
             fence.worldMgr.ecs.addComponent(fence.entity, new BeamUpComponent(fence))

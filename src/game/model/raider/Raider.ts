@@ -32,6 +32,7 @@ import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 import { RunPanicJob } from '../job/raider/RunPanicJob'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
+import { LastWillComponent } from '../../component/LastWillComponent'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -63,6 +64,10 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false, 16, 10, this.sceneEntity, true))
         this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
         this.infoComponent = this.worldMgr.ecs.addComponent(this.entity, new RaiderInfoComponent(this.sceneEntity))
+        this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
+            EventBus.publishEvent(new GenericDeathEvent(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)))
+            this.beamUp()
+        }))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
@@ -71,13 +76,6 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     update(elapsedMs: number) {
-        const components = this.worldMgr.ecs.getComponents(this.entity)
-        const health = components.get(HealthComponent).health
-        if (health <= 0 && !components.has(BeamUpComponent)) {
-            EventBus.publishEvent(new GenericDeathEvent(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)))
-            this.beamUp()
-            return
-        }
         if (this.slipped) return
         if (this.vehicle) {
             this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
@@ -94,7 +92,7 @@ export class Raider implements Updatable, JobFulfiller {
         const raider = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
         this.worldMgr.entityMgr.raiderScare.forEach((scare) => {
             const distanceSq = raider.getPosition2D().distanceToSquared(scare.getPosition2D())
-            if (distanceSq >= 60 * 60) return
+            if (distanceSq >= TILESIZE * TILESIZE) return
             this.scared = true
             this.dropCarried(true)
             const scareNeighbors = scare.surface.neighbors
@@ -167,7 +165,7 @@ export class Raider implements Updatable, JobFulfiller {
                     const rockyPosition2D = positionComponent.getPosition2D()
                     if (raiderPosition2D.distanceToSquared(rockyPosition2D) < 25 * 25) { // TODO Use WakeRadius from monster stats
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
-                            this.worldMgr.entityMgr.raiderScare.push(positionComponent)
+                            this.worldMgr.entityMgr.raiderScare.add(positionComponent)
                             this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
                         })
                     }

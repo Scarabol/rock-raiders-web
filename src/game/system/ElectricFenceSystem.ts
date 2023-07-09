@@ -5,17 +5,9 @@ import { WorldManager } from '../WorldManager'
 import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
 import { TILESIZE } from '../../params'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
-import { WorldTargetComponent } from '../component/WorldTargetComponent'
-import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
-import { RockMonsterActivity } from '../model/anim/AnimationActivity'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { Surface } from '../terrain/Surface'
 import { Vector3 } from 'three'
-import { MaterialSpawner } from '../entity/MaterialSpawner'
-import { EntityType } from '../model/EntityType'
-import { EventBus } from '../../event/EventBus'
-import { WorldLocationEvent } from '../../event/WorldLocationEvent'
-import { EventKey } from '../../event/EventKeyEnum'
 
 const FENCE_RANGE_SQ = TILESIZE / 4 * TILESIZE / 4
 
@@ -37,12 +29,9 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                 const components = this.ecs.getComponents(entity)
                 if (!components.get(MonsterStatsComponent).stats.CanBeHitByFence) continue
                 const positionComponent = components.get(PositionComponent)
-                const numCrystalsEaten = components.get(RockMonsterBehaviorComponent).numCrystalsEaten
                 fenceProtectedSurfaces.forEach((f) => {
                     if (f.getCenterWorld2D().distanceToSquared(positionComponent.getPosition2D()) >= FENCE_RANGE_SQ) return
                     components.get(HealthComponent).changeHealth(-100)
-                    this.ecs.removeComponent(entity, WorldTargetComponent)
-                    this.ecs.removeComponent(entity, RockMonsterBehaviorComponent)
                     if (!f.fence) {
                         if (this.worldMgr.sceneMgr.terrain.getSurface(f.x - 1, f.y).fence && this.worldMgr.sceneMgr.terrain.getSurface(f.x + 1, f.y).fence) {
                             this.addBeamX(f.getCenterWorld(), false)
@@ -50,17 +39,6 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                             this.addBeamZ(f.getCenterWorld(), false)
                         }
                     } // XXX else spawn beam to random fence neighbor
-                    const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
-                    sceneEntity.setAnimation(RockMonsterActivity.Crumble, () => {
-                        for (let c = 0; c < numCrystalsEaten; c++) {
-                            MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, positionComponent.getPosition2D()) // XXX add random offset and random heading
-                        }
-                        EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
-                        this.worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
-                        this.worldMgr.entityMgr.removeEntity(entity)
-                        this.ecs.removeEntity(entity)
-                        sceneEntity.dispose()
-                    })
                 })
             } catch
                 (e) {

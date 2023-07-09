@@ -229,7 +229,7 @@ export class Terrain {
         const positionComponent = components.get(PositionComponent)
         sceneEntity.setAnimation(RockMonsterActivity.Emerge, () => {
             sceneEntity.setAnimation(AnimEntityActivity.Stand)
-            this.worldMgr.entityMgr.raiderScare.push(positionComponent)
+            this.worldMgr.entityMgr.raiderScare.add(positionComponent)
             this.worldMgr.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
         })
         EventBus.publishEvent(new GenericMonsterEvent(positionComponent))

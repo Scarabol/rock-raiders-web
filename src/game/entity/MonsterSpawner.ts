@@ -13,6 +13,13 @@ import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/Animation
 import { GameEntity } from '../ECS'
 import { RandomMoveComponent } from '../component/RandomMoveComponent'
 import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
+import { LastWillComponent } from '../component/LastWillComponent'
+import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
+import { WorldTargetComponent } from '../component/WorldTargetComponent'
+import { MaterialSpawner } from './MaterialSpawner'
+import { EventBus } from '../../event/EventBus'
+import { WorldLocationEvent } from '../../event/WorldLocationEvent'
+import { EventKey } from '../../event/EventKeyEnum'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
@@ -72,5 +79,23 @@ export class MonsterSpawner {
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
         worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
         worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false))
+        worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
+            const components = worldMgr.ecs.getComponents(entity)
+            const numCrystalsEaten = components.get(RockMonsterBehaviorComponent).numCrystalsEaten
+            worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+            worldMgr.ecs.removeComponent(entity, RockMonsterBehaviorComponent)
+            sceneEntity.setAnimation(RockMonsterActivity.Crumble, () => {
+                const positionComponent = components.get(PositionComponent)
+                for (let c = 0; c < numCrystalsEaten; c++) {
+                    MaterialSpawner.spawnMaterial(worldMgr, EntityType.CRYSTAL, positionComponent.getPosition2D()) // XXX add random offset and random heading
+                }
+                EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
+                worldMgr.entityMgr.raiderScare.remove(positionComponent)
+                worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
+                worldMgr.entityMgr.removeEntity(entity)
+                worldMgr.ecs.removeEntity(entity)
+                sceneEntity.dispose()
+            })
+        }))
     }
 }

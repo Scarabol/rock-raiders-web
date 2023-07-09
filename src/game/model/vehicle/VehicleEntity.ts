@@ -35,6 +35,7 @@ import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
 import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
+import { LastWillComponent } from '../../component/LastWillComponent'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -62,17 +63,14 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false, 24, 14, this.sceneEntity, false))
+        this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
+            EventBus.publishEvent(new GenericDeathEvent(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)))
+            this.beamUp(true)
+        }))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
     update(elapsedMs: number) {
-        const components = this.worldMgr.ecs.getComponents(this.entity)
-        const health = components.get(HealthComponent).health
-        if (health <= 0 && !components.has(BeamUpComponent)) {
-            EventBus.publishEvent(new GenericDeathEvent(components.get(PositionComponent)))
-            this.beamUp(true)
-            return
-        }
         if (!this.job || this.selected || this.isInBeam()) return
         this.work(elapsedMs)
     }
@@ -135,7 +133,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                     const rockyPosition2D = positionComponent.getPosition2D()
                     if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < 25 * 25) { // TODO Use WakeRadius from monster stats
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
-                            this.worldMgr.entityMgr.raiderScare.push(positionComponent)
+                            this.worldMgr.entityMgr.raiderScare.add(positionComponent)
                             this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
                         })
                     }

@@ -273,6 +273,7 @@ export class EntityManager {
     }
 
     removeEntity(entity: GameEntity) {
+        // TODO search in all other lists for this entity and remove it
         this.spiders.remove(entity)
         this.undiscoveredSpiders.remove(entity)
         this.bats.remove(entity)

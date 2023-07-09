@@ -28,6 +28,7 @@ import { MapMarkerUpdateSystem } from './system/MapMarkerUpdateSystem'
 import { ObjectInfoSystem } from './system/ObjectInfoSystem'
 import { RockMonsterBehaviorSystem } from './system/RockMonsterBehaviorSystem'
 import { ElectricFenceSystem } from './system/ElectricFenceSystem'
+import { DeathSystem } from './system/DeathSystem'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -56,6 +57,7 @@ export class WorldManager {
         this.ecs.addSystem(new ObjectInfoSystem())
         this.ecs.addSystem(new RockMonsterBehaviorSystem(this))
         this.ecs.addSystem(new ElectricFenceSystem(this))
+        this.ecs.addSystem(new DeathSystem(this))
         this.oxygenSystem = this.ecs.addSystem(new OxygenSystem())
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())

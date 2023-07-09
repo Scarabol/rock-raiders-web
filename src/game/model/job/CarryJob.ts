@@ -16,7 +16,6 @@ import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { GameState } from '../GameState'
 import { EntityManager } from '../../EntityManager'
 import { SelectionChanged } from '../../../event/LocalEvents'
-import { HealthComponent } from '../../component/HealthComponent'
 
 export class CarryJob extends Job {
     fulfiller: JobFulfiller = null
@@ -175,7 +174,6 @@ export class CarryJob extends Job {
         const stats = ResourceManager.configuration.stats.electricFence
         const pickSphere = this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(SceneSelectionComponent).pickSphere
         this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new SelectionFrameComponent(pickSphere, stats))
-        this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new HealthComponent(stats.DamageCausesCallToArms, stats.CollHeight, 10, this.carryItem.sceneEntity, false))
         this.carryItem.targetSurface.fence = this.carryItem.entity
         this.carryItem.targetSurface.fenceRequested = false
         this.carryItem.worldMgr.entityMgr.placedFences.add(this.carryItem)

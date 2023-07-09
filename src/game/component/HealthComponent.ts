@@ -25,8 +25,11 @@ export class HealthComponent extends AbstractGameComponent {
     }
 
     changeHealth(delta: number) {
-        this.health = Math.max(0, Math.min(this.maxHealth, this.health + delta))
+        const nextHealth = Math.max(0, Math.min(this.maxHealth, this.health + delta))
+        if (this.health === nextHealth) return
+        this.health = nextHealth
         if (delta < 0 && this.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
+        this.markDirty()
     }
 
     updateSpriteStatus(elapsedMs: number) {
