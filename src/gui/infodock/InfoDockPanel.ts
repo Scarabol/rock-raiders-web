@@ -23,7 +23,7 @@ export class InfoDockPanel extends Panel {
         this.addChild(new Button(this, buttonsCfg.panelButtonInfoDockClose)).onClick = () => this.dropLatestMessage()
 
         this.addInfoDockButton(infoMessagesConfig.infoGenericDeath, EventKey.LOCATION_DEATH)
-        this.addInfoDockButton(infoMessagesConfig.infoGenericMonster, EventKey.LOCATION_MONSTER)
+        this.addInfoDockButton(infoMessagesConfig.infoGenericMonster, EventKey.LOCATION_MONSTER, EventKey.LOCATION_MONSTER_GONE)
         this.addInfoDockButton(infoMessagesConfig.infoCrystalFound, EventKey.LOCATION_CRYSTAL_FOUND)
         this.addInfoDockButton(infoMessagesConfig.infoUnderAttack, EventKey.LOCATION_UNDER_ATTACK)
         this.addInfoDockButton(infoMessagesConfig.infoLandslide, EventKey.LOCATION_LANDSLIDE)
@@ -63,7 +63,7 @@ export class InfoDockPanel extends Panel {
         button.notifyRedraw()
     }
 
-    private addInfoDockButton(config: InfoMessagesEntryConfig, eventKey: EventKey) {
+    private addInfoDockButton(config: InfoMessagesEntryConfig, eventKey: EventKey, eventKeyGone?: EventKey) {
         const infoDockButton = this.addChild(new InfoDockButton(this, config))
         const sample = Sample[config.sfxName]
         this.registerEventListener(eventKey, (event: WorldLocationEvent) => {
@@ -73,6 +73,12 @@ export class InfoDockPanel extends Panel {
             this.showButton(infoDockButton)
             if (sample) this.publishEvent(new PlaySoundEvent(sample, true))
         })
+        if (eventKeyGone) {
+            this.registerEventListener(eventKeyGone, (event: WorldLocationEvent) => {
+                infoDockButton.messages.removeAll((e) => e.location === event.location)
+                this.redrawAfterMessageStackUpdate(infoDockButton)
+            })
+        }
     }
 
     private showButton(button: InfoDockButton) {

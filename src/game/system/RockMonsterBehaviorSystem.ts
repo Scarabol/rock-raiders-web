@@ -12,6 +12,9 @@ import { SurfaceType } from '../terrain/SurfaceType'
 import { WALL_TYPE } from '../terrain/WallType'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { HealthComponent } from '../component/HealthComponent'
+import { EventBus } from '../../event/EventBus'
+import { EventKey } from '../../event/EventKeyEnum'
+import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -217,11 +220,11 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetWall.getCenterWorld2D()))
                                 this.worldMgr.entityMgr.rockMonsters.remove(entity)
                                 sceneEntity.setAnimation(RockMonsterActivity.Enter, () => {
+                                    EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
                                     this.worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
                                     this.worldMgr.entityMgr.removeEntity(entity)
                                     this.ecs.removeEntity(entity)
                                     sceneEntity.dispose()
-                                    // TODO remove monster world location event, if still exists
                                 })
                             } else {
                                 const wallPathTargets = behaviorComponent.targetWall.getDigPositions().map((p) => PathTarget.fromLocation(p, ROCKY_GATHER_DISTANCE_SQ))

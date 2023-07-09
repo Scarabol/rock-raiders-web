@@ -13,6 +13,9 @@ import { Surface } from '../terrain/Surface'
 import { Vector3 } from 'three'
 import { MaterialSpawner } from '../entity/MaterialSpawner'
 import { EntityType } from '../model/EntityType'
+import { EventBus } from '../../event/EventBus'
+import { WorldLocationEvent } from '../../event/WorldLocationEvent'
+import { EventKey } from '../../event/EventKeyEnum'
 
 const FENCE_RANGE_SQ = TILESIZE / 4 * TILESIZE / 4
 
@@ -52,11 +55,11 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                         for (let c = 0; c < numCrystalsEaten; c++) {
                             MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, positionComponent.getPosition2D()) // XXX add random offset and random heading
                         }
+                        EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
                         this.worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
                         this.worldMgr.entityMgr.removeEntity(entity)
                         this.ecs.removeEntity(entity)
                         sceneEntity.dispose()
-                        // TODO remove monster world location event, if still exists
                     })
                 })
             } catch
