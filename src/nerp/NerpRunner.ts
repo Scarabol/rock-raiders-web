@@ -15,6 +15,7 @@ import { NerpParser } from './NerpParser'
 import { NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
 import { GameResultEvent } from '../event/WorldEvents'
+import { PositionComponent } from '../game/component/PositionComponent'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -237,7 +238,7 @@ export class NerpRunner {
         return GameState.numCrystal
     }
 
-    setMessageTimerValues(arg1, arg2, arg3) {
+    setMessageTimerValues(sampleLengthMultiplier, timeAddedAfterSample, timeForNoSample) {
         // TODO implement this
     }
 
@@ -257,7 +258,7 @@ export class NerpRunner {
         }
         const msg = this.messages[messageNumber - 1]
         if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt))
-        if (msg.snd && VERBOSE) console.warn(`Sounds from DATA directory not yet implemented`, msg.snd) // TODO snd files reside in sounds/streamed/ which is not included in WAD files :(
+        if (msg.snd && VERBOSE) console.warn(`Sounds from DATA directory not yet implemented`, msg.snd) // XXX snd files reside in sounds/streamed/ which is not included in WAD files :(
     }
 
     setRockMonsterAtTutorial(tutoBlockId: number) {
@@ -281,12 +282,20 @@ export class NerpRunner {
         return tutoBlocks.count((s) => s.discovered && s.surfaceType.floor) // XXX must be non-zero at least, but what meaning exactly?
     }
 
-    getTutorialBlockIsPath(blockNum) {
-        return 0 // TODO return true if given block is a path
+    getTutorialBlockIsPath(tutoBlockId): number {
+        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using first one`)
+        const targetBlock = tutoBlocks[0]
+        if (!targetBlock) return 0
+        return targetBlock.discovered && targetBlock.isPath() ? 1 : 0
     }
 
-    getUnitAtBlock(blockNum) {
-        return 0 // TODO return number of units on given block
+    getUnitAtBlock(tutoBlockId): number {
+        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        return [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles].count((e): boolean => {
+            const surface = this.worldMgr.ecs.getComponents(e.entity).get(PositionComponent).surface
+            return tutoBlocks.some((tutoBlock) => tutoBlock.discovered && surface === tutoBlock)
+        })
     }
 
     getOxygenLevel() {
@@ -319,12 +328,8 @@ export class NerpRunner {
         const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         const recordedEntities = this.worldMgr.entityMgr.recordedEntities
         return recordedEntities.count((entity): boolean => {
-            const position = this.worldMgr.entityMgr.raiders.find((r) => r.entity === entity)?.getPosition()
-                ?? this.worldMgr.entityMgr.vehicles.find((v) => v.entity === entity)?.getPosition()
-            if (!position) return false
-            // TODO Use position component to determine entity surface
-            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(position)
-            return !!surface && tutoBlocks.some((tutoBlock) => surface === tutoBlock)
+            const surface = this.worldMgr.ecs.getComponents(entity).get(PositionComponent).surface
+            return tutoBlocks.some((tutoBlock) => surface === tutoBlock)
         })
     }
 
