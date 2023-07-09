@@ -15,6 +15,12 @@ import { HealthComponent } from '../component/HealthComponent'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { WorldLocationEvent } from '../../event/WorldLocationEvent'
+import { GameState } from '../model/GameState'
+import { PathFinder } from '../terrain/PathFinder'
+import { Vector2 } from 'three'
+import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
+import { MaterialEntity } from '../model/material/MaterialEntity'
+import { TILESIZE } from '../../params'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -41,17 +47,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 const rockyPos = positionComponent.getPosition2D()
                 switch (behaviorComponent.state) {
                     case RockMonsterBehaviorState.IDLE:
-                        if (behaviorComponent.boulder) {
-                            behaviorComponent.state = RockMonsterBehaviorState.BOULDER_ATTACK
-                        } else if (behaviorComponent.numCrystalsEaten < stats.Capacity && crystals.length > 0) {
-                            const closestCrystal = pathFinder.findClosestObj(rockyPos, crystals, stats, false) // TODO Use timer to look for crystals to improve performance
-                            if (closestCrystal) {
-                                behaviorComponent.state = RockMonsterBehaviorState.GOTO_CRYSTAL
-                                behaviorComponent.targetCrystal = closestCrystal.obj
-                            }
-                        } else {
-                            behaviorComponent.state = Math.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
-                        }
+                        this.doIdle(behaviorComponent, pathFinder, rockyPos, stats, entity, crystals)
                         break
                     case RockMonsterBehaviorState.GOTO_CRYSTAL:
                         if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH) {
@@ -241,6 +237,26 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             } catch (e) {
                 console.error(e)
             }
+        }
+    }
+
+    private doIdle(behaviorComponent: RockMonsterBehaviorComponent, pathFinder: PathFinder, rockyPos: Vector2, stats: MonsterEntityStats, entity: number, crystals: MaterialEntity[]) {
+        if (behaviorComponent.boulder) {
+            behaviorComponent.state = RockMonsterBehaviorState.BOULDER_ATTACK
+        } else if (GameState.monsterCongregation && GameState.monsterCongregation.getCenterWorld2D().distanceToSquared(rockyPos) > TILESIZE) {
+            const path = pathFinder.findShortestPath(rockyPos, [PathTarget.fromLocation(GameState.monsterCongregation.getCenterWorld2D())], stats, false)
+            if (path && path.locations.length > 0) {
+                this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0], 1))
+                return
+            }
+        } else if (behaviorComponent.numCrystalsEaten < stats.Capacity && crystals.length > 0) {
+            const closestCrystal = pathFinder.findClosestObj(rockyPos, crystals, stats, false) // TODO Use timer to look for crystals to improve performance
+            if (closestCrystal) {
+                behaviorComponent.state = RockMonsterBehaviorState.GOTO_CRYSTAL
+                behaviorComponent.targetCrystal = closestCrystal.obj
+            }
+        } else {
+            behaviorComponent.state = Math.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
         }
     }
 }

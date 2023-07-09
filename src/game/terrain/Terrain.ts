@@ -198,28 +198,16 @@ export class Terrain {
         const failedEmergeTrigger = []
         this.emergeTrigger.forEach((t) => {
             try {
-                if (t.emergeDelayMs > 0) t.emergeDelayMs -= elapsedMs
-                if (t.emergeDelayMs > 0) return
+                if (t.emergeDelayMs > 0) {
+                    t.emergeDelayMs -= elapsedMs
+                    return
+                }
                 const isTriggered = [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles]
                     .some((e) => this.worldMgr.ecs.getComponents(e.entity).get(PositionComponent).surface === t.triggerSurface)
                 if (!isTriggered) return
                 this.emergeSpawns.getOrDefault(t.emergeSpawnId, []).forEach((spawn) => {
-                    const target = spawn.neighbors.find((n) => n.surfaceType.floor && n.discovered)
-                    if (!target) return
                     t.emergeDelayMs = this.emergeTimeoutMs
-                    const spawnCenter = spawn.getCenterWorld2D()
-                    const targetCenter = target.getCenterWorld2D()
-                    const angle = -targetCenter.clone().sub(spawnCenter).angle() + Math.PI / 2
-                    const monster = MonsterSpawner.spawnMonster(this.worldMgr, this.emergeCreature, spawnCenter.clone().add(targetCenter).divideScalar(2), angle)
-                    const components = this.worldMgr.ecs.getComponents(monster)
-                    const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
-                    const positionComponent = components.get(PositionComponent)
-                    sceneEntity.setAnimation(RockMonsterActivity.Emerge, () => {
-                        sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                        this.worldMgr.entityMgr.raiderScare.push(positionComponent)
-                        this.worldMgr.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
-                    })
-                    EventBus.publishEvent(new GenericMonsterEvent(positionComponent))
+                    this.emergeFromSurface(spawn)
                 })
             } catch (e) {
                 console.error(e)
@@ -227,6 +215,24 @@ export class Terrain {
             }
         })
         failedEmergeTrigger.forEach((t) => this.emergeTrigger.remove(t))
+    }
+
+    emergeFromSurface(spawn: Surface) {
+        const target = spawn.neighbors.find((n) => n.surfaceType.floor && n.discovered)
+        if (!target) return
+        const spawnCenter = spawn.getCenterWorld2D()
+        const targetCenter = target.getCenterWorld2D()
+        const angle = -targetCenter.clone().sub(spawnCenter).angle() + Math.PI / 2
+        const monster = MonsterSpawner.spawnMonster(this.worldMgr, this.emergeCreature, spawnCenter.clone().add(targetCenter).divideScalar(2), angle)
+        const components = this.worldMgr.ecs.getComponents(monster)
+        const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
+        const positionComponent = components.get(PositionComponent)
+        sceneEntity.setAnimation(RockMonsterActivity.Emerge, () => {
+            sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            this.worldMgr.entityMgr.raiderScare.push(positionComponent)
+            this.worldMgr.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
+        })
+        EventBus.publishEvent(new GenericMonsterEvent(positionComponent))
     }
 
     getFloorPosition(world: Vector2) {

@@ -295,11 +295,16 @@ export class NerpRunner {
     }
 
     setRockMonsterAtTutorial(tutoBlockId: number) {
-        console.warn(`Emerging rock monsters from tuto blocks ${tutoBlockId} not yet implemented`) // TODO implement rock monster
+        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        tutoBlocks.forEach((t) => this.worldMgr.sceneMgr.terrain.emergeFromSurface(t))
     }
 
     setCongregationAtTutorial(tutoBlockId: number) {
-        console.warn(`Moving all rock monsters to tuto block ${tutoBlockId} not yet implemented`) // TODO implement rock monster
+        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using first one`)
+        const targetBlock = tutoBlocks[0]
+        if (!targetBlock) return
+        GameState.monsterCongregation = targetBlock
     }
 
     setCameraGotoTutorial(tutoBlockId: number) {

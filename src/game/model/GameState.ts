@@ -3,6 +3,7 @@ import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { MaterialEntity } from './material/MaterialEntity'
 import { EntityType } from './EntityType'
 import { DEV_MODE } from '../../params'
+import { Surface } from '../terrain/Surface'
 
 export class GameState {
     static numCrystal: number = 0
@@ -19,6 +20,7 @@ export class GameState {
     static alarmMode: boolean = false
     static objectiveShowing: number = 1
     static showObjInfo: boolean = DEV_MODE
+    static monsterCongregation: Surface = null
 
     static reset() {
         this.numCrystal = 0
@@ -34,6 +36,7 @@ export class GameState {
         this.hiddenObjectsFound = 0
         this.alarmMode = false
         this.objectiveShowing = 1
+        this.monsterCongregation = null
     }
 
     static depositItem(item: MaterialEntity) {
