@@ -48,6 +48,9 @@ export enum EntityType {
 
     // OTHERS
     TV_CAMERA,
+    LASER_SHOT,
+    FREEZER_SHOT,
+    PUSHER_SHOT,
 }
 
 export type MaterialEntityType = EntityType.ORE | EntityType.CRYSTAL | EntityType.BRICK | EntityType.BARRIER | EntityType.DYNAMITE | EntityType.ELECTRIC_FENCE

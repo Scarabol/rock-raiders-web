@@ -81,7 +81,7 @@ export class MonsterSpawner {
         worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false))
         worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
             const components = worldMgr.ecs.getComponents(entity)
-            const numCrystalsEaten = components.get(RockMonsterBehaviorComponent).numCrystalsEaten
+            const numCrystalsEaten = components.get(RockMonsterBehaviorComponent)?.numCrystalsEaten || 0
             worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
             worldMgr.ecs.removeComponent(entity, RockMonsterBehaviorComponent)
             sceneEntity.setAnimation(RockMonsterActivity.Crumble, () => {

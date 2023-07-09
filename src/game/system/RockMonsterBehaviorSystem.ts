@@ -121,11 +121,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         sceneEntity.removeAllCarried()
                                         // this.worldMgr.sceneMgr.scene.add(behaviorComponent.boulder) // TODO Add boulder as bullet (component)
                                         this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BoulderExplode, targetBuildingSurface.getCenterWorld(), 0, false) // TODO adapt to monster/level entity type
-                                        const healthComponent = this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).get(HealthComponent)
-                                        if (healthComponent.health > 0) {
-                                            healthComponent.changeHealth(stats.RepairValue)
-                                            // TODO show damage value as flying text above mesh
-                                        }
+                                        this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).get(HealthComponent).changeHealth(stats.RepairValue)
                                         behaviorComponent.boulder = null
                                     })
                                 } else if (!components.has(WorldTargetComponent)) {
@@ -162,11 +158,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 behaviorComponent.state = RockMonsterBehaviorState.PUNCH
                                 sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
                                     sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                                    const healthComponent = this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).get(HealthComponent)
-                                    if (healthComponent.health > 0) {
-                                        healthComponent.changeHealth(stats.RepairValue)
-                                        // TODO show damage value as flying text above mesh
-                                    }
+                                    this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).get(HealthComponent).changeHealth(stats.RepairValue)
                                     behaviorComponent.changeToIdle()
                                 })
                             } else if (!components.has(WorldTargetComponent)) {

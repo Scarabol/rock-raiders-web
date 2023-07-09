@@ -28,7 +28,10 @@ export class HealthComponent extends AbstractGameComponent {
         const nextHealth = Math.max(0, Math.min(this.maxHealth, this.health + delta))
         if (this.health === nextHealth) return
         this.health = nextHealth
-        if (delta < 0 && this.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
+        if (delta < 0) {
+            console.warn(`Damage (${delta}) visualization not yet implemented`) // TODO replace with flying number visualizing the damage
+            if (this.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
+        }
         this.markDirty()
     }
 

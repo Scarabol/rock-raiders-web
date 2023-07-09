@@ -8,6 +8,7 @@ import { ResourceManager } from '../../../resource/ResourceManager'
 import { WorldManager } from '../../WorldManager'
 import { AnimationActivity, AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
+import { GameState } from '../GameState'
 import { Job, JobFulfiller } from '../job/Job'
 import { JobState } from '../job/JobState'
 import { Surface } from '../../terrain/Surface'
@@ -33,6 +34,7 @@ import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 import { RunPanicJob } from '../job/raider/RunPanicJob'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
+import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -53,6 +55,7 @@ export class Raider implements Updatable, JobFulfiller {
     vehicle: VehicleEntity = null
     scared: boolean = false
     toolsIndex: number = 0
+    weaponCooldown: number = 0
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
@@ -76,14 +79,23 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     update(elapsedMs: number) {
+        if (this.weaponCooldown > 0) this.weaponCooldown -= elapsedMs
         if (this.slipped) return
         if (this.vehicle) {
             this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
             return
         }
         if (this.selected || this.isInBeam()) return
+        if (GameState.alarmMode && this.hasWeapon()) {
+            this.fight(elapsedMs)
+            return
+        }
         this.checkScared()
-        if (!this.job) return
+        if (!this.job) {
+            this.infoComponent.setBubbleTexture('bubbleIdle')
+            this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            return
+        }
         this.work(elapsedMs)
     }
 
@@ -359,6 +371,56 @@ export class Raider implements Updatable, JobFulfiller {
         }
     }
 
+    private fight(elapsedMs: number) {
+        this.stopJob()
+        this.infoComponent.setBubbleTexture('bubbleCallToArms')
+        this.scared = false
+        const targets = this.worldMgr.entityMgr.getRaiderFightTargets()
+        const alarmTarget = this.findShortestPath(targets) // TODO Find closest position where shooting is possible, don't shoot through walls
+        if (!alarmTarget) {
+            this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            return
+        }
+        const moveState = this.moveToClosestTargetInternal(alarmTarget.target, elapsedMs)
+        if (moveState !== MoveState.TARGET_REACHED) {
+            if (moveState === MoveState.TARGET_UNREACHABLE) {
+                this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            }
+            return
+        }
+        const targetComponents = this.worldMgr.ecs.getComponents(alarmTarget.target.entity)
+        const stats = targetComponents.get(MonsterStatsComponent).stats
+        const attacks = [
+            {tool: RaiderTool.LASER, damage: stats.LaserDamage, allowed: stats.CanLaser, bulletType: EntityType.LASER_SHOT, misc: ResourceManager.configuration.miscObjects.LaserShot},
+            {tool: RaiderTool.FREEZERGUN, damage: stats.FreezerDamage, allowed: stats.CanFreeze, bulletType: EntityType.FREEZER_SHOT, misc: ResourceManager.configuration.miscObjects.Freezer},
+            {tool: RaiderTool.PUSHERGUN, damage: stats.PusherDamage, allowed: stats.CanPush, bulletType: EntityType.PUSHER_SHOT, misc: ResourceManager.configuration.miscObjects.Pusher},
+        ].filter((a) => this.hasTool(a.tool)).sort((l, r) => r.damage - l.damage)
+        if (attacks.length < 1) {
+            console.warn('Could not shoot at monster')
+            return
+        }
+        const attack = attacks[0]
+        if (this.weaponCooldown <= 0) {
+            // TODO Visualize shot as bullet and add to bullet system
+            // const bullet = new AbstractGameEntity(atk.bulletType)
+            // bullet.addComponent(new LifecycleComponent())
+            // bullet.addComponent(new PositionComponent()).setPosition2D(this.sceneEntity.position2D)
+            // bullet.addComponent(new BulletMovementGameComponent(this.currentPath.target.targetLocation))
+            // const start = this.sceneEntity.position.clone()
+            // start.y += TILESIZE / 4
+            // bullet.addComponent(new MiscAnimComponent(atk.misc, start, this.currentPath.target.targetLocation))
+            // this.worldMgr.registerEntity(bullet)
+            this.sceneEntity.setAnimation(RaiderActivity.Shoot, () => {
+                this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                this.weaponCooldown = 1000 // TODO use "RechargeTime" from Pusher/LaserShot/Freezer stats with 25.0 = 1 second
+                const healthComponent = targetComponents.get(HealthComponent)
+                healthComponent.changeHealth(-attack.damage) // TODO Replace with damage from bullet system
+                // TODO Apply push effect
+                // TODO Apply freeze effect
+            })
+        }
+    }
+
     private completeJob() {
         if (this.workAudio?.loop) this.workAudio = resetAudioSafe(this.workAudio)
         else this.workAudio = null
@@ -387,6 +449,10 @@ export class Raider implements Updatable, JobFulfiller {
 
     hasTool(tool: RaiderTool) {
         return !tool || this.tools.some((t) => t === tool)
+    }
+
+    private hasWeapon(): boolean {
+        return [RaiderTool.FREEZERGUN, RaiderTool.LASER, RaiderTool.PUSHERGUN].some((w) => this.hasTool(w))
     }
 
     hasTraining(training: RaiderTraining) {
@@ -426,7 +492,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     isReadyToTakeAJob(): boolean {
-        return !this.job && !this.selected && !this.isInBeam() && !this.slipped && !this.scared
+        return !this.job && !this.selected && !this.isInBeam() && !this.slipped && !this.scared && (!GameState.alarmMode || !this.hasWeapon())
     }
 
     maxTools(): number {

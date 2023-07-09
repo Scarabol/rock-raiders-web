@@ -18,6 +18,8 @@ import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { ECS, GameEntity } from './ECS'
 import { PositionComponent } from './component/PositionComponent'
 import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityComponent'
+import { RockMonsterActivity } from './model/anim/AnimationActivity'
+import { MonsterStatsComponent } from './component/MonsterStatsComponent'
 
 export class EntityManager {
     ecs: ECS
@@ -160,6 +162,19 @@ export class EntityManager {
             }
         })
         return closest // TODO when using path finding, return path instead
+    }
+
+    getRaiderFightTargets(): PathTarget[] {
+        return [...this.rockMonsters, ...this.slugs]
+            .map((m) => ({entity: m, components: this.worldMgr.ecs.getComponents(m)}))
+            .filter((e) => {
+                return e.components.get(MonsterStatsComponent).stats.CanBeShotAt &&
+                    e.components.get(AnimatedSceneEntityComponent).sceneEntity.currentAnimation !== RockMonsterActivity.Unpowered
+            })
+            .map((e) => {
+                const pos = e.components.get(PositionComponent).getPosition2D()
+                return PathTarget.fromEntity(e.entity, pos, TILESIZE * TILESIZE * 4)
+            })
     }
 
     discoverSurface(surface: Surface) {

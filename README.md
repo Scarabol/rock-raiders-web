@@ -42,7 +42,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.7.0 - Rockies, Slugs And Damage
 
-- switch all raider with weapon from work to defend
 - let raider in defend mode target any known slug or rock monster
 - add spawn timer for slugs, only one slug per hole
 - make slugs look for nearby reachable buildings or fences to leech energy
