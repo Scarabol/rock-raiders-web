@@ -120,19 +120,20 @@ export class CarryJob extends Job {
         this.fulfiller.sceneEntity.headTowards(this.target.targetLocation)
         this.fulfiller.dropCarried(false)
         this.carryItem.setPosition(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
-        if (this.target.building) {
-            if (this.target.building.entityType === EntityType.POWER_STATION || this.target.building.entityType === EntityType.ORE_REFINERY) {
-                this.target.building.pickupItem(this.carryItem)
-                if (this.target.building.sceneEntity.carriedByIndex.size >= this.target.building.getMaxCarry()) {
-                    this.target.building.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
-                        this.target.building.sceneEntity.setAnimation(this.target.building.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
-                        this.target.building.sceneEntity.removeAllCarried()
-                        this.target.building.carriedItems.forEach((carried) => {
+        const targetBuilding = this.target.building
+        if (targetBuilding) {
+            if (targetBuilding.entityType === EntityType.POWER_STATION || targetBuilding.entityType === EntityType.ORE_REFINERY) {
+                targetBuilding.pickupItem(this.carryItem)
+                if (targetBuilding.sceneEntity.carriedByIndex.size >= targetBuilding.getMaxCarry()) {
+                    targetBuilding.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
+                        targetBuilding.sceneEntity.setAnimation(targetBuilding.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
+                        targetBuilding.sceneEntity.removeAllCarried()
+                        targetBuilding.carriedItems.forEach((carried) => {
                             const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.getPosition2D())
                             carried.setPosition(floorPosition)
                             carried.worldMgr.sceneMgr.addMeshGroup(carried.sceneEntity)
                         })
-                        this.target.building.depositItems()
+                        targetBuilding.depositItems()
                     })
                 }
             } else {

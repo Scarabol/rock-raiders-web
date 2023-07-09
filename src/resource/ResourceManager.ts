@@ -233,11 +233,7 @@ class ResourceManagerTextureLoader extends LWOBTextureLoader {
             return ResourceManager.getTexturesBySequenceName(this.meshPath + match[1])
         } else {
             const texture = ResourceManager.getMeshTexture(textureFilename, this.meshPath, this.entityPath)
-            if (!texture
-                && textureFilename !== 'teofoilreflections.jpg' // known issue with original game files
-            ) {
-                console.warn(`Could not get mesh texture "${textureFilename}" from mesh path "${this.meshPath}" or entity path "${this.entityPath}"`)
-            }
+            if (!texture && VERBOSE) console.warn(`Could not get mesh texture "${textureFilename}" from mesh path "${this.meshPath}" or entity path "${this.entityPath}"`)
             return texture ? [texture] : []
         }
     }

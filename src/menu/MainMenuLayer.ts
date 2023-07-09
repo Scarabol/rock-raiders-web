@@ -23,14 +23,17 @@ export class MainMenuLayer extends ScaledLayer {
         super()
         this.cfg = menuCfg
         this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : null
-        ResourceManager.bitmapFontWorkerPool.createTextImage(menuCfg.loFont, menuCfg.fullName)
-            .then((titleImage) => {
-                this.animationFrame.onRedraw = (context) => {
-                    context.drawImage(this.menuImage, 0, -this.scrollY)
-                    if (menuCfg.displayTitle) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position[1])
-                    this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
-                }
-            })
+        let titleImage: SpriteImage = null
+        if (menuCfg.displayTitle && menuCfg.fullName) {
+            ResourceManager.bitmapFontWorkerPool.createTextImage(menuCfg.loFont, menuCfg.fullName)
+                .then((img) => titleImage = img)
+        }
+        this.animationFrame.onRedraw = (context) => {
+            context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
+            context.drawImage(this.menuImage, 0, -this.scrollY)
+            if (titleImage) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position[1])
+            this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
+        }
 
         menuCfg.itemsLabel.forEach((item) => {
             if (item.label) {
@@ -40,7 +43,6 @@ export class MainMenuLayer extends ScaledLayer {
             }
         })
 
-        this.items.sort((a, b) => MainMenuBaseItem.compareZ(a, b))
         new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],
@@ -68,6 +70,11 @@ export class MainMenuLayer extends ScaledLayer {
         this.scrollY = 0
         this.scrollSpeedY = 0
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
+    }
+
+    show() {
+        this.items.sort((a, b) => b.zIndex - a.zIndex)
+        super.show()
     }
 
     hide() {

@@ -21,8 +21,8 @@ export class BriefingPanelCfg extends PanelCfg {
         const dialogCfg = ResourceManager.configuration.dialog
         this.titleWindow = dialogCfg.titleWindow
         this.textFontName = 'Interface/Fonts/MbriefFont.bmp'
-        this.textWindow = dialogCfg.textWindow
-        this.textWindow.y -= 10
+        this.textWindow = {...dialogCfg.textWindow}
+        this.textWindow.y -= 10 // XXX Why offset needed? Better use help window?
         this.nextButtonCfg = {
             buttonType: 'Next briefing paragraph',
             relX: 394,

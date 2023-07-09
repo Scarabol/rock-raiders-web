@@ -83,7 +83,8 @@ export class TerrainLoader {
             if (predugMap[s.y][s.x] === PredugMap.CAVERN_EXPOSED || predugMap[s.y][s.x] === PredugMap.SLUG_HOLE_EXPOSED) { // map are rows (y) first, columns (x) second
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
-                        terrain.getSurfaceOrNull(x, y).discovered = true
+                        const surface = terrain.getSurfaceOrNull(x, y)
+                        if (surface) surface.discovered = true
                     }
                 }
             }

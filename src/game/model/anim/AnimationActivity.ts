@@ -54,24 +54,20 @@ export enum RaiderActivity {
 
     Hoverboard = 'Activity_Hoverboard',
     Standhoverboard = 'Activity_Standhoverboard',
-
     SMALLTRUCK = 'Activity_SMALLTRUCK',
     StandSMALLTRUCK = 'Activity_StandSMALLTRUCK',
-
     SMALLheli = 'Activity_SMALLheli',
     StandSMALLheli = 'Activity_StandSMALLheli',
-
     SMALLCAT = 'Activity_SMALLCAT',
     StandSMALLCAT = 'Activity_StandSMALLCAT',
-
     SMALLMLP = 'Activity_SMALLMLP',
     StandSMALLMLP = 'Activity_StandSMALLMLP',
-
     LARGECAT = 'Activity_LARGECAT',
     StandLARGECAT = 'Activity_StandLARGECAT',
-
     SMALLDIGGER = 'Activity_SMALLDIGGER',
     StandSMALLDIGGER = 'Activity_StandSMALLDIGGER',
+
+    Shoot = 'Activity_FireLaser',
 }
 
 export enum RockMonsterActivity {

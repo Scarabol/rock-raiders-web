@@ -91,6 +91,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Nice to have
 
+- Scared raider should ignore all jobs like movement
+- Inverted corner surfaces are treated as discovered and slug holes are revealed there
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Clear job from surface, if dynamite cannot reach target
 - Use long press on mobile browser to emulate right click
@@ -101,7 +103,9 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Cosmetics
 
-- Mesh texture not shown for sleeping lava rockies
+- Show health number in vehicle tooltip
+- Play vehicle SFX when tooltip is shown
+- Mesh texture not shown for lava rockies
 - Raider not facing walls while drilling
 - Make tooltips stay on screen and follow cursor
 - Numbers above ticking dynamite are not shown correctly sometimes

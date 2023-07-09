@@ -1,18 +1,18 @@
 import { BaseConfig } from '../../cfg/BaseConfig'
-import { TextInfoMessageEntryConfig } from './TextInfoMessageEntryConfig'
+import { TextInfoMessageEntryCfg } from '../../cfg/TextInfoMessageEntryCfg'
 
 export class TextInfoMessageCfg extends BaseConfig {
-    textCrystalFound: TextInfoMessageEntryConfig = null
-    textSpaceToContinue: TextInfoMessageEntryConfig = null
-    textCavernDiscovered: TextInfoMessageEntryConfig = null
-    textOreFound: TextInfoMessageEntryConfig = null
-    textAirSupplyLow: TextInfoMessageEntryConfig = null
-    textAirSupplyRunningOut: TextInfoMessageEntryConfig = null
-    textGameCompleted: TextInfoMessageEntryConfig = null
-    textManTrained: TextInfoMessageEntryConfig = null
-    textUnitUpgraded: TextInfoMessageEntryConfig = null
+    textCrystalFound: TextInfoMessageEntryCfg = null
+    textSpaceToContinue: TextInfoMessageEntryCfg = null
+    textCavernDiscovered: TextInfoMessageEntryCfg = null
+    textOreFound: TextInfoMessageEntryCfg = null
+    textAirSupplyLow: TextInfoMessageEntryCfg = null
+    textAirSupplyRunningOut: TextInfoMessageEntryCfg = null
+    textGameCompleted: TextInfoMessageEntryCfg = null
+    textManTrained: TextInfoMessageEntryCfg = null
+    textUnitUpgraded: TextInfoMessageEntryCfg = null
 
     parseValue(unifiedKey: string, cfgValue: any): any {
-        return new TextInfoMessageEntryConfig(cfgValue)
+        return new TextInfoMessageEntryCfg(cfgValue)
     }
 }

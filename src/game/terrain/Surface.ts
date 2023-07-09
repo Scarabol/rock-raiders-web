@@ -128,7 +128,7 @@ export class Surface {
                 .rotateAround(new Vector2(0, 0), degToRad(-10 + Math.randomInclusive(20)))
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
-                const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, seamDropPosition)
+                MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, seamDropPosition)
                 EventBus.publishEvent(new CrystalFoundEvent(crystal.getPosition()))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
                 MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, seamDropPosition)

@@ -166,7 +166,7 @@ export class RaiderTrainingCompleteEvent extends LocalEvent {
     }
 }
 
-export class VehicleUpgradeCompleteEvent extends LocalEvent {
+export class UpgradeVehicleCompleteEvent extends LocalEvent {
     constructor() {
         super(EventKey.VEHICLE_UPGRADE_COMPLETE)
     }

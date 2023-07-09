@@ -71,7 +71,18 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
     CrossLand: boolean = false
     CrossLava: boolean = false
     CrossWater: boolean = false
+    CanBeHitByFence: boolean = false
     CanBeShotAt: boolean = false
+    CanFreeze: boolean = false
+    FreezerTime: number = 0
+    FreezerDamage: number = 0
+    CanLaser: boolean = false
+    LaserDamage: number = 0
+    CanPush: boolean = false
+    PusherDist: number = 0
+    PusherDamage: number = 0
+    Capacity: number = 0
+    RepairValue: number = 0
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if ('CanBeShotAt'.equalsIgnoreCase(unifiedKey) && Array.isArray(cfgValue)) {

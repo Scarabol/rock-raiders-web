@@ -2,17 +2,17 @@ import { Job, JobFulfiller } from './Job'
 import { VehicleUpgrade } from '../vehicle/VehicleUpgrade'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { PathTarget } from '../PathTarget'
-import { EntityManager } from '../../EntityManager'
+import { WorldManager } from '../../WorldManager'
 import { BuildingActivity } from '../anim/AnimationActivity'
 import { EventBus } from '../../../event/EventBus'
-import { VehicleUpgradeCompleteEvent } from '../../../event/LocalEvents'
+import { UpgradeVehicleCompleteEvent } from '../../../event/LocalEvents'
 
-export class VehicleUpgradeJob extends Job {
+export class UpgradeVehicleJob extends Job {
     readonly workplace: PathTarget
 
-    constructor(readonly entityMgr: EntityManager, readonly vehicle: VehicleEntity, readonly upgrade: VehicleUpgrade) {
+    constructor(worldMgr: WorldManager, readonly vehicle: VehicleEntity, readonly upgrade: VehicleUpgrade) {
         super()
-        this.workplace = vehicle.findShortestPath(this.entityMgr.getUpgradePathTargets())?.target
+        this.workplace = vehicle.findShortestPath(worldMgr.entityMgr.getUpgradePathTargets())?.target
     }
 
     getWorkplace(entity: VehicleEntity): PathTarget {
@@ -28,7 +28,7 @@ export class VehicleUpgradeJob extends Job {
             super.onJobComplete(fulfiller)
             building.sceneEntity.setAnimation(BuildingActivity.Stand)
             this.vehicle.addUpgrade(this.upgrade)
-            EventBus.publishEvent(new VehicleUpgradeCompleteEvent())
+            EventBus.publishEvent(new UpgradeVehicleCompleteEvent())
         })
     }
 

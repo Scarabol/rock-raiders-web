@@ -1,15 +1,15 @@
 import { Sample } from '../../audio/Sample'
 import { SpriteImage } from '../../core/Sprite'
-import { TextInfoMessageEntryConfig } from './TextInfoMessageEntryConfig'
+import { TextInfoMessageEntryCfg } from '../../cfg/TextInfoMessageEntryCfg'
 import { DEFAULT_FONT_NAME } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 
 export class TextInfoMessage {
-    infoImage: SpriteImage
     textImage: SpriteImage
+    infoImage: SpriteImage
     sfxSample: Sample
 
-    constructor(infoMessageEntryConfig: TextInfoMessageEntryConfig, maxWidth: number) {
+    constructor(infoMessageEntryConfig: TextInfoMessageEntryCfg, maxWidth: number) {
         ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, infoMessageEntryConfig.text, maxWidth)
             .then((textImage) => this.textImage = textImage)
         this.infoImage = ResourceManager.getImageOrNull(infoMessageEntryConfig.imageFilename)

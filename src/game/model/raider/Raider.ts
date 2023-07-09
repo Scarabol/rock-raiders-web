@@ -159,7 +159,7 @@ export class Raider implements Updatable, JobFulfiller {
                 return false
             })
         } else if (result === MoveState.TARGET_UNREACHABLE) {
-            console.warn('Entity could not move to job target, stopping job')
+            console.warn('Raider could not move to job target, stopping job', this.job, target)
             this.stopJob()
         }
         return result

@@ -169,10 +169,10 @@ export class NerpRunner {
 
     /**
      * This is used to make messages come up/not come up.
-     * @param messagesAllowed
+     * @param blockMessages
      */
-    setMessagePermit(messagesAllowed) {
-        this.messagePermit = !messagesAllowed
+    setMessagePermit(blockMessages: number) {
+        this.messagePermit = !blockMessages
     }
 
     setBuildingsUpgradeLevel(typeName: EntityType, level: number) {
@@ -249,7 +249,7 @@ export class NerpRunner {
         this.worldMgr.sceneMgr.controls.enabled = true
     }
 
-    setMessage(messageNumber: number, arrowDisabled) {
+    setMessage(messageNumber: number, arrowDisabled) { // TODO Implement arrow disabled
         if (!this.messagePermit) return
         if (messageNumber < 1) {
             console.warn(`Unexpected message number ${messageNumber} given`)

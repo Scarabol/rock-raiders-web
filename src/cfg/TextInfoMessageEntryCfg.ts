@@ -1,4 +1,4 @@
-export class TextInfoMessageEntryConfig {
+export class TextInfoMessageEntryCfg {
     text: string
     imageFilename?: string
     sfxName?: string

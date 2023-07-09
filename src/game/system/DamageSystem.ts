@@ -36,10 +36,10 @@ export class DamageSystem extends AbstractGameSystem {
                         healthComponent.changeHealth(-this.dynamiteMaxDamage * Math.pow(inRangeSq, 2))
                     }
                 })
-                if (positionComponent.surface.surfaceType === SurfaceType.LAVA5 && healthComponent.health > 0) {
+                if (positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
                     healthComponent.changeHealth(-50 / 1000 * elapsedMs)
                 }
-                healthComponent.updateSpriteStatus(healthComponent.health / healthComponent.maxHealth, elapsedMs)
+                healthComponent.updateSpriteStatus(elapsedMs) // TODO This renders updates for all other changes/systems too, move updating to scene
             } catch (e) {
                 console.error(e)
             }

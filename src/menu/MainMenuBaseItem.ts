@@ -16,10 +16,6 @@ export class MainMenuBaseItem {
     ) {
     }
 
-    static compareZ(left: MainMenuBaseItem, right: MainMenuBaseItem) {
-        return left.zIndex === right.zIndex ? 0 : left.zIndex > right.zIndex ? -1 : 1
-    }
-
     isHovered(sx: number, sy: number): boolean {
         return sx >= this.x && sx < this.x + this.width && sy >= this.y && sy < this.y + this.height
     }

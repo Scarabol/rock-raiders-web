@@ -20,7 +20,7 @@ import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/G
 import { EventBus } from '../../event/EventBus'
 import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
-import { SetSpaceToContinueEvent, ShowOptionsEvent } from '../../event/LocalEvents'
+import { ShowOptionsEvent } from '../../event/LocalEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 
@@ -90,13 +90,6 @@ export class GuiMainLayer extends ScaledLayer {
             EventBus.registerEventListener(eventKey, callback)
         }
         this.animationFrame.notifyRedraw()
-        EventBus.registerEventListener(EventKey.SET_SPACE_TO_CONTINUE, (event: SetSpaceToContinueEvent) => {
-            if (event.state) {
-                this.panelMessages.setMessage(this.panelMessages.msgSpaceToContinue, 0)
-            } else {
-                this.panelMessages.unsetMessage(this.panelMessages.msgSpaceToContinue)
-            }
-        })
         new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],

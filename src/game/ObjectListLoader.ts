@@ -37,7 +37,6 @@ export class ObjectListLoader {
                     console.error(e)
                 }
             })
-            EventBus.publishEvent(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
             this.vehicleKeyToDriver.forEach((driver, vehicleKey) => {
                 const vehicle = this.vehicleByKey.get(vehicleKey)
                 if (!vehicle) {
@@ -47,6 +46,7 @@ export class ObjectListLoader {
                 driver.addTraining(vehicle.getRequiredTraining())
                 vehicle.addDriver(driver)
             })
+            EventBus.publishEvent(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
         } catch (e) {
             console.error(e)
         }

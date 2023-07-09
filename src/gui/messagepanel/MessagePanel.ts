@@ -2,7 +2,7 @@ import { PanelCfg } from '../../cfg/PanelCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
-import { AirLevelChanged, NerpMessage, RaiderTrainingCompleteEvent } from '../../event/LocalEvents'
+import { AirLevelChanged, NerpMessage, RaiderTrainingCompleteEvent, SetSpaceToContinueEvent } from '../../event/LocalEvents'
 import { PlaySoundEvent } from '../../event/GuiCommand'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
@@ -20,8 +20,6 @@ export class MessagePanel extends Panel {
     currentMessage: TextInfoMessage = null
     messageTimeout: NodeJS.Timeout = null
 
-    msgSpaceToContinue: TextInfoMessage
-
     airLevelWidth: number = this.maxAirLevelWidth
     nextAirWarning: number = 1 - AIR_LEVEL_WARNING_STEP
 
@@ -33,7 +31,7 @@ export class MessagePanel extends Panel {
 
         const crystalFound = new TextInfoMessage(textInfoMessageConfig.textCrystalFound, this.img.width)
         this.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(crystalFound))
-        this.msgSpaceToContinue = new TextInfoMessage(textInfoMessageConfig.textSpaceToContinue, this.img.width)
+        const msgSpaceToContinue = new TextInfoMessage(textInfoMessageConfig.textSpaceToContinue, this.img.width)
         const cavernDiscovered = new TextInfoMessage(textInfoMessageConfig.textCavernDiscovered, this.img.width)
         this.registerEventListener(EventKey.CAVERN_DISCOVERED, () => this.setMessage(cavernDiscovered))
         const oreFound = new TextInfoMessage(textInfoMessageConfig.textOreFound, this.img.width)
@@ -61,6 +59,13 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessage) => {
             this.setMessage(new TextInfoMessage({text: event.text}, this.img.width)) // XXX cache this?
         })
+        this.registerEventListener(EventKey.SET_SPACE_TO_CONTINUE, (event: SetSpaceToContinueEvent) => {
+            if (event.state) {
+                this.setMessage(msgSpaceToContinue, 0)
+            } else {
+                this.unsetMessage(msgSpaceToContinue)
+            }
+        })
     }
 
     reset() {
@@ -69,7 +74,7 @@ export class MessagePanel extends Panel {
         this.nextAirWarning = 1 - AIR_LEVEL_WARNING_STEP
     }
 
-    setMessage(textInfoMessage: TextInfoMessage, timeout: number = 3000) {
+    private setMessage(textInfoMessage: TextInfoMessage, timeout: number = 3000) {
         this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
         this.currentMessage = textInfoMessage
         this.notifyRedraw()
@@ -83,7 +88,7 @@ export class MessagePanel extends Panel {
         }
     }
 
-    unsetMessage(textInfoMessage: TextInfoMessage) {
+    private unsetMessage(textInfoMessage: TextInfoMessage) {
         if (this.currentMessage === textInfoMessage) {
             this.currentMessage = null
             this.notifyRedraw()

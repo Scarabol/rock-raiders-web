@@ -29,14 +29,14 @@ export class HealthComponent extends AbstractGameComponent {
         if (delta < 0 && this.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
     }
 
-    updateSpriteStatus(targetStatus: number, elapsedMs: number) {
+    updateSpriteStatus(elapsedMs: number) {
         if (this.visibleTimeout > 0) {
             this.visibleTimeout -= elapsedMs
         } else {
             this.sprite.visible = false
             this.visibleTimeout = 0
         }
-        const nextStatus = Math.max(0, Math.min(1, targetStatus))
+        const nextStatus = Math.max(0, Math.min(1, this.health / this.maxHealth))
         if (this.targetStatus !== nextStatus) {
             this.targetStatus = nextStatus
             this.visibleTimeout = 3000
