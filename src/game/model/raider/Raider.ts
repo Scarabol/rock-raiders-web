@@ -31,10 +31,10 @@ import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { OxygenComponent } from '../../component/OxygenComponent'
 import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
-import { RunPanicJob } from '../job/raider/RunPanicJob'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
 import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
+import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -85,33 +85,19 @@ export class Raider implements Updatable, JobFulfiller {
             this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
             return
         }
-        if (this.selected || this.isInBeam()) return
-        if (GameState.alarmMode && this.hasWeapon()) {
+        if (this.isInBeam()) return
+        if (!this.selected && GameState.alarmMode && this.hasWeapon()) {
             this.fight(elapsedMs)
             return
         }
-        this.checkScared()
+        if (this.selected) return
         if (!this.job) {
+            this.scared = false
             this.infoComponent.setBubbleTexture('bubbleIdle')
             this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             return
         }
         this.work(elapsedMs)
-    }
-
-    private checkScared() {
-        if (this.scared) return
-        const raider = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
-        this.worldMgr.entityMgr.raiderScare.forEach((scare) => {
-            const distanceSq = raider.getPosition2D().distanceToSquared(scare.getPosition2D())
-            if (distanceSq >= TILESIZE * TILESIZE) return
-            this.scared = true
-            this.dropCarried(true)
-            const scareNeighbors = scare.surface.neighbors
-            const safeNeighbors = raider.surface.neighbors.filter((s) => s !== scare.surface && !scareNeighbors.includes(s))
-            const runTarget = [...safeNeighbors, ...scareNeighbors, raider.surface].find((s) => s.isWalkable()).getRandomPosition()
-            this.setJob(new RunPanicJob(runTarget))
-        })
     }
 
     isDriving(): boolean {
@@ -177,7 +163,7 @@ export class Raider implements Updatable, JobFulfiller {
                     const rockyPosition2D = positionComponent.getPosition2D()
                     if (raiderPosition2D.distanceToSquared(rockyPosition2D) < 25 * 25) { // TODO Use WakeRadius from monster stats
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
-                            this.worldMgr.entityMgr.raiderScare.add(positionComponent)
+                            this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
                             this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
                         })
                     }
@@ -293,7 +279,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     isSelectable(): boolean {
-        return !this.selected && !this.isInBeam() && !this.slipped && !this.vehicle
+        return !this.selected && !this.isInBeam() && !this.slipped && !this.vehicle && !this.scared
     }
 
     private isInBeam(): boolean {

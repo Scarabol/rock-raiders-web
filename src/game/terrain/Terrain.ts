@@ -22,6 +22,7 @@ import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/Animation
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WALL_TYPE } from './WallType'
+import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 
 export class Terrain {
     heightOffset: number[][] = [[]]
@@ -229,7 +230,7 @@ export class Terrain {
         const positionComponent = components.get(PositionComponent)
         sceneEntity.setAnimation(RockMonsterActivity.Emerge, () => {
             sceneEntity.setAnimation(AnimEntityActivity.Stand)
-            this.worldMgr.entityMgr.raiderScare.add(positionComponent)
+            this.worldMgr.ecs.addComponent(monster, new RaiderScareComponent(RaiderScareRange.ROCKY))
             this.worldMgr.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
         })
         EventBus.publishEvent(new GenericMonsterEvent(positionComponent))

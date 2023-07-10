@@ -11,11 +11,11 @@ import { EventBus } from '../../../event/EventBus'
 import { DynamiteExplosionEvent } from '../../../event/WorldEvents'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
-import { PositionComponent } from '../../component/PositionComponent'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
 import { GameState } from '../GameState'
 import { EntityManager } from '../../EntityManager'
 import { SelectionChanged } from '../../../event/LocalEvents'
+import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
 
 export class CarryJob extends Job {
     fulfiller: JobFulfiller = null
@@ -156,11 +156,10 @@ export class CarryJob extends Job {
     }
 
     private igniteDynamite() {
-        const positionComponent = this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(PositionComponent)
-        this.carryItem.worldMgr.entityMgr.raiderScare.add(positionComponent)
+        this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new RaiderScareComponent(RaiderScareRange.DYNAMITE))
         this.carryItem.sceneEntity.headTowards(this.carryItem.targetSurface.getCenterWorld2D())
         this.carryItem.sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
-            this.carryItem.worldMgr.entityMgr.raiderScare.remove(positionComponent)
+            this.carryItem.worldMgr.ecs.removeComponent(this.carryItem.entity, RaiderScareComponent)
             this.carryItem.targetSurface.collapse()
             this.carryItem.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.carryItem.getPosition(), this.carryItem.sceneEntity.heading, false)
             EventBus.publishEvent(new DynamiteExplosionEvent(this.carryItem.getPosition2D()))

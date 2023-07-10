@@ -36,6 +36,7 @@ import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
+import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -133,7 +134,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                     const rockyPosition2D = positionComponent.getPosition2D()
                     if (vehiclePosition2D.distanceToSquared(rockyPosition2D) < 25 * 25) { // TODO Use WakeRadius from monster stats
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
-                            this.worldMgr.entityMgr.raiderScare.add(positionComponent)
+                            this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
                             this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
                         })
                     }

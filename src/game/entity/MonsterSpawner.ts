@@ -20,6 +20,7 @@ import { MaterialSpawner } from './MaterialSpawner'
 import { EventBus } from '../../event/EventBus'
 import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { EventKey } from '../../event/EventKeyEnum'
+import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
@@ -50,6 +51,8 @@ export class MonsterSpawner {
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(batStats))
                 if (batStats.RandomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - batStats.RandomMoveTime) * 1000))
                 worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
+                worldMgr.ecs.addComponent(entity, new RaiderScareComponent(RaiderScareRange.BAT))
+                worldMgr.ecs.addComponent(entity, new LastWillComponent(() => worldMgr.ecs.removeComponent(entity, RaiderScareComponent)))
                 break
             case EntityType.ICE_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster')
@@ -90,7 +93,7 @@ export class MonsterSpawner {
                     MaterialSpawner.spawnMaterial(worldMgr, EntityType.CRYSTAL, positionComponent.getPosition2D()) // XXX add random offset and random heading
                 }
                 EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
-                worldMgr.entityMgr.raiderScare.remove(positionComponent)
+                worldMgr.ecs.removeComponent(entity, RaiderScareComponent)
                 worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
                 worldMgr.entityMgr.removeEntity(entity)
                 worldMgr.ecs.removeEntity(entity)

@@ -29,6 +29,7 @@ import { ObjectInfoSystem } from './system/ObjectInfoSystem'
 import { RockMonsterBehaviorSystem } from './system/RockMonsterBehaviorSystem'
 import { ElectricFenceSystem } from './system/ElectricFenceSystem'
 import { DeathSystem } from './system/DeathSystem'
+import { RaiderScareSystem } from './system/RaiderScareSystem'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -59,6 +60,7 @@ export class WorldManager {
         this.ecs.addSystem(new ElectricFenceSystem(this))
         this.ecs.addSystem(new DeathSystem(this))
         this.oxygenSystem = this.ecs.addSystem(new OxygenSystem())
+        this.ecs.addSystem(new RaiderScareSystem(this))
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
