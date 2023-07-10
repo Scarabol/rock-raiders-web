@@ -44,7 +44,7 @@ export class MessagePanel extends Panel {
             if (this.airLevelWidth === nextAirLevelWidth) return
             const nextPercent = nextAirLevelWidth / this.maxAirLevelWidth
             if (nextPercent < this.nextAirWarning) this.setMessage(nextPercent > AIR_LEVEL_LEVEL_LOW ? msgAirSupplyRunningOut : msgAirSupplyLow)
-            this.nextAirWarning = Math.floor(nextAirLevelWidth / this.maxAirLevelWidth / AIR_LEVEL_WARNING_STEP) * AIR_LEVEL_WARNING_STEP
+            this.nextAirWarning = Math.min(1 - AIR_LEVEL_WARNING_STEP, Math.floor(nextAirLevelWidth / this.maxAirLevelWidth / AIR_LEVEL_WARNING_STEP) * AIR_LEVEL_WARNING_STEP)
             this.airLevelWidth = nextAirLevelWidth
             this.notifyRedraw()
         })
