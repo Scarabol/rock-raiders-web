@@ -2,7 +2,7 @@ export {}
 
 declare global {
     interface Array<T> {
-        add(element: T): void
+        add(...element: T[]): void
 
         remove(element: T): void
 
@@ -25,9 +25,11 @@ declare global {
     }
 }
 
-Array.prototype.add = function <T>(element: T): void {
-    const index = this.indexOf(element)
-    if (index === -1) this.push(element)
+Array.prototype.add = function <T>(...items: T[]): void {
+    items?.forEach((item) => {
+        const index = this.indexOf(item)
+        if (index === -1) this.push(item)
+    })
 }
 
 Array.prototype.remove = function <T>(element: T): void {
