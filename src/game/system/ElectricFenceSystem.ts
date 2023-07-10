@@ -97,9 +97,9 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         const toAdd: Surface[] = []
         fenceProtectedSurfaces.forEach((origin) => {
             origin.neighbors.forEach((possibleStud) => {
-                if (!possibleStud.fence && !studPositions.includes(possibleStud) &&
-                    possibleStud.neighbors.some((target) => target !== origin && target.fence &&
-                        (target.x === origin.x || target.y === origin.y) && fenceProtectedSurfaces.includes(target))
+                if (!possibleStud.fence && !possibleStud.building && !studPositions.includes(possibleStud) &&
+                    possibleStud.neighbors.some((target) => target !== origin && (target.x === origin.x || target.y === origin.y) &&
+                        ((target.fence && fenceProtectedSurfaces.includes(target)) || (target.building && target.energized)))
                 ) {
                     studPositions.add(possibleStud)
                     if (!possibleStud.stud) toAdd.add(possibleStud)
@@ -130,7 +130,9 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         // TODO add beams between fences and buildings
         // TODO add short beams between fences and between fences and buildings
         const f = studProtectedSurfaces.random()
-        if (this.worldMgr.sceneMgr.terrain.getSurface(f.x - 1, f.y).fence && this.worldMgr.sceneMgr.terrain.getSurface(f.x + 1, f.y).fence) {
+        const sy1 = this.worldMgr.sceneMgr.terrain.getSurface(f.x - 1, f.y)
+        const sy2 = this.worldMgr.sceneMgr.terrain.getSurface(f.x + 1, f.y)
+        if ((sy1.fence || sy1.building) && (sy2.fence || sy2.building)) {
             this.addBeamX(f.getCenterWorld(), false)
         } else {
             this.addBeamZ(f.getCenterWorld(), false)
