@@ -403,6 +403,17 @@ export class LWOBParser {
                     if (this.verbose) console.log(`Scene background (RIMG): ${sceneBackgroundFilepath}`)
                     console.warn('Scene background image not yet implemented', sceneBackgroundFilepath)
                     break
+                case 'TFP0':
+                case 'TFP1':
+                case 'TFP2':
+                case 'TFP3':
+                    if (this.verbose) console.log(`Algorithmic texture parameter (${subChunkType}) not used and ignored`)
+                    this.lwoReader.readFloat32() // most probably unused in the game
+                    break
+                case 'GLOW':
+                    if (this.verbose) console.log(`Undefined parameter (GLOW) not used and ignored`)
+                    this.lwoReader.skip(4) // not specified anywhere
+                    break
                 default: // TODO implement all LWOB features
                     if (this.verbose || VERBOSE) console.warn(`Found unrecognised SURF sub-chunk type ${subChunkType} (${subChunkType}) at ${cursor}; length ${subChunkSize}`)
                     this.lwoReader.skip(subChunkSize)
