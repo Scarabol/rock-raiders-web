@@ -49,7 +49,7 @@ export class GameResult {
             const quota = this.rewardConfig.quota
             const importance = this.rewardConfig.importance
             this.scoreCrystals = quota.crystals ? Math.min(1, GameState.numCrystal / quota.crystals) * importance.crystals : 0
-            this.scoreTimer = quota.timer ? Math.min(1, this.gameTimeSeconds / quota.timer) * importance.timer : 0
+            this.scoreTimer = quota.timer && this.gameTimeSeconds <= quota.timer ? importance.timer : 0
             this.scoreCaverns = quota.caverns ? Math.min(1, GameState.discoveredCaverns / quota.caverns) * importance.caverns : 0
             this.scoreConstructions = quota.constructions ? Math.min(1, this.numBuildings / quota.constructions) * importance.constructions : 0
             this.scoreOxygen = GameState.airLevel * importance.oxygen
