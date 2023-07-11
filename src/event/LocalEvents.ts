@@ -172,18 +172,23 @@ export class UpgradeVehicleCompleteEvent extends LocalEvent {
     }
 }
 
-export class UpdateRadarTerrain extends LocalEvent {
-    surfaces: MapSurfaceRect[] = []
+export class UpdateRadarFocus extends LocalEvent {
     focusTile: { x: number, y: number } = null
 
-    constructor(terrain: Terrain, mapFocus: Vector3) {
+    constructor(mapFocus: Vector3) {
+        super(EventKey.UPDATE_RADAR_FOCUS)
+        this.focusTile = {x: Math.floor(mapFocus.x / TILESIZE), y: Math.floor(mapFocus.z / TILESIZE)}
+    }
+}
+
+export class UpdateRadarTerrain extends LocalEvent {
+    surfaces: MapSurfaceRect[] = []
+
+    constructor(terrain: Terrain) {
         super(EventKey.UPDATE_RADAR_TERRAIN)
         terrain.forEachSurface((s) => {
-            if (s.discovered) {
-                this.surfaces.push(new MapSurfaceRect(s))
-            }
+            if (s.discovered) this.surfaces.push(new MapSurfaceRect(s))
         })
-        if (mapFocus) this.focusTile = {x: Math.floor(mapFocus.x / TILESIZE), y: Math.floor(mapFocus.z / TILESIZE)}
     }
 }
 

@@ -87,7 +87,7 @@ export class Surface {
             w.needsMeshUpdate = true
             if (w.isUnstable()) w.collapse()
         })
-        EventBus.publishEvent(new UpdateRadarTerrain(this.terrain, null))
+        EventBus.publishEvent(new UpdateRadarTerrain(this.terrain))
         return caveFound
     }
 
