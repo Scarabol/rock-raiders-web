@@ -32,6 +32,8 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addMenuWithAssets(gameConfig.menu.optionsMenu)
         this.addAsset(this.wadLoader.loadAlphaImageAsset, 'Interface/BriefingPanel/BriefingPanel.bmp')
         this.addAsset(this.wadLoader.loadObjectiveTexts, 'Languages/ObjectiveText.txt')
+        this.addAsset(this.wadLoader.loadAlphaImageAsset, gameConfig.dialog.image)
+        this.addAsset(this.wadLoader.loadAlphaImageAsset, gameConfig.dialog.contrastOverlay)
         // add in-game assets
         this.addAlphaImageFolder('Interface/TopPanel/') // top panel
         this.addAlphaImageFolder('Interface/RightPanel/') // crystal side bar

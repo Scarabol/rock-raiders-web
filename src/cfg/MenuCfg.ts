@@ -2,6 +2,7 @@ import { Rect } from '../core/Rect'
 import { BaseConfig } from './BaseConfig'
 import { parseLabel } from './CfgHelper'
 import { MenuEntryCfg } from './MenuEntryCfg'
+import { OverwriteCfg } from './OverwriteCfg'
 
 export class GameMenuCfg extends BaseConfig {
     levelText: LevelTextCfg = new LevelTextCfg()
@@ -10,6 +11,7 @@ export class GameMenuCfg extends BaseConfig {
     optionsMenu: MenuCfg = new MenuCfg()
     saveGame: string = ''
     loadGame: string = ''
+    overwrite: OverwriteCfg = new OverwriteCfg()
     saveImage: {
         BigWidth: number,
         BigHeight: number,
@@ -38,6 +40,8 @@ export class GameMenuCfg extends BaseConfig {
             this.optionsMenu.setFromCfgObj(cfgValue)
             const helpWindowCycle = this.optionsMenu.menus[0].itemsCycle[0]
             ;[helpWindowCycle.labelOn, helpWindowCycle.labelOff] = [helpWindowCycle.labelOff, helpWindowCycle.labelOn] // XXX uplift config parsing workaround
+        } else if ('Overwrite'.equalsIgnoreCase(unifiedKey)) {
+            this.overwrite.setFromCfgObj(cfgValue)
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
         }

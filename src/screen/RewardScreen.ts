@@ -14,6 +14,7 @@ import { ScreenMaster } from './ScreenMaster'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
+import { OverwriteLayer } from '../menu/OverwriteLayer'
 
 export class RewardScreen {
     cfg: RewardCfg = null
@@ -123,17 +124,23 @@ export class RewardScreen {
         ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFont, 'No level selected')
             .then((textImage) => this.levelFullNameImg = textImage)
         this.saveGameLayer = screenMaster.addLayer(new LoadSaveLayer(ResourceManager.configuration.menu.mainMenuFull.menus[3], false), 660)
+        const overwriteLayer = screenMaster.addLayer(new OverwriteLayer(), 670)
         this.saveGameLayer.onItemAction = (item: MainMenuBaseItem) => {
             if (item.actionName.equalsIgnoreCase('next')) {
                 this.saveGameLayer.hide()
             } else if (item.actionName.toLowerCase().startsWith('save_game_')) {
                 if (SaveGameManager.hasSaveGame(item.targetIndex)) {
-                    console.warn('Overwrite window not yet implemented') // TODO show overwrite warning window
-                    SaveGameManager.saveGame(item.targetIndex, this.screenshot)
+                    overwriteLayer.overwritePanel.setIndex(item.targetIndex)
+                    overwriteLayer.yesBtn.onPressed = () => {
+                        SaveGameManager.saveGame(item.targetIndex, this.screenshot)
+                        overwriteLayer.hide()
+                        this.saveGameLayer.hide()
+                    }
+                    overwriteLayer.show()
                 } else {
                     SaveGameManager.saveGame(item.targetIndex, this.screenshot)
+                    this.saveGameLayer.hide()
                 }
-                this.saveGameLayer.hide()
             } else {
                 console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
             }
