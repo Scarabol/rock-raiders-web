@@ -30,6 +30,8 @@ abstract class VehiclePanel extends IconSubPanel {
         }
         item.tooltip = ResourceManager.configuration.objectNamesCfg.get(itemKey.toLowerCase())
         item.tooltipSfx = Sample[tooltipSfx]
+        item.tooltipDisabled = item.tooltip
+        item.tooltipDisabledSfx = item.tooltipSfx
         this.btnLabelByType.set(entityType, item.addChild(new IconPanelButtonLabel(item)))
     }
 }
