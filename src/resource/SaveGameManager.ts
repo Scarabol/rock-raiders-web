@@ -85,12 +85,14 @@ export class SaveGameManager {
     }
 
     static saveGame(index: number, screenshot: HTMLCanvasElement) {
-        this.screenshots[index] = screenshot
         const saveGame = this.saveGames[index] || new SaveGame()
         saveGame.levels = this.currentLevels
         this.saveGames[index] = saveGame
         localStorage.setItem('savegames', JSON.stringify(this.saveGames))
-        localStorage.setItem(`screenshot${index}`, this.encodeScreenshot(screenshot))
+        if (screenshot) {
+            this.screenshots[index] = screenshot
+            localStorage.setItem(`screenshot${index}`, this.encodeScreenshot(screenshot))
+        }
         console.log('game progress saved', this.saveGames)
     }
 
