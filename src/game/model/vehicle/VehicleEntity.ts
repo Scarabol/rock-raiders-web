@@ -3,7 +3,7 @@ import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
-import { SelectionChanged } from '../../../event/LocalEvents'
+import { SelectionChanged, UpdateRadarEntities } from '../../../event/LocalEvents'
 import { DEV_MODE, ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL } from '../../../params'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity } from '../anim/AnimationActivity'
@@ -146,6 +146,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.setPosition(this.getPosition().add(step.vec))
             this.sceneEntity.setAnimation(AnimEntityActivity.Route)
+            EventBus.publishEvent(new UpdateRadarEntities(this.worldMgr.entityMgr)) // TODO only send map updates not all
             const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
             this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
             return MoveState.MOVED
