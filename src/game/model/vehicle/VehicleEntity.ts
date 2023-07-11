@@ -286,7 +286,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             this.sceneEntity.setAnimation(AnimEntityActivity.Stand, () => {
                 this.carriedItems.add(carryItem)
                 this.sceneEntity.pickupEntity(carryItem.sceneEntity)
-            })
+            }, 500)
         }
         return false
     }
