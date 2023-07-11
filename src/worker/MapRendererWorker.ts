@@ -120,18 +120,11 @@ export class MapRendererWorker {
     private redrawEntities(entityContext: SpriteContext, color: string, offset: { x: number; y: number }, entities: { x: number; z: number }[], surfaceRectSize: number, size: number) {
         entityContext.clearRect(0, 0, entityContext.canvas.width, entityContext.canvas.height)
         entityContext.fillStyle = color
-        entities.map((e) => this.mapToMap(offset, e, surfaceRectSize)).forEach((p) => {
-            const x = Math.round(p.x - size / 2)
-            const y = Math.round(p.y - size / 2)
+        entities.forEach((e) => {
+            const x = Math.round(e.x * surfaceRectSize / TILESIZE - offset.x - size / 2)
+            const y = Math.round(e.z * surfaceRectSize / TILESIZE - offset.y - size / 2)
             entityContext.fillRect(x, y, Math.round(size), Math.round(size))
         })
-    }
-
-    private mapToMap(offset: { x: number; y: number }, vec: { x: number; z: number }, surfaceRectSize: number): { x: number; y: number } {
-        return {
-            x: Math.round(vec.x * surfaceRectSize / TILESIZE - 1 - offset.x),
-            y: Math.round(vec.z * surfaceRectSize / TILESIZE - 1 - offset.y),
-        }
     }
 }
 
