@@ -192,7 +192,7 @@ export class WorldManager {
 
     async teleportEnd(): Promise<void> {
         ;[...this.entityMgr.raiders.filter((r) => !r.vehicle), ...this.entityMgr.vehicles, ...this.entityMgr.buildings].shuffle()
-            .forEach((e, i) => setTimeout(() => e.beamUp(false), i * 200))
+            .forEach((e, i) => setTimeout(() => e.beamUp(), i * 200))
         return new Promise((resolve) => setTimeout(() => resolve(), 10000))
     }
 }

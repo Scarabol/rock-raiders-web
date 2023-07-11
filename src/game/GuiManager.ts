@@ -18,6 +18,7 @@ import { SelectionFrameComponent } from './component/SelectionFrameComponent'
 import { BeamUpComponent } from './component/BeamUpComponent'
 import { CameraRotation } from '../scene/BirdViewControls'
 import { RepairBuildingJob } from './model/job/raider/RepairBuildingJob'
+import { MaterialSpawner } from './entity/MaterialSpawner'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -96,7 +97,16 @@ export class GuiManager {
             entityMgr.selection.building?.upgrade()
         })
         EventBus.registerEventListener(EventKey.COMMAND_BUILDING_BEAMUP, () => {
-            entityMgr.selection.building?.beamUp(true)
+            const building = entityMgr.selection.building
+            if (!building) return
+            for (let c = 0; c < building.stats.CostOre; c++) {
+                MaterialSpawner.spawnMaterial(building.worldMgr, EntityType.ORE, building.primarySurface.getRandomPosition())
+            }
+            for (let c = 0; c < building.stats.CostCrystal; c++) {
+                MaterialSpawner.spawnMaterial(building.worldMgr, EntityType.CRYSTAL, building.primarySurface.getRandomPosition())
+            }
+            building.carriedItems.forEach((m) => building.worldMgr.entityMgr.placeMaterial(m, building.primarySurface.getRandomPosition()))
+            building.beamUp()
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_BUILDING_POWER_STATE, (event: ChangeBuildingPowerState) => {
             entityMgr.selection.building?.setPowerSwitch(event.state)
@@ -145,7 +155,16 @@ export class GuiManager {
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
-            entityMgr.selection.vehicles.forEach((v) => v.beamUp(true))
+            entityMgr.selection.vehicles.forEach((v) => {
+                const surface = v.getSurface()
+                const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
+                if (spawnSurface) {
+                    for (let c = 0; c < v.stats.CostOre; c++) MaterialSpawner.spawnMaterial(v.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
+                    for (let c = 0; c < v.stats.CostCrystal; c++) MaterialSpawner.spawnMaterial(v.worldMgr, EntityType.CRYSTAL, spawnSurface.getRandomPosition())
+                }
+                v.dropDriver()
+                v.beamUp()
+            })
             EventBus.publishEvent(new DeselectAll())
         })
         EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT, () => {

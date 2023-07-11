@@ -26,7 +26,6 @@ import { HealthComponent } from '../../component/HealthComponent'
 import { GameEntity } from '../../ECS'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
-import { MaterialSpawner } from '../../entity/MaterialSpawner'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { PositionComponent } from '../../component/PositionComponent'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -66,7 +65,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false, 24, 14, this.sceneEntity, false))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
             EventBus.publishEvent(new GenericDeathEvent(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)))
-            this.beamUp(true)
+            this.beamUp()
         }))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
@@ -76,18 +75,14 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.work(elapsedMs)
     }
 
-    beamUp(dropMaterials: boolean) {
-        this.dropDriver()
+    beamUp() {
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
-        if (dropMaterials) {
-            const surface = this.getSurface()
-            const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
-            if (spawnSurface) {
-                for (let c = 0; c < this.stats.CostOre; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, spawnSurface.getRandomPosition())
-                for (let c = 0; c < this.stats.CostCrystal; c++) MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, spawnSurface.getRandomPosition())
-            }
+        if (this.driver) {
+            this.worldMgr.entityMgr.raiders.remove(this.driver)
+            this.worldMgr.entityMgr.raidersInBeam.remove(this.driver)
+            this.worldMgr.entityMgr.raidersUndiscovered.remove(this.driver)
         }
         this.worldMgr.entityMgr.vehicles.remove(this)
         this.worldMgr.entityMgr.vehiclesInBeam.add(this)
