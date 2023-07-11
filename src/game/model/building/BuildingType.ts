@@ -1,7 +1,6 @@
 import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { ResourceManager } from '../../../resource/ResourceManager'
-import { RaiderActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 
 export class BuildingType {
@@ -12,7 +11,6 @@ export class BuildingType {
     primaryPowerPath: Vector2 = new Vector2(0, 1)
     secondaryPowerPath: Vector2 = null
     waterPathSurface: Vector2 = null
-    dropAction: RaiderActivity = RaiderActivity.Place
     teleportedEntityTypes: EntityType[] = []
 
     constructor(entityType: EntityType, stats: BuildingEntityStats, aeFilename: string) {
@@ -34,7 +32,7 @@ export class BuildingType {
                     .setPrimaryPowerPath(0, -1).setWaterPathSurface(0, 1).addTeleport(EntityType.SMALL_CAT, EntityType.LARGE_CAT) // TODO evaluate stats UseWaterTeleporter
             case EntityType.POWER_STATION:
                 return new BuildingType(entityType, ResourceManager.configuration.stats.powerStation, 'Buildings/Powerstation')
-                    .setSecondaryBuildingPart(-1, 0).setDropAction(RaiderActivity.Deposit)
+                    .setSecondaryBuildingPart(-1, 0)
             case EntityType.BARRACKS:
                 return new BuildingType(entityType, ResourceManager.configuration.stats.barracks, 'Buildings/Barracks')
             case EntityType.UPGRADE:
@@ -44,7 +42,7 @@ export class BuildingType {
                     .removePrimaryPowerPath().setSecondaryBuildingPart(0, 1)
             case EntityType.ORE_REFINERY:
                 return new BuildingType(entityType, ResourceManager.configuration.stats.oreRefinery, 'Buildings/OreRefinery')
-                    .setPrimaryPowerPath(0, 2).setSecondaryBuildingPart(0, 1).setDropAction(RaiderActivity.Deposit)
+                    .setPrimaryPowerPath(0, 2).setSecondaryBuildingPart(0, 1)
             case EntityType.GUNSTATION:
                 return new BuildingType(entityType, ResourceManager.configuration.stats.gunStation, 'Buildings/gunstation')
                     .removePrimaryPowerPath()
@@ -75,11 +73,6 @@ export class BuildingType {
 
     setSecondaryBuildingPart(x: number, y: number): this {
         this.secondaryBuildingPart = new Vector2(x, y)
-        return this
-    }
-
-    setDropAction(dropAction: RaiderActivity): this {
-        this.dropAction = dropAction
         return this
     }
 

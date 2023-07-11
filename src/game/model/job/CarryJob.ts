@@ -1,4 +1,4 @@
-import { AnimationActivity, BarrierActivity, BuildingActivity, DynamiteActivity, RaiderActivity } from '../anim/AnimationActivity'
+import { AnimationActivity, AnimEntityActivity, BarrierActivity, BuildingActivity, DynamiteActivity, RaiderActivity } from '../anim/AnimationActivity'
 import { MaterialEntity } from '../material/MaterialEntity'
 import { PathTarget } from '../PathTarget'
 import { Job, JobFulfiller } from './Job'
@@ -104,7 +104,11 @@ export class CarryJob extends Job {
     }
 
     getWorkActivity(): AnimationActivity {
-        return this.target.building?.getDropAction() || RaiderActivity.Place
+        if (this.fulfiller?.entityType === EntityType.PILOT) {
+            const building = this.target.building?.entityType
+            return building === EntityType.POWER_STATION || building === EntityType.ORE_REFINERY ? RaiderActivity.Deposit : RaiderActivity.Place
+        }
+        return AnimEntityActivity.Stand
     }
 
     isReadyToComplete(): boolean {

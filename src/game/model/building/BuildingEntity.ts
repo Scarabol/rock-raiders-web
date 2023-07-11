@@ -8,7 +8,7 @@ import { DEV_MODE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { BubbleSprite } from '../../../scene/BubbleSprite'
 import { WorldManager } from '../../WorldManager'
-import { BuildingActivity, RaiderActivity } from '../anim/AnimationActivity'
+import { BuildingActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
 import { GameState } from '../GameState'
 import { Surface } from '../../terrain/Surface'
@@ -332,10 +332,6 @@ export class BuildingEntity {
         this.getToolPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D())
         this.carryPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
-    }
-
-    getDropAction(): RaiderActivity {
-        return this.buildingType.dropAction
     }
 
     getTrainingTargets() {
