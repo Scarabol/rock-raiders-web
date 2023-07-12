@@ -12,9 +12,11 @@ import { AIR_LEVEL_LEVEL_LOW, AIR_LEVEL_WARNING_STEP } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { GameResultEvent } from '../../event/WorldEvents'
 import { GameResultState } from '../../game/model/GameResult'
+import { TextInfoMessageEntryCfg } from '../../cfg/TextInfoMessageEntryCfg'
 
 export class MessagePanel extends Panel {
     private readonly maxAirLevelWidth = 236
+    readonly textInfoMessageCache: Map<TextInfoMessageEntryCfg, Promise<TextInfoMessage>> = new Map()
 
     imgAir: SpriteImage = null
     currentMessage: TextInfoMessage = null
@@ -29,41 +31,35 @@ export class MessagePanel extends Panel {
         this.relY = this.yOut = this.yIn = 409
         this.imgAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
 
-        const crystalFound = new TextInfoMessage(textInfoMessageConfig.textCrystalFound, this.img.width)
-        this.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(crystalFound))
-        const msgSpaceToContinue = new TextInfoMessage(textInfoMessageConfig.textSpaceToContinue, this.img.width)
-        const cavernDiscovered = new TextInfoMessage(textInfoMessageConfig.textCavernDiscovered, this.img.width)
-        this.registerEventListener(EventKey.CAVERN_DISCOVERED, () => this.setMessage(cavernDiscovered))
-        const oreFound = new TextInfoMessage(textInfoMessageConfig.textOreFound, this.img.width)
-        this.registerEventListener(EventKey.ORE_FOUND, () => this.setMessage(oreFound))
-        const msgAirSupplyLow = new TextInfoMessage(textInfoMessageConfig.textAirSupplyLow, this.img.width)
-        const msgAirSupplyRunningOut = new TextInfoMessage(textInfoMessageConfig.textAirSupplyRunningOut, this.img.width)
+        this.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(textInfoMessageConfig.textCrystalFound))
+        this.registerEventListener(EventKey.CAVERN_DISCOVERED, () => this.setMessage(textInfoMessageConfig.textCavernDiscovered))
+        this.registerEventListener(EventKey.ORE_FOUND, () => this.setMessage(textInfoMessageConfig.textOreFound))
         this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, (event: AirLevelChanged) => {
             if (event.airLevel <= 0) return
             const nextAirLevelWidth = Math.round(this.maxAirLevelWidth * event.airLevel)
             if (this.airLevelWidth === nextAirLevelWidth) return
             const nextPercent = nextAirLevelWidth / this.maxAirLevelWidth
-            if (nextPercent < this.nextAirWarning) this.setMessage(nextPercent > AIR_LEVEL_LEVEL_LOW ? msgAirSupplyRunningOut : msgAirSupplyLow)
+            if (nextPercent < this.nextAirWarning) {
+                const infoMessageCfg = nextPercent > AIR_LEVEL_LEVEL_LOW ? textInfoMessageConfig.textAirSupplyRunningOut : textInfoMessageConfig.textAirSupplyLow
+                this.setMessage(infoMessageCfg)
+            }
             this.nextAirWarning = Math.min(1 - AIR_LEVEL_WARNING_STEP, Math.floor(nextAirLevelWidth / this.maxAirLevelWidth / AIR_LEVEL_WARNING_STEP) * AIR_LEVEL_WARNING_STEP)
             this.airLevelWidth = nextAirLevelWidth
             this.notifyRedraw()
         })
-        const msgGameCompleted = new TextInfoMessage(textInfoMessageConfig.textGameCompleted, this.img.width)
         this.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
-            if (event.result === GameResultState.COMPLETE) this.setMessage(msgGameCompleted)
+            if (event.result === GameResultState.COMPLETE) this.setMessage(textInfoMessageConfig.textGameCompleted)
         })
-        const msgManTrained = new TextInfoMessage(textInfoMessageConfig.textManTrained, this.img.width)
-        this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(msgManTrained))
-        const msgUnitUpgraded = new TextInfoMessage(textInfoMessageConfig.textUnitUpgraded, this.img.width)
-        this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(msgUnitUpgraded))
+        this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(textInfoMessageConfig.textManTrained))
+        this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(textInfoMessageConfig.textUnitUpgraded))
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessage) => {
-            this.setMessage(new TextInfoMessage({text: event.text}, this.img.width)) // XXX cache this?
+            this.setMessage({text: event.text})
         })
         this.registerEventListener(EventKey.SET_SPACE_TO_CONTINUE, (event: SetSpaceToContinueEvent) => {
             if (event.state) {
-                this.setMessage(msgSpaceToContinue, 0)
+                this.setMessage(textInfoMessageConfig.textSpaceToContinue, 0)
             } else {
-                this.unsetMessage(msgSpaceToContinue)
+                this.unsetMessage(textInfoMessageConfig.textSpaceToContinue)
             }
         })
     }
@@ -74,25 +70,29 @@ export class MessagePanel extends Panel {
         this.nextAirWarning = 1 - AIR_LEVEL_WARNING_STEP
     }
 
-    private setMessage(textInfoMessage: TextInfoMessage, timeout: number = 3000) {
-        this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
-        this.currentMessage = textInfoMessage
-        this.notifyRedraw()
-        if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample))
-        if (timeout) {
-            const that = this
-            this.messageTimeout = setTimeout(() => {
-                that.currentMessage = null
-                that.notifyRedraw()
-            }, timeout)
-        }
+    private setMessage(cfg: TextInfoMessageEntryCfg, timeout: number = 3000) {
+        this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, this.img.width)).then((msg: TextInfoMessage) => {
+            this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
+            this.currentMessage = msg
+            this.notifyRedraw()
+            if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample))
+            if (timeout) {
+                const that = this
+                this.messageTimeout = setTimeout(() => {
+                    that.currentMessage = null
+                    that.notifyRedraw()
+                }, timeout)
+            }
+        })
     }
 
-    private unsetMessage(textInfoMessage: TextInfoMessage) {
-        if (this.currentMessage === textInfoMessage) {
-            this.currentMessage = null
-            this.notifyRedraw()
-        }
+    private unsetMessage(cfg: TextInfoMessageEntryCfg) {
+        this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, this.img.width)).then((msg: TextInfoMessage) => {
+            if (this.currentMessage === msg) {
+                this.currentMessage = null
+                this.notifyRedraw()
+            }
+        })
     }
 
     onRedraw(context: SpriteContext) {

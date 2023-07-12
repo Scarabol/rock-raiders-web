@@ -5,14 +5,17 @@ import { DEFAULT_FONT_NAME } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 
 export class TextInfoMessage {
-    textImage: SpriteImage
-    infoImage: SpriteImage
-    sfxSample: Sample
+    constructor(
+        readonly textImage: SpriteImage,
+        readonly infoImage: SpriteImage,
+        readonly sfxSample: Sample,
+    ) {
+    }
 
-    constructor(infoMessageEntryConfig: TextInfoMessageEntryCfg, maxWidth: number) {
-        ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, infoMessageEntryConfig.text, maxWidth)
-            .then((textImage) => this.textImage = textImage)
-        this.infoImage = ResourceManager.getImageOrNull(infoMessageEntryConfig.imageFilename)
-        this.sfxSample = Sample[infoMessageEntryConfig.sfxName]
+    static async fromConfig(cfg: TextInfoMessageEntryCfg, maxWidth: number): Promise<TextInfoMessage> {
+        const textImage = await ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, cfg.text, maxWidth)
+        const infoImage = ResourceManager.getImageOrNull(cfg.imageFilename)
+        const sfxSample = Sample[cfg.sfxName]
+        return new TextInfoMessage(textImage, infoImage, sfxSample)
     }
 }
