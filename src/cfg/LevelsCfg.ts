@@ -40,7 +40,7 @@ export class LevelEntryCfg extends BaseConfig {
     fogRate: number = 0
     fallinMultiplier: number = 0
     numberOfLandSlidesTillCaveIn: number = 0
-    noFallins: boolean = false
+    noFallins: boolean = false // this does not disable fallins, compare with level05
     oxygenRate: number = 0 // 0 - 100
     surfaceMap: string = ''
     predugMap: string = ''
