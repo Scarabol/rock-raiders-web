@@ -34,7 +34,7 @@ export class ResourceManager extends ResourceCache {
         } else if (!lBasename.startsWith('world/shared/')) {
             return this.getTexturesBySequenceName(`world/shared/${getFilename(lBasename)}`)
         } else {
-            console.warn(`Texture sequence not found: ${lBasename}`)
+            if (VERBOSE) console.log(`Texture sequence not found: ${lBasename}`)
             return []
         }
     }
@@ -46,10 +46,10 @@ export class ResourceManager extends ResourceCache {
             const lEntityFilepath = entityPath ? entityPath.toLowerCase() + lTextureFilename : null
             if (entityPath) {
                 return this.resourceByName.getOrUpdate(lEntityFilepath, () => {
-                    return this.getImgDataFromSharedPaths(lTextureFilename, textureFilename, lMeshFilepath, lEntityFilepath)
+                    return this.getTextureImageDataFromSharedPaths(lTextureFilename, textureFilename, lMeshFilepath, lEntityFilepath)
                 })
             } else {
-                return this.getImgDataFromSharedPaths(lTextureFilename, textureFilename, lMeshFilepath, lEntityFilepath)
+                return this.getTextureImageDataFromSharedPaths(lTextureFilename, textureFilename, lMeshFilepath, lEntityFilepath)
             }
         })
         if (!imgData) return null
@@ -60,12 +60,12 @@ export class ResourceManager extends ResourceCache {
         return texture
     }
 
-    private static getImgDataFromSharedPaths(lTextureFilename: string, textureFilename: string, lMeshFilepath: string, lEntityFilepath: string): ImageData {
+    private static getTextureImageDataFromSharedPaths(lTextureFilename: string, textureFilename: string, lMeshFilepath: string, lEntityFilepath: string): ImageData {
         const ugSharedFilename = `vehicles/sharedug/${lTextureFilename}`
         return this.resourceByName.getOrUpdate(ugSharedFilename, () => {
             const worldSharedFilename = `world/shared/${lTextureFilename}`
             return this.resourceByName.getOrUpdate(worldSharedFilename, () => {
-                if (VERBOSE) console.warn(`Texture '${textureFilename}' (${lMeshFilepath}, ${lEntityFilepath}, ${worldSharedFilename}) unknown!`)
+                if (VERBOSE) console.log(`Image data for '${textureFilename}' not found at '${lMeshFilepath}', '${lEntityFilepath}' or '${worldSharedFilename}'`)
                 return null
             })
         })
@@ -77,7 +77,7 @@ export class ResourceManager extends ResourceCache {
         }
         const imgData = this.resourceByName.get(textureFilepath.toLowerCase())
         if (!imgData) {
-            console.warn(`Could not find texture '${textureFilepath}'`)
+            if (VERBOSE) console.warn(`Could not find texture '${textureFilepath}'`)
             return null
         }
         // without repeat wrapping some entities are not fully textured
@@ -233,7 +233,7 @@ class ResourceManagerTextureLoader extends LWOBTextureLoader {
             return ResourceManager.getTexturesBySequenceName(this.meshPath + match[1])
         } else {
             const texture = ResourceManager.getMeshTexture(textureFilename, this.meshPath, this.entityPath)
-            if (!texture && VERBOSE) console.warn(`Could not get mesh texture "${textureFilename}" from mesh path "${this.meshPath}" or entity path "${this.entityPath}"`)
+            if (!texture && VERBOSE) console.log(`Could not get mesh texture "${textureFilename}" from mesh path '${this.meshPath}' or entity path '${this.entityPath}'`)
             return texture ? [texture] : []
         }
     }
