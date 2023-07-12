@@ -105,11 +105,8 @@ export class AirLevelChanged extends LocalEvent {
 }
 
 export class NerpMessage extends LocalEvent {
-    text: string
-
-    constructor(text: string) {
+    constructor(readonly text: string, readonly messageTimeoutMs: number) {
         super(EventKey.NERP_MESSAGE)
-        this.text = text
     }
 }
 

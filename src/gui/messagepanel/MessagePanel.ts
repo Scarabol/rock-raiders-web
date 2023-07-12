@@ -53,7 +53,7 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(textInfoMessageConfig.textManTrained))
         this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(textInfoMessageConfig.textUnitUpgraded))
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessage) => {
-            this.setMessage({text: event.text})
+            this.setMessage({text: event.text}, event.messageTimeoutMs || 3000)
         })
         this.registerEventListener(EventKey.SET_SPACE_TO_CONTINUE, (event: SetSpaceToContinueEvent) => {
             if (event.state) {

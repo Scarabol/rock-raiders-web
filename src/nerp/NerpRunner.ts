@@ -35,6 +35,10 @@ export class NerpRunner {
     messagePermit: boolean = null
     objectiveSwitch: boolean = true
     objectiveShowing: number = 0
+    sampleLengthMultiplier: number = 0
+    timeAddedAfterSample: number = 0
+    timeForNoSample: number = 0
+    messageTimer: number = 0
 
     constructor(readonly worldMgr: WorldManager, nerpScriptFile: string) {
         this.script = NerpParser.parse(nerpScriptFile)
@@ -44,6 +48,7 @@ export class NerpRunner {
 
     update(elapsedMs: number) {
         this.timer += elapsedMs
+        this.messageTimer = this.messageTimer > 0 ? this.messageTimer - elapsedMs : 0
         while (this.timer >= 0) {
             this.timer -= NERP_EXECUTION_INTERVAL
             this.execute()
@@ -238,12 +243,14 @@ export class NerpRunner {
         return GameState.numCrystal
     }
 
-    setMessageTimerValues(sampleLengthMultiplier, timeAddedAfterSample, timeForNoSample) {
-        // TODO implement this
+    setMessageTimerValues(sampleLengthMultiplier: number, timeAddedAfterSample: number, timeForNoSample: number) {
+        this.sampleLengthMultiplier = sampleLengthMultiplier
+        this.timeAddedAfterSample = timeAddedAfterSample
+        this.timeForNoSample = timeForNoSample
     }
 
-    getMessageTimer() {
-        return 0 // TODO return remaining amount of time needed to fully play WAV message
+    getMessageTimer() { // XXX return remaining amount of time needed to fully play WAV message
+        return this.messageTimer // XXX workaround until sounds from DATA directory are implemented
     }
 
     cameraUnlock() {
@@ -257,8 +264,13 @@ export class NerpRunner {
             return
         }
         const msg = this.messages[messageNumber - 1]
-        if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt))
-        if (msg.snd && VERBOSE) console.warn(`Sounds from DATA directory not yet implemented`, msg.snd) // XXX snd files reside in sounds/streamed/ which is not included in WAD files :(
+        const sampleLength = this.timeForNoSample / 1000 // XXX workaround until sounds from DATA directory are implemented
+        const messageTimeoutMs = sampleLength * this.sampleLengthMultiplier + this.timeAddedAfterSample
+        if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt, messageTimeoutMs))
+        if (msg.snd) { // XXX snd files reside in sounds/streamed/ which is not included in WAD files :(
+            if (VERBOSE) console.warn(`Sounds from DATA directory not yet implemented`, msg.snd)
+        }
+        this.messageTimer = this.timeForNoSample // XXX workaround until sounds from DATA directory are implemented
     }
 
     setRockMonsterAtTutorial(tutoBlockId: number) {
