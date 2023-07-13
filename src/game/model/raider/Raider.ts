@@ -115,9 +115,6 @@ export class Raider implements Updatable, JobFulfiller {
     disposeFromWorld() {
         this.disposeFromScene()
         this.workAudio = resetAudioSafe(this.workAudio)
-        this.worldMgr.entityMgr.raiders.remove(this)
-        this.worldMgr.entityMgr.raidersUndiscovered.remove(this)
-        this.worldMgr.entityMgr.raidersInBeam.remove(this)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }

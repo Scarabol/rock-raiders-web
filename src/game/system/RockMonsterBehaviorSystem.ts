@@ -206,11 +206,10 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         } else if (!components.has(WorldTargetComponent)) {
                             if (behaviorComponent.targetWall.getDigPositions().some((p) => rockyPos.distanceToSquared(p) <= ROCKY_GATHER_DISTANCE_SQ)) {
                                 sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetWall.getCenterWorld2D()))
-                                this.worldMgr.entityMgr.rockMonsters.remove(entity)
+                                this.worldMgr.entityMgr.removeEntity(entity)
                                 sceneEntity.setAnimation(RockMonsterActivity.Enter, () => {
                                     EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
                                     this.worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
-                                    this.worldMgr.entityMgr.removeEntity(entity)
                                     this.ecs.removeEntity(entity)
                                     sceneEntity.dispose()
                                 })

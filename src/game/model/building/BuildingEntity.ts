@@ -62,7 +62,6 @@ export class BuildingEntity {
         this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
-            this.worldMgr.entityMgr.buildings.remove(this)
             this.worldMgr.entityMgr.removeEntity(this.entity)
             this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
             this.setEnergized(false)
@@ -168,8 +167,6 @@ export class BuildingEntity {
         this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.sceneEntity.dispose()
         this.engineSound = resetAudioSafe(this.engineSound)
-        this.worldMgr.entityMgr.buildings.remove(this)
-        this.worldMgr.entityMgr.buildingsUndiscovered.remove(this)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }

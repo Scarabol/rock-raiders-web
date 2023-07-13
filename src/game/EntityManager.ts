@@ -20,10 +20,12 @@ import { PositionComponent } from './component/PositionComponent'
 import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityComponent'
 import { RockMonsterActivity } from './model/anim/AnimationActivity'
 import { MonsterStatsComponent } from './component/MonsterStatsComponent'
+import { WorldManager } from './WorldManager'
 
 export class EntityManager {
     ecs: ECS
     selection: GameSelection = new GameSelection()
+    // entity partitions
     buildings: BuildingEntity[] = []
     buildingsUndiscovered: BuildingEntity[] = []
     raiders: Raider[] = []
@@ -47,7 +49,7 @@ export class EntityManager {
     completedBuildingSites: BuildingSite[] = []
     recordedEntities: GameEntity[] = []
 
-    constructor() {
+    constructor(readonly worldMgr: WorldManager) {
         // event handler must be placed here, because only this class knows the "actual" selection instance
         EventBus.registerEventListener(EventKey.DESELECT_ALL, () => {
             this.selection.deselectAll()
@@ -286,7 +288,15 @@ export class EntityManager {
     }
 
     removeEntity(entity: GameEntity) {
-        // TODO search in all other lists for this entity and remove it
+        this.buildings.removeAll((e) => e.entity === entity)
+        this.buildingsUndiscovered.removeAll((e) => e.entity === entity)
+        this.raiders.removeAll((e) => e.entity === entity)
+        this.raidersUndiscovered.removeAll((e) => e.entity === entity)
+        this.raidersInBeam.removeAll((e) => e.entity === entity)
+        this.materials.removeAll((e) => e.entity === entity)
+        this.materialsUndiscovered.removeAll((e) => e.entity === entity)
+        this.placedFences.removeAll((e) => e.entity === entity)
+        // this.buildingSites // TODO How to remove building site?
         this.spiders.remove(entity)
         this.undiscoveredSpiders.remove(entity)
         this.bats.remove(entity)
@@ -294,6 +304,10 @@ export class EntityManager {
         this.rockMonsters.remove(entity)
         this.undiscoveredRockMonsters.remove(entity)
         this.slugs.remove(entity)
+        this.vehicles.removeAll((e) => e.entity === entity)
+        this.vehiclesUndiscovered.removeAll((e) => e.entity === entity)
+        this.vehiclesInBeam.removeAll((e) => e.entity === entity)
+        // this.completedBuildingSites // TODO How to remove building site?
         this.recordedEntities.remove(entity)
     }
 }

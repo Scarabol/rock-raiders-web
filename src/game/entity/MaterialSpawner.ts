@@ -84,7 +84,7 @@ export class MaterialSpawner {
                 material.worldMgr.ecs.addComponent(material.entity, new HealthComponent(statsFence.DamageCausesCallToArms, statsFence.CollHeight, 10, material.sceneEntity, false))
                 material.worldMgr.ecs.addComponent(material.entity, new LastWillComponent(() => {
                     EventBus.publishEvent(new GenericDeathEvent(material.worldMgr.ecs.getComponents(material.entity).get(PositionComponent)))
-                    material.worldMgr.entityMgr.placedFences.remove(material)
+                    material.worldMgr.entityMgr.removeEntity(material.entity)
                     material.targetSurface.fence = null
                     material.targetSurface.fenceRequested = false
                     material.worldMgr.ecs.addComponent(material.entity, new BeamUpComponent(material))

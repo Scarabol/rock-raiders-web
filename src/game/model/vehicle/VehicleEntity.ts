@@ -79,13 +79,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
-        if (this.driver) {
-            this.worldMgr.entityMgr.raiders.remove(this.driver)
-            this.worldMgr.entityMgr.raidersInBeam.remove(this.driver)
-            this.worldMgr.entityMgr.raidersUndiscovered.remove(this.driver)
-        }
-        this.worldMgr.entityMgr.vehicles.remove(this)
-        this.worldMgr.entityMgr.vehiclesInBeam.add(this)
+        if (this.driver) this.worldMgr.entityMgr.removeEntity(this.driver.entity)
+        this.worldMgr.entityMgr.removeEntity(this.entity)
     }
 
     disposeFromWorld() {
@@ -93,13 +88,6 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.workAudio = resetAudioSafe(this.workAudio)
         this.engineSound = resetAudioSafe(this.engineSound)
-        this.worldMgr.entityMgr.vehicles.remove(this)
-        this.worldMgr.entityMgr.vehiclesUndiscovered.remove(this)
-        this.worldMgr.entityMgr.vehiclesInBeam.remove(this)
-        this.engineSound = resetAudioSafe(this.engineSound)
-        this.worldMgr.entityMgr.vehicles.remove(this)
-        this.worldMgr.entityMgr.vehiclesUndiscovered.remove(this)
-        this.worldMgr.entityMgr.vehiclesInBeam.remove(this)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }

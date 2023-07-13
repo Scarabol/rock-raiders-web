@@ -39,8 +39,8 @@ export class GameScreen {
         this.selectionLayer = screenMaster.addLayer(new SelectionLayer(), 510)
         this.guiLayer = screenMaster.addLayer(new GuiMainLayer(), 520)
         this.overlayLayer = screenMaster.addLayer(new OverlayLayer(), 530)
-        this.entityMgr = new EntityManager()
         this.worldMgr = new WorldManager()
+        this.entityMgr = new EntityManager(this.worldMgr)
         this.sceneMgr = new SceneManager(this.gameLayer.canvas)
         this.sceneMgr.worldMgr = this.worldMgr
         this.worldMgr.sceneMgr = this.sceneMgr
