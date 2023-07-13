@@ -21,6 +21,7 @@ import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityCom
 import { RockMonsterActivity } from './model/anim/AnimationActivity'
 import { MonsterStatsComponent } from './component/MonsterStatsComponent'
 import { WorldManager } from './WorldManager'
+import { HealthComponent } from './component/HealthComponent'
 
 export class EntityManager {
     ecs: ECS
@@ -87,7 +88,6 @@ export class EntityManager {
     }
 
     update(elapsedMs: number) {
-        this.buildings.forEach((b) => updateSafe(b, elapsedMs))
         this.raiders.forEach((r) => updateSafe(r, elapsedMs))
         this.raidersInBeam.forEach((r) => updateSafe(r, elapsedMs))
         this.vehicles.forEach((v) => updateSafe(v, elapsedMs))
@@ -288,6 +288,8 @@ export class EntityManager {
     }
 
     removeEntity(entity: GameEntity) {
+        const healthBarSprite = this.ecs.getComponents(entity)?.get(HealthComponent)?.sprite
+        if (healthBarSprite) this.worldMgr.sceneMgr.removeSprite(healthBarSprite)
         this.buildings.removeAll((e) => e.entity === entity)
         this.buildingsUndiscovered.removeAll((e) => e.entity === entity)
         this.raiders.removeAll((e) => e.entity === entity)

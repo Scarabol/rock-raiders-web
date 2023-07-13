@@ -1,4 +1,4 @@
-import { AmbientLight, AudioListener, Color, Frustum, Mesh, Object3D, PositionalAudio, Scene, Vector2, Vector3 } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, Mesh, Object3D, PositionalAudio, Scene, Sprite, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { SpriteImage } from '../core/Sprite'
 import { ResourceManager } from '../resource/ResourceManager'
@@ -28,6 +28,7 @@ export class SceneManager implements Updatable {
     readonly controls: BirdViewControls
     readonly entities: AnimatedSceneEntity[] = []
     readonly miscAnims: AnimationGroup[] = []
+    readonly sprites: (Sprite & Updatable)[] = []
     worldMgr: WorldManager
     scene: Scene
     ambientLight: AmbientLight
@@ -172,6 +173,7 @@ export class SceneManager implements Updatable {
         updateSafe(this.terrain, elapsedMs)
         this.entities.forEach((e) => updateSafe(e, elapsedMs))
         this.miscAnims.forEach((a) => updateSafe(a, elapsedMs))
+        this.sprites.forEach((s) => updateSafe(s, elapsedMs))
         updateSafe(this.cursor, elapsedMs)
         try {
             this.controls.updateForceMove(elapsedMs)
@@ -235,6 +237,14 @@ export class SceneManager implements Updatable {
         this.miscAnims.remove(group)
         this.scene.remove(group)
         group.dispose()
+    }
+
+    addSprite(sprite: (Sprite & Updatable)) {
+        this.sprites.add(sprite)
+    }
+
+    removeSprite(sprite: (Sprite & Updatable)) {
+        this.sprites.remove(sprite)
     }
 
     addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean): PositionalAudio {

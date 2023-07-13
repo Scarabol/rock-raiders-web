@@ -57,9 +57,11 @@ export class BuildingEntity {
         this.sceneEntity.flipXAxis()
         this.powerOffSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
         this.sceneEntity.add(this.powerOffSprite)
+        this.worldMgr.sceneMgr.addSprite(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
         this.entity = this.worldMgr.ecs.addEntity()
-        this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false))
+        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false))
+        this.worldMgr.sceneMgr.addSprite(healthComponent.sprite)
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
             this.worldMgr.entityMgr.removeEntity(this.entity)
@@ -165,6 +167,7 @@ export class BuildingEntity {
 
     disposeFromWorld() {
         this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
+        this.worldMgr.sceneMgr.removeSprite(this.powerOffSprite)
         this.sceneEntity.dispose()
         this.engineSound = resetAudioSafe(this.engineSound)
         this.worldMgr.entityMgr.removeEntity(this.entity)
@@ -349,10 +352,6 @@ export class BuildingEntity {
 
     canTeleportIn(entityType: EntityType): boolean {
         return this.teleport?.canTeleportIn(entityType) && (entityType === EntityType.PILOT || !this.pathSurfaces.some((s) => s.isBlockedByVehicle()))
-    }
-
-    update(elapsedMs: number) {
-        this.powerOffSprite.update(elapsedMs) // TODO Move sprite updating to scene manager
     }
 
     getMaxCarry(): number {

@@ -3,13 +3,17 @@ import { createContext } from '../core/ImageHelper'
 import { SpriteContext } from '../core/Sprite'
 import { ResourceManager } from '../resource/ResourceManager'
 import { rgbToHtmlHex } from '../core/Util'
+import { GameState } from '../game/model/GameState'
 
 export class HealthBarSprite extends Sprite {
-    private static readonly textureSize = 128
-    private readonly textureContext: SpriteContext
-    private readonly activeArea: { x: number, y: number, w: number, h: number } = {x: 0, y: 0, w: 0, h: 0}
+    static readonly textureSize = 128
+    readonly textureContext: SpriteContext
+    readonly activeArea: { x: number, y: number, w: number, h: number } = {x: 0, y: 0, w: 0, h: 0}
+    actualStatus: number = 1
+    targetStatus: number = 1
+    visibleTimeout: number = 0
 
-    constructor(yOffset: number, scale: number) {
+    constructor(yOffset: number, scale: number, readonly canBeShownPermanently: boolean) {
         super(new SpriteMaterial({depthTest: false}))
         this.position.set(0, yOffset, 0)
         this.scale.setScalar(scale)
@@ -33,8 +37,25 @@ export class HealthBarSprite extends Sprite {
         this.material.map = new CanvasTexture(this.textureContext.canvas as HTMLCanvasElement)
     }
 
-    setStatus(value: number) {
-        const x = Math.max(0, Math.min(1, value))
+    setTargetStatus(targetStatus: number) {
+        const nextStatus = Math.max(0, Math.min(1, targetStatus))
+        if (this.targetStatus === nextStatus) return
+        this.targetStatus = nextStatus
+        this.visibleTimeout = 3000
+        this.visible = true
+    }
+
+    update(elapsedMs: number) {
+        if (this.visibleTimeout > 0) {
+            this.visibleTimeout -= elapsedMs
+        } else {
+            this.visible = GameState.showObjInfo && this.canBeShownPermanently
+            this.visibleTimeout = 0
+        }
+        if (this.targetStatus === this.actualStatus) return
+        const delta = this.targetStatus - this.actualStatus
+        this.actualStatus += Math.sign(delta) * Math.min(Math.abs(delta), 0.03)
+        const x = Math.max(0, Math.min(1, this.actualStatus))
         this.textureContext.fillStyle = rgbToHtmlHex(ResourceManager.configuration.objInfo.healthBarRGB)
         this.textureContext.fillRect(this.activeArea.x, this.activeArea.y, this.activeArea.w, this.activeArea.h)
         this.textureContext.fillStyle = rgbToHtmlHex(ResourceManager.configuration.objInfo.healthBarBackgroundRGB)

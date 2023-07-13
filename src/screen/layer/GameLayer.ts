@@ -190,6 +190,10 @@ export class GameLayer extends ScreenLayer {
         if (event.eventEnum === KEY_EVENT.UP) {
             if (event.key === ' ') {
                 GameState.showObjInfo = !GameState.showObjInfo
+                this.entityMgr.raiders.forEach((r) => {
+                    r.infoComponent.bubbleSprite.visible = GameState.showObjInfo
+                    r.infoComponent.hungerSprite.visible = GameState.showObjInfo
+                })
             } else if (DEV_MODE && this.entityMgr.selection.surface) {
                 if (event.key === 'c') {
                     this.entityMgr.selection.surface.collapse()

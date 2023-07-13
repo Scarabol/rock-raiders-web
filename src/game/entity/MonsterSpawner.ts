@@ -81,7 +81,8 @@ export class MonsterSpawner {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
         worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
-        worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false))
+        const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false))
+        worldMgr.sceneMgr.addSprite(healthComponent.sprite)
         worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
             const components = worldMgr.ecs.getComponents(entity)
             const numCrystalsEaten = components.get(RockMonsterBehaviorComponent)?.numCrystalsEaten || 0
