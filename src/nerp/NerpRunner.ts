@@ -16,6 +16,7 @@ import { NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
 import { GameResultEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
+import { SurfaceType } from '../game/terrain/SurfaceType'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -173,6 +174,10 @@ export class NerpRunner {
         }
     }
 
+    setTutorialPointer(unknown1: number, unknown2: number) {
+        // XXX Only used in tutorials
+    }
+
     /**
      * This is used to make messages come up/not come up.
      * @param blockMessages
@@ -193,6 +198,10 @@ export class NerpRunner {
 
     setTeleportPadLevel(level: number) {
         this.setBuildingsUpgradeLevel(EntityType.TELEPORT_PAD, level)
+    }
+
+    setDocksLevel(level: number) {
+        this.setBuildingsUpgradeLevel(EntityType.DOCKS, level)
     }
 
     setPowerStationLevel(level: number) {
@@ -257,12 +266,17 @@ export class NerpRunner {
         this.worldMgr.sceneMgr.controls.enabled = true
     }
 
-    setMessage(messageNumber: number, arrowDisabled) { // TODO Implement arrow disabled
+    cameraLockOnObject(recordedEntity: number) {
+        // XXX Only used in tutorials, lock camera to recorded entity
+    }
+
+    setMessage(messageNumber: number, arrowDisabled: number) {
         if (!this.messagePermit) return
         if (messageNumber < 1) {
             console.warn(`Unexpected message number ${messageNumber} given`)
             return
         }
+        this.supressArrow(arrowDisabled)
         const msg = this.messages[messageNumber - 1]
         const sampleLength = this.timeForNoSample / 1000 // XXX workaround until sounds from DATA directory are implemented
         const messageTimeoutMs = sampleLength * this.sampleLengthMultiplier + this.timeAddedAfterSample
@@ -287,6 +301,15 @@ export class NerpRunner {
         const targetBlock = tutoBlocks[0]
         if (!targetBlock) return
         this.worldMgr.sceneMgr.controls.forceMoveToTarget(targetBlock.getCenterWorld())
+    }
+
+    setTutorialBlockIsGround(tutoBlockId: number, state: number): void {
+        if (state === 1) {
+            const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+            tutoBlocks.forEach((s) => s.setSurfaceType(SurfaceType.GROUND))
+        } else {
+            console.warn(`Unexpected state (${state}) given for setTutorialBlockIsGround`)
+        }
     }
 
     getTutorialBlockIsGround(tutoBlockId: number): number {
@@ -367,6 +390,14 @@ export class NerpRunner {
 
     getRandom100(): number {
         return Math.randomInclusive(100)
+    }
+
+    supressArrow(state: number): void {
+        // XXX Implement tutorial function to enable/disable helper arrow
+    }
+
+    setGameSpeed(speed: number, unknown: number): void {
+        // TODO Only used in tutorials, implement changeable game speed first
     }
 
     callMethod(methodName: string, methodArgs: any[]) {
