@@ -31,9 +31,9 @@ export class GuiManager {
         const entityMgr = worldMgr.entityMgr
         EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: SelectedRaiderPickTool) => {
             entityMgr.selection.raiders.forEach((r) => {
-                if (!r.hasTool(event.tool)) {
-                    r.setJob(new GetToolJob(entityMgr, event.tool, null))
-                }
+                if (r.hasTool(event.tool)) return
+                const pathToToolstation = r.findShortestPath(r.worldMgr.entityMgr.getGetToolTargets())
+                if (pathToToolstation) r.setJob(new GetToolJob(entityMgr, event.tool, pathToToolstation.target.building))
             })
             EventBus.publishEvent(new DeselectAll())
         })
@@ -120,10 +120,9 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_RAIDER_UPGRADE, () => {
             entityMgr.selection.raiders.forEach((r) => {
-                const closestToolstation = entityMgr.getClosestBuildingByType(r.getPosition(), EntityType.TOOLSTATION)
-                if (closestToolstation && r.level < r.stats.Levels) {
-                    r.setJob(new UpgradeRaiderJob(closestToolstation))
-                }
+                if (r.level >= r.stats.Levels) return
+                const closestToolstation = r.findShortestPath(entityMgr.getRaiderUpgradePathTarget())
+                if (closestToolstation) r.setJob(new UpgradeRaiderJob(closestToolstation.target.building))
             })
             EventBus.publishEvent(new DeselectAll())
         })

@@ -2,7 +2,6 @@ import { Sample } from '../../audio/Sample'
 import { SoundManager } from '../../audio/SoundManager'
 import { SelectPanelType } from '../../event/LocalEvents'
 import { BuildingEntity } from './building/BuildingEntity'
-import { EntityType } from './EntityType'
 import { DrillJob } from './job/surface/DrillJob'
 import { ClearRubbleJob } from './job/surface/ClearRubbleJob'
 import { GetToolJob } from './job/raider/GetToolJob'
@@ -149,7 +148,8 @@ export class GameSelection {
             if (r.isPrepared(job)) {
                 r.setJob(job)
             } else {
-                r.setJob(new GetToolJob(r.worldMgr.entityMgr, job.requiredTool, r.worldMgr.entityMgr.getClosestBuildingByType(r.getPosition(), EntityType.TOOLSTATION)), job)
+                const pathToToolstation = r.findShortestPath(r.worldMgr.entityMgr.getGetToolTargets())
+                if (pathToToolstation) r.setJob(new GetToolJob(r.worldMgr.entityMgr, job.requiredTool, pathToToolstation.target.building), job)
             }
         })
         this.vehicles.forEach((v) => {

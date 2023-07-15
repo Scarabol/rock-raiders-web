@@ -118,7 +118,17 @@ export class EntityManager {
     }
 
     getClosestBuildingByType(position: Vector3, ...buildingTypes: EntityType[]): BuildingEntity {
-        return EntityManager.getClosestBuilding(this.getBuildingsByType(...buildingTypes), position)
+        const buildings = this.getBuildingsByType(...buildingTypes)
+        let closest: BuildingEntity = null, minDist: number = null
+        buildings.forEach((b) => {
+            const bPos = b.getPosition()
+            const dist = position.distanceToSquared(bPos)
+            if (closest === null || dist < minDist) {
+                closest = b
+                minDist = dist
+            }
+        })
+        return closest
     }
 
     getGetToolTargets(): PathTarget[] {
@@ -129,7 +139,11 @@ export class EntityManager {
         return this.getBuildingsByType(entityType).map((b) => b.carryPathTarget)
     }
 
-    getUpgradePathTargets(): PathTarget[] {
+    getRaiderUpgradePathTarget(): PathTarget[] {
+        return this.getBuildingsByType(EntityType.TOOLSTATION).flatMap((b) => b.getTrainingTargets())
+    }
+
+    getVehicleUpgradePathTargets(): PathTarget[] {
         return this.getBuildingsByType(EntityType.UPGRADE).map((b) => PathTarget.fromBuilding(b, b.getDropPosition2D()))
     }
 
@@ -149,19 +163,6 @@ export class EntityManager {
 
     hasUpgradeSite(): boolean {
         return this.buildings.some((b) => b.isPowered() && b.entityType === EntityType.UPGRADE)
-    }
-
-    private static getClosestBuilding(buildings: BuildingEntity[], position: Vector3) {
-        let closest: BuildingEntity = null, minDist: number = null
-        buildings.forEach((b) => {
-            const bPos = b.getPosition()
-            const dist = position.distanceToSquared(bPos) // TODO better use pathfinding
-            if (closest === null || dist < minDist) {
-                closest = b
-                minDist = dist
-            }
-        })
-        return closest // TODO when using path finding, return path instead
     }
 
     getRaiderFightTargets(): PathTarget[] {

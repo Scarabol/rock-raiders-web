@@ -12,7 +12,7 @@ export class UpgradeVehicleJob extends Job {
 
     constructor(worldMgr: WorldManager, readonly vehicle: VehicleEntity, readonly upgrade: VehicleUpgrade) {
         super()
-        this.workplace = vehicle.findShortestPath(worldMgr.entityMgr.getUpgradePathTargets())?.target
+        this.workplace = vehicle.findShortestPath(worldMgr.entityMgr.getVehicleUpgradePathTargets())?.target
     }
 
     getWorkplace(entity: VehicleEntity): PathTarget {

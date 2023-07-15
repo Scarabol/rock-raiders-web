@@ -338,12 +338,11 @@ export class BuildingEntity {
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
-    getTrainingTargets() {
-        return [new Vector2(-1, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(0, -1)]
-            .map((v) => {
-                const location = v.multiplyScalar(TILESIZE / 2).add(this.primarySurface.getCenterWorld2D())
-                return PathTarget.fromBuilding(this, location)
-            })
+    getTrainingTargets(): PathTarget[] {
+        return [new Vector2(-1, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(0, -1)].map((v) => {
+            const location = v.multiplyScalar(TILESIZE / 2).add(this.primarySurface.getCenterWorld2D())
+            return PathTarget.fromBuilding(this, location)
+        })
     }
 
     isTrainingSite(training: RaiderTraining): boolean {
