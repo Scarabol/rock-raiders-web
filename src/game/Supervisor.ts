@@ -73,7 +73,9 @@ export class Supervisor {
             let closestVehicle: VehicleEntity = null
             let closestVehicleDistance: number = null
             unemployedVehicles.forEach((vehicle) => {
-                const pathToJob = job.carryItem ? vehicle.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : vehicle.findShortestPath(job.getWorkplace(vehicle))
+                const pathToWorkplace = vehicle.findShortestPath(job.getWorkplace(vehicle))
+                if (!pathToWorkplace) return
+                const pathToJob = job.carryItem ? vehicle.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : pathToWorkplace
                 if (!pathToJob) return
                 if (vehicle.isPrepared(job)) {
                     const dist = pathToJob.lengthSq
@@ -99,7 +101,9 @@ export class Supervisor {
             let closestTrainingArea: BuildingEntity = null
             const requiredTraining = job.requiredTraining
             unemployedRaider.forEach((raider) => {
-                const pathToJob = job.carryItem ? raider.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : raider.findShortestPath(job.getWorkplace(raider))
+                const pathToWorkplace = raider.findShortestPath(job.getWorkplace(raider))
+                if (!pathToWorkplace) return
+                const pathToJob = job.carryItem ? raider.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : pathToWorkplace
                 if (!pathToJob) return
                 if (raider.isPrepared(job)) {
                     const dist = pathToJob.lengthSq
