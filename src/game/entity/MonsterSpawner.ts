@@ -55,17 +55,17 @@ export class MonsterSpawner {
                 worldMgr.ecs.addComponent(entity, new LastWillComponent(() => worldMgr.ecs.removeComponent(entity, RaiderScareComponent)))
                 break
             case EntityType.ICE_MONSTER:
-                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster')
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType)
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.iceMonster))
                 worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.iceMonster))
                 break
             case EntityType.LAVA_MONSTER:
-                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/LavaMonster')
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/LavaMonster', entityType)
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.lavaMonster))
                 worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.lavaMonster))
                 break
             case EntityType.ROCK_MONSTER:
-                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster')
+                this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster', entityType)
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.rockMonster))
                 worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.rockMonster))
                 break
@@ -77,11 +77,11 @@ export class MonsterSpawner {
         return entity
     }
 
-    private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string) {
+    private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string, entityType: EntityType) {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
         worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
-        const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false))
+        const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, ResourceManager.getRockFallDamage(entityType)))
         worldMgr.sceneMgr.addSprite(healthComponent.sprite)
         worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
             const components = worldMgr.ecs.getComponents(entity)

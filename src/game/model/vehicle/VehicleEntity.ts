@@ -62,7 +62,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr.audioListener)
         aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
-        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false, 24, 14, this.sceneEntity, false))
+        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false, 24, 14, this.sceneEntity, false, ResourceManager.getRockFallDamage(this.entityType, this.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.sprite)
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
             EventBus.publishEvent(new GenericDeathEvent(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)))
@@ -403,6 +403,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const upgradeLevel = VehicleUpgrades.toUpgradeString(this.upgrades)
         this.sceneEntity.setUpgradeLevel(upgradeLevel)
         this.level = parseInt(upgradeLevel, 2)
+        this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent).rockFallDamage = ResourceManager.getRockFallDamage(this.entityType, this.level)
     }
 
     getRepairValue(): number {

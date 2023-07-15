@@ -11,6 +11,7 @@ import { RaiderTool, RaiderTools } from '../game/model/raider/RaiderTool'
 import { RaiderTraining, RaiderTrainings } from '../game/model/raider/RaiderTraining'
 import { LWSCData, LWSCParser } from './LWSCParser'
 import { AnimEntityData, AnimEntityParser } from './AnimEntityParser'
+import { EntityType } from '../game/model/EntityType'
 
 export class ResourceManager extends ResourceCache {
     static lwoCache: Map<string, SceneMesh> = new Map()
@@ -215,6 +216,10 @@ export class ResourceManager extends ResourceCache {
             contentHeight += maxHeight
         }
         return [contentWidth, contentHeight]
+    }
+
+    static getRockFallDamage(entityType: EntityType, level: number = 0): number {
+        return this.configuration.weaponTypes.get('rockfallin').damageByEntityType.get(entityType)?.[level] || 0
     }
 }
 

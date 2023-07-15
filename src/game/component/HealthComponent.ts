@@ -9,7 +9,14 @@ export class HealthComponent extends AbstractGameComponent {
     maxHealth: number = 100
     sprite: HealthBarSprite = null
 
-    constructor(readonly triggerAlarm: boolean, yOffset: number, scale: number, parent: Object3D,  canBeShownPermanently: boolean) {
+    constructor(
+        readonly triggerAlarm: boolean,
+        yOffset: number,
+        scale: number,
+        parent: Object3D,
+        canBeShownPermanently: boolean,
+        public rockFallDamage: number,
+    ) {
         super()
         this.sprite = new HealthBarSprite(yOffset, scale, canBeShownPermanently)
         parent.add(this.sprite)

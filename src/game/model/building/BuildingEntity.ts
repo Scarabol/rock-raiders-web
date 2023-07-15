@@ -60,7 +60,7 @@ export class BuildingEntity {
         this.worldMgr.sceneMgr.addSprite(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
         this.entity = this.worldMgr.ecs.addEntity()
-        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false))
+        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false, ResourceManager.getRockFallDamage(entityType, this.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.sprite)
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
@@ -142,6 +142,7 @@ export class BuildingEntity {
         }
         EventBus.publishEvent(new MaterialAmountChanged())
         this.level++
+        this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent).rockFallDamage = ResourceManager.getRockFallDamage(this.entityType, this.level)
         EventBus.publishEvent(new DeselectAll())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.UpgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.heading, false)

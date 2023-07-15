@@ -7,9 +7,11 @@ import { PositionComponent } from '../component/PositionComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SurfaceType } from '../terrain/SurfaceType'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
+import { LandslideEvent } from '../../event/WorldLocationEvent'
 
 export class DamageSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
+    readonly landslides: PositionComponent[] = []
     readonly dynamiteExplosions: DynamiteExplosionEvent[] = []
     readonly dynamiteRadiusSq: number = 0
     readonly dynamiteMaxDamage: number = 0
@@ -20,6 +22,9 @@ export class DamageSystem extends AbstractGameSystem {
         this.dynamiteMaxDamage = ResourceManager.configuration.main.DynamiteMaxDamage
         EventBus.registerEventListener(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
             this.dynamiteExplosions.push(event)
+        })
+        EventBus.registerEventListener(EventKey.LOCATION_LANDSLIDE, (event: LandslideEvent) => {
+            this.landslides.push(event.location)
         })
     }
 
@@ -41,10 +46,15 @@ export class DamageSystem extends AbstractGameSystem {
                 if (!movableComponent?.crossLava && positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
                     healthComponent.changeHealth(-50 / 1000 * elapsedMs)
                 }
+                this.landslides.forEach((landslide) => {
+                    if (positionComponent.surface !== landslide.surface) return
+                    healthComponent.changeHealth(-healthComponent.rockFallDamage * 50) // TODO balance fallins
+                })
             } catch (e) {
                 console.error(e)
             }
         }
         this.dynamiteExplosions.length = 0
+        this.landslides.length = 0
     }
 }

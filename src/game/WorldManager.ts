@@ -33,6 +33,7 @@ import { RaiderScareSystem } from './system/RaiderScareSystem'
 export class WorldManager {
     readonly ecs: ECS = new ECS()
     readonly jobSupervisor: Supervisor = new Supervisor(this)
+    readonly damageSystem: DamageSystem
     readonly oxygenSystem: OxygenSystem
     sceneMgr: SceneManager
     entityMgr: EntityManager
@@ -51,7 +52,7 @@ export class WorldManager {
         this.ecs.addSystem(new SceneEntityPositionSystem())
         this.ecs.addSystem(new SceneEntityHeadingSystem())
         this.ecs.addSystem(new RandomMoveBehaviorSystem())
-        this.ecs.addSystem(new DamageSystem())
+        this.damageSystem = this.ecs.addSystem(new DamageSystem())
         this.ecs.addSystem(new BeamUpSystem())
         this.ecs.addSystem(new MapMarkerUpdateSystem())
         this.ecs.addSystem(new RockMonsterBehaviorSystem(this))
