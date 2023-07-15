@@ -50,10 +50,14 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         this.doIdle(behaviorComponent, pathFinder, rockyPos, stats, entity, crystals)
                         break
                     case RockMonsterBehaviorState.GOTO_CRYSTAL:
-                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH) {
-                            behaviorComponent.state = RockMonsterBehaviorState.STAMP
+                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH || positionComponent.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING) {
+                            const prevTargetComponent = components.get(WorldTargetComponent)
                             this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                            this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(positionComponent.surface.getCenterWorld2D()))
+                            sceneEntity.setAnimation(RockMonsterActivity.Stamp, () => {
+                                this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
+                                sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
+                            })
                         } else if (!this.worldMgr.entityMgr.materials.includes(behaviorComponent.targetCrystal)) {
                             behaviorComponent.changeToIdle()
                         } else if (!components.has(WorldTargetComponent)) {
@@ -79,21 +83,6 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     behaviorComponent.changeToIdle()
                                 }
                             }
-                        }
-                        break
-                    case RockMonsterBehaviorState.STAMP:
-                        if (!components.has(WorldTargetComponent)) {
-                            sceneEntity.setAnimation(RockMonsterActivity.Stamp, () => {
-                                sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                                positionComponent.surface.makeRubble(2)
-                                if (behaviorComponent.targetCrystal) {
-                                    behaviorComponent.state = RockMonsterBehaviorState.GOTO_CRYSTAL
-                                } else if (behaviorComponent.targetWall) {
-                                    behaviorComponent.state = RockMonsterBehaviorState.GOTO_WALL
-                                } else {
-                                    behaviorComponent.changeToIdle()
-                                }
-                            })
                         }
                         break
                     case RockMonsterBehaviorState.BOULDER_ATTACK:
@@ -141,7 +130,15 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         }
                         break
                     case RockMonsterBehaviorState.MELEE_ATTACK:
-                        if (!behaviorComponent.targetBuilding) {
+                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH || positionComponent.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING) {
+                            const prevTargetComponent = components.get(WorldTargetComponent)
+                            this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                            sceneEntity.setAnimation(RockMonsterActivity.Stamp, () => {
+                                this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
+                                sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
+                            })
+                        } else if (!behaviorComponent.targetBuilding) {
                             // TODO path finding to buildings does not work since surface below buildings are not accessible
                             const closestBuilding = pathFinder.findClosestObj(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
                             if (closestBuilding) {
@@ -174,10 +171,14 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         }
                         break
                     case RockMonsterBehaviorState.GOTO_WALL:
-                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH) {
-                            behaviorComponent.state = RockMonsterBehaviorState.STAMP
+                        if (positionComponent.surface.surfaceType === SurfaceType.POWER_PATH || positionComponent.surface.surfaceType === SurfaceType.POWER_PATH_BUILDING) {
+                            const prevTargetComponent = components.get(WorldTargetComponent)
                             this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                            this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(positionComponent.surface.getCenterWorld2D()))
+                            sceneEntity.setAnimation(RockMonsterActivity.Stamp, () => {
+                                this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
+                                sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
+                            })
                         } else if (behaviorComponent.targetWall.wallType !== WALL_TYPE.WALL) {
                             behaviorComponent.changeToIdle()
                         } else if (!components.has(WorldTargetComponent)) {

@@ -8,7 +8,6 @@ export enum RockMonsterBehaviorState {
     IDLE,
     GOTO_CRYSTAL,
     EAT_CRYSTAL,
-    STAMP,
     BOULDER_ATTACK,
     MELEE_ATTACK,
     GO_HOME,
