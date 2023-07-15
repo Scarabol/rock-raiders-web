@@ -92,6 +92,7 @@ export class NerpParser {
 
     private static replaceMacros(macrosByName: Map<string, { args: string[], lines: string[] }>, line: string): string[] {
         // check if this line contains a macro
+        line = line.replace('goto(jump)', ':jump') // XXX Remove this workaround for level 14
         const split = line.split('(') // not a very stable check though...
         const macro = macrosByName.get(split[0])
         if (macro) {
