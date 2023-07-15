@@ -19,6 +19,8 @@ import { BeamUpComponent } from './component/BeamUpComponent'
 import { CameraRotation } from '../scene/BirdViewControls'
 import { RepairBuildingJob } from './model/job/raider/RepairBuildingJob'
 import { MaterialSpawner } from './entity/MaterialSpawner'
+import { GenericDeathEvent } from '../event/WorldLocationEvent'
+import { PositionComponent } from './component/PositionComponent'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -54,6 +56,7 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_FENCE_BEAMUP, () => {
             const fence = entityMgr.selection.fence
+            EventBus.publishEvent(new GenericDeathEvent(fence.worldMgr.ecs.getComponents(fence.entity).get(PositionComponent)))
             fence.worldMgr.ecs.getComponents(fence.entity).get(SelectionFrameComponent)?.deselect()
             fence.worldMgr.ecs.removeComponent(fence.entity, SelectionFrameComponent)
             fence.worldMgr.entityMgr.removeEntity(fence.entity)

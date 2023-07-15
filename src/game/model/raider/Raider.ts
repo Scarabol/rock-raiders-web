@@ -68,10 +68,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr.sceneMgr.addSprite(healthComponent.sprite)
         this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
         this.infoComponent = this.worldMgr.ecs.addComponent(this.entity, new RaiderInfoComponent(this.sceneEntity))
-        this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
-            EventBus.publishEvent(new GenericDeathEvent(this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)))
-            this.beamUp()
-        }))
+        this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
 
@@ -107,7 +104,9 @@ export class Raider implements Updatable, JobFulfiller {
 
     beamUp() {
         this.stopJob()
-        this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.deselect()
+        const components = this.worldMgr.ecs.getComponents(this.entity)
+        EventBus.publishEvent(new GenericDeathEvent(components.get(PositionComponent)))
+        components.get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         EventBus.publishEvent(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
