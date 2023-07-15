@@ -45,7 +45,7 @@ export class SelectionRaycaster {
     getFirstCursorTarget(origin: Vector2, checkAll: boolean): CursorTarget {
         const raycaster = new SceneRaycaster(this.worldMgr, origin)
         if (checkAll) {
-            const raider = raycaster.getFirstEntity(this.worldMgr.entityMgr.raiders)
+            const raider = raycaster.getFirstEntity(this.worldMgr.entityMgr.raiders.filter((r) => !r.vehicle))
             if (raider) return {raider: raider, entityType: raider.entityType}
         }
         const material = raycaster.getFirstEntity(this.worldMgr.entityMgr.materials)
