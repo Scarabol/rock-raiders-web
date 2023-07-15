@@ -6,6 +6,7 @@ import { DynamiteExplosionEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SurfaceType } from '../terrain/SurfaceType'
+import { MovableStatsComponent } from '../component/MovableStatsComponent'
 
 export class DamageSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
@@ -36,7 +37,8 @@ export class DamageSystem extends AbstractGameSystem {
                         healthComponent.changeHealth(-this.dynamiteMaxDamage * Math.pow(inRangeSq, 2))
                     }
                 })
-                if (positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
+                const movableComponent = components.get(MovableStatsComponent)
+                if (!movableComponent?.crossLava && positionComponent.surface.surfaceType === SurfaceType.LAVA5) {
                     healthComponent.changeHealth(-50 / 1000 * elapsedMs)
                 }
             } catch (e) {
