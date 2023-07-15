@@ -375,10 +375,10 @@ export class Raider implements Updatable, JobFulfiller {
         const targetComponents = this.worldMgr.ecs.getComponents(alarmTarget.target.entity)
         const stats = targetComponents.get(MonsterStatsComponent).stats
         const attacks = [
-            {tool: RaiderTool.LASER, damage: stats.LaserDamage, allowed: stats.CanLaser, bulletType: EntityType.LASER_SHOT, misc: ResourceManager.configuration.miscObjects.LaserShot},
-            {tool: RaiderTool.FREEZERGUN, damage: stats.FreezerDamage, allowed: stats.CanFreeze, bulletType: EntityType.FREEZER_SHOT, misc: ResourceManager.configuration.miscObjects.Freezer},
-            {tool: RaiderTool.PUSHERGUN, damage: stats.PusherDamage, allowed: stats.CanPush, bulletType: EntityType.PUSHER_SHOT, misc: ResourceManager.configuration.miscObjects.Pusher},
-        ].filter((a) => this.hasTool(a.tool)).sort((l, r) => r.damage - l.damage)
+            {tool: RaiderTool.LASER, allowed: stats.CanLaser, damage: stats.LaserDamage, weaponStats: ResourceManager.configuration.weaponTypes.get('lasershot'), bulletType: EntityType.LASER_SHOT, misc: ResourceManager.configuration.miscObjects.LaserShot},
+            {tool: RaiderTool.FREEZERGUN, allowed: stats.CanFreeze, damage: stats.FreezerDamage, weaponStats: ResourceManager.configuration.weaponTypes.get('freezer'), bulletType: EntityType.FREEZER_SHOT, misc: ResourceManager.configuration.miscObjects.Freezer},
+            {tool: RaiderTool.PUSHERGUN, allowed: stats.CanPush, damage: stats.PusherDamage, weaponStats: ResourceManager.configuration.weaponTypes.get('pusher'), bulletType: EntityType.PUSHER_SHOT, misc: ResourceManager.configuration.miscObjects.Pusher},
+        ].filter((a) => a.allowed && this.hasTool(a.tool)).sort((l, r) => r.damage - l.damage)
         if (attacks.length < 1) {
             console.warn('Could not shoot at monster')
             return
@@ -396,9 +396,9 @@ export class Raider implements Updatable, JobFulfiller {
             // this.worldMgr.registerEntity(bullet)
             this.sceneEntity.setAnimation(RaiderActivity.Shoot, () => {
                 this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                this.weaponCooldown = 1000 // TODO use "RechargeTime" from Pusher/LaserShot/Freezer stats with 25.0 = 1 second
+                this.weaponCooldown = attack.weaponStats.rechargeTimeMs
                 const healthComponent = targetComponents.get(HealthComponent)
-                healthComponent.changeHealth(-attack.damage) // TODO Replace with damage from bullet system
+                healthComponent.changeHealth(-attack.damage) // TODO Replace with damage by bullet system
                 // TODO Apply push effect
                 // TODO Apply freeze effect
             })

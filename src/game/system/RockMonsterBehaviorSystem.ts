@@ -99,7 +99,6 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                     case RockMonsterBehaviorState.BOULDER_ATTACK:
                         if (behaviorComponent.boulder) {
                             if (!behaviorComponent.targetBuilding) {
-                                // TODO only target buildings where boulder damage is > 0
                                 // TODO path finding to buildings does not work since surface below buildings are not accessible
                                 const closestBuilding = pathFinder.findClosestObj(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
                                 if (closestBuilding) {
@@ -116,13 +115,15 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetBuildingSurface.getCenterWorld2D()))
                                     behaviorComponent.state = RockMonsterBehaviorState.THROW
                                     sceneEntity.setAnimation(RockMonsterActivity.Throw, () => {
-                                        sceneEntity.setAnimation(behaviorComponent.boulder ? AnimEntityActivity.StandCarry : AnimEntityActivity.Stand)
-                                        behaviorComponent.changeToIdle()
-                                        sceneEntity.removeAllCarried()
                                         // this.worldMgr.sceneMgr.scene.add(behaviorComponent.boulder) // TODO Add boulder as bullet (component)
                                         this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BoulderExplode, targetBuildingSurface.getCenterWorld(), 0, false) // TODO adapt to monster/level entity type
-                                        this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).get(HealthComponent).changeHealth(stats.RepairValue)
+                                        const boulderStats = ResourceManager.configuration.weaponTypes.get('boulder')
+                                        const boulderDamage = boulderStats.damageByEntityType.get(behaviorComponent.targetBuilding.entityType)?.[behaviorComponent.targetBuilding.level] || boulderStats.defaultDamage
+                                        this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).get(HealthComponent).changeHealth(-boulderDamage)
+                                        sceneEntity.removeAllCarried()
                                         behaviorComponent.boulder = null
+                                        sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                        behaviorComponent.changeToIdle()
                                     })
                                 } else if (!components.has(WorldTargetComponent)) {
                                     const buildingPathTargets = [behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), ROCKY_BOULDER_THROW_DISTANCE_SQ))

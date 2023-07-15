@@ -76,7 +76,7 @@ export function getEntityTypeByName(type: string): EntityType {
         return EntityType.BARRACKS
     } else if ('Upgrade'.equalsIgnoreCase(type)) {
         return EntityType.UPGRADE
-    } else if ('GEO-Dome'.equalsIgnoreCase(type)) {
+    } else if ('GEO-Dome'.equalsIgnoreCase(type) || 'geodome'.equalsIgnoreCase(type)) {
         return EntityType.GEODOME
     } else if ('OreRefinery'.equalsIgnoreCase(type)) {
         return EntityType.ORE_REFINERY

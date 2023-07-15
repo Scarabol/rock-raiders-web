@@ -19,6 +19,7 @@ import { MiscObjectsCfg } from './MiscObjectsCfg'
 import { RockFallStylesCfg } from './RockFallStylesCfg'
 import { EntityType, getEntityTypeByName } from '../game/model/EntityType'
 import { ObjInfoCfg } from './ObjInfoCfg'
+import { WeaponTypeCfg } from './WeaponTypesCfg'
 
 export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
 export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
@@ -54,6 +55,7 @@ export class GameConfig extends BaseConfig {
     upgradeTypesCfg: Map<string, string> = new Map()
     infoMessages: InfoMessagesCfg = new InfoMessagesCfg()
     stats: GameStatsCfg = new GameStatsCfg()
+    weaponTypes: Map<string, WeaponTypeCfg> = new Map()
     dependencies: Map<EntityType, EntityDependency[]> = new Map()
     levels: LevelsCfg = new LevelsCfg()
     tooltips: Map<string, string> = new Map()
@@ -121,6 +123,8 @@ export class GameConfig extends BaseConfig {
             this.infoMessages.setFromCfgObj(cfgValue)
         } else if ('Stats'.equalsIgnoreCase(unifiedKey)) {
             this.stats.setFromCfgObj(cfgValue)
+        } else if ('WeaponTypes'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.weaponTypes.set(cfgKey.toLowerCase(), new WeaponTypeCfg().setFromCfgObj(value)))
         } else if ('Dependencies'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => {
                 if (!cfgKey.toLowerCase().startsWith('AlwaysCheck:'.toLowerCase())) {
