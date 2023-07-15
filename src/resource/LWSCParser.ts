@@ -23,6 +23,7 @@ export class LWSCObject {
     parentObjInd: number = 0 // index is 1 based, 0 means no parent
     pivot: Vector3 = new Vector3(0, 0, 0)
     readonly keyframeTracks: KeyframeTrack[] = []
+    readonly opacityTracks: NumberKeyframeTrack[] = []
 }
 
 export class LWSCParser {
@@ -127,7 +128,7 @@ export class LWSCParser {
                     const sfxNames = []
                     for (let c = 0; c < this.numOfKeyframes; c++) {
                         times[c] = c / this.numOfKeyframes * this.lwscData.durationSeconds
-                        sfxNames[c] = currentObject.sfxFrames.includes(c) ? currentObject.sfxName :  ''
+                        sfxNames[c] = currentObject.sfxFrames.includes(c) ? currentObject.sfxName : ''
                     }
                     currentObject.keyframeTracks.push(new StringKeyframeTrack('.userData[sfxName]', times, sfxNames))
                 } else if (currentObject.lowerName === 'snd' && nameParts[1].equalsIgnoreCase('SFX_LANDSLIDE')) {
@@ -200,7 +201,7 @@ export class LWSCParser {
                     const opacity = 1 - parseInt(value, 10)
                     opacities.push(opacity)
                 }
-                currentObject.keyframeTracks.push(new NumberKeyframeTrack(`.material[0].opacity`, times, opacities)) // XXX apply opacity to all materials once fixed in three.js
+                currentObject.opacityTracks.push(new NumberKeyframeTrack(`.opacity`, times, opacities))
             } else if (key === 'PivotPoint') {
                 currentObject.pivot = new Vector3().fromArray(value.split(' ').map((n) => parseInt(n, 10)))
             } else if (this.verbose) {

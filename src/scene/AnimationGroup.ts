@@ -1,4 +1,4 @@
-import { AnimationClip, AnimationMixer, AudioListener, Group, LoopOnce } from 'three'
+import { AnimationClip, AnimationMixer, AudioListener, Group, LoopOnce, NumberKeyframeTrack } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from './SceneMesh'
@@ -58,7 +58,9 @@ export class AnimationGroup extends Group implements Updatable {
                 this.meshList[obj.parentObjInd - 1].add(mesh)
             }
             // setup animation clip for each object
-            const clip = new AnimationClip(lwsFilepath, lwscData.durationSeconds, obj.keyframeTracks)
+            const opacityTracks = obj.opacityTracks.flatMap((t) => mesh.getMaterials()
+                .map((m, index) => new NumberKeyframeTrack(`.material[${index}].opacity`, t.times, t.values)))
+            const clip = new AnimationClip(lwsFilepath, lwscData.durationSeconds, [...obj.keyframeTracks, ...opacityTracks])
             const mixer = new AnimationMixer(mesh) // mixer needs to recreate after each group change
             const animationAction = mixer.clipAction(clip)
             if (this.onAnimationDone && !this.durationTimeoutMs) {
