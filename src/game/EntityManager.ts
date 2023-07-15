@@ -126,10 +126,7 @@ export class EntityManager {
     }
 
     getUpgradePathTargets(): PathTarget[] {
-        return this.getBuildingsByType(EntityType.UPGRADE).map((b) => {
-            // TODO can use drop/deposit target from upgrade building here?
-            return PathTarget.fromBuilding(b, b.primaryPathSurface.getCenterWorld2D())
-        })
+        return this.getBuildingsByType(EntityType.UPGRADE).map((b) => PathTarget.fromBuilding(b, b.getDropPosition2D()))
     }
 
     hasBuilding(buildingType: EntityType): boolean {
