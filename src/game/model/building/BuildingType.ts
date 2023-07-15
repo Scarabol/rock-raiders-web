@@ -26,10 +26,10 @@ export class BuildingType {
                     .addTeleport(EntityType.PILOT)
             case EntityType.TELEPORT_PAD:
                 return new BuildingType(entityType, ResourceManager.configuration.stats.teleportPad, 'Buildings/Teleports')
-                    .addTeleport(EntityType.PILOT, EntityType.HOVERBOARD, EntityType.SMALL_TRUCK, EntityType.SMALL_DIGGER, EntityType.SMALL_MLP, EntityType.SMALL_HELI) // TODO evaluate stats UseSmallTeleporter
+                    .addTeleport(EntityType.PILOT, EntityType.HOVERBOARD, EntityType.SMALL_TRUCK, EntityType.SMALL_DIGGER, EntityType.SMALL_MLP, EntityType.SMALL_HELI) // XXX evaluate stats UseSmallTeleporter
             case EntityType.DOCKS:
                 return new BuildingType(entityType, ResourceManager.configuration.stats.docks, 'Buildings/Docks')
-                    .setPrimaryPowerPath(0, -1).setWaterPathSurface(0, 1).addTeleport(EntityType.SMALL_CAT, EntityType.LARGE_CAT) // TODO evaluate stats UseWaterTeleporter
+                    .setPrimaryPowerPath(0, -1).setWaterPathSurface(0, 1).addTeleport(EntityType.SMALL_CAT, EntityType.LARGE_CAT) // XXX evaluate stats UseWaterTeleporter
             case EntityType.POWER_STATION:
                 return new BuildingType(entityType, ResourceManager.configuration.stats.powerStation, 'Buildings/Powerstation')
                     .setSecondaryBuildingPart(-1, 0)
@@ -49,7 +49,7 @@ export class BuildingType {
             case EntityType.TELEPORT_BIG:
                 return new BuildingType(entityType, ResourceManager.configuration.stats.teleportBig, 'Buildings/BIGTeleport')
                     .setSecondaryBuildingPart(0, 1).setPrimaryPowerPath(-1, 0).setSecondaryPowerPath(-1, 1)
-                    .addTeleport(EntityType.BULLDOZER, EntityType.WALKER_DIGGER, EntityType.LARGE_MLP, EntityType.LARGE_DIGGER) // TODO evaluate stats UseLargeTeleporter
+                    .addTeleport(EntityType.BULLDOZER, EntityType.WALKER_DIGGER, EntityType.LARGE_MLP, EntityType.LARGE_DIGGER) // XXX evaluate stats UseLargeTeleporter
             default:
                 if (entityType) console.error(`EntityType (${entityType}, ${EntityType[entityType]}) is not a BuildingType`)
                 return null

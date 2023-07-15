@@ -2,7 +2,7 @@ import { AbstractGameSystem, GameEntity } from '../ECS'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 
-export class SceneEntityPositionSystem extends AbstractGameSystem { // TODO replace system with events?
+export class SceneEntityPositionSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([AnimatedSceneEntityComponent, PositionComponent])
     dirtyComponents: Set<Function> = new Set([PositionComponent])
 

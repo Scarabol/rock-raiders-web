@@ -243,10 +243,12 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 return
             }
         } else if (behaviorComponent.numCrystalsEaten < stats.Capacity && crystals.length > 0) {
-            const closestCrystal = pathFinder.findClosestObj(rockyPos, crystals, stats, false) // TODO Use timer to look for crystals to improve performance
+            const closestCrystal = pathFinder.findClosestObj(rockyPos, crystals, stats, false)
             if (closestCrystal) {
                 behaviorComponent.state = RockMonsterBehaviorState.GOTO_CRYSTAL
                 behaviorComponent.targetCrystal = closestCrystal.obj
+            } else {
+                behaviorComponent.state = Math.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
             }
         } else {
             behaviorComponent.state = Math.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK

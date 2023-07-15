@@ -149,12 +149,12 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
             sndKey = sndKey.toLowerCase()
             if (sndKey === '!sfx_drip') {
                 return // Sounds/dripB.wav missing and seems unused anyway
-            } else if (sndKey.startsWith('!')) { // TODO no clue what this means... loop? duplicate?!
+            } else if (sndKey.startsWith('!')) { // XXX no clue what this means... loop? duplicate?!
                 sndKey = sndKey.slice(1)
             }
             const sndFilePaths = Array.isArray(value) ? value : [value]
             sndFilePaths.forEach(sndPath => {
-                if (sndPath.startsWith('*')) { // TODO no clue what this means... don't loop maybe, see telportup
+                if (sndPath.startsWith('*')) { // XXX no clue what this means... don't loop maybe, see telportup
                     sndPath = sndPath.slice(1)
                 } else if (sndPath.startsWith('@')) {
                     // sndPath = sndPath.slice(1)

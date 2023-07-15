@@ -81,7 +81,7 @@ export class MessagePanel extends Panel {
             this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
             this.currentMessage = msg
             this.notifyRedraw()
-            if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample, true))
+            if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample, true)) // TODO Check NERP timeAddedAfterSample
             if (timeout > 0) {
                 this.messageTimeout = setTimeout(() => {
                     this.messageTimeout = null

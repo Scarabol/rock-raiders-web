@@ -136,7 +136,7 @@ export class Raider implements Updatable, JobFulfiller {
         const result = this.moveToClosestTargetInternal(target, elapsedMs)
         if (result === MoveState.MOVED) {
             const raiderPosition2D = this.getPosition2D()
-            this.worldMgr.entityMgr.spiders.some((spider) => { // TODO optimize this with a quad tree or similar
+            this.worldMgr.entityMgr.spiders.some((spider) => {
                 const components = this.worldMgr.ecs.getComponents(spider)
                 const spiderPosition2D = components.get(PositionComponent).getPosition2D()
                 if (raiderPosition2D.distanceToSquared(spiderPosition2D) < SPIDER_SLIP_RANGE_SQ) {
@@ -158,7 +158,8 @@ export class Raider implements Updatable, JobFulfiller {
                 if (rockySceneEntity.currentAnimation === RockMonsterActivity.Unpowered) {
                     const positionComponent = components.get(PositionComponent)
                     const rockyPosition2D = positionComponent.getPosition2D()
-                    if (raiderPosition2D.distanceToSquared(rockyPosition2D) < 25 * 25) { // TODO Use WakeRadius from monster stats
+                    const wakeRadius = components.get(MonsterStatsComponent).stats.WakeRadius
+                    if (raiderPosition2D.distanceToSquared(rockyPosition2D) < wakeRadius * wakeRadius) {
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                             this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
                             this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())

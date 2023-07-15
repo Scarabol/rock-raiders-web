@@ -44,7 +44,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - let raider in defend mode target any known slug or rock monster
 - add spawn timer for slugs, only one slug per hole
-- make slugs look for nearby reachable buildings or fences to leech energy
+- make slugs look for nearby reachable buildings to leech energy
 - spawn a depleted energy crystal, when slug leeched energy
 - wake up rock monsters by big bangs
 - make rock monster pick up nearby raider and shake them upside down
@@ -53,24 +53,23 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- First-Person and shoulder camera
 - Geologists and scanner
+- Fix Large Cat not usable to carry vehicles in Level 19
+- Move camera with click on mini map and show camera view area as wireframe
+- Refactor job system to allow multi-carry jobs for vehicles
+- First-Person and shoulder camera
 - Background music and soundtrack
 - Tutorial levels and helper features
 - Show FLT mini-figure animation with mission briefing
 - Add screen shake for exploding dynamites
-- Add all work sounds for all jobs
 - Show loading screen when starting a level
 - Add rockfall transition when switching in main menu
 - Show misc anim LavaErosionSmoke over lava
 - Add water and lava animation (texture UV coords tearing)
 - Change cursor to X when over disabled IconPanelButtons
 - Unlock levels only after linked levels are completed
-- Move camera with click on mini map and show camera view area as wireframe
 - Use same team for all missions and add names to raiders
 - Auto switch from portrait to landscape mode in fullscreen
-- Refactor job system to allow multi-carry jobs for vehicles
-- Large Cat not usable to carry vehicles in Level 19
 - Add surface type tooltips for map panel
 - Render last selected entity with rotating camera in radar panel
 - Add magnet cursor to map panel to track entities
@@ -84,7 +83,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Nice to have
 
 - Add rotation speed to entities and play turnLeft, turnRight animations
-- Clear job from surface, if dynamite cannot reach target
 - Use long press on mobile browser to emulate right click
 - Do not allow touch events to move scene camera while build mode selection is active
 - Camera can get stuck on mobile browsers when using multiple pointer gestures
@@ -93,9 +91,9 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Cosmetics
 
+- Mesh texture not shown for lava rockies
 - Show health number in vehicle tooltip
 - Play vehicle SFX when tooltip is shown
-- Mesh texture not shown for lava rockies
 - Make tooltips stay on screen and follow cursor
 - Numbers above ticking dynamite are not shown correctly sometimes
 - Two buttons in priority list can be hovered/pressed/released at the same time

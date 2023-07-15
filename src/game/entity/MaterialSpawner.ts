@@ -52,7 +52,7 @@ export class MaterialSpawner {
                     mat.setOpacity(0.5) // XXX read from LWO file?
                 })
                 animGlowMesh.scale.set(1.75, 1.75, 1.75) // XXX derive from texture scale?
-                material.sceneEntity.add(animGlowMesh) // TODO this mesh needs to be updated
+                material.sceneEntity.add(animGlowMesh)
                 const highPolyMesh = ResourceManager.getLwoModel('World/Shared/Crystal') // high poly version
                 highPolyMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
                     mat.emissive = new Color(0, 8, 0) // XXX read from LWO file?

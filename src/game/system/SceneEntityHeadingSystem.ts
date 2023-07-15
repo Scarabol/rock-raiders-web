@@ -2,7 +2,7 @@ import { AbstractGameSystem, GameEntity } from '../ECS'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 
-export class SceneEntityHeadingSystem extends AbstractGameSystem { // TODO replace system with events?
+export class SceneEntityHeadingSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([AnimatedSceneEntityComponent, WorldTargetComponent])
     dirtyComponents: Set<Function> = new Set([WorldTargetComponent])
 

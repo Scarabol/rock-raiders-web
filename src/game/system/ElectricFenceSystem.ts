@@ -127,7 +127,6 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         }
         if (studProtectedSurfaces.length < 1) return
         this.beamDelayMs = Math.randomInclusive(2000, 10000)
-        // TODO add beams between fences and buildings
         // TODO add short beams between fences and between fences and buildings
         const f = studProtectedSurfaces.random()
         const sy1 = this.worldMgr.sceneMgr.terrain.getSurface(f.x - 1, f.y)

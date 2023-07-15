@@ -82,7 +82,6 @@ export class MapPanel extends Panel {
                     entities.delete(event.entity)
                     break
             }
-            // TODO check if entity is actually visible
             this.mapRenderer.redrawEntities(this.offset, event.mapMarkerType, this.surfaceRectSize, Array.from(entities.values())).then(() => this.notifyRedraw())
         })
     }

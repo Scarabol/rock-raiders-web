@@ -27,7 +27,7 @@ export class MovementSystem extends AbstractGameSystem {
                 if (targetWorld.distanceToSquared(positionComponent.position) <= worldTargetComponent.radiusSq) {
                     this.ecs.removeComponent(entity, WorldTargetComponent)
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
-                        this.ecs.worldMgr.entityMgr.removeEntity(entity) // TODO remove other entity types from entity manager too
+                        this.ecs.worldMgr.entityMgr.removeEntity(entity)
                         this.ecs.removeEntity(entity)
                         if (sceneEntityComponent) {
                             this.ecs.worldMgr.sceneMgr.removeMeshGroup(sceneEntityComponent.sceneEntity)

@@ -81,6 +81,7 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
     CanPush: boolean = false
     PusherDist: number = 0
     PusherDamage: number = 0
+    WakeRadius: number = 0
     Capacity: number = 0
     RepairValue: number = 0
 

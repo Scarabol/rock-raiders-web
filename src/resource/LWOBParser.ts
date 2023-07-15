@@ -367,8 +367,8 @@ export class LWOBParser {
                     const textureFilepath = this.lwoReader.readString()
                     if (this.verbose) console.log(`Texture filepath (TIMG): ${textureFilepath}`)
                     const lTextureFilename = getFilename(textureFilepath)?.toLowerCase()
-                    if (lTextureFilename.endsWith(' (sequence)') && (sequenceOffset || sequenceFlags || sequenceLoopLength)) { // TODO implement sequence options
-                        console.warn('Sequence options not yet implemented', lTextureFilename, sequenceOffset, sequenceFlags, sequenceLoopLength)
+                    if (lTextureFilename.endsWith(' (sequence)') && (sequenceOffset || sequenceFlags || sequenceLoopLength)) {
+                        console.warn('Sequence options not yet implemented', lTextureFilename, sequenceOffset, sequenceFlags, sequenceLoopLength) // XXX Implement sequence options
                     }
                     material.transparent = material.transparent || !!lTextureFilename.match(/(.*a)(\d+)(_.+)/)
                     this.textureLoader.load(lTextureFilename, (t) => material.setTextures(t))
@@ -414,7 +414,7 @@ export class LWOBParser {
                     if (this.verbose) console.log(`Undefined parameter (GLOW) not used and ignored`)
                     this.lwoReader.skip(4) // not specified anywhere
                     break
-                default: // TODO implement all LWOB features
+                default: // XXX implement all LWOB features
                     if (this.verbose || VERBOSE) console.warn(`Found unrecognised SURF sub-chunk type ${subChunkType} (${subChunkType}) at ${cursor}; length ${subChunkSize}`)
                     this.lwoReader.skip(subChunkSize)
                     break

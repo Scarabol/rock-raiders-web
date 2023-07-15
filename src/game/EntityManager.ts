@@ -298,7 +298,6 @@ export class EntityManager {
         this.materials.removeAll((e) => e.entity === entity)
         this.materialsUndiscovered.removeAll((e) => e.entity === entity)
         this.placedFences.removeAll((e) => e.entity === entity)
-        // this.buildingSites // TODO How to remove building site?
         this.spiders.remove(entity)
         this.undiscoveredSpiders.remove(entity)
         this.bats.remove(entity)
@@ -309,7 +308,6 @@ export class EntityManager {
         this.vehicles.removeAll((e) => e.entity === entity)
         this.vehiclesUndiscovered.removeAll((e) => e.entity === entity)
         this.vehiclesInBeam.removeAll((e) => e.entity === entity)
-        // this.completedBuildingSites // TODO How to remove building site?
         this.recordedEntities.remove(entity)
     }
 }
