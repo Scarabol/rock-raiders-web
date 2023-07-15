@@ -68,7 +68,7 @@ export class BuildingEntity {
             this.worldMgr.entityMgr.removeEntity(this.entity)
             this.surfaces.forEach((s) => s.pathBlockedByBuilding = false)
             this.setEnergized(false)
-            this.sceneEntity.setAnimation(BuildingActivity.Explode, () => this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity))
+            this.sceneEntity.setAnimation(BuildingActivity.Explode, () => this.disposeFromWorld())
             this.powerOffSprite.setEnabled(false)
             this.surfaces.forEach((s) => s.setBuilding(null))
             EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))

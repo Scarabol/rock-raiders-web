@@ -43,6 +43,7 @@ export class MaterialEntity {
         this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.sceneEntity.dispose()
         this.worldMgr.entityMgr.removeEntity(this.entity)
+        this.worldMgr.ecs.removeEntity(this.entity)
     }
 
     getPosition(): Vector3 {
