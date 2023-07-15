@@ -141,9 +141,7 @@ export class Terrain {
     }
 
     findFallInTarget(source: Surface): Surface {
-        const s = source.neighbors.find((n) => n.isWalkable()) // TODO don't target surfaces with lava erosion
-        if (!s) return null
-        return s
+        return source.neighbors.find((n) => n.isWalkable() && !n.surfaceType.hasErosion)
     }
 
     createFallIn(source: Surface, target: Surface) {

@@ -35,7 +35,7 @@ export class SelectionChanged extends LocalEvent {
     canPlaceFence: boolean
     isFloor: boolean
     isSite: boolean
-    isLava: boolean
+    hasErosion: boolean
     hasRepairLava: boolean
     hasRubble: boolean
     isDrillable: boolean
@@ -61,7 +61,7 @@ export class SelectionChanged extends LocalEvent {
         this.isPowerPath = entityMgr.selection.surface?.surfaceType === SurfaceType.POWER_PATH
         this.isFloor = entityMgr.selection.surface?.surfaceType.floor
         this.isSite = !!entityMgr.selection.surface?.site
-        this.isLava = [SurfaceType.LAVA1, SurfaceType.LAVA2, SurfaceType.LAVA3, SurfaceType.LAVA4].includes(entityMgr.selection.surface?.surfaceType)
+        this.hasErosion = entityMgr.selection.surface?.surfaceType.hasErosion
         this.hasRepairLava = !!entityMgr.selection.surface?.site
         this.hasRubble = entityMgr.selection.surface?.hasRubble()
         this.isDrillable = entityMgr.selection.surface?.isDigable() && (entityMgr.selection.surface?.surfaceType !== SurfaceType.HARD_ROCK || entityMgr.vehicles.some((v) => v.canDrill(entityMgr.selection.surface)))

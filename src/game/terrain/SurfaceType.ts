@@ -14,6 +14,7 @@ export class SurfaceType {
     connectsPath: boolean = false
     mapSurfaceColor: string = '#00FFFF'
     rubbleResilient: boolean = true
+    hasErosion: boolean = false
 
     constructor(options: Partial<SurfaceType> = {}) {
         Object.assign(this, options)
@@ -76,16 +77,16 @@ export class SurfaceType {
         name: 'surfaceTypeSlugHole', floor: true, matIndex: '30', mapSurfaceColor: '#280048',
     })
     static readonly LAVA1 = new SurfaceType({
-        name: 'lava 1', floor: true, matIndex: '06', selectable: true, mapSurfaceColor: '#280048',
+        name: 'lava 1', floor: true, matIndex: '06', selectable: true, mapSurfaceColor: '#280048', hasErosion: true,
     })
     static readonly LAVA2 = new SurfaceType({
-        name: 'lava 2', floor: true, matIndex: '16', selectable: true, mapSurfaceColor: '#280048',
+        name: 'lava 2', floor: true, matIndex: '16', selectable: true, mapSurfaceColor: '#280048', hasErosion: true,
     })
     static readonly LAVA3 = new SurfaceType({
-        name: 'lava 3', floor: true, matIndex: '26', selectable: true, mapSurfaceColor: '#280048',
+        name: 'lava 3', floor: true, matIndex: '26', selectable: true, mapSurfaceColor: '#280048', hasErosion: true,
     })
     static readonly LAVA4 = new SurfaceType({
-        name: 'lava 4', floor: true, matIndex: '36', selectable: true, mapSurfaceColor: '#280048',
+        name: 'lava 4', floor: true, matIndex: '36', selectable: true, mapSurfaceColor: '#280048', hasErosion: true,
     })
     static readonly LAVA5 = new SurfaceType({
         name: 'surfaceTypeLava', floor: true, matIndex: '46', mapSurfaceColor: '#fa5700',
