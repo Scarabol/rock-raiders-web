@@ -51,15 +51,16 @@ export class BuildingEntity {
     teleport: Teleport = null
 
     constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType) {
+        this.entity = this.worldMgr.ecs.addEntity()
         this.buildingType = BuildingType.from(this.entityType)
         this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr.audioListener)
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(this.buildingType.aeFilename))
         this.sceneEntity.flipXAxis()
         this.powerOffSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
+        this.powerOffSprite.visible = this.isPowered()
         this.sceneEntity.add(this.powerOffSprite)
         this.worldMgr.sceneMgr.addSprite(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
-        this.entity = this.worldMgr.ecs.addEntity()
         const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false, ResourceManager.getRockFallDamage(entityType, this.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.sprite)
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
