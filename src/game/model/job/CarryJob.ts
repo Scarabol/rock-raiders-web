@@ -39,7 +39,8 @@ export class CarryJob extends Job {
         if (this.target && !(
             (this.target.building && !this.target.building.isPowered()) ||
             (this.target.site && (this.target.site.complete || this.target.site.canceled)) ||
-            (this.carryItem.targetSurface && this.carryItem.targetSurface.dynamiteJob !== this)
+            (this.carryItem.targetSurface && this.carryItem.targetSurface.dynamiteJob !== this) ||
+            !entity.findShortestPath(this.target)
         )) {
             return this.target
         }
@@ -56,13 +57,13 @@ export class CarryJob extends Job {
             case EntityType.ORE:
                 const oreSites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
                 if (oreSites.length > 0) return oreSites
-                const oreRefineries = entityMgr.getBuildingCarryPathTargets(EntityType.ORE_REFINERY)
+                const oreRefineries = this.findReachableBuilding(entityMgr, EntityType.ORE_REFINERY, entity)
                 if (oreRefineries.length > 0) return oreRefineries
                 return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
             case EntityType.CRYSTAL:
                 const crystalSites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
                 if (crystalSites.length > 0) return crystalSites
-                const powerStations = entityMgr.getBuildingCarryPathTargets(EntityType.POWER_STATION)
+                const powerStations = this.findReachableBuilding(entityMgr, EntityType.POWER_STATION, entity)
                 if (powerStations.length > 0) return powerStations
                 return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
             case EntityType.BRICK:
