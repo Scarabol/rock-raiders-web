@@ -121,7 +121,6 @@ export class CarryJob extends Job {
 
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
-        this.fulfiller.sceneEntity.headTowards(this.target.targetLocation)
         this.fulfiller.dropCarried(false)
         this.carryItem.setPosition(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
         const targetBuilding = this.target.building

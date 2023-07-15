@@ -23,9 +23,4 @@ export class PathTarget {
     static fromSite(site: BuildingSite, targetLocation: Vector2) {
         return new PathTarget(targetLocation, ITEM_ACTION_RANGE_SQ, null, site)
     }
-
-    getFocusPoint(): Vector2 {
-        if (this.building) return this.building.primarySurface.getCenterWorld2D()
-        return this.targetLocation
-    }
 }

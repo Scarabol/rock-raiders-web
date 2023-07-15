@@ -106,7 +106,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Show health number in vehicle tooltip
 - Play vehicle SFX when tooltip is shown
 - Mesh texture not shown for lava rockies
-- Raider not facing walls while drilling
 - Make tooltips stay on screen and follow cursor
 - Numbers above ticking dynamite are not shown correctly sometimes
 - Two buttons in priority list can be hovered/pressed/released at the same time

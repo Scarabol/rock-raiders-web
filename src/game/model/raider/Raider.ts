@@ -174,7 +174,7 @@ export class Raider implements Updatable, JobFulfiller {
         }
         const step = this.determineStep(elapsedMs)
         if (step.targetReached) {
-            this.sceneEntity.headTowards(this.currentPath.target.getFocusPoint())
+            if (target.building) this.sceneEntity.headTowards(target.building.primarySurface.getCenterWorld2D())
             return MoveState.TARGET_REACHED
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
@@ -333,6 +333,7 @@ export class Raider implements Updatable, JobFulfiller {
             this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[this.job.workSoundRaider], true, this.job.getExpectedTimeLeft() !== null)
         }
         if (workActivity === RaiderActivity.Drill) {
+            this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
             this.sceneEntity.setAnimation(workActivity)
             this.job?.addProgress(this, elapsedMs)
         } else if (workActivity === RaiderActivity.Stand) {
