@@ -59,9 +59,10 @@ export class ObjectListLoader {
         const headingRad = degToRad(olEntry.heading)
         switch (entityType) {
             case EntityType.TV_CAMERA:
-                const cameraOffset = new Vector2(6, 0).rotateAround(new Vector2(0, 0), headingRad + Math.PI / 2)
-                const cameraPos = this.worldMgr.sceneMgr.getFloorPosition(cameraOffset.multiplyScalar(TILESIZE).add(worldPos))
-                cameraPos.y += 4 * TILESIZE
+                const cameraOffset = new Vector2(5, 0).rotateAround(new Vector2(0, 0), headingRad + Math.PI / 2)
+                    .multiplyScalar(TILESIZE).add(worldPos)
+                const cameraPos = this.worldMgr.sceneMgr.getFloorPosition(cameraOffset)
+                cameraPos.y += 5 * TILESIZE
                 this.worldMgr.sceneMgr.camera.position.copy(cameraPos)
                 this.worldMgr.sceneMgr.controls.target.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPos))
                 this.worldMgr.sceneMgr.controls.update()
