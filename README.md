@@ -42,7 +42,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.7.0 - Rockies, Slugs And Damage
 
-- make slugs look for nearby reachable buildings to leech energy
 - spawn a depleted energy crystal, when slug leeched energy
 - wake up rock monsters by big bangs
 - make rock monster pick up nearby raider and shake them upside down

@@ -22,6 +22,7 @@ import { MonsterSpawner } from '../game/entity/MonsterSpawner'
 import { SlugEmergeEvent } from '../event/WorldLocationEvent'
 import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity, SlugActivity } from '../game/model/anim/AnimationActivity'
+import { SlugBehaviorComponent } from '../game/component/SlugBehaviorComponent'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -254,7 +255,7 @@ export class NerpRunner {
         const sceneEntity = components.get(AnimatedSceneEntityComponent)
         sceneEntity.sceneEntity.setAnimation(SlugActivity.Emerge, () => {
             sceneEntity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-            // TODO Implement slug behavior
+            this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())
         })
         const slugPos = components.get(PositionComponent)
         EventBus.publishEvent(new SlugEmergeEvent(slugPos))

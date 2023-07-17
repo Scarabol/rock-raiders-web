@@ -46,6 +46,8 @@ export const NERP_EXECUTION_INTERVAL = 500
 export const CURSOR_MAX_HEIGHT = 32 // px; limited by browsers
 export const MAP_PANEL_SURFACE_RECT_MARGIN = 1
 export const MAP_MAX_UPDATE_INTERVAL = Math.round(1000 / 15)
+export const SLUG_SUCK_TIME = 20000
+export const SLUG_MAX_IDLE_TIME = 15000
 
 // native constants (do not change)
 

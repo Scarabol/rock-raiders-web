@@ -21,6 +21,7 @@ import { EventBus } from '../../event/EventBus'
 import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { EventKey } from '../../event/EventKeyEnum'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
+import { SlugBehaviorComponent, SlugBehaviorState } from '../component/SlugBehaviorComponent'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
@@ -61,6 +62,11 @@ export class MonsterSpawner {
                 worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
                 const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, ResourceManager.getRockFallDamage(entityType)))
                 worldMgr.sceneMgr.addSprite(healthComponent.sprite)
+                worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
+                    worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                    worldMgr.ecs.getComponents(entity).get(SlugBehaviorComponent).state = SlugBehaviorState.GO_ENTER
+                    sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                }))
                 break
             case EntityType.ICE_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType)
