@@ -113,10 +113,21 @@ export class Surface {
     }
 
     private markDiscovered() {
+        if (this.neighbors.some((n) => n.discovered && n.surfaceType.floor)) {
+            switch (this.surfaceType) {
+                case SurfaceType.HIDDEN_CAVERN:
+                    this.surfaceType = SurfaceType.GROUND
+                    this.needsMeshUpdate = true
+                    break
+                case SurfaceType.HIDDEN_SLUG_HOLE:
+                    this.surfaceType = SurfaceType.SLUG_HOLE
+                    this.needsMeshUpdate = true
+                    break
+            }
+        }
         if (this.discovered) return
         this.discovered = true
         this.worldMgr.entityMgr.discoverSurface(this)
-        if (this.surfaceType === SurfaceType.HIDDEN_CAVERN) this.surfaceType = SurfaceType.GROUND
         this.needsMeshUpdate = true
     }
 

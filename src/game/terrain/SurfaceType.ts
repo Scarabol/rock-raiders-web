@@ -33,6 +33,11 @@ export class SurfaceType {
         floor: true,
         mapSurfaceColor: '#6A0000',
     })
+    static readonly HIDDEN_SLUG_HOLE = new SurfaceType({
+        name: 'surfaceTypeUndiscovered',
+        floor: true,
+        mapSurfaceColor: '#6A0000',
+    })
     static readonly SOLID_ROCK = new SurfaceType({
         name: 'surfaceTypeImmovable',
         shaping: true,

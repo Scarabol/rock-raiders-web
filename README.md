@@ -92,7 +92,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Nice to have
 
 - Scared raider should ignore all jobs like movement
-- Inverted corner surfaces are treated as discovered and slug holes are revealed there
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Clear job from surface, if dynamite cannot reach target
 - Use long press on mobile browser to emulate right click
