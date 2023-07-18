@@ -177,7 +177,7 @@ export class BuildingEntity {
     }
 
     missingOreForUpgrade(): number {
-        return Math.max(0, ResourceManager.configuration.main.buildingUpgradeCostOre - GameState.numOre)
+        return this.hasMaxLevel() ? 0 : Math.max(0, ResourceManager.configuration.main.buildingUpgradeCostOre - GameState.numOre)
     }
 
     spawnMaterials(type: EntityType, quantity: number) {
