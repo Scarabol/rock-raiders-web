@@ -82,7 +82,7 @@ export class GameSelection {
                 this.surface = null
             }
         }
-        if (added) SoundManager.playSample(Sample.SFX_Okay)
+        if (added) SoundManager.playSample(Sample.SFX_Okay, false)
     }
 
     private syncRaiderSelection(before: Raider[], after: Raider[]): boolean {

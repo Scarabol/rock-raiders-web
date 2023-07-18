@@ -53,7 +53,7 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(textInfoMessageConfig.textManTrained))
         this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(textInfoMessageConfig.textUnitUpgraded))
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessage) => {
-            this.setMessage({text: event.text}, event.messageTimeoutMs || 3000)
+            this.setMessage({text: event.text}, event.messageTimeoutMs)
         })
         this.registerEventListener(EventKey.SET_SPACE_TO_CONTINUE, (event: SetSpaceToContinueEvent) => {
             if (event.state) {
@@ -75,8 +75,8 @@ export class MessagePanel extends Panel {
             this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
             this.currentMessage = msg
             this.notifyRedraw()
-            if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample))
-            if (timeout) {
+            if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample, true))
+            if (timeout > 0) {
                 const that = this
                 this.messageTimeout = setTimeout(() => {
                     that.currentMessage = null

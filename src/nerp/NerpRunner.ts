@@ -23,6 +23,7 @@ window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 // noinspection JSUnusedGlobalSymbols,JSUnusedLocalSymbols
 export class NerpRunner {
     static debug = false
+    static timeAddedAfterSample = 0
 
     readonly script: NerpScript
 
@@ -37,11 +38,11 @@ export class NerpRunner {
     objectiveSwitch: boolean = true
     objectiveShowing: number = 0
     sampleLengthMultiplier: number = 0
-    timeAddedAfterSample: number = 0
     timeForNoSample: number = 0
     messageTimer: number = 0
 
     constructor(readonly worldMgr: WorldManager, nerpScriptFile: string) {
+        NerpRunner.timeAddedAfterSample = 0
         this.script = NerpParser.parse(nerpScriptFile)
         this.checkSyntax()
         if (NerpRunner.debug) console.log(`Executing following script\n${this.script.lines.join('\n')}`)
@@ -254,7 +255,7 @@ export class NerpRunner {
 
     setMessageTimerValues(sampleLengthMultiplier: number, timeAddedAfterSample: number, timeForNoSample: number) {
         this.sampleLengthMultiplier = sampleLengthMultiplier
-        this.timeAddedAfterSample = timeAddedAfterSample
+        NerpRunner.timeAddedAfterSample = timeAddedAfterSample
         this.timeForNoSample = timeForNoSample
     }
 
@@ -279,8 +280,8 @@ export class NerpRunner {
         this.supressArrow(arrowDisabled)
         const msg = this.messages[messageNumber - 1]
         const sampleLength = this.timeForNoSample / 1000 // XXX workaround until sounds from DATA directory are implemented
-        const messageTimeoutMs = sampleLength * this.sampleLengthMultiplier + this.timeAddedAfterSample
-        if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt, messageTimeoutMs))
+        const messageTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample
+        if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt, messageTimeoutMs || 3000))
         if (msg.snd) { // XXX snd files reside in sounds/streamed/ which is not included in WAD files :(
             if (VERBOSE) console.warn(`Sounds from DATA directory not yet implemented`, msg.snd)
         }

@@ -124,13 +124,13 @@ export class BaseElement {
         if (event.button === MOUSE_BUTTON.MAIN) {
             if (this.onClick) {
                 this.publishEvent(new ChangeCursor(Cursor.OKAY, 1000))
-                this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
+                this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed, false))
                 this.onClick(event.sx, event.sy)
             }
         } else if (event.button === MOUSE_BUTTON.SECONDARY) {
             if (this.onClickSecondary) {
                 this.publishEvent(new ChangeCursor(Cursor.OKAY, 1000))
-                this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed))
+                this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed, false))
                 this.onClickSecondary(event.sx, event.sy)
             }
         }

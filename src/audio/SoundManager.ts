@@ -4,6 +4,7 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { VERBOSE } from '../params'
+import { NerpRunner } from '../nerp/NerpRunner'
 
 export class SoundManager {
     static sfxBuffersByKey: Map<string, ArrayBuffer[]> = new Map()
@@ -11,24 +12,30 @@ export class SoundManager {
     static audioContext: AudioContext
     static sfxAudioTarget: GainNode
     static readonly playingAudio: Set<PositionalAudio> = new Set()
+    static skipVoiceLines: boolean = false
 
     static {
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.playingAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.playingAudio.forEach((a) => a.play()))
     }
 
-    static playSample(sample: Sample) {
-        this.playSound(Sample[sample])
+    static playSample(sample: Sample, isVoice: boolean) {
+        this.playSound(Sample[sample], isVoice)
     }
 
-    static playSound(sfxName: string) {
-        this.getSoundBuffer(sfxName).then((audioBuffer) => {
+    static playSound(soundName: string, isVoice: boolean) {
+        if (isVoice && this.skipVoiceLines) return
+        this.getSoundBuffer(soundName).then((audioBuffer) => {
             try {
                 if (!audioBuffer) return
                 const source = SoundManager.audioContext.createBufferSource()
                 source.buffer = audioBuffer
                 source.connect(SoundManager.sfxAudioTarget)
                 source.start()
+                if (isVoice) {
+                    this.skipVoiceLines = true
+                    setTimeout(() => this.skipVoiceLines = false, audioBuffer.duration * 1000 + NerpRunner.timeAddedAfterSample)
+                }
             } catch (e) {
                 console.error(e)
             }

@@ -30,7 +30,7 @@ export class TooltipLayer extends ScreenLayer {
                 this.tooltipTimeoutText = setTimeout(() => this.changeTooltipImg(event), event.timeoutText)
             }
             if (event.tooltipSfx && event.timeoutSfx > 0) {
-                this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(event.tooltipSfx), event.timeoutSfx)
+                this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(event.tooltipSfx, true), event.timeoutSfx)
             }
         })
         this.addEventListener('pointermove', (event: PointerEvent): boolean => {

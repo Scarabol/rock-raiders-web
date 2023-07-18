@@ -71,7 +71,7 @@ export class InfoDockPanel extends Panel {
             while (infoDockButton.messages.length >= 9) infoDockButton.messages.pop()
             infoDockButton.messages.unshift(event)
             this.showButton(infoDockButton)
-            if (sample) this.publishEvent(new PlaySoundEvent(sample))
+            if (sample) this.publishEvent(new PlaySoundEvent(sample, true))
         })
     }
 

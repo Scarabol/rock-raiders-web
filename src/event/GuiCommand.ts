@@ -62,11 +62,8 @@ export class ChangeTooltip extends GuiCommand {
 }
 
 export class PlaySoundEvent extends GuiCommand {
-    sample: Sample
-
-    constructor(sample: Sample) {
+    constructor(readonly sample: Sample, readonly isVoice: boolean) {
         super(EventKey.COMMAND_PLAY_SOUND)
-        this.sample = sample
     }
 }
 

@@ -32,7 +32,7 @@ export class MainMenuIconButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = () => {
-            SoundManager.playSample(Sample.SFX_ButtonPressed)
+            SoundManager.playSample(Sample.SFX_ButtonPressed, false)
             callback()
         }
     }
