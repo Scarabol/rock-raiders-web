@@ -54,6 +54,14 @@ export class MonsterSpawner {
                 worldMgr.ecs.addComponent(entity, new RaiderScareComponent(RaiderScareRange.BAT))
                 worldMgr.ecs.addComponent(entity, new LastWillComponent(() => worldMgr.ecs.removeComponent(entity, RaiderScareComponent)))
                 break
+            case EntityType.SLUG:
+                sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/Slug'))
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.slug))
+                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.slug))
+                worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
+                const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, ResourceManager.getRockFallDamage(entityType)))
+                worldMgr.sceneMgr.addSprite(healthComponent.sprite)
+                break
             case EntityType.ICE_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType)
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.iceMonster))

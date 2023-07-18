@@ -43,6 +43,7 @@ export class Terrain {
     emergeTrigger: EmergeTrigger[] = []
     emergeSpawns: Map<number, Surface[]> = new Map()
     emergeTimeoutMs: number = 0
+    slugHoles: Surface[] = []
 
     constructor(readonly worldMgr: WorldManager, readonly levelConf: LevelEntryCfg) {
         this.worldMgr.sceneMgr.terrain = this

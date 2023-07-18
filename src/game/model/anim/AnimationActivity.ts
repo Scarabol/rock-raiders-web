@@ -82,3 +82,9 @@ export enum RockMonsterActivity {
     Punch = 'Activity_Repair',
     Crumble = 'Activity_Crumble',
 }
+
+export enum SlugActivity {
+    Emerge = 'Activity_Emerge',
+    Enter = 'Activity_Enter',
+    Suck = 'Activity_Repair',
+}

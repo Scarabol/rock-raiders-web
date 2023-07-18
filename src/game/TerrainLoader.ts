@@ -88,7 +88,12 @@ export class TerrainLoader {
                 for (let x = s.x - 1; x <= s.x + 1; x++) {
                     for (let y = s.y - 1; y <= s.y + 1; y++) {
                         const surface = terrain.getSurfaceOrNull(x, y)
-                        if (surface) surface.discovered = true
+                        if (surface) {
+                            surface.discovered = true
+                            if (surface.surfaceType === SurfaceType.SLUG_HOLE && surface.neighbors.some((n) => n.surfaceType.floor)) {
+                                terrain.slugHoles.add(surface)
+                            }
+                        }
                     }
                 }
             }

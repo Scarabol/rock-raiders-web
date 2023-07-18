@@ -18,6 +18,10 @@ import { GameResultEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { ResourceManager } from '../resource/ResourceManager'
+import { MonsterSpawner } from '../game/entity/MonsterSpawner'
+import { SlugEmergeEvent } from '../event/WorldLocationEvent'
+import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
+import { AnimEntityActivity, SlugActivity } from '../game/model/anim/AnimationActivity'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -243,7 +247,17 @@ export class NerpRunner {
     }
 
     generateSlug() {
-        console.warn('Slugs not yet implemented') // TODO implement slugs
+        const slugHole = this.worldMgr.sceneMgr.terrain.slugHoles.random()
+        if (!slugHole) return
+        const slug = MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SLUG, slugHole.getRandomPosition(), Math.random() * 2 * Math.PI)
+        const components = this.worldMgr.ecs.getComponents(slug)
+        const sceneEntity = components.get(AnimatedSceneEntityComponent)
+        sceneEntity.sceneEntity.setAnimation(SlugActivity.Emerge, () => {
+            sceneEntity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            // TODO Implement slug behavior
+        })
+        const slugPos = components.get(PositionComponent)
+        EventBus.publishEvent(new SlugEmergeEvent(slugPos))
     }
 
     /**

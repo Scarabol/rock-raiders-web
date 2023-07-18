@@ -275,6 +275,10 @@ export class EntityManager {
                 if (discovered) this.spiders.add(entity)
                 else this.undiscoveredSpiders.add(entity)
                 break
+            case EntityType.SLUG:
+                if (!discovered) console.warn('Slugs should not spawn on undiscovered surfaces!')
+                this.slugs.add(entity)
+                break
             case EntityType.ROCK_MONSTER:
             case EntityType.ICE_MONSTER:
             case EntityType.LAVA_MONSTER:

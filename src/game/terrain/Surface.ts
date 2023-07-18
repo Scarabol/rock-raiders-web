@@ -119,6 +119,7 @@ export class Surface {
                     break
                 case SurfaceType.HIDDEN_SLUG_HOLE:
                     this.surfaceType = SurfaceType.SLUG_HOLE
+                    this.terrain.slugHoles.add(this)
                     this.needsMeshUpdate = true
                     break
             }
