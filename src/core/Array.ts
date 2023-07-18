@@ -8,6 +8,8 @@ declare global {
 
         removeLast(element: T): void
 
+        removeAll(predicate: (e: T) => boolean): void
+
         last(): T
 
         count(callback: (element: T) => boolean): number
@@ -40,6 +42,13 @@ Array.prototype.remove = function <T>(element: T): void {
 Array.prototype.removeLast = function <T>(element: T): void {
     const lastIndex = this.indexOf(element)
     if (lastIndex !== -1) this.splice(lastIndex, 1)
+}
+
+Array.prototype.removeAll = function <T>(predicate: (e: T) => boolean): void {
+    let index = -1
+    while ((index = this.findIndex(predicate)) >= 0) {
+        this.splice(index, 1)
+    }
 }
 
 Array.prototype.last = function <T>(): T {

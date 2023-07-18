@@ -1,24 +1,20 @@
 import { InfoButtonCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
-import { EventKey } from '../../event/EventKeyEnum'
-import { WorldEvent } from '../../event/WorldEvents'
 import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { NATIVE_FRAMERATE } from '../../params'
 import { Button } from '../base/Button'
 import { InfoDockPanel } from './InfoDockPanel'
 import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
-import { PlaySoundEvent } from '../../event/GuiCommand'
-import { Sample } from '../../audio/Sample'
 
 export class InfoDockButton extends Button {
-    messages: WorldEvent[] = [] // newest message first
+    messages: WorldLocationEvent[] = [] // newest message first
     text: string = null
     animationTimeout: NodeJS.Timeout = null
     animationSpeedX = 0.5
     animationSpeedY = 1
 
-    constructor(parent: InfoDockPanel, infoMessagesEntryConfig: InfoMessagesEntryConfig, eventKey: EventKey) {
+    constructor(parent: InfoDockPanel, infoMessagesEntryConfig: InfoMessagesEntryConfig) {
         super(parent, new InfoButtonCfg(infoMessagesEntryConfig.buttonImageFilename))
         this.text = infoMessagesEntryConfig.message
         this.hidden = true
@@ -27,15 +23,6 @@ export class InfoDockButton extends Button {
             if (this.messages.length < 1) return
             parent.buttonClicked(this)
         }
-
-        const sample = Sample[infoMessagesEntryConfig.sfxName]
-        this.registerEventListener(eventKey, (event: WorldLocationEvent) => {
-            this.hidden = false
-            while (this.messages.length >= 9) this.messages.pop()
-            this.messages.unshift(event)
-            parent.showButton(this)
-            if (sample) this.publishEvent(new PlaySoundEvent(sample))
-        })
     }
 
     reset() {

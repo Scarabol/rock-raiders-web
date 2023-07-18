@@ -8,10 +8,12 @@ import { Panel } from '../base/Panel'
 import { InfoDockButton } from './InfoDockButton'
 import { InfoMessagesCfg } from './InfoMessagesCfg'
 import { InformationPanel } from './InformationPanel'
-import { CameraControl } from '../../event/GuiCommand'
+import { CameraControl, PlaySoundEvent } from '../../event/GuiCommand'
+import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
+import { Sample } from '../../audio/Sample'
 
 export class InfoDockPanel extends Panel {
-    stackButtons: InfoDockButton[] = []
+    readonly stackButtons: InfoDockButton[] = []
     informationPanel: InformationPanel = null
 
     constructor(parent: BaseElement, panelCfg: PanelCfg, buttonsCfg: ButtonInfoDockCfg, infoMessagesConfig: InfoMessagesCfg, informationPanel: InformationPanel) {
@@ -20,27 +22,27 @@ export class InfoDockPanel extends Panel {
         this.addChild(new Button(this, buttonsCfg.panelButtonInfoDockGoto)).onClick = () => this.gotoLatestMessage()
         this.addChild(new Button(this, buttonsCfg.panelButtonInfoDockClose)).onClick = () => this.dropLatestMessage()
 
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoGenericDeath, EventKey.LOCATION_DEATH))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoGenericMonster, EventKey.LOCATION_MONSTER))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoCrystalFound, EventKey.LOCATION_CRYSTAL_FOUND))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoUnderAttack, EventKey.LOCATION_UNDER_ATTACK))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoLandslide, EventKey.LOCATION_LANDSLIDE))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoPowerDrain, EventKey.LOCATION_POWER_DRAIN))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoSlugEmerge, EventKey.LOCATION_SLUG_EMERGE))
-        this.addChild(new InfoDockButton(this, infoMessagesConfig.infoFoundMinifigure, EventKey.LOCATION_RAIDER_DISCOVERED))
+        this.addInfoDockButton(infoMessagesConfig.infoGenericDeath, EventKey.LOCATION_DEATH)
+        this.addInfoDockButton(infoMessagesConfig.infoGenericMonster, EventKey.LOCATION_MONSTER)
+        this.addInfoDockButton(infoMessagesConfig.infoCrystalFound, EventKey.LOCATION_CRYSTAL_FOUND)
+        this.addInfoDockButton(infoMessagesConfig.infoUnderAttack, EventKey.LOCATION_UNDER_ATTACK)
+        this.addInfoDockButton(infoMessagesConfig.infoLandslide, EventKey.LOCATION_LANDSLIDE)
+        this.addInfoDockButton(infoMessagesConfig.infoPowerDrain, EventKey.LOCATION_POWER_DRAIN)
+        this.addInfoDockButton(infoMessagesConfig.infoSlugEmerge, EventKey.LOCATION_SLUG_EMERGE)
+        this.addInfoDockButton(infoMessagesConfig.infoFoundMinifigure, EventKey.LOCATION_RAIDER_DISCOVERED)
     }
 
     reset() {
         super.reset()
-        this.stackButtons = []
+        this.stackButtons.length = 0
     }
 
     private gotoLatestMessage() {
         if (this.stackButtons.length < 1) return
         const btn = this.stackButtons[0]
         if (btn.messages.length < 1) return
-        const msg = btn.messages[0] as WorldLocationEvent
-        this.publishEvent(new CameraControl(0, false, -1, msg.location))
+        const location = btn.messages[0].location
+        this.publishEvent(new CameraControl(0, false, -1, location))
     }
 
     private dropLatestMessage() {
@@ -48,16 +50,32 @@ export class InfoDockPanel extends Panel {
         const button = this.stackButtons[0]
         if (button.messages.length < 1) return
         button.messages.shift()
+        this.redrawAfterMessageStackUpdate(button)
+    }
+
+    private redrawAfterMessageStackUpdate(button: InfoDockButton) {
         if (button.messages.length < 1) {
             button.hidden = true
             this.informationPanel.setMovedIn(true)
-            this.stackButtons.splice(this.stackButtons.indexOf(button), 1)
+            this.stackButtons.remove(button)
             this.slideStackIntoPosition().then()
         }
         button.notifyRedraw()
     }
 
-    showButton(button: InfoDockButton) {
+    private addInfoDockButton(config: InfoMessagesEntryConfig, eventKey: EventKey) {
+        const infoDockButton = this.addChild(new InfoDockButton(this, config))
+        const sample = Sample[config.sfxName]
+        this.registerEventListener(eventKey, (event: WorldLocationEvent) => {
+            infoDockButton.hidden = false
+            while (infoDockButton.messages.length >= 9) infoDockButton.messages.pop()
+            infoDockButton.messages.unshift(event)
+            this.showButton(infoDockButton)
+            if (sample) this.publishEvent(new PlaySoundEvent(sample))
+        })
+    }
+
+    private showButton(button: InfoDockButton) {
         if (this.stackButtons.includes(button)) {
             button.notifyRedraw()
         } else {
