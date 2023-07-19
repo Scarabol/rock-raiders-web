@@ -42,30 +42,32 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.7.0 - Rockies, Slugs And Damage
 
-- make rock monster pick up nearby raider and shake them upside down
-- Raider get tired while carrying and eat at barracks
+- Improve path finding, since rockies cannot reach buildings other than toolstations or raider cannot reach water vehicles
+- Make rock monster pick up nearby raider and shake them upside down
+- Make rockies block building mode
+- Implement bullet system, move bullet components, on impact with collision sphere apply damage and remove bullet
 
 ### v0.8.0 - Late game features
 
-- Fix Large Cat not usable to carry vehicles in Level 19
-- Move camera with click on mini map and show camera view area as wireframe
+- Unlock levels only after linked levels are completed
+- Add screen shake for exploding dynamites
+- Show loading screen when starting a level
+- Show misc anim LavaErosionSmoke over lava
+- Add rockfall transition when switching in main menu
+- Show FLT mini-figure animation with mission briefing
 - Refactor job system to allow multi-carry jobs for vehicles
+- Raider get tired while carrying and eat at barracks
+- Add surface type tooltips for map panel
+- Add magnet cursor to map panel to track entities
+- Render last selected entity with rotating camera in radar panel
+- Move camera with click on mini map and show camera view area as wireframe
 - First-Person and shoulder camera
 - Background music and soundtrack
 - Tutorial levels and helper features
-- Show FLT mini-figure animation with mission briefing
-- Add screen shake for exploding dynamites
-- Show loading screen when starting a level
-- Add rockfall transition when switching in main menu
-- Show misc anim LavaErosionSmoke over lava
 - Add water and lava animation (texture UV coords tearing)
 - Change cursor to X when over disabled IconPanelButtons
-- Unlock levels only after linked levels are completed
 - Use same team for all missions and add names to raiders
 - Auto switch from portrait to landscape mode in fullscreen
-- Add surface type tooltips for map panel
-- Render last selected entity with rotating camera in radar panel
-- Add magnet cursor to map panel to track entities
 
 ### v0.9.0 - Polishing
 
@@ -73,8 +75,20 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Known Issues
 
+### Important
+
+- Mark start and end tile in path finding always as accessible to make entering water vehicles and drilling easier, also frees raider stuck on lava
+- Damage and blow up buildings with lava erosion
+- Make idle raider leave lava fields
+- Forbidding collection of ores or crystals stops building projects too
+- Save game overwrites levels on all previous saves
+- Fix Large Cat not usable to carry vehicles in Level 19
+- Improve GUI rendering performance maybe reduce scope or reduce quantity
+- Multitouch breaks camera on mobile
+
 ### Nice to have
 
+- Save game state in browser cache to allow reload
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Use long press on mobile browser to emulate right click
 - Do not allow touch events to move scene camera while build mode selection is active
