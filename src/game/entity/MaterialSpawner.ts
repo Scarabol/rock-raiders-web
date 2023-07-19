@@ -63,6 +63,17 @@ export class MaterialSpawner {
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.powerCrystal))
                 material.priorityIdentifier = PriorityIdentifier.CRYSTAL
                 break
+            case EntityType.DEPLETED_CRYSTAL:
+                const depletedHighPolyMesh = ResourceManager.getLwoModel('World/Shared/Crystal') // high poly version
+                depletedHighPolyMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
+                    mat.emissive = new Color(8, 0, 8) // XXX read from LWO file?
+                    mat.color = new Color(0, 0, 0) // XXX read from LWO file?
+                    mat.setOpacity(0.9) // XXX read from LWO file?
+                })
+                material.sceneEntity.add(depletedHighPolyMesh)
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.powerCrystal))
+                material.priorityIdentifier = PriorityIdentifier.RECHARGE
+                break
             case EntityType.BARRIER:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(ResourceManager.configuration.miscObjects.Barrier))
                 material.sceneEntity.setAnimation(BarrierActivity.Short)

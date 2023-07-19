@@ -122,6 +122,14 @@ export class Surface {
                     this.terrain.slugHoles.add(this)
                     this.needsMeshUpdate = true
                     break
+                case SurfaceType.RECHARGE_SEAM:
+                    this.terrain.rechargeSeams.add(this)
+                    const floorNeighbor = this.neighbors.find((n) => n.surfaceType.floor)
+                    const angle = Math.atan2(floorNeighbor.y - this.y, this.x - floorNeighbor.x) + Math.PI / 2
+                    const grp = this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.RechargeSparkle, new Vector3(0.5, 2, 0.5), angle, true)
+                    grp.scale.setScalar(1 / TILESIZE)
+                    this.mesh.add(grp)
+                    break
             }
         }
         if (this.discovered) return

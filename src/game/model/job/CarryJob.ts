@@ -16,6 +16,7 @@ import { GameState } from '../GameState'
 import { EntityManager } from '../../EntityManager'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
+import { MaterialSpawner } from '../../entity/MaterialSpawner'
 
 export class CarryJob extends Job {
     fulfiller: JobFulfiller = null
@@ -65,6 +66,13 @@ export class CarryJob extends Job {
                 const powerStations = this.findReachableBuilding(entityMgr, EntityType.POWER_STATION, entity)
                 if (powerStations.length > 0) return powerStations
                 return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
+            case EntityType.DEPLETED_CRYSTAL:
+                return this.carryItem.worldMgr.sceneMgr.terrain.rechargeSeams
+                    .flatMap((s) => s.getDigPositions().map((p) => {
+                        const target = PathTarget.fromLocation(p)
+                        target.focusPoint = s.getCenterWorld2D()
+                        return target
+                    }))
             case EntityType.BRICK:
                 const sites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
                 if (sites.length > 0) return sites
@@ -105,6 +113,7 @@ export class CarryJob extends Job {
 
     getWorkActivity(): AnimationActivity {
         if (this.fulfiller?.entityType === EntityType.PILOT) {
+            if (this.carryItem.entityType === EntityType.DEPLETED_CRYSTAL) return RaiderActivity.Recharge
             const building = this.target.building?.entityType
             return building === EntityType.POWER_STATION || building === EntityType.ORE_REFINERY ? RaiderActivity.Deposit : RaiderActivity.Place
         }
@@ -143,6 +152,13 @@ export class CarryJob extends Job {
                 GameState.depositItem(this.carryItem)
                 this.carryItem.disposeFromWorld()
             }
+        } else if (this.carryItem.entityType === EntityType.DEPLETED_CRYSTAL) {
+            this.carryItem.disposeFromWorld()
+            const material = MaterialSpawner.spawnMaterial(this.carryItem.worldMgr, EntityType.CRYSTAL, this.carryItem.getPosition2D())
+            const raider = fulfiller as Raider // XXX refactor type safety for jobs
+            raider.setJob(material.carryJob)
+            raider.carries = material
+            raider.sceneEntity.pickupEntity(material.sceneEntity)
         } else {
             this.carryItem.sceneEntity.addToScene(this.carryItem.worldMgr.sceneMgr, null, null)
             if (this.carryItem.entityType === EntityType.BARRIER) {
@@ -201,6 +217,8 @@ export class CarryJob extends Job {
                 return 'bubbleCarryOre'
             case EntityType.CRYSTAL:
                 return 'bubbleCarryCrystal'
+            case EntityType.DEPLETED_CRYSTAL:
+                return 'bubbleRecharge'
             case EntityType.DYNAMITE:
                 return 'bubbleCarryDynamite'
             case EntityType.BARRIER:

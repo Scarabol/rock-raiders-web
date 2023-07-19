@@ -5,6 +5,8 @@ import { BuildingSite } from './building/BuildingSite'
 import { GameEntity } from '../ECS'
 
 export class PathTarget {
+    focusPoint: Vector2 = null
+
     constructor(
         readonly targetLocation: Vector2,
         readonly radiusSq: number = 1,

@@ -32,6 +32,7 @@ export enum EntityType {
     ORE,
     BRICK,
     BARRIER,
+    DEPLETED_CRYSTAL,
 
     // VEHICLE
     HOVERBOARD,
@@ -54,7 +55,7 @@ export enum EntityType {
     PUSHER_SHOT,
 }
 
-export type MaterialEntityType = EntityType.ORE | EntityType.CRYSTAL | EntityType.BRICK | EntityType.BARRIER | EntityType.DYNAMITE | EntityType.ELECTRIC_FENCE
+export type MaterialEntityType = EntityType.ORE | EntityType.CRYSTAL | EntityType.BRICK | EntityType.BARRIER | EntityType.DYNAMITE | EntityType.ELECTRIC_FENCE | EntityType.DEPLETED_CRYSTAL
 
 export type VehicleEntityType = EntityType.HOVERBOARD | EntityType.SMALL_DIGGER | EntityType.SMALL_TRUCK | EntityType.SMALL_CAT | EntityType.SMALL_MLP | EntityType.SMALL_HELI | EntityType.BULLDOZER | EntityType.WALKER_DIGGER | EntityType.LARGE_MLP | EntityType.LARGE_DIGGER | EntityType.LARGE_CAT | EntityType.LARGE_HELI
 

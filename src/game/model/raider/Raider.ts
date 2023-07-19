@@ -349,6 +349,8 @@ export class Raider implements Updatable, JobFulfiller {
             this.sceneEntity.setAnimation(workActivity)
             this.completeJob()
         } else {
+            const focusPoint = this.job?.getWorkplace(this)?.focusPoint
+            if (focusPoint) this.sceneEntity.headTowards(focusPoint)
             this.sceneEntity.setAnimation(workActivity, () => {
                 this.completeJob()
             }, this.job.getExpectedTimeLeft())

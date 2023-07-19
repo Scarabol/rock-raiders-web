@@ -14,6 +14,8 @@ import { GameState } from '../model/GameState'
 import { MaterialAmountChanged } from '../../event/WorldEvents'
 import { SLUG_MAX_IDLE_TIME, SLUG_SUCK_TIME } from '../../params'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
+import { MaterialSpawner } from '../entity/MaterialSpawner'
+import { EntityType } from '../model/EntityType'
 
 const SLUG_SUCK_DISTANCE_SQ = 25 * 25
 const SLUG_ENTER_DISTANCE_SQ = 5 * 5
@@ -67,7 +69,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             sceneEntity.setAnimation(SlugActivity.Suck, () => {
                                 GameState.numCrystal--
                                 EventBus.publishEvent(new MaterialAmountChanged())
-                                // MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.DEPLETED_CRYSTAL, positionComponent.getPosition2D()) // TODO spawn depleted crystal
+                                MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.DEPLETED_CRYSTAL, positionComponent.getPosition2D())
                                 behaviorComponent.state = SlugBehaviorState.GO_ENTER
                                 behaviorComponent.energyLeeched = true
                             }, SLUG_SUCK_TIME)

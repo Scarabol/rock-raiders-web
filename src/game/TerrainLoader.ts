@@ -7,6 +7,7 @@ import { Terrain } from './terrain/Terrain'
 import { WorldManager } from './WorldManager'
 import { getMonsterEntityTypeByName } from './model/EntityType'
 import { EmergeTrigger } from './terrain/EmergeTrigger'
+import { Vector3 } from 'three'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
@@ -90,8 +91,20 @@ export class TerrainLoader {
                         const surface = terrain.getSurfaceOrNull(x, y)
                         if (surface) {
                             surface.discovered = true
-                            if (surface.surfaceType === SurfaceType.SLUG_HOLE && surface.neighbors.some((n) => n.surfaceType.floor)) {
-                                terrain.slugHoles.add(surface)
+                            if (surface.neighbors.some((n) => n.surfaceType.floor)) {
+                                switch (surface.surfaceType) {
+                                    case SurfaceType.SLUG_HOLE:
+                                        terrain.slugHoles.add(surface)
+                                        break
+                                    case SurfaceType.RECHARGE_SEAM:
+                                        terrain.rechargeSeams.add(surface)
+                                        const floorNeighbor = surface.neighbors.find((n) => n.surfaceType.floor)
+                                        const angle = Math.atan2(floorNeighbor.y - surface.y, surface.x - floorNeighbor.x) + Math.PI / 2
+                                        const grp = worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.RechargeSparkle, new Vector3(0.5, 2, 0.5), angle, true)
+                                        grp.scale.setScalar(1 / TILESIZE)
+                                        surface.mesh.add(grp)
+                                        break
+                                }
                             }
                         }
                     }

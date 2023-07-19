@@ -68,6 +68,7 @@ export enum RaiderActivity {
     StandSMALLDIGGER = 'Activity_StandSMALLDIGGER',
 
     Shoot = 'Activity_FireLaser',
+    Recharge = 'Activity_Recharge',
 }
 
 export enum RockMonsterActivity {
