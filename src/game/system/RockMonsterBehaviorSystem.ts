@@ -74,29 +74,45 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
-                        } else if (!this.worldMgr.entityMgr.materials.includes(behaviorComponent.targetCrystal)) {
-                            behaviorComponent.changeToIdle()
-                        } else if (!components.has(WorldTargetComponent)) {
-                            const crystalPosition = behaviorComponent.targetCrystal.getPosition2D()
-                            if (rockyPos.distanceToSquared(crystalPosition) <= ROCKY_GRAB_DISTANCE_SQ) {
-                                sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetCrystal.getPosition2D()))
-                                behaviorComponent.state = RockMonsterBehaviorState.EAT_CRYSTAL
-                                sceneEntity.pickupEntity(behaviorComponent.targetCrystal.sceneEntity)
-                                behaviorComponent.targetCrystal.targetSite?.removeItem(behaviorComponent.targetCrystal)
-                                sceneEntity.setAnimation(RockMonsterActivity.Eat, () => {
+                        } else {
+                            const vehicleInMeleeRange = this.worldMgr.entityMgr.vehicles
+                                .find((v) => v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
+                            if (vehicleInMeleeRange) {
+                                const prevState = behaviorComponent.state
+                                this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                                sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.getPosition2D()))
+                                behaviorComponent.state = RockMonsterBehaviorState.PUNCH
+                                sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
                                     sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                                    behaviorComponent.numCrystalsEaten++
-                                    sceneEntity.removeAllCarried()
-                                    behaviorComponent.targetCrystal.disposeFromWorld()
-                                    behaviorComponent.changeToIdle()
+                                    if (vehicleInMeleeRange.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
+                                        this.worldMgr.ecs.getComponents(vehicleInMeleeRange.entity).get(HealthComponent).changeHealth(stats.RepairValue)
+                                    }
+                                    behaviorComponent.state = prevState
                                 })
-                            } else {
-                                const crystalPathTarget = [PathTarget.fromLocation(crystalPosition)]
-                                const path = pathFinder.findShortestPath(rockyPos, crystalPathTarget, stats, false)
-                                if (path && path.locations.length > 0) {
-                                    this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0], ROCKY_GRAB_DISTANCE_SQ))
+                            } else if (!this.worldMgr.entityMgr.materials.includes(behaviorComponent.targetCrystal)) {
+                                behaviorComponent.changeToIdle()
+                            } else if (!components.has(WorldTargetComponent)) {
+                                const crystalPosition = behaviorComponent.targetCrystal.getPosition2D()
+                                if (rockyPos.distanceToSquared(crystalPosition) <= ROCKY_GRAB_DISTANCE_SQ) {
+                                    sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetCrystal.getPosition2D()))
+                                    behaviorComponent.state = RockMonsterBehaviorState.EAT_CRYSTAL
+                                    sceneEntity.pickupEntity(behaviorComponent.targetCrystal.sceneEntity)
+                                    behaviorComponent.targetCrystal.targetSite?.removeItem(behaviorComponent.targetCrystal)
+                                    sceneEntity.setAnimation(RockMonsterActivity.Eat, () => {
+                                        sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                        behaviorComponent.numCrystalsEaten++
+                                        sceneEntity.removeAllCarried()
+                                        behaviorComponent.targetCrystal.disposeFromWorld()
+                                        behaviorComponent.changeToIdle()
+                                    })
                                 } else {
-                                    behaviorComponent.changeToIdle()
+                                    const crystalPathTarget = [PathTarget.fromLocation(crystalPosition)]
+                                    const path = pathFinder.findShortestPath(rockyPos, crystalPathTarget, stats, false)
+                                    if (path && path.locations.length > 0) {
+                                        this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0], ROCKY_GRAB_DISTANCE_SQ))
+                                    } else {
+                                        behaviorComponent.changeToIdle()
+                                    }
                                 }
                             }
                         }
@@ -155,34 +171,50 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
-                        } else if (!behaviorComponent.targetBuilding) {
-                            // TODO path finding to buildings does not work since surface below buildings are not accessible
-                            const closestBuilding = pathFinder.findClosestObj(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
-                            if (closestBuilding) {
-                                behaviorComponent.targetBuilding = closestBuilding.obj
-                            } else {
-                                behaviorComponent.state = RockMonsterBehaviorState.GO_HOME
-                            }
-                        } else if (!this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
-                            behaviorComponent.changeToIdle()
                         } else {
-                            const targetBuildingSurface = [behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_MELEE_ATTACK_DISTANCE_SQ)
-                            if (targetBuildingSurface) {
+                            const vehicleInMeleeRange = this.worldMgr.entityMgr.vehicles
+                                .find((v) => v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
+                            if (vehicleInMeleeRange) {
+                                const prevState = behaviorComponent.state
                                 this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                                sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetBuildingSurface.getCenterWorld2D()))
+                                sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.getPosition2D()))
                                 behaviorComponent.state = RockMonsterBehaviorState.PUNCH
                                 sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
                                     sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                                    this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).get(HealthComponent).changeHealth(stats.RepairValue)
-                                    behaviorComponent.changeToIdle()
+                                    if (vehicleInMeleeRange.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
+                                        this.worldMgr.ecs.getComponents(vehicleInMeleeRange.entity).get(HealthComponent).changeHealth(stats.RepairValue)
+                                    }
+                                    behaviorComponent.state = prevState
                                 })
-                            } else if (!components.has(WorldTargetComponent)) {
-                                const buildingPathTargets = [behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), ROCKY_MELEE_ATTACK_DISTANCE_SQ))
-                                const path = pathFinder.findShortestPath(rockyPos, buildingPathTargets, stats, false)
-                                if (path && path.locations.length > 0) {
-                                    this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
+                            } else if (!behaviorComponent.targetBuilding) {
+                                // TODO path finding to buildings does not work since surface below buildings are not accessible
+                                const closestBuilding = pathFinder.findClosestObj(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
+                                if (closestBuilding) {
+                                    behaviorComponent.targetBuilding = closestBuilding.obj
                                 } else {
-                                    behaviorComponent.changeToIdle()
+                                    behaviorComponent.state = RockMonsterBehaviorState.GO_HOME
+                                }
+                            } else if (!this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
+                                behaviorComponent.changeToIdle()
+                            } else {
+                                const targetBuildingSurface = [behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_MELEE_ATTACK_DISTANCE_SQ)
+                                if (targetBuildingSurface) {
+                                    this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                                    sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetBuildingSurface.getCenterWorld2D()))
+                                    behaviorComponent.state = RockMonsterBehaviorState.PUNCH
+                                    sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
+                                        sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                        this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).get(HealthComponent).changeHealth(stats.RepairValue)
+                                        behaviorComponent.changeToIdle()
+                                    })
+                                } else if (!components.has(WorldTargetComponent)) {
+                                    const buildingPathTargets = [behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), ROCKY_MELEE_ATTACK_DISTANCE_SQ))
+                                    const path = pathFinder.findShortestPath(rockyPos, buildingPathTargets, stats, false)
+                                    if (path && path.locations.length > 0) {
+                                        this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
+                                    } else {
+                                        behaviorComponent.changeToIdle()
+                                    }
                                 }
                             }
                         }
@@ -197,25 +229,41 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
-                        } else if (behaviorComponent.targetWall.wallType !== WALL_TYPE.WALL) {
-                            behaviorComponent.changeToIdle()
-                        } else if (!components.has(WorldTargetComponent)) {
-                            if (behaviorComponent.targetWall.getDigPositions().some((p) => rockyPos.distanceToSquared(p) <= ROCKY_GATHER_DISTANCE_SQ)) {
-                                sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetWall.getCenterWorld2D()))
-                                behaviorComponent.state = RockMonsterBehaviorState.GATHER
-                                sceneEntity.setAnimation(RockMonsterActivity.Gather, () => {
-                                    sceneEntity.setAnimation(AnimEntityActivity.StandCarry)
-                                    behaviorComponent.boulder = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Boulder) // TODO not textured use BoulderAnimation or vertex colors?
-                                    sceneEntity.pickupEntity(behaviorComponent.boulder)
-                                    behaviorComponent.changeToIdle()
+                        } else {
+                            const vehicleInMeleeRange = this.worldMgr.entityMgr.vehicles
+                                .find((v) => v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
+                            if (vehicleInMeleeRange) {
+                                const prevState = behaviorComponent.state
+                                this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                                sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.getPosition2D()))
+                                behaviorComponent.state = RockMonsterBehaviorState.PUNCH
+                                sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
+                                    sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                    if (vehicleInMeleeRange.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
+                                        this.worldMgr.ecs.getComponents(vehicleInMeleeRange.entity).get(HealthComponent).changeHealth(stats.RepairValue)
+                                    }
+                                    behaviorComponent.state = prevState
                                 })
-                            } else {
-                                const wallPathTargets = behaviorComponent.targetWall.getDigPositions().map((p) => PathTarget.fromLocation(p, ROCKY_GATHER_DISTANCE_SQ))
-                                const path = pathFinder.findShortestPath(rockyPos, wallPathTargets, stats, false)
-                                if (path && path.locations.length > 0) {
-                                    this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0], ROCKY_GATHER_DISTANCE_SQ))
+                            } else if (behaviorComponent.targetWall.wallType !== WALL_TYPE.WALL) {
+                                behaviorComponent.changeToIdle()
+                            } else if (!components.has(WorldTargetComponent)) {
+                                if (behaviorComponent.targetWall.getDigPositions().some((p) => rockyPos.distanceToSquared(p) <= ROCKY_GATHER_DISTANCE_SQ)) {
+                                    sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetWall.getCenterWorld2D()))
+                                    behaviorComponent.state = RockMonsterBehaviorState.GATHER
+                                    sceneEntity.setAnimation(RockMonsterActivity.Gather, () => {
+                                        sceneEntity.setAnimation(AnimEntityActivity.StandCarry)
+                                        behaviorComponent.boulder = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Boulder) // TODO not textured use BoulderAnimation or vertex colors?
+                                        sceneEntity.pickupEntity(behaviorComponent.boulder)
+                                        behaviorComponent.changeToIdle()
+                                    })
                                 } else {
-                                    behaviorComponent.changeToIdle()
+                                    const wallPathTargets = behaviorComponent.targetWall.getDigPositions().map((p) => PathTarget.fromLocation(p, ROCKY_GATHER_DISTANCE_SQ))
+                                    const path = pathFinder.findShortestPath(rockyPos, wallPathTargets, stats, false)
+                                    if (path && path.locations.length > 0) {
+                                        this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0], ROCKY_GATHER_DISTANCE_SQ))
+                                    } else {
+                                        behaviorComponent.changeToIdle()
+                                    }
                                 }
                             }
                         }
