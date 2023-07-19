@@ -69,7 +69,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             const prevTargetComponent = components.get(WorldTargetComponent)
                             this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
                             sceneEntity.setAnimation(RockMonsterActivity.Stamp, () => {
-                                this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
+                                if (prevTargetComponent) this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
@@ -173,7 +173,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             const prevTargetComponent = components.get(WorldTargetComponent)
                             this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
                             sceneEntity.setAnimation(RockMonsterActivity.Stamp, () => {
-                                this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
+                                if (prevTargetComponent) this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
@@ -231,7 +231,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             const prevTargetComponent = components.get(WorldTargetComponent)
                             this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
                             sceneEntity.setAnimation(RockMonsterActivity.Stamp, () => {
-                                this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
+                                if (prevTargetComponent) this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
