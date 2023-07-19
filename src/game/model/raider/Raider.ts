@@ -29,12 +29,13 @@ import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntit
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { OxygenComponent } from '../../component/OxygenComponent'
-import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
+import { GenericDeathEvent, WorldLocationEvent } from '../../../event/WorldLocationEvent'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
 import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
 import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -163,6 +164,7 @@ export class Raider implements Updatable, JobFulfiller {
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                             this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
                             this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
+                            EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                         })
                     }
                 }

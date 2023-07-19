@@ -31,12 +31,13 @@ import { PositionComponent } from '../../component/PositionComponent'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { VehicleUpgrade, VehicleUpgrades } from './VehicleUpgrade'
-import { GenericDeathEvent } from '../../../event/WorldLocationEvent'
+import { GenericDeathEvent, WorldLocationEvent } from '../../../event/WorldLocationEvent'
 import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
 import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
 import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
+import { EventKey } from '../../../event/EventKeyEnum'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -121,6 +122,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                             this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
                             this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
+                            EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                         })
                     }
                 }

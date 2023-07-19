@@ -42,6 +42,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                     components.get(AnimatedSceneEntityComponent).sceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                         this.worldMgr.ecs.addComponent(m, new RaiderScareComponent(RaiderScareRange.ROCKY))
                         this.ecs.addComponent(m, new RockMonsterBehaviorComponent())
+                        EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                     })
                 }
             })
