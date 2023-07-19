@@ -21,6 +21,8 @@ import { Vector2 } from 'three'
 import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
 import { MaterialEntity } from '../model/material/MaterialEntity'
 import { TILESIZE } from '../../params'
+import { DynamiteExplosionEvent } from '../../event/WorldEvents'
+import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -32,6 +34,18 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
 
     constructor(readonly worldMgr: WorldManager) {
         super()
+        EventBus.registerEventListener(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
+            this.worldMgr.entityMgr.rockMonsters.forEach((m) => {
+                const components = this.ecs.getComponents(m)
+                const positionComponent = components.get(PositionComponent)
+                if (positionComponent.getPosition2D().distanceToSquared(event.position) < Math.pow(ResourceManager.configuration.main.DynamiteDamageRadius, 2)) {
+                    components.get(AnimatedSceneEntityComponent).sceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
+                        this.worldMgr.ecs.addComponent(m, new RaiderScareComponent(RaiderScareRange.ROCKY))
+                        this.ecs.addComponent(m, new RockMonsterBehaviorComponent())
+                    })
+                }
+            })
+        })
     }
 
     update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
