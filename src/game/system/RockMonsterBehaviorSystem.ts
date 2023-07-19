@@ -72,6 +72,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
+                                this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else if (!this.worldMgr.entityMgr.materials.includes(behaviorComponent.targetCrystal)) {
                             behaviorComponent.changeToIdle()
@@ -152,6 +153,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
+                                this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else if (!behaviorComponent.targetBuilding) {
                             // TODO path finding to buildings does not work since surface below buildings are not accessible
@@ -193,6 +195,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 this.worldMgr.ecs.addComponent(entity, new WorldTargetComponent(prevTargetComponent.position, prevTargetComponent.radiusSq))
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
+                                this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else if (behaviorComponent.targetWall.wallType !== WALL_TYPE.WALL) {
                             behaviorComponent.changeToIdle()
