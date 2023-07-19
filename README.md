@@ -43,7 +43,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### v0.7.0 - Rockies, Slugs And Damage
 
 - make rock monster pick up nearby raider and shake them upside down
-- make rock monster punch vehicles passing by and vehicle break boulders
 - Raider get tired while carrying and eat at barracks
 
 ### v0.8.0 - Late game features

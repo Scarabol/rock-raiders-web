@@ -17,7 +17,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { GameState } from '../model/GameState'
 import { PathFinder } from '../terrain/PathFinder'
-import { Vector2 } from 'three'
+import { Vector2, Vector3 } from 'three'
 import { MonsterEntityStats } from '../../cfg/GameStatsCfg'
 import { MaterialEntity } from '../model/material/MaterialEntity'
 import { TILESIZE } from '../../params'
@@ -119,7 +119,14 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         break
                     case RockMonsterBehaviorState.BOULDER_ATTACK:
                         if (behaviorComponent.boulder) {
-                            if (!behaviorComponent.targetBuilding) {
+                            const drivingVehicleCloseBy = this.worldMgr.entityMgr.vehicles
+                                .find((v) => v.sceneEntity.currentAnimation === AnimEntityActivity.Route && v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
+                            if (drivingVehicleCloseBy) {
+                                this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BoulderExplode, behaviorComponent.boulder.getWorldPosition(new Vector3()), behaviorComponent.boulder.rotation.y, false)
+                                sceneEntity.removeAllCarried()
+                                behaviorComponent.boulder = null
+                                sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                            } else if (!behaviorComponent.targetBuilding) {
                                 // TODO path finding to buildings does not work since surface below buildings are not accessible
                                 const closestBuilding = pathFinder.findClosestObj(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
                                 if (closestBuilding) {
