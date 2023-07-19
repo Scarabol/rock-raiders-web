@@ -50,7 +50,7 @@ export class CarryJob extends Job {
         return this.target
     }
 
-    private findWorkplaces(entity: Raider | VehicleEntity) {
+    private findWorkplaces(entity: Raider | VehicleEntity): PathTarget[] {
         const carryItem = this.carryItem
         const entityMgr = carryItem.worldMgr.entityMgr
         switch (carryItem.entityType) {

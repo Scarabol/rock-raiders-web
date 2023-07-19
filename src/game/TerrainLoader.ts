@@ -97,7 +97,6 @@ export class TerrainLoader {
                 surface.surfaceType = SurfaceType.HIDDEN_CAVERN
             } else if (predugMap[s.y][s.x] === PredugMap.SLUG_HOLE_HIDDEN) {
                 surface.surfaceType = SurfaceType.HIDDEN_SLUG_HOLE
-                if (s.y === 12) console.log(surface)
             }
         })
 

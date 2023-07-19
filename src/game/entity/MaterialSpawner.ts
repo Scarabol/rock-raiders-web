@@ -2,7 +2,7 @@ import { WorldManager } from '../WorldManager'
 import { AdditiveBlending, Color, Vector2 } from 'three'
 import { MaterialEntity } from '../model/material/MaterialEntity'
 import { Surface } from '../terrain/Surface'
-import { EntityType } from '../model/EntityType'
+import { EntityType, MaterialEntityType } from '../model/EntityType'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { SceneSelectionComponent } from '../component/SceneSelectionComponent'
 import { SequenceTextureMaterial } from '../../scene/SequenceTextureMaterial'
@@ -12,8 +12,6 @@ import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { BarrierActivity, DynamiteActivity } from '../model/anim/AnimationActivity'
 import { PriorityIdentifier } from '../model/job/PriorityIdentifier'
 import { RaiderTraining } from '../model/raider/RaiderTraining'
-
-export type MaterialEntityType = EntityType.ORE | EntityType.CRYSTAL | EntityType.BRICK | EntityType.BARRIER | EntityType.DYNAMITE | EntityType.ELECTRIC_FENCE
 
 export class MaterialSpawner {
     static spawnMaterial(
@@ -36,6 +34,11 @@ export class MaterialSpawner {
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.ore))
                 material.priorityIdentifier = PriorityIdentifier.ORE
                 break
+            case EntityType.BRICK:
+                material.sceneEntity.add(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ProcessedOre))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.processedOre))
+                material.priorityIdentifier = PriorityIdentifier.ORE
+                break
             case EntityType.CRYSTAL:
                 const animGlowMesh = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Crystal)
                 animGlowMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
@@ -54,11 +57,6 @@ export class MaterialSpawner {
                 material.sceneEntity.add(highPolyMesh)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.powerCrystal))
                 material.priorityIdentifier = PriorityIdentifier.CRYSTAL
-                break
-            case EntityType.BRICK:
-                material.sceneEntity.add(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ProcessedOre))
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.processedOre))
-                material.priorityIdentifier = PriorityIdentifier.ORE
                 break
             case EntityType.BARRIER:
                 material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(ResourceManager.configuration.miscObjects.Barrier))
