@@ -70,7 +70,7 @@ export class MessagePanel extends Panel {
         this.nextAirWarning = 1 - AIR_LEVEL_WARNING_STEP
     }
 
-    private setMessage(cfg: TextInfoMessageEntryCfg, timeout: number = 3000) {
+    private setMessage(cfg: TextInfoMessageEntryCfg, timeout: number = ResourceManager.configuration.main.textPauseTimeMs) {
         this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, this.img.width)).then((msg: TextInfoMessage) => {
             this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
             this.currentMessage = msg

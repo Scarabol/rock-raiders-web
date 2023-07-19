@@ -30,13 +30,16 @@ export class LoadingLayer extends ScaledLayer {
     enableGraphicMode(totalResources: number) {
         const imgBackground = ResourceManager.getImage(ResourceManager.configuration.main.loadScreen)
         const imgProgress = ResourceManager.getImage(ResourceManager.configuration.main.progressBar)
+        const rectProgress = ResourceManager.configuration.main.progressWindow
         ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, ResourceManager.configuration.main.loadingText)
             .then((imgLoading) => {
+                const loadX = Math.round(rectProgress.x + (rectProgress.w - imgLoading.width) / 2) + 1
+                const loadY = Math.round(rectProgress.y + (rectProgress.h - imgLoading.height) / 2) + 1
                 this.animationFrame.onRedraw = (context => {
                     context.drawImage(imgBackground, 0, 0)
-                    const loadingBarWidth = Math.round(353 * (this.assetIndex < totalResources ? this.assetIndex / totalResources : 1))
-                    context.drawImage(imgProgress, 142, 450, loadingBarWidth, 9)
-                    if (imgLoading) context.drawImage(imgLoading, Math.round(320 - imgLoading.width / 2), Math.round(456 - imgLoading.height / 2))
+                    const loadingBarWidth = Math.round(rectProgress.w * (this.assetIndex < totalResources ? this.assetIndex / totalResources : 1))
+                    context.drawImage(imgProgress, rectProgress.x, rectProgress.y, loadingBarWidth, rectProgress.h)
+                    context.drawImage(imgLoading, loadX, loadY)
                 })
                 this.animationFrame.notifyRedraw()
             })

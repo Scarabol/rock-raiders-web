@@ -106,7 +106,7 @@ export class SurfaceGeometry extends BufferGeometry {
     }
 
     private static copyVectorsToBuffer(bufferAttribute: BufferAttribute, vectors: Vector2[] | Vector3[], dimensions: number) {
-        const array = bufferAttribute.array as number[]
+        const array = bufferAttribute.array
         let offset = 0
         for (let i = 0, l = vectors.length; i < l; i++) {
             vectors[i].toArray(array, offset)

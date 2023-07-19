@@ -17,6 +17,7 @@ import { NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
 import { GameResultEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
+import { ResourceManager } from '../resource/ResourceManager'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -281,7 +282,7 @@ export class NerpRunner {
         const msg = this.messages[messageNumber - 1]
         const sampleLength = this.timeForNoSample / 1000 // XXX workaround until sounds from DATA directory are implemented
         const messageTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample
-        if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt, messageTimeoutMs || 3000))
+        if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt, messageTimeoutMs || ResourceManager.configuration.main.textPauseTimeMs))
         if (msg.snd) { // XXX snd files reside in sounds/streamed/ which is not included in WAD files :(
             if (VERBOSE) console.warn(`Sounds from DATA directory not yet implemented`, msg.snd)
         }

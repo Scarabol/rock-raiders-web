@@ -74,7 +74,7 @@ export class GameScreen {
         // setup GUI
         this.guiMgr.buildingCycleIndex = 0
         const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(this.levelConf.objectiveText), this.levelName)
-        this.overlayLayer.setup(objectiveText.objective, this.levelConf.objectiveImage640x480)
+        this.overlayLayer.setup(ResourceManager.configuration.main.missionBriefingText, objectiveText.objective, this.levelConf.objectiveImage640x480)
         EventBus.publishEvent(new SetupPriorityList(this.levelConf.priorities))
         // load in non-space objects next
         const objectList = ResourceManager.getResource(this.levelConf.oListFile)
@@ -121,11 +121,10 @@ export class GameScreen {
                     await this.worldMgr.teleportEnd()
                 }
             }
-        } else {
-            // TODO Show briefing panel with outro message for tutorial levels
         }
         this.worldMgr.stop()
         GameState.reset()
+        // TODO Show briefing panel with objective completed or objective failure or objective crystal_failure message
         this.hide()
         EventBus.publishEvent(new ShowGameResultEvent(result))
     }

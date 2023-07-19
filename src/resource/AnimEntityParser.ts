@@ -147,7 +147,7 @@ export class AnimEntityParser {
                         if (rootKey.equalsIgnoreCase('stand')) { // XXX workaround for walkerlegs.ae
                             this.parseActivityEntry(value, AnimEntityActivity.Stand)
                         } else {
-                            if (VERBOSE) console.warn(`Parsing unlisted activity '${rootKey}'`)
+                            // XXX What does it mean to have activities given outside of listing?
                             this.parseActivityEntry(value, rootKey)
                         }
                     } catch (e) {

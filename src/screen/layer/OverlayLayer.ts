@@ -16,7 +16,6 @@ import { BaseElement } from '../../gui/base/BaseElement'
 import { EventBus } from '../../event/EventBus'
 import { GameResultState } from '../../game/model/GameResult'
 import { GameResultEvent, RestartGameEvent } from '../../event/WorldEvents'
-import { SetSpaceToContinueEvent } from '../../event/LocalEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
 
 export class OverlayLayer extends ScaledLayer {
@@ -42,8 +41,7 @@ export class OverlayLayer extends ScaledLayer {
             this.panelPause.onRestartGame = () => EventBus.publishEvent(new RestartGameEvent())
             this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
             this.panelOptions.onContinueMission = () => this.setActivePanel(null)
-            this.panelBriefing.onSetSpaceToContinue = (state: boolean) => EventBus.publishEvent(new SetSpaceToContinueEvent(state))
-            this.panelBriefing.onStartMission = () => this.setActivePanel(null)
+            this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
         })
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.canvas.width, this.canvas.height)
@@ -80,13 +78,11 @@ export class OverlayLayer extends ScaledLayer {
             }
             return false
         })
-        this.addEventListener('wheel', (): boolean => {
-            return this.panels.some((p) => !p.hidden)
-        })
+        this.addEventListener('wheel', (): boolean => this.panels.some((p) => !p.hidden))
     }
 
-    setup(objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
-        this.panelBriefing.setup(objectiveText, objectiveBackImgCfg)
+    setup(dialogTitle: string, objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
+        this.panelBriefing.setup(dialogTitle, objectiveText, objectiveBackImgCfg)
         this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
     }
 

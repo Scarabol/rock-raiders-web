@@ -1,4 +1,5 @@
 import { BaseConfig } from './BaseConfig'
+import { Rect } from '../core/Rect'
 
 export class MainCfg extends BaseConfig {
     // TextureUsage = 3145728
@@ -7,7 +8,7 @@ export class MainCfg extends BaseConfig {
     loadScreen: string = 'Languages/Loading.bmp'
     // ShutdownScreen = Languages/ShutDown.bmp
     progressBar: string = 'Interface/FrontEnd/gradient.bmp'
-    // ProgressWindow = R:142,450,353,9
+    progressWindow: Rect = new Rect(142,450,353,9)
     loadingText: string = 'Lade'
     // SharedTextures = World/Shared
     // SharedObjects = World/Shared
@@ -21,7 +22,7 @@ export class MainCfg extends BaseConfig {
     // HPBlocks = 20
     buildingUpgradeCostOre: number = 5
     buildingUpgradeCostStuds: number = 1
-    // TextPauseTime = 3.0 = ; Time in seconds that the Text_ messages last.
+    textPauseTimeMs = 3000 // Time in seconds that the Text_ messages last.
     // RubbleCoef = 10
     // StartLevel = Levels::Tutorial01
     // TutorialStartLevel = Levels::MoveTuto_01
@@ -45,8 +46,8 @@ export class MainCfg extends BaseConfig {
     // ToolTipRGB = 000:100:000
     minDist = 150.0 // minimum camera distance
     maxDist = 250.0 // maximum camera distance
-    // MinTilt = 0.0
-    // MaxTilt = 60.0
+    minTilt = 0.0
+    maxTilt = 60.0
     CameraSpeed = 7.0
     // CameraDropOff = 0.5
     // CameraAcceleration = 0.4
@@ -87,4 +88,15 @@ export class MainCfg extends BaseConfig {
     // MissionCompletedText = Einsatz_erfolgreich!
     // MissionFailedText = Einsatz_beendet
     // TutorialIcon = Interface/Tutorial/Arrow01.bmp
+
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
+        if (unifiedKey === 'ProgressWindow'.toLowerCase()) {
+            // cfgValue[0] = 'R' // XXX What is it good for?
+            this.progressWindow = Rect.fromArray(cfgValue[1])
+            return true
+        } else if (unifiedKey === 'TextPauseTime'.toLowerCase()) {
+            this.textPauseTimeMs = Math.round(cfgValue * 1000)
+        }
+        return super.assignValue(objKey, unifiedKey, cfgValue)
+    }
 }

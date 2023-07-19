@@ -4,6 +4,7 @@ import { DEV_MODE, KEY_PAN_SPEED, MIN_CAMERA_HEIGHT_ABOVE_TERRAIN, NATIVE_UPDATE
 import { ResourceManager } from '../resource/ResourceManager'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { SceneManager } from '../game/SceneManager'
+import { degToRad } from 'three/src/math/MathUtils'
 
 export enum CameraRotation {
     NONE = -1,
@@ -28,6 +29,8 @@ export class BirdViewControls extends MapControls {
             this.addEventListener('change', () => this.forceCameraAboveTerrain(sceneMgr))
             this.minDistance = ResourceManager.configuration.main.minDist
             this.maxDistance = ResourceManager.configuration.main.maxDist
+            this.minPolarAngle = Math.PI / 2 - degToRad(ResourceManager.configuration.main.maxTilt)
+            this.maxPolarAngle = Math.PI / 2 - degToRad(ResourceManager.configuration.main.minTilt)
         }
         this.rewriteWASDToArrowKeys() // TODO WASD also used as keyboard shortcuts for icon panels
     }

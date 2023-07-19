@@ -7,7 +7,6 @@ export class BriefingPanelCfg extends PanelCfg {
     // XXX find config values for this class
 
     titleFontName: string
-    title: string
     titleWindow: Rect
     textFontName: string
     textWindow: Rect
@@ -17,7 +16,6 @@ export class BriefingPanelCfg extends PanelCfg {
     constructor() {
         super()
         this.titleFontName = 'Interface/Fonts/MbriefFont2.bmp'
-        this.title = ResourceManager.configuration.main.missionBriefingText
         const dialogCfg = ResourceManager.configuration.dialog
         this.titleWindow = dialogCfg.titleWindow
         this.textFontName = 'Interface/Fonts/MbriefFont.bmp'
