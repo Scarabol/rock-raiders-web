@@ -33,6 +33,7 @@ export class Surface {
     containedOres: number = 0
     containedCrystals: number = 0
     discovered: boolean = false
+    scanned: boolean = false
     selected: boolean = false
     reinforced: boolean = false
     drillJob: DrillJob = null

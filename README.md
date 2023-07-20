@@ -47,7 +47,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Geologists and scanner
 - Fix Large Cat not usable to carry vehicles in Level 19
 - Move camera with click on mini map and show camera view area as wireframe
 - Refactor job system to allow multi-carry jobs for vehicles

@@ -28,6 +28,7 @@ import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
 import { OxygenComponent } from '../../component/OxygenComponent'
 import { PositionComponent } from '../../component/PositionComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
+import { ScannerComponent } from '../../component/ScannerComponent'
 
 export class BuildingEntity {
     readonly carriedItems: MaterialEntity[] = []
@@ -143,10 +144,12 @@ export class BuildingEntity {
         }
         EventBus.publishEvent(new MaterialAmountChanged())
         this.level++
-        this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent).rockFallDamage = ResourceManager.getRockFallDamage(this.entityType, this.level)
+        const components = this.worldMgr.ecs.getComponents(this.entity)
+        components.get(HealthComponent).rockFallDamage = ResourceManager.getRockFallDamage(this.entityType, this.level)
         EventBus.publishEvent(new DeselectAll())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.UpgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.heading, false)
+        components.get(ScannerComponent)?.setRange(this.stats.SurveyRadius?.[this.level] ?? 0)
     }
 
     setLevel(level: number) {
@@ -237,6 +240,11 @@ export class BuildingEntity {
                 if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.addEnergySource(this.surfaces)
                 if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
                 if (this.stats.OxygenCoef) this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
+                const components = this.worldMgr.ecs.getComponents(this.entity)
+                if (!components.has(ScannerComponent)) {
+                    const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
+                    if (scannerRange > 0 && this.primarySurface) this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(components.get(PositionComponent), scannerRange))
+                }
             } else {
                 this.changeUsedCrystals(-this.crystalDrain)
                 if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.removeEnergySource(this.surfaces)
@@ -296,7 +304,10 @@ export class BuildingEntity {
             this.pathSurfaces.push(this.waterPathSurface)
         }
         this.surfaces.forEach((s) => s.setBuilding(this))
-        const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity, {gameEntity: this.entity, entityType: this.entityType}, this.stats))
+        const sceneSelectionComponent = this.worldMgr.ecs.addComponent(this.entity, new SceneSelectionComponent(this.sceneEntity, {
+            gameEntity: this.entity,
+            entityType: this.entityType
+        }, this.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPosition)
         floorPosition.y = Math.max(...this.surfaces.map((s) => this.worldMgr.sceneMgr.getFloorPosition(s.getCenterWorld2D()).y))
         const positionComponent = this.worldMgr.ecs.addComponent(this.entity, new PositionComponent(floorPosition, this.primarySurface))

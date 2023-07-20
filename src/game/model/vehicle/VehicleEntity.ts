@@ -38,6 +38,7 @@ import { LastWillComponent } from '../../component/LastWillComponent'
 import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
 import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { ScannerComponent } from '../../component/ScannerComponent'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -406,7 +407,13 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const upgradeLevel = VehicleUpgrades.toUpgradeString(this.upgrades)
         this.sceneEntity.setUpgradeLevel(upgradeLevel)
         this.level = parseInt(upgradeLevel, 2)
-        this.worldMgr.ecs.getComponents(this.entity).get(HealthComponent).rockFallDamage = ResourceManager.getRockFallDamage(this.entityType, this.level)
+        const components = this.worldMgr.ecs.getComponents(this.entity)
+        components.get(HealthComponent).rockFallDamage = ResourceManager.getRockFallDamage(this.entityType, this.level)
+        const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
+        if (scannerRange) {
+            const positionComponent = components.get(PositionComponent)
+            this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(positionComponent, scannerRange))
+        }
     }
 
     getRepairValue(): number {

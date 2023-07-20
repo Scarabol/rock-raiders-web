@@ -29,6 +29,7 @@ export class VehicleEntityStats extends BaseConfig implements MovableEntityStats
     EngineSound: string = ''
     CanClearRubble: boolean = false
     RouteSpeed: number[] = []
+    SurveyRadius: number[] = []
     PathCoef: number = 1
     RubbleCoef: number = 1
     RandomEnterWall: boolean = false
@@ -49,6 +50,7 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
     CostOre: number = 0
     CostRefinedOre: number = 0
     CostCrystal: number = 0
+    SurveyRadius: number[] = []
     CrystalDrain: number | number[] = 0
     OxygenCoef: number = 0
     EngineSound: string = null
@@ -564,7 +566,7 @@ export class LargeDiggerStats extends VehicleEntityStats { // [Carry][Scan][Spee
 export class LargeCatStats extends VehicleEntityStats { // [Carry][Scan][Speed][Drill] (No carry) (Drill???)
     Levels: number = 1
     RouteSpeed: number[] = [1.50]
-    SurveyRadius: number = 0
+    SurveyRadius: number[] = []
     TrackDist: number = 80.0
     CollRadius: number = 22.0
     CollHeight: number = 25.0

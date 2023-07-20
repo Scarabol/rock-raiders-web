@@ -36,6 +36,7 @@ import { LastWillComponent } from '../../component/LastWillComponent'
 import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
 import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
 import { EventKey } from '../../../event/EventKeyEnum'
+import { ScannerComponent } from '../../component/ScannerComponent'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -379,9 +380,30 @@ export class Raider implements Updatable, JobFulfiller {
         const targetComponents = this.worldMgr.ecs.getComponents(alarmTarget.target.entity)
         const stats = targetComponents.get(MonsterStatsComponent).stats
         const attacks = [
-            {tool: RaiderTool.LASER, allowed: stats.CanLaser, damage: stats.LaserDamage, weaponStats: ResourceManager.configuration.weaponTypes.get('lasershot'), bulletType: EntityType.LASER_SHOT, misc: ResourceManager.configuration.miscObjects.LaserShot},
-            {tool: RaiderTool.FREEZERGUN, allowed: stats.CanFreeze, damage: stats.FreezerDamage, weaponStats: ResourceManager.configuration.weaponTypes.get('freezer'), bulletType: EntityType.FREEZER_SHOT, misc: ResourceManager.configuration.miscObjects.Freezer},
-            {tool: RaiderTool.PUSHERGUN, allowed: stats.CanPush, damage: stats.PusherDamage, weaponStats: ResourceManager.configuration.weaponTypes.get('pusher'), bulletType: EntityType.PUSHER_SHOT, misc: ResourceManager.configuration.miscObjects.Pusher},
+            {
+                tool: RaiderTool.LASER,
+                allowed: stats.CanLaser,
+                damage: stats.LaserDamage,
+                weaponStats: ResourceManager.configuration.weaponTypes.get('lasershot'),
+                bulletType: EntityType.LASER_SHOT,
+                misc: ResourceManager.configuration.miscObjects.LaserShot
+            },
+            {
+                tool: RaiderTool.FREEZERGUN,
+                allowed: stats.CanFreeze,
+                damage: stats.FreezerDamage,
+                weaponStats: ResourceManager.configuration.weaponTypes.get('freezer'),
+                bulletType: EntityType.FREEZER_SHOT,
+                misc: ResourceManager.configuration.miscObjects.Freezer
+            },
+            {
+                tool: RaiderTool.PUSHERGUN,
+                allowed: stats.CanPush,
+                damage: stats.PusherDamage,
+                weaponStats: ResourceManager.configuration.weaponTypes.get('pusher'),
+                bulletType: EntityType.PUSHER_SHOT,
+                misc: ResourceManager.configuration.miscObjects.Pusher
+            },
         ].filter((a) => a.allowed && this.hasTool(a.tool)).sort((l, r) => r.damage - l.damage)
         if (attacks.length < 1) {
             console.warn('Could not shoot at monster')
@@ -460,6 +482,13 @@ export class Raider implements Updatable, JobFulfiller {
 
     addTraining(training: RaiderTraining) {
         this.trainings.add(training)
+        if (training === RaiderTraining.GEOLOGIST) {
+            const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
+            if (scannerRange) {
+                const positionComponent = this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)
+                this.worldMgr.ecs.addComponent(this.entity, new ScannerComponent(positionComponent, scannerRange))
+            }
+        }
     }
 
     isPrepared(job: Job): boolean {

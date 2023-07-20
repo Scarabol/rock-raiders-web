@@ -183,7 +183,7 @@ export class InitRadarMap extends LocalEvent {
         super(EventKey.INIT_RADAR_MAP)
         this.focusTile = {x: Math.floor(mapFocus.x / TILESIZE), y: Math.floor(mapFocus.z / TILESIZE)}
         terrain.forEachSurface((s) => {
-            if (s.discovered) this.surfaces.push(new MapSurfaceRect(s))
+            if (s.discovered || s.scanned) this.surfaces.push(new MapSurfaceRect(s))
         })
         const entities = new Map()
         entityMgr.raiders.forEach((r) => {
@@ -213,7 +213,7 @@ export class UpdateRadarTerrain extends LocalEvent {
     constructor(terrain: Terrain) {
         super(EventKey.UPDATE_RADAR_TERRAIN)
         terrain.forEachSurface((s) => {
-            if (s.discovered) this.surfaces.push(new MapSurfaceRect(s))
+            if (s.discovered || s.scanned) this.surfaces.push(new MapSurfaceRect(s))
         })
     }
 }
