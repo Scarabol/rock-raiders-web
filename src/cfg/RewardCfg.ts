@@ -1,4 +1,5 @@
 import { BaseConfig } from './BaseConfig'
+import { Rect } from '../core/Rect'
 
 export class RewardCfg extends BaseConfig {
     display: boolean = true
@@ -7,7 +8,7 @@ export class RewardCfg extends BaseConfig {
     text: RewardTextCfg[] = []
     boxImages: RewardImageCfg[] = []
     fonts: RewardFontsCfg = new RewardFontsCfg()
-    flics: { flhFilepath: string, x: number, y: number, w: number, h: number } = null
+    flics: Map<string, { flhFilepath: string, rect: Rect }> = new Map()
     scrollSpeed: number = 0
     centreText: boolean = false
     vertSpacing: number = 0
@@ -36,6 +37,11 @@ export class RewardCfg extends BaseConfig {
             this.saveButton.setFromCfgObj(cfgValue)
         } else if (unifiedKey === 'advancebutton') {
             this.advanceButton.setFromCfgObj(cfgValue)
+        } else if (unifiedKey === 'flics') {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
+                const unwrapped = Array.isArray(value) && value.length === 1 ? value[0] : value
+                this.flics.set(this.unifyKey(cfgKey), {flhFilepath: unwrapped[0], rect: Rect.fromArray((unwrapped as number[]).slice(1))})
+            })
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
         }

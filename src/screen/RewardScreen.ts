@@ -15,6 +15,7 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
 import { OverwriteLayer } from '../menu/OverwriteLayer'
+import { MainMenuFlicAnim } from "../menu/MainMenuFlicAnim"
 
 export class RewardScreen {
     cfg: RewardCfg = null
@@ -27,6 +28,7 @@ export class RewardScreen {
     resultLastIndex: number = 0
     images: { img: SpriteImage, x: number, y: number }[] = []
     boxes: { img: SpriteImage, x: number, y: number }[] = []
+    flics: MainMenuFlicAnim[] = []
     fontNames: Map<string, string> = new Map()
     texts: SpriteImage[] = []
     uncoverTimeout: NodeJS.Timeout = null
@@ -63,6 +65,12 @@ export class RewardScreen {
             this.descriptionTextLayer.animationFrame.notifyRedraw()
             this.btnLayer.animationFrame.notifyRedraw()
             return true
+        })
+        const keyToIndex = ['crystals', 'ore', 'diggable', 'constructions', 'caverns', 'figures', 'rockmonsters', 'oxygen', 'timer', 'score']
+        this.cfg.flics.forEach((flic, key) => {
+            const flicIndex = keyToIndex.indexOf(key)
+            const flhFilepath = 'Interface/Reward/captain.flh' // XXX use flic.flhFilepath when DATA directory is available
+            this.flics[flicIndex] = new MainMenuFlicAnim(this.resultsLayer, flhFilepath, flic.rect)
         })
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 620)
         this.btnLayer = screenMaster.addLayer(new ScaledLayer('RewardButtonLayer'), 650)
@@ -191,6 +199,8 @@ export class RewardScreen {
             .then((gameResultTextImg) => {
                 this.resultsLayer.animationFrame.onRedraw = (context) => {
                     context.clearRect(0, 0, this.resultsLayer.fixedWidth, this.resultsLayer.fixedHeight)
+                    const flic = this.flics[this.resultIndex + 1] ?? this.flics[this.resultIndex]
+                    flic?.draw(context)
                     for (let c = 0; c <= this.resultIndex; c++) {
                         const img = this.images[c]
                         if (img) context.drawImage(img.img, img.x, img.y)
@@ -240,16 +250,20 @@ export class RewardScreen {
     uncoverResult() {
         this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
         this.uncoverTimeout = setTimeout(() => {
-            if (this.resultIndex < this.resultLastIndex) {
-                this.resultIndex++
-                this.uncoverResult()
-            } else {
-                this.btnSave.visible = true
-                this.btnAdvance.visible = true
-            }
-            this.resultsLayer.animationFrame.notifyRedraw()
-            this.descriptionTextLayer.animationFrame.notifyRedraw()
-            this.btnLayer.animationFrame.notifyRedraw()
+            const flic = this.flics[this.resultIndex + 1] // XXX does not work for flics on first entry
+            const flicBeforeNext = flic?.play() ?? Promise.resolve()
+            flicBeforeNext.then(() => {
+                if (this.resultIndex < this.resultLastIndex) {
+                    this.resultIndex++
+                    this.uncoverResult()
+                } else {
+                    this.btnSave.visible = true
+                    this.btnAdvance.visible = true
+                }
+                this.resultsLayer.animationFrame.notifyRedraw()
+                this.descriptionTextLayer.animationFrame.notifyRedraw()
+                this.btnLayer.animationFrame.notifyRedraw()
+            })
         }, this.cfg.timer * 1000)
     }
 }
