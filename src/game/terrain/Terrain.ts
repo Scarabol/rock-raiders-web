@@ -151,7 +151,7 @@ export class Terrain {
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading, false)
         source.playPositionalSample(Sample.SFX_RockBreak)
         target.makeRubble()
-        EventBus.publishEvent(new LandslideEvent(target.worldMgr.ecs.getComponents(target.entity).get(PositionComponent)))
+        EventBus.publishEvent(new LandslideEvent(new PositionComponent(target.getCenterWorld(), target)))
     }
 
     removeFallInOrigin(surface: Surface) {
