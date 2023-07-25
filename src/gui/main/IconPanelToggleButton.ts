@@ -28,7 +28,7 @@ export class IconPanelToggleButton extends IconPanelButton {
 
     updateState(autoRedraw: boolean = true): boolean {
         const stateChanged = super.updateState(false)
-        const targetToggleState = !!this.isToggled()
+        const targetToggleState = this.isToggled()
         const toggleStateChanged = this.toggleState = targetToggleState
         this.toggleState = targetToggleState
         if ((stateChanged || toggleStateChanged) && autoRedraw) this.notifyRedraw()

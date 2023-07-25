@@ -23,6 +23,7 @@ abstract class VehiclePanel extends IconSubPanel {
 
     addVehicleMenuItem(itemKey: string, entityType: EntityType, tooltipSfx: Sample) {
         const item = super.addMenuItem(ResourceManager.configuration.interfaceBuildImages, itemKey)
+        item.isDisabled = () => item.hasUnfulfilledDependency
         item.onClick = () => this.publishEvent(new RequestVehicleSpawn(entityType, this.requestedVehiclesByType.getOrDefault(entityType, 0) + 1))
         item.onClickSecondary = () => {
             const numRequested = this.requestedVehiclesByType.getOrDefault(entityType, 0)

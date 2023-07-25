@@ -27,6 +27,7 @@ export class BuildingPanel extends IconSubPanel {
 
     addBuildMenuItem(itemKey: string, entityType: EntityType, tooltipSfx: Sample) {
         const item = super.addMenuItem(ResourceManager.configuration.interfaceBuildImages, itemKey)
+        item.isDisabled = () => item.hasUnfulfilledDependency
         item.onClick = () => this.publishEvent(new SelectBuildMode(entityType))
         item.tooltip = ResourceManager.configuration.objectNamesCfg.get(itemKey.toLowerCase())
         item.tooltipSfx = Sample[tooltipSfx]

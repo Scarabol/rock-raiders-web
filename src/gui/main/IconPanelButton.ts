@@ -14,11 +14,12 @@ export class IconPanelButton extends Button {
     tooltipDisabled: string = null
     tooltipDisabledSfx: string = null
     hotkey: string = null
-    isDisabled: () => boolean = () => this.disabled
+    isDisabled: () => boolean = () => true
     hasRaider: boolean = false
     discoveredBuildingsMaxLevel: Map<EntityType, number> = new Map()
     dependencyTooltipImage: SpriteImage = null
     showDependencies: boolean = false
+    hasUnfulfilledDependency: boolean = false
 
     constructor(parent: BaseElement, menuItemCfg: MenuItemCfg, itemKey: string, parentWidth: number, menuIndex: number) {
         super(parent, menuItemCfg)
@@ -29,7 +30,6 @@ export class IconPanelButton extends Button {
         this.tooltipDisabled = menuItemCfg.tooltipDisabled
         this.tooltipDisabledSfx = menuItemCfg.tooltipDisabledSfx
         this.hotkey = menuItemCfg.hotkey
-        this.disabled = true
         this.onClick = () => console.log(`menu item pressed: ${this.buttonType}`)
         this.addDependencyCheck(getEntityTypeByName(itemKey))
     }
@@ -58,8 +58,9 @@ export class IconPanelButton extends Button {
             isOk: (d.entityType === EntityType.PILOT && this.hasRaider)
                 || (this.discoveredBuildingsMaxLevel.getOrDefault(d.entityType, -1) >= d.minLevel),
         }))
-        this.disabled = !DEV_MODE && checked.some((d) => !d.isOk)
+        this.hasUnfulfilledDependency = !DEV_MODE && checked.some((d) => !d.isOk)
         ResourceManager.createDependenciesSprite(checked).then((dependencySprite) => this.dependencyTooltipImage = dependencySprite)
+        this.updateState(true)
     }
 
     showTooltipDisabled() {
@@ -71,14 +72,14 @@ export class IconPanelButton extends Button {
 
     reset() {
         super.reset()
-        this.disabled = true
+        this.hasUnfulfilledDependency = false
         this.hasRaider = false
         this.discoveredBuildingsMaxLevel = new Map()
         this.updateState(false)
     }
 
     updateState(autoRedraw: boolean = true) {
-        const targetState = !!this.isDisabled()
+        const targetState = this.isDisabled()
         const stateChanged = this.disabled !== targetState
         this.disabled = targetState
         if (stateChanged && autoRedraw) this.notifyRedraw()
