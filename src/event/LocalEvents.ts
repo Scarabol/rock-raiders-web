@@ -15,6 +15,7 @@ import { GameEvent } from './GameEvent'
 import { VehicleUpgrade, VehicleUpgrades } from '../game/model/vehicle/VehicleUpgrade'
 import { GameResult } from '../game/model/GameResult'
 import { GameEntity } from '../game/ECS'
+import { HealthComponent } from '../game/component/HealthComponent'
 
 export class LocalEvent extends GameEvent {
 }
@@ -48,6 +49,7 @@ export class SelectionChanged extends LocalEvent {
     everyHasTool: Map<RaiderTool, boolean> = new Map()
     buildingCanUpgrade: boolean
     buildingMissingOreForUpgrade: number
+    buildingNeedsRepair: boolean
     buildingCanSwitchPower: boolean
     buildingPowerSwitchState: boolean
     vehicleHasCallManJob: boolean
@@ -75,6 +77,9 @@ export class SelectionChanged extends LocalEvent {
         this.hasUpgradeSite = entityMgr.hasUpgradeSite()
         this.buildingCanUpgrade = entityMgr.selection.building?.canUpgrade()
         this.buildingMissingOreForUpgrade = entityMgr.selection.building?.missingOreForUpgrade()
+        const buildingEntity = entityMgr.selection.building?.entity
+        const buildingHealthComponent = buildingEntity ? entityMgr.ecs.getComponents(buildingEntity)?.get(HealthComponent) : null
+        this.buildingNeedsRepair = buildingHealthComponent ? buildingHealthComponent.health < buildingHealthComponent.maxHealth : false
         this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.SelfPowered && !entityMgr.selection.building?.stats.PowerBuilding && (entityMgr.selection.building?.energized || entityMgr.selection.building?.surfaces.some((s) => s.energized))
         this.buildingPowerSwitchState = entityMgr.selection.building?.powerSwitch
         this.vehicleHasCallManJob = entityMgr.selection.vehicles.every((v) => !!v.callManJob)

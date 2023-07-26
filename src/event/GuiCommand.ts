@@ -292,3 +292,9 @@ export class UpgradeVehicle extends GuiCommand {
         super(EventKey.COMMAND_UPGRADE_VEHICLE)
     }
 }
+
+export class RepairBuilding extends GuiCommand {
+    constructor() {
+        super(EventKey.COMMAND_REPAIR_BUILDING)
+    }
+}

@@ -1,5 +1,5 @@
 import { EventKey } from '../../../event/EventKeyEnum'
-import { BeamUpBuilding, ChangeBuildingPowerState, ChangeTooltip, UpgradeBuilding } from '../../../event/GuiCommand'
+import { BeamUpBuilding, ChangeBuildingPowerState, ChangeTooltip, RepairBuilding, UpgradeBuilding } from '../../../event/GuiCommand'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
@@ -9,6 +9,7 @@ import { TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_MENU } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 
 export class SelectBuildingPanel extends SelectBasePanel {
+    buildingNeedsRepair: boolean = false
     buildingCanSwitchPower: boolean = false
     buildingPowerSwitchState: boolean = false
     buildingCanUpgrade: boolean = false
@@ -16,7 +17,9 @@ export class SelectBuildingPanel extends SelectBasePanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 4, onBackPanel)
-        this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_Repair') // TODO implement repair buildings
+        const repairBuildingItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_Repair')
+        repairBuildingItem.isDisabled = () => !this.buildingNeedsRepair
+        repairBuildingItem.onClick = () => this.publishEvent(new RepairBuilding())
         const menuItemOffCfg = ResourceManager.configuration.interfaceImages.get('Interface_MenuItem_PowerOff'.toLowerCase())
         const menuItemOnCfg = ResourceManager.configuration.interfaceImages.get('Interface_MenuItem_PowerOn'.toLowerCase())
         const powerSwitchItem = this.addChild(new IconPanelToggleButton(this, menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
@@ -34,6 +37,7 @@ export class SelectBuildingPanel extends SelectBasePanel {
         deleteBuildingItem.isDisabled = () => false
         deleteBuildingItem.onClick = () => this.publishEvent(new BeamUpBuilding())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
+            this.buildingNeedsRepair = event.buildingNeedsRepair
             this.buildingCanSwitchPower = event.buildingCanSwitchPower
             this.buildingPowerSwitchState = event.buildingPowerSwitchState
             this.buildingCanUpgrade = event.buildingCanUpgrade

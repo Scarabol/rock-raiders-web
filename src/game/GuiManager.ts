@@ -17,6 +17,7 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { SelectionFrameComponent } from './component/SelectionFrameComponent'
 import { BeamUpComponent } from './component/BeamUpComponent'
 import { CameraRotation } from '../scene/BirdViewControls'
+import { RepairBuildingJob } from './model/job/raider/RepairBuildingJob'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -87,6 +88,10 @@ export class GuiManager {
         EventBus.registerEventListener(EventKey.COMMAND_CREATE_CLEAR_RUBBLE_JOB, () => {
             entityMgr.selection.surface?.setupClearRubbleJob()
             EventBus.publishEvent(new DeselectAll())
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_REPAIR_BUILDING, () => {
+            if (!entityMgr.selection.building) return
+            EventBus.publishEvent(new JobCreateEvent(new RepairBuildingJob(entityMgr.selection.building)))
         })
         EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_BUILDING, () => {
             entityMgr.selection.building?.upgrade()
