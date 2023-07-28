@@ -61,7 +61,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                     case SlugBehaviorState.LEECH:
                         if (!behaviorComponent.targetBuilding?.energized) {
                             this.changeToIdle(entity, sceneEntity, behaviorComponent)
-                        } else if ([behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).some((s) => s.getCenterWorld2D().distanceToSquared(slugPos) <= SLUG_SUCK_DISTANCE_SQ)) {
+                        } else if (behaviorComponent.targetBuilding.buildingSurfaces.some((s) => s.getCenterWorld2D().distanceToSquared(slugPos) <= SLUG_SUCK_DISTANCE_SQ)) {
                             if (components.has(WorldTargetComponent)) {
                                 this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
                                 EventBus.publishEvent(new PowerDrainEvent(positionComponent))
@@ -74,7 +74,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                 behaviorComponent.energyLeeched = true
                             }, SLUG_SUCK_TIME)
                         } else if (!components.has(WorldTargetComponent)) {
-                            const buildingPathTargets = [behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), SLUG_SUCK_DISTANCE_SQ))
+                            const buildingPathTargets = behaviorComponent.targetBuilding.buildingSurfaces.map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), SLUG_SUCK_DISTANCE_SQ))
                             const path = pathFinder.findShortestPath(slugPos, buildingPathTargets, stats, false)
                             if (path && path.locations.length > 0) {
                                 this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))

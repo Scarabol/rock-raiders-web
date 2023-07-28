@@ -404,4 +404,11 @@ export class BuildingEntity {
             this.sceneEntity.position.y += positionComponent.floorOffset
         }
     }
+
+    get buildingSurfaces(): Surface[] {
+        const result: Surface[] = []
+        if (this.primarySurface) result.push(this.primarySurface)
+        if (this.secondarySurface) result.add(this.secondarySurface)
+        return result
+    }
 }

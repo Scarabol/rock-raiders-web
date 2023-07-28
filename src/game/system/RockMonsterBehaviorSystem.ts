@@ -137,7 +137,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             } else if (!this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
                                 behaviorComponent.changeToIdle()
                             } else {
-                                const targetBuildingSurface = [behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_BOULDER_THROW_DISTANCE_SQ)
+                                const targetBuildingSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_BOULDER_THROW_DISTANCE_SQ)
                                 if (targetBuildingSurface) {
                                     this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
                                     sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetBuildingSurface.getCenterWorld2D()))
@@ -154,7 +154,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         behaviorComponent.changeToIdle()
                                     })
                                 } else if (!components.has(WorldTargetComponent)) {
-                                    const buildingPathTargets = [behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), ROCKY_BOULDER_THROW_DISTANCE_SQ))
+                                    const buildingPathTargets = behaviorComponent.targetBuilding.buildingSurfaces.map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), ROCKY_BOULDER_THROW_DISTANCE_SQ))
                                     const path = pathFinder.findShortestPath(rockyPos, buildingPathTargets, stats, false)
                                     if (path && path.locations.length > 0) {
                                         this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
@@ -204,7 +204,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             } else if (!this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
                                 behaviorComponent.changeToIdle()
                             } else {
-                                const targetBuildingSurface = [behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_MELEE_ATTACK_DISTANCE_SQ)
+                                const targetBuildingSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                                 if (targetBuildingSurface) {
                                     this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
                                     sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetBuildingSurface.getCenterWorld2D()))
@@ -215,7 +215,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         behaviorComponent.changeToIdle()
                                     })
                                 } else if (!components.has(WorldTargetComponent)) {
-                                    const buildingPathTargets = [behaviorComponent.targetBuilding.primarySurface, behaviorComponent.targetBuilding.secondarySurface].filter((s) => !!s).map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), ROCKY_MELEE_ATTACK_DISTANCE_SQ))
+                                    const buildingPathTargets = behaviorComponent.targetBuilding.buildingSurfaces.map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), ROCKY_MELEE_ATTACK_DISTANCE_SQ))
                                     const path = pathFinder.findShortestPath(rockyPos, buildingPathTargets, stats, false)
                                     if (path && path.locations.length > 0) {
                                         this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))

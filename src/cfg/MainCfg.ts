@@ -24,8 +24,8 @@ export class MainCfg extends BaseConfig {
     buildingUpgradeCostStuds: number = 1
     textPauseTimeMs = 3000 // Time in seconds that the Text_ messages last.
     // RubbleCoef = 10
-    // StartLevel = Levels::Tutorial01
-    // TutorialStartLevel = Levels::MoveTuto_01
+    startLevel: string = 'Tutorial01'
+    tutorialStartLevel: string = 'MoveTuto_01'
     // Quality = Gouraud
     // Dither = TRUE
     // Filter = YES
