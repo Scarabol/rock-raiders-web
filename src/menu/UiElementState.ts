@@ -12,20 +12,12 @@ export class UiElementState {
     onHoverChanged: UiElementCallback = null
     onShowTooltip: UiElementCallback = null
 
-    constructor(
-        protected readonly hiddenDefault: boolean = false,
-        protected readonly disabledDefault: boolean = false,
-    ) {
-        this.hidden = this.hiddenDefault
-        this.disabled = this.disabledDefault
-    }
-
     reset() {
-        this.stateChanged = this.hovered || this.down || this.hiddenDefault !== this.hiddenDefault || this.disabled !== this.disabledDefault
+        this.stateChanged = this.hovered || this.down || this.hidden !== false || this.disabled !== false
         this.hovered = false
         this.down = false
-        this.hidden = this.hiddenDefault
-        this.disabled = this.disabledDefault
+        this.hidden = false
+        this.disabled = false
     }
 
     clearStateChanged() {
