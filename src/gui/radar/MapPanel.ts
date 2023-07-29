@@ -1,7 +1,7 @@
 import { createCanvas } from '../../core/ImageHelper'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
-import { UpdateRadarEntities, UpdateRadarEntityEvent, UpdateRadarFocus, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
+import { InitRadarMap, UpdateRadarEntities, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { MapMarkerChange, MapMarkerType } from '../../game/component/MapMarkerComponent'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
@@ -40,9 +40,15 @@ export class MapPanel extends Panel {
             this.offset.y += (cy - this.y - this.height / 2) * surfaceScale
             this.redrawAll()
         }
-        this.registerEventListener(EventKey.UPDATE_RADAR_FOCUS, (event: UpdateRadarFocus) => {
+        this.registerEventListener(EventKey.INIT_RADAR_MAP, (event: InitRadarMap) => {
             this.offset.x = event.focusTile.x * this.surfaceRectSize - this.width / 2
             this.offset.y = event.focusTile.y * this.surfaceRectSize - this.height / 2
+            this.surfaceMap.length = 0
+            event.surfaces.forEach((s) => {
+                this.surfaceMap[s.x] = this.surfaceMap[s.x] || []
+                this.surfaceMap[s.x][s.y] = s
+            })
+            this.entitiesByOrder = event.entitiesByOrder
             this.redrawAll()
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_TERRAIN, (event: UpdateRadarTerrain) => {
