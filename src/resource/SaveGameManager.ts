@@ -85,18 +85,17 @@ export class SaveGameManager {
     }
 
     static saveGame(index: number, screenshot: HTMLCanvasElement) {
-        const saveGame = this.saveGames[index] || new SaveGame()
-        saveGame.levels = this.currentLevels
-        this.saveGames[index] = saveGame
+        this.saveGames[index] = this.saveGames[index] || new SaveGame()
+        this.saveGames[index].levels = this.currentLevels.map((l) => SaveGameLevel.copy(l)) // deep copy required, otherwise changes are reflected
         localStorage.setItem('savegames', JSON.stringify(this.saveGames))
         if (screenshot) {
             this.screenshots[index] = screenshot
-            localStorage.setItem(`screenshot${index}`, this.encodeScreenshot(screenshot))
+            localStorage.setItem(`screenshot${index}`, this.createSaveGameThumbnail(screenshot))
         }
         console.log('game progress saved', this.saveGames)
     }
 
-    private static encodeScreenshot(screenshot: HTMLCanvasElement): string {
+    private static createSaveGameThumbnail(screenshot: HTMLCanvasElement): string {
         const canvas = document.createElement('canvas')
         canvas.width = SAVE_GAME_SCREENSHOT_WIDTH
         canvas.height = SAVE_GAME_SCREENSHOT_HEIGHT
@@ -156,5 +155,9 @@ export class SaveGameLevel { // this gets serialized
     constructor(levelName: string, levelScore: number) {
         this.levelName = levelName
         this.levelScore = levelScore
+    }
+
+    static copy(other: SaveGameLevel): SaveGameLevel {
+        return new SaveGameLevel(other.levelName, other.levelScore)
     }
 }
