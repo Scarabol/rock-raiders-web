@@ -274,12 +274,17 @@ export class NerpRunner {
 
     setMessage(messageNumber: number, arrowDisabled: number) {
         if (!this.messagePermit) return
+        if (messageNumber === 0) messageNumber = 1 // XXX Remove workaround for level 07
         if (messageNumber < 1) {
             console.warn(`Unexpected message number ${messageNumber} given`)
             return
         }
         this.supressArrow(arrowDisabled)
         const msg = this.messages[messageNumber - 1]
+        if (!msg) {
+            console.warn(`Message ${messageNumber} not found in [${this.messages.map((m) => m.txt)}]`)
+            return
+        }
         const sampleLength = this.timeForNoSample / 1000 // XXX workaround until sounds from DATA directory are implemented
         const messageTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample
         if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt, messageTimeoutMs || ResourceManager.configuration.main.textPauseTimeMs))
