@@ -71,7 +71,8 @@ export class MessagePanel extends Panel {
     }
 
     private setMessage(cfg: TextInfoMessageEntryCfg, timeout: number = ResourceManager.configuration.main.textPauseTimeMs) {
-        this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, this.img.width)).then((msg: TextInfoMessage) => {
+        const maxMessageWidth = this.img.width - 10 // XXX Read from cfg?
+        this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, maxMessageWidth)).then((msg: TextInfoMessage) => {
             this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
             this.currentMessage = msg
             this.notifyRedraw()
