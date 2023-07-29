@@ -53,11 +53,11 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(textInfoMessageConfig.textManTrained))
         this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(textInfoMessageConfig.textUnitUpgraded))
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessage) => {
-            this.setMessage({text: event.text}, event.messageTimeoutMs)
+            this.setTimedMessage({text: event.text}, event.messageTimeoutMs)
         })
         this.registerEventListener(EventKey.SET_SPACE_TO_CONTINUE, (event: SetSpaceToContinueEvent) => {
             if (event.state) {
-                this.setMessage(textInfoMessageConfig.textSpaceToContinue, 0)
+                this.setTimedMessage(textInfoMessageConfig.textSpaceToContinue, 0)
             } else {
                 this.unsetMessage(textInfoMessageConfig.textSpaceToContinue)
             }
@@ -70,7 +70,12 @@ export class MessagePanel extends Panel {
         this.nextAirWarning = 1 - AIR_LEVEL_WARNING_STEP
     }
 
-    private setMessage(cfg: TextInfoMessageEntryCfg, timeout: number = ResourceManager.configuration.main.textPauseTimeMs) {
+    setMessage(cfg: TextInfoMessageEntryCfg) {
+        if (this.currentMessage) return
+        this.setTimedMessage(cfg, ResourceManager.configuration.main.textPauseTimeMs)
+    }
+
+    private setTimedMessage(cfg: TextInfoMessageEntryCfg, timeout: number) {
         const maxMessageWidth = this.img.width - 10 // XXX Read from cfg?
         this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, maxMessageWidth)).then((msg: TextInfoMessage) => {
             this.messageTimeout = clearTimeoutSafe(this.messageTimeout)
@@ -78,10 +83,10 @@ export class MessagePanel extends Panel {
             this.notifyRedraw()
             if (this.currentMessage.sfxSample) this.publishEvent(new PlaySoundEvent(this.currentMessage.sfxSample, true))
             if (timeout > 0) {
-                const that = this
                 this.messageTimeout = setTimeout(() => {
-                    that.currentMessage = null
-                    that.notifyRedraw()
+                    this.messageTimeout = null
+                    this.currentMessage = null
+                    this.notifyRedraw()
                 }, timeout)
             }
         })
