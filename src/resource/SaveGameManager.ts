@@ -17,8 +17,8 @@ export class SaveGamePreferences { // this gets serialized
 export class SaveGameManager {
 
     static currentPreferences: SaveGamePreferences = new SaveGamePreferences()
+    static screenshots: Promise<HTMLCanvasElement>[] = []
     private static currentLevels: SaveGameLevel[] = []
-    private static screenshots: HTMLCanvasElement[] = []
     private static saveGames: SaveGame[] = [] // this gets serialized
 
     static loadPreferences() {
@@ -47,24 +47,27 @@ export class SaveGameManager {
 
     static loadSaveGameScreenshots() {
         if (VERBOSE) console.log('Loading save game screenshots...')
-        Promise.all(this.saveGames.map((s, index) => {
-            return new Promise<void>((resolve) => {
+        this.screenshots = this.saveGames.map((s, index) => new Promise<HTMLCanvasElement>((resolve) => {
+            try {
                 const screenshot = localStorage.getItem(`screenshot${index}`)
-                if (!screenshot) return null
+                if (!screenshot) {
+                    resolve(null)
+                    return
+                }
                 const img = new Image()
                 img.onload = () => {
                     const canvas = document.createElement('canvas')
                     canvas.width = SAVE_GAME_SCREENSHOT_WIDTH
                     canvas.height = SAVE_GAME_SCREENSHOT_HEIGHT
                     canvas.getContext('2d').drawImage(img, 0, 0)
-                    this.screenshots[index] = canvas
-                    resolve()
+                    resolve(canvas)
                 }
                 img.src = screenshot
-            })
-        })).catch((e) => {
-            console.error('Could not load save game screenshot', e)
-        })
+            } catch (e) {
+                console.error('Could not load save game screenshot', e)
+                resolve(null)
+            }
+        }))
     }
 
     static hasSaveGame(index: number): boolean {
@@ -80,22 +83,17 @@ export class SaveGameManager {
         return new Set(levelNameList).size * 100 / NUM_OF_LEVELS_TO_COMPLETE_GAME
     }
 
-    static getSaveGameScreenshot(index: number): HTMLCanvasElement {
-        return this.screenshots[index] || null
-    }
-
     static saveGame(index: number, screenshot: HTMLCanvasElement) {
         this.saveGames[index] = this.saveGames[index] || new SaveGame()
         this.saveGames[index].levels = this.currentLevels.map((l) => SaveGameLevel.copy(l)) // deep copy required, otherwise changes are reflected
         localStorage.setItem('savegames', JSON.stringify(this.saveGames))
-        if (screenshot) {
-            this.screenshots[index] = screenshot
-            localStorage.setItem(`screenshot${index}`, this.createSaveGameThumbnail(screenshot))
-        }
+        this.screenshots[index] = Promise.resolve(screenshot)
+        localStorage.setItem(`screenshot${index}`, this.createSaveGameThumbnail(screenshot))
         console.log('game progress saved', this.saveGames)
     }
 
     private static createSaveGameThumbnail(screenshot: HTMLCanvasElement): string {
+        if (!screenshot) return ''
         const canvas = document.createElement('canvas')
         canvas.width = SAVE_GAME_SCREENSHOT_WIDTH
         canvas.height = SAVE_GAME_SCREENSHOT_HEIGHT

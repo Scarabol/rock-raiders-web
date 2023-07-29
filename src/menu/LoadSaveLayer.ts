@@ -46,8 +46,11 @@ export class LoadSaveLayer extends MainMenuLayer {
     }
 
     show() {
-        this.buttons.forEach((btn) => {
-            btn.saveGameImg = SaveGameManager.getSaveGameScreenshot(btn.targetIndex)
+        Promise.all(SaveGameManager.screenshots).then((screenshots) => {
+            this.buttons.forEach((btn) => {
+                btn.saveGameImg = screenshots[btn.targetIndex]
+            })
+            this.animationFrame.notifyRedraw()
         })
         super.show()
     }
