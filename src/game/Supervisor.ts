@@ -70,104 +70,124 @@ export class Supervisor {
         const unemployedRaider = new Set(this.worldMgr.entityMgr.raiders.filter((r) => r.isReadyToTakeAJob()))
         const unemployedVehicles = new Set(this.worldMgr.entityMgr.vehicles.filter((v) => v.isReadyToTakeAJob()))
         availableJobs.forEach((job) => { // XXX better use estimated time to complete job as metric
-            let closestVehicle: VehicleEntity = null
-            let closestVehicleDistance: number = null
-            unemployedVehicles.forEach((vehicle) => {
-                const pathToWorkplace = vehicle.findShortestPath(job.getWorkplace(vehicle))
-                if (!pathToWorkplace) return
-                const pathToJob = job.carryItem ? vehicle.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : pathToWorkplace
-                if (!pathToJob) return
-                if (vehicle.isPrepared(job)) {
-                    const dist = pathToJob.lengthSq
-                    if (closestVehicleDistance === null || dist < closestVehicleDistance) {
-                        closestVehicle = vehicle
-                        closestVehicleDistance = dist
-                    }
-                }
-            })
-            if (closestVehicle) {
-                closestVehicle.setJob(job)
-                unemployedVehicles.delete(closestVehicle)
-                return // if vehicle found do not check for raider
-            }
-            let closestRaider: Raider = null
-            let minDistance: number = null
-            let closestToolRaider: Raider = null
-            let minToolDistance: number = null
-            let closestToolstation: BuildingEntity = null
-            const requiredTool = job.requiredTool
-            let closestTrainingRaider: Raider = null
-            let minTrainingDistance: number = null
-            let closestTrainingArea: BuildingEntity = null
-            const requiredTraining = job.requiredTraining
-            unemployedRaider.forEach((raider) => {
-                const pathToWorkplace = raider.findShortestPath(job.getWorkplace(raider))
-                if (!pathToWorkplace) return
-                const pathToJob = job.carryItem ? raider.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : pathToWorkplace
-                if (!pathToJob) return
-                if (raider.isPrepared(job)) {
-                    const dist = pathToJob.lengthSq
-                    if (minDistance === null || dist < minDistance) {
-                        closestRaider = raider
-                        minDistance = dist
-                    }
-                } else if (!raider.hasTool(requiredTool)) {
-                    const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
-                    if (pathToToolstation) {
-                        const dist = pathToToolstation.lengthSq
-                        if (minToolDistance === null || dist < minToolDistance) {
-                            closestToolRaider = raider
-                            minToolDistance = dist
-                            closestToolstation = pathToToolstation.target.building
+            try {
+                let closestVehicle: VehicleEntity = null
+                let closestVehicleDistance: number = null
+                unemployedVehicles.forEach((vehicle) => {
+                    try {
+                        const pathToWorkplace = vehicle.findShortestPath(job.getWorkplace(vehicle))
+                        if (!pathToWorkplace) return
+                        const pathToJob = job.carryItem ? vehicle.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : pathToWorkplace
+                        if (!pathToJob) return
+                        if (vehicle.isPrepared(job)) {
+                            const dist = pathToJob.lengthSq
+                            if (closestVehicleDistance === null || dist < closestVehicleDistance) {
+                                closestVehicle = vehicle
+                                closestVehicleDistance = dist
+                            }
                         }
+                    } catch (e) {
+                        console.error(e)
                     }
-                } else if (!raider.hasTraining(requiredTraining)) {
-                    const pathToTrainingSite = raider.findShortestPath(this.worldMgr.entityMgr.getTrainingSiteTargets(requiredTraining))
-                    if (pathToTrainingSite) {
-                        const dist = pathToTrainingSite.lengthSq
-                        if (minTrainingDistance === null || dist < minTrainingDistance) {
-                            closestTrainingRaider = raider
-                            minTrainingDistance = dist
-                            closestTrainingArea = pathToTrainingSite.target.building
-                        }
-                    }
+                })
+                if (closestVehicle) {
+                    closestVehicle.setJob(job)
+                    unemployedVehicles.delete(closestVehicle)
+                    return // if vehicle found do not check for raider
                 }
-            })
-            if (closestRaider) {
-                closestRaider.setJob(job)
-                unemployedRaider.delete(closestRaider)
-            } else if (closestToolRaider) {
-                closestToolRaider.setJob(new GetToolJob(this.worldMgr.entityMgr, requiredTool, closestToolstation), job)
-                unemployedRaider.delete(closestToolRaider)
-            } else if (closestTrainingRaider) {
-                closestTrainingRaider.setJob(new TrainRaiderJob(this.worldMgr.entityMgr, requiredTraining, closestTrainingArea), job)
-                unemployedRaider.delete(closestTrainingRaider)
+                let closestRaider: Raider = null
+                let minDistance: number = null
+                let closestToolRaider: Raider = null
+                let minToolDistance: number = null
+                let closestToolstation: BuildingEntity = null
+                const requiredTool = job.requiredTool
+                let closestTrainingRaider: Raider = null
+                let minTrainingDistance: number = null
+                let closestTrainingArea: BuildingEntity = null
+                const requiredTraining = job.requiredTraining
+                unemployedRaider.forEach((raider) => {
+                    try {
+                        const pathToWorkplace = raider.findShortestPath(job.getWorkplace(raider))
+                        if (!pathToWorkplace) return
+                        const pathToJob = job.carryItem ? raider.findShortestPath(PathTarget.fromLocation(job.carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)) : pathToWorkplace
+                        if (!pathToJob) return
+                        if (raider.isPrepared(job)) {
+                            const dist = pathToJob.lengthSq
+                            if (minDistance === null || dist < minDistance) {
+                                closestRaider = raider
+                                minDistance = dist
+                            }
+                        } else if (!raider.hasTool(requiredTool)) {
+                            const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
+                            if (pathToToolstation) {
+                                const dist = pathToToolstation.lengthSq
+                                if (minToolDistance === null || dist < minToolDistance) {
+                                    closestToolRaider = raider
+                                    minToolDistance = dist
+                                    closestToolstation = pathToToolstation.target.building
+                                }
+                            }
+                        } else if (!raider.hasTraining(requiredTraining)) {
+                            const pathToTrainingSite = raider.findShortestPath(this.worldMgr.entityMgr.getTrainingSiteTargets(requiredTraining))
+                            if (pathToTrainingSite) {
+                                const dist = pathToTrainingSite.lengthSq
+                                if (minTrainingDistance === null || dist < minTrainingDistance) {
+                                    closestTrainingRaider = raider
+                                    minTrainingDistance = dist
+                                    closestTrainingArea = pathToTrainingSite.target.building
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.error(e)
+                    }
+                })
+                if (closestRaider) {
+                    closestRaider.setJob(job)
+                    unemployedRaider.delete(closestRaider)
+                } else if (closestToolRaider) {
+                    closestToolRaider.setJob(new GetToolJob(this.worldMgr.entityMgr, requiredTool, closestToolstation), job)
+                    unemployedRaider.delete(closestToolRaider)
+                } else if (closestTrainingRaider) {
+                    closestTrainingRaider.setJob(new TrainRaiderJob(this.worldMgr.entityMgr, requiredTraining, closestTrainingArea), job)
+                    unemployedRaider.delete(closestTrainingRaider)
+                }
+            } catch (e) {
+                console.error(e)
             }
         })
         unemployedRaider.forEach((raider) => {
-            const blockedSite = raider.getSurface().site
-            if (blockedSite?.buildingType) raider.setJob(new MoveJob(raider, blockedSite.getWalkOutSurface().getRandomPosition()))
+            try {
+                const blockedSite = raider.getSurface().site
+                if (blockedSite?.buildingType) raider.setJob(new MoveJob(raider, blockedSite.getWalkOutSurface().getRandomPosition()))
+            } catch (e) {
+                console.error(e)
+            }
         })
         unemployedVehicles.forEach((vehicle) => {
-            if (vehicle.isReadyToTakeAJob() && vehicle.canClear()) {
-                const startSurface = vehicle.getSurface()
-                for (let rad = 0; rad < 10; rad++) {
-                    for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
-                        for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
-                            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
-                            if (!(surface?.hasRubble()) || !surface?.discovered) continue
-                            const clearRubbleJob = surface.setupClearRubbleJob()
-                            if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !vehicle.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
-                            vehicle.setJob(clearRubbleJob)
+            try {
+                if (vehicle.isReadyToTakeAJob() && vehicle.canClear()) {
+                    const startSurface = vehicle.getSurface()
+                    for (let rad = 0; rad < 10; rad++) {
+                        for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
+                            for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
+                                const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
+                                if (!(surface?.hasRubble()) || !surface?.discovered) continue
+                                const clearRubbleJob = surface.setupClearRubbleJob()
+                                if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !vehicle.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
+                                vehicle.setJob(clearRubbleJob)
+                            }
                         }
                     }
                 }
-            }
-            const blockedSite = vehicle.getSurface().site
-            if (blockedSite?.buildingType) {
-                vehicle.setJob(new MoveJob(vehicle, blockedSite.getWalkOutSurface().getRandomPosition()))
-            } else {
-                vehicle.unblockTeleporter()
+                const blockedSite = vehicle.getSurface().site
+                if (blockedSite?.buildingType) {
+                    vehicle.setJob(new MoveJob(vehicle, blockedSite.getWalkOutSurface().getRandomPosition()))
+                } else {
+                    vehicle.unblockTeleporter()
+                }
+            } catch (e) {
+                console.error(e)
             }
         })
     }
@@ -178,27 +198,31 @@ export class Supervisor {
         this.checkClearRubbleTimer %= CHECK_CLEAR_RUBBLE_INTERVAL
         if (!this.isEnabled(PriorityIdentifier.CLEARING)) return
         this.worldMgr.entityMgr.raiders.forEach((raider) => {
-            if (!raider.isReadyToTakeAJob()) return
-            const startSurface = raider.getSurface()
-            for (let rad = 0; rad < 10; rad++) {
-                for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
-                    for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
-                        const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
-                        if (!(surface?.hasRubble()) || !surface?.discovered) continue
-                        const clearRubbleJob = surface.setupClearRubbleJob()
-                        if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !raider.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
-                        if (raider.hasTool(clearRubbleJob.requiredTool)) {
-                            raider.setJob(clearRubbleJob)
-                            return
-                        } else {
-                            const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
-                            if (pathToToolstation) {
-                                raider.setJob(new GetToolJob(this.worldMgr.entityMgr, clearRubbleJob.requiredTool, pathToToolstation.target.building), clearRubbleJob)
+            try {
+                if (!raider.isReadyToTakeAJob()) return
+                const startSurface = raider.getSurface()
+                for (let rad = 0; rad < 10; rad++) {
+                    for (let x = startSurface.x - rad; x <= startSurface.x + rad; x++) {
+                        for (let y = startSurface.y - rad; y <= startSurface.y + rad; y++) {
+                            const surface = this.worldMgr.sceneMgr.terrain.getSurfaceOrNull(x, y)
+                            if (!(surface?.hasRubble()) || !surface?.discovered) continue
+                            const clearRubbleJob = surface.setupClearRubbleJob()
+                            if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !raider.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
+                            if (raider.hasTool(clearRubbleJob.requiredTool)) {
+                                raider.setJob(clearRubbleJob)
                                 return
+                            } else {
+                                const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
+                                if (pathToToolstation) {
+                                    raider.setJob(new GetToolJob(this.worldMgr.entityMgr, clearRubbleJob.requiredTool, pathToToolstation.target.building), clearRubbleJob)
+                                    return
+                                }
                             }
                         }
                     }
                 }
+            } catch (e) {
+                console.error(e)
             }
         })
     }
