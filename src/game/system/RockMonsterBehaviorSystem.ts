@@ -7,7 +7,7 @@ import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityCo
 import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { PathTarget } from '../model/PathTarget'
-import { AnimEntityActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
+import { AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../model/anim/AnimationActivity'
 import { SurfaceType } from '../terrain/SurfaceType'
 import { WALL_TYPE } from '../terrain/WallType'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -25,6 +25,7 @@ import { DynamiteExplosionEvent } from '../../event/WorldEvents'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { VehicleEntity } from '../model/vehicle/VehicleEntity'
+import { Raider } from '../model/raider/Raider'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -81,29 +82,35 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 .find((v) => v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (vehicleInMeleeRange) {
                                 this.punchVehicle(behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
-                            } else if (!this.worldMgr.entityMgr.materials.includes(behaviorComponent.targetCrystal)) {
-                                behaviorComponent.changeToIdle()
-                            } else if (!components.has(WorldTargetComponent)) {
-                                const crystalPosition = behaviorComponent.targetCrystal.getPosition2D()
-                                if (rockyPos.distanceToSquared(crystalPosition) <= ROCKY_GRAB_DISTANCE_SQ) {
-                                    sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetCrystal.getPosition2D()))
-                                    behaviorComponent.state = RockMonsterBehaviorState.EAT_CRYSTAL
-                                    sceneEntity.pickupEntity(behaviorComponent.targetCrystal.sceneEntity)
-                                    behaviorComponent.targetCrystal.targetSite?.removeItem(behaviorComponent.targetCrystal)
-                                    sceneEntity.setAnimation(RockMonsterActivity.Eat, () => {
-                                        sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                                        behaviorComponent.numCrystalsEaten++
-                                        sceneEntity.removeAllCarried()
-                                        behaviorComponent.targetCrystal.disposeFromWorld()
-                                        behaviorComponent.changeToIdle()
-                                    })
-                                } else {
-                                    const crystalPathTarget = [PathTarget.fromLocation(crystalPosition)]
-                                    const path = pathFinder.findShortestPath(rockyPos, crystalPathTarget, stats, false)
-                                    if (path && path.locations.length > 0) {
-                                        this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0], ROCKY_GRAB_DISTANCE_SQ))
+                            } else {
+                                const raiderInGrabRange = this.worldMgr.entityMgr.raiders
+                                    .find((r) => !r.thrown && r.getPosition2D().distanceToSquared(rockyPos) < ROCKY_GRAB_DISTANCE_SQ)
+                                if (raiderInGrabRange) {
+                                    this.throwRaider(behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
+                                } else if (!this.worldMgr.entityMgr.materials.includes(behaviorComponent.targetCrystal)) {
+                                    behaviorComponent.changeToIdle()
+                                } else if (!components.has(WorldTargetComponent)) {
+                                    const crystalPosition = behaviorComponent.targetCrystal.getPosition2D()
+                                    if (rockyPos.distanceToSquared(crystalPosition) <= ROCKY_GRAB_DISTANCE_SQ) {
+                                        sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetCrystal.getPosition2D()))
+                                        behaviorComponent.state = RockMonsterBehaviorState.EAT_CRYSTAL
+                                        sceneEntity.pickupEntity(behaviorComponent.targetCrystal.sceneEntity)
+                                        behaviorComponent.targetCrystal.targetSite?.removeItem(behaviorComponent.targetCrystal)
+                                        sceneEntity.setAnimation(RockMonsterActivity.Eat, () => {
+                                            sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                            behaviorComponent.numCrystalsEaten++
+                                            sceneEntity.removeAllCarried()
+                                            behaviorComponent.targetCrystal.disposeFromWorld()
+                                            behaviorComponent.changeToIdle()
+                                        })
                                     } else {
-                                        behaviorComponent.changeToIdle()
+                                        const crystalPathTarget = [PathTarget.fromLocation(crystalPosition)]
+                                        const path = pathFinder.findShortestPath(rockyPos, crystalPathTarget, stats, false)
+                                        if (path && path.locations.length > 0) {
+                                            this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0], ROCKY_GRAB_DISTANCE_SQ))
+                                        } else {
+                                            behaviorComponent.changeToIdle()
+                                        }
                                     }
                                 }
                             }
@@ -178,37 +185,43 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 .find((v) => v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (vehicleInMeleeRange) {
                                 this.punchVehicle(behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
-                            } else if (!behaviorComponent.targetBuilding) {
-                                const closestBuilding = pathFinder.findClosestBuilding(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
-                                if (closestBuilding) {
-                                    behaviorComponent.targetBuilding = closestBuilding.obj
-                                } else {
-                                    behaviorComponent.state = RockMonsterBehaviorState.GO_HOME
-                                }
-                            } else if (!this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
-                                behaviorComponent.changeToIdle()
                             } else {
-                                const targetBuildingSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_MELEE_ATTACK_DISTANCE_SQ)
-                                if (targetBuildingSurface) {
-                                    this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                                    sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetBuildingSurface.getCenterWorld2D()))
-                                    behaviorComponent.state = RockMonsterBehaviorState.PUNCH
-                                    sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
-                                        sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                                        const buildingComponents = this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity)
-                                        const healthComponent = buildingComponents.get(HealthComponent)
-                                        healthComponent.changeHealth(stats.RepairValue)
-                                        if (healthComponent.triggerAlarm) EventBus.publishEvent(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
-                                        behaviorComponent.changeToIdle()
-                                    })
-                                } else if (!components.has(WorldTargetComponent)) {
-                                    const buildingPathTargets = behaviorComponent.targetBuilding.getTrainingTargets()
-                                    const path = pathFinder.findShortestPath(rockyPos, buildingPathTargets, stats, false)
-                                    if (path && path.locations.length > 0) {
-                                        this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
+                                const raiderInGrabRange = this.worldMgr.entityMgr.raiders
+                                    .find((r) => !r.thrown && r.getPosition2D().distanceToSquared(rockyPos) < ROCKY_GRAB_DISTANCE_SQ)
+                                if (raiderInGrabRange) {
+                                    this.throwRaider(behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
+                                } else if (!behaviorComponent.targetBuilding) {
+                                    const closestBuilding = pathFinder.findClosestBuilding(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
+                                    if (closestBuilding) {
+                                        behaviorComponent.targetBuilding = closestBuilding.obj
                                     } else {
-                                        console.warn('Rocky cannot find path to targets', buildingPathTargets)
-                                        behaviorComponent.changeToIdle()
+                                        behaviorComponent.state = RockMonsterBehaviorState.GO_HOME
+                                    }
+                                } else if (!this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
+                                    behaviorComponent.changeToIdle()
+                                } else {
+                                    const targetBuildingSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_MELEE_ATTACK_DISTANCE_SQ)
+                                    if (targetBuildingSurface) {
+                                        this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                                        sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetBuildingSurface.getCenterWorld2D()))
+                                        behaviorComponent.state = RockMonsterBehaviorState.PUNCH
+                                        sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
+                                            sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                            const buildingComponents = this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity)
+                                            const healthComponent = buildingComponents.get(HealthComponent)
+                                            healthComponent.changeHealth(stats.RepairValue)
+                                            if (healthComponent.triggerAlarm) EventBus.publishEvent(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
+                                            behaviorComponent.changeToIdle()
+                                        })
+                                    } else if (!components.has(WorldTargetComponent)) {
+                                        const buildingPathTargets = behaviorComponent.targetBuilding.getTrainingTargets()
+                                        const path = pathFinder.findShortestPath(rockyPos, buildingPathTargets, stats, false)
+                                        if (path && path.locations.length > 0) {
+                                            this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
+                                        } else {
+                                            console.warn('Rocky cannot find path to targets', buildingPathTargets)
+                                            behaviorComponent.changeToIdle()
+                                        }
                                     }
                                 }
                             }
@@ -229,25 +242,31 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 .find((v) => v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (vehicleInMeleeRange) {
                                 this.punchVehicle(behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
-                            } else if (behaviorComponent.targetWall.wallType !== WALL_TYPE.WALL) {
-                                behaviorComponent.changeToIdle()
-                            } else if (!components.has(WorldTargetComponent)) {
-                                if (behaviorComponent.targetWall.getDigPositions().some((p) => rockyPos.distanceToSquared(p) <= ROCKY_GATHER_DISTANCE_SQ)) {
-                                    sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetWall.getCenterWorld2D()))
-                                    behaviorComponent.state = RockMonsterBehaviorState.GATHER
-                                    sceneEntity.setAnimation(RockMonsterActivity.Gather, () => {
-                                        sceneEntity.setAnimation(AnimEntityActivity.StandCarry)
-                                        behaviorComponent.boulder = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Boulder) // TODO not textured use BoulderAnimation or vertex colors?
-                                        sceneEntity.pickupEntity(behaviorComponent.boulder)
-                                        behaviorComponent.changeToIdle()
-                                    })
-                                } else {
-                                    const wallPathTargets = behaviorComponent.targetWall.getDigPositions().map((p) => PathTarget.fromLocation(p, ROCKY_GATHER_DISTANCE_SQ))
-                                    const path = pathFinder.findShortestPath(rockyPos, wallPathTargets, stats, false)
-                                    if (path && path.locations.length > 0) {
-                                        this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0], ROCKY_GATHER_DISTANCE_SQ))
+                            } else {
+                                const raiderInGrabRange = this.worldMgr.entityMgr.raiders
+                                    .find((r) => !r.thrown && r.getPosition2D().distanceToSquared(rockyPos) < ROCKY_GRAB_DISTANCE_SQ)
+                                if (raiderInGrabRange) {
+                                    this.throwRaider(behaviorComponent, entity, sceneEntity, raiderInGrabRange, positionComponent)
+                                } else if (behaviorComponent.targetWall.wallType !== WALL_TYPE.WALL) {
+                                    behaviorComponent.changeToIdle()
+                                } else if (!components.has(WorldTargetComponent)) {
+                                    if (behaviorComponent.targetWall.getDigPositions().some((p) => rockyPos.distanceToSquared(p) <= ROCKY_GATHER_DISTANCE_SQ)) {
+                                        sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetWall.getCenterWorld2D()))
+                                        behaviorComponent.state = RockMonsterBehaviorState.GATHER
+                                        sceneEntity.setAnimation(RockMonsterActivity.Gather, () => {
+                                            sceneEntity.setAnimation(AnimEntityActivity.StandCarry)
+                                            behaviorComponent.boulder = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Boulder) // TODO not textured use BoulderAnimation or vertex colors?
+                                            sceneEntity.pickupEntity(behaviorComponent.boulder)
+                                            behaviorComponent.changeToIdle()
+                                        })
                                     } else {
-                                        behaviorComponent.changeToIdle()
+                                        const wallPathTargets = behaviorComponent.targetWall.getDigPositions().map((p) => PathTarget.fromLocation(p, ROCKY_GATHER_DISTANCE_SQ))
+                                        const path = pathFinder.findShortestPath(rockyPos, wallPathTargets, stats, false)
+                                        if (path && path.locations.length > 0) {
+                                            this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0], ROCKY_GATHER_DISTANCE_SQ))
+                                        } else {
+                                            behaviorComponent.changeToIdle()
+                                        }
                                     }
                                 }
                             }
@@ -321,5 +340,43 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             }
             behaviorComponent.state = prevState
         })
+    }
+
+    private throwRaider(behaviorComponent: RockMonsterBehaviorComponent, entity: GameEntity, sceneEntity: AnimatedSceneEntity, raider: Raider, positionComponent: PositionComponent) {
+        const prevState = behaviorComponent.state
+        this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+        behaviorComponent.state = RockMonsterBehaviorState.THROW_MAN
+        const prevScale = raider.sceneEntity.getWorldScale(new Vector3())
+        sceneEntity.setAnimation(RockMonsterActivity.ThrowMan, () => {
+            raider.sceneEntity.getWorldPosition(raider.sceneEntity.position)
+            raider.sceneEntity.rotation.copy(sceneEntity.rotation)
+            const raiderPositionComponent = this.worldMgr.ecs.getComponents(raider.entity).get(PositionComponent)
+            raiderPositionComponent.position.copy(raider.sceneEntity.position)
+            raiderPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raiderPositionComponent.position)
+            sceneEntity.depositParent.remove(raider.sceneEntity)
+            this.worldMgr.sceneMgr.scene.add(raider.sceneEntity)
+            raider.sceneEntity.scale.copy(prevScale)
+            sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            behaviorComponent.state = prevState
+            sceneEntity.position.add(new Vector3(0, 0, TILESIZE / 2).applyEuler(sceneEntity.rotation))
+            positionComponent.position.copy(sceneEntity.position)
+            positionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(positionComponent.position)
+        })
+        raider.thrown = true
+        raider.dropCarried(true)
+        raider.stopJob()
+        raider.sceneEntity.setAnimation(RaiderActivity.Thrown, () => {
+            raider.sceneEntity.setAnimation(RaiderActivity.GetUp, () => {
+                raider.thrown = false
+                raider.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            })
+        })
+        raider.sceneEntity.position.copy(new Vector3(0, 0, 4)) // XXX Why is this offset needed?
+        const euler = sceneEntity.rotation.clone()
+        euler.y = Math.PI // XXX Why is this rotation needed?
+        raider.sceneEntity.rotation.copy(euler)
+        sceneEntity.depositParent.add(raider.sceneEntity)
+        const parentScale = raider.sceneEntity.parent.getWorldScale(new Vector3())
+        raider.sceneEntity.scale.set(1 / parentScale.x, 1 / parentScale.y, 1 / parentScale.z)
     }
 }

@@ -42,7 +42,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.7.0 - Rockies, Slugs And Damage
 
-- Make rock monster pick up nearby raider and shake them upside down
 - Make rockies block building mode
 - Implement bullet system, move bullet components, on impact with collision sphere apply damage and remove bullet
 

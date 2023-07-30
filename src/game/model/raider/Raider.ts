@@ -53,6 +53,7 @@ export class Raider implements Updatable, JobFulfiller {
     sceneEntity: AnimatedSceneEntity
     carries: MaterialEntity = null
     slipped: boolean = false
+    thrown: boolean = false
     foodLevel: number = 1
     vehicle: VehicleEntity = null
     scared: boolean = false
@@ -85,7 +86,7 @@ export class Raider implements Updatable, JobFulfiller {
             this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
             return
         }
-        if (this.isInBeam()) return
+        if (this.isInBeam() || this.thrown) return
         if (!this.selected && GameState.alarmMode && this.hasWeapon()) {
             this.fight(elapsedMs)
             return
@@ -279,7 +280,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     isSelectable(): boolean {
-        return !this.selected && !this.isInBeam() && !this.slipped && !this.vehicle && !this.scared
+        return !this.selected && !this.isInBeam() && !this.slipped && !this.vehicle && !this.scared && !this.thrown
     }
 
     private isInBeam(): boolean {
@@ -508,7 +509,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     isReadyToTakeAJob(): boolean {
-        return !this.job && !this.selected && !this.isInBeam() && !this.slipped && !this.scared && (!GameState.alarmMode || !this.hasWeapon())
+        return !this.job && !this.selected && !this.isInBeam() && !this.slipped && !this.scared && (!GameState.alarmMode || !this.hasWeapon()) && !this.thrown
     }
 
     maxTools(): number {

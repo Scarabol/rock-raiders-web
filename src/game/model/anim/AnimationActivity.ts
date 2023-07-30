@@ -51,6 +51,8 @@ export enum RaiderActivity {
     Slip = 'Activity_Slip',
     Train = 'Activity_Train',
     RunPanic = 'Activity_RunPanic',
+    Thrown = 'Activity_ThrownByRockMonster',
+    GetUp = 'Activity_GetUp',
 
     Hoverboard = 'Activity_Hoverboard',
     Standhoverboard = 'Activity_Standhoverboard',
@@ -82,6 +84,7 @@ export enum RockMonsterActivity {
     Throw = 'Activity_Throw',
     Punch = 'Activity_Repair',
     Crumble = 'Activity_Crumble',
+    ThrowMan = 'Activity_ThrowMan',
 }
 
 export enum SlugActivity {
