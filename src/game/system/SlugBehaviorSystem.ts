@@ -47,7 +47,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             behaviorComponent.state = SlugBehaviorState.GO_ENTER
                         } else {
                             behaviorComponent.idleTimer += elapsedMs
-                            const energizedBuildings = this.worldMgr.entityMgr.buildings.filter((b) => b.energized)
+                            const energizedBuildings = this.worldMgr.entityMgr.buildings.filter((b) => b.energized && b.getPosition2D().distanceToSquared(slugPos) < stats.AttackRadiusSq)
                             const closestBuilding = pathFinder.findClosestBuilding(slugPos, energizedBuildings, stats, false)
                             if (closestBuilding) {
                                 behaviorComponent.state = SlugBehaviorState.LEECH

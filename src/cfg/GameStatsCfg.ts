@@ -86,10 +86,14 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
     WakeRadius: number = 0
     Capacity: number = 0
     RepairValue: number = 0
+    AttackRadiusSq: number = 0
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if ('CanBeShotAt'.equalsIgnoreCase(unifiedKey) && Array.isArray(cfgValue)) {
             this.CanBeShotAt = cfgValue[0] // value may be specified twice in original config
+            return true
+        } else if ('AttackRadius'.equalsIgnoreCase(unifiedKey)) {
+            this.AttackRadiusSq = cfgValue * cfgValue
             return true
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
