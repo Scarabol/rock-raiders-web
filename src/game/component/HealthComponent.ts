@@ -27,7 +27,7 @@ export class HealthComponent extends AbstractGameComponent {
         if (this.health === nextHealth) return
         this.health = nextHealth
         if (delta < 0) {
-            console.warn(`Damage (${delta}) visualization not yet implemented`) // TODO replace with flying number visualizing the damage
+            console.warn(`Damage (${delta}) visualization not yet implemented`) // TODO replace with flying number of interface/fonts/healthfont visualizing the damage
             if (this.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
         }
         this.sprite.setTargetStatus(this.health / this.maxHealth)

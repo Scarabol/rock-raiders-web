@@ -44,6 +44,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Make rockies block building mode
 - Implement bullet system, move bullet components, on impact with collision sphere apply damage and remove bullet
+- Show damage numbers with font interface/fonts/healthfont
+- Scare slugs away with sonic blaster
 
 ### v0.8.0 - Late game features
 
@@ -75,6 +77,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Important
 
+- Vehicles can get stuck in toolstations, needs vehicle behavior
 - Mark start and end tile in path finding always as accessible to make entering water vehicles and drilling easier, also frees raider stuck on lava
 - Damage and blow up buildings with lava erosion
 - Make idle raider leave lava fields
@@ -96,8 +99,9 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Cosmetics
 
+- Raider scene entity position/rotation not correct when thrown by rocky
 - Mesh texture not shown for lava rockies
-- Show health number in vehicle tooltip
+- Show health percentage in vehicle tooltip
 - Play vehicle SFX when tooltip is shown
 - Make tooltips stay on screen and follow cursor
 - Numbers above ticking dynamite are not shown correctly sometimes
