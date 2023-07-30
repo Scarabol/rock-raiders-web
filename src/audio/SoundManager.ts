@@ -25,6 +25,7 @@ export class SoundManager {
 
     static playSound(soundName: string, isVoice: boolean) {
         if (isVoice && this.skipVoiceLines) return
+        this.skipVoiceLines = isVoice
         this.getSoundBuffer(soundName).then((audioBuffer) => {
             try {
                 if (!audioBuffer) return
@@ -32,10 +33,7 @@ export class SoundManager {
                 source.buffer = audioBuffer
                 source.connect(SoundManager.sfxAudioTarget)
                 source.start()
-                if (isVoice) {
-                    this.skipVoiceLines = true
-                    setTimeout(() => this.skipVoiceLines = false, audioBuffer.duration * 1000 + NerpRunner.timeAddedAfterSample)
-                }
+                if (isVoice) setTimeout(() => this.skipVoiceLines = false, audioBuffer.duration * 1000 + NerpRunner.timeAddedAfterSample)
             } catch (e) {
                 console.error(e)
             }
