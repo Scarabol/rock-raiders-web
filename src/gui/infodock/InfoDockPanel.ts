@@ -67,6 +67,7 @@ export class InfoDockPanel extends Panel {
         const infoDockButton = this.addChild(new InfoDockButton(this, config))
         const sample = Sample[config.sfxName]
         this.registerEventListener(eventKey, (event: WorldLocationEvent) => {
+            if (infoDockButton.messages.some((m) => m.location === event.location)) return
             infoDockButton.hidden = false
             while (infoDockButton.messages.length >= 9) infoDockButton.messages.pop()
             infoDockButton.messages.unshift(event)

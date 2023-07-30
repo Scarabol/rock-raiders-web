@@ -257,8 +257,7 @@ export class NerpRunner {
             sceneEntity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())
         })
-        const slugPos = components.get(PositionComponent)
-        EventBus.publishEvent(new SlugEmergeEvent(slugPos))
+        EventBus.publishEvent(new SlugEmergeEvent(components.get(PositionComponent)))
     }
 
     /**

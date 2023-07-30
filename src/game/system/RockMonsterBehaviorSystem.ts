@@ -14,7 +14,7 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { HealthComponent } from '../component/HealthComponent'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
-import { WorldLocationEvent } from '../../event/WorldLocationEvent'
+import { UnderAttackEvent, WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { GameState } from '../model/GameState'
 import { PathFinder } from '../terrain/PathFinder'
 import { Vector2, Vector3 } from 'three'
@@ -23,6 +23,8 @@ import { MaterialEntity } from '../model/material/MaterialEntity'
 import { TILESIZE } from '../../params'
 import { DynamiteExplosionEvent } from '../../event/WorldEvents'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
+import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
+import { VehicleEntity } from '../model/vehicle/VehicleEntity'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -78,17 +80,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.vehicles
                                 .find((v) => v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (vehicleInMeleeRange) {
-                                const prevState = behaviorComponent.state
-                                this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                                sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.getPosition2D()))
-                                behaviorComponent.state = RockMonsterBehaviorState.PUNCH
-                                sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
-                                    sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                                    if (vehicleInMeleeRange.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
-                                        this.worldMgr.ecs.getComponents(vehicleInMeleeRange.entity).get(HealthComponent).changeHealth(stats.RepairValue)
-                                    }
-                                    behaviorComponent.state = prevState
-                                })
+                                this.punchVehicle(behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
                             } else if (!this.worldMgr.entityMgr.materials.includes(behaviorComponent.targetCrystal)) {
                                 behaviorComponent.changeToIdle()
                             } else if (!components.has(WorldTargetComponent)) {
@@ -146,7 +138,10 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BoulderExplode, targetBuildingSurface.getCenterWorld(), 0, false) // TODO adapt to monster/level entity type
                                         const boulderStats = ResourceManager.configuration.weaponTypes.get('boulder')
                                         const boulderDamage = boulderStats.damageByEntityType.get(behaviorComponent.targetBuilding.entityType)?.[behaviorComponent.targetBuilding.level] || boulderStats.defaultDamage
-                                        this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).get(HealthComponent).changeHealth(-boulderDamage)
+                                        const buildingComponents = this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity)
+                                        const healthComponent = buildingComponents.get(HealthComponent)
+                                        healthComponent.changeHealth(-boulderDamage)
+                                        if (healthComponent.triggerAlarm) EventBus.publishEvent(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
                                         sceneEntity.removeAllCarried()
                                         behaviorComponent.boulder = null
                                         sceneEntity.setAnimation(AnimEntityActivity.Stand)
@@ -182,17 +177,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.vehicles
                                 .find((v) => v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (vehicleInMeleeRange) {
-                                const prevState = behaviorComponent.state
-                                this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                                sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.getPosition2D()))
-                                behaviorComponent.state = RockMonsterBehaviorState.PUNCH
-                                sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
-                                    sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                                    if (vehicleInMeleeRange.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
-                                        this.worldMgr.ecs.getComponents(vehicleInMeleeRange.entity).get(HealthComponent).changeHealth(stats.RepairValue)
-                                    }
-                                    behaviorComponent.state = prevState
-                                })
+                                this.punchVehicle(behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
                             } else if (!behaviorComponent.targetBuilding) {
                                 const closestBuilding = pathFinder.findClosestBuilding(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
                                 if (closestBuilding) {
@@ -210,7 +195,10 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     behaviorComponent.state = RockMonsterBehaviorState.PUNCH
                                     sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
                                         sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                                        this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).get(HealthComponent).changeHealth(stats.RepairValue)
+                                        const buildingComponents = this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity)
+                                        const healthComponent = buildingComponents.get(HealthComponent)
+                                        healthComponent.changeHealth(stats.RepairValue)
+                                        if (healthComponent.triggerAlarm) EventBus.publishEvent(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
                                         behaviorComponent.changeToIdle()
                                     })
                                 } else if (!components.has(WorldTargetComponent)) {
@@ -240,17 +228,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.vehicles
                                 .find((v) => v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (vehicleInMeleeRange) {
-                                const prevState = behaviorComponent.state
-                                this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                                sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.getPosition2D()))
-                                behaviorComponent.state = RockMonsterBehaviorState.PUNCH
-                                sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
-                                    sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                                    if (vehicleInMeleeRange.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
-                                        this.worldMgr.ecs.getComponents(vehicleInMeleeRange.entity).get(HealthComponent).changeHealth(stats.RepairValue)
-                                    }
-                                    behaviorComponent.state = prevState
-                                })
+                                this.punchVehicle(behaviorComponent, entity, sceneEntity, vehicleInMeleeRange, rockyPos, stats)
                             } else if (behaviorComponent.targetWall.wallType !== WALL_TYPE.WALL) {
                                 behaviorComponent.changeToIdle()
                             } else if (!components.has(WorldTargetComponent)) {
@@ -326,5 +304,22 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         } else {
             behaviorComponent.state = Math.random() < 0.2 ? RockMonsterBehaviorState.BOULDER_ATTACK : RockMonsterBehaviorState.MELEE_ATTACK
         }
+    }
+
+    private punchVehicle(behaviorComponent: RockMonsterBehaviorComponent, entity: number, sceneEntity: AnimatedSceneEntity, vehicleInMeleeRange: VehicleEntity, rockyPos: Vector2, stats: MonsterEntityStats) {
+        const prevState = behaviorComponent.state
+        this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+        sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.getPosition2D()))
+        behaviorComponent.state = RockMonsterBehaviorState.PUNCH
+        sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
+            sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            if (vehicleInMeleeRange.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
+                const vehicleComponents = this.worldMgr.ecs.getComponents(vehicleInMeleeRange.entity)
+                const healthComponent = vehicleComponents.get(HealthComponent)
+                healthComponent.changeHealth(stats.RepairValue)
+                if (healthComponent.triggerAlarm) EventBus.publishEvent(new UnderAttackEvent(vehicleComponents.get(PositionComponent)))
+            }
+            behaviorComponent.state = prevState
+        })
     }
 }

@@ -67,7 +67,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                 if (components.has(WorldTargetComponent)) {
                                     sceneEntity.headTowards(targetSurface.getCenterWorld2D())
                                     this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                                    EventBus.publishEvent(new PowerDrainEvent(positionComponent))
+                                    EventBus.publishEvent(new PowerDrainEvent(new PositionComponent(positionComponent.position, positionComponent.surface)))
                                 }
                                 sceneEntity.setAnimation(SlugActivity.Suck, () => {
                                     GameState.numCrystal--
