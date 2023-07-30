@@ -150,6 +150,7 @@ export class BuildingEntity {
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.UpgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.heading, false)
         components.get(ScannerComponent)?.setRange(this.stats.SurveyRadius?.[this.level] ?? 0)
+        this.sceneEntity.setUpgradeLevel(this.level.toString(2).padStart(4, '0'))
     }
 
     setLevel(level: number) {
