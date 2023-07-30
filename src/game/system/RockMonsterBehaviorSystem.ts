@@ -127,8 +127,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 behaviorComponent.boulder = null
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             } else if (!behaviorComponent.targetBuilding) {
-                                // TODO path finding to buildings does not work since surface below buildings are not accessible
-                                const closestBuilding = pathFinder.findClosestObj(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
+                                const closestBuilding = pathFinder.findClosestBuilding(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
                                 if (closestBuilding) {
                                     behaviorComponent.targetBuilding = closestBuilding.obj
                                 } else {
@@ -154,11 +153,12 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         behaviorComponent.changeToIdle()
                                     })
                                 } else if (!components.has(WorldTargetComponent)) {
-                                    const buildingPathTargets = behaviorComponent.targetBuilding.buildingSurfaces.map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), ROCKY_BOULDER_THROW_DISTANCE_SQ))
+                                    const buildingPathTargets = behaviorComponent.targetBuilding.getTrainingTargets()
                                     const path = pathFinder.findShortestPath(rockyPos, buildingPathTargets, stats, false)
                                     if (path && path.locations.length > 0) {
                                         this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
                                     } else {
+                                        console.warn('Rocky cannot find path to targets', buildingPathTargets)
                                         behaviorComponent.changeToIdle()
                                     }
                                 }
@@ -194,8 +194,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     behaviorComponent.state = prevState
                                 })
                             } else if (!behaviorComponent.targetBuilding) {
-                                // TODO path finding to buildings does not work since surface below buildings are not accessible
-                                const closestBuilding = pathFinder.findClosestObj(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
+                                const closestBuilding = pathFinder.findClosestBuilding(rockyPos, this.worldMgr.entityMgr.buildings, stats, false)
                                 if (closestBuilding) {
                                     behaviorComponent.targetBuilding = closestBuilding.obj
                                 } else {
@@ -215,11 +214,12 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         behaviorComponent.changeToIdle()
                                     })
                                 } else if (!components.has(WorldTargetComponent)) {
-                                    const buildingPathTargets = behaviorComponent.targetBuilding.buildingSurfaces.map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), ROCKY_MELEE_ATTACK_DISTANCE_SQ))
+                                    const buildingPathTargets = behaviorComponent.targetBuilding.getTrainingTargets()
                                     const path = pathFinder.findShortestPath(rockyPos, buildingPathTargets, stats, false)
                                     if (path && path.locations.length > 0) {
                                         this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
                                     } else {
+                                        console.warn('Rocky cannot find path to targets', buildingPathTargets)
                                         behaviorComponent.changeToIdle()
                                     }
                                 }

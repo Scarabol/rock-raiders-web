@@ -8,6 +8,7 @@ import { Terrain } from './Terrain'
 import { TerrainPath } from './TerrainPath'
 import { PathTarget } from '../model/PathTarget'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
+import { BuildingEntity } from '../model/building/BuildingEntity'
 
 export class PathFinder {
     graphWalk: Graph = null
@@ -114,6 +115,21 @@ export class PathFinder {
             }
             return {obj: obj, locations: path, lengthSq: lengthSq}
         }).filter((terrainPath) => !!terrainPath)
+            .sort((l, r) => l.lengthSq - r.lengthSq)[0]
+    }
+
+    findClosestBuilding(start: Vector2, buildings: BuildingEntity[], stats: MovableEntityStats, highPrecision: boolean): { obj: BuildingEntity, locations: Vector2[], lengthSq: number } {
+        return buildings.flatMap((b) => b.getTrainingTargets().flatMap((t) => {
+            const path = this.findPath(start, t.targetLocation, stats, highPrecision)
+            if (!path) return null
+            let lengthSq = 0
+            for (let c = 0; c < path.length - 1; c++) {
+                const start = path[c]
+                const end = path[c + 1]
+                lengthSq += start.distanceToSquared(end)
+            }
+            return {obj: b, locations: path, lengthSq: lengthSq}
+        })).filter((terrainPath) => !!terrainPath)
             .sort((l, r) => l.lengthSq - r.lengthSq)[0]
     }
 

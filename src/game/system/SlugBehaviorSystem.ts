@@ -48,7 +48,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                         } else {
                             behaviorComponent.idleTimer += elapsedMs
                             const energizedBuildings = this.worldMgr.entityMgr.buildings.filter((b) => b.energized)
-                            const closestBuilding = pathFinder.findClosestObj(slugPos, energizedBuildings, stats, false)
+                            const closestBuilding = pathFinder.findClosestBuilding(slugPos, energizedBuildings, stats, false)
                             if (closestBuilding) {
                                 behaviorComponent.state = SlugBehaviorState.LEECH
                                 behaviorComponent.targetBuilding = closestBuilding.obj
@@ -61,25 +61,30 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                     case SlugBehaviorState.LEECH:
                         if (!behaviorComponent.targetBuilding?.energized) {
                             this.changeToIdle(entity, sceneEntity, behaviorComponent)
-                        } else if (behaviorComponent.targetBuilding.buildingSurfaces.some((s) => s.getCenterWorld2D().distanceToSquared(slugPos) <= SLUG_SUCK_DISTANCE_SQ)) {
-                            if (components.has(WorldTargetComponent)) {
-                                this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                                EventBus.publishEvent(new PowerDrainEvent(positionComponent))
-                            }
-                            sceneEntity.setAnimation(SlugActivity.Suck, () => {
-                                GameState.numCrystal--
-                                EventBus.publishEvent(new MaterialAmountChanged())
-                                MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.DEPLETED_CRYSTAL, positionComponent.getPosition2D())
-                                behaviorComponent.state = SlugBehaviorState.GO_ENTER
-                                behaviorComponent.energyLeeched = true
-                            }, SLUG_SUCK_TIME)
-                        } else if (!components.has(WorldTargetComponent)) {
-                            const buildingPathTargets = behaviorComponent.targetBuilding.buildingSurfaces.map((p) => PathTarget.fromLocation(p.getCenterWorld2D(), SLUG_SUCK_DISTANCE_SQ))
-                            const path = pathFinder.findShortestPath(slugPos, buildingPathTargets, stats, false)
-                            if (path && path.locations.length > 0) {
-                                this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
-                            } else {
-                                this.changeToIdle(entity, sceneEntity, behaviorComponent)
+                        } else {
+                            const targetSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => s.getCenterWorld2D().distanceToSquared(slugPos) <= SLUG_SUCK_DISTANCE_SQ)
+                            if (targetSurface) {
+                                if (components.has(WorldTargetComponent)) {
+                                    sceneEntity.headTowards(targetSurface.getCenterWorld2D())
+                                    this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                                    EventBus.publishEvent(new PowerDrainEvent(positionComponent))
+                                }
+                                sceneEntity.setAnimation(SlugActivity.Suck, () => {
+                                    GameState.numCrystal--
+                                    EventBus.publishEvent(new MaterialAmountChanged())
+                                    MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.DEPLETED_CRYSTAL, positionComponent.getPosition2D())
+                                    behaviorComponent.state = SlugBehaviorState.GO_ENTER
+                                    behaviorComponent.energyLeeched = true
+                                }, SLUG_SUCK_TIME)
+                            } else if (!components.has(WorldTargetComponent)) {
+                                const buildingPathTargets = behaviorComponent.targetBuilding.getTrainingTargets()
+                                const path = pathFinder.findShortestPath(slugPos, buildingPathTargets, stats, false)
+                                if (path && path.locations.length > 0) {
+                                    this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
+                                } else {
+                                    console.warn('Slug cannot find path to targets', buildingPathTargets)
+                                    this.changeToIdle(entity, sceneEntity, behaviorComponent)
+                                }
                             }
                         }
                         break
