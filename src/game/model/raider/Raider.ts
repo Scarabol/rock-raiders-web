@@ -509,7 +509,11 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     isReadyToTakeAJob(): boolean {
-        return !this.job && !this.selected && !this.isInBeam() && !this.slipped && !this.scared && (!GameState.alarmMode || !this.hasWeapon()) && !this.thrown
+        return !this.job && !this.selected && this.canBeScared()
+    }
+
+    canBeScared() {
+        return !this.isInBeam() && !this.slipped && !this.scared && (!GameState.alarmMode || !this.hasWeapon()) && !this.thrown
     }
 
     maxTools(): number {
