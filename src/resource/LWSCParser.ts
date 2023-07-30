@@ -91,8 +91,8 @@ export class LWSCParser {
                 this.numOfKeyframes = this.lastFrame + 1 - this.firstFrame
                 this.lwscData.durationSeconds = this.numOfKeyframes / this.framesPerSecond / this.frameStep
             } else if (key === 'LastFrame') {
-                this.lastFrame = parseInt(value, 10) + 1
-                this.numOfKeyframes = this.lastFrame - this.firstFrame
+                this.lastFrame = parseInt(value, 10)
+                this.numOfKeyframes = this.lastFrame + 1 - this.firstFrame
                 this.lwscData.durationSeconds = this.numOfKeyframes / this.framesPerSecond / this.frameStep
             } else if (key === 'FrameStep') {
                 this.frameStep = parseInt(value, 10)
@@ -156,7 +156,7 @@ export class LWSCParser {
                     if (infos.length !== lenInfos) console.warn(`Number of infos (${infos.length}) does not match with specified count (${lenInfos})`)
                     line = this.lines[this.lineIndex + c * 2 + 1]
                     const keyframeIndex = parseInt(line.split(' ')[0], 10) // other entries in line should be zeros
-                    const timeFromIndex = (keyframeIndex - this.firstFrame) / this.numOfKeyframes * this.lwscData.durationSeconds
+                    const timeFromIndex = (keyframeIndex - this.firstFrame) / (this.numOfKeyframes - 1) * this.lwscData.durationSeconds
                     times.push(timeFromIndex)
                     new Vector3(infos[0], infos[1], infos[2]).toArray(relPos, relPos.length)
                     if (currentObject.lowerName === 'lpgunpivot') relPos[1] += -42 // TODO Why is this workaround needed? What about upgrade station?
