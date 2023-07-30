@@ -1,6 +1,5 @@
 import { ButtonRadarCfg } from '../../cfg/ButtonsCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
-import { SpriteContext } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
@@ -48,13 +47,5 @@ export class RadarPanel extends Panel {
         this.map.show()
         this.fill.hide()
         this.overlay.hide()
-    }
-
-    onRedraw(context: SpriteContext) {
-        if (this.hidden) return
-        this.map.onRedraw(context)
-        this.map.hidden = true // TODO refactor workaround add z layering to panels
-        super.onRedraw(context)
-        this.map.hidden = false
     }
 }

@@ -5,18 +5,18 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 
 export class MainMenuLevelButton extends MainMenuBaseItem {
-    layer: MainMenuLayer
     imgActive: SpriteImage = null
     imgInactive: SpriteImage = null
     imgCross: SpriteImage = null
     unlocked: boolean = false
-    levelKey: string = ''
 
-    constructor(layer: MainMenuLayer, levelKey: string, levelCfg: LevelEntryCfg) {
+    constructor(
+        readonly layer: MainMenuLayer,
+        readonly levelKey: string,
+        readonly levelCfg: LevelEntryCfg,
+    ) {
         super(levelCfg.frontEndX, levelCfg.frontEndY)
-        this.layer = layer
         this.actionName = 'selectlevel'
-        this.levelKey = levelKey
         this.zIndex = 10
         this.scrollAffected = true
         const [imgActive, imgInactive, imgCross] = levelCfg.menuBMP

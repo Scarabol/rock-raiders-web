@@ -4,7 +4,8 @@ import { GameState } from './GameState'
 import { ResourceManager } from '../../resource/ResourceManager'
 
 export enum GameResultState {
-    UNDECIDED,
+    // noinspection JSUnusedGlobalSymbols
+    UNDECIDED = 0, // useful for truthiness checks
     QUIT,
     COMPLETE,
     FAILED,

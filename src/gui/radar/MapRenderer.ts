@@ -12,7 +12,7 @@ export class MapRenderer {
 
     constructor(terrainSprite: HTMLCanvasElement, entitySprite: HTMLCanvasElement, monsterSprite: HTMLCanvasElement, materialSprite: HTMLCanvasElement) {
         const msgInit: MapRendererMessage = {
-            type: WorkerMessageType.INIT,
+            type: WorkerMessageType.MAP_RENDERER_INIT,
             terrainSprite: terrainSprite,
             monsterSprite: monsterSprite,
             materialSprite: materialSprite,

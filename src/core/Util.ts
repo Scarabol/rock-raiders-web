@@ -26,20 +26,6 @@ export function iGet(obj: any, ...keys: string[]): any {
     return obj
 }
 
-export function iSet(obj: any, key: string, value: any) {
-    Object.keys(obj).forEach((keyName) => {
-        if (keyName.toLowerCase() === key.toLowerCase()) obj[keyName] = value
-    })
-}
-
-export function decodeString(data: BufferSource) {
-    return new TextDecoder().decode(data).replace(/\0/g, '')
-}
-
-export function decodeFilepath(data: BufferSource) {
-    return decodeString(data).replace(/\\/g, '/')
-}
-
 export function clearTimeoutSafe(timeout: NodeJS.Timeout): null {
     if (timeout) clearTimeout(timeout)
     return null

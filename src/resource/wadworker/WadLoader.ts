@@ -233,7 +233,7 @@ export class WadLoader {
             xhr.responseType = 'arraybuffer'
             xhr.onprogress = (event) => this.onDownloadProgress(wadFileIndex, event.loaded, event.total)
             xhr.onerror = (event) => console.error(event)
-            xhr.onload = (event) => resolve(xhr.response)
+            xhr.onload = () => resolve(xhr.response)
             xhr.send()
         })
     }

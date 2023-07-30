@@ -8,7 +8,7 @@ export class MainCfg extends BaseConfig {
     loadScreen: string = 'Languages/Loading.bmp'
     // ShutdownScreen = Languages/ShutDown.bmp
     progressBar: string = 'Interface/FrontEnd/gradient.bmp'
-    progressWindow: Rect = new Rect(142,450,353,9)
+    progressWindow: Rect = new Rect(142, 450, 353, 9)
     loadingText: string = 'Lade'
     // SharedTextures = World/Shared
     // SharedObjects = World/Shared

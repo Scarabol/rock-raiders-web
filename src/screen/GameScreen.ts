@@ -100,7 +100,7 @@ export class GameScreen {
         this.guiLayer.hide()
         this.selectionLayer.hide()
         this.gameLayer.hide()
-        document.title = "Rock Raiders Web"
+        document.title = 'Rock Raiders Web'
     }
 
     async startEndgameSequence(resultState: GameResultState) {

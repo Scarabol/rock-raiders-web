@@ -75,8 +75,7 @@ function maskColor(
             (((x & maskBlue) / maskBlueR) * 0x100) / shiftedMaskBlueL,
         shiftAlpha:
             maskAlpha !== 0
-                ? (x: number) =>
-                (((x & maskAlpha) / maskAlphaR) * 0x100) / shiftedMaskAlphaL
+                ? (x: number) => (((x & maskAlpha) / maskAlphaR) * 0x100) / shiftedMaskAlphaL
                 : () => 255,
     }
 }

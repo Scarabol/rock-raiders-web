@@ -15,7 +15,7 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
 import { OverwriteLayer } from '../menu/OverwriteLayer'
-import { MainMenuFlicAnim } from "../menu/MainMenuFlicAnim"
+import { MainMenuFlicAnim } from '../menu/MainMenuFlicAnim'
 
 export class RewardScreen {
     cfg: RewardCfg = null
