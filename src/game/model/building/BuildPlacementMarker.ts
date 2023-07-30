@@ -8,6 +8,7 @@ import { SurfaceType } from '../../terrain/SurfaceType'
 import { BuildingSite } from './BuildingSite'
 import { BuildingType } from './BuildingType'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
+import { PositionComponent } from '../../component/PositionComponent'
 
 export class BuildPlacementMarker {
     static readonly goodBuildingMarkerColor: number = 0x005000
@@ -79,6 +80,9 @@ export class BuildPlacementMarker {
             (!this.buildingType.primaryPowerPath && (this.buildingMarkerPrimary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH ||
                 (this.buildingMarkerSecondary.visible && this.buildingMarkerSecondary.surface.neighbors.some((n) => n.surfaceType === SurfaceType.POWER_PATH)))))
         ) && (!this.waterPathMarker.visible || this.waterPathMarker.surface.surfaceType === SurfaceType.WATER)
+            && ![this.buildingMarkerPrimary, this.buildingMarkerSecondary, this.powerPathMarkerPrimary, this.powerPathMarkerSecondary]
+                .some((c) => [...this.worldMgr.entityMgr.rockMonsters, ...this.worldMgr.entityMgr.slugs]
+                    .some((m) => this.worldMgr.ecs.getComponents(m).get(PositionComponent).surface === c.surface))
         if (isGood) {
             const heightOffset = this.worldMgr.sceneMgr.terrain.heightOffset
             const tooSteep = [this.buildingMarkerPrimary?.surface, this.buildingMarkerSecondary?.surface].some((s) => {
