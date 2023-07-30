@@ -186,7 +186,6 @@ export class Raider implements Updatable, JobFulfiller {
         }
         const step = this.determineStep(elapsedMs)
         if (step.targetReached) {
-            if (target.building) this.sceneEntity.headTowards(target.building.primarySurface.getCenterWorld2D())
             return MoveState.TARGET_REACHED
         } else {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)

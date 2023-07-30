@@ -68,11 +68,9 @@ export class CarryJob extends Job {
                 return this.findReachableBuilding(entityMgr, EntityType.TOOLSTATION, entity)
             case EntityType.DEPLETED_CRYSTAL:
                 return this.carryItem.worldMgr.sceneMgr.terrain.rechargeSeams
-                    .flatMap((s) => s.getDigPositions().map((p) => {
-                        const target = PathTarget.fromLocation(p)
-                        target.focusPoint = s.getCenterWorld2D()
-                        return target
-                    }))
+                    .flatMap((s) => s.getDigPositions()
+                        .map((p) => PathTarget.fromLocation(p, 1, s.getCenterWorld2D()))
+                    )
             case EntityType.BRICK:
                 const sites = this.findReachableBuildingSiteWithNeed(entityMgr, carryItem, entity)
                 if (sites.length > 0) return sites

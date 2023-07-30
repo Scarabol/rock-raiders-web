@@ -344,15 +344,21 @@ export class BuildingEntity {
             if (surface.surfaceType.connectsPath) surface.neighbors.forEach((n) => n.updateTexture())
             surface.terrain.powerGrid.onPathChange(surface)
         })
-        this.getToolPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D())
-        this.carryPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D())
+        this.getToolPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
+        this.carryPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
     getTrainingTargets(): PathTarget[] {
-        return [new Vector2(-1, 0), new Vector2(0, 1), new Vector2(1, 0), new Vector2(0, -1)].map((v) => {
-            const location = v.multiplyScalar(TILESIZE / 2).add(this.primarySurface.getCenterWorld2D())
-            return PathTarget.fromBuilding(this, location)
+        const offset = TILESIZE * 11 / 20
+        return this.buildingSurfaces.flatMap((s) => { // XXX Filter out targets in between both surfaces
+            const center = s.getCenterWorld2D()
+            return [
+                PathTarget.fromBuilding(this, new Vector2(-offset, 0).add(center), 1, center),
+                PathTarget.fromBuilding(this, new Vector2(0, offset).add(center), 1, center),
+                PathTarget.fromBuilding(this, new Vector2(offset, 0).add(center), 1, center),
+                PathTarget.fromBuilding(this, new Vector2(0, -offset).add(center), 1, center),
+            ]
         })
     }
 

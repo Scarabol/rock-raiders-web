@@ -144,7 +144,7 @@ export class EntityManager {
     }
 
     getVehicleUpgradePathTargets(): PathTarget[] {
-        return this.getBuildingsByType(EntityType.UPGRADE).map((b) => PathTarget.fromBuilding(b, b.getDropPosition2D()))
+        return this.getBuildingsByType(EntityType.UPGRADE).map((b) => PathTarget.fromBuilding(b, b.getDropPosition2D(), 1, b.primarySurface.getCenterWorld2D()))
     }
 
     hasBuilding(buildingType: EntityType): boolean {
