@@ -13,7 +13,7 @@ import { MonsterSpawner } from './entity/MonsterSpawner'
 import { SceneSelectionComponent } from './component/SceneSelectionComponent'
 import { SelectionFrameComponent } from './component/SelectionFrameComponent'
 import { MaterialSpawner } from './entity/MaterialSpawner'
-import { AnimEntityActivity, RaiderActivity } from './model/anim/AnimationActivity'
+import { AnimEntityActivity } from './model/anim/AnimationActivity'
 import { PositionComponent } from './component/PositionComponent'
 import { RaiderTrainings } from './model/raider/RaiderTraining'
 import degToRad = MathUtils.degToRad
@@ -137,7 +137,7 @@ export class ObjectListLoader {
 
     private spawnRaider(worldPos: Vector2, headingRad: number) {
         const raider = new Raider(this.worldMgr)
-        raider.sceneEntity.setAnimation(RaiderActivity.Stand)
+        raider.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         const raiderSceneSelection = this.worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
         this.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(raiderSceneSelection.pickSphere, raider.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPos)

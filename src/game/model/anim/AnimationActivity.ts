@@ -30,7 +30,6 @@ export enum AnimEntityActivity {
 }
 
 export enum RaiderActivity {
-    Stand = 'Activity_Stand',
     Drill = 'Activity_Drill',
     Walk = 'Activity_Walk',
     Reinforce = 'Activity_Reinforce',
@@ -38,8 +37,6 @@ export enum RaiderActivity {
     TurnRight = 'Activity_TurnRight',
     Collect = 'Activity_Collect',
     Clear = 'Activity_Clear',
-    Carry = 'Activity_Carry',
-    CarryStand = 'Activity_CarryStand',
     Dynamite = 'Activity_Dynamite',
     Place = 'Activity_Place',
     Deposit = 'Activity_Deposit',

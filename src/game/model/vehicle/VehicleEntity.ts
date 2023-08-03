@@ -57,7 +57,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     carriedItems: Set<MaterialEntity> = new Set()
     upgrades: Set<VehicleUpgrade> = new Set()
 
-    constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity = RaiderActivity.Stand, readonly driverActivityRoute: RaiderActivity = RaiderActivity.Stand) {
+    constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand, readonly driverActivityRoute: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand) {
         this.entityType = entityType
         this.worldMgr = worldMgr
         this.stats = stats
@@ -250,7 +250,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
             this.sceneEntity.setAnimation(workActivity)
             this.job?.addProgress(this, elapsedMs)
-        } else if (workActivity === RaiderActivity.Stand) {
+        } else if (workActivity === AnimEntityActivity.Stand) {
             this.sceneEntity.setAnimation(workActivity)
             this.completeJob()
         } else {
@@ -333,7 +333,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.driver.setPosition(this.driver.worldMgr.sceneMgr.getFloorPosition(hopOffSpot))
         this.driver.sceneEntity.rotation.y = this.sceneEntity.heading
         this.driver.worldMgr.sceneMgr.addMeshGroup(this.driver.sceneEntity)
-        this.driver.sceneEntity.setAnimation(RaiderActivity.Stand)
+        this.driver.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         this.driver = null
         this.engineSound = resetAudioSafe(this.engineSound)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))

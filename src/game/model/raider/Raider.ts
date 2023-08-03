@@ -229,7 +229,7 @@ export class Raider implements Updatable, JobFulfiller {
         } else if (this.isOnRubble()) {
             return !!this.carries ? RaiderActivity.CarryRubble : RaiderActivity.routeRubble
         } else {
-            return !!this.carries ? RaiderActivity.Carry : AnimEntityActivity.Route
+            return !!this.carries ? AnimEntityActivity.Carry : AnimEntityActivity.Route
         }
     }
 
@@ -272,7 +272,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private getDefaultAnimationName(): AnimationActivity {
-        return this.carries ? RaiderActivity.CarryStand : RaiderActivity.Stand
+        return this.carries ? AnimEntityActivity.StandCarry : AnimEntityActivity.Stand
     }
 
     deselect() {
@@ -348,7 +348,7 @@ export class Raider implements Updatable, JobFulfiller {
             this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
             this.sceneEntity.setAnimation(workActivity)
             this.job?.addProgress(this, elapsedMs)
-        } else if (workActivity === RaiderActivity.Stand) {
+        } else if (workActivity === AnimEntityActivity.Stand) {
             this.sceneEntity.setAnimation(workActivity)
             this.completeJob()
         } else {
