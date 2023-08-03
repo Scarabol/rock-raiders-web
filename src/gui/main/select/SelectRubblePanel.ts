@@ -18,7 +18,7 @@ export class SelectRubblePanel extends SelectBasePanel {
         clearRubbleItem.onClick = () => this.publishEvent(new CreateClearRubbleJob())
         const placeFenceItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_PlaceFence')
         placeFenceItem.addDependencyCheck(EntityType.ELECTRIC_FENCE)
-        placeFenceItem.isDisabled = () => !this.canPlaceFence
+        placeFenceItem.isDisabled = () => placeFenceItem.hasUnfulfilledDependency || !this.canPlaceFence
         placeFenceItem.onClick = () => this.publishEvent(new PlaceFence())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             this.hasRubble = event.hasRubble

@@ -68,7 +68,7 @@ export class SelectionChanged extends LocalEvent {
         this.hasRubble = entityMgr.selection.surface?.hasRubble()
         this.isDrillable = entityMgr.selection.surface?.isDigable() && (entityMgr.selection.surface?.surfaceType !== SurfaceType.HARD_ROCK || entityMgr.vehicles.some((v) => v.canDrill(entityMgr.selection.surface)))
         this.isReinforcable = entityMgr.selection.surface?.isReinforcable()
-        this.canPlaceFence = entityMgr.selection.surface?.canPlaceFence() && entityMgr.buildings.some((b) => b.entityType === EntityType.POWER_STATION && b.isReady())
+        this.canPlaceFence = entityMgr.selection.surface?.canPlaceFence()
         this.someCarries = !!entityMgr.selection.raiders.some((r) => !!r.carries)
         this.everyHasMaxLevel = !!entityMgr.selection.raiders.every((r) => r.level >= r.stats.Levels)
         RaiderTrainings.values.forEach((training) => this.canDoTraining.set(training, entityMgr.hasTrainingSite(training) && entityMgr.selection.raiders.some((r) => !r.hasTraining(training))))
