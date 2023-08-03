@@ -9,6 +9,7 @@ import { BuildingSite } from './BuildingSite'
 import { BuildingType } from './BuildingType'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
 import { PositionComponent } from '../../component/PositionComponent'
+import { MaterialAmountChanged } from '../../../event/WorldEvents'
 
 export class BuildPlacementMarker {
     static readonly goodBuildingMarkerColor: number = 0x005000
@@ -145,6 +146,7 @@ export class BuildPlacementMarker {
                 closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)
                 closestToolstation.spawnMaterials(EntityType.BRICK, neededBricks)
                 closestToolstation.spawnMaterials(EntityType.ORE, neededOres)
+                EventBus.publishEvent(new MaterialAmountChanged())
             }
         } else {
             site.checkComplete()
