@@ -318,4 +318,17 @@ export class EntityManager {
         this.vehiclesInBeam.removeAll((e) => e.entity === entity)
         this.recordedEntities.remove(entity)
     }
+
+    findVehicleInRange(position2d: Vector2, rangeSq: number): { entity: GameEntity, position2d: Vector2 } {
+        let result = null
+        this.worldMgr.entityMgr.vehicles.some((v) => {
+            const vPos = this.worldMgr.ecs.getComponents(v.entity).get(PositionComponent).getPosition2D()
+            if (vPos.distanceToSquared(position2d) < rangeSq) {
+                result = {entity: v, position2d: vPos}
+                return true
+            }
+            return false
+        })
+        return result
+    }
 }
