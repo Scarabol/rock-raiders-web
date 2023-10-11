@@ -89,9 +89,7 @@ export class EntityManager {
 
     update(elapsedMs: number) {
         this.raiders.forEach((r) => updateSafe(r, elapsedMs))
-        this.raidersInBeam.forEach((r) => updateSafe(r, elapsedMs))
         this.vehicles.forEach((v) => updateSafe(v, elapsedMs))
-        this.vehiclesInBeam.forEach((v) => updateSafe(v, elapsedMs))
         this.completedBuildingSites.forEach((b) => updateSafe(b, elapsedMs))
     }
 
