@@ -1,7 +1,7 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
-import { DeselectAll, UpdatePriorities } from '../event/LocalEvents'
+import { DeselectAll, SelectionChanged, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
@@ -21,6 +21,8 @@ import { RepairBuildingJob } from './model/job/raider/RepairBuildingJob'
 import { MaterialSpawner } from './entity/MaterialSpawner'
 import { GenericDeathEvent } from '../event/WorldLocationEvent'
 import { PositionComponent } from './component/PositionComponent'
+import { RaiderTool } from './model/raider/RaiderTool'
+import { ResourceManager } from '../resource/ResourceManager'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -215,6 +217,17 @@ export class GuiManager {
         EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {
             entityMgr.selection.assignUpgradeJob(event.upgrade)
             EventBus.publishEvent(new DeselectAll())
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_DROP_BIRD_SCARER, () => {
+            entityMgr.selection.raiders.forEach((r) => {
+                if (!r.hasTool(RaiderTool.BIRDSCARER)) return
+                r.removeTool(RaiderTool.BIRDSCARER)
+                if (r.selected) EventBus.publishEvent(new SelectionChanged(entityMgr))
+                const birdScarer = worldMgr.ecs.addEntity()
+                sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BirdScarer, r.getPosition(), Math.random() * 2 * Math.PI, false, () => {
+                    worldMgr.ecs.removeEntity(birdScarer)
+                })
+            })
         })
     }
 }

@@ -1,5 +1,5 @@
 import { EventKey } from '../../../event/EventKeyEnum'
-import { RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade } from '../../../event/GuiCommand'
+import { DropBirdScarer, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade } from '../../../event/GuiCommand'
 import { BuildingsChangedEvent, SelectionChanged } from '../../../event/LocalEvents'
 import { EntityType } from '../../../game/model/EntityType'
 import { BaseElement } from '../../base/BaseElement'
@@ -15,6 +15,7 @@ export class SelectRaiderPanel extends SelectBasePanel {
     someCarries: boolean = false
     everyHasMaxLevel: boolean = false
     hasToolstation: boolean = false
+    hasBirdScarer: boolean = false
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 10, onBackPanel)
@@ -27,7 +28,9 @@ export class SelectRaiderPanel extends SelectBasePanel {
         this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_MinifigurePickUp')
         this.getToolItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GetTool')
         this.getToolItem.isDisabled = () => false
-        this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_DropBirdScarer')
+        const dropBirdScarer = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_DropBirdScarer')
+        dropBirdScarer.isDisabled = () => !this.hasBirdScarer
+        dropBirdScarer.onClick = () => this.publishEvent(new DropBirdScarer())
         const upgradeItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_UpgradeMan')
         upgradeItem.isDisabled = () => this.everyHasMaxLevel || !this.hasToolstation
         upgradeItem.onClick = () => this.publishEvent(new RaiderUpgrade())
@@ -41,6 +44,7 @@ export class SelectRaiderPanel extends SelectBasePanel {
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {
             this.someCarries = event.someCarries
             this.everyHasMaxLevel = event.everyHasMaxLevel
+            this.hasBirdScarer = event.someHasBirdScarer
             this.updateAllButtonStates()
         })
         this.registerEventListener(EventKey.BUILDINGS_CHANGED, (event: BuildingsChangedEvent) => {
@@ -54,5 +58,6 @@ export class SelectRaiderPanel extends SelectBasePanel {
         this.someCarries = false
         this.everyHasMaxLevel = false
         this.hasToolstation = false
+        this.hasBirdScarer = false
     }
 }

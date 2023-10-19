@@ -224,8 +224,11 @@ export class SceneManager implements Updatable {
         this.scene.remove(meshGroup)
     }
 
-    addMiscAnim(lwsFilename: string, position: Vector3, heading: number, loop: boolean) {
-        const group = new AnimationGroup(lwsFilename, loop ? null : () => this.removeMiscAnim(group)).start(this.audioListener)
+    addMiscAnim(lwsFilename: string, position: Vector3, heading: number, loop: boolean, onRemove?: () => unknown) {
+        const group = new AnimationGroup(lwsFilename, loop ? null : () => {
+            this.removeMiscAnim(group)
+            if (onRemove) onRemove()
+        }).start(this.audioListener)
         group.position.copy(position)
         group.rotateOnAxis(Object3D.DEFAULT_UP, heading)
         this.miscAnims.add(group)

@@ -298,3 +298,9 @@ export class RepairBuilding extends GuiCommand {
         super(EventKey.COMMAND_REPAIR_BUILDING)
     }
 }
+
+export class DropBirdScarer extends GuiCommand {
+    constructor() {
+        super(EventKey.COMMAND_DROP_BIRD_SCARER)
+    }
+}

@@ -480,6 +480,10 @@ export class Raider implements Updatable, JobFulfiller {
         }
     }
 
+    removeTool(tool: RaiderTool) {
+        this.tools.remove(tool)
+    }
+
     addTraining(training: RaiderTraining) {
         this.trainings.add(training)
         if (training === RaiderTraining.GEOLOGIST) {
