@@ -32,8 +32,8 @@ export function createContext(width: number, height: number): SpriteContext {
 
 /**
  * This method is intended to increase stability by providing an (ugly) placeholder image in case the right one is missing
- * @param width: expected width of the original image
- * @param height: expected height of the original image
+ * @param width expected width of the original image
+ * @param height expected height of the original image
  */
 export function createDummyContext(width: number, height: number): SpriteContext {
     const result = createContext(width, height)
