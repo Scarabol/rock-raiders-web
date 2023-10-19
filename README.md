@@ -44,7 +44,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Implement bullet system, move bullet components, on impact with collision sphere apply damage and remove bullet
 - Show damage numbers with font interface/fonts/healthfont
-- Scare slugs away with sonic blaster
 
 ### v0.8.0 - Late game features
 

@@ -224,7 +224,11 @@ export class GuiManager {
                 r.removeTool(RaiderTool.BIRDSCARER)
                 if (r.selected) EventBus.publishEvent(new SelectionChanged(entityMgr))
                 const birdScarer = worldMgr.ecs.addEntity()
-                sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BirdScarer, r.getPosition(), Math.random() * 2 * Math.PI, false, () => {
+                const position = r.getPosition()
+                worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
+                entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
+                sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BirdScarer, position, Math.random() * 2 * Math.PI, false, () => {
+                    entityMgr.removeEntity(birdScarer)
                     worldMgr.ecs.removeEntity(birdScarer)
                 })
             })

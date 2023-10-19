@@ -49,6 +49,7 @@ export class EntityManager {
     vehiclesInBeam: VehicleEntity[] = []
     completedBuildingSites: BuildingSite[] = []
     recordedEntities: GameEntity[] = []
+    birdScarer: GameEntity[] = []
 
     constructor(readonly worldMgr: WorldManager) {
         // event handler must be placed here, because only this class knows the "actual" selection instance
@@ -85,6 +86,7 @@ export class EntityManager {
         this.vehiclesInBeam.length = 0
         this.completedBuildingSites.length = 0
         this.recordedEntities.length = 0
+        this.birdScarer.length = 0
     }
 
     update(elapsedMs: number) {
@@ -287,6 +289,9 @@ export class EntityManager {
                 // if (discovered) this.materials.add(entity) // TODO use game entities within entity manager
                 // else this.materialsUndiscovered.add(entity) // TODO use game entities within entity manager
                 break
+            case EntityType.BIRD_SCARER:
+                this.birdScarer.add(entity)
+                break
         }
     }
 
@@ -315,6 +320,7 @@ export class EntityManager {
         this.vehiclesUndiscovered.removeAll((e) => e.entity === entity)
         this.vehiclesInBeam.removeAll((e) => e.entity === entity)
         this.recordedEntities.remove(entity)
+        this.birdScarer.remove(entity)
     }
 
     findVehicleInRange(position2d: Vector2, rangeSq: number): { entity: GameEntity, position2d: Vector2 } {

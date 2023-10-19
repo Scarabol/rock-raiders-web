@@ -87,6 +87,7 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
     Capacity: number = 0
     RepairValue: number = 0
     AttackRadiusSq: number = 0
+    AlertRadiusSq: number = 0
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
         if ('CanBeShotAt'.equalsIgnoreCase(unifiedKey) && Array.isArray(cfgValue)) {
@@ -94,6 +95,9 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
             return true
         } else if ('AttackRadius'.equalsIgnoreCase(unifiedKey)) {
             this.AttackRadiusSq = cfgValue * cfgValue
+            return true
+        } else if ('AlertRadius'.equalsIgnoreCase(unifiedKey)) {
+            this.AlertRadiusSq = cfgValue * cfgValue
             return true
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
