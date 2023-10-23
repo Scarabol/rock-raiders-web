@@ -38,7 +38,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
                         } else {
                             this.addBeamZ(f.getCenterWorld(), false)
                         }
-                    } // XXX else spawn beam to random fence neighbor
+                    }
                 })
             } catch
                 (e) {
@@ -125,16 +125,34 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             this.beamDelayMs -= elapsedMs
             return
         }
-        if (studProtectedSurfaces.length < 1) return
-        this.beamDelayMs = Math.randomInclusive(2000, 10000)
-        // TODO add short beams between fences and between fences and buildings
-        const f = studProtectedSurfaces.random()
-        const sy1 = this.worldMgr.sceneMgr.terrain.getSurface(f.x - 1, f.y)
-        const sy2 = this.worldMgr.sceneMgr.terrain.getSurface(f.x + 1, f.y)
-        if ((sy1.fence || sy1.building) && (sy2.fence || sy2.building)) {
-            this.addBeamX(f.getCenterWorld(), false)
-        } else {
-            this.addBeamZ(f.getCenterWorld(), false)
-        }
+        const longBeams = studProtectedSurfaces.map((surface) => {
+            const lwsFilename = ResourceManager.configuration.miscObjects.LongElectricFenceBeam
+            const beamPos = surface.getCenterWorld();
+            const surfaceLeft = this.worldMgr.sceneMgr.terrain.getSurface(surface.x - 1, surface.y)
+            const surfaceRight = this.worldMgr.sceneMgr.terrain.getSurface(surface.x + 1, surface.y)
+            let beamHeading = 0
+            if ((surfaceLeft.fence || surfaceLeft.building) && (surfaceRight.fence || surfaceRight.building)) {
+                beamPos.x -= TILESIZE
+                beamHeading = Math.PI / 2;
+            } else {
+                beamPos.z -= TILESIZE
+            }
+            return {lwsFilename, beamPos, beamHeading}
+        })
+        const shortBeams = []
+        this.worldMgr.entityMgr.placedFences.forEach((fence) => {
+            const components = this.ecs.getComponents(fence.entity)
+            const surface = components.get(PositionComponent).surface
+            const neighbors = surface.neighbors.filter((n) => !!n.fence || n.building?.primarySurface === n || n.building?.secondarySurface === n)
+            neighbors.forEach((n) => {
+                const beamHeading = -n.getCenterWorld2D().sub(surface.getCenterWorld2D()).angle() + Math.PI / 2
+                shortBeams.push({lwsFilename: ResourceManager.configuration.miscObjects.ShortElectricFenceBeam, beamPos: surface.getCenterWorld(), beamHeading})
+            })
+        })
+        const beamLocations = [...longBeams, ...shortBeams]
+        if (beamLocations.length < 1) return
+        const nextBeam = beamLocations.random()
+        this.beamDelayMs = Math.randomInclusive(0, 4000)
+        this.worldMgr.sceneMgr.addMiscAnim(nextBeam.lwsFilename, nextBeam.beamPos, nextBeam.beamHeading, false)
     }
 }
