@@ -103,15 +103,11 @@ export class ResourceManager extends ResourceCache {
                         return null
                     }
                     const textureLoader = new ResourceManagerTextureLoader(getPath(sharedLwoFilepath), entityPath)
-                    const result = new LWOBParser(sharedLwoBuffer, textureLoader).parse()
-                    result.name = sharedLwoFilepath
-                    return result
+                    return new LWOBParser(sharedLwoFilepath, sharedLwoBuffer, textureLoader).parse()
                 })
             }
             const textureLoader = new ResourceManagerTextureLoader(getPath(lwoFilepath), entityPath)
-            const result = new LWOBParser(lwoBuffer, textureLoader).parse()
-            result.name = lwoFilepath
-            return result
+            return new LWOBParser(lwoFilepath, lwoBuffer, textureLoader).parse()
         })?.clone()
     }
 

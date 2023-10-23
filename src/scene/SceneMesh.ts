@@ -1,7 +1,12 @@
-import { Mesh } from 'three'
+import { BufferGeometry, Material, Mesh } from 'three'
 import { SequenceTextureMaterial } from './SequenceTextureMaterial'
 
 export class SceneMesh extends Mesh {
+    constructor(geometry?: BufferGeometry, material?: Material | Material[], name?: string) {
+        super(geometry, material);
+        this.name = name ?? ''
+    }
+
     clone(): this {
         const clone = super.clone(true)
         clone.material = this.getMaterials().map((m) => m.clone())

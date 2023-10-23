@@ -64,6 +64,7 @@ export class LWOBParser {
     uvs: Float32Array = null
 
     constructor(
+        readonly lwoFilepath: string,
         buffer: ArrayBuffer,
         readonly textureLoader: LWOBTextureLoader,
         readonly verbose: boolean = false,
@@ -120,7 +121,7 @@ export class LWOBParser {
         this.geometry.setIndex(new BufferAttribute(this.indices, 1))
         this.geometry.computeVertexNormals()
 
-        return new SceneMesh(this.geometry, this.materials)
+        return new SceneMesh(this.geometry, this.materials, this.lwoFilepath)
     }
 
     parsePoints(chunkSize: number): void {
