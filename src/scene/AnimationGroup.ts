@@ -80,6 +80,7 @@ export class AnimationGroup extends Group implements Updatable {
 
     update(elapsedMs: number) {
         this.animationMixers.forEach((m) => m.update(elapsedMs / 1000 * this.animationTransCoef))
+        this.meshList.forEach((m) => m.update(elapsedMs))
         if (this.durationTimeoutMs) {
             this.animationTime += elapsedMs
             if (this.animationTime >= this.durationTimeoutMs) {

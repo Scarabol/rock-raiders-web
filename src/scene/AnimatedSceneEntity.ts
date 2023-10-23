@@ -168,7 +168,6 @@ export class AnimatedSceneEntity extends Group implements Updatable {
 
     update(elapsedMs: number) {
         this.animationGroups.forEach((a) => a.update(elapsedMs))
-        this.meshesByLName.forEach((meshes) => meshes.forEach((m) => m.update(elapsedMs)))
         this.installedUpgrades.forEach((c) => c.child.update(elapsedMs))
     }
 
