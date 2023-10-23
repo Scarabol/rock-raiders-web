@@ -93,6 +93,9 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         Object.values<string>(rockMonsterTypes).forEach((mType) => {
             this.addMeshObjects(mType)
         })
+        this.wadLoader.wad0File.filterEntryNames(`Creatures/LavaMonster/.+\\.uv`).forEach((assetPath) => {
+            this.addAsset(this.wadLoader.loadUVFile, assetPath)
+        })
         await yieldToMainThread()
         // load vehicles
         const vehicleTypes = iGet(gameConfig, 'VehicleTypes')

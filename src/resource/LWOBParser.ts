@@ -11,6 +11,8 @@ import { getFilename } from '../core/Util'
 import { VERBOSE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
 import { SequenceTextureMaterial } from '../scene/SequenceTextureMaterial'
+import { ResourceManager } from './ResourceManager'
+import { UVData } from './LWOUVParser'
 
 /*************************/
 /* FLAG DEFINITION START */
@@ -422,7 +424,17 @@ export class LWOBParser {
             }
         }
 
-        this.planarMapUVS(materialIndex, textureSize, textureCenter, textureFlags)
+        const uvFilepath = this.lwoFilepath.replace('.lwo', '.uv')
+        const uvData = ResourceManager.getResource(uvFilepath) as UVData[]
+        if (uvData) {
+            uvData.forEach((uv) => {
+                if (!materialName.equalsIgnoreCase(uv.name)) return
+                this.textureLoader.load(uv.mapName.toLowerCase(), (t) => material.setTextures(t))
+                this.uvs = new Float32Array(uv.uvs)
+            })
+        } else {
+            this.planarMapUVS(materialIndex, textureSize, textureCenter, textureFlags)
+        }
 
         if (this.verbose) console.log(`Done parsing surface: "${materialName}"`)
     }

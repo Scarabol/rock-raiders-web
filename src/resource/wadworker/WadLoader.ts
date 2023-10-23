@@ -13,6 +13,7 @@ import { WadFile } from './WadFile'
 import { grayscaleToGreen } from './WadUtil'
 import { Cursor } from '../Cursor'
 import { DEFAULT_FONT_NAME } from '../../params'
+import { LWOUVParser } from '../LWOUVParser'
 
 export class WadLoader {
     static readonly bitmapWorkerPool = new BitmapWorkerPool().startPool(16, null)
@@ -166,6 +167,12 @@ export class WadLoader {
         const flhContent = this.wad0File.getEntryBuffer(filename)
         const flhFrames = new FlhParser().parse(flhContent)
         callback([filename], flhFrames)
+    }
+
+    loadUVFile(filename: string, callback: (assetNames: string[], obj: any) => any) {
+        const uvContent = this.wad0File.getEntryText(filename)
+        const uvData = new LWOUVParser().parse(uvContent)
+        callback([filename], uvData)
     }
 
     loadAssetsParallel() {

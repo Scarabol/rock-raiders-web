@@ -1,0 +1,87 @@
+import { getFilename } from '../core/Util'
+import { Vector3 } from 'three'
+import { degToRad } from 'three/src/math/MathUtils'
+
+export interface UVData {
+    name: string;
+    mapName: string;
+    uvs: number[];
+    rotation: Vector3;
+}
+
+export class LWOUVParser {
+    constructor(readonly verbose: boolean = false) {
+    }
+
+    parse(content: string): UVData[] {
+        const result: UVData[] = []
+        if (this.verbose) console.log(content)
+        const lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
+            .replace(/\t/g, ' ') // tabs to spaces
+            .split('\n')
+            .map((l) => l.trim())
+        if (this.verbose) console.log(lines)
+        let fileIndex = 0
+        if (lines[fileIndex] !== '2') { // XXX What means 2 in first line?
+            throw new Error(`first line is not 2, but ${lines[0]}`)
+        }
+        fileIndex++
+        const numOfMats = parseInt(lines[fileIndex])
+        if (this.verbose) console.log(`UV file should contain ${numOfMats} materials`)
+        fileIndex++
+        for (let c = 0; c < numOfMats; c++) {
+            const matName = lines[fileIndex + c]
+            if (this.verbose) console.log('Material name is ', matName)
+            result[c] = result[c] ?? {} as UVData // XXX Avoid casting
+            result[c].name = matName
+        }
+        fileIndex += numOfMats
+        for (let c = 0; c < numOfMats; c++) {
+            const mapName = lines[fileIndex + c]
+            if (this.verbose) console.log('Texture map name is ', mapName)
+            result[c].mapName = getFilename(mapName)
+        }
+        fileIndex += numOfMats
+        const numOfCoords = parseInt(lines[fileIndex])
+        if (this.verbose) console.log(`Expecting ${numOfCoords} coords`)
+        fileIndex++
+        for (let c = 0; c < numOfCoords; c++) {
+            const tupleLine = lines[fileIndex]
+            if (this.verbose) console.log('tupleLine', tupleLine)
+            fileIndex++
+            const [uvIndex, uvLength] = tupleLine.split(' ').map((n) => parseInt(n))
+            if (this.verbose) console.log(`tuple index is ${uvIndex} and length is ${uvLength}`)
+            for (let t = 0; t < uvLength; t++) {
+                const uvLine = lines[fileIndex]
+                if (this.verbose) console.log(uvLine)
+                const [u, v] = uvLine.split(' ').map((n) => parseFloat(n)) // XXX safe to ignore third param (always 0)?
+                for (let x = 0; x < numOfMats; x++) {
+                    result[x].uvs = result[x].uvs ?? []
+                    result[x].uvs.push(u, v)
+                }
+                fileIndex++
+            }
+        }
+        for (let c = 0; c < numOfMats; c++) {
+            const nextLine = lines[fileIndex]
+            if (this.verbose) console.log('nextLine', nextLine)
+            fileIndex++
+            const tupleLength = parseInt(nextLine) // should be always 4
+            if (tupleLength !== 4) {
+                console.error(`Unexpected tuple length ${tupleLength}`)
+                continue
+            }
+            const rotation = lines[fileIndex] // XXX Is it actual rotation? Numbers look like angle in degree
+            result[c].rotation = new Vector3(...rotation.split(' ').map((n) => degToRad(parseFloat(n))))
+            fileIndex++
+            // const unknown0 = lines[fileIndex] // XXX Mostly 0,0,0 maybe translation/center
+            fileIndex++
+            // const unknown1 = lines[fileIndex]
+            fileIndex++
+            // const unknown2 = lines[fileIndex]
+            fileIndex++
+        }
+        if (this.verbose) console.log(result)
+        return result
+    }
+}

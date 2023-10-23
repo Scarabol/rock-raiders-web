@@ -98,7 +98,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Cosmetics
 
 - Raider scene entity position/rotation not correct when thrown by rocky
-- Mesh texture not shown for lava rockies
+- Lava rockies texture not using correct UV coordinates
 - Show health percentage in vehicle tooltip
 - Play vehicle SFX when tooltip is shown
 - Make tooltips stay on screen and follow cursor
