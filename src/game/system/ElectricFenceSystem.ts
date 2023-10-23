@@ -62,7 +62,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
     private getFenceProtectedSurfaces(): Surface[] {
         const fenceProtectedSurfaces: Surface[] = []
         const energizedBuildingSurfaces = this.worldMgr.entityMgr.buildings.filter((b) => b.energized)
-            .flatMap((b) => b.surfaces)
+            .flatMap((b) => b.buildingSurfaces)
         const toCheck = this.worldMgr.entityMgr.placedFences
             .map((f) => this.worldMgr.ecs.getComponents(f.entity).get(PositionComponent))
         energizedBuildingSurfaces.forEach((s) => {
@@ -99,7 +99,8 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             origin.neighbors.forEach((possibleStud) => {
                 if (!possibleStud.fence && !possibleStud.building && !studPositions.includes(possibleStud) &&
                     possibleStud.neighbors.some((target) => target !== origin && (target.x === origin.x || target.y === origin.y) &&
-                        ((target.fence && fenceProtectedSurfaces.includes(target)) || (target.building && target.energized)))
+                        ((target.fence && fenceProtectedSurfaces.includes(target)) ||
+                            (target.energized && (target === target.building?.primarySurface || target === target.building?.secondarySurface))))
                 ) {
                     studPositions.add(possibleStud)
                     if (!possibleStud.stud) toAdd.add(possibleStud)
