@@ -30,6 +30,7 @@ export class ResourceManager extends ResourceCache {
         this.resourceByName.forEach((res, name) => {
             if (name.startsWith(lBasename + '0')) result.push(name)
         })
+        result.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()))
         if (result.length > 0) {
             return result.map((textureFilepath) => this.getTexture(textureFilepath))
         } else if (!lBasename.startsWith('world/shared/')) {
