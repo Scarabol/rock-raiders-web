@@ -8,15 +8,13 @@ export class MapMarkerUpdateSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([PositionComponent, MapMarkerComponent])
     dirtyComponents: Set<Function> = new Set([PositionComponent])
 
-    // TODO register for level start event and update complete minimap
-
     update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
         for (const entity of dirty) {
             try {
                 const components = this.ecs.getComponents(entity)
-                const position = components.get(PositionComponent).position
                 const mapMarkerType = components.get(MapMarkerComponent).mapMarkerType
-                EventBus.publishEvent(new UpdateRadarEntityEvent(mapMarkerType, entity, MapMarkerChange.UPDATE, {x: position.x, z: position.z}))
+                const position = components.get(PositionComponent).position
+                EventBus.publishEvent(new UpdateRadarEntityEvent(mapMarkerType, entity, MapMarkerChange.UPDATE, position))
             } catch (e) {
                 console.error(e)
             }

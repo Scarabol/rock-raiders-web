@@ -59,6 +59,9 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
     update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
         const pathFinder = this.worldMgr.sceneMgr.terrain.pathFinder
         const crystals = this.worldMgr.entityMgr.materials.filter((m) => m.entityType === EntityType.CRYSTAL)
+        const drivingVehiclePositions = this.worldMgr.entityMgr.vehicles
+            .filter((v) => v.sceneEntity.currentAnimation === AnimEntityActivity.Route)
+            .map((v) => this.ecs.getComponents(v.entity).get(PositionComponent).getPosition2D())
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
@@ -121,8 +124,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         break
                     case RockMonsterBehaviorState.BOULDER_ATTACK:
                         if (behaviorComponent.boulder) {
-                            const drivingVehicleCloseBy = this.worldMgr.entityMgr.vehicles
-                                .find((v) => v.sceneEntity.currentAnimation === AnimEntityActivity.Route && v.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
+                            const drivingVehicleCloseBy = drivingVehiclePositions.find((pos) => pos.distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (drivingVehicleCloseBy) {
                                 this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BoulderExplode, behaviorComponent.boulder.getWorldPosition(new Vector3()), behaviorComponent.boulder.rotation.y, false)
                                 sceneEntity.removeAllCarried()

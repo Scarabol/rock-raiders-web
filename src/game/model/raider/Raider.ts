@@ -86,12 +86,11 @@ export class Raider implements Updatable, JobFulfiller {
             this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
             return
         }
-        if (this.isInBeam() || this.thrown) return
-        if (!this.selected && GameState.alarmMode && this.hasWeapon()) {
+        if (this.isInBeam() || this.thrown || this.selected) return
+        if (GameState.alarmMode && this.hasWeapon()) {
             this.fight(elapsedMs)
             return
         }
-        if (this.selected) return
         if (!this.job) {
             this.scared = false
             this.infoComponent.setBubbleTexture('bubbleIdle')

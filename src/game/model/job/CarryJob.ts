@@ -138,11 +138,6 @@ export class CarryJob extends Job {
                     targetBuilding.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
                         targetBuilding.sceneEntity.setAnimation(targetBuilding.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
                         targetBuilding.sceneEntity.removeAllCarried()
-                        targetBuilding.carriedItems.forEach((carried) => {
-                            const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.getPosition2D())
-                            carried.setPosition(floorPosition)
-                            carried.worldMgr.sceneMgr.addMeshGroup(carried.sceneEntity)
-                        })
                         targetBuilding.depositItems()
                     })
                 }

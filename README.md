@@ -47,28 +47,28 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Unlock levels only after linked levels are completed
-- Add screen shake for exploding dynamites
-- Show loading screen when starting a level
 - Show misc anim LavaErosionSmoke over lava
-- Add rockfall transition when switching in main menu
-- Show FLT mini-figure animation with mission briefing
+- Add water and lava animation (texture UV coords tearing)
+- Add screen shake for exploding dynamites
+- First-Person and shoulder camera
 - Refactor job system to allow multi-carry jobs for vehicles
 - Raider get tired while carrying and eat at barracks
+- Render last selected entity with rotating camera in radar panel
 - Add surface type tooltips for map panel
 - Add magnet cursor to map panel to track entities
-- Render last selected entity with rotating camera in radar panel
 - Move camera with click on mini map and show camera view area as wireframe
-- First-Person and shoulder camera
-- Background music and soundtrack
-- Tutorial levels and helper features
-- Add water and lava animation (texture UV coords tearing)
+- Add rockfall transition when switching in main menu
+- Show loading screen when starting a level
+- Show FLT mini-figure animation with mission briefing
 - Change cursor to X when over disabled IconPanelButtons
+- Background music and soundtrack
 - Use same team for all missions and add names to raiders
+- Tutorial levels and helper features
 - Auto switch from portrait to landscape mode in fullscreen
 
 ### v0.9.0 - Polishing
 
+- Unlock levels only after linked levels are completed (see XXX)
 - Fix all remaining bugs
 
 ## Known Issues
@@ -80,7 +80,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Damage and blow up buildings with lava erosion
 - Make idle raider leave lava fields
 - Forbidding collection of ores or crystals stops building projects too
-- Save game overwrites levels on all previous saves
 - Fix Large Cat not usable to carry vehicles in Level 19
 - Improve GUI rendering performance maybe reduce scope or reduce quantity
 - Multitouch breaks camera on mobile

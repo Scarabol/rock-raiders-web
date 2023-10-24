@@ -73,7 +73,34 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     update(elapsedMs: number) {
         if (!this.job || this.selected || this.isInBeam()) return
-        this.work(elapsedMs)
+        if (this.job.jobState !== JobState.INCOMPLETE) {
+            this.stopJob()
+            return
+        }
+        const grabbedJobItem = this.grabJobItem(elapsedMs, this.job.carryItem)
+        if (!grabbedJobItem) return
+        const workplaceReached = this.moveToClosestTarget(this.job.getWorkplace(this), elapsedMs) === MoveState.TARGET_REACHED
+        if (!workplaceReached) return
+        if (!this.job.isReadyToComplete()) {
+            this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            return
+        }
+        const workActivity = this.job.getWorkActivity() || AnimEntityActivity.Stand
+        if (!this.workAudio && this.job.workSoundVehicle) {
+            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[this.job.workSoundVehicle], true, true)
+        }
+        if (workActivity === RaiderActivity.Drill) {
+            this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
+            this.sceneEntity.setAnimation(workActivity)
+            this.job?.addProgress(this, elapsedMs)
+        } else if (workActivity === AnimEntityActivity.Stand) {
+            this.sceneEntity.setAnimation(workActivity)
+            this.completeJob()
+        } else {
+            this.sceneEntity.setAnimation(workActivity, () => {
+                this.completeJob()
+            }, this.job.getExpectedTimeLeft())
+        }
     }
 
     beamUp() {
@@ -227,37 +254,6 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.job = null
         this.followUpJob = null
         this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-    }
-
-    private work(elapsedMs: number) {
-        if (this.job.jobState !== JobState.INCOMPLETE) {
-            this.stopJob()
-            return
-        }
-        const grabbedJobItem = this.grabJobItem(elapsedMs, this.job.carryItem)
-        if (!grabbedJobItem) return
-        const workplaceReached = this.moveToClosestTarget(this.job.getWorkplace(this), elapsedMs) === MoveState.TARGET_REACHED
-        if (!workplaceReached) return
-        if (!this.job.isReadyToComplete()) {
-            this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-            return
-        }
-        const workActivity = this.job.getWorkActivity() || AnimEntityActivity.Stand
-        if (!this.workAudio && this.job.workSoundVehicle) {
-            this.workAudio = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, Sample[this.job.workSoundVehicle], true, true)
-        }
-        if (workActivity === RaiderActivity.Drill) {
-            this.sceneEntity.headTowards(this.job.surface.getCenterWorld2D())
-            this.sceneEntity.setAnimation(workActivity)
-            this.job?.addProgress(this, elapsedMs)
-        } else if (workActivity === AnimEntityActivity.Stand) {
-            this.sceneEntity.setAnimation(workActivity)
-            this.completeJob()
-        } else {
-            this.sceneEntity.setAnimation(workActivity, () => {
-                this.completeJob()
-            }, this.job.getExpectedTimeLeft())
-        }
     }
 
     private completeJob() {

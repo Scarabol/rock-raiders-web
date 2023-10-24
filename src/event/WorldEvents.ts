@@ -9,8 +9,8 @@ import { GameResultState } from '../game/model/GameResult'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 
 export class WorldEvent extends GameEvent {
-    constructor(entityKey: EventKey) {
-        super(entityKey)
+    constructor(eventKey: EventKey) {
+        super(eventKey)
         this.logEvent = true
     }
 }
