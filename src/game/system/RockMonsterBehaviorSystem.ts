@@ -356,6 +356,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             const raiderPositionComponent = this.worldMgr.ecs.getComponents(raider.entity).get(PositionComponent)
             raiderPositionComponent.position.copy(raider.sceneEntity.position)
             raiderPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raiderPositionComponent.position)
+            raiderPositionComponent.markDirty()
             sceneEntity.depositParent.remove(raider.sceneEntity)
             this.worldMgr.sceneMgr.scene.add(raider.sceneEntity)
             raider.sceneEntity.scale.copy(prevScale)
@@ -364,6 +365,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             sceneEntity.position.add(new Vector3(0, 0, TILESIZE / 2).applyEuler(sceneEntity.rotation))
             positionComponent.position.copy(sceneEntity.position)
             positionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(positionComponent.position)
+            positionComponent.markDirty()
         })
         raider.thrown = true
         raider.dropCarried(true)

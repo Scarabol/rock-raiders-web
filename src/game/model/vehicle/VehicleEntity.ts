@@ -310,7 +310,9 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (this.stats.InvisibleDriver) {
             this.worldMgr.sceneMgr.removeMeshGroup(this.driver.sceneEntity)
         } else {
-            this.worldMgr.ecs.getComponents(this.driver.entity).get(PositionComponent).position.set(0, 0, 0)
+            const positionComponent = this.worldMgr.ecs.getComponents(this.driver.entity).get(PositionComponent)
+            positionComponent.position.set(0, 0, 0)
+            positionComponent.markDirty()
             this.sceneEntity.addDriver(this.driver.sceneEntity)
             // TODO sync idle animation of vehicle and driver
         }
@@ -432,6 +434,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (positionComponent) {
             positionComponent.position.copy(position)
             positionComponent.surface = surface
+            positionComponent.markDirty()
             this.sceneEntity.position.y += positionComponent.floorOffset
         }
     }

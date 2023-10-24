@@ -62,6 +62,7 @@ export class MaterialEntity {
         if (positionComponent) {
             positionComponent.position.copy(position)
             positionComponent.surface = surface
+            positionComponent.markDirty()
             this.sceneEntity.position.y += positionComponent.floorOffset
         }
     }
