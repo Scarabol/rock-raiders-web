@@ -161,6 +161,9 @@ export class ECS {
             this.systems.get(system).add(entity)
         } else {
             this.systems.get(system).delete(entity)
+            if (this.dirtyEntities.has(system)) {
+                this.dirtyEntities.get(system).delete(entity)
+            }
         }
     }
 
