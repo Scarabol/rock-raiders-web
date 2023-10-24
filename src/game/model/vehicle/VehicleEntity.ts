@@ -437,6 +437,14 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             positionComponent.markDirty()
             this.sceneEntity.position.y += positionComponent.floorOffset
         }
+        this.carriedItems.forEach((carriedItem) => {
+            const carriedPositionComponent = this.worldMgr.ecs.getComponents(carriedItem.entity).get(PositionComponent)
+            if (carriedPositionComponent) {
+                carriedItem.sceneEntity.getWorldPosition(carriedPositionComponent.position)
+                carriedPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(carriedPositionComponent.position)
+                carriedPositionComponent.markDirty()
+            }
+        })
     }
 
     getSurface(): Surface {

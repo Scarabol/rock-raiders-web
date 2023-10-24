@@ -546,6 +546,14 @@ export class Raider implements Updatable, JobFulfiller {
             positionComponent.markDirty()
             this.sceneEntity.position.y += positionComponent.floorOffset
         }
+        if (this.carries) {
+            const carriedPositionComponent = this.worldMgr.ecs.getComponents(this.carries.entity).get(PositionComponent)
+            if (carriedPositionComponent) {
+                this.carries.sceneEntity.getWorldPosition(carriedPositionComponent.position)
+                carriedPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(carriedPositionComponent.position)
+                carriedPositionComponent.markDirty()
+            }
+        }
     }
 
     getSurface(): Surface {
