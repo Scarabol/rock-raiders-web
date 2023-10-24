@@ -2,7 +2,7 @@ import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
-import { RaidersAmountChangedEvent, UpdateRadarEntities } from '../../../event/LocalEvents'
+import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 import { WorldManager } from '../../WorldManager'
@@ -37,6 +37,7 @@ import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
 import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { ScannerComponent } from '../../component/ScannerComponent'
+import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -110,6 +111,8 @@ export class Raider implements Updatable, JobFulfiller {
         EventBus.publishEvent(new GenericDeathEvent(components.get(PositionComponent)))
         components.get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
+        this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
+        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         EventBus.publishEvent(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
     }
@@ -191,7 +194,6 @@ export class Raider implements Updatable, JobFulfiller {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.setPosition(this.getPosition().add(step.vec))
             this.sceneEntity.setAnimation(this.getRouteActivity())
-            EventBus.publishEvent(new UpdateRadarEntities(this.worldMgr.entityMgr)) // TODO only send map updates not all
             if (this.foodLevel > 0) this.foodLevel -= step.vec.lengthSq() / TILESIZE / TILESIZE / 5
             this.infoComponent.setHungerIndicator(this.foodLevel)
             return MoveState.MOVED

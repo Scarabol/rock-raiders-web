@@ -4,7 +4,7 @@ import { WorldManager } from '../WorldManager'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { HealthComponent } from '../component/HealthComponent'
-import { MapMarkerComponent, MapMarkerType } from '../component/MapMarkerComponent'
+import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Vector2 } from 'three'
 import { ResourceManager } from '../../resource/ResourceManager'
@@ -22,6 +22,7 @@ import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { EventKey } from '../../event/EventKeyEnum'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { SlugBehaviorComponent, SlugBehaviorState } from '../component/SlugBehaviorComponent'
+import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
@@ -51,21 +52,23 @@ export class MonsterSpawner {
                 const batStats = ResourceManager.configuration.stats.bat
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(batStats))
                 if (batStats.RandomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - batStats.RandomMoveTime) * 1000))
-                worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
                 worldMgr.ecs.addComponent(entity, new RaiderScareComponent(RaiderScareRange.BAT))
-                worldMgr.ecs.addComponent(entity, new LastWillComponent(() => worldMgr.ecs.removeComponent(entity, RaiderScareComponent)))
+                worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
+                    worldMgr.ecs.removeComponent(entity, RaiderScareComponent)
+                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
+                }))
                 break
             case EntityType.SLUG:
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/Slug'))
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.slug))
                 worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.slug))
-                worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
                 const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, ResourceManager.getRockFallDamage(entityType)))
                 worldMgr.sceneMgr.addSprite(healthComponent.sprite)
                 worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
                     worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
                     worldMgr.ecs.getComponents(entity).get(SlugBehaviorComponent).state = SlugBehaviorState.GO_ENTER
                     sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
                 }))
                 break
             case EntityType.ICE_MONSTER:
@@ -94,7 +97,6 @@ export class MonsterSpawner {
     private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string, entityType: EntityType) {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
-        worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
         const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, ResourceManager.getRockFallDamage(entityType)))
         worldMgr.sceneMgr.addSprite(healthComponent.sprite)
         worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
@@ -109,6 +111,7 @@ export class MonsterSpawner {
                 }
                 EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
                 worldMgr.ecs.removeComponent(entity, RaiderScareComponent)
+                EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
                 worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
                 worldMgr.entityMgr.removeEntity(entity)
                 worldMgr.ecs.removeEntity(entity)

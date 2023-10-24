@@ -17,6 +17,8 @@ import { LastWillComponent } from '../component/LastWillComponent'
 import { EventBus } from '../../event/EventBus'
 import { GenericDeathEvent } from '../../event/WorldLocationEvent'
 import { BeamUpComponent } from '../component/BeamUpComponent'
+import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../component/MapMarkerComponent'
+import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 
 export class MaterialSpawner {
     static spawnMaterial(
@@ -108,6 +110,8 @@ export class MaterialSpawner {
         if (material.sceneEntity.visible) {
             material.setupCarryJob()
             worldMgr.entityMgr.materials.add(material) // TODO use game entities within entity manager
+            worldMgr.ecs.addComponent(material.entity, new MapMarkerComponent(MapMarkerType.MATERIAL))
+            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, material.entity, MapMarkerChange.UPDATE, floorPosition))
         } else {
             worldMgr.entityMgr.materialsUndiscovered.add(material) // TODO use game entities within entity manager
         }

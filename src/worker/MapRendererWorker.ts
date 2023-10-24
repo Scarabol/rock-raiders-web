@@ -36,9 +36,8 @@ export class MapRendererWorker {
     entityContext: SpriteContext
     monsterContext: SpriteContext
     materialContext: SpriteContext
-    renderDefaultBlocked: NodeJS.Timeout
-    renderMonsterBlocked: NodeJS.Timeout
-    renderMaterialBlocked: NodeJS.Timeout
+    blocked: Set<MapMarkerType> = new Set()
+    markedDirty: Map<MapMarkerType, MapRendererRenderMessage> = new Map()
 
     constructor(readonly worker: TypedWorkerBackend<MapRendererMessage, MapRendererResponse>) {
         this.worker.onMessageFromFrontend = (msg) => this.processMessage(msg)
@@ -61,28 +60,40 @@ export class MapRendererWorker {
                 case WorkerMessageType.MAP_RENDER_ENTITIES:
                     switch (msg.mapMarkerType) {
                         case MapMarkerType.DEFAULT:
-                            if (!this.renderDefaultBlocked) {
-                                this.renderDefaultBlocked = setTimeout(() => this.renderDefaultBlocked = null, MAP_MAX_UPDATE_INTERVAL)
-                                this.redrawEntities(this.entityContext, '#e8d400', msg.offset, msg.entities, msg.surfaceRectSize, 4)
-                            }
+                            this.redrawEntitiesContext(msg, this.entityContext, '#e8d400', 4)
                             break
                         case MapMarkerType.MONSTER:
-                            if (!this.renderMonsterBlocked) {
-                                this.renderMonsterBlocked = setTimeout(() => this.renderMonsterBlocked = null, MAP_MAX_UPDATE_INTERVAL)
-                                this.redrawEntities(this.monsterContext, '#f00', msg.offset, msg.entities, msg.surfaceRectSize, 3)
-                            }
+                            this.redrawEntitiesContext(msg, this.monsterContext, '#f00', 3)
                             break
                         case MapMarkerType.MATERIAL:
-                            if (!this.renderMaterialBlocked) {
-                                this.renderMaterialBlocked = setTimeout(() => this.renderMaterialBlocked = null, MAP_MAX_UPDATE_INTERVAL)
-                                this.redrawEntities(this.materialContext, '#0f0', msg.offset, msg.entities, msg.surfaceRectSize, 2)
-                            }
+                            this.redrawEntitiesContext(msg, this.materialContext, '#0f0', 2)
                             break
                     }
                     break
             }
             this.worker.sendResponse({type: WorkerMessageType.RESPONSE_MAP_RENDERER, requestId: msg.requestId})
         }
+    }
+
+    private redrawEntitiesContext(msg: MapRendererRenderMessage, context: SpriteContext, rectColor: string, rectSize: number) {
+        if (this.blocked.has(msg.mapMarkerType)) {
+            this.markedDirty.set(msg.mapMarkerType, msg)
+            return
+        }
+        this.blocked.add(msg.mapMarkerType)
+        setTimeout(() => {
+            this.blocked.delete(msg.mapMarkerType)
+            const dirty = this.markedDirty.get(msg.mapMarkerType)
+            this.markedDirty.delete(msg.mapMarkerType)
+            if (dirty) this.redrawEntitiesContext(dirty, context, rectColor, rectSize)
+        }, MAP_MAX_UPDATE_INTERVAL)
+        context.clearRect(0, 0, context.canvas.width, context.canvas.height)
+        context.fillStyle = rectColor
+        msg.entities.forEach((e) => {
+            const x = Math.round(e.x * msg.surfaceRectSize / TILESIZE - msg.offset.x - rectSize / 2)
+            const y = Math.round(e.z * msg.surfaceRectSize / TILESIZE - msg.offset.y - rectSize / 2)
+            context.fillRect(x, y, rectSize, rectSize)
+        })
     }
 
     private isInitMessage(msg?: MapRendererMessage): msg is MapRendererInitMessage {
@@ -115,17 +126,6 @@ export class MapRendererWorker {
             this.surfaceContext.fillStyle = surfaceRect.surfaceColor
             this.surfaceContext.fillRect(surfaceX, surfaceY, rectSize, rectSize)
         }
-    }
-
-    private redrawEntities(entityContext: SpriteContext, color: string, offset: { x: number; y: number }, entities: { x: number; z: number }[], surfaceRectSize: number, size: number) {
-        entityContext.clearRect(0, 0, entityContext.canvas.width, entityContext.canvas.height)
-        entityContext.fillStyle = color
-        const rectSize = Math.round(size)
-        entities.forEach((e) => {
-            const x = Math.round(e.x * surfaceRectSize / TILESIZE - offset.x - size / 2)
-            const y = Math.round(e.z * surfaceRectSize / TILESIZE - offset.y - size / 2)
-            entityContext.fillRect(x, y, rectSize, rectSize)
-        })
     }
 }
 

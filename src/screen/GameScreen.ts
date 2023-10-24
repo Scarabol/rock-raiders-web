@@ -79,7 +79,7 @@ export class GameScreen {
         // load in non-space objects next
         const objectList = ResourceManager.getResource(this.levelConf.oListFile)
         new ObjectListLoader(this.worldMgr, this.levelConf.disableStartTeleport || DEV_MODE).loadObjectList(objectList)
-        EventBus.publishEvent(new InitRadarMap(this.sceneMgr.controls.target.clone(), this.sceneMgr.terrain, this.entityMgr))
+        EventBus.publishEvent(new InitRadarMap(this.sceneMgr.controls.target.clone(), this.sceneMgr.terrain))
         this.show()
     }
 

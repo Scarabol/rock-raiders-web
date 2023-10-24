@@ -1,7 +1,7 @@
 import { Vector2, Vector3 } from 'three'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged } from '../event/LocalEvents'
+import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, UpdateRadarEntityEvent } from '../event/LocalEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, MAX_RAIDER_BASE, TILESIZE } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
@@ -22,6 +22,7 @@ import { RockMonsterActivity } from './model/anim/AnimationActivity'
 import { MonsterStatsComponent } from './component/MonsterStatsComponent'
 import { WorldManager } from './WorldManager'
 import { HealthComponent } from './component/HealthComponent'
+import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/MapMarkerComponent'
 
 export class EntityManager {
     ecs: ECS
@@ -184,7 +185,10 @@ export class EntityManager {
         const numRaidersUndiscovered = this.raidersUndiscovered.length
         this.raidersUndiscovered = EntityManager.removeInRect(this.raidersUndiscovered, minX, maxX, minZ, maxZ, (r) => {
             r.worldMgr.entityMgr.raiders.push(r)
-            EventBus.publishEvent(new RaiderDiscoveredEvent(r.worldMgr.ecs.getComponents(r.entity).get(PositionComponent)))
+            const positionComponent = r.worldMgr.ecs.getComponents(r.entity).get(PositionComponent)
+            EventBus.publishEvent(new RaiderDiscoveredEvent(positionComponent))
+            this.worldMgr.ecs.addComponent(r.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
+            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, r.entity, MapMarkerChange.UPDATE, positionComponent.position))
         })
         if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBus.publishEvent(new RaidersAmountChangedEvent(this))
         this.buildingsUndiscovered = EntityManager.removeInRect(this.buildingsUndiscovered, minX, maxX, minZ, maxZ, (b) => {
@@ -195,6 +199,9 @@ export class EntityManager {
         this.materialsUndiscovered = EntityManager.removeInRect(this.materialsUndiscovered, minX, maxX, minZ, maxZ, (m) => {
             m.worldMgr.entityMgr.materials.push(m)
             m.setupCarryJob()
+            const positionComponent = m.worldMgr.ecs.getComponents(m.entity).get(PositionComponent)
+            m.worldMgr.ecs.addComponent(m.entity, new MapMarkerComponent(MapMarkerType.MATERIAL))
+            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, m.entity, MapMarkerChange.UPDATE, positionComponent.position))
         })
         this.vehiclesUndiscovered = EntityManager.removeInRect(this.vehiclesUndiscovered, minX, maxX, minZ, maxZ, (v) => {
             v.worldMgr.entityMgr.vehicles.push(v)
@@ -203,8 +210,14 @@ export class EntityManager {
                 driver.worldMgr.entityMgr.raidersUndiscovered.remove(driver)
                 driver.sceneEntity.visible = true
                 driver.worldMgr.entityMgr.raiders.push(driver)
-                EventBus.publishEvent(new RaiderDiscoveredEvent(driver.worldMgr.ecs.getComponents(driver.entity).get(PositionComponent)))
+                const positionComponent = driver.worldMgr.ecs.getComponents(driver.entity).get(PositionComponent)
+                EventBus.publishEvent(new RaiderDiscoveredEvent(positionComponent))
+                this.worldMgr.ecs.addComponent(driver.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
+                EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, driver.entity, MapMarkerChange.UPDATE, positionComponent.position))
             }
+            const positionComponent = v.worldMgr.ecs.getComponents(v.entity).get(PositionComponent)
+            this.worldMgr.ecs.addComponent(v.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
+            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, v.entity, MapMarkerChange.UPDATE, positionComponent.position))
         })
         this.undiscoveredSpiders = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
             this.spiders.push(m)
@@ -268,8 +281,14 @@ export class EntityManager {
         const discovered = this.ecs.getComponents(entity).get(PositionComponent)?.isDiscovered()
         switch (entityType) {
             case EntityType.BAT:
-                if (discovered) this.bats.add(entity)
-                else this.undiscoveredBats.add(entity)
+                if (discovered) {
+                    this.bats.add(entity)
+                    const positionComponent = this.ecs.getComponents(entity).get(PositionComponent)
+                    this.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
+                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
+                } else {
+                    this.undiscoveredBats.add(entity)
+                }
                 break
             case EntityType.SMALL_SPIDER:
                 if (discovered) this.spiders.add(entity)
@@ -278,12 +297,21 @@ export class EntityManager {
             case EntityType.SLUG:
                 if (!discovered) console.warn('Slugs should not spawn on undiscovered surfaces!')
                 this.slugs.add(entity)
+                const positionComponent = this.ecs.getComponents(entity).get(PositionComponent)
+                this.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
+                EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
                 break
             case EntityType.ROCK_MONSTER:
             case EntityType.ICE_MONSTER:
             case EntityType.LAVA_MONSTER:
-                if (discovered) this.rockMonsters.add(entity)
-                else this.undiscoveredRockMonsters.add(entity)
+                if (discovered) {
+                    this.rockMonsters.add(entity)
+                    const positionComponent = this.ecs.getComponents(entity).get(PositionComponent)
+                    this.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
+                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
+                } else {
+                    this.undiscoveredRockMonsters.add(entity)
+                }
                 break
             case EntityType.ORE | EntityType.CRYSTAL | EntityType.BRICK | EntityType.BARRIER | EntityType.DYNAMITE | EntityType.ELECTRIC_FENCE:
                 // if (discovered) this.materials.add(entity) // TODO use game entities within entity manager

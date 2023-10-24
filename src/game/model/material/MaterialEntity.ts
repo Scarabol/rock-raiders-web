@@ -12,6 +12,8 @@ import { PriorityIdentifier } from '../job/PriorityIdentifier'
 import { RaiderTraining } from '../raider/RaiderTraining'
 import { Vector2, Vector3 } from 'three'
 import { PositionComponent } from '../../component/PositionComponent'
+import { UpdateRadarEntityEvent } from '../../../event/LocalEvents'
+import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
 
 export class MaterialEntity {
     entity: GameEntity
@@ -40,6 +42,8 @@ export class MaterialEntity {
 
     disposeFromWorld() {
         if (this.carryJob) this.carryJob.jobState = JobState.CANCELED
+        this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
+        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.sceneEntity.dispose()
         this.worldMgr.entityMgr.removeEntity(this.entity)

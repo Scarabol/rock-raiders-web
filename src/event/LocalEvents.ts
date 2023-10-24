@@ -179,33 +179,13 @@ export class UpgradeVehicleCompleteEvent extends LocalEvent {
 export class InitRadarMap extends LocalEvent {
     focusTile: { x: number, y: number } = null
     surfaces: MapSurfaceRect[] = []
-    entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number }>> = new Map() // no Vectors, because of serialization
 
-    constructor(mapFocus: Vector3, terrain: Terrain, entityMgr: EntityManager) {
+    constructor(mapFocus: Vector3, terrain: Terrain) {
         super(EventKey.INIT_RADAR_MAP)
         this.focusTile = {x: Math.floor(mapFocus.x / TILESIZE), y: Math.floor(mapFocus.z / TILESIZE)}
         terrain.forEachSurface((s) => {
             if (s.discovered || s.scanned) this.surfaces.push(new MapSurfaceRect(s))
         })
-        const entities = new Map()
-        entityMgr.raiders.forEach((r) => {
-            const position = r.getPosition()
-            return entities.set(r.entity, {x: position.x, z: position.z})
-        })
-        entityMgr.vehicles.forEach((v) => {
-            const position = v.getPosition()
-            return entities.set(v.entity, {x: position.x, z: position.z})
-        })
-        this.entitiesByOrder.set(MapMarkerType.DEFAULT, entities)
-        const materials = new Map()
-        const tmpWorldPosition = new Vector3()
-        entityMgr.materials.forEach((m) => {
-            if (m.entityType !== EntityType.BARRIER) {
-                m.sceneEntity.getWorldPosition(tmpWorldPosition)
-                materials.set(m.entity, {x: tmpWorldPosition.x, z: tmpWorldPosition.z})
-            }
-        })
-        this.entitiesByOrder.set(MapMarkerType.MATERIAL, materials)
     }
 }
 
@@ -238,35 +218,8 @@ export class UpdatePriorities extends LocalEvent {
     }
 }
 
-export class UpdateRadarEntities extends LocalEvent {
-    entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number }>> = new Map() // no Vectors, because of serialization
-
-    constructor(entityMgr: EntityManager) {
-        super(EventKey.UPDATE_RADAR_LEGACY_ENTITIES)
-        const entities = new Map()
-        entityMgr.raiders.forEach((r) => {
-            const position = r.getPosition()
-            return entities.set(r.entity, {x: position.x, z: position.z})
-        })
-        entityMgr.vehicles.forEach((v) => {
-            const position = v.getPosition()
-            return entities.set(v.entity, {x: position.x, z: position.z})
-        })
-        this.entitiesByOrder.set(MapMarkerType.DEFAULT, entities)
-        const materials = new Map()
-        const tmpWorldPosition = new Vector3()
-        entityMgr.materials.forEach((m) => {
-            if (m.entityType !== EntityType.BARRIER) {
-                m.sceneEntity.getWorldPosition(tmpWorldPosition)
-                materials.set(m.entity, {x: tmpWorldPosition.x, z: tmpWorldPosition.z})
-            }
-        })
-        this.entitiesByOrder.set(MapMarkerType.MATERIAL, materials)
-    }
-}
-
 export class UpdateRadarEntityEvent extends LocalEvent {
-    constructor(readonly mapMarkerType: MapMarkerType, readonly entity: GameEntity, readonly change: MapMarkerChange, readonly position: { x: number, z: number }) {
+    constructor(readonly mapMarkerType: MapMarkerType, readonly entity: GameEntity, readonly change: MapMarkerChange, readonly position?: { x: number, z: number }) {
         super(EventKey.UPDATE_RADAR_ENTITY)
     }
 }

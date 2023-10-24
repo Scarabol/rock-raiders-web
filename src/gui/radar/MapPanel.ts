@@ -1,7 +1,7 @@
 import { createCanvas } from '../../core/ImageHelper'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
-import { InitRadarMap, UpdateRadarEntities, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
+import { InitRadarMap, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { MapMarkerChange, MapMarkerType } from '../../game/component/MapMarkerComponent'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
@@ -48,7 +48,6 @@ export class MapPanel extends Panel {
                 this.surfaceMap[s.x] = this.surfaceMap[s.x] || []
                 this.surfaceMap[s.x][s.y] = s
             })
-            this.entitiesByOrder = event.entitiesByOrder
             this.redrawAll()
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_TERRAIN, (event: UpdateRadarTerrain) => {
@@ -64,13 +63,6 @@ export class MapPanel extends Panel {
             this.surfaceMap[s.x] = this.surfaceMap[s.x] || []
             this.surfaceMap[s.x][s.y] = s
             this.mapRenderer.redrawSurface(this.offset, this.surfaceRectSize, event.surfaceRect).then(() => this.notifyRedraw())
-        })
-        this.registerEventListener(EventKey.UPDATE_RADAR_LEGACY_ENTITIES, (event: UpdateRadarEntities) => {
-            this.entitiesByOrder = event.entitiesByOrder
-            Promise.all([
-                this.mapRenderer.redrawEntities(this.offset, MapMarkerType.DEFAULT, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.DEFAULT, () => new Map()).values())),
-                this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MATERIAL, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MATERIAL, () => new Map()).values())),
-            ]).then(() => this.notifyRedraw())
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_ENTITY, (event: UpdateRadarEntityEvent) => {
             const entities = this.entitiesByOrder.getOrUpdate(event.mapMarkerType, () => new Map())

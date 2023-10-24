@@ -1,7 +1,7 @@
 import { MathUtils, Vector2 } from 'three'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { EventBus } from '../event/EventBus'
-import { RaidersAmountChangedEvent } from '../event/LocalEvents'
+import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { EntityType, getEntityTypeByName, VehicleEntityType } from './model/EntityType'
@@ -16,6 +16,7 @@ import { MaterialSpawner } from './entity/MaterialSpawner'
 import { AnimEntityActivity } from './model/anim/AnimationActivity'
 import { PositionComponent } from './component/PositionComponent'
 import { RaiderTrainings } from './model/raider/RaiderTraining'
+import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/MapMarkerComponent'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -150,6 +151,8 @@ export class ObjectListLoader {
         this.worldMgr.sceneMgr.addMeshGroup(raider.sceneEntity)
         if (raider.sceneEntity.visible) {
             this.worldMgr.entityMgr.raiders.push(raider)
+            this.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
+            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, raider.entity, MapMarkerChange.UPDATE, floorPosition))
         } else {
             this.worldMgr.entityMgr.raidersUndiscovered.push(raider)
         }
@@ -171,6 +174,8 @@ export class ObjectListLoader {
         this.worldMgr.sceneMgr.addMeshGroup(vehicle.sceneEntity)
         if (vehicle.sceneEntity.visible) {
             this.worldMgr.entityMgr.vehicles.push(vehicle)
+            this.worldMgr.ecs.addComponent(vehicle.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
+            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, vehicle.entity, MapMarkerChange.UPDATE, floorPosition))
         } else {
             this.worldMgr.entityMgr.vehiclesUndiscovered.push(vehicle)
         }

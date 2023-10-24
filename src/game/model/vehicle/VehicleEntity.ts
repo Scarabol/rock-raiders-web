@@ -3,7 +3,7 @@ import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
-import { SelectionChanged, UpdateRadarEntities } from '../../../event/LocalEvents'
+import { SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { DEV_MODE, ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL } from '../../../params'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../anim/AnimationActivity'
@@ -39,6 +39,7 @@ import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderSc
 import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { ScannerComponent } from '../../component/ScannerComponent'
+import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -108,6 +109,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         EventBus.publishEvent(new GenericDeathEvent(components.get(PositionComponent)))
         components.get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
+        this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
+        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         if (this.driver) this.worldMgr.entityMgr.removeEntity(this.driver.entity)
         this.worldMgr.entityMgr.removeEntity(this.entity)
@@ -177,7 +180,6 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             this.sceneEntity.headTowards(this.currentPath.firstLocation)
             this.setPosition(this.getPosition().add(step.vec))
             this.sceneEntity.setAnimation(AnimEntityActivity.Route)
-            EventBus.publishEvent(new UpdateRadarEntities(this.worldMgr.entityMgr)) // TODO only send map updates not all
             const angle = elapsedMs * this.getSpeed() / 1000 * 4 * Math.PI
             this.sceneEntity.wheelJoints.forEach((w) => w.radius && w.mesh.rotateX(angle / w.radius))
             return MoveState.MOVED
