@@ -24,7 +24,6 @@ export class BitmapFontSystem extends AbstractWorkerSystem<BitmapFontWorkerReque
     private readonly fontCache: Map<string, BitmapFont> = new Map()
 
     onMessageFromFrontend(workerRequestHash: string, request: BitmapFontWorkerRequest) {
-        if (!request) return
         switch (request.type) {
             case BitmapFontWorkerRequestType.ADD_FONT:
                 this.fontCache.set(request.fontName.toLowerCase(), new BitmapFont(request.fontData))

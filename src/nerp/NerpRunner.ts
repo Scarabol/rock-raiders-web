@@ -423,7 +423,7 @@ export class NerpRunner {
     }
 
     setGameSpeed(speed: number, unknown: number): void {
-        // TODO Only used in tutorials, implement changeable game speed first
+        // XXX Only used in tutorials, implement changeable game speed first
     }
 
     callMethod(methodName: string, methodArgs: any[]) {

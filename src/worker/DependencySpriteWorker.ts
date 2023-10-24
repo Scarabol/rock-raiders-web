@@ -35,7 +35,6 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
     equalsSignImg: SpriteImage
 
     onMessageFromFrontend(workerRequestHash: string, request: DependencySpriteWorkerRequest): void {
-        if (!request) return // TODO all worker receive the same messages
         switch (request.type) {
             case DependencySpriteWorkerRequestType.SETUP:
                 this.upgradeNames = request.upgradeNames

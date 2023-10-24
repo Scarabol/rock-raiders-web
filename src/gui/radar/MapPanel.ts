@@ -35,7 +35,7 @@ export class MapPanel extends Panel {
         this.relY = this.yIn = this.yOut = 15
         this.onClick = (cx: number, cy: number) => {
             const surfaceScale = this.surfaceRectSizeMin / this.surfaceRectSize
-            // TODO limit offsets
+            // TODO limit radar map panel offsets
             this.offset.x += (cx - this.x - this.width / 2) * surfaceScale
             this.offset.y += (cy - this.y - this.height / 2) * surfaceScale
             this.redrawAll()

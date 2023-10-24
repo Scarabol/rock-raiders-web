@@ -205,7 +205,7 @@ export class Raider implements Updatable, JobFulfiller {
         targetWorld.y += this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent)?.floorOffset ?? 0
         const step = new EntityStep(targetWorld.sub(this.getPosition()))
         const stepLengthSq = step.vec.lengthSq()
-        const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // TODO use average speed between current and target position
+        const entitySpeed = this.getSpeed() * elapsedMs / NATIVE_UPDATE_INTERVAL // XXX use average speed between current and target position
         const entitySpeedSq = entitySpeed * entitySpeed
         if (this.currentPath.locations.length > 1) {
             if (stepLengthSq <= entitySpeedSq) {
