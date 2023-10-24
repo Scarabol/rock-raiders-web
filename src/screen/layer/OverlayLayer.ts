@@ -5,7 +5,7 @@ import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
 import { OptionsPanel } from '../../gui/overlay/OptionsPanel'
 import { PausePanel } from '../../gui/overlay/PausePanel'
 import { DEV_MODE } from '../../params'
-import { ChangeCursor, GuiCommand } from '../../event/GuiCommand'
+import { ChangeCursor, ChangeTooltip, GuiCommand } from '../../event/GuiCommand'
 import { GameEvent } from '../../event/GameEvent'
 import { Panel } from '../../gui/base/Panel'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
@@ -88,7 +88,11 @@ export class OverlayLayer extends ScaledLayer {
 
     setActivePanel(panel: Panel) {
         this.panels.forEach(p => p !== panel && p.hide())
-        panel?.show()
+        if (panel) {
+            panel.show()
+            EventBus.publishEvent(new ChangeCursor(Cursor.STANDARD))
+            EventBus.publishEvent(new ChangeTooltip('', 0, '', 0))
+        }
         EventBus.publishEvent(new GuiCommand(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
         this.animationFrame.notifyRedraw()
     }
@@ -107,17 +111,13 @@ export class OverlayLayer extends ScaledLayer {
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (this.panels.every(p => p.hidden)) return false
-        const hit = this.animationFrame.isOpaque(event.canvasX, event.canvasY)
-        if (hit) {
-            EventBus.publishEvent(new ChangeCursor(Cursor.STANDARD)) // TODO don't spam so many events?!
-            if (event.eventEnum === POINTER_EVENT.MOVE) {
-                this.rootElement.checkHover(new GuiHoverEvent(event.canvasX, event.canvasY))
-            } else if (event.eventEnum === POINTER_EVENT.DOWN) {
-                this.rootElement.checkClick(new GuiClickEvent(event.canvasX, event.canvasY, event.button))
-            } else if (event.eventEnum === POINTER_EVENT.UP) {
-                this.rootElement.checkRelease(new GuiReleaseEvent(event.canvasX, event.canvasY, event.button))
-            }
-        } else if (event.eventEnum === POINTER_EVENT.MOVE || event.eventEnum === POINTER_EVENT.LEAVE) {
+        if (event.eventEnum === POINTER_EVENT.MOVE) {
+            this.rootElement.checkHover(new GuiHoverEvent(event.canvasX, event.canvasY))
+        } else if (event.eventEnum === POINTER_EVENT.DOWN) {
+            this.rootElement.checkClick(new GuiClickEvent(event.canvasX, event.canvasY, event.button))
+        } else if (event.eventEnum === POINTER_EVENT.UP) {
+            this.rootElement.checkRelease(new GuiReleaseEvent(event.canvasX, event.canvasY, event.button))
+        } else if (event.eventEnum === POINTER_EVENT.LEAVE) {
             this.rootElement.release()
         }
         return true
