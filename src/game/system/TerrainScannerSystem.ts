@@ -1,8 +1,9 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { ScannerComponent } from '../component/ScannerComponent'
 import { EventBus } from '../../event/EventBus'
-import { UpdateRadarTerrain } from '../../event/LocalEvents'
+import { UpdateRadarEntityEvent, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { WorldManager } from '../WorldManager'
+import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
 
 export class TerrainScannerSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([ScannerComponent])
@@ -19,8 +20,9 @@ export class TerrainScannerSystem extends AbstractGameSystem {
                 const scannerComponent = components.get(ScannerComponent)
                 if (scannerComponent.scanDelay > 0) {
                     scannerComponent.scanDelay -= elapsedMs
+                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.UPDATE, scannerComponent.origin.position, 1 - (scannerComponent.scanDelay % 1000) / 1000))
                 } else {
-                    // TODO visualize scan on map
+                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.REMOVE))
                     scannerComponent.scanDelay = 5000
                     const origin = scannerComponent.origin.surface
                     for (let dx = -scannerComponent.range - 1; dx <= scannerComponent.range; dx++) {

@@ -219,7 +219,7 @@ export class UpdatePriorities extends LocalEvent {
 }
 
 export class UpdateRadarEntityEvent extends LocalEvent {
-    constructor(readonly mapMarkerType: MapMarkerType, readonly entity: GameEntity, readonly change: MapMarkerChange, readonly position?: { x: number, z: number }) {
+    constructor(readonly mapMarkerType: MapMarkerType, readonly entity: GameEntity, readonly change: MapMarkerChange, readonly position?: { x: number, z: number }, readonly radius?: number) {
         super(EventKey.UPDATE_RADAR_ENTITY)
     }
 }

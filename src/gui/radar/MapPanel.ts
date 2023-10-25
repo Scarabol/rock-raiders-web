@@ -15,9 +15,10 @@ export class MapPanel extends Panel {
     readonly entitySprite: SpriteImage
     readonly monsterSprite: SpriteImage
     readonly materialSprite: SpriteImage
+    readonly geoScanSprite: SpriteImage
     readonly offset: { x: number, y: number } = {x: 0, y: 0}
     readonly surfaceMap: MapSurfaceRect[][] = []
-    entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number }>> = new Map()
+    entitiesByOrder: Map<MapMarkerType, Map<GameEntity, { x: number, z: number, r: number }>> = new Map()
     surfaceRectSizeMin: number = 10
     surfaceRectSizeMax: number = 15
     surfaceRectSize: number = 10
@@ -30,7 +31,8 @@ export class MapPanel extends Panel {
         this.entitySprite = createCanvas(this.width, this.height)
         this.monsterSprite = createCanvas(this.width, this.height)
         this.materialSprite = createCanvas(this.width, this.height)
-        this.mapRenderer = new MapRenderer(this.surfaceSprite, this.entitySprite, this.monsterSprite, this.materialSprite)
+        this.geoScanSprite = createCanvas(this.width, this.height)
+        this.mapRenderer = new MapRenderer(this.surfaceSprite, this.entitySprite, this.monsterSprite, this.materialSprite, this.geoScanSprite)
         this.relX = this.xIn = this.xOut = 15
         this.relY = this.yIn = this.yOut = 15
         this.onClick = (cx: number, cy: number) => {
@@ -68,7 +70,7 @@ export class MapPanel extends Panel {
             const entities = this.entitiesByOrder.getOrUpdate(event.mapMarkerType, () => new Map())
             switch (event.change) {
                 case MapMarkerChange.UPDATE:
-                    entities.set(event.entity, event.position)
+                    entities.set(event.entity, {...event.position, r: event.radius})
                     break
                 case MapMarkerChange.REMOVE:
                     entities.delete(event.entity)
@@ -102,6 +104,7 @@ export class MapPanel extends Panel {
             this.mapRenderer.redrawEntities(this.offset, MapMarkerType.DEFAULT, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.DEFAULT, () => new Map()).values())),
             this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MONSTER, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MONSTER, () => new Map()).values())),
             this.mapRenderer.redrawEntities(this.offset, MapMarkerType.MATERIAL, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.MATERIAL, () => new Map()).values())),
+            this.mapRenderer.redrawEntities(this.offset, MapMarkerType.SCANNER, this.surfaceRectSize, Array.from(this.entitiesByOrder.getOrUpdate(MapMarkerType.SCANNER, () => new Map()).values())),
         ]).then(() => this.notifyRedraw())
     }
 
@@ -112,5 +115,6 @@ export class MapPanel extends Panel {
         context.drawImage(this.entitySprite, this.x, this.y)
         context.drawImage(this.monsterSprite, this.x, this.y)
         context.drawImage(this.materialSprite, this.x, this.y)
+        context.drawImage(this.geoScanSprite, this.x, this.y)
     }
 }

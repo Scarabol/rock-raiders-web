@@ -2,7 +2,7 @@ import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { resetAudioSafe } from '../../../audio/AudioUtil'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
-import { BuildingsChangedEvent, DeselectAll, SelectionChanged } from '../../../event/LocalEvents'
+import { BuildingsChangedEvent, DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { MaterialAmountChanged, UsedCrystalsChanged } from '../../../event/WorldEvents'
 import { DEV_MODE, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -29,6 +29,7 @@ import { OxygenComponent } from '../../component/OxygenComponent'
 import { PositionComponent } from '../../component/PositionComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
 import { ScannerComponent } from '../../component/ScannerComponent'
+import { MapMarkerChange, MapMarkerType } from '../../component/MapMarkerComponent'
 
 export class BuildingEntity {
     readonly carriedItems: MaterialEntity[] = []
@@ -167,6 +168,8 @@ export class BuildingEntity {
         this.sceneEntity.setAnimation(BuildingActivity.Stand)
         this.powerOffSprite.setEnabled(false)
         this.surfaces.forEach((s) => s.setBuilding(null))
+        this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
+        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }

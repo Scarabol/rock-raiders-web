@@ -111,6 +111,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
         EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.entity, MapMarkerChange.REMOVE))
+        this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
+        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         if (this.driver) this.worldMgr.entityMgr.removeEntity(this.driver.entity)
         this.worldMgr.entityMgr.removeEntity(this.entity)

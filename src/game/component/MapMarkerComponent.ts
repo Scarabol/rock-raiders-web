@@ -4,6 +4,7 @@ export enum MapMarkerType {
     DEFAULT = 1,
     MONSTER,
     MATERIAL,
+    SCANNER,
 }
 
 export enum MapMarkerChange {
