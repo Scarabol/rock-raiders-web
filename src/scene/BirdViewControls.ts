@@ -32,22 +32,6 @@ export class BirdViewControls extends MapControls {
             this.minPolarAngle = Math.PI / 2 - degToRad(ResourceManager.configuration.main.maxTilt)
             this.maxPolarAngle = Math.PI / 2 - degToRad(ResourceManager.configuration.main.minTilt)
         }
-        this.rewriteWASDToArrowKeys() // TODO WASD also used as keyboard shortcuts for icon panels
-    }
-
-    private rewriteWASDToArrowKeys() {
-        [['KeyW', 'ArrowUp'], ['KeyA', 'ArrowLeft'], ['KeyS', 'ArrowDown'], ['KeyD', 'ArrowRight']].forEach((pair) => {
-            this.domElement.addEventListener('keydown', (event: KeyboardEvent) => {
-                if (event.code === pair[0]) {
-                    this.domElement.dispatchEvent(new KeyboardEvent(event.type, {...event, code: pair[1], key: pair[1]}))
-                }
-            })
-            this.domElement.addEventListener('keyup', (event: KeyboardEvent) => {
-                if (event.code === pair[0]) {
-                    this.domElement.dispatchEvent(new KeyboardEvent(event.type, {...event, code: pair[1], key: pair[1]}))
-                }
-            })
-        })
     }
 
     zoom(zoom: number) {

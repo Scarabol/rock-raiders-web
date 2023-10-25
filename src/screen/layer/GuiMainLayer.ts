@@ -15,7 +15,7 @@ import { GameEvent } from '../../event/GameEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { TOOLTIP_FONT_NAME } from '../../params'
 import { Cursor } from '../../resource/Cursor'
-import { POINTER_EVENT } from '../../event/EventTypeEnum'
+import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/GuiEvent'
 import { EventBus } from '../../event/EventBus'
 import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
@@ -23,6 +23,7 @@ import { ToggleAlarmEvent } from '../../event/WorldEvents'
 import { ShowOptionsEvent } from '../../event/LocalEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
+import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 
 export class GuiMainLayer extends ScaledLayer {
     rootElement: BaseElement = new BaseElement(null)
@@ -102,6 +103,15 @@ export class GuiMainLayer extends ScaledLayer {
                 return this.handlePointerEvent(gameEvent)
             })
         })
+        new Map<keyof HTMLElementEventMap, KEY_EVENT>([
+            ['keydown', KEY_EVENT.DOWN],
+            ['keyup', KEY_EVENT.UP],
+        ]).forEach((eventEnum, eventType) => {
+            this.addEventListener(eventType, (event: KeyboardEvent): boolean => {
+                const gameEvent = new GameKeyboardEvent(eventEnum, event)
+                return this.handleKeyEvent(gameEvent)
+            })
+        })
         this.addEventListener('wheel', (event: WheelEvent): boolean => {
             const gameEvent = new GameWheelEvent(event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
@@ -136,5 +146,17 @@ export class GuiMainLayer extends ScaledLayer {
             this.rootElement.release()
         }
         return hit
+    }
+
+    handleKeyEvent(event: GameKeyboardEvent): boolean {
+        if (this.panelMain.movedIn) return false
+        const activeSubPanels = this.panelMain.subPanels.filter((p) => !p.movedIn)
+        const activeIconPanelButtons = activeSubPanels.flatMap((p) => p.iconPanelButtons)
+        const buttonWithKey = activeIconPanelButtons.find((b) => b.hotkey === event.key)
+        if (buttonWithKey && !buttonWithKey.isInactive()) {
+            if (event.eventEnum === KEY_EVENT.UP) buttonWithKey.onClick()
+            return true
+        }
+        return false
     }
 }
