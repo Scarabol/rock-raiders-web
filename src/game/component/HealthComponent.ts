@@ -3,11 +3,13 @@ import { HealthBarSprite } from '../../scene/HealthBarSprite'
 import { Object3D } from 'three'
 import { EventBus } from '../../event/EventBus'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
+import { HealthFontSprite } from '../../scene/HealthFontSprite'
 
 export class HealthComponent extends AbstractGameComponent {
+    readonly healthBarSprite: HealthBarSprite = null
+    readonly healthFontSprite: HealthFontSprite = null
     health: number = 100
     maxHealth: number = 100
-    sprite: HealthBarSprite = null
 
     constructor(
         readonly triggerAlarm: boolean,
@@ -18,8 +20,10 @@ export class HealthComponent extends AbstractGameComponent {
         public rockFallDamage: number,
     ) {
         super()
-        this.sprite = new HealthBarSprite(yOffset, scale, canBeShownPermanently)
-        parent.add(this.sprite)
+        this.healthBarSprite = new HealthBarSprite(yOffset, scale, canBeShownPermanently)
+        parent.add(this.healthBarSprite)
+        this.healthFontSprite = new HealthFontSprite(yOffset, scale)
+        parent.add(this.healthFontSprite)
     }
 
     changeHealth(delta: number) {
@@ -27,10 +31,10 @@ export class HealthComponent extends AbstractGameComponent {
         if (this.health === nextHealth) return
         this.health = nextHealth
         if (delta < 0) {
-            console.warn(`Damage (${delta}) visualization not yet implemented`) // TODO replace with flying number of interface/fonts/healthfont visualizing the damage
+            this.healthFontSprite.setNumber(delta)
             if (this.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
         }
-        this.sprite.setTargetStatus(this.health / this.maxHealth)
+        this.healthBarSprite.setTargetStatus(this.health / this.maxHealth)
         this.markDirty()
     }
 }

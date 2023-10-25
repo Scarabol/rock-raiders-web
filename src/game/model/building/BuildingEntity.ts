@@ -64,7 +64,8 @@ export class BuildingEntity {
         this.worldMgr.sceneMgr.addSprite(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
         const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false, ResourceManager.getRockFallDamage(entityType, this.level)))
-        this.worldMgr.sceneMgr.addSprite(healthComponent.sprite)
+        this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
+        this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => {
             this.worldMgr.entityMgr.removeEntity(this.entity)

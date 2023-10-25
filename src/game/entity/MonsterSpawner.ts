@@ -63,7 +63,8 @@ export class MonsterSpawner {
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.slug))
                 worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.slug))
                 const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, ResourceManager.getRockFallDamage(entityType)))
-                worldMgr.sceneMgr.addSprite(healthComponent.sprite)
+                worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
+                worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
                 worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
                     worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
                     worldMgr.ecs.getComponents(entity).get(SlugBehaviorComponent).state = SlugBehaviorState.GO_ENTER
@@ -98,7 +99,8 @@ export class MonsterSpawner {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
         const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, ResourceManager.getRockFallDamage(entityType)))
-        worldMgr.sceneMgr.addSprite(healthComponent.sprite)
+        worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
+        worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
             const components = worldMgr.ecs.getComponents(entity)
             const numCrystalsEaten = components.get(RockMonsterBehaviorComponent)?.numCrystalsEaten || 0

@@ -95,7 +95,8 @@ export class MaterialSpawner {
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, statsFence))
                 material.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
                 const healthComponent = material.worldMgr.ecs.addComponent(material.entity, new HealthComponent(statsFence.DamageCausesCallToArms, statsFence.CollHeight, 10, material.sceneEntity, false, ResourceManager.getRockFallDamage(material.entityType)))
-                material.worldMgr.sceneMgr.addSprite(healthComponent.sprite)
+                material.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
+                material.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
                 material.worldMgr.ecs.addComponent(material.entity, new LastWillComponent(() => {
                     EventBus.publishEvent(new GenericDeathEvent(material.worldMgr.ecs.getComponents(material.entity).get(PositionComponent)))
                     material.worldMgr.entityMgr.removeEntity(material.entity)

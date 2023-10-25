@@ -324,10 +324,16 @@ export class EntityManager {
     }
 
     removeEntity(entity: GameEntity) {
-        const healthBarSprite = this.ecs.getComponents(entity)?.get(HealthComponent)?.sprite
+        const healthComponent = this.ecs.getComponents(entity)?.get(HealthComponent)
+        const healthBarSprite = healthComponent?.healthBarSprite
         if (healthBarSprite) {
             healthBarSprite.visible = false
             this.worldMgr.sceneMgr.removeSprite(healthBarSprite)
+        }
+        const healthFontSprite = healthComponent?.healthFontSprite
+        if (healthFontSprite) {
+            healthFontSprite.visible = false
+            this.worldMgr.sceneMgr.removeSprite(healthFontSprite)
         }
         this.buildings.removeAll((e) => e.entity === entity)
         this.buildingsUndiscovered.removeAll((e) => e.entity === entity)

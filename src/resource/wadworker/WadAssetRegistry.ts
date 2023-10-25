@@ -51,6 +51,7 @@ export class WadAssetRegistry extends Map<string, WadAsset> {
         this.addAlphaImageFolder('Interface/Menus/')
         this.addAlphaImageFolder('Interface/Buttons/')
         this.addAlphaImageFolder('Interface/InfoImages/')
+        this.addAlphaImageFolder('Interface/Fonts/HealthFont/')
         this.addAssetFolder(this.wadLoader.loadAlphaImageAsset, 'Interface/FrontEnd/Vol_')
         this.addAssetFolder(this.wadLoader.loadWadImageAsset, 'Interface/FrontEnd/lp_')
         this.addAssetFolder(this.wadLoader.loadAlphaImageAsset, 'Interface/ToolTipIcons/')
