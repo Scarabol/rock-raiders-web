@@ -56,7 +56,7 @@ export class ObjectListLoader {
     private loadObjectEntry(olEntry: ObjectListEntryCfg, olKey: string) {
         const entityType = getEntityTypeByName(olEntry.type ? olEntry.type.toLowerCase() : olEntry.type)
         // all object positions are off by one tile, because they start at 1 not 0
-        const worldPos = new Vector2(olEntry.xPos, olEntry.yPos).addScalar(-1).multiplyScalar(TILESIZE) // TODO assert that world pos is over terrain otherwise drop item
+        const worldPos = new Vector2(olEntry.xPos, olEntry.yPos).addScalar(-1).multiplyScalar(TILESIZE)
         const headingRad = degToRad(olEntry.heading)
         switch (entityType) {
             case EntityType.TV_CAMERA:

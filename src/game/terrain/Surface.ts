@@ -286,7 +286,7 @@ export class Surface {
     private getVertex(x: number, y: number, s1: Surface, s2: Surface, s3: Surface): SurfaceVertex {
         const high = (!this.discovered || (!this.surfaceType.floor || !this.neighbors.some((s) => s.isGround())) && ![s1, s2, s3].some((s) => s.isGround()))
         const minSeamProgress = Math.min(this.getSeamProgress(), s1.getSeamProgress(), s2.getSeamProgress(), s3.getSeamProgress())
-        const offset = this.terrain.heightOffset[x][y]
+        const offset = this.terrain.getHeightOffset(x, y)
         return new SurfaceVertex(high, minSeamProgress, offset)
     }
 

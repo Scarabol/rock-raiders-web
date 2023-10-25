@@ -85,10 +85,14 @@ export class BuildPlacementMarker {
                 .some((c) => [...this.worldMgr.entityMgr.rockMonsters, ...this.worldMgr.entityMgr.slugs]
                     .some((m) => this.worldMgr.ecs.getComponents(m).get(PositionComponent).surface === c.surface))
         if (isGood) {
-            const heightOffset = this.worldMgr.sceneMgr.terrain.heightOffset
             const tooSteep = [this.buildingMarkerPrimary?.surface, this.buildingMarkerSecondary?.surface].some((s) => {
                 if (!s) return false
-                const offsets = [heightOffset[s.x][s.y], heightOffset[s.x + 1][s.y], heightOffset[s.x + 1][s.y + 1], heightOffset[s.x][s.y + 1]]
+                const offsets = [
+                    this.worldMgr.sceneMgr.terrain.getHeightOffset(s.x, s.y),
+                    this.worldMgr.sceneMgr.terrain.getHeightOffset(s.x + 1, s.y),
+                    this.worldMgr.sceneMgr.terrain.getHeightOffset(s.x + 1, s.y + 1),
+                    this.worldMgr.sceneMgr.terrain.getHeightOffset(s.x, s.y + 1)
+                ]
                 return Math.abs(Math.max(...offsets) - Math.min(...offsets)) > 0.2
             })
             if (tooSteep) {
