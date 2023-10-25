@@ -13,6 +13,8 @@ declare global {
         randomInclusive(minimum: number, maximum?: number): number
 
         randomSign(): number
+
+        interpolate(y0: number, y1: number, x: number): number
     }
 }
 
@@ -36,7 +38,7 @@ Number.prototype.toPadded = function (): string {
     return `00${this.toString()}`.slice(-2)
 }
 
-Math.randomInclusive = function (minimum: number, maximum: number): number {
+Math.randomInclusive = (minimum: number, maximum: number): number => {
     if (maximum === undefined) {
         maximum = minimum
         minimum = 0
@@ -44,8 +46,8 @@ Math.randomInclusive = function (minimum: number, maximum: number): number {
     return Math.floor(Math.random() * (maximum - minimum + 1) + minimum)
 }
 
-Math.randomSign = function (): number {
-    return Math.random() < 0.5 ? -1 : 1
-}
+Math.randomSign = (): number => Math.random() < 0.5 ? -1 : 1
+
+Math.interpolate = (y0: number, y1: number, x: number): number => y0 + x * (y1 - y0)
 
 export {}
