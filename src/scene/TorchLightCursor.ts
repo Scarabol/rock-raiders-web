@@ -12,6 +12,7 @@ export class TorchLightCursor extends Object3D {
         const torchLight = new PointLight(0xffffff, 9000, 4, 2)
         torchLight.distance *= TILESIZE
         torchLight.position.y = 2 * TILESIZE
+        torchLight.castShadow = true
         this.add(torchLight)
 
         this.alarmLights = [-1, 1].map((c) => {

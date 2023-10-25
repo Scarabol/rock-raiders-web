@@ -13,6 +13,8 @@ export class SceneRenderer extends WebGLRenderer {
 
     constructor(canvas: SpriteImage, readonly camera: Camera) {
         super({antialias: true, canvas: canvas})
+        // this.shadowMap.enabled = true // XXX enable shadows here
+        // this.shadowMap.type = PCFSoftShadowMap // XXX set shadow quality here
     }
 
     startRendering(scene: Scene) {

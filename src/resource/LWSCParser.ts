@@ -24,6 +24,8 @@ export class LWSCObject {
     pivot: Vector3 = new Vector3(0, 0, 0)
     readonly keyframeTracks: KeyframeTrack[] = []
     readonly opacityTracks: NumberKeyframeTrack[] = []
+    castShadow: boolean = false
+    receiveShadow: boolean = false
 }
 
 export class LWSCParser {
@@ -175,10 +177,17 @@ export class LWSCParser {
                 currentObject.parentObjInd = parseInt(value, 10) // index is 1 based
             } else if (key === 'ShowObject' || key === 'LockedChannels') {
                 // only used in editor
-            } else if (key === 'ShadowOptions') { // TODO implement shadow options (bitwise)
-                // 0 - Self Shadow
-                // 1 - Cast Shadow
-                // 2 - Receive Shadow
+            } else if (key === 'ShadowOptions') {
+                const shadowBits = parseInt(value)
+                if (isNaN(shadowBits)) {
+                    console.warn('Could not parse shadow options', value)
+                } else {
+                    const selfShadow = !!(shadowBits & 0b001)
+                    const castShadow = !!(shadowBits & 0b010)
+                    const receiveShadow = !!(shadowBits & 0b100)
+                    currentObject.castShadow = selfShadow || castShadow
+                    currentObject.receiveShadow = selfShadow || receiveShadow
+                }
             } else if (key === 'ObjDissolve') {
                 const times = []
                 const opacities = []

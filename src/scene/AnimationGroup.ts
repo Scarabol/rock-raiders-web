@@ -43,6 +43,8 @@ export class AnimationGroup extends Group implements Updatable {
                 mesh = this.resolveMesh(obj.lowerName)
             }
             mesh.name = obj.lowerName
+            mesh.castShadow = obj.castShadow
+            mesh.receiveShadow = obj.receiveShadow
             this.meshList.push(mesh)
         })
     }
