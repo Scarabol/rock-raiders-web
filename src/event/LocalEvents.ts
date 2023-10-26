@@ -179,6 +179,8 @@ export class UpgradeVehicleCompleteEvent extends LocalEvent {
 export class InitRadarMap extends LocalEvent {
     focusTile: { x: number, y: number } = null
     surfaces: MapSurfaceRect[] = []
+    terrainWidth: number
+    terrainHeight: number
 
     constructor(mapFocus: Vector3, terrain: Terrain) {
         super(EventKey.INIT_RADAR_MAP)
@@ -186,17 +188,23 @@ export class InitRadarMap extends LocalEvent {
         terrain.forEachSurface((s) => {
             if (s.discovered || s.scanned) this.surfaces.push(new MapSurfaceRect(s))
         })
+        this.terrainWidth = terrain.width
+        this.terrainHeight = terrain.height
     }
 }
 
 export class UpdateRadarTerrain extends LocalEvent {
     surfaces: MapSurfaceRect[] = []
+    terrainWidth: number
+    terrainHeight: number
 
     constructor(terrain: Terrain) {
         super(EventKey.UPDATE_RADAR_TERRAIN)
         terrain.forEachSurface((s) => {
             if (s.discovered || s.scanned) this.surfaces.push(new MapSurfaceRect(s))
         })
+        this.terrainWidth = terrain.width
+        this.terrainHeight = terrain.height
     }
 }
 

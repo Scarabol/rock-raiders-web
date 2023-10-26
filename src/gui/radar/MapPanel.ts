@@ -22,6 +22,8 @@ export class MapPanel extends Panel {
     surfaceRectSizeMin: number = 10
     surfaceRectSizeMax: number = 15
     surfaceRectSize: number = 10
+    terrainWidth: number = 0
+    terrainHeight: number = 0
 
     constructor(parent: BaseElement) {
         super(parent, null)
@@ -39,11 +41,13 @@ export class MapPanel extends Panel {
             const surfaceScale = this.surfaceRectSizeMin / this.surfaceRectSize
             this.offset.x += (cx - this.x - this.width / 2) * surfaceScale
             this.offset.y += (cy - this.y - this.height / 2) * surfaceScale
-            this.offset.x = Math.max(-this.width / 2, Math.min(this.surfaceMap.length * this.surfaceRectSizeMin - this.width / 2, this.offset.x))
-            this.offset.y = Math.max(-this.height / 2, Math.min(((this.surfaceMap[0]?.length ?? 1) - 1) * this.surfaceRectSizeMin - this.height / 2, this.offset.y))
+            this.offset.x = Math.max(-this.width / 2, Math.min(this.terrainWidth * this.surfaceRectSizeMin - this.width / 2, this.offset.x))
+            this.offset.y = Math.max(-this.height / 2, Math.min(this.terrainHeight * this.surfaceRectSizeMin - this.height / 2, this.offset.y))
             this.redrawAll()
         }
         this.registerEventListener(EventKey.INIT_RADAR_MAP, (event: InitRadarMap) => {
+            this.terrainWidth = event.terrainWidth
+            this.terrainHeight = event.terrainHeight
             this.offset.x = event.focusTile.x * this.surfaceRectSize - this.width / 2
             this.offset.y = event.focusTile.y * this.surfaceRectSize - this.height / 2
             this.surfaceMap.length = 0
@@ -54,6 +58,8 @@ export class MapPanel extends Panel {
             this.redrawAll()
         })
         this.registerEventListener(EventKey.UPDATE_RADAR_TERRAIN, (event: UpdateRadarTerrain) => {
+            this.terrainWidth = event.terrainWidth
+            this.terrainHeight = event.terrainHeight
             this.surfaceMap.length = 0
             event.surfaces.forEach((s) => {
                 this.surfaceMap[s.x] = this.surfaceMap[s.x] || []
