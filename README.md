@@ -42,7 +42,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Show misc anim LavaErosionSmoke over lava
 - Add water and lava animation (texture UV coords tearing)
 - Add screen shake for exploding dynamites
 - First-Person and shoulder camera
@@ -98,6 +97,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Make tooltips stay on screen and follow cursor
 - Numbers above ticking dynamite are not shown correctly sometimes
 - Two buttons in priority list can be hovered/pressed/released at the same time
+- Orange smoke column above lava tiles not shown
 
 ## Technical Debt
 

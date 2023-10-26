@@ -1,6 +1,7 @@
 import { Updatable } from '../model/Updateable'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class LavaErosion implements Updatable {
     readonly isSelfEroding: boolean = false
@@ -44,5 +45,13 @@ export class LavaErosion implements Updatable {
             this.surface.containedCrystals = 0
         }
         this.surface.setSurfaceType(erosionSurfaceType)
+        const lwsFilename = [
+            ResourceManager.configuration.miscObjects.LavaErosionSmoke1,
+            ResourceManager.configuration.miscObjects.LavaErosionSmoke2,
+            ResourceManager.configuration.miscObjects.LavaErosionSmoke3,
+            ResourceManager.configuration.miscObjects.LavaErosionSmoke4,
+        ].random()
+        const smoke = this.surface.worldMgr.sceneMgr.addMiscAnim(lwsFilename, this.surface.getCenterWorld(), Math.random() * 2 * Math.PI, false)
+        smoke.meshList.forEach((m) => m.getMaterials().forEach((m) => m.color.setRGB(1, 0.5, 0)))
     }
 }
