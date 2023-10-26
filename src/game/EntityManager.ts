@@ -51,6 +51,7 @@ export class EntityManager {
     completedBuildingSites: BuildingSite[] = []
     recordedEntities: GameEntity[] = []
     birdScarer: GameEntity[] = []
+    bullets: GameEntity[] = []
 
     constructor(readonly worldMgr: WorldManager) {
         // event handler must be placed here, because only this class knows the "actual" selection instance
@@ -88,6 +89,7 @@ export class EntityManager {
         this.completedBuildingSites.length = 0
         this.recordedEntities.length = 0
         this.birdScarer.length = 0
+        this.bullets.length = 0
     }
 
     update(elapsedMs: number) {
@@ -170,7 +172,8 @@ export class EntityManager {
         return [...this.rockMonsters, ...this.slugs]
             .map((m) => ({entity: m, components: this.worldMgr.ecs.getComponents(m)}))
             .filter((e) => {
-                return e.components.get(MonsterStatsComponent).stats.CanBeShotAt &&
+                return e.components.get(HealthComponent).health > 0 &&
+                    e.components.get(MonsterStatsComponent).stats.CanBeShotAt &&
                     e.components.get(AnimatedSceneEntityComponent).sceneEntity.currentAnimation !== RockMonsterActivity.Unpowered
             })
             .map((e) => {
@@ -320,6 +323,11 @@ export class EntityManager {
             case EntityType.BIRD_SCARER:
                 this.birdScarer.add(entity)
                 break
+            case EntityType.LASER_SHOT:
+            case EntityType.FREEZER_SHOT:
+            case EntityType.PUSHER_SHOT:
+                this.bullets.add(entity)
+                break
         }
     }
 
@@ -355,6 +363,7 @@ export class EntityManager {
         this.vehiclesInBeam.removeAll((e) => e.entity === entity)
         this.recordedEntities.remove(entity)
         this.birdScarer.remove(entity)
+        this.bullets.remove(entity)
     }
 
     findVehicleInRange(position2d: Vector2, rangeSq: number): { entity: GameEntity, position2d: Vector2 } {

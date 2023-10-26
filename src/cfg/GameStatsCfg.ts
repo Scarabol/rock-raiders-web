@@ -63,6 +63,7 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
 export class MonsterEntityStats extends BaseConfig implements MovableEntityStats {
     PickSphere: number = 0
     CollRadius: number = 0
+    CollRadiusSq: number = 0
     CollHeight: number = 0
     RouteSpeed: number[] = []
     PathCoef: number = 1
@@ -99,6 +100,9 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
         } else if ('AlertRadius'.equalsIgnoreCase(unifiedKey)) {
             this.AlertRadiusSq = cfgValue * cfgValue
             return true
+        } else if ('CollRadius'.equalsIgnoreCase(unifiedKey)) {
+            this.CollRadiusSq = cfgValue * cfgValue
+            return super.assignValue(objKey, unifiedKey, cfgValue)
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
         }

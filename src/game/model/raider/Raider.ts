@@ -38,6 +38,7 @@ import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderSc
 import { EventKey } from '../../../event/EventKeyEnum'
 import { ScannerComponent } from '../../component/ScannerComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
+import { BulletComponent } from '../../component/BulletComponent'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -386,7 +387,6 @@ export class Raider implements Updatable, JobFulfiller {
         const attacks = [
             {
                 tool: RaiderTool.LASER,
-                allowed: stats.CanLaser,
                 damage: stats.LaserDamage,
                 weaponStats: ResourceManager.configuration.weaponTypes.get('lasershot'),
                 bulletType: EntityType.LASER_SHOT,
@@ -394,7 +394,6 @@ export class Raider implements Updatable, JobFulfiller {
             },
             {
                 tool: RaiderTool.FREEZERGUN,
-                allowed: stats.CanFreeze,
                 damage: stats.FreezerDamage,
                 weaponStats: ResourceManager.configuration.weaponTypes.get('freezer'),
                 bulletType: EntityType.FREEZER_SHOT,
@@ -402,35 +401,31 @@ export class Raider implements Updatable, JobFulfiller {
             },
             {
                 tool: RaiderTool.PUSHERGUN,
-                allowed: stats.CanPush,
                 damage: stats.PusherDamage,
                 weaponStats: ResourceManager.configuration.weaponTypes.get('pusher'),
                 bulletType: EntityType.PUSHER_SHOT,
                 misc: ResourceManager.configuration.miscObjects.Pusher
             },
-        ].filter((a) => a.allowed && this.hasTool(a.tool)).sort((l, r) => r.damage - l.damage)
+        ].filter((a) => this.hasTool(a.tool)).sort((l, r) => r.damage - l.damage)
         if (attacks.length < 1) {
             console.warn('Could not shoot at monster')
+            this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             return
         }
         const attack = attacks[0]
         if (this.weaponCooldown <= 0) {
-            // TODO Visualize shot as bullet and add to bullet system
-            // const bullet = new AbstractGameEntity(atk.bulletType)
-            // bullet.addComponent(new LifecycleComponent())
-            // bullet.addComponent(new PositionComponent()).setPosition2D(this.sceneEntity.position2D)
-            // bullet.addComponent(new BulletMovementGameComponent(this.currentPath.target.targetLocation))
-            // const start = this.sceneEntity.position.clone()
-            // start.y += TILESIZE / 4
-            // bullet.addComponent(new MiscAnimComponent(atk.misc, start, this.currentPath.target.targetLocation))
-            // this.worldMgr.registerEntity(bullet)
+            const gunPos = this.getPosition()
+            gunPos.y += 10
+            const targetLocation = targetComponents.get(PositionComponent).getPosition2D()
+            const heading = -this.getPosition2D().sub(targetLocation).angle() + Math.PI / 2
+            const bulletAnim = this.worldMgr.sceneMgr.addMiscAnim(attack.misc, gunPos, heading, true)
+            const bulletEntity = this.worldMgr.ecs.addEntity()
+            this.worldMgr.ecs.addComponent(bulletEntity, new BulletComponent(bulletAnim, targetLocation, attack.bulletType))
+            this.worldMgr.entityMgr.addEntity(bulletEntity, attack.bulletType)
+            this.weaponCooldown = attack.weaponStats.rechargeTimeMs
+            this.sceneEntity.headTowards(targetLocation)
             this.sceneEntity.setAnimation(RaiderActivity.Shoot, () => {
                 this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                this.weaponCooldown = attack.weaponStats.rechargeTimeMs
-                const healthComponent = targetComponents.get(HealthComponent)
-                healthComponent.changeHealth(-attack.damage) // TODO Replace with damage by bullet system
-                // TODO Apply push effect
-                // TODO Apply freeze effect
             })
         }
     }
