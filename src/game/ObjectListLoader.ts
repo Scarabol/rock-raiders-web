@@ -84,18 +84,18 @@ export class ObjectListLoader {
             case EntityType.ORE_REFINERY:
             case EntityType.GUNSTATION:
             case EntityType.TELEPORT_BIG:
-                const entity = new BuildingEntity(this.worldMgr, entityType)
-                entity.placeDown(worldPos, -headingRad - Math.PI, this.disableStartTeleport)
+                const building = new BuildingEntity(this.worldMgr, entityType)
+                building.placeDown(worldPos, -headingRad - Math.PI, this.disableStartTeleport)
                 if (entityType === EntityType.TOOLSTATION) {
                     for (let c = 0; c < ObjectListLoader.numRaider; c++) {
-                        const randomPosition = entity.primaryPathSurface.getRandomPosition()
+                        const randomPosition = building.primaryPathSurface.getRandomPosition()
                         const raider = this.spawnRaider(randomPosition, headingRad - Math.PI)
                         RaiderTrainings.values.forEach((t) => raider.addTraining(t))
                     }
                     if (ObjectListLoader.startVehicle) {
                         const startVehicleEntityType = getEntityTypeByName(ObjectListLoader.startVehicle) as VehicleEntityType
                         if (startVehicleEntityType) {
-                            this.spawnVehicle(startVehicleEntityType, entity.primaryPathSurface.getCenterWorld2D(), headingRad - Math.PI)
+                            this.spawnVehicle(startVehicleEntityType, building.primaryPathSurface.getCenterWorld2D(), headingRad - Math.PI)
                         } else {
                             console.warn(`Could not determine entity type for '${ObjectListLoader.startVehicle}'`)
                         }

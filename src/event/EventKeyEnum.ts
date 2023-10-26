@@ -1,4 +1,5 @@
 export enum EventKey {
+    // Local events
     SELECTION_CHANGED,
     DESELECT_ALL,
     BUILDINGS_CHANGED,
@@ -11,8 +12,8 @@ export enum EventKey {
     SHOW_GAME_RESULT,
     SHOW_OPTIONS,
     SET_SPACE_TO_CONTINUE,
-    LEVEL_SELECTED,
 
+    // GUI command events
     COMMAND_CHANGE_CURSOR,
     COMMAND_CHANGE_TOOLTIP,
     COMMAND_PLAY_SOUND,
@@ -52,6 +53,7 @@ export enum EventKey {
     COMMAND_REPAIR_BUILDING,
     COMMAND_DROP_BIRD_SCARER,
 
+    // World events with location
     LOCATION_DEATH,
     LOCATION_MONSTER,
     LOCATION_MONSTER_GONE,
@@ -63,6 +65,8 @@ export enum EventKey {
     LOCATION_SLUG_GONE,
     LOCATION_RAIDER_DISCOVERED,
 
+    // World events
+    LEVEL_SELECTED,
     JOB_CREATE,
     REQUESTED_RAIDERS_CHANGED,
     REQUESTED_VEHICLES_CHANGED,

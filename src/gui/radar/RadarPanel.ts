@@ -6,9 +6,9 @@ import { Panel } from '../base/Panel'
 import { MapPanel } from './MapPanel'
 
 export class RadarPanel extends Panel {
-    map: MapPanel
-    fill: Panel
-    overlay: Panel
+    readonly map: MapPanel
+    readonly fill: Panel
+    readonly overlay: Panel
 
     // TODO 3D view has no sound and can render scene camera offscreen
 
