@@ -22,7 +22,7 @@ import { MonsterSpawner } from '../game/entity/MonsterSpawner'
 import { SlugEmergeEvent } from '../event/WorldLocationEvent'
 import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity, SlugActivity } from '../game/model/anim/AnimationActivity'
-import { SlugBehaviorComponent } from '../game/component/SlugBehaviorComponent'
+import { SlugBehaviorComponent, SlugBehaviorState } from '../game/component/SlugBehaviorComponent'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -251,11 +251,12 @@ export class NerpRunner {
         const slugHole = this.worldMgr.sceneMgr.terrain.slugHoles.random()
         if (!slugHole) return
         const slug = MonsterSpawner.spawnMonster(this.worldMgr, EntityType.SLUG, slugHole.getRandomPosition(), Math.random() * 2 * Math.PI)
+        const behaviorComponent = this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())
         const components = this.worldMgr.ecs.getComponents(slug)
         const sceneEntity = components.get(AnimatedSceneEntityComponent)
         sceneEntity.sceneEntity.setAnimation(SlugActivity.Emerge, () => {
             sceneEntity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-            this.worldMgr.ecs.addComponent(slug, new SlugBehaviorComponent())
+            behaviorComponent.state = SlugBehaviorState.IDLE
         })
         EventBus.publishEvent(new SlugEmergeEvent(components.get(PositionComponent)))
     }

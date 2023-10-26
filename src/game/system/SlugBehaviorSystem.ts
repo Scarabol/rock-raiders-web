@@ -39,7 +39,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                 const positionComponent = components.get(PositionComponent)
                 const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
                 if (components.has(EntityFrozenComponent) || components.has(EntityPushedComponent)) {
-                    this.changeToIdle(entity, sceneEntity, behaviorComponent)
+                    this.changeToIdle(sceneEntity, behaviorComponent)
                     continue
                 }
                 const stats = components.get(MonsterStatsComponent).stats
@@ -68,13 +68,13 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                     case SlugBehaviorState.LEECH:
                         if (!behaviorComponent.targetBuilding?.energized) {
                             this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                            this.changeToIdle(entity, sceneEntity, behaviorComponent)
+                            this.changeToIdle(sceneEntity, behaviorComponent)
                         } else {
                             // console.log('Checking scarer', scarerPositions.map((pos) => pos.getPosition2D().distanceToSquared(slugPos)))
                             const scarerInRange = scarerPositions.find((pos) => pos.getPosition2D().distanceToSquared(slugPos) < stats.AlertRadiusSq)
                             if (scarerInRange) {
                                 this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                                this.changeToIdle(entity, sceneEntity, behaviorComponent)
+                                this.changeToIdle(sceneEntity, behaviorComponent)
                                 const safeNeighbors = scarerInRange.surface.neighbors.filter((s) => s !== scarerInRange.surface)
                                 const safePos = [...safeNeighbors, scarerInRange.surface].find((s) => s.isWalkable()).getRandomPosition()
                                 this.ecs.addComponent(entity, new WorldTargetComponent(safePos, SLUG_ENTER_DISTANCE_SQ))
@@ -101,7 +101,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                     } else {
                                         console.warn('Slug cannot find path to targets', buildingPathTargets)
                                         this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                                        this.changeToIdle(entity, sceneEntity, behaviorComponent)
+                                        this.changeToIdle(sceneEntity, behaviorComponent)
                                     }
                                 }
                             }
@@ -142,7 +142,8 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
         }
     }
 
-    private changeToIdle(entity: number, sceneEntity: AnimatedSceneEntity, behaviorComponent: SlugBehaviorComponent) {
+    private changeToIdle(sceneEntity: AnimatedSceneEntity, behaviorComponent: SlugBehaviorComponent) {
+        if (behaviorComponent.state === SlugBehaviorState.EMERGE) return
         sceneEntity.setAnimation(AnimEntityActivity.Stand)
         behaviorComponent.targetBuilding = null
         behaviorComponent.targetEnter = null

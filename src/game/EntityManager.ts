@@ -23,6 +23,7 @@ import { MonsterStatsComponent } from './component/MonsterStatsComponent'
 import { WorldManager } from './WorldManager'
 import { HealthComponent } from './component/HealthComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/MapMarkerComponent'
+import { SlugBehaviorComponent, SlugBehaviorState } from './component/SlugBehaviorComponent'
 
 export class EntityManager {
     ecs: ECS
@@ -174,7 +175,8 @@ export class EntityManager {
             .filter((e) => {
                 return e.components.get(HealthComponent).health > 0 &&
                     e.components.get(MonsterStatsComponent).stats.CanBeShotAt &&
-                    e.components.get(AnimatedSceneEntityComponent).sceneEntity.currentAnimation !== RockMonsterActivity.Unpowered
+                    e.components.get(AnimatedSceneEntityComponent).sceneEntity.currentAnimation !== RockMonsterActivity.Unpowered &&
+                    e.components.get(SlugBehaviorComponent)?.state !== SlugBehaviorState.EMERGE
             })
             .map((e) => {
                 const pos = e.components.get(PositionComponent).getPosition2D()
