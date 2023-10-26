@@ -20,6 +20,8 @@ import { SoundManager } from '../audio/SoundManager'
 import { AnimatedSceneEntity } from '../scene/AnimatedSceneEntity'
 import { AnimationGroup } from '../scene/AnimationGroup'
 import { SceneSelectionComponent } from './component/SceneSelectionComponent'
+import { createCanvas } from '../core/ImageHelper'
+import { FollowerRenderer } from '../scene/FollowerRenderer'
 
 export class SceneManager implements Updatable {
     readonly audioListener: AudioListener
@@ -35,6 +37,7 @@ export class SceneManager implements Updatable {
     terrain: Terrain
     cursor: TorchLightCursor
     buildMarker: BuildPlacementMarker
+    followerRenderer: FollowerRenderer
 
     constructor(canvas: SpriteImage) {
         this.audioListener = new AudioListener()
@@ -159,6 +162,9 @@ export class SceneManager implements Updatable {
         GameState.totalDiggables = this.terrain.countDiggables()
         GameState.totalCrystals = this.terrain.countCrystals()
         GameState.numTotalOres = this.terrain.countOres()
+
+        const followerCanvas = createCanvas(158, 158)
+        this.followerRenderer = new FollowerRenderer(followerCanvas, this.scene, this.worldMgr.ecs)
     }
 
     startScene() {
@@ -185,6 +191,7 @@ export class SceneManager implements Updatable {
     disposeScene() {
         this.scene.clear()
         this.renderer.stopRendering()
+        this.followerRenderer?.stopRendering()
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null

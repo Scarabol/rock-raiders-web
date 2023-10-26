@@ -1,7 +1,7 @@
 import { MathUtils, Vector2 } from 'three'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
 import { EventBus } from '../event/EventBus'
-import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../event/LocalEvents'
+import { FollowerSetLookAtEvent, RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { EntityType, getEntityTypeByName, VehicleEntityType } from './model/EntityType'
@@ -21,6 +21,7 @@ import { HealthComponent } from './component/HealthComponent'
 import { OxygenComponent } from './component/OxygenComponent'
 import { RaiderInfoComponent } from './component/RaiderInfoComponent'
 import { ResourceManager } from '../resource/ResourceManager'
+import { GameEntity } from './ECS'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -29,6 +30,7 @@ export class ObjectListLoader {
 
     readonly vehicleKeyToDriver = new Map<string, Raider>()
     readonly vehicleByKey = new Map<string, VehicleEntity>()
+    trackEntity: GameEntity = null
 
     constructor(readonly worldMgr: WorldManager, readonly disableStartTeleport: boolean) {
     }
@@ -52,6 +54,7 @@ export class ObjectListLoader {
                 vehicle.addDriver(driver)
             })
             EventBus.publishEvent(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
+            if (this.trackEntity) EventBus.publishEvent(new FollowerSetLookAtEvent(this.trackEntity))
         } catch (e) {
             console.error(e)
         }
@@ -91,6 +94,7 @@ export class ObjectListLoader {
                 const building = new BuildingEntity(this.worldMgr, entityType)
                 building.placeDown(worldPos, -headingRad - Math.PI, this.disableStartTeleport)
                 if (entityType === EntityType.TOOLSTATION) {
+                    if (!this.trackEntity && building.sceneEntity.visible) this.trackEntity = building.entity
                     for (let c = 0; c < ObjectListLoader.numRaider; c++) {
                         const randomPosition = building.primaryPathSurface.getRandomPosition()
                         const raider = this.spawnRaider(randomPosition, headingRad - Math.PI)
@@ -148,7 +152,8 @@ export class ObjectListLoader {
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         this.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.OxygenCoef))
         this.worldMgr.ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
-        const raiderSceneSelection = this.worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
+        const sceneSelectionComponent = new SceneSelectionComponent(raider.sceneEntity, { gameEntity: raider.entity, entityType: raider.entityType }, raider.stats)
+        const raiderSceneSelection = this.worldMgr.ecs.addComponent(raider.entity, sceneSelectionComponent)
         this.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(raiderSceneSelection.pickSphere, raider.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPos)
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(floorPosition)
@@ -162,6 +167,7 @@ export class ObjectListLoader {
             this.worldMgr.entityMgr.raiders.push(raider)
             this.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
             EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, raider.entity, MapMarkerChange.UPDATE, floorPosition))
+            if (!this.trackEntity) this.trackEntity = raider.entity
         } else {
             this.worldMgr.entityMgr.raidersUndiscovered.push(raider)
         }
@@ -174,7 +180,8 @@ export class ObjectListLoader {
         const healthComponent = this.worldMgr.ecs.addComponent(vehicle.entity, new HealthComponent(false, 24, 14, vehicle.sceneEntity, false, ResourceManager.getRockFallDamage(vehicle.entityType, vehicle.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
-        const vehicleSceneSelection = this.worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats))
+        const sceneSelectionComponent = new SceneSelectionComponent(vehicle.sceneEntity, { gameEntity: vehicle.entity, entityType: vehicle.entityType }, vehicle.stats)
+        const vehicleSceneSelection = this.worldMgr.ecs.addComponent(vehicle.entity, sceneSelectionComponent)
         this.worldMgr.ecs.addComponent(vehicle.entity, new SelectionFrameComponent(vehicleSceneSelection.pickSphere, vehicle.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPos)
         const surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(floorPosition)

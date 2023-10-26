@@ -56,6 +56,7 @@ export class SelectionChanged extends LocalEvent {
     noVehicleWithDriver: boolean
     vehicleWithCarriedItems: boolean
     someHasBirdScarer: boolean
+    lookAtPosition: Vector3
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.SELECTION_CHANGED)
@@ -254,5 +255,17 @@ export class ShowOptionsEvent extends LocalEvent {
 export class SetSpaceToContinueEvent extends LocalEvent {
     constructor(readonly state: boolean) {
         super(EventKey.SET_SPACE_TO_CONTINUE)
+    }
+}
+
+export class FollowerSetCanvasEvent extends LocalEvent {
+    constructor(readonly canvas: HTMLCanvasElement) {
+        super(EventKey.FOLLOWER_SET_CANVAS)
+    }
+}
+
+export class FollowerSetLookAtEvent extends LocalEvent {
+    constructor(readonly entity: GameEntity) {
+        super(EventKey.FOLLOWER_SET_LOOK_AT)
     }
 }

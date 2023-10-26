@@ -45,7 +45,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Refactor job system to allow multi-carry jobs for vehicles
 - Raider get tired while carrying and eat at barracks
 
-- Render last selected entity with rotating camera in radar panel
 - Add surface type tooltips for map panel
 - Add magnet cursor to map panel to track entities
 - Move camera with click on radar map panel
