@@ -232,10 +232,10 @@ export class LWOBParser {
                         this.lwoReader.readUint8() / 255,
                         this.lwoReader.readUint8() / 255,
                         this.lwoReader.readUint8() / 255,
-                        this.lwoReader.readUint8() / 255,
                     ]
-                    material.color = new Color().fromArray(colorArray)
-                    if (this.verbose) console.log(`Material color (COLR): ${colorArray.join(' ')}`)
+                    const lastColorByte = this.lwoReader.readUint8() // should be zero
+                    if (lastColorByte !== 0) console.warn('Unexpected ignored last color byte is not zero', lastColorByte)
+                    material.color.fromArray(colorArray)
                     break
                 case 'FLAG':
                     const flags = this.lwoReader.readUint16()
@@ -356,11 +356,14 @@ export class LWOBParser {
                         this.lwoReader.readUint8() / 255,
                         this.lwoReader.readUint8() / 255,
                         this.lwoReader.readUint8() / 255,
-                        this.lwoReader.readUint8() / 255,
                     ]
-                    // const textureColor = new Color().fromArray(textureColorArray);
-                    // seems to be 0 0 0 anyway...
-                    if (this.verbose) console.log(`Unhandled texture color (TCLR): ${textureColorArray.join(' ')}`)
+                    const lastTextureColorByte = this.lwoReader.readUint8() // should be zero
+                    if (lastTextureColorByte !== 0) console.warn('Unexpected ignored last texture color byte is not zero', lastTextureColorByte)
+                    if (textureColorArray[0]  === 0 && textureColorArray[1]  === 0 && textureColorArray[0]  === 0) {
+                        material.color.set(0xFFFFFF) // Default color in three.js is 0xFFFFFF instead of 0x000000
+                    } else {
+                        material.color.fromArray(textureColorArray)
+                    }
                     break
                 case 'TVAL':
                     const textureValue = this.lwoReader.readUint16() / 256

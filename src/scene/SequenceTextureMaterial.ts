@@ -25,7 +25,6 @@ export class SequenceTextureMaterial extends MeshPhongMaterial {
         this.textures = textures
         if (this.textures.length < 1) return
         this.map = this.textures[0]
-        this.color.set(0xFFFFFF) // overwrite color, when color map (texture) in use
     }
 
     update(elapsedMs: number) {
