@@ -23,6 +23,7 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { SlugBehaviorComponent, SlugBehaviorState } from '../component/SlugBehaviorComponent'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
+import { EntityPushedComponent } from '../component/EntityPushedComponent'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
@@ -67,6 +68,7 @@ export class MonsterSpawner {
                 worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
                 worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
                     worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                    worldMgr.ecs.removeComponent(entity, EntityPushedComponent)
                     worldMgr.ecs.getComponents(entity).get(SlugBehaviorComponent).state = SlugBehaviorState.GO_ENTER
                     sceneEntity.setAnimation(AnimEntityActivity.Stand)
                     EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
@@ -105,6 +107,7 @@ export class MonsterSpawner {
             const components = worldMgr.ecs.getComponents(entity)
             const numCrystalsEaten = components.get(RockMonsterBehaviorComponent)?.numCrystalsEaten || 0
             worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+            worldMgr.ecs.removeComponent(entity, EntityPushedComponent)
             worldMgr.ecs.removeComponent(entity, RockMonsterBehaviorComponent)
             sceneEntity.setAnimation(RockMonsterActivity.Crumble, () => {
                 const positionComponent = components.get(PositionComponent)

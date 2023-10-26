@@ -12,7 +12,7 @@ export class SceneEntityHeadingSystem extends AbstractGameSystem {
                 const components = this.ecs.getComponents(entity)
                 const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                 const worldTargetComponent = components.get(WorldTargetComponent)
-                sceneEntityComponent.sceneEntity.headTowards(worldTargetComponent.position)
+                if (worldTargetComponent.faceTarget) sceneEntityComponent.sceneEntity.headTowards(worldTargetComponent.position)
             } catch (e) {
                 console.error(e)
             }

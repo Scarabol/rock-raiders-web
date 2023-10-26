@@ -9,6 +9,8 @@ import { HealthComponent } from '../component/HealthComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
+import { EntityPushedComponent } from '../component/EntityPushedComponent'
+import { WorldTargetComponent } from '../component/WorldTargetComponent'
 
 export class BulletSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([BulletComponent])
@@ -59,8 +61,11 @@ export class BulletSystem extends AbstractGameSystem {
                         } else if (bulletComponent.bulletType === EntityType.PUSHER_SHOT) {
                             this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.PusherHit, t.pos.position, 0, false)
                             t.health.changeHealth(-targetStats.PusherDamage)
-                            if (targetStats.CanPush) {
-                                // TODO Stop moving and push/move rocky
+                            if (targetStats.CanPush && !this.ecs.getComponents(t.entity).has(EntityPushedComponent)) {
+                                this.ecs.removeComponent(t.entity, WorldTargetComponent)
+                                const pushTarget = t.pos.getPosition2D().add(step.clone().setLength(t.stats.PusherDist))
+                                this.ecs.addComponent(t.entity, new WorldTargetComponent(pushTarget, 1, false))
+                                this.ecs.addComponent(t.entity, new EntityPushedComponent())
                             }
                         }
                         this.worldMgr.entityMgr.removeEntity(entity)

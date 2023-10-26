@@ -5,6 +5,7 @@ import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity } from '../model/anim/AnimationActivity'
+import { EntityPushedComponent } from '../component/EntityPushedComponent'
 
 export class MovementSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([PositionComponent, WorldTargetComponent, MovableStatsComponent])
@@ -25,6 +26,7 @@ export class MovementSystem extends AbstractGameSystem {
                 const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                 if (targetWorld.distanceToSquared(positionComponent.position) <= worldTargetComponent.radiusSq) {
                     this.ecs.removeComponent(entity, WorldTargetComponent)
+                    this.ecs.removeComponent(entity, EntityPushedComponent)
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
                         this.ecs.worldMgr.entityMgr.removeEntity(entity)
                         this.ecs.removeEntity(entity)

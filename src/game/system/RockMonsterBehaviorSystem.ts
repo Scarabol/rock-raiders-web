@@ -26,6 +26,7 @@ import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScare
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Raider } from '../model/raider/Raider'
 import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
+import { EntityPushedComponent } from '../component/EntityPushedComponent'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -69,7 +70,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 const behaviorComponent = components.get(RockMonsterBehaviorComponent)
                 const positionComponent = components.get(PositionComponent)
                 const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
-                if (components.has(EntityFrozenComponent)) {
+                if (components.has(EntityFrozenComponent) || components.has(EntityPushedComponent)) {
                     sceneEntity.removeAllCarried()
                     behaviorComponent.boulder = null
                     sceneEntity.setAnimation(AnimEntityActivity.Stand)
