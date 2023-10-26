@@ -4,11 +4,12 @@ import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { MapView } from './MapView'
-import { SpriteContext } from '../../core/Sprite'
+import { SpriteContext, SpriteImage } from '../../core/Sprite'
+import { ResourceManager } from '../../resource/ResourceManager'
 
 export class RadarPanel extends Panel {
+    readonly fill: SpriteImage
     readonly map: MapView
-    readonly fill: Panel
     readonly overlay: Panel
     readonly btnToggle: Button
     readonly btnMap: Button
@@ -19,28 +20,21 @@ export class RadarPanel extends Panel {
     constructor(parent: BaseElement, panelCfg: PanelCfg, panelFillCfg: PanelCfg, panelOverlayCfg: PanelCfg, buttonsCfg: ButtonRadarCfg) {
         super(parent, panelCfg)
         this.map = this.addChild(new MapView(this))
-        this.fill = this.addChild(new Panel(this, panelFillCfg))
-        this.fill.xIn = 0
-        this.fill.yIn = 0
-        this.fill.xOut = 0
-        this.fill.yOut = 0
-        this.fill.updatePosition()
+        this.fill = ResourceManager.getImage(panelFillCfg.filename)
         this.overlay = this.addChild(new Panel(this, panelOverlayCfg))
         this.btnToggle = this.addChild(new Button(this, buttonsCfg.panelButtonRadarToggle))
         this.btnToggle.onClick = () => this.toggleState()
         this.btnMap = this.addChild(new Button(this, buttonsCfg.panelButtonRadarMapView))
         this.btnMap.onClick = () => {
-            this.fill.hide()
-            this.overlay.hide()
             this.map.show()
+            this.overlay.hide()
             this.btnZoomIn.hidden = this.map.hidden
             this.btnZoomOut.hidden = this.map.hidden
         }
         this.btnTagged = this.addChild(new Button(this, buttonsCfg.panelButtonRadarTaggedObjectView))
         this.btnTagged.onClick = () => {
-            this.fill.show()
-            // this.overlay.show() // TODO only show overlay, when entity selected
             this.map.hide()
+            this.overlay.show()
             this.btnZoomIn.hidden = this.map.hidden
             this.btnZoomOut.hidden = this.map.hidden
         }
@@ -55,7 +49,6 @@ export class RadarPanel extends Panel {
     reset() {
         super.reset()
         this.map.show()
-        this.fill.hide()
         this.overlay.hide()
         this.btnZoomIn.hidden = this.map.hidden
         this.btnZoomOut.hidden = this.map.hidden
@@ -63,8 +56,8 @@ export class RadarPanel extends Panel {
 
     onRedraw(context: SpriteContext) {
         if (this.hidden) return
+        if (this.fill) context.drawImage(this.fill, this.x, this.y)
         this.map.onRedraw(context)
-        this.fill.onRedraw(context)
         this.overlay.onRedraw(context)
         if (this.img) context.drawImage(this.img, this.x, this.y)
         this.btnToggle.onRedraw(context)
