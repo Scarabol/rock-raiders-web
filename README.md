@@ -42,47 +42,50 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Add water and lava animation (texture UV coords tearing)
-- Add screen shake for exploding dynamites
-- First-Person and shoulder camera
 - Refactor job system to allow multi-carry jobs for vehicles
 - Raider get tired while carrying and eat at barracks
+
 - Render last selected entity with rotating camera in radar panel
 - Add surface type tooltips for map panel
 - Add magnet cursor to map panel to track entities
-- Move camera with click on mini map and show camera view area as wireframe
+- Move camera with click on radar map panel
+- Show camera view area as wireframe on radar map panel
+- Add first-person and shoulder camera
+
+- Add screen shake for exploding dynamites
 - Add rockfall transition when switching in main menu
 - Show loading screen when starting a level
 - Show FLT mini-figure animation with mission briefing
-- Change cursor to X when over disabled IconPanelButtons
-- Background music and soundtrack
-- Use same team for all missions and add names to raiders
-- Tutorial levels and helper features
-- Auto switch from portrait to landscape mode in fullscreen
+- Change cursor to X and play sound when click on gui layer is not consumed
 
 ### v0.9.0 - Polishing
 
-- Unlock levels only after linked levels are completed (see XXX)
+- Background music and soundtrack
+- Tutorial levels and helper features
+- Use same team for all missions and add names to raiders
+- Auto switch from portrait to landscape mode in fullscreen
 - Fix all remaining bugs
+
+### v1.0.0 - Final Release
+
+- Unlock levels only after linked levels are completed (see XXX)
 
 ## Known Issues
 
 ### Important
 
+- Forbidding collection of ores or crystals stops building projects too
 - Vehicles can get stuck in toolstations, needs vehicle behavior
 - Mark start and end tile in path finding always as accessible to make entering water vehicles and drilling easier, also frees raider stuck on lava
+- Large Cat not usable to carry vehicles in Level 19
 - Damage and blow up buildings with lava erosion
 - Make idle raider leave lava fields
-- Forbidding collection of ores or crystals stops building projects too
-- Fix Large Cat not usable to carry vehicles in Level 19
-- Improve GUI rendering performance maybe reduce scope or reduce quantity
 - Multitouch breaks camera on mobile
 
 ### Nice to have
 
 - Save game state in browser cache to allow reload
 - Add rotation speed to entities and play turnLeft, turnRight animations
-- Use long press on mobile browser to emulate right click
 - Do not allow touch events to move scene camera while build mode selection is active
 - Camera can get stuck on mobile browsers when using multiple pointer gestures
 - Rendering issue on mobile with icon panel and mission briefing, clearing rect seems to small
@@ -90,14 +93,16 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Cosmetics
 
-- Raider scene entity position/rotation not correct when thrown by rocky
+- Sparkles over recharge seam have wrong offset and rotation in Level 24 and Level 13
 - Lava rockies texture not using correct UV coordinates
-- Show health percentage in vehicle tooltip
-- Play vehicle SFX when tooltip is shown
+- Show health percentage in vehicle tooltip as power
 - Make tooltips stay on screen and follow cursor
+- Play vehicle SFX when tooltip is shown
+- Orange smoke column above lava tiles missing
+- Water and lava animation missing, might use texture UV coords tearing
+- Raider scene entity position/rotation not correct when thrown by rocky
 - Numbers above ticking dynamite are not shown correctly sometimes
 - Two buttons in priority list can be hovered/pressed/released at the same time
-- Orange smoke column above lava tiles not shown
 
 ## Technical Debt
 
