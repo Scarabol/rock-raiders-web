@@ -40,7 +40,9 @@ export class MovementSystem extends AbstractGameSystem {
                     positionComponent.position.add(step)
                     positionComponent.surface = terrain.getSurfaceFromWorld(positionComponent.position)
                     positionComponent.markDirty()
-                    sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? AnimEntityActivity.Carry : AnimEntityActivity.Route)
+                    if (sceneEntityComponent) {
+                        sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? AnimEntityActivity.Carry : AnimEntityActivity.Route)
+                    }
                 } else {
                     console.warn(`Entity ${entity} speed (${entitySpeed}) is zero or less`)
                 }
