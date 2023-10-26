@@ -7,6 +7,8 @@ import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
 import { PositionComponent } from '../component/PositionComponent'
 import { HealthComponent } from '../component/HealthComponent'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
+import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 
 export class BulletSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([BulletComponent])
@@ -20,9 +22,11 @@ export class BulletSystem extends AbstractGameSystem {
             .map((e) => {
                 const components = this.ecs.getComponents(e)
                 return {
+                    entity: e,
                     stats: components.get(MonsterStatsComponent)?.stats,
                     pos: components.get(PositionComponent),
                     health: components.get(HealthComponent),
+                    heading: components.get(AnimatedSceneEntityComponent).sceneEntity.rotation.y,
                 }
             }).filter((t) => !!t.stats && !!t.pos && !!t.health)
         for (const entity of entities) {
@@ -47,8 +51,10 @@ export class BulletSystem extends AbstractGameSystem {
                         } else if (bulletComponent.bulletType === EntityType.FREEZER_SHOT) {
                             this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.FreezerHit, t.pos.position, 0, false)
                             t.health.changeHealth(-targetStats.FreezerDamage)
-                            if (targetStats.CanFreeze) {
-                                // TODO Freeze target into block
+                            if (targetStats.CanFreeze && !this.ecs.getComponents(t.entity).has(EntityFrozenComponent)) {
+                                const entityFrozenComponent = new EntityFrozenComponent(this.worldMgr, t.entity, targetStats.FreezerTimeMs, t.pos.position, t.heading)
+                                this.ecs.removeComponent(t.entity, WorldTargetComponent)
+                                this.ecs.addComponent(t.entity, entityFrozenComponent)
                             }
                         } else if (bulletComponent.bulletType === EntityType.PUSHER_SHOT) {
                             this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.PusherHit, t.pos.position, 0, false)

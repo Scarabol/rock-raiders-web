@@ -78,6 +78,7 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
     CanBeShotAt: boolean = false
     CanFreeze: boolean = false
     FreezerTime: number = 0
+    FreezerTimeMs: number = 0
     FreezerDamage: number = 0
     CanLaser: boolean = false
     LaserDamage: number = 0
@@ -102,6 +103,9 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
             return true
         } else if ('CollRadius'.equalsIgnoreCase(unifiedKey)) {
             this.CollRadiusSq = cfgValue * cfgValue
+            return super.assignValue(objKey, unifiedKey, cfgValue)
+        } else if ('FreezerTime'.equalsIgnoreCase(unifiedKey)) {
+            this.FreezerTimeMs = cfgValue * 1000 / 25 // given as 25 per second
             return super.assignValue(objKey, unifiedKey, cfgValue)
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)

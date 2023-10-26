@@ -25,6 +25,7 @@ import { DynamiteExplosionEvent } from '../../event/WorldEvents'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Raider } from '../model/raider/Raider'
+import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -68,6 +69,13 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 const behaviorComponent = components.get(RockMonsterBehaviorComponent)
                 const positionComponent = components.get(PositionComponent)
                 const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
+                if (components.has(EntityFrozenComponent)) {
+                    sceneEntity.removeAllCarried()
+                    behaviorComponent.boulder = null
+                    sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                    behaviorComponent.changeToIdle()
+                    continue
+                }
                 const stats = components.get(MonsterStatsComponent).stats
                 const rockyPos = positionComponent.getPosition2D()
                 switch (behaviorComponent.state) {
