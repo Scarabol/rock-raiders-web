@@ -3,11 +3,11 @@ import { PanelCfg } from '../../cfg/PanelCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
-import { MapPanel } from './MapPanel'
+import { MapView } from './MapView'
 import { SpriteContext } from '../../core/Sprite'
 
 export class RadarPanel extends Panel {
-    readonly map: MapPanel
+    readonly map: MapView
     readonly fill: Panel
     readonly overlay: Panel
     readonly btnToggle: Button
@@ -18,7 +18,7 @@ export class RadarPanel extends Panel {
 
     constructor(parent: BaseElement, panelCfg: PanelCfg, panelFillCfg: PanelCfg, panelOverlayCfg: PanelCfg, buttonsCfg: ButtonRadarCfg) {
         super(parent, panelCfg)
-        this.map = this.addChild(new MapPanel(this))
+        this.map = this.addChild(new MapView(this))
         this.fill = this.addChild(new Panel(this, panelFillCfg))
         this.fill.xIn = 0
         this.fill.yIn = 0

@@ -4,12 +4,11 @@ import { EventKey } from '../../event/EventKeyEnum'
 import { InitRadarMap, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { MapMarkerChange, MapMarkerType } from '../../game/component/MapMarkerComponent'
 import { BaseElement } from '../base/BaseElement'
-import { Panel } from '../base/Panel'
 import { MapSurfaceRect } from './MapSurfaceRect'
 import { MapRenderer } from './MapRenderer'
 import { GameEntity } from '../../game/ECS'
 
-export class MapPanel extends Panel {
+export class MapView extends BaseElement {
     readonly mapRenderer: MapRenderer
     readonly surfaceSprite: SpriteImage
     readonly entitySprite: SpriteImage
@@ -26,7 +25,7 @@ export class MapPanel extends Panel {
     terrainHeight: number = 0
 
     constructor(parent: BaseElement) {
-        super(parent, null)
+        super(parent)
         this.width = 152
         this.height = 149
         this.surfaceSprite = createCanvas(this.width, this.height)
@@ -35,8 +34,8 @@ export class MapPanel extends Panel {
         this.materialSprite = createCanvas(this.width, this.height)
         this.geoScanSprite = createCanvas(this.width, this.height)
         this.mapRenderer = new MapRenderer(this.surfaceSprite, this.entitySprite, this.monsterSprite, this.materialSprite, this.geoScanSprite)
-        this.relX = this.xIn = this.xOut = 15
-        this.relY = this.yIn = this.yOut = 15
+        this.relX = 15
+        this.relY = 15
         this.onClick = (cx: number, cy: number) => {
             const surfaceScale = this.surfaceRectSizeMin / this.surfaceRectSize
             this.offset.x += (cx - this.x - this.width / 2) * surfaceScale
