@@ -16,11 +16,12 @@ export class RadarPanel extends Panel {
     readonly btnTagged: Button
     readonly btnZoomIn: Button
     readonly btnZoomOut: Button
+    lastView: BaseElement
 
     constructor(parent: BaseElement, panelCfg: PanelCfg, panelFillCfg: PanelCfg, panelOverlayCfg: PanelCfg, buttonsCfg: ButtonRadarCfg) {
         super(parent, panelCfg)
-        this.map = this.addChild(new MapView(this))
         this.fill = ResourceManager.getImage(panelFillCfg.filename)
+        this.map = this.addChild(new MapView(this))
         this.overlay = this.addChild(new Panel(this, panelOverlayCfg))
         this.btnToggle = this.addChild(new Button(this, buttonsCfg.panelButtonRadarToggle))
         this.btnToggle.onClick = () => this.toggleState()
@@ -28,6 +29,7 @@ export class RadarPanel extends Panel {
         this.btnMap.onClick = () => {
             this.map.show()
             this.overlay.hide()
+            this.lastView = this.map
             this.btnZoomIn.hidden = this.map.hidden
             this.btnZoomOut.hidden = this.map.hidden
         }
@@ -35,6 +37,7 @@ export class RadarPanel extends Panel {
         this.btnTagged.onClick = () => {
             this.map.hide()
             this.overlay.show()
+            this.lastView = this.overlay
             this.btnZoomIn.hidden = this.map.hidden
             this.btnZoomOut.hidden = this.map.hidden
         }
@@ -46,10 +49,28 @@ export class RadarPanel extends Panel {
         this.btnZoomOut.hidden = this.map.hidden
     }
 
+    toggleState(onDone: () => any = null) {
+        super.toggleState(() => {
+            if (!this.movedIn && this.lastView) {
+                this.lastView.hidden = false
+                if (this.lastView === this.map) {
+                    this.btnZoomIn.hidden = this.map.hidden
+                    this.btnZoomOut.hidden = this.map.hidden
+                }
+            }
+            if (onDone) onDone()
+        })
+        if (this.movedIn) {
+            this.map.hidden = true
+            this.overlay.hidden = true
+        }
+    }
+
     reset() {
         super.reset()
-        this.map.show()
+        this.map.hide()
         this.overlay.hide()
+        this.lastView = this.map
         this.btnZoomIn.hidden = this.map.hidden
         this.btnZoomOut.hidden = this.map.hidden
     }
