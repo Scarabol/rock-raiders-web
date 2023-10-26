@@ -39,11 +39,18 @@ export class MovementSystem extends AbstractGameSystem {
                     }
                 } else if (entitySpeed > 0) {
                     step.clampLength(0, entitySpeed)
-                    positionComponent.position.add(step)
-                    positionComponent.surface = terrain.getSurfaceFromWorld(positionComponent.position)
-                    positionComponent.markDirty()
-                    if (sceneEntityComponent) {
-                        sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? AnimEntityActivity.Carry : AnimEntityActivity.Route)
+                    const targetPos = positionComponent.position.clone().add(step)
+                    const targetSurface = terrain.getSurfaceFromWorld(targetPos)
+                    if (!targetSurface.wallType || statsComponent.enterWall) {
+                        positionComponent.position.copy(targetPos)
+                        positionComponent.surface = targetSurface
+                        positionComponent.markDirty()
+                        if (sceneEntityComponent) {
+                            sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? AnimEntityActivity.Carry : AnimEntityActivity.Route)
+                        }
+                    } else {
+                        this.ecs.removeComponent(entity, WorldTargetComponent)
+                        this.ecs.removeComponent(entity, EntityPushedComponent)
                     }
                 } else {
                     console.warn(`Entity ${entity} speed (${entitySpeed}) is zero or less`)
