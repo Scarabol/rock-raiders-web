@@ -23,7 +23,7 @@ export class FollowerRenderer extends WebGLRenderer {
     angle: number = 0
 
     constructor(readonly canvas: HTMLCanvasElement, readonly scene: Scene, readonly ecs: ECS) {
-        super({antialias: true, canvas: canvas})
+        super({antialias: true, canvas: canvas, powerPreference: 'high-performance'})
         this.camera = new PerspectiveCamera(45, 1, 0.1, 200)
         this.composer = new EffectComposer(this)
         this.composer.addPass(new RenderPass(scene, this.camera))
