@@ -2,7 +2,7 @@ import { AbstractWorkerPool } from './AbstractWorkerPool'
 import { TypedWorkerFallback, WorkerRequestMessage, WorkerResponseMessage } from './TypedWorker'
 import { BitmapFontSystem, BitmapFontWorkerRequest, BitmapFontWorkerRequestType, BitmapFontWorkerResponse } from './BitmapFontWorker'
 import { SpriteImage } from '../core/Sprite'
-import { imgDataToContext } from '../core/ImageHelper'
+import { imgDataToCanvas } from '../core/ImageHelper'
 import { BitmapFontData } from '../core/BitmapFont'
 
 export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerRequest, BitmapFontWorkerResponse> {
@@ -23,6 +23,6 @@ export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerReq
         if (!text) return Promise.resolve(null)
         const message = {type: BitmapFontWorkerRequestType.CREATE_TEXT_IMAGE, fontName: fontName, text: text, maxWidth: maxWidth, autoCenter: autoCenter}
         const response = await this.processMessage(message)
-        return response ? imgDataToContext(response.textImageData).canvas : null
+        return response ? imgDataToCanvas(response.textImageData) : null
     }
 }

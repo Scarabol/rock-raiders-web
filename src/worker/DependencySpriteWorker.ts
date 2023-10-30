@@ -2,7 +2,7 @@ import { TypedWorkerThreaded } from './TypedWorker'
 import { AbstractWorkerSystem } from './AbstractWorkerSystem'
 import { SpriteImage } from '../core/Sprite'
 import { EntityType } from '../game/model/EntityType'
-import { createContext, imgDataToContext } from '../core/ImageHelper'
+import { createContext, imgDataToCanvas } from '../core/ImageHelper'
 import { EntityDependencyChecked } from '../cfg/GameConfig'
 import { BitmapFont, BitmapFontData } from '../core/BitmapFont'
 
@@ -39,12 +39,12 @@ export class DependencySpriteSystem extends AbstractWorkerSystem<DependencySprit
             case DependencySpriteWorkerRequestType.SETUP:
                 this.upgradeNames = request.upgradeNames
                 this.tooltipFont = new BitmapFont(request.tooltipFontData)
-                this.plusSignImg = imgDataToContext(request.plusSignImgData).canvas
-                this.equalsSignImg = imgDataToContext(request.equalSignImgData).canvas
+                this.plusSignImg = imgDataToCanvas(request.plusSignImgData)
+                this.equalsSignImg = imgDataToCanvas(request.equalSignImgData)
                 request.interfaceImageData.forEach((imgData, key) => this.interfaceImages
-                    .set(key.toLowerCase(), imgData.map((imgData) => imgDataToContext(imgData).canvas)))
+                    .set(key.toLowerCase(), imgData.map((imgData) => imgDataToCanvas(imgData))))
                 request.interfaceBuildImageData.forEach((imgData, key) => this.interfaceBuildImages
-                    .set(key.toLowerCase(), imgData.map((imgData) => imgDataToContext(imgData).canvas)))
+                    .set(key.toLowerCase(), imgData.map((imgData) => imgDataToCanvas(imgData))))
                 this.sendResponse(workerRequestHash, null)
                 break
             case DependencySpriteWorkerRequestType.CREATE_SPRITE:
