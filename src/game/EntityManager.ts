@@ -224,10 +224,10 @@ export class EntityManager {
             this.worldMgr.ecs.addComponent(v.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
             EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, v.entity, MapMarkerChange.UPDATE, positionComponent.position))
         })
-        this.undiscoveredSpiders = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
+        this.undiscoveredSpiders = this.removeInRectNew(this.undiscoveredSpiders, minX, maxX, minZ, maxZ, (m) => {
             this.spiders.push(m)
         })
-        this.undiscoveredBats = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
+        this.undiscoveredBats = this.removeInRectNew(this.undiscoveredBats, minX, maxX, minZ, maxZ, (m) => {
             this.bats.push(m)
         })
         this.undiscoveredRockMonsters = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
