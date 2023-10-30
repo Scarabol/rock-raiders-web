@@ -16,7 +16,7 @@ export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerReq
 
     async addFont(fontName: string, fontData: BitmapFontData): Promise<void> {
         const message = {type: BitmapFontWorkerRequestType.ADD_FONT, fontName: fontName, fontData: fontData}
-        await this.broadcast(message)
+        this.broadcast(message)
     }
 
     async createTextImage(fontName: string, text?: string, maxWidth?: number, autoCenter: boolean = true): Promise<SpriteImage> {

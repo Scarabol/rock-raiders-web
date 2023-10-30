@@ -6,7 +6,7 @@
  * File format description: https://www.sandbox.de/osg/lightwave.htm
  */
 
-import { AdditiveBlending, BufferAttribute, BufferGeometry, ClampToEdgeWrapping, Color, DoubleSide, Loader, MirroredRepeatWrapping, RepeatWrapping, Texture, Vector3 } from 'three'
+import { AdditiveBlending, BufferAttribute, BufferGeometry, ClampToEdgeWrapping, DoubleSide, Loader, MirroredRepeatWrapping, RepeatWrapping, Texture, Vector3 } from 'three'
 import { getFilename } from '../core/Util'
 import { VERBOSE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'

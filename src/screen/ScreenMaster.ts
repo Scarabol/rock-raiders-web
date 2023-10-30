@@ -9,12 +9,12 @@ import { ChangeCursor } from '../event/GuiCommand'
 import { SaveScreenshot } from '../event/LocalEvents'
 
 export class ScreenMaster {
-    gameContainer: HTMLElement
-    gameCanvasContainer: HTMLElement
-    layers: ScreenLayer[] = []
+    readonly gameContainer: HTMLElement
+    readonly gameCanvasContainer: HTMLElement
+    readonly layers: ScreenLayer[] = []
+    readonly ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
     width: number = NATIVE_SCREEN_WIDTH
     height: number = NATIVE_SCREEN_HEIGHT
-    ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
 
     constructor() {
         this.gameContainer = getElementByIdOrThrow('game-container')
