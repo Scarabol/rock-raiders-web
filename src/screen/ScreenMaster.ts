@@ -1,4 +1,4 @@
-import { cloneContext } from '../core/ImageHelper'
+import { createCanvas } from '../core/ImageHelper'
 import { getElementByIdOrThrow } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
@@ -128,16 +128,16 @@ export class ScreenMaster {
         return this.layers.filter(l => l.isActive()).sort((a, b) => b.zIndex - a.zIndex)
     }
 
-    createScreenshot(): Promise<HTMLCanvasElement> {
+    async createScreenshot(): Promise<HTMLCanvasElement> {
         const activeLayers = this.getActiveLayersSorted().reverse()
         if (activeLayers.length < 1) return Promise.reject()
-        const context = cloneContext(activeLayers[0].canvas)
-        return new Promise<HTMLCanvasElement>((resolve) => {
-            Promise.all(activeLayers.map((l) => l.takeScreenshotFromLayer())).then((layers) => {
-                layers.forEach((c) => context.drawImage(c, 0, 0))
-                resolve(context.canvas)
-            })
-        })
+        const layers = await Promise.all(activeLayers.map((l) => l.takeScreenshotFromLayer()))
+        const maxLayerWidth = layers.reduce((w, l) => Math.max(w, l.width), 0)
+        const maxLayerHeight = layers.reduce((h, l) => Math.max(h, l.height), 0)
+        const canvas = createCanvas(maxLayerWidth, maxLayerHeight)
+        const context = canvas.getContext('2d')
+        layers.forEach((c) => context.drawImage(c, 0, 0))
+        return canvas
     }
 
     saveScreenshot() {
