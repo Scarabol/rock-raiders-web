@@ -229,9 +229,11 @@ export class EntityManager {
         })
         this.undiscoveredBats = this.removeInRectNew(this.undiscoveredBats, minX, maxX, minZ, maxZ, (m) => {
             this.bats.push(m)
+            this.addMapMarker(m)
         })
         this.undiscoveredRockMonsters = this.removeInRectNew(this.undiscoveredRockMonsters, minX, maxX, minZ, maxZ, (m) => {
             this.rockMonsters.push(m)
+            this.addMapMarker(m)
         })
     }
 
@@ -288,9 +290,7 @@ export class EntityManager {
             case EntityType.BAT:
                 if (discovered) {
                     this.bats.add(entity)
-                    const positionComponent = this.ecs.getComponents(entity).get(PositionComponent)
-                    this.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
-                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
+                    this.addMapMarker(entity)
                 } else {
                     this.undiscoveredBats.add(entity)
                 }
@@ -302,18 +302,14 @@ export class EntityManager {
             case EntityType.SLUG:
                 if (!discovered) console.warn('Slugs should not spawn on undiscovered surfaces!')
                 this.slugs.add(entity)
-                const positionComponent = this.ecs.getComponents(entity).get(PositionComponent)
-                this.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
-                EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
+                this.addMapMarker(entity)
                 break
             case EntityType.ROCK_MONSTER:
             case EntityType.ICE_MONSTER:
             case EntityType.LAVA_MONSTER:
                 if (discovered) {
                     this.rockMonsters.add(entity)
-                    const positionComponent = this.ecs.getComponents(entity).get(PositionComponent)
-                    this.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
-                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
+                    this.addMapMarker(entity)
                 } else {
                     this.undiscoveredRockMonsters.add(entity)
                 }
@@ -331,6 +327,12 @@ export class EntityManager {
                 this.bullets.add(entity)
                 break
         }
+    }
+
+    private addMapMarker(entity: number) {
+        const positionComponent = this.ecs.getComponents(entity).get(PositionComponent)
+        this.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
+        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
     }
 
     removeEntity(entity: GameEntity) {
