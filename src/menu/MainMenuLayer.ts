@@ -12,6 +12,8 @@ import { MainMenuLabelButton } from './MainMenuLabelButton'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 
 export class MainMenuLayer extends ScaledLayer {
+    static readonly SCROLL_AREA_HEIGHT = 180
+
     cfg: MenuEntryCfg
     menuImage: SpriteImage
     items: MainMenuBaseItem[] = []
@@ -88,11 +90,10 @@ export class MainMenuLayer extends ScaledLayer {
         if (event.eventEnum === POINTER_EVENT.MOVE) {
             this.updateItemsHoveredState(event.canvasX, event.canvasY)
             if (this.cfg.canScroll) {
-                const scrollAreaHeight = 100
-                if (event.canvasY < scrollAreaHeight) {
-                    this.setScrollSpeedY(-(scrollAreaHeight - event.canvasY))
-                } else if (event.canvasY > this.fixedHeight - scrollAreaHeight) {
-                    this.setScrollSpeedY(event.canvasY - (this.fixedHeight - scrollAreaHeight))
+                if (event.canvasY < MainMenuLayer.SCROLL_AREA_HEIGHT) {
+                    this.setScrollSpeedY(-(MainMenuLayer.SCROLL_AREA_HEIGHT - event.canvasY))
+                } else if (event.canvasY > this.fixedHeight - MainMenuLayer.SCROLL_AREA_HEIGHT) {
+                    this.setScrollSpeedY(event.canvasY - (this.fixedHeight - MainMenuLayer.SCROLL_AREA_HEIGHT))
                 } else {
                     this.setScrollSpeedY(0)
                 }
@@ -123,7 +124,7 @@ export class MainMenuLayer extends ScaledLayer {
     }
 
     private setScrollSpeedY(deltaY: number) {
-        const nextScrollSpeedY = Math.sign(deltaY) * Math.pow(Math.round(deltaY / 20), 2)
+        const nextScrollSpeedY = Math.sign(deltaY) * Math.pow(Math.round(Math.min(100, deltaY) / 20), 2)
         if (nextScrollSpeedY === this.scrollSpeedY) return
         this.scrollSpeedY = nextScrollSpeedY
         if (!this.scrollSpeedY) {
