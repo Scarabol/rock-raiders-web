@@ -115,7 +115,7 @@ export class TerrainLoader {
         // create hidden caverns
         terrain.forEachSurface((s) => {
             const surface = terrain.getSurfaceOrNull(s.x, s.y)
-            if (predugMap[s.y][s.x] === PredugMap.CAVERN_HIDDEN) {
+            if (predugMap[s.y][s.x] === PredugMap.CAVERN_HIDDEN && !surface.surfaceType.floor) {
                 surface.surfaceType = SurfaceType.HIDDEN_CAVERN
             } else if (predugMap[s.y][s.x] === PredugMap.SLUG_HOLE_HIDDEN) {
                 surface.surfaceType = SurfaceType.HIDDEN_SLUG_HOLE
