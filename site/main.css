@@ -1,4 +1,5 @@
 html, body {
+    height: 100%;
     margin: 0;
     padding: 0;
     background: #333;
@@ -8,7 +9,7 @@ html, body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    height: 100vh;
+    height: 100%;
     touch-action: manipulation;
     justify-content: center;
 }
