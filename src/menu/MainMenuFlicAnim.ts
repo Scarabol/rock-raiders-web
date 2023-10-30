@@ -2,7 +2,7 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { Rect } from '../core/Rect'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { ResourceManager } from '../resource/ResourceManager'
-import { imgDataToContext } from '../core/ImageHelper'
+import { imgDataToCanvas } from '../core/ImageHelper'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { ScaledLayer } from '../screen/layer/ScreenLayer'
 
@@ -12,7 +12,7 @@ export class MainMenuFlicAnim extends MainMenuBaseItem {
 
     constructor(readonly layer: ScaledLayer, flhFilepath: string, rect: Rect) {
         super(rect.x, rect.y, rect.w, rect.h)
-        this.flicImages = ResourceManager.getResource(flhFilepath).map((f) => imgDataToContext(f).canvas)
+        this.flicImages = ResourceManager.getResource(flhFilepath).map((f) => imgDataToCanvas(f))
     }
 
     play(): Promise<void> {

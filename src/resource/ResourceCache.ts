@@ -1,7 +1,7 @@
 import { EntityDependencyChecked, GameConfig } from '../cfg/GameConfig'
 import { Cursor } from './Cursor'
 import { BitmapFontData } from '../core/BitmapFont'
-import { createContext, createDummyImgData, imgDataToContext } from '../core/ImageHelper'
+import { createCanvas, createContext, createDummyImgData, imgDataToCanvas } from '../core/ImageHelper'
 import { SpriteImage } from '../core/Sprite'
 import { iGet } from '../core/Util'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
@@ -96,8 +96,13 @@ export class ResourceCache {
                 if (!animatedCursorData) {
                     let maxHeight = 0
                     const cursorImages = (this.getResource(cursorImageName) as ImageData[]).map((imgData) => {
-                        const context = imgDataToContext(blankPointerImageData)
-                        context.drawImage(imgDataToContext(imgData).canvas, Math.round((blankPointerImageData.width - imgData.width) / 2), Math.round((blankPointerImageData.height - imgData.height) / 2))
+                        const blankCanvas = createCanvas(blankPointerImageData.width, blankPointerImageData.height)
+                        const context = blankCanvas.getContext('2d')
+                        context.putImageData(blankPointerImageData, 0, 0)
+                        const cursorCanvas = imgDataToCanvas(imgData)
+                        const x = Math.round((blankPointerImageData.width - imgData.width) / 2)
+                        const y = Math.round((blankPointerImageData.height - imgData.height) / 2)
+                        context.drawImage(cursorCanvas, x, y)
                         maxHeight = Math.max(maxHeight, context.canvas.height)
                         return context.canvas
                     })
@@ -117,8 +122,10 @@ export class ResourceCache {
         return cacheGetData(cursorImageName).then((animatedCursorData) => {
             if (!animatedCursorData) {
                 const imgData = this.getImageData(cursorImageName)
+                const canvas = createCanvas(imgData.width, imgData.height)
+                canvas.getContext('2d').putImageData(imgData, 0, 0)
                 animatedCursorData = {
-                    dataUrls: this.cursorToDataUrl(imgDataToContext(imgData).canvas),
+                    dataUrls: this.cursorToDataUrl(canvas),
                     maxHeight: imgData.height,
                 }
                 cachePutData(cursorImageName, animatedCursorData).then()
@@ -162,7 +169,7 @@ export class ResourceCache {
         const fromCache = this.dependencySpriteCache.get(depHash)
         if (fromCache) return fromCache
         const imgData = await this.dependencySpriteWorkerPool.createDependenciesSprite(dependencies)
-        const dependencyImage = imgDataToContext(imgData).canvas
+        const dependencyImage = imgDataToCanvas(imgData)
         this.dependencySpriteCache.set(depHash, dependencyImage)
         return dependencyImage
     }

@@ -4,7 +4,7 @@
  * @param height: the desired height of the new context
  * @returns RenderingContext the newly created canvas
  */
-import { SpriteContext } from './Sprite'
+import { SpriteContext, SpriteImage } from './Sprite'
 
 export function createCanvas(width: number, height: number): HTMLCanvasElement {
     const canvas = document.createElement('canvas')
@@ -18,16 +18,13 @@ export function createContext(width: number, height: number): SpriteContext {
         console.error(`Can't create context with size ${width} x ${height}`)
         return createDummyContext(64, 64)
     }
-    let canvas
+    let canvas: SpriteImage
     if (typeof document !== 'undefined') {
         canvas = createCanvas(width, height)
     } else {
         canvas = new OffscreenCanvas(width, height)
     }
-    const context = canvas.getContext('2d')
-    context.width = width
-    context.height = height
-    return context
+    return canvas.getContext('2d')
 }
 
 /**
@@ -78,18 +75,10 @@ export function getPixel(imgData: ImageData, x: number, y: number): { r: number;
     return {r: imgData.data[n], g: imgData.data[n + 1], b: imgData.data[n + 2], a: imgData.data[n + 3]}
 }
 
-export function imgDataToContext(imgData: ImageData): CanvasRenderingContext2D {
-    let canvas
-    if (typeof document !== 'undefined') {
-        canvas = document.createElement('canvas')
-        canvas.width = imgData.width
-        canvas.height = imgData.height
-    } else {
-        canvas = new OffscreenCanvas(imgData.width, imgData.height)
-    }
-    const context = canvas.getContext('2d')
+export function imgDataToCanvas(imgData: ImageData): SpriteImage {
+    const context = createContext(imgData.width, imgData.height)
     context.putImageData(imgData, 0, 0)
-    return context
+    return context.canvas
 }
 
 export function cloneContext(origin: HTMLCanvasElement): CanvasRenderingContext2D {
