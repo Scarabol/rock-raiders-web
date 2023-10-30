@@ -97,10 +97,8 @@ export class ScaledLayer extends ScreenLayer {
     resize(width: number, height: number) {
         super.resize(width, height)
         this.updateScale()
-        setTimeout(() => {
-            this.animationFrame.scale(this.scaleX, this.scaleY)
-            this.animationFrame.notifyRedraw()
-        })
+        this.animationFrame.scale(this.scaleX, this.scaleY)
+        this.animationFrame.notifyRedraw()
     }
 
     show() {

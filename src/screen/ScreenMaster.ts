@@ -107,7 +107,8 @@ export class ScreenMaster {
         const maxHeight = this.gameContainer.offsetHeight
         const idealHeight = Math.round(maxWidth / this.ratio)
         if (idealHeight > maxHeight) {
-            this.resize(Math.round(maxHeight * this.ratio), maxHeight)
+            const width = Math.round(maxHeight * this.ratio)
+            this.resize(width, maxHeight)
         } else {
             this.resize(maxWidth, idealHeight)
         }
