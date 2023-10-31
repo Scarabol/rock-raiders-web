@@ -417,7 +417,7 @@ export class Raider implements Updatable, JobFulfiller {
             const gunPos = this.getPosition()
             gunPos.y += 10
             const targetLocation = targetComponents.get(PositionComponent).getPosition2D()
-            const heading = -this.getPosition2D().sub(targetLocation).angle() + Math.PI / 2
+            const heading = -this.getPosition2D().angleTo(targetLocation) + Math.PI / 2
             const bulletAnim = this.worldMgr.sceneMgr.addMiscAnim(attack.misc, gunPos, heading, true)
             const bulletEntity = this.worldMgr.ecs.addEntity()
             this.worldMgr.ecs.addComponent(bulletEntity, new BulletComponent(bulletAnim, targetLocation, attack.bulletType))

@@ -146,7 +146,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             const surface = components.get(PositionComponent).surface
             const neighbors = surface.neighbors.filter((n) => !!n.fence || n.building?.primarySurface === n || n.building?.secondarySurface === n)
             neighbors.forEach((n) => {
-                const beamHeading = -n.getCenterWorld2D().sub(surface.getCenterWorld2D()).angle() + Math.PI / 2
+                const beamHeading = -n.getCenterWorld2D().angleTo(surface.getCenterWorld2D()) + Math.PI / 2
                 shortBeams.push({lwsFilename: ResourceManager.configuration.miscObjects.ShortElectricFenceBeam, beamPos: surface.getCenterWorld(), beamHeading})
             })
         })

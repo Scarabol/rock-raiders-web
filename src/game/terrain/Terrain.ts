@@ -225,7 +225,7 @@ export class Terrain {
         if (!target) return
         const spawnCenter = spawn.getCenterWorld2D()
         const targetCenter = target.getCenterWorld2D()
-        const angle = -targetCenter.clone().sub(spawnCenter).angle() + Math.PI / 2
+        const angle = -targetCenter.angleTo(spawnCenter) + Math.PI / 2
         const monster = MonsterSpawner.spawnMonster(this.worldMgr, this.emergeCreature, spawnCenter.clone().add(targetCenter).divideScalar(2), angle)
         const components = this.worldMgr.ecs.getComponents(monster)
         const sceneEntity = components.get(AnimatedSceneEntityComponent).sceneEntity
