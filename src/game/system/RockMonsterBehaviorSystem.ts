@@ -27,6 +27,7 @@ import { AnimatedSceneEntity } from '../../scene/AnimatedSceneEntity'
 import { Raider } from '../model/raider/Raider'
 import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
+import { BoulderComponent } from '../component/BoulderComponent'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -152,18 +153,16 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 const targetBuildingSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_BOULDER_THROW_DISTANCE_SQ)
                                 if (targetBuildingSurface) {
                                     this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
-                                    sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetBuildingSurface.getCenterWorld2D()))
+                                    const targetLocation = targetBuildingSurface.getCenterWorld2D()
+                                    sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(targetLocation))
                                     behaviorComponent.state = RockMonsterBehaviorState.THROW
                                     sceneEntity.setAnimation(RockMonsterActivity.Throw, () => {
-                                        // this.worldMgr.sceneMgr.scene.add(behaviorComponent.boulder) // TODO Add boulder as bullet (component)
-                                        this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BoulderExplode, targetBuildingSurface.getCenterWorld(), 0, false) // TODO adapt to monster/level entity type
-                                        const boulderStats = ResourceManager.configuration.weaponTypes.get('boulder')
-                                        const boulderDamage = boulderStats.damageByEntityType.get(behaviorComponent.targetBuilding.entityType)?.[behaviorComponent.targetBuilding.level] || boulderStats.defaultDamage
-                                        const buildingComponents = this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity)
-                                        const healthComponent = buildingComponents.get(HealthComponent)
-                                        healthComponent.changeHealth(-boulderDamage)
-                                        if (healthComponent.triggerAlarm) EventBus.publishEvent(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
                                         sceneEntity.removeAllCarried()
+                                        behaviorComponent.boulder.lookAt(targetBuildingSurface.getCenterWorld())
+                                        this.worldMgr.sceneMgr.scene.add(behaviorComponent.boulder)
+                                        const bulletEntity = this.worldMgr.ecs.addEntity()
+                                        this.worldMgr.ecs.addComponent(bulletEntity, new BoulderComponent(EntityType.BOULDER, behaviorComponent.boulder, behaviorComponent.targetBuilding.entity, behaviorComponent.targetBuilding.buildingType, behaviorComponent.targetBuilding.level, targetLocation))
+                                        this.worldMgr.entityMgr.addEntity(bulletEntity, EntityType.BOULDER)
                                         behaviorComponent.boulder = null
                                         sceneEntity.setAnimation(AnimEntityActivity.Stand)
                                         behaviorComponent.changeToIdle()

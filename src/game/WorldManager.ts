@@ -32,6 +32,7 @@ import { RaiderScareSystem } from './system/RaiderScareSystem'
 import { SlugBehaviorSystem } from './system/SlugBehaviorSystem'
 import { TerrainScannerSystem } from './system/TerrainScannerSystem'
 import { BulletSystem } from './system/BulletSystem'
+import { BoulderSystem } from './system/BoulderSystem'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -66,6 +67,7 @@ export class WorldManager {
         this.ecs.addSystem(new SlugBehaviorSystem(this))
         this.ecs.addSystem(new TerrainScannerSystem(this))
         this.ecs.addSystem(new BulletSystem(this))
+        this.ecs.addSystem(new BoulderSystem())
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {

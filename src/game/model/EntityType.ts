@@ -54,6 +54,8 @@ export enum EntityType {
     FREEZER_SHOT,
     PUSHER_SHOT,
     BIRD_SCARER,
+    BOULDER,
+    BOULDER_ICE,
 }
 
 export type MaterialEntityType = EntityType.ORE | EntityType.CRYSTAL | EntityType.BRICK | EntityType.BARRIER | EntityType.DYNAMITE | EntityType.ELECTRIC_FENCE | EntityType.DEPLETED_CRYSTAL
