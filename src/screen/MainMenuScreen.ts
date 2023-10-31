@@ -16,7 +16,7 @@ export class MainMenuScreen {
     menuLayers: MainMenuLayer[] = []
     loadSaveLayer: LoadSaveLayer
 
-    constructor(screenMaster: ScreenMaster) {
+    constructor(readonly screenMaster: ScreenMaster) {
         ResourceManager.configuration.menu.mainMenuFull.menus.forEach((menuCfg) => {
             let layer: MainMenuLayer
             if (menuCfg.title.equalsIgnoreCase('Main')) {
@@ -82,6 +82,7 @@ export class MainMenuScreen {
             console.error(`Could not load level: ${levelName}`, e)
             return
         }
+        this.screenMaster.loadingLayer.show()
         this.menuLayers.forEach((m) => m.hide())
         EventBus.publishEvent(new LevelSelectedEvent(levelName, levelConf))
         EventBus.publishEvent(new MaterialAmountChanged())

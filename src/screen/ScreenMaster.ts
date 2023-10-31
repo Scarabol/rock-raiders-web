@@ -7,12 +7,14 @@ import { ScreenLayer } from './layer/ScreenLayer'
 import { CursorManager } from './CursorManager'
 import { ChangeCursor } from '../event/GuiCommand'
 import { SaveScreenshot } from '../event/LocalEvents'
+import { LoadingLayer } from './layer/LoadingLayer'
 
 export class ScreenMaster {
     readonly gameContainer: HTMLElement
     readonly gameCanvasContainer: HTMLElement
     readonly layers: ScreenLayer[] = []
     readonly ratio: number = NATIVE_SCREEN_WIDTH / NATIVE_SCREEN_HEIGHT
+    readonly loadingLayer: LoadingLayer
     width: number = NATIVE_SCREEN_WIDTH
     height: number = NATIVE_SCREEN_HEIGHT
 
@@ -45,6 +47,7 @@ export class ScreenMaster {
             })
         })
         this.setupToolbarButtons()
+        this.loadingLayer = this.addLayer(new LoadingLayer(), 100)
     }
 
     private setupToolbarButtons() {

@@ -18,7 +18,6 @@ import { InitLoadingMessage } from './resource/wadworker/InitLoadingMessage'
 import { WorkerResponse } from './worker/WorkerResponse'
 import { WadWorker } from './resource/wadworker/WadWorker'
 import { ScreenMaster } from './screen/ScreenMaster'
-import { LoadingLayer } from './screen/layer/LoadingLayer'
 import { TooltipLayer } from './screen/layer/TooltipLayer'
 import { WadFileSelectionModal } from '../site/wadModal/WadFileSelectionModal'
 import { GithubBox } from '../site/github/github-box'
@@ -36,16 +35,16 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
         case WorkerMessageType.ASSET:
             msg.assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), msg.assetObj))
             msg.sfxKeys?.forEach((sfxKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sfxKey, () => []).push(msg.assetObj))
-            loadingLayer.increaseLoadingState()
+            screenMaster.loadingLayer.increaseLoadingState()
             break
         case WorkerMessageType.MSG:
             wadFileSelectModal.hide()
-            loadingLayer.setLoadingMessage(msg.text)
+            screenMaster.loadingLayer.setLoadingMessage(msg.text)
             break
         case WorkerMessageType.CFG:
             ResourceManager.configuration = msg.cfg
             ResourceManager.startBitmapFontRenderPool()
-            loadingLayer.enableGraphicMode(msg.totalResources)
+            screenMaster.loadingLayer.enableGraphicMode(msg.totalResources)
             ResourceManager.loadDefaultCursor().then(() => EventBus.publishEvent(new ChangeCursor(Cursor.STANDARD)))
             break
         case WorkerMessageType.CACHE_MISS:
@@ -73,7 +72,7 @@ function onWadLoaderMessage(msg: WadWorkerMessage) {
                 await yieldToMainThread()
 
                 // setup complete
-                loadingLayer.hide()
+                screenMaster.loadingLayer.hide()
                 githubBox.hide()
                 clearCacheButton.hide()
                 const params = new URLSearchParams(window.location.search)
@@ -105,7 +104,6 @@ SaveGameManager.loadSaveGames()
 SaveGameManager.loadSaveGameScreenshots()
 if (DEV_MODE) SaveGameManager.loadGame(0)
 const screenMaster = new ScreenMaster()
-const loadingLayer = screenMaster.addLayer(new LoadingLayer(), 100)
 const wadFileSelectModal = new WadFileSelectionModal('game-container', (wad0Url: string, wad1Url: string) => {
     wadWorker.sendMessage(new InitLoadingMessage(wad0Url, wad1Url))
 })
@@ -113,5 +111,5 @@ const githubBox = new GithubBox('game-container')
 const clearCacheButton = new ClearCacheButton('game-container')
 
 // start the game by loading resources
-loadingLayer.show()
+screenMaster.loadingLayer.show()
 wadWorker.sendMessage(null)

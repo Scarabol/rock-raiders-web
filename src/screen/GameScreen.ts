@@ -90,6 +90,7 @@ export class GameScreen {
         this.guiLayer.show()
         this.overlayLayer.show()
         this.sceneMgr.startScene()
+        this.screenMaster.loadingLayer.hide()
     }
 
     hide() {
