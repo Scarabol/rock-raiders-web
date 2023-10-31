@@ -30,7 +30,7 @@ export class BulletSystem extends AbstractGameSystem {
                     health: components.get(HealthComponent),
                     heading: components.get(AnimatedSceneEntityComponent).sceneEntity.rotation.y,
                 }
-            }).filter((t) => !!t.stats && !!t.pos && !!t.health)
+            }).filter((t) => !!t.stats && !!t.pos && !!t.health && t.health.health > 0)
         for (const entity of entities) {
             try {
                 const components = this.ecs.getComponents(entity)
