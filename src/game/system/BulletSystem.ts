@@ -11,6 +11,7 @@ import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
+import { HeadingComponent } from '../component/HeadingComponent'
 
 export class BulletSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([BulletComponent])
@@ -56,6 +57,7 @@ export class BulletSystem extends AbstractGameSystem {
                             if (targetStats.CanFreeze && !this.ecs.getComponents(t.entity).has(EntityFrozenComponent)) {
                                 const entityFrozenComponent = new EntityFrozenComponent(this.worldMgr, t.entity, targetStats.FreezerTimeMs, t.pos.position, t.heading)
                                 this.ecs.removeComponent(t.entity, WorldTargetComponent)
+                                this.ecs.removeComponent(t.entity, HeadingComponent)
                                 this.ecs.addComponent(t.entity, entityFrozenComponent)
                             }
                         } else if (bulletComponent.bulletType === EntityType.PUSHER_SHOT) {
@@ -63,8 +65,9 @@ export class BulletSystem extends AbstractGameSystem {
                             t.health.changeHealth(-targetStats.PusherDamage)
                             if (targetStats.CanPush && !this.ecs.getComponents(t.entity).has(EntityPushedComponent)) {
                                 this.ecs.removeComponent(t.entity, WorldTargetComponent)
+                                this.ecs.removeComponent(t.entity, HeadingComponent)
                                 const pushTarget = t.pos.getPosition2D().add(step.clone().setLength(t.stats.PusherDist))
-                                this.ecs.addComponent(t.entity, new WorldTargetComponent(pushTarget, 1, false))
+                                this.ecs.addComponent(t.entity, new WorldTargetComponent(pushTarget, 1))
                                 this.ecs.addComponent(t.entity, new EntityPushedComponent())
                             }
                         }

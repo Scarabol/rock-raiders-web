@@ -6,6 +6,7 @@ import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity } from '../model/anim/AnimationActivity'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
+import { HeadingComponent } from '../component/HeadingComponent'
 
 export class MovementSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([PositionComponent, WorldTargetComponent, MovableStatsComponent])
@@ -26,6 +27,7 @@ export class MovementSystem extends AbstractGameSystem {
                 const sceneEntityComponent = components.get(AnimatedSceneEntityComponent)
                 if (targetWorld.distanceToSquared(positionComponent.position) <= worldTargetComponent.radiusSq) {
                     this.ecs.removeComponent(entity, WorldTargetComponent)
+                    this.ecs.removeComponent(entity, HeadingComponent)
                     this.ecs.removeComponent(entity, EntityPushedComponent)
                     if (positionComponent.surface.wallType && statsComponent.enterWall) {
                         this.ecs.worldMgr.entityMgr.removeEntity(entity)
@@ -51,6 +53,7 @@ export class MovementSystem extends AbstractGameSystem {
                     } else {
                         // TODO Move entity along the wall until there is no other option
                         this.ecs.removeComponent(entity, WorldTargetComponent)
+                        this.ecs.removeComponent(entity, HeadingComponent)
                         this.ecs.removeComponent(entity, EntityPushedComponent)
                     }
                 } else {
