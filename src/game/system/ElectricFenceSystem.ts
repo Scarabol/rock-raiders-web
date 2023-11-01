@@ -64,7 +64,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         const energizedBuildingSurfaces = this.worldMgr.entityMgr.buildings.filter((b) => b.energized)
             .flatMap((b) => b.buildingSurfaces)
         const toCheck = this.worldMgr.entityMgr.placedFences
-            .map((f) => this.worldMgr.ecs.getComponents(f.entity).get(PositionComponent))
+            .map((f) => this.ecs.getComponents(f.entity).get(PositionComponent))
         energizedBuildingSurfaces.forEach((s) => {
             [[2, 0], [1, 0], [0, 2], [0, 1], [-2, 0], [-1, 0], [0, -2], [0, -1]].forEach((o) => {
                 const next = this.worldMgr.sceneMgr.terrain.getSurface(s.x + o[0], s.y + o[1])

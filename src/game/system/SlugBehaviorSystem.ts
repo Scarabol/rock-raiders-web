@@ -67,13 +67,13 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                         break
                     case SlugBehaviorState.LEECH:
                         if (!behaviorComponent.targetBuilding?.energized) {
-                            this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                            this.ecs.removeComponent(entity, WorldTargetComponent)
                             this.changeToIdle(sceneEntity, behaviorComponent)
                         } else {
                             // console.log('Checking scarer', scarerPositions.map((pos) => pos.getPosition2D().distanceToSquared(slugPos)))
                             const scarerInRange = scarerPositions.find((pos) => pos.getPosition2D().distanceToSquared(slugPos) < stats.AlertRadiusSq)
                             if (scarerInRange) {
-                                this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                                this.ecs.removeComponent(entity, WorldTargetComponent)
                                 this.changeToIdle(sceneEntity, behaviorComponent)
                                 const safeNeighbors = scarerInRange.surface.neighbors.filter((s) => s !== scarerInRange.surface)
                                 const safePos = [...safeNeighbors, scarerInRange.surface].find((s) => s.isWalkable()).getRandomPosition()
@@ -83,7 +83,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                 if (targetSurface) {
                                     if (components.has(WorldTargetComponent)) {
                                         sceneEntity.headTowards(targetSurface.getCenterWorld2D())
-                                        this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                                        this.ecs.removeComponent(entity, WorldTargetComponent)
                                         EventBus.publishEvent(new PowerDrainEvent(new PositionComponent(positionComponent.position, positionComponent.surface)))
                                     }
                                     sceneEntity.setAnimation(SlugActivity.Suck, () => {
@@ -100,7 +100,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                         this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
                                     } else {
                                         console.warn('Slug cannot find path to targets', buildingPathTargets)
-                                        this.worldMgr.ecs.removeComponent(entity, WorldTargetComponent)
+                                        this.ecs.removeComponent(entity, WorldTargetComponent)
                                         this.changeToIdle(sceneEntity, behaviorComponent)
                                     }
                                 }

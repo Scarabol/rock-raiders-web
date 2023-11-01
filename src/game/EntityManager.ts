@@ -15,7 +15,7 @@ import { Raider } from './model/raider/Raider'
 import { RaiderTraining } from './model/raider/RaiderTraining'
 import { updateSafe } from './model/Updateable'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
-import { ECS, GameEntity } from './ECS'
+import { GameEntity } from './ECS'
 import { PositionComponent } from './component/PositionComponent'
 import { AnimatedSceneEntityComponent } from './component/AnimatedSceneEntityComponent'
 import { RockMonsterActivity } from './model/anim/AnimationActivity'
@@ -26,7 +26,6 @@ import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/
 import { SlugBehaviorComponent, SlugBehaviorState } from './component/SlugBehaviorComponent'
 
 export class EntityManager {
-    ecs: ECS
     selection: GameSelection = new GameSelection()
     // entity partitions
     buildings: BuildingEntity[] = []
@@ -251,10 +250,10 @@ export class EntityManager {
 
     private removeInRectNew(listing: GameEntity[], minX: number, maxX: number, minZ: number, maxZ: number, onRemove: (e: GameEntity) => any) {
         return listing.filter((e) => {
-            const pos = this.ecs.getComponents(e).get(PositionComponent).position
+            const pos = this.worldMgr.ecs.getComponents(e).get(PositionComponent).position
             const discovered = pos.x >= minX && pos.x < maxX && pos.z >= minZ && pos.z < maxZ
             if (discovered) {
-                this.ecs.getComponents(e).get(AnimatedSceneEntityComponent).sceneEntity.visible = true
+                this.worldMgr.ecs.getComponents(e).get(AnimatedSceneEntityComponent).sceneEntity.visible = true
                 onRemove(e)
             }
             return !discovered
@@ -285,7 +284,7 @@ export class EntityManager {
     }
 
     addEntity(entity: GameEntity, entityType: EntityType) {
-        const discovered = this.ecs.getComponents(entity).get(PositionComponent)?.isDiscovered()
+        const discovered = this.worldMgr.ecs.getComponents(entity).get(PositionComponent)?.isDiscovered()
         switch (entityType) {
             case EntityType.BAT:
                 if (discovered) {
@@ -330,13 +329,13 @@ export class EntityManager {
     }
 
     private addMapMarker(entity: number) {
-        const positionComponent = this.ecs.getComponents(entity).get(PositionComponent)
-        this.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
+        const positionComponent = this.worldMgr.ecs.getComponents(entity).get(PositionComponent)
+        this.worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
         EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
     }
 
     removeEntity(entity: GameEntity) {
-        const healthComponent = this.ecs.getComponents(entity)?.get(HealthComponent)
+        const healthComponent = this.worldMgr.ecs.getComponents(entity)?.get(HealthComponent)
         const healthBarSprite = healthComponent?.healthBarSprite
         if (healthBarSprite) {
             healthBarSprite.visible = false

@@ -98,7 +98,6 @@ export class WorldManager {
     }
 
     setup(levelConf: LevelEntryCfg) {
-        this.entityMgr.ecs = this.ecs
         this.ecs.reset()
         this.jobSupervisor.reset()
         this.oxygenSystem.setLevelOxygenRate(DEV_MODE ? 0 : levelConf.oxygenRate)

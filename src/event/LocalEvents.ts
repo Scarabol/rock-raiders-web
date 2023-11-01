@@ -79,7 +79,7 @@ export class SelectionChanged extends LocalEvent {
         this.buildingCanUpgrade = entityMgr.selection.building?.canUpgrade()
         this.buildingMissingOreForUpgrade = entityMgr.selection.building?.missingOreForUpgrade()
         const buildingEntity = entityMgr.selection.building?.entity
-        const buildingHealthComponent = buildingEntity ? entityMgr.ecs.getComponents(buildingEntity)?.get(HealthComponent) : null
+        const buildingHealthComponent = buildingEntity ? entityMgr.worldMgr.ecs.getComponents(buildingEntity)?.get(HealthComponent) : null
         this.buildingNeedsRepair = buildingHealthComponent ? buildingHealthComponent.health < buildingHealthComponent.maxHealth : false
         this.buildingCanSwitchPower = !entityMgr.selection.building?.stats.SelfPowered && !entityMgr.selection.building?.stats.PowerBuilding && (entityMgr.selection.building?.energized || entityMgr.selection.building?.surfaces.some((s) => s.energized))
         this.buildingPowerSwitchState = entityMgr.selection.building?.powerSwitch

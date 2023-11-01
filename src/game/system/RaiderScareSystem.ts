@@ -19,7 +19,7 @@ export class RaiderScareSystem extends AbstractGameSystem {
                 const scareComponent = components.get(RaiderScareComponent)
                 this.worldMgr.entityMgr.raiders.forEach((r) => {
                     if (!r.canBeScared()) return
-                    const raiderPos = this.worldMgr.ecs.getComponents(r.entity).get(PositionComponent)
+                    const raiderPos = this.ecs.getComponents(r.entity).get(PositionComponent)
                     const distanceSq = raiderPos.getPosition2D().distanceToSquared(positionComponent.getPosition2D())
                     if (distanceSq >= scareComponent.scareRadiusSq) return
                     r.scared = true

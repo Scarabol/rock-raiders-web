@@ -43,7 +43,6 @@ import { BulletComponent } from '../../component/BulletComponent'
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
     readonly entity: GameEntity
-    readonly infoComponent: RaiderInfoComponent
     readonly tools: RaiderTool[] = []
     readonly trainings: RaiderTraining[] = []
     worldMgr: WorldManager
@@ -73,7 +72,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
-        this.infoComponent = this.worldMgr.ecs.addComponent(this.entity, new RaiderInfoComponent(this.sceneEntity))
+        this.worldMgr.ecs.addComponent(this.entity, new RaiderInfoComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }
@@ -96,7 +95,7 @@ export class Raider implements Updatable, JobFulfiller {
         }
         if (!this.job) {
             this.scared = false
-            this.infoComponent.setBubbleTexture('bubbleIdle')
+            this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture('bubbleIdle')
             this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             return
         }
@@ -199,7 +198,7 @@ export class Raider implements Updatable, JobFulfiller {
             this.setPosition(this.getPosition().add(step.vec))
             this.sceneEntity.setAnimation(this.getRouteActivity())
             if (this.foodLevel > 0) this.foodLevel -= step.vec.lengthSq() / TILESIZE / TILESIZE / 5
-            this.infoComponent.setHungerIndicator(this.foodLevel)
+            this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setHungerIndicator(this.foodLevel)
             return MoveState.MOVED
         }
     }
@@ -299,7 +298,7 @@ export class Raider implements Updatable, JobFulfiller {
     setJob(job: Job, followUpJob: Job = null) {
         if (this.job !== job) this.stopJob()
         this.job = job
-        this.infoComponent.setBubbleTexture(this.job.getJobBubble())
+        this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture(this.job.getJobBubble())
         if (this.job) this.job.assign(this)
         this.followUpJob = followUpJob
         if (this.followUpJob) this.followUpJob.assign(this)
@@ -319,7 +318,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.job = null
         this.followUpJob = null
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
-        this.infoComponent.setBubbleTexture('bubbleIdle')
+        this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture('bubbleIdle')
     }
 
     dropCarried(unAssignFromSite: boolean): void {
@@ -367,7 +366,7 @@ export class Raider implements Updatable, JobFulfiller {
 
     private fight(elapsedMs: number) {
         this.stopJob()
-        this.infoComponent.setBubbleTexture('bubbleCallToArms')
+        this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture('bubbleCallToArms')
         this.scared = false
         const targets = this.worldMgr.entityMgr.getRaiderFightTargets()
         const alarmTarget = this.findShortestPath(targets) // TODO Find closest position where shooting is possible, don't shoot through walls
@@ -438,7 +437,7 @@ export class Raider implements Updatable, JobFulfiller {
         if (this.job?.jobState === JobState.INCOMPLETE) return
         if (this.job) this.job.unAssign(this)
         this.job = this.followUpJob
-        this.infoComponent.setBubbleTexture(this.job?.getJobBubble() || 'bubbleIdle')
+        this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture(this.job?.getJobBubble() || 'bubbleIdle')
         this.followUpJob = null
     }
 

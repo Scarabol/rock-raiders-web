@@ -22,6 +22,7 @@ import { WorldManager } from '../../game/WorldManager'
 import { GameState } from '../../game/model/GameState'
 import { MoveJob } from '../../game/model/job/MoveJob'
 import { MaterialEntity } from '../../game/model/material/MaterialEntity'
+import { RaiderInfoComponent } from '../../game/component/RaiderInfoComponent'
 
 export class GameLayer extends ScreenLayer {
     worldMgr: WorldManager
@@ -191,8 +192,9 @@ export class GameLayer extends ScreenLayer {
             if (event.key === ' ') {
                 GameState.showObjInfo = !GameState.showObjInfo
                 this.entityMgr.raiders.forEach((r) => {
-                    r.infoComponent.bubbleSprite.visible = GameState.showObjInfo
-                    r.infoComponent.hungerSprite.visible = GameState.showObjInfo
+                    const infoComponent = r.worldMgr.ecs.getComponents(r.entity).get(RaiderInfoComponent)
+                    infoComponent.bubbleSprite.visible = GameState.showObjInfo
+                    infoComponent.hungerSprite.visible = GameState.showObjInfo
                 })
             } else if (DEV_MODE && this.entityMgr.selection.surface) {
                 if (event.key === 'c') {
