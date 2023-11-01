@@ -266,7 +266,9 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         behaviorComponent.state = RockMonsterBehaviorState.GATHER
                                         sceneEntity.setAnimation(RockMonsterActivity.Gather, () => {
                                             sceneEntity.setAnimation(AnimEntityActivity.StandCarry)
-                                            behaviorComponent.boulder = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Boulder) // TODO not textured use BoulderAnimation or vertex colors?
+                                            behaviorComponent.boulder = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Boulder)
+                                            const boulderTexture = ResourceManager.getTexture('Creatures/RMonster/greyrock.bmp') // XXX Read boulder texture from config?
+                                            behaviorComponent.boulder.getMaterials().forEach((m) => m.map = boulderTexture)
                                             sceneEntity.pickupEntity(behaviorComponent.boulder)
                                             behaviorComponent.changeToIdle()
                                         })
