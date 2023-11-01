@@ -1,6 +1,6 @@
 import { MapControls } from 'three/examples/jsm/controls/MapControls'
 import { MOUSE, Raycaster, Vector2, Vector3 } from 'three'
-import { DEV_MODE, KEY_PAN_SPEED, MIN_CAMERA_HEIGHT_ABOVE_TERRAIN, NATIVE_UPDATE_INTERVAL } from '../params'
+import { DEV_MODE, KEY_PAN_SPEED, MIN_CAMERA_HEIGHT_ABOVE_TERRAIN, NATIVE_UPDATE_INTERVAL, USE_KEYBOARD_SHORTCUTS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { SceneManager } from '../game/SceneManager'
@@ -32,6 +32,22 @@ export class BirdViewControls extends MapControls {
             this.minPolarAngle = Math.PI / 2 - degToRad(ResourceManager.configuration.main.maxTilt)
             this.maxPolarAngle = Math.PI / 2 - degToRad(ResourceManager.configuration.main.minTilt)
         }
+        if (!USE_KEYBOARD_SHORTCUTS) this.rewriteWASDToArrowKeys()
+    }
+
+    private rewriteWASDToArrowKeys() {
+        [['KeyW', 'ArrowUp'], ['KeyA', 'ArrowLeft'], ['KeyS', 'ArrowDown'], ['KeyD', 'ArrowRight']].forEach((pair) => {
+            this.domElement.addEventListener('keydown', (event: KeyboardEvent) => {
+                if (event.code === pair[0]) {
+                    this.domElement.dispatchEvent(new KeyboardEvent(event.type, {...event, code: pair[1], key: pair[1]}))
+                }
+            })
+            this.domElement.addEventListener('keyup', (event: KeyboardEvent) => {
+                if (event.code === pair[0]) {
+                    this.domElement.dispatchEvent(new KeyboardEvent(event.type, {...event, code: pair[1], key: pair[1]}))
+                }
+            })
+        })
     }
 
     zoom(zoom: number) {

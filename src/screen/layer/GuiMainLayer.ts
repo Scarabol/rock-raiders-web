@@ -13,7 +13,7 @@ import { ChangeCursor, GuiCommand } from '../../event/GuiCommand'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameEvent } from '../../event/GameEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { TOOLTIP_FONT_NAME } from '../../params'
+import { TOOLTIP_FONT_NAME, USE_KEYBOARD_SHORTCUTS } from '../../params'
 import { Cursor } from '../../resource/Cursor'
 import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/GuiEvent'
@@ -152,10 +152,12 @@ export class GuiMainLayer extends ScaledLayer {
         if (this.panelMain.movedIn) return false
         const activeSubPanels = this.panelMain.subPanels.filter((p) => !p.movedIn)
         const activeIconPanelButtons = activeSubPanels.flatMap((p) => p.iconPanelButtons)
-        const buttonWithKey = activeIconPanelButtons.find((b) => b.hotkey === event.key)
-        if (buttonWithKey && !buttonWithKey.isInactive()) {
-            if (event.eventEnum === KEY_EVENT.UP) buttonWithKey.onClick()
-            return true
+        if (USE_KEYBOARD_SHORTCUTS) {
+            const buttonWithKey = activeIconPanelButtons.find((b) => b.hotkey === event.key)
+            if (buttonWithKey && !buttonWithKey.isInactive()) {
+                if (event.eventEnum === KEY_EVENT.UP) buttonWithKey.onClick()
+                return true
+            }
         }
         return false
     }
