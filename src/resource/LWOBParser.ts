@@ -236,6 +236,7 @@ export class LWOBParser {
                     const lastColorByte = this.lwoReader.readUint8() // should be zero
                     if (lastColorByte !== 0) console.warn('Unexpected ignored last color byte is not zero', lastColorByte)
                     material.color.fromArray(colorArray)
+                    if (this.verbose) console.log(`Surface color for ${material.name} is ${material.color.toArray().map((x) => Math.round(x * 255))}`)
                     break
                 case 'FLAG':
                     const flags = this.lwoReader.readUint16()
@@ -364,6 +365,7 @@ export class LWOBParser {
                     } else {
                         material.color.fromArray(textureColorArray)
                     }
+                    if (this.verbose) console.log(`Texture color for ${material.name} is ${material.color.toArray().map((x) => Math.round(x * 255))}`)
                     break
                 case 'TVAL':
                     const textureValue = this.lwoReader.readUint16() / 256
