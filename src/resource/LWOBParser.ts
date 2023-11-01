@@ -376,6 +376,10 @@ export class LWOBParser {
                     if (lTextureFilename.endsWith(' (sequence)') && (sequenceOffset || sequenceFlags || sequenceLoopLength)) {
                         console.warn('Sequence options not yet implemented', lTextureFilename, sequenceOffset, sequenceFlags, sequenceLoopLength) // XXX Implement sequence options
                     }
+                    if (lTextureFilename.trim().equalsIgnoreCase('(none)')) {
+                        material.map = null
+                        continue
+                    }
                     material.transparent = material.transparent || !!lTextureFilename.match(/(.*a)(\d+)(_.+)/)
                     this.textureLoader.load(lTextureFilename, (t) => material.setTextures(t))
                     sequenceOffset = 0
