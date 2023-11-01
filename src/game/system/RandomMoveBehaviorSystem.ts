@@ -4,6 +4,7 @@ import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { PositionComponent } from '../component/PositionComponent'
 import { SurfaceType } from '../terrain/SurfaceType'
 import { RandomMoveComponent } from '../component/RandomMoveComponent'
+import { HeadingComponent } from '../component/HeadingComponent'
 
 export class RandomMoveBehaviorSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([RandomMoveComponent, PositionComponent, MovableStatsComponent])
@@ -23,8 +24,9 @@ export class RandomMoveBehaviorSystem extends AbstractGameSystem {
                     && (n.surfaceType !== SurfaceType.LAVA5 || statsComponent.crossLava)
                     && (n.surfaceType !== SurfaceType.WATER || statsComponent.crossWater))
                     , positionComponent.surface].random()
-                const worldTargetComponent = new WorldTargetComponent(targetSurface.getRandomPosition(), 1)
-                this.ecs.addComponent(entity, worldTargetComponent)
+                const targetLocation = targetSurface.getRandomPosition()
+                this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, 1))
+                this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
             } catch (e) {
                 console.error(e)
             }

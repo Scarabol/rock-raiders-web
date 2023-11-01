@@ -18,6 +18,7 @@ import { MaterialSpawner } from '../entity/MaterialSpawner'
 import { EntityType } from '../model/EntityType'
 import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
+import { HeadingComponent } from '../component/HeadingComponent'
 
 const SLUG_SUCK_DISTANCE_SQ = 25 * 25
 const SLUG_ENTER_DISTANCE_SQ = 5 * 5
@@ -62,28 +63,33 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             } else {
                                 const randomTarget = [positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) => n.isWalkable())].random().getRandomPosition()
                                 this.ecs.addComponent(entity, new WorldTargetComponent(randomTarget, SLUG_ENTER_DISTANCE_SQ))
+                                this.ecs.addComponent(entity, new HeadingComponent(randomTarget))
                             }
                         }
                         break
                     case SlugBehaviorState.LEECH:
                         if (!behaviorComponent.targetBuilding?.energized) {
                             this.ecs.removeComponent(entity, WorldTargetComponent)
+                            this.worldMgr.ecs.removeComponent(entity, HeadingComponent)
                             this.changeToIdle(sceneEntity, behaviorComponent)
                         } else {
                             // console.log('Checking scarer', scarerPositions.map((pos) => pos.getPosition2D().distanceToSquared(slugPos)))
                             const scarerInRange = scarerPositions.find((pos) => pos.getPosition2D().distanceToSquared(slugPos) < stats.AlertRadiusSq)
                             if (scarerInRange) {
                                 this.ecs.removeComponent(entity, WorldTargetComponent)
+                                this.worldMgr.ecs.removeComponent(entity, HeadingComponent)
                                 this.changeToIdle(sceneEntity, behaviorComponent)
                                 const safeNeighbors = scarerInRange.surface.neighbors.filter((s) => s !== scarerInRange.surface)
                                 const safePos = [...safeNeighbors, scarerInRange.surface].find((s) => s.isWalkable()).getRandomPosition()
                                 this.ecs.addComponent(entity, new WorldTargetComponent(safePos, SLUG_ENTER_DISTANCE_SQ))
+                                this.ecs.addComponent(entity, new HeadingComponent(safePos))
                             } else {
                                 const targetSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => s.getCenterWorld2D().distanceToSquared(slugPos) <= SLUG_SUCK_DISTANCE_SQ)
                                 if (targetSurface) {
                                     if (components.has(WorldTargetComponent)) {
                                         sceneEntity.headTowards(targetSurface.getCenterWorld2D())
                                         this.ecs.removeComponent(entity, WorldTargetComponent)
+                                        this.worldMgr.ecs.removeComponent(entity, HeadingComponent)
                                         EventBus.publishEvent(new PowerDrainEvent(new PositionComponent(positionComponent.position, positionComponent.surface)))
                                     }
                                     sceneEntity.setAnimation(SlugActivity.Suck, () => {
@@ -97,10 +103,13 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                     const buildingPathTargets = behaviorComponent.targetBuilding.getTrainingTargets()
                                     const path = pathFinder.findShortestPath(slugPos, buildingPathTargets, stats, false)
                                     if (path && path.locations.length > 0) {
-                                        this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0]))
+                                        const targetLocation = path.locations[0]
+                                        this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation))
+                                        this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
                                     } else {
                                         console.warn('Slug cannot find path to targets', buildingPathTargets)
                                         this.ecs.removeComponent(entity, WorldTargetComponent)
+                                        this.worldMgr.ecs.removeComponent(entity, HeadingComponent)
                                         this.changeToIdle(sceneEntity, behaviorComponent)
                                     }
                                 }
@@ -116,6 +125,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                             } else {
                                 const randomTarget = [positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) => n.isWalkable())].random().getRandomPosition()
                                 this.ecs.addComponent(entity, new WorldTargetComponent(randomTarget, SLUG_ENTER_DISTANCE_SQ))
+                                this.ecs.addComponent(entity, new HeadingComponent(randomTarget))
                             }
                         } else if (behaviorComponent.targetEnter.targetLocation.distanceToSquared(slugPos) <= SLUG_ENTER_DISTANCE_SQ) {
                             this.worldMgr.entityMgr.removeEntity(entity)
@@ -128,10 +138,13 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                         } else if (!components.has(WorldTargetComponent)) {
                             const path = pathFinder.findShortestPath(slugPos, behaviorComponent.targetEnter, stats, false)
                             if (path && path.locations.length > 0) {
-                                this.ecs.addComponent(entity, new WorldTargetComponent(path.locations[0], SLUG_ENTER_DISTANCE_SQ))
+                                const targetLocation = path.locations[0]
+                                this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, SLUG_ENTER_DISTANCE_SQ))
+                                this.ecs.addComponent(entity, new HeadingComponent(targetLocation))
                             } else {
                                 const randomTarget = [positionComponent.surface, ...positionComponent.surface.neighbors.filter((n) => n.isWalkable())].random().getRandomPosition()
                                 this.ecs.addComponent(entity, new WorldTargetComponent(randomTarget, SLUG_ENTER_DISTANCE_SQ))
+                                this.ecs.addComponent(entity, new HeadingComponent(randomTarget))
                             }
                         }
                         break
