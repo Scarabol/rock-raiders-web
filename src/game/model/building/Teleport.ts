@@ -10,6 +10,10 @@ import { SelectionFrameComponent } from '../../component/SelectionFrameComponent
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { PositionComponent } from '../../component/PositionComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
+import { HealthComponent } from '../../component/HealthComponent'
+import { OxygenComponent } from '../../component/OxygenComponent'
+import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
+import { ResourceManager } from '../../../resource/ResourceManager'
 
 type TeleportEntity = Raider | VehicleEntity
 
@@ -38,6 +42,16 @@ export class Teleport {
         entity.worldMgr.sceneMgr.addMeshGroup(entity.sceneEntity)
         entity.sceneEntity.setAnimation(AnimEntityActivity.TeleportIn, () => {
             entity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            let healthComponent: HealthComponent;
+            if (entity.entityType === EntityType.PILOT) {
+                healthComponent = entity.worldMgr.ecs.addComponent(entity.entity, new HealthComponent(false, 16, 10, entity.sceneEntity, true, ResourceManager.getRockFallDamage(entity.entityType, entity.level)))
+                entity.worldMgr.ecs.addComponent(entity.entity, new OxygenComponent(entity.stats.OxygenCoef))
+                entity.worldMgr.ecs.addComponent(entity.entity, new RaiderInfoComponent(entity.sceneEntity))
+            } else {
+                healthComponent = entity.worldMgr.ecs.addComponent(entity.entity, new HealthComponent(false, 24, 14, entity.sceneEntity, false, ResourceManager.getRockFallDamage(entity.entityType, entity.level)))
+            }
+            entity.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
+            entity.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
             const sceneSelectionComponent = entity.worldMgr.ecs.addComponent(entity.entity, new SceneSelectionComponent(entity.sceneEntity, {gameEntity: entity.entity, entityType: entity.entityType}, entity.stats))
             entity.worldMgr.ecs.addComponent(entity.entity, new SelectionFrameComponent(sceneSelectionComponent.pickSphere, entity.stats))
             if (walkOutPos) entity.setJob(new MoveJob(entity, walkOutPos))

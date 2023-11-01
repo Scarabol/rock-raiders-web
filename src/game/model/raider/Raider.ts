@@ -22,13 +22,11 @@ import { RaiderTool } from './RaiderTool'
 import { RaiderTraining } from './RaiderTraining'
 import { EntityType } from '../EntityType'
 import { GameEntity } from '../../ECS'
-import { HealthComponent } from '../../component/HealthComponent'
 import { PositionComponent } from '../../component/PositionComponent'
 import { BeamUpComponent } from '../../component/BeamUpComponent'
 import { AnimatedSceneEntityComponent } from '../../component/AnimatedSceneEntityComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { AnimatedSceneEntity } from '../../../scene/AnimatedSceneEntity'
-import { OxygenComponent } from '../../component/OxygenComponent'
 import { GenericDeathEvent, WorldLocationEvent } from '../../../event/WorldLocationEvent'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 import { RockMonsterBehaviorComponent } from '../../component/RockMonsterBehaviorComponent'
@@ -68,11 +66,6 @@ export class Raider implements Updatable, JobFulfiller {
         this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr.audioListener)
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData('mini-figures/pilot'))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
-        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false, 16, 10, this.sceneEntity, true, ResourceManager.getRockFallDamage(this.entityType, this.level)))
-        this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
-        this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
-        this.worldMgr.ecs.addComponent(this.entity, new OxygenComponent(this.stats.OxygenCoef))
-        this.worldMgr.ecs.addComponent(this.entity, new RaiderInfoComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }

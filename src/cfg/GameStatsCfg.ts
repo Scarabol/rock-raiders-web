@@ -30,6 +30,7 @@ export class VehicleEntityStats extends BaseConfig implements MovableEntityStats
     CanClearRubble: boolean = false
     RouteSpeed: number[] = []
     SurveyRadius: number[] = []
+    OxygenCoef: number = 0
     PathCoef: number = 1
     RubbleCoef: number = 1
     RandomEnterWall: boolean = false

@@ -66,9 +66,6 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr.audioListener)
         aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
-        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(false, 24, 14, this.sceneEntity, false, ResourceManager.getRockFallDamage(this.entityType, this.level)))
-        this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
-        this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
     }

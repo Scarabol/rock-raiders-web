@@ -17,6 +17,10 @@ import { AnimEntityActivity } from './model/anim/AnimationActivity'
 import { PositionComponent } from './component/PositionComponent'
 import { RaiderTrainings } from './model/raider/RaiderTraining'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/MapMarkerComponent'
+import { HealthComponent } from './component/HealthComponent'
+import { OxygenComponent } from './component/OxygenComponent'
+import { RaiderInfoComponent } from './component/RaiderInfoComponent'
+import { ResourceManager } from '../resource/ResourceManager'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -139,6 +143,11 @@ export class ObjectListLoader {
     private spawnRaider(worldPos: Vector2, headingRad: number) {
         const raider = new Raider(this.worldMgr)
         raider.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        const healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, ResourceManager.getRockFallDamage(raider.entityType, raider.level)))
+        this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
+        this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
+        this.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.OxygenCoef))
+        this.worldMgr.ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
         const raiderSceneSelection = this.worldMgr.ecs.addComponent(raider.entity, new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats))
         this.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(raiderSceneSelection.pickSphere, raider.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPos)
@@ -162,6 +171,9 @@ export class ObjectListLoader {
     private spawnVehicle(entityType: VehicleEntityType, worldPos: Vector2, headingRad: number) {
         const vehicle = VehicleFactory.createVehicleFromType(entityType, this.worldMgr)
         vehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        const healthComponent = this.worldMgr.ecs.addComponent(vehicle.entity, new HealthComponent(false, 24, 14, vehicle.sceneEntity, false, ResourceManager.getRockFallDamage(vehicle.entityType, vehicle.level)))
+        this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
+        this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         const vehicleSceneSelection = this.worldMgr.ecs.addComponent(vehicle.entity, new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats))
         this.worldMgr.ecs.addComponent(vehicle.entity, new SelectionFrameComponent(vehicleSceneSelection.pickSphere, vehicle.stats))
         const floorPosition = this.worldMgr.sceneMgr.getFloorPosition(worldPos)
