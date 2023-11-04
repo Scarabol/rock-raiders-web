@@ -14,7 +14,7 @@ export class MenuEntryCfg extends BaseConfig {
     menuImage: string = ''
     autoCenter: boolean = false
     displayTitle: boolean = false
-    overlays: any[] = []
+    overlays: MenuEntryOverlayCfg[] = []
     playRandom: boolean = false
     itemsLabel: MenuLabelItemCfg[] = []
     itemsSlider: MenuSliderItemCfg[] = []
@@ -37,7 +37,7 @@ export class MenuEntryCfg extends BaseConfig {
             }
             return true
         } else if (unifiedKey.match(/overlay\d+/i)) {
-            this.overlays.push(cfgValue)
+            this.overlays.push(new MenuEntryOverlayCfg(cfgValue))
             return true
         }
         return super.assignValue(objKey, unifiedKey, cfgValue)
@@ -51,5 +51,18 @@ export class MenuEntryCfg extends BaseConfig {
         } else {
             return super.parseValue(unifiedKey, cfgValue)
         }
+    }
+}
+
+export class MenuEntryOverlayCfg {
+    flhFilepath: string
+    sfxName: string
+    x: number
+    y: number
+
+    constructor(cfgValue: any) {
+        [this.flhFilepath, this.sfxName, this.x, this.y] = cfgValue
+        this.flhFilepath = `Program Data Files/Data/${this.flhFilepath}`
+        if (this.sfxName.equalsIgnoreCase('SFX_NULL')) this.sfxName = ''
     }
 }

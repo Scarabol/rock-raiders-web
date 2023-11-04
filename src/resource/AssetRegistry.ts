@@ -163,9 +163,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
                 if (sndPath.startsWith('*')) { // XXX no clue what this means... don't loop maybe, see telportup
                     sndPath = sndPath.slice(1)
                 } else if (sndPath.startsWith('@')) {
-                    // sndPath = sndPath.slice(1)
-                    // console.warn(`Sound ${sndPath} must be loaded from program files folder. Not yet implemented!`)
-                    return // TODO implement sounds from program files folder
+                    sndPath = `Program Data Files/Data/${sndPath.slice(1)}`
                 }
                 sndPathToKeys.getOrUpdate(`${sndPath}.wav`, () => []).push(sndKey)
             })
@@ -271,6 +269,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.menuFont)
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.loFont)
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.hiFont)
+            menuCfg.overlays.forEach((overlay) => this.addAsset(this.assetLoader.loadFlhAsset, overlay.flhFilepath))
         })
     }
 
