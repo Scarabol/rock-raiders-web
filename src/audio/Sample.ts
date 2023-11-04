@@ -487,9 +487,4 @@ export enum Sample {
 
     SFX_MusicLoop,
     SFX_AmbientMusicLoop,
-
-    FrontSFX_RockMonster,
-    FrontSFX_Truck,
-    FrontSFX_Sand,
-    FrontSFX_Slug,
 }

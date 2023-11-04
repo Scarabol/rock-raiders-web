@@ -120,12 +120,21 @@ export class AssetLoader {
      * @param path Path inside the WAD file
      * @param callback A callback that is triggered after the file has been loaded
      */
-    loadWavAsset(path: string, callback: (assetNames: string[], obj: any) => any) {
+    async loadWavAsset(path: string, callback: (assetNames: string[], obj: any) => any) {
         let buffer: ArrayBufferLike
         try { // localized wad1 file first, then generic wad0 file
             buffer = this.wad1File.getEntryBuffer(path)
         } catch (e) {
-            buffer = this.wad0File.getEntryBuffer(path)
+            try {
+                buffer = this.wad0File.getEntryBuffer(path)
+            } catch (e) {
+                try {
+                    buffer = await this.cabFile.getFileBuffer(path)
+                } catch (e) {
+                    // console.error(`Could not find sound ${path}`, e) // TODO what is wrong with those files?
+                    callback([path], null)
+                }
+            }
         }
         callback([path], buffer)
     }
