@@ -1,4 +1,4 @@
-import { getFilename } from '../core/Util'
+import { getFilename } from '../../core/Util'
 import { Vector3 } from 'three'
 import { degToRad } from 'three/src/math/MathUtils'
 

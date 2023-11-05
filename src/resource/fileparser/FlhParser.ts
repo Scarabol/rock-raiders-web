@@ -1,4 +1,4 @@
-import { setPixel } from '../core/ImageHelper'
+import { setPixel } from '../../core/ImageHelper'
 
 /**
  * References for FLIC file formats (FLC, FLI and FLH)

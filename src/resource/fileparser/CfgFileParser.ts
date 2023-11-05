@@ -1,7 +1,7 @@
-import { GameConfig } from '../../../cfg/GameConfig'
+import { GameConfig } from '../../cfg/GameConfig'
 import { encodeChar } from './EncodingHelper'
-import { VERBOSE } from '../../../params'
-import { yieldToMainThread } from '../../../core/Util'
+import { VERBOSE } from '../../params'
+import { yieldToMainThread } from '../../core/Util'
 
 const enum PARSING_STATE {
     LOOKING_FOR_KEY,
