@@ -7,6 +7,7 @@ import { OverwriteCfg } from './OverwriteCfg'
 export class GameMenuCfg extends BaseConfig {
     levelText: LevelTextCfg = new LevelTextCfg()
     pausedMenu: MenuCfg = new MenuCfg()
+    saveMenu: MenuCfg = new MenuCfg()
     mainMenuFull: MenuCfg = new MenuCfg()
     optionsMenu: MenuCfg = new MenuCfg()
     saveGame: string = ''
@@ -34,6 +35,8 @@ export class GameMenuCfg extends BaseConfig {
             this.pausedMenu.setFromCfgObj(cfgValue)
             const helpWindowCycle = this.pausedMenu.menus[1].itemsCycle[0]
             ;[helpWindowCycle.labelOn, helpWindowCycle.labelOff] = [helpWindowCycle.labelOff, helpWindowCycle.labelOn] // XXX uplift config parsing workaround
+        } else if ('SaveMenu'.equalsIgnoreCase(unifiedKey)) {
+            this.saveMenu.setFromCfgObj(cfgValue)
         } else if ('MainMenuFull'.equalsIgnoreCase(unifiedKey)) {
             this.mainMenuFull.setFromCfgObj(cfgValue)
         } else if ('OptionsMenu'.equalsIgnoreCase(unifiedKey)) {
