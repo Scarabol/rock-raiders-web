@@ -11,6 +11,8 @@ import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
 import { LevelSelectedEvent, MaterialAmountChanged } from '../event/WorldEvents'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { SoundManager } from '../audio/SoundManager'
+import { Sample } from '../audio/Sample'
 
 export class MainMenuScreen {
     menuLayers: MainMenuLayer[] = []
@@ -67,6 +69,11 @@ export class MainMenuScreen {
     }
 
     showMainMenu(index: number = 0) {
+        const oldIndex = this.menuLayers.findIndex((m) => m.active)
+        if (oldIndex === 0) {
+            SoundManager.playSample(Sample.SFX_RockWipe, false)
+            // TODO play MenuWipe (rockwipe.lws) animation, too
+        }
         this.menuLayers.forEach((m, i) => i === index ? m.show() : m.hide())
     }
 
