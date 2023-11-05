@@ -52,7 +52,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add first-person and shoulder camera
 
 - Add screen shake for exploding dynamites
-- Add rockfall transition when switching in main menu
 - Show loading screen when starting a level
 - Show FLT mini-figure animation with mission briefing
 - Change cursor to X and play sound when click on gui layer is not consumed
@@ -92,6 +91,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Cosmetics
 
+- Missing rockfall animation when switching in main menu
 - Sparkles over recharge seam have wrong offset and rotation in Level 24 and Level 13
 - Lava rockies texture not using correct UV coordinates
 - Show health percentage in vehicle tooltip as power
