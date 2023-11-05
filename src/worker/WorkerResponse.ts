@@ -1,4 +1,4 @@
-import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
+import { WorkerMessageType } from './WorkerMessageType'
 
 export class WorkerResponse {
     type: WorkerMessageType

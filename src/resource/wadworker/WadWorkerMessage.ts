@@ -1,5 +1,5 @@
 import { GameConfig } from '../../cfg/GameConfig'
-import { WorkerMessageType } from './WorkerMessageType'
+import { WorkerMessageType } from '../../worker/WorkerMessageType'
 
 export class WadWorkerMessage {
     type: WorkerMessageType = null

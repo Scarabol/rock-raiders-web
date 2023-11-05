@@ -82,7 +82,11 @@ export class OverlayLayer extends ScaledLayer {
     }
 
     setup(dialogTitle: string, objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
-        this.panelBriefing.setup(dialogTitle, objectiveText, objectiveBackImgCfg)
+        if (!this.panelBriefing) { // TODO Method setup may be called before briefing panel is initialized
+            console.warn('Briefing panel not yet initialized and will not work in the future')
+        } else {
+            this.panelBriefing.setup(dialogTitle, objectiveText, objectiveBackImgCfg)
+        }
         this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
     }
 

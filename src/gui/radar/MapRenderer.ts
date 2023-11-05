@@ -2,7 +2,7 @@ import { TypedWorker, TypedWorkerFallback, TypedWorkerFrontend } from '../../wor
 import { WorkerResponse } from '../../worker/WorkerResponse'
 import { MapSurfaceRect } from './MapSurfaceRect'
 import { MapRendererMessage, MapRendererResponse, MapRendererWorker } from '../../worker/MapRendererWorker'
-import { WorkerMessageType } from '../../resource/wadworker/WorkerMessageType'
+import { WorkerMessageType } from '../../worker/WorkerMessageType'
 import { generateUUID } from 'three/src/math/MathUtils'
 import { MapMarkerType } from '../../game/component/MapMarkerComponent'
 

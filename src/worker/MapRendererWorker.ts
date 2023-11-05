@@ -1,5 +1,5 @@
 import { TypedWorkerBackend, TypedWorkerThreaded } from './TypedWorker'
-import { WorkerMessageType } from '../resource/wadworker/WorkerMessageType'
+import { WorkerMessageType } from './WorkerMessageType'
 import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { MAP_MAX_UPDATE_INTERVAL, MAP_PANEL_SURFACE_RECT_MARGIN, TILESIZE } from '../params'
 import { SpriteContext, SpriteImage } from '../core/Sprite'

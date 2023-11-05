@@ -1,7 +1,7 @@
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import '../site/main.css'
 import { WadWorkerMessage } from './resource/wadworker/WadWorkerMessage'
-import { WorkerMessageType } from './resource/wadworker/WorkerMessageType'
+import { WorkerMessageType } from './worker/WorkerMessageType'
 import { ResourceManager } from './resource/ResourceManager'
 import { SoundManager } from './audio/SoundManager'
 import { WadLoader } from './resource/wadworker/WadLoader'
@@ -111,5 +111,4 @@ const githubBox = new GithubBox('game-container')
 const clearCacheButton = new ClearCacheButton('game-container')
 
 // start the game by loading resources
-screenMaster.loadingLayer.show()
 wadWorker.sendMessage(null)

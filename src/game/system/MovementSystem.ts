@@ -49,6 +49,7 @@ export class MovementSystem extends AbstractGameSystem {
                             sceneEntityComponent.sceneEntity.setAnimation(sceneEntityComponent.sceneEntity.carriedByIndex.size > 0 ? AnimEntityActivity.Carry : AnimEntityActivity.Route)
                         }
                     } else {
+                        // TODO Move entity along the wall until there is no other option
                         this.ecs.removeComponent(entity, WorldTargetComponent)
                         this.ecs.removeComponent(entity, EntityPushedComponent)
                     }
