@@ -5,4 +5,5 @@ console.log(`Rock Raider Web v${APP_VERSION}`)
 
 console.time('Total asset loading time')
 
+import('three')
 import('./main')

@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { threeMinifier } from '@yushijinhun/three-minifier-rollup'
 
 // noinspection JSUnusedGlobalSymbols
 export default defineConfig({
@@ -14,5 +15,8 @@ export default defineConfig({
     },
     build: {
         sourcemap: true
-    }
+    },
+    plugins: [
+        { ...threeMinifier(), enforce: "pre" },
+    ]
 })
