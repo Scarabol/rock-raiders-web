@@ -7,11 +7,11 @@
  */
 
 import { AdditiveBlending, BufferAttribute, BufferGeometry, ClampToEdgeWrapping, DoubleSide, Loader, MirroredRepeatWrapping, RepeatWrapping, Texture, Vector3 } from 'three'
-import { getFilename } from '../core/Util'
-import { VERBOSE } from '../params'
-import { SceneMesh } from '../scene/SceneMesh'
-import { SequenceTextureMaterial } from '../scene/SequenceTextureMaterial'
-import { ResourceManager } from './ResourceManager'
+import { getFilename } from '../../core/Util'
+import { VERBOSE } from '../../params'
+import { SceneMesh } from '../../scene/SceneMesh'
+import { SequenceTextureMaterial } from '../../scene/SequenceTextureMaterial'
+import { ResourceManager } from '../ResourceManager'
 import { UVData } from './LWOUVParser'
 
 /*************************/

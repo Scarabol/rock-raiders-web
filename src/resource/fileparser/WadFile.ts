@@ -1,16 +1,9 @@
-import { encodeChar } from './parser/EncodingHelper'
-
-export interface WadData {
-    buffer: Int8Array
-    entryIndexByName: Map<string, number>
-    fLength: number[]
-    fStart: number[]
-}
+import { encodeChar } from './EncodingHelper'
 
 /**
  * Handles the extraction of single files from a bigger WAD data blob
  */
-export class WadFile implements WadData {
+export class WadFile {
     buffer: Int8Array = null
     entryIndexByName: Map<string, number> = new Map()
     fLength: number[] = []

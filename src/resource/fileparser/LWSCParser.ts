@@ -6,9 +6,9 @@
 
 import { Euler, KeyframeTrack, NumberKeyframeTrack, Quaternion, QuaternionKeyframeTrack, StringKeyframeTrack, Vector3, VectorKeyframeTrack } from 'three'
 import { degToRad } from 'three/src/math/MathUtils'
-import { Sample } from '../audio/Sample'
-import { getFilename } from '../core/Util'
-import { VERBOSE } from '../params'
+import { Sample } from '../../audio/Sample'
+import { getFilename } from '../../core/Util'
+import { VERBOSE } from '../../params'
 
 export class LWSCData {
     durationSeconds: number = null

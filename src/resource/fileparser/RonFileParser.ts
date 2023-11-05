@@ -1,6 +1,6 @@
 // The RockRaidersObjectNotation (RON) format is related to JSON
 
-import { VERBOSE } from '../../../params'
+import { VERBOSE } from '../../params'
 
 export class RonFileParser {
     static parse(filename: string, content: string) {

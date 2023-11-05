@@ -3,7 +3,7 @@ import { Updatable } from '../game/model/Updateable'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from './SceneMesh'
 import { getPath } from '../core/Util'
-import { LWSCData } from '../resource/LWSCParser'
+import { LWSCData } from '../resource/fileparser/LWSCParser'
 import { SceneAudioMesh } from './SceneAudioMesh'
 
 export class AnimationGroup extends Group implements Updatable {

@@ -1,4 +1,4 @@
-import { ObjectListEntryCfg } from '../../../cfg/ObjectListEntryCfg'
+import { ObjectListEntryCfg } from '../../cfg/ObjectListEntryCfg'
 
 export class WadParser {
     static parseMap(buffer: Uint8Array) {

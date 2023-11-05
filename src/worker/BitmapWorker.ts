@@ -1,5 +1,5 @@
 import { TypedWorkerThreaded } from './TypedWorker'
-import { BitmapWithPalette } from '../resource/wadworker/parser/BitmapWithPalette'
+import { BitmapWithPalette } from '../resource/fileparser/BitmapWithPalette'
 import { AbstractWorkerSystem } from './AbstractWorkerSystem'
 
 export enum BitmapWorkerRequestType {

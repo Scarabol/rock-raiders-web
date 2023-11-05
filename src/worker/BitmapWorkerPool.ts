@@ -1,4 +1,4 @@
-import { BitmapWithPalette } from '../resource/wadworker/parser/BitmapWithPalette'
+import { BitmapWithPalette } from '../resource/fileparser/BitmapWithPalette'
 import { BitmapSystem, BitmapWorkerRequest, BitmapWorkerRequestType, BitmapWorkerResponse } from './BitmapWorker'
 import { AbstractWorkerPool } from './AbstractWorkerPool'
 import { TypedWorkerFallback, WorkerRequestMessage, WorkerResponseMessage } from './TypedWorker'
