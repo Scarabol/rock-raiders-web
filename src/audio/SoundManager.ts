@@ -48,7 +48,7 @@ export class SoundManager {
         if (sfxBuffers.length < 1) return null
         const data = sfxBuffers.random().slice(0) // slice used to create copy, because array gets auto detached after decode
         SoundManager.sfxAudioTarget = SoundManager.sfxAudioTarget || AudioContext.getContext().createGain()
-        SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx / 10
+        SoundManager.sfxAudioTarget.gain.value = SaveGameManager.getSfxVolume()
         if (SaveGameManager.currentPreferences.toggleSfx) SoundManager.sfxAudioTarget.connect(AudioContext.getContext().destination)
         const audioBuffer = await AudioContext.getContext().decodeAudioData(data)
         SoundManager.audioBufferCache.set(sfxName, audioBuffer)
