@@ -162,8 +162,6 @@ export class AssetRegistry extends Map<string, WadAsset> {
             sndFilePaths.forEach(sndPath => {
                 if (sndPath.startsWith('*')) { // XXX no clue what this means... don't loop maybe, see telportup
                     sndPath = sndPath.slice(1)
-                } else if (sndPath.startsWith('@')) {
-                    sndPath = `Program Data Files/Data/${sndPath.slice(1)}`
                 }
                 sndPathToKeys.getOrUpdate(`${sndPath}.wav`, () => []).push(sndKey)
             })

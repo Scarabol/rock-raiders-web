@@ -37,6 +37,7 @@ export const DEFAULT_AUTO_GAME_SPEED = false
 export const TOOLTIP_DELAY_TEXT_MENU = 50
 export const TOOLTIP_DELAY_TEXT_SCENE = 1000
 export const TOOLTIP_DELAY_SFX = 1000
+export const TOOLTIP_DELAY_SFX_MENU = 500
 export const DEFAULT_FONT_NAME = 'Interface/Fonts/Font5_Hi.bmp'
 export const TOOLTIP_FONT_NAME = 'Interface/Fonts/tooltipfont.bmp'
 export const MIN_CAMERA_HEIGHT_ABOVE_TERRAIN = 5

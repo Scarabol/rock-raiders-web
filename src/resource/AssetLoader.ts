@@ -129,10 +129,14 @@ export class AssetLoader {
                 buffer = this.wad0File.getEntryBuffer(path)
             } catch (e) {
                 try {
-                    buffer = await this.cabFile.getFileBuffer(path)
+                    buffer = await this.cabFile.getFileBuffer(`0007-German Files/Data/${path.slice(1)}`) // TODO support other languages
                 } catch (e) {
-                    // console.error(`Could not find sound ${path}`, e) // TODO what is wrong with those files?
-                    callback([path], null)
+                    try {
+                        buffer = await this.cabFile.getFileBuffer(`Program Data Files/Data/${path.slice(1)}`)
+                    } catch (e) {
+                        // console.error(`Could not find sound ${path}`, e) // XXX stats.wav and Atmosdel.wav can only be found on ISO-File
+                        callback([path], null)
+                    }
                 }
             }
         }
