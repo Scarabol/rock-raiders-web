@@ -12,7 +12,8 @@ export class SceneAudioMesh extends SceneMesh {
     constructor(audioListener: AudioListener) {
         super()
         this.audioNode = new PositionalAudio(audioListener)
-        this.audioNode.setRefDistance(TILESIZE / 2)
+        this.audioNode.setRefDistance(TILESIZE * 5)
+        this.audioNode.setRolloffFactor(10)
         this.add(this.audioNode)
     }
 
