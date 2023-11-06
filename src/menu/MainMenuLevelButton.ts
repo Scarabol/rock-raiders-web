@@ -4,11 +4,16 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { SaveGameManager } from '../resource/SaveGameManager'
+import { UiElementCallback } from './UiElementState'
+import { clearTimeoutSafe } from '../core/Util'
+import { TOOLTIP_DELAY_SFX_MENU } from '../params'
 
 export class MainMenuLevelButton extends MainMenuBaseItem {
     imgActive: SpriteImage = null
     imgInactive: SpriteImage = null
     imgCross: SpriteImage = null
+    tooltipTimeout: NodeJS.Timeout = null
+    onShowTooltip: () => void = null
 
     constructor(
         readonly layer: MainMenuLayer,
@@ -43,9 +48,25 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
         )
     }
 
+    set onHoverChange(callback: UiElementCallback) {
+        super.onHoverChange = () => {
+            if (this.onShowTooltip) {
+                if (this.hover) {
+                    if (!this.tooltipTimeout) {
+                        this.tooltipTimeout = setTimeout(() => this.onShowTooltip(), TOOLTIP_DELAY_SFX_MENU)
+                    }
+                } else {
+                    this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
+                }
+            }
+            callback()
+        }
+    }
+
     reset() {
         super.reset()
         this.disabled = this.isLocked()
+        this.tooltipTimeout = clearTimeoutSafe(this.tooltipTimeout)
     }
 
     draw(context: SpriteContext) {

@@ -6,6 +6,7 @@ import { MainMenuLayer } from './MainMenuLayer'
 import { MainMenuLevelButton } from './MainMenuLevelButton'
 import { MainMenuPanel } from './MainMenuPanel'
 import { MainMenuWindow } from './MainMenuWindow'
+import { SoundManager } from '../audio/SoundManager'
 
 export class LevelSelectLayer extends MainMenuLayer {
     constructor(menuCfg: MenuEntryCfg, allLevels: boolean) {
@@ -22,6 +23,13 @@ export class LevelSelectLayer extends MainMenuLayer {
                 if (levelButton.isLocked()) return
                 const levelScore = SaveGameManager.getLevelScoreString(levelKey)
                 levelTextWindow.setSecondLine(levelButton.hover ? level.fullName + levelScore : ' ')
+            }
+            levelButton.onShowTooltip = () => {
+                const levelNum = parseInt(levelKey.slice(-2))
+                const tutPrefix = levelKey.toLowerCase().startsWith('tutorial') ? 'T' : ''
+                const swapped = levelNum === 2 ? 5 : (levelNum === 5 ? 2 : levelNum) // XXX read from config
+                const tooltipName = `Stream_LevelName_${tutPrefix}Level${!!tutPrefix ? levelNum : swapped}`
+                SoundManager.playSound(tooltipName, true)
             }
             this.items.push(levelButton)
         })
