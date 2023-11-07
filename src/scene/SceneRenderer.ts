@@ -46,8 +46,8 @@ export class SceneRenderer extends WebGLRenderer {
         })
     }
 
-    dispose() {
-        super.dispose()
+    stopRendering() {
+        this.dispose()
         this.debugHelper.hide()
         this.renderInterval = clearIntervalSafe(this.renderInterval)
         this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
