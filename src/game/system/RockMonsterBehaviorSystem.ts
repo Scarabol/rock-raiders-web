@@ -393,7 +393,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             raiderPositionComponent.surface = this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(raiderPositionComponent.position)
             raiderPositionComponent.markDirty()
             sceneEntity.depositParent.remove(raider.sceneEntity)
-            this.worldMgr.sceneMgr.scene.add(raider.sceneEntity)
+            this.worldMgr.sceneMgr.addMeshGroup(raider.sceneEntity)
             raider.sceneEntity.scale.copy(prevScale)
             sceneEntity.setAnimation(AnimEntityActivity.Stand)
             behaviorComponent.state = prevState

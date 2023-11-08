@@ -47,7 +47,7 @@ export class MonsterSpawner {
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(spiderStats))
                 if (spiderStats.RandomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - spiderStats.RandomMoveTime) * 1000))
                 break
-            case EntityType.BAT: // TODO make bats appear in flocks
+            case EntityType.BAT:
                 positionComponent.floorOffset = TILESIZE / 2
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/bat'))
                 sceneEntity.setAnimation(AnimEntityActivity.Route)

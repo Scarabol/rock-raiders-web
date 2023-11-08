@@ -58,10 +58,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.9.0 - Polishing
 
-- Background music and soundtrack
 - Tutorial levels and helper features
 - Use same team for all missions and add names to raiders
 - Auto switch from portrait to landscape mode in fullscreen
+- Background music and soundtrack (needs files from ISO-File)
 - Fix all remaining bugs
 
 ### v1.0.0 - Final Release
@@ -78,15 +78,12 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Large Cat not usable to carry vehicles in Level 19
 - Damage and blow up buildings with lava erosion
 - Make idle raider leave lava fields
-- Multitouch breaks camera on mobile
 
 ### Nice to have
 
 - Save game state in browser cache to allow reload
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Do not allow touch events to move scene camera while build mode selection is active
-- Camera can get stuck on mobile browsers when using multiple pointer gestures
-- Rendering issue on mobile with icon panel and mission briefing, clearing rect seems to small
 - Hardware cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position manipulation
 
 ### Cosmetics

@@ -10,7 +10,7 @@ export abstract class AbstractWorkerPool<M, R> {
 
     protected abstract createWorker(): Worker
 
-    protected abstract attachFallbackSystem(worker: TypedWorkerFallback<WorkerRequestMessage<M>, WorkerResponseMessage<R>>)
+    protected abstract attachFallbackSystem(worker: TypedWorkerFallback<WorkerRequestMessage<M>, WorkerResponseMessage<R>>): void
 
     startPool(poolSize: number, setupMessage: M): this {
         for (let c = 0; c < poolSize; c++) {
@@ -30,7 +30,7 @@ export abstract class AbstractWorkerPool<M, R> {
         return this
     }
 
-    private sendBroadcasts(worker) {
+    private sendBroadcasts(worker: TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>) {
         this.broadcastHistory.forEach((broadcast) => {
             this.lastRequestId++
             this.lastRequestId++
@@ -47,20 +47,20 @@ export abstract class AbstractWorkerPool<M, R> {
 
     private createTypedWorker(): TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>> {
         try {
-            const wadWorker = new TypedWorkerFrontend(this.createWorker(),
+            const wadWorker: TypedWorkerFrontend<WorkerRequestMessage<M>, WorkerResponseMessage<R>> = new TypedWorkerFrontend(this.createWorker(),
                 (r: WorkerResponseMessage<R>) => this.onWorkerResponse(wadWorker, r))
             return wadWorker
         } catch (e) {
             console.warn('Could not setup threaded worker!\nUsing fallback to main thread, expect reduced performance.', e)
-            const wadWorker = new TypedWorkerFallback<WorkerRequestMessage<M>, WorkerResponseMessage<R>>(
+            const wadWorker: TypedWorkerFallback<WorkerRequestMessage<M>, WorkerResponseMessage<R>> = new TypedWorkerFallback(
                 (r: WorkerResponseMessage<R>) => this.onWorkerResponse(wadWorker, r))
             this.attachFallbackSystem(wadWorker)
             return wadWorker
         }
     }
 
-    protected processMessage(request: M) {
-        let workerRequestHash = request?.['hash']
+    protected processMessage(request: M & { hash?: string }): Promise<R> {
+        let workerRequestHash = request.hash
         if (!workerRequestHash) {
             this.lastRequestId++
             workerRequestHash = `message-${this.lastRequestId}`
@@ -86,7 +86,7 @@ export abstract class AbstractWorkerPool<M, R> {
         })
     }
 
-    private onWorkerResponse(worker, response: WorkerResponseMessage<R>) {
+    private onWorkerResponse(worker: TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>, response: WorkerResponseMessage<R>) {
         if (response.workerRequestHash) {
             const requests = this.openRequests.get(response.workerRequestHash)
             if (requests) {

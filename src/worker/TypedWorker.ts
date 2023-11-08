@@ -9,7 +9,7 @@ export class WorkerResponseMessage<T> {
 }
 
 export interface TypedWorker<M, R> {
-    sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[])
+    sendMessage(message: M, transfer?: (Transferable | OffscreenCanvas)[]): void
 
     terminate(): void
 }
@@ -33,7 +33,7 @@ export class TypedWorkerFrontend<M, R> implements TypedWorker<M, R> {
 export interface TypedWorkerBackend<M, R> {
     onMessageFromFrontend: (message: M) => any
 
-    sendResponse(response: R, transfer?: Transferable[])
+    sendResponse(response: R, transfer?: Transferable[]): void
 }
 
 export class TypedWorkerThreaded<M, R> implements TypedWorkerBackend<M, R> {
