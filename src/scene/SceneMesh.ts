@@ -3,7 +3,7 @@ import { SequenceTextureMaterial } from './SequenceTextureMaterial'
 
 export class SceneMesh extends Mesh {
     constructor(geometry?: BufferGeometry, material?: Material | Material[], name?: string) {
-        super(geometry, material);
+        super(geometry, material)
         this.name = name ?? ''
     }
 

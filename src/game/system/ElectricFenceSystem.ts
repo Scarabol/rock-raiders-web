@@ -128,13 +128,13 @@ export class ElectricFenceSystem extends AbstractGameSystem {
         }
         const longBeams = studProtectedSurfaces.map((surface) => {
             const lwsFilename = ResourceManager.configuration.miscObjects.LongElectricFenceBeam
-            const beamPos = surface.getCenterWorld();
+            const beamPos = surface.getCenterWorld()
             const surfaceLeft = this.worldMgr.sceneMgr.terrain.getSurface(surface.x - 1, surface.y)
             const surfaceRight = this.worldMgr.sceneMgr.terrain.getSurface(surface.x + 1, surface.y)
             let beamHeading = 0
             if ((surfaceLeft.fence || surfaceLeft.building) && (surfaceRight.fence || surfaceRight.building)) {
                 beamPos.x -= TILESIZE
-                beamHeading = Math.PI / 2;
+                beamHeading = Math.PI / 2
             } else {
                 beamPos.z -= TILESIZE
             }

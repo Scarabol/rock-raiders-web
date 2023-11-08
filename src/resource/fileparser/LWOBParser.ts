@@ -360,7 +360,7 @@ export class LWOBParser {
                     ]
                     const lastTextureColorByte = this.lwoReader.readUint8() // should be zero
                     if (lastTextureColorByte !== 0) console.warn('Unexpected ignored last texture color byte is not zero', lastTextureColorByte)
-                    if (textureColorArray[0]  === 0 && textureColorArray[1]  === 0 && textureColorArray[0]  === 0) {
+                    if (textureColorArray[0] === 0 && textureColorArray[1] === 0 && textureColorArray[0] === 0) {
                         // TODO only apply, if texture is actually set
                         material.color.set(0xFFFFFF) // Default color in three.js is 0xFFFFFF instead of 0x000000
                     } else {
