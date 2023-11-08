@@ -42,7 +42,7 @@ export class Teleport {
         entity.worldMgr.sceneMgr.addMeshGroup(entity.sceneEntity)
         entity.sceneEntity.setAnimation(AnimEntityActivity.TeleportIn, () => {
             entity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-            let healthComponent: HealthComponent;
+            let healthComponent: HealthComponent
             if (entity.entityType === EntityType.PILOT) {
                 healthComponent = entity.worldMgr.ecs.addComponent(entity.entity, new HealthComponent(false, 16, 10, entity.sceneEntity, true, ResourceManager.getRockFallDamage(entity.entityType, entity.level)))
                 entity.worldMgr.ecs.addComponent(entity.entity, new OxygenComponent(entity.stats.OxygenCoef))
