@@ -9,7 +9,6 @@ import { NerpRunner } from '../nerp/NerpRunner'
 export class SoundManager {
     static sfxBuffersByKey: Map<string, ArrayBuffer[]> = new Map()
     static audioBufferCache: Map<string, AudioBuffer> = new Map()
-    static audioContext: AudioContext
     static sfxAudioTarget: GainNode
     static readonly playingAudio: Set<PositionalAudio> = new Set()
     static skipVoiceLines: boolean = false
@@ -29,7 +28,7 @@ export class SoundManager {
         this.getSoundBuffer(soundName).then((audioBuffer) => {
             try {
                 if (!audioBuffer) return
-                const source = SoundManager.audioContext.createBufferSource()
+                const source = AudioContext.getContext().createBufferSource()
                 source.buffer = audioBuffer
                 source.connect(SoundManager.sfxAudioTarget)
                 source.start()
@@ -48,18 +47,17 @@ export class SoundManager {
         })
         if (sfxBuffers.length < 1) return null
         const data = sfxBuffers.random().slice(0) // slice used to create copy, because array gets auto detached after decode
-        SoundManager.audioContext = SoundManager.audioContext || new (window['AudioContext'] || window['webkitAudioContext'])()
-        SoundManager.sfxAudioTarget = SoundManager.sfxAudioTarget || SoundManager.audioContext.createGain()
+        SoundManager.sfxAudioTarget = SoundManager.sfxAudioTarget || AudioContext.getContext().createGain()
         SoundManager.sfxAudioTarget.gain.value = SaveGameManager.currentPreferences.volumeSfx / 10
-        if (SaveGameManager.currentPreferences.toggleSfx) SoundManager.sfxAudioTarget.connect(SoundManager.audioContext.destination)
-        const audioBuffer = await SoundManager.audioContext.decodeAudioData(data)
+        if (SaveGameManager.currentPreferences.toggleSfx) SoundManager.sfxAudioTarget.connect(AudioContext.getContext().destination)
+        const audioBuffer = await AudioContext.getContext().decodeAudioData(data)
         SoundManager.audioBufferCache.set(sfxName, audioBuffer)
         return audioBuffer
     }
 
     static toggleSfx() {
         if (SaveGameManager.currentPreferences.toggleSfx) {
-            SoundManager.sfxAudioTarget.connect(SoundManager.audioContext.destination)
+            SoundManager.sfxAudioTarget.connect(AudioContext.getContext().destination)
         } else {
             SoundManager.sfxAudioTarget.disconnect()
         }

@@ -120,7 +120,7 @@ export async function start() {
                 GameState.numOre = Number(params.get('numOre')) || 0
                 GameState.numBrick = Number(params.get('numBrick')) || 0
                 ObjectListLoader.numRaider = Number(params.get('numRaider')) || 0
-                ObjectListLoader.startVehicle = params.get('vehicle')
+                ObjectListLoader.startVehicle = params.get('vehicle') || ''
                 const loadGame = params.get('loadGame')
                 if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))
                 if (entry === 'level') mainMenuScreen.showLevelSelection()

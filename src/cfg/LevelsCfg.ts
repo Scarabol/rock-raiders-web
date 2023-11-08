@@ -39,7 +39,7 @@ export class LevelEntryCfg extends BaseConfig {
     highFogColourRGB: number[] = [0, 0, 0]
     fogRate: number = 0
     fallinMultiplier: number = 0
-    numberOfLandSlidesTillCaveIn: number = 0
+    numberOfLandSlidesTillCaveIn: number = 0 // TODO after this number of fallins the area of effect is increased from 1 to 6
     noFallins: boolean = false // this does not disable fallins, compare with level05
     oxygenRate: number = 0 // 0 - 100
     surfaceMap: string = ''
