@@ -31,10 +31,21 @@ html, body {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-    margin-top: 10vh;
-    margin-bottom: 10vh;
     height: 80vh;
-    margin-left: -80px;
+    margin: 10vh inherit 10vh -80px;
+}
+
+@media (aspect-ratio <= 1.333333) {
+    #game-container {
+        flex-direction: column;
+    }
+
+    .mobile-helper-toolbar {
+        width: 100%;
+        flex-direction: row;
+        margin: -80px 10vw 0;
+        height: auto;
+    }
 }
 
 .mobile-helper-toolbar button {
