@@ -98,9 +98,10 @@ export class TerrainLoader {
                                         break
                                     case SurfaceType.RECHARGE_SEAM:
                                         terrain.rechargeSeams.add(surface)
+                                        const position = new Vector3(0.5, 0.5 + surface.terrain.getHeightOffset(surface.x, surface.y), 0.5)
                                         const floorNeighbor = surface.neighbors.find((n) => n.surfaceType.floor)
                                         const angle = Math.atan2(floorNeighbor.y - surface.y, surface.x - floorNeighbor.x) + Math.PI / 2
-                                        const grp = worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.RechargeSparkle, new Vector3(0.5, 2, 0.5), angle, true)
+                                        const grp = worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.RechargeSparkle, position, angle, true)
                                         grp.scale.setScalar(1 / TILESIZE)
                                         surface.mesh.add(grp)
                                         break
