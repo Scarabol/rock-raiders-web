@@ -26,7 +26,8 @@ export class AnimationGroup extends Group implements Updatable {
     }
 
     protected resolveMesh(lowerName: string): SceneMesh {
-        return ResourceManager.getLwoModel(getPath(this.lwsFilepath) + lowerName) || new SceneMesh()
+        if (!lowerName) return null
+        return ResourceManager.getLwoModel(getPath(this.lwsFilepath) + lowerName)
     }
 
     private createMeshList(lwscData: LWSCData, audioListener: AudioListener) {
@@ -40,7 +41,7 @@ export class AnimationGroup extends Group implements Updatable {
                     mesh = new SceneMesh()
                 }
             } else {
-                mesh = this.resolveMesh(obj.lowerName)
+                mesh = this.resolveMesh(obj.lowerName) || new SceneMesh()
             }
             mesh.name = obj.lowerName
             mesh.castShadow = obj.castShadow

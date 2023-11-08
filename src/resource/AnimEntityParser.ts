@@ -174,11 +174,11 @@ export class AnimEntityParser {
         return this.entityType
     }
 
-    private parsePolyBodies(value, polyBodies: Map<string, string>) {
+    private parsePolyBodies(value: object, polyBodies: Map<string, string>) {
         Object.keys(value).forEach((key) => {
             const polyKey = key.startsWith('!') ? key.slice(1) : key
             const fileName = value[key]
-            const filePath = 'NULL'.equalsIgnoreCase(fileName) ? 'hidden' : `${this.path + fileName}.lwo`
+            const filePath = 'NULL'.equalsIgnoreCase(fileName) ? 'hidden' : `${fileName}.lwo`
             polyBodies.set(polyKey.toLowerCase(), filePath)
         })
     }
