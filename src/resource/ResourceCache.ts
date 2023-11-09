@@ -67,8 +67,8 @@ export class ResourceCache {
         })
     }
 
-    static addFont(fontName: string): Promise<void> {
-        return this.bitmapFontWorkerPool.addFont(fontName, this.getResource(fontName))
+    static async addFont(fontName: string): Promise<void> {
+        return await this.bitmapFontWorkerPool.addFont(fontName, this.getResource(fontName))
     }
 
     static getTooltipText(tooltipKey: string): string {

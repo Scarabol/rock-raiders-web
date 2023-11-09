@@ -76,14 +76,16 @@ export abstract class AbstractWorkerPool<M, R> {
         return new Promise<R>((resolve) => this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(resolve))
     }
 
-    protected broadcast(broadcast: M) {
+    protected broadcast(broadcast: M): Promise<R>[] {
         this.broadcastHistory.add(broadcast)
+        const result: Promise<R>[] = []
         this.allWorkers.forEach((worker) => {
             this.lastRequestId++
             const message = {workerRequestHash: `message-${this.lastRequestId}`, request: broadcast}
             worker.sendMessage(message)
-            this.openRequests.getOrUpdate(message.workerRequestHash, () => [])
+            result.push(new Promise<R>((resolve) => this.openRequests.getOrUpdate(message.workerRequestHash, () => []).push(resolve)))
         })
+        return result
     }
 
     private onWorkerResponse(worker: TypedWorker<WorkerRequestMessage<M>, WorkerResponseMessage<R>>, response: WorkerResponseMessage<R>) {
