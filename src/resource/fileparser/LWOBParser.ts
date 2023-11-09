@@ -559,7 +559,7 @@ class LWOBFileReader {
             }
             if (length % 2 !== 0) this.skip(1) // if string is uneven, extra nullbyte is skipped
         }
-        return new TextDecoder().decode(new Uint8Array(charBuffer))
+        return String.fromCharCode.apply(null, charBuffer)
     }
 
     readStringArray(size: number): string[] {

@@ -39,7 +39,7 @@ export class CabFileReader {
             char = this.readUint8()
             if (char !== 0) charCodes.push(char)
         } while (char !== 0)
-        return new TextDecoder().decode(new Uint8Array(charCodes))
+        return String.fromCharCode.apply(null, charCodes)
     }
 
     readBuffer(bufferLength: number): ArrayBuffer {
