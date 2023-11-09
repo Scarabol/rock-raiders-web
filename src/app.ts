@@ -100,6 +100,8 @@ export async function start() {
             ResourceManager.addFont('Interface/Fonts/FSFont.bmp'),
             ResourceManager.addFont('Interface/Fonts/RSWritten.bmp'),
             ResourceManager.addFont(TOOLTIP_FONT_NAME),
+            ResourceManager.addFont('Interface/Fonts/MbriefFont2.bmp'),
+            ResourceManager.addFont('Interface/Fonts/MbriefFont.bmp'),
         ]).then(async () => {
             console.timeEnd('Total asset loading time')
             console.log(`Loading of about ${(assetLoader.assetRegistry.size)} assets complete!`)

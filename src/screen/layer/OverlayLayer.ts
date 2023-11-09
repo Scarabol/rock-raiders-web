@@ -19,7 +19,7 @@ import { GameResultEvent, RestartGameEvent } from '../../event/WorldEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
 
 export class OverlayLayer extends ScaledLayer {
-    rootElement: BaseElement = new BaseElement(null)
+    rootElement: BaseElement
     panels: Panel[] = []
     panelBriefing: BriefingPanel
     panelOptions: OptionsPanel
@@ -27,32 +27,28 @@ export class OverlayLayer extends ScaledLayer {
 
     constructor() {
         super()
-        Promise.all([
-            ResourceManager.addFont('interface/fonts/MbriefFont2.bmp'),
-            ResourceManager.addFont('interface/fonts/MbriefFont.bmp'),
-        ]).then(() => {
-            this.panelPause = this.addPanel(new PausePanel(this.rootElement, ResourceManager.configuration.menu.pausedMenu, this.canvas.width, this.canvas.height))
-            this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, ResourceManager.configuration.menu.optionsMenu, this.canvas.width, this.canvas.height))
-            this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
-            // link items
-            this.panelPause.onContinueGame = () => this.setActivePanel(null)
-            this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
-            this.panelPause.onAbortGame = () => EventBus.publishEvent(new GameResultEvent(GameResultState.QUIT))
-            this.panelPause.onRestartGame = () => EventBus.publishEvent(new RestartGameEvent())
-            this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
-            this.panelOptions.onContinueMission = () => this.setActivePanel(null)
-            this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
-        })
-        this.animationFrame.onRedraw = (context) => {
-            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-            this.rootElement.onRedraw(context)
-        }
+        this.rootElement = new BaseElement(null)
         this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
         this.rootElement.publishEvent = (event: GuiCommand) => {
             EventBus.publishEvent(event)
         }
         this.rootElement.registerEventListener = (eventKey: EventKey, callback: (event: GameEvent) => any) => {
             EventBus.registerEventListener(eventKey, callback)
+        }
+        this.panelPause = this.addPanel(new PausePanel(this.rootElement, ResourceManager.configuration.menu.pausedMenu, this.canvas.width, this.canvas.height))
+        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, ResourceManager.configuration.menu.optionsMenu, this.canvas.width, this.canvas.height))
+        this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
+        // link items
+        this.panelPause.onContinueGame = () => this.setActivePanel(null)
+        this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
+        this.panelPause.onAbortGame = () => EventBus.publishEvent(new GameResultEvent(GameResultState.QUIT))
+        this.panelPause.onRestartGame = () => EventBus.publishEvent(new RestartGameEvent())
+        this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
+        this.panelOptions.onContinueMission = () => this.setActivePanel(null)
+        this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
+        this.animationFrame.onRedraw = (context) => {
+            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            this.rootElement.onRedraw(context)
         }
         this.animationFrame.notifyRedraw()
         EventBus.registerEventListener(EventKey.SHOW_OPTIONS, () => this.setActivePanel(this.panelOptions))
