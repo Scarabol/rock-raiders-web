@@ -13,7 +13,7 @@ import { ChangeCursor, GuiCommand } from '../../event/GuiCommand'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameEvent } from '../../event/GameEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { TOOLTIP_FONT_NAME, USE_KEYBOARD_SHORTCUTS } from '../../params'
+import { USE_KEYBOARD_SHORTCUTS } from '../../params'
 import { Cursor } from '../../resource/Cursor'
 import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/GuiEvent'
@@ -26,7 +26,7 @@ import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 
 export class GuiMainLayer extends ScaledLayer {
-    rootElement: BaseElement = new BaseElement(null)
+    rootElement: BaseElement
     panels: Panel[] = []
     panelRadar: RadarPanel
     panelMessages: MessagePanel
@@ -43,52 +43,48 @@ export class GuiMainLayer extends ScaledLayer {
     constructor() {
         super()
         ResourceManager.startDependencySpriteRenderPool()
-        Promise.all([
-            ResourceManager.addFont(TOOLTIP_FONT_NAME),
-            ResourceManager.addFont('Interface/FrontEnd/Menu_Font_Hi.bmp'),
-        ]).then(() => {
-            const panelsCfg = ResourceManager.configuration.panels
-            const buttonsCfg = ResourceManager.configuration.buttons
-            // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
-            this.panelEncyclopedia = this.addPanel(new Panel(this.rootElement, panelsCfg.panelEncyclopedia))
-            this.panelInformation = this.addPanel(new InformationPanel(this.rootElement, panelsCfg.panelInformation))
-            this.panelInfoDock = this.addPanel(new InfoDockPanel(this.rootElement, panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, ResourceManager.configuration.infoMessages, this.panelInformation))
-            this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, ResourceManager.configuration.panelRotationControl))
-            this.panelPriorityList = this.addPanel(new PriorityListPanel(this.rootElement, panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, ResourceManager.configuration.prioritiesImagePositions, ResourceManager.configuration.priorityImages))
-            this.panelTopPanel = this.addPanel(new TopPanel(this.rootElement, panelsCfg.panelTopPanel, buttonsCfg.panelTopPanel))
-            this.panelMain = this.addPanel(new MainPanel(this.rootElement))
-            this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(this.rootElement, panelsCfg.panelCrystalSideBar, buttonsCfg.panelCrystalSideBar))
-            this.panelMessagesSide = this.addPanel(new Panel(this.rootElement, panelsCfg.panelMessagesSide))
-            this.panelMessages = this.addPanel(new MessagePanel(this.rootElement, panelsCfg.panelMessages, ResourceManager.configuration.textMessagesWithImages))
-            this.panelRadar = this.addPanel(new RadarPanel(this.rootElement, panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
-            // link panels
-            this.panelTopPanel.btnCallToArms.onClick = () => {
-                EventBus.publishEvent(new ToggleAlarmEvent(this.panelTopPanel.btnCallToArms.toggleState))
-            }
-            EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
-                this.panelTopPanel.btnCallToArms.setToggleState(event.alarmState)
-            })
-            this.panelTopPanel.btnOptions.onClick = () => {
-                EventBus.publishEvent(new ShowOptionsEvent())
-            }
-            this.panelTopPanel.btnPriorities.onClick = () => {
-                if (this.panelTopPanel.btnPriorities.toggleState) {
-                    this.panelMain.setMovedIn(true, () => this.panelPriorityList.setMovedIn(false))
-                } else {
-                    this.panelPriorityList.setMovedIn(true, () => this.panelMain.setMovedIn(false))
-                }
-            }
-        })
-        this.animationFrame.onRedraw = (context) => {
-            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-            this.rootElement.onRedraw(context)
-        }
+        const panelsCfg = ResourceManager.configuration.panels
+        const buttonsCfg = ResourceManager.configuration.buttons
+        this.rootElement = new BaseElement(null)
         this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
         this.rootElement.publishEvent = (event: GuiCommand) => {
             EventBus.publishEvent(event)
         }
         this.rootElement.registerEventListener = (eventKey: EventKey, callback: (event: GameEvent) => any) => {
             EventBus.registerEventListener(eventKey, callback)
+        }
+        // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
+        this.panelEncyclopedia = this.addPanel(new Panel(this.rootElement, panelsCfg.panelEncyclopedia))
+        this.panelInformation = this.addPanel(new InformationPanel(this.rootElement, panelsCfg.panelInformation))
+        this.panelInfoDock = this.addPanel(new InfoDockPanel(this.rootElement, panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, ResourceManager.configuration.infoMessages, this.panelInformation))
+        this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, ResourceManager.configuration.panelRotationControl))
+        this.panelPriorityList = this.addPanel(new PriorityListPanel(this.rootElement, panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, ResourceManager.configuration.prioritiesImagePositions, ResourceManager.configuration.priorityImages))
+        this.panelTopPanel = this.addPanel(new TopPanel(this.rootElement, panelsCfg.panelTopPanel, buttonsCfg.panelTopPanel))
+        this.panelMain = this.addPanel(new MainPanel(this.rootElement))
+        this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(this.rootElement, panelsCfg.panelCrystalSideBar, buttonsCfg.panelCrystalSideBar))
+        this.panelMessagesSide = this.addPanel(new Panel(this.rootElement, panelsCfg.panelMessagesSide))
+        this.panelMessages = this.addPanel(new MessagePanel(this.rootElement, panelsCfg.panelMessages, ResourceManager.configuration.textMessagesWithImages))
+        this.panelRadar = this.addPanel(new RadarPanel(this.rootElement, panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
+        // link panels
+        this.panelTopPanel.btnCallToArms.onClick = () => {
+            EventBus.publishEvent(new ToggleAlarmEvent(this.panelTopPanel.btnCallToArms.toggleState))
+        }
+        EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
+            this.panelTopPanel.btnCallToArms.setToggleState(event.alarmState)
+        })
+        this.panelTopPanel.btnOptions.onClick = () => {
+            EventBus.publishEvent(new ShowOptionsEvent())
+        }
+        this.panelTopPanel.btnPriorities.onClick = () => {
+            if (this.panelTopPanel.btnPriorities.toggleState) {
+                this.panelMain.setMovedIn(true, () => this.panelPriorityList.setMovedIn(false))
+            } else {
+                this.panelPriorityList.setMovedIn(true, () => this.panelMain.setMovedIn(false))
+            }
+        }
+        this.animationFrame.onRedraw = (context) => {
+            context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+            this.rootElement.onRedraw(context)
         }
         this.animationFrame.notifyRedraw()
         new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
