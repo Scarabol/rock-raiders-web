@@ -6,6 +6,8 @@ import { imgDataToCanvas } from '../core/ImageHelper'
 import { BitmapFontData } from '../core/BitmapFont'
 
 export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerRequest, BitmapFontWorkerResponse> {
+    readonly knownFonts: Set<string> = new Set()
+
     protected createWorker() {
         return new Worker(new URL('./BitmapFontWorker', import.meta.url), {type: 'module'}) // do not change this line otherwise no worker.js is exported for production
     }
@@ -15,6 +17,11 @@ export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerReq
     }
 
     async addFont(fontName: string, fontData: BitmapFontData): Promise<void> {
+        if (this.knownFonts.has(fontName.toLowerCase())) {
+            console.warn(`Font ${fontName} already known in pool`)
+            return
+        }
+        this.knownFonts.add(fontName.toLowerCase())
         const message = {type: BitmapFontWorkerRequestType.ADD_FONT, fontName: fontName, fontData: fontData}
         this.broadcast(message)
     }
