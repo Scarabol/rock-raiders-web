@@ -27,7 +27,7 @@ export class MainMenuIconButton extends MainMenuBaseItem {
         this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x
         this.y = layer.cfg.position[1] + cfg.y
         this.actionName = cfg.actionName
-        if (this.actionName === 'Next') this.targetIndex = Number(cfg.target.substring('menu'.length)) - 1
+        if (this.actionName === 'Next') this.targetIndex = Number(cfg.target.slice('menu'.length)) - 1
     }
 
     set onPressed(callback: UiElementCallback) {

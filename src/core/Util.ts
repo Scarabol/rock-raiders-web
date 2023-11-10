@@ -1,19 +1,19 @@
 export function getPath(url: string): string {
     if (!url) return url
     let strUrl = url.toString().replace(/\\/g, '/')
-    if (strUrl.startsWith('/')) strUrl = strUrl.substring(1)
+    if (strUrl.startsWith('/')) strUrl = strUrl.slice(1)
     const lastInd = strUrl.lastIndexOf('/')
-    strUrl = strUrl.substring(0, lastInd + 1)
-    if (strUrl.startsWith('/')) strUrl = strUrl.substring(1)
+    strUrl = strUrl.slice(0, lastInd + 1)
+    if (strUrl.startsWith('/')) strUrl = strUrl.slice(1)
     return strUrl
 }
 
 export function getFilename(url: string): string {
     if (!url) return url
     let strUrl = url.toString().replace(/\\/g, '/')
-    if (strUrl.startsWith('/')) strUrl = strUrl.substring(1)
+    if (strUrl.startsWith('/')) strUrl = strUrl.slice(1)
     const lastInd = strUrl.lastIndexOf('/')
-    return strUrl.substring(lastInd + 1)
+    return strUrl.slice(lastInd + 1)
 }
 
 export function iGet(obj: any, ...keys: string[]): any {

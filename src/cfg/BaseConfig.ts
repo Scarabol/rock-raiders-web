@@ -19,7 +19,7 @@ export class BaseConfig {
     }
 
     unifyKey(cfgKey: string): string {
-        return (cfgKey.startsWith('!') ? cfgKey.substring(1) : cfgKey)
+        return (cfgKey.startsWith('!') ? cfgKey.slice(1) : cfgKey)
             .replace(/_/g, '') // Activity_Stand
             .replace(/-/g, '') // Geo-dome
             .toLowerCase()
