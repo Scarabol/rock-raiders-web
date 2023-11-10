@@ -36,7 +36,7 @@ export async function start() {
     const cfgFiles = assetLoader.wad1File.filterEntryNames('\\.cfg')
     if (cfgFiles.length < 1) throw new Error('Invalid second WAD file given! No config file present at root level.')
     if (cfgFiles.length > 1) console.warn(`Found multiple config files ${cfgFiles} will proceed with first one ${cfgFiles[0]} only`)
-    ResourceManager.configuration = await CfgFileParser.parse(assetLoader.wad1File.getEntryData(cfgFiles[0]))
+    ResourceManager.configuration = await CfgFileParser.parse(assetLoader.wad1File.getEntryArrayView(cfgFiles[0]))
     await assetLoader.assetRegistry.registerAllAssets(ResourceManager.configuration) // dynamically register all assets from config
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')
     await Promise.all([

@@ -94,18 +94,18 @@ export class AssetLoader {
     }
 
     loadObjectiveTexts(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const txtContent = this.wad1File.getEntryData(name)
-        const result = new ObjectiveTextParser().parseObjectiveTextFile(txtContent)
+        const view = this.wad1File.getEntryArrayView(name)
+        const result = new ObjectiveTextParser().parseObjectiveTextFile(view)
         callback([name], result)
     }
 
     loadMapAsset(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const buffer = this.wad0File.getEntryData(name)
-        if (buffer.length < 13 || String.fromCharCode.apply(String, buffer.slice(0, 3)) !== 'MAP') {
+        const view = this.wad0File.getEntryArrayView(name)
+        if (view.length < 13 || String.fromCharCode(...view.slice(0, 3)) !== 'MAP') {
             console.error(`Invalid map data provided for: ${name}`)
             return
         }
-        const map = WadParser.parseMap(buffer)
+        const map = WadParser.parseMap(view)
         callback([name], map)
     }
 
@@ -166,13 +166,14 @@ export class AssetLoader {
     }
 
     async loadFlhAsset(filename: string, callback: (assetNames: string[], obj: any) => any) {
-        let flhContent: ArrayBuffer
+        let flhContent: DataView
         try {
-            flhContent = this.wad0File.getEntryBuffer(filename)
+            flhContent = this.wad0File.getEntryDataView(filename)
         } catch (e) {
-            flhContent = await this.cabFile.getFileBuffer(filename)
+            const arrayBuffer = await this.cabFile.getFileBuffer(filename)
+            flhContent = new DataView(arrayBuffer)
         }
-        const flhFrames = new FlhParser().parse(flhContent)
+        const flhFrames = new FlhParser(flhContent).parse()
         callback([filename], flhFrames)
     }
 

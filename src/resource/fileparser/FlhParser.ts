@@ -12,7 +12,6 @@ import { setPixel } from '../../core/ImageHelper'
  */
 
 export class FlhParser {
-    dataView: DataView = null
     fileLength: number = null
     flicFileType: number = null
     lengthFrames: number = null
@@ -22,8 +21,10 @@ export class FlhParser {
     depth: number = null
     offsetFirstFrame: number = null
 
-    parse(flhContent: ArrayBufferLike): ImageData[] {
-        this.dataView = new DataView(flhContent)
+    constructor(readonly dataView: DataView) {
+    }
+
+    parse(): ImageData[] {
         this.parseHeader()
         this.parseChunks()
         return this.frames
@@ -49,11 +50,10 @@ export class FlhParser {
         for (let chunkStart = this.offsetFirstFrame; chunkStart < this.fileLength;) {
             const chunkLength = this.getDWord(chunkStart)
             const chunkType = this.getWord(chunkStart + 4)
-            const chunkDataView = new DataView(this.dataView.buffer, chunkStart + 6, chunkLength - 6)
             switch (chunkType) {
                 case 0xF1FA:
                     if (chunkLength > 16) {
-                        this.parseFrameType(chunkDataView, frameIndex)
+                        this.parseFrameType(chunkStart + 6, frameIndex)
                         frameIndex++
                     }
                     break
@@ -65,9 +65,9 @@ export class FlhParser {
         }
     }
 
-    parseFrameType(seg: DataView, frameIndex: number) {
-        let offset = 0
-        const numChunks = seg.getUint16(offset, true)
+    parseFrameType(chunkStart: number, frameIndex: number) {
+        let offset = chunkStart
+        const numChunks = this.dataView.getUint16(offset, true)
         if (numChunks > 1) {
             console.warn(`More than one sub-chunk; got instead: ${numChunks}`)
         }
@@ -76,18 +76,18 @@ export class FlhParser {
         offset += 2 // reserved = 0
         offset += 4 // width and height override should be 0
 
-        let len = seg.getUint32(offset, true)
+        let len = this.dataView.getUint32(offset, true)
         len -= 6
         offset += 4
-        const chunkType = seg.getUint16(offset, true)
+        const chunkType = this.dataView.getUint16(offset, true)
         offset += 2
 
         switch (chunkType) {
             case 25:
-                this.parseDtaBrun(seg, offset, len, frameIndex)
+                this.parseDtaBrun(this.dataView, offset, len, frameIndex)
                 break
             case 27:
-                this.parseDeltaFlc(seg, offset, len, frameIndex)
+                this.parseDeltaFlc(this.dataView, offset, len, frameIndex)
                 break
             default:
                 console.warn(`Unsupported sub-chunk type: ${chunkType}`)
