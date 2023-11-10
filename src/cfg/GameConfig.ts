@@ -20,6 +20,7 @@ import { RockFallStylesCfg } from './RockFallStylesCfg'
 import { EntityType, getEntityTypeByName } from '../game/model/EntityType'
 import { ObjInfoCfg } from './ObjInfoCfg'
 import { WeaponTypeCfg } from './WeaponTypesCfg'
+import { SamplesCfg } from './SamplesCfg'
 
 export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
 export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
@@ -46,7 +47,7 @@ export class GameConfig extends BaseConfig {
     bubbles: BubblesCfg = new BubblesCfg()
     rockFallStyles: RockFallStylesCfg = new RockFallStylesCfg()
     textMessagesWithImages: TextInfoMessageCfg = new TextInfoMessageCfg()
-    // samples: SamplesCfg = new SamplesCfg()
+    samples: SamplesCfg = new SamplesCfg()
     textures: TexturesCfg = new TexturesCfg()
     objectNamesCfg: Map<string, string> = new Map()
     // vehicleTypes: VehicleTypesCfg = new VehicleTypesCfg()
@@ -105,8 +106,8 @@ export class GameConfig extends BaseConfig {
             this.rockFallStyles.setFromCfgObj(cfgValue)
         } else if ('TextMessagesWithImages'.equalsIgnoreCase(unifiedKey)) {
             this.textMessagesWithImages.setFromCfgObj(cfgValue)
-            // } else if ('Samples'.equalsIgnoreCase(unifiedKey)) {
-            //     this.samples.setFromCfgObj(cfgValue)
+        } else if ('Samples'.equalsIgnoreCase(unifiedKey)) {
+            this.samples.setFromCfgObj(cfgValue)
         } else if ('Textures'.equalsIgnoreCase(unifiedKey)) {
             this.textures.setFromCfgObj(cfgValue)
         } else if ('ObjectNames'.equalsIgnoreCase(unifiedKey)) {

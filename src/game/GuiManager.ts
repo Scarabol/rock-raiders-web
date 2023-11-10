@@ -208,10 +208,9 @@ export class GuiManager {
         })
         EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             SaveGameManager.savePreferences()
-            const sfxVolume = SaveGameManager.getSfxVolume()
-            SoundManager.sfxAudioTarget.gain.value = sfxVolume
-            SoundManager.toggleSfx()
+            SoundManager.setupSfxAudioTarget()
             sceneMgr.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
+            const sfxVolume = SaveGameManager.getSfxVolume()
             SoundManager.playingAudio.forEach((a) => a.setVolume(sfxVolume))
         })
         EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {

@@ -7,15 +7,25 @@ import { VERBOSE } from '../params'
 import { NerpRunner } from '../nerp/NerpRunner'
 
 export class SoundManager {
-    static sfxBuffersByKey: Map<string, ArrayBuffer[]> = new Map()
-    static audioBufferCache: Map<string, AudioBuffer> = new Map()
-    static sfxAudioTarget: GainNode
     static readonly playingAudio: Set<PositionalAudio> = new Set()
+    static readonly sfxBuffersByKey: Map<string, ArrayBuffer[]> = new Map()
+    static sfxAudioTarget: GainNode
     static skipVoiceLines: boolean = false
 
     static {
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.playingAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.playingAudio.forEach((a) => a.play()))
+    }
+
+    static setupSfxAudioTarget(): GainNode {
+        SoundManager.sfxAudioTarget = SoundManager.sfxAudioTarget || AudioContext.getContext().createGain()
+        SoundManager.sfxAudioTarget.gain.value = SaveGameManager.getSfxVolume()
+        if (SaveGameManager.currentPreferences.toggleSfx) {
+            SoundManager.sfxAudioTarget.connect(AudioContext.getContext().destination)
+        } else {
+            SoundManager.sfxAudioTarget.disconnect()
+        }
+        return SoundManager.sfxAudioTarget
     }
 
     static playSample(sample: Sample, isVoice: boolean) {
@@ -30,36 +40,24 @@ export class SoundManager {
                 if (!audioBuffer) return
                 const source = AudioContext.getContext().createBufferSource()
                 source.buffer = audioBuffer
-                source.connect(SoundManager.sfxAudioTarget)
+                source.connect(SoundManager.setupSfxAudioTarget())
                 source.start()
                 if (isVoice) setTimeout(() => this.skipVoiceLines = false, audioBuffer.duration * 1000 + NerpRunner.timeAddedAfterSample)
             } catch (e) {
                 console.error(e)
             }
+        }).catch((e) => {
+            console.error(e)
         })
     }
 
     static async getSoundBuffer(sfxName: string): Promise<AudioBuffer> {
         sfxName = sfxName.toLowerCase()
-        const sfxBuffers = this.sfxBuffersByKey.getOrUpdate(sfxName, () => {
+        const sfxBuffer = this.sfxBuffersByKey.getOrUpdate(sfxName, () => {
             if (VERBOSE) console.warn(`Could not find SFX with name '${sfxName}'`)
             return []
-        })
-        if (sfxBuffers.length < 1) return null
-        const data = sfxBuffers.random().slice(0) // slice used to create copy, because array gets auto detached after decode
-        SoundManager.sfxAudioTarget = SoundManager.sfxAudioTarget || AudioContext.getContext().createGain()
-        SoundManager.sfxAudioTarget.gain.value = SaveGameManager.getSfxVolume()
-        if (SaveGameManager.currentPreferences.toggleSfx) SoundManager.sfxAudioTarget.connect(AudioContext.getContext().destination)
-        const audioBuffer = await AudioContext.getContext().decodeAudioData(data)
-        SoundManager.audioBufferCache.set(sfxName, audioBuffer)
-        return audioBuffer
-    }
-
-    static toggleSfx() {
-        if (SaveGameManager.currentPreferences.toggleSfx) {
-            SoundManager.sfxAudioTarget.connect(AudioContext.getContext().destination)
-        } else {
-            SoundManager.sfxAudioTarget.disconnect()
-        }
+        }).random()
+        if (!sfxBuffer) return null
+        return await AudioContext.getContext().decodeAudioData(sfxBuffer.slice(0)) // slice used to create copy, because array gets auto detached after decode
     }
 }

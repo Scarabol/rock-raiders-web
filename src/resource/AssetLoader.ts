@@ -115,11 +115,6 @@ export class AssetLoader {
         callback([name], objectList)
     }
 
-    /**
-     * Load a WAV file format sound asset from the WAD file.
-     * @param path Path inside the WAD file
-     * @param callback A callback that is triggered after the file has been loaded
-     */
     async loadWavAsset(path: string, callback: (assetNames: string[], obj: any) => any) {
         let buffer: ArrayBufferLike
         try { // localized wad1 file first, then generic wad0 file
