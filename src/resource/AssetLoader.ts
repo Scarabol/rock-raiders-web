@@ -23,13 +23,13 @@ export class AssetLoader {
     }
 
     loadWadImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
-        const data = this.wad0File.getEntryData(name)
+        const data = this.wad0File.getEntryBuffer(name)
         AssetLoader.bitmapWorkerPool.decodeBitmap(data)
             .then((imgData) => callback([name], imgData))
     }
 
     loadWadTexture(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
-        const data = this.wad0File.getEntryData(name)
+        const data = this.wad0File.getEntryBuffer(name)
         const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
         let alphaIndex = null
         const assetNames = [name]
@@ -57,7 +57,7 @@ export class AssetLoader {
     }
 
     loadAlphaImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
-        const data = this.wad0File.getEntryData(name)
+        const data = this.wad0File.getEntryBuffer(name)
         AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(data)
             .then((imgData) => {
                 const assetNames = [name]
@@ -68,7 +68,7 @@ export class AssetLoader {
     }
 
     loadFontImageAsset(name: string, callback: (assetNames: string[], obj: BitmapFontData) => any) {
-        const data = this.wad0File.getEntryData(name)
+        const data = this.wad0File.getEntryBuffer(name)
         AssetLoader.bitmapWorkerPool.decodeBitmap(data)
             .then((imgData) => {
                 const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
