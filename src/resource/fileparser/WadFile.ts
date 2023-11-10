@@ -1,118 +1,101 @@
 import { encodeChar } from './EncodingHelper'
 
-/**
- * Handles the extraction of single files from a bigger WAD data blob
- */
 export class WadFile {
-    buffer: Int8Array = null
-    entryIndexByName: Map<string, number> = new Map()
-    fLength: number[] = []
-    fStart: number[] = []
+    readonly entryByLowerName: Map<string, Uint8Array> = new Map()
 
-    /**
-     * Validate and parse the given data object as binary blob of a WAD file
-     * @param data binary blob
-     * @param debug enable/disable debug output while parsing
-     */
+    constructor(readonly data: ArrayBuffer) {
+    }
+
     static parseWadFile(data: ArrayBufferLike, debug = false): WadFile {
-        const result = new WadFile()
+        const result = new WadFile(data)
         const dataView = new DataView(data)
-        result.buffer = new Int8Array(data)
-        let pos = 0
-        if (String.fromCharCode.apply(null, result.buffer.slice(pos, 4)) !== 'WWAD') {
+        const textDecoder = new TextDecoder()
+        if (textDecoder.decode(new Uint8Array(data, 0, 4)) !== 'WWAD') {
             throw new Error('Invalid WAD0 file provided')
         }
         if (debug) {
             console.log('WAD0 file seems legit')
         }
-        pos = 4
-        const numberOfEntries = dataView.getInt32(pos, true)
+        const numberOfEntries = dataView.getInt32(4, true)
         if (debug) {
             console.log(numberOfEntries)
         }
-        pos = 8
 
+        const lEntryNames: string[] = []
+        let pos = 8
         let bufferStart = pos
-        for (let i = 0; i < numberOfEntries; pos++) {
-            if (result.buffer[pos] === 0) {
-                result.entryIndexByName.set(String.fromCharCode.apply(null, result.buffer.slice(bufferStart, pos)).replace(/\\/g, '/').toLowerCase(), i)
-                bufferStart = pos + 1
-                i++
-            }
+        for (let entryIndex = 0; entryIndex < numberOfEntries; pos++) {
+            if (dataView.getUint8(pos) !== 0) continue
+            const len = pos - bufferStart
+            const array = new Uint8Array(data, bufferStart, len)
+            lEntryNames[entryIndex] = textDecoder.decode(array).replace(/\\/g, '/').toLowerCase()
+            bufferStart = pos + 1
+            entryIndex++
         }
 
         if (debug) {
-            console.log(result.entryIndexByName)
+            console.log(lEntryNames)
         }
 
-        for (let i = 0; i < numberOfEntries; pos++) {
-            if (result.buffer[pos] === 0) {
-                bufferStart = pos + 1
-                i++
-            }
+        for (let entryIndex = 0; entryIndex < numberOfEntries; pos++) {
+            if (dataView.getUint8(pos) !== 0) continue
+            entryIndex++
         }
 
         if (debug) {
             console.log(`Offset after absolute original names is ${pos}`)
         }
 
-        for (let i = 0; i < numberOfEntries; i++) {
-            result.fLength[i] = dataView.getInt32(pos + 8, true)
-            result.fStart[i] = dataView.getInt32(pos + 12, true)
+        for (let entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
+            const fileLength = dataView.getInt32(pos + 8, true)
+            const fileStartOffset = dataView.getInt32(pos + 12, true)
+            result.entryByLowerName.set(lEntryNames[entryIndex], new Uint8Array(data, fileStartOffset, fileLength))
             pos += 16
         }
 
         if (debug) {
-            console.log(result.fLength)
-            console.log(result.fStart)
+            console.log(result.entryByLowerName)
         }
         return result
     }
 
-    /**
-     * Returns the entries content extracted by name from the managed WAD file
-     * @param entryName Entry name to be extracted
-     * @returns {Uint8Array} Returns the content as Uint8Array
-     */
-    getEntryData(entryName: string): Uint8Array {
-        return new Uint8Array(this.getEntryBuffer(entryName))
-    }
-
-    /**
-     * Returns the entries content as text extracted by name from the managed WAD file
-     * @param entryName Entry name to be extracted
-     * @returns {string} Returns the content as String
-     */
-    getEntryText(entryName: string): string {
-        let result = ''
-        this.getEntryData(entryName).forEach((c) => result += String.fromCharCode(encodeChar[c]))
-        return result
-    }
-
-    /**
-     * Returns the entries content by name extracted from the managed WAD file
-     * @param entryName Entry name to be extracted
-     * @returns {ArrayBufferLike} Returns the content as buffer slice
-     */
-    getEntryBuffer(entryName: string): ArrayBufferLike {
-        const index = this.entryIndexByName.get(entryName.toLowerCase())
-        if (index === undefined || index === null) {
+    getEntryArrayView(entryName: string): Uint8Array {
+        const view = this.entryByLowerName.get(entryName.toLowerCase())
+        if (view === undefined || view === null) {
             throw new Error(`Entry '${entryName}' not found in WAD file`)
         }
-        return this.buffer.slice(this.fStart[index], this.fStart[index] + this.fLength[index]).buffer
+        return view
+    }
+
+    getEntryDataView(entryName: string): DataView {
+        const view = this.getEntryArrayView(entryName)
+        return new DataView(view.buffer, view.byteOffset, view.byteLength)
+    }
+
+    getEntryText(entryName: string): string {
+        let result = ''
+        this.getEntryArrayView(entryName).forEach((c) => result += String.fromCharCode(encodeChar[c]))
+        return result
+    }
+
+    getEntryBuffer(entryName: string): ArrayBuffer {
+        const view = this.entryByLowerName.get(entryName.toLowerCase())
+        if (view === undefined || view === null) {
+            throw new Error(`Entry '${entryName}' not found in WAD file`)
+        }
+        return this.data.slice(view.byteOffset, view.byteOffset + view.byteLength)
     }
 
     filterEntryNames(regexStr: string) {
         const regex = new RegExp(regexStr.toLowerCase())
         const result: string[] = []
-        this.entryIndexByName.forEach((index, entry) => {
+        this.entryByLowerName.forEach((_, entry) => {
             if (entry.match(regex)) result.push(entry)
         })
         return result
     }
 
     hasEntry(entryName: string): boolean {
-        const index = this.entryIndexByName.get(entryName.toLowerCase())
-        return index !== undefined && index !== null
+        return this.entryByLowerName.has(entryName.toLowerCase())
     }
 }
