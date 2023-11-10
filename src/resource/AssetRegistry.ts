@@ -148,25 +148,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
             this.addAsset(this.assetLoader.loadWadImageAsset, cfg.imgDisabledFilepath)
         })
         // sounds
-        const sndPathToKeys = new Map<string, string[]>()
-        const samplesConf = gameConfig['Samples']
-        Object.keys(samplesConf).forEach((sndKey) => {
-            const value = samplesConf[sndKey]
-            sndKey = sndKey.toLowerCase()
-            if (sndKey === '!sfx_drip') {
-                return // Sounds/dripB.wav missing and seems unused anyway
-            } else if (sndKey.startsWith('!')) { // XXX no clue what this means... loop? duplicate?!
-                sndKey = sndKey.slice(1)
-            }
-            const sndFilePaths = Array.isArray(value) ? value : [value]
-            sndFilePaths.forEach(sndPath => {
-                if (sndPath.startsWith('*')) { // XXX no clue what this means... don't loop maybe, see telportup
-                    sndPath = sndPath.slice(1)
-                }
-                sndPathToKeys.getOrUpdate(`${sndPath}.wav`, () => []).push(sndKey)
-            })
-        })
-        sndPathToKeys.forEach((sndKeys, sndPath) => {
+        gameConfig.samples.pathToSfxKeys.forEach((sndKeys, sndPath) => {
             this.addAsset(this.assetLoader.loadWavAsset, sndPath, false, sndKeys)
         })
         await Promise.all(this.inProgress)

@@ -79,7 +79,7 @@ export async function start() {
                 try {
                     asset.method(asset.assetPath, (assetNames, assetObj) => {
                         assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj))
-                        asset.sfxKeys?.forEach((sfxKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sfxKey, () => []).push(assetObj))
+                        if (assetObj) asset.sfxKeys?.forEach((sfxKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sfxKey, () => []).push(assetObj))
                         screenMaster.loadingLayer.increaseLoadingState()
                         resolve()
                     })
