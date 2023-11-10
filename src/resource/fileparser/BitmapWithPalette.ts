@@ -157,8 +157,6 @@ class BmpDecoder implements IBitmapImage {
 
     private pos: number
     private bottomUp: boolean
-    private readonly buffer: Uint8Array
-    private readonly bufferView: DataView
 
     private readonly locRed: number
     private readonly locGreen: number
@@ -171,18 +169,12 @@ class BmpDecoder implements IBitmapImage {
     private shiftAlpha!: (x: number) => number
 
     constructor(
-        buffer: Uint8Array,
+        readonly bufferView: DataView,
         {toRGBA}: IDecoderOptions = {toRGBA: false},
     ) {
-        this.buffer = buffer
-        this.bufferView = new DataView(
-            buffer.buffer,
-            buffer.byteOffset,
-            buffer.byteLength,
-        )
         this.toRGBA = !!toRGBA
         this.bottomUp = true
-        this.flag = String.fromCharCode(this.buffer[0]) + String.fromCharCode(this.buffer[1])
+        this.flag = String.fromCharCode(this.bufferView.getUint8(0), this.bufferView.getUint8(1))
         this.pos = 2
 
         if (this.flag !== 'BM') {
@@ -285,10 +277,10 @@ class BmpDecoder implements IBitmapImage {
             this.palette = new Array(len)
 
             for (let i = 0; i < len; i++) {
-                const blue = this.buffer[this.pos++]
-                const green = this.buffer[this.pos++]
-                const red = this.buffer[this.pos++]
-                const quad = this.buffer[this.pos++]
+                const blue = this.bufferView.getUint8(this.pos++)
+                const green = this.bufferView.getUint8(this.pos++)
+                const red = this.bufferView.getUint8(this.pos++)
+                const quad = this.bufferView.getUint8(this.pos++)
 
                 this.palette[i] = {
                     red,
@@ -356,7 +348,7 @@ class BmpDecoder implements IBitmapImage {
                 lastLine = line
             }
 
-            const b = this.buffer[this.pos++]
+            const b = this.bufferView.getUint8(this.pos++)
             const location = line * this.width * 4 + x * 8 * 4
 
             for (let i = 0; i < 8; i++) {
@@ -383,8 +375,8 @@ class BmpDecoder implements IBitmapImage {
             let location = 0
 
             while (location < this.data.length) {
-                const a = this.buffer[this.pos++]
-                const b = this.buffer[this.pos++]
+                const a = this.bufferView.getUint8(this.pos++)
+                const b = this.bufferView.getUint8(this.pos++)
 
                 //absolute mode
                 if (a === 0) {
@@ -404,13 +396,13 @@ class BmpDecoder implements IBitmapImage {
 
                     if (b === 2) {
                         // offset x, y
-                        const x = this.buffer[this.pos++]
-                        const y = this.buffer[this.pos++]
+                        const x = this.bufferView.getUint8(this.pos++)
+                        const y = this.bufferView.getUint8(this.pos++)
 
                         lines += this.bottomUp ? -y : y
                         location += y * this.width * 4 + x * 4
                     } else {
-                        let c = this.buffer[this.pos++]
+                        let c = this.bufferView.getUint8(this.pos++)
 
                         for (let i = 0; i < b; i++) {
                             location = this.setPixelData(
@@ -419,7 +411,7 @@ class BmpDecoder implements IBitmapImage {
                             )
 
                             if (i & 1 && i + 1 < b) {
-                                c = this.buffer[this.pos++]
+                                c = this.bufferView.getUint8(this.pos++)
                             }
 
                             lowNibble = !lowNibble
@@ -446,7 +438,7 @@ class BmpDecoder implements IBitmapImage {
             const padding = mode !== 0 ? 4 - mode : 0
 
             this.scanImage(padding, xLen, (x, line) => {
-                const b = this.buffer[this.pos++]
+                const b = this.bufferView.getUint8(this.pos++)
                 const location = line * this.width * 4 + x * 2 * 4
 
                 const first4 = b >> 4
@@ -481,8 +473,8 @@ class BmpDecoder implements IBitmapImage {
             let location = 0
 
             while (location < this.data.length) {
-                const a = this.buffer[this.pos++]
-                const b = this.buffer[this.pos++]
+                const a = this.bufferView.getUint8(this.pos++)
+                const b = this.bufferView.getUint8(this.pos++)
 
                 //absolute mode
                 if (a === 0) {
@@ -500,14 +492,14 @@ class BmpDecoder implements IBitmapImage {
 
                     if (b === 2) {
                         //offset x,y
-                        const x = this.buffer[this.pos++]
-                        const y = this.buffer[this.pos++]
+                        const x = this.bufferView.getUint8(this.pos++)
+                        const y = this.bufferView.getUint8(this.pos++)
 
                         lines += this.bottomUp ? -y : y
                         location += y * this.width * 4 + x * 4
                     } else {
                         for (let i = 0; i < b; i++) {
-                            const c = this.buffer[this.pos++]
+                            const c = this.bufferView.getUint8(this.pos++)
                             location = this.setPixelData(location, c)
                         }
 
@@ -529,7 +521,7 @@ class BmpDecoder implements IBitmapImage {
             const padding = mode !== 0 ? 4 - mode : 0
 
             this.scanImage(padding, this.width, (x, line) => {
-                const b = this.buffer[this.pos++]
+                const b = this.bufferView.getUint8(this.pos++)
                 const location = line * this.width * 4 + x * 4
 
                 if (b < this.palette.length) {
@@ -564,9 +556,9 @@ class BmpDecoder implements IBitmapImage {
 
         this.scanImage(padding, this.width, (x, line) => {
             const loc = line * this.width * 4 + x * 4
-            const blue = this.buffer[this.pos++]
-            const green = this.buffer[this.pos++]
-            const red = this.buffer[this.pos++]
+            const blue = this.bufferView.getUint8(this.pos++)
+            const green = this.bufferView.getUint8(this.pos++)
+            const red = this.bufferView.getUint8(this.pos++)
 
             this.data[loc + this.locAlpha] = 0xff
             this.data[loc + this.locBlue] = blue
@@ -624,8 +616,8 @@ class BmpDecoder implements IBitmapImage {
 export class BitmapWithPalette extends ImageData {
     readonly palette: IColor[]
 
-    static decode(buffer: Uint8Array): BitmapWithPalette {
-        return new BitmapWithPalette(new BmpDecoder(buffer, {toRGBA: true}))
+    static decode(bitmapData: ArrayBuffer): BitmapWithPalette {
+        return new BitmapWithPalette(new BmpDecoder(new DataView(bitmapData), {toRGBA: true}))
     }
 
     constructor(decoder: BmpDecoder) {

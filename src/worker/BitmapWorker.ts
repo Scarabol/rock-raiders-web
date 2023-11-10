@@ -10,7 +10,7 @@ export enum BitmapWorkerRequestType {
 
 export class BitmapWorkerRequest {
     type: BitmapWorkerRequestType
-    bitmapData: Uint8Array
+    bitmapData: ArrayBuffer
     alphaIndex?: number
 }
 

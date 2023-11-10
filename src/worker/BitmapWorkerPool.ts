@@ -12,19 +12,19 @@ export class BitmapWorkerPool extends AbstractWorkerPool<BitmapWorkerRequest, Bi
         new BitmapSystem(worker)
     }
 
-    async decodeBitmap(data: Uint8Array): Promise<BitmapWithPalette> {
+    async decodeBitmap(data: ArrayBuffer): Promise<BitmapWithPalette> {
         const message = {type: BitmapWorkerRequestType.DECODE_BITMAP, bitmapData: data}
         const response = await this.processMessage(message)
         return response.decoded
     }
 
-    async decodeBitmapWithAlpha(data: Uint8Array): Promise<BitmapWithPalette> {
+    async decodeBitmapWithAlpha(data: ArrayBuffer): Promise<BitmapWithPalette> {
         const message = {type: BitmapWorkerRequestType.DECODE_BITMAP_ALPHA, bitmapData: data}
         const response = await this.processMessage(message)
         return response.decoded
     }
 
-    async decodeBitmapWithAlphaIndex(data: Uint8Array, alphaIndex: number): Promise<BitmapWithPalette> {
+    async decodeBitmapWithAlphaIndex(data: ArrayBuffer, alphaIndex: number): Promise<BitmapWithPalette> {
         const message = {type: BitmapWorkerRequestType.DECODE_BITMAP_ALPHA_INDEX, bitmapData: data, alphaIndex: alphaIndex}
         const response = await this.processMessage(message)
         return response.decoded
