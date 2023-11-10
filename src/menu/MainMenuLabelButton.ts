@@ -25,7 +25,7 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
         })
         this.y = layer.cfg.position[1] + cfg.y
         this.actionName = cfg.actionName
-        if (this.actionName === 'Next') this.targetIndex = Number(cfg.target.substring('menu'.length)) - 1
+        if (this.actionName === 'Next') this.targetIndex = Number(cfg.target.slice('menu'.length)) - 1
     }
 
     set onPressed(callback: UiElementCallback) {

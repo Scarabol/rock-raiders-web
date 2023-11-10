@@ -204,7 +204,7 @@ export class AnimEntityParser {
         const transcoef = iGet(act, 'TRANSCOEF')
         const looping = iGet(act, 'LOOPING') === true
         if (isLws) {
-            if (lActivityName.startsWith('!')) lActivityName = lActivityName.substring(1) // XXX What's the meaning of leading ! for activities???
+            if (lActivityName.startsWith('!')) lActivityName = lActivityName.slice(1) // XXX What's the meaning of leading ! for activities???
             this.entityType.animations.push({name: lActivityName, file: this.path + file.toLowerCase(), transcoef, looping})
         } else {
             console.error('Found activity which is not an LWS file')

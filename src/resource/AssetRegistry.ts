@@ -243,7 +243,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         }
 
         return lines.filter((line) => line.toLowerCase().startsWith('LoadObject '.toLowerCase()))
-            .map((objLine) => path + getFilename(objLine.substring('LoadObject '.length)).toLowerCase())
+            .map((objLine) => path + getFilename(objLine.slice('LoadObject '.length)).toLowerCase())
     }
 
     addAlphaImageFolder(folderPath: string) {
