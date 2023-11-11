@@ -1,6 +1,5 @@
 import { AmbientLight, AudioListener, Color, Frustum, Mesh, Object3D, PositionalAudio, Scene, Sprite, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { SpriteImage } from '../core/Sprite'
 import { ResourceManager } from '../resource/ResourceManager'
 import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
@@ -39,12 +38,12 @@ export class SceneManager implements Updatable {
     buildMarker: BuildPlacementMarker
     followerRenderer: FollowerRenderer
 
-    constructor(canvas: SpriteImage) {
+    constructor(canvas: HTMLCanvasElement) {
         this.audioListener = new AudioListener()
         this.camera = new BirdViewCamera(canvas.width / canvas.height)
         this.camera.add(this.audioListener)
         this.renderer = new SceneRenderer(canvas, this.camera)
-        this.controls = new BirdViewControls(this)
+        this.controls = new BirdViewControls(canvas, this)
     }
 
     getEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number): GameSelection {

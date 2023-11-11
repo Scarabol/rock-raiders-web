@@ -20,10 +20,10 @@ export class BirdViewControls extends MapControls {
     readonly raycaster: Raycaster = new Raycaster()
     moveTarget: Vector3 = null
 
-    constructor(sceneMgr: SceneManager) {
-        super(sceneMgr.camera, sceneMgr.renderer.domElement)
+    constructor(readonly domElement: HTMLCanvasElement, sceneMgr: SceneManager) { // overwrite domElement to make addEventListener below return KeyboardEvents
+        super(sceneMgr.camera, domElement)
         this.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
-        this.listenToKeyEvents(sceneMgr.renderer.domElement)
+        this.listenToKeyEvents(domElement)
         this.keyPanSpeed = this.keyPanSpeed * KEY_PAN_SPEED
         if (!DEV_MODE) {
             this.addEventListener('change', () => this.forceCameraAboveTerrain(sceneMgr))

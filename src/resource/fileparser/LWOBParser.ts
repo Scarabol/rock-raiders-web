@@ -211,8 +211,8 @@ export class LWOBParser {
         }
 
         let textureFlags = 0
-        let textureSize = new Vector3(0, 0, 0)
-        let textureCenter = new Vector3(0, 0, 0)
+        const textureSize = new Vector3(0, 0, 0)
+        const textureCenter = new Vector3(0, 0, 0)
         // let textureFalloff = new Vector3(0, 0, 0);
         // let textureVelocity = new Vector3(0, 0, 0);
         let sequenceOffset = 0
@@ -345,11 +345,11 @@ export class LWOBParser {
                     if (this.verbose && textureFlags & ANTIALIASING_BIT) console.log('Texture flag is set: Antialiasing') // turned on by default
                     break
                 case 'TSIZ':
-                    textureSize = new Vector3(this.lwoReader.readFloat32(), this.lwoReader.readFloat32(), this.lwoReader.readFloat32())
+                    textureSize.set(this.lwoReader.readFloat32(), this.lwoReader.readFloat32(), this.lwoReader.readFloat32())
                     if (this.verbose) console.log(`Texture size (TSIZ): ${textureSize.toArray().join(' ')}`)
                     break
                 case 'TCTR':
-                    textureCenter = new Vector3(this.lwoReader.readFloat32(), this.lwoReader.readFloat32(), this.lwoReader.readFloat32())
+                    textureCenter.set(this.lwoReader.readFloat32(), this.lwoReader.readFloat32(), this.lwoReader.readFloat32())
                     if (this.verbose) console.warn(`Unhandled texture center (TCTR): ${textureCenter.toArray().join(' ')}`)
                     break
                 case 'TCLR':
@@ -464,7 +464,7 @@ export class LWOBParser {
         }
     }
 
-    planarMapUVS(materialIndex, size, center, flags) {
+    planarMapUVS(materialIndex: number, size: Vector3, center: Vector3, flags: number) {
         // Check to ensure that one of the flags is set, if not throw an error.
         const mask = XAXIS_BIT | YAXIS_BIT | ZAXIS_BIT
         if (!(flags & mask)) {

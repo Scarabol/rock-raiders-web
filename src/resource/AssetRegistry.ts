@@ -188,8 +188,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
                 })
             }
         })
-        Object.keys(cfgRoot).forEach((cfgKey) => {
-            const value = cfgRoot[cfgKey]
+        Object.values(cfgRoot).forEach((value) => {
             const isLws = iGet(value, 'LWSFILE') === true
             if (isLws) {
                 const file = iGet(value, 'FILE')

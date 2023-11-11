@@ -2,7 +2,7 @@ import { ObjectListEntryCfg } from '../../cfg/ObjectListEntryCfg'
 
 export class WadParser {
     static parseMap(buffer: Uint8Array) {
-        const map = {width: buffer[8], height: buffer[12], level: []}
+        const map: { width: number, height: number, level: number[][] } = {width: buffer[8], height: buffer[12], level: []}
         let row = []
         for (let seek = 16; seek < buffer.length; seek += 2) {
             row.push(buffer[seek])
@@ -17,7 +17,7 @@ export class WadParser {
     static parseObjectList(data: string): Map<string, ObjectListEntryCfg> {
         const lines = data.split('\n')
         const objectList = new Map<string, ObjectListEntryCfg>()
-        let currentObject = null
+        let currentObject: ObjectListEntryCfg = null
         for (let c = 0; c < lines.length; c++) {
             const line = lines[c].trim()
             const objectStartMatch = line.match(/(.+)\s+{/)
@@ -37,13 +37,14 @@ export class WadParser {
                     throw new Error(`Unexpected key value entry: ${line}`)
                 }
                 const key = split[0]
-                let val: any = split[1]
+                let val = split[1]
                 if (key === 'xPos' || key === 'yPos' || key === 'heading') {
-                    val = parseFloat(val)
-                } else if (key !== 'type') {
+                    currentObject[key] = parseFloat(val)
+                } else if (key === 'type') {
+                    currentObject[key] = val
+                } else {
                     throw new Error(`Unexpected key value entry: ${line}`)
                 }
-                currentObject[key] = val
             }
         }
         return objectList
