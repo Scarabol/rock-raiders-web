@@ -9,6 +9,7 @@ import { AssetRegistry } from './AssetRegistry'
 import { WadFile } from './fileparser/WadFile'
 import { LWOUVParser } from './fileparser/LWOUVParser'
 import { CabFile } from './fileparser/CabFile'
+import { AudioContext } from 'three'
 
 export class AssetLoader {
     static readonly bitmapWorkerPool = new BitmapWorkerPool().startPool(16, null)
@@ -119,23 +120,27 @@ export class AssetLoader {
         let buffer: ArrayBufferLike
         try { // localized wad1 file first, then generic wad0 file
             buffer = this.wad1File.getEntryBuffer(path)
-        } catch (e) {
+        } catch (e1) {
             try {
                 buffer = this.wad0File.getEntryBuffer(path)
-            } catch (e) {
+            } catch (e2) {
                 try {
-                    buffer = await this.cabFile.getFileBuffer(`0007-German Files/Data/${path.slice(1)}`) // TODO support other languages
-                } catch (e) {
+                    buffer = await this.cabFile.getFileBuffer(`0007-German Files/Data/${path}`) // TODO support other languages
+                } catch (e3) {
                     try {
-                        buffer = await this.cabFile.getFileBuffer(`Program Data Files/Data/${path.slice(1)}`)
-                    } catch (e) {
-                        // console.error(`Could not find sound ${path}`, e) // XXX stats.wav and Atmosdel.wav can only be found on ISO-File
+                        buffer = await this.cabFile.getFileBuffer(`Program Data Files/Data/${path}`)
+                    } catch (e4) {
+                        if (!path.toLowerCase().endsWith('/atmosdel.wav') && !path.toLowerCase().endsWith('/stats.wav')) { // XXX stats.wav and Atmosdel.wav can only be found on ISO-File
+                            console.error(`Could not find sound ${path}:\n` + [e1, e2, e3, e4].join('\n'))
+                        }
                         callback([path], null)
+                        return
                     }
                 }
             }
         }
-        callback([path], buffer)
+        const audioBuffer = await AudioContext.getContext().decodeAudioData(buffer)
+        callback([path], audioBuffer)
     }
 
     loadLWOFile(lwoFilepath: string, callback: (assetNames: string[], obj: any) => any) {
