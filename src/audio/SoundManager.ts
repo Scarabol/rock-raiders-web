@@ -3,12 +3,11 @@ import { Sample } from './Sample'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { VERBOSE } from '../params'
 import { NerpRunner } from '../nerp/NerpRunner'
 
 export class SoundManager {
     static readonly playingAudio: Set<PositionalAudio> = new Set()
-    static readonly sfxBuffersByKey: Map<string, ArrayBuffer[]> = new Map()
+    static readonly sfxBuffersByKey: Map<string, AudioBuffer[]> = new Map()
     static sfxAudioTarget: GainNode
     static skipVoiceLines: boolean = false
 
@@ -52,12 +51,9 @@ export class SoundManager {
     }
 
     static async getSoundBuffer(sfxName: string): Promise<AudioBuffer> {
-        sfxName = sfxName.toLowerCase()
-        const sfxBuffer = this.sfxBuffersByKey.getOrUpdate(sfxName, () => {
-            if (VERBOSE) console.warn(`Could not find SFX with name '${sfxName}'`)
+        return this.sfxBuffersByKey.getOrUpdate(sfxName.toLowerCase(), () => {
+            console.warn(`Could not find SFX with name '${sfxName}'`)
             return []
         }).random()
-        if (!sfxBuffer) return null
-        return await AudioContext.getContext().decodeAudioData(sfxBuffer.slice(0)) // slice used to create copy, because array gets auto detached after decode
     }
 }
