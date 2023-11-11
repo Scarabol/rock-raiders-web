@@ -83,9 +83,8 @@ export class AnimEntityParser {
                 })
             }
         })
-        Object.keys(this.cfgRoot).forEach((cfgKey) => {
+        Object.values(this.cfgRoot).forEach((value) => {
             try {
-                const value = this.cfgRoot[cfgKey]
                 const isLws = iGet(value, 'LWSFILE') === true
                 if (isLws) {
                     const file = iGet(value, 'FILE')
@@ -175,9 +174,8 @@ export class AnimEntityParser {
     }
 
     private parsePolyBodies(value: object, polyBodies: Map<string, string>) {
-        Object.keys(value).forEach((key) => {
+        Object.entries(value).forEach(([key, fileName]) => {
             const polyKey = key.startsWith('!') ? key.slice(1) : key
-            const fileName = value[key]
             const filePath = 'NULL'.equalsIgnoreCase(fileName) ? 'hidden' : `${fileName}.lwo`
             polyBodies.set(polyKey.toLowerCase(), filePath)
         })
@@ -211,7 +209,7 @@ export class AnimEntityParser {
         }
     }
 
-    private parseUpgrades(value: any) {
+    private parseUpgrades(value: object) {
         Object.entries(value).forEach(([levelKey, upgradesCfg]) => {
             if (!this.parseUpgradeEntry(levelKey, upgradesCfg)) {
                 console.warn(`Unexpected upgrade level key: ${levelKey}`)
@@ -223,8 +221,8 @@ export class AnimEntityParser {
         const match = levelKey.match(/level(\d\d\d\d)/i) // [carry] [scan] [speed] [drill]
         if (!match) return false
         const upgradesByLevel: AnimEntityUpgradeData[] = []
-        Object.entries<unknown[]>(upgradesCfg).forEach(([upgradeTypeName, upgradeEntry]) => {
-            const upgradeEntries = Array.isArray(upgradeEntry[0]) ? upgradeEntry : [upgradeEntry]
+        Object.entries<[string, number][] | [string, number]>(upgradesCfg).forEach(([upgradeTypeName, upgradeEntry]) => {
+            const upgradeEntries: [string, number][] = Array.isArray(upgradeEntry[0]) ? upgradeEntry as [string, number][] : [upgradeEntry as [string, number]]
             upgradeEntries.forEach((upgradeTypeEntry) => {
                 const lNameType = upgradeTypeName.toLowerCase()
                 upgradesByLevel.push(new AnimEntityUpgradeData(lNameType, this.path + lNameType, upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))
