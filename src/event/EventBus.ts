@@ -2,27 +2,25 @@ import '../core'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 
-type GenericGameEventListener<T extends GameEvent> = (event: T) => any
+type GameEventListener = (event: GameEvent) => void
 
-class GenericEventBus<T extends GameEvent> {
-    eventListener: Map<EventKey, GenericGameEventListener<T>[]> = new Map()
-    blockedEvents: EventKey[] = []
+export class EventBus {
+    static readonly eventListener: Map<EventKey, GameEventListener[]> = new Map<EventKey, GameEventListener[]>()
+    static readonly blockedEvents: Set<EventKey> = new Set<EventKey>()
 
-    publishEvent(event: T) {
-        if (this.blockedEvents.includes(event.eventKey)) return // event is currently blocked from publishing
+    static publishEvent(event: GameEvent) {
+        if (this.blockedEvents.has(event.eventKey)) return // event is currently blocked from publishing
         if (event.logEvent) console.log(`Event published: ${EventKey[event.eventKey]}`)
-        this.blockedEvents.push(event.eventKey)
-        this.getListener(event.eventKey).forEach((callback: GenericGameEventListener<T>) => callback(event))
-        this.blockedEvents.remove(event.eventKey)
+        this.blockedEvents.add(event.eventKey)
+        this.getListener(event.eventKey).forEach((callback: GameEventListener) => callback(event))
+        this.blockedEvents.delete(event.eventKey)
     }
 
-    registerEventListener(eventKey: EventKey, callback: (event: T) => any) {
-        this.getListener(eventKey).push(callback)
+    static registerEventListener<T extends GameEvent>(eventKey: EventKey, callback: (event: T) => void) {
+        this.getListener(eventKey).push(callback as GameEventListener)
     }
 
-    private getListener(eventKey: EventKey): GenericGameEventListener<T>[] {
+    private static getListener(eventKey: EventKey): GameEventListener[] {
         return this.eventListener.getOrUpdate(eventKey, () => [])
     }
 }
-
-export const EventBus: GenericEventBus<GameEvent> = new GenericEventBus<GameEvent>()
