@@ -198,7 +198,7 @@ export class Terrain {
     }
 
     private updateEmergeTrigger(elapsedMs: number) {
-        const failedEmergeTrigger = []
+        const failedEmergeTrigger: EmergeTrigger[] = []
         this.emergeTrigger.forEach((t) => {
             try {
                 if (t.emergeDelayMs > 0) {

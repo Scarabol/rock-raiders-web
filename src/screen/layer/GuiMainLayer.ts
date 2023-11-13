@@ -50,7 +50,7 @@ export class GuiMainLayer extends ScaledLayer {
         this.rootElement.publishEvent = (event: GuiCommand) => {
             EventBus.publishEvent(event)
         }
-        this.rootElement.registerEventListener = (eventKey: EventKey, callback: (event: GameEvent) => any) => {
+        this.rootElement.registerEventListener = <T extends GameEvent>(eventKey: EventKey, callback: (event: T) => void) => {
             EventBus.registerEventListener(eventKey, callback)
         }
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
@@ -93,9 +93,9 @@ export class GuiMainLayer extends ScaledLayer {
             ['pointerup', POINTER_EVENT.UP],
             ['pointerleave', POINTER_EVENT.LEAVE],
         ]).forEach((eventEnum, eventType) => {
-            this.addEventListener(eventType, (event: PointerEvent): boolean => {
-                const gameEvent = new GamePointerEvent(eventEnum, event)
-                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(event.clientX, event.clientY)
+            this.addEventListener(eventType, (event): boolean => {
+                const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent)
+                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
                 return this.handlePointerEvent(gameEvent)
             })
         })
@@ -103,8 +103,8 @@ export class GuiMainLayer extends ScaledLayer {
             ['keydown', KEY_EVENT.DOWN],
             ['keyup', KEY_EVENT.UP],
         ]).forEach((eventEnum, eventType) => {
-            this.addEventListener(eventType, (event: KeyboardEvent): boolean => {
-                const gameEvent = new GameKeyboardEvent(eventEnum, event)
+            this.addEventListener(eventType, (event): boolean => {
+                const gameEvent = new GameKeyboardEvent(eventEnum, event as KeyboardEvent)
                 return this.handleKeyEvent(gameEvent)
             })
         })

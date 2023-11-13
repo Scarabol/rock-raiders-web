@@ -12,7 +12,7 @@ export class MainMenuFlicAnim extends MainMenuBaseItem {
 
     constructor(readonly layer: ScaledLayer, flhFilepath: string, rect: Rect) {
         super(rect.x, rect.y, rect.w, rect.h)
-        this.flicImages = ResourceManager.getResource(flhFilepath).map((f) => imgDataToCanvas(f))
+        this.flicImages = ResourceManager.getResource(flhFilepath).map((f: ImageData) => imgDataToCanvas(f))
     }
 
     play(): Promise<void> {

@@ -56,9 +56,9 @@ export class MainMenuLayer extends ScaledLayer {
             ['pointerdown', POINTER_EVENT.DOWN],
             ['pointerup', POINTER_EVENT.UP],
         ]).forEach((eventEnum, eventType) => {
-            this.addEventListener(eventType, (event: PointerEvent): boolean => {
-                const gameEvent = new GamePointerEvent(eventEnum, event)
-                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(event.clientX, event.clientY)
+            this.addEventListener(eventType, (event): boolean => {
+                const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent)
+                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
                 return this.handlePointerEvent(gameEvent)
             })
         })

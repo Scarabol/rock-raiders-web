@@ -153,7 +153,7 @@ export class BaseElement {
         else this.onPublishEvent(event)
     }
 
-    registerEventListener(eventKey: EventKey, callback: (event: GameEvent) => any) {
-        this.parent.registerEventListener(eventKey, callback)
+    registerEventListener<T extends GameEvent>(eventKey: EventKey, callback: (event: T) => void) {
+        this.parent?.registerEventListener(eventKey, callback)
     }
 }

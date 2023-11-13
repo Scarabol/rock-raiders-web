@@ -4,6 +4,9 @@
     "target": "ES2021",
     "useDefineForClassFields": true,
     "module": "ESNext",
+    "strict": true,
+    "strictNullChecks": false, // XXX Improve null/undefined handling
+    "noImplicitAny": false, // XXX remove exception for config parsing
     "lib": [
       "ESNext",
       "DOM"

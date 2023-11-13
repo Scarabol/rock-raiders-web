@@ -32,7 +32,7 @@ export class OverlayLayer extends ScaledLayer {
         this.rootElement.publishEvent = (event: GuiCommand) => {
             EventBus.publishEvent(event)
         }
-        this.rootElement.registerEventListener = (eventKey: EventKey, callback: (event: GameEvent) => any) => {
+        this.rootElement.registerEventListener = <T extends GameEvent>(eventKey: EventKey, callback: (event: T) => void) => {
             EventBus.registerEventListener(eventKey, callback)
         }
         this.panelPause = this.addPanel(new PausePanel(this.rootElement, ResourceManager.configuration.menu.pausedMenu, this.canvas.width, this.canvas.height))
@@ -58,9 +58,9 @@ export class OverlayLayer extends ScaledLayer {
             ['pointerup', POINTER_EVENT.UP],
             ['pointerleave', POINTER_EVENT.LEAVE],
         ]).forEach((eventEnum, eventType) => {
-            this.addEventListener(eventType, (event: PointerEvent): boolean => {
-                const gameEvent = new GamePointerEvent(eventEnum, event)
-                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(event.clientX, event.clientY)
+            this.addEventListener(eventType, (event): boolean => {
+                const gameEvent = new GamePointerEvent(eventEnum, event as PointerEvent)
+                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
                 return this.handlePointerEvent(gameEvent)
             })
         })
