@@ -1,6 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
 import { BaseConfig } from './BaseConfig'
+import { RaiderTrainingStats } from "../game/model/raider/RaiderTraining";
 
 export interface PickSphereStats {
     PickSphere: number
@@ -40,14 +41,19 @@ export class VehicleEntityStats extends BaseConfig implements MovableEntityStats
     MaxCarry: number[] = []
 }
 
-export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats {
+export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats, RaiderTrainingStats {
     Levels: number = 0
     SelfPowered: boolean = false
     PowerBuilding: boolean = false
     PickSphere: number = 0
     CollRadius: number = 0
     CollHeight: number = 0
-    TrainDynamite: boolean[] = null
+    TrainDriver: boolean[] = []
+    TrainRepair: boolean[] = []
+    TrainScanner: boolean[] = []
+    TrainPilot: boolean[] = []
+    TrainSailor: boolean[] = []
+    TrainDynamite: boolean[] = []
     CostOre: number = 0
     CostRefinedOre: number = 0
     CostCrystal: number = 0

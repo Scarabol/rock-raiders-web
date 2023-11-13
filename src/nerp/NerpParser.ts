@@ -8,7 +8,7 @@ export class NerpParser {
             throw new Error(`Can't parse unknown nerp script: ${nerpScriptFile}`)
         }
         const result = new NerpScript()
-        const lines = nerpScriptContent.split('\n').map(l => l
+        const lines = nerpScriptContent.split('\n').map((l: string) => l
             .split('//')[0].trim() // before comment starts
             .split(';')[0].trim() // before preprocessor comment starts
             .replace(/_/g, '') // some preprocessor macros use this prefix
@@ -113,7 +113,7 @@ export class NerpParser {
         }
     }
 
-    private static preProcess(expression) {
+    private static preProcess(expression: string): unknown {
         expression = expression.trim().replace(/^_/, '') // remove whitespace and leading underscore
         const number = parseInt(expression)
         if (!isNaN(number)) {

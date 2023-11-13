@@ -33,13 +33,13 @@ export class ScreenMaster {
             this.getActiveLayersSorted()?.[0]?.canvas?.focus() // always focus topmost
         })
         // in case topmost layer (usually cursor layer) does not listen for event, it reaches game-canvas-container as fallback dispatch from here
-        ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'wheel'].forEach((eventType: keyof HTMLElementEventMap) => {
+        ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'wheel'].forEach((eventType) => {
             this.gameCanvasContainer.addEventListener(eventType, (event) => {
                 event.stopPropagation()
                 this.dispatchEvent(event)
             })
         })
-        ;['touchstart', 'touchmove', 'touchend'].forEach((eventType: keyof HTMLElementEventMap) => {
+        ;['touchstart', 'touchmove', 'touchend'].forEach((eventType) => {
             this.gameCanvasContainer.addEventListener(eventType, (event) => {
                 event.preventDefault()
                 event.stopPropagation()
@@ -52,35 +52,30 @@ export class ScreenMaster {
     }
 
     private setupToolbarButtons() {
-        Array.from(document.getElementsByClassName('button-escape')).forEach((btn: HTMLButtonElement) => {
-            btn.style.removeProperty('visibility')
-            btn.onclick = (event) => {
-                event.stopPropagation()
-                this.dispatchEvent(new KeyboardEvent('keydown', {code: 'Escape', key: 'Escape'}))
-                setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: 'Escape', key: 'Escape'})), 69)
-            }
+        this.setupButton('button-escape', () => {
+            this.dispatchEvent(new KeyboardEvent('keydown', {code: 'Escape', key: 'Escape'}))
+            setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: 'Escape', key: 'Escape'})), 69)
         })
-        Array.from(document.getElementsByClassName('button-space')).forEach((btn: HTMLButtonElement) => {
-            btn.style.removeProperty('visibility')
-            btn.onclick = (event) => {
-                event.stopPropagation()
-                this.dispatchEvent(new KeyboardEvent('keydown', {code: ' ', key: ' '}))
-                setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: ' ', key: ' '})), 69)
-            }
+        this.setupButton('button-space', () => {
+            this.dispatchEvent(new KeyboardEvent('keydown', {code: ' ', key: ' '}))
+            setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: ' ', key: ' '})), 69)
         })
-        Array.from(document.getElementsByClassName('button-screenshot')).forEach((btn: HTMLButtonElement) => {
-            btn.style.removeProperty('visibility')
-            btn.onclick = (event) => {
-                event.stopPropagation()
-                EventBus.publishEvent(new SaveScreenshot())
-            }
+        this.setupButton('button-screenshot', () => {
+            EventBus.publishEvent(new SaveScreenshot())
         })
-        Array.from(document.getElementsByClassName('button-fullscreen')).forEach((btn: HTMLButtonElement) => {
+        this.setupButton('button-fullscreen', () => {
+            if (document.fullscreenElement === this.gameContainer) document.exitFullscreen().then()
+            else this.gameContainer?.requestFullscreen().then()
+        })
+    }
+
+    private setupButton(clsName: string, onClickCallback: () => void): void {
+        const buttons = Array.from(document.getElementsByClassName(clsName)) as HTMLButtonElement[]
+        buttons.forEach((btn) => {
             btn.style.removeProperty('visibility')
             btn.onclick = (event) => {
                 event.stopPropagation()
-                if (document.fullscreenElement === this.gameContainer) document.exitFullscreen().then()
-                else this.gameContainer?.requestFullscreen().then()
+                onClickCallback()
             }
         })
     }

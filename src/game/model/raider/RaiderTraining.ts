@@ -8,6 +8,15 @@ export enum RaiderTraining {
     DEMOLITION,
 }
 
+export interface RaiderTrainingStats {
+    TrainDriver: boolean[]
+    TrainRepair: boolean[]
+    TrainScanner: boolean[]
+    TrainPilot: boolean[]
+    TrainSailor: boolean[]
+    TrainDynamite: boolean[]
+}
+
 export class RaiderTrainings {
     static values: RaiderTraining[] = [
         RaiderTraining.DRIVER,
@@ -18,7 +27,7 @@ export class RaiderTrainings {
         RaiderTraining.DEMOLITION,
     ]
 
-    static toStatsProperty(training: RaiderTraining): string {
+    static toStatsProperty(training: RaiderTraining): keyof RaiderTrainingStats {
         switch (training) {
             case RaiderTraining.DRIVER:
                 return 'TrainDriver'

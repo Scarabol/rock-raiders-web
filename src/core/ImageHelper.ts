@@ -24,7 +24,7 @@ export function createContext(width: number, height: number): SpriteContext {
     } else {
         canvas = new OffscreenCanvas(width, height)
     }
-    return canvas.getContext('2d')
+    return canvas.getContext('2d') as SpriteContext
 }
 
 /**

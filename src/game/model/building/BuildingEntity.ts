@@ -369,7 +369,7 @@ export class BuildingEntity {
 
     isTrainingSite(training: RaiderTraining): boolean {
         const statsProperty = RaiderTrainings.toStatsProperty(training)
-        const stat: boolean[] = this.stats[statsProperty]
+        const stat = this.stats[statsProperty]
         return this.isPowered() && stat?.[this.level]
     }
 

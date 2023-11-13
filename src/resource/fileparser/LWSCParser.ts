@@ -147,10 +147,10 @@ export class LWSCParser {
                 line = this.lines[++this.lineIndex]
                 const lenFrames = parseInt(line, 10)
                 this.lineIndex++
-                const times = []
-                const relPos = []
-                const relRot = []
-                const relScale = []
+                const times: number[] = []
+                const relPos: number[] = []
+                const relRot: number[] = []
+                const relScale: number[] = []
                 for (let c = 0; c < lenFrames; c++) {
                     let line = this.lines[this.lineIndex + c * 2]
                     if (line.startsWith('EndBehavior')) break

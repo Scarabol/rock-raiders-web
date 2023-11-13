@@ -140,7 +140,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             }
             return {lwsFilename, beamPos, beamHeading}
         })
-        const shortBeams = []
+        const shortBeams: {lwsFilename: string, beamPos: Vector3, beamHeading: number}[] = []
         this.worldMgr.entityMgr.placedFences.forEach((fence) => {
             const components = this.ecs.getComponents(fence.entity)
             const surface = components.get(PositionComponent).surface
