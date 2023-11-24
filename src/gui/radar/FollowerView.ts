@@ -46,8 +46,8 @@ export class FollowerView extends BaseElement {
     onRedraw(context: SpriteContext) {
         if (this.hidden) return
         if (this.followerCanvas) {
-            context.drawImage(this.followerCanvas, this.x - 15, this.y + 13)
-            if (this.overlay) context.drawImage(this.overlay, this.x, this.y)
+            context.drawImage(this.followerCanvas, this.x - 8, this.y - 2)
+            if (this.overlay) context.drawImage(this.overlay, this.x + 4, this.y - 2)
         }
     }
 }
