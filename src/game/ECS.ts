@@ -101,7 +101,7 @@ export class ECS {
     public removeComponent(
         entity: GameEntity, componentClass: Function,
     ): void {
-        this.entities.get(entity).delete(componentClass)
+        this.entities.get(entity)?.delete(componentClass)
         this.dirtyEntities.forEach((entities, system) => {
             if (system.dirtyComponents.has(componentClass)) entities.delete(entity)
         })
@@ -157,7 +157,7 @@ export class ECS {
     }
 
     private checkEntityWithSystem(entity: GameEntity, system: AbstractGameSystem): void {
-        if (this.entities.get(entity).hasAll(system.componentsRequired)) {
+        if (this.entities.get(entity)?.hasAll(system.componentsRequired)) {
             this.systems.get(system).add(entity)
         } else {
             this.systems.get(system).delete(entity)
