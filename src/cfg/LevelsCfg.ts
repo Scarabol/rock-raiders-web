@@ -1,5 +1,6 @@
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseConfig } from './BaseConfig'
+import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
 
 export class LevelsCfg extends BaseConfig {
     levelCfgByName: Map<string, LevelEntryCfg> = new Map()
@@ -62,6 +63,7 @@ export class LevelEntryCfg extends BaseConfig {
     nerpFile: string = ''
     nerpMessageFile: string = ''
     objectiveText: string = ''
+    objectiveTextCfg: LevelObjectiveTextEntry = null
     objectiveImage640x480: ObjectiveImageCfg = null
     erodeTriggerTime: number = 0 // 1, 20, 40, 60, 120 time in seconds until erosion starts on next surface
     erodeErodeTime: number = 0 // 1, 5, 7, 20, 30, 40, 60 time in seconds until next erosion level is reached

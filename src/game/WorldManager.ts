@@ -33,6 +33,7 @@ import { SlugBehaviorSystem } from './system/SlugBehaviorSystem'
 import { TerrainScannerSystem } from './system/TerrainScannerSystem'
 import { BulletSystem } from './system/BulletSystem'
 import { BoulderSystem } from './system/BoulderSystem'
+import { MaterialEntity } from './model/material/MaterialEntity'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -200,5 +201,14 @@ export class WorldManager {
         ;[...this.entityMgr.raiders.filter((r) => !r.vehicle), ...this.entityMgr.vehicles, ...this.entityMgr.buildings].shuffle()
             .forEach((e, i) => setTimeout(() => e.beamUp(), i * 200))
         return new Promise((resolve) => setTimeout(() => resolve(), 10000))
+    }
+
+    depositItem(item: MaterialEntity) {
+        if (item.entityType === EntityType.ORE || item.entityType === EntityType.CRYSTAL || item.entityType === EntityType.BRICK) {
+            if (item.entityType === EntityType.ORE) GameState.numOre++
+            else if (item.entityType === EntityType.CRYSTAL) GameState.numCrystal++
+            else if (item.entityType === EntityType.BRICK) GameState.numBrick++
+            EventBus.publishEvent(new MaterialAmountChanged())
+        }
     }
 }

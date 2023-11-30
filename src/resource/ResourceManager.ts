@@ -12,6 +12,7 @@ import { RaiderTraining, RaiderTrainings } from '../game/model/raider/RaiderTrai
 import { LWSCData, LWSCParser } from './fileparser/LWSCParser'
 import { AnimEntityData, AnimEntityParser } from './AnimEntityParser'
 import { EntityType } from '../game/model/EntityType'
+import { LevelObjectiveTextEntry } from './fileparser/ObjectiveTextParser'
 
 export class ResourceManager extends ResourceCache {
     static lwoCache: Map<string, SceneMesh> = new Map()
@@ -21,6 +22,8 @@ export class ResourceManager extends ResourceCache {
     static getLevelEntryCfg(levelName: string): LevelEntryCfg {
         const levelConf = this.configuration.levels.levelCfgByName.get(levelName)
         if (!levelConf) throw new Error(`Could not find level configuration for "${levelName}"`)
+        const resource = ResourceManager.getResource(levelConf.objectiveText) as Record<string, LevelObjectiveTextEntry>
+        levelConf.objectiveTextCfg = resource[levelName.toLowerCase()]
         return levelConf
     }
 

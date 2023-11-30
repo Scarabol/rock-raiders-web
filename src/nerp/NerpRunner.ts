@@ -319,7 +319,7 @@ export class NerpRunner {
         if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using first one`)
         const targetBlock = tutoBlocks[0]
         if (!targetBlock) return
-        GameState.monsterCongregation = targetBlock
+        GameState.monsterCongregation = targetBlock.getCenterWorld2D()
     }
 
     setCameraGotoTutorial(tutoBlockId: number) {

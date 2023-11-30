@@ -1,9 +1,5 @@
-import { EventBus } from '../../event/EventBus'
-import { MaterialAmountChanged } from '../../event/WorldEvents'
-import { MaterialEntity } from './material/MaterialEntity'
-import { EntityType } from './EntityType'
 import { DEV_MODE } from '../../params'
-import { Surface } from '../terrain/Surface'
+import { Vector2 } from 'three'
 
 export class GameState {
     static numCrystal: number = 0
@@ -20,7 +16,7 @@ export class GameState {
     static alarmMode: boolean = false
     static objectiveShowing: number = 1
     static showObjInfo: boolean = DEV_MODE
-    static monsterCongregation: Surface = null
+    static monsterCongregation: Vector2 = null
 
     static reset() {
         this.numCrystal = 0
@@ -37,14 +33,5 @@ export class GameState {
         this.alarmMode = false
         this.objectiveShowing = 1
         this.monsterCongregation = null
-    }
-
-    static depositItem(item: MaterialEntity) {
-        if (item.entityType === EntityType.ORE || item.entityType === EntityType.CRYSTAL || item.entityType === EntityType.BRICK) {
-            if (item.entityType === EntityType.ORE) GameState.numOre++
-            else if (item.entityType === EntityType.CRYSTAL) GameState.numCrystal++
-            else if (item.entityType === EntityType.BRICK) GameState.numBrick++
-            EventBus.publishEvent(new MaterialAmountChanged())
-        }
     }
 }

@@ -1,5 +1,4 @@
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { iGet } from '../core/Util'
 import { EventBus } from '../event/EventBus'
 import { InitRadarMap, SetupPriorityList, ShowGameResultEvent } from '../event/LocalEvents'
 import { EntityManager } from '../game/EntityManager'
@@ -11,7 +10,6 @@ import { SceneManager } from '../game/SceneManager'
 import { WorldManager } from '../game/WorldManager'
 import { ADDITIONAL_RAIDER_PER_SUPPORT, DEV_MODE, MAX_RAIDER_BASE } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
-import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
 import { GameLayer } from './layer/GameLayer'
 import { GuiMainLayer } from './layer/GuiMainLayer'
 import { OverlayLayer } from './layer/OverlayLayer'
@@ -82,8 +80,8 @@ export class GameScreen {
         this.sceneMgr.setupScene(this.levelConf)
         // setup GUI
         this.guiMgr.buildingCycleIndex = 0
-        const objectiveText: LevelObjectiveTextEntry = iGet(ResourceManager.getResource(this.levelConf.objectiveText), this.levelName)
-        this.overlayLayer.setup(ResourceManager.configuration.main.missionBriefingText, objectiveText.objective, this.levelConf.objectiveImage640x480)
+        const objectiveText = this.levelConf.objectiveTextCfg.objective
+        this.overlayLayer.setup(ResourceManager.configuration.main.missionBriefingText, objectiveText, this.levelConf.objectiveImage640x480)
         EventBus.publishEvent(new SetupPriorityList(this.levelConf.priorities))
         // load in non-space objects next
         const objectList = ResourceManager.getResource(this.levelConf.oListFile)
