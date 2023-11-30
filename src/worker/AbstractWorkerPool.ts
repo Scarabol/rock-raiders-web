@@ -13,6 +13,10 @@ export abstract class AbstractWorkerPool<M, R> {
     protected abstract attachFallbackSystem(worker: TypedWorkerFallback<WorkerRequestMessage<M>, WorkerResponseMessage<R>>): void
 
     startPool(poolSize: number, setupMessage: M): this {
+        if (this.allWorkers.size > 0) {
+            console.warn('Pool already has been started')
+            return this
+        }
         for (let c = 0; c < poolSize; c++) {
             setTimeout(() => {
                 const worker = this.createTypedWorker()
