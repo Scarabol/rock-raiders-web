@@ -12,7 +12,6 @@ import { DynamiteExplosionEvent } from '../../../event/WorldEvents'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
 import { BubblesCfg } from '../../../cfg/BubblesCfg'
-import { GameState } from '../GameState'
 import { EntityManager } from '../../EntityManager'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
@@ -142,7 +141,7 @@ export class CarryJob extends Job {
                     })
                 }
             } else {
-                GameState.depositItem(this.carryItem)
+                this.carryItem.worldMgr.depositItem(this.carryItem)
                 this.carryItem.disposeFromWorld()
             }
         } else if (this.carryItem.entityType === EntityType.DEPLETED_CRYSTAL) {

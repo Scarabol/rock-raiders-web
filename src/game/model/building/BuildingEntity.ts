@@ -390,7 +390,7 @@ export class BuildingEntity {
         if (this.entityType === EntityType.ORE_REFINERY) {
             MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.BRICK, this.getDropPosition2D())
         } else {
-            this.carriedItems.forEach((m) => GameState.depositItem(m))
+            this.carriedItems.forEach((m) => this.worldMgr.depositItem(m))
         }
         this.carriedItems.forEach((m) => m.disposeFromWorld())
         this.carriedItems.length = 0

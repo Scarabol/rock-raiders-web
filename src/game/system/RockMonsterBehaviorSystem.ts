@@ -340,8 +340,8 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
     private doIdle(behaviorComponent: RockMonsterBehaviorComponent, pathFinder: PathFinder, rockyPos: Vector2, stats: MonsterEntityStats, entity: number, crystals: MaterialEntity[]) {
         if (behaviorComponent.boulder) {
             behaviorComponent.state = RockMonsterBehaviorState.BOULDER_ATTACK
-        } else if (GameState.monsterCongregation && GameState.monsterCongregation.getCenterWorld2D().distanceToSquared(rockyPos) > TILESIZE) {
-            const path = pathFinder.findShortestPath(rockyPos, [PathTarget.fromLocation(GameState.monsterCongregation.getCenterWorld2D())], stats, false)
+        } else if (GameState.monsterCongregation && GameState.monsterCongregation.distanceToSquared(rockyPos) > TILESIZE) {
+            const path = pathFinder.findShortestPath(rockyPos, [PathTarget.fromLocation(GameState.monsterCongregation)], stats, false)
             if (path && path.locations.length > 0) {
                 const targetLocation = path.locations[0]
                 this.ecs.addComponent(entity, new WorldTargetComponent(targetLocation, 1))
