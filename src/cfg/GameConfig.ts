@@ -21,6 +21,7 @@ import { EntityType, getEntityTypeByName } from '../game/model/EntityType'
 import { ObjInfoCfg } from './ObjInfoCfg'
 import { WeaponTypeCfg } from './WeaponTypesCfg'
 import { SamplesCfg } from './SamplesCfg'
+import { InterfaceSurroundImagesCfg } from './InterfaceSurroundImagesCfg'
 
 export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
 export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
@@ -40,7 +41,7 @@ export class GameConfig extends BaseConfig {
     buttons: ButtonsCfg = new ButtonsCfg()
     interfaceBackButton: IconPanelBackButtonCfg = null
     interfaceBuildImages: Map<string, MenuItemCfg> = new Map()
-    // interfaceSurroundImages: InterfaceSurroundImagesCfg = new InterfaceSurroundImagesCfg()
+    interfaceSurroundImages: InterfaceSurroundImagesCfg = null
     priorityImages: PriorityButtonsCfg = new PriorityButtonsCfg()
     prioritiesImagePositions: PrioritiesImagePositionsCfg = new PrioritiesImagePositionsCfg()
     miscObjects: MiscObjectsCfg = new MiscObjectsCfg()
@@ -92,8 +93,8 @@ export class GameConfig extends BaseConfig {
             this.interfaceBackButton = new IconPanelBackButtonCfg(cfgValue)
         } else if ('InterfaceBuildImages'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.interfaceBuildImages.set(cfgKey.toLowerCase(), new MenuItemCfg(value)))
-        // } else if ('InterfaceSurroundImages'.equalsIgnoreCase(unifiedKey)) {
-        //     this.interfaceSurroundImages.setFromCfgObj(cfgValue)
+        } else if ('InterfaceSurroundImages'.equalsIgnoreCase(unifiedKey)) {
+            this.interfaceSurroundImages = new InterfaceSurroundImagesCfg(cfgValue)
         } else if ('PriorityImages'.equalsIgnoreCase(unifiedKey)) {
             this.priorityImages.setFromCfgObj(cfgValue)
         } else if ('PrioritiesImagePositions'.equalsIgnoreCase(unifiedKey)) {

@@ -15,10 +15,8 @@ export class IconSubPanel extends Panel {
             this.backBtn = this.addChild(new Button(this, ResourceManager.configuration.interfaceBackButton))
             this.backBtn.onClick = () => this.toggleState(() => onBackPanel.toggleState())
         }
-        const frameImgCfg = ResourceManager.cfg('InterfaceSurroundImages', numOfItems.toString())
-        // noinspection JSUnusedLocalSymbols
-        const [imgName, val1, val2, val3, val4, imgNameWoBackName, woBack1, woBack2] = frameImgCfg
-        this.img = onBackPanel ? ResourceManager.getImage(imgName) : ResourceManager.getImage(imgNameWoBackName)
+        const frameImgCfg = ResourceManager.configuration.interfaceSurroundImages.cfgByNumItems[numOfItems]
+        this.img = onBackPanel ? ResourceManager.getImage(frameImgCfg.imgName) : ResourceManager.getImage(frameImgCfg.imgNameWoBackName)
         this.xOut = -this.img.width
     }
 

@@ -3,7 +3,6 @@ import { Cursor } from './Cursor'
 import { BitmapFontData } from '../core/BitmapFont'
 import { createCanvas, createContext, createDummyImgData, imgDataToCanvas } from '../core/ImageHelper'
 import { SpriteImage } from '../core/Sprite'
-import { iGet } from '../core/Util'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME } from '../params'
@@ -20,10 +19,6 @@ export class ResourceCache {
     static readonly dependencySpriteCache: Map<string, SpriteImage> = new Map()
     static configuration: GameConfig = new GameConfig()
     static resourceByName: Map<string, any> = new Map()
-
-    static cfg(...keys: string[]): any {
-        return iGet(this.configuration, ...keys)
-    }
 
     static getResource(resourceName: string): any {
         const lName = resourceName?.toString()?.toLowerCase() || null
