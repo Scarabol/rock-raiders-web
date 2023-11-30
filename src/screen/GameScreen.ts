@@ -59,6 +59,15 @@ export class GameScreen {
         })
     }
 
+    dispose() {
+        this.hide()
+        this.screenMaster.removeLayer(this.gameLayer)
+        this.screenMaster.removeLayer(this.selectionLayer)
+        this.screenMaster.removeLayer(this.guiLayer)
+        this.screenMaster.removeLayer(this.overlayLayer)
+        // TODO remove event listener on hot reload?
+    }
+
     restartLevel() {
         this.hide()
         GameState.reset()

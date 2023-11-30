@@ -101,6 +101,11 @@ export class ScreenMaster {
         return layer
     }
 
+    removeLayer(layer: ScreenLayer) {
+        this.layers.remove(layer)
+        this.gameCanvasContainer.removeChild(layer.canvas)
+    }
+
     private onWindowResize() {
         const maxWidth = this.gameContainer.offsetWidth
         const maxHeight = this.gameContainer.offsetHeight
