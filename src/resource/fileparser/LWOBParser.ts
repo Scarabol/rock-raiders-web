@@ -14,9 +14,9 @@ import { SequenceTextureMaterial } from '../../scene/SequenceTextureMaterial'
 import { ResourceManager } from '../ResourceManager'
 import { UVData } from './LWOUVParser'
 
-/*************************/
-/* FLAG DEFINITION START */
-/*************************/
+//*************************//
+//* FLAG DEFINITION START *//
+//*************************//
 
 const LUMINOUS_BIT = 1
 const OUTLINE_BIT = 2
@@ -30,13 +30,13 @@ const DOUBLESIDED_BIT = 256
 const ADDITIVE_BIT = 512
 const SHADOWALPHA_BIT = 1024
 
-/*************************/
-/*  FLAG DEFINITION END  */
-/*************************/
+//*************************//
+//*  FLAG DEFINITION END  *//
+//*************************//
 
-/*************************/
-/* TFLG DEFINITION START */
-/*************************/
+//*************************//
+//* TFLG DEFINITION START *//
+//*************************//
 
 const XAXIS_BIT = 1
 const YAXIS_BIT = 2
@@ -46,9 +46,9 @@ const NEGATIVEIMAGE_BIT = 16
 const PIXELBLENDING_BIT = 32
 const ANTIALIASING_BIT = 64
 
-/*************************/
-/*  TFLG DEFINITION END  */
-/*************************/
+//*************************//
+//*  TFLG DEFINITION END  *//
+//*************************//
 
 enum ReflectionMode {
     BACKDROP = 0,
