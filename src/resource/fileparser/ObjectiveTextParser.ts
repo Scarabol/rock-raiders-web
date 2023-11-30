@@ -10,7 +10,7 @@ export class LevelObjectiveTextEntry {
 
 export class ObjectiveTextParser {
     parseObjectiveTextFile(txtFileContent: Uint8Array) {
-        const result = {}
+        const result: Record<string, LevelObjectiveTextEntry> = {}
         let state = PARSING_STATE.DROP
         let currentLevel: LevelObjectiveTextEntry = null
         let value = ''
@@ -20,7 +20,7 @@ export class ObjectiveTextParser {
             let char = String.fromCharCode(code)
             if (state === PARSING_STATE.DROP) {
                 if (char === '[') {
-                    if (currentLevel) result[currentLevel.key] = currentLevel
+                    if (currentLevel) result[currentLevel.key.toLowerCase()] = currentLevel
                     currentLevel = new LevelObjectiveTextEntry()
                     state = PARSING_STATE.KEY
                 } else if (currentLevel && char === ':') {
@@ -89,7 +89,7 @@ export class ObjectiveTextParser {
                 }
             }
         }
-        if (currentLevel) result[currentLevel.key] = currentLevel
+        if (currentLevel) result[currentLevel.key.toLowerCase()] = currentLevel
         currentLevel = null
         return result
     }
@@ -103,4 +103,3 @@ enum PARSING_STATE {
     COMPLETION,
     CRYSTAL_FAILURE,
 }
-
