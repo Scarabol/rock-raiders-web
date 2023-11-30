@@ -19,6 +19,24 @@ import { ObjectListLoader } from './game/ObjectListLoader'
 import { GameResult } from './game/model/GameResult'
 import { SoundManager } from './audio/SoundManager'
 
+function finishSetup(entry: string, params: URLSearchParams, mainMenuScreen: MainMenuScreen, rewardScreen: RewardScreen) {
+    if (DEV_MODE && entry) {
+        GameState.numCrystal = Number(params.get('numCrystal')) || 0
+        GameState.numOre = Number(params.get('numOre')) || 0
+        GameState.numBrick = Number(params.get('numBrick')) || 0
+        ObjectListLoader.numRaider = Number(params.get('numRaider')) || 0
+        ObjectListLoader.startVehicle = params.get('vehicle') || ''
+        const loadGame = params.get('loadGame')
+        if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))
+        if (entry === 'level') mainMenuScreen.showLevelSelection()
+        else if (entry === 'reward') rewardScreen.showGameResult(GameResult.random())
+        else if (entry === 'random') mainMenuScreen.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
+        else if (entry) mainMenuScreen.selectLevel(entry)
+    } else {
+        mainMenuScreen.showMainMenu()
+    }
+}
+
 export async function start() {
     SaveGameManager.loadPreferences()
     SaveGameManager.loadSaveGames()
@@ -108,30 +126,24 @@ export async function start() {
             // complete setup
             screenMaster.addLayer(new TooltipLayer(), 1000).show()
             const mainMenuScreen = new MainMenuScreen(screenMaster)
-            new GameScreen(screenMaster)
+            let gameScreen = new GameScreen(screenMaster)
             const rewardScreen = new RewardScreen(screenMaster)
 
-            // setup complete
             screenMaster.loadingLayer.hide()
             githubBox.hide()
             clearCacheButton.hide()
             const params = new URLSearchParams(window.location.search)
             const entry = params.get('entry')
-            if (DEV_MODE && entry) {
-                GameState.numCrystal = Number(params.get('numCrystal')) || 0
-                GameState.numOre = Number(params.get('numOre')) || 0
-                GameState.numBrick = Number(params.get('numBrick')) || 0
-                ObjectListLoader.numRaider = Number(params.get('numRaider')) || 0
-                ObjectListLoader.startVehicle = params.get('vehicle') || ''
-                const loadGame = params.get('loadGame')
-                if (loadGame !== null) SaveGameManager.loadGame(Number(loadGame))
-                if (entry === 'level') mainMenuScreen.showLevelSelection()
-                else if (entry === 'reward') rewardScreen.showGameResult(GameResult.random())
-                else if (entry === 'random') mainMenuScreen.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
-                else if (entry) mainMenuScreen.selectLevel(entry)
-            } else {
-                mainMenuScreen.showMainMenu()
+
+            if (import.meta.hot) {
+                import.meta.hot.accept('./screen/GameScreen', (mNs) => {
+                    gameScreen.dispose()
+                    gameScreen = new mNs.GameScreen(screenMaster)
+                    finishSetup(entry, params, mainMenuScreen, rewardScreen)
+                })
             }
+
+            finishSetup(entry, params, mainMenuScreen, rewardScreen)
         })
     })
 }
