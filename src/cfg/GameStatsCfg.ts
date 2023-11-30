@@ -1,7 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
 import { BaseConfig } from './BaseConfig'
-import { RaiderTrainingStats } from "../game/model/raider/RaiderTraining";
+import { RaiderTrainingStats } from '../game/model/raider/RaiderTraining'
 
 export interface PickSphereStats {
     PickSphere: number
