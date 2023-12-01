@@ -70,6 +70,11 @@ export class Surface {
                 this.rubblePositions = [this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition(), this.getRandomPosition()]
                 break
         }
+        // TODO Use pro meshes for high wall details?
+        // const proMesh = ResourceManager.getLwoModel(this.terrain.textureSet.meshBasename + '01b.lwo')
+        // proMesh.position.copy(this.mesh.position)
+        // proMesh.scale.setScalar(1 / TILESIZE)
+        // this.terrain.floorGroup.add(proMesh)
         this.mesh = new SurfaceMesh(x, y, {selectable: this, surface: this})
         this.terrain.floorGroup.add(this.mesh)
     }
