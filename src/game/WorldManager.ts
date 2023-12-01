@@ -34,6 +34,7 @@ import { TerrainScannerSystem } from './system/TerrainScannerSystem'
 import { BulletSystem } from './system/BulletSystem'
 import { BoulderSystem } from './system/BoulderSystem'
 import { MaterialEntity } from './model/material/MaterialEntity'
+import { LavaErosionSystem } from './system/LavaErosionSystem'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -69,6 +70,7 @@ export class WorldManager {
         this.ecs.addSystem(new TerrainScannerSystem(this))
         this.ecs.addSystem(new BulletSystem(this))
         this.ecs.addSystem(new BoulderSystem())
+        this.ecs.addSystem(new LavaErosionSystem())
         EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
