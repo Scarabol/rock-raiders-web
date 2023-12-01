@@ -5,7 +5,6 @@ import { DEV_MODE, SURFACE_NUM_CONTAINED_ORE, TILESIZE } from '../../params'
 import { WorldManager } from '../WorldManager'
 import { updateSafe } from '../model/Updateable'
 import { FallIn } from './FallIn'
-import { LavaErosion } from './LavaErosion'
 import { PathFinder } from './PathFinder'
 import { PowerGrid } from './PowerGrid'
 import { Surface } from './Surface'
@@ -36,8 +35,6 @@ export class Terrain {
     pathFinder: PathFinder = new PathFinder()
     fallIns: FallIn[] = []
     powerGrid: PowerGrid
-    erodeTriggerTimeMs: number = 0
-    lavaErodes: LavaErosion[] = []
     tutoBlocksById: Map<number, Surface[]> = new Map()
     emergeCreature: MonsterEntityType = EntityType.NONE
     emergeTrigger: EmergeTrigger[] = []
@@ -54,7 +51,6 @@ export class Terrain {
         this.roofGroup.scale.setScalar(TILESIZE)
         this.roofGroup.visible = false // keep roof hidden unless switched to other camera
         this.powerGrid = new PowerGrid(this.worldMgr)
-        this.erodeTriggerTimeMs = levelConf.erodeTriggerTime * 1000
         this.emergeTimeoutMs = levelConf.emergeTimeOut / 1500 * 60 * 1000 // 1500 specifies 1 minute
     }
 
@@ -177,23 +173,8 @@ export class Terrain {
         this.emergeSpawns.forEach((spawns) => spawns.remove(surface))
     }
 
-    addLavaErosion(x: number, y: number, erosionLevel: number) {
-        const nextErodeTimeMs = this.levelConf.erodeErodeTime * 1000
-        const powerPathLockTimeMs = this.levelConf.erodeLockTime * 1000
-        const lavaErosion = new LavaErosion(this.getSurface(x, y), erosionLevel, nextErodeTimeMs, powerPathLockTimeMs)
-        this.lavaErodes.push(lavaErosion)
-        return lavaErosion
-    }
-
     update(elapsedMs: number) {
         this.fallIns.forEach((f) => updateSafe(f, elapsedMs))
-        if (this.erodeTriggerTimeMs > elapsedMs) {
-            this.erodeTriggerTimeMs -= elapsedMs
-        } else {
-            this.lavaErodes = this.lavaErodes.filter((e) => e.surface.surfaceType !== SurfaceType.LAVA5)
-            this.lavaErodes.forEach((e) => updateSafe(e, elapsedMs - this.erodeTriggerTimeMs))
-            this.erodeTriggerTimeMs = 0
-        }
         if (this.emergeCreature) this.updateEmergeTrigger(elapsedMs)
     }
 

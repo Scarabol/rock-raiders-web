@@ -29,7 +29,8 @@ import { PositionComponent } from '../component/PositionComponent'
 import { AnimationGroup } from '../../scene/AnimationGroup'
 
 export class Surface {
-    worldMgr: WorldManager
+    readonly worldMgr: WorldManager
+    readonly entity: GameEntity
     containedOres: number = 0
     containedCrystals: number = 0
     discovered: boolean = false
@@ -58,6 +59,7 @@ export class Surface {
 
     constructor(readonly terrain: Terrain, public surfaceType: SurfaceType, readonly x: number, readonly y: number) {
         this.worldMgr = this.terrain.worldMgr
+        this.entity = this.worldMgr.ecs.addEntity()
         switch (surfaceType) {
             case SurfaceType.CRYSTAL_SEAM:
             case SurfaceType.ORE_SEAM:

@@ -8,6 +8,7 @@ import { WorldManager } from './WorldManager'
 import { getMonsterEntityTypeByName } from './model/EntityType'
 import { EmergeTrigger } from './terrain/EmergeTrigger'
 import { Vector3 } from 'three'
+import { LavaErosionComponent } from './component/LavaErosionComponent'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
@@ -140,13 +141,14 @@ export class TerrainLoader {
         if (erodeMap) {
             for (let x = 0; x < terrain.width; x++) {
                 for (let y = 0; y < terrain.height; y++) {
-                    const erosion = erodeMap[y][x]
-                    if (erosion > 0) {
-                        const lavaErosion = terrain.addLavaErosion(x, y, erosion)
-                        if (lavaErosion.isSelfEroding) {
-                            for (let c = 0; c < 5; c++) {
-                                lavaErosion.increaseErosionLevel()
-                            }
+                    const erosionLevel = erodeMap[y][x]
+                    if (erosionLevel <= 0) continue
+                    const targetSurface = terrain.getSurface(x, y)
+                    const lavaErosionComponent = new LavaErosionComponent(targetSurface, erosionLevel)
+                    worldMgr.ecs.addComponent(targetSurface.entity, lavaErosionComponent)
+                    if (lavaErosionComponent.isSelfEroding) {
+                        for (let c = 0; c < 5; c++) {
+                            lavaErosionComponent.increaseErosionLevel()
                         }
                     }
                 }
