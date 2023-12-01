@@ -135,6 +135,12 @@ export class AssetRegistry extends Map<string, WadAsset> {
         this.addTextureFolder('World/WorldTextures/IceSplit/Ice')
         this.addTextureFolder('World/WorldTextures/LavaSplit/Lava')
         this.addTextureFolder('World/WorldTextures/RockSplit/Rock')
+        // TODO Use pro meshes for high wall details?
+        // Array.from(gameConfig.textures.textureSetByName.values()).forEach((set) => {
+        //     this.assetLoader.wad0File.filterEntryNames(`${set.meshBasename}.*.lwo`).forEach((meshName) => {
+        //         this.addAsset(this.assetLoader.loadLWOFile, meshName)
+        //     })
+        // })
         // reward screen
         this.addAsset(this.assetLoader.loadWadImageAsset, gameConfig.reward.wallpaper)
         this.addAsset(this.assetLoader.loadFontImageAsset, gameConfig.reward.backFont)
