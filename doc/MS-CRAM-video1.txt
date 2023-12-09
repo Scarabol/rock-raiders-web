@@ -1,0 +1,297 @@
+Description of the Microsoft Video-1 Decoding Algorithm
+by Mike Melanson (mike at multimedia.cx)
+v1.2: March 13, 2003
+
+
+=======================================================================
+NOTE: The information in this document is now maintained in Wiki format
+at:
+  http://wiki.multimedia.cx/index.php?title=Microsoft_Video_1
+=======================================================================
+
+
+
+  Copyright (c) 2001-2003 Mike Melanson
+  Permission is granted to copy, distribute and/or modify this document
+  under the terms of the GNU Free Documentation License, Version 1.2
+  or any later version published by the Free Software Foundation;
+  with no Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.
+  A copy of the license is included in the section entitled "GNU
+  Free Documentation License".
+
+
+Contents
+--------
+ * Introduction
+ * 8-bit Video-1 Data
+ * 16-bit Video-1 Data
+ * References
+ * Changelog
+ * GNU Free Documentation License
+
+
+Introduction
+------------
+The Microsoft Video-1 codec is a rather simple algorithm, especially when
+compared to modern video compression methods. The algorithm operates on
+4x4 blocks of pixels, which implies that the source data to be compressed
+must be divisible by 4 in both its width and height. Just like decoding a
+Microsoft BMP image, decoding a frame of Video-1 data is a bottom-to-top
+operation.
+
+The Video-1 codec has two variants: One variant encodes 8-bit palettized
+data, where the palette is stored in the AVI file header. The second
+variant encodes 16-bit colors. Actually, the colors are BGR555 data, and
+the top bit is sometimes used for extra encoding information. To determine
+which variant a particular AVI file uses, examine the AVI file header,
+specifically the biBitCount field of the bitmap header within the AVI file
+header.
+
+Video-1 data is transported within Microsoft AVI or ASF files. Such data
+is known to be identified by the following FOURCCs:
+- MSVC, msvc
+- CRAM, cram
+- WHAM, wham
+
+
+8-bit Video-1 Data
+------------------
+In the 8-bit variant of Video-1, the decoded 8-bit pixel values are
+indices into the palette table stored in the AVI file that transported
+the Video-1 data.
+
+In order to decode the Video-1 data, traverse through the encoded byte
+stream, reading the first two bytes into byte_a and byte_b, respectively.
+The value of byte_b will usually indicate what to do next.
+
+byte_a == 0 && byte_b == 0 && all of the 4x4 image blocks have been
+traversed, then decode is finished
+
+0x84 <= byte_b < 0x88:
+This code specifies that a certain number of blocks should be skipped in
+the output stream. This is useful for frame differencing (encoding changes
+from frame to frame) and thus achieving greater compression.
+  formula for skipping:
+    if (0x84 <= byte_b <= 0x87) [100001xx] then
+        skip n blocks, where n is computed as
+         (byte_b - 0x84) * 256 + byte_a
+        since byte_b has to be >= 0x84 and <= 0x87, values of byte_b are
+        restricted from 0..3, which means this command can skip anywhere
+        from 0..1023 blocks (if byte_b is 0x87 and byte_a is 0xFF)
+
+byte_b < 0x80:
+2-color encoding
+In this encoding, the next 2 bytes in the encoded byte stream are color_a
+and color_b, respectively. Byte_a and byte_b turn into sets of flags that
+represent which color, a or b, to place into a particular pixel in the
+decoded block. The flags are laid out as follows:
+  b4 b5 b6 b7
+  b0 b1 b2 b3
+  a4 a5 a6 a7
+  a0 a1 a2 a3
+For example, if bit 0 of byte_a is 1, the lower left pixel of the block is
+color_a. Otherwise, it's color_b. In all, a 2-color block is encoded as 4
+bytes:
+
+  byte_a
+  byte_b
+
+  color_a
+  color_b
+
+0x90 <= byte_b:
+8-color encoding
+In this encoding, a single 4x4 block can have as many as 8 colors. More
+accurately, the 4x4 block is subdivided into 4 2x2 quads, each of which
+can have 2 colors. The quads are laid out as follows:
+  +-------+-------+
+  |       |       |
+  | quad3 | quad4 |
+  |       |       |
+  +-------+-------+
+  |       |       |
+  | quad1 | quad2 |
+  |       |       |
+  +-------+-------+
+As in 2 color encoding, byte_a and byte_b become sets of flags indicating
+which color pixel to place in the decoded block. The flag matrix is laid
+out the same as in the 2 color encoding:
+  b4 b5 b6 b7
+  b0 b1 b2 b3
+  a4 a5 a6 a7
+  a0 a1 a2 a3
+The 2 possible colors for each of the four quads directly follow the
+two block bytes. In all, an 8-color block is encoded as 10 bytes:
+
+  byte_a
+  byte_b
+
+  quad1_a
+  quad1_b
+
+  quad2_a
+  quad2_b
+
+  quad3_a
+  quad3_b
+
+  quad4_a
+  quad4_b
+
+For example, if bit 7 of byte_b is 1 then the color represented by quad4_a
+is placed in the top right corner of the 4x4 block. Otherwise, it's
+quad4_b.
+
+0x80 <= byte_b < 0x84
+  or
+0x88 <= byte_b < 0x90
+  or
+"byte_b didn't qualify this block for any other encoding scheme"
+1-color encoding
+In this encoding, byte_a represents the color for the entire 4x4 block.
+
+
+16-bit Video-1 Data
+-------------------
+Colors are stored in BGR555 format. In the data stream, the colors are
+encoded in little endian format:
+... | color_lo | color_hi | ...
+When the color is properly decoded, the color components are
+represented by the following bits:
+B: 14-10
+G: 9-5
+R: 4-0
+
+In order to decode the Video-1 data, traverse through the encoded byte
+stream, reading the first two bytes into byte_a and byte_b, respectively.
+The value of byte_b will usually indicate what to do next.
+
+byte_a == 0 && byte_b == 0 && all of the 4x4 image blocks have been
+traversed, then decode is finished
+
+0x84 <= byte_b < 0x88:
+This code specifies that a certain number of blocks should be skipped in
+the output stream. This is useful for frame differencing (encoding changes
+from frame to frame) and thus achieving greater compression.
+  formula for skipping:
+    if (0x84 <= byte_b <= 0x87) [100001xx] then
+        skip n blocks, where n is computed as
+         (byte_b - 0x84) * 256 + byte_a
+        since byte_b has to be >= 0x84 and <= 0x87, values of byte_b are
+        restricted from 0..3, which means this command can skip anywhere
+        from 0..1023 blocks (if byte_b is 0x87 and byte_a is 0xFF)
+
+0 <= byte_b < 0x80:
+2- or 8- color encoding
+The 2- and 8- color encoding schemes are quite similar. To determine
+which of the two schemes a block is using, it's necessary to read the
+next two little endian 16-bit numbers in the stream. If the highest bit of
+the first number is 1, then the block is encoded with the 8-color
+scheme. Otherwise, it uses the 2-color scheme.
+
+2-color encoding
+In this encoding, the two LE16 numbers are labeled color_a and color_b,
+respectively. Byte_a and byte_b turn into sets of flags that represent
+which color, a or b, to place into a particular pixel in the decoded
+block. The flags are laid out as follows:
+  b4 b5 b6 b7
+  b0 b1 b2 b3
+  a4 a5 a6 a7
+  a0 a1 a2 a3
+For example, if bit 0 of byte_a is 1, the lower left pixel of the block is
+color_a. Otherwise, it's color_b. In all, a 2-color block is encoded as 6
+bytes:
+
+  byte_a
+  byte_b
+
+  color_a_lo
+  color_a_hi
+  color_b_lo
+  color_b_hi
+
+8-color encoding
+In this encoding, a single 4x4 block can have as many as 8 colors. More
+accurately, the 4x4 block is subdivided into 4 2x2 quads, each of which
+can have 2 colors. The quads are laid out as follows:
+  +-------+-------+
+  |       |       |
+  | quad3 | quad4 |
+  |       |       |
+  +-------+-------+
+  |       |       |
+  | quad1 | quad2 |
+  |       |       |
+  +-------+-------+
+As in 2 color encoding, byte_a and byte_b become sets of flags indicating
+which color pixel to place in the decoded block. The flag matrix is laid
+out the same as in the 2 color encoding:
+  b4 b5 b6 b7
+  b0 b1 b2 b3
+  a4 a5 a6 a7
+  a0 a1 a2 a3
+The 2 possible colors for each of the four quads directly follow the
+two block bytes. The colors for the first quad were likely read from the
+data stream in order to determine if the block is 2- or 8- color
+encoded. The 2 colors for each of the other 3 quads will follow the first.
+In all, a full 8 color block is encoded as 18 bytes:
+
+  byte_a
+  byte_b
+
+  quad1_a_lo
+  quad1_a_hi
+  quad1_b_lo
+  quad1_b_hi
+
+  quad2_a_lo
+  quad2_a_hi
+  quad2_b_lo
+  quad2_b_hi
+
+  quad3_a_lo
+  quad3_a_hi
+  quad3_b_lo
+  quad3_b_hi
+
+  quad4_a_lo
+  quad4_a_hi
+  quad4_b_lo
+  quad4_b_hi
+
+For example, if bit 7 of byte_b is 1 then the color represented by quad4_a
+is placed in the top right corner of the 4x4 block. Otherwise, it's
+quad4_b.
+
+0x80 <= byte_b < 0x84
+OR
+0x88 <= byte_b:
+1-color encoding
+In this encoding, byte_a and byte_b represent a little endian 16-bit
+number which is the color for the entire 4x4 block.
+
+
+References
+----------
+XAnim
+http://xanim.polter.net/
+
+
+ChangeLog
+---------
+v1.2: March 13, 2003
+- licensed under GNU Free Documentation License
+- minor cosmetic changes
+
+v1.1: December 21, 2001
+- added FOURCCs
+- fixed inaccuracy regarding end of frame code
+- cosmetic changes
+
+v1.0: November, 2001
+- initial release
+
+
+GNU Free Documentation License
+------------------------------
+see http://www.gnu.org/licenses/fdl.html

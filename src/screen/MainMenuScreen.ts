@@ -13,10 +13,13 @@ import { LevelSelectedEvent, MaterialAmountChanged } from '../event/WorldEvents'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { SoundManager } from '../audio/SoundManager'
 import { Sample } from '../audio/Sample'
+import { MainMenuCreditsLayer } from '../menu/MainMenuCreditsLayer'
+import { ScaledLayer } from './layer/ScreenLayer'
 
 export class MainMenuScreen {
-    menuLayers: MainMenuLayer[] = []
+    menuLayers: ScaledLayer[] = []
     loadSaveLayer: LoadSaveLayer
+    creditsLayer: MainMenuCreditsLayer
 
     constructor(readonly screenMaster: ScreenMaster) {
         ResourceManager.configuration.menu.mainMenuFull.menus.forEach((menuCfg) => {
@@ -39,6 +42,21 @@ export class MainMenuScreen {
             layer.onItemAction = (item: MainMenuBaseItem) => this.onItemAction(item)
             this.menuLayers.push(screenMaster.addLayer(layer, 200 + this.menuLayers.length * 10))
         })
+        this.creditsLayer = screenMaster.addLayer(new MainMenuCreditsLayer(), 200 + this.menuLayers.length * 10)
+        this.creditsLayer.addEventListener('pointerup', (): boolean => {
+            this.showMainMenu()
+            return true
+        })
+        this.creditsLayer.addEventListener('keydown', (event: KeyboardEvent): boolean => {
+            if (event.code === 'Escape') {
+                this.showMainMenu()
+                return true
+            } else {
+                console.log(event.code)
+            }
+            return false
+        })
+        this.menuLayers.push(this.creditsLayer)
         EventBus.registerEventListener(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
             if (!event.result) this.showLevelSelection()
         })
@@ -66,6 +84,8 @@ export class MainMenuScreen {
             } else {
                 this.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
             }
+        } else if (item.actionName.equalsIgnoreCase('Trigger') && item.targetIndex === 0) {
+            this.showCredits()
         } else if (item.actionName) {
             console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
         } else {
@@ -84,6 +104,10 @@ export class MainMenuScreen {
 
     showLevelSelection() {
         this.showMainMenu(1)
+    }
+
+    showCredits() {
+        this.menuLayers.forEach((l) => l === this.creditsLayer ? l.show() : l.hide())
     }
 
     selectLevel(levelName: string) {
