@@ -47,8 +47,18 @@ export async function start() {
     const clearCacheButton = new ClearCacheButton('game-container')
     const gameFilesLoader = new GameFilesLoader(screenMaster)
     const cabFile = await gameFilesLoader.loadGameFiles()
+    let wad1File: ArrayBuffer
     const wad0File = await cabFile.getFileBuffer('Program Data Files/LegoRR0.wad')
-    const wad1File = await cabFile.getFileBuffer('0007-German Files/LegoRR1.wad') // TODO support other languages
+    const errors = []
+    for (const folder of ['0007-German Files', '0009-English Files', '040c-French_(Standard)_Files']) {
+        try {
+            wad1File = await cabFile.getFileBuffer(`${folder}/LegoRR1.wad`)
+            break
+        } catch (e) {
+            errors.push(e)
+        }
+    }
+    if (!wad1File) throw new Error(`No wad1 file found in cab ${cabFile.lowerFilePathNameToFile}:\n` + errors.join('\n'))
     const assetLoader = new AssetLoader(cabFile, wad0File, wad1File)
     screenMaster.loadingLayer.setLoadingMessage('Loading configuration...')
     const cfgFiles = assetLoader.wad1File.filterEntryNames('\\.cfg')
@@ -125,7 +135,7 @@ export async function start() {
             console.log(`Loading of about ${(assetLoader.assetRegistry.size)} assets complete!`)
             // complete setup
             screenMaster.addLayer(new TooltipLayer(), 1000).show()
-            const mainMenuScreen = new MainMenuScreen(screenMaster)
+            let mainMenuScreen = new MainMenuScreen(screenMaster)
             let gameScreen = new GameScreen(screenMaster)
             const rewardScreen = new RewardScreen(screenMaster)
 
@@ -136,10 +146,23 @@ export async function start() {
             const entry = params.get('entry')
 
             if (import.meta.hot) {
+                import.meta.hot.accept('./screen/MainMenuScreen', (mNs) => {
+                    try {
+                        mainMenuScreen.dispose()
+                        mainMenuScreen = new mNs.MainMenuScreen(screenMaster)
+                        finishSetup(entry, params, mainMenuScreen, rewardScreen)
+                    } catch (e) {
+                        console.error(e)
+                    }
+                })
                 import.meta.hot.accept('./screen/GameScreen', (mNs) => {
-                    gameScreen.dispose()
-                    gameScreen = new mNs.GameScreen(screenMaster)
-                    finishSetup(entry, params, mainMenuScreen, rewardScreen)
+                    try {
+                        gameScreen.dispose()
+                        gameScreen = new mNs.GameScreen(screenMaster)
+                        finishSetup(entry, params, mainMenuScreen, rewardScreen)
+                    } catch (e) {
+                        console.error(e)
+                    }
                 })
             }
 

@@ -37,7 +37,7 @@ export class MainMenuLayer extends ScaledLayer {
         }
         this.animationFrame.onRedraw = (context) => {
             context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
-            context.drawImage(this.menuImage, 0, -this.scrollY)
+            if (this.menuImage) context.drawImage(this.menuImage, 0, -this.scrollY)
             if (this.overlayFrame?.img) context.drawImage(this.overlayFrame.img, this.overlayFrame.x, this.overlayFrame.y)
             if (titleImage) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position[1])
             this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
@@ -200,7 +200,7 @@ export class MainMenuLayer extends ScaledLayer {
         return new Promise<void>((resolve) => {
             this.overlayFrame.img = this.overlayImages[frameIndex]
             this.animationFrame.notifyRedraw()
-            if (frameIndex < this.overlayImages.length) {
+            if (frameIndex + 1 < this.overlayImages.length) {
                 this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
                 this.overlayTimeout = setTimeout(() => {
                     this.renderNextOverlayFrame(frameIndex + 1).then(() => resolve())

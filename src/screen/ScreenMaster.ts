@@ -102,6 +102,7 @@ export class ScreenMaster {
     }
 
     removeLayer(layer: ScreenLayer) {
+        layer.hide()
         this.layers.remove(layer)
         this.gameCanvasContainer.removeChild(layer.canvas)
     }

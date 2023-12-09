@@ -44,6 +44,12 @@ export class MainMenuScreen {
         })
     }
 
+    dispose() {
+        this.menuLayers.forEach((l) => this.screenMaster.removeLayer(l))
+        this.menuLayers.length = 0
+        // TODO remove event listener on hot reload?
+    }
+
     private onItemAction(item: MainMenuBaseItem) {
         if (item.actionName.equalsIgnoreCase('next')) {
             this.showMainMenu(item.targetIndex)
