@@ -118,24 +118,28 @@ export class AssetLoader {
 
     async loadWavAsset(path: string, callback: (assetNames: string[], obj: any) => any) {
         let buffer: ArrayBufferLike
+        const errors = []
         try { // localized wad1 file first, then generic wad0 file
             buffer = this.wad1File.getEntryBuffer(path)
         } catch (e1) {
+            errors.push(e1)
             try {
                 buffer = this.wad0File.getEntryBuffer(path)
             } catch (e2) {
-                try {
-                    buffer = await this.cabFile.getFileBuffer(`0007-German Files/Data/${path}`) // TODO support other languages
-                } catch (e3) {
+                errors.push(e2)
+                for (const folder of ['0007-German Files', '0009-English Files', '040c-French_(Standard)_Files', 'Program Data Files']) {
                     try {
-                        buffer = await this.cabFile.getFileBuffer(`Program Data Files/Data/${path}`)
-                    } catch (e4) {
-                        if (!path.toLowerCase().endsWith('/atmosdel.wav') && !path.toLowerCase().endsWith('/stats.wav')) { // XXX stats.wav and Atmosdel.wav can only be found on ISO-File
-                            console.error(`Could not find sound ${path}:\n` + [e1, e2, e3, e4].join('\n'))
-                        }
-                        callback([path], null)
-                        return
+                        buffer = await this.cabFile.getFileBuffer(`${folder}/Data/${path}`)
+                    } catch (e) {
+                        errors.push(e)
                     }
+                }
+                if (!buffer) {
+                    if (!path.toLowerCase().endsWith('/atmosdel.wav') && !path.toLowerCase().endsWith('/stats.wav')) { // XXX stats.wav and Atmosdel.wav can only be found on ISO-File
+                        console.error(`Could not find sound ${path}:\n` + errors.join('\n'))
+                    }
+                    callback([path], null)
+                    return
                 }
             }
         }

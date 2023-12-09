@@ -84,10 +84,10 @@ export class FlhParser {
 
         switch (chunkType) {
             case 25:
-                this.parseDtaBrun(this.dataView, offset, len, frameIndex)
+                this.parseDtaBrun(this.dataView, offset, chunkStart + len, frameIndex)
                 break
             case 27:
-                this.parseDeltaFlc(this.dataView, offset, len, frameIndex)
+                this.parseDeltaFlc(this.dataView, offset, chunkStart + len, frameIndex)
                 break
             default:
                 console.warn(`Unsupported sub-chunk type: ${chunkType}`)
@@ -95,13 +95,13 @@ export class FlhParser {
         }
     }
 
-    private parseDtaBrun(seg: DataView, offset: number, len: number, frameIndex: number) {
+    private parseDtaBrun(seg: DataView, offset: number, chunkEnd: number, frameIndex: number) {
         const imgData = new ImageData(this.width, this.height)
         let x = 0
         let y = 0
         let w = this.width
         offset += 1
-        while ((len - offset) > 0) {
+        while ((chunkEnd - offset) > 0) {
             let repeat = seg.getInt8(offset)
             if (repeat < 0) {
                 repeat = (repeat * -1)
@@ -129,7 +129,7 @@ export class FlhParser {
         this.frames[frameIndex] = imgData
     }
 
-    private parseDeltaFlc(seg: DataView, offset: number, len: number, frameIndex: number) {
+    private parseDeltaFlc(seg: DataView, offset: number, chunkEnd: number, frameIndex: number) {
         const res = new ImageData(this.width, this.height)
         if (frameIndex > 0) {
             res.data.set(this.frames[frameIndex - 1].data)
@@ -138,9 +138,9 @@ export class FlhParser {
         offset += 2
         let y = 0
         let linesDone = 0
-        while ((len - offset) > 0) {
+        while ((chunkEnd - offset) > 0) {
             if (numLines === linesDone) {
-                console.warn(`All lines already done. Unexpected data at: ${len - offset}`)
+                console.warn(`All lines already done. Unexpected data at: ${chunkEnd - offset}`)
                 break
             }
             let packCount = -1
