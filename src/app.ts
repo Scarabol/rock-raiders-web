@@ -31,6 +31,7 @@ function finishSetup(entry: string, params: URLSearchParams, mainMenuScreen: Mai
         if (entry === 'level') mainMenuScreen.showLevelSelection()
         else if (entry === 'reward') rewardScreen.showGameResult(GameResult.random())
         else if (entry === 'random') mainMenuScreen.selectLevel(`Level${Math.randomInclusive(1, 25).toPadded()}`)
+        else if (entry === 'credits') mainMenuScreen.showCredits()
         else if (entry) mainMenuScreen.selectLevel(entry)
     } else {
         mainMenuScreen.showMainMenu()
@@ -126,6 +127,7 @@ export async function start() {
             ResourceManager.addFont('Interface/FrontEnd/Menu_Font_Hi.bmp'),
             ResourceManager.addFont('Interface/FrontEnd/Menu_Font_Lo.bmp'),
             ResourceManager.addFont('Interface/Fonts/FSFont.bmp'),
+            ResourceManager.addFont('Interface/Fonts/RSFont.bmp'),
             ResourceManager.addFont('Interface/Fonts/RSWritten.bmp'),
             ResourceManager.addFont(TOOLTIP_FONT_NAME),
             ResourceManager.addFont('Interface/Fonts/MbriefFont2.bmp'),

@@ -10,6 +10,7 @@ import { WadFile } from './fileparser/WadFile'
 import { LWOUVParser } from './fileparser/LWOUVParser'
 import { CabFile } from './fileparser/CabFile'
 import { AudioContext } from 'three'
+import { AVIParser } from './fileparser/AVIParser'
 
 export class AssetLoader {
     static readonly bitmapWorkerPool = new BitmapWorkerPool().startPool(16, null)
@@ -185,5 +186,16 @@ export class AssetLoader {
         const uvContent = this.wad0File.getEntryText(filename)
         const uvData = new LWOUVParser().parse(uvContent)
         callback([filename], uvData)
+    }
+
+    async loadAVI(filename: string, callback: (assetNames: string[], obj: any) => any) {
+        const buffer = await this.cabFile.getFileBuffer(`Program Data Files/Data/${filename}`)
+        const decoder = new AVIParser().parse(buffer)
+        callback([filename], decoder)
+    }
+
+    loadCreditsFile(filename: string, callback: (assetNames: string[], obj: any) => any) {
+        const content = this.wad1File.getEntryText(this.wad1File.filterEntryNames(filename)[0])
+        callback([filename], content)
     }
 }

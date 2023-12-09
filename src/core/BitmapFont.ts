@@ -4,7 +4,8 @@ import { SpriteImage } from './Sprite'
 export class BitmapFontData {
     // actually chars are font dependent and have to be externalized in future
     // maybe CP850 was used... not sure, doesn't fit...
-    static readonly chars: string[] = [' ', '!', '"', '#', '$', '%', '⌵', '`', '(', ')',
+    static readonly chars: string[] = [
+        ' ', '!', '"', '#', '$', '%', '&', '`', '(', ')',
         '*', '+', ',', '-', '.', '/', '0', '1', '2', '3',
         '4', '5', '6', '7', '8', '9', ':', ';', '<', '=',
         '>', '?', '@', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
@@ -18,8 +19,8 @@ export class BitmapFontData {
         'Ę', 'ë', 'e̊', 'é', 'è', 'e̊', 'ę̊', '', '', '',
         '', '', '', '', '', 'Ö', '', '', '', '',
         'ö', '', '', '', '', 'Ü', '', '', '', 'ü',
-        '', '', '', '', '', '', '', '', '', '',
-        '', '', '', '', '', '', '', '', '', '',
+        '', '', '', '', '', '', '', 'Æ', 'æ', 'Ø',
+        'ø', '', '', '', '', '', '', '', '', '',
         '', '', '', 'ß', '', '', '', 'Ñ', '', 'ñ',
         '',
     ] // XXX complete this character list
@@ -115,7 +116,7 @@ export class BitmapFont {
         const rows: { text: string, width: number }[] = []
         let rowText = ''
         let rowWidth = 0
-        text.split(' ').forEach((word) => {
+        text.replaceAll('\t', '    ').split(' ').forEach((word) => {
             let wordWidth = 0
             for (let c = 0; c < word.length; c++) {
                 const letter = word.charAt(c)
@@ -123,7 +124,10 @@ export class BitmapFont {
                 if (letterImg) {
                     wordWidth += letterImg.width
                 } else {
-                    console.error(`Letter '${letter}' not found in charset! Ignoring it`)
+                    const charCode = word.charCodeAt(c)
+                    if (charCode !== 13) { // ignore carriage return
+                        console.error(`Letter '${letter}' (${charCode}) not found in charset! Ignoring it`, letter)
+                    }
                 }
             }
             if (rowWidth > 0) {

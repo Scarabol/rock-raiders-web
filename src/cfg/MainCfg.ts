@@ -3,8 +3,8 @@ import { Rect } from '../core/Rect'
 
 export class MainCfg extends BaseConfig {
     // TextureUsage = 3145728
-    // CreditsTextFile = Credits.txt
-    // CreditsBackAVI = AVI/Loop.avi
+    creditsTextFile: string = "Credits.txt"
+    creditsBackAVI: string = "AVI/Loop.avi"
     loadScreen: string = 'Languages/Loading.bmp'
     // ShutdownScreen = Languages/ShutDown.bmp
     progressBar: string = 'Interface/FrontEnd/gradient.bmp'
