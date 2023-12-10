@@ -102,12 +102,7 @@ export class SaveGameManager {
     }
 
     static loadGame(index: number): boolean {
-        const saveGame = this.saveGames[index]
-        if (!saveGame) {
-            console.log(`No savegame found at index ${index}`)
-            return false
-        }
-        this.currentLevels = [...saveGame.levels]
+        this.currentLevels = this.saveGames[index]?.levels ?? []
         console.log('game progress loaded', this.currentLevels)
         return true
     }
