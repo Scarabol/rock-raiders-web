@@ -56,9 +56,8 @@ export class MainMenuScreen {
         } else if (item.actionName.equalsIgnoreCase('selectlevel')) {
             this.selectLevel((item as MainMenuLevelButton).levelKey)
         } else if (item.actionName.toLowerCase().startsWith('load_game')) {
-            if (SaveGameManager.loadGame(item.targetIndex)) {
-                this.showMainMenu()
-            }
+            SaveGameManager.loadGame(item.targetIndex)
+            this.showLevelSelection()
         } else if (item.actionName.equalsIgnoreCase('selectrandomlevel')) { // TODO make sure that target level is unlocked?
             const allLevelKeys = Array.from(Array(24).keys()).map((n) => `Level${(n + 1).toPadded()}`)
             const unScoredLevels = allLevelKeys.filter((levelKey) => !SaveGameManager.getLevelScoreString(levelKey))

@@ -4,7 +4,6 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { UiElementCallback } from './UiElementState'
 import { MenuEntryOverlayCfg } from '../cfg/MenuEntryCfg'
-import { SaveGameManager } from '../resource/SaveGameManager'
 
 export class MainMenuLoadSaveButton extends MainMenuBaseItem {
     labelImgLo: SpriteImage = null
@@ -40,7 +39,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = async () => {
-            if (SaveGameManager.hasSaveGame(this.targetIndex)) await this.layer.playOverlay(this.overlay)
+            await this.layer.playOverlay(this.overlay)
             callback()
         }
     }
