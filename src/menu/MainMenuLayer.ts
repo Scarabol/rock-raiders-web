@@ -25,6 +25,7 @@ export class MainMenuLayer extends ScaledLayer {
     overlayFrame: { img: SpriteImage, x: number, y: number } = null
     overlayImages: SpriteImage[] = []
     overlayTimeout: NodeJS.Timeout = null
+    overlayIndex: number = 0
 
     constructor(menuCfg: MenuEntryCfg) {
         super()
@@ -86,7 +87,10 @@ export class MainMenuLayer extends ScaledLayer {
     show() {
         this.items.sort((a, b) => b.zIndex - a.zIndex)
         super.show()
-        if (this.cfg.playRandom) this.playRandomOverlay()
+        if (this.cfg.playRandom) {
+            this.cfg.overlays.shuffle()
+            this.playRandomOverlay()
+        }
     }
 
     hide() {
@@ -182,7 +186,8 @@ export class MainMenuLayer extends ScaledLayer {
     playRandomOverlay(): void {
         this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
         this.overlayTimeout = setTimeout(async () => {
-            const overlay = this.cfg.overlays.random()
+            const overlay = this.cfg.overlays[this.overlayIndex]
+            this.overlayIndex = (this.overlayIndex + 1) % this.cfg.overlays.length
             await this.playOverlay(overlay)
             this.playRandomOverlay()
         }, Math.randomInclusive(2000, 5000))
