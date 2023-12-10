@@ -54,9 +54,21 @@ export class GameFilesLoader {
     }
 
     async onGameFilesLoaded(cabHeader: ArrayBuffer, cabVolume: ArrayBuffer) {
-        const cabFile = new CabFile(cabHeader, cabVolume, false).parse()
-        this.modal.hide()
-        this.onDoneCallback(cabFile)
+        console.log('Loading avi file')
+        const aviFileContent = intro
+        const parser = new AVIParser()
+        try {
+            const decoders = parser.parse(aviFileContent)
+            console.log('decoder', decoders)
+            // const frame = decoder.getNextFrame()
+            // console.log('frame', frame)
+            // FIXME render video frames on canvas then proceed to main menu
+            // const cabFile = new CabFile(cabHeader, cabVolume, false).parse()
+            // this.modal.hide()
+            // this.onDoneCallback(cabFile)
+        } catch (e) {
+            console.error(e)
+        }
     }
 
     async loadFileFromUrl(url: string): Promise<ArrayBuffer> {
