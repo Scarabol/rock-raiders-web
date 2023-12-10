@@ -15,20 +15,22 @@ export class GameFilesLoader {
         })
     }
 
-    onFilesSelected(headerUrl: string, volumeUrl1: string, volumeUrl2: string): void {
+    onFilesSelected(headerUrl: string, volumeUrl1: string, volumeUrl2: string, introUrl: string): void {
         this.screenMaster.loadingLayer.setLoadingMessage('Loading installer files from urls...')
         Promise.all<ArrayBuffer>([
             this.loadFileFromUrl(headerUrl),
             this.loadFileFromUrl(volumeUrl1),
             !!volumeUrl2 ? this.loadFileFromUrl(volumeUrl2) : new ArrayBuffer(0),
-        ]).then(([cabHeader, cabVolume1, cabVolume2]) => {
+            !!introUrl ? this.loadFileFromUrl(introUrl) : new ArrayBuffer(0),
+        ]).then(([cabHeader, cabVolume1, cabVolume2, intro]) => {
             const cabMerge = new Uint8Array(cabVolume1.byteLength + cabVolume2.byteLength)
             cabMerge.set(new Uint8Array(cabVolume1), 0)
             cabMerge.set(new Uint8Array(cabVolume2), cabVolume1.byteLength)
             const cabVolume = cabMerge.buffer
             cachePutData('cabHeader', cabHeader).then()
             cachePutData('cabVolume', cabVolume).then()
-            this.onGameFilesLoaded(cabHeader, cabVolume).then()
+            cachePutData('intro', intro).then()
+            this.onGameFilesLoaded(cabHeader, cabVolume, intro).then()
         })
     }
 
@@ -36,10 +38,10 @@ export class GameFilesLoader {
         this.screenMaster.loadingLayer.setLoadingMessage('Loading installer files from cache...')
         console.time('Files loaded from cache')
         try {
-            const [cabHeader, cabVolume] = await Promise.all<ArrayBuffer>([cacheGetData('cabHeader'), cacheGetData('cabVolume')])
+            const [cabHeader, cabVolume, intro] = await Promise.all<ArrayBuffer>([cacheGetData('cabHeader'), cacheGetData('cabVolume'), cacheGetData('intro')])
             console.timeEnd('Files loaded from cache')
             if (cabHeader && cabVolume) {
-                this.onGameFilesLoaded(cabHeader, cabVolume).then()
+                this.onGameFilesLoaded(cabHeader, cabVolume, intro).then()
             } else {
                 console.log('Installer files not found in cache')
                 this.screenMaster.loadingLayer.setLoadingMessage('Installer files not found in cache')
@@ -53,7 +55,7 @@ export class GameFilesLoader {
         return this.onDonePromise
     }
 
-    async onGameFilesLoaded(cabHeader: ArrayBuffer, cabVolume: ArrayBuffer) {
+    async onGameFilesLoaded(cabHeader: ArrayBuffer, cabVolume: ArrayBuffer, intro: ArrayBuffer) {
         console.log('Loading avi file')
         const aviFileContent = intro
         const parser = new AVIParser()

@@ -5,7 +5,7 @@ export class SelectFilesModal {
     readonly rootElement: HTMLElement
     readonly container: HTMLElement
 
-    constructor(parentId: string, onFilesSelected: (headerUrl: string, volumeUrl1: string, volumeUrl2: string) => void) {
+    constructor(parentId: string, onFilesSelected: (headerUrl: string, volumeUrl1: string, volumeUrl2: string, introUrl: string) => void) {
         this.rootElement = document.getElementById(parentId).appendChild(document.createElement('div'))
         this.rootElement.classList.add('select-files-modal')
         this.rootElement.style.visibility = 'hidden'
@@ -23,10 +23,11 @@ export class SelectFilesModal {
             const headerUrl = 'https://scarabol.github.io/wad-editor/data1.hdr'
             const volumeUrl1 = 'https://scarabol.github.io/wad-editor/data1.cab.part1'
             const volumeUrl2 = 'https://scarabol.github.io/wad-editor/data1.cab.part2'
+            const introUrl = ''
             this.setProgress(headerUrl, 0, 100)
             this.setProgress(volumeUrl1, 0, 100)
             this.setProgress(volumeUrl2, 0, 100)
-            onFilesSelected(headerUrl, volumeUrl1, volumeUrl2)
+            onFilesSelected(headerUrl, volumeUrl1, volumeUrl2, introUrl)
         })
         this.container = content.appendChild(document.createElement('div'))
         this.container.classList.add('select-files-container')
@@ -42,6 +43,11 @@ export class SelectFilesModal {
         const volumeInput = this.container.appendChild(document.createElement('input'))
         volumeInput.classList.add('select-files-input')
         volumeInput.type = 'file'
+        const introLabel = this.container.appendChild(document.createElement('label'))
+        introLabel.innerHTML = 'Select <b>intro.avi</b> here:'
+        const introInput = this.container.appendChild(document.createElement('input'))
+        introInput.classList.add('select-files-input')
+        introInput.type = 'file'
         const btnStartModded = this.container.appendChild(document.createElement('button'))
         btnStartModded.innerText = 'Start game with modded files'
         btnStartModded.addEventListener('click', () => {
@@ -49,10 +55,12 @@ export class SelectFilesModal {
             btnStartModded.disabled = true
             const headerFile = headerInput.files[0]
             const volumeFile = volumeInput.files[0]
+            const introFile = introInput.files[0]
             if (headerFile && volumeFile) {
                 const headerUrl = URL.createObjectURL(headerFile)
-                const volumeUrl1 = URL.createObjectURL(volumeFile)
-                onFilesSelected(headerUrl, volumeUrl1, '')
+                const volumeUrl = URL.createObjectURL(volumeFile)
+                const introUrl = URL.createObjectURL(introFile)
+                onFilesSelected(headerUrl, volumeUrl, '', introUrl)
             }
         })
     }
