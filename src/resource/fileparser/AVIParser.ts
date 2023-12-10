@@ -1,4 +1,5 @@
 import { MSVCDecoder } from './MSVCDecoder'
+import { ADPCMAudioDecoder } from './ADPCMAudioDecoder'
 
 export interface AVIStreamHeader {
     fccType: string;
@@ -31,15 +32,31 @@ export interface AVIVideoFormat {
     biYPelsPerMeter: number
 }
 
+export interface AVIAudioFormat {
+    wFormatTag: number;
+    nChannels: number;
+    nSamplesPerSec: number;
+    nAvgBytesPerSec: number;
+    nBlockAlign: number;
+    wBitsPerSample: number;
+    cbSize: number;
+}
+
 export interface RRWVideoDecoder {
     initialize(chunks: AVIReader[], videoFormat: AVIVideoFormat): void
 
     getNextFrame(): ImageData
 }
 
+export interface RRWAudioDecoder {
+    initialize(chunks: AVIReader[], audioFormat: AVIAudioFormat): void
+}
+
 export class AVIParser {
 
-    parse(buffer: ArrayBuffer): RRWVideoDecoder {
+    static readonly WAVE_FORMAT_ADPCM = 0x2
+
+    parse(buffer: ArrayBuffer): { videoDecoder: RRWVideoDecoder, audioDecoder: RRWAudioDecoder } {
         const aviReader = new AVIReader(new DataView(buffer), 0, buffer.byteLength)
         const magic = aviReader.readFourCC()
         if (magic !== 'RIFF') throw new Error(`Unexpected magic in AVI header; got ${magic} instead of "RIFF"`)
@@ -49,14 +66,41 @@ export class AVIParser {
         const headerList = aviReader.readList()
         const aviHeaderItem = headerList.getNextListItem() as AVIChunk
         this.parseAVIHeader(aviHeaderItem.chunkReader) // aviHeader not needed
-        const streamList = headerList.getNextListItem() as AVIList
-        let streamHeader: AVIStreamHeader = null
-        let videoFormat: AVIVideoFormat = null
+
+        let firstVideoFormat: AVIVideoFormat
+        let firstVideoStreamHeader: AVIStreamHeader
+        let firstVideoStreamIndex: number = -1
+        let firstAudioFormat: AVIAudioFormat
+        let firstAudioStreamHeader: AVIStreamHeader
+        let firstAudioStreamIndex: number = -1
+        let firstAudioChunkReader: AVIReader
         let streamIndex = 0
-        while (streamList.hasMoreItems()) {
+        while (headerList.hasMoreItems()) {
+            const streamList = headerList.getNextListItem() as AVIList
             const item = streamList.getNextListItem() as AVIChunk
-            streamHeader = this.parseStreamHeader(item.chunkReader)
+            const streamHeader = this.parseStreamHeader(item.chunkReader)
             const streamFormat = streamList.getNextListItem() as AVIChunk
+            switch (streamHeader.fccType) {
+                case 'vids':
+                    if (!firstVideoFormat) {
+                        firstVideoFormat = this.parseVideoFormat(streamFormat.chunkReader)
+                        firstVideoStreamHeader = streamHeader
+                        firstVideoStreamIndex = streamIndex
+                    }
+                    break
+                case 'auds':
+                    if (!firstAudioFormat) {
+                        firstAudioFormat = this.parseAudioFormat(streamFormat.chunkReader)
+                        firstAudioStreamHeader = streamHeader
+                        firstAudioStreamIndex = streamIndex
+                        firstAudioChunkReader = streamFormat.chunkReader
+                    }
+                    break
+                default:
+                    console.warn(`Unsupported stream fcc type ${streamHeader.fccType}`)
+                    break
+            }
+            streamIndex++
             videoFormat = this.parseStreamFormat(streamHeader, streamFormat.chunkReader)
             if (videoFormat) break
             streamIndex++
@@ -72,22 +116,53 @@ export class AVIParser {
             default:
                 throw new Error(`Unhandled video codec ${streamHeader.fccHandler}`)
         }
+
         const moviList = aviReader.readList()
         if (moviList.listType !== 'movi') throw new Error(`Unexpected list type; got ${moviList.listType} instead of movi`)
-        const paddedStreamIndex = streamIndex.toPadded()
-        const chunks: AVIReader[] = []
+        const paddedVideoStreamIndex = firstVideoStreamIndex.toPadded()
+        const paddedAudioStreamIndex = firstAudioStreamIndex.toPadded()
+        const videoChunks: AVIReader[] = []
+        const audioChunks: AVIReader[] = []
         while (moviList.hasMoreItems()) {
             const item = moviList.getNextListItem() as AVIChunk
-            if (item.chunkType === `${paddedStreamIndex}dc`) {
-                chunks.push(item.chunkReader)
-            } else if (item.chunkType === `${paddedStreamIndex}wb`) {
-                console.log('Audio stream data not yet supported') // TODO Add support for audio streams
+            if (item.chunkType === `${paddedVideoStreamIndex}dc`) {
+                videoChunks.push(item.chunkReader)
+            } else if (item.chunkType === `${paddedAudioStreamIndex}wb`) {
+                audioChunks.push(item.chunkReader)
             } else {
                 console.warn(`Unhandled stream data ${item.chunkType}`)
             }
         }
-        decoder.initialize(chunks, videoFormat)
-        return decoder
+
+        let videoDecoder: RRWVideoDecoder
+        if (firstVideoFormat) {
+            switch (firstVideoStreamHeader.fccHandler) {
+                case 'MSVC':
+                case 'CRAM':
+                case 'WHAM':
+                    videoDecoder = new MSVCDecoder()
+                    break
+                case 'IV50':
+                    videoDecoder = new Indeo5Decoder()
+                    break
+                default:
+                    throw new Error(`Unhandled video codec ${firstAudioStreamHeader.fccHandler}`)
+            }
+            videoDecoder.initialize(videoChunks, firstVideoFormat)
+        }
+
+        let audioDecoder: RRWAudioDecoder
+        if (firstAudioFormat) {
+            switch (firstAudioFormat.wFormatTag) {
+                case AVIParser.WAVE_FORMAT_ADPCM:
+                    audioDecoder = new ADPCMAudioDecoder(firstAudioChunkReader)
+                    break
+                default:
+                    throw new Error(`Unhandled audio codec ${firstAudioFormat.wFormatTag}`)
+            }
+            audioDecoder.initialize(audioChunks, firstAudioFormat)
+        }
+        return {videoDecoder, audioDecoder}
     }
 
     parseAVIHeader(aviReader: AVIReader) {
@@ -130,16 +205,6 @@ export class AVIParser {
         }
     }
 
-    parseStreamFormat(streamHeader: AVIStreamHeader, aviReader: AVIReader): AVIVideoFormat {
-        switch (streamHeader.fccType) {
-            case 'vids':
-                return this.parseVideoFormat(aviReader)
-            default:
-                console.warn(`Unsupported stream fcc type ${streamHeader.fccType}`)
-                return null
-        }
-    }
-
     parseVideoFormat(aviReader: AVIReader): AVIVideoFormat {
         const videoFormat = {
             biSize: aviReader.read32(),
@@ -158,6 +223,19 @@ export class AVIParser {
             console.warn('Reading bitmap palette is not yet implemented')
         }
         return videoFormat
+    }
+
+    parseAudioFormat(aviReader: AVIReader): AVIAudioFormat {
+        return {
+            wFormatTag: aviReader.read16(),
+            nChannels: aviReader.read16(),
+            nSamplesPerSec: aviReader.read32(),
+            nAvgBytesPerSec: aviReader.read32(),
+            nBlockAlign: aviReader.read16(),
+            wBitsPerSample: aviReader.read16(),
+            cbSize: aviReader.read16(),
+            // TODO read cbSize here and pass to reader?
+        }
     }
 }
 
