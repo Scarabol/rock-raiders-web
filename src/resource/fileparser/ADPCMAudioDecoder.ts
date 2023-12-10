@@ -19,13 +19,6 @@ export class ADPCMAudioDecoder implements RRWAudioDecoder {
     audioFormat: AVIAudioFormat = null
     chunkIndex: number = 0
 
-    /**
-     * Decode a block of MS-ADPCM data
-     * @param  {number[]}  coefficient1  array of 7 UInt8 coefficient values
-     *                                   usually, [ 256, 512, 0, 192, 240, 460, 392 ]
-     * @param  {number[]}  coefficient2  array of 7 UInt8 coefficient values
-     *                                   usually, [ 0, -256, 0, 64, 0, -208, -232 ]
-     */
     constructor(
         readonly chunkReader: AVIReader,
         readonly coefficient1: number[] = [256, 512, 0, 192, 240, 460, 392],
@@ -50,6 +43,7 @@ export class ADPCMAudioDecoder implements RRWAudioDecoder {
         this.chunks.forEach((chunk) => {
             while (chunk.hasMoreData()) {
                 const decoded = this.decode(chunk, audioFormat.nChannels, wSamplesPerBlock)
+                decoded[1] = decoded[1] ?? decoded[0] // TODO Avoid workaround for mono sound videos
                 channel1.push(...decoded[0])
                 channel2.push(...decoded[1])
             }

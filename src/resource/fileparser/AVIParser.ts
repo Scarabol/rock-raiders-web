@@ -1,3 +1,4 @@
+import { Indeo5Decoder } from './Indeo5Decoder'
 import { MSVCDecoder } from './MSVCDecoder'
 import { ADPCMAudioDecoder } from './ADPCMAudioDecoder'
 
@@ -101,23 +102,12 @@ export class AVIParser {
                     break
             }
             streamIndex++
-            videoFormat = this.parseStreamFormat(streamHeader, streamFormat.chunkReader)
-            if (videoFormat) break
-            streamIndex++
-        }
-        if (!videoFormat) throw new Error('No video format found')
-        let decoder: RRWVideoDecoder
-        switch (streamHeader.fccHandler) {
-            case 'MSVC':
-            case 'CRAM':
-            case 'WHAM':
-                decoder = new MSVCDecoder()
-                break
-            default:
-                throw new Error(`Unhandled video codec ${streamHeader.fccHandler}`)
         }
 
-        const moviList = aviReader.readList()
+        let moviList = aviReader.readList()
+        while (moviList.listType !== 'movi') {
+            moviList = aviReader.readList()
+        }
         if (moviList.listType !== 'movi') throw new Error(`Unexpected list type; got ${moviList.listType} instead of movi`)
         const paddedVideoStreamIndex = firstVideoStreamIndex.toPadded()
         const paddedAudioStreamIndex = firstAudioStreamIndex.toPadded()
@@ -346,6 +336,7 @@ export class AVIList {
     }
 
     hasMoreItems(): boolean {
+        if (this.listReader.hasMoreData()) this.listReader.skipJunkChunk()
         return this.listReader.hasMoreData()
     }
 
