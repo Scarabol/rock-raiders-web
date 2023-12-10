@@ -2,6 +2,9 @@ import { ScreenMaster } from '../screen/ScreenMaster'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
 import { SelectFilesModal } from '../../site/selectfiles/SelectFilesModal'
 import { CabFile } from './fileparser/CabFile'
+import { AVIParser } from './fileparser/AVIParser'
+import { imgDataToCanvas } from '../core/ImageHelper'
+import { getElementByIdOrThrow } from '../core/Util'
 
 export class GameFilesLoader {
     readonly modal: SelectFilesModal
@@ -64,6 +67,17 @@ export class GameFilesLoader {
             console.log('decoder', decoders)
             // const frame = decoder.getNextFrame()
             // console.log('frame', frame)
+            const parent = getElementByIdOrThrow('game-canvas-container')
+            const target = document.createElement('canvas')
+            target.width = 640
+            target.height = 480
+            parent.replaceChildren(target)
+            // setInterval(() => {
+                const context = target.getContext('2d')
+                const imageData = decoders.videoDecoder.getNextFrame()
+                const canvas = imgDataToCanvas(imageData)
+                context.drawImage(canvas, 0, 0, 640, 480)
+            // }, 1000 / 14.9)
             // FIXME render video frames on canvas then proceed to main menu
             // const cabFile = new CabFile(cabHeader, cabVolume, false).parse()
             // this.modal.hide()
