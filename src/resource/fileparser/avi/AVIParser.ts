@@ -1,25 +1,12 @@
 import { ByteStreamReader } from '../../../core/ByteStreamReader'
 import { AVIVideoStream } from './AVIVideoStream'
-import { AVIAudioFormat, AVIMainHeader, AVIStreamHeader, AVIVideoFormat } from './AVI'
+import { AVIAudioFormat, AVIMainHeader, AVIStreamHeader, AVIVideoFormat, WAVE_FORMAT_MSADPCM } from './AVI'
 import { AVIItem, AVIReader } from './AVIReader'
+import { AVIAudioStream } from './AVIAudioStream'
 
 export interface AVIFile {
     videoStreams: AVIVideoStream[]
     audioStreams: AVIAudioStream[]
-}
-
-// TODO Implement AVI audio streams for intro and intermediate videos
-export class AVIAudioStream {
-    readonly frameChunks: ByteStreamReader[] = []
-
-    constructor(
-        readonly streamIndex: number
-    ) {
-    }
-
-    setFrameChunks(chunks: ByteStreamReader[]) {
-        this.frameChunks.push(...chunks)
-    }
 }
 
 export class AVIParser {
@@ -32,6 +19,7 @@ export class AVIParser {
     static readonly CHUNK_TYPE_STREAM_HEADER = 'strh'
     static readonly CHUNK_TYPE_STREAM_FORMAT = 'strf'
     static readonly FCC_TYPE_VIDEO = 'vids'
+    static readonly FCC_TYPE_AUDIO = 'auds'
 
     readonly reader: AVIReader
     readonly videoStreams: AVIVideoStream[] = []
@@ -113,6 +101,10 @@ export class AVIParser {
                     const videoFormat = this.parseVideoFormat(streamFormatItem.reader)
                     this.videoStreams.push(new AVIVideoStream(streamIndex, streamHeader, videoFormat))
                     break
+                case AVIParser.FCC_TYPE_AUDIO:
+                    const audioFormat = this.parseAudioFormat(streamFormatItem.reader)
+                    this.audioStreams.push(new AVIAudioStream(streamIndex, streamHeader, audioFormat))
+                    break
                 default:
                     console.warn(`Unsupported stream fcc type ${streamHeader.fccType}`)
                     break
@@ -162,6 +154,36 @@ export class AVIParser {
             console.warn('Reading bitmap palette is not yet implemented')
         }
         return videoFormat
+    }
+
+    private parseAudioFormat(aviReader: AVIReader): AVIAudioFormat {
+        const result: AVIAudioFormat = {
+            wFormatTag: aviReader.read16(),
+            nChannels: aviReader.read16(),
+            nSamplesPerSec: aviReader.read32(),
+            nAvgBytesPerSec: aviReader.read32(),
+            nBlockAlign: aviReader.read16(),
+            wBitsPerSample: aviReader.read16(),
+            cbSize: aviReader.read16(),
+        }
+        if (result.cbSize) {
+            switch (result.wFormatTag) {
+                case WAVE_FORMAT_MSADPCM:
+                    result.extra = {
+                        wSamplesPerBlock: aviReader.read16(),
+                        wNumCoefficients: aviReader.read16(),
+                        coefficientPairs: [[], []]
+                    }
+                    for (let c = 0; c < result.extra.wNumCoefficients; c++) {
+                        result.extra.coefficientPairs[0].push(aviReader.read16Signed())
+                        result.extra.coefficientPairs[1].push(aviReader.read16Signed())
+                    }
+                    break
+                default:
+                    throw new Error(`Unhandled audio codec ${result.wFormatTag}`)
+            }
+        }
+        return result
     }
 
     private parseStreamData() {

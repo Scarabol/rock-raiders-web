@@ -43,3 +43,22 @@ export interface AVIVideoFormat {
     biPlanes: number
     biYPelsPerMeter: number
 }
+
+export const WAVE_FORMAT_MSADPCM = 0x2
+
+export interface AVIAudioFormat {
+    wFormatTag: number
+    nChannels: number
+    nSamplesPerSec: number
+    nAvgBytesPerSec: number
+    nBlockAlign: number
+    wBitsPerSample: number
+    cbSize: number
+    extra?: MSADPCMAdditionalInfo
+}
+
+export interface MSADPCMAdditionalInfo {
+    wSamplesPerBlock: number
+    wNumCoefficients: number
+    coefficientPairs: number[][]
+}
