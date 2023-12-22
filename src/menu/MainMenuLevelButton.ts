@@ -6,7 +6,7 @@ import { MainMenuLayer } from './MainMenuLayer'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { UiElementCallback } from './UiElementState'
 import { clearTimeoutSafe } from '../core/Util'
-import { TOOLTIP_DELAY_SFX_MENU } from '../params'
+import { DEV_MODE, TOOLTIP_DELAY_SFX_MENU } from '../params'
 
 export class MainMenuLevelButton extends MainMenuBaseItem {
     imgActive: SpriteImage = null
@@ -34,7 +34,8 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
     }
 
     isLocked(): boolean {
-        return !(() => true) && // XXX Remove this line before release 1.0
+        return (!DEV_MODE && this.levelKey.toLowerCase().includes('tutorial')) || // TODO Remove this line when tutorial helper functions implemented
+            !(() => true) && // TODO Remove this line before release 1.0
             !this.levelCfg.frontEndOpen &&
             !this.levelKey.equalsIgnoreCase(ResourceManager.configuration.main.startLevel) &&
             !this.levelKey.equalsIgnoreCase(ResourceManager.configuration.main.tutorialStartLevel) &&
