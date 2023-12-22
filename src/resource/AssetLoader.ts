@@ -136,7 +136,12 @@ export class AssetLoader {
                     }
                 }
                 if (!buffer) {
-                    if (!path.toLowerCase().endsWith('/atmosdel.wav') && !path.toLowerCase().endsWith('/stats.wav')) { // XXX stats.wav and Atmosdel.wav can only be found on ISO-File
+                    const lPath = path.toLowerCase()
+                    // XXX stats.wav and Atmosdel.wav can only be found on ISO-File
+                    if (!lPath.endsWith('/atmosdel.wav') &&
+                        !lPath.endsWith('/stats.wav') &&
+                        !lPath.endsWith('/dripsB.wav'.toLowerCase())
+                    ) {
                         console.error(`Could not find sound ${path}:\n` + errors.join('\n'))
                     }
                     callback([path], null)

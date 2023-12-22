@@ -10,10 +10,6 @@ export class SamplesCfg extends BaseConfig {
     }
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if (unifiedKey === 'sfx_drip') { // Sounds/dripB.wav missing and seems unused anyway
-            if (VERBOSE) console.warn(`Ignoring known issue with ${unifiedKey}`)
-            return true
-        }
         const sndFilePaths: string[] = Array.isArray(cfgValue) ? cfgValue : [cfgValue]
         sndFilePaths.map((sndPath) => {
             if (sndPath.startsWith('*') || // XXX no clue what this means... don't loop maybe, see teleportup
@@ -22,6 +18,6 @@ export class SamplesCfg extends BaseConfig {
             }
             return `${sndPath}.wav`
         }).forEach(sndPath => this.pathToSfxKeys.getOrUpdate(sndPath, () => []).push(unifiedKey))
-        return super.assignValue(objKey, unifiedKey, cfgValue)
+        return true
     }
 }
