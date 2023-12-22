@@ -74,9 +74,6 @@ export class MainPanel extends Panel {
         teleportRaider.isDisabled = () => this.hasMaxRaiders || this.numRequestedRaiders >= MAX_RAIDER_REQUEST || !this.hasRaiderTeleport
         teleportRaider.updateState()
         teleportRaider.onClick = () => this.publishEvent(new ChangeRaiderSpawnRequest(true))
-        teleportRaider.onClickSecondary = () => {
-            if (this.numRequestedRaiders > 0) this.publishEvent(new ChangeRaiderSpawnRequest(false))
-        }
         const requestedRaiderLabel = teleportRaider.addChild(new IconPanelButtonLabel(teleportRaider))
         requestedRaiderLabel.registerEventListener(EventKey.REQUESTED_RAIDERS_CHANGED, (event: RequestedRaidersChanged) => {
             requestedRaiderLabel.setLabel(event.numRequested)

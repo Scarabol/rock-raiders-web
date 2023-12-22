@@ -21,7 +21,6 @@ export class BaseElement {
     hover: boolean = false
     pressedByButton: MOUSE_BUTTON = null
     onClick: (cx?: number, cy?: number) => any = null
-    onClickSecondary: (cx?: number, cy?: number) => any = null
     onPublishEvent: (event: GuiCommand) => any = (event) => console.log(`TODO publish event: ${EventKey[event.eventKey]}`)
 
     constructor(parent: BaseElement) {
@@ -95,8 +94,7 @@ export class BaseElement {
         if (this.isInactive()) return false
         const oldState = this.pressedByButton
         if (this.isInRect(event.sx, event.sy)) {
-            if (this.pressedByButton === null && ((event.button === MOUSE_BUTTON.MAIN && this.onClick) ||
-                (event.button === MOUSE_BUTTON.SECONDARY && this.onClickSecondary))) {
+            if (this.pressedByButton === null && event.button === MOUSE_BUTTON.MAIN && this.onClick) {
                 this.pressedByButton = event.button
             }
         } else {
@@ -126,12 +124,6 @@ export class BaseElement {
                 this.publishEvent(new ChangeCursor(Cursor.OKAY, 1000))
                 this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed, false))
                 this.onClick(event.sx, event.sy)
-            }
-        } else if (event.button === MOUSE_BUTTON.SECONDARY) {
-            if (this.onClickSecondary) {
-                this.publishEvent(new ChangeCursor(Cursor.OKAY, 1000))
-                this.publishEvent(new PlaySoundEvent(Sample.SFX_ButtonPressed, false))
-                this.onClickSecondary(event.sx, event.sy)
             }
         }
     }

@@ -31,8 +31,7 @@ export class ToggleButton extends Button {
         if (this.isInactive()) return false
         const oldState = this.pressedByButton
         if (this.isInRect(event.sx, event.sy) || this.toggleState) {
-            if (this.pressedByButton === null && ((event.button === MOUSE_BUTTON.MAIN && this.onClick) ||
-                (event.button === MOUSE_BUTTON.SECONDARY && this.onClickSecondary))) {
+            if (this.pressedByButton === null && event.button === MOUSE_BUTTON.MAIN && this.onClick) {
                 this.pressedByButton = event.button
             }
         } else {
