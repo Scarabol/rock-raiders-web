@@ -175,7 +175,15 @@ export class AssetLoader {
         callback([lwoFilepath], lwoContent)
     }
 
-    async loadFlhAsset(filename: string, callback: (assetNames: string[], obj: any) => any) {
+    async loadFlhAssetDefault(filename: string, callback: (assetNames: string[], obj: any) => any) {
+        await this.loadFlhAssetInternal(filename, false, callback)
+    }
+
+    async loadFlhAssetInterframe(filename: string, callback: (assetNames: string[], obj: any) => any) {
+        await this.loadFlhAssetInternal(filename, true, callback)
+    }
+
+    private async loadFlhAssetInternal(filename: string, interFrameMode: boolean, callback: (assetNames: string[], obj: any) => any) {
         let flhContent: DataView
         try {
             flhContent = this.wad0File.getEntryDataView(filename)
@@ -183,7 +191,7 @@ export class AssetLoader {
             const arrayBuffer = await this.cabFile.getFileBuffer(filename)
             flhContent = new DataView(arrayBuffer)
         }
-        const flhFrames = new FlhParser(flhContent).parse()
+        const flhFrames = new FlhParser(flhContent, interFrameMode).parse()
         callback([filename], flhFrames)
     }
 

@@ -24,7 +24,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         // add fonts and cursors
         this.addAssetFolder(this.assetLoader.loadAlphaImageAsset, 'Interface/Pointers/')
         this.assetLoader.wad0File.filterEntryNames(`Interface/Pointers/.+\\.flh`).forEach((assetPath) => {
-            this.addAsset(this.assetLoader.loadFlhAsset, assetPath)
+            this.addAsset(this.assetLoader.loadFlhAssetDefault, assetPath)
         })
         this.addAsset(this.assetLoader.loadFontImageAsset, TOOLTIP_FONT_NAME)
         // add menu assets
@@ -35,7 +35,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         this.addAsset(this.assetLoader.loadObjectiveTexts, 'Languages/ObjectiveText.txt')
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.image)
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.contrastOverlay)
-        this.addAsset(this.assetLoader.loadFlhAsset, 'Interface/Reward/captain.flh') // XXX Actually use Reward.Flics from config
+        this.addAsset(this.assetLoader.loadFlhAssetDefault, 'Interface/Reward/captain.flh') // XXX Actually use Reward.Flics from config
         // add in-game assets
         this.addAlphaImageFolder('Interface/TopPanel/') // top panel
         this.addAlphaImageFolder('Interface/RightPanel/') // crystal sidebar
@@ -257,7 +257,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.menuFont)
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.loFont)
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.hiFont)
-            menuCfg.overlays.forEach((overlay) => this.addAsset(this.assetLoader.loadFlhAsset, overlay.flhFilepath))
+            menuCfg.overlays.forEach((overlay) => this.addAsset(this.assetLoader.loadFlhAssetInterframe, overlay.flhFilepath))
         })
     }
 

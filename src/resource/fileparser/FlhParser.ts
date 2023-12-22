@@ -1,4 +1,4 @@
-import { setPixel } from '../../core/ImageHelper'
+import { getPixel, setPixel } from '../../core/ImageHelper'
 
 /**
  * References for FLIC file formats (FLC, FLI and FLH)
@@ -21,12 +21,13 @@ export class FlhParser {
     depth: number = null
     offsetFirstFrame: number = null
 
-    constructor(readonly dataView: DataView) {
+    constructor(readonly dataView: DataView, readonly interFrameMode: boolean) {
     }
 
     parse(): ImageData[] {
         this.parseHeader()
         this.parseChunks()
+        if (this.interFrameMode) this.frames.shift()
         return this.frames
     }
 
@@ -107,14 +108,14 @@ export class FlhParser {
                 repeat = (repeat * -1)
                 for (let i = 0; i < repeat; i++) {
                     const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset + i * 2 + 1)
-                    setPixel(imgData, x, y, r, g, b, (!r && !g && !b ? 0 : 255))
+                    this.setPixel(imgData, x, y, r, g, b, (!r && !g && !b ? 0 : 255))
                     x++
                 }
                 offset += repeat * 2 + 1
             } else {
                 const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset + 1)
                 for (let i = 0; i < repeat; i++) {
-                    setPixel(imgData, x, y, r, g, b, (!r && !g && !b ? 0 : 255))
+                    this.setPixel(imgData, x, y, r, g, b, (!r && !g && !b ? 0 : 255))
                     x++
                 }
                 offset += 3
@@ -131,7 +132,7 @@ export class FlhParser {
 
     private parseDeltaFlc(seg: DataView, offset: number, chunkEnd: number, frameIndex: number) {
         const res = new ImageData(this.width, this.height)
-        if (frameIndex > 0) {
+        if (frameIndex > (this.interFrameMode ? 1 : 0)) {
             res.data.set(this.frames[frameIndex - 1].data)
         }
         const numLines = seg.getUint16(offset, true)
@@ -176,14 +177,14 @@ export class FlhParser {
                     repeat = (-1 * repeat)
                     const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset)
                     for (let j = 0; j < repeat; j++) {
-                        setPixel(res, x, y, r, g, b)
+                        this.setPixel(res, x, y, r, g, b)
                         x++
                     }
                     offset += 2
                 } else {
                     for (let j = 0; j < repeat; j++) {
                         const [r, g, b] = FlhParser.getARGBFrom555RGB(seg, offset + j * 2)
-                        setPixel(res, x, y, r, g, b)
+                        this.setPixel(res, x, y, r, g, b)
                         x++
                     }
                     offset += repeat * 2
@@ -193,6 +194,21 @@ export class FlhParser {
             linesDone++
         }
         this.frames[frameIndex] = res
+    }
+
+    private setPixel(img: ImageData, x: number, y: number, r: number, g: number, b: number, a: number = 255) {
+        const firstFrame = this.frames[0]
+        if (this.interFrameMode && firstFrame && img !== firstFrame) {
+            const f = getPixel(firstFrame, x, y)
+            const d = Math.abs(f.r - r) + Math.abs(f.g - g) + Math.abs(f.b - b) + Math.abs(f.a - a)
+            if (d > 1) {
+                setPixel(img, x, y, r, g, b, a)
+            } else {
+                setPixel(img, x, y, 0, 0, 0, 0)
+            }
+        } else {
+            setPixel(img, x, y, r, g, b, a)
+        }
     }
 
     private static getARGBFrom555RGB(a: DataView, offset: number): [number, number, number] {
