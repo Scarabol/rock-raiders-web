@@ -29,12 +29,12 @@ export class SceneAudioMesh extends SceneMesh {
             resetAudioSafe(this.audioNode)
             this.lastSfxName = null
         }
-        SoundManager.getSoundBuffer(sfxName).then((audioBuffer) => {
-            if (!audioBuffer) return
+        const audioBuffer = SoundManager.getSoundBuffer(sfxName)
+        if (audioBuffer) {
             this.audioNode.setBuffer(audioBuffer)
             this.audioNode.play()
             SoundManager.playingAudio.add(this.audioNode)
-        })
+        }
     }
 
     dispose() {

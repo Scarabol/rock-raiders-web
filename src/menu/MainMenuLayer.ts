@@ -26,6 +26,7 @@ export class MainMenuLayer extends ScaledLayer {
     overlayImages: SpriteImage[] = []
     overlayTimeout: NodeJS.Timeout = null
     overlayIndex: number = 0
+    overlaySfx: AudioBufferSourceNode = null
 
     constructor(menuCfg: MenuEntryCfg) {
         super()
@@ -81,7 +82,8 @@ export class MainMenuLayer extends ScaledLayer {
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
         this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
         this.overlayFrame = null
-        // TODO stop playing overlay sfx sound
+        this.overlaySfx?.stop()
+        this.overlaySfx = null
     }
 
     show() {
@@ -99,7 +101,8 @@ export class MainMenuLayer extends ScaledLayer {
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
         this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
         this.overlayFrame = null
-        // TODO stop playing overlay sfx sound
+        this.overlaySfx?.stop()
+        this.overlaySfx = null
         super.hide()
     }
 
@@ -195,7 +198,7 @@ export class MainMenuLayer extends ScaledLayer {
 
     async playOverlay(overlay: MenuEntryOverlayCfg) {
         if (!overlay) return
-        if (overlay.sfxName) SoundManager.playSound(overlay.sfxName, false)
+        if (overlay.sfxName) this.overlaySfx = SoundManager.playSound(overlay.sfxName, false)
         this.overlayImages = ResourceManager.getResource(overlay.flhFilepath).map((f: ImageData) => imgDataToCanvas(f))
         this.overlayFrame = {img: this.overlayImages[0], x: overlay.x, y: overlay.y}
         await this.renderNextOverlayFrame(0)

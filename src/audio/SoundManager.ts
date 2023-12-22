@@ -31,26 +31,25 @@ export class SoundManager {
         this.playSound(Sample[sample], isVoice)
     }
 
-    static playSound(soundName: string, isVoice: boolean) {
-        if (isVoice && this.skipVoiceLines) return
+    static playSound(soundName: string, isVoice: boolean): AudioBufferSourceNode {
+        if (isVoice && this.skipVoiceLines) return null
         this.skipVoiceLines = isVoice
-        this.getSoundBuffer(soundName).then((audioBuffer) => {
-            try {
-                if (!audioBuffer) return
-                const source = AudioContext.getContext().createBufferSource()
-                source.buffer = audioBuffer
-                source.connect(SoundManager.setupSfxAudioTarget())
-                source.start()
-                if (isVoice) setTimeout(() => this.skipVoiceLines = false, audioBuffer.duration * 1000 + NerpRunner.timeAddedAfterSample)
-            } catch (e) {
-                console.error(e)
-            }
-        }).catch((e) => {
-            console.error(e)
-        })
+        try {
+            const audioBuffer = this.getSoundBuffer(soundName)
+            if (!audioBuffer) return null
+            const source = AudioContext.getContext().createBufferSource()
+            source.buffer = audioBuffer
+            source.connect(SoundManager.setupSfxAudioTarget())
+            source.start()
+            if (isVoice) setTimeout(() => this.skipVoiceLines = false, audioBuffer.duration * 1000 + NerpRunner.timeAddedAfterSample)
+            return source
+        } catch (e) {
+            console.error(`Could not play sound ${soundName}`, e)
+            return null
+        }
     }
 
-    static async getSoundBuffer(sfxName: string): Promise<AudioBuffer> {
+    static getSoundBuffer(sfxName: string): AudioBuffer {
         return this.sfxBuffersByKey.getOrUpdate(sfxName.toLowerCase(), () => {
             console.warn(`Could not find SFX with name '${sfxName}'`)
             return []
