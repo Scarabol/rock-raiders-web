@@ -123,7 +123,6 @@ export class BuildPlacementMarker {
     }
 
     createBuildingSite() {
-        if (!this.buildingType || !this.lastCheck) return
         const barrierLocations = this.getBarrierLocations()
         const stats = this.buildingType.stats
         const neededCrystals = stats?.CostCrystal || 0

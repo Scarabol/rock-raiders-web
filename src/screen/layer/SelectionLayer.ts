@@ -51,6 +51,7 @@ export class SelectionLayer extends ScreenLayer {
 
     handlePointerEvent(event: GamePointerEvent): boolean {
         if (this.worldMgr.sceneMgr.hasBuildModeSelection()) return false
+        if (this.worldMgr.entityMgr.selection.canMove()) return false // TODO this prevents using selection frame while entities are selected
         if (event.pointerType === 'mouse') {
             if (event.eventEnum === POINTER_EVENT.DOWN) {
                 if (event.button === MOUSE_BUTTON.MAIN) {

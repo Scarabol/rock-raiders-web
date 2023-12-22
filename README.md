@@ -57,7 +57,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add debugging layer with basic performance info and log messages (for mobile)
 - Add option to read savegames from URL
 - Start random level picks only unlocked and prefers unranked levels, never picks tuts
-- Replace all right click features with tap or left click like in original
 
 ### v0.8.0 - Late game features
 

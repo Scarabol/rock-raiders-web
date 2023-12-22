@@ -117,10 +117,10 @@ export class GameLayer extends ScreenLayer {
                 const worldPos = this.sceneMgr.getFloorPosition(cursorTarget.intersectionPoint)
                 doubleSelection.sceneEntity.pointLaserAt(worldPos)
             }
-        } else if (event.eventEnum === POINTER_EVENT.UP) {
-            this.handlePointerUpEvent(event)
-        } else if (event.eventEnum === POINTER_EVENT.DOWN) {
-            if (event.button === MOUSE_BUTTON.SECONDARY) {
+        } else if (event.button === MOUSE_BUTTON.MAIN) {
+            if (event.eventEnum === POINTER_EVENT.UP) {
+                this.handlePointerUpEvent(event)
+            } else if (event.eventEnum === POINTER_EVENT.DOWN) {
                 this.rightDown.x = event.canvasX
                 this.rightDown.y = event.canvasY
             }
@@ -129,9 +129,9 @@ export class GameLayer extends ScreenLayer {
     }
 
     private handlePointerUpEvent(event: GamePointerEvent) {
-        if (event.button === MOUSE_BUTTON.MAIN) {
+        if (this.sceneMgr.buildMarker.buildingType && this.sceneMgr.buildMarker.lastCheck) {
             this.sceneMgr.buildMarker.createBuildingSite()
-        } else if (event.button === MOUSE_BUTTON.SECONDARY) {
+        } else {
             const downUpDistance = Math.abs(event.canvasX - this.rightDown.x) + Math.abs(event.canvasY - this.rightDown.y)
             if (downUpDistance < 3) {
                 if (this.sceneMgr.hasBuildModeSelection()) {
