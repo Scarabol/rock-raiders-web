@@ -2,7 +2,7 @@ import { InfoButtonCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
 import { WorldLocationEvent } from '../../event/WorldLocationEvent'
-import { NATIVE_FRAMERATE } from '../../params'
+import { NATIVE_UPDATE_INTERVAL } from '../../params'
 import { Button } from '../base/Button'
 import { InfoDockPanel } from './InfoDockPanel'
 import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
@@ -48,7 +48,7 @@ export class InfoDockButton extends Button {
             this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * this.animationSpeedX)
             this.relY += Math.round(Math.sign(diffY) * Math.sqrt(Math.abs(diffY)) * this.animationSpeedY)
             const that = this
-            this.animationTimeout = setTimeout(() => that.updateAnimation(targetX, targetY, onDone), 1000 / NATIVE_FRAMERATE)
+            this.animationTimeout = setTimeout(() => that.updateAnimation(targetX, targetY, onDone), NATIVE_UPDATE_INTERVAL)
         }
         this.updatePosition()
         this.notifyRedraw()

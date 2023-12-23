@@ -1,7 +1,7 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
-import { NATIVE_FRAMERATE, PANEL_ANIMATION_MULTIPLIER } from '../../params'
+import { NATIVE_UPDATE_INTERVAL, PANEL_ANIMATION_MULTIPLIER } from '../../params'
 import { BaseElement } from './BaseElement'
 import { ResourceManager } from '../../resource/ResourceManager'
 
@@ -71,7 +71,7 @@ export class Panel extends BaseElement {
             this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * speed)
             this.relY += Math.round(Math.sign(diffY) * Math.sqrt(Math.abs(diffY)) * speed)
             const panel = this
-            this.animationTimeout = setTimeout(() => panel.updateAnimation(targetX, targetY, speed, onDone), 1000 / NATIVE_FRAMERATE)
+            this.animationTimeout = setTimeout(() => panel.updateAnimation(targetX, targetY, speed, onDone), NATIVE_UPDATE_INTERVAL)
         }
         this.updatePosition()
         this.notifyRedraw()

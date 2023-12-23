@@ -56,5 +56,4 @@ export const USE_KEYBOARD_SHORTCUTS = false
 export const NATIVE_SCREEN_WIDTH = 640
 export const NATIVE_SCREEN_HEIGHT = 480
 export const TILESIZE = 40
-export const NATIVE_FRAMERATE = 30
-export const NATIVE_UPDATE_INTERVAL = 1000 / NATIVE_FRAMERATE
+export const NATIVE_UPDATE_INTERVAL = 1000 / 25
