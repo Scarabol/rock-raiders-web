@@ -74,6 +74,7 @@ export class GameScreen {
 
     private setupAndStartLevel() {
         console.log(`Starting level ${this.levelName} - ${this.levelConf.fullName}`)
+        document.title = `${this.levelName} - ${this.levelConf.fullName} - Rock Raiders Web`
         this.entityMgr.reset()
         this.guiLayer.reset()
         this.worldMgr.setup(this.levelConf)
@@ -91,7 +92,6 @@ export class GameScreen {
     }
 
     show() {
-        document.title = `${this.levelName} - ${this.levelConf.fullName} - Rock Raiders Web`
         this.gameLayer.show()
         this.selectionLayer.show()
         this.guiLayer.show()

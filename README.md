@@ -48,7 +48,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Quick wins
 
-- Set level name before loading it
 - Show loading errors with debug layer even in loading screen
 - Rocky behaviour fails if target building is teleported up
 - Rocky behaviour should only reference building entity number not complete object
