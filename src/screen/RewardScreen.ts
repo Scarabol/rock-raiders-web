@@ -198,12 +198,12 @@ export class RewardScreen {
             .then((gameResultTextImg) => {
                 this.resultsLayer.animationFrame.onRedraw = (context) => {
                     context.clearRect(0, 0, this.resultsLayer.fixedWidth, this.resultsLayer.fixedHeight)
-                    const flic = this.flics[this.resultIndex + 1] ?? this.flics[this.resultIndex]
-                    flic?.draw(context)
                     for (let c = 0; c <= this.resultIndex; c++) {
                         const img = this.images[c]
                         if (img) context.drawImage(img.img, img.x, img.y)
                     }
+                    const flic = this.flics[this.resultIndex + 1]
+                    flic?.draw(context)
                     for (let c = 0; c <= this.resultIndex; c++) {
                         const box = this.boxes[c]
                         if (box) context.drawImage(box.img, box.x, box.y)
