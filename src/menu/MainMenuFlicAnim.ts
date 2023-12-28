@@ -5,10 +5,12 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { imgDataToCanvas } from '../core/ImageHelper'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { ScaledLayer } from '../screen/layer/ScreenLayer'
+import { clearTimeoutSafe } from '../core/Util'
 
 export class MainMenuFlicAnim extends MainMenuBaseItem {
     readonly flicImages: SpriteImage[] = []
     animIndex: number = 0
+    timeout: NodeJS.Timeout
 
     constructor(readonly layer: ScaledLayer, flhFilepath: string, rect: Rect) {
         super(rect.x, rect.y, rect.w, rect.h)
@@ -25,8 +27,8 @@ export class MainMenuFlicAnim extends MainMenuBaseItem {
     private trigger(resolve: (value: (PromiseLike<void> | void)) => void) {
         this.state.stateChanged = true
         this.layer.animationFrame.notifyRedraw()
-        if (this.animIndex < this.flicImages.length) {
-            setTimeout(() => {
+        if (this.animIndex < this.flicImages.length - 1) {
+            this.timeout = setTimeout(() => {
                 this.animIndex++
                 this.trigger(resolve)
             }, NATIVE_UPDATE_INTERVAL)
@@ -39,5 +41,10 @@ export class MainMenuFlicAnim extends MainMenuBaseItem {
         super.draw(context)
         const img = this.flicImages[this.animIndex]
         if (img) context.drawImage(img, this.x, this.y)
+    }
+
+    reset() {
+        super.reset()
+        this.timeout = clearTimeoutSafe(this.timeout)
     }
 }
