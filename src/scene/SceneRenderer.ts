@@ -5,8 +5,8 @@ import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
 import { cloneContext } from '../core/ImageHelper'
 
 export class SceneRenderer extends WebGLRenderer {
-    readonly debugHelper: DebugHelper = new DebugHelper()
-    readonly maxFps: number = 30 // animations have only 25 fps
+    readonly debugHelper: DebugHelper
+    readonly maxFps: number = 30 // animations and videos have 25 fps (PAL)
     renderInterval: NodeJS.Timeout
     lastAnimationRequest: number
     screenshotCallback: (canvas: HTMLCanvasElement) => any
@@ -15,6 +15,7 @@ export class SceneRenderer extends WebGLRenderer {
         super({antialias: true, canvas: canvas, powerPreference: 'high-performance'})
         // this.shadowMap.enabled = true // XXX enable shadows here
         // this.shadowMap.type = PCFSoftShadowMap // XXX set shadow quality here
+        this.debugHelper = new DebugHelper()
     }
 
     startRendering(scene: Scene) {
@@ -23,9 +24,9 @@ export class SceneRenderer extends WebGLRenderer {
         this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
         this.renderInterval = setInterval(() => {
             this.lastAnimationRequest = requestAnimationFrame(() => {
-                this.debugHelper.renderStart()
+                this.debugHelper.onRenderStart()
                 this.render(scene, this.camera)
-                this.debugHelper.renderDone()
+                this.debugHelper.onRenderDone()
                 this.checkForScreenshot()
             })
         }, 1000 / this.maxFps)
