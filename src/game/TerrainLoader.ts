@@ -136,7 +136,6 @@ export class TerrainLoader {
                 }
             }
         }
-        console.log(`Level has ${terrain.fallIns.length} fallins according to map; nofallins is ${levelConf.noFallins} and safeCaverns is ${levelConf.safeCaverns}`)
 
         if (erodeMap) {
             for (let x = 0; x < terrain.width; x++) {
