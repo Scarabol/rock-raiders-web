@@ -32,7 +32,6 @@ html, body {
     flex-direction: column;
     justify-content: space-around;
     height: 80vh;
-    margin: 10vh inherit 10vh -80px;
 }
 
 @media (aspect-ratio <= 1.333333) {
@@ -50,7 +49,7 @@ html, body {
 
 .mobile-helper-toolbar button {
     width: 80px;
-    height: 80px;
+    aspect-ratio: 1;
     /*bootstrap .btn-dark*/
     color: #fff;
     background-color: #343a40;
@@ -70,4 +69,19 @@ html, body {
     /*root*/
     cursor: pointer;
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.game-debug-layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 3000;
+    background-color: #000;
+    opacity: 40%;
+    color: #fff;
+    margin: 2%;
+    padding: 0.5em;
+    overflow: auto;
 }

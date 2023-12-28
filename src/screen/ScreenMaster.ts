@@ -60,6 +60,10 @@ export class ScreenMaster {
             this.dispatchEvent(new KeyboardEvent('keydown', {code: ' ', key: ' '}))
             setTimeout(() => this.dispatchEvent(new KeyboardEvent('keyup', {code: ' ', key: ' '})), 69)
         })
+        this.setupButton('button-debug', () => {
+            const buttons = Array.from(document.getElementsByClassName('game-debug-layer')) as HTMLElement[]
+            buttons.forEach((btn) => btn.style.display = btn.style.display === 'none' ? 'block' : 'none')
+        })
         this.setupButton('button-screenshot', () => {
             EventBus.publishEvent(new SaveScreenshot())
         })
