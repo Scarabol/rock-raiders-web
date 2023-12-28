@@ -188,8 +188,13 @@ export class AssetLoader {
         try {
             flhContent = this.wad0File.getEntryDataView(filename)
         } catch (e) {
-            const arrayBuffer = await this.cabFile.getFileBuffer(filename)
-            flhContent = new DataView(arrayBuffer)
+            try {
+                const arrayBuffer = await this.cabFile.getFileBuffer(filename)
+                flhContent = new DataView(arrayBuffer)
+            } catch (e) {
+                const arrayBuffer = await this.cabFile.getFileBuffer(`Program Data Files/Data/${filename}`)
+                flhContent = new DataView(arrayBuffer)
+            }
         }
         const flhFrames = new FlhParser(flhContent, interFrameMode).parse()
         callback([filename], flhFrames)

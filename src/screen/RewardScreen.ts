@@ -69,8 +69,7 @@ export class RewardScreen {
         const keyToIndex = ['crystals', 'ore', 'diggable', 'constructions', 'caverns', 'figures', 'rockmonsters', 'oxygen', 'timer', 'score']
         this.cfg.flics.forEach((flic, key) => {
             const flicIndex = keyToIndex.indexOf(key)
-            const flhFilepath = 'Interface/Reward/captain.flh' // XXX use flic.flhFilepath when DATA directory is available
-            this.flics[flicIndex] = new MainMenuFlicAnim(this.resultsLayer, flhFilepath, flic.rect)
+            this.flics[flicIndex] = new MainMenuFlicAnim(this.resultsLayer, flic.flhFilepath, flic.rect)
         })
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 620)
         this.btnLayer = screenMaster.addLayer(new ScaledLayer('RewardButtonLayer'), 650)

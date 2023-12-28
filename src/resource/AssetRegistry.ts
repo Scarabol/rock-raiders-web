@@ -35,7 +35,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         this.addAsset(this.assetLoader.loadObjectiveTexts, 'Languages/ObjectiveText.txt')
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.image)
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.contrastOverlay)
-        this.addAsset(this.assetLoader.loadFlhAssetDefault, 'Interface/Reward/captain.flh') // XXX Actually use Reward.Flics from config
+        Array.from(gameConfig.reward.flics.values()).forEach((f) => this.addAsset(this.assetLoader.loadFlhAssetDefault, f.flhFilepath))
         // add in-game assets
         this.addAlphaImageFolder('Interface/TopPanel/') // top panel
         this.addAlphaImageFolder('Interface/RightPanel/') // crystal sidebar
