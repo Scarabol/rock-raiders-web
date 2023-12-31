@@ -46,27 +46,10 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ## Development Roadmap
 
-### Quick wins
-
-- Rocky behaviour fails if target building is teleported up
-- Rocky behaviour should only reference building entity number not complete object
-- Add level reference to URL for easier reloading, check if game is unlocked when not in dev mode
-- Tooltip should be shown above cursor, if close to screen border
-- Add debugging layer with basic performance info and log messages (for mobile)
-- Add option to read savegames from URL
-- Start random level picks only unlocked and prefers unranked levels, never picks tuts
-
 ### v0.8.0 - Late game features
 
 - Rocky behaviour fails if target building is teleported up
-- Rocky behaviour should only reference building entity number not complete object
-- Add level reference to URL for easier reloading, check if game is unlocked when not in dev mode
-- Actual game allows loading of empty save game slots
-- After loading a game should be dropped to level select layer, going back resets game state progress
 - Tooltip should be shown above cursor, if close to screen border
-- Play random menu overlay in random order, but not randomly
-- Add debugging layer with basic performance info and log messages (for mobile)
-- Add option to read savegames from URL
 - Start random level picks only unlocked and prefers unranked levels, never picks tuts 
 - Replace all right click features with tap or left click like in original
 
@@ -118,6 +101,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Do not allow touch events to move scene camera while build mode selection is active
 - Save complete game state in browser cache to allow reload
 - Hardware cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position manipulation
+- Add level reference to URL for easier reloading, check if game is unlocked when not in dev mode
+- Add option to read savegames from URL
 
 ### Cosmetics
 
