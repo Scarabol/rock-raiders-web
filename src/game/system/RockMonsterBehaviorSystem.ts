@@ -30,6 +30,7 @@ import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { BoulderComponent } from '../component/BoulderComponent'
 import { VehicleTarget } from '../EntityManager'
 import { HeadingComponent } from '../component/HeadingComponent'
+import { BeamUpComponent } from '../component/BeamUpComponent'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -150,7 +151,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 } else {
                                     behaviorComponent.state = RockMonsterBehaviorState.GO_HOME
                                 }
-                            } else if (!this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
+                            } else if (this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).has(BeamUpComponent) || !this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
                                 behaviorComponent.changeToIdle()
                             } else {
                                 const targetBuildingSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_BOULDER_THROW_DISTANCE_SQ)
@@ -219,7 +220,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     } else {
                                         behaviorComponent.state = RockMonsterBehaviorState.GO_HOME
                                     }
-                                } else if (!this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
+                                } else if (this.worldMgr.ecs.getComponents(behaviorComponent.targetBuilding.entity).has(BeamUpComponent) || !this.worldMgr.entityMgr.buildings.includes(behaviorComponent.targetBuilding)) {
                                     behaviorComponent.changeToIdle()
                                 } else {
                                     const targetBuildingSurface = behaviorComponent.targetBuilding.buildingSurfaces.find((s) => rockyPos.distanceToSquared(s.getCenterWorld2D()) <= ROCKY_MELEE_ATTACK_DISTANCE_SQ)
