@@ -48,8 +48,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Replace all right click features with tap or left click like in original
-
 - Refactor job system to allow multi-carry jobs for vehicles
 - Raider get tired while carrying and eat at barracks
 - Allow raider in alarm mode to be moved by player
