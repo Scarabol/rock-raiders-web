@@ -17,7 +17,7 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
 
     constructor(
         readonly layer: MainMenuLayer,
-        readonly levelKey: string,
+        readonly levelName: string,
         readonly levelCfg: LevelEntryCfg,
     ) {
         super(levelCfg.frontEndX, levelCfg.frontEndY)
@@ -34,18 +34,18 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
     }
 
     isLocked(): boolean {
-        return (!DEV_MODE && this.levelKey.toLowerCase().includes('tutorial')) || // TODO Remove this line when tutorial helper functions implemented
+        return (!DEV_MODE && this.levelName.toLowerCase().includes('tutorial')) || // TODO Remove this line when tutorial helper functions implemented
             !(() => true) && // TODO Remove this line before release 1.0
             !this.levelCfg.frontEndOpen &&
-            !this.levelKey.equalsIgnoreCase(ResourceManager.configuration.main.startLevel) &&
-            !this.levelKey.equalsIgnoreCase(ResourceManager.configuration.main.tutorialStartLevel) &&
-            !SaveGameManager.getLevelScoreString(this.levelKey) &&
+            !this.levelName.equalsIgnoreCase(ResourceManager.configuration.main.startLevel) &&
+            !this.levelName.equalsIgnoreCase(ResourceManager.configuration.main.tutorialStartLevel) &&
+            !SaveGameManager.getLevelScoreString(this.levelName) &&
             !this.isUnlockedByLevelLink()
     }
 
     private isUnlockedByLevelLink(): boolean {
-        return Array.from(ResourceManager.configuration.levels.levelCfgByName.entries()).some(([levelKey, levelEntryCfg]) =>
-            SaveGameManager.getLevelScoreString(levelKey) && levelEntryCfg.levelLinks.some((levelLink) => this.levelKey.equalsIgnoreCase(levelLink))
+        return Array.from(ResourceManager.configuration.levels.levelCfgByName.entries()).some(([levelName, levelEntryCfg]) =>
+            SaveGameManager.getLevelScoreString(levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelName.equalsIgnoreCase(levelLink))
         )
     }
 

@@ -6,9 +6,9 @@ export class LevelsCfg extends BaseConfig {
     levelCfgByName: Map<string, LevelEntryCfg> = new Map()
 
     setFromCfgObj(cfgObj: any): this {
-        Object.keys(cfgObj).forEach((levelKey) => {
-            if (!levelKey.startsWith('Tutorial') && !levelKey.startsWith('Level')) return // ignore incomplete test levels and duplicates
-            this.levelCfgByName.set(levelKey, new LevelEntryCfg().setFromCfgObj(cfgObj[levelKey]))
+        Object.keys(cfgObj).forEach((levelName) => {
+            if (!levelName.startsWith('Tutorial') && !levelName.startsWith('Level')) return // ignore incomplete test levels and duplicates
+            this.levelCfgByName.set(levelName, new LevelEntryCfg().setFromCfgObj(cfgObj[levelName]))
         })
         return this
     }

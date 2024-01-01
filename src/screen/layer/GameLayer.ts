@@ -40,10 +40,8 @@ export class GameLayer extends ScreenLayer {
     constructor() {
         super()
         EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
-            if (this.active) {
-                const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, true)
-                EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
-            }
+            const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, true)
+            EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
         })
         new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
             ['pointermove', POINTER_EVENT.MOVE],

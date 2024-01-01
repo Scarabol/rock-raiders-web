@@ -72,13 +72,13 @@ export class MainMenuScreen {
         if (item.actionName.equalsIgnoreCase('next')) {
             this.showMainMenu(item.targetIndex)
         } else if (item.actionName.equalsIgnoreCase('selectlevel')) {
-            this.selectLevel((item as MainMenuLevelButton).levelKey)
+            this.selectLevel((item as MainMenuLevelButton).levelName)
         } else if (item.actionName.toLowerCase().startsWith('load_game')) {
             SaveGameManager.loadGame(item.targetIndex)
             this.showLevelSelection()
         } else if (item.actionName.equalsIgnoreCase('selectrandomlevel')) { // TODO make sure that target level is unlocked?
-            const allLevelKeys = Array.from(Array(24).keys()).map((n) => `Level${(n + 1).toPadded()}`)
-            const unScoredLevels = allLevelKeys.filter((levelKey) => !SaveGameManager.getLevelScoreString(levelKey))
+            const allLevelNames = Array.from(Array(24).keys()).map((n) => `Level${(n + 1).toPadded()}`)
+            const unScoredLevels = allLevelNames.filter((levelName) => !SaveGameManager.getLevelScoreString(levelName))
             if (unScoredLevels.length > 0) {
                 this.selectLevel(unScoredLevels.random())
             } else {
@@ -121,6 +121,6 @@ export class MainMenuScreen {
         this.screenMaster.loadingLayer.show()
         this.menuLayers.forEach((m) => m.hide())
         EventBus.publishEvent(new LevelSelectedEvent(levelName, levelConf))
-        EventBus.publishEvent(new MaterialAmountChanged())
+        EventBus.publishEvent(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
     }
 }

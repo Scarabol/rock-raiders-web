@@ -60,7 +60,7 @@ export class GameResult {
     }
 
     static random(): GameResult {
-        const randomLevelConf = Array.from(ResourceManager.configuration.levels.levelCfgByName.values()).random()
+        const randomLevelConf = ResourceManager.configuration.levels.levelCfgByName.get(`Level${Math.randomInclusive(1, 25).toPadded()}`)
         return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, Math.randomInclusive(6), Math.randomInclusive(10), 10, 942, null)
     }
 }

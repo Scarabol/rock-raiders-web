@@ -4,8 +4,8 @@ export class TexturesCfg extends BaseConfig {
     textureSetByName: Map<string, TextureEntryCfg> = new Map()
 
     setFromCfgObj(cfgObj: any): this {
-        Object.keys(cfgObj).forEach((levelKey) => {
-            this.textureSetByName.set(levelKey.toLowerCase(), new TextureEntryCfg().setFromCfgObj(cfgObj[levelKey]))
+        Object.keys(cfgObj).forEach((levelName) => {
+            this.textureSetByName.set(levelName.toLowerCase(), new TextureEntryCfg().setFromCfgObj(cfgObj[levelName]))
         })
         return this
     }

@@ -38,7 +38,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 <img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2022-03-20%2004.png?raw=true" width="360" alt="Screenshot">
 </a>
 <a href="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2023-10-26%2001.png?raw=true">
-<img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2023-03-20%2001.png?raw=true" width="360" alt="Screenshot">
+<img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2023-10-26%2001.png?raw=true" width="360" alt="Screenshot">
 </a>
 <a href="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2023-10-31%2001.png?raw=true">
 <img src="https://github.com/Scarabol/rock-raiders-web/blob/dev/screenshots/2023-10-31%2001.png?raw=true" width="360" alt="Screenshot">
@@ -48,7 +48,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Start random level picks only unlocked and prefers unranked levels, never picks tuts 
 - Replace all right click features with tap or left click like in original
 
 - Refactor job system to allow multi-carry jobs for vehicles
@@ -79,6 +78,7 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### v1.0.0 - Final Release
 
 - Unlock levels only after linked levels are completed (see XXX)
+- Start random level picks only unlocked and prefers unranked levels, never picks tuts
 
 ## Known Issues
 
