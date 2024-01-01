@@ -93,7 +93,12 @@ export class TooltipLayer extends ScreenLayer {
         const tooltipWidth = Math.round(tooltipImg.width * this.canvas.width / NATIVE_SCREEN_WIDTH)
         const tooltipHeight = Math.round(tooltipImg.height * this.canvas.height / NATIVE_SCREEN_HEIGHT)
         const posX = Math.min(this.cursorCanvasPos.x + tooltipWidth, this.canvas.width) - tooltipWidth
-        const posY = Math.min(this.cursorCanvasPos.y + CURSOR_MAX_HEIGHT + tooltipHeight, this.canvas.height) - tooltipHeight
+        let posY = 0
+        if (this.cursorCanvasPos.y + CURSOR_MAX_HEIGHT + tooltipHeight < this.canvas.height) {
+            posY = this.cursorCanvasPos.y + CURSOR_MAX_HEIGHT
+        } else {
+            posY = this.cursorCanvasPos.y - tooltipHeight
+        }
         this.animationFrame.onRedraw = (context) => context.drawImage(tooltipImg, posX, posY, tooltipWidth, tooltipHeight)
         this.animationFrame.notifyRedraw()
     }

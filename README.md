@@ -48,7 +48,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Tooltip should be shown above cursor, if close to screen border
 - Start random level picks only unlocked and prefers unranked levels, never picks tuts 
 - Replace all right click features with tap or left click like in original
 
