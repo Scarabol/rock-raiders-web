@@ -3,7 +3,7 @@ import { SoundManager } from '../audio/SoundManager'
 import { MenuLabelItemCfg } from '../cfg/MenuLabelItemCfg'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { EventBus } from '../event/EventBus'
-import { ChangeTooltip } from '../event/GuiCommand'
+import { ChangeTooltip, HideTooltip } from '../event/GuiCommand'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
@@ -22,6 +22,7 @@ export class MainMenuIconButton extends MainMenuBaseItem {
         this.imgPressed = ResourceManager.getImage(cfg.imgPressed)
         const tooltipText = ResourceManager.getTooltipText(cfg.tooltipKey)
         this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
+        this.state.onHideTooltip = () => EventBus.publishEvent(new HideTooltip(tooltipText, null))
         this.width = Math.max(this.imgNormal.width, this.imgHover.width, this.imgPressed.width)
         this.height = Math.max(this.imgNormal.height, this.imgHover.height, this.imgPressed.height)
         this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x

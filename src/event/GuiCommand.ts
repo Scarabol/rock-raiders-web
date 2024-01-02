@@ -38,7 +38,7 @@ export class ChangeTooltip extends GuiCommand {
         site?: BuildingSite,
         readonly buildingMissingOreForUpgrade?: number,
     ) {
-        super(EventKey.COMMAND_CHANGE_TOOLTIP)
+        super(EventKey.COMMAND_TOOLTIP_CHANGE)
         if (raider) {
             this.numToolSlots = raider.maxTools()
             this.tools = [...raider.tools]
@@ -58,6 +58,12 @@ export class ChangeTooltip extends GuiCommand {
                 needed: site.neededByType.get(EntityType.BRICK),
             }
         }
+    }
+}
+
+export class HideTooltip extends GuiCommand {
+    constructor(readonly tooltipText: string, readonly tooltipSfx: string) {
+        super(EventKey.COMMAND_TOOLTIP_HIDE)
     }
 }
 

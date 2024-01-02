@@ -100,10 +100,8 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 ### Cosmetics
 
 - Missing rockfall animation when switching in main menu
-- Sparkles over recharge seam have wrong offset and rotation in Level 24 and Level 13
 - Lava rockies texture not using correct UV coordinates
 - Show health percentage in vehicle tooltip as power
-- Make tooltips stay on screen and follow cursor
 - Play vehicle SFX when tooltip is shown
 - Orange smoke column above lava tiles missing
 - Water and lava animation missing, might use texture UV coords tearing

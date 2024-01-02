@@ -78,7 +78,8 @@ export class BaseElement {
 
     checkHover(event: GuiHoverEvent): void {
         const inRect = this.isInRect(event.sx, event.sy)
-        if (inRect) this.onHoverInRect(event.sx, event.sy)
+        if (inRect && !this.hover) this.onHoverStart()
+        else if (!inRect && this.hover) this.onHoverEnd()
         if (!this.isInactive()) {
             event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
             this.hover = inRect
@@ -87,7 +88,10 @@ export class BaseElement {
         this.children.forEach((child) => child.checkHover(event))
     }
 
-    onHoverInRect(sx: number, sy: number): void {
+    onHoverStart(): void {
+    }
+
+    onHoverEnd(): void {
     }
 
     checkClick(event: GuiClickEvent): boolean {

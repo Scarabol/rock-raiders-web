@@ -2,7 +2,7 @@ import { MenuItemCfg } from '../../cfg/ButtonCfg'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { ChangeTooltip } from '../../event/GuiCommand'
-import { DEV_MODE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_MENU } from '../../params'
+import { DEV_MODE, TOOLTIP_DELAY_SFX } from '../../params'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EntityType, getEntityTypeByName } from '../../game/model/EntityType'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -66,7 +66,7 @@ export class IconPanelButton extends Button {
     showTooltipDisabled() {
         super.showTooltipDisabled()
         if (this.tooltipDisabled || this.tooltipDisabledSfx) {
-            this.publishEvent(new ChangeTooltip(this.tooltipDisabled, TOOLTIP_DELAY_TEXT_MENU, this.tooltipDisabledSfx, TOOLTIP_DELAY_SFX))
+            this.publishEvent(new ChangeTooltip(this.tooltipDisabled, 0, this.tooltipDisabledSfx, TOOLTIP_DELAY_SFX))
         }
     }
 

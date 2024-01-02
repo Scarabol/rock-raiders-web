@@ -1,56 +1,60 @@
-import { clearTimeoutSafe } from '../../core/Util'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
-import { POINTER_EVENT } from '../../event/EventTypeEnum'
-import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { ChangeTooltip } from '../../event/GuiCommand'
+import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
 import { SaveScreenshot } from '../../event/LocalEvents'
-import { CURSOR_MAX_HEIGHT, NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { AnimationFrame } from '../AnimationFrame'
 import { ScreenLayer } from './ScreenLayer'
+import { CURSOR_MAX_HEIGHT } from '../../params'
+import { clearTimeoutSafe } from '../../core/Util'
 import { SoundManager } from '../../audio/SoundManager'
-import { SpriteImage } from '../../core/Sprite'
 
 export class TooltipLayer extends ScreenLayer {
-    readonly animationFrame: AnimationFrame
-    cursorCanvasPos: { x: number, y: number } = {x: 0, y: 0}
+    readonly gameCanvasContainer: HTMLElement
+    readonly lastCursorPos: { x: number, y: number } = {x: 0, y: 0}
     tooltipTimeoutText: NodeJS.Timeout = null
     tooltipTimeoutSfx: NodeJS.Timeout = null
     cursorLeft: boolean = false
+    tooltipCanvas: HTMLCanvasElement = null
+    lastTooltipText: string = null
+    lastTooltipSfx: string = null
 
     constructor() {
         super()
-        this.animationFrame = new AnimationFrame(this.canvas, this.readbackCanvas)
-        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_TOOLTIP, (event: ChangeTooltip) => {
+        this.gameCanvasContainer = document.getElementById('game-canvas-container')
+        EventBus.registerEventListener(EventKey.COMMAND_TOOLTIP_CHANGE, (event: ChangeTooltip) => {
+            if (this.cursorLeft || !this.active || event.tooltipText === this.lastTooltipText) return
+            this.lastTooltipText = event.tooltipText
+            this.lastTooltipSfx = event.tooltipSfx
             this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
             this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
-            if (this.cursorLeft || !this.active) return
-            if (event.tooltipText && event.timeoutText > 0) {
-                this.tooltipTimeoutText = setTimeout(() => this.changeTooltipImg(event), event.timeoutText)
+            if (this.tooltipCanvas) {
+                this.gameCanvasContainer.removeChild(this.tooltipCanvas)
+                this.tooltipCanvas = null
             }
-            if (event.tooltipSfx && event.timeoutSfx > 0) {
+            if (event.tooltipText) {
+                this.tooltipTimeoutText = setTimeout(() => this.getTooltipImg(event).then((tooltipImg) => {
+                    this.changeTooltipImage(tooltipImg)
+                }), event.timeoutText)
+            }
+            if (event.tooltipSfx) {
                 this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(event.tooltipSfx, true), event.timeoutSfx)
             }
         })
+        EventBus.registerEventListener(EventKey.COMMAND_TOOLTIP_HIDE, (event: HideTooltip) => {
+            if (!(this.lastTooltipText === event.tooltipText || this.lastTooltipSfx === event.tooltipSfx)) return
+            this.removeTooltip()
+        })
         this.addEventListener('pointermove', (event: PointerEvent): boolean => {
             this.cursorLeft = false
-            const gameEvent = new GamePointerEvent(POINTER_EVENT.MOVE, event)
-            ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(event.clientX, event.clientY)
-            this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
-            this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
-            this.cursorCanvasPos = {x: gameEvent.canvasX, y: gameEvent.canvasY}
-            this.animationFrame.onRedraw = (context) => {
-                context.clearRect(0, 0, context.canvas.width, context.canvas.height)
-                this.animationFrame.onRedraw = null
-            }
-            this.animationFrame.notifyRedraw()
+            const clientRect = this.gameCanvasContainer.getBoundingClientRect()
+            this.lastCursorPos.x = event.clientX - clientRect.left
+            this.lastCursorPos.y = event.clientY - clientRect.top + CURSOR_MAX_HEIGHT
+            if (this.tooltipCanvas) this.updateTooltipCanvasPosition()
             return false
         })
         this.addEventListener('pointerleave', (): boolean => {
             this.cursorLeft = true
-            this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
-            this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
+            this.removeTooltip()
             return false
         })
         this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
@@ -60,6 +64,43 @@ export class TooltipLayer extends ScreenLayer {
             }
             return false
         })
+    }
+
+    private removeTooltip() {
+        this.tooltipTimeoutText = clearTimeoutSafe(this.tooltipTimeoutText)
+        this.tooltipTimeoutSfx = clearTimeoutSafe(this.tooltipTimeoutSfx)
+        if (this.tooltipCanvas) {
+            this.gameCanvasContainer.removeChild(this.tooltipCanvas)
+            this.tooltipCanvas = null
+        }
+        this.lastTooltipText = null
+        this.lastTooltipSfx = null
+    }
+
+    private changeTooltipImage(tooltipImg: HTMLCanvasElement | OffscreenCanvas) {
+        if (this.tooltipCanvas) this.gameCanvasContainer.removeChild(this.tooltipCanvas)
+        if (this.cursorLeft) return
+        this.tooltipCanvas = document.createElement('canvas')
+        this.gameCanvasContainer.appendChild(this.tooltipCanvas)
+        const scale = this.gameCanvasContainer.getBoundingClientRect().width / 640
+        this.tooltipCanvas.width = Math.round(tooltipImg.width * scale)
+        this.tooltipCanvas.height = Math.round(tooltipImg.height * scale)
+        this.tooltipCanvas.style.position = 'absolute'
+        this.tooltipCanvas.style.zIndex = `${this.zIndex + 10}`
+        this.tooltipCanvas.getContext('2d').drawImage(tooltipImg, 0, 0, this.tooltipCanvas.width, this.tooltipCanvas.height)
+        this.updateTooltipCanvasPosition()
+    }
+
+    private updateTooltipCanvasPosition() {
+        const posX = Math.min(this.lastCursorPos.x + this.tooltipCanvas.width, this.canvas.width) - this.tooltipCanvas.width
+        let posY: number
+        if (this.lastCursorPos.y + this.tooltipCanvas.height < this.canvas.height) {
+            posY = this.lastCursorPos.y
+        } else {
+            posY = this.lastCursorPos.y - CURSOR_MAX_HEIGHT - this.tooltipCanvas.height
+        }
+        this.tooltipCanvas.style.left = `${posX}px`
+        this.tooltipCanvas.style.top = `${posY}px`
     }
 
     show() {
@@ -74,32 +115,17 @@ export class TooltipLayer extends ScreenLayer {
         this.cursorLeft = false
     }
 
-    private async changeTooltipImg(event: ChangeTooltip) {
-        let tooltipImg: SpriteImage = null
+    private async getTooltipImg(event: ChangeTooltip) { // XXX cache tooltip images
         if (event.numToolSlots || event.tools || event.trainings) {
-            tooltipImg = await ResourceManager.getRaiderTooltipSprite(event.tooltipText || '',
+            return await ResourceManager.getRaiderTooltipSprite(event.tooltipText || '',
                 event.numToolSlots || 0, event.tools || [], event.trainings || [])
         } else if (event.crystals || event.ores || event.bricks) {
-            tooltipImg = await ResourceManager.getBuildingSiteTooltipSprite(event.tooltipText, event.crystals, event.ores, event.bricks)
+            return await ResourceManager.getBuildingSiteTooltipSprite(event.tooltipText, event.crystals, event.ores, event.bricks)
         } else if (event.buildingMissingOreForUpgrade) {
-            tooltipImg = await ResourceManager.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, event.buildingMissingOreForUpgrade)
+            return await ResourceManager.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, event.buildingMissingOreForUpgrade)
         } else if (event.tooltipText) {
-            tooltipImg = await ResourceManager.getTooltipSprite(event.tooltipText)
+            return await ResourceManager.getTooltipSprite(event.tooltipText)
         }
-        if (tooltipImg) this.setTooltipImg(tooltipImg)
-    }
-
-    private setTooltipImg(tooltipImg: SpriteImage) {
-        const tooltipWidth = Math.round(tooltipImg.width * this.canvas.width / NATIVE_SCREEN_WIDTH)
-        const tooltipHeight = Math.round(tooltipImg.height * this.canvas.height / NATIVE_SCREEN_HEIGHT)
-        const posX = Math.min(this.cursorCanvasPos.x + tooltipWidth, this.canvas.width) - tooltipWidth
-        let posY = 0
-        if (this.cursorCanvasPos.y + CURSOR_MAX_HEIGHT + tooltipHeight < this.canvas.height) {
-            posY = this.cursorCanvasPos.y + CURSOR_MAX_HEIGHT
-        } else {
-            posY = this.cursorCanvasPos.y - tooltipHeight
-        }
-        this.animationFrame.onRedraw = (context) => context.drawImage(tooltipImg, posX, posY, tooltipWidth, tooltipHeight)
-        this.animationFrame.notifyRedraw()
+        return null
     }
 }

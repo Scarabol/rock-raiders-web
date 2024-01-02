@@ -5,7 +5,7 @@ import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { IconPanelToggleButton } from '../IconPanelToggleButton'
 import { SelectBasePanel } from './SelectBasePanel'
-import { TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_MENU } from '../../../params'
+import { TOOLTIP_DELAY_SFX } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
 
 export class SelectBuildingPanel extends SelectBasePanel {
@@ -31,7 +31,7 @@ export class SelectBuildingPanel extends SelectBasePanel {
         upgradeItem.isDisabled = () => !this.buildingCanUpgrade
         upgradeItem.onClick = () => this.publishEvent(new UpgradeBuilding())
         upgradeItem.showTooltipDisabled = () => {
-            this.publishEvent(new ChangeTooltip(upgradeItem.tooltipDisabled, TOOLTIP_DELAY_TEXT_MENU, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, null, null, this.buildingMissingOreForUpgrade))
+            this.publishEvent(new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, null, null, this.buildingMissingOreForUpgrade))
         }
         const deleteBuildingItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_DeleteBuilding')
         deleteBuildingItem.isDisabled = () => false

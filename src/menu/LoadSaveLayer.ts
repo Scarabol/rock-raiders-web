@@ -5,6 +5,7 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { MainMenuLayer } from './MainMenuLayer'
 import { MainMenuLoadSaveButton } from './MainMenuLoadSaveButton'
 import { MainMenuWindow } from './MainMenuWindow'
+import { GamePointerEvent } from '../event/GamePointerEvent'
 
 export class LoadSaveLayer extends MainMenuLayer {
     menuCfg: GameMenuCfg
@@ -53,5 +54,9 @@ export class LoadSaveLayer extends MainMenuLayer {
             this.animationFrame.notifyRedraw()
         })
         super.show()
+    }
+
+    handlePointerEvent(event: GamePointerEvent): boolean {
+        return super.handlePointerEvent(event) || true
     }
 }

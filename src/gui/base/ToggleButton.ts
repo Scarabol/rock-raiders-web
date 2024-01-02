@@ -18,7 +18,8 @@ export class ToggleButton extends Button {
 
     checkHover(event: GuiHoverEvent): void {
         const inRect = this.isInRect(event.sx, event.sy)
-        if (inRect) this.onHoverInRect(event.sx, event.sy)
+        if (inRect && !this.hover) this.onHoverStart()
+        else if (!inRect && this.hover) this.onHoverEnd()
         if (!this.isInactive()) {
             event.hoverStateChanged = event.hoverStateChanged || this.hover !== inRect
             this.hover = inRect

@@ -1,7 +1,7 @@
 import { RewardButtonCfg } from '../cfg/RewardCfg'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { EventBus } from '../event/EventBus'
-import { ChangeTooltip } from '../event/GuiCommand'
+import { ChangeTooltip, HideTooltip } from '../event/GuiCommand'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { TOOLTIP_DELAY_TEXT_MENU } from '../params'
@@ -22,6 +22,7 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.height = this.imgNormal.height
         const tooltipText = ResourceManager.getTooltipText(tooltipKey)
         this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
+        this.state.onHideTooltip = () => EventBus.publishEvent(new HideTooltip(tooltipText, null))
     }
 
     draw(context: SpriteContext) {

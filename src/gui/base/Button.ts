@@ -1,9 +1,9 @@
 import { BaseButtonCfg } from '../../cfg/ButtonCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
-import { ChangeTooltip } from '../../event/GuiCommand'
+import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { BaseElement } from './BaseElement'
-import { TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_MENU } from '../../params'
+import { TOOLTIP_DELAY_SFX } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
 
 export class Button extends BaseElement {
@@ -37,8 +37,8 @@ export class Button extends BaseElement {
         return Math.max(...numbers.map((n) => n || 0))
     }
 
-    onHoverInRect(sx: number, sy: number): void {
-        super.onHoverInRect(sx, sy)
+    onHoverStart(): void {
+        super.onHoverStart()
         if (this.isInactive()) {
             this.showTooltipDisabled()
         } else if (this.tooltip || this.tooltipSfx) {
@@ -46,8 +46,13 @@ export class Button extends BaseElement {
         }
     }
 
+    onHoverEnd() {
+        super.onHoverEnd()
+        this.publishEvent(new HideTooltip(this.tooltip, this.tooltipSfx))
+    }
+
     showTooltip() {
-        this.publishEvent(new ChangeTooltip(this.tooltip, TOOLTIP_DELAY_TEXT_MENU, this.tooltipSfx, TOOLTIP_DELAY_SFX))
+        this.publishEvent(new ChangeTooltip(this.tooltip, 0, this.tooltipSfx, TOOLTIP_DELAY_SFX))
     }
 
     showTooltipDisabled() {

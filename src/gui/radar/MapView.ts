@@ -27,6 +27,7 @@ export class MapView extends BaseElement {
     surfaceRectSize: number = 10
     terrainWidth: number = 0
     terrainHeight: number = 0
+    lastSurface: MapSurfaceRect = null
 
     constructor(parent: BaseElement) {
         super(parent)
@@ -128,14 +129,18 @@ export class MapView extends BaseElement {
         context.drawImage(this.geoScanSprite, this.x, this.y)
     }
 
-    onHoverInRect(sx: number, sy: number): void {
-        super.onHoverInRect(sx, sy)
-        const tileX = Math.floor((sx - this.x + this.offset.x) / this.surfaceRectSize)
-        const tileY = Math.floor((sy - this.y + this.offset.y) / this.surfaceRectSize)
-        const lSurfaceName = this.surfaceMap[tileX]?.[tileY]?.name?.toLowerCase()
-        if (lSurfaceName) { // XXX only publish event, when tooltip changes not on each cursor move
-            const tooltip = ResourceManager.configuration.surfaceTypeDescriptions.get(lSurfaceName)
-            if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
+    isInRect(sx: number, sy: number): boolean {
+        const inRect = super.isInRect(sx, sy)
+        if (inRect) {
+            const tileX = Math.floor((sx - this.x + this.offset.x) / this.surfaceRectSize)
+            const tileY = Math.floor((sy - this.y + this.offset.y) / this.surfaceRectSize)
+            const surface = this.surfaceMap[tileX]?.[tileY]
+            if (surface && surface !== this.lastSurface) {
+                this.lastSurface = surface
+                const tooltip = ResourceManager.configuration.surfaceTypeDescriptions.get(surface.name.toLowerCase())
+                if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
+            }
         }
+        return inRect
     }
 }

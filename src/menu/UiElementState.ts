@@ -11,10 +11,12 @@ export class UiElementState {
     onPressed: UiElementCallback = null
     onHoverChanged: UiElementCallback = null
     onShowTooltip: UiElementCallback = null
+    onHideTooltip: UiElementCallback = null
 
     reset() {
         this.stateChanged = this.hovered || this.down || this.hidden !== false || this.disabled !== false
         this.hovered = false
+        this.onHideTooltip?.()
         this.down = false
         this.hidden = false
         this.disabled = false
@@ -35,29 +37,38 @@ export class UiElementState {
         if (!this.down || this.disabled || this.hidden) return false
         this.stateChanged = true
         this.down = false
-        if (this.hovered && this.onPressed) this.onPressed()
+        if (this.hovered && this.onPressed) {
+            this.onHideTooltip?.()
+            this.onPressed()
+        }
         return true
     }
 
     setHovered(hovered: boolean) {
         if (this.disabled || this.hidden) return
-        if (hovered && this.onShowTooltip) this.onShowTooltip()
         if (this.hovered === hovered) return
+        if (hovered) {
+            this.onShowTooltip?.()
+        } else {
+            this.onHideTooltip?.()
+        }
         this.stateChanged = true
         this.hovered = hovered
-        if (this.onHoverChanged) this.onHoverChanged()
+        this.onHoverChanged?.()
     }
 
     setDisabled(disabled: boolean) {
         if (this.disabled === disabled) return
         this.stateChanged = true
         this.hovered = false
+        this.onHideTooltip?.()
         this.disabled = disabled
     }
 
     setHidden(hidden: boolean) {
         if (this.hidden === hidden) return
         this.hovered = false
+        this.onHideTooltip?.()
         this.hidden = hidden
     }
 
