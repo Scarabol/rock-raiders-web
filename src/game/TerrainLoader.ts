@@ -12,8 +12,6 @@ import { LavaErosionComponent } from './component/LavaErosionComponent'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
-        const tileSize = levelConf.blockSize
-        if (tileSize !== TILESIZE) console.error(`Unexpected tile size in level configuration: ${tileSize}`)
         const terrain = new Terrain(worldMgr, levelConf)
         terrain.textureSet = ResourceManager.configuration.textures.textureSetByName.get(levelConf.textureSet)
         terrain.rockFallStyle = levelConf.rockFallStyle.toLowerCase()

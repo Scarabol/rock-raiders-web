@@ -1,6 +1,7 @@
 import { PriorityIdentifier } from '../game/model/job/PriorityIdentifier'
 import { BaseConfig } from './BaseConfig'
 import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
+import { TILESIZE } from '../params'
 
 export class LevelsCfg extends BaseConfig {
     levelCfgByName: Map<string, LevelEntryCfg> = new Map()
@@ -8,7 +9,10 @@ export class LevelsCfg extends BaseConfig {
     setFromCfgObj(cfgObj: any): this {
         Object.keys(cfgObj).forEach((levelName) => {
             if (!levelName.startsWith('Tutorial') && !levelName.startsWith('Level')) return // ignore incomplete test levels and duplicates
-            this.levelCfgByName.set(levelName, new LevelEntryCfg().setFromCfgObj(cfgObj[levelName]))
+            const levelConf = new LevelEntryCfg().setFromCfgObj(cfgObj[levelName])
+            const tileSize = levelConf.blockSize
+            if (tileSize !== TILESIZE) console.warn(`Unexpected tile size in level configuration: ${tileSize}`)
+            this.levelCfgByName.set(levelName, levelConf)
         })
         return this
     }
