@@ -1,4 +1,4 @@
-export type UiElementCallback = () => any
+export type UiElementCallback = () => void
 
 export class UiElementState {
 

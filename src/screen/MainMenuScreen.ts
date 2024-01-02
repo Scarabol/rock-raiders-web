@@ -43,19 +43,7 @@ export class MainMenuScreen {
             this.menuLayers.push(screenMaster.addLayer(layer, 200 + this.menuLayers.length * 10))
         })
         this.creditsLayer = screenMaster.addLayer(new MainMenuCreditsLayer(), 200 + this.menuLayers.length * 10)
-        this.creditsLayer.addEventListener('pointerup', (): boolean => {
-            this.showMainMenu()
-            return true
-        })
-        this.creditsLayer.addEventListener('keydown', (event: KeyboardEvent): boolean => {
-            if (event.code === 'Escape') {
-                this.showMainMenu()
-                return true
-            } else {
-                console.log(event.code)
-            }
-            return false
-        })
+        this.creditsLayer.onExitCredits = () => this.showMainMenu()
         this.menuLayers.push(this.creditsLayer)
         EventBus.registerEventListener(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
             if (!event.result) this.showLevelSelection()

@@ -4,6 +4,7 @@ import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { clearTimeoutSafe } from '../core/Util'
 import { SpriteImage } from '../core/Sprite'
 import { AVIVideoStream } from '../resource/fileparser/avi/AVIVideoStream'
+import { UiElementCallback } from './UiElementState'
 
 export class MainMenuCreditsLayer extends ScaledLayer {
     static readonly FONT = 'Interface/Fonts/RSFont.bmp'
@@ -16,6 +17,7 @@ export class MainMenuCreditsLayer extends ScaledLayer {
     loopIndexTimeout: NodeJS.Timeout = null
     offsetY: number = 0
     counter: number = 0
+    onExitCredits: UiElementCallback = null
 
     constructor() {
         super('credits')
@@ -42,6 +44,20 @@ export class MainMenuCreditsLayer extends ScaledLayer {
                     if (lineImage) context.drawImage(lineImage, (this.fixedWidth - lineImage.width) / 2, Math.round(index * fontHeight - this.offsetY))
                 })
             }
+        })
+        this.addEventListener('pointerup', (): boolean => {
+            if (this.onExitCredits) {
+                this.onExitCredits()
+                return true
+            }
+            return false
+        })
+        this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
+            if (event.code === 'Escape' && this.onExitCredits) {
+                this.onExitCredits()
+                return true
+            }
+            return false
         })
     }
 
