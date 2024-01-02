@@ -13,7 +13,7 @@ import { BirdViewCamera } from '../scene/BirdViewCamera'
 import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
 import { Updatable, updateSafe } from './model/Updateable'
-import { TILESIZE } from '../params'
+import { NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { AnimatedSceneEntity } from '../scene/AnimatedSceneEntity'
@@ -21,6 +21,8 @@ import { AnimationGroup } from '../scene/AnimationGroup'
 import { SceneSelectionComponent } from './component/SceneSelectionComponent'
 import { createCanvas } from '../core/ImageHelper'
 import { FollowerRenderer } from '../scene/FollowerRenderer'
+import { EventBus } from '../event/EventBus'
+import { EventKey } from '../event/EventKeyEnum'
 
 export class SceneManager implements Updatable {
     readonly audioListener: AudioListener
@@ -37,6 +39,8 @@ export class SceneManager implements Updatable {
     cursor: TorchLightCursor
     buildMarker: BuildPlacementMarker
     followerRenderer: FollowerRenderer
+    shakeTimeout: number = 0
+    bumpTimeout: number = 0
 
     constructor(canvas: HTMLCanvasElement) {
         this.audioListener = new AudioListener()
@@ -44,6 +48,10 @@ export class SceneManager implements Updatable {
         this.camera.add(this.audioListener)
         this.renderer = new SceneRenderer(canvas, this.camera)
         this.controls = new BirdViewControls(canvas, this)
+        EventBus.registerEventListener(EventKey.DYNAMITE_EXPLOSION, () => {
+            this.shakeTimeout = 1000
+            this.bumpTimeout = 0
+        })
     }
 
     getEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number): GameSelection {
@@ -184,6 +192,22 @@ export class SceneManager implements Updatable {
             this.controls.updateForceMove(elapsedMs)
         } catch (e) {
             console.error(e)
+        }
+        this.shakeScene(elapsedMs)
+    }
+
+    private shakeScene(elapsedMs: number) {
+        if (this.shakeTimeout <= 0) return
+        this.shakeTimeout -= elapsedMs
+        this.bumpTimeout += elapsedMs
+        if (this.bumpTimeout > NATIVE_UPDATE_INTERVAL) {
+            this.scene.position.random().multiplyScalar(2)
+            this.bumpTimeout = 0
+        }
+        if (this.shakeTimeout <= 0) {
+            this.shakeTimeout = 0
+            this.bumpTimeout = 0
+            this.scene.position.setScalar(0)
         }
     }
 
