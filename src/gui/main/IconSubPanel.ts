@@ -40,4 +40,8 @@ export class IconSubPanel extends Panel {
         this.iconPanelButtons.forEach((button) => button.updateState(false))
         this.notifyRedraw()
     }
+
+    isInactive(): boolean {
+        return this.movedIn || super.isInactive()
+    }
 }
