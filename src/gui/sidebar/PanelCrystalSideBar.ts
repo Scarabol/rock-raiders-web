@@ -49,7 +49,6 @@ export class PanelCrystalSideBar extends Panel {
         super.reset()
         this.numCrystal = 0
         this.usedCrystals = 0
-        this.neededCrystals = 0
         this.totalOre = 0
     }
 
