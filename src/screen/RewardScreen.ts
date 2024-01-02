@@ -249,7 +249,7 @@ export class RewardScreen {
     uncoverResult() {
         this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
         this.uncoverTimeout = setTimeout(() => {
-            const flic = this.flics[this.resultIndex + 1] // XXX does not work for flics on first entry
+            const flic =  this.resultIndex < this.resultLastIndex ? this.flics[this.resultIndex + 1] : null // XXX does not work for flics on first entry
             const flicBeforeNext = flic?.play() ?? Promise.resolve()
             flicBeforeNext.then(() => {
                 if (this.resultIndex < this.resultLastIndex) {
