@@ -37,7 +37,8 @@ export class Button extends BaseElement {
         return Math.max(...numbers.map((n) => n || 0))
     }
 
-    onHoverInRect() {
+    onHoverInRect(sx: number, sy: number): void {
+        super.onHoverInRect(sx, sy)
         if (this.isInactive()) {
             this.showTooltipDisabled()
         } else if (this.tooltip || this.tooltipSfx) {

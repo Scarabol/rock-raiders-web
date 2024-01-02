@@ -7,6 +7,10 @@ import { BaseElement } from '../base/BaseElement'
 import { MapSurfaceRect } from './MapSurfaceRect'
 import { MapRenderer } from './MapRenderer'
 import { GameEntity } from '../../game/ECS'
+import { ChangeTooltip } from '../../event/GuiCommand'
+import { TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
+import { ResourceManager } from '../../resource/ResourceManager'
+import { EventBus } from '../../event/EventBus'
 
 export class MapView extends BaseElement {
     readonly mapRenderer: MapRenderer
@@ -122,5 +126,16 @@ export class MapView extends BaseElement {
         context.drawImage(this.monsterSprite, this.x, this.y)
         context.drawImage(this.materialSprite, this.x, this.y)
         context.drawImage(this.geoScanSprite, this.x, this.y)
+    }
+
+    onHoverInRect(sx: number, sy: number): void {
+        super.onHoverInRect(sx, sy)
+        const tileX = Math.floor((sx - this.x + this.offset.x) / this.surfaceRectSize)
+        const tileY = Math.floor((sy - this.y + this.offset.y) / this.surfaceRectSize)
+        const lSurfaceName = this.surfaceMap[tileX]?.[tileY]?.name?.toLowerCase()
+        if (lSurfaceName) { // XXX only publish event, when tooltip changes not on each cursor move
+            const tooltip = ResourceManager.configuration.surfaceTypeDescriptions.get(lSurfaceName)
+            if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
+        }
     }
 }

@@ -53,7 +53,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Allow raider in alarm mode to be moved by player
 - Show time raider obj info when changing job/action
 
-- Add surface type tooltips for map panel
 - Add magnet cursor to map panel to track entities
 - Move camera with click on radar map panel
 - Show camera view area as wireframe on radar map panel

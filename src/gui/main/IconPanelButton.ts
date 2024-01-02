@@ -93,8 +93,8 @@ export class IconPanelButton extends Button {
         }
     }
 
-    isInRect(cx: number, cy: number): boolean {
-        const inRect = super.isInRect(cx, cy)
+    isInRect(sx: number, sy: number): boolean {
+        const inRect = super.isInRect(sx, sy)
         this.showDependencies = inRect
         return inRect
     }
