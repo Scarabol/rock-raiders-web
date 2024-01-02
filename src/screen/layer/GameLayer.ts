@@ -187,7 +187,7 @@ export class GameLayer extends ScreenLayer {
             GameState.showObjInfo = !GameState.showObjInfo
             this.entityMgr.raiders.forEach((r) => {
                 const infoComponent = r.worldMgr.ecs.getComponents(r.entity).get(RaiderInfoComponent)
-                infoComponent.bubbleSprite.visible = GameState.showObjInfo
+                infoComponent.bubbleSprite.updateVisibleState()
                 infoComponent.hungerSprite.visible = GameState.showObjInfo
             })
             return true

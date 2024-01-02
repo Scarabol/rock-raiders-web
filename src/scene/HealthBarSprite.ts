@@ -4,8 +4,9 @@ import { SpriteContext } from '../core/Sprite'
 import { ResourceManager } from '../resource/ResourceManager'
 import { rgbToHtmlHex } from '../core/Util'
 import { GameState } from '../game/model/GameState'
+import { Updatable } from '../game/model/Updateable'
 
-export class HealthBarSprite extends Sprite {
+export class HealthBarSprite extends Sprite implements Updatable {
     static readonly textureSize = 128
     readonly textureContext: SpriteContext
     readonly activeArea: { x: number, y: number, w: number, h: number } = {x: 0, y: 0, w: 0, h: 0}
