@@ -25,6 +25,7 @@ export class SequenceTextureMaterial extends MeshPhongMaterial {
         this.textures = textures
         if (this.textures.length < 1) return
         this.map = this.textures[0]
+        this.color.setScalar(1)
     }
 
     update(elapsedMs: number) {
