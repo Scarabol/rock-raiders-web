@@ -186,7 +186,7 @@ export class LWOBParser {
                     indices[currentIndex++] = faceIndices[3]
                     break
                 default:
-                    if (VERBOSE) console.warn(`Expected face with 3 or 4 indices but got ${numIndices} instead`)
+                    if (VERBOSE) console.warn(`Expected face with 3, 4 or 5 indices but got ${numIndices} instead`)
             }
             offset += 2 + (numIndices * 2) + 2
         }
@@ -219,6 +219,7 @@ export class LWOBParser {
         let sequenceFlags = 0
         let sequenceLoopLength = 0
         let reflectionMode = ReflectionMode.SPHERICAL_WITH_RAYTRACING
+        let textureColorArray: number[] = null
 
         while (this.lwoReader.cursor < chunkEnd) {
             const cursor = this.lwoReader.cursor
@@ -332,6 +333,7 @@ export class LWOBParser {
                 case 'BTEX':
                     const textureTypeName = this.lwoReader.readString()
                     if (this.verbose) console.log(`Texture typename: ${textureTypeName}`)
+                    textureColorArray = null
                     break
                 case 'TFLG':
                     textureFlags = this.lwoReader.readUint16()
@@ -353,19 +355,13 @@ export class LWOBParser {
                     if (this.verbose) console.warn(`Unhandled texture center (TCTR): ${textureCenter.toArray().join(' ')}`)
                     break
                 case 'TCLR':
-                    const textureColorArray = [
+                    textureColorArray = [
                         this.lwoReader.readUint8() / 255,
                         this.lwoReader.readUint8() / 255,
                         this.lwoReader.readUint8() / 255,
                     ]
                     const lastTextureColorByte = this.lwoReader.readUint8() // should be zero
                     if (lastTextureColorByte !== 0) console.warn('Unexpected ignored last texture color byte is not zero', lastTextureColorByte)
-                    if (textureColorArray[0] === 0 && textureColorArray[1] === 0 && textureColorArray[0] === 0) {
-                        // TODO only apply, if texture is actually set
-                        material.color.set(0xFFFFFF) // Default color in three.js is 0xFFFFFF instead of 0x000000
-                    } else {
-                        material.color.fromArray(textureColorArray)
-                    }
                     if (this.verbose) console.log(`Texture color for ${material.name} is ${material.color.toArray().map((x) => Math.round(x * 255))}`)
                     break
                 case 'TVAL':
@@ -389,6 +385,7 @@ export class LWOBParser {
                     sequenceFlags = 0
                     sequenceLoopLength = 0
                     reflectionMode = ReflectionMode.SPHERICAL_WITH_RAYTRACING
+                    if (textureColorArray) material.color.fromArray(textureColorArray)
                     break
                 case 'TWRP':
                     const horizontalWrappingMode = this.parseWrappingMode(this.lwoReader.readUint16())

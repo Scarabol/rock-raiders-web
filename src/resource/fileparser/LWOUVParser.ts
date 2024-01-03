@@ -54,7 +54,8 @@ export class LWOUVParser {
             for (let t = 0; t < uvLength; t++) {
                 const uvLine = lines[fileIndex]
                 if (this.verbose) console.log(uvLine)
-                const [u, v] = uvLine.split(' ').map((n) => parseFloat(n)) // XXX safe to ignore third param (always 0)?
+                const [u, v, w] = uvLine.split(' ').map((n) => parseFloat(n))
+                if (w !== 0) console.warn(`Unexpected non zero third UV value w = ${w} given`)
                 for (let x = 0; x < numOfMats; x++) {
                     result[x].uvs = result[x].uvs ?? []
                     result[x].uvs.push(u, v)
