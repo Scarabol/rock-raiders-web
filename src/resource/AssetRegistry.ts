@@ -36,6 +36,11 @@ export class AssetRegistry extends Map<string, WadAsset> {
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.image)
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.contrastOverlay)
         Array.from(gameConfig.reward.flics.values()).forEach((f) => this.addAsset(this.assetLoader.loadFlhAssetDefault, f.flhFilepath))
+        this.addLWSFile('Interface/FrontEnd/Rock_Wipe/RockWipe.lws')
+        this.assetLoader.wad0File.filterEntryNames(`Interface/FrontEnd/Rock_Wipe/.+\\.uv`).forEach((assetPath) => {
+            this.addAsset(this.assetLoader.loadUVFile, assetPath)
+        })
+        this.addTextureFolder('Interface/FrontEnd/Rock_Wipe/')
         // add in-game assets
         this.addAlphaImageFolder('Interface/TopPanel/') // top panel
         this.addAlphaImageFolder('Interface/RightPanel/') // crystal sidebar

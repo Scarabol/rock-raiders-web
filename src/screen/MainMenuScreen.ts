@@ -11,15 +11,15 @@ import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
 import { LevelSelectedEvent, MaterialAmountChanged } from '../event/WorldEvents'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { SoundManager } from '../audio/SoundManager'
-import { Sample } from '../audio/Sample'
 import { MainMenuCreditsLayer } from '../menu/MainMenuCreditsLayer'
 import { ScaledLayer } from './layer/ScreenLayer'
+import { RockWipeLayer } from '../menu/RockWipeLayer'
 
 export class MainMenuScreen {
     menuLayers: ScaledLayer[] = []
     loadSaveLayer: LoadSaveLayer
     creditsLayer: MainMenuCreditsLayer
+    rockWipeLayer: RockWipeLayer
 
     constructor(readonly screenMaster: ScreenMaster) {
         ResourceManager.configuration.menu.mainMenuFull.menus.forEach((menuCfg) => {
@@ -45,6 +45,7 @@ export class MainMenuScreen {
         this.creditsLayer = screenMaster.addLayer(new MainMenuCreditsLayer(), 200 + this.menuLayers.length * 10)
         this.creditsLayer.onExitCredits = () => this.showMainMenu()
         this.menuLayers.push(this.creditsLayer)
+        this.rockWipeLayer = screenMaster.addLayer(new RockWipeLayer(), 200 + this.menuLayers.length * 10)
         EventBus.registerEventListener(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
             if (!event.result) this.showLevelSelection()
         })
@@ -53,6 +54,8 @@ export class MainMenuScreen {
     dispose() {
         this.menuLayers.forEach((l) => this.screenMaster.removeLayer(l))
         this.menuLayers.length = 0
+        this.screenMaster.removeLayer(this.rockWipeLayer)
+        this.rockWipeLayer.dispose()
         // TODO remove event listener on hot reload?
     }
 
@@ -83,10 +86,7 @@ export class MainMenuScreen {
 
     showMainMenu(index: number = 0) {
         const oldIndex = this.menuLayers.findIndex((m) => m.active)
-        if (oldIndex === 0) {
-            SoundManager.playSample(Sample.SFX_RockWipe, false)
-            // TODO play MenuWipe (rockwipe.lws) animation, too
-        }
+        if (oldIndex === 0 || (index === 0 && oldIndex > 0)) this.rockWipeLayer.playOnce() // TODO Trigger layer change only after 50% of animation is done
         this.menuLayers.forEach((m, i) => i === index ? m.show() : m.hide())
     }
 
@@ -108,6 +108,7 @@ export class MainMenuScreen {
         }
         this.screenMaster.loadingLayer.show()
         this.menuLayers.forEach((m) => m.hide())
+        this.rockWipeLayer.hide()
         EventBus.publishEvent(new LevelSelectedEvent(levelName, levelConf))
         EventBus.publishEvent(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
     }

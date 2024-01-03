@@ -38,15 +38,19 @@ export class AssetLoader {
         if (alphaIndexMatch) {
             assetNames.push(alphaIndexMatch[1] + alphaIndexMatch[3])
             alphaIndex = parseInt(alphaIndexMatch[2])
+            AssetLoader.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex)
+                .then((imgData) => {
+                    if (name.toLowerCase().startsWith('miscanims/crystal')) { // XXX fix crystal lwo loading
+                        callback(assetNames, this.grayscaleToGreen(imgData))
+                    } else {
+                        callback(assetNames, imgData)
+                    }
+                })
+        } else if (name.match(/\/a.*\d.*/i)) {
+            AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(data).then((imgData) => callback(assetNames, imgData))
+        } else {
+            AssetLoader.bitmapWorkerPool.decodeBitmap(data).then((imgData) => callback(assetNames, imgData))
         }
-        AssetLoader.bitmapWorkerPool.decodeBitmapWithAlphaIndex(data, alphaIndex)
-            .then((imgData) => {
-                if (name.toLowerCase().startsWith('miscanims/crystal')) { // XXX fix crystal lwo loading
-                    callback(assetNames, this.grayscaleToGreen(imgData))
-                } else {
-                    callback(assetNames, imgData)
-                }
-            })
     }
 
     grayscaleToGreen(imgData: ImageData): ImageData {

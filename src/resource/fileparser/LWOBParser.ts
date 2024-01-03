@@ -383,7 +383,7 @@ export class LWOBParser {
                         material.map = null
                         continue
                     }
-                    material.transparent = material.transparent || !!lTextureFilename.match(/(.*a)(\d+)(_.+)/)
+                    material.transparent = material.transparent || !!lTextureFilename.match(/(.*a).*(\d+)(_?.+)/) || !!lTextureFilename.match(/\/a.*\d.*/i)
                     this.textureLoader.load(lTextureFilename, (t) => material.setTextures(t))
                     sequenceOffset = 0
                     sequenceFlags = 0
