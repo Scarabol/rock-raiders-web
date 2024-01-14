@@ -3,18 +3,15 @@ import { encodeChar } from './EncodingHelper'
 export class WadFile {
     readonly entryByLowerName: Map<string, Uint8Array> = new Map()
 
-    constructor(readonly data: ArrayBuffer) {
-    }
-
     static parseWadFile(data: ArrayBufferLike, debug = false): WadFile {
-        const result = new WadFile(data)
+        const result = new WadFile()
         const dataView = new DataView(data)
         const textDecoder = new TextDecoder()
         if (textDecoder.decode(new Uint8Array(data, 0, 4)) !== 'WWAD') {
-            throw new Error('Invalid WAD0 file provided')
+            throw new Error('Invalid WAD file provided')
         }
         if (debug) {
-            console.log('WAD0 file seems legit')
+            console.log('WAD file seems legit')
         }
         const numberOfEntries = dataView.getInt32(4, true)
         if (debug) {
@@ -49,7 +46,8 @@ export class WadFile {
         for (let entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
             const fileLength = dataView.getInt32(pos + 8, true)
             const fileStartOffset = dataView.getInt32(pos + 12, true)
-            result.entryByLowerName.set(lEntryNames[entryIndex], new Uint8Array(data, fileStartOffset, fileLength))
+            const buffer = data.slice(fileStartOffset, fileStartOffset + fileLength)
+            result.entryByLowerName.set(lEntryNames[entryIndex], new Uint8Array(buffer, 0, fileLength))
             pos += 16
         }
 
@@ -83,7 +81,7 @@ export class WadFile {
         if (view === undefined || view === null) {
             throw new Error(`Entry '${entryName}' not found in WAD file`)
         }
-        return this.data.slice(view.byteOffset, view.byteOffset + view.byteLength)
+        return view.buffer
     }
 
     filterEntryNames(regexStr: string) {

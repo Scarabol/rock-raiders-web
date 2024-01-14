@@ -141,7 +141,7 @@ export class AssetLoader {
                 }
                 if (!buffer) {
                     const lPath = path.toLowerCase()
-                    // XXX stats.wav and Atmosdel.wav can only be found on ISO-File
+                    // XXX stats.wav and atmosdel.wav can only be found on ISO-File
                     if (!lPath.endsWith('/atmosdel.wav') &&
                         !lPath.endsWith('/stats.wav') &&
                         !lPath.endsWith('/dripsB.wav'.toLowerCase())
