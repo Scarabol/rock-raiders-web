@@ -15,9 +15,9 @@ export class AVIReader extends ByteStreamReader {
         const chunkType: string = this.skipJunk()
         if (!chunkType) return null
         const chunkLength = this.read32()
-        const dataEnd = this.offset + chunkLength
-        const reader = new AVIReader(this.dataView, this.offset, dataEnd)
-        this.offset = dataEnd
+        const nextOffset = this.dataView.byteOffset + this.offset
+        const reader = new AVIReader(new DataView(this.dataView.buffer, nextOffset, chunkLength))
+        this.offset += chunkLength
         this.offset += this.offset % 2 // padded to WORD boundary
         return {chunkType, reader}
     }

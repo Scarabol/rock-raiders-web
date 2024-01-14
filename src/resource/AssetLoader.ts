@@ -212,7 +212,8 @@ export class AssetLoader {
 
     async loadAVI(filename: string, callback: (assetNames: string[], obj: any) => any) {
         const buffer = await this.cabFile.getFileBuffer(`Program Data Files/Data/${filename}`)
-        const decoder = new AVIParser(buffer).parse()
+        const dataView = new DataView(buffer)
+        const decoder = new AVIParser(dataView).parse()
         callback([filename], decoder)
     }
 

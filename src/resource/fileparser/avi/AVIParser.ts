@@ -27,8 +27,8 @@ export class AVIParser {
     readonly chunksByStreamIndex: Map<number, ByteStreamReader[]> = new Map()
     mainHeader: AVIMainHeader
 
-    constructor(buffer: ArrayBuffer) {
-        this.reader = new AVIReader(new DataView(buffer), 0, buffer.byteLength)
+    constructor(dataView: DataView) {
+        this.reader = new AVIReader(dataView)
     }
 
     parse(): AVIFile {
