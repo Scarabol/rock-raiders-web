@@ -2,22 +2,28 @@ import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { clearTimeoutSafe } from '../core/Util'
 import { AnimationFrame } from '../screen/AnimationFrame'
+import { SoundManager } from '../audio/SoundManager'
 
 export class FlicAnimOverlay {
     animIndex: number = 0
     timeout: NodeJS.Timeout
+    sfx: AudioBufferSourceNode
 
     constructor(
         readonly animationFrame: AnimationFrame,
         readonly flicImages: SpriteImage[],
         readonly x: number,
         readonly y: number,
+        readonly sfxName: string,
     ) {
     }
 
     play(): Promise<void> {
+        this.sfx?.stop()
+        this.sfx = null
         return new Promise((resolve) => {
             this.animIndex = 0
+            if (this.sfxName) this.sfx = SoundManager.playSound(this.sfxName, false)
             this.trigger(resolve)
         })
     }
@@ -42,5 +48,7 @@ export class FlicAnimOverlay {
     stop() {
         this.animIndex = 0
         this.timeout = clearTimeoutSafe(this.timeout)
+        this.sfx?.stop()
+        this.sfx = null
     }
 }

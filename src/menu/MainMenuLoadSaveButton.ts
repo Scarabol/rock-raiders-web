@@ -3,7 +3,8 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { UiElementCallback } from './UiElementState'
-import { MenuEntryOverlayCfg } from '../cfg/MenuEntryCfg'
+import { FlicAnimOverlay } from './FlicAnimOverlay'
+import { imgDataToCanvas } from '../core/ImageHelper'
 
 export class MainMenuLoadSaveButton extends MainMenuBaseItem {
     labelImgLo: SpriteImage = null
@@ -13,7 +14,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
     saveGameImgHeightLo: number = 0
     saveGameImgWidthHi: number = 0
     saveGameImgHeightHi: number = 0
-    overlay: MenuEntryOverlayCfg
+    overlay: FlicAnimOverlay
 
     constructor(readonly layer: MainMenuLayer, index: number, x: number, y: number, loading: boolean) {
         super(x, y)
@@ -29,7 +30,14 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
             this.height = Math.max(this.labelImgLo.height, this.labelImgHi.height)
         })
         this.targetIndex = index
-        this.overlay = loading ? layer.cfg.overlays[index] : null
+        if (loading) {
+            const overlayCfg = layer.cfg.overlays[index]
+            const flhImgData = ResourceManager.getResource(overlayCfg.flhFilepath) ?? []
+            if (flhImgData.length > 0) {
+                const flicImages = flhImgData.map((f: ImageData) => imgDataToCanvas(f))
+                this.overlay = new FlicAnimOverlay(this.layer.animationFrame, flicImages, overlayCfg.x, overlayCfg.y, overlayCfg.sfxName)
+            }
+        }
         this.actionName = loading ? `load_game_${index}` : `save_game_${index}`
         this.saveGameImgWidthLo = menuCfg.saveImage.Width
         this.saveGameImgHeightLo = menuCfg.saveImage.Height
@@ -39,7 +47,7 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
 
     set onPressed(callback: UiElementCallback) {
         super.onPressed = async () => {
-            await this.layer.playOverlay(this.overlay)
+            await this.overlay?.play()
             callback()
         }
     }
@@ -57,5 +65,6 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
         }
         const img = (this.state.hover && !this.state.pressed) ? this.labelImgHi : this.labelImgLo
         if (img) context.drawImage(img, this.x + 80, this.y)
+        this.overlay?.draw(context)
     }
 }

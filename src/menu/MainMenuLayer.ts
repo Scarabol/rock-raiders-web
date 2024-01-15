@@ -1,6 +1,6 @@
-import { MenuEntryCfg, MenuEntryOverlayCfg } from '../cfg/MenuEntryCfg'
+import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { SpriteImage } from '../core/Sprite'
-import { clearIntervalSafe, clearTimeoutSafe } from '../core/Util'
+import { clearIntervalSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
@@ -11,22 +11,21 @@ import { MainMenuIconButton } from './MainMenuIconButton'
 import { MainMenuLabelButton } from './MainMenuLabelButton'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { imgDataToCanvas } from '../core/ImageHelper'
-import { SoundManager } from '../audio/SoundManager'
+import { FlicAnimOverlay } from './FlicAnimOverlay'
 
 export class MainMenuLayer extends ScaledLayer {
     static readonly SCROLL_AREA_HEIGHT = 180
 
-    cfg: MenuEntryCfg
-    menuImage: SpriteImage
-    items: MainMenuBaseItem[] = []
+    readonly cfg: MenuEntryCfg
+    readonly menuImage: SpriteImage
+    readonly items: MainMenuBaseItem[] = []
+    readonly overlays: FlicAnimOverlay[] = []
     scrollY: number = 0
     scrollSpeedY: number = 0
     scrollInterval: NodeJS.Timeout = null
-    overlayFrame: { img: SpriteImage, x: number, y: number } = null
-    overlayImages: SpriteImage[] = []
     overlayTimeout: NodeJS.Timeout = null
     overlayIndex: number = 0
-    overlaySfx: AudioBufferSourceNode = null
+    overlay: FlicAnimOverlay = null
 
     constructor(menuCfg: MenuEntryCfg) {
         super()
@@ -37,14 +36,6 @@ export class MainMenuLayer extends ScaledLayer {
             ResourceManager.bitmapFontWorkerPool.createTextImage(menuCfg.loFont, menuCfg.fullName) // TODO create all the images in loading phase
                 .then((img) => titleImage = img)
         }
-        this.animationFrame.onRedraw = (context) => {
-            context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
-            if (this.menuImage) context.drawImage(this.menuImage, 0, -this.scrollY)
-            if (this.overlayFrame?.img) context.drawImage(this.overlayFrame.img, this.overlayFrame.x, this.overlayFrame.y)
-            if (titleImage) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position[1])
-            this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
-        }
-
         menuCfg.itemsLabel.forEach((item) => {
             if (item.label) {
                 this.items.push(new MainMenuLabelButton(this, item))
@@ -52,9 +43,21 @@ export class MainMenuLayer extends ScaledLayer {
                 this.items.push(new MainMenuIconButton(this, item))
             }
         })
-
+        this.cfg.overlays.forEach((flic) => {
+            const flhImgData = ResourceManager.getResource(flic.flhFilepath) ?? []
+            if (flhImgData.length > 0) {
+                const flicImages = flhImgData.map((f: ImageData) => imgDataToCanvas(f))
+                this.overlays.push(new FlicAnimOverlay(this.animationFrame, flicImages, flic.x, flic.y, flic.sfxName))
+            }
+        })
         if (this.cfg.playRandom) this.cfg.overlays.shuffle()
-
+        this.animationFrame.onRedraw = (context) => {
+            context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
+            if (this.menuImage) context.drawImage(this.menuImage, 0, -this.scrollY)
+            this.overlay?.draw(context)
+            if (titleImage) context.drawImage(titleImage, (this.fixedWidth - titleImage.width) / 2, this.cfg.position[1])
+            this.items.forEach((item, index) => (this.items[this.items.length - 1 - index]).draw(context))
+        }
         new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],
@@ -82,10 +85,7 @@ export class MainMenuLayer extends ScaledLayer {
         this.scrollY = 0
         this.scrollSpeedY = 0
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
-        this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
-        this.overlayFrame = null
-        this.overlaySfx?.stop()
-        this.overlaySfx = null
+        this.overlay?.stop()
     }
 
     show() {
@@ -98,10 +98,7 @@ export class MainMenuLayer extends ScaledLayer {
         this.items.forEach((item) => item.reset())
         this.scrollSpeedY = 0
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
-        this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
-        this.overlayFrame = null
-        this.overlaySfx?.stop()
-        this.overlaySfx = null
+        this.overlay?.stop()
         super.hide()
     }
 
@@ -186,35 +183,13 @@ export class MainMenuLayer extends ScaledLayer {
     }
 
     playRandomOverlay(): void {
-        this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
+        this.overlay?.stop()
+        if (this.overlays.length < 1) return
         this.overlayTimeout = setTimeout(async () => {
-            const overlay = this.cfg.overlays[this.overlayIndex]
+            this.overlay = this.overlays[this.overlayIndex]
             this.overlayIndex = (this.overlayIndex + 1) % this.cfg.overlays.length
-            await this.playOverlay(overlay)
+            await this.overlay.play()
             this.playRandomOverlay()
         }, Math.randomInclusive(2000, 5000))
-    }
-
-    async playOverlay(overlay: MenuEntryOverlayCfg) {
-        if (!overlay) return
-        if (overlay.sfxName) this.overlaySfx = SoundManager.playSound(overlay.sfxName, false)
-        this.overlayImages = ResourceManager.getResource(overlay.flhFilepath).map((f: ImageData) => imgDataToCanvas(f))
-        this.overlayFrame = {img: this.overlayImages[0], x: overlay.x, y: overlay.y}
-        await this.renderNextOverlayFrame(0)
-    }
-
-    renderNextOverlayFrame(frameIndex: number): Promise<void> {
-        return new Promise<void>((resolve) => {
-            this.overlayFrame.img = this.overlayImages[frameIndex]
-            this.animationFrame.notifyRedraw()
-            if (frameIndex + 1 < this.overlayImages.length) {
-                this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
-                this.overlayTimeout = setTimeout(() => {
-                    this.renderNextOverlayFrame(frameIndex + 1).then(() => resolve())
-                }, NATIVE_UPDATE_INTERVAL)
-            } else {
-                resolve()
-            }
-        })
     }
 }

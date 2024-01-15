@@ -73,7 +73,7 @@ export class RewardScreen {
             const flhImgData = ResourceManager.getResource(flic.flhFilepath) ?? []
             if (flhImgData.length > 0) {
                 const flicImages = flhImgData.map((f: ImageData) => imgDataToCanvas(f))
-                this.flics[flicIndex] = new FlicAnimOverlay(this.resultsLayer.animationFrame, flicImages, flic.rect.x, flic.rect.y) // XXX Consider width/height of rect to scale/clip?
+                this.flics[flicIndex] = new FlicAnimOverlay(this.resultsLayer.animationFrame, flicImages, flic.rect.x, flic.rect.y, '') // XXX Consider width/height of rect to scale/clip?
             }
         })
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 620)

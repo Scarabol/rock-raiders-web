@@ -163,7 +163,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         })
         // sounds
         gameConfig.samples.pathToSfxKeys.forEach((sndKeys, sndPath) => {
-            this.addAsset(this.assetLoader.loadWavAsset, sndPath, false, sndKeys)
+            this.addAsset(this.assetLoader.loadWavAsset, sndPath, true, sndKeys)
         })
         await Promise.all(this.inProgress)
     }
@@ -262,7 +262,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.menuFont)
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.loFont)
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.hiFont)
-            menuCfg.overlays.forEach((overlay) => this.addAsset(this.assetLoader.loadFlhAssetInterframe, overlay.flhFilepath))
+            menuCfg.overlays.forEach((overlay) => this.addAsset(this.assetLoader.loadFlhAssetInterframe, overlay.flhFilepath, true))
         })
     }
 
