@@ -1,6 +1,8 @@
 import { CabFileReader } from './CabFileReader'
 import Pako from 'pako'
 import { cacheGetData, cachePutData } from '../AssetCacheHelper'
+import { VirtualFileSystem } from './VirtualFileSystem'
+import { VirtualFile } from './VirtualFile'
 
 interface CabFileEntry {
     filePathName: string;
@@ -181,6 +183,29 @@ export class CabFile {
         return CabFile.FALLBACK_MAJOR_VERSION
     }
 
+    async loadAllFiles() {
+        const vfs = new VirtualFileSystem()
+        await Promise.all(
+            Array.from(this.lowerFilePathNameToFile.keys()).map(async (fileName) => {
+                const buffer = await this.getFileBuffer(fileName)
+                let mappedFileName: string = fileName
+                if (fileName.startsWith('program data files/')) {
+                    mappedFileName = fileName.replace('program data files/', '')
+                } else if (fileName.startsWith('0009-english files/')) { // TODO Implement language support for CAB files
+                    mappedFileName = fileName.replace('0009-english files/', '')
+                } else if (fileName.startsWith('0007-german files/')) { // TODO Implement language support for CAB files
+                    mappedFileName = fileName.replace('0007-german files/', '')
+                } else {
+                    return
+                }
+                await cachePutData(mappedFileName, buffer)
+                vfs.registerFile(mappedFileName, new VirtualFile(buffer))
+            })
+        )
+        cachePutData('vfs', Array.from(vfs.files.keys())).then()
+        return vfs
+    }
+
     async getFileBuffer(fileName: string): Promise<ArrayBuffer> {
         if (!fileName) throw new Error('No filename given')
         const lName = fileName.toLowerCase()
@@ -213,8 +238,6 @@ export class CabFile {
             bytesLeft -= chunkSize
             if (this.verbose) console.log('bytesLeft', bytesLeft)
         }
-        const fileBuffer = fileData.buffer
-        cachePutData(file.filePathName, fileBuffer).then()
-        return fileBuffer
+        return fileData.buffer
     }
 }

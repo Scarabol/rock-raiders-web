@@ -23,7 +23,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
     async registerAllAssets(gameConfig: GameConfig) {
         // add fonts and cursors
         this.addAssetFolder(this.assetLoader.loadAlphaImageAsset, 'Interface/Pointers/')
-        this.assetLoader.wad0File.filterEntryNames(`Interface/Pointers/.+\\.flh`).forEach((assetPath) => {
+        this.assetLoader.vfs.filterEntryNames(`Interface/Pointers/.+\\.flh`).forEach((assetPath) => {
             this.addAsset(this.assetLoader.loadFlhAssetDefault, assetPath)
         })
         this.addAsset(this.assetLoader.loadFontImageAsset, TOOLTIP_FONT_NAME)
@@ -37,7 +37,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         this.addAsset(this.assetLoader.loadAlphaImageAsset, gameConfig.dialog.contrastOverlay)
         Array.from(gameConfig.reward.flics.values()).forEach((f) => this.addAsset(this.assetLoader.loadFlhAssetDefault, f.flhFilepath))
         this.addLWSFile('Interface/FrontEnd/Rock_Wipe/RockWipe.lws')
-        this.assetLoader.wad0File.filterEntryNames(`Interface/FrontEnd/Rock_Wipe/.+\\.uv`).forEach((assetPath) => {
+        this.assetLoader.vfs.filterEntryNames(`Interface/FrontEnd/Rock_Wipe/.+\\.uv`).forEach((assetPath) => {
             this.addAsset(this.assetLoader.loadUVFile, assetPath)
         })
         this.addTextureFolder('Interface/FrontEnd/Rock_Wipe/')
@@ -100,7 +100,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         Object.values<string>(rockMonsterTypes).forEach((mType) => {
             this.addMeshObjects(mType)
         })
-        this.assetLoader.wad0File.filterEntryNames(`Creatures/LavaMonster/.+\\.uv`).forEach((assetPath) => {
+        this.assetLoader.vfs.filterEntryNames(`Creatures/LavaMonster/.+\\.uv`).forEach((assetPath) => {
             this.addAsset(this.assetLoader.loadUVFile, assetPath)
         })
         await yieldToMainThread()
@@ -170,21 +170,21 @@ export class AssetRegistry extends Map<string, WadAsset> {
 
     addMeshObjects(basePath: string) {
         const aeFilepath = `${basePath}/${basePath.split('/').last()}.ae`
-        if (this.assetLoader.wad0File.hasEntry(aeFilepath)) this.addAnimatedEntity(aeFilepath)
+        if (this.assetLoader.vfs.hasEntry(aeFilepath)) this.addAnimatedEntity(aeFilepath)
         const aeSharedFilepath = `world/shared/${basePath.split('/').last()}.ae`
-        if (this.assetLoader.wad0File.hasEntry(aeSharedFilepath)) this.addAnimatedEntity(aeSharedFilepath)
+        if (this.assetLoader.vfs.hasEntry(aeSharedFilepath)) this.addAnimatedEntity(aeSharedFilepath)
         const lwsFilepath = `${basePath}.lws`
-        if (this.assetLoader.wad0File.hasEntry(lwsFilepath)) this.addLWSFile(lwsFilepath)
+        if (this.assetLoader.vfs.hasEntry(lwsFilepath)) this.addLWSFile(lwsFilepath)
         const lwsSharedFilepath = `world/shared/${basePath.split('/').last()}.lws`
-        if (this.assetLoader.wad0File.hasEntry(lwsSharedFilepath)) this.addLWSFile(lwsSharedFilepath)
+        if (this.assetLoader.vfs.hasEntry(lwsSharedFilepath)) this.addLWSFile(lwsSharedFilepath)
         const lwoFilepath = `${basePath}.lwo`
-        if (this.assetLoader.wad0File.hasEntry(lwoFilepath)) this.addAsset(this.assetLoader.loadLWOFile, lwoFilepath)
+        if (this.assetLoader.vfs.hasEntry(lwoFilepath)) this.addAsset(this.assetLoader.loadLWOFile, lwoFilepath)
         const lwoSharedFilepath = `world/shared/${basePath.split('/').last()}.lwo`
-        if (this.assetLoader.wad0File.hasEntry(lwoSharedFilepath)) this.addAsset(this.assetLoader.loadLWOFile, lwoSharedFilepath)
+        if (this.assetLoader.vfs.hasEntry(lwoSharedFilepath)) this.addAsset(this.assetLoader.loadLWOFile, lwoSharedFilepath)
     }
 
     addAnimatedEntity(aeFile: string) {
-        const content = this.assetLoader.wad0File.getEntryText(aeFile)
+        const content = this.assetLoader.vfs.getFile(aeFile).toText()
         const cfgRoot = RonFileParser.parse(aeFile, content)
         ResourceManager.resourceByName.set(aeFile.toLowerCase(), cfgRoot)
         const path = getPath(aeFile)
@@ -215,7 +215,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         this.inProgress.push(new Promise((resolve) => {
             setTimeout(() => {
                 try {
-                    const content = this.assetLoader.wad0File.getEntryText(lwsFilepath)
+                    const content = this.assetLoader.vfs.getFile(lwsFilepath).toText()
                     ResourceManager.resourceByName.set(lwsFilepath.toLowerCase(), content)
                     const lwoFiles: string[] = this.extractLwoFiles(getPath(lwsFilepath), content)
                     lwoFiles.forEach((lwoFile) => this.addAsset(this.assetLoader.loadLWOFile, lwoFile))
@@ -250,7 +250,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
     }
 
     addAssetFolder(callback: (name: string, callback: (assetNames: string[], obj: any) => any) => void, folderPath: string) {
-        this.assetLoader.wad0File.filterEntryNames(`${folderPath}.+\\.bmp`).forEach((assetPath) => {
+        this.assetLoader.vfs.filterEntryNames(`${folderPath}.+\\.bmp`).forEach((assetPath) => {
             this.addAsset(callback, assetPath)
         })
     }

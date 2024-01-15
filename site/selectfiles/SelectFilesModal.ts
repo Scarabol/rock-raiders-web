@@ -4,8 +4,9 @@ export class SelectFilesModal {
     readonly progressByUrl: Map<string, HTMLProgressElement> = new Map<string, HTMLProgressElement>()
     readonly rootElement: HTMLElement
     readonly container: HTMLElement
+    onCabFilesSelected: (headerUrl: string, volumeUrl1: string, volumeUrl2: string) => void
 
-    constructor(parentId: string, onFilesSelected: (headerUrl: string, volumeUrl1: string, volumeUrl2: string) => void) {
+    constructor(parentId: string) {
         this.rootElement = document.getElementById(parentId).appendChild(document.createElement('div'))
         this.rootElement.classList.add('select-files-modal')
         this.rootElement.style.visibility = 'hidden'
@@ -26,7 +27,7 @@ export class SelectFilesModal {
             this.setProgress(headerUrl, 0, 100)
             this.setProgress(volumeUrl1, 0, 100)
             this.setProgress(volumeUrl2, 0, 100)
-            onFilesSelected(headerUrl, volumeUrl1, volumeUrl2)
+            this.onCabFilesSelected(headerUrl, volumeUrl1, volumeUrl2)
         })
         this.container = content.appendChild(document.createElement('div'))
         this.container.classList.add('select-files-container')
@@ -52,7 +53,7 @@ export class SelectFilesModal {
             if (headerFile && volumeFile) {
                 const headerUrl = URL.createObjectURL(headerFile)
                 const volumeUrl1 = URL.createObjectURL(volumeFile)
-                onFilesSelected(headerUrl, volumeUrl1, '')
+                this.onCabFilesSelected(headerUrl, volumeUrl1, '')
             }
         })
     }

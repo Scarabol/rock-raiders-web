@@ -6,32 +6,28 @@ import { NerpMsgParser } from './fileparser/NerpMsgParser'
 import { ObjectiveTextParser } from './fileparser/ObjectiveTextParser'
 import { WadParser } from './fileparser/WadParser'
 import { AssetRegistry } from './AssetRegistry'
-import { WadFile } from './fileparser/WadFile'
 import { LWOUVParser } from './fileparser/LWOUVParser'
-import { CabFile } from './fileparser/CabFile'
 import { AudioContext } from 'three'
 import { AVIParser } from './fileparser/avi/AVIParser'
+import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
 
 export class AssetLoader {
     static readonly bitmapWorkerPool = new BitmapWorkerPool().startPool(16, null)
 
-    readonly wad0File: WadFile
-    readonly wad1File: WadFile
     readonly assetRegistry: AssetRegistry = new AssetRegistry(this)
 
-    constructor(readonly cabFile: CabFile, wad0Content: ArrayBuffer, wad1Content: ArrayBuffer) {
-        this.wad0File = WadFile.parseWadFile(wad0Content)
-        this.wad1File = WadFile.parseWadFile(wad1Content)
+    constructor(
+        readonly vfs: VirtualFileSystem,
+    ) {
     }
 
     loadWadImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
-        const data = this.wad0File.getEntryBuffer(name)
-        AssetLoader.bitmapWorkerPool.decodeBitmap(data)
+        AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).buffer)
             .then((imgData) => callback([name], imgData))
     }
 
     loadWadTexture(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
-        const data = this.wad0File.getEntryBuffer(name)
+        const data = this.vfs.getFile(name).buffer
         const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
         let alphaIndex = null
         const assetNames = [name]
@@ -63,8 +59,7 @@ export class AssetLoader {
     }
 
     loadAlphaImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
-        const data = this.wad0File.getEntryBuffer(name)
-        AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(data)
+        AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(this.vfs.getFile(name).buffer)
             .then((imgData) => {
                 const assetNames = [name]
                 const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
@@ -74,8 +69,7 @@ export class AssetLoader {
     }
 
     loadFontImageAsset(name: string, callback: (assetNames: string[], obj: BitmapFontData) => any) {
-        const data = this.wad0File.getEntryBuffer(name)
-        AssetLoader.bitmapWorkerPool.decodeBitmap(data)
+        AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).buffer)
             .then((imgData) => {
                 const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
                 // XXX find better way to detect char dimensions
@@ -88,29 +82,24 @@ export class AssetLoader {
 
     loadNerpAsset(name: string, callback: (assetNames: string[], obj: string) => any) {
         const nrnName = name.replace(/\.npl$/, '.nrn')
-        const script = this.wad0File.getEntryText(nrnName)
+        const script = this.vfs.getFile(nrnName).toText()
         callback([name, nrnName], script)
     }
 
     loadNerpMsg(name: string, callback: (assetNames: string[], obj: any) => any) {
-        let wadData: string
-        try {
-            wadData = this.wad1File.getEntryText(name)
-        } catch (e1) {
-            wadData = this.wad0File.getEntryText(name)
-        }
+        const wadData = this.vfs.getFile(name).toText()
         const result = NerpMsgParser.parseNerpMessages(wadData)
         callback([name], result)
     }
 
     loadObjectiveTexts(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const view = this.wad1File.getEntryArrayView(name)
+        const view = this.vfs.getFile(name).toArray()
         const result = new ObjectiveTextParser().parseObjectiveTextFile(view)
         callback([name], result)
     }
 
     loadMapAsset(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const view = this.wad0File.getEntryArrayView(name)
+        const view = this.vfs.getFile(name).toArray()
         if (view.length < 13 || String.fromCharCode(...view.slice(0, 3)) !== 'MAP') {
             console.error(`Invalid map data provided for: ${name}`)
             return
@@ -120,7 +109,7 @@ export class AssetLoader {
     }
 
     loadObjectListAsset(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const data = this.wad0File.getEntryText(name)
+        const data = this.vfs.getFile(name).toText()
         const objectList = WadParser.parseObjectList(data)
         callback([name], objectList)
     }
@@ -128,33 +117,26 @@ export class AssetLoader {
     async loadWavAsset(path: string, callback: (assetNames: string[], obj: any) => any) {
         let buffer: ArrayBufferLike
         const errors = []
-        try { // localized wad1 file first, then generic wad0 file
-            buffer = this.wad1File.getEntryBuffer(path)
-        } catch (e1) {
-            errors.push(e1)
+        try {
+            buffer = this.vfs.getFile(path).buffer
+        } catch (e2) {
+            errors.push(e2)
             try {
-                buffer = this.wad0File.getEntryBuffer(path)
-            } catch (e2) {
-                errors.push(e2)
-                for (const folder of ['0007-German Files', '0009-English Files', '040c-French_(Standard)_Files', 'Program Data Files']) {
-                    try {
-                        buffer = await this.cabFile.getFileBuffer(`${folder}/Data/${path}`)
-                    } catch (e) {
-                        errors.push(e)
-                    }
+                buffer = this.vfs.getFile(`Data/${path}`).buffer
+            } catch (e) {
+                errors.push(e)
+            }
+            if (!buffer) {
+                const lPath = path.toLowerCase()
+                // XXX stats.wav and atmosdel.wav can only be found on ISO-File
+                if (!lPath.endsWith('/atmosdel.wav') &&
+                    !lPath.endsWith('/stats.wav') &&
+                    !lPath.endsWith('/dripsB.wav'.toLowerCase())
+                ) {
+                    console.error(`Could not find sound ${path}:\n` + errors.join('\n'))
                 }
-                if (!buffer) {
-                    const lPath = path.toLowerCase()
-                    // XXX stats.wav and atmosdel.wav can only be found on ISO-File
-                    if (!lPath.endsWith('/atmosdel.wav') &&
-                        !lPath.endsWith('/stats.wav') &&
-                        !lPath.endsWith('/dripsB.wav'.toLowerCase())
-                    ) {
-                        console.error(`Could not find sound ${path}:\n` + errors.join('\n'))
-                    }
-                    callback([path], null)
-                    return
-                }
+                callback([path], null)
+                return
             }
         }
         const audioBuffer = await AudioContext.getContext().decodeAudioData(buffer)
@@ -164,10 +146,10 @@ export class AssetLoader {
     loadLWOFile(lwoFilepath: string, callback: (assetNames: string[], obj: any) => any) {
         let lwoContent = null
         try {
-            lwoContent = this.wad0File.getEntryBuffer(lwoFilepath)
+            lwoContent = this.vfs.getFile(lwoFilepath).buffer
         } catch (e) {
             try {
-                lwoContent = this.wad0File.getEntryBuffer(`world/shared/${getFilename(lwoFilepath)}`)
+                lwoContent = this.vfs.getFile(`world/shared/${getFilename(lwoFilepath)}`).buffer
             } catch (e) {
                 if (!lwoFilepath.equalsIgnoreCase('Vehicles/BullDozer/VLBD_light.lwo') // ignore known issues
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_bucket.lwo')
@@ -183,25 +165,23 @@ export class AssetLoader {
         callback([lwoFilepath], lwoContent)
     }
 
-    async loadFlhAssetDefault(filename: string, callback: (assetNames: string[], obj: any) => any) {
-        await this.loadFlhAssetInternal(filename, false, callback)
+    loadFlhAssetDefault(filename: string, callback: (assetNames: string[], obj: any) => any) {
+        this.loadFlhAssetInternal(filename, false, callback)
     }
 
-    async loadFlhAssetInterframe(filename: string, callback: (assetNames: string[], obj: any) => any) {
-        await this.loadFlhAssetInternal(filename, true, callback)
+    loadFlhAssetInterframe(filename: string, callback: (assetNames: string[], obj: any) => any) {
+        this.loadFlhAssetInternal(filename, true, callback)
     }
 
-    private async loadFlhAssetInternal(filename: string, interFrameMode: boolean, callback: (assetNames: string[], obj: any) => any) {
+    private loadFlhAssetInternal(filename: string, interFrameMode: boolean, callback: (assetNames: string[], obj: any) => any) {
         let flhContent: DataView
         try {
-            flhContent = this.wad0File.getEntryDataView(filename)
+            flhContent = this.vfs.getFile(filename).toDataView()
         } catch (e) {
             try {
-                const arrayBuffer = await this.cabFile.getFileBuffer(filename)
-                flhContent = new DataView(arrayBuffer)
+                flhContent = this.vfs.getFile(filename).toDataView()
             } catch (e) {
-                const arrayBuffer = await this.cabFile.getFileBuffer(`Program Data Files/Data/${filename}`)
-                flhContent = new DataView(arrayBuffer)
+                flhContent = this.vfs.getFile(`Data/${filename}`).toDataView()
             }
         }
         const flhFrames = new FlhParser(flhContent, interFrameMode).parse()
@@ -209,20 +189,19 @@ export class AssetLoader {
     }
 
     loadUVFile(filename: string, callback: (assetNames: string[], obj: any) => any) {
-        const uvContent = this.wad0File.getEntryText(filename)
+        const uvContent = this.vfs.getFile(filename).toText()
         const uvData = new LWOUVParser().parse(uvContent)
         callback([filename], uvData)
     }
 
-    async loadAVI(filename: string, callback: (assetNames: string[], obj: any) => any) {
-        const buffer = await this.cabFile.getFileBuffer(`Program Data Files/Data/${filename}`)
-        const dataView = new DataView(buffer)
+    loadAVI(filename: string, callback: (assetNames: string[], obj: any) => any) {
+        const dataView = this.vfs.getFile(`Data/${filename}`).toDataView()
         const decoder = new AVIParser(dataView).parse()
         callback([filename], decoder)
     }
 
     loadCreditsFile(filename: string, callback: (assetNames: string[], obj: any) => any) {
-        const content = this.wad1File.getEntryText(this.wad1File.filterEntryNames(filename)[0])
+        const content = this.vfs.getFile(this.vfs.filterEntryNames(filename)[0]).toText()
         callback([filename], content)
     }
 }

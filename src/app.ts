@@ -46,26 +46,13 @@ export async function start() {
     const screenMaster = new ScreenMaster()
     const githubBox = new GithubBox('game-container')
     const clearCacheButton = new ClearCacheButton('game-container')
-    const gameFilesLoader = new GameFilesLoader(screenMaster)
-    const cabFile = await gameFilesLoader.loadGameFiles()
-    let wad1File: ArrayBuffer
-    const wad0File = await cabFile.getFileBuffer('Program Data Files/LegoRR0.wad')
-    const errors = []
-    for (const folder of ['0007-German Files', '0009-English Files', '040c-French_(Standard)_Files']) {
-        try {
-            wad1File = await cabFile.getFileBuffer(`${folder}/LegoRR1.wad`)
-            break
-        } catch (e) {
-            errors.push(e)
-        }
-    }
-    if (!wad1File) throw new Error(`No wad1 file found in cab ${cabFile.lowerFilePathNameToFile}:\n` + errors.join('\n'))
-    const assetLoader = new AssetLoader(cabFile, wad0File, wad1File)
+    const vfs = await new GameFilesLoader(screenMaster).loadGameFiles()
     screenMaster.loadingLayer.setLoadingMessage('Loading configuration...')
-    const cfgFiles = assetLoader.wad1File.filterEntryNames('\\.cfg')
+    const cfgFiles = vfs.filterEntryNames('\\.cfg')
     if (cfgFiles.length < 1) throw new Error('Invalid second WAD file given! No config file present at root level.')
     if (cfgFiles.length > 1) console.warn(`Found multiple config files ${cfgFiles} will proceed with first one ${cfgFiles[0]} only`)
-    ResourceManager.configuration = await CfgFileParser.parse(assetLoader.wad1File.getEntryArrayView(cfgFiles[0]))
+    ResourceManager.configuration = await CfgFileParser.parse(vfs.getFile(cfgFiles[0]).toArray())
+    const assetLoader = new AssetLoader(vfs)
     await assetLoader.assetRegistry.registerAllAssets(ResourceManager.configuration) // dynamically register all assets from config
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')
     await Promise.all([

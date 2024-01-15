@@ -62,7 +62,7 @@ export class MenuEntryOverlayCfg {
 
     constructor(cfgValue: any) {
         [this.flhFilepath, this.sfxName, this.x, this.y] = cfgValue
-        this.flhFilepath = `Program Data Files/Data/${this.flhFilepath}`
+        this.flhFilepath = `Data/${this.flhFilepath}`
         if (this.sfxName.equalsIgnoreCase('SFX_NULL')) this.sfxName = ''
     }
 }
