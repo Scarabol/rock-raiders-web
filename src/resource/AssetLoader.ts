@@ -93,9 +93,13 @@ export class AssetLoader {
     }
 
     loadNerpMsg(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const wad0Data = this.wad0File.getEntryText(name)
-        const wad1Data = this.wad1File.getEntryText(name)
-        const result = NerpMsgParser.parseNerpMessages(wad0Data, wad1Data)
+        let wadData: string
+        try {
+            wadData = this.wad1File.getEntryText(name)
+        } catch (e1) {
+            wadData = this.wad0File.getEntryText(name)
+        }
+        const result = NerpMsgParser.parseNerpMessages(wadData)
         callback([name], result)
     }
 
