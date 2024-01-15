@@ -15,7 +15,8 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
 import { OverwriteLayer } from '../menu/OverwriteLayer'
-import { MainMenuFlicAnim } from '../menu/MainMenuFlicAnim'
+import { FlicAnimOverlay } from '../menu/FlicAnimOverlay'
+import { imgDataToCanvas } from '../core/ImageHelper'
 
 export class RewardScreen {
     readonly cfg: RewardCfg = null
@@ -26,7 +27,7 @@ export class RewardScreen {
     readonly saveGameLayer: LoadSaveLayer
     readonly images: { img: SpriteImage, x: number, y: number }[] = []
     readonly boxes: { img: SpriteImage, x: number, y: number }[] = []
-    readonly flics: MainMenuFlicAnim[] = []
+    readonly flics: FlicAnimOverlay[] = []
     readonly fontNames: Map<string, string> = new Map()
     readonly btnSave: RewardScreenButton
     readonly btnAdvance: RewardScreenButton
@@ -69,7 +70,11 @@ export class RewardScreen {
         const keyToIndex = ['crystals', 'ore', 'diggable', 'constructions', 'caverns', 'figures', 'rockmonsters', 'oxygen', 'timer', 'score']
         this.cfg.flics.forEach((flic, key) => {
             const flicIndex = keyToIndex.indexOf(key)
-            this.flics[flicIndex] = new MainMenuFlicAnim(this.resultsLayer, flic.flhFilepath, flic.rect)
+            const flhImgData = ResourceManager.getResource(flic.flhFilepath) ?? []
+            if (flhImgData.length > 0) {
+                const flicImages = flhImgData.map((f: ImageData) => imgDataToCanvas(f))
+                this.flics[flicIndex] = new FlicAnimOverlay(this.resultsLayer.animationFrame, flicImages, flic.rect.x, flic.rect.y) // XXX Consider width/height of rect to scale/clip?
+            }
         })
         this.descriptionTextLayer = screenMaster.addLayer(new ScaledLayer('RewardDescriptionLayer'), 620)
         this.btnLayer = screenMaster.addLayer(new ScaledLayer('RewardButtonLayer'), 650)
@@ -82,6 +87,7 @@ export class RewardScreen {
             this.descriptionTextLayer.hide()
             this.btnLayer.hide()
             this.saveGameLayer.hide()
+            this.flics.forEach((f) => f.stop())
             GameState.reset()
             EventBus.publishEvent(new ShowGameResultEvent())
         }

@@ -1,20 +1,18 @@
-import { MainMenuBaseItem } from './MainMenuBaseItem'
-import { Rect } from '../core/Rect'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
-import { ResourceManager } from '../resource/ResourceManager'
-import { imgDataToCanvas } from '../core/ImageHelper'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
-import { ScaledLayer } from '../screen/layer/ScreenLayer'
 import { clearTimeoutSafe } from '../core/Util'
+import { AnimationFrame } from '../screen/AnimationFrame'
 
-export class MainMenuFlicAnim extends MainMenuBaseItem {
-    readonly flicImages: SpriteImage[] = []
+export class FlicAnimOverlay {
     animIndex: number = 0
     timeout: NodeJS.Timeout
 
-    constructor(readonly layer: ScaledLayer, flhFilepath: string, rect: Rect) {
-        super(rect.x, rect.y, rect.w, rect.h)
-        this.flicImages = ResourceManager.getResource(flhFilepath).map((f: ImageData) => imgDataToCanvas(f))
+    constructor(
+        readonly animationFrame: AnimationFrame,
+        readonly flicImages: SpriteImage[],
+        readonly x: number,
+        readonly y: number,
+    ) {
     }
 
     play(): Promise<void> {
@@ -25,8 +23,7 @@ export class MainMenuFlicAnim extends MainMenuBaseItem {
     }
 
     private trigger(resolve: (value: (PromiseLike<void> | void)) => void) {
-        this.state.stateChanged = true
-        this.layer.animationFrame.notifyRedraw()
+        this.animationFrame.notifyRedraw()
         if (this.animIndex < this.flicImages.length - 1) {
             this.timeout = setTimeout(() => {
                 this.animIndex++
@@ -38,13 +35,12 @@ export class MainMenuFlicAnim extends MainMenuBaseItem {
     }
 
     draw(context: SpriteContext) {
-        super.draw(context)
         const img = this.flicImages[this.animIndex]
         if (img) context.drawImage(img, this.x, this.y)
     }
 
-    reset() {
-        super.reset()
+    stop() {
+        this.animIndex = 0
         this.timeout = clearTimeoutSafe(this.timeout)
     }
 }
