@@ -6,7 +6,7 @@
  *
  */
 import { EventBus } from '../event/EventBus'
-import { NerpMessage } from '../event/LocalEvents'
+import { NerpMessageEvent } from '../event/LocalEvents'
 import { WorldManager } from '../game/WorldManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
@@ -302,7 +302,7 @@ export class NerpRunner {
         }
         const sampleLength = this.timeForNoSample / 1000 // XXX workaround until sounds from DATA directory are implemented
         const messageTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample
-        if (msg.txt) EventBus.publishEvent(new NerpMessage(msg.txt, messageTimeoutMs || ResourceManager.configuration.main.textPauseTimeMs))
+        if (msg.txt) EventBus.publishEvent(new NerpMessageEvent(msg.txt, messageTimeoutMs || ResourceManager.configuration.main.textPauseTimeMs))
         if (msg.snd) { // XXX snd files reside in sounds/streamed/ which is not included in WAD files :(
             if (VERBOSE) console.warn(`Sounds from DATA directory not yet implemented`, msg.snd)
         }

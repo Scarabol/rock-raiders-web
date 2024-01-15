@@ -2,7 +2,7 @@ import { PanelCfg } from '../../cfg/PanelCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
-import { AirLevelChanged, NerpMessage, RaiderTrainingCompleteEvent, SetSpaceToContinueEvent } from '../../event/LocalEvents'
+import { AirLevelChanged, NerpMessageEvent, RaiderTrainingCompleteEvent, SetSpaceToContinueEvent } from '../../event/LocalEvents'
 import { PlaySoundEvent } from '../../event/GuiCommand'
 import { BaseElement } from '../base/BaseElement'
 import { Panel } from '../base/Panel'
@@ -52,7 +52,7 @@ export class MessagePanel extends Panel {
         })
         this.registerEventListener(EventKey.RAIDER_TRAINING_COMPLETE, (event: RaiderTrainingCompleteEvent) => event.training && this.setMessage(textInfoMessageConfig.textManTrained))
         this.registerEventListener(EventKey.VEHICLE_UPGRADE_COMPLETE, () => this.setMessage(textInfoMessageConfig.textUnitUpgraded))
-        this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessage) => {
+        this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessageEvent) => {
             this.setTimedMessage({text: event.text}, event.messageTimeoutMs)
         })
         this.registerEventListener(EventKey.SET_SPACE_TO_CONTINUE, (event: SetSpaceToContinueEvent) => {

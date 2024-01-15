@@ -112,7 +112,7 @@ export class AirLevelChanged extends LocalEvent {
     }
 }
 
-export class NerpMessage extends LocalEvent {
+export class NerpMessageEvent extends LocalEvent {
     constructor(readonly text: string, readonly messageTimeoutMs: number) {
         super(EventKey.NERP_MESSAGE)
     }
