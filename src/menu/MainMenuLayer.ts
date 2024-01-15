@@ -53,6 +53,8 @@ export class MainMenuLayer extends ScaledLayer {
             }
         })
 
+        if (this.cfg.playRandom) this.cfg.overlays.shuffle()
+
         new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],
@@ -89,10 +91,7 @@ export class MainMenuLayer extends ScaledLayer {
     show() {
         this.items.sort((a, b) => b.zIndex - a.zIndex)
         super.show()
-        if (this.cfg.playRandom) {
-            this.cfg.overlays.shuffle()
-            this.playRandomOverlay()
-        }
+        if (this.cfg.playRandom) this.playRandomOverlay()
     }
 
     hide() {
