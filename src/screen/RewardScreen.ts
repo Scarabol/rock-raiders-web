@@ -18,22 +18,22 @@ import { OverwriteLayer } from '../menu/OverwriteLayer'
 import { MainMenuFlicAnim } from '../menu/MainMenuFlicAnim'
 
 export class RewardScreen {
-    cfg: RewardCfg = null
-    backgroundLayer: ScaledLayer
-    resultsLayer: ScaledLayer
-    descriptionTextLayer: ScaledLayer
-    btnLayer: ScaledLayer
-    saveGameLayer: LoadSaveLayer
+    readonly cfg: RewardCfg = null
+    readonly backgroundLayer: ScaledLayer
+    readonly resultsLayer: ScaledLayer
+    readonly descriptionTextLayer: ScaledLayer
+    readonly btnLayer: ScaledLayer
+    readonly saveGameLayer: LoadSaveLayer
+    readonly images: { img: SpriteImage, x: number, y: number }[] = []
+    readonly boxes: { img: SpriteImage, x: number, y: number }[] = []
+    readonly flics: MainMenuFlicAnim[] = []
+    readonly fontNames: Map<string, string> = new Map()
+    readonly btnSave: RewardScreenButton
+    readonly btnAdvance: RewardScreenButton
     resultIndex: number = 0
     resultLastIndex: number = 0
-    images: { img: SpriteImage, x: number, y: number }[] = []
-    boxes: { img: SpriteImage, x: number, y: number }[] = []
-    flics: MainMenuFlicAnim[] = []
-    fontNames: Map<string, string> = new Map()
     texts: SpriteImage[] = []
     uncoverTimeout: NodeJS.Timeout = null
-    btnSave: RewardScreenButton
-    btnAdvance: RewardScreenButton
     levelFullNameImg: SpriteImage
     resultText: string
     resultValues: SpriteImage[] = []
@@ -249,7 +249,7 @@ export class RewardScreen {
     uncoverResult() {
         this.uncoverTimeout = clearTimeoutSafe(this.uncoverTimeout)
         this.uncoverTimeout = setTimeout(() => {
-            const flic =  this.resultIndex < this.resultLastIndex ? this.flics[this.resultIndex + 1] : null // XXX does not work for flics on first entry
+            const flic = this.resultIndex < this.resultLastIndex ? this.flics[this.resultIndex + 1] : null // XXX does not work for flics on first entry
             const flicBeforeNext = flic?.play() ?? Promise.resolve()
             flicBeforeNext.then(() => {
                 if (this.resultIndex < this.resultLastIndex) {
