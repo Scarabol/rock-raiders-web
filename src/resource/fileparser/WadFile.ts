@@ -86,11 +86,7 @@ export class WadFile {
 
     filterEntryNames(regexStr: string) {
         const regex = new RegExp(regexStr.toLowerCase())
-        const result: string[] = []
-        this.entryByLowerName.forEach((_, entry) => {
-            if (entry.match(regex)) result.push(entry)
-        })
-        return result
+        return Array.from(this.entryByLowerName.keys()).filter((e) => e.match(regex))
     }
 
     hasEntry(entryName: string): boolean {
