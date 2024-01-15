@@ -263,6 +263,6 @@ export class RewardScreen {
                 this.descriptionTextLayer.animationFrame.notifyRedraw()
                 this.btnLayer.animationFrame.notifyRedraw()
             })
-        }, this.cfg.timer * 1000)
+        }, this.cfg.timerMs)
     }
 }

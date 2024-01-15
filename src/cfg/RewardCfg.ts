@@ -1,5 +1,6 @@
 import { BaseConfig } from './BaseConfig'
 import { Rect } from '../core/Rect'
+import { DEV_MODE } from '../params'
 
 export class RewardCfg extends BaseConfig {
     display: boolean = true
@@ -15,7 +16,7 @@ export class RewardCfg extends BaseConfig {
     backFont: string = ''
     font: string = ''
     titleFont: string = ''
-    timer: number = 0
+    timerMs: number = 0
     saveButton: RewardButtonCfg = new RewardButtonCfg()
     advanceButton: RewardButtonCfg = new RewardButtonCfg()
     completeText: string = ''
@@ -24,8 +25,11 @@ export class RewardCfg extends BaseConfig {
     textPos: [number, number] = [0, 0]
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
-        if (objKey.toLowerCase() !== unifiedKey) return false
-        if (unifiedKey === 'images') {
+        if (unifiedKey === 'timer') {
+            this.timerMs = Math.round(cfgValue * (DEV_MODE ? 100 : 1000))
+        } else if (objKey.toLowerCase() !== unifiedKey) {
+            return false
+        } else if (unifiedKey === 'images') {
             Object.values(cfgValue).forEach((imgConf) => this.images.push(new RewardImageCfg(imgConf)))
         } else if (unifiedKey === 'text') {
             Object.values(cfgValue).forEach((imgConf) => this.text.push(new RewardTextCfg(imgConf)))
