@@ -267,7 +267,8 @@ export class AssetRegistry extends Map<string, WadAsset> {
     }
 
     addAsset(method: (name: string, callback: (assetNames: string[], assetData: any) => void) => void, assetPath: string, optional = false, sfxKeys: string[] = []) {
-        if (!assetPath || this.hasOwnProperty(assetPath) || assetPath === 'NULL') {
+        assetPath = assetPath?.toLowerCase()
+        if (!assetPath || this.has(assetPath) || assetPath.equalsIgnoreCase('NULL')) {
             return // do not load assets twice
         }
         this.set(assetPath, {
