@@ -262,7 +262,9 @@ export class AssetRegistry extends Map<string, WadAsset> {
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.menuFont)
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.loFont)
             this.addAsset(this.assetLoader.loadFontImageAsset, menuCfg.hiFont)
-            menuCfg.overlays.forEach((overlay) => this.addAsset(this.assetLoader.loadFlhAssetInterframe, overlay.flhFilepath, true))
+            let flhCallback = this.assetLoader.loadFlhAssetDefault
+            if (menuCfg.title.equalsIgnoreCase('Main')) flhCallback = this.assetLoader.loadFlhAssetInterframe
+            menuCfg.overlays.forEach((overlay) => this.addAsset(flhCallback, overlay.flhFilepath, true))
         })
     }
 
