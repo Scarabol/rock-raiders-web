@@ -27,19 +27,23 @@ export class MainMenuCreditsLayer extends ScaledLayer {
         const bitmapLines = creditsTextContent.split('\n').map((line) => {
             return ResourceManager.bitmapFontWorkerPool.createTextImage(MainMenuCreditsLayer.FONT, line, this.fixedWidth, true)
         })
-        const videoStreams: AVIVideoStream[] = ResourceManager.getResource(ResourceManager.configuration.main.creditsBackAVI).videoStreams
-        if (videoStreams.length !== 1) throw new Error(`Unexpected number of background video streams; got ${videoStreams.length} instead of 1`)
-        this.backVideo = videoStreams[0]
-        this.backImg = this.backVideo.getNextFrame()
-        this.animationFrame.onRedraw = (context) => {
-            context.drawImage(this.backImg, 0, 0, this.fixedWidth, this.fixedHeight)
+        const creditsBackAVI = ResourceManager.getResource(ResourceManager.configuration.main.creditsBackAVI)
+        if (creditsBackAVI) {
+            const videoStreams: AVIVideoStream[] = creditsBackAVI.videoStreams
+            if (videoStreams.length !== 1) throw new Error(`Unexpected number of background video streams; got ${videoStreams.length} instead of 1`)
+            this.backVideo = videoStreams[0]
+            this.backImg = this.backVideo.getNextFrame()
+            this.animationFrame.onRedraw = (context) => {
+                context.drawImage(this.backImg, 0, 0, this.fixedWidth, this.fixedHeight)
+            }
         }
         Promise.all((bitmapLines)).then((bitmapLines) => {
             this.renderedBitmapLines.push(...bitmapLines)
             this.counter = this.maxNumOfLinesOnScreen + 5
             this.currentLines.push(...this.renderedBitmapLines.slice(0, this.counter))
             this.animationFrame.onRedraw = (context) => {
-                context.drawImage(this.backImg, 0, 0, this.fixedWidth, this.fixedHeight)
++                context.clearRect(0, 0, this.fixedWidth, this.fixedHeight)
+                if (this.backImg) context.drawImage(this.backImg, 0, 0, this.fixedWidth, this.fixedHeight)
                 this.currentLines.forEach((lineImage, index) => {
                     if (lineImage) context.drawImage(lineImage, (this.fixedWidth - lineImage.width) / 2, Math.round(index * fontHeight - this.offsetY))
                 })
@@ -69,7 +73,7 @@ export class MainMenuCreditsLayer extends ScaledLayer {
     increaseLoopIndex() {
         this.loopIndexTimeout = clearTimeoutSafe(this.loopIndexTimeout)
         this.loopIndexTimeout = setTimeout(() => {
-            this.backImg = this.backVideo.getNextFrame()
+            if (this.backVideo) this.backImg = this.backVideo.getNextFrame()
             if (this.offsetY > 17) {
                 this.currentLines.shift()
                 this.currentLines.push(this.renderedBitmapLines[this.counter])

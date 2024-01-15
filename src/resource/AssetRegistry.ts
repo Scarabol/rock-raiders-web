@@ -136,7 +136,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         })
         this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/Dependencies/+.bmp')
         this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/Dependencies/=.bmp')
-        this.addAsset(this.assetLoader.loadAVI, gameConfig.main.creditsBackAVI)
+        this.addAsset(this.assetLoader.loadAVI, gameConfig.main.creditsBackAVI, true)
         this.addAsset(this.assetLoader.loadCreditsFile, gameConfig.main.creditsTextFile)
         this.addAsset(this.assetLoader.loadFontImageAsset, 'Interface/Fonts/RSFont.bmp')
         // spaces
