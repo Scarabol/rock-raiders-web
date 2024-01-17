@@ -58,7 +58,7 @@ export class CfgFileParser {
                     } else if (parsingState === PARSING_STATE.INSIDE_VALUE) {
                         // XXX Only decode when necessary in the first place
                         const encoded = key !== 'FullName' ? value.replaceAll('Å', '|') : value // Revert decoding if not (German) level name
-                        const parsed = CfgFileParser.parseValue(encoded)
+                        const parsed = CfgFileParser.parseValue(encoded, key !== 'FullName')
                         if (activeObject.hasOwnProperty(key)) {
                             activeObject[key].push(parsed)
                         } else {
@@ -132,9 +132,9 @@ export class CfgFileParser {
         return new GameConfig().setFromCfgObj(result, true) // TODO do not create missing
     }
 
-    static parseValue(val) {
+    static parseValue(val, isNoLevelName: boolean) {
         function splitShrink(sep) {
-            val = val.split(sep).filter(val => val !== '').map(val => CfgFileParser.parseValue(val))
+            val = val.split(sep).filter(val => val !== '').map(val => CfgFileParser.parseValue(val, isNoLevelName))
             if (val.length === 0) {
                 val = ''
             } else if (val.length === 1) {
@@ -150,9 +150,9 @@ export class CfgFileParser {
             if (lVal === 'false') return false
             if (lVal === 'null') return ''
             const hasReference = val.includes('::') // XXX actually these are references to other paths in the cfg file
-            if (val.includes(':') && !hasReference) { // XXX Dependencies uses separator , over : however icon panel entries use : over ,
+            if (val.includes(':') && !hasReference && isNoLevelName) { // XXX Dependencies uses separator , over : however icon panel entries use : over , and French/Spanish use both characters in their level names
                 splitShrink.call(this, /:+/)
-            } else if (val.includes(',')) {
+            } else if (val.includes(',') && isNoLevelName) {
                 splitShrink.call(this, ',')
             } else if (val.includes('|')) {
                 splitShrink.call(this, '|')
