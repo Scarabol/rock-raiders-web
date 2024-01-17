@@ -9,15 +9,16 @@ export class LevelObjectiveTextEntry {
 }
 
 export class ObjectiveTextParser {
-    parseObjectiveTextFile(txtFileContent: Uint8Array) {
+    parseObjectiveTextFile(txtFileText: string) {
+        // XXX Use given text in parsing below
+        const txtFileContent = new TextEncoder().encode(txtFileText)
         const result: Record<string, LevelObjectiveTextEntry> = {}
         let state = PARSING_STATE.DROP
         let currentLevel: LevelObjectiveTextEntry = null
         let value = ''
         let line = ''
         for (let c = 0; c < txtFileContent.length; c++) {
-            const code = encodeChar[txtFileContent[c]]
-            let char = String.fromCharCode(code)
+            let char = String.fromCharCode(encodeChar[txtFileContent[c]])
             if (state === PARSING_STATE.DROP) {
                 if (char === '[') {
                     if (currentLevel) result[currentLevel.key.toLowerCase()] = currentLevel

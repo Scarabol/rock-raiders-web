@@ -21,20 +21,17 @@ export class CfgFileParser {
         let value = ''
         // debug output is a bad idea here, buffer size is about 232.611 characters and has 6781 lines
         for (let seek = 0; seek < buffer.length; seek++) {
-            let charCode = buffer[seek]
-            if (charCode === 123 && key === 'FullName') { // dirty workaround but in the original file { (123) was used instead of Ä (142)
-                charCode = 142
-            }
-            let charStr = String.fromCharCode(encodeChar[charCode])
-            if (charStr === ';' || charStr === '/') { // someone used // as a marker for a comment
+            const charCode = buffer[seek]
+            if (charCode === ';'.charCodeAt(0) || charCode === '/'.charCodeAt(0)) { // someone used // as a marker for a comment
                 isComment = true
             } else if (charCode === 10 || charCode === 13) {
                 isComment = false
             }
             if (!isComment) {
                 if (charCode > 32) { // not a whitespace
+                    const charStr = String.fromCharCode(encodeChar[charCode])
                     if (parsingState === PARSING_STATE.LOOKING_FOR_KEY) {
-                        if (charStr === '}') {
+                        if (charCode === '}'.charCodeAt(0)) {
                             activeObject = ancestry.pop()
                         } else {
                             key = charStr
@@ -43,7 +40,7 @@ export class CfgFileParser {
                     } else if (parsingState === PARSING_STATE.INSIDE_KEY) {
                         key += charStr
                     } else if (parsingState === PARSING_STATE.LOOKING_FOR_VALUE) {
-                        if (charStr === '{') { // start of a new object key is identifier
+                        if (charCode === '{'.charCodeAt(0) && key !== 'FullName') { // start of a new object key is identifier
                             ancestry.push(activeObject)
                             activeObject = {}
                             ancestry[ancestry.length - 1][key] = activeObject
@@ -55,11 +52,13 @@ export class CfgFileParser {
                     } else if (parsingState === PARSING_STATE.INSIDE_VALUE) {
                         value += charStr
                     }
-                } else { // some whitespace
+                } else if (charCode === 9 || charCode === 10 || charCode === 13 || charCode === 32) { // some whitespace
                     if (parsingState === PARSING_STATE.INSIDE_KEY) {
                         parsingState = PARSING_STATE.LOOKING_FOR_VALUE
                     } else if (parsingState === PARSING_STATE.INSIDE_VALUE) {
-                        const parsed = CfgFileParser.parseValue(value)
+                        // XXX Only decode when necessary in the first place
+                        const encoded = key !== 'FullName' ? value.replaceAll('Å', '|') : value // Revert decoding if not (German) level name
+                        const parsed = CfgFileParser.parseValue(encoded)
                         if (activeObject.hasOwnProperty(key)) {
                             activeObject[key].push(parsed)
                         } else {
@@ -67,6 +66,8 @@ export class CfgFileParser {
                         }
                         parsingState = PARSING_STATE.LOOKING_FOR_KEY
                     }
+                } else {
+                    throw new Error(`Unexpected character code found ${charCode} in config file`)
                 }
             }
         }

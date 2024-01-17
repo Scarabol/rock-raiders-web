@@ -87,14 +87,14 @@ export class AssetLoader {
     }
 
     loadNerpMsg(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const wadData = this.vfs.getFile(name).toText()
+        const wadData = this.vfs.getFile(name).toText(true)
         const result = NerpMsgParser.parseNerpMessages(wadData)
         callback([name], result)
     }
 
     loadObjectiveTexts(name: string, callback: (assetNames: string[], obj: any) => any) {
-        const view = this.vfs.getFile(name).toArray()
-        const result = new ObjectiveTextParser().parseObjectiveTextFile(view)
+        const text = this.vfs.getFile(name).toText(true)
+        const result = new ObjectiveTextParser().parseObjectiveTextFile(text)
         callback([name], result)
     }
 
@@ -201,7 +201,7 @@ export class AssetLoader {
     }
 
     loadCreditsFile(filename: string, callback: (assetNames: string[], obj: any) => any) {
-        const content = this.vfs.getFile(this.vfs.filterEntryNames(filename)[0]).toText()
+        const content = this.vfs.getFile(this.vfs.filterEntryNames(filename)[0]).toText(true)
         callback([filename], content)
     }
 }

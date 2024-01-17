@@ -14,10 +14,13 @@ export class VirtualFile {
         return new DataView(this.buffer)
     }
 
-    toText(): string {
+    toText(decode: boolean = false): string {
         if (this.text !== undefined && this.text !== null) return this.text
         this.text = '' // otherwise text starts with 'undefined'
-        this.toArray().forEach((c) => this.text += String.fromCharCode(encodeChar[c]))
+        this.toArray().forEach((c) => {
+            const decoded = decode ? encodeChar[c] : c
+            return this.text += String.fromCharCode(decoded)
+        })
         return this.text
     }
 }
