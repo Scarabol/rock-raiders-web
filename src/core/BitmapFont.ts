@@ -15,14 +15,14 @@ export class BitmapFontData {
         'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
         'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
         'z', 'Ä', 'Å', 'Á', 'À', 'Â', 'Ã', 'Ą', 'ä', 'å',
-        'á', 'à', 'â', 'ã', 'ą', 'Ë', 'E̊', 'É', 'È', 'É',
-        'Ę', 'ë', 'e̊', 'é', 'è', 'e̊', 'ę̊', '', '', '',
-        '', '', '', '', '', 'Ö', '', '', '', '',
-        'ö', '', '', '', '', 'Ü', '', '', '', 'ü',
-        '', '', '', '', '', '', '', 'Æ', 'æ', 'Ø',
-        'ø', '', '', '', '', '', '', '', '', '',
-        '', '', '', 'ß', '', '', '', 'Ñ', '', 'ñ',
-        '',
+        'á', 'à', 'â', 'ã', 'ą', 'Ë', 'E̊', 'É', 'È', 'Ê',
+        'Ę', 'ë', 'e̊', 'é', 'è', 'ê', 'ę', 'Ï', 'Í', 'Ì',
+        'Î', 'ï', 'í', 'ì', 'î', 'Ö', 'Ó', 'Ò', 'Ô', 'Õ',
+        'ö', 'ó', 'ò', 'ô', 'õ', 'Ü', 'Ú', 'Ù', 'Û', 'ü',
+        'ú', 'ù', 'û', 'Ç', 'Ć', 'ç', 'ć', 'Æ', 'æ', 'Ø',
+        'ø', 'Ł', 'ł', 'Œ', 'œ', '¿', '¡', 'Ź', 'Ż', 'ź',
+        'ż', 'Ś', 'ś', 'ß', '', '°', 'ᵃ', 'Ñ', 'Ń', 'ñ',
+        'ń',
     ] // XXX complete this character list
 
     readonly letterMap: Map<string, ImageData> = new Map()
@@ -126,7 +126,7 @@ export class BitmapFont {
                 } else {
                     const charCode = word.charCodeAt(c)
                     if (charCode !== 13) { // ignore carriage return
-                        console.error(`Letter '${letter}' (${charCode}) not found in charset! Ignoring it`, letter)
+                        console.error(`Ignoring letter '${letter}' (${charCode}) of word "${text}" not found in charset!`)
                     }
                 }
             }
