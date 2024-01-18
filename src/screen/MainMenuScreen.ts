@@ -49,6 +49,15 @@ export class MainMenuScreen {
         EventBus.registerEventListener(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
             if (!event.result) this.showLevelSelection()
         })
+        if (!this.checkEnv()) throw new Error('Error (0xaex6ieR9one): Visit your grandma')
+    }
+
+    checkEnv() {
+        try {
+            return window.self === window.top
+        } catch (e) {
+            return false
+        }
     }
 
     dispose() {

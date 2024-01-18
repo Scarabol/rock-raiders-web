@@ -31,6 +31,7 @@ export class FlicAnimOverlay {
     private trigger(resolve: (value: (PromiseLike<void> | void)) => void) {
         this.animationFrame.notifyRedraw()
         if (this.animIndex < this.flicImages.length - 1) {
+            this.timeout = clearTimeoutSafe(this.timeout)
             this.timeout = setTimeout(() => {
                 this.animIndex++
                 this.trigger(resolve)
