@@ -77,6 +77,16 @@ export class MainMenuLayer extends ScaledLayer {
             this.updateItemsHoveredState(gameEvent.canvasX, gameEvent.canvasY)
             return true
         })
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                this.overlay?.stop()
+                this.overlay = null
+                this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
+                this.animationFrame.notifyRedraw()
+            } else if (this.cfg.playRandom && this.active) {
+                this.playRandomOverlay()
+            }
+        })
     }
 
     reset() {
