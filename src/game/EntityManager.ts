@@ -25,6 +25,11 @@ import { HealthComponent } from './component/HealthComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/MapMarkerComponent'
 import { SlugBehaviorComponent, SlugBehaviorState } from './component/SlugBehaviorComponent'
 
+export interface VehicleTarget {
+    entity: GameEntity
+    position2d: Vector2
+}
+
 export class EntityManager {
     selection: GameSelection = new GameSelection()
     // entity partitions
@@ -369,12 +374,12 @@ export class EntityManager {
         this.bullets.remove(entity)
     }
 
-    findVehicleInRange(position2d: Vector2, rangeSq: number): { entity: GameEntity, position2d: Vector2 } {
-        let result = null
+    findVehicleInRange(position2d: Vector2, rangeSq: number): VehicleTarget {
+        let result: VehicleTarget = null
         this.worldMgr.entityMgr.vehicles.some((v) => {
             const vPos = this.worldMgr.ecs.getComponents(v.entity).get(PositionComponent).getPosition2D()
             if (vPos.distanceToSquared(position2d) < rangeSq) {
-                result = {entity: v, position2d: vPos}
+                result = {entity: v.entity, position2d: vPos}
                 return true
             }
             return false

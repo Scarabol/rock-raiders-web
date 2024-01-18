@@ -28,16 +28,12 @@ import { Raider } from '../model/raider/Raider'
 import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { BoulderComponent } from '../component/BoulderComponent'
+import { VehicleTarget } from '../EntityManager'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
 const ROCKY_BOULDER_THROW_DISTANCE_SQ = 80 * 80
 const ROCKY_MELEE_ATTACK_DISTANCE_SQ = 30 * 30
-
-interface VehicleTarget {
-    entity: GameEntity
-    position2d: Vector2
-}
 
 export class RockMonsterBehaviorSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([RockMonsterBehaviorComponent, PositionComponent, AnimatedSceneEntityComponent, MonsterStatsComponent])
