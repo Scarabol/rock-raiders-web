@@ -1,10 +1,11 @@
 import { ScreenMaster } from '../screen/ScreenMaster'
-import { cacheGetData } from './AssetCacheHelper'
-import { SelectFilesModal } from '../../site/selectfiles/SelectFilesModal'
-import { CabFile } from './fileparser/CabFile'
+import { cacheGetData, cachePutData } from './AssetCacheHelper'
+import { SelectFilesModal } from './selectfiles/SelectFilesModal'
 import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
 import { VirtualFile } from './fileparser/VirtualFile'
-import { WadFileParser } from './fileparser/WadFileParser'
+import { WadParser } from './fileparser/WadParser'
+import { ResourceManager } from './ResourceManager'
+import { CfgFileParser } from './fileparser/CfgFileParser'
 
 export class GameFilesLoader {
     readonly modal: SelectFilesModal
@@ -12,27 +13,13 @@ export class GameFilesLoader {
     onDoneCallback: (vfs: VirtualFileSystem) => void
 
     constructor(readonly screenMaster: ScreenMaster) {
-        this.modal = new SelectFilesModal('game-container')
-        this.modal.onCabFilesSelected = this.onCabFilesSelected.bind(this)
+        this.modal = new SelectFilesModal('game-container', async (vfs) => {
+            await cachePutData('vfs', vfs.fileNames)
+            this.onGameFilesLoaded(vfs).then()
+        })
         this.onDonePromise = new Promise<VirtualFileSystem>((resolve) => {
             this.onDoneCallback = resolve
         })
-    }
-
-    async onCabFilesSelected(headerUrl: string, volumeUrl1: string, volumeUrl2: string) {
-        this.screenMaster.loadingLayer.setLoadingMessage('Loading CAB files from urls...')
-        const [cabHeader, cabVolume1, cabVolume2] = await Promise.all<ArrayBuffer>([
-            this.loadFileFromUrl(headerUrl),
-            this.loadFileFromUrl(volumeUrl1),
-            !!volumeUrl2 ? this.loadFileFromUrl(volumeUrl2) : new ArrayBuffer(0),
-        ])
-        const cabMerge = new Uint8Array(cabVolume1.byteLength + cabVolume2.byteLength)
-        cabMerge.set(new Uint8Array(cabVolume1), 0)
-        cabMerge.set(new Uint8Array(cabVolume2), cabVolume1.byteLength)
-        const cabVolume = cabMerge.buffer
-        const cabFile = new CabFile(cabHeader, cabVolume, false).parse()
-        const vfs = await cabFile.loadAllFiles()
-        this.onGameFilesLoaded(vfs)
     }
 
     async loadGameFiles(): Promise<VirtualFileSystem> {
@@ -42,13 +29,12 @@ export class GameFilesLoader {
             const vfsFileNames: string[] = await cacheGetData('vfs')
             if (vfsFileNames) {
                 const vfs = new VirtualFileSystem()
-                await Promise.all(vfsFileNames.map(async (f) => {
-                    const buffer = await cacheGetData(f)
-                    const vFile = new VirtualFile(buffer)
-                    vfs.registerFile(f, vFile)
+                await Promise.all(vfsFileNames.map(async (fileName) => {
+                    const buffer = await cacheGetData(fileName)
+                    vfs.registerFile(new VirtualFile(fileName, buffer))
                 }))
                 console.timeEnd('Files loaded from cache')
-                this.onGameFilesLoaded(vfs)
+                this.onGameFilesLoaded(vfs).then()
             } else {
                 console.log('Files not found in cache')
                 this.screenMaster.loadingLayer.setLoadingMessage('Files not found in cache')
@@ -62,33 +48,15 @@ export class GameFilesLoader {
         return this.onDonePromise
     }
 
-    onGameFilesLoaded(vfs: VirtualFileSystem) {
-        const wadFiles = vfs.filterEntryNames('.+\\.wad')
-        wadFiles.sort()
-        console.log(`Loading WAD files in order like ${wadFiles}`)
-        wadFiles.forEach((wadFileName) => {
-            WadFileParser.parse(vfs, vfs.getFile(wadFileName).buffer)
-        })
+    async onGameFilesLoaded(vfs: VirtualFileSystem) {
+        vfs.filterEntryNames('.+\\.wad').sort()
+            .forEach((f) => WadParser.parseFileList(vfs.getFile(f).buffer).forEach((f) => vfs.registerFile(f)))
+        this.screenMaster.loadingLayer.setLoadingMessage('Loading configuration...')
+        const cfgFiles = vfs.filterEntryNames('\\.cfg')
+        if (cfgFiles.length < 1) throw new Error('Invalid second WAD file given! No config file present at root level.')
+        if (cfgFiles.length > 1) console.warn(`Found multiple config files ${cfgFiles} will proceed with first one ${cfgFiles[0]} only`)
+        ResourceManager.configuration = await CfgFileParser.parse(vfs.getFile(cfgFiles[0]).toArray())
         this.modal.hide()
         this.onDoneCallback(vfs)
-    }
-
-    async loadFileFromUrl(url: string): Promise<ArrayBuffer> {
-        return new Promise((resolve, reject) => {
-            console.log(`Loading file from ${url}`)
-            const xhr = new XMLHttpRequest()
-            xhr.open('GET', url)
-            xhr.responseType = 'arraybuffer'
-            xhr.onprogress = (event) => this.modal.setProgress(url, event.loaded, event.total)
-            xhr.onerror = (event) => reject(event)
-            xhr.onload = () => {
-                if (xhr.status === 200) {
-                    resolve(xhr.response)
-                } else {
-                    reject(new Error(`Could not fetch file from "${url}" Got status ${xhr.status} - ${xhr.statusText}`))
-                }
-            }
-            xhr.send()
-        })
     }
 }

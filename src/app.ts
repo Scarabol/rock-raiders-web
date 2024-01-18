@@ -47,11 +47,6 @@ export async function start() {
     const githubBox = new GithubBox('game-container')
     const clearCacheButton = new ClearCacheButton('game-container')
     const vfs = await new GameFilesLoader(screenMaster).loadGameFiles()
-    screenMaster.loadingLayer.setLoadingMessage('Loading configuration...')
-    const cfgFiles = vfs.filterEntryNames('\\.cfg')
-    if (cfgFiles.length < 1) throw new Error('Invalid second WAD file given! No config file present at root level.')
-    if (cfgFiles.length > 1) console.warn(`Found multiple config files ${cfgFiles} will proceed with first one ${cfgFiles[0]} only`)
-    ResourceManager.configuration = await CfgFileParser.parse(vfs.getFile(cfgFiles[0]).toArray())
     const assetLoader = new AssetLoader(vfs)
     await assetLoader.assetRegistry.registerAllAssets(ResourceManager.configuration) // dynamically register all assets from config
     screenMaster.loadingLayer.setLoadingMessage('Loading initial assets...')

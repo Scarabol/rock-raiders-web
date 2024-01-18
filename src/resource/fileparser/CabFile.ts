@@ -1,7 +1,6 @@
 import { CabFileReader } from './CabFileReader'
 import Pako from 'pako'
-import { cacheGetData, cachePutData } from '../AssetCacheHelper'
-import { VirtualFileSystem } from './VirtualFileSystem'
+import { cacheGetData } from '../AssetCacheHelper'
 import { VirtualFile } from './VirtualFile'
 
 interface CabFileEntry {
@@ -183,8 +182,8 @@ export class CabFile {
         return CabFile.FALLBACK_MAJOR_VERSION
     }
 
-    async loadAllFiles() {
-        const vfs = new VirtualFileSystem()
+    async loadAllFiles(): Promise<VirtualFile[]> {
+        const result: VirtualFile[] = []
         await Promise.all(
             Array.from(this.lowerFilePathNameToFile.keys()).map(async (fileName) => {
                 const buffer = await this.getFileBuffer(fileName)
@@ -198,12 +197,10 @@ export class CabFile {
                 } else {
                     return
                 }
-                await cachePutData(mappedFileName, buffer)
-                vfs.registerFile(mappedFileName, new VirtualFile(buffer))
+                result.push(new VirtualFile(mappedFileName, buffer))
             })
         )
-        cachePutData('vfs', Array.from(vfs.files.keys())).then()
-        return vfs
+        return result
     }
 
     async getFileBuffer(fileName: string): Promise<ArrayBuffer> {

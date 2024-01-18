@@ -3,7 +3,10 @@ import { encodeChar } from './EncodingHelper'
 export class VirtualFile {
     text: string
 
-    constructor(readonly buffer: ArrayBuffer) {
+    constructor(readonly fileName: string, readonly buffer: ArrayBuffer) {
+        if (!fileName) throw new Error('No filename given')
+        if (!buffer) throw new Error('No buffer given')
+        else if (buffer.byteLength < 1) throw new Error(`Invalid buffer given with length of ${buffer.byteLength} bytes`)
     }
 
     toArray(): Uint8Array {

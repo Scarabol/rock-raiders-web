@@ -3,8 +3,8 @@ import { VirtualFile } from './VirtualFile'
 export class VirtualFileSystem {
     readonly files: Map<string, VirtualFile> = new Map()
 
-    registerFile(filename: string, file: VirtualFile) {
-        this.files.set(filename.toLowerCase(), file)
+    registerFile(file: VirtualFile) {
+        this.files.set(file.fileName.toLowerCase(), file)
     }
 
     getFile(filename: string): VirtualFile {
@@ -21,5 +21,9 @@ export class VirtualFileSystem {
 
     hasEntry(entryName: string): boolean {
         return this.files.has(entryName.toLowerCase())
+    }
+
+    get fileNames(): string[] {
+        return Array.from(this.files.keys())
     }
 }
