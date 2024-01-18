@@ -26,12 +26,12 @@ export class RockWipeLayer extends ScreenLayer {
         this.show()
     }
 
-    playOnce() {
+    playOnce(): number {
         const group = new AnimationGroup('Interface/FrontEnd/Rock_Wipe/RockWipe.lws', () => {
             this.scene.remove(group)
             group.dispose()
             if (this.scene.children.length < 2) this.stopRendering() // ambient light is always a child
-        }, null).start(null)
+        }).start(null)
         this.scene.add(group)
         SoundManager.playSample(Sample.SFX_RockWipe, false)
         this.renderInterval = setInterval(() => {
@@ -40,6 +40,7 @@ export class RockWipeLayer extends ScreenLayer {
                 this.renderer.render(this.scene, this.camera)
             })
         }, NATIVE_UPDATE_INTERVAL) // XXX Use FPS from LWS data
+        return group.maxDurationMs
     }
 
     resize(width: number, height: number) {

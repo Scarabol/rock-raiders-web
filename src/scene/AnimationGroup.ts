@@ -12,9 +12,11 @@ export class AnimationGroup extends Group implements Updatable {
     isDone: boolean = false
     animationTransCoef: number = 1
     animationTime: number = 0
+    maxDurationMs: number = 0
 
     constructor(readonly lwsFilepath: string, readonly onAnimationDone: () => unknown, readonly durationTimeoutMs: number = 0) {
         super()
+        this.maxDurationMs = durationTimeoutMs
     }
 
     start(audioListener: AudioListener): this {
@@ -64,6 +66,7 @@ export class AnimationGroup extends Group implements Updatable {
             const opacityTracks = obj.opacityTracks.flatMap((t) => mesh.getMaterials()
                 .map((m, index) => new NumberKeyframeTrack(`.material[${index}].opacity`, t.times, t.values)))
             const clip = new AnimationClip(lwsFilepath, lwscData.durationSeconds, [...obj.keyframeTracks, ...opacityTracks])
+            this.maxDurationMs = Math.max(this.maxDurationMs, clip.duration * 1000)
             const mixer = new AnimationMixer(mesh) // mixer needs to recreate after each group change
             const animationAction = mixer.clipAction(clip)
             if (this.onAnimationDone && !this.durationTimeoutMs) {

@@ -86,8 +86,14 @@ export class MainMenuScreen {
 
     showMainMenu(index: number = 0) {
         const oldIndex = this.menuLayers.findIndex((m) => m.active)
-        if (oldIndex === 0 || (index === 0 && oldIndex > 0)) this.rockWipeLayer.playOnce() // TODO Trigger layer change only after 50% of animation is done
-        this.menuLayers.forEach((m, i) => i === index ? m.show() : m.hide())
+        let timeout = 0
+        if (oldIndex === 0 || (index === 0 && oldIndex > 0)) {
+            const maxDurationMs = this.rockWipeLayer.playOnce()
+            timeout = Math.round(maxDurationMs / 2)
+        }
+        setTimeout(() => {
+            this.menuLayers.forEach((m, i) => i === index ? m.show() : m.hide())
+        }, timeout)
     }
 
     showLevelSelection() {
