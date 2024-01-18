@@ -20,7 +20,7 @@ export interface JobFulfiller {
 
     findShortestPath(targets: PathTarget[] | PathTarget): TerrainPath
     stopJob(): void
-    dropCarried(unAssign: boolean): void
+    dropCarried(unAssign: boolean): MaterialEntity[]
     getDrillTimeSeconds(surface: Surface): number
     getRepairValue(): number
 }

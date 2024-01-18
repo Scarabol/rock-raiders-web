@@ -4,7 +4,7 @@ import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
-import { DEV_MODE, ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL } from '../../../params'
+import { DEV_MODE, ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
 import { AnimEntityActivity, RaiderActivity, RockMonsterActivity } from '../anim/AnimationActivity'
 import { EntityStep } from '../EntityStep'
@@ -283,27 +283,56 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     private grabJobItem(elapsedMs: number, carryItem: MaterialEntity): boolean {
-        if (!carryItem || this.carriedItems.has(carryItem)) return true
-        const positionAsPathTarget = PathTarget.fromLocation(carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)
-        if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
-            this.sceneEntity.setAnimation(AnimEntityActivity.Stand, () => {
-                this.carriedItems.add(carryItem)
-                this.sceneEntity.pickupEntity(carryItem.sceneEntity)
-            }, 500)
+        if (!carryItem) {
+            return true // nothing to do here
+        } else if (!this.carriedItems.has(carryItem)) {
+            const positionAsPathTarget = PathTarget.fromLocation(carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)
+            if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
+                this.sceneEntity.setAnimation(AnimEntityActivity.Stand, () => {
+                    this.carriedItems.add(carryItem)
+                    this.sceneEntity.pickupEntity(carryItem.sceneEntity)
+                }, 500)
+            }
+            return false
+        } else if (this.hasCapacity()) {
+            const fulfillerPos = this.getPosition2D()
+            const matNearby = this.worldMgr.entityMgr.materials.find((m) => { // XXX Move to entity manager and optimize with quad tree
+                if (m.entityType !== this.job.carryItem.entityType || m.carryJob.hasFulfiller() || m.carryJob.jobState !== JobState.INCOMPLETE) return false
+                const pos = this.worldMgr.ecs.getComponents(m.entity)?.get(PositionComponent)
+                if (!pos) return false
+                return pos.getPosition2D().distanceToSquared(fulfillerPos) < Math.pow(3 * TILESIZE, 2) // XXX Improve range, since this is executed on each frame
+            })
+            if (matNearby) {
+                const workplace = this.job.getWorkplace(this)
+                if (workplace.building) {
+                    this.job = matNearby.carryJob
+                    this.job.assign(this)
+                } else if (workplace.site) {
+                    if (!workplace.site.needs(carryItem.entityType)) {
+                        return true
+                    }
+                    this.job = matNearby.carryJob
+                    this.job.assign(this)
+                }
+            }
+            return true
         }
-        return false
+        return true
     }
 
-    dropCarried(unAssignFromSite: boolean) {
-        if (this.carriedItems.size < 1) return
+    dropCarried(unAssignFromSite: boolean): MaterialEntity[] {
+        if (this.carriedItems.size < 1) return []
         if (unAssignFromSite) this.carriedItems.forEach((i) => i.carryJob?.target?.site?.unAssign(i))
         this.sceneEntity.removeAllCarried()
+        const carriedEntities: MaterialEntity[] = []
         this.carriedItems.forEach((carried) => {
             const floorPosition = carried.worldMgr.sceneMgr.terrain.getFloorPosition(carried.getPosition2D())
             carried.setPosition(floorPosition)
             carried.worldMgr.sceneMgr.addMeshGroup(carried.sceneEntity)
+            carriedEntities.push(carried)
         })
         this.carriedItems.clear()
+        return carriedEntities
     }
 
     addDriver(driver: Raider) {

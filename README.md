@@ -48,7 +48,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Refactor job system to allow multi-carry jobs for vehicles
 - Raider get tired while carrying and eat at barracks
 - Allow raider in alarm mode to be moved by player
 
@@ -81,7 +80,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 - Forbidding collection of ores or crystals stops building projects too
 - Level is not marked as failed even if too many crystals are missing
-- Vehicles can get stuck in toolstations, needs vehicle behavior
 - Mark start and end tile in path finding always as accessible to make entering water vehicles and drilling easier, also frees raider stuck on lava
 - Large Cat not usable to carry vehicles in Level 19
 - Damage and blow up buildings with lava erosion
@@ -99,7 +97,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Cosmetics
 
-- Missing rockfall animation when switching in main menu
 - Lava rockies texture not using correct UV coordinates
 - Show health percentage in vehicle tooltip as power
 - Play vehicle SFX when tooltip is shown

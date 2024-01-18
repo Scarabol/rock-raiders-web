@@ -314,14 +314,16 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture('bubbleIdle')
     }
 
-    dropCarried(unAssignFromSite: boolean): void {
-        if (!this.carries) return
+    dropCarried(unAssignFromSite: boolean): MaterialEntity[] {
+        if (!this.carries) return []
         if (unAssignFromSite) this.carries.carryJob?.target?.site?.unAssign(this.carries)
         this.sceneEntity.removeAllCarried()
         const floorPosition = this.carries.worldMgr.sceneMgr.getFloorPosition(this.carries.getPosition2D())
         this.carries.setPosition(floorPosition)
         this.carries.worldMgr.sceneMgr.addMeshGroup(this.carries.sceneEntity)
+        const carriedEntity = this.carries
         this.carries = null
+        return [carriedEntity]
     }
 
     private work(elapsedMs: number) {

@@ -127,38 +127,41 @@ export class CarryJob extends Job {
 
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
-        this.fulfiller.dropCarried(false)
-        this.carryItem.setPosition(this.carryItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
-        const targetBuilding = this.target.building
-        if (targetBuilding) {
-            if (targetBuilding.entityType === EntityType.POWER_STATION || targetBuilding.entityType === EntityType.ORE_REFINERY) {
-                targetBuilding.pickupItem(this.carryItem)
-                if (targetBuilding.sceneEntity.carriedByIndex.size >= targetBuilding.getMaxCarry()) {
-                    targetBuilding.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
-                        targetBuilding.sceneEntity.setAnimation(targetBuilding.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
-                        targetBuilding.sceneEntity.removeAllCarried()
-                        targetBuilding.depositItems()
-                    })
+        const dropped = this.fulfiller.dropCarried(false)
+        dropped.forEach((droppedItem) => {
+            const targetBuilding = this.target.building
+            if (targetBuilding) {
+                if (targetBuilding.entityType === EntityType.POWER_STATION || targetBuilding.entityType === EntityType.ORE_REFINERY) {
+                    targetBuilding.pickupItem(droppedItem)
+                    if (targetBuilding.sceneEntity.carriedByIndex.size >= targetBuilding.getMaxCarry()) {
+                        targetBuilding.sceneEntity.setAnimation(BuildingActivity.Deposit, () => {
+                            targetBuilding.sceneEntity.setAnimation(targetBuilding.isPowered() ? BuildingActivity.Stand : BuildingActivity.Unpowered)
+                            targetBuilding.sceneEntity.removeAllCarried()
+                            targetBuilding.depositItems()
+                        })
+                    }
+                } else {
+                    droppedItem.worldMgr.depositItem(droppedItem)
+                    droppedItem.disposeFromWorld()
                 }
+            } else if (droppedItem.entityType === EntityType.DEPLETED_CRYSTAL) {
+                droppedItem.disposeFromWorld()
+                const material = MaterialSpawner.spawnMaterial(droppedItem.worldMgr, EntityType.CRYSTAL, droppedItem.getPosition2D())
+                const raider = fulfiller as Raider // XXX refactor type safety for jobs
+                raider.setJob(material.carryJob)
+                raider.carries = material
+                raider.sceneEntity.pickupEntity(material.sceneEntity)
             } else {
-                this.carryItem.worldMgr.depositItem(this.carryItem)
-                this.carryItem.disposeFromWorld()
+                const dropOff = this.target.site ? this.target.site.getRandomDropPosition() : this.target.targetLocation
+                droppedItem.setPosition(droppedItem.worldMgr.sceneMgr.getFloorPosition(dropOff))
+                droppedItem.sceneEntity.addToScene(droppedItem.worldMgr.sceneMgr, null, null)
+                if (droppedItem.entityType === EntityType.BARRIER) {
+                    droppedItem.sceneEntity.setAnimation(BarrierActivity.Expand, () => droppedItem.sceneEntity.setAnimation(BarrierActivity.Long))
+                    droppedItem.sceneEntity.lookAt(droppedItem.getSurface().getCenterWorld())
+                }
+                this.target.site?.addItem(droppedItem)
             }
-        } else if (this.carryItem.entityType === EntityType.DEPLETED_CRYSTAL) {
-            this.carryItem.disposeFromWorld()
-            const material = MaterialSpawner.spawnMaterial(this.carryItem.worldMgr, EntityType.CRYSTAL, this.carryItem.getPosition2D())
-            const raider = fulfiller as Raider // XXX refactor type safety for jobs
-            raider.setJob(material.carryJob)
-            raider.carries = material
-            raider.sceneEntity.pickupEntity(material.sceneEntity)
-        } else {
-            this.carryItem.sceneEntity.addToScene(this.carryItem.worldMgr.sceneMgr, null, null)
-            if (this.carryItem.entityType === EntityType.BARRIER) {
-                this.carryItem.sceneEntity.setAnimation(BarrierActivity.Expand, () => this.carryItem.sceneEntity.setAnimation(BarrierActivity.Long))
-                this.carryItem.sceneEntity.lookAt(this.carryItem.getSurface().getCenterWorld())
-            }
-            this.target.site?.addItem(this.carryItem)
-        }
+        })
         if (this.carryItem.entityType === EntityType.DYNAMITE && this.carryItem.targetSurface?.dynamiteJob === this) this.igniteDynamite()
         else if (this.carryItem.entityType === EntityType.ELECTRIC_FENCE) this.placeFence()
     }
