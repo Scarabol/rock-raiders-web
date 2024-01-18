@@ -343,11 +343,11 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
     private punchVehicle(behaviorComponent: RockMonsterBehaviorComponent, entity: number, sceneEntity: AnimatedSceneEntity, vehicleInMeleeRange: VehicleTarget, rockyPos: Vector2, stats: MonsterEntityStats) {
         const prevState = behaviorComponent.state
         this.ecs.removeComponent(entity, WorldTargetComponent)
-        sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.position2d))
+        sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(vehicleInMeleeRange.position.getPosition2D()))
         behaviorComponent.state = RockMonsterBehaviorState.PUNCH
         sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
             sceneEntity.setAnimation(AnimEntityActivity.Stand)
-            if (vehicleInMeleeRange.position2d.distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
+            if (vehicleInMeleeRange.position.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
                 const vehicleComponents = this.ecs.getComponents(vehicleInMeleeRange.entity)
                 const healthComponent = vehicleComponents.get(HealthComponent)
                 healthComponent.changeHealth(stats.RepairValue)

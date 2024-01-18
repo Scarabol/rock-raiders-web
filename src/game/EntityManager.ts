@@ -27,7 +27,7 @@ import { SlugBehaviorComponent, SlugBehaviorState } from './component/SlugBehavi
 
 export interface VehicleTarget {
     entity: GameEntity
-    position2d: Vector2
+    position: PositionComponent
 }
 
 export class EntityManager {
@@ -377,9 +377,9 @@ export class EntityManager {
     findVehicleInRange(position2d: Vector2, rangeSq: number): VehicleTarget {
         let result: VehicleTarget = null
         this.worldMgr.entityMgr.vehicles.some((v) => {
-            const vPos = this.worldMgr.ecs.getComponents(v.entity).get(PositionComponent).getPosition2D()
-            if (vPos.distanceToSquared(position2d) < rangeSq) {
-                result = {entity: v.entity, position2d: vPos}
+            const vPos = this.worldMgr.ecs.getComponents(v.entity).get(PositionComponent)
+            if (vPos.getPosition2D().distanceToSquared(position2d) < rangeSq) {
+                result = {entity: v.entity, position: vPos}
                 return true
             }
             return false
