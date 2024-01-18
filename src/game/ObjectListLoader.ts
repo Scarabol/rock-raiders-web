@@ -103,7 +103,11 @@ export class ObjectListLoader {
                     if (ObjectListLoader.startVehicle) {
                         const startVehicleEntityType = getEntityTypeByName(ObjectListLoader.startVehicle) as VehicleEntityType
                         if (startVehicleEntityType) {
-                            this.spawnVehicle(startVehicleEntityType, building.primaryPathSurface.getCenterWorld2D(), headingRad - Math.PI)
+                            const vehiclePos = building.primaryPathSurface.getCenterWorld2D()
+                            const vehicle = this.spawnVehicle(startVehicleEntityType, vehiclePos, headingRad - Math.PI)
+                            const driver = this.spawnRaider(vehiclePos, headingRad - Math.PI)
+                            RaiderTrainings.values.forEach((t) => driver.addTraining(t))
+                            vehicle.addDriver(driver)
                         } else {
                             console.warn(`Could not determine entity type for '${ObjectListLoader.startVehicle}'`)
                         }
