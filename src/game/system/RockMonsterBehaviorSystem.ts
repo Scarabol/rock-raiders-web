@@ -93,6 +93,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     this.worldMgr.ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
                                 }
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                            }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
@@ -201,6 +202,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     this.worldMgr.ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
                                 }
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                            }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
@@ -231,11 +233,12 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         behaviorComponent.state = RockMonsterBehaviorState.PUNCH
                                         sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
                                             sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                                            behaviorComponent.changeToIdle()
+                                        }, 0, () => {
                                             const buildingComponents = this.ecs.getComponents(behaviorComponent.targetBuilding.entity)
                                             const healthComponent = buildingComponents.get(HealthComponent)
                                             healthComponent.changeHealth(stats.RepairValue)
                                             if (healthComponent.triggerAlarm) EventBus.publishEvent(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
-                                            behaviorComponent.changeToIdle()
                                         })
                                     } else if (!components.has(WorldTargetComponent)) {
                                         const buildingPathTargets = behaviorComponent.targetBuilding.getTrainingTargets()
@@ -264,6 +267,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                     this.worldMgr.ecs.addComponent(entity, new HeadingComponent(prevTargetComponent.position))
                                 }
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                            }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
                                 this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
@@ -370,13 +374,14 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
         behaviorComponent.state = RockMonsterBehaviorState.PUNCH
         sceneEntity.setAnimation(RockMonsterActivity.Punch, () => {
             sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            behaviorComponent.state = prevState
+        }, 0, () => {
             if (vehicleInMeleeRange.position.getPosition2D().distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ) {
                 const vehicleComponents = this.ecs.getComponents(vehicleInMeleeRange.entity)
                 const healthComponent = vehicleComponents.get(HealthComponent)
                 healthComponent.changeHealth(stats.RepairValue)
                 if (healthComponent.triggerAlarm) EventBus.publishEvent(new UnderAttackEvent(vehicleComponents.get(PositionComponent)))
             }
-            behaviorComponent.state = prevState
         })
     }
 

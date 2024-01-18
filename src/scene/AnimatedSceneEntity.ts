@@ -56,14 +56,15 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.driver = null
     }
 
-    setAnimation(animationName: string, onAnimationDone?: () => unknown, durationTimeoutMs: number = 0) {
+    setAnimation(animationName: string, onAnimationDone?: () => void, durationTimeoutMs: number = 0, onAnimationTrigger: () => void = null) {
         if (this.currentAnimation === animationName) return
         this.currentAnimation = animationName
         if (this.animationData.length > 0) this.removeAll()
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
-            const animatedGroup = new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs).setup(this.audioListener)
+            // TODO recycle animation groups for better performance?
+            const animatedGroup = new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs, onAnimationTrigger).setup(this.audioListener)
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
             this.animationParent.add(animatedGroup)
             this.animationGroups.push(animatedGroup)

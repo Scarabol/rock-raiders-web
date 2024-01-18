@@ -13,10 +13,12 @@ export class AnimationGroup extends Group implements Updatable {
     animationTransCoef: number = 1
     animationTime: number = 0
     maxDurationMs: number = 0
+    animationTriggerTimeMs: number = 0
 
-    constructor(readonly lwsFilepath: string, readonly onAnimationDone: () => unknown, readonly durationTimeoutMs: number = 0) {
+    constructor(readonly lwsFilepath: string, readonly onAnimationDone: () => void, readonly durationTimeoutMs: number = 0, readonly onAnimationTrigger: () => void = null) {
         super()
         this.maxDurationMs = durationTimeoutMs
+        this.animationTriggerTimeMs = durationTimeoutMs
     }
 
     start(audioListener: AudioListener): this {
@@ -87,9 +89,12 @@ export class AnimationGroup extends Group implements Updatable {
     update(elapsedMs: number) {
         this.animationMixers.forEach((m) => m.update(elapsedMs / 1000 * this.animationTransCoef))
         this.meshList.forEach((m) => m.update(elapsedMs))
-        if (this.durationTimeoutMs) {
+        if (this.durationTimeoutMs || this.animationTriggerTimeMs) { // otherwise animationTime counter may become very high for loop
+            if (this.onAnimationTrigger && this.animationTime < this.animationTriggerTimeMs && this.animationTime + elapsedMs >= this.animationTriggerTimeMs) {
+                this.onAnimationTrigger()
+            }
             this.animationTime += elapsedMs
-            if (this.animationTime >= this.durationTimeoutMs) {
+            if (this.durationTimeoutMs && this.animationTime >= this.durationTimeoutMs) {
                 this.animationMixers.forEach((a) => a.stopAllAction())
                 if (this.onAnimationDone) {
                     this.onAnimationDone() // XXX ensure this is not triggered more than once
