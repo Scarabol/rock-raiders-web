@@ -52,7 +52,7 @@ Array.prototype.removeAll = function <T>(predicate: (e: T) => boolean): void {
 }
 
 Array.prototype.last = function <T>(): T {
-    return this.length > 0 ? this[this.length - 1] : undefined
+    return this[this.length > 1 ? this.length - 1 : 0]
 }
 
 Array.prototype.count = function <T>(callback: (element: T) => boolean): number {
