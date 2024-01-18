@@ -97,7 +97,7 @@ export class MainMenuScreen {
         const oldIndex = this.menuLayers.findIndex((m) => m.active)
         let timeout = 0
         if (oldIndex === 0 || (index === 0 && oldIndex > 0)) {
-            const maxDurationMs = this.rockWipeLayer.playOnce()
+            const maxDurationMs = this.rockWipeLayer.show()
             timeout = Math.round(maxDurationMs / 2)
         }
         setTimeout(() => {

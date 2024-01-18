@@ -1,4 +1,4 @@
-import { AnimationClip, AnimationMixer, AudioListener, Group, LoopOnce, NumberKeyframeTrack } from 'three'
+import { AnimationAction, AnimationClip, AnimationMixer, AudioListener, Group, LoopOnce, NumberKeyframeTrack } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from './SceneMesh'
@@ -9,6 +9,7 @@ import { SceneAudioMesh } from './SceneAudioMesh'
 export class AnimationGroup extends Group implements Updatable {
     readonly meshList: SceneMesh[] = []
     readonly animationMixers: AnimationMixer[] = []
+    readonly animationActions: AnimationAction[] = []
     isDone: boolean = false
     animationTransCoef: number = 1
     animationTime: number = 0
@@ -21,7 +22,7 @@ export class AnimationGroup extends Group implements Updatable {
         this.animationTriggerTimeMs = durationTimeoutMs
     }
 
-    start(audioListener: AudioListener): this {
+    setup(audioListener: AudioListener): this {
         const lwscData = ResourceManager.getLwscData(this.lwsFilepath)
         this.createMeshList(lwscData, audioListener)
         this.createAnimationMixers(lwscData, this.lwsFilepath)
@@ -82,6 +83,7 @@ export class AnimationGroup extends Group implements Updatable {
                 })
             }
             animationAction.play()
+            this.animationActions.push(animationAction)
             this.animationMixers.push(mixer)
         })
     }
@@ -105,5 +107,14 @@ export class AnimationGroup extends Group implements Updatable {
 
     dispose() {
         this.meshList.forEach((m) => m.dispose())
+    }
+
+    stop() {
+        this.isDone = false
+        this.animationTime = 0
+        this.animationActions.forEach((m) => m.stop())
+        // play needs to be called here to not have the animation stuck on last frame but first
+        this.animationActions.forEach((m) => m.play())
+        this.update(0)
     }
 }
