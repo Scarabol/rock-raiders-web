@@ -1,5 +1,3 @@
-import { encodeChar } from './EncodingHelper'
-
 export class LevelObjectiveTextEntry {
     key: string
     objective: string
@@ -10,15 +8,13 @@ export class LevelObjectiveTextEntry {
 
 export class ObjectiveTextParser {
     parseObjectiveTextFile(txtFileText: string) {
-        // XXX Use given text in parsing below
-        const txtFileContent = new TextEncoder().encode(txtFileText)
         const result: Record<string, LevelObjectiveTextEntry> = {}
         let state = PARSING_STATE.DROP
         let currentLevel: LevelObjectiveTextEntry = null
         let value = ''
         let line = ''
-        for (let c = 0; c < txtFileContent.length; c++) {
-            let char = String.fromCharCode(encodeChar[txtFileContent[c]])
+        for (let c = 0; c < txtFileText.length; c++) {
+            let char = txtFileText.charAt(c)
             if (state === PARSING_STATE.DROP) {
                 if (char === '[') {
                     if (currentLevel) result[currentLevel.key.toLowerCase()] = currentLevel
@@ -39,7 +35,7 @@ export class ObjectiveTextParser {
                         line = ''
                         state = PARSING_STATE.CRYSTAL_FAILURE
                     }
-                    for (; c < txtFileContent.length && txtFileContent[c + 1] === '\t'.charCodeAt(0); c++) {
+                    for (; c < txtFileText.length && txtFileText.charCodeAt(c + 1) === '\t'.charCodeAt(0); c++) {
                     }
                 } else if (char === '\n' || char === '\r') {
                     line = ''
