@@ -1,6 +1,6 @@
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
 import { SpriteImage } from '../core/Sprite'
-import { clearIntervalSafe } from '../core/Util'
+import { clearIntervalSafe, clearTimeoutSafe } from '../core/Util'
 import { MOUSE_BUTTON, POINTER_EVENT } from '../event/EventTypeEnum'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
@@ -86,6 +86,7 @@ export class MainMenuLayer extends ScaledLayer {
         this.scrollSpeedY = 0
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
         this.overlay?.stop()
+        this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
     }
 
     show() {
@@ -99,6 +100,7 @@ export class MainMenuLayer extends ScaledLayer {
         this.scrollSpeedY = 0
         this.scrollInterval = clearIntervalSafe(this.scrollInterval)
         this.overlay?.stop()
+        this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
         super.hide()
     }
 
@@ -184,6 +186,7 @@ export class MainMenuLayer extends ScaledLayer {
 
     playRandomOverlay(): void {
         this.overlay?.stop()
+        this.overlayTimeout = clearTimeoutSafe(this.overlayTimeout)
         if (this.overlays.length < 1) return
         this.overlayTimeout = setTimeout(async () => {
             this.overlay = this.overlays[this.overlayIndex]
