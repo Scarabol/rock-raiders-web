@@ -8,6 +8,7 @@ export class SurfaceType {
     selectable: boolean = false
     digable: boolean = false
     reinforcable: boolean = false
+    hasRubble: boolean = false
     cursor: Cursor = Cursor.STANDARD
     statsDrillName: string = null
     canHaveFence: boolean = false
@@ -155,6 +156,7 @@ export class SurfaceType {
         floor: true,
         matIndex: '13',
         selectable: true,
+        hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
         rubbleResilient: false,
@@ -164,6 +166,7 @@ export class SurfaceType {
         floor: true,
         matIndex: '12',
         selectable: true,
+        hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
         rubbleResilient: false,
@@ -173,6 +176,7 @@ export class SurfaceType {
         floor: true,
         matIndex: '11',
         selectable: true,
+        hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
         rubbleResilient: false,
@@ -182,6 +186,7 @@ export class SurfaceType {
         floor: true,
         matIndex: '10',
         selectable: true,
+        hasRubble: true,
         canHaveFence: true,
         mapSurfaceColor: '#280048',
     })

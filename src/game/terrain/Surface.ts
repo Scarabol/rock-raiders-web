@@ -425,7 +425,7 @@ export class Surface {
     }
 
     hasRubble(): boolean {
-        return this.rubblePositions.length > 0
+        return this.surfaceType.hasRubble
     }
 
     isPath(): boolean {
