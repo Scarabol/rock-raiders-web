@@ -50,6 +50,7 @@ export class WorldManager {
     requestedVehicleTypes: EntityType[] = []
     spawnVehicleTimer: number = 0
     firstUnpause: boolean = true
+    gameSpeedMultiplier: number = 1
 
     constructor() {
         this.ecs.worldMgr = this
@@ -129,7 +130,7 @@ export class WorldManager {
     private mainLoop(elapsedMs: number) {
         const startUpdate = window.performance.now()
         this.elapsedGameTimeMs += UPDATE_INTERVAL_MS
-        this.update(elapsedMs)
+        this.update(elapsedMs * this.gameSpeedMultiplier)
         const endUpdate = window.performance.now()
         const updateDurationMs = endUpdate - startUpdate
         const sleepForMs = UPDATE_INTERVAL_MS - Math.round(updateDurationMs)

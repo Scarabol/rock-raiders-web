@@ -5,7 +5,6 @@ import { SaveGameManager } from '../../resource/SaveGameManager'
 
 export function setupOptionsLayer(optionsLayer: MenuLayer, onRepeatBriefing: () => unknown) {
     const gameSpeedSlider = optionsLayer.itemsSlider[0]
-    gameSpeedSlider.disabled = true // TODO Implement adjustable game speed
     gameSpeedSlider.onValueChanged = (value) => {
         SaveGameManager.currentPreferences.gameSpeed = value
         optionsLayer.publishEvent(new ChangePreferences())
