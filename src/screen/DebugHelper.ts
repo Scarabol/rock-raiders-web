@@ -57,6 +57,7 @@ export class DebugHelper {
             optionalParams.forEach((p) => msg.innerText += `\n${JSON.stringify(p)}`)
             msg.style.padding = '0.1em'
             msg.style.color = color
+            msg.style.userSelect = 'none'
             DebugHelper.element.scrollTop = DebugHelper.element.scrollHeight
         } catch (e) {
             // do nothing to avoid circular calls
