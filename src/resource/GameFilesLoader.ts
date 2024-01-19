@@ -31,7 +31,7 @@ export class GameFilesLoader {
                 const vfs = new VirtualFileSystem()
                 await Promise.all(vfsFileNames.map(async (fileName) => {
                     const buffer = await cacheGetData(fileName)
-                    vfs.registerFile(new VirtualFile(fileName, buffer))
+                    vfs.registerFile(VirtualFile.fromBuffer(fileName, buffer))
                 }))
                 console.timeEnd('Files loaded from cache')
                 this.onGameFilesLoaded(vfs).then()
@@ -50,7 +50,7 @@ export class GameFilesLoader {
 
     async onGameFilesLoaded(vfs: VirtualFileSystem) {
         vfs.filterEntryNames('.+\\.wad').sort()
-            .forEach((f) => WadParser.parseFileList(vfs.getFile(f).buffer).forEach((f) => vfs.registerFile(f)))
+            .forEach((f) => WadParser.parseFileList(vfs.getFile(f).toDataView()).forEach((f) => vfs.registerFile(f)))
         this.screenMaster.loadingLayer.setLoadingMessage('Loading configuration...')
         const cfgFiles = vfs.filterEntryNames('\\.cfg')
         if (cfgFiles.length < 1) throw new Error('Invalid second WAD file given! No config file present at root level.')

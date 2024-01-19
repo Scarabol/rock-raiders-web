@@ -18,7 +18,7 @@ export class CabFilesComponent extends AbstractFormFilesComponent {
         const cabFile = new CabFile(cabHeader, cabVolume, false).parse()
         const allFiles = await cabFile.loadAllFiles()
         await Promise.all(allFiles.map(async (f) => {
-            await cachePutData(f.fileName.toLowerCase(), f.buffer)
+            await cachePutData(f.fileName.toLowerCase(), f.toBuffer())
             vfs.registerFile(f)
         }))
     }

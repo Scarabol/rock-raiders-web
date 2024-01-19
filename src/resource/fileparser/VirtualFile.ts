@@ -1,20 +1,39 @@
 import { encodeChar } from './EncodingHelper'
 
 export class VirtualFile {
-    text: string
+    private buffer: ArrayBuffer = null
+    private text: string = null
 
-    constructor(readonly fileName: string, readonly buffer: ArrayBuffer) {
+    private constructor(readonly fileName: string, private view: DataView) {
         if (!fileName) throw new Error('No filename given')
-        if (!buffer) throw new Error('No buffer given')
-        else if (buffer.byteLength < 1) throw new Error(`Invalid buffer given with length of ${buffer.byteLength} bytes`)
+        if (!view) throw new Error('No data given')
+        else if (view.byteLength < 1) throw new Error(`Invalid data given with length of ${view.byteLength} bytes`)
+    }
+
+    static fromView(fileName: string, view: DataView): VirtualFile {
+        return new VirtualFile(fileName, view)
+    }
+
+    static fromBuffer(fileName: string, buffer: ArrayBuffer): VirtualFile {
+        const f = new VirtualFile(fileName, new DataView(buffer))
+        f.buffer = buffer
+        return f
+    }
+
+    /**
+     * This method actually clones the memory buffer and should be considered 'pricey' in terms of performance
+     */
+    toBuffer(): ArrayBuffer {
+        if (!this.buffer) this.buffer = this.view.buffer.slice(this.view.byteOffset, this.view.byteOffset + this.view.byteLength)
+        return this.buffer
     }
 
     toArray(): Uint8Array {
-        return new Uint8Array(this.buffer)
+        return new Uint8Array(this.view.buffer, this.view.byteOffset, this.view.byteLength)
     }
 
     toDataView(): DataView {
-        return new DataView(this.buffer)
+        return new DataView(this.view.buffer, this.view.byteOffset, this.view.byteLength)
     }
 
     toText(decode: boolean = false): string {

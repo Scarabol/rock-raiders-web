@@ -197,7 +197,7 @@ export class CabFile {
                 } else {
                     return
                 }
-                result.push(new VirtualFile(mappedFileName, buffer))
+                result.push(VirtualFile.fromBuffer(mappedFileName, buffer))
             })
         )
         return result

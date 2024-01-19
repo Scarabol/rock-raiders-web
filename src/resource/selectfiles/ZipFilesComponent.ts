@@ -124,15 +124,15 @@ export class ZipFilesComponent implements SelectFilesComponent {
                     }
                 })
                 const buffer = zipFileData.buffer
-                vfs.registerFile(new VirtualFile(lFileName, buffer))
+                vfs.registerFile(VirtualFile.fromBuffer(lFileName, buffer))
                 await cachePutData(lFileName, buffer)
             }))
             const dataEntries = zipEntries.filter((e) => !e.directory && !!e.filename.match(/Rock Raiders\/Data/i))
             let progress = 0
-            await Promise.all(dataEntries.map(async (e, index) => {
+            await Promise.all(dataEntries.map(async (e) => {
                 const lFileName = e.filename.replace('Rock Raiders/', '').toLowerCase()
                 const buffer = (await e.getData(new Uint8ArrayWriter())).buffer
-                vfs.registerFile(new VirtualFile(lFileName, buffer))
+                vfs.registerFile(VirtualFile.fromBuffer(lFileName, buffer))
                 await cachePutData(lFileName, buffer)
                 progress++
                 this.setProgress(`Extracting files...`, progress, dataEntries.length)

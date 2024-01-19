@@ -22,12 +22,12 @@ export class AssetLoader {
     }
 
     loadWadImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
-        AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).buffer)
+        AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
             .then((imgData) => callback([name], imgData))
     }
 
     loadWadTexture(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
-        const data = this.vfs.getFile(name).buffer
+        const data = this.vfs.getFile(name).toBuffer()
         const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
         let alphaIndex = null
         const assetNames = [name]
@@ -59,7 +59,7 @@ export class AssetLoader {
     }
 
     loadAlphaImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {
-        AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(this.vfs.getFile(name).buffer)
+        AssetLoader.bitmapWorkerPool.decodeBitmapWithAlpha(this.vfs.getFile(name).toBuffer())
             .then((imgData) => {
                 const assetNames = [name]
                 const alphaIndexMatch = name.toLowerCase().match(/(.*a)(\d+)(_.+)/)
@@ -69,7 +69,7 @@ export class AssetLoader {
     }
 
     loadFontImageAsset(name: string, callback: (assetNames: string[], obj: BitmapFontData) => any) {
-        AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).buffer)
+        AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
             .then((imgData) => {
                 const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
                 // XXX find better way to detect char dimensions
@@ -118,11 +118,11 @@ export class AssetLoader {
         let buffer: ArrayBufferLike
         const errors = []
         try {
-            buffer = this.vfs.getFile(path).buffer
+            buffer = this.vfs.getFile(path).toBuffer()
         } catch (e2) {
             errors.push(e2)
             try {
-                buffer = this.vfs.getFile(`Data/${path}`).buffer
+                buffer = this.vfs.getFile(`Data/${path}`).toBuffer()
             } catch (e) {
                 errors.push(e)
             }
@@ -146,10 +146,10 @@ export class AssetLoader {
     loadLWOFile(lwoFilepath: string, callback: (assetNames: string[], obj: any) => any) {
         let lwoContent = null
         try {
-            lwoContent = this.vfs.getFile(lwoFilepath).buffer
+            lwoContent = this.vfs.getFile(lwoFilepath).toBuffer()
         } catch (e) {
             try {
-                lwoContent = this.vfs.getFile(`world/shared/${getFilename(lwoFilepath)}`).buffer
+                lwoContent = this.vfs.getFile(`world/shared/${getFilename(lwoFilepath)}`).toBuffer()
             } catch (e) {
                 if (!lwoFilepath.equalsIgnoreCase('Vehicles/BullDozer/VLBD_light.lwo') // ignore known issues
                     && !lwoFilepath.equalsIgnoreCase('Vehicles/LargeDigger/LD_bucket.lwo')

@@ -2,20 +2,21 @@ import { ObjectListEntryCfg } from '../../cfg/ObjectListEntryCfg'
 import { VirtualFile } from './VirtualFile'
 
 export class WadParser {
-    static parseFileList(data: ArrayBufferLike): VirtualFile[] {
-        const dataView = new DataView(data)
+    static parseFileList(dataView: DataView): VirtualFile[] {
         const textDecoder = new TextDecoder()
-        if (textDecoder.decode(new Uint8Array(data, 0, 4)) !== 'WWAD') {
+        let pos = dataView.byteOffset
+        if (textDecoder.decode(new Uint8Array(dataView.buffer, pos, 4)) !== 'WWAD') {
             throw new Error('Invalid WAD file provided')
         }
-        const numberOfEntries = dataView.getInt32(4, true)
+        pos += 4
+        const numberOfEntries = dataView.getInt32(pos, true)
         const lEntryNames: string[] = []
-        let pos = 8
+        pos += 4
         let bufferStart = pos
         for (let entryIndex = 0; entryIndex < numberOfEntries; pos++) {
             if (dataView.getUint8(pos) !== 0) continue
             const len = pos - bufferStart
-            const array = new Uint8Array(data, bufferStart, len)
+            const array = new Uint8Array(dataView.buffer, bufferStart, len)
             lEntryNames[entryIndex] = textDecoder.decode(array).replace(/\\/g, '/').toLowerCase()
             bufferStart = pos + 1
             entryIndex++
@@ -28,8 +29,9 @@ export class WadParser {
         for (let entryIndex = 0; entryIndex < numberOfEntries; entryIndex++) {
             const fileLength = dataView.getInt32(pos + 8, true)
             const fileStartOffset = dataView.getInt32(pos + 12, true)
-            const buffer = data.slice(fileStartOffset, fileStartOffset + fileLength)
-            result.push(new VirtualFile(lEntryNames[entryIndex], buffer))
+            const fileName = lEntryNames[entryIndex]
+            const view = new DataView(dataView.buffer, fileStartOffset, fileLength)
+            result.push(VirtualFile.fromView(fileName, view))
             pos += 16
         }
         return result

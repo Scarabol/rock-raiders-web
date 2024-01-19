@@ -16,7 +16,7 @@ export class WadFilesComponent extends AbstractFormFilesComponent {
         await Promise.all(files.map(async (file) => {
             const lFileName = file.name.toLowerCase()
             const buffer = await file.arrayBuffer()
-            vfs.registerFile(new VirtualFile(lFileName, buffer))
+            vfs.registerFile(VirtualFile.fromBuffer(lFileName, buffer))
             await cachePutData(lFileName, buffer)
         }))
     }
