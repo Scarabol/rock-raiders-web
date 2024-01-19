@@ -40,7 +40,6 @@ export class WorldManager {
     readonly ecs: ECS = new ECS()
     readonly jobSupervisor: Supervisor = new Supervisor(this)
     readonly damageSystem: DamageSystem
-    readonly oxygenSystem: OxygenSystem
     sceneMgr: SceneManager
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
@@ -64,7 +63,7 @@ export class WorldManager {
         this.ecs.addSystem(new RockMonsterBehaviorSystem(this))
         this.ecs.addSystem(new ElectricFenceSystem(this))
         this.ecs.addSystem(new DeathSystem(this))
-        this.oxygenSystem = this.ecs.addSystem(new OxygenSystem())
+        if (!DEV_MODE) this.ecs.addSystem(new OxygenSystem())
         this.ecs.addSystem(new RaiderScareSystem(this))
         this.ecs.addSystem(new SlugBehaviorSystem(this))
         this.ecs.addSystem(new TerrainScannerSystem(this))
@@ -103,7 +102,6 @@ export class WorldManager {
     setup(levelConf: LevelEntryCfg) {
         this.ecs.reset()
         this.jobSupervisor.reset()
-        this.oxygenSystem.setLevelOxygenRate(DEV_MODE ? 0 : levelConf.oxygenRate)
         this.elapsedGameTimeMs = 0
         this.requestedRaiders = 0
         this.spawnRaiderTimer = 0

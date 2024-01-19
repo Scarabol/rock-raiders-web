@@ -3,15 +3,19 @@ import { OxygenComponent } from '../component/OxygenComponent'
 import { GameState } from '../model/GameState'
 import { EventBus } from '../../event/EventBus'
 import { AirLevelChanged } from '../../event/LocalEvents'
-import { GameResultEvent } from '../../event/WorldEvents'
+import { GameResultEvent, LevelSelectedEvent } from '../../event/WorldEvents'
 import { GameResultState } from '../model/GameResult'
+import { EventKey } from '../../event/EventKeyEnum'
 
 export class OxygenSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([OxygenComponent])
     levelOxygenRate: number = 0
 
-    setLevelOxygenRate(oxygenRate: number) {
-        this.levelOxygenRate = oxygenRate / 1000 * (1.8 / 100 / 1000)
+    constructor() {
+        super()
+        EventBus.registerEventListener(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
+            this.levelOxygenRate = event.levelConf.oxygenRate / 1000 / 100 / 1000
+        })
     }
 
     update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
