@@ -82,6 +82,7 @@ export enum RockMonsterActivity {
     Punch = 'Activity_Repair',
     Crumble = 'Activity_Crumble',
     ThrowMan = 'Activity_ThrowMan',
+    Rest = 'Activity_Rest',
 }
 
 export enum SlugActivity {

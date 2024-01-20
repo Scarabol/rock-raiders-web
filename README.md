@@ -48,7 +48,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Raider get tired while carrying and eat at barracks
 - Allow raider in alarm mode to be moved by player
 
 - Add magnet cursor to map panel to track entities

@@ -69,6 +69,7 @@ export class BuildingEntityStats extends BaseConfig implements DoubleSelectStats
 
 export class MonsterEntityStats extends BaseConfig implements MovableEntityStats {
     PickSphere: number = 0
+    RestPercent: number = 100.0
     CollRadius: number = 0
     CollRadiusSq: number = 0
     CollHeight: number = 0
@@ -114,6 +115,9 @@ export class MonsterEntityStats extends BaseConfig implements MovableEntityStats
         } else if ('FreezerTime'.equalsIgnoreCase(unifiedKey)) {
             this.FreezerTimeMs = cfgValue * 1000 / 25 // given as 25 per second
             return super.assignValue(objKey, unifiedKey, cfgValue)
+        } else if ('RestPercent'.equalsIgnoreCase(unifiedKey)) {
+            this.RestPercent = cfgValue / 100
+            return true
         } else {
             return super.assignValue(objKey, unifiedKey, cfgValue)
         }
@@ -155,6 +159,18 @@ export class PilotStats extends BaseConfig implements MovableEntityStats {
     CanStrafe: boolean = true
     EnterToolStore: boolean = true
     ShowHealthBar: boolean = true
+
+    assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
+        if ('RestPercent'.equalsIgnoreCase(unifiedKey)) {
+            if (isNaN(cfgValue)) {
+                console.warn(`Unexpected value "${cfgValue}" given for "${objKey}"`)
+            } else {
+                this.RestPercent = cfgValue / 100
+                return true
+            }
+        }
+        return super.assignValue(objKey, unifiedKey, cfgValue)
+    }
 }
 
 export class RockMonsterStats extends MonsterEntityStats {

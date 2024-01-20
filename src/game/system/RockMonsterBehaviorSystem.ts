@@ -184,6 +184,18 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         console.warn('Rocky cannot find path to targets', buildingPathTargets)
                                         behaviorComponent.changeToIdle()
                                     }
+                                } else {
+                                    // XXX Adjust balancing for resting
+                                    const chanceToRestPerSecond = stats.RestPercent / 20
+                                    if (Math.random() < chanceToRestPerSecond * elapsedMs / 1000) {
+                                        const prevState = behaviorComponent.state
+                                        behaviorComponent.state = RockMonsterBehaviorState.RESTING
+                                        this.ecs.removeComponent(entity, WorldTargetComponent)
+                                        this.worldMgr.ecs.removeComponent(entity, HeadingComponent)
+                                        sceneEntity.setAnimation(RockMonsterActivity.Rest, () => {
+                                            behaviorComponent.state = prevState
+                                        })
+                                    }
                                 }
                             }
                         } else {

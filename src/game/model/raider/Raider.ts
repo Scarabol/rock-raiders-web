@@ -58,6 +58,7 @@ export class Raider implements Updatable, JobFulfiller {
     scared: boolean = false
     toolsIndex: number = 0
     weaponCooldown: number = 0
+    resting: boolean = false
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
@@ -76,12 +77,11 @@ export class Raider implements Updatable, JobFulfiller {
 
     update(elapsedMs: number) {
         if (this.weaponCooldown > 0) this.weaponCooldown -= elapsedMs
-        if (this.slipped) return
         if (this.vehicle) {
             this.sceneEntity.setAnimation(this.vehicle.getDriverActivity())
             return
         }
-        if (this.isInBeam() || this.thrown || this.selected) return
+        if (this.slipped || this.isInBeam() || this.thrown || this.selected || this.resting) return
         if (GameState.alarmMode && this.hasWeapon()) {
             this.fight(elapsedMs)
             return
@@ -191,6 +191,16 @@ export class Raider implements Updatable, JobFulfiller {
             this.setPosition(this.getPosition().add(step.vec))
             this.sceneEntity.setAnimation(this.getRouteActivity())
             if (this.foodLevel > 0) this.foodLevel -= step.vec.lengthSq() / TILESIZE / TILESIZE / 5
+            if (!!this.carries) {
+                // XXX Adjust balancing for resting
+                const chanceToRestPerSecond = this.stats.RestPercent / 20 * Math.max(0, 1 - this.foodLevel / this.stats.RestPercent)
+                if (Math.random() < chanceToRestPerSecond * elapsedMs / 1000) {
+                    this.resting = true
+                    this.sceneEntity.setAnimation('Activity_Rest', () => {
+                        this.resting = false
+                    })
+                }
+            }
             this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setHungerIndicator(this.foodLevel)
             return MoveState.MOVED
         }
@@ -277,7 +287,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     isSelectable(): boolean {
-        return !this.selected && !this.isInBeam() && !this.slipped && !this.vehicle && !this.scared && !this.thrown
+        return !this.selected && !this.isInBeam() && !this.slipped && !this.vehicle && !this.scared && !this.thrown && !this.resting
     }
 
     private isInBeam(): boolean {
