@@ -46,7 +46,8 @@ export class Teleport {
             if (entity.entityType === EntityType.PILOT) {
                 healthComponent = entity.worldMgr.ecs.addComponent(entity.entity, new HealthComponent(false, 16, 10, entity.sceneEntity, true, ResourceManager.getRockFallDamage(entity.entityType, entity.level)))
                 entity.worldMgr.ecs.addComponent(entity.entity, new OxygenComponent(entity.stats.OxygenCoef))
-                entity.worldMgr.ecs.addComponent(entity.entity, new RaiderInfoComponent(entity.sceneEntity))
+                const infoComp = entity.worldMgr.ecs.addComponent(entity.entity, new RaiderInfoComponent(entity.sceneEntity))
+                infoComp.setHungerIndicator((entity as Raider).foodLevel)
             } else {
                 healthComponent = entity.worldMgr.ecs.addComponent(entity.entity, new HealthComponent(false, 24, 14, entity.sceneEntity, false, ResourceManager.getRockFallDamage(entity.entityType, entity.level)))
             }

@@ -157,6 +157,7 @@ export class ObjectListLoader {
         this.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.OxygenCoef))
         const infoComp = this.worldMgr.ecs.addComponent(raider.entity, new RaiderInfoComponent(raider.sceneEntity))
         this.worldMgr.sceneMgr.addSprite(infoComp.bubbleSprite)
+        infoComp.setHungerIndicator(raider.foodLevel)
         const sceneSelectionComponent = new SceneSelectionComponent(raider.sceneEntity, {gameEntity: raider.entity, entityType: raider.entityType}, raider.stats)
         const raiderSceneSelection = this.worldMgr.ecs.addComponent(raider.entity, sceneSelectionComponent)
         this.worldMgr.ecs.addComponent(raider.entity, new SelectionFrameComponent(raiderSceneSelection.pickSphere, raider.stats))
