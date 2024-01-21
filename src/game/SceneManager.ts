@@ -174,8 +174,8 @@ export class SceneManager implements Updatable {
         this.followerRenderer = new FollowerRenderer(followerCanvas, this.scene, this.worldMgr.ecs)
     }
 
-    startScene() {
-        this.renderer.startRendering(this.scene)
+    async startScene(): Promise<void> {
+        return this.renderer.startRendering(this.scene)
     }
 
     update(elapsedMs: number) {

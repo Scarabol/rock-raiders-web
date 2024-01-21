@@ -96,8 +96,9 @@ export class GameScreen {
         this.selectionLayer.show()
         this.guiLayer.show()
         this.overlayLayer.show()
-        this.sceneMgr.startScene()
-        this.screenMaster.loadingLayer.hide()
+        this.sceneMgr.startScene().then(() => {
+            this.screenMaster.loadingLayer.hide()
+        })
     }
 
     hide() {

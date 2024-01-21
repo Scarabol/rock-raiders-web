@@ -47,7 +47,7 @@ export class ScreenMaster {
             })
         })
         this.setupToolbarButtons()
-        this.loadingLayer = this.addLayer(new LoadingLayer(), 100)
+        this.loadingLayer = this.addLayer(new LoadingLayer(), 1500)
         this.loadingLayer.show()
     }
 

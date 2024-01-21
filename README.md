@@ -55,7 +55,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Show camera view area as wireframe on radar map panel
 - Add first-person and shoulder camera
 
-- Show loading screen when starting a level
 - Show FLT mini-figure animation with mission briefing
 - Change cursor to X and play sound when click on gui layer is not consumed
 - Implement laser shooting for turrets and mobile lasers

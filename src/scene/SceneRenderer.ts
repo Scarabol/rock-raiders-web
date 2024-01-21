@@ -18,18 +18,21 @@ export class SceneRenderer extends WebGLRenderer {
         this.debugHelper = new DebugHelper()
     }
 
-    startRendering(scene: Scene) {
-        this.debugHelper.show()
-        this.renderInterval = clearIntervalSafe(this.renderInterval)
-        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
-        this.renderInterval = setInterval(() => {
-            this.lastAnimationRequest = requestAnimationFrame(() => {
-                this.debugHelper.onRenderStart()
-                this.render(scene, this.camera)
-                this.debugHelper.onRenderDone()
-                this.checkForScreenshot()
-            })
-        }, 1000 / this.maxFps)
+    async startRendering(scene: Scene): Promise<void> {
+        return new Promise<void>((resolve) => {
+            this.debugHelper.show()
+            this.renderInterval = clearIntervalSafe(this.renderInterval)
+            this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
+            this.renderInterval = setInterval(() => {
+                this.lastAnimationRequest = requestAnimationFrame(() => {
+                    this.debugHelper.onRenderStart()
+                    this.render(scene, this.camera)
+                    this.debugHelper.onRenderDone()
+                    resolve()
+                    this.checkForScreenshot()
+                })
+            }, 1000 / this.maxFps)
+        })
     }
 
     private checkForScreenshot() {
