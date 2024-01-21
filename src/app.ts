@@ -140,8 +140,11 @@ export async function start() {
                 })
                 import.meta.hot.accept('./screen/GameScreen', (mNs) => {
                     try {
+                        const levelConf = gameScreen.levelConf
                         gameScreen.dispose()
                         gameScreen = new mNs.GameScreen(screenMaster)
+                        gameScreen.levelConf = levelConf
+                        gameScreen.restartLevel()
                         finishSetup(entry, params, mainMenuScreen, rewardScreen)
                     } catch (e) {
                         console.error(e)

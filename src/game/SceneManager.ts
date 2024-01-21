@@ -25,6 +25,7 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 
 export class SceneManager implements Updatable {
+    readonly scene: Scene
     readonly audioListener: AudioListener
     readonly camera: BirdViewCamera
     readonly renderer: SceneRenderer
@@ -33,7 +34,6 @@ export class SceneManager implements Updatable {
     readonly miscAnims: AnimationGroup[] = []
     readonly sprites: (Sprite & Updatable)[] = []
     worldMgr: WorldManager
-    scene: Scene
     ambientLight: AmbientLight
     terrain: Terrain
     cursor: TorchLightCursor
@@ -43,6 +43,7 @@ export class SceneManager implements Updatable {
     bumpTimeout: number = 0
 
     constructor(canvas: HTMLCanvasElement) {
+        this.scene = new Scene()
         this.audioListener = new AudioListener()
         this.camera = new BirdViewCamera(canvas.width / canvas.height)
         this.camera.add(this.audioListener)
@@ -145,8 +146,7 @@ export class SceneManager implements Updatable {
     }
 
     setupScene(levelConf: LevelEntryCfg) {
-        this.scene = new Scene()
-
+        this.scene.clear()
         const ambientRgb = ResourceManager.configuration.main.ambientRGB
         const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
         const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
@@ -175,10 +175,6 @@ export class SceneManager implements Updatable {
     }
 
     startScene() {
-        if (!this.scene) {
-            console.error('No scene to render')
-            return
-        }
         this.renderer.startRendering(this.scene)
     }
 
