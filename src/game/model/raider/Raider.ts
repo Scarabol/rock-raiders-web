@@ -59,6 +59,7 @@ export class Raider implements Updatable, JobFulfiller {
     toolsIndex: number = 0
     weaponCooldown: number = 0
     resting: boolean = false
+    idleCounter: number = Math.random() * 3000
 
     constructor(worldMgr: WorldManager) {
         this.worldMgr = worldMgr
@@ -89,9 +90,18 @@ export class Raider implements Updatable, JobFulfiller {
         if (!this.job) {
             this.scared = false
             this.worldMgr.ecs.getComponents(this.entity).get(RaiderInfoComponent).setBubbleTexture('bubbleIdle')
-            this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+            if (this.idleCounter > 3000) {
+                const idleAnim = ['Activity_Waiting1', 'Activity_Waiting2', 'Activity_Waiting3', 'Activity_Waiting4'].random()
+                this.idleCounter = 0
+                this.sceneEntity.setAnimation(idleAnim, () => {
+                    this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                })
+            } else {
+                this.idleCounter += elapsedMs * Math.random()
+            }
             return
         }
+        this.idleCounter = 0
         this.work(elapsedMs)
     }
 
