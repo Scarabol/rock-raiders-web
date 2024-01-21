@@ -12,16 +12,20 @@ import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
 
 export class TrainRaiderJob extends RaiderJob {
+    building: BuildingEntity
     workplaces: PathTarget[]
 
-    constructor(readonly entityMgr: EntityManager, readonly training: RaiderTraining, readonly building: BuildingEntity) {
+    constructor(readonly entityMgr: EntityManager, readonly training: RaiderTraining, building: BuildingEntity) {
         super()
+        this.building = building
         this.workplaces = this.building?.getTrainingTargets()
     }
 
     getWorkplace(entity: Raider | VehicleEntity): PathTarget {
         if (!this.building?.isPowered()) this.workplaces = this.entityMgr.getTrainingSiteTargets(this.training)
-        return entity.findShortestPath(this.workplaces)?.target
+        const target = entity.findShortestPath(this.workplaces)?.target
+        this.building = target?.building
+        return target
     }
 
     onJobComplete(fulfiller: JobFulfiller): void {
