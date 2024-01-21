@@ -5,7 +5,7 @@ interface NerpMessage {
 }
 
 export class NerpMsgParser {
-    static readonly txtMatcher = /(\\\[)?([^\\]+)(\\])?\s*(#([^#]+)#)?/
+    static readonly txtMatcher = /(\\\[)?([^\\#]+)(\\])?\s*(#([^#]+)#)?/
 
     static parseNerpMessages(wadData: string): NerpMessage[] {
         // line formatting differs between wad0 and wad1 files!
