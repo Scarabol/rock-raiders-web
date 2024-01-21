@@ -16,6 +16,7 @@ import { EntityManager } from '../../EntityManager'
 import { SelectionChanged } from '../../../event/LocalEvents'
 import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
 import { MaterialSpawner } from '../../entity/MaterialSpawner'
+import { JobState } from './JobState'
 
 export class CarryJob extends Job {
     fulfiller: JobFulfiller = null
@@ -129,6 +130,7 @@ export class CarryJob extends Job {
         super.onJobComplete(fulfiller)
         const dropped = this.fulfiller.dropCarried(false)
         dropped.forEach((droppedItem) => {
+            droppedItem.carryJob.jobState = JobState.COMPLETE
             droppedItem.setPosition(droppedItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
             const targetBuilding = this.target.building
             if (targetBuilding) {
