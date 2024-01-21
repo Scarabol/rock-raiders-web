@@ -1,6 +1,6 @@
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
-import { clearTimeoutSafe } from '../../core/Util'
+import { clearIntervalSafe, clearTimeoutSafe } from '../../core/Util'
 import { EventKey } from '../../event/EventKeyEnum'
 import { AirLevelChanged, NerpMessageEvent, RaiderTrainingCompleteEvent, SetSpaceToContinueEvent } from '../../event/LocalEvents'
 import { PlaySoundEvent } from '../../event/GuiCommand'
@@ -19,33 +19,27 @@ export class MessagePanel extends Panel {
     readonly textInfoMessageCache: Map<TextInfoMessageEntryCfg, Promise<TextInfoMessage>> = new Map()
 
     imgAir: SpriteImage = null
+    imgNoAir: SpriteImage = null
     currentMessage: TextInfoMessage = null
     messageTimeout: NodeJS.Timeout = null
 
     airLevelWidth: number = this.maxAirLevelWidth
     nextAirWarning: number = 1 - AIR_LEVEL_WARNING_STEP
+    blinkLabel: boolean = false
+    blinkInterval: NodeJS.Timeout = null
 
     constructor(parent: BaseElement, panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageCfg) {
         super(parent, panelCfg)
         this.relX = this.xOut = this.xIn = 42
         this.relY = this.yOut = this.yIn = 409
         this.imgAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_air_juice.bmp')
+        this.imgNoAir = ResourceManager.getImage('Interface/Airmeter/msgpanel_noair.bmp')
 
         this.registerEventListener(EventKey.LOCATION_CRYSTAL_FOUND, () => this.setMessage(textInfoMessageConfig.textCrystalFound))
         this.registerEventListener(EventKey.CAVERN_DISCOVERED, () => this.setMessage(textInfoMessageConfig.textCavernDiscovered))
         this.registerEventListener(EventKey.ORE_FOUND, () => this.setMessage(textInfoMessageConfig.textOreFound))
         this.registerEventListener(EventKey.AIR_LEVEL_CHANGED, (event: AirLevelChanged) => {
-            if (event.airLevel <= 0) return
-            const nextAirLevelWidth = Math.round(this.maxAirLevelWidth * event.airLevel)
-            if (this.airLevelWidth === nextAirLevelWidth) return
-            const nextPercent = nextAirLevelWidth / this.maxAirLevelWidth
-            if (nextPercent < this.nextAirWarning) {
-                const infoMessageCfg = nextPercent > AIR_LEVEL_LEVEL_LOW ? textInfoMessageConfig.textAirSupplyRunningOut : textInfoMessageConfig.textAirSupplyLow
-                this.setMessage(infoMessageCfg)
-            }
-            this.nextAirWarning = Math.min(1 - AIR_LEVEL_WARNING_STEP, Math.floor(nextAirLevelWidth / this.maxAirLevelWidth / AIR_LEVEL_WARNING_STEP) * AIR_LEVEL_WARNING_STEP)
-            this.airLevelWidth = nextAirLevelWidth
-            this.notifyRedraw()
+            this.onAirLevelChanged(event.airLevel, textInfoMessageConfig)
         })
         this.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
             if (event.result === GameResultState.COMPLETE) this.setMessage(textInfoMessageConfig.textGameCompleted)
@@ -64,10 +58,31 @@ export class MessagePanel extends Panel {
         })
     }
 
+    private onAirLevelChanged(airLevel: number, textInfoMessageConfig: TextInfoMessageCfg) {
+        if (airLevel <= 0) return
+        const nextAirLevelWidth = Math.round(this.maxAirLevelWidth * airLevel)
+        if (this.airLevelWidth === nextAirLevelWidth) return
+        const nextPercent = nextAirLevelWidth / this.maxAirLevelWidth
+        if (nextPercent < this.nextAirWarning) {
+            const critical = nextPercent <= AIR_LEVEL_LEVEL_LOW
+            if (critical && !this.blinkInterval) this.blinkInterval = setInterval(() => {
+                this.blinkLabel = !this.blinkLabel
+                this.notifyRedraw()
+            }, 1000)
+            const infoMessageCfg = critical ? textInfoMessageConfig.textAirSupplyLow : textInfoMessageConfig.textAirSupplyRunningOut
+            this.setMessage(infoMessageCfg)
+        }
+        this.nextAirWarning = Math.min(1 - AIR_LEVEL_WARNING_STEP, Math.floor(nextAirLevelWidth / this.maxAirLevelWidth / AIR_LEVEL_WARNING_STEP) * AIR_LEVEL_WARNING_STEP)
+        this.airLevelWidth = nextAirLevelWidth
+        this.notifyRedraw()
+    }
+
     reset() {
         super.reset()
         this.airLevelWidth = this.maxAirLevelWidth
         this.nextAirWarning = 1 - AIR_LEVEL_WARNING_STEP
+        this.blinkLabel = false
+        this.blinkInterval = clearIntervalSafe(this.blinkInterval)
     }
 
     setMessage(cfg: TextInfoMessageEntryCfg) {
@@ -104,6 +119,7 @@ export class MessagePanel extends Panel {
     onRedraw(context: SpriteContext) {
         super.onRedraw(context)
         context.drawImage(this.imgAir, this.x + 85, this.y + 6, this.airLevelWidth, 8)
+        if (this.blinkLabel) context.drawImage(this.imgNoAir, this.x + 21, this.y)
         const textImage = this.currentMessage?.textImage
         const infoImage = this.currentMessage?.infoImage
         if (textImage) {

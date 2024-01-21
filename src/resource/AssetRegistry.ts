@@ -47,6 +47,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         this.addAlphaImageFolder('Interface/RadarPanel/')
         this.addAlphaImageFolder('Interface/MessagePanel/')
         this.addAsset(this.assetLoader.loadWadImageAsset, 'Interface/Airmeter/msgpanel_air_juice.bmp')
+        this.addAsset(this.assetLoader.loadAlphaImageAsset, 'Interface/Airmeter/msgpanel_noair.bmp')
         this.addAlphaImageFolder('Interface/InfoPanel/')
         this.addAlphaImageFolder('Interface/PriorityPanel/')
         this.addAlphaImageFolder('Interface/Priorities')
