@@ -41,7 +41,10 @@ export class OverlayLayer extends ScaledLayer {
         // link items
         this.panelPause.onContinueGame = () => this.setActivePanel(null)
         this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
-        this.panelPause.onAbortGame = () => EventBus.publishEvent(new GameResultEvent(GameResultState.QUIT))
+        this.panelPause.onAbortGame = () => {
+            this.setActivePanel(null)
+            EventBus.publishEvent(new GameResultEvent(GameResultState.QUIT))
+        }
         this.panelPause.onRestartGame = () => EventBus.publishEvent(new RestartGameEvent())
         this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
         this.panelOptions.onContinueMission = () => this.setActivePanel(null)

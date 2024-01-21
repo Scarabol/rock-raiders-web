@@ -48,7 +48,12 @@ export class GameScreen {
         this.gameLayer.entityMgr = this.entityMgr
         this.selectionLayer.worldMgr = this.worldMgr
         this.guiMgr = new GuiManager(this.worldMgr)
-        EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => this.startEndgameSequence(event.result))
+        EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
+            this.selectionLayer.active = false
+            this.guiLayer.active = false
+            this.overlayLayer.active = false
+            this.startEndgameSequence(event.result).then()
+        })
         EventBus.registerEventListener(EventKey.RESTART_GAME, () => this.restartLevel())
         EventBus.registerEventListener(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
             this.levelName = event.levelName
