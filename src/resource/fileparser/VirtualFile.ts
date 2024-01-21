@@ -5,19 +5,24 @@ export class VirtualFile {
     private text: string = null
 
     private constructor(readonly fileName: string, private view: DataView) {
-        if (!fileName) throw new Error('No filename given')
-        if (!view) throw new Error('No data given')
-        else if (view.byteLength < 1) throw new Error(`Invalid data given with length of ${view.byteLength} bytes`)
     }
 
     static fromView(fileName: string, view: DataView): VirtualFile {
+        this.assertArgs(fileName, view)
         return new VirtualFile(fileName, view)
     }
 
     static fromBuffer(fileName: string, buffer: ArrayBuffer): VirtualFile {
+        this.assertArgs(fileName, buffer)
         const f = new VirtualFile(fileName, new DataView(buffer))
         f.buffer = buffer
         return f
+    }
+
+    private static assertArgs(fileName: string, view: DataView | ArrayBuffer) {
+        if (!fileName) throw new Error('No filename given')
+        if (!view) throw new Error(`No data given for"${fileName}"`)
+        else if (view.byteLength < 1) throw new Error(`Invalid data given "${fileName}" with length of ${view.byteLength} bytes`)
     }
 
     /**
