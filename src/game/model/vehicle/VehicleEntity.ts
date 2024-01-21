@@ -57,6 +57,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     engineSound: PositionalAudio = null
     carriedItems: Set<MaterialEntity> = new Set()
     upgrades: Set<VehicleUpgrade> = new Set()
+    loadItemDelayMs: number = 0
 
     constructor(entityType: EntityType, worldMgr: WorldManager, stats: VehicleEntityStats, aeNames: string[], readonly driverActivityStand: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand, readonly driverActivityRoute: RaiderActivity | AnimEntityActivity.Stand = AnimEntityActivity.Stand) {
         this.entityType = entityType
@@ -288,10 +289,16 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         } else if (!this.carriedItems.has(carryItem)) {
             const positionAsPathTarget = PathTarget.fromLocation(carryItem.getPosition2D(), ITEM_ACTION_RANGE_SQ)
             if (this.moveToClosestTarget(positionAsPathTarget, elapsedMs) === MoveState.TARGET_REACHED) {
-                this.sceneEntity.setAnimation(AnimEntityActivity.Stand, () => {
+                this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+                if (this.loadItemDelayMs > 0) {
+                    this.loadItemDelayMs -= elapsedMs
+                } else {
                     this.carriedItems.add(carryItem)
                     this.sceneEntity.pickupEntity(carryItem.sceneEntity)
-                }, 500)
+                    return true
+                }
+            } else {
+                this.loadItemDelayMs = 500
             }
             return false
         } else if (this.hasCapacity()) {
