@@ -31,7 +31,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
     }
 
     update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
-        const pathFinder = this.worldMgr.sceneMgr.terrain.pathFinder
+        const pathFinder = this.worldMgr.sceneMgr.terrain?.pathFinder
         const scarerPositions = this.worldMgr.entityMgr.birdScarer.map((b) => this.ecs.getComponents(b).get(PositionComponent))
         for (const entity of entities) {
             try {

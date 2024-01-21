@@ -58,7 +58,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
     }
 
     update(entities: Set<GameEntity>, dirty: Set<GameEntity>, elapsedMs: number): void {
-        const pathFinder = this.worldMgr.sceneMgr.terrain.pathFinder
+        const pathFinder = this.worldMgr.sceneMgr.terrain?.pathFinder
         const crystals = this.worldMgr.entityMgr.materials.filter((m) => m.entityType === EntityType.CRYSTAL)
         const drivingVehiclePositions = this.worldMgr.entityMgr.vehicles
             .filter((v) => v.sceneEntity.currentAnimation === AnimEntityActivity.Route)
