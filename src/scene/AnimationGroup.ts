@@ -98,8 +98,9 @@ export class AnimationGroup extends Group implements Updatable {
             this.animationTime += elapsedMs
             if (this.durationTimeoutMs && this.animationTime >= this.durationTimeoutMs) {
                 this.animationMixers.forEach((a) => a.stopAllAction())
-                if (this.onAnimationDone) {
-                    this.onAnimationDone() // XXX ensure this is not triggered more than once
+                if (this.onAnimationDone && !this.isDone) {
+                    this.isDone = true
+                    this.onAnimationDone()
                 }
             }
         }
