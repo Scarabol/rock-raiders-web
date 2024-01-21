@@ -123,11 +123,9 @@ export class GameScreen {
             result = new GameResult(this.levelConf.fullName, this.levelConf.reward, resultState, this.entityMgr.buildings.length, this.entityMgr.raiders.length, numMaxAirRaiders, gameTimeSeconds, canvas)
             if (result.state === GameResultState.COMPLETE) {
                 SaveGameManager.setLevelScore(this.levelName, result.score)
-                if (!this.levelConf.disableEndTeleport) {
-                    await this.worldMgr.teleportEnd()
-                }
             }
         }
+        if (!DEV_MODE && !this.levelConf.disableEndTeleport) await this.worldMgr.teleportEnd()
         this.worldMgr.stop()
         GameState.reset()
         // TODO Show briefing panel with objective completed or objective failure or objective crystal_failure message
