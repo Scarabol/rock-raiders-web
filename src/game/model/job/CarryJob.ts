@@ -129,6 +129,7 @@ export class CarryJob extends Job {
         super.onJobComplete(fulfiller)
         const dropped = this.fulfiller.dropCarried(false)
         dropped.forEach((droppedItem) => {
+            droppedItem.setPosition(droppedItem.worldMgr.sceneMgr.getFloorPosition(this.target.targetLocation))
             const targetBuilding = this.target.building
             if (targetBuilding) {
                 if (targetBuilding.entityType === EntityType.POWER_STATION || targetBuilding.entityType === EntityType.ORE_REFINERY) {
@@ -152,8 +153,6 @@ export class CarryJob extends Job {
                 raider.carries = material
                 raider.sceneEntity.pickupEntity(material.sceneEntity)
             } else {
-                const dropOff = this.target.site ? this.target.site.getRandomDropPosition() : this.target.targetLocation
-                droppedItem.setPosition(droppedItem.worldMgr.sceneMgr.getFloorPosition(dropOff))
                 droppedItem.sceneEntity.addToScene(droppedItem.worldMgr.sceneMgr, null, null)
                 if (droppedItem.entityType === EntityType.BARRIER) {
                     droppedItem.sceneEntity.setAnimation(BarrierActivity.Expand, () => droppedItem.sceneEntity.setAnimation(BarrierActivity.Long))
