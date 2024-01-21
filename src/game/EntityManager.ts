@@ -151,6 +151,10 @@ export class EntityManager {
         return this.getBuildingsByType(EntityType.TOOLSTATION).flatMap((b) => b.getTrainingTargets())
     }
 
+    getRaiderEatPathTarget(): PathTarget[] {
+        return this.getBuildingsByType(EntityType.BARRACKS).flatMap((b) => b.getTrainingTargets())
+    }
+
     getVehicleUpgradePathTargets(): PathTarget[] {
         return this.getBuildingsByType(EntityType.UPGRADE).map((b) => PathTarget.fromBuilding(b, b.getDropPosition2D(), 1, b.primarySurface.getCenterWorld2D()))
     }

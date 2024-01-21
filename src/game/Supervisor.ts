@@ -15,6 +15,8 @@ import { Raider } from './model/raider/Raider'
 import { VehicleEntity } from './model/vehicle/VehicleEntity'
 import { WorldManager } from './WorldManager'
 import { PathTarget } from './model/PathTarget'
+import { EntityType } from './model/EntityType'
+import { EatBarracksJob } from './model/job/raider/EatBarracksJob'
 
 export class Supervisor {
     jobs: Job[] = []
@@ -66,6 +68,11 @@ export class Supervisor {
         })
         availableJobs.sort((left, right) => {
             return Math.sign(this.getPriority(left) - this.getPriority(right))
+        })
+        this.worldMgr.entityMgr.raiders.forEach((raider) => {
+            if (!raider.isReadyToTakeAJob() || raider.foodLevel > 0.25) return
+            const barracks = this.worldMgr.entityMgr.getClosestBuildingByType(raider.getPosition(), EntityType.BARRACKS)
+            if (barracks) raider.setJob(new EatBarracksJob(this.worldMgr.entityMgr, barracks))
         })
         const unemployedRaider = new Set(this.worldMgr.entityMgr.raiders.filter((r) => r.isReadyToTakeAJob()))
         const unemployedVehicles = new Set(this.worldMgr.entityMgr.vehicles.filter((v) => v.isReadyToTakeAJob()))
