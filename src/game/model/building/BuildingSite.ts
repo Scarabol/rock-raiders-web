@@ -84,6 +84,7 @@ export class BuildingSite {
 
     addItem(item: MaterialEntity) {
         this.onSiteByType.getOrUpdate(item.entityType, () => []).push(item)
+        this.worldMgr.entityMgr.removeEntity(item.entity)
         this.checkComplete()
     }
 
