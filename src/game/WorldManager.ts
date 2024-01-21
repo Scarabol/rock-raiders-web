@@ -35,6 +35,7 @@ import { BulletSystem } from './system/BulletSystem'
 import { BoulderSystem } from './system/BoulderSystem'
 import { MaterialEntity } from './model/material/MaterialEntity'
 import { LavaErosionSystem } from './system/LavaErosionSystem'
+import { SaveGameManager } from '../resource/SaveGameManager'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -112,6 +113,8 @@ export class WorldManager {
         this.nerpRunner = new NerpRunner(this, levelConf.nerpFile)
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
         this.firstUnpause = true
+        const gameSpeedIndex = Math.round(SaveGameManager.currentPreferences.gameSpeed * 5)
+        this.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event for state reconstruction
     }
 
     stop() {
