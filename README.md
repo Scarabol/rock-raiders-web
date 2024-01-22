@@ -85,7 +85,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### Nice to have
 
-- Laser turret has offset and does not always focus on cursor
 - Add rotation speed to entities and play turnLeft, turnRight animations
 - Do not allow touch events to move scene camera while build mode selection is active
 - Save complete game state in browser cache to allow reload

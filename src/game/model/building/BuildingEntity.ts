@@ -106,7 +106,7 @@ export class BuildingEntity {
     }
 
     doubleSelect(): boolean {
-        if (!this.selected) return false
+        if (!this.selected || !this.isPowered()) return false
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.doubleSelect()
         return true
     }

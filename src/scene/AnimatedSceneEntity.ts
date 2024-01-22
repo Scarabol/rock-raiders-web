@@ -68,7 +68,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
             this.animationParent.add(animatedGroup)
             this.animationGroups.push(animatedGroup)
-            this.pivotMaxZ = animEntityData.pivotMinZ ?? this.pivotMaxZ
+            this.pivotMaxZ = animEntityData.pivotMaxZ ?? this.pivotMaxZ
             this.pivotMinZ = animEntityData.pivotMinZ ?? this.pivotMinZ
             // add wheels
             if (animEntityData.wheelMesh && animEntityData.wheelNullName) {
@@ -236,14 +236,14 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             const pivotWorldPos = new Vector3()
             this.xPivotObj.getWorldPosition(pivotWorldPos)
             const diff = worldTarget.clone().sub(pivotWorldPos)
-            const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI - Math.PI / 20
+            const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI
             const lAngle = this.limitAngle(angle)
             this.xPivotObj.setRotationFromAxisAngle(new Vector3(1, 0, 0), lAngle) // XXX use rotation speed and smooth movement
         }
         if (this.yPivotObj) {
             const pivotWorldPos = new Vector3()
             this.yPivotObj.getWorldPosition(pivotWorldPos)
-            const angle = new Vector2(worldTarget.x, worldTarget.z).sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() - Math.PI / 2
+            const angle = new Vector2(worldTarget.x, worldTarget.z).sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() + Math.PI / 2
             this.yPivotObj.setRotationFromAxisAngle(Object3D.DEFAULT_UP, angle) // XXX use rotation speed and smooth movement
         }
     }
