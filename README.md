@@ -48,7 +48,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Show endgame message briefing with text
 - Show FLT mini-figure animation with mission briefing
 - Change cursor to X and play sound when click on gui layer is not consumed
 

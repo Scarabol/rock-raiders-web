@@ -1,4 +1,4 @@
-import { ObjectiveImageCfg } from '../../cfg/LevelsCfg'
+import { LevelEntryCfg } from '../../cfg/LevelsCfg'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ScaledLayer } from './ScreenLayer'
 import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
@@ -80,13 +80,33 @@ export class OverlayLayer extends ScaledLayer {
         this.addEventListener('wheel', (): boolean => this.panels.some((p) => !p.hidden))
     }
 
-    setup(dialogTitle: string, objectiveText: string, objectiveBackImgCfg: ObjectiveImageCfg) {
-        if (!this.panelBriefing) { // TODO Method setup may be called before briefing panel is initialized
-            console.warn('Briefing panel not yet initialized and will not work in the future')
-        } else {
-            this.panelBriefing.setup(dialogTitle, objectiveText, objectiveBackImgCfg)
-        }
+    showBriefing(levelConf: LevelEntryCfg) {
+        this.panelBriefing.setup(ResourceManager.configuration.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage640x480)
+        this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
         this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
+    }
+
+    showResultBriefing(result: GameResultState, levelConf: LevelEntryCfg, onContinue: () => void) {
+        const mainCfg = ResourceManager.configuration.main
+        let title = ''
+        let text = ''
+        if (result === GameResultState.COMPLETE) {
+            title = mainCfg.missionCompletedText
+            text = levelConf.objectiveTextCfg.completion
+        } else if (result === GameResultState.FAILED) {
+            title = mainCfg.missionFailedText
+            text = levelConf.objectiveTextCfg.failure
+        } else if (result === GameResultState.CRYSTAL_FAILURE) {
+            title = mainCfg.missionFailedText
+            text = levelConf.objectiveTextCfg.crystalFailure
+        } else { // GameResultState.QUIT
+            onContinue()
+            return
+        }
+        this.panelBriefing.setup(title, text, levelConf.objectiveImage640x480)
+        this.setActivePanel(this.panelBriefing)
+        this.panelBriefing.onContinueMission = onContinue
+        this.active = true
     }
 
     setActivePanel(panel: Panel) {

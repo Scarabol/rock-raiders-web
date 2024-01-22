@@ -9,6 +9,7 @@ export enum GameResultState {
     QUIT,
     COMPLETE,
     FAILED,
+    CRYSTAL_FAILURE,
 }
 
 export class GameResult {

@@ -85,8 +85,8 @@ export class MainCfg extends BaseConfig {
     // RollOffFor3DSounds = 3
     // RenameReplace = Rock_Raider
     missionBriefingText: string = 'Einsatzbesprechung'
-    // MissionCompletedText = Einsatz_erfolgreich!
-    // MissionFailedText = Einsatz_beendet
+    missionCompletedText: string = 'Einsatz erfolgreich!'
+    missionFailedText: string = 'Einsatz beendet'
     // TutorialIcon = Interface/Tutorial/Arrow01.bmp
 
     assignValue(objKey: string, unifiedKey: string, cfgValue: any): boolean {
