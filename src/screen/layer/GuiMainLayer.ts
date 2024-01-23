@@ -9,7 +9,7 @@ import { InformationPanel } from '../../gui/infodock/InformationPanel'
 import { PriorityListPanel } from '../../gui/toppanel/PriorityListPanel'
 import { InfoDockPanel } from '../../gui/infodock/InfoDockPanel'
 import { BaseElement } from '../../gui/base/BaseElement'
-import { ChangeCursor, GuiCommand } from '../../event/GuiCommand'
+import { ChangeCursor, GuiCommand, PlaySoundEvent } from '../../event/GuiCommand'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameEvent } from '../../event/GameEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
@@ -24,6 +24,7 @@ import { ShowOptionsEvent } from '../../event/LocalEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
+import { Sample } from '../../audio/Sample'
 
 export class GuiMainLayer extends ScaledLayer {
     rootElement: BaseElement
@@ -136,7 +137,11 @@ export class GuiMainLayer extends ScaledLayer {
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {
                 this.rootElement.checkClick(new GuiClickEvent(event.canvasX, event.canvasY, event.button))
             } else if (event.eventEnum === POINTER_EVENT.UP) {
-                this.rootElement.checkRelease(new GuiReleaseEvent(event.canvasX, event.canvasY, event.button))
+                const stateChanged = this.rootElement.checkRelease(new GuiReleaseEvent(event.canvasX, event.canvasY, event.button))
+                if (!stateChanged) {
+                    this.rootElement.publishEvent(new ChangeCursor(Cursor.NOT_OKAY, 1000))
+                    this.rootElement.publishEvent(new PlaySoundEvent(Sample.SFX_NotOkay, false))
+                }
             }
         } else if (event.eventEnum === POINTER_EVENT.MOVE || event.eventEnum === POINTER_EVENT.LEAVE) {
             this.rootElement.release()
