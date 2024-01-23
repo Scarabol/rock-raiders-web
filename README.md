@@ -89,7 +89,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Geologists do not scan when placed in vehicles
 - Allow raider in alarm mode to be moved by player
 - Add rotation speed to entities and play turnLeft, turnRight animations
-- Do not allow touch events to move scene camera while build mode selection is active
 - Save complete game state in browser cache to allow reload
 - Hardware cursor on priority panel cannot move along with prioritization, because browser won't allow cursor position manipulation
 - Add level reference to URL for easier reloading, check if game is unlocked when not in dev mode

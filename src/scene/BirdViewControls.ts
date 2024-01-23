@@ -18,6 +18,7 @@ export class BirdViewControls extends MapControls {
     static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
     readonly lastCameraWorldPos: Vector3 = new Vector3()
     readonly raycaster: Raycaster = new Raycaster()
+    private lockBuild: boolean = false
     moveTarget: Vector3 = null
 
     constructor(readonly domElement: HTMLCanvasElement, sceneMgr: SceneManager) { // overwrite domElement to make addEventListener below return KeyboardEvents
@@ -92,7 +93,7 @@ export class BirdViewControls extends MapControls {
         if (!this.moveTarget) return
         if (this.target.distanceToSquared(this.moveTarget) < 1) {
             this.moveTarget = null
-            this.enabled = true
+            this.enabled = !this.lockBuild
         } else {
             const nextCameraTargetPos = this.target.clone().add(this.moveTarget.clone().sub(this.target)
                 .clampLength(0, ResourceManager.configuration.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
@@ -103,5 +104,14 @@ export class BirdViewControls extends MapControls {
     forceMoveToTarget(target: Vector3) {
         this.enabled = false
         this.moveTarget = target
+    }
+
+    unlockCamera() {
+        this.enabled = !this.lockBuild
+    }
+
+    setBuildLock(locked: boolean) {
+        this.lockBuild = locked
+        this.enabled = !this.lockBuild && !this.moveTarget
     }
 }

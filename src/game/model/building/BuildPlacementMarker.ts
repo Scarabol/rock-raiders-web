@@ -54,6 +54,7 @@ export class BuildPlacementMarker {
         if (!worldPosition || !this.buildingType) {
             this.hideAllMarker()
         } else {
+            this.worldMgr.sceneMgr.controls.setBuildLock(true)
             this.updateAllMarker(worldPosition)
             this.buildingMarkerPrimary.setColor(this.buildingMarkerColor)
             this.buildingMarkerSecondary.setColor(this.buildingMarkerColor)
@@ -115,6 +116,7 @@ export class BuildPlacementMarker {
     }
 
     hideAllMarker() {
+        this.worldMgr.sceneMgr.controls.setBuildLock(false)
         this.markers.forEach((m) => m.visible = false)
         this.lastCheck = false
         this.buildingMarkerColor = BuildPlacementMarker.invalidMarkerColor

@@ -280,7 +280,7 @@ export class NerpRunner {
     }
 
     cameraUnlock() {
-        this.worldMgr.sceneMgr.controls.enabled = true
+        this.worldMgr.sceneMgr.controls.unlockCamera()
     }
 
     cameraLockOnObject(recordedEntity: number) {
