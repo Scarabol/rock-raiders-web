@@ -96,6 +96,10 @@ export class AssetRegistry extends Map<string, WadAsset> {
         })
         this.addTextureFolder('Buildings/E-Fence')
         this.addAnimatedEntity('mini-figures/pilot/pilot.ae')
+        Array.from(gameConfig.advisor.values()).forEach((adv) => {
+            this.addLWSFile(`${adv.animFileName}.lws`)
+            this.addTextureFolder(getPath(adv.animFileName))
+        })
         // load monsters
         const rockMonsterTypes = iGet(gameConfig, 'RockMonsterTypes')
         Object.values<string>(rockMonsterTypes).forEach((mType) => {

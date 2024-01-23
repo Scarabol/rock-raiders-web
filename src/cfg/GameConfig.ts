@@ -22,6 +22,7 @@ import { ObjInfoCfg } from './ObjInfoCfg'
 import { WeaponTypeCfg } from './WeaponTypesCfg'
 import { SamplesCfg } from './SamplesCfg'
 import { InterfaceSurroundImagesCfg } from './InterfaceSurroundImagesCfg'
+import { AdvisorPositionCfg, AdvisorTypeCfg } from './AdvisorCfg'
 
 export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
 export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
@@ -57,6 +58,8 @@ export class GameConfig extends BaseConfig {
     upgradeTypesCfg: Map<string, string> = new Map()
     infoMessages: InfoMessagesCfg = new InfoMessagesCfg()
     stats: GameStatsCfg = new GameStatsCfg()
+    advisor: Map<string, AdvisorTypeCfg> = new Map()
+    advisorPositions640x480: Map<string, AdvisorPositionCfg> = new Map()
     weaponTypes: Map<string, WeaponTypeCfg> = new Map()
     dependencies: Map<EntityType, EntityDependency[]> = new Map()
     levels: LevelsCfg = new LevelsCfg()
@@ -125,6 +128,10 @@ export class GameConfig extends BaseConfig {
             this.infoMessages.setFromCfgObj(cfgValue)
         } else if ('Stats'.equalsIgnoreCase(unifiedKey)) {
             this.stats.setFromCfgObj(cfgValue)
+        } else if ('Advisor'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.advisor.set(cfgKey.toLowerCase(), new AdvisorTypeCfg(value)))
+        } else if ('AdvisorPositions640x480'.equalsIgnoreCase(unifiedKey)) {
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.advisorPositions640x480.set(cfgKey.toLowerCase(), new AdvisorPositionCfg(value)))
         } else if ('WeaponTypes'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.weaponTypes.set(cfgKey.toLowerCase(), new WeaponTypeCfg().setFromCfgObj(value)))
         } else if ('Dependencies'.equalsIgnoreCase(unifiedKey)) {

@@ -19,10 +19,12 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventKey } from '../event/EventKeyEnum'
 import { GameResultEvent, LevelSelectedEvent } from '../event/WorldEvents'
 import { EntityType } from '../game/model/EntityType'
+import { AdvisorLayer } from './layer/AdvisorLayer'
 
 export class GameScreen {
     gameLayer: GameLayer
     selectionFrameLayer: SelectionFrameLayer
+    advisorLayer: AdvisorLayer
     guiLayer: GuiMainLayer
     overlayLayer: OverlayLayer
     worldMgr: WorldManager
@@ -35,6 +37,7 @@ export class GameScreen {
     constructor(readonly screenMaster: ScreenMaster) {
         this.gameLayer = screenMaster.addLayer(new GameLayer(), 500)
         this.selectionFrameLayer = screenMaster.addLayer(new SelectionFrameLayer(), 510)
+        this.advisorLayer = screenMaster.addLayer(new AdvisorLayer(), 515)
         this.guiLayer = screenMaster.addLayer(new GuiMainLayer(), 520)
         this.overlayLayer = screenMaster.addLayer(new OverlayLayer(), 530)
         this.worldMgr = new WorldManager()
@@ -65,6 +68,7 @@ export class GameScreen {
         this.hide()
         this.screenMaster.removeLayer(this.gameLayer)
         this.screenMaster.removeLayer(this.selectionFrameLayer)
+        this.screenMaster.removeLayer(this.advisorLayer)
         this.screenMaster.removeLayer(this.guiLayer)
         this.screenMaster.removeLayer(this.overlayLayer)
         // TODO remove event listener on hot reload?
@@ -97,6 +101,7 @@ export class GameScreen {
     show() {
         this.gameLayer.show()
         this.selectionFrameLayer.show()
+        this.advisorLayer.show()
         this.guiLayer.show()
         this.overlayLayer.show()
         this.sceneMgr.startScene().then(() => {
@@ -110,6 +115,7 @@ export class GameScreen {
         this.sceneMgr.disposeScene()
         this.overlayLayer.hide()
         this.guiLayer.hide()
+        this.advisorLayer.hide()
         this.selectionFrameLayer.hide()
         this.gameLayer.hide()
         document.title = 'Rock Raiders Web'

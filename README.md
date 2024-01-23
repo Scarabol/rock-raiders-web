@@ -48,8 +48,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 
 ### v0.8.0 - Late game features
 
-- Show FLT mini-figure animation with mission briefing
-
 - Add magnet cursor to map panel to track entities
 - Move camera with click on radar map panel
 - Show camera view area as wireframe on radar map panel
