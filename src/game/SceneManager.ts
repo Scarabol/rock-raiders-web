@@ -254,7 +254,7 @@ export class SceneManager implements Updatable {
         const group = new AnimationGroup(lwsFilename, loop ? null : () => {
             this.removeMiscAnim(group)
             if (onRemove) onRemove()
-        }).setup(this.audioListener)
+        }).setup(this.audioListener).play()
         group.position.copy(position)
         group.rotateOnAxis(Object3D.DEFAULT_UP, heading)
         this.miscAnims.add(group)

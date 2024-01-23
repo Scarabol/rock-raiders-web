@@ -22,11 +22,10 @@ export class AnimationGroup extends Group implements Updatable {
         this.animationTriggerTimeMs = durationTimeoutMs
     }
 
-    setup(audioListener: AudioListener): this {
+    setup(audioListener?: AudioListener): this {
         const lwscData = ResourceManager.getLwscData(this.lwsFilepath)
         this.createMeshList(lwscData, audioListener)
         this.createAnimationMixers(lwscData, this.lwsFilepath)
-        this.update(0)
         return this
     }
 
@@ -35,7 +34,7 @@ export class AnimationGroup extends Group implements Updatable {
         return ResourceManager.getLwoModel(getPath(this.lwsFilepath) + lowerName)
     }
 
-    private createMeshList(lwscData: LWSCData, audioListener: AudioListener) {
+    protected createMeshList(lwscData: LWSCData, audioListener: AudioListener) {
         this.meshList.length = 0
         lwscData.objects.forEach((obj) => {
             let mesh: SceneMesh
@@ -55,7 +54,7 @@ export class AnimationGroup extends Group implements Updatable {
         })
     }
 
-    private createAnimationMixers(lwscData: LWSCData, lwsFilepath: string) {
+    protected createAnimationMixers(lwscData: LWSCData, lwsFilepath: string) {
         this.animationMixers.length = 0
         lwscData.objects.forEach((obj, index) => {
             const mesh = this.meshList[index]
@@ -70,22 +69,25 @@ export class AnimationGroup extends Group implements Updatable {
                 .map((m, index) => new NumberKeyframeTrack(`.material[${index}].opacity`, t.times, t.values)))
             const clip = new AnimationClip(lwsFilepath, lwscData.durationSeconds, [...obj.keyframeTracks, ...opacityTracks])
             this.maxDurationMs = Math.max(this.maxDurationMs, clip.duration * 1000)
-            const mixer = new AnimationMixer(mesh) // mixer needs to recreate after each group change
-            const animationAction = mixer.clipAction(clip)
-            if (this.onAnimationDone && !this.durationTimeoutMs) {
-                animationAction.setLoop(LoopOnce, 0)
-                animationAction.clampWhenFinished = true
-                mixer.addEventListener('finished', () => {
-                    if (!this.isDone) {
-                        this.isDone = true
-                        this.onAnimationDone()
-                    }
-                })
-            }
-            animationAction.play()
-            this.animationActions.push(animationAction)
-            this.animationMixers.push(mixer)
+            this.addMixer(mesh, clip)
         })
+    }
+
+    protected addMixer(mesh: SceneMesh, clip: AnimationClip) {
+        const mixer = new AnimationMixer(mesh) // mixer needs to recreate after each group change
+        this.animationMixers.push(mixer)
+        const animationAction = mixer.clipAction(clip)
+        this.animationActions.push(animationAction)
+        if (this.onAnimationDone && !this.durationTimeoutMs) {
+            animationAction.setLoop(LoopOnce, 0)
+            animationAction.clampWhenFinished = true
+            mixer.addEventListener('finished', () => {
+                if (!this.isDone) {
+                    this.isDone = true
+                    this.onAnimationDone()
+                }
+            })
+        }
     }
 
     update(elapsedMs: number) {
@@ -110,12 +112,17 @@ export class AnimationGroup extends Group implements Updatable {
         this.meshList.forEach((m) => m.dispose())
     }
 
+    play(): this {
+        this.animationActions.forEach((a) => a.play())
+        this.update(0)
+        return this
+    }
+
     stop() {
         this.isDone = false
         this.animationTime = 0
-        this.animationActions.forEach((m) => m.stop())
+        this.animationMixers.forEach((m) => m.stopAllAction())
         // play needs to be called here to not have the animation stuck on last frame but first
-        this.animationActions.forEach((m) => m.play())
-        this.update(0)
+        this.play()
     }
 }

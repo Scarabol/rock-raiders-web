@@ -26,7 +26,7 @@ export class RockWipeLayer extends ScreenLayer {
         this.camera.lookAt(0, 0, 0)
         this.group = new AnimationGroup('Interface/FrontEnd/Rock_Wipe/RockWipe.lws', () => {
             this.hide()
-        }).setup(null)
+        }).setup()
         this.scene.add(this.group)
     }
 
@@ -34,6 +34,7 @@ export class RockWipeLayer extends ScreenLayer {
         super.show()
         this.renderInterval = clearIntervalSafe(this.renderInterval)
         this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
+        this.group.play()
         SoundManager.playSample(Sample.SFX_RockWipe, false)
         this.renderInterval = setInterval(() => {
             this.group.update(NATIVE_UPDATE_INTERVAL)
