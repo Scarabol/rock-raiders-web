@@ -20,7 +20,8 @@ export class TerrainScannerSystem extends AbstractGameSystem {
                 const scannerComponent = components.get(ScannerComponent)
                 if (scannerComponent.scanDelay > 0) {
                     scannerComponent.scanDelay -= elapsedMs
-                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.UPDATE, scannerComponent.origin.position, 1 - (scannerComponent.scanDelay % 1000) / 1000))
+                    const radius = (1 - (scannerComponent.scanDelay % 1000) / 1000) * (scannerComponent.range - 0.5)
+                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.UPDATE, scannerComponent.origin.position, radius))
                 } else {
                     EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.REMOVE))
                     scannerComponent.scanDelay = 5000

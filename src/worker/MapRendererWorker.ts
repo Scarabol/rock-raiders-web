@@ -118,7 +118,7 @@ export class MapRendererWorker {
         this.geoScanContext.strokeStyle = '#fff'
         this.geoScanContext.lineWidth = 1
         msg.entities.forEach((e) => {
-            const scanRadius = Math.round(e.r * msg.surfaceRectSize * 3)
+            const scanRadius = Math.round(e.r * msg.surfaceRectSize)
             const x = Math.round(e.x * msg.surfaceRectSize / TILESIZE - msg.offset.x)
             const y = Math.round(e.z * msg.surfaceRectSize / TILESIZE - msg.offset.y)
             this.geoScanContext.beginPath()

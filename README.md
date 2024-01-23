@@ -103,7 +103,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Play vehicle SFX when tooltip is shown
 - Orange smoke column above lava tiles missing
 - Water and lava animation missing, might use texture UV coords tearing
-- Geo-dome scanner range does not match with animated circle on map view
 - Raider scene entity position/rotation not correct when thrown by rocky
 - Numbers above ticking dynamite are not shown correctly sometimes
 - Two buttons in priority list can be hovered/pressed/released at the same time
