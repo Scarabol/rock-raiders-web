@@ -16,6 +16,7 @@ export enum EventKey {
     FOLLOWER_SET_LOOK_AT,
     FOLLOWER_RENDER_START,
     FOLLOWER_RENDER_STOP,
+    SELECTION_FRAME_CHANGE,
 
     // GUI command events
     COMMAND_CHANGE_CURSOR,

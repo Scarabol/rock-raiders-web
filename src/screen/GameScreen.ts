@@ -13,7 +13,7 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { GameLayer } from './layer/GameLayer'
 import { GuiMainLayer } from './layer/GuiMainLayer'
 import { OverlayLayer } from './layer/OverlayLayer'
-import { SelectionLayer } from './layer/SelectionLayer'
+import { SelectionFrameLayer } from './layer/SelectionFrameLayer'
 import { ScreenMaster } from './ScreenMaster'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventKey } from '../event/EventKeyEnum'
@@ -22,7 +22,7 @@ import { EntityType } from '../game/model/EntityType'
 
 export class GameScreen {
     gameLayer: GameLayer
-    selectionLayer: SelectionLayer
+    selectionFrameLayer: SelectionFrameLayer
     guiLayer: GuiMainLayer
     overlayLayer: OverlayLayer
     worldMgr: WorldManager
@@ -34,7 +34,7 @@ export class GameScreen {
 
     constructor(readonly screenMaster: ScreenMaster) {
         this.gameLayer = screenMaster.addLayer(new GameLayer(), 500)
-        this.selectionLayer = screenMaster.addLayer(new SelectionLayer(), 510)
+        this.selectionFrameLayer = screenMaster.addLayer(new SelectionFrameLayer(), 510)
         this.guiLayer = screenMaster.addLayer(new GuiMainLayer(), 520)
         this.overlayLayer = screenMaster.addLayer(new OverlayLayer(), 530)
         this.worldMgr = new WorldManager()
@@ -46,10 +46,9 @@ export class GameScreen {
         this.gameLayer.worldMgr = this.worldMgr
         this.gameLayer.sceneMgr = this.sceneMgr
         this.gameLayer.entityMgr = this.entityMgr
-        this.selectionLayer.worldMgr = this.worldMgr
         this.guiMgr = new GuiManager(this.worldMgr)
         EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
-            this.selectionLayer.active = false
+            this.selectionFrameLayer.active = false
             this.guiLayer.active = false
             this.overlayLayer.active = false
             this.startEndgameSequence(event.result).then()
@@ -65,7 +64,7 @@ export class GameScreen {
     dispose() {
         this.hide()
         this.screenMaster.removeLayer(this.gameLayer)
-        this.screenMaster.removeLayer(this.selectionLayer)
+        this.screenMaster.removeLayer(this.selectionFrameLayer)
         this.screenMaster.removeLayer(this.guiLayer)
         this.screenMaster.removeLayer(this.overlayLayer)
         // TODO remove event listener on hot reload?
@@ -97,7 +96,7 @@ export class GameScreen {
 
     show() {
         this.gameLayer.show()
-        this.selectionLayer.show()
+        this.selectionFrameLayer.show()
         this.guiLayer.show()
         this.overlayLayer.show()
         this.sceneMgr.startScene().then(() => {
@@ -111,7 +110,7 @@ export class GameScreen {
         this.sceneMgr.disposeScene()
         this.overlayLayer.hide()
         this.guiLayer.hide()
-        this.selectionLayer.hide()
+        this.selectionFrameLayer.hide()
         this.gameLayer.hide()
         document.title = 'Rock Raiders Web'
     }

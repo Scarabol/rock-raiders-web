@@ -3,7 +3,7 @@ import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { DeselectAll } from '../../event/LocalEvents'
+import { DeselectAll, SelectionChanged, SelectionFrameChangeEvent } from '../../event/LocalEvents'
 import { JobCreateEvent } from '../../event/WorldEvents'
 import { EntityManager } from '../../game/EntityManager'
 import { ManVehicleJob } from '../../game/model/job/ManVehicleJob'
@@ -23,6 +23,8 @@ import { GameState } from '../../game/model/GameState'
 import { MoveJob } from '../../game/model/job/MoveJob'
 import { MaterialEntity } from '../../game/model/material/MaterialEntity'
 import { RaiderInfoComponent } from '../../game/component/RaiderInfoComponent'
+import { GameSelection } from '../../game/model/GameSelection'
+import { Rect } from '../../core/Rect'
 
 export class GameLayer extends ScreenLayer {
     worldMgr: WorldManager
@@ -40,7 +42,7 @@ export class GameLayer extends ScreenLayer {
     constructor() {
         super()
         EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
-            const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, true)
+            const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
             EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
         })
         this.addEventListener('pointerleave', (): boolean => {
@@ -53,17 +55,17 @@ export class GameLayer extends ScreenLayer {
             return this.handlePointerMoveEvent(gameEvent)
         })
         this.addEventListener('pointerdown', (event): boolean => {
+            if (event.button !== MOUSE_BUTTON.MAIN) return false
             const gameEvent = new GamePointerEvent(POINTER_EVENT.DOWN, event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             this.pointerDown = {x: gameEvent.canvasX, y: gameEvent.canvasY}
             return false
         })
         this.addEventListener('pointerup', (event): boolean => {
-            if (event.button === MOUSE_BUTTON.MAIN) {
-                const gameEvent = new GamePointerEvent(POINTER_EVENT.DOWN, event)
-                ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
-                this.handlePointerUpEvent(gameEvent)
-            }
+            if (event.button !== MOUSE_BUTTON.MAIN) return false
+            const gameEvent = new GamePointerEvent(POINTER_EVENT.DOWN, event)
+            ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
+            this.handlePointerUpEvent(gameEvent)
             return false
         })
         this.addEventListener('keyup', (event): boolean => {
@@ -76,6 +78,7 @@ export class GameLayer extends ScreenLayer {
     reset() {
         super.reset()
         this.pointerDown = null
+        EventBus.publishEvent(new SelectionFrameChangeEvent(null))
     }
 
     show() {
@@ -89,9 +92,14 @@ export class GameLayer extends ScreenLayer {
     }
 
     handlePointerMoveEvent(event: GamePointerEvent): boolean {
+        if (this.pointerDown && event.pointerType === 'mouse') {
+            const w = event.canvasX - this.pointerDown.x
+            const h = event.canvasY - this.pointerDown.y
+            EventBus.publishEvent(new SelectionFrameChangeEvent(new Rect(this.pointerDown.x, this.pointerDown.y, w, h)))
+        }
         this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
         this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
-        const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, true)
+        const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
         EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
         if (cursorTarget.intersectionPoint) this.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
         if (cursorTarget.surface) {
@@ -128,57 +136,84 @@ export class GameLayer extends ScreenLayer {
             this.sceneMgr.buildMarker.createBuildingSite()
         } else if (this.pointerDown) {
             const downUpDistance = Math.abs(event.canvasX - this.pointerDown.x) + Math.abs(event.canvasY - this.pointerDown.y)
-            if (downUpDistance < 3) {
+            if (downUpDistance < 5) {
                 if (this.sceneMgr.hasBuildModeSelection()) {
                     this.sceneMgr.setBuildModeSelection(null)
+                } else if (this.entityMgr.selection.doubleSelect) {
+                    console.warn('Double selection handling not yet implemented') // TODO Implement laser shooting
                 } else if (this.entityMgr.selection.raiders.length > 0 || this.entityMgr.selection.vehicles.length > 0) {
-                    this.handleSecondaryClickWithSelection()
-                }
-            }
-        }
-    }
-
-    private handleSecondaryClickWithSelection() {
-        const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos, false)
-        if (cursorTarget.vehicle) {
-            this.handleSecondaryClickForVehicle(cursorTarget)
-        } else if (cursorTarget.material) {
-            this.entityMgr.selection.assignCarryJob(cursorTarget.material)
-            if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
-        } else if (cursorTarget.surface) {
-            if (this.entityMgr.selection.canDrill(cursorTarget.surface)) {
-                const drillJob = cursorTarget.surface.setupDrillJob()
-                this.entityMgr.selection.assignSurfaceJob(drillJob)
-            } else if (this.entityMgr.selection.canClear() && cursorTarget.surface.hasRubble()) {
-                const clearJob = cursorTarget.surface.setupClearRubbleJob()
-                this.entityMgr.selection.assignSurfaceJob(clearJob)
-            } else if (this.entityMgr.selection.canMove()) {
-                if (cursorTarget.surface.isWalkable()) {
-                    this.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(r, cursorTarget.surface.getRandomPosition())))
-                }
-                this.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(v, cursorTarget.surface.getCenterWorld2D())))
-            }
-            if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
-        }
-    }
-
-    private handleSecondaryClickForVehicle(selection: CursorTarget) {
-        const selectedRaiders = this.entityMgr.selection.raiders
-        if (selectedRaiders.length > 0) {
-            const manVehicleJob = new ManVehicleJob(selection.vehicle)
-            selectedRaiders.some((r) => {
-                if (r.hasTraining(manVehicleJob.requiredTraining)) {
-                    r.setJob(manVehicleJob)
+                    this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
+                    this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
+                    const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
+                    if (cursorTarget.vehicle) {
+                        const selectedRaiders = this.entityMgr.selection.raiders
+                        if (selectedRaiders.length > 0 && !cursorTarget.vehicle.driver) {
+                            const manVehicleJob = new ManVehicleJob(cursorTarget.vehicle)
+                            selectedRaiders.some((r) => {
+                                if (r.hasTraining(manVehicleJob.requiredTraining)) {
+                                    r.setJob(manVehicleJob)
+                                } else {
+                                    const requiredTraining = manVehicleJob.requiredTraining
+                                    const closestTrainingSite = r.findShortestPath(this.entityMgr.getTrainingSiteTargets(requiredTraining))
+                                    if (!closestTrainingSite) return false
+                                    r.setJob(new TrainRaiderJob(r.worldMgr.entityMgr, requiredTraining, closestTrainingSite.target.building), manVehicleJob)
+                                }
+                                EventBus.publishEvent(new DeselectAll())
+                                return true
+                            })
+                            EventBus.publishEvent(new JobCreateEvent(manVehicleJob))
+                        } else {
+                            const selection = new GameSelection()
+                            selection.vehicles.push(cursorTarget.vehicle)
+                            this.worldMgr.entityMgr.selection.set(selection)
+                            EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
+                        }
+                    } else if (cursorTarget.material) {
+                        this.entityMgr.selection.assignCarryJob(cursorTarget.material)
+                        if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
+                    } else if (cursorTarget.surface) {
+                        if (this.entityMgr.selection.canDrill(cursorTarget.surface)) {
+                            const drillJob = cursorTarget.surface.setupDrillJob()
+                            this.entityMgr.selection.assignSurfaceJob(drillJob)
+                        } else if (this.entityMgr.selection.canClear() && cursorTarget.surface.hasRubble()) {
+                            const clearJob = cursorTarget.surface.setupClearRubbleJob()
+                            this.entityMgr.selection.assignSurfaceJob(clearJob)
+                        } else if (this.entityMgr.selection.canMove()) {
+                            if (cursorTarget.surface.isWalkable()) {
+                                this.entityMgr.selection.raiders.forEach((r) => r.setJob(new MoveJob(r, cursorTarget.surface.getRandomPosition())))
+                            }
+                            this.entityMgr.selection.vehicles.forEach((v) => v.setJob(new MoveJob(v, cursorTarget.surface.getCenterWorld2D())))
+                        } else {
+                            console.warn('Unexpected surface target given', cursorTarget)
+                        }
+                        if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
+                    } else if (cursorTarget.raider || cursorTarget.building) {
+                        const selection = new GameSelection()
+                        if (cursorTarget.raider) selection.raiders.push(cursorTarget.raider)
+                        selection.building = cursorTarget.building
+                        this.worldMgr.entityMgr.selection.set(selection)
+                        EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
+                    } else {
+                        console.warn('Unexpected cursor target given', cursorTarget)
+                    }
                 } else {
-                    const requiredTraining = manVehicleJob.requiredTraining
-                    const closestTrainingSite = r.findShortestPath(this.entityMgr.getTrainingSiteTargets(requiredTraining))
-                    if (!closestTrainingSite) return false
-                    r.setJob(new TrainRaiderJob(r.worldMgr.entityMgr, requiredTraining, closestTrainingSite.target.building), manVehicleJob)
+                    const x = (this.pointerDown.x + event.canvasX) / this.canvas.width - 1
+                    const y = -(this.pointerDown.y + event.canvasY) / this.canvas.height + 1
+                    const selectionByRay = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y))
+                    this.worldMgr.entityMgr.selection.set(selectionByRay)
+                    EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
                 }
-                EventBus.publishEvent(new DeselectAll())
-                return true
-            })
-            EventBus.publishEvent(new JobCreateEvent(manVehicleJob))
+            } else if (event.pointerType === 'mouse') {
+                const r1x = (this.pointerDown.x / this.canvas.width) * 2 - 1
+                const r1y = -(this.pointerDown.y / this.canvas.height) * 2 + 1
+                const r2x = (event.canvasX / this.canvas.width) * 2 - 1
+                const r2y = -(event.canvasY / this.canvas.height) * 2 + 1
+                const entities = this.worldMgr.sceneMgr.getEntitiesInFrustum(r1x, r1y, r2x, r2y)
+                this.worldMgr.entityMgr.selection.set(entities)
+                EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
+            }
+            this.pointerDown = null
+            EventBus.publishEvent(new SelectionFrameChangeEvent(null))
         }
     }
 

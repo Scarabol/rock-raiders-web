@@ -16,6 +16,7 @@ import { VehicleUpgrade, VehicleUpgrades } from '../game/model/vehicle/VehicleUp
 import { GameResult } from '../game/model/GameResult'
 import { GameEntity } from '../game/ECS'
 import { HealthComponent } from '../game/component/HealthComponent'
+import { Rect } from '../core/Rect'
 
 export class LocalEvent extends GameEvent {
 }
@@ -266,5 +267,11 @@ export class FollowerSetCanvasEvent extends LocalEvent {
 export class FollowerSetLookAtEvent extends LocalEvent {
     constructor(readonly entity: GameEntity) {
         super(EventKey.FOLLOWER_SET_LOOK_AT)
+    }
+}
+
+export class SelectionFrameChangeEvent extends LocalEvent {
+    constructor(readonly rect: Rect) {
+        super(EventKey.SELECTION_FRAME_CHANGE)
     }
 }
