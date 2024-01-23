@@ -15,7 +15,7 @@ export class GameState {
     static hiddenObjectsFound: number = 0
     static alarmMode: boolean = false
     static objectiveShowing: number = 1
-    static showObjInfo: boolean = DEV_MODE
+    static showObjInfo: boolean = false
     static monsterCongregation: Vector2 = null
 
     static reset() {

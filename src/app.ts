@@ -119,7 +119,7 @@ export async function start() {
             // complete setup
             screenMaster.addLayer(new TooltipLayer(), 1000).show()
             let mainMenuScreen = new MainMenuScreen(screenMaster)
-            let gameScreen = new GameScreen(screenMaster)
+            new GameScreen(screenMaster)
             const rewardScreen = new RewardScreen(screenMaster)
 
             screenMaster.loadingLayer.hide()
@@ -133,18 +133,6 @@ export async function start() {
                     try {
                         mainMenuScreen.dispose()
                         mainMenuScreen = new mNs.MainMenuScreen(screenMaster)
-                        finishSetup(entry, params, mainMenuScreen, rewardScreen)
-                    } catch (e) {
-                        console.error(e)
-                    }
-                })
-                import.meta.hot.accept('./screen/GameScreen', (mNs) => {
-                    try {
-                        const levelConf = gameScreen.levelConf
-                        gameScreen.dispose()
-                        gameScreen = new mNs.GameScreen(screenMaster)
-                        gameScreen.levelConf = levelConf
-                        gameScreen.restartLevel()
                         finishSetup(entry, params, mainMenuScreen, rewardScreen)
                     } catch (e) {
                         console.error(e)

@@ -165,8 +165,12 @@ export class LWSCParser {
                     } else if (currentObject.lowerName === 'lpcranetop') {
                         infos[1] = 0 // TODO Remove workaround
                     }
+                    // XXX LightWave coordinate system (left-handed) to three.js coordinate system (right-handed)
                     new Vector3(infos[0], infos[1], infos[2]).toArray(relPos, relPos.length)
-                    new Quaternion().setFromEuler(new Euler(degToRad(infos[4]), degToRad(infos[3]), degToRad(infos[5]), 'YXZ'), true).toArray(relRot, relRot.length) // Heading (Y), Pitch (X), Bank (Z)
+                    const pitch = infos[4] // pitch -> x-axis
+                    const heading = infos[3] // heading aka. yaw -> y-axis
+                    const bank = infos[5] // bank aka. roll -> z-axis
+                    new Quaternion().setFromEuler(new Euler(degToRad(pitch), degToRad(heading), degToRad(bank), 'YXZ'), true).toArray(relRot, relRot.length)
                     new Vector3(infos[6], infos[7], infos[8]).toArray(relScale, relScale.length)
                 }
                 currentObject.keyframeTracks.push(new VectorKeyframeTrack(`.position`, times, relPos))

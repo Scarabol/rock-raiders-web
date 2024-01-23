@@ -56,7 +56,6 @@ export class SelectionChanged extends LocalEvent {
     noVehicleWithDriver: boolean
     vehicleWithCarriedItems: boolean
     someHasBirdScarer: boolean
-    lookAtPosition: Vector3
 
     constructor(entityMgr: EntityManager) {
         super(EventKey.SELECTION_CHANGED)

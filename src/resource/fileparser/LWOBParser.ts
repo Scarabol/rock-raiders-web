@@ -134,9 +134,10 @@ export class LWOBParser {
         const vertices = []
         for (let c = 0; c < chunkSize; c += 12) {
             vertices.push(
-                this.lwoReader.readFloat32(), // x
-                this.lwoReader.readFloat32(), // y
-                this.lwoReader.readFloat32(), // z
+                // XXX LightWave coordinate system (left-handed) to three.js coordinate system (right-handed)
+                this.lwoReader.readFloat32(), // x where +x means to the right or east
+                this.lwoReader.readFloat32(), // y where +y means up
+                this.lwoReader.readFloat32(), // z where +z means forward or north
             )
         }
         this.vertices = new Float32Array(vertices)
