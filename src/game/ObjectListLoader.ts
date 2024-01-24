@@ -71,7 +71,7 @@ export class ObjectListLoader {
                     .multiplyScalar(TILESIZE).add(worldPos)
                 const cameraPos = this.worldMgr.sceneMgr.getFloorPosition(cameraOffset)
                 cameraPos.y += 5 * TILESIZE
-                this.worldMgr.sceneMgr.camera.position.copy(cameraPos)
+                this.worldMgr.sceneMgr.cameraBird.position.copy(cameraPos)
                 this.worldMgr.sceneMgr.controls.target.copy(this.worldMgr.sceneMgr.getFloorPosition(worldPos))
                 this.worldMgr.sceneMgr.controls.update()
                 this.worldMgr.sceneMgr.setCursorFloorPosition(new Vector2(worldPos.x, worldPos.y - TILESIZE / 2))

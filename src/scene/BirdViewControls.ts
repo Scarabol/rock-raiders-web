@@ -1,9 +1,8 @@
 import { MapControls } from 'three/examples/jsm/controls/MapControls'
-import { MOUSE, Raycaster, Vector2, Vector3 } from 'three'
-import { DEV_MODE, KEY_PAN_SPEED, MIN_CAMERA_HEIGHT_ABOVE_TERRAIN, NATIVE_UPDATE_INTERVAL, USE_KEYBOARD_SHORTCUTS } from '../params'
+import { Camera, MOUSE, Vector3 } from 'three'
+import { DEV_MODE, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, USE_KEYBOARD_SHORTCUTS } from '../params'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
-import { SceneManager } from '../game/SceneManager'
 import { degToRad } from 'three/src/math/MathUtils'
 
 export enum CameraRotation {
@@ -15,19 +14,15 @@ export enum CameraRotation {
 }
 
 export class BirdViewControls extends MapControls {
-    static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
-    readonly lastCameraWorldPos: Vector3 = new Vector3()
-    readonly raycaster: Raycaster = new Raycaster()
     private lockBuild: boolean = false
     moveTarget: Vector3 = null
 
-    constructor(readonly domElement: HTMLCanvasElement, sceneMgr: SceneManager) { // overwrite domElement to make addEventListener below return KeyboardEvents
-        super(sceneMgr.camera, domElement)
+    constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
+        super(camera, domElement)
         this.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
         this.listenToKeyEvents(domElement)
         this.keyPanSpeed = this.keyPanSpeed * KEY_PAN_SPEED
         if (!DEV_MODE) {
-            this.addEventListener('change', () => this.forceCameraAboveTerrain(sceneMgr))
             this.minDistance = ResourceManager.configuration.main.minDist
             this.maxDistance = ResourceManager.configuration.main.maxDist
             this.minPolarAngle = Math.PI / 2 - degToRad(ResourceManager.configuration.main.maxTilt)
@@ -72,21 +67,6 @@ export class BirdViewControls extends MapControls {
         this.object.position.set(location.x, location.y, location.z).add(offsetTargetToCamera)
         this.target.set(location.x, location.y, location.z)
         this.update()
-    }
-
-    private forceCameraAboveTerrain(sceneMgr: SceneManager) {
-        this.object.getWorldPosition(this.lastCameraWorldPos)
-        this.raycaster.set(this.lastCameraWorldPos, BirdViewControls.VEC_DOWN)
-        const terrainIntersectionPoint = this.raycaster.intersectObject(sceneMgr.terrain.floorGroup, true)?.[0]?.point
-        if (!terrainIntersectionPoint) return
-        const minCameraPosY = terrainIntersectionPoint.y + MIN_CAMERA_HEIGHT_ABOVE_TERRAIN
-        const centerPosition = this.target.clone()
-        centerPosition.y = 0
-        const groundPosition = this.object.position.clone()
-        groundPosition.y = 0
-        const origin = new Vector2(this.target.y, 0)
-        const remote = new Vector2(minCameraPosY, centerPosition.distanceTo(groundPosition))
-        this.maxPolarAngle = Math.atan2(remote.y - origin.y, remote.x - origin.x)
     }
 
     updateForceMove(elapsedMs: number) {

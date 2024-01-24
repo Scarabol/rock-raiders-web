@@ -397,11 +397,11 @@ export class BuildingEntity {
     }
 
     getPosition(): Vector3 {
-        return this.sceneEntity.position.clone()
+        return this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position.clone()
     }
 
     getPosition2D(): Vector2 {
-        return this.sceneEntity.position2D
+        return this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).getPosition2D()
     }
 
     setPosition(position: Vector3) {

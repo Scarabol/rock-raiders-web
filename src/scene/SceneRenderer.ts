@@ -7,11 +7,12 @@ import { cloneContext } from '../core/ImageHelper'
 export class SceneRenderer extends WebGLRenderer {
     readonly debugHelper: DebugHelper
     readonly maxFps: number = 30 // animations and videos have 25 fps (PAL)
+    camera: Camera
     renderInterval: NodeJS.Timeout
     lastAnimationRequest: number
     screenshotCallback: (canvas: HTMLCanvasElement) => any
 
-    constructor(canvas: SpriteImage, readonly camera: Camera) {
+    constructor(canvas: SpriteImage) {
         super({antialias: true, canvas: canvas, powerPreference: 'high-performance'})
         // this.shadowMap.enabled = true // XXX enable shadows here
         // this.shadowMap.type = PCFSoftShadowMap // XXX set shadow quality here

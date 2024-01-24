@@ -199,8 +199,8 @@ export class GameLayer extends ScreenLayer {
                 } else {
                     const x = (this.pointerDown.x + event.canvasX) / this.canvas.width - 1
                     const y = -(this.pointerDown.y + event.canvasY) / this.canvas.height + 1
-                    const selectionByRay = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y))
-                    this.worldMgr.entityMgr.selection.set(selectionByRay)
+                    const selection = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y))
+                    this.worldMgr.entityMgr.selection.set(selection)
                     EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
                 }
             } else if (event.pointerType === 'mouse') {
@@ -208,8 +208,8 @@ export class GameLayer extends ScreenLayer {
                 const r1y = -(this.pointerDown.y / this.canvas.height) * 2 + 1
                 const r2x = (event.canvasX / this.canvas.width) * 2 - 1
                 const r2y = -(event.canvasY / this.canvas.height) * 2 + 1
-                const entities = this.worldMgr.sceneMgr.getEntitiesInFrustum(r1x, r1y, r2x, r2y)
-                this.worldMgr.entityMgr.selection.set(entities)
+                const selection = this.worldMgr.sceneMgr.getEntitiesInFrustum(r1x, r1y, r2x, r2y)
+                this.worldMgr.entityMgr.selection.set(selection)
                 EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
             }
             this.pointerDown = null

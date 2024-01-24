@@ -1,4 +1,4 @@
-import { AmbientLight, AudioListener, Color, Frustum, Mesh, Object3D, PositionalAudio, Scene, Sprite, Vector2, Vector3 } from 'three'
+import { AmbientLight, AudioListener, Color, Frustum, Mesh, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { ResourceManager } from '../resource/ResourceManager'
 import { BirdViewControls } from '../scene/BirdViewControls'
@@ -13,7 +13,7 @@ import { BirdViewCamera } from '../scene/BirdViewCamera'
 import { TorchLightCursor } from '../scene/TorchLightCursor'
 import { SceneRenderer } from '../scene/SceneRenderer'
 import { Updatable, updateSafe } from './model/Updateable'
-import { NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
+import { CAMERA_FOV, DEV_MODE, MIN_CAMERA_HEIGHT_ABOVE_TERRAIN, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../params'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
 import { AnimatedSceneEntity } from '../scene/AnimatedSceneEntity'
@@ -25,14 +25,19 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 
 export class SceneManager implements Updatable {
+    static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
     readonly scene: Scene
     readonly audioListener: AudioListener
-    readonly camera: BirdViewCamera
+    readonly cameraBird: BirdViewCamera
+    readonly cameraShoulder: PerspectiveCamera
+    readonly cameraFPV: PerspectiveCamera
     readonly renderer: SceneRenderer
     readonly controls: BirdViewControls
     readonly entities: AnimatedSceneEntity[] = []
     readonly miscAnims: AnimationGroup[] = []
     readonly sprites: (Sprite & Updatable)[] = []
+    readonly lastCameraWorldPos: Vector3 = new Vector3()
+    readonly raycaster: Raycaster = new Raycaster()
     worldMgr: WorldManager
     ambientLight: AmbientLight
     terrain: Terrain
@@ -41,18 +46,29 @@ export class SceneManager implements Updatable {
     followerRenderer: FollowerRenderer
     shakeTimeout: number = 0
     bumpTimeout: number = 0
+    cameraActive: PerspectiveCamera
 
     constructor(canvas: HTMLCanvasElement) {
         this.scene = new Scene()
         this.audioListener = new AudioListener()
-        this.camera = new BirdViewCamera(canvas.width / canvas.height)
-        this.camera.add(this.audioListener)
-        this.renderer = new SceneRenderer(canvas, this.camera)
-        this.controls = new BirdViewControls(canvas, this)
+        const aspect = canvas.width / canvas.height
+        this.cameraBird = new BirdViewCamera(aspect)
+        this.cameraShoulder = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 200) // TODO Adjust camera parameters
+        this.cameraFPV = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 200) // TODO Adjust camera parameters
+        this.renderer = new SceneRenderer(canvas)
+        this.setActiveCamera(this.cameraBird)
+        this.controls = new BirdViewControls(this.cameraBird, canvas)
+        if (!DEV_MODE) this.controls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
         EventBus.registerEventListener(EventKey.DYNAMITE_EXPLOSION, () => {
             this.shakeTimeout = 1000
             this.bumpTimeout = 0
         })
+    }
+
+    setActiveCamera(camera: PerspectiveCamera) {
+        this.cameraActive = camera
+        this.cameraActive.add(this.audioListener)
+        this.renderer.camera = camera
     }
 
     getEntitiesInFrustum(r1x: number, r1y: number, r2x: number, r2y: number): GameSelection {
@@ -66,8 +82,8 @@ export class SceneManager implements Updatable {
             endPoint.y += Number.EPSILON
         }
         // update camera
-        this.camera.updateProjectionMatrix()
-        this.camera.updateMatrixWorld()
+        this.cameraActive.updateProjectionMatrix()
+        this.cameraActive.updateMatrixWorld()
         // update frustum
         const tmpPoint = new Vector3()
         tmpPoint.copy(startPoint)
@@ -81,16 +97,16 @@ export class SceneManager implements Updatable {
         const vecTopRight = new Vector3()
         const vecDownRight = new Vector3()
         const vecDownLeft = new Vector3()
-        vecNear.setFromMatrixPosition(this.camera.matrixWorld)
+        vecNear.setFromMatrixPosition(this.cameraActive.matrixWorld)
         vecTopLeft.copy(tmpPoint)
         vecTopRight.set(endPoint.x, tmpPoint.y, 0)
         vecDownRight.copy(endPoint)
         vecDownLeft.set(tmpPoint.x, endPoint.y, 0)
 
-        vecTopLeft.unproject(this.camera)
-        vecTopRight.unproject(this.camera)
-        vecDownRight.unproject(this.camera)
-        vecDownLeft.unproject(this.camera)
+        vecTopLeft.unproject(this.cameraActive)
+        vecTopRight.unproject(this.cameraActive)
+        vecDownRight.unproject(this.cameraActive)
+        vecDownLeft.unproject(this.cameraActive)
 
         const vectemp1 = new Vector3()
         const vectemp2 = new Vector3()
@@ -221,7 +237,10 @@ export class SceneManager implements Updatable {
 
     resize(width: number, height: number) {
         this.renderer.setSize(width, height)
-        this.camera.aspect = width / height
+        const aspect = width / height
+        this.cameraBird.aspect = aspect
+        this.cameraShoulder.aspect = aspect
+        this.cameraFPV.aspect = aspect
     }
 
     setCursorFloorPosition(position: Vector2) {
@@ -302,5 +321,21 @@ export class SceneManager implements Updatable {
     setLightLevel(lightLevel: number) {
         if (!this.ambientLight) return
         this.ambientLight.intensity = 0.05 + Math.max(0, Math.min(1, lightLevel)) * 0.45
+    }
+
+    private forceCameraBirdAboveFloor() {
+        this.cameraBird.getWorldPosition(this.lastCameraWorldPos)
+        this.lastCameraWorldPos.y += TILESIZE
+        this.raycaster.set(this.lastCameraWorldPos, SceneManager.VEC_DOWN)
+        const terrainIntersectionPoint = this.raycaster.intersectObject(this.terrain.floorGroup, true)?.[0]?.point
+        if (!terrainIntersectionPoint) return
+        const minCameraPosY = terrainIntersectionPoint.y + MIN_CAMERA_HEIGHT_ABOVE_TERRAIN
+        const centerPosition = this.controls.target.clone()
+        centerPosition.y = 0
+        const groundPosition = this.cameraBird.position.clone()
+        groundPosition.y = 0
+        const origin = new Vector2(this.controls.target.y, 0)
+        const remote = new Vector2(minCameraPosY, centerPosition.distanceTo(groundPosition))
+        this.controls.maxPolarAngle = Math.atan2(remote.y - origin.y, remote.x - origin.x)
     }
 }

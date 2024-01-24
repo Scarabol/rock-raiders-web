@@ -458,11 +458,11 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     getPosition(): Vector3 {
-        return this.sceneEntity.position.clone()
+        return this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).position.clone()
     }
 
     getPosition2D(): Vector2 {
-        return this.sceneEntity.position2D
+        return this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).getPosition2D()
     }
 
     setPosition(position: Vector3) {
@@ -487,6 +487,6 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     getSurface(): Surface {
-        return this.worldMgr.sceneMgr.terrain.getSurfaceFromWorld(this.getPosition())
+        return this.worldMgr.ecs.getComponents(this.entity).get(PositionComponent).surface
     }
 }

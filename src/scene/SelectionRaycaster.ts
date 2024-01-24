@@ -65,7 +65,7 @@ class SceneRaycaster {
 
     constructor(readonly worldMgr: WorldManager, origin: Vector2) {
         this.raycaster = new Raycaster()
-        this.raycaster.setFromCamera(origin, this.worldMgr.sceneMgr.camera)
+        this.raycaster.setFromCamera(origin, this.worldMgr.sceneMgr.cameraActive)
     }
 
     getEntities<T extends { entity: GameEntity }>(entities: T[], allowDoubleSelection: boolean): any[] {

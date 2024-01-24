@@ -1,4 +1,3 @@
-import { DEV_MODE } from '../../params'
 import { Vector2 } from 'three'
 
 export class GameState {
