@@ -1,7 +1,7 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
-import { DeselectAll, SelectionChanged, UpdatePriorities } from '../event/LocalEvents'
+import { CameraViewMode, ChangeCameraEvent, DeselectAll, SelectionChanged, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
@@ -233,6 +233,29 @@ export class GuiManager {
                     worldMgr.ecs.removeEntity(birdScarer)
                 })
             })
+        })
+        EventBus.registerEventListener(EventKey.COMMAND_CAMERA_VIEW, (event: ChangeCameraEvent) => {
+            const entity = entityMgr.selection.getPrimarySelected()
+            if (!entity) {
+                console.warn('No entity seems selected')
+                return
+            }
+            const camJoints = entity.sceneEntity.animationGroups.flatMap((a) => a.meshList.filter((m) => m.name.equalsIgnoreCase('cam_null')))
+            if (camJoints.length != 2) {
+                console.warn(`Unexpected number ${camJoints.length} camera joints found in mesh`, entity.sceneEntity, camJoints)
+                return
+            }
+            const [headJoint, shoulderJoint] = camJoints
+            if (event.viewMode === CameraViewMode.BIRD) {
+                worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraBird)
+                return
+            } else if (event.viewMode === CameraViewMode.FPV) {
+                headJoint.add(worldMgr.sceneMgr.cameraFPV)
+                worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraFPV)
+            } else if (event.viewMode === CameraViewMode.SHOULDER) {
+                shoulderJoint.add(worldMgr.sceneMgr.cameraShoulder)
+                worldMgr.sceneMgr.setActiveCamera(worldMgr.sceneMgr.cameraShoulder)
+            }
         })
     }
 }

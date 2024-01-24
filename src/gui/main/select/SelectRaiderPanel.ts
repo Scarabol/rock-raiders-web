@@ -1,6 +1,6 @@
 import { EventKey } from '../../../event/EventKeyEnum'
 import { DropBirdScarer, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade } from '../../../event/GuiCommand'
-import { BuildingsChangedEvent, SelectionChanged } from '../../../event/LocalEvents'
+import { BuildingsChangedEvent, CameraViewMode, ChangeCameraEvent, SelectionChanged } from '../../../event/LocalEvents'
 import { EntityType } from '../../../game/model/EntityType'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
@@ -36,8 +36,12 @@ export class SelectRaiderPanel extends SelectBasePanel {
         upgradeItem.onClick = () => this.publishEvent(new RaiderUpgrade())
         this.trainItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_TrainSkill')
         this.trainItem.isDisabled = () => false
-        this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GotoFirstPerson')
-        this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GotoSecondPerson')
+        const firstPersonView = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GotoFirstPerson')
+        firstPersonView.isDisabled = () => false
+        firstPersonView.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.FPV))
+        const shoulderView = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GotoSecondPerson')
+        shoulderView.isDisabled = () => false
+        shoulderView.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.SHOULDER))
         const deleteRaiderItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_DeleteMan')
         deleteRaiderItem.isDisabled = () => false
         deleteRaiderItem.onClick = () => this.publishEvent(new RaiderBeamUp())

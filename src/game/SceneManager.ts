@@ -63,6 +63,9 @@ export class SceneManager implements Updatable {
             this.shakeTimeout = 1000
             this.bumpTimeout = 0
         })
+        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
+            this.setActiveCamera(this.cameraBird)
+        })
     }
 
     setActiveCamera(camera: PerspectiveCamera) {

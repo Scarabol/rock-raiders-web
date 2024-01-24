@@ -1,6 +1,6 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeRaiderSpawnRequest } from '../../event/GuiCommand'
-import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
+import { BuildingsChangedEvent, CameraViewMode, ChangeCameraEvent, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { MAX_RAIDER_REQUEST } from '../../params'
@@ -24,6 +24,7 @@ import { TrainRaiderPanel } from './TrainRaiderPanel'
 import { LargeVehiclePanel, SmallVehiclePanel } from './VehiclePanel'
 import { UpgradeVehiclePanel } from './UpgradeVehiclePanel'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { ChangeCameraPanel } from './select/ChangeCameraPanel'
 
 export class MainPanel extends Panel {
     subPanels: IconSubPanel[] = []
@@ -68,6 +69,7 @@ export class MainPanel extends Panel {
         const upgradeVehiclePanel = this.addSubPanel(new UpgradeVehiclePanel(this, selectVehicleManedPanel))
         selectVehicleManedPanel.upgradeItem.onClick = () => selectVehicleManedPanel.toggleState(() => upgradeVehiclePanel.toggleState())
         const selectFencePanel = this.addSubPanel(new SelectFencePanel(this, this.mainPanel))
+        const cameraViewPanel = this.addSubPanel(new ChangeCameraPanel(this))
 
         const teleportRaider = this.mainPanel.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_TeleportMan')
         teleportRaider.addDependencyCheck(EntityType.PILOT)
@@ -111,6 +113,15 @@ export class MainPanel extends Panel {
         })
         this.registerEventListener(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             this.hidden = event.isShowing
+        })
+        this.registerEventListener(EventKey.COMMAND_CAMERA_VIEW, (event: ChangeCameraEvent) => {
+            cameraViewPanel.cameraViewMode = event.viewMode
+            cameraViewPanel.updateAllButtonStates()
+            if (event.viewMode === CameraViewMode.BIRD) {
+                this.selectSubPanel(selectRaiderPanel)
+            } else {
+                this.selectSubPanel(cameraViewPanel)
+            }
         })
     }
 

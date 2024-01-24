@@ -183,4 +183,9 @@ export class GameSelection {
     canPickup(): boolean {
         return this.raiders.some((r) => r.getCarryCapacity() > 0) || this.vehicles.some((v) => v.getCarryCapacity() > 0)
     }
+
+    getPrimarySelected(): Raider | VehicleEntity {
+        // TODO Allow for primary (green) and secondary (yellow) selected entities
+        return this.raiders[0] ?? this.vehicles[0]
+    }
 }

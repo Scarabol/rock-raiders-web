@@ -275,3 +275,15 @@ export class SelectionFrameChangeEvent extends LocalEvent {
         super(EventKey.SELECTION_FRAME_CHANGE)
     }
 }
+
+export enum CameraViewMode {
+    BIRD,
+    FPV,
+    SHOULDER,
+}
+
+export class ChangeCameraEvent extends LocalEvent {
+    constructor(readonly viewMode: CameraViewMode) {
+        super(EventKey.COMMAND_CAMERA_VIEW)
+    }
+}

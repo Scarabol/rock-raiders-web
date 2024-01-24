@@ -58,6 +58,7 @@ export enum EventKey {
     COMMAND_UPGRADE_VEHICLE,
     COMMAND_REPAIR_BUILDING,
     COMMAND_DROP_BIRD_SCARER,
+    COMMAND_CAMERA_VIEW,
 
     // World events with location
     LOCATION_DEATH,
