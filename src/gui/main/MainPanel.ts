@@ -1,6 +1,6 @@
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeRaiderSpawnRequest } from '../../event/GuiCommand'
-import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType } from '../../event/LocalEvents'
+import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, SelectPanelType, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { RequestedRaidersChanged } from '../../event/WorldEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { MAX_RAIDER_REQUEST } from '../../params'
@@ -108,6 +108,9 @@ export class MainPanel extends Panel {
         this.registerEventListener(EventKey.RAIDER_AMOUNT_CHANGED, (event: RaidersAmountChangedEvent) => {
             this.hasMaxRaiders = event.hasMaxRaiders
             teleportRaider.updateState()
+        })
+        this.registerEventListener(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
+            this.hidden = event.isShowing
         })
     }
 
