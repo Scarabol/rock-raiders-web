@@ -236,17 +236,29 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             const pivotWorldPos = new Vector3()
             this.xPivotObj.getWorldPosition(pivotWorldPos)
             const diff = worldTarget.clone().sub(pivotWorldPos)
-            const angle = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI
+            const angleToTarget = diff.clone().setY(pivotWorldPos.y).angleTo(diff) / Math.PI
+            const parentAngle = AnimatedSceneEntity.getParentAngle(this.xPivotObj.parent, 'x')
             // XXX use rotation speed and smooth movement
-            this.xPivotObj.rotation.x = this.limitAngle(angle)
+            this.xPivotObj.rotation.x = parentAngle + this.limitAngle(angleToTarget)
         }
         const yPivot = this.yPivotObj ?? this.xPivotObj
         if (yPivot) {
             const pivotWorldPos = new Vector3()
             yPivot.getWorldPosition(pivotWorldPos)
+            const angleToTarget = new Vector2(worldTarget.x, worldTarget.z).sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle()
+            const parentAngle = AnimatedSceneEntity.getParentAngle(yPivot.parent, 'y')
             // XXX use rotation speed and smooth movement
-            yPivot.rotation.y = new Vector2(worldTarget.x, worldTarget.z).sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle() + Math.PI / 2
+            yPivot.rotation.y = parentAngle + angleToTarget - Math.PI / 2
         }
+    }
+
+    private static getParentAngle(parent: Object3D, dim: keyof Vector3): number {
+        let angle = 0
+        while (parent) {
+            angle += parent.rotation[dim]
+            parent = parent.parent
+        }
+        return angle
     }
 
     private limitAngle(angle: number): number {
