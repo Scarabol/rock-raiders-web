@@ -68,7 +68,6 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.entity = this.worldMgr.ecs.addEntity()
         this.sceneEntity = new AnimatedSceneEntity()
         aeNames.forEach((aeName) => this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName)))
-        this.sceneEntity.flipXAxis()
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)

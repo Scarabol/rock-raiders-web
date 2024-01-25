@@ -1,5 +1,5 @@
 import { ScreenLayer } from './ScreenLayer'
-import { AmbientLight, Camera, PerspectiveCamera, Scene } from 'three'
+import { AmbientLight, Camera, DoubleSide, PerspectiveCamera, Scene } from 'three'
 import { CAMERA_FOV, NATIVE_UPDATE_INTERVAL } from '../../params'
 import { AnimationLoopGroup } from '../../scene/AnimationLoopGroup'
 import { EventKey } from '../../event/EventKeyEnum'
@@ -42,8 +42,7 @@ export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeL
         this.group = new AnimationLoopGroup(advisorCfg.animFileName, () => {
             this.renderer.stopRendering()
         }).setLoop(advisorCfg.loopStart, advisorCfg.loopEnd).setup()
-        this.group.meshList.forEach((m) => m.geometry.scale(-1, 1, 1)) // flip normals
-        this.group.scale.x = -1
+        this.group.meshList.forEach((m) => m.getMaterials().forEach((m) => m.side = DoubleSide)) // otherwise flipped normals
         this.scene.add(this.group)
         EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             if (event.isShowing) {

@@ -115,17 +115,16 @@ export class LWSCParser {
         for (; this.lineIndex < this.lines.length; this.lineIndex++) {
             let line = this.lines[this.lineIndex]
             if (!line) {
-                if (currentObject.pivot) {
+                if (currentObject.pivot?.some((v) => v > 0)) {
                     const translatedPositionTracks = currentObject.positionTracks.map((t) => {
-                        let c = 0
-                        const mappedValues = t.values.map((v) => {
+                        const mappedValues = t.values.map((v, c) => {
                             // TODO Remove workaround of doom, otherwise telepthings.lwo which uses pivot point for rotation has offset from model
                             if ((c % 3) === 0) {
-                                v += 0.4
+                                v -= 0.4
                             } else if ((c % 3) === 2) {
-                                v -= 1.2
+                                v -= 0.2
                             }
-                            c++
+                            v -= currentObject.pivot[(c % 3)]
                             return v
                         })
                         t.values.set(mappedValues)
@@ -184,17 +183,12 @@ export class LWSCParser {
                     const keyframeIndex = parseInt(line.split(' ')[0], 10) // other entries in line should be zeros
                     const timeFromIndex = (keyframeIndex - this.firstFrame) / (this.numOfKeyframes - 1) * this.lwscData.durationSeconds
                     times.push(timeFromIndex)
-                    if (currentObject.lowerName === 'lpgunpivot') {
-                        infos[1] = -42 // TODO Remove workaround
-                    } else if (currentObject.lowerName === 'lpcranetop') {
-                        infos[1] = 0 // TODO Remove workaround
-                    }
-                    // XXX LightWave coordinate system (left-handed) to three.js coordinate system (right-handed)
-                    new Vector3(infos[0], infos[1], infos[2]).toArray(relPos, relPos.length)
-                    const pitch = infos[4] // pitch -> x-axis
-                    const heading = infos[3] // heading aka. yaw -> y-axis
-                    const bank = infos[5] // bank aka. roll -> z-axis
-                    new Quaternion().setFromEuler(new Euler(degToRad(pitch), degToRad(heading), degToRad(bank), 'YXZ'), true).toArray(relRot, relRot.length)
+                    // LightWave coordinate system (left-handed) to three.js coordinate system (right-handed)
+                    new Vector3(-infos[0], infos[1], infos[2]).toArray(relPos, relPos.length)
+                    const heading = -degToRad(infos[3]) // heading aka. yaw -> y-axis
+                    const pitch = degToRad(infos[4]) // pitch -> x-axis
+                    const bank = -degToRad(infos[5]) // bank aka. roll -> z-axis
+                    new Quaternion().setFromEuler(new Euler(pitch, heading, bank, 'YXZ'), true).toArray(relRot, relRot.length)
                     new Vector3(infos[6], infos[7], infos[8]).toArray(relScale, relScale.length)
                 }
                 currentObject.positionTracks.push(new VectorKeyframeTrack(`.position`, times, relPos))

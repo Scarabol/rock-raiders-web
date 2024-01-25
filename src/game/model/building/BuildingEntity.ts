@@ -58,7 +58,6 @@ export class BuildingEntity {
         this.buildingType = BuildingType.from(this.entityType)
         this.sceneEntity = new AnimatedSceneEntity()
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(this.buildingType.aeFilename))
-        this.sceneEntity.flipXAxis()
         this.powerOffSprite = new BubbleSprite(GameConfig.instance.bubbles.bubblePowerOff)
         this.powerOffSprite.visible = this.isPowered()
         this.sceneEntity.add(this.powerOffSprite)

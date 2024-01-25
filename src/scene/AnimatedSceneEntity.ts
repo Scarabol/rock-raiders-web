@@ -1,4 +1,4 @@
-import { Box3, Group, Matrix4, Object3D, Sphere, Vector2, Vector3 } from 'three'
+import { Box3, Group, Object3D, Sphere, Vector2, Vector3 } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
@@ -192,10 +192,6 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         })
     }
 
-    flipXAxis() {
-        this.applyMatrix4(new Matrix4().makeScale(-1, 1, 1))
-    }
-
     pickupEntity(entity: Object3D) {
         const foundCarryJoint = this.carryJoints.some((carryJoint, index) => {
             if (carryJoint.children.length < 1) {
@@ -254,10 +250,10 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         if (yPivot) {
             const pivotWorldPos = new Vector3()
             yPivot.getWorldPosition(pivotWorldPos)
-            const angleToTarget = new Vector2(worldTarget.x, worldTarget.z).sub(new Vector2(pivotWorldPos.x, pivotWorldPos.z)).angle()
-            const parentAngle = AnimatedSceneEntity.getParentAngle(yPivot.parent, 'y')
+            const angleToTarget = -Math.atan2(worldTarget.z - pivotWorldPos.z, worldTarget.x - pivotWorldPos.x)
+            const parentAngle = -AnimatedSceneEntity.getParentAngle(yPivot.parent, 'y')
             // XXX use rotation speed and smooth movement
-            yPivot.rotation.y = parentAngle + angleToTarget - Math.PI / 2
+            yPivot.rotation.y = parentAngle + angleToTarget + Math.PI / 2
         }
     }
 

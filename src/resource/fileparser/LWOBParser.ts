@@ -134,8 +134,8 @@ export class LWOBParser {
         const vertices = []
         for (let c = 0; c < chunkSize; c += 12) {
             vertices.push(
-                // XXX LightWave coordinate system (left-handed) to three.js coordinate system (right-handed)
-                this.lwoReader.readFloat32(), // x where +x means to the right or east
+                // LightWave coordinate system (left-handed) to three.js coordinate system (right-handed)
+                -this.lwoReader.readFloat32(), // x where +x means to the right or east
                 this.lwoReader.readFloat32(), // y where +y means up
                 this.lwoReader.readFloat32(), // z where +z means forward or north
             )
@@ -163,29 +163,29 @@ export class LWOBParser {
             this.geometry.addGroup(indices.length, (numIndices - 2) * 3, materialIndex)
             switch (numIndices) {
                 case 3:
-                    indices[currentIndex++] = faceIndices[0]
-                    indices[currentIndex++] = faceIndices[1]
                     indices[currentIndex++] = faceIndices[2]
+                    indices[currentIndex++] = faceIndices[1]
+                    indices[currentIndex++] = faceIndices[0]
                     break
                 case 4: // split quad face into two triangles
                     // XXX Splitting the face here, breaks the UV mapping for previous triangles, see mphead.lwo
-                    indices[currentIndex++] = faceIndices[0]
+                    indices[currentIndex++] = faceIndices[2]
                     indices[currentIndex++] = faceIndices[1]
+                    indices[currentIndex++] = faceIndices[0]
+                    indices[currentIndex++] = faceIndices[3]
                     indices[currentIndex++] = faceIndices[2]
                     indices[currentIndex++] = faceIndices[0]
-                    indices[currentIndex++] = faceIndices[2]
-                    indices[currentIndex++] = faceIndices[3]
                     break
                 case 5: // split face into triangles
-                    indices[currentIndex++] = faceIndices[0]
+                    indices[currentIndex++] = faceIndices[2]
                     indices[currentIndex++] = faceIndices[1]
+                    indices[currentIndex++] = faceIndices[0]
+                    indices[currentIndex++] = faceIndices[4]
                     indices[currentIndex++] = faceIndices[2]
                     indices[currentIndex++] = faceIndices[0]
-                    indices[currentIndex++] = faceIndices[2]
-                    indices[currentIndex++] = faceIndices[4]
-                    indices[currentIndex++] = faceIndices[4]
-                    indices[currentIndex++] = faceIndices[2]
                     indices[currentIndex++] = faceIndices[3]
+                    indices[currentIndex++] = faceIndices[2]
+                    indices[currentIndex++] = faceIndices[4]
                     break
                 default:
                     if (VERBOSE) console.warn(`Expected face with 3, 4 or 5 indices but got ${numIndices} instead`)
@@ -485,10 +485,14 @@ export class LWOBParser {
                     u = z / size.z + 0.5
                     v = y / size.y + 0.5
                 } else if (flags & YAXIS_BIT) {
+                    // TODO drill_icon.bmp on top of large digger is shown duplicated with 2 rows and 4 columns
                     u = x / size.x + 0.5
                     v = z / size.z + 0.5
+                    // u = (x / size.x + 0.5) / 4 + 0.5
+                    // v = (z / size.z + 0.5) / 2 + 0.5
                 } else if (flags & ZAXIS_BIT) {
-                    u = x / size.x + 0.5
+                    // LightWave coordinate system (left-handed) to three.js coordinate system (right-handed)
+                    u = (-this.vertices[vertexIndex] - center.x) / size.x + 0.5
                     v = y / size.y + 0.5
                 }
 
