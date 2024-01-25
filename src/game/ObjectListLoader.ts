@@ -20,7 +20,7 @@ import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/
 import { HealthComponent } from './component/HealthComponent'
 import { OxygenComponent } from './component/OxygenComponent'
 import { RaiderInfoComponent } from './component/RaiderInfoComponent'
-import { ResourceManager } from '../resource/ResourceManager'
+import { GameConfig } from '../cfg/GameConfig'
 import { GameEntity } from './ECS'
 import degToRad = MathUtils.degToRad
 
@@ -152,7 +152,7 @@ export class ObjectListLoader {
     private spawnRaider(worldPos: Vector2, headingRad: number) {
         const raider = new Raider(this.worldMgr)
         raider.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-        const healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, ResourceManager.getRockFallDamage(raider.entityType, raider.level)))
+        const healthComponent = this.worldMgr.ecs.addComponent(raider.entity, new HealthComponent(false, 16, 10, raider.sceneEntity, true, GameConfig.instance.getRockFallDamage(raider.entityType, raider.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         this.worldMgr.ecs.addComponent(raider.entity, new OxygenComponent(raider.stats.OxygenCoef))
@@ -184,7 +184,7 @@ export class ObjectListLoader {
     private spawnVehicle(entityType: VehicleEntityType, worldPos: Vector2, headingRad: number) {
         const vehicle = VehicleFactory.createVehicleFromType(entityType, this.worldMgr)
         vehicle.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-        const healthComponent = this.worldMgr.ecs.addComponent(vehicle.entity, new HealthComponent(false, 24, 14, vehicle.sceneEntity, false, ResourceManager.getRockFallDamage(vehicle.entityType, vehicle.level)))
+        const healthComponent = this.worldMgr.ecs.addComponent(vehicle.entity, new HealthComponent(false, 24, 14, vehicle.sceneEntity, false, GameConfig.instance.getRockFallDamage(vehicle.entityType, vehicle.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         const sceneSelectionComponent = new SceneSelectionComponent(vehicle.sceneEntity, {gameEntity: vehicle.entity, entityType: vehicle.entityType}, vehicle.stats)

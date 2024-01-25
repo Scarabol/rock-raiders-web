@@ -4,6 +4,7 @@ import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { IconPanelButton } from './IconPanelButton'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class IconSubPanel extends Panel {
     backBtn: Button = null
@@ -12,10 +13,10 @@ export class IconSubPanel extends Panel {
     constructor(parent: BaseElement, numOfItems: number, onBackPanel: Panel = null) {
         super(parent)
         if (onBackPanel) {
-            this.backBtn = this.addChild(new Button(this, ResourceManager.configuration.interfaceBackButton))
+            this.backBtn = this.addChild(new Button(this, GameConfig.instance.interfaceBackButton))
             this.backBtn.onClick = () => this.toggleState(() => onBackPanel.toggleState())
         }
-        const frameImgCfg = ResourceManager.configuration.interfaceSurroundImages.cfgByNumItems[numOfItems]
+        const frameImgCfg = GameConfig.instance.interfaceSurroundImages.cfgByNumItems[numOfItems]
         this.img = onBackPanel ? ResourceManager.getImage(frameImgCfg.imgName) : ResourceManager.getImage(frameImgCfg.imgNameWoBackName)
         this.xOut = -this.img.width
     }

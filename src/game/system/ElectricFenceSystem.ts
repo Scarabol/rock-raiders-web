@@ -5,9 +5,9 @@ import { WorldManager } from '../WorldManager'
 import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
 import { TILESIZE } from '../../params'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { Surface } from '../terrain/Surface'
 import { Vector3 } from 'three'
+import { GameConfig } from '../../cfg/GameConfig'
 
 const FENCE_RANGE_SQ = TILESIZE / 4 * TILESIZE / 4
 
@@ -49,13 +49,13 @@ export class ElectricFenceSystem extends AbstractGameSystem {
 
     private addBeamX(beamPos: Vector3, short: boolean) {
         beamPos.x -= TILESIZE
-        const lwsFilename = short ? ResourceManager.configuration.miscObjects.ShortElectricFenceBeam : ResourceManager.configuration.miscObjects.LongElectricFenceBeam
+        const lwsFilename = short ? GameConfig.instance.miscObjects.ShortElectricFenceBeam : GameConfig.instance.miscObjects.LongElectricFenceBeam
         this.worldMgr.sceneMgr.addMiscAnim(lwsFilename, beamPos, Math.PI / 2, false)
     }
 
     private addBeamZ(beamPos: Vector3, short: boolean) {
         beamPos.z -= TILESIZE
-        const lwsFilename = short ? ResourceManager.configuration.miscObjects.ShortElectricFenceBeam : ResourceManager.configuration.miscObjects.LongElectricFenceBeam
+        const lwsFilename = short ? GameConfig.instance.miscObjects.ShortElectricFenceBeam : GameConfig.instance.miscObjects.LongElectricFenceBeam
         this.worldMgr.sceneMgr.addMiscAnim(lwsFilename, beamPos, 0, false)
     }
 
@@ -115,7 +115,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             }
         })
         toAdd.forEach((s) => {
-            s.stud = this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.ElectricFenceStud, s.getCenterWorld(), 0, true)
+            s.stud = this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.ElectricFenceStud, s.getCenterWorld(), 0, true)
             this.worldMgr.entityMgr.surfacesWithStuds.add(s)
         })
         return studPositions
@@ -127,7 +127,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             return
         }
         const longBeams = studProtectedSurfaces.map((surface) => {
-            const lwsFilename = ResourceManager.configuration.miscObjects.LongElectricFenceBeam
+            const lwsFilename = GameConfig.instance.miscObjects.LongElectricFenceBeam
             const beamPos = surface.getCenterWorld()
             const surfaceLeft = this.worldMgr.sceneMgr.terrain.getSurface(surface.x - 1, surface.y)
             const surfaceRight = this.worldMgr.sceneMgr.terrain.getSurface(surface.x + 1, surface.y)
@@ -147,7 +147,7 @@ export class ElectricFenceSystem extends AbstractGameSystem {
             const neighbors = surface.neighbors.filter((n) => !!n.fence || n.building?.primarySurface === n || n.building?.secondarySurface === n)
             neighbors.forEach((n) => {
                 const beamHeading = -n.getCenterWorld2D().angleTo(surface.getCenterWorld2D()) + Math.PI / 2
-                shortBeams.push({lwsFilename: ResourceManager.configuration.miscObjects.ShortElectricFenceBeam, beamPos: surface.getCenterWorld(), beamHeading})
+                shortBeams.push({lwsFilename: GameConfig.instance.miscObjects.ShortElectricFenceBeam, beamPos: surface.getCenterWorld(), beamHeading})
             })
         })
         const beamLocations = [...longBeams, ...shortBeams]

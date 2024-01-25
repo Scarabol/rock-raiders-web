@@ -9,7 +9,6 @@ import { PathFinder } from './PathFinder'
 import { PowerGrid } from './PowerGrid'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { Sample } from '../../audio/Sample'
 import { EventBus } from '../../event/EventBus'
 import { GenericMonsterEvent, LandslideEvent } from '../../event/WorldLocationEvent'
@@ -22,6 +21,7 @@ import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityCo
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WALL_TYPE } from './WallType'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class Terrain {
     heightOffset: number[][] = [[]]
@@ -158,7 +158,7 @@ export class Terrain {
     createFallIn(source: Surface, target: Surface) {
         const fallInPosition = target.getCenterWorld()
         const heading = Math.atan2(target.y - source.y, source.x - target.x) + Math.PI / 2
-        const rockFallAnimName = ResourceManager.configuration.rockFallStyles[this.rockFallStyle][3] // TODO not always pick "tunnel"
+        const rockFallAnimName = GameConfig.instance.rockFallStyles[this.rockFallStyle][3] // TODO not always pick "tunnel"
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading, false)
         source.playPositionalSample(Sample.SFX_RockBreak)
         target.makeRubble()

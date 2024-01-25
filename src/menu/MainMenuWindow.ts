@@ -1,7 +1,7 @@
 import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
-import { ResourceManager } from '../resource/ResourceManager'
 import { DEFAULT_FONT_NAME } from '../params'
+import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 
 export class MainMenuWindow extends MainMenuBaseItem {
     imgFirstLine: SpriteImage = null
@@ -12,14 +12,14 @@ export class MainMenuWindow extends MainMenuBaseItem {
     }
 
     setFirstLine(text: string) {
-        ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text, this.width).then((textImage) => {
+        BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, text, this.width).then((textImage) => {
             this.imgFirstLine = textImage
             this.state.stateChanged = true
         })
     }
 
     setSecondLine(text: string) {
-        ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, text, this.width).then((textImage) => {
+        BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, text, this.width).then((textImage) => {
             this.imgSecondLine = textImage
             this.state.stateChanged = true
         })

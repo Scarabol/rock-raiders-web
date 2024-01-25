@@ -17,6 +17,8 @@ import { ShowGameResultEvent } from '../event/LocalEvents'
 import { OverwriteLayer } from '../menu/OverwriteLayer'
 import { FlicAnimOverlay } from '../menu/FlicAnimOverlay'
 import { imgDataToCanvas } from '../core/ImageHelper'
+import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class RewardScreen {
     readonly cfg: RewardCfg = null
@@ -41,7 +43,7 @@ export class RewardScreen {
     screenshot: HTMLCanvasElement = null
 
     constructor(screenMaster: ScreenMaster) {
-        this.cfg = ResourceManager.configuration.reward
+        this.cfg = GameConfig.instance.reward
         const backgroundImg = ResourceManager.getImage(this.cfg.wallpaper)
         this.backgroundLayer = screenMaster.addLayer(new ScaledLayer('RewardBackgroundLayer'), 600)
         this.backgroundLayer.animationFrame.onRedraw = (context) => context.drawImage(backgroundImg, 0, 0)
@@ -54,7 +56,7 @@ export class RewardScreen {
         Promise.all(Object.keys(this.cfg.fonts).map((fontKey, index) => {
             this.fontNames.set(fontKey.toLowerCase(), this.cfg.fonts[fontKey])
             const labelFontName = index < 9 ? this.cfg.fonts[fontKey] : this.cfg.backFont
-            return ResourceManager.bitmapFontWorkerPool.createTextImage(labelFontName, this.cfg.text[index].text)
+            return BitmapFontWorkerPool.instance.createTextImage(labelFontName, this.cfg.text[index].text)
         })).then((textImages) => this.texts = textImages)
         this.resultsLayer = screenMaster.addLayer(new ScaledLayer('RewardResultsLayer'), 610)
         this.resultsLayer.addEventListener('pointerup', (): boolean => {
@@ -134,9 +136,9 @@ export class RewardScreen {
             this.btnSave.draw(context)
             this.btnAdvance.draw(context)
         }
-        ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFont, 'No level selected')
+        BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFont, 'No level selected')
             .then((textImage) => this.levelFullNameImg = textImage)
-        this.saveGameLayer = screenMaster.addLayer(new LoadSaveLayer(ResourceManager.configuration.menu.mainMenuFull.menus[3], false), 660)
+        this.saveGameLayer = screenMaster.addLayer(new LoadSaveLayer(GameConfig.instance.menu.mainMenuFull.menus[3], false), 660)
         const overwriteLayer = screenMaster.addLayer(new OverwriteLayer(), 670)
         this.saveGameLayer.onItemAction = (item: MainMenuBaseItem) => {
             if (item.actionName.equalsIgnoreCase('next')) {
@@ -165,7 +167,7 @@ export class RewardScreen {
 
     showGameResult(result: GameResult) {
         console.log('Your game result', result)
-        ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFont, result.levelFullName)
+        BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFont, result.levelFullName)
             .then((textImage) => this.levelFullNameImg = textImage)
         this.btnSave.disabled = result.state !== GameResultState.COMPLETE
         this.resultText = this.cfg.quitText
@@ -179,16 +181,16 @@ export class RewardScreen {
         this.screenshot = result.screenshot
         this.resultValues.length = 0
         Promise.all([
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('crystals'), this.percentString(result.numCrystal, result.rewardConfig?.quota?.crystals || 0)),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('ore'), this.percentString(result.numOre, result.numTotalOres)),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('diggable'), this.percentString(result.remainingDiggables, result.totalDiggables, true)),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('constructions'), result.numBuildings.toString()),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('caverns'), this.percentString(result.discoveredCaverns, result.rewardConfig?.quota?.caverns || 0)),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('figures'), this.percentString(result.numRaiders, result.numMaxAirRaiders)),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('rockmonsters'), this.percentString(result.defencePercent, 100)),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('oxygen'), this.percentString(result.airLevelPercent, 100)),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('timer'), this.timeString(result.gameTimeSeconds)),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(this.fontNames.get('score'), `${result.score}%`),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('crystals'), this.percentString(result.numCrystal, result.rewardConfig?.quota?.crystals || 0)),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('ore'), this.percentString(result.numOre, result.numTotalOres)),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('diggable'), this.percentString(result.remainingDiggables, result.totalDiggables, true)),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('constructions'), result.numBuildings.toString()),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('caverns'), this.percentString(result.discoveredCaverns, result.rewardConfig?.quota?.caverns || 0)),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('figures'), this.percentString(result.numRaiders, result.numMaxAirRaiders)),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('rockmonsters'), this.percentString(result.defencePercent, 100)),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('oxygen'), this.percentString(result.airLevelPercent, 100)),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('timer'), this.timeString(result.gameTimeSeconds)),
+            BitmapFontWorkerPool.instance.createTextImage(this.fontNames.get('score'), `${result.score}%`),
         ]).then((textImages) => {
             this.resultValues = textImages
             this.show()
@@ -200,7 +202,7 @@ export class RewardScreen {
         this.btnSave.visible = false
         this.btnAdvance.visible = false
         this.uncoverResult()
-        ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFont, this.resultText)
+        BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFont, this.resultText)
             .then((gameResultTextImg) => {
                 this.resultsLayer.animationFrame.onRedraw = (context) => {
                     context.clearRect(0, 0, this.resultsLayer.fixedWidth, this.resultsLayer.fixedHeight)

@@ -6,6 +6,7 @@ import { Panel } from '../base/Panel'
 import { BriefingPanelCfg } from './BriefingPanelCfg'
 import { SetSpaceToContinueEvent, ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class BriefingPanel extends Panel {
     cfg: BriefingPanelCfg = null
@@ -47,12 +48,12 @@ export class BriefingPanel extends Panel {
         this.height = this.imgBack.height
         this.updatePosition()
         this.objectiveParagraphs = objectiveText.split('\\a')
-        ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.titleFontName, dialogTitle).then((textImage) => {
+        BitmapFontWorkerPool.instance.createTextImage(this.cfg.titleFontName, dialogTitle).then((textImage) => {
             this.imgTitle = textImage
             this.notifyRedraw()
         })
         Promise.all(this.objectiveParagraphs.map((txt) => {
-            return ResourceManager.bitmapFontWorkerPool.createTextImage(this.cfg.textFontName, txt, this.cfg.textWindow.w, false)
+            return BitmapFontWorkerPool.instance.createTextImage(this.cfg.textFontName, txt, this.cfg.textWindow.w, false)
         })).then((textImages) => {
             this.imgParagraphList = textImages
             this.notifyRedraw()

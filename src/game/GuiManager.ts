@@ -22,7 +22,7 @@ import { MaterialSpawner } from './entity/MaterialSpawner'
 import { GenericDeathEvent } from '../event/WorldLocationEvent'
 import { PositionComponent } from './component/PositionComponent'
 import { RaiderTool } from './model/raider/RaiderTool'
-import { ResourceManager } from '../resource/ResourceManager'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -228,7 +228,7 @@ export class GuiManager {
                 const position = r.getPosition()
                 worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
                 entityMgr.addEntity(birdScarer, EntityType.BIRD_SCARER)
-                sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BirdScarer, position, Math.random() * 2 * Math.PI, false, () => {
+                sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BirdScarer, position, Math.random() * 2 * Math.PI, false, () => {
                     entityMgr.removeEntity(birdScarer)
                     worldMgr.ecs.removeEntity(birdScarer)
                 })

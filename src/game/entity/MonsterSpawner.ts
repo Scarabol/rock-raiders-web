@@ -25,6 +25,7 @@ import { SlugBehaviorComponent, SlugBehaviorState } from '../component/SlugBehav
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { HeadingComponent } from '../component/HeadingComponent'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
@@ -43,7 +44,7 @@ export class MonsterSpawner {
                 positionComponent.floorOffset = 1
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/SpiderSB'))
                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                const spiderStats = ResourceManager.configuration.stats.smallSpider
+                const spiderStats = GameConfig.instance.stats.smallSpider
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(spiderStats))
                 if (spiderStats.RandomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - spiderStats.RandomMoveTime) * 1000))
                 break
@@ -51,7 +52,7 @@ export class MonsterSpawner {
                 positionComponent.floorOffset = TILESIZE / 2
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/bat'))
                 sceneEntity.setAnimation(AnimEntityActivity.Route)
-                const batStats = ResourceManager.configuration.stats.bat
+                const batStats = GameConfig.instance.stats.bat
                 worldMgr.ecs.addComponent(entity, new MovableStatsComponent(batStats))
                 if (batStats.RandomMove) worldMgr.ecs.addComponent(entity, new RandomMoveComponent(Math.max(0, 10 - batStats.RandomMoveTime) * 1000))
                 worldMgr.ecs.addComponent(entity, new RaiderScareComponent(RaiderScareRange.BAT))
@@ -62,9 +63,9 @@ export class MonsterSpawner {
                 break
             case EntityType.SLUG:
                 sceneEntity.addAnimated(ResourceManager.getAnimatedData('Creatures/Slug'))
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.slug))
-                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.slug))
-                const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, ResourceManager.getRockFallDamage(entityType)))
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(GameConfig.instance.stats.slug))
+                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(GameConfig.instance.stats.slug))
+                const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, 0)))
                 worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
                 worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
                 worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
@@ -78,18 +79,18 @@ export class MonsterSpawner {
                 break
             case EntityType.ICE_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/IceMonster', entityType)
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.iceMonster))
-                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.iceMonster))
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(GameConfig.instance.stats.iceMonster))
+                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(GameConfig.instance.stats.iceMonster))
                 break
             case EntityType.LAVA_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/LavaMonster', entityType)
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.lavaMonster))
-                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.lavaMonster))
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(GameConfig.instance.stats.lavaMonster))
+                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(GameConfig.instance.stats.lavaMonster))
                 break
             case EntityType.ROCK_MONSTER:
                 this.addRockMonsterComponents(sceneEntity, worldMgr, entity, 'Creatures/RMonster', entityType)
-                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(ResourceManager.configuration.stats.rockMonster))
-                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(ResourceManager.configuration.stats.rockMonster))
+                worldMgr.ecs.addComponent(entity, new MovableStatsComponent(GameConfig.instance.stats.rockMonster))
+                worldMgr.ecs.addComponent(entity, new MonsterStatsComponent(GameConfig.instance.stats.rockMonster))
                 break
             default:
                 throw new Error(`Unexpected entity type: ${EntityType[entityType]}`)
@@ -102,7 +103,7 @@ export class MonsterSpawner {
     private static addRockMonsterComponents(sceneEntity: AnimatedSceneEntity, worldMgr: WorldManager, entity: number, aeName: string, entityType: EntityType) {
         sceneEntity.addAnimated(ResourceManager.getAnimatedData(aeName))
         sceneEntity.setAnimation(RockMonsterActivity.Unpowered)
-        const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, ResourceManager.getRockFallDamage(entityType)))
+        const healthComponent = worldMgr.ecs.addComponent(entity, new HealthComponent(false, 24, 10, sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, 0)))
         worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {

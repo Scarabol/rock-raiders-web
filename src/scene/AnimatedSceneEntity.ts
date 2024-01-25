@@ -8,6 +8,7 @@ import { AnimationGroup } from './AnimationGroup'
 import { VERBOSE } from '../params'
 import { AnimationQualityGroup } from './AnimationQualityGroup'
 import { SceneManager } from '../game/SceneManager'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class AnimatedSceneEntity extends Group implements Updatable {
     readonly animationData: AnimEntityData[] = []
@@ -144,11 +145,11 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                 }
                 const upgradeMesh = new AnimatedSceneEntity(this.audioListener)
                 upgradeMesh.name = upgrade.lNameType
-                const upgradeFilename = ResourceManager.configuration.upgradeTypesCfg.get(upgrade.lNameType) || upgrade.lUpgradeFilepath
-                const upgradeAnimData = ResourceManager.getAnimatedDataOrNull(upgradeFilename)
-                if (upgradeAnimData) {
+                const upgradeFilename = GameConfig.instance.upgradeTypesCfg.get(upgrade.lNameType) || upgrade.lUpgradeFilepath
+                try {
+                    const upgradeAnimData = ResourceManager.getAnimatedData(upgradeFilename)
                     upgradeMesh.addAnimated(upgradeAnimData)
-                } else {
+                } catch (e) {
                     const mesh = ResourceManager.getLwoModel(upgradeFilename)
                     if (!mesh) {
                         console.error(`Could not get upgrade mesh for ${upgrade.lNameType}`)

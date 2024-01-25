@@ -5,6 +5,8 @@ import { MainMenuLayer } from './MainMenuLayer'
 import { UiElementCallback } from './UiElementState'
 import { FlicAnimOverlay } from './FlicAnimOverlay'
 import { imgDataToCanvas } from '../core/ImageHelper'
+import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class MainMenuLoadSaveButton extends MainMenuBaseItem {
     labelImgLo: SpriteImage = null
@@ -18,12 +20,12 @@ export class MainMenuLoadSaveButton extends MainMenuBaseItem {
 
     constructor(readonly layer: MainMenuLayer, index: number, x: number, y: number, loading: boolean) {
         super(x, y)
-        const menuCfg = ResourceManager.configuration.menu
+        const menuCfg = GameConfig.instance.menu
         const btnNum = index + 1
         const buttonLabel = loading ? `${menuCfg.loadGame} ${btnNum}` : `${menuCfg.saveGame} ${btnNum}` // yes, even for "load"game the label says savegame
         Promise.all([
-            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.loFont, buttonLabel),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.hiFont, buttonLabel),
+            BitmapFontWorkerPool.instance.createTextImage(layer.cfg.loFont, buttonLabel),
+            BitmapFontWorkerPool.instance.createTextImage(layer.cfg.hiFont, buttonLabel),
         ]).then((textImages) => {
             [this.labelImgLo, this.labelImgHi] = textImages
             this.width = Math.max(this.labelImgLo.width, this.labelImgHi.width) + menuCfg.saveImage.BigWidth

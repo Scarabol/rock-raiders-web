@@ -5,6 +5,7 @@ import { ChangeTooltip, HideTooltip } from '../event/GuiCommand'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { TOOLTIP_DELAY_TEXT_MENU } from '../params'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class RewardScreenButton extends MainMenuBaseItem {
     imgNormal: SpriteImage
@@ -20,7 +21,7 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.imgDisabled = ResourceManager.getImage(conf.imgDisabledFilepath)
         this.width = this.imgNormal.width
         this.height = this.imgNormal.height
-        const tooltipText = ResourceManager.getTooltipText(tooltipKey)
+        const tooltipText = GameConfig.instance.getTooltipText(tooltipKey)
         this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
         this.state.onHideTooltip = () => EventBus.publishEvent(new HideTooltip(tooltipText, null))
     }

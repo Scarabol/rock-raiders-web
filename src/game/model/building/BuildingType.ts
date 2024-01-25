@@ -1,7 +1,7 @@
 import { Vector2 } from 'three'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityType } from '../EntityType'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class BuildingType {
     entityType: EntityType = null
@@ -22,32 +22,32 @@ export class BuildingType {
     static from(entityType: EntityType): BuildingType {
         switch (entityType) {
             case EntityType.TOOLSTATION:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.toolStation, 'Buildings/Toolstation')
+                return new BuildingType(entityType, GameConfig.instance.stats.toolStation, 'Buildings/Toolstation')
                     .addTeleport(EntityType.PILOT)
             case EntityType.TELEPORT_PAD:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.teleportPad, 'Buildings/Teleports')
+                return new BuildingType(entityType, GameConfig.instance.stats.teleportPad, 'Buildings/Teleports')
                     .addTeleport(EntityType.PILOT, EntityType.HOVERBOARD, EntityType.SMALL_TRUCK, EntityType.SMALL_DIGGER, EntityType.SMALL_MLP, EntityType.SMALL_HELI) // XXX evaluate stats UseSmallTeleporter
             case EntityType.DOCKS:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.docks, 'Buildings/Docks')
+                return new BuildingType(entityType, GameConfig.instance.stats.docks, 'Buildings/Docks')
                     .setPrimaryPowerPath(0, -1).setWaterPathSurface(0, 1).addTeleport(EntityType.SMALL_CAT, EntityType.LARGE_CAT) // XXX evaluate stats UseWaterTeleporter
             case EntityType.POWER_STATION:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.powerStation, 'Buildings/Powerstation')
+                return new BuildingType(entityType, GameConfig.instance.stats.powerStation, 'Buildings/Powerstation')
                     .setSecondaryBuildingPart(-1, 0)
             case EntityType.BARRACKS:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.barracks, 'Buildings/Barracks')
+                return new BuildingType(entityType, GameConfig.instance.stats.barracks, 'Buildings/Barracks')
             case EntityType.UPGRADE:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.upgrade, 'Buildings/Upgrade')
+                return new BuildingType(entityType, GameConfig.instance.stats.upgrade, 'Buildings/Upgrade')
             case EntityType.GEODOME:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.geoDome, 'Buildings/Geo-dome')
+                return new BuildingType(entityType, GameConfig.instance.stats.geoDome, 'Buildings/Geo-dome')
                     .removePrimaryPowerPath().setSecondaryBuildingPart(0, 1)
             case EntityType.ORE_REFINERY:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.oreRefinery, 'Buildings/OreRefinery')
+                return new BuildingType(entityType, GameConfig.instance.stats.oreRefinery, 'Buildings/OreRefinery')
                     .setPrimaryPowerPath(0, 2).setSecondaryBuildingPart(0, 1)
             case EntityType.GUNSTATION:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.gunStation, 'Buildings/gunstation')
+                return new BuildingType(entityType, GameConfig.instance.stats.gunStation, 'Buildings/gunstation')
                     .removePrimaryPowerPath()
             case EntityType.TELEPORT_BIG:
-                return new BuildingType(entityType, ResourceManager.configuration.stats.teleportBig, 'Buildings/BIGTeleport')
+                return new BuildingType(entityType, GameConfig.instance.stats.teleportBig, 'Buildings/BIGTeleport')
                     .setSecondaryBuildingPart(0, 1).setPrimaryPowerPath(-1, 0).setSecondaryPowerPath(-1, 1)
                     .addTeleport(EntityType.BULLDOZER, EntityType.WALKER_DIGGER, EntityType.LARGE_MLP, EntityType.LARGE_DIGGER) // XXX evaluate stats UseLargeTeleporter
             default:

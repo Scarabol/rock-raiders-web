@@ -13,7 +13,7 @@ import { ChangeCursor, GuiCommand, PlaySoundEvent } from '../../event/GuiCommand
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameEvent } from '../../event/GameEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
-import { USE_KEYBOARD_SHORTCUTS } from '../../params'
+import { TOOLTIP_FONT_NAME, USE_KEYBOARD_SHORTCUTS } from '../../params'
 import { Cursor } from '../../resource/Cursor'
 import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/GuiEvent'
@@ -25,6 +25,9 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { GameWheelEvent } from '../../event/GameWheelEvent'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { Sample } from '../../audio/Sample'
+import { GameConfig } from '../../cfg/GameConfig'
+import { DependencySpriteWorkerPool } from '../../worker/DependencySpriteWorkerPool'
+import { BitmapFontData } from '../../core/BitmapFont'
 
 export class GuiMainLayer extends ScaledLayer {
     rootElement: BaseElement
@@ -43,9 +46,21 @@ export class GuiMainLayer extends ScaledLayer {
 
     constructor() {
         super()
-        ResourceManager.startDependencySpriteRenderPool()
-        const panelsCfg = ResourceManager.configuration.panels
-        const buttonsCfg = ResourceManager.configuration.buttons
+        const teleportManConfig = GameConfig.instance.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase())
+        const depInterfaceBuildImageData: Map<string, ImageData[]> = new Map()
+        GameConfig.instance.interfaceBuildImages.forEach((cfg, key) => {
+            depInterfaceBuildImageData.set(key, [ResourceManager.getImageData(cfg.normalFile), ResourceManager.getImageData(cfg.disabledFile)])
+        })
+        DependencySpriteWorkerPool.instance.setupPool({
+            teleportManNormal: ResourceManager.getImageData(teleportManConfig.normalFile),
+            teleportManDisabled: ResourceManager.getImageData(teleportManConfig.disabledFile),
+            tooltipFontData: ResourceManager.getResource(TOOLTIP_FONT_NAME) as BitmapFontData,
+            plusSign: ResourceManager.getImageData('Interface/Dependencies/+.bmp'),
+            equalSign: ResourceManager.getImageData('Interface/Dependencies/=.bmp'),
+            depInterfaceBuildImageData: depInterfaceBuildImageData,
+        })
+        const panelsCfg = GameConfig.instance.panels
+        const buttonsCfg = GameConfig.instance.buttons
         this.rootElement = new BaseElement(null)
         this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
         this.rootElement.publishEvent = (event: GuiCommand) => {
@@ -57,14 +72,14 @@ export class GuiMainLayer extends ScaledLayer {
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
         this.panelEncyclopedia = this.addPanel(new Panel(this.rootElement, panelsCfg.panelEncyclopedia))
         this.panelInformation = this.addPanel(new InformationPanel(this.rootElement, panelsCfg.panelInformation))
-        this.panelInfoDock = this.addPanel(new InfoDockPanel(this.rootElement, panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, ResourceManager.configuration.infoMessages, this.panelInformation))
-        this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, ResourceManager.configuration.panelRotationControl))
-        this.panelPriorityList = this.addPanel(new PriorityListPanel(this.rootElement, panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, ResourceManager.configuration.prioritiesImagePositions, ResourceManager.configuration.priorityImages))
+        this.panelInfoDock = this.addPanel(new InfoDockPanel(this.rootElement, panelsCfg.panelInfoDock, buttonsCfg.panelInfoDock, GameConfig.instance.infoMessages, this.panelInformation))
+        this.panelCameraControl = this.addPanel(new CameraControlPanel(this.rootElement, panelsCfg.panelCameraControl, buttonsCfg.panelCameraControl, GameConfig.instance.panelRotationControl))
+        this.panelPriorityList = this.addPanel(new PriorityListPanel(this.rootElement, panelsCfg.panelPriorityList, buttonsCfg.panelPriorityList, GameConfig.instance.prioritiesImagePositions, GameConfig.instance.priorityImages))
         this.panelTopPanel = this.addPanel(new TopPanel(this.rootElement, panelsCfg.panelTopPanel, buttonsCfg.panelTopPanel))
         this.panelMain = this.addPanel(new MainPanel(this.rootElement))
         this.panelCrystalSideBar = this.addPanel(new PanelCrystalSideBar(this.rootElement, panelsCfg.panelCrystalSideBar, buttonsCfg.panelCrystalSideBar))
         this.panelMessagesSide = this.addPanel(new Panel(this.rootElement, panelsCfg.panelMessagesSide))
-        this.panelMessages = this.addPanel(new MessagePanel(this.rootElement, panelsCfg.panelMessages, ResourceManager.configuration.textMessagesWithImages))
+        this.panelMessages = this.addPanel(new MessagePanel(this.rootElement, panelsCfg.panelMessages, GameConfig.instance.textMessagesWithImages))
         this.panelRadar = this.addPanel(new RadarPanel(this.rootElement, panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         // link panels
         this.panelTopPanel.btnCallToArms.onClick = () => {

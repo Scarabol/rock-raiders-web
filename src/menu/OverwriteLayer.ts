@@ -1,23 +1,23 @@
 import { MainMenuLayer } from './MainMenuLayer'
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
-import { ResourceManager } from '../resource/ResourceManager'
 import { GamePointerEvent } from '../event/GamePointerEvent'
 import { POINTER_EVENT } from '../event/EventTypeEnum'
 import { MainMenuLabelButton } from './MainMenuLabelButton'
 import { MainMenuOverwritePanel } from './MainMenuOverwritePanel'
 import { MenuLabelItemCfg } from '../cfg/MenuLabelItemCfg'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class OverwriteLayer extends MainMenuLayer {
     overwritePanel: MainMenuOverwritePanel
     yesBtn: MainMenuLabelButton
 
     constructor() {
-        const dialogCfg = ResourceManager.configuration.dialog
+        const dialogCfg = GameConfig.instance.dialog
         const layerCfg = {...(new MenuEntryCfg()), menuImage: dialogCfg.contrastOverlay, loFont: 'Interface/Fonts/MbriefFont.bmp', hiFont: 'Interface/Fonts/MbriefFont2.bmp'} as MenuEntryCfg
         super(layerCfg)
         this.overwritePanel = new MainMenuOverwritePanel(this.fixedWidth, this.fixedHeight)
         this.items.push(this.overwritePanel)
-        const overwriteCfg = ResourceManager.configuration.menu.overwrite
+        const overwriteCfg = GameConfig.instance.menu.overwrite
         const panelX = (this.fixedWidth - this.overwritePanel.width) / 2
         const panelY = (this.fixedHeight - this.overwritePanel.height) / 2
         this.yesBtn = new MainMenuLabelButton(this, {

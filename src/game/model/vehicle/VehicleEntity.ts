@@ -1,5 +1,5 @@
 import { PositionalAudio, Vector2, Vector3 } from 'three'
-import { resetAudioSafe } from '../../../audio/AudioUtil'
+import { SoundManager } from '../../../audio/SoundManager'
 import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
@@ -40,6 +40,7 @@ import { MonsterStatsComponent } from '../../component/MonsterStatsComponent'
 import { EventKey } from '../../../event/EventKeyEnum'
 import { ScannerComponent } from '../../component/ScannerComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -121,8 +122,8 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     disposeFromWorld() {
         this.disposeFromScene()
         this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
-        this.workAudio = resetAudioSafe(this.workAudio)
-        this.engineSound = resetAudioSafe(this.engineSound)
+        this.workAudio = SoundManager.stopAudio(this.workAudio)
+        this.engineSound = SoundManager.stopAudio(this.engineSound)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
@@ -229,7 +230,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         if (!this.isSelectable()) return false
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
         this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
-        this.workAudio = resetAudioSafe(this.workAudio)
+        this.workAudio = SoundManager.stopAudio(this.workAudio)
         return true
     }
 
@@ -250,7 +251,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
      */
 
     stopJob() {
-        this.workAudio = resetAudioSafe(this.workAudio)
+        this.workAudio = SoundManager.stopAudio(this.workAudio)
         this.dropCarried(false)
         if (!this.job) return
         this.job.unAssign(this)
@@ -261,7 +262,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     private completeJob() {
-        this.workAudio = resetAudioSafe(this.workAudio)
+        this.workAudio = SoundManager.stopAudio(this.workAudio)
         this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         if (this.job?.jobState === JobState.INCOMPLETE) return
@@ -372,7 +373,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.driver.worldMgr.sceneMgr.addMeshGroup(this.driver.sceneEntity)
         this.driver.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         this.driver = null
-        this.engineSound = resetAudioSafe(this.engineSound)
+        this.engineSound = SoundManager.stopAudio(this.engineSound)
         if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
@@ -445,7 +446,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.sceneEntity.setUpgradeLevel(upgradeLevel)
         this.level = parseInt(upgradeLevel, 2)
         const components = this.worldMgr.ecs.getComponents(this.entity)
-        components.get(HealthComponent).rockFallDamage = ResourceManager.getRockFallDamage(this.entityType, this.level)
+        components.get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.entityType, this.level)
         const scannerRange = this.stats.SurveyRadius?.[this.level] ?? 0
         if (scannerRange) {
             const positionComponent = components.get(PositionComponent)

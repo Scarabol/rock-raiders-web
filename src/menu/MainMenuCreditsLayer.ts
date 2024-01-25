@@ -5,6 +5,8 @@ import { clearTimeoutSafe } from '../core/Util'
 import { SpriteImage } from '../core/Sprite'
 import { AVIVideoStream } from '../resource/fileparser/avi/AVIVideoStream'
 import { UiElementCallback } from './UiElementState'
+import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class MainMenuCreditsLayer extends ScaledLayer {
     static readonly FONT = 'Interface/Fonts/RSFont.bmp'
@@ -21,13 +23,13 @@ export class MainMenuCreditsLayer extends ScaledLayer {
 
     constructor() {
         super('credits')
-        const fontHeight = ResourceManager.bitmapFontWorkerPool.getFontHeight(MainMenuCreditsLayer.FONT)
+        const fontHeight = BitmapFontWorkerPool.instance.getFontHeight(MainMenuCreditsLayer.FONT)
         this.maxNumOfLinesOnScreen = Math.round(this.fixedHeight / fontHeight)
-        const creditsTextContent: string = '\n'.repeat(this.maxNumOfLinesOnScreen) + ResourceManager.getResource(ResourceManager.configuration.main.creditsTextFile) + '\n\n\n\nWeb Port\n\nScarabol'
+        const creditsTextContent: string = '\n'.repeat(this.maxNumOfLinesOnScreen) + ResourceManager.getResource(GameConfig.instance.main.creditsTextFile) + '\n\n\n\nWeb Port\n\nScarabol'
         const bitmapLines = creditsTextContent.split('\n').map((line) => {
-            return ResourceManager.bitmapFontWorkerPool.createTextImage(MainMenuCreditsLayer.FONT, line, this.fixedWidth, true)
+            return BitmapFontWorkerPool.instance.createTextImage(MainMenuCreditsLayer.FONT, line, this.fixedWidth, true)
         })
-        const creditsBackAVI = ResourceManager.getResource(ResourceManager.configuration.main.creditsBackAVI)
+        const creditsBackAVI = ResourceManager.getResource(GameConfig.instance.main.creditsBackAVI)
         if (creditsBackAVI) {
             const videoStreams: AVIVideoStream[] = creditsBackAVI.videoStreams
             if (videoStreams.length !== 1) throw new Error(`Unexpected number of background video streams; got ${videoStreams.length} instead of 1`)

@@ -6,6 +6,7 @@ import { Button } from '../base/Button'
 import { GuiHoverEvent } from '../event/GuiEvent'
 import { MenuLayer } from './MenuLayer'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class MenuSliderItem extends BaseElement {
     imgTextNormal: SpriteImage
@@ -60,8 +61,8 @@ export class MenuSliderItem extends BaseElement {
         this.max = itemCfg.max || 1
         this.value = this.min
         Promise.all([
-            ResourceManager.bitmapFontWorkerPool.createTextImage(parent.menuCfg.loFont, itemCfg.description),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(parent.menuCfg.hiFont, itemCfg.description),
+            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.loFont, itemCfg.description),
+            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.hiFont, itemCfg.description),
         ]).then((textImages) => {
             [this.imgTextNormal, this.imgTextHover] = textImages
             this.height = this.imgTextNormal.height

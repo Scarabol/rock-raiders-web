@@ -1,6 +1,5 @@
 import { AmbientLight, AudioListener, Color, Frustum, Mesh, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { ResourceManager } from '../resource/ResourceManager'
 import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
 import { EntityType } from './model/EntityType'
@@ -23,6 +22,7 @@ import { createCanvas } from '../core/ImageHelper'
 import { FollowerRenderer } from '../scene/FollowerRenderer'
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class SceneManager implements Updatable {
     static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
@@ -166,7 +166,7 @@ export class SceneManager implements Updatable {
 
     setupScene(levelConf: LevelEntryCfg) {
         this.scene.clear()
-        const ambientRgb = ResourceManager.configuration.main.ambientRGB
+        const ambientRgb = GameConfig.instance.main.ambientRGB
         const maxAmbRgb = Math.min(255, Math.max(0, ...ambientRgb))
         const normalizedRgb = ambientRgb.map(v => v / (maxAmbRgb ? maxAmbRgb : 1))
         const ambientColor = new Color(normalizedRgb[0], normalizedRgb[1], normalizedRgb[2])

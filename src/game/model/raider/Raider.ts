@@ -1,5 +1,5 @@
 import { PositionalAudio, Vector2, Vector3 } from 'three'
-import { resetAudioSafe } from '../../../audio/AudioUtil'
+import { SoundManager } from '../../../audio/SoundManager'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
@@ -37,6 +37,7 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { ScannerComponent } from '../../component/ScannerComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
 import { BulletComponent } from '../../component/BulletComponent'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -73,7 +74,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     get stats() {
-        return ResourceManager.configuration.stats.pilot
+        return GameConfig.instance.stats.pilot
     }
 
     update(elapsedMs: number) {
@@ -125,7 +126,7 @@ export class Raider implements Updatable, JobFulfiller {
 
     disposeFromWorld() {
         this.disposeFromScene()
-        this.workAudio = resetAudioSafe(this.workAudio)
+        this.workAudio = SoundManager.stopAudio(this.workAudio)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
@@ -284,7 +285,7 @@ export class Raider implements Updatable, JobFulfiller {
         if (!this.isSelectable()) return false
         this.worldMgr.ecs.getComponents(this.entity).get(SelectionFrameComponent)?.select()
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())
-        this.workAudio = resetAudioSafe(this.workAudio)
+        this.workAudio = SoundManager.stopAudio(this.workAudio)
         return true
     }
 
@@ -324,7 +325,7 @@ export class Raider implements Updatable, JobFulfiller {
 
     stopJob() {
         this.dropCarried(false)
-        this.workAudio = resetAudioSafe(this.workAudio)
+        this.workAudio = SoundManager.stopAudio(this.workAudio)
         if (!this.job) return
         this.job.unAssign(this)
         if (this.followUpJob) this.followUpJob.unAssign(this)
@@ -402,23 +403,23 @@ export class Raider implements Updatable, JobFulfiller {
             {
                 tool: RaiderTool.LASER,
                 damage: stats.LaserDamage,
-                weaponStats: ResourceManager.configuration.weaponTypes.get('lasershot'),
+                weaponStats: GameConfig.instance.weaponTypes.get('lasershot'),
                 bulletType: EntityType.LASER_SHOT,
-                misc: ResourceManager.configuration.miscObjects.LaserShot
+                misc: GameConfig.instance.miscObjects.LaserShot
             },
             {
                 tool: RaiderTool.FREEZERGUN,
                 damage: stats.FreezerDamage,
-                weaponStats: ResourceManager.configuration.weaponTypes.get('freezer'),
+                weaponStats: GameConfig.instance.weaponTypes.get('freezer'),
                 bulletType: EntityType.FREEZER_SHOT,
-                misc: ResourceManager.configuration.miscObjects.Freezer
+                misc: GameConfig.instance.miscObjects.Freezer
             },
             {
                 tool: RaiderTool.PUSHERGUN,
                 damage: stats.PusherDamage,
-                weaponStats: ResourceManager.configuration.weaponTypes.get('pusher'),
+                weaponStats: GameConfig.instance.weaponTypes.get('pusher'),
                 bulletType: EntityType.PUSHER_SHOT,
-                misc: ResourceManager.configuration.miscObjects.Pusher
+                misc: GameConfig.instance.miscObjects.Pusher
             },
         ].filter((a) => this.hasTool(a.tool)).sort((l, r) => r.damage - l.damage)
         if (attacks.length < 1) {
@@ -445,7 +446,7 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     private completeJob() {
-        if (this.workAudio?.loop) this.workAudio = resetAudioSafe(this.workAudio)
+        if (this.workAudio?.loop) this.workAudio = SoundManager.stopAudio(this.workAudio)
         else this.workAudio = null
         this.job?.onJobComplete(this)
         this.sceneEntity.setAnimation(this.getDefaultAnimationName())

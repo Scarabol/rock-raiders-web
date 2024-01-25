@@ -4,8 +4,8 @@ import { RaidersAmountChangedEvent, SelectionChanged } from '../../../event/Loca
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityType } from '../../../game/model/EntityType'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class SelectFloorPanel extends SelectBasePanel {
     isGround: boolean = false
@@ -15,14 +15,14 @@ export class SelectFloorPanel extends SelectBasePanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 3, onBackPanel)
-        const pathItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_LayPath')
+        const pathItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_LayPath')
         pathItem.addDependencyCheck(EntityType.POWER_PATH)
         pathItem.onClick = () => this.publishEvent(new CreatePowerPath())
         pathItem.isDisabled = () => !this.isGround || !this.hasRaider
-        const removeItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_RemovePath')
+        const removeItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_RemovePath')
         removeItem.onClick = () => this.publishEvent(new MakeRubble())
         removeItem.isDisabled = () => !this.isPowerPath
-        const placeFenceItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_PlaceFence')
+        const placeFenceItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_PlaceFence')
         placeFenceItem.addDependencyCheck(EntityType.ELECTRIC_FENCE)
         placeFenceItem.isDisabled = () => placeFenceItem.hasUnfulfilledDependency || !this.canPlaceFence
         placeFenceItem.onClick = () => this.publishEvent(new PlaceFence())

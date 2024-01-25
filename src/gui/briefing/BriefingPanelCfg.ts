@@ -1,7 +1,7 @@
 import { ButtonCfg } from '../../cfg/ButtonCfg'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { Rect } from '../../core/Rect'
-import { ResourceManager } from '../../resource/ResourceManager'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class BriefingPanelCfg extends PanelCfg {
     // XXX find config values for this class
@@ -16,7 +16,7 @@ export class BriefingPanelCfg extends PanelCfg {
     constructor() {
         super()
         this.titleFontName = 'Interface/Fonts/MbriefFont2.bmp'
-        const dialogCfg = ResourceManager.configuration.dialog
+        const dialogCfg = GameConfig.instance.dialog
         this.titleWindow = dialogCfg.titleWindow
         this.textFontName = 'Interface/Fonts/MbriefFont.bmp'
         this.textWindow = {...dialogCfg.textWindow}
@@ -25,13 +25,13 @@ export class BriefingPanelCfg extends PanelCfg {
             buttonType: 'Next briefing paragraph',
             relX: 394,
             relY: 214,
-            normalFile: ResourceManager.configuration.main.nextButton640x480,
+            normalFile: GameConfig.instance.main.nextButton640x480,
         }
         this.backButtonCfg = {
             buttonType: 'Previous briefing paragraph',
             relX: 54,
             relY: 214,
-            normalFile: ResourceManager.configuration.main.backArrow,
+            normalFile: GameConfig.instance.main.backArrow,
         }
     }
 }

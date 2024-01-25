@@ -55,4 +55,10 @@ export class SoundManager {
             return []
         }).random()
     }
+
+    static stopAudio(audio: PositionalAudio): null {
+        if (audio?.isPlaying) audio?.stop()
+        this.playingAudio.delete(audio)
+        return null
+    }
 }

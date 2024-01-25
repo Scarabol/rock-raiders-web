@@ -1,7 +1,5 @@
-import { GameConfig } from '../../cfg/GameConfig'
 import { encodeChar } from './EncodingHelper'
 import { VERBOSE } from '../../params'
-import { yieldToMainThread } from '../../core/Util'
 
 const enum PARSING_STATE {
     LOOKING_FOR_KEY,
@@ -11,7 +9,7 @@ const enum PARSING_STATE {
 }
 
 export class CfgFileParser {
-    static async parse(buffer: Uint8Array): Promise<GameConfig> {
+    static parse(buffer: Uint8Array): object {
         const root = {}
         const ancestry = []
         let activeObject = root
@@ -91,7 +89,7 @@ export class CfgFileParser {
 
         const entries = Object.values(root)
         if (entries.length > 1 && VERBOSE) console.warn(`Config file contains (${entries.length}) objects! Will proceed with first object '${Object.keys(root)[0]}' only`)
-        const result = entries[0]
+        const result = entries[0] as object
 
         // apply some patches here
         Object.values(result['Levels']).forEach((levelConf) => {
@@ -127,9 +125,7 @@ export class CfgFileParser {
                 return result
             }, [])
         })
-
-        await yieldToMainThread()
-        return new GameConfig().setFromCfgObj(result, true) // TODO do not create missing
+        return result
     }
 
     static parseValue(val, isNoLevelName: boolean) {

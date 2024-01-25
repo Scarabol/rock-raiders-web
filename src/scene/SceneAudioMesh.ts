@@ -2,7 +2,6 @@ import { SceneMesh } from './SceneMesh'
 import { AudioListener, PositionalAudio } from 'three'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
-import { resetAudioSafe } from '../audio/AudioUtil'
 import { TILESIZE } from '../params'
 
 export class SceneAudioMesh extends SceneMesh {
@@ -26,7 +25,7 @@ export class SceneAudioMesh extends SceneMesh {
         this.lastSfxName = sfxName
         this.audioNode.setVolume(sfxVolume)
         this.audioNode.onEnded = () => {
-            resetAudioSafe(this.audioNode)
+            SoundManager.stopAudio(this.audioNode)
             this.lastSfxName = null
         }
         const audioBuffer = SoundManager.getSoundBuffer(sfxName)
@@ -39,7 +38,7 @@ export class SceneAudioMesh extends SceneMesh {
 
     dispose() {
         super.dispose()
-        resetAudioSafe(this.audioNode)
+        SoundManager.stopAudio(this.audioNode)
         this.lastSfxName = null
     }
 }

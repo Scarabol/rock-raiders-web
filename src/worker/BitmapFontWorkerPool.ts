@@ -6,7 +6,17 @@ import { imgDataToCanvas } from '../core/ImageHelper'
 import { BitmapFontData } from '../core/BitmapFont'
 
 export class BitmapFontWorkerPool extends AbstractWorkerPool<BitmapFontWorkerRequest, BitmapFontWorkerResponse> {
+    static readonly instance = new BitmapFontWorkerPool()
+
     readonly knownFonts: Map<string, BitmapFontData> = new Map()
+
+    setupPool(fontName: string, fontData: BitmapFontData) {
+        this.startPool(4, {
+            type: BitmapFontWorkerRequestType.ADD_FONT,
+            fontName: fontName,
+            fontData: fontData,
+        })
+    }
 
     async addFont(fontName: string, fontData: BitmapFontData): Promise<void> {
         if (this.knownFonts.has(fontName.toLowerCase())) {

@@ -16,7 +16,7 @@ import { BaseElement } from '../../gui/base/BaseElement'
 import { EventBus } from '../../event/EventBus'
 import { GameResultState } from '../../game/model/GameResult'
 import { GameResultEvent, RestartGameEvent } from '../../event/WorldEvents'
-import { ResourceManager } from '../../resource/ResourceManager'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class OverlayLayer extends ScaledLayer {
     rootElement: BaseElement
@@ -35,8 +35,8 @@ export class OverlayLayer extends ScaledLayer {
         this.rootElement.registerEventListener = <T extends GameEvent>(eventKey: EventKey, callback: (event: T) => void) => {
             EventBus.registerEventListener(eventKey, callback)
         }
-        this.panelPause = this.addPanel(new PausePanel(this.rootElement, ResourceManager.configuration.menu.pausedMenu, this.canvas.width, this.canvas.height))
-        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, ResourceManager.configuration.menu.optionsMenu, this.canvas.width, this.canvas.height))
+        this.panelPause = this.addPanel(new PausePanel(this.rootElement, GameConfig.instance.menu.pausedMenu, this.canvas.width, this.canvas.height))
+        this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, GameConfig.instance.menu.optionsMenu, this.canvas.width, this.canvas.height))
         this.panelBriefing = this.addPanel(new BriefingPanel(this.rootElement))
         // link items
         this.panelPause.onContinueGame = () => this.setActivePanel(null)
@@ -81,13 +81,13 @@ export class OverlayLayer extends ScaledLayer {
     }
 
     showBriefing(levelConf: LevelEntryCfg) {
-        this.panelBriefing.setup(ResourceManager.configuration.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage640x480)
+        this.panelBriefing.setup(GameConfig.instance.main.missionBriefingText, levelConf.objectiveTextCfg.objective, levelConf.objectiveImage640x480)
         this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
         this.setActivePanel(DEV_MODE ? null : this.panelBriefing)
     }
 
     showResultBriefing(result: GameResultState, levelConf: LevelEntryCfg, onContinue: () => void) {
-        const mainCfg = ResourceManager.configuration.main
+        const mainCfg = GameConfig.instance.main
         let title = ''
         let text = ''
         if (result === GameResultState.COMPLETE) {

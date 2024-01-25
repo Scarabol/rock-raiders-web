@@ -71,12 +71,7 @@ export class AssetLoader {
     loadFontImageAsset(name: string, callback: (assetNames: string[], obj: BitmapFontData) => any) {
         AssetLoader.bitmapWorkerPool.decodeBitmap(this.vfs.getFile(name).toBuffer())
             .then((imgData) => {
-                const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
-                // XXX find better way to detect char dimensions
-                const maxCharWidth = imgData.width / cols
-                const charHeight = imgData.height / rows
-                const bitmapFontData = new BitmapFontData(imgData, maxCharWidth, charHeight)
-                callback([name], bitmapFontData)
+                callback([name], new BitmapFontData(imgData))
             })
     }
 

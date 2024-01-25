@@ -1,9 +1,10 @@
 import { Cursor } from '../resource/Cursor'
 import { AnimatedCursor } from './AnimatedCursor'
 import { clearTimeoutSafe } from '../core/Util'
-import { ResourceManager } from '../resource/ResourceManager'
 
 export class CursorManager {
+    static readonly cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
+
     currentCursor: Cursor = null
     cursorTimeout: NodeJS.Timeout = null
     activeCursor: AnimatedCursor = null
@@ -28,7 +29,8 @@ export class CursorManager {
 
     private setCursor(cursor: Cursor) {
         this.activeCursor?.disableAnimation()
-        this.activeCursor = ResourceManager.getCursor(cursor)
+        this.activeCursor = CursorManager.cursorToUrl.get(cursor)
+        if (!this.activeCursor) throw new Error(`Cursor ${cursor} not found`)
         this.activeCursor.enableAnimation(this.cursorTarget)
     }
 }

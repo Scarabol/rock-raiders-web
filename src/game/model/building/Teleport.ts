@@ -13,7 +13,7 @@ import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../compon
 import { HealthComponent } from '../../component/HealthComponent'
 import { OxygenComponent } from '../../component/OxygenComponent'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
-import { ResourceManager } from '../../../resource/ResourceManager'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 type TeleportEntity = Raider | VehicleEntity
 
@@ -44,12 +44,12 @@ export class Teleport {
             entity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             let healthComponent: HealthComponent
             if (entity.entityType === EntityType.PILOT) {
-                healthComponent = entity.worldMgr.ecs.addComponent(entity.entity, new HealthComponent(false, 16, 10, entity.sceneEntity, true, ResourceManager.getRockFallDamage(entity.entityType, entity.level)))
+                healthComponent = entity.worldMgr.ecs.addComponent(entity.entity, new HealthComponent(false, 16, 10, entity.sceneEntity, true, GameConfig.instance.getRockFallDamage(entity.entityType, entity.level)))
                 entity.worldMgr.ecs.addComponent(entity.entity, new OxygenComponent(entity.stats.OxygenCoef))
                 const infoComp = entity.worldMgr.ecs.addComponent(entity.entity, new RaiderInfoComponent(entity.sceneEntity))
                 infoComp.setHungerIndicator((entity as Raider).foodLevel)
             } else {
-                healthComponent = entity.worldMgr.ecs.addComponent(entity.entity, new HealthComponent(false, 24, 14, entity.sceneEntity, false, ResourceManager.getRockFallDamage(entity.entityType, entity.level)))
+                healthComponent = entity.worldMgr.ecs.addComponent(entity.entity, new HealthComponent(false, 24, 14, entity.sceneEntity, false, GameConfig.instance.getRockFallDamage(entity.entityType, entity.level)))
             }
             entity.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
             entity.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)

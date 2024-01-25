@@ -4,10 +4,10 @@ import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { DynamiteExplosionEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { SurfaceType } from '../terrain/SurfaceType'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { LandslideEvent } from '../../event/WorldLocationEvent'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class DamageSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
@@ -18,8 +18,8 @@ export class DamageSystem extends AbstractGameSystem {
 
     constructor() {
         super()
-        this.dynamiteRadiusSq = Math.pow(ResourceManager.configuration.main.DynamiteDamageRadius, 2)
-        this.dynamiteMaxDamage = ResourceManager.configuration.main.DynamiteMaxDamage
+        this.dynamiteRadiusSq = Math.pow(GameConfig.instance.main.DynamiteDamageRadius, 2)
+        this.dynamiteMaxDamage = GameConfig.instance.main.DynamiteMaxDamage
         EventBus.registerEventListener(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
             this.dynamiteExplosions.push(event)
         })

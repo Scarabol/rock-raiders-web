@@ -7,7 +7,7 @@ import { Panel } from '../base/Panel'
 import { IconPanelButtonLabel } from './IconPanelButtonLabel'
 import { Sample } from '../../audio/Sample'
 import { IconSubPanel } from './IconSubPanel'
-import { ResourceManager } from '../../resource/ResourceManager'
+import { GameConfig } from '../../cfg/GameConfig'
 
 abstract class VehiclePanel extends IconSubPanel {
     requestedVehiclesByType: Map<EntityType, number> = new Map()
@@ -22,10 +22,10 @@ abstract class VehiclePanel extends IconSubPanel {
     }
 
     addVehicleMenuItem(itemKey: string, entityType: EntityType, tooltipSfx: Sample) {
-        const item = super.addMenuItem(ResourceManager.configuration.interfaceBuildImages, itemKey)
+        const item = super.addMenuItem(GameConfig.instance.interfaceBuildImages, itemKey)
         item.isDisabled = () => item.hasUnfulfilledDependency
         item.onClick = () => this.publishEvent(new RequestVehicleSpawn(entityType, this.requestedVehiclesByType.getOrDefault(entityType, 0) + 1))
-        item.tooltip = ResourceManager.configuration.objectNamesCfg.get(itemKey.toLowerCase())
+        item.tooltip = GameConfig.instance.objectNamesCfg.get(itemKey.toLowerCase())
         item.tooltipSfx = Sample[tooltipSfx]
         item.tooltipDisabled = item.tooltip
         item.tooltipDisabledSfx = item.tooltipSfx

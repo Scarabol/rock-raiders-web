@@ -4,8 +4,8 @@ import { SelectFilesModal } from './selectfiles/SelectFilesModal'
 import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
 import { VirtualFile } from './fileparser/VirtualFile'
 import { WadParser } from './fileparser/WadParser'
-import { ResourceManager } from './ResourceManager'
 import { CfgFileParser } from './fileparser/CfgFileParser'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class GameFilesLoader {
     readonly modal: SelectFilesModal
@@ -55,7 +55,8 @@ export class GameFilesLoader {
         const cfgFiles = vfs.filterEntryNames('\\.cfg')
         if (cfgFiles.length < 1) throw new Error('Invalid second WAD file given! No config file present at root level.')
         if (cfgFiles.length > 1) console.warn(`Found multiple config files ${cfgFiles} will proceed with first one ${cfgFiles[0]} only`)
-        ResourceManager.configuration = await CfgFileParser.parse(vfs.getFile(cfgFiles[0]).toArray())
+        const result = CfgFileParser.parse(vfs.getFile(cfgFiles[0]).toArray())
+        GameConfig.instance.setFromCfgObj(result, true) // TODO do not create missing
         this.modal.hide()
         this.onDoneCallback(vfs)
     }

@@ -10,10 +10,11 @@ import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
 import { LevelSelectedEvent, MaterialAmountChanged } from '../event/WorldEvents'
-import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { LevelObjectiveTextEntry } from '../resource/fileparser/ObjectiveTextParser'
 import { MainMenuCreditsLayer } from '../menu/MainMenuCreditsLayer'
 import { ScaledLayer } from './layer/ScreenLayer'
 import { RockWipeLayer } from '../menu/RockWipeLayer'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class MainMenuScreen {
     menuLayers: ScaledLayer[] = []
@@ -22,7 +23,7 @@ export class MainMenuScreen {
     rockWipeLayer: RockWipeLayer
 
     constructor(readonly screenMaster: ScreenMaster) {
-        ResourceManager.configuration.menu.mainMenuFull.menus.forEach((menuCfg) => {
+        GameConfig.instance.menu.mainMenuFull.menus.forEach((menuCfg) => {
             let layer: MainMenuLayer
             if (menuCfg.title.equalsIgnoreCase('Main')) {
                 layer = new MainMenuLayer(menuCfg)
@@ -114,13 +115,13 @@ export class MainMenuScreen {
     }
 
     selectLevel(levelName: string) {
-        let levelConf: LevelEntryCfg = null
-        try {
-            levelConf = ResourceManager.getLevelEntryCfg(levelName)
-        } catch (e) {
-            console.error(`Could not load level: ${levelName}`, e)
+        const levelConf = GameConfig.instance.levels.levelCfgByName.get(levelName)
+        if (!levelConf) {
+            console.error(`Could not find level configuration for "${levelName}"`)
             return
         }
+        const levelObjective = ResourceManager.getResource(levelConf.objectiveText) as Record<string, LevelObjectiveTextEntry>
+        levelConf.objectiveTextCfg = levelObjective[levelName.toLowerCase()]
         this.screenMaster.loadingLayer.show()
         this.menuLayers.forEach((m) => m.hide())
         this.rockWipeLayer.hide()

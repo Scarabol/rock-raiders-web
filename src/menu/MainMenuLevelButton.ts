@@ -7,6 +7,7 @@ import { SaveGameManager } from '../resource/SaveGameManager'
 import { UiElementCallback } from './UiElementState'
 import { clearTimeoutSafe } from '../core/Util'
 import { DEV_MODE, TOOLTIP_DELAY_SFX_MENU } from '../params'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class MainMenuLevelButton extends MainMenuBaseItem {
     imgActive: SpriteImage = null
@@ -37,14 +38,14 @@ export class MainMenuLevelButton extends MainMenuBaseItem {
         return (!DEV_MODE && this.levelName.toLowerCase().includes('tutorial')) || // TODO Remove this line when tutorial helper functions implemented
             !(() => true) && // TODO Remove this line before release 1.0
             !this.levelCfg.frontEndOpen &&
-            !this.levelName.equalsIgnoreCase(ResourceManager.configuration.main.startLevel) &&
-            !this.levelName.equalsIgnoreCase(ResourceManager.configuration.main.tutorialStartLevel) &&
+            !this.levelName.equalsIgnoreCase(GameConfig.instance.main.startLevel) &&
+            !this.levelName.equalsIgnoreCase(GameConfig.instance.main.tutorialStartLevel) &&
             !SaveGameManager.getLevelScoreString(this.levelName) &&
             !this.isUnlockedByLevelLink()
     }
 
     private isUnlockedByLevelLink(): boolean {
-        return Array.from(ResourceManager.configuration.levels.levelCfgByName.entries()).some(([levelName, levelEntryCfg]) =>
+        return Array.from(GameConfig.instance.levels.levelCfgByName.entries()).some(([levelName, levelEntryCfg]) =>
             SaveGameManager.getLevelScoreString(levelName) && levelEntryCfg.levelLinks.some((levelLink) => this.levelName.equalsIgnoreCase(levelLink))
         )
     }

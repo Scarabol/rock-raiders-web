@@ -23,11 +23,14 @@ import { WeaponTypeCfg } from './WeaponTypesCfg'
 import { SamplesCfg } from './SamplesCfg'
 import { InterfaceSurroundImagesCfg } from './InterfaceSurroundImagesCfg'
 import { AdvisorPositionCfg, AdvisorTypeCfg } from './AdvisorCfg'
+import { Cursor } from '../resource/Cursor'
 
 export type EntityDependency = { entityType: EntityType, minLevel: number, itemKey: string }
 export type EntityDependencyChecked = EntityDependency & { isOk: boolean }
 
 export class GameConfig extends BaseConfig {
+    static readonly instance = new GameConfig()
+
     main: MainCfg = new MainCfg()
     dialog: DialogCfg = new DialogCfg()
     reward: RewardCfg = new RewardCfg()
@@ -35,7 +38,7 @@ export class GameConfig extends BaseConfig {
     toolTipInfo: Map<string, string> = new Map()
     surfaceTypeDescriptions: Map<string, string[]> = new Map()
     objInfo: ObjInfoCfg = new ObjInfoCfg()
-    pointers: Map<string, string | string[]> = new Map()
+    pointers: Map<Cursor, string> = new Map()
     interfaceImages: Map<string, MenuItemCfg> = new Map()
     panelRotationControl: PanelRotationControlCfg = new PanelRotationControlCfg()
     panels: PanelsCfg = new PanelsCfg()
@@ -83,7 +86,10 @@ export class GameConfig extends BaseConfig {
         } else if ('ObjInfo'.equalsIgnoreCase(unifiedKey)) {
             this.objInfo.setFromCfgObj(cfgValue)
         } else if ('Pointers'.equalsIgnoreCase(unifiedKey)) {
-            Object.entries(cfgValue).forEach(([cfgKey, value]) => this.pointers.set(this.stripKey(cfgKey), value as string[]))
+            Object.entries(cfgValue).forEach(([cfgKey, value]) => {
+                const cursorFileName: string = Array.isArray(value) ? value[0] : value
+                this.pointers.set(this.stripKey(cfgKey) as Cursor, cursorFileName)
+            })
         } else if ('InterfaceImages'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.interfaceImages.set(cfgKey.toLowerCase(), new MenuItemCfg(value)))
         } else if ('PanelRotationControl'.equalsIgnoreCase(unifiedKey)) {
@@ -102,8 +108,8 @@ export class GameConfig extends BaseConfig {
             this.priorityImages.setFromCfgObj(cfgValue)
         } else if ('PrioritiesImagePositions'.equalsIgnoreCase(unifiedKey)) {
             this.prioritiesImagePositions.setFromCfgObj(cfgValue)
-        // } else if ('MiscObjects'.equalsIgnoreCase(unifiedKey)) {
-        //     this.miscObjects.setFromCfgObj(cfgValue)
+            // } else if ('MiscObjects'.equalsIgnoreCase(unifiedKey)) {
+            //     this.miscObjects.setFromCfgObj(cfgValue)
         } else if ('Bubbles'.equalsIgnoreCase(unifiedKey)) {
             this.bubbles.setFromCfgObj(cfgValue)
         } else if ('RockFallStyles'.equalsIgnoreCase(unifiedKey)) {
@@ -116,12 +122,12 @@ export class GameConfig extends BaseConfig {
             this.textures.setFromCfgObj(cfgValue)
         } else if ('ObjectNames'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.objectNamesCfg.set(this.unifyKey(cfgKey), parseLabel(value as string)))
-        // } else if ('VehicleTypes'.equalsIgnoreCase(unifiedKey)) {
-        //     this.vehicleTypes.setFromCfgObj(cfgValue)
-        // } else if ('RockMonsterTypes'.equalsIgnoreCase(unifiedKey)) {
-        //     this.rockMonsterTypes.setFromCfgObj(cfgValue)
-        // } else if ('BuildingTypes'.equalsIgnoreCase(unifiedKey)) {
-        //     this.buildingTypes.setFromCfgObj(cfgValue)
+            // } else if ('VehicleTypes'.equalsIgnoreCase(unifiedKey)) {
+            //     this.vehicleTypes.setFromCfgObj(cfgValue)
+            // } else if ('RockMonsterTypes'.equalsIgnoreCase(unifiedKey)) {
+            //     this.rockMonsterTypes.setFromCfgObj(cfgValue)
+            // } else if ('BuildingTypes'.equalsIgnoreCase(unifiedKey)) {
+            //     this.buildingTypes.setFromCfgObj(cfgValue)
         } else if ('UpgradeTypes'.equalsIgnoreCase(unifiedKey)) {
             Object.entries(cfgValue).forEach(([cfgKey, value]) => this.upgradeTypesCfg.set(cfgKey.toLowerCase(), value as string))
         } else if ('InfoMessages'.equalsIgnoreCase(unifiedKey)) {
@@ -169,5 +175,14 @@ export class GameConfig extends BaseConfig {
         } else {
             return cfgKey.toLowerCase()
         }
+    }
+
+    getTooltipText(tooltipKey: string): string {
+        if (!tooltipKey) return ''
+        return this.tooltips.get(tooltipKey.toLowerCase())
+    }
+
+    getRockFallDamage(entityType: EntityType, level: number = 0): number {
+        return this.weaponTypes.get('rockfallin').damageByEntityType.get(entityType)?.[level] || 0
     }
 }

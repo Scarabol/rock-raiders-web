@@ -16,7 +16,6 @@ import { EntityType } from '../../game/model/EntityType'
 import { Surface } from '../../game/terrain/Surface'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { CursorTarget, SelectionRaycaster } from '../../scene/SelectionRaycaster'
 import { WorldManager } from '../../game/WorldManager'
 import { GameState } from '../../game/model/GameState'
@@ -25,6 +24,7 @@ import { MaterialEntity } from '../../game/model/material/MaterialEntity'
 import { RaiderInfoComponent } from '../../game/component/RaiderInfoComponent'
 import { GameSelection } from '../../game/model/GameSelection'
 import { Rect } from '../../core/Rect'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class GameLayer extends ScreenLayer {
     worldMgr: WorldManager
@@ -106,18 +106,18 @@ export class GameLayer extends ScreenLayer {
             const site = cursorTarget.surface.site
             if (site?.buildingType) {
                 const objectKey = EntityType[site.buildingType.entityType].toString().replace('_', '').toLowerCase()
-                const tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
+                const tooltipText = GameConfig.instance.objectNamesCfg.get(objectKey)
                 if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, null, site))
             } else {
-                const tooltip = ResourceManager.configuration.surfaceTypeDescriptions.get(cursorTarget.surface.surfaceType.name.toLowerCase())
+                const tooltip = GameConfig.instance.surfaceTypeDescriptions.get(cursorTarget.surface.surfaceType.name.toLowerCase())
                 if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
             }
         }
         if (cursorTarget.entityType) {
             const objectKey = EntityType[cursorTarget.entityType].toString().replace('_', '').toLowerCase()
-            let tooltipText = ResourceManager.configuration.objectNamesCfg.get(objectKey)
+            let tooltipText = GameConfig.instance.objectNamesCfg.get(objectKey)
             if (cursorTarget.building) {
-                const upgradeName = ResourceManager.configuration.upgradeNames[cursorTarget.building.level - 1]
+                const upgradeName = GameConfig.instance.upgradeNames[cursorTarget.building.level - 1]
                 if (upgradeName) tooltipText += ` (${upgradeName})`
             }
             if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, cursorTarget.raider))
@@ -137,13 +137,13 @@ export class GameLayer extends ScreenLayer {
         } else if (this.pointerDown) {
             const downUpDistance = Math.abs(event.canvasX - this.pointerDown.x) + Math.abs(event.canvasY - this.pointerDown.y)
             if (downUpDistance < 5) {
+                this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
+                this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
                 if (this.sceneMgr.hasBuildModeSelection()) {
                     this.sceneMgr.setBuildModeSelection(null)
                 } else if (this.entityMgr.selection.doubleSelect) {
                     console.warn('Double selection handling not yet implemented') // TODO Implement laser shooting
                 } else if (this.entityMgr.selection.raiders.length > 0 || this.entityMgr.selection.vehicles.length > 0) {
-                    this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
-                    this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
                     const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
                     if (cursorTarget.vehicle) {
                         const selectedRaiders = this.entityMgr.selection.raiders

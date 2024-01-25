@@ -13,6 +13,7 @@ import { ResourceManager } from '../../resource/ResourceManager'
 import { GameResultEvent } from '../../event/WorldEvents'
 import { GameResultState } from '../../game/model/GameResult'
 import { TextInfoMessageEntryCfg } from '../../cfg/TextInfoMessageEntryCfg'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class MessagePanel extends Panel {
     private readonly maxAirLevelWidth = 236
@@ -87,7 +88,7 @@ export class MessagePanel extends Panel {
 
     setMessage(cfg: TextInfoMessageEntryCfg) {
         if (this.currentMessage) return
-        this.setTimedMessage(cfg, ResourceManager.configuration.main.textPauseTimeMs)
+        this.setTimedMessage(cfg, GameConfig.instance.main.textPauseTimeMs)
     }
 
     private setTimedMessage(cfg: TextInfoMessageEntryCfg, timeout: number) {

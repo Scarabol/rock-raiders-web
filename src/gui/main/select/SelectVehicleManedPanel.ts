@@ -5,7 +5,7 @@ import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
 import { IconPanelButton } from '../IconPanelButton'
-import { ResourceManager } from '../../../resource/ResourceManager'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class SelectVehicleManedPanel extends SelectBasePanel {
     readonly upgradeItem: IconPanelButton
@@ -15,18 +15,18 @@ export class SelectVehicleManedPanel extends SelectBasePanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 7, onBackPanel)
-        const unloadVehicleItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_UnLoadVehicle')
+        const unloadVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UnLoadVehicle')
         unloadVehicleItem.isDisabled = () => this.noVehicleWithCarriedItems
         unloadVehicleItem.onClick = () => this.publishEvent(new VehicleUnload())
-        this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_VehiclePickUp')
-        this.upgradeItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_UpgradeVehicle')
+        this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_VehiclePickUp')
+        this.upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UpgradeVehicle')
         this.upgradeItem.isDisabled = () => !this.hasUpgradeSite
-        const leaveVehicleItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GetOut')
+        const leaveVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GetOut')
         leaveVehicleItem.isDisabled = () => this.noVehicleWithDriver
         leaveVehicleItem.onClick = () => this.publishEvent(new VehicleDriverGetOut())
-        this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GotoFirstPerson')
-        this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GotoSecondPerson')
-        const deleteVehicleItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_DeleteVehicle')
+        this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoFirstPerson')
+        this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoSecondPerson')
+        const deleteVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteVehicle')
         deleteVehicleItem.isDisabled = () => false
         deleteVehicleItem.onClick = () => this.publishEvent(new VehicleBeamUp())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

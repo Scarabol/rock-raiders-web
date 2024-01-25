@@ -31,6 +31,7 @@ import { BoulderComponent } from '../component/BoulderComponent'
 import { VehicleTarget } from '../EntityManager'
 import { HeadingComponent } from '../component/HeadingComponent'
 import { BeamUpComponent } from '../component/BeamUpComponent'
+import { GameConfig } from '../../cfg/GameConfig'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -46,7 +47,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
             this.worldMgr.entityMgr.rockMonsters.forEach((m) => {
                 const components = this.ecs.getComponents(m)
                 const positionComponent = components.get(PositionComponent)
-                if (positionComponent.getPosition2D().distanceToSquared(event.position) < Math.pow(ResourceManager.configuration.main.DynamiteDamageRadius, 2)) {
+                if (positionComponent.getPosition2D().distanceToSquared(event.position) < Math.pow(GameConfig.instance.main.DynamiteDamageRadius, 2)) {
                     components.get(AnimatedSceneEntityComponent).sceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                         this.ecs.addComponent(m, new RaiderScareComponent(RaiderScareRange.ROCKY))
                         this.ecs.addComponent(m, new RockMonsterBehaviorComponent())
@@ -95,7 +96,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
-                                this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
+                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.findVehicleInRange(rockyPos, ROCKY_MELEE_ATTACK_DISTANCE_SQ)
@@ -141,7 +142,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                         if (behaviorComponent.boulder) {
                             const drivingVehicleCloseBy = drivingVehiclePositions.find((pos) => pos.distanceToSquared(rockyPos) < ROCKY_MELEE_ATTACK_DISTANCE_SQ)
                             if (drivingVehicleCloseBy) {
-                                this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.BoulderExplode, behaviorComponent.boulder.getWorldPosition(new Vector3()), behaviorComponent.boulder.rotation.y, false)
+                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.BoulderExplode, behaviorComponent.boulder.getWorldPosition(new Vector3()), behaviorComponent.boulder.rotation.y, false)
                                 sceneEntity.removeAllCarried()
                                 behaviorComponent.boulder = null
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
@@ -216,7 +217,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
-                                this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
+                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.findVehicleInRange(rockyPos, ROCKY_MELEE_ATTACK_DISTANCE_SQ)
@@ -281,7 +282,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.setAnimation(AnimEntityActivity.Stand)
                             }, 0, () => {
                                 positionComponent.surface.setSurfaceType(SurfaceType.RUBBLE4)
-                                this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
+                                this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.SmashPath, positionComponent.surface.getCenterWorld(), 0, false)
                             })
                         } else {
                             const vehicleInMeleeRange = this.worldMgr.entityMgr.findVehicleInRange(rockyPos, ROCKY_MELEE_ATTACK_DISTANCE_SQ)
@@ -300,7 +301,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                         behaviorComponent.state = RockMonsterBehaviorState.GATHER
                                         sceneEntity.setAnimation(RockMonsterActivity.Gather, () => {
                                             sceneEntity.setAnimation(AnimEntityActivity.StandCarry)
-                                            behaviorComponent.boulder = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Boulder)
+                                            behaviorComponent.boulder = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Boulder)
                                             const boulderTexture = ResourceManager.getTexture('Creatures/RMonster/greyrock.bmp') // XXX Read boulder texture from config?
                                             behaviorComponent.boulder.getMaterials().forEach((m) => m.map = boulderTexture)
                                             sceneEntity.pickupEntity(behaviorComponent.boulder)

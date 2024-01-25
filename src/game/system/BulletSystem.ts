@@ -6,12 +6,12 @@ import { EntityType } from '../model/EntityType'
 import { MonsterStatsComponent } from '../component/MonsterStatsComponent'
 import { PositionComponent } from '../component/PositionComponent'
 import { HealthComponent } from '../component/HealthComponent'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { HeadingComponent } from '../component/HeadingComponent'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class BulletSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([BulletComponent])
@@ -49,10 +49,10 @@ export class BulletSystem extends AbstractGameSystem {
                         const bulletLocation = new Vector2(bulletPos.x, bulletPos.z)
                         if (targetLocation.distanceToSquared(bulletLocation) >= targetStats.CollRadiusSq) return false
                         if (bulletComponent.bulletType === EntityType.LASER_SHOT) {
-                            this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.LazerHit, t.pos.position, 0, false)
+                            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.LazerHit, t.pos.position, 0, false)
                             t.health.changeHealth(-targetStats.LaserDamage)
                         } else if (bulletComponent.bulletType === EntityType.FREEZER_SHOT) {
-                            this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.FreezerHit, t.pos.position, 0, false)
+                            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.FreezerHit, t.pos.position, 0, false)
                             t.health.changeHealth(-targetStats.FreezerDamage)
                             if (targetStats.CanFreeze && !this.ecs.getComponents(t.entity).has(EntityFrozenComponent)) {
                                 const entityFrozenComponent = new EntityFrozenComponent(this.worldMgr, t.entity, targetStats.FreezerTimeMs, t.pos.position, t.heading)
@@ -61,7 +61,7 @@ export class BulletSystem extends AbstractGameSystem {
                                 this.ecs.addComponent(t.entity, entityFrozenComponent)
                             }
                         } else if (bulletComponent.bulletType === EntityType.PUSHER_SHOT) {
-                            this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.PusherHit, t.pos.position, 0, false)
+                            this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.PusherHit, t.pos.position, 0, false)
                             t.health.changeHealth(-targetStats.PusherDamage)
                             if (targetStats.CanPush && !this.ecs.getComponents(t.entity).has(EntityPushedComponent)) {
                                 this.ecs.removeComponent(t.entity, WorldTargetComponent)

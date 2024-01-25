@@ -6,7 +6,7 @@ import { Panel } from '../../base/Panel'
 import { IconPanelToggleButton } from '../IconPanelToggleButton'
 import { SelectBasePanel } from './SelectBasePanel'
 import { TOOLTIP_DELAY_SFX } from '../../../params'
-import { ResourceManager } from '../../../resource/ResourceManager'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class SelectBuildingPanel extends SelectBasePanel {
     buildingNeedsRepair: boolean = false
@@ -17,23 +17,23 @@ export class SelectBuildingPanel extends SelectBasePanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 4, onBackPanel)
-        const repairBuildingItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_Repair')
+        const repairBuildingItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_Repair')
         repairBuildingItem.isDisabled = () => !this.buildingNeedsRepair
         repairBuildingItem.onClick = () => this.publishEvent(new RepairBuilding())
-        const menuItemOffCfg = ResourceManager.configuration.interfaceImages.get('Interface_MenuItem_PowerOff'.toLowerCase())
-        const menuItemOnCfg = ResourceManager.configuration.interfaceImages.get('Interface_MenuItem_PowerOn'.toLowerCase())
+        const menuItemOffCfg = GameConfig.instance.interfaceImages.get('Interface_MenuItem_PowerOff'.toLowerCase())
+        const menuItemOnCfg = GameConfig.instance.interfaceImages.get('Interface_MenuItem_PowerOn'.toLowerCase())
         const powerSwitchItem = this.addChild(new IconPanelToggleButton(this, menuItemOffCfg, menuItemOnCfg, this.img.width, this.iconPanelButtons.length))
         this.iconPanelButtons.push(powerSwitchItem)
         powerSwitchItem.isDisabled = () => !this.buildingCanSwitchPower
         powerSwitchItem.isToggled = () => !this.buildingPowerSwitchState
         powerSwitchItem.onClick = () => this.publishEvent(new ChangeBuildingPowerState(!powerSwitchItem.toggleState))
-        const upgradeItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_UpgradeBuilding')
+        const upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UpgradeBuilding')
         upgradeItem.isDisabled = () => !this.buildingCanUpgrade
         upgradeItem.onClick = () => this.publishEvent(new UpgradeBuilding())
         upgradeItem.showTooltipDisabled = () => {
             this.publishEvent(new ChangeTooltip(upgradeItem.tooltipDisabled, 0, upgradeItem.tooltipDisabledSfx, TOOLTIP_DELAY_SFX, null, null, this.buildingMissingOreForUpgrade))
         }
-        const deleteBuildingItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_DeleteBuilding')
+        const deleteBuildingItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteBuilding')
         deleteBuildingItem.isDisabled = () => false
         deleteBuildingItem.onClick = () => this.publishEvent(new BeamUpBuilding())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

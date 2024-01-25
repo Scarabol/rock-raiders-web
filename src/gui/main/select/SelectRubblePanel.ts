@@ -4,8 +4,8 @@ import { SelectionChanged } from '../../../event/LocalEvents'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { EntityType } from '../../../game/model/EntityType'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class SelectRubblePanel extends SelectBasePanel {
     hasRubble: boolean = false
@@ -13,10 +13,10 @@ export class SelectRubblePanel extends SelectBasePanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 2, onBackPanel)
-        const clearRubbleItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_ClearRubble')
+        const clearRubbleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_ClearRubble')
         clearRubbleItem.isDisabled = () => !this.hasRubble
         clearRubbleItem.onClick = () => this.publishEvent(new CreateClearRubbleJob())
-        const placeFenceItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_PlaceFence')
+        const placeFenceItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_PlaceFence')
         placeFenceItem.addDependencyCheck(EntityType.ELECTRIC_FENCE)
         placeFenceItem.isDisabled = () => placeFenceItem.hasUnfulfilledDependency || !this.canPlaceFence
         placeFenceItem.onClick = () => this.publishEvent(new PlaceFence())

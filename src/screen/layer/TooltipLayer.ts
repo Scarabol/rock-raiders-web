@@ -2,7 +2,7 @@ import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
 import { SaveScreenshot } from '../../event/LocalEvents'
-import { ResourceManager } from '../../resource/ResourceManager'
+import { TooltipSpriteBuilder } from '../../resource/TooltipSpriteBuilder'
 import { ScreenLayer } from './ScreenLayer'
 import { CURSOR_MAX_HEIGHT } from '../../params'
 import { clearTimeoutSafe } from '../../core/Util'
@@ -117,14 +117,14 @@ export class TooltipLayer extends ScreenLayer {
 
     private async getTooltipImg(event: ChangeTooltip) { // XXX cache tooltip images
         if (event.numToolSlots || event.tools || event.trainings) {
-            return await ResourceManager.getRaiderTooltipSprite(event.tooltipText || '',
+            return await TooltipSpriteBuilder.getRaiderTooltipSprite(event.tooltipText || '',
                 event.numToolSlots || 0, event.tools || [], event.trainings || [])
         } else if (event.crystals || event.ores || event.bricks) {
-            return await ResourceManager.getBuildingSiteTooltipSprite(event.tooltipText, event.crystals, event.ores, event.bricks)
+            return await TooltipSpriteBuilder.getBuildingSiteTooltipSprite(event.tooltipText, event.crystals, event.ores, event.bricks)
         } else if (event.buildingMissingOreForUpgrade) {
-            return await ResourceManager.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, event.buildingMissingOreForUpgrade)
+            return await TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, event.buildingMissingOreForUpgrade)
         } else if (event.tooltipText) {
-            return await ResourceManager.getTooltipSprite(event.tooltipText)
+            return await TooltipSpriteBuilder.getTooltipSprite(event.tooltipText)
         }
         return null
     }

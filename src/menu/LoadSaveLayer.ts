@@ -1,11 +1,11 @@
 import { GameMenuCfg } from '../cfg/MenuCfg'
 import { MenuEntryCfg } from '../cfg/MenuEntryCfg'
-import { ResourceManager } from '../resource/ResourceManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { MainMenuLayer } from './MainMenuLayer'
 import { MainMenuLoadSaveButton } from './MainMenuLoadSaveButton'
 import { MainMenuWindow } from './MainMenuWindow'
 import { GamePointerEvent } from '../event/GamePointerEvent'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class LoadSaveLayer extends MainMenuLayer {
     menuCfg: GameMenuCfg
@@ -14,7 +14,7 @@ export class LoadSaveLayer extends MainMenuLayer {
 
     constructor(menuCfg: MenuEntryCfg, loading: boolean) {
         super(menuCfg)
-        this.menuCfg = ResourceManager.configuration.menu
+        this.menuCfg = GameConfig.instance.menu
         const saveImage = this.menuCfg.saveImage
         this.addButton(0, saveImage.Pos1[0], saveImage.Pos1[1], loading)
         this.addButton(1, saveImage.Pos2[0], saveImage.Pos2[1], loading)

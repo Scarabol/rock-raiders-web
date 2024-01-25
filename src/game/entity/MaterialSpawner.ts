@@ -19,6 +19,7 @@ import { GenericDeathEvent } from '../../event/WorldLocationEvent'
 import { BeamUpComponent } from '../component/BeamUpComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../component/MapMarkerComponent'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class MaterialSpawner {
     static spawnMaterial(
@@ -37,17 +38,17 @@ export class MaterialSpawner {
         material.sceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr.audioListener)
         switch (entityType) {
             case EntityType.ORE:
-                material.sceneEntity.add(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Ore))
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.ore))
+                material.sceneEntity.add(ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Ore))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.ore))
                 material.priorityIdentifier = PriorityIdentifier.ORE
                 break
             case EntityType.BRICK:
-                material.sceneEntity.add(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ProcessedOre))
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.processedOre))
+                material.sceneEntity.add(ResourceManager.getLwoModel(GameConfig.instance.miscObjects.ProcessedOre))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.processedOre))
                 material.priorityIdentifier = PriorityIdentifier.ORE
                 break
             case EntityType.CRYSTAL:
-                const animGlowMesh = ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.Crystal)
+                const animGlowMesh = ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Crystal)
                 animGlowMesh.getMaterials().forEach((mat: SequenceTextureMaterial) => {
                     mat.blending = AdditiveBlending
                     mat.depthWrite = false // otherwise, transparent parts "carve out" objects behind
@@ -62,7 +63,7 @@ export class MaterialSpawner {
                     mat.setOpacity(0.9) // XXX read from LWO file?
                 })
                 material.sceneEntity.add(highPolyMesh)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.powerCrystal))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.powerCrystal))
                 material.priorityIdentifier = PriorityIdentifier.CRYSTAL
                 break
             case EntityType.DEPLETED_CRYSTAL:
@@ -73,28 +74,28 @@ export class MaterialSpawner {
                     mat.setOpacity(0.9) // XXX read from LWO file?
                 })
                 material.sceneEntity.add(depletedHighPolyMesh)
-                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, ResourceManager.configuration.stats.powerCrystal))
+                worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, GameConfig.instance.stats.powerCrystal))
                 material.priorityIdentifier = PriorityIdentifier.RECHARGE
                 break
             case EntityType.BARRIER:
-                material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(ResourceManager.configuration.miscObjects.Barrier))
+                material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.Barrier))
                 material.sceneEntity.setAnimation(BarrierActivity.Short)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {PickSphere: 10, CollRadius: 10, CollHeight: 0})) // XXX find any constant for pick sphere?
                 material.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
                 break
             case EntityType.DYNAMITE:
-                material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(ResourceManager.configuration.miscObjects.Dynamite))
+                material.sceneEntity.addAnimated(ResourceManager.getAnimatedData(GameConfig.instance.miscObjects.Dynamite))
                 material.sceneEntity.setAnimation(DynamiteActivity.Normal)
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, {PickSphere: 8, CollRadius: 8, CollHeight: 0})) // XXX find any constant for pick sphere?
                 material.priorityIdentifier = PriorityIdentifier.DESTRUCTION
                 material.requiredTraining = RaiderTraining.DEMOLITION
                 break
             case EntityType.ELECTRIC_FENCE:
-                const statsFence = ResourceManager.configuration.stats.electricFence
-                material.sceneEntity.add(ResourceManager.getLwoModel(ResourceManager.configuration.miscObjects.ElectricFence))
+                const statsFence = GameConfig.instance.stats.electricFence
+                material.sceneEntity.add(ResourceManager.getLwoModel(GameConfig.instance.miscObjects.ElectricFence))
                 worldMgr.ecs.addComponent(material.entity, new SceneSelectionComponent(material.sceneEntity, {gameEntity: material.entity, entityType: material.entityType}, statsFence))
                 material.priorityIdentifier = PriorityIdentifier.CONSTRUCTION
-                const healthComponent = material.worldMgr.ecs.addComponent(material.entity, new HealthComponent(statsFence.DamageCausesCallToArms, statsFence.CollHeight, 10, material.sceneEntity, false, ResourceManager.getRockFallDamage(material.entityType)))
+                const healthComponent = material.worldMgr.ecs.addComponent(material.entity, new HealthComponent(statsFence.DamageCausesCallToArms, statsFence.CollHeight, 10, material.sceneEntity, false, GameConfig.instance.getRockFallDamage(material.entityType, 0)))
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
                 material.worldMgr.ecs.addComponent(material.entity, new LastWillComponent(() => {

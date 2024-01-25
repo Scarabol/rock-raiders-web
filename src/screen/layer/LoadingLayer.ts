@@ -1,6 +1,8 @@
 import { ResourceManager } from '../../resource/ResourceManager'
 import { ScaledLayer } from './ScreenLayer'
 import { DEFAULT_FONT_NAME } from '../../params'
+import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class LoadingLayer extends ScaledLayer {
     assetIndex: number = 0
@@ -28,10 +30,10 @@ export class LoadingLayer extends ScaledLayer {
     }
 
     enableGraphicMode(totalResources: number) {
-        const imgBackground = ResourceManager.getImage(ResourceManager.configuration.main.loadScreen)
-        const imgProgress = ResourceManager.getImage(ResourceManager.configuration.main.progressBar)
-        const rectProgress = ResourceManager.configuration.main.progressWindow
-        ResourceManager.bitmapFontWorkerPool.createTextImage(DEFAULT_FONT_NAME, ResourceManager.configuration.main.loadingText)
+        const imgBackground = ResourceManager.getImage(GameConfig.instance.main.loadScreen)
+        const imgProgress = ResourceManager.getImage(GameConfig.instance.main.progressBar)
+        const rectProgress = GameConfig.instance.main.progressWindow
+        BitmapFontWorkerPool.instance.createTextImage(DEFAULT_FONT_NAME, GameConfig.instance.main.loadingText)
             .then((imgLoading) => {
                 const loadX = Math.round(rectProgress.x + (rectProgress.w - imgLoading.width) / 2) + 1
                 const loadY = Math.round(rectProgress.y + (rectProgress.h - imgLoading.height) / 2) + 1

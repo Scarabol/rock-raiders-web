@@ -1,7 +1,7 @@
 import { LevelRewardConfig } from '../../cfg/LevelsCfg'
 import { ADDITIONAL_RAIDER_PER_SUPPORT } from '../../params'
 import { GameState } from './GameState'
-import { ResourceManager } from '../../resource/ResourceManager'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export enum GameResultState {
     // noinspection JSUnusedGlobalSymbols
@@ -61,7 +61,7 @@ export class GameResult {
     }
 
     static random(): GameResult {
-        const randomLevelConf = ResourceManager.configuration.levels.levelCfgByName.get(`Level${Math.randomInclusive(1, 25).toPadded()}`)
+        const randomLevelConf = GameConfig.instance.levels.levelCfgByName.get(`Level${Math.randomInclusive(1, 25).toPadded()}`)
         return new GameResult(randomLevelConf.fullName, randomLevelConf.reward, GameResultState.COMPLETE, Math.randomInclusive(6), Math.randomInclusive(10), 10, 942, null)
     }
 }

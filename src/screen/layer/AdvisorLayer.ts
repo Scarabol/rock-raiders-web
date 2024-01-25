@@ -3,10 +3,10 @@ import { AmbientLight, Camera, PerspectiveCamera, Scene, WebGLRenderer } from 't
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../../core/Util'
 import { CAMERA_FOV, NATIVE_UPDATE_INTERVAL } from '../../params'
 import { AnimationLoopGroup } from '../../scene/AnimationLoopGroup'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ShowMissionBriefingEvent } from '../../event/LocalEvents'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeLayer
     readonly renderer: WebGLRenderer
@@ -24,12 +24,12 @@ export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeL
         this.scene.add(new AmbientLight(0xffffff, 1)) // XXX read from LWS file
         this.camera = new PerspectiveCamera(CAMERA_FOV, 4 / 3, 0.1, 100)
 
-        const advisorPosCfg = ResourceManager.configuration.advisorPositions640x480.get('Advisor_Objective'.toLowerCase())
+        const advisorPosCfg = GameConfig.instance.advisorPositions640x480.get('Advisor_Objective'.toLowerCase())
         if (!advisorPosCfg) {
             console.warn('Advisor position config for mission objective not found')
             return
         }
-        const advisorCfg = ResourceManager.configuration.advisor.get(advisorPosCfg.advisorType.toLowerCase())
+        const advisorCfg = GameConfig.instance.advisor.get(advisorPosCfg.advisorType.toLowerCase())
         if (!advisorCfg) {
             console.warn('Advisor config for mission objective not found', advisorPosCfg)
             return

@@ -4,17 +4,17 @@ import { SelectionChanged } from '../../../event/LocalEvents'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { SelectBasePanel } from './SelectBasePanel'
-import { ResourceManager } from '../../../resource/ResourceManager'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class SelectVehicleEmptyPanel extends SelectBasePanel {
     vehicleHasJob: boolean = false
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 2, onBackPanel)
-        const manVehicleItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GetIn')
+        const manVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GetIn')
         manVehicleItem.onClick = () => this.publishEvent(new VehicleCallMan())
         manVehicleItem.isDisabled = () => this.vehicleHasJob
-        const deleteVehicleItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_DeleteVehicle')
+        const deleteVehicleItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteVehicle')
         deleteVehicleItem.isDisabled = () => false
         deleteVehicleItem.onClick = () => this.publishEvent(new VehicleBeamUp())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

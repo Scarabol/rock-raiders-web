@@ -5,6 +5,7 @@ import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent
 import { BaseElement } from './BaseElement'
 import { TOOLTIP_DELAY_SFX } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class Button extends BaseElement {
     buttonType: string = null
@@ -27,7 +28,7 @@ export class Button extends BaseElement {
         this.relY = btnCfg.relY
         this.width = Button.ignoreUndefinedMax(btnCfg.width, this.imgNormal?.width, this.imgPressed?.width, this.imgHover?.width)
         this.height = Button.ignoreUndefinedMax(btnCfg.height, this.imgNormal?.height, this.imgPressed?.height, this.imgHover?.height)
-        this.tooltip = ResourceManager.getTooltipText(btnCfg.tooltipKey) || btnCfg.tooltipText
+        this.tooltip = GameConfig.instance.getTooltipText(btnCfg.tooltipKey) || btnCfg.tooltipText
         this.tooltipSfx = btnCfg.tooltipSfx
         this.updatePosition()
         this.onClick = () => console.log(`button pressed: ${this.buttonType}`)

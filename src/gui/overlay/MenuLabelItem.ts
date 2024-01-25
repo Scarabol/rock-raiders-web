@@ -3,7 +3,7 @@ import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { BaseElement } from '../base/BaseElement'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { MenuLayer } from './MenuLayer'
-import { ResourceManager } from '../../resource/ResourceManager'
+import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class MenuLabelItem extends BaseElement {
     target: string
@@ -14,8 +14,8 @@ export class MenuLabelItem extends BaseElement {
         super(parent)
         this.target = itemCfg.target
         Promise.all([
-            ResourceManager.bitmapFontWorkerPool.createTextImage(parent.menuCfg.loFont, itemCfg.label),
-            ResourceManager.bitmapFontWorkerPool.createTextImage(parent.menuCfg.hiFont, itemCfg.label),
+            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.loFont, itemCfg.label),
+            BitmapFontWorkerPool.instance.createTextImage(parent.menuCfg.hiFont, itemCfg.label),
         ]).then((textImages) => {
             [this.loImg, this.hiImg] = textImages
             this.width = this.loImg.width

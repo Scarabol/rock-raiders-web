@@ -1,24 +1,14 @@
-import { EntityDependencyChecked, GameConfig } from '../cfg/GameConfig'
+import { GameConfig } from '../cfg/GameConfig'
 import { Cursor } from './Cursor'
-import { BitmapFontData } from '../core/BitmapFont'
 import { createCanvas, createContext, createDummyImgData, imgDataToCanvas } from '../core/ImageHelper'
 import { SpriteImage } from '../core/Sprite'
 import { AnimatedCursor } from '../screen/AnimatedCursor'
 import { cacheGetData, cachePutData } from './AssetCacheHelper'
-import { DEFAULT_FONT_NAME, TOOLTIP_FONT_NAME } from '../params'
-import { DependencySpriteWorkerPool } from '../worker/DependencySpriteWorkerPool'
-import { DependencySpriteWorkerRequestType } from '../worker/DependencySpriteWorker'
-import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
-import { BitmapFontWorkerRequestType } from '../worker/BitmapFontWorker'
+import { CursorManager } from '../screen/CursorManager'
 
 export class ResourceCache {
-    static readonly bitmapFontWorkerPool: BitmapFontWorkerPool = new BitmapFontWorkerPool()
-    static readonly cursorToUrl: Map<Cursor, AnimatedCursor> = new Map()
     static readonly imageCache: Map<string, SpriteImage> = new Map()
-    static readonly dependencySpriteWorkerPool: DependencySpriteWorkerPool = new DependencySpriteWorkerPool()
-    static readonly dependencySpriteCache: Map<string, SpriteImage> = new Map()
-    static configuration: GameConfig = new GameConfig()
-    static resourceByName: Map<string, any> = new Map()
+    static readonly resourceByName: Map<string, any> = new Map()
 
     static getResource(resourceName: string): any {
         const lName = resourceName?.toString()?.toLowerCase() || null
@@ -35,6 +25,7 @@ export class ResourceCache {
         const imgData = this.getImageData(imageName)
         const context = createContext(imgData.width, imgData.height)
         context.putImageData(imgData, 0, 0)
+        // TODO Loading screen background should be cached to be able to be shown earlier
         if (imageName.toLowerCase().endsWith('/loading.bmp') || imageName.toLowerCase().endsWith('/menubgpic.bmp')) {
             context.fillStyle = '#f00'
             context.fillRect(38, 9, 131, 131)
@@ -54,43 +45,19 @@ export class ResourceCache {
         return imageName ? this.getImage(imageName) : null
     }
 
-    static startBitmapFontRenderPool() {
-        this.bitmapFontWorkerPool.startPool(4, {
-            type: BitmapFontWorkerRequestType.ADD_FONT,
-            fontName: DEFAULT_FONT_NAME,
-            fontData: this.getResource(DEFAULT_FONT_NAME),
-        })
-    }
-
-    static async addFont(fontName: string): Promise<void> {
-        return await this.bitmapFontWorkerPool.addFont(fontName, this.getResource(fontName))
-    }
-
-    static getTooltipText(tooltipKey: string): string {
-        if (!tooltipKey) return ''
-        return this.configuration.tooltips.get(tooltipKey.toLowerCase())
-    }
-
-    static async loadDefaultCursor() {
-        const cursorImageName = this.configuration.pointers.get(Cursor.STANDARD) as string
-        await this.loadCursor(cursorImageName, Cursor.STANDARD)
-    }
-
     static async loadAllCursor() {
-        const blankPointerFilename = this.configuration.pointers.get(Cursor.BLANK) as string
+        const blankPointerFilename = GameConfig.instance.pointers.get(Cursor.BLANK)
         const blankPointerImageData = this.getImageData(blankPointerFilename)
         const loadingCursors: Promise<void>[] = []
-        this.configuration.pointers.forEach((cursorCfg, objKey) => {
-            const cursor = objKey as Cursor
-            if (!Array.isArray(cursorCfg)) {
-                loadingCursors.push(this.loadCursor(cursorCfg, cursor))
+        GameConfig.instance.pointers.forEach((cursorFileName, cursor) => {
+            if (cursorFileName.toLowerCase().endsWith('.bmp')) {
+                loadingCursors.push(this.loadCursor(cursorFileName, cursor))
                 return
             }
-            const cursorImageName = cursorCfg[0]
-            loadingCursors.push(cacheGetData(cursorImageName).then((animatedCursorData) => {
+            loadingCursors.push(cacheGetData(cursorFileName).then((animatedCursorData) => {
                 if (!animatedCursorData) {
                     let maxHeight = 0
-                    const cursorImages = (this.getResource(cursorImageName) as ImageData[]).map((imgData) => {
+                    const cursorImages = (this.getResource(cursorFileName) as ImageData[]).map((imgData) => {
                         const blankCanvas = createCanvas(blankPointerImageData.width, blankPointerImageData.height)
                         const context = blankCanvas.getContext('2d')
                         context.putImageData(blankPointerImageData, 0, 0)
@@ -105,15 +72,15 @@ export class ResourceCache {
                         dataUrls: this.cursorToDataUrl(cursorImages),
                         maxHeight: maxHeight,
                     }
-                    cachePutData(cursorImageName, animatedCursorData).then()
+                    cachePutData(cursorFileName, animatedCursorData).then()
                 }
-                this.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls))
+                CursorManager.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls))
             }))
         })
         await Promise.all(loadingCursors)
     }
 
-    private static async loadCursor(cursorImageName: string, cursor: Cursor) {
+    static async loadCursor(cursorImageName: string, cursor: Cursor) {
         return cacheGetData(cursorImageName).then((animatedCursorData) => {
             if (!animatedCursorData) {
                 const imgData = this.getImageData(cursorImageName)
@@ -125,47 +92,11 @@ export class ResourceCache {
                 }
                 cachePutData(cursorImageName, animatedCursorData).then()
             }
-            this.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls))
+            CursorManager.cursorToUrl.set(cursor, new AnimatedCursor(animatedCursorData.dataUrls))
         })
     }
 
     private static cursorToDataUrl(cursorImages: HTMLCanvasElement | HTMLCanvasElement[]) {
         return Array.ensure(cursorImages).map((c) => `url(${c.toDataURL()}), auto`)
-    }
-
-    static getCursor(cursor: Cursor): AnimatedCursor {
-        const result = this.cursorToUrl.get(cursor)
-        if (!result) throw new Error(`Cursor ${cursor} not found`)
-        return result
-    }
-
-    static startDependencySpriteRenderPool() {
-        const depInterfaceImageData: Map<string, ImageData[]> = new Map()
-        const teleportManConfig = this.configuration.interfaceImages.get('Interface_MenuItem_TeleportMan'.toLowerCase())
-        depInterfaceImageData.set('Interface_MenuItem_TeleportMan'.toLowerCase(),
-            [this.getImageData(teleportManConfig.normalFile), this.getImageData(teleportManConfig.disabledFile)])
-        const depInterfaceBuildImageData: Map<string, ImageData[]> = new Map()
-        this.configuration.interfaceBuildImages.forEach((cfg, key) => {
-            depInterfaceBuildImageData.set(key, [this.getImageData(cfg.normalFile), this.getImageData(cfg.disabledFile)])
-        })
-        this.dependencySpriteWorkerPool.startPool(4, {
-            type: DependencySpriteWorkerRequestType.SETUP,
-            upgradeNames: this.configuration.upgradeNames,
-            tooltipFontData: this.getResource(TOOLTIP_FONT_NAME) as BitmapFontData,
-            plusSignImgData: this.getImageData('Interface/Dependencies/+.bmp'),
-            equalSignImgData: this.getImageData('Interface/Dependencies/=.bmp'),
-            interfaceImageData: depInterfaceImageData,
-            interfaceBuildImageData: depInterfaceBuildImageData,
-        })
-    }
-
-    static async createDependenciesSprite(dependencies: EntityDependencyChecked[]): Promise<SpriteImage> {
-        const depHash = dependencies.map((d) => `${d.itemKey}:${d.minLevel}=${d.isOk}`).join(';')
-        const fromCache = this.dependencySpriteCache.get(depHash)
-        if (fromCache) return fromCache
-        const imgData = await this.dependencySpriteWorkerPool.createDependenciesSprite(dependencies)
-        const dependencyImage = imgDataToCanvas(imgData)
-        this.dependencySpriteCache.set(depHash, dependencyImage)
-        return dependencyImage
     }
 }

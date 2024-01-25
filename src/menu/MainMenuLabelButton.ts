@@ -5,7 +5,7 @@ import { SpriteContext, SpriteImage } from '../core/Sprite'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { UiElementCallback } from './UiElementState'
-import { ResourceManager } from '../resource/ResourceManager'
+import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 
 export class MainMenuLabelButton extends MainMenuBaseItem {
     labelImgLo: SpriteImage = null
@@ -14,8 +14,8 @@ export class MainMenuLabelButton extends MainMenuBaseItem {
     constructor(layer: MainMenuLayer, cfg: MenuLabelItemCfg) {
         super()
         Promise.all([
-            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.loFont, cfg.label), // TODO create all the images in loading phase
-            ResourceManager.bitmapFontWorkerPool.createTextImage(layer.cfg.hiFont, cfg.label), // TODO create all the images in loading phase
+            BitmapFontWorkerPool.instance.createTextImage(layer.cfg.loFont, cfg.label), // TODO create all the images in loading phase
+            BitmapFontWorkerPool.instance.createTextImage(layer.cfg.hiFont, cfg.label), // TODO create all the images in loading phase
         ]).then((textImages) => {
             [this.labelImgLo, this.labelImgHi] = textImages
             this.width = Math.max(this.labelImgLo.width, this.labelImgHi.width)

@@ -9,11 +9,12 @@ import { getMonsterEntityTypeByName } from './model/EntityType'
 import { EmergeTrigger } from './terrain/EmergeTrigger'
 import { Vector3 } from 'three'
 import { LavaErosionComponent } from './component/LavaErosionComponent'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class TerrainLoader {
     static loadTerrain(levelConf: LevelEntryCfg, worldMgr: WorldManager) {
         const terrain = new Terrain(worldMgr, levelConf)
-        terrain.textureSet = ResourceManager.configuration.textures.textureSetByName.get(levelConf.textureSet)
+        terrain.textureSet = GameConfig.instance.textures.textureSetByName.get(levelConf.textureSet)
         terrain.rockFallStyle = levelConf.rockFallStyle.toLowerCase()
         terrain.emergeCreature = getMonsterEntityTypeByName(levelConf.emergeCreature)
 
@@ -100,7 +101,7 @@ export class TerrainLoader {
                                         const position = new Vector3(0.5, 0.5 + surface.terrain.getHeightOffset(surface.x, surface.y), 0.5)
                                         const floorNeighbor = surface.neighbors.find((n) => n.surfaceType.floor)
                                         const angle = Math.atan2(floorNeighbor.y - surface.y, surface.x - floorNeighbor.x) + Math.PI / 2
-                                        const grp = worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.RechargeSparkle, position, angle, true)
+                                        const grp = worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.RechargeSparkle, position, angle, true)
                                         grp.scale.setScalar(1 / TILESIZE)
                                         surface.mesh.add(grp)
                                         break

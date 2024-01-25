@@ -5,7 +5,7 @@ import { Panel } from '../base/Panel'
 import { EventKey } from '../../event/EventKeyEnum'
 import { SelectionChanged } from '../../event/LocalEvents'
 import { UpgradeVehicle } from '../../event/GuiCommand'
-import { ResourceManager } from '../../resource/ResourceManager'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class UpgradeVehiclePanel extends IconSubPanel {
     canInstallUpgrade: Map<VehicleUpgrade, boolean> = new Map()
@@ -23,7 +23,7 @@ export class UpgradeVehiclePanel extends IconSubPanel {
     }
 
     private addUpgradeItem(itemKey: string, upgrade: VehicleUpgrade) {
-        const upgradeItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, itemKey)
+        const upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages, itemKey)
         upgradeItem.isDisabled = () => !this.canInstallUpgrade.get(upgrade)
         upgradeItem.onClick = () => this.publishEvent(new UpgradeVehicle(upgrade))
     }

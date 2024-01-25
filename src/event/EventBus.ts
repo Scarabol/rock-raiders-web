@@ -1,4 +1,3 @@
-import '../core'
 import { EventKey } from './EventKeyEnum'
 import { GameEvent } from './GameEvent'
 

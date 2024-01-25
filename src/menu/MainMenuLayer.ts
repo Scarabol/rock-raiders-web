@@ -12,6 +12,7 @@ import { MainMenuLabelButton } from './MainMenuLabelButton'
 import { GameWheelEvent } from '../event/GameWheelEvent'
 import { imgDataToCanvas } from '../core/ImageHelper'
 import { FlicAnimOverlay } from './FlicAnimOverlay'
+import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 
 export class MainMenuLayer extends ScaledLayer {
     static readonly SCROLL_AREA_HEIGHT = 180
@@ -33,7 +34,7 @@ export class MainMenuLayer extends ScaledLayer {
         this.menuImage = menuCfg.menuImage ? ResourceManager.getImage(menuCfg.menuImage) : null // TODO create all the images in loading phase
         let titleImage: SpriteImage = null
         if (menuCfg.displayTitle && menuCfg.fullName) {
-            ResourceManager.bitmapFontWorkerPool.createTextImage(menuCfg.loFont, menuCfg.fullName) // TODO create all the images in loading phase
+            BitmapFontWorkerPool.instance.createTextImage(menuCfg.loFont, menuCfg.fullName) // TODO create all the images in loading phase
                 .then((img) => titleImage = img)
         }
         menuCfg.itemsLabel.forEach((item) => {

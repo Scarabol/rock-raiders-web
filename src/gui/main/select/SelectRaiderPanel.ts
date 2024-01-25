@@ -6,7 +6,7 @@ import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'
 import { IconPanelButton } from '../IconPanelButton'
 import { SelectBasePanel } from './SelectBasePanel'
-import { ResourceManager } from '../../../resource/ResourceManager'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class SelectRaiderPanel extends SelectBasePanel {
     getToolItem: IconPanelButton
@@ -19,30 +19,30 @@ export class SelectRaiderPanel extends SelectBasePanel {
 
     constructor(parent: BaseElement, onBackPanel: Panel) {
         super(parent, 10, onBackPanel)
-        const feedItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GoFeed')
+        const feedItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GoFeed')
         feedItem.isDisabled = () => false
         feedItem.onClick = () => this.publishEvent(new RaiderEat())
-        const unloadItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_UnLoadMinifigure')
+        const unloadItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UnLoadMinifigure')
         unloadItem.isDisabled = () => !this.someCarries
         unloadItem.onClick = () => this.publishEvent(new RaiderDrop())
-        this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_MinifigurePickUp')
-        this.getToolItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GetTool')
+        this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_MinifigurePickUp')
+        this.getToolItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GetTool')
         this.getToolItem.isDisabled = () => false
-        const dropBirdScarer = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_DropBirdScarer')
+        const dropBirdScarer = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DropBirdScarer')
         dropBirdScarer.isDisabled = () => !this.hasBirdScarer
         dropBirdScarer.onClick = () => this.publishEvent(new DropBirdScarer())
-        const upgradeItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_UpgradeMan')
+        const upgradeItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_UpgradeMan')
         upgradeItem.isDisabled = () => this.everyHasMaxLevel || !this.hasToolstation
         upgradeItem.onClick = () => this.publishEvent(new RaiderUpgrade())
-        this.trainItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_TrainSkill')
+        this.trainItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_TrainSkill')
         this.trainItem.isDisabled = () => false
-        const firstPersonView = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GotoFirstPerson')
+        const firstPersonView = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoFirstPerson')
         firstPersonView.isDisabled = () => false
         firstPersonView.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.FPV))
-        const shoulderView = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_GotoSecondPerson')
+        const shoulderView = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_GotoSecondPerson')
         shoulderView.isDisabled = () => false
         shoulderView.onClick = () => this.publishEvent(new ChangeCameraEvent(CameraViewMode.SHOULDER))
-        const deleteRaiderItem = this.addMenuItem(ResourceManager.configuration.interfaceImages, 'Interface_MenuItem_DeleteMan')
+        const deleteRaiderItem = this.addMenuItem(GameConfig.instance.interfaceImages, 'Interface_MenuItem_DeleteMan')
         deleteRaiderItem.isDisabled = () => false
         deleteRaiderItem.onClick = () => this.publishEvent(new RaiderBeamUp())
         this.registerEventListener(EventKey.SELECTION_CHANGED, (event: SelectionChanged) => {

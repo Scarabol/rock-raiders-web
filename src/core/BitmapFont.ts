@@ -26,8 +26,14 @@ export class BitmapFontData {
     ] // XXX complete this character list
 
     readonly letterMap: Map<string, ImageData> = new Map()
+    readonly charHeight: number
 
-    constructor(fontImageData: ImageData, maxCharWidth: number, readonly charHeight: number) {
+    constructor(fontImageData: ImageData) {
+        const cols = 10, rows = 19 // font images mostly consist of 10 columns and 19 rows with last row empty
+        // XXX find better way to detect char dimensions
+        const maxCharWidth = fontImageData.width / cols
+        this.charHeight = fontImageData.height / rows
+
         function isLimiterColor(imgData: ImageData, index: number): boolean {
             // Last pixel in the first row of the first char defines the end of char limiter color (e.g. 255,39,0)
             return imgData.data[index] === fontImageData.data[(maxCharWidth - 1) * 4]

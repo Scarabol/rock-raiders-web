@@ -7,7 +7,7 @@ import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { JobFulfiller } from '../Job'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { HealthComponent } from '../../../component/HealthComponent'
-import { ResourceManager } from '../../../../resource/ResourceManager'
+import { GameConfig } from '../../../../cfg/GameConfig'
 
 export class UpgradeRaiderJob extends RaiderJob {
     building: BuildingEntity
@@ -28,7 +28,7 @@ export class UpgradeRaiderJob extends RaiderJob {
         super.onJobComplete(fulfiller)
         if (this.raider.level < this.raider.stats.Levels) {
             this.raider.level++
-            this.raider.worldMgr.ecs.getComponents(this.raider.entity).get(HealthComponent).rockFallDamage = ResourceManager.getRockFallDamage(this.raider.entityType, this.raider.level)
+            this.raider.worldMgr.ecs.getComponents(this.raider.entity).get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.raider.entityType, this.raider.level)
         }
     }
 

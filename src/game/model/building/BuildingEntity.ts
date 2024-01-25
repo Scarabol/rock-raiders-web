@@ -1,5 +1,5 @@
 import { PositionalAudio, Vector2, Vector3 } from 'three'
-import { resetAudioSafe } from '../../../audio/AudioUtil'
+import { SoundManager } from '../../../audio/SoundManager'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
 import { EventBus } from '../../../event/EventBus'
 import { BuildingsChangedEvent, DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
@@ -30,6 +30,7 @@ import { PositionComponent } from '../../component/PositionComponent'
 import { LastWillComponent } from '../../component/LastWillComponent'
 import { ScannerComponent } from '../../component/ScannerComponent'
 import { MapMarkerChange, MapMarkerType } from '../../component/MapMarkerComponent'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class BuildingEntity {
     readonly carriedItems: MaterialEntity[] = []
@@ -58,12 +59,12 @@ export class BuildingEntity {
         this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr.audioListener)
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(this.buildingType.aeFilename))
         this.sceneEntity.flipXAxis()
-        this.powerOffSprite = new BubbleSprite(ResourceManager.configuration.bubbles.bubblePowerOff)
+        this.powerOffSprite = new BubbleSprite(GameConfig.instance.bubbles.bubblePowerOff)
         this.powerOffSprite.visible = this.isPowered()
         this.sceneEntity.add(this.powerOffSprite)
         this.worldMgr.sceneMgr.addSprite(this.powerOffSprite)
         this.teleport = new Teleport(this.buildingType.teleportedEntityTypes)
-        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false, ResourceManager.getRockFallDamage(entityType, this.level)))
+        const healthComponent = this.worldMgr.ecs.addComponent(this.entity, new HealthComponent(this.stats.DamageCausesCallToArms, 24, 14, this.sceneEntity, false, GameConfig.instance.getRockFallDamage(entityType, this.level)))
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
         this.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
         this.worldMgr.entityMgr.addEntity(this.entity, this.entityType)
@@ -139,18 +140,18 @@ export class BuildingEntity {
 
     upgrade() {
         if (!this.canUpgrade()) return
-        if (GameState.numBrick >= ResourceManager.configuration.main.buildingUpgradeCostStuds) {
-            GameState.numBrick -= ResourceManager.configuration.main.buildingUpgradeCostStuds
+        if (GameState.numBrick >= GameConfig.instance.main.buildingUpgradeCostStuds) {
+            GameState.numBrick -= GameConfig.instance.main.buildingUpgradeCostStuds
         } else {
-            GameState.numOre -= ResourceManager.configuration.main.buildingUpgradeCostOre
+            GameState.numOre -= GameConfig.instance.main.buildingUpgradeCostOre
         }
         EventBus.publishEvent(new MaterialAmountChanged())
         this.level++
         const components = this.worldMgr.ecs.getComponents(this.entity)
-        components.get(HealthComponent).rockFallDamage = ResourceManager.getRockFallDamage(this.entityType, this.level)
+        components.get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.entityType, this.level)
         EventBus.publishEvent(new DeselectAll())
         EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
-        this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.UpgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.heading, false)
+        this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.UpgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.heading, false)
         components.get(ScannerComponent)?.setRange(this.stats.SurveyRadius?.[this.level] ?? 0)
         this.sceneEntity.setUpgradeLevel(this.level.toString(2).padStart(4, '0'))
     }
@@ -179,17 +180,17 @@ export class BuildingEntity {
         this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.worldMgr.sceneMgr.removeSprite(this.powerOffSprite)
         this.sceneEntity.dispose()
-        this.engineSound = resetAudioSafe(this.engineSound)
+        this.engineSound = SoundManager.stopAudio(this.engineSound)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
     }
 
     canUpgrade() {
-        return !this.hasMaxLevel() && (GameState.numOre >= ResourceManager.configuration.main.buildingUpgradeCostOre || GameState.numBrick >= ResourceManager.configuration.main.buildingUpgradeCostStuds)
+        return !this.hasMaxLevel() && (GameState.numOre >= GameConfig.instance.main.buildingUpgradeCostOre || GameState.numBrick >= GameConfig.instance.main.buildingUpgradeCostStuds)
     }
 
     missingOreForUpgrade(): number {
-        return this.hasMaxLevel() ? 0 : Math.max(0, ResourceManager.configuration.main.buildingUpgradeCostOre - GameState.numOre)
+        return this.hasMaxLevel() ? 0 : Math.max(0, GameConfig.instance.main.buildingUpgradeCostOre - GameState.numOre)
     }
 
     spawnMaterials(type: EntityType, quantity: number) {
@@ -253,7 +254,7 @@ export class BuildingEntity {
             } else {
                 this.changeUsedCrystals(-this.crystalDrain)
                 if (this.stats.PowerBuilding) this.primarySurface.terrain.powerGrid.removeEnergySource(this.surfaces)
-                this.engineSound = resetAudioSafe(this.engineSound)
+                this.engineSound = SoundManager.stopAudio(this.engineSound)
                 this.worldMgr.ecs.removeComponent(this.entity, OxygenComponent)
             }
         }

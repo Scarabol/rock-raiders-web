@@ -1,9 +1,9 @@
 import { MapControls } from 'three/examples/jsm/controls/MapControls'
 import { Camera, MOUSE, Vector3 } from 'three'
 import { DEV_MODE, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, USE_KEYBOARD_SHORTCUTS } from '../params'
-import { ResourceManager } from '../resource/ResourceManager'
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { degToRad } from 'three/src/math/MathUtils'
+import { GameConfig } from '../cfg/GameConfig'
 
 export enum CameraRotation {
     NONE = -1,
@@ -23,10 +23,10 @@ export class BirdViewControls extends MapControls {
         this.listenToKeyEvents(domElement)
         this.keyPanSpeed = this.keyPanSpeed * KEY_PAN_SPEED
         if (!DEV_MODE) {
-            this.minDistance = ResourceManager.configuration.main.minDist
-            this.maxDistance = ResourceManager.configuration.main.maxDist
-            this.minPolarAngle = Math.PI / 2 - degToRad(ResourceManager.configuration.main.maxTilt)
-            this.maxPolarAngle = Math.PI / 2 - degToRad(ResourceManager.configuration.main.minTilt)
+            this.minDistance = GameConfig.instance.main.minDist
+            this.maxDistance = GameConfig.instance.main.maxDist
+            this.minPolarAngle = Math.PI / 2 - degToRad(GameConfig.instance.main.maxTilt)
+            this.maxPolarAngle = Math.PI / 2 - degToRad(GameConfig.instance.main.minTilt)
         }
         if (!USE_KEYBOARD_SHORTCUTS) this.rewriteWASDToArrowKeys()
     }
@@ -76,7 +76,7 @@ export class BirdViewControls extends MapControls {
             this.enabled = !this.lockBuild
         } else {
             const nextCameraTargetPos = this.target.clone().add(this.moveTarget.clone().sub(this.target)
-                .clampLength(0, ResourceManager.configuration.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
+                .clampLength(0, GameConfig.instance.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
             this.jumpTo(nextCameraTargetPos)
         }
     }

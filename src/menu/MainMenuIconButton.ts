@@ -9,6 +9,7 @@ import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { MainMenuLayer } from './MainMenuLayer'
 import { UiElementCallback } from './UiElementState'
 import { TOOLTIP_DELAY_TEXT_MENU } from '../params'
+import { GameConfig } from '../cfg/GameConfig'
 
 export class MainMenuIconButton extends MainMenuBaseItem {
     imgNormal: SpriteImage = null
@@ -20,7 +21,7 @@ export class MainMenuIconButton extends MainMenuBaseItem {
         this.imgNormal = ResourceManager.getImage(cfg.imgNormal)
         this.imgHover = ResourceManager.getImage(cfg.imgHover)
         this.imgPressed = ResourceManager.getImage(cfg.imgPressed)
-        const tooltipText = ResourceManager.getTooltipText(cfg.tooltipKey)
+        const tooltipText = GameConfig.instance.getTooltipText(cfg.tooltipKey)
         this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
         this.state.onHideTooltip = () => EventBus.publishEvent(new HideTooltip(tooltipText, null))
         this.width = Math.max(this.imgNormal.width, this.imgHover.width, this.imgPressed.width)

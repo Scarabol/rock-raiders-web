@@ -5,7 +5,6 @@ import { Job, JobFulfiller } from './Job'
 import { EntityType } from '../EntityType'
 import { Raider } from '../raider/Raider'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
-import { ResourceManager } from '../../../resource/ResourceManager'
 import { Sample } from '../../../audio/Sample'
 import { EventBus } from '../../../event/EventBus'
 import { DynamiteExplosionEvent } from '../../../event/WorldEvents'
@@ -17,6 +16,7 @@ import { SelectionChanged } from '../../../event/LocalEvents'
 import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderScareComponent'
 import { MaterialSpawner } from '../../entity/MaterialSpawner'
 import { JobState } from './JobState'
+import { GameConfig } from '../../../cfg/GameConfig'
 
 export class CarryJob extends Job {
     fulfiller: JobFulfiller = null
@@ -173,7 +173,7 @@ export class CarryJob extends Job {
         this.carryItem.sceneEntity.setAnimation(DynamiteActivity.TickDown, () => {
             this.carryItem.worldMgr.ecs.removeComponent(this.carryItem.entity, RaiderScareComponent)
             this.carryItem.targetSurface.collapse()
-            this.carryItem.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.Explosion, this.carryItem.getPosition(), this.carryItem.sceneEntity.heading, false)
+            this.carryItem.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.Explosion, this.carryItem.getPosition(), this.carryItem.sceneEntity.heading, false)
             EventBus.publishEvent(new DynamiteExplosionEvent(this.carryItem.getPosition2D()))
             this.carryItem.disposeFromWorld()
         })
@@ -182,7 +182,7 @@ export class CarryJob extends Job {
     private placeFence() {
         this.carryItem.worldMgr.sceneMgr.addMeshGroup(this.carryItem.sceneEntity)
         this.carryItem.sceneEntity.rotation.set(0, 0, 0)
-        const stats = ResourceManager.configuration.stats.electricFence
+        const stats = GameConfig.instance.stats.electricFence
         const pickSphere = this.carryItem.worldMgr.ecs.getComponents(this.carryItem.entity).get(SceneSelectionComponent).pickSphere
         this.carryItem.worldMgr.ecs.addComponent(this.carryItem.entity, new SelectionFrameComponent(pickSphere, stats))
         this.carryItem.targetSurface.fence = this.carryItem.entity

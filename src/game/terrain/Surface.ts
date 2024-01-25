@@ -20,13 +20,13 @@ import { SurfaceMesh } from './SurfaceMesh'
 import { SurfaceType } from './SurfaceType'
 import { Terrain } from './Terrain'
 import { WALL_TYPE } from './WallType'
-import { ResourceManager } from '../../resource/ResourceManager'
 import { Job } from '../model/job/Job'
 import { JobState } from '../model/job/JobState'
 import { MaterialSpawner } from '../entity/MaterialSpawner'
 import { degToRad } from 'three/src/math/MathUtils'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimationGroup } from '../../scene/AnimationGroup'
+import { GameConfig } from '../../cfg/GameConfig'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -134,7 +134,7 @@ export class Surface {
                     this.terrain.rechargeSeams.add(this)
                     const floorNeighbor = this.neighbors.find((n) => n.surfaceType.floor)
                     const angle = Math.atan2(floorNeighbor.y - this.y, this.x - floorNeighbor.x) + Math.PI / 2
-                    const grp = this.worldMgr.sceneMgr.addMiscAnim(ResourceManager.configuration.miscObjects.RechargeSparkle, new Vector3(0.5, 2, 0.5), angle, true)
+                    const grp = this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.RechargeSparkle, new Vector3(0.5, 2, 0.5), angle, true)
                     grp.scale.setScalar(1 / TILESIZE)
                     this.mesh.add(grp)
                     break
@@ -208,7 +208,7 @@ export class Surface {
         // add crumble animation
         const wallNeighbor = this.neighbors.filter((n) => !!n.wallType).random()
         const crumbleAngle = !!wallNeighbor ? Math.atan2(wallNeighbor.x - this.x, wallNeighbor.y - this.y) : 0 // XXX why is x/y swapped here?
-        const rockFallAnimName = ResourceManager.configuration.rockFallStyles[this.terrain.rockFallStyle][3] // TODO not always pick "tunnel"
+        const rockFallAnimName = GameConfig.instance.rockFallStyles[this.terrain.rockFallStyle][3] // TODO not always pick "tunnel"
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, this.getCenterWorld(), crumbleAngle, false)
         this.playPositionalSample(Sample.SFX_RockBreak)
     }

@@ -6,6 +6,7 @@ import { MenuCycleItem } from './MenuCycleItem'
 import { MenuLabelItem } from './MenuLabelItem'
 import { MenuSliderItem } from './MenuSliderItem'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { BitmapFontWorkerPool } from '../../worker/BitmapFontWorkerPool'
 
 export class MenuLayer extends BaseElement {
     menuImage: SpriteImage
@@ -20,7 +21,7 @@ export class MenuLayer extends BaseElement {
         this.relX = menuCfg.position[0]
         this.relY = menuCfg.position[1]
         this.menuImage = ResourceManager.getImageOrNull(menuCfg.menuImage)
-        ResourceManager.bitmapFontWorkerPool.createTextImage(menuCfg.menuFont, menuCfg.fullName)
+        BitmapFontWorkerPool.instance.createTextImage(menuCfg.menuFont, menuCfg.fullName)
             .then((textImage) => this.titleImage = textImage)
         menuCfg.itemsLabel.forEach((itemCfg) => {
             const item = this.addChild(new MenuLabelItem(this, itemCfg, menuCfg.autoCenter))
