@@ -128,18 +128,11 @@ export class ResourceManager {
         }
     }
 
-    static getMeshTexture(textureFilename: string, meshPath: string, entityPath: string): Texture {
+    static getMeshTexture(textureFilename: string, meshPath: string): Texture {
         const lTextureFilename = textureFilename?.toLowerCase()
         const lMeshFilepath = meshPath?.toLowerCase() + lTextureFilename
         const imgData = this.resourceByName.getOrUpdate(lMeshFilepath, () => {
-            const lEntityFilepath = entityPath ? entityPath.toLowerCase() + lTextureFilename : null
-            if (entityPath) {
-                return this.resourceByName.getOrUpdate(lEntityFilepath, () => {
-                    return this.getTextureImageDataFromSharedPaths(lTextureFilename, textureFilename, lMeshFilepath, lEntityFilepath)
-                })
-            } else {
-                return this.getTextureImageDataFromSharedPaths(lTextureFilename, textureFilename, lMeshFilepath, lEntityFilepath)
-            }
+            return this.getTextureImageDataFromSharedPaths(lTextureFilename, textureFilename, lMeshFilepath)
         })
         if (!imgData) return null
         // without repeat wrapping some entities are not fully textured
@@ -149,12 +142,12 @@ export class ResourceManager {
         return texture
     }
 
-    private static getTextureImageDataFromSharedPaths(lTextureFilename: string, textureFilename: string, lMeshFilepath: string, lEntityFilepath: string): ImageData {
+    private static getTextureImageDataFromSharedPaths(lTextureFilename: string, textureFilename: string, lMeshFilepath: string): ImageData {
         const ugSharedFilename = `vehicles/sharedug/${lTextureFilename}`
         return this.resourceByName.getOrUpdate(ugSharedFilename, () => {
             const worldSharedFilename = `world/shared/${lTextureFilename}`
             return this.resourceByName.getOrUpdate(worldSharedFilename, () => {
-                if (VERBOSE) console.log(`Image data for '${textureFilename}' not found at '${lMeshFilepath}', '${lEntityFilepath}' or '${worldSharedFilename}'`)
+                if (VERBOSE) console.log(`Image data for '${textureFilename}' not found at '${lMeshFilepath}' or '${worldSharedFilename}'`)
                 return null
             })
         })
@@ -177,7 +170,7 @@ export class ResourceManager {
         return texture
     }
 
-    static getLwoModel(lwoFilepath: string, entityPath: string = null): SceneMesh {
+    static getLwoModel(lwoFilepath: string, textureLoader: ResourceManagerTextureLoader = ResourceManagerTextureLoader.instance): SceneMesh {
         if (!lwoFilepath.endsWith('.lwo')) lwoFilepath += '.lwo'
         return this.lwoCache.getOrUpdate(lwoFilepath.toLowerCase(), () => {
             const lwoBuffer = ResourceManager.getResource(lwoFilepath)
@@ -189,13 +182,13 @@ export class ResourceManager {
                         if (VERBOSE) console.warn(`Could not find lwo file neither at ${lwoFilepath} nor at ${sharedLwoFilepath}`)
                         return null
                     }
-                    const textureLoader = new ResourceManagerTextureLoader(getPath(sharedLwoFilepath), entityPath)
+                    textureLoader.setMeshPath(getPath(sharedLwoFilepath))
                     const uvFilepath = sharedLwoFilepath.replace('.lwo', '.uv')
                     const uvData = ResourceManager.getResource(uvFilepath) as UVData[]
                     return new LWOBParser(sharedLwoFilepath, sharedLwoBuffer, textureLoader, uvData).parse()
                 })
             }
-            const textureLoader = new ResourceManagerTextureLoader(getPath(lwoFilepath), entityPath)
+            textureLoader.setMeshPath(getPath(lwoFilepath))
             const uvFilepath = lwoFilepath.replace('.lwo', '.uv')
             const uvData = ResourceManager.getResource(uvFilepath) as UVData[]
             return new LWOBParser(lwoFilepath, lwoBuffer, textureLoader, uvData).parse()
@@ -223,6 +216,13 @@ export class ResourceManager {
 }
 
 class ResourceManagerTextureLoader extends LWOBTextureLoader {
+    static readonly instance: ResourceManagerTextureLoader = new ResourceManagerTextureLoader()
+
+    meshPath: string = ''
+
+    setMeshPath(meshPath: string) {
+        this.meshPath = meshPath
+    }
 
     load(textureFilename: string, onLoad: (textures: Texture[]) => any): void {
         return onLoad(this.loadFromResourceManager(textureFilename))
@@ -236,8 +236,8 @@ class ResourceManagerTextureLoader extends LWOBTextureLoader {
             const match = sequenceBaseFilepath.match(/(.+\D)0+(\d+)\..+/i)
             return ResourceManager.getTexturesBySequenceName(this.meshPath + match[1])
         } else {
-            const texture = ResourceManager.getMeshTexture(textureFilename, this.meshPath, this.entityPath)
-            if (!texture && VERBOSE) console.log(`Could not get mesh texture "${textureFilename}" from mesh path '${this.meshPath}' or entity path '${this.entityPath}'`)
+            const texture = ResourceManager.getMeshTexture(textureFilename, this.meshPath)
+            if (!texture && VERBOSE) console.log(`Could not get mesh texture "${textureFilename}" from mesh path '${this.meshPath}'`)
             return texture ? [texture] : []
         }
     }

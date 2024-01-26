@@ -499,11 +499,6 @@ export class LWOBParser {
 }
 
 export class LWOBTextureLoader extends Loader {
-
-    constructor(readonly meshPath: string, readonly entityPath: string) {
-        super()
-    }
-
     load(textureFilename: string, onLoad: (textures: Texture[]) => any): void {
     }
 }
