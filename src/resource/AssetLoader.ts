@@ -10,6 +10,8 @@ import { LWOUVParser } from './fileparser/LWOUVParser'
 import { AudioContext } from 'three'
 import { AVIParser } from './fileparser/avi/AVIParser'
 import { VirtualFileSystem } from './fileparser/VirtualFileSystem'
+import { ResourceManager } from './ResourceManager'
+import { SoundManager } from '../audio/SoundManager'
 
 export class AssetLoader {
     static readonly bitmapWorkerPool = new BitmapWorkerPool().startPool(16, null)
@@ -19,6 +21,30 @@ export class AssetLoader {
     constructor(
         readonly vfs: VirtualFileSystem,
     ) {
+    }
+
+    loadRegisteredAssets(onLoad: () => void) {
+        console.log(`Loading ${this.assetRegistry.size} assets...`)
+        const promises: Promise<void>[] = []
+        this.assetRegistry.forEach((asset) => {
+            promises.push(new Promise<void>((resolve) => {
+                setTimeout(() => {
+                    try {
+                        asset.method(asset.assetPath, (assetNames, assetObj) => {
+                            assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj))
+                            if (assetObj) asset.sfxKeys?.forEach((sfxKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sfxKey, () => []).push(assetObj))
+                            onLoad()
+                            resolve()
+                        })
+                    } catch (e) {
+                        if (!asset.optional) console.error(e)
+                        onLoad()
+                        resolve()
+                    }
+                })
+            }))
+        })
+        return Promise.all(promises)
     }
 
     loadWadImageAsset(name: string, callback: (assetNames: string[], obj: ImageData) => any) {

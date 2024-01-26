@@ -152,7 +152,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                 } catch (e) {
                     const mesh = ResourceManager.getLwoModel(upgradeFilename)
                     if (!mesh) {
-                        console.error(`Could not get upgrade mesh for ${upgrade.lNameType}`)
+                        console.error(`Could not get upgrade mesh for "${upgrade.lNameType}"`)
                     } else {
                         mesh.name = upgrade.lNameType
                         upgradeMesh.animationParent.add(mesh)

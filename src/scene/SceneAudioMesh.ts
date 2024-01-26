@@ -10,10 +10,12 @@ export class SceneAudioMesh extends SceneMesh {
 
     constructor(audioListener: AudioListener) {
         super()
-        this.audioNode = new PositionalAudio(audioListener)
-        this.audioNode.setRefDistance(TILESIZE * 5)
-        this.audioNode.setRolloffFactor(10)
-        this.add(this.audioNode)
+        if (audioListener) {
+            this.audioNode = new PositionalAudio(audioListener)
+            this.audioNode.setRefDistance(TILESIZE * 5)
+            this.audioNode.setRolloffFactor(10)
+            this.add(this.audioNode)
+        }
     }
 
     update(elapsedMs: number) {
@@ -23,13 +25,15 @@ export class SceneAudioMesh extends SceneMesh {
         const sfxName = this.userData.sfxName
         if (this.lastSfxName === sfxName || !sfxName) return
         this.lastSfxName = sfxName
-        this.audioNode.setVolume(sfxVolume)
-        this.audioNode.onEnded = () => {
-            SoundManager.stopAudio(this.audioNode)
-            this.lastSfxName = null
+        if (this.audioNode) {
+            this.audioNode.setVolume(sfxVolume)
+            this.audioNode.onEnded = () => {
+                SoundManager.stopAudio(this.audioNode)
+                this.lastSfxName = null
+            }
         }
         const audioBuffer = SoundManager.getSoundBuffer(sfxName)
-        if (audioBuffer) {
+        if (audioBuffer && this.audioNode) {
             this.audioNode.setBuffer(audioBuffer)
             this.audioNode.play()
             SoundManager.playingAudio.add(this.audioNode)

@@ -16,7 +16,6 @@ import { RewardScreen } from './screen/RewardScreen'
 import { GameState } from './game/model/GameState'
 import { ObjectListLoader } from './game/ObjectListLoader'
 import { GameResult } from './game/model/GameResult'
-import { SoundManager } from './audio/SoundManager'
 import { GameConfig } from './cfg/GameConfig'
 import { BitmapFontWorkerPool } from './worker/BitmapFontWorkerPool'
 
@@ -68,26 +67,7 @@ export async function start() {
     const cursorImageName = GameConfig.instance.pointers.get(Cursor.STANDARD)
     ResourceManager.loadCursor(cursorImageName, Cursor.STANDARD).then(() => EventBus.publishEvent(new ChangeCursor(Cursor.STANDARD)))
     console.log('Initial loading done.')
-    const promises: Promise<void>[] = []
-    assetLoader.assetRegistry.forEach((asset) => {
-        promises.push(new Promise<void>((resolve) => {
-            setTimeout(() => {
-                try {
-                    asset.method(asset.assetPath, (assetNames, assetObj) => {
-                        assetNames.forEach((assetName) => ResourceManager.resourceByName.set(assetName.toLowerCase(), assetObj))
-                        if (assetObj) asset.sfxKeys?.forEach((sfxKey) => SoundManager.sfxBuffersByKey.getOrUpdate(sfxKey, () => []).push(assetObj))
-                        screenMaster.loadingLayer.increaseLoadingState()
-                        resolve()
-                    })
-                } catch (e) {
-                    if (!asset.optional) console.error(e)
-                    screenMaster.loadingLayer.increaseLoadingState()
-                    resolve()
-                }
-            })
-        }))
-    })
-    await Promise.all(promises)
+    await assetLoader.loadRegisteredAssets(() => screenMaster.loadingLayer.increaseLoadingState())
     AssetLoader.bitmapWorkerPool.terminatePool()
     await Promise.all([
         ResourceManager.loadAllCursor(),

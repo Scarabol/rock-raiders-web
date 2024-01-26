@@ -45,7 +45,11 @@ export class AnimationGroup extends Group implements Updatable {
                     mesh = new SceneMesh()
                 }
             } else {
-                mesh = this.resolveMesh(obj.lowerName) || new SceneMesh()
+                mesh = this.resolveMesh(obj.lowerName)
+                if (!mesh) {
+                    console.warn(`Could not find mesh ${obj.lowerName}`)
+                    mesh = new SceneMesh()
+                }
             }
             mesh.name = obj.lowerName
             mesh.castShadow = obj.castShadow

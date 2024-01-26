@@ -134,7 +134,10 @@ export class ResourceManager {
         const imgData = this.resourceByName.getOrUpdate(lMeshFilepath, () => {
             return this.getTextureImageDataFromSharedPaths(lTextureFilename, textureFilename, lMeshFilepath)
         })
-        if (!imgData) return null
+        if (!imgData) {
+            console.warn(`Could not find texture ${textureFilename}`)
+            return null
+        }
         // without repeat wrapping some entities are not fully textured
         const texture = new Texture(imgData, Texture.DEFAULT_MAPPING, RepeatWrapping, RepeatWrapping)
         texture.needsUpdate = true // without everything is just dark
@@ -147,7 +150,7 @@ export class ResourceManager {
         return this.resourceByName.getOrUpdate(ugSharedFilename, () => {
             const worldSharedFilename = `world/shared/${lTextureFilename}`
             return this.resourceByName.getOrUpdate(worldSharedFilename, () => {
-                if (VERBOSE) console.log(`Image data for '${textureFilename}' not found at '${lMeshFilepath}' or '${worldSharedFilename}'`)
+                console.log(`Image data for '${textureFilename}' not found at '${lMeshFilepath}' or '${worldSharedFilename}'`)
                 return null
             })
         })
@@ -159,7 +162,7 @@ export class ResourceManager {
         }
         const imgData = this.resourceByName.get(textureFilepath.toLowerCase())
         if (!imgData) {
-            if (VERBOSE) console.warn(`Could not find texture '${textureFilepath}'`)
+            console.warn(`Could not find texture '${textureFilepath}'`)
             return null
         }
         // without repeat wrapping some entities are not fully textured
