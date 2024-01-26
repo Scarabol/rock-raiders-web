@@ -218,17 +218,15 @@ export class AssetRegistry extends Map<string, WadAsset> {
 
     addLWSFile(lwsFilepath: string) {
         this.inProgress.push(new Promise((resolve) => {
-            setTimeout(() => {
-                try {
-                    const content = this.assetLoader.vfs.getFile(lwsFilepath).toText()
-                    ResourceManager.resourceByName.set(lwsFilepath.toLowerCase(), content)
-                    const lwoFiles: string[] = this.extractLwoFiles(getPath(lwsFilepath), content)
-                    lwoFiles.forEach((lwoFile) => this.addAsset(this.assetLoader.loadLWOFile, lwoFile))
-                } catch (e) {
-                    // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/...
-                }
-                resolve()
-            })
+            try {
+                const content = this.assetLoader.vfs.getFile(lwsFilepath).toText()
+                ResourceManager.resourceByName.set(lwsFilepath.toLowerCase(), content)
+                const lwoFiles: string[] = this.extractLwoFiles(getPath(lwsFilepath), content)
+                lwoFiles.forEach((lwoFile) => this.addAsset(this.assetLoader.loadLWOFile, lwoFile))
+            } catch (e) {
+                // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/...
+            }
+            resolve()
         }))
     }
 
