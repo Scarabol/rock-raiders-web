@@ -6,6 +6,7 @@ import { LWOBParser, LWOBTextureLoader } from './fileparser/LWOBParser'
 import { ResourceCache } from './ResourceCache'
 import { LWSCData, LWSCParser } from './fileparser/LWSCParser'
 import { AnimEntityData, AnimEntityParser } from './AnimEntityParser'
+import { UVData } from './fileparser/LWOUVParser'
 
 export class ResourceManager extends ResourceCache {
     static lwoCache: Map<string, SceneMesh> = new Map()
@@ -91,11 +92,15 @@ export class ResourceManager extends ResourceCache {
                         return null
                     }
                     const textureLoader = new ResourceManagerTextureLoader(getPath(sharedLwoFilepath), entityPath)
-                    return new LWOBParser(sharedLwoFilepath, sharedLwoBuffer, textureLoader).parse()
+                    const uvFilepath = sharedLwoFilepath.replace('.lwo', '.uv')
+                    const uvData = ResourceManager.getResource(uvFilepath) as UVData[]
+                    return new LWOBParser(sharedLwoFilepath, sharedLwoBuffer, textureLoader, uvData).parse()
                 })
             }
             const textureLoader = new ResourceManagerTextureLoader(getPath(lwoFilepath), entityPath)
-            return new LWOBParser(lwoFilepath, lwoBuffer, textureLoader).parse()
+            const uvFilepath = lwoFilepath.replace('.lwo', '.uv')
+            const uvData = ResourceManager.getResource(uvFilepath) as UVData[]
+            return new LWOBParser(lwoFilepath, lwoBuffer, textureLoader, uvData).parse()
         })?.clone()
     }
 

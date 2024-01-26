@@ -11,7 +11,6 @@ import { getFilename } from '../../core/Util'
 import { VERBOSE } from '../../params'
 import { SceneMesh } from '../../scene/SceneMesh'
 import { SequenceTextureMaterial } from '../../scene/SequenceTextureMaterial'
-import { ResourceManager } from '../ResourceManager'
 import { UVData } from './LWOUVParser'
 
 //*************************//
@@ -69,6 +68,7 @@ export class LWOBParser {
         readonly lwoFilepath: string,
         buffer: ArrayBuffer,
         readonly textureLoader: LWOBTextureLoader,
+        readonly uvData: UVData[],
         readonly verbose: boolean = false,
     ) {
         this.lwoReader = new LWOBFileReader(buffer)
@@ -76,19 +76,19 @@ export class LWOBParser {
 
     parse(): SceneMesh {
         if (this.lwoReader.readIDTag() !== 'FORM') {
-            console.error('LWOLoader.parse: Cannot find header.')
+            console.error('Cannot find header.')
             return null
         }
 
         const fileSize = this.lwoReader.readUint32()
         const readerByteLength = this.lwoReader.byteLength
         if (fileSize + 8 !== readerByteLength) {
-            console.warn(`LWOLoader.parse: Discrepancy between size in header (${fileSize + 8} bytes) and actual size (${readerByteLength} bytes).`)
+            console.warn(`Discrepancy between size in header (${fileSize + 8} bytes) and actual size (${readerByteLength} bytes).`)
         }
 
         const magic = this.lwoReader.readString(4)
         if (magic !== 'LWOB') {
-            console.error(`LWOLoader.parse: Invalid magic ID (${magic}) in LWO header.`)
+            console.error(`Invalid magic ID (${magic}) in LWO header.`)
             return null
         }
 
@@ -128,7 +128,7 @@ export class LWOBParser {
 
     parsePoints(chunkSize: number): void {
         if (chunkSize % 12 !== 0) {
-            console.error(`LWOLoader.parse: F12 does not evenly divide into chunk size (${chunkSize}). Possible corruption.`)
+            console.error(`PNTS does not evenly divide into chunk size (${chunkSize}). Possible corruption.`)
             return
         }
         const vertices = []
@@ -168,6 +168,7 @@ export class LWOBParser {
                     indices[currentIndex++] = faceIndices[2]
                     break
                 case 4: // split quad face into two triangles
+                    // XXX Splitting the face here, breaks the UV mapping for previous triangles, see mphead.lwo
                     indices[currentIndex++] = faceIndices[0]
                     indices[currentIndex++] = faceIndices[1]
                     indices[currentIndex++] = faceIndices[2]
@@ -204,10 +205,11 @@ export class LWOBParser {
             if (this.materials[i].name === materialName) {
                 materialIndex = i
                 material = this.materials[i]
+                break
             }
         }
         if (!material) {
-            console.error(`LWOLoader.parse: Surface "${materialName}" in SURF chunk does not exist in SRFS chunk`)
+            console.error(`Surface "${materialName}" from SURF chunk does not exist in SRFS chunk`)
             return
         }
 
@@ -339,9 +341,7 @@ export class LWOBParser {
                 case 'TFLG':
                     textureFlags = this.lwoReader.readUint16()
                     if (this.verbose) console.log(`Flags (TFLG): ${textureFlags.toString(2)}`)
-                    if (this.verbose && textureFlags & XAXIS_BIT) console.warn('Texture flag is set but unhandled: X Axis')
-                    if (this.verbose && textureFlags & YAXIS_BIT) console.warn('Texture flag is set but unhandled: Y Axis')
-                    if (this.verbose && textureFlags & ZAXIS_BIT) console.warn('Texture flag is set but unhandled: Z Axis')
+                    // axis bits (XAXIS_BIT, YAXIS_BIT, ZAXIS_BIT) are handled below in planar mapping
                     if (this.verbose && textureFlags & WORLDCOORDS_BIT) console.warn('Texture flag is set but unhandled: World Coords')
                     if (this.verbose && textureFlags & NEGATIVEIMAGE_BIT) console.warn('Texture flag is set but unhandled: Negative Image')
                     if (this.verbose && textureFlags & PIXELBLENDING_BIT) console.warn('Texture flag is set but unhandled: Pixel Blending')
@@ -353,7 +353,7 @@ export class LWOBParser {
                     break
                 case 'TCTR':
                     textureCenter.set(this.lwoReader.readFloat32(), this.lwoReader.readFloat32(), this.lwoReader.readFloat32())
-                    if (this.verbose) console.warn(`Unhandled texture center (TCTR): ${textureCenter.toArray().join(' ')}`)
+                    // texture center is handled below in planar mapping
                     break
                 case 'TCLR':
                     textureColorArray = [
@@ -376,7 +376,7 @@ export class LWOBParser {
                     if (lTextureFilename.endsWith(' (sequence)') && (sequenceOffset || sequenceFlags || sequenceLoopLength)) {
                         console.warn('Sequence options not yet implemented', lTextureFilename, sequenceOffset, sequenceFlags, sequenceLoopLength) // XXX Implement sequence options
                     }
-                    if (lTextureFilename.trim().equalsIgnoreCase('(none)')) {
+                    if (lTextureFilename.trim().toLowerCase() === '(none)') {
                         material.map = null
                         continue
                     }
@@ -432,11 +432,9 @@ export class LWOBParser {
             }
         }
 
-        const uvFilepath = this.lwoFilepath.replace('.lwo', '.uv')
-        const uvData = ResourceManager.getResource(uvFilepath) as UVData[]
-        if (uvData) {
-            uvData.forEach((uv) => {
-                if (!materialName.equalsIgnoreCase(uv.name)) return
+        if (this.uvData) {
+            this.uvData.forEach((uv) => {
+                if (materialName.toLowerCase() !== uv.name.toLowerCase()) return
                 this.textureLoader.load(uv.mapName.toLowerCase(), (t) => material.setTextures(t))
                 this.uvs = new Float32Array(uv.uvs)
             })
@@ -444,7 +442,7 @@ export class LWOBParser {
             this.planarMapUVS(materialIndex, textureSize, textureCenter, textureFlags)
         }
 
-        if (this.verbose) console.log(`Done parsing surface: "${materialName}"`)
+        if (this.verbose) console.log(`Done parsing surface: "${materialName}"`, material)
     }
 
     parseWrappingMode(wrap: number) {
@@ -466,7 +464,7 @@ export class LWOBParser {
         // Check to ensure that one of the flags is set, if not throw an error.
         const mask = XAXIS_BIT | YAXIS_BIT | ZAXIS_BIT
         if (!(flags & mask)) {
-            // console.warn("LWOLoader.planarMapUVS: No axis bit is set!"); // XXX what is this about
+            if (this.verbose) console.warn('No texture axis bit is set!')
             return
         }
         for (let group of this.geometry.groups) {
