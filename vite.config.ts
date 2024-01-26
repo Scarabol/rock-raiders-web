@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite'
-import { threeMinifier } from '@yushijinhun/three-minifier-rollup'
 
 // noinspection JSUnusedGlobalSymbols
 export default defineConfig({
@@ -15,8 +14,13 @@ export default defineConfig({
     },
     build: {
         sourcemap: true,
+        chunkSizeWarningLimit: 520,
+        rollupOptions: {
+            output: {
+                manualChunks: {
+                    three: ['three']
+                }
+            }
+        }
     },
-    plugins: [
-        {...threeMinifier(), enforce: 'pre'},
-    ],
 })
