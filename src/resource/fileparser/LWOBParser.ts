@@ -257,6 +257,7 @@ export class LWOBParser {
                     if (flags & ADDITIVE_BIT) {
                         material.blending = AdditiveBlending
                         material.depthWrite = false // otherwise transparent parts "carve out" objects behind
+                        material.transparent = true // otherwise texture is shown behind opaque siblings
                     }
                     if (this.verbose && flags & SHADOWALPHA_BIT) console.warn('Flag is set but unhandled: shadowAlpha')
                     break
