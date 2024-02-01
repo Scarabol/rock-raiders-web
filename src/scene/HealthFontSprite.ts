@@ -17,7 +17,7 @@ export class HealthFontSprite extends Sprite {
     }
 
     setNumber(healthNumber: number) {
-        healthNumber = Math.max(-100, Math.min(healthNumber, 100))
+        healthNumber = Math.round(Math.max(-100, Math.min(healthNumber, 100)))
         this.state = 0
         this.textureContext.clearRect(0, 0, HealthFontSprite.textureSize, HealthFontSprite.textureSize)
         const numStr = healthNumber.toString()
