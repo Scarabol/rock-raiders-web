@@ -20,7 +20,6 @@ export abstract class JobEvent extends WorldEvent {
 
     protected constructor(eventKey: EventKey, job: Job) {
         super(eventKey)
-        this.guiForward = false
         this.job = job
     }
 }

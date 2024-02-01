@@ -1,6 +1,6 @@
 import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, SelectedRaiderPickTool, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
+import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, PickTool, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
 import { CameraViewMode, ChangeCameraEvent, DeselectAll, SelectionChanged, UpdatePriorities } from '../event/LocalEvents'
 import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
@@ -31,7 +31,7 @@ export class GuiManager {
         const sceneMgr = worldMgr.sceneMgr
         const cameraControls = sceneMgr.controls
         const entityMgr = worldMgr.entityMgr
-        EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: SelectedRaiderPickTool) => {
+        EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: PickTool) => {
             entityMgr.selection.raiders.forEach((r) => {
                 if (r.hasTool(event.tool)) return
                 const pathToToolstation = r.findShortestPath(r.worldMgr.entityMgr.getGetToolTargets())

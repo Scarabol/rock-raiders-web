@@ -94,7 +94,7 @@ export class SelectBuildMode extends GuiCommand {
     }
 }
 
-export class SelectedRaiderPickTool extends GuiCommand {
+export class PickTool extends GuiCommand {
     tool: RaiderTool
 
     constructor(tool: RaiderTool) {

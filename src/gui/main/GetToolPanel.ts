@@ -1,5 +1,5 @@
 import { EventKey } from '../../event/EventKeyEnum'
-import { SelectedRaiderPickTool } from '../../event/GuiCommand'
+import { PickTool } from '../../event/GuiCommand'
 import { BuildingsChangedEvent, SelectionChanged } from '../../event/LocalEvents'
 import { EntityType } from '../../game/model/EntityType'
 import { RaiderTool } from '../../game/model/raider/RaiderTool'
@@ -36,7 +36,7 @@ export class GetToolPanel extends IconSubPanel {
     addGetToolItem(itemKey: string, tool: RaiderTool): IconPanelButton {
         const menuItem = super.addMenuItem(GameConfig.instance.interfaceImages, itemKey)
         menuItem.isDisabled = () => !this.hasToolstation || !!this.everyHasTool.get(tool)
-        menuItem.onClick = () => this.publishEvent(new SelectedRaiderPickTool(tool))
+        menuItem.onClick = () => this.publishEvent(new PickTool(tool))
         return menuItem
     }
 

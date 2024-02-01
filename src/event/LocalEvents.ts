@@ -242,7 +242,6 @@ export class ShowMissionBriefingEvent extends LocalEvent {
 export class ShowGameResultEvent extends LocalEvent {
     constructor(readonly result?: GameResult) {
         super(EventKey.SHOW_GAME_RESULT)
-        this.guiForward = false
     }
 }
 
