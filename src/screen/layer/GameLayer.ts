@@ -1,5 +1,4 @@
 import { Vector2 } from 'three'
-import { EventBus } from '../../event/EventBus'
 import { KEY_EVENT, MOUSE_BUTTON, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GameKeyboardEvent } from '../../event/GameKeyboardEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
@@ -25,6 +24,7 @@ import { RaiderInfoComponent } from '../../game/component/RaiderInfoComponent'
 import { GameSelection } from '../../game/model/GameSelection'
 import { Rect } from '../../core/Rect'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
 
 export class GameLayer extends ScreenLayer {
     worldMgr: WorldManager
@@ -41,9 +41,9 @@ export class GameLayer extends ScreenLayer {
 
     constructor() {
         super()
-        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
+        EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
-            EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
+            EventBroker.publish(new ChangeCursor(this.determineCursor(cursorTarget)))
         })
         this.addEventListener('pointerleave', (): boolean => {
             // signal to screen master for camera controls listening on canvas for events
@@ -78,7 +78,7 @@ export class GameLayer extends ScreenLayer {
     reset() {
         super.reset()
         this.pointerDown = null
-        EventBus.publishEvent(new SelectionFrameChangeEvent(null))
+        EventBroker.publish(new SelectionFrameChangeEvent(null))
     }
 
     show() {
@@ -95,22 +95,22 @@ export class GameLayer extends ScreenLayer {
         if (this.pointerDown && event.pointerType === 'mouse') {
             const w = event.canvasX - this.pointerDown.x
             const h = event.canvasY - this.pointerDown.y
-            EventBus.publishEvent(new SelectionFrameChangeEvent(new Rect(this.pointerDown.x, this.pointerDown.y, w, h)))
+            EventBroker.publish(new SelectionFrameChangeEvent(new Rect(this.pointerDown.x, this.pointerDown.y, w, h)))
         }
         this.cursorRelativePos.x = (event.canvasX / this.canvas.width) * 2 - 1
         this.cursorRelativePos.y = -(event.canvasY / this.canvas.height) * 2 + 1
         const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
-        EventBus.publishEvent(new ChangeCursor(this.determineCursor(cursorTarget)))
+        EventBroker.publish(new ChangeCursor(this.determineCursor(cursorTarget)))
         if (cursorTarget.intersectionPoint) this.sceneMgr.setCursorFloorPosition(cursorTarget.intersectionPoint)
         if (cursorTarget.surface) {
             const site = cursorTarget.surface.site
             if (site?.buildingType) {
                 const objectKey = EntityType[site.buildingType.entityType].toString().replace('_', '').toLowerCase()
                 const tooltipText = GameConfig.instance.objectNamesCfg.get(objectKey)
-                if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, null, site))
+                if (tooltipText) EventBroker.publish(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, null, site))
             } else {
                 const tooltip = GameConfig.instance.surfaceTypeDescriptions.get(cursorTarget.surface.surfaceType.name.toLowerCase())
-                if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
+                if (tooltip) EventBroker.publish(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
             }
         }
         if (cursorTarget.entityType) {
@@ -120,7 +120,7 @@ export class GameLayer extends ScreenLayer {
                 const upgradeName = GameConfig.instance.upgradeNames[cursorTarget.building.level - 1]
                 if (upgradeName) tooltipText += ` (${upgradeName})`
             }
-            if (tooltipText) EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, cursorTarget.raider))
+            if (tooltipText) EventBroker.publish(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, cursorTarget.raider))
         }
         this.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
         const doubleSelection = this.entityMgr.selection.doubleSelect
@@ -158,19 +158,19 @@ export class GameLayer extends ScreenLayer {
                                     if (!closestTrainingSite) return false
                                     r.setJob(new TrainRaiderJob(r.worldMgr.entityMgr, requiredTraining, closestTrainingSite.target.building), manVehicleJob)
                                 }
-                                EventBus.publishEvent(new DeselectAll())
+                                EventBroker.publish(new DeselectAll())
                                 return true
                             })
-                            EventBus.publishEvent(new JobCreateEvent(manVehicleJob))
+                            EventBroker.publish(new JobCreateEvent(manVehicleJob))
                         } else {
                             const selection = new GameSelection()
                             selection.vehicles.push(cursorTarget.vehicle)
                             this.worldMgr.entityMgr.selection.set(selection)
-                            EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
+                            EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
                         }
                     } else if (cursorTarget.material) {
                         this.entityMgr.selection.assignCarryJob(cursorTarget.material)
-                        if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
+                        if (!this.entityMgr.selection.isEmpty()) EventBroker.publish(new DeselectAll())
                     } else if (cursorTarget.surface) {
                         if (this.entityMgr.selection.canDrill(cursorTarget.surface)) {
                             const drillJob = cursorTarget.surface.setupDrillJob()
@@ -186,13 +186,13 @@ export class GameLayer extends ScreenLayer {
                         } else {
                             console.warn('Unexpected surface target given', cursorTarget)
                         }
-                        if (!this.entityMgr.selection.isEmpty()) EventBus.publishEvent(new DeselectAll())
+                        if (!this.entityMgr.selection.isEmpty()) EventBroker.publish(new DeselectAll())
                     } else if (cursorTarget.raider || cursorTarget.building) {
                         const selection = new GameSelection()
                         if (cursorTarget.raider) selection.raiders.push(cursorTarget.raider)
                         selection.building = cursorTarget.building
                         this.worldMgr.entityMgr.selection.set(selection)
-                        EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
+                        EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
                     } else {
                         console.warn('Unexpected cursor target given', cursorTarget)
                     }
@@ -201,7 +201,7 @@ export class GameLayer extends ScreenLayer {
                     const y = -(this.pointerDown.y + event.canvasY) / this.canvas.height + 1
                     const selection = new SelectionRaycaster(this.worldMgr).getSelectionByRay(new Vector2(x, y))
                     this.worldMgr.entityMgr.selection.set(selection)
-                    EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
+                    EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
                 }
             } else if (event.pointerType === 'mouse') {
                 const r1x = (this.pointerDown.x / this.canvas.width) * 2 - 1
@@ -210,10 +210,10 @@ export class GameLayer extends ScreenLayer {
                 const r2y = -(event.canvasY / this.canvas.height) * 2 + 1
                 const selection = this.worldMgr.sceneMgr.getEntitiesInFrustum(r1x, r1y, r2x, r2y)
                 this.worldMgr.entityMgr.selection.set(selection)
-                EventBus.publishEvent(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
+                EventBroker.publish(this.worldMgr.entityMgr.selection.isEmpty() ? new DeselectAll() : new SelectionChanged(this.worldMgr.entityMgr))
             }
             this.pointerDown = null
-            EventBus.publishEvent(new SelectionFrameChangeEvent(null))
+            EventBroker.publish(new SelectionFrameChangeEvent(null))
         }
     }
 
@@ -229,14 +229,14 @@ export class GameLayer extends ScreenLayer {
         } else if (DEV_MODE && this.entityMgr.selection.surface) {
             if (event.key === 'c') {
                 this.entityMgr.selection.surface.collapse()
-                EventBus.publishEvent(new DeselectAll())
+                EventBroker.publish(new DeselectAll())
                 return true
             } else if (event.key === 'f') {
                 const surface = this.entityMgr.selection.surface
                 if (!surface.surfaceType.floor) {
                     this.sceneMgr.terrain.createFallIn(surface, this.sceneMgr.terrain.findFallInTarget(surface))
                 }
-                EventBus.publishEvent(new DeselectAll())
+                EventBroker.publish(new DeselectAll())
                 return true
             }
         }

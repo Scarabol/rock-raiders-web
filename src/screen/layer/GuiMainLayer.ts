@@ -9,15 +9,13 @@ import { InformationPanel } from '../../gui/infodock/InformationPanel'
 import { PriorityListPanel } from '../../gui/toppanel/PriorityListPanel'
 import { InfoDockPanel } from '../../gui/infodock/InfoDockPanel'
 import { BaseElement } from '../../gui/base/BaseElement'
-import { ChangeCursor, GuiCommand, PlaySoundEvent } from '../../event/GuiCommand'
+import { ChangeCursor, PlaySoundEvent } from '../../event/GuiCommand'
 import { EventKey } from '../../event/EventKeyEnum'
-import { GameEvent } from '../../event/GameEvent'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { TOOLTIP_FONT_NAME, USE_KEYBOARD_SHORTCUTS } from '../../params'
 import { Cursor } from '../../resource/Cursor'
 import { KEY_EVENT, POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/GuiEvent'
-import { EventBus } from '../../event/EventBus'
 import { CameraControlPanel } from '../../gui/cameracontrol/CameraControlPanel'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
 import { ShowOptionsEvent } from '../../event/LocalEvents'
@@ -28,6 +26,8 @@ import { Sample } from '../../audio/Sample'
 import { GameConfig } from '../../cfg/GameConfig'
 import { DependencySpriteWorkerPool } from '../../worker/DependencySpriteWorkerPool'
 import { BitmapFontData } from '../../core/BitmapFont'
+import { EventBroker } from '../../event/EventBroker'
+import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 
 export class GuiMainLayer extends ScaledLayer {
     rootElement: BaseElement
@@ -63,11 +63,11 @@ export class GuiMainLayer extends ScaledLayer {
         const buttonsCfg = GameConfig.instance.buttons
         this.rootElement = new BaseElement(null)
         this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
-        this.rootElement.publishEvent = (event: GuiCommand) => {
-            EventBus.publishEvent(event)
+        this.rootElement.publishEvent = (event: BaseEvent) => {
+            EventBroker.publish(event)
         }
-        this.rootElement.registerEventListener = <T extends GameEvent>(eventKey: EventKey, callback: (event: T) => void) => {
-            EventBus.registerEventListener(eventKey, callback)
+        this.rootElement.registerEventListener = <Type extends keyof EventTypeMap>(eventType: Type, callback: (event: EventTypeMap[Type]) => void) => {
+            EventBroker.subscribe(eventType, callback)
         }
         // created in reverse order compared to cfg, earlier in cfg means higher z-value // TODO add some z layering at least to panels
         this.panelEncyclopedia = this.addPanel(new Panel(this.rootElement, panelsCfg.panelEncyclopedia))
@@ -83,13 +83,13 @@ export class GuiMainLayer extends ScaledLayer {
         this.panelRadar = this.addPanel(new RadarPanel(this.rootElement, panelsCfg.panelRadar, panelsCfg.panelRadarFill, panelsCfg.panelRadarOverlay, buttonsCfg.panelRadar))
         // link panels
         this.panelTopPanel.btnCallToArms.onClick = () => {
-            EventBus.publishEvent(new ToggleAlarmEvent(this.panelTopPanel.btnCallToArms.toggleState))
+            EventBroker.publish(new ToggleAlarmEvent(this.panelTopPanel.btnCallToArms.toggleState))
         }
-        EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
+        EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
             this.panelTopPanel.btnCallToArms.setToggleState(event.alarmState)
         })
         this.panelTopPanel.btnOptions.onClick = () => {
-            EventBus.publishEvent(new ShowOptionsEvent())
+            EventBroker.publish(new ShowOptionsEvent())
         }
         this.panelTopPanel.btnPriorities.onClick = () => {
             if (this.panelTopPanel.btnPriorities.toggleState) {
@@ -146,7 +146,7 @@ export class GuiMainLayer extends ScaledLayer {
     handlePointerEvent(event: GamePointerEvent): boolean {
         const hit = this.animationFrame.isOpaque(event.canvasX, event.canvasY)
         if (hit) {
-            EventBus.publishEvent(new ChangeCursor(Cursor.STANDARD)) // TODO don't spam so many events?!
+            EventBroker.publish(new ChangeCursor(Cursor.STANDARD)) // TODO don't spam so many events?!
             if (event.eventEnum === POINTER_EVENT.MOVE) {
                 this.rootElement.checkHover(new GuiHoverEvent(event.canvasX, event.canvasY))
             } else if (event.eventEnum === POINTER_EVENT.DOWN) {

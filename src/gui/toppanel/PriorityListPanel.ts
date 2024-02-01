@@ -3,12 +3,12 @@ import { PanelCfg } from '../../cfg/PanelCfg'
 import { PrioritiesImagePositionsCfg, PriorityButtonsCfg, PriorityPositionsEntry } from '../../cfg/PriorityButtonsCfg'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangePriorityList } from '../../event/GuiCommand'
-import { SetupPriorityList } from '../../event/LocalEvents'
 import { PriorityIdentifier } from '../../game/model/job/PriorityIdentifier'
 import { BaseElement } from '../base/BaseElement'
 import { Button } from '../base/Button'
 import { Panel } from '../base/Panel'
 import { PriorityList } from './PriorityList'
+import { SetupPriorityList } from '../../event/WorldEvents'
 
 export class PriorityListPanel extends Panel {
     prioPositions: PriorityPositionsEntry[] = []

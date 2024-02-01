@@ -1,7 +1,5 @@
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { UpdatePriorities } from '../event/LocalEvents'
-import { JobCreateEvent } from '../event/WorldEvents'
+import { JobCreateEvent, UpdatePriorities } from '../event/WorldEvents'
 import { CHECK_CLEAR_RUBBLE_INTERVAL, ITEM_ACTION_RANGE_SQ, JOB_SCHEDULE_INTERVAL } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
 import { Job } from './model/job/Job'
@@ -17,6 +15,7 @@ import { WorldManager } from './WorldManager'
 import { PathTarget } from './model/PathTarget'
 import { EntityType } from './model/EntityType'
 import { EatBarracksJob } from './model/job/raider/EatBarracksJob'
+import { EventBroker } from '../event/EventBroker'
 
 export class Supervisor {
     jobs: Job[] = []
@@ -26,10 +25,10 @@ export class Supervisor {
     checkClearRubbleTimer: number = 0
 
     constructor(readonly worldMgr: WorldManager) {
-        EventBus.registerEventListener(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
+        EventBroker.subscribe(EventKey.JOB_CREATE, (event: JobCreateEvent) => {
             this.jobs.push(event.job)
         })
-        EventBus.registerEventListener(EventKey.UPDATE_PRIORITIES, (event: UpdatePriorities) => {
+        EventBroker.subscribe(EventKey.UPDATE_PRIORITIES, (event: UpdatePriorities) => {
             event.priorityList.forEach((p) => {
                 if (!p.enabled) {
                     this.worldMgr.entityMgr.raiders.forEach((r) => {

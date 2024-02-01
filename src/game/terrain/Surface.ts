@@ -1,7 +1,6 @@
 import { PositionalAudio, Raycaster, Vector2, Vector3 } from 'three'
 import { Sample } from '../../audio/Sample'
 import { SoundManager } from '../../audio/SoundManager'
-import { EventBus } from '../../event/EventBus'
 import { DeselectAll, SelectionChanged, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { CavernDiscovered, JobCreateEvent, OreFoundEvent } from '../../event/WorldEvents'
 import { CrystalFoundEvent } from '../../event/WorldLocationEvent'
@@ -27,6 +26,7 @@ import { degToRad } from 'three/src/math/MathUtils'
 import { PositionComponent } from '../component/PositionComponent'
 import { AnimationGroup } from '../../scene/AnimationGroup'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
 
 export class Surface {
     readonly worldMgr: WorldManager
@@ -93,7 +93,7 @@ export class Surface {
             w.needsMeshUpdate = true
             if (w.isUnstable()) w.collapse()
         })
-        EventBus.publishEvent(new UpdateRadarTerrain(this.terrain))
+        EventBroker.publish(new UpdateRadarTerrain(this.terrain))
         return caveFound
     }
 
@@ -160,10 +160,10 @@ export class Surface {
                 .add(drillPosition)
             if (this.surfaceType === SurfaceType.CRYSTAL_SEAM) {
                 const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, seamDropPosition)
-                EventBus.publishEvent(new CrystalFoundEvent(this.worldMgr.ecs.getComponents(crystal.entity).get(PositionComponent)))
+                EventBroker.publish(new CrystalFoundEvent(this.worldMgr.ecs.getComponents(crystal.entity).get(PositionComponent)))
             } else if (this.surfaceType === SurfaceType.ORE_SEAM) {
                 MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, seamDropPosition)
-                EventBus.publishEvent(new OreFoundEvent())
+                EventBroker.publish(new OreFoundEvent())
             }
         }
         if (this.seamLevel > 0) {
@@ -189,8 +189,8 @@ export class Surface {
         this.containedOres += SURFACE_NUM_CONTAINED_ORE
         this.needsMeshUpdate = true
         const caveFound = this.discover()
-        if (caveFound) EventBus.publishEvent(new CavernDiscovered())
-        if (this.selected) EventBus.publishEvent(new DeselectAll())
+        if (caveFound) EventBroker.publish(new CavernDiscovered())
+        if (this.selected) EventBroker.publish(new DeselectAll())
         // drop contained ores and crystals
         this.dropContainedMaterials(droppedOre, droppedCrystals)
         // check for unsupported neighbors
@@ -217,11 +217,11 @@ export class Surface {
         for (let c = 0; c < droppedOre && this.containedOres > 0; c++) {
             this.containedOres--
             MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.ORE, this.getRandomPosition())
-            EventBus.publishEvent(new OreFoundEvent())
+            EventBroker.publish(new OreFoundEvent())
         }
         for (let c = 0; c < droppedCrystals; c++) {
             const crystal = MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.CRYSTAL, this.getRandomPosition())
-            EventBus.publishEvent(new CrystalFoundEvent(this.worldMgr.ecs.getComponents(crystal.entity).get(PositionComponent)))
+            EventBroker.publish(new CrystalFoundEvent(this.worldMgr.ecs.getComponents(crystal.entity).get(PositionComponent)))
         }
     }
 
@@ -260,7 +260,7 @@ export class Surface {
                 break
         }
         this.dropContainedMaterials(this.containedOres - this.rubblePositions.length, 0)
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
+        if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
     isUnstable(): boolean {
@@ -458,7 +458,7 @@ export class Surface {
         this.cancelReinforceJobs()
         this.terrain.removeFallInOrigin(this)
         this.updateTexture()
-        EventBus.publishEvent(new UpdateRadarSurface(this))
+        EventBroker.publish(new UpdateRadarSurface(this))
     }
 
     getCenterWorld2D(): Vector2 {
@@ -513,10 +513,10 @@ export class Surface {
         this.surfaceType = surfaceType
         this.updateTexture()
         if (oldSurfaceType.connectsPath || this.surfaceType.connectsPath) this.neighbors.forEach((n) => n.updateTexture())
-        EventBus.publishEvent(new UpdateRadarSurface(this))
+        EventBroker.publish(new UpdateRadarSurface(this))
         if (wasPath !== this.isPath()) this.terrain.powerGrid.onPathChange(this)
         this.terrain.pathFinder.updateSurface(this)
-        if (this.selected && !this.surfaceType.selectable) EventBus.publishEvent(new DeselectAll())
+        if (this.selected && !this.surfaceType.selectable) EventBroker.publish(new DeselectAll())
         if (this.surfaceType === SurfaceType.LAVA5) {
             this.site?.cancelSite()
             const materials = [...this.worldMgr.entityMgr.materials] // list will be changed by dispose below
@@ -546,7 +546,7 @@ export class Surface {
         if (!this.isDigable()) return null
         if (this.drillJob) return this.drillJob
         this.drillJob = new DrillJob(this)
-        EventBus.publishEvent(new JobCreateEvent(this.drillJob))
+        EventBroker.publish(new JobCreateEvent(this.drillJob))
         this.updateJobColor()
         return this.drillJob
     }
@@ -554,7 +554,7 @@ export class Surface {
     setupReinforceJob(): void {
         if (!this.isReinforcable() || this.reinforceJob) return
         this.reinforceJob = new ReinforceJob(this)
-        EventBus.publishEvent(new JobCreateEvent(this.reinforceJob))
+        EventBroker.publish(new JobCreateEvent(this.reinforceJob))
         this.updateJobColor()
     }
 
@@ -572,7 +572,7 @@ export class Surface {
         if (this.clearRubbleJob) return this.clearRubbleJob
         this.clearRubbleJob = new ClearRubbleJob(this)
         this.updateJobColor()
-        EventBus.publishEvent(new JobCreateEvent(this.clearRubbleJob))
+        EventBroker.publish(new JobCreateEvent(this.clearRubbleJob))
         return this.clearRubbleJob
     }
 

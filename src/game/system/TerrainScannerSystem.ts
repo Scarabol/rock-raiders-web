@@ -1,9 +1,9 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { ScannerComponent } from '../component/ScannerComponent'
-import { EventBus } from '../../event/EventBus'
 import { UpdateRadarEntityEvent, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { WorldManager } from '../WorldManager'
 import { MapMarkerChange, MapMarkerType } from '../component/MapMarkerComponent'
+import { EventBroker } from '../../event/EventBroker'
 
 export class TerrainScannerSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([ScannerComponent])
@@ -21,9 +21,9 @@ export class TerrainScannerSystem extends AbstractGameSystem {
                 if (scannerComponent.scanDelay > 0) {
                     scannerComponent.scanDelay -= elapsedMs
                     const radius = (1 - (scannerComponent.scanDelay % 1000) / 1000) * (scannerComponent.range - 0.5)
-                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.UPDATE, scannerComponent.origin.position, radius))
+                    EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.UPDATE, scannerComponent.origin.position, radius))
                 } else {
-                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.REMOVE))
+                    EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, entity, MapMarkerChange.REMOVE))
                     scannerComponent.scanDelay = 5000
                     const origin = scannerComponent.origin.surface
                     for (let dx = -scannerComponent.range - 1; dx <= scannerComponent.range; dx++) {
@@ -41,6 +41,6 @@ export class TerrainScannerSystem extends AbstractGameSystem {
                 console.error(e)
             }
         }
-        if (scanned) EventBus.publishEvent(new UpdateRadarTerrain(this.worldMgr.sceneMgr.terrain))
+        if (scanned) EventBroker.publish(new UpdateRadarTerrain(this.worldMgr.sceneMgr.terrain))
     }
 }

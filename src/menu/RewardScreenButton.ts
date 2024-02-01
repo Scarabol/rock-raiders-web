@@ -1,11 +1,11 @@
 import { RewardButtonCfg } from '../cfg/RewardCfg'
 import { SpriteContext, SpriteImage } from '../core/Sprite'
-import { EventBus } from '../event/EventBus'
 import { ChangeTooltip, HideTooltip } from '../event/GuiCommand'
 import { ResourceManager } from '../resource/ResourceManager'
 import { MainMenuBaseItem } from './MainMenuBaseItem'
 import { TOOLTIP_DELAY_TEXT_MENU } from '../params'
 import { GameConfig } from '../cfg/GameConfig'
+import { EventBroker } from '../event/EventBroker'
 
 export class RewardScreenButton extends MainMenuBaseItem {
     imgNormal: SpriteImage
@@ -22,8 +22,8 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.width = this.imgNormal.width
         this.height = this.imgNormal.height
         const tooltipText = GameConfig.instance.getTooltipText(tooltipKey)
-        this.state.onShowTooltip = () => EventBus.publishEvent(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
-        this.state.onHideTooltip = () => EventBus.publishEvent(new HideTooltip(tooltipText, null))
+        this.state.onShowTooltip = () => EventBroker.publish(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
+        this.state.onHideTooltip = () => EventBroker.publish(new HideTooltip(tooltipText, null))
     }
 
     draw(context: SpriteContext) {

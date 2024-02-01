@@ -1,4 +1,3 @@
-import { EventBus } from '../../../event/EventBus'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { WorldManager } from '../../WorldManager'
 import { CarryJob } from '../job/CarryJob'
@@ -14,6 +13,7 @@ import { Vector2, Vector3 } from 'three'
 import { PositionComponent } from '../../component/PositionComponent'
 import { UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
+import { EventBroker } from '../../../event/EventBroker'
 
 export class MaterialEntity {
     entity: GameEntity
@@ -35,7 +35,7 @@ export class MaterialEntity {
     setupCarryJob(): CarryJob {
         if (this.carryJob?.jobState !== JobState.INCOMPLETE) {
             this.carryJob = new CarryJob(this)
-            EventBus.publishEvent(new JobCreateEvent(this.carryJob))
+            EventBroker.publish(new JobCreateEvent(this.carryJob))
         }
         return this.carryJob
     }
@@ -43,7 +43,7 @@ export class MaterialEntity {
     disposeFromWorld() {
         if (this.carryJob) this.carryJob.jobState = JobState.CANCELED
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
-        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.sceneEntity.dispose()
         this.worldMgr.entityMgr.removeEntity(this.entity)

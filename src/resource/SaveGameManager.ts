@@ -1,6 +1,6 @@
 import { DEFAULT_AUTO_GAME_SPEED, DEFAULT_GAME_BRIGHTNESS, DEFAULT_GAME_SPEED_MULTIPLIER, DEFAULT_MUSIC_TOGGLE, DEFAULT_MUSIC_VOLUME, DEFAULT_SFX_TOGGLE, DEFAULT_SFX_VOLUME, DEFAULT_SHOW_HELP_WINDOW, DEFAULT_WALL_DETAILS, NUM_OF_LEVELS_TO_COMPLETE_GAME, SAVE_GAME_SCREENSHOT_HEIGHT, SAVE_GAME_SCREENSHOT_WIDTH, VERBOSE } from '../params'
-import { EventBus } from '../event/EventBus'
 import { ChangePreferences } from '../event/GuiCommand'
+import { EventBroker } from '../event/EventBroker'
 
 export class SaveGamePreferences { // this gets serialized
     gameSpeed: number = DEFAULT_GAME_SPEED_MULTIPLIER
@@ -27,7 +27,7 @@ export class SaveGameManager {
             const preferences = localStorage.getItem('preferences')
             if (preferences) {
                 this.currentPreferences = {...this.currentPreferences, ...JSON.parse(preferences)}
-                EventBus.publishEvent(new ChangePreferences())
+                EventBroker.publish(new ChangePreferences())
                 console.log(`Preferences loaded`, this.currentPreferences)
             }
         } catch (e) {

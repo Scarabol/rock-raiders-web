@@ -1,7 +1,6 @@
 import { Camera, PerspectiveCamera, Scene, Vector2, WebGLRenderer } from 'three'
 import { clearIntervalSafe } from '../core/Util'
 import { TILESIZE } from '../params'
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { FollowerSetCanvasEvent, FollowerSetLookAtEvent } from '../event/LocalEvents'
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass'
@@ -12,6 +11,7 @@ import { GreenScaleShader } from './GreenScaleShader'
 import { ECS, GameEntity } from '../game/ECS'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { BeamUpComponent } from '../game/component/BeamUpComponent'
+import { EventBroker } from '../event/EventBroker'
 
 export class FollowerRenderer extends WebGLRenderer {
     static readonly MAX_FPS = 30
@@ -29,21 +29,21 @@ export class FollowerRenderer extends WebGLRenderer {
         this.composer.addPass(new RenderPass(scene, this.camera))
         this.composer.addPass(new ShaderPass(GreenScaleShader))
         this.composer.addPass(new OutputPass())
-        EventBus.registerEventListener(EventKey.FOLLOWER_RENDER_START, () => {
+        EventBroker.subscribe(EventKey.FOLLOWER_RENDER_START, () => {
             this.started = true
             this.startRendering()
         })
-        EventBus.registerEventListener(EventKey.FOLLOWER_RENDER_STOP, () => {
+        EventBroker.subscribe(EventKey.FOLLOWER_RENDER_STOP, () => {
             this.started = false
             this.renderInterval = clearIntervalSafe(this.renderInterval)
         })
-        EventBus.registerEventListener(EventKey.PAUSE_GAME, () => {
+        EventBroker.subscribe(EventKey.PAUSE_GAME, () => {
             this.renderInterval = clearIntervalSafe(this.renderInterval)
         })
-        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
+        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
             if (this.started) this.startRendering()
         })
-        EventBus.registerEventListener(EventKey.FOLLOWER_SET_LOOK_AT, (event: FollowerSetLookAtEvent) => {
+        EventBroker.subscribe(EventKey.FOLLOWER_SET_LOOK_AT, (event: FollowerSetLookAtEvent) => {
             this.trackEntity = event.entity
         })
     }
@@ -60,7 +60,7 @@ export class FollowerRenderer extends WebGLRenderer {
                 gl.clearColor(0, 0, 0, 0)
                 gl.clear(gl.COLOR_BUFFER_BIT)
                 this.renderInterval = clearIntervalSafe(this.renderInterval)
-                EventBus.publishEvent(new FollowerSetCanvasEvent(null))
+                EventBroker.publish(new FollowerSetCanvasEvent(null))
                 return
             }
             this.angle += Math.PI / 180 / FollowerRenderer.MAX_FPS * 5
@@ -69,7 +69,7 @@ export class FollowerRenderer extends WebGLRenderer {
             this.camera.lookAt(lookAtPosition)
             requestAnimationFrame(() => this.composer.render())
         }, 1000 / FollowerRenderer.MAX_FPS)
-        EventBus.publishEvent(new FollowerSetCanvasEvent(this.canvas))
+        EventBroker.publish(new FollowerSetCanvasEvent(this.canvas))
     }
 
     stopRendering() {

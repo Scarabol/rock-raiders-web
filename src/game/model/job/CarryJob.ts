@@ -6,7 +6,6 @@ import { EntityType } from '../EntityType'
 import { Raider } from '../raider/Raider'
 import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { Sample } from '../../../audio/Sample'
-import { EventBus } from '../../../event/EventBus'
 import { DynamiteExplosionEvent } from '../../../event/WorldEvents'
 import { SceneSelectionComponent } from '../../component/SceneSelectionComponent'
 import { SelectionFrameComponent } from '../../component/SelectionFrameComponent'
@@ -17,6 +16,7 @@ import { RaiderScareComponent, RaiderScareRange } from '../../component/RaiderSc
 import { MaterialSpawner } from '../../entity/MaterialSpawner'
 import { JobState } from './JobState'
 import { GameConfig } from '../../../cfg/GameConfig'
+import { EventBroker } from '../../../event/EventBroker'
 
 export class CarryJob extends Job {
     fulfiller: JobFulfiller = null
@@ -174,7 +174,7 @@ export class CarryJob extends Job {
             this.carryItem.worldMgr.ecs.removeComponent(this.carryItem.entity, RaiderScareComponent)
             this.carryItem.targetSurface.collapse()
             this.carryItem.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.Explosion, this.carryItem.getPosition(), this.carryItem.sceneEntity.heading, false)
-            EventBus.publishEvent(new DynamiteExplosionEvent(this.carryItem.getPosition2D()))
+            EventBroker.publish(new DynamiteExplosionEvent(this.carryItem.getPosition2D()))
             this.carryItem.disposeFromWorld()
         })
     }
@@ -189,7 +189,7 @@ export class CarryJob extends Job {
         this.carryItem.targetSurface.fenceRequested = false
         this.carryItem.worldMgr.entityMgr.placedFences.add(this.carryItem)
         const neighborsFence = this.carryItem.targetSurface.neighborsFence
-        if (neighborsFence.some((s) => s.selected)) EventBus.publishEvent(new SelectionChanged(this.carryItem.worldMgr.entityMgr))
+        if (neighborsFence.some((s) => s.selected)) EventBroker.publish(new SelectionChanged(this.carryItem.worldMgr.entityMgr))
     }
 
     assign(fulfiller: JobFulfiller) {

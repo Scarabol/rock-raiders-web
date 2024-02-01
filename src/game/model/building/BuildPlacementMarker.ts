@@ -1,5 +1,4 @@
 import { Group, Vector2 } from 'three'
-import { EventBus } from '../../../event/EventBus'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
@@ -10,6 +9,7 @@ import { BuildingType } from './BuildingType'
 import { BuildPlacementMarkerMesh } from './BuildPlacementMarkerMesh'
 import { PositionComponent } from '../../component/PositionComponent'
 import { MaterialAmountChanged } from '../../../event/WorldEvents'
+import { EventBroker } from '../../../event/EventBroker'
 
 export class BuildPlacementMarker {
     static readonly goodBuildingMarkerColor: number = 0x005000
@@ -143,7 +143,7 @@ export class BuildPlacementMarker {
             site.neededByType.set(EntityType.ORE, neededOres)
         }
         this.worldMgr.entityMgr.buildingSites.push(site)
-        EventBus.publishEvent(new DeselectAll())
+        EventBroker.publish(new DeselectAll())
         const closestToolstation = this.worldMgr.entityMgr.getClosestBuildingByType(primarySurface.getCenterWorld(), EntityType.TOOLSTATION)
         if (needsAnything) {
             if (closestToolstation) {
@@ -151,7 +151,7 @@ export class BuildPlacementMarker {
                 closestToolstation.spawnMaterials(EntityType.CRYSTAL, neededCrystals)
                 closestToolstation.spawnMaterials(EntityType.BRICK, neededBricks)
                 closestToolstation.spawnMaterials(EntityType.ORE, neededOres)
-                EventBus.publishEvent(new MaterialAmountChanged())
+                EventBroker.publish(new MaterialAmountChanged())
             }
         } else {
             site.checkComplete()

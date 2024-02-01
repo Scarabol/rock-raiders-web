@@ -2,7 +2,6 @@ import { Vector3 } from 'three'
 import { MapMarkerChange, MapMarkerType } from '../game/component/MapMarkerComponent'
 import { EntityManager } from '../game/EntityManager'
 import { EntityType } from '../game/model/EntityType'
-import { PriorityEntry } from '../game/model/job/PriorityEntry'
 import { Surface } from '../game/terrain/Surface'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { Terrain } from '../game/terrain/Terrain'
@@ -11,15 +10,12 @@ import { RaiderTraining, RaiderTrainings } from '../game/model/raider/RaiderTrai
 import { MapSurfaceRect } from '../gui/radar/MapSurfaceRect'
 import { TILESIZE } from '../params'
 import { EventKey } from './EventKeyEnum'
-import { GameEvent } from './GameEvent'
 import { VehicleUpgrade, VehicleUpgrades } from '../game/model/vehicle/VehicleUpgrade'
 import { GameResult } from '../game/model/GameResult'
 import { GameEntity } from '../game/ECS'
 import { HealthComponent } from '../game/component/HealthComponent'
 import { Rect } from '../core/Rect'
-
-export class LocalEvent extends GameEvent {
-}
+import { BaseEvent } from './EventTypeMap'
 
 export enum SelectPanelType {
     NONE,
@@ -30,7 +26,7 @@ export enum SelectPanelType {
     FENCE,
 }
 
-export class SelectionChanged extends LocalEvent {
+export class SelectionChanged extends BaseEvent {
     selectPanelType: SelectPanelType = SelectPanelType.NONE
     isGround: boolean
     isPowerPath: boolean
@@ -91,43 +87,19 @@ export class SelectionChanged extends LocalEvent {
     }
 }
 
-export class DeselectAll extends LocalEvent {
+export class DeselectAll extends BaseEvent {
     constructor() {
         super(EventKey.DESELECT_ALL)
     }
 }
 
-export class SaveScreenshot extends LocalEvent {
+export class SaveScreenshot extends BaseEvent {
     constructor() {
         super(EventKey.SAVE_SCREENSHOT)
     }
 }
 
-export class AirLevelChanged extends LocalEvent {
-    airLevel: number
-
-    constructor(airLevel: number) {
-        super(EventKey.AIR_LEVEL_CHANGED)
-        this.airLevel = airLevel
-    }
-}
-
-export class NerpMessageEvent extends LocalEvent {
-    constructor(readonly text: string, readonly messageTimeoutMs: number) {
-        super(EventKey.NERP_MESSAGE)
-    }
-}
-
-export class SetupPriorityList extends LocalEvent {
-    priorityList: PriorityEntry[]
-
-    constructor(priorityList: PriorityEntry[]) {
-        super(EventKey.SETUP_PRIORITY_LIST)
-        this.priorityList = priorityList
-    }
-}
-
-export class BuildingsChangedEvent extends LocalEvent {
+export class BuildingsChangedEvent extends BaseEvent {
     discoveredBuildingsMaxLevel: Map<EntityType, number> = new Map()
     usableBuildingsMaxLevel: Map<EntityType, number> = new Map()
 
@@ -152,7 +124,7 @@ export class BuildingsChangedEvent extends LocalEvent {
     }
 }
 
-export class RaidersAmountChangedEvent extends LocalEvent {
+export class RaidersAmountChangedEvent extends BaseEvent {
     hasRaider: boolean
     hasMaxRaiders: boolean
     hasDemolition: boolean
@@ -165,19 +137,19 @@ export class RaidersAmountChangedEvent extends LocalEvent {
     }
 }
 
-export class RaiderTrainingCompleteEvent extends LocalEvent {
+export class RaiderTrainingCompleteEvent extends BaseEvent {
     constructor(readonly training: RaiderTraining) {
         super(EventKey.RAIDER_TRAINING_COMPLETE)
     }
 }
 
-export class UpgradeVehicleCompleteEvent extends LocalEvent {
+export class VehicleUpgradeCompleteEvent extends BaseEvent {
     constructor() {
         super(EventKey.VEHICLE_UPGRADE_COMPLETE)
     }
 }
 
-export class InitRadarMap extends LocalEvent {
+export class InitRadarMap extends BaseEvent {
     focusTile: { x: number, y: number } = null
     surfaces: MapSurfaceRect[] = []
     terrainWidth: number
@@ -194,7 +166,7 @@ export class InitRadarMap extends LocalEvent {
     }
 }
 
-export class UpdateRadarTerrain extends LocalEvent {
+export class UpdateRadarTerrain extends BaseEvent {
     surfaces: MapSurfaceRect[] = []
     terrainWidth: number
     terrainHeight: number
@@ -209,7 +181,7 @@ export class UpdateRadarTerrain extends LocalEvent {
     }
 }
 
-export class UpdateRadarSurface extends LocalEvent {
+export class UpdateRadarSurface extends BaseEvent {
     surfaceRect: MapSurfaceRect
 
     constructor(surface: Surface) {
@@ -218,71 +190,50 @@ export class UpdateRadarSurface extends LocalEvent {
     }
 }
 
-export class UpdatePriorities extends LocalEvent {
-    priorityList: PriorityEntry[]
-
-    constructor(priorityList: PriorityEntry[]) {
-        super(EventKey.UPDATE_PRIORITIES)
-        this.priorityList = priorityList
-    }
-}
-
-export class UpdateRadarEntityEvent extends LocalEvent {
+export class UpdateRadarEntityEvent extends BaseEvent {
     constructor(readonly mapMarkerType: MapMarkerType, readonly entity: GameEntity, readonly change: MapMarkerChange, readonly position?: { x: number, z: number }, readonly radius?: number) {
         super(EventKey.UPDATE_RADAR_ENTITY)
     }
 }
 
-export class ShowMissionBriefingEvent extends LocalEvent {
+export class ShowMissionBriefingEvent extends BaseEvent {
     constructor(readonly isShowing: boolean) {
         super(EventKey.SHOW_MISSION_BRIEFING)
     }
 }
 
-export class ShowGameResultEvent extends LocalEvent {
+export class ShowGameResultEvent extends BaseEvent {
     constructor(readonly result?: GameResult) {
         super(EventKey.SHOW_GAME_RESULT)
     }
 }
 
-export class ShowOptionsEvent extends LocalEvent {
+export class ShowOptionsEvent extends BaseEvent {
     constructor() {
         super(EventKey.SHOW_OPTIONS)
     }
 }
 
-export class SetSpaceToContinueEvent extends LocalEvent {
+export class SetSpaceToContinueEvent extends BaseEvent {
     constructor(readonly state: boolean) {
         super(EventKey.SET_SPACE_TO_CONTINUE)
     }
 }
 
-export class FollowerSetCanvasEvent extends LocalEvent {
+export class FollowerSetCanvasEvent extends BaseEvent {
     constructor(readonly canvas: HTMLCanvasElement) {
         super(EventKey.FOLLOWER_SET_CANVAS)
     }
 }
 
-export class FollowerSetLookAtEvent extends LocalEvent {
+export class FollowerSetLookAtEvent extends BaseEvent {
     constructor(readonly entity: GameEntity) {
         super(EventKey.FOLLOWER_SET_LOOK_AT)
     }
 }
 
-export class SelectionFrameChangeEvent extends LocalEvent {
+export class SelectionFrameChangeEvent extends BaseEvent {
     constructor(readonly rect: Rect) {
         super(EventKey.SELECTION_FRAME_CHANGE)
-    }
-}
-
-export enum CameraViewMode {
-    BIRD,
-    FPV,
-    SHOULDER,
-}
-
-export class ChangeCameraEvent extends LocalEvent {
-    constructor(readonly viewMode: CameraViewMode) {
-        super(EventKey.COMMAND_CAMERA_VIEW)
     }
 }

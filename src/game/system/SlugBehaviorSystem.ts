@@ -7,7 +7,6 @@ import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { PathTarget } from '../model/PathTarget'
 import { AnimatedSceneEntityComponent } from '../component/AnimatedSceneEntityComponent'
 import { AnimEntityActivity, SlugActivity } from '../model/anim/AnimationActivity'
-import { EventBus } from '../../event/EventBus'
 import { PowerDrainEvent, WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { EventKey } from '../../event/EventKeyEnum'
 import { GameState } from '../model/GameState'
@@ -19,6 +18,7 @@ import { EntityType } from '../model/EntityType'
 import { EntityFrozenComponent } from '../component/EntityFrozenComponent'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { HeadingComponent } from '../component/HeadingComponent'
+import { EventBroker } from '../../event/EventBroker'
 
 const SLUG_SUCK_DISTANCE_SQ = 25 * 25
 const SLUG_ENTER_DISTANCE_SQ = 5 * 5
@@ -90,11 +90,11 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                                         sceneEntity.headTowards(targetSurface.getCenterWorld2D())
                                         this.ecs.removeComponent(entity, WorldTargetComponent)
                                         this.worldMgr.ecs.removeComponent(entity, HeadingComponent)
-                                        EventBus.publishEvent(new PowerDrainEvent(new PositionComponent(positionComponent.position, positionComponent.surface)))
+                                        EventBroker.publish(new PowerDrainEvent(new PositionComponent(positionComponent.position, positionComponent.surface)))
                                     }
                                     sceneEntity.setAnimation(SlugActivity.Suck, () => {
                                         GameState.numCrystal--
-                                        EventBus.publishEvent(new MaterialAmountChanged())
+                                        EventBroker.publish(new MaterialAmountChanged())
                                         MaterialSpawner.spawnMaterial(this.worldMgr, EntityType.DEPLETED_CRYSTAL, positionComponent.getPosition2D())
                                         behaviorComponent.state = SlugBehaviorState.GO_ENTER
                                         behaviorComponent.energyLeeched = true
@@ -130,7 +130,7 @@ export class SlugBehaviorSystem extends AbstractGameSystem {
                         } else if (behaviorComponent.targetEnter.targetLocation.distanceToSquared(slugPos) <= SLUG_ENTER_DISTANCE_SQ) {
                             this.worldMgr.entityMgr.removeEntity(entity)
                             sceneEntity.setAnimation(SlugActivity.Enter, () => {
-                                EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_SLUG_GONE, positionComponent))
+                                EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_SLUG_GONE, positionComponent))
                                 this.worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
                                 this.ecs.removeEntity(entity)
                                 sceneEntity.dispose()

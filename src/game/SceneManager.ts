@@ -20,9 +20,9 @@ import { AnimationGroup } from '../scene/AnimationGroup'
 import { SceneSelectionComponent } from './component/SceneSelectionComponent'
 import { createCanvas } from '../core/ImageHelper'
 import { FollowerRenderer } from '../scene/FollowerRenderer'
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { GameConfig } from '../cfg/GameConfig'
+import { EventBroker } from '../event/EventBroker'
 
 export class SceneManager implements Updatable {
     static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
@@ -59,11 +59,11 @@ export class SceneManager implements Updatable {
         this.setActiveCamera(this.cameraBird)
         this.controls = new BirdViewControls(this.cameraBird, canvas)
         if (!DEV_MODE) this.controls.addEventListener('change', () => this.forceCameraBirdAboveFloor())
-        EventBus.registerEventListener(EventKey.DYNAMITE_EXPLOSION, () => {
+        EventBroker.subscribe(EventKey.DYNAMITE_EXPLOSION, () => {
             this.shakeTimeout = 1000
             this.bumpTimeout = 0
         })
-        EventBus.registerEventListener(EventKey.SELECTION_CHANGED, () => {
+        EventBroker.subscribe(EventKey.SELECTION_CHANGED, () => {
             this.setActiveCamera(this.cameraBird)
         })
     }

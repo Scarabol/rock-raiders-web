@@ -1,5 +1,4 @@
 import { Vector2, Vector3 } from 'three'
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { BuildingsChangedEvent, RaidersAmountChangedEvent, SelectionChanged, UpdateRadarEntityEvent } from '../event/LocalEvents'
 import { RaiderDiscoveredEvent } from '../event/WorldLocationEvent'
@@ -24,6 +23,7 @@ import { WorldManager } from './WorldManager'
 import { HealthComponent } from './component/HealthComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from './component/MapMarkerComponent'
 import { SlugBehaviorComponent, SlugBehaviorState } from './component/SlugBehaviorComponent'
+import { EventBroker } from '../event/EventBroker'
 
 export interface VehicleTarget {
     entity: GameEntity
@@ -60,11 +60,11 @@ export class EntityManager {
 
     constructor(readonly worldMgr: WorldManager) {
         // event handler must be placed here, because only this class knows the "actual" selection instance
-        EventBus.registerEventListener(EventKey.DESELECT_ALL, () => {
+        EventBroker.subscribe(EventKey.DESELECT_ALL, () => {
             this.selection.deselectAll()
-            EventBus.publishEvent(new SelectionChanged(this))
+            EventBroker.publish(new SelectionChanged(this))
         })
-        EventBus.registerEventListener(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
+        EventBroker.subscribe(EventKey.MATERIAL_AMOUNT_CHANGED, () => {
             this.buildings.forEach((b) => b.updateEnergyState())
         })
     }
@@ -199,22 +199,22 @@ export class EntityManager {
         this.raidersUndiscovered = EntityManager.removeInRect(this.raidersUndiscovered, minX, maxX, minZ, maxZ, (r) => {
             r.worldMgr.entityMgr.raiders.push(r)
             const positionComponent = r.worldMgr.ecs.getComponents(r.entity).get(PositionComponent)
-            EventBus.publishEvent(new RaiderDiscoveredEvent(positionComponent))
+            EventBroker.publish(new RaiderDiscoveredEvent(positionComponent))
             this.worldMgr.ecs.addComponent(r.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, r.entity, MapMarkerChange.UPDATE, positionComponent.position))
+            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, r.entity, MapMarkerChange.UPDATE, positionComponent.position))
         })
-        if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBus.publishEvent(new RaidersAmountChangedEvent(this))
+        if (numRaidersUndiscovered !== this.raidersUndiscovered.length) EventBroker.publish(new RaidersAmountChangedEvent(this))
         this.buildingsUndiscovered = EntityManager.removeInRect(this.buildingsUndiscovered, minX, maxX, minZ, maxZ, (b) => {
             b.updateEnergyState()
             b.worldMgr.entityMgr.buildings.push(b)
-            EventBus.publishEvent(new BuildingsChangedEvent(b.worldMgr.entityMgr))
+            EventBroker.publish(new BuildingsChangedEvent(b.worldMgr.entityMgr))
         })
         this.materialsUndiscovered = EntityManager.removeInRect(this.materialsUndiscovered, minX, maxX, minZ, maxZ, (m) => {
             m.worldMgr.entityMgr.materials.push(m)
             m.setupCarryJob()
             const positionComponent = m.worldMgr.ecs.getComponents(m.entity).get(PositionComponent)
             m.worldMgr.ecs.addComponent(m.entity, new MapMarkerComponent(MapMarkerType.MATERIAL))
-            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, m.entity, MapMarkerChange.UPDATE, positionComponent.position))
+            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, m.entity, MapMarkerChange.UPDATE, positionComponent.position))
         })
         this.vehiclesUndiscovered = EntityManager.removeInRect(this.vehiclesUndiscovered, minX, maxX, minZ, maxZ, (v) => {
             v.worldMgr.entityMgr.vehicles.push(v)
@@ -224,13 +224,13 @@ export class EntityManager {
                 driver.sceneEntity.visible = true
                 driver.worldMgr.entityMgr.raiders.push(driver)
                 const positionComponent = driver.worldMgr.ecs.getComponents(driver.entity).get(PositionComponent)
-                EventBus.publishEvent(new RaiderDiscoveredEvent(positionComponent))
+                EventBroker.publish(new RaiderDiscoveredEvent(positionComponent))
                 this.worldMgr.ecs.addComponent(driver.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-                EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, driver.entity, MapMarkerChange.UPDATE, positionComponent.position))
+                EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, driver.entity, MapMarkerChange.UPDATE, positionComponent.position))
             }
             const positionComponent = v.worldMgr.ecs.getComponents(v.entity).get(PositionComponent)
             this.worldMgr.ecs.addComponent(v.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, v.entity, MapMarkerChange.UPDATE, positionComponent.position))
+            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, v.entity, MapMarkerChange.UPDATE, positionComponent.position))
         })
         this.undiscoveredSpiders = this.removeInRectNew(this.undiscoveredSpiders, minX, maxX, minZ, maxZ, (m) => {
             this.spiders.push(m)
@@ -340,7 +340,7 @@ export class EntityManager {
     private addMapMarker(entity: number) {
         const positionComponent = this.worldMgr.ecs.getComponents(entity).get(PositionComponent)
         this.worldMgr.ecs.addComponent(entity, new MapMarkerComponent(MapMarkerType.MONSTER))
-        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
+        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.UPDATE, positionComponent.position))
     }
 
     removeEntity(entity: GameEntity) {

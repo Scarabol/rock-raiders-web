@@ -1,11 +1,10 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { OxygenComponent } from '../component/OxygenComponent'
 import { GameState } from '../model/GameState'
-import { EventBus } from '../../event/EventBus'
-import { AirLevelChanged } from '../../event/LocalEvents'
-import { GameResultEvent, LevelSelectedEvent } from '../../event/WorldEvents'
+import { AirLevelChanged, GameResultEvent, LevelSelectedEvent } from '../../event/WorldEvents'
 import { GameResultState } from '../model/GameResult'
 import { EventKey } from '../../event/EventKeyEnum'
+import { EventBroker } from '../../event/EventBroker'
 
 export class OxygenSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([OxygenComponent])
@@ -13,7 +12,7 @@ export class OxygenSystem extends AbstractGameSystem {
 
     constructor() {
         super()
-        EventBus.registerEventListener(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
+        EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
             this.levelOxygenRate = event.levelConf.oxygenRate / 1000 / 100 / 1000
         })
     }
@@ -33,8 +32,8 @@ export class OxygenSystem extends AbstractGameSystem {
         const nextAirLevel = Math.max(0, Math.min(1, GameState.airLevel + airDiff))
         if (GameState.airLevel !== nextAirLevel) {
             GameState.airLevel = nextAirLevel
-            EventBus.publishEvent(new AirLevelChanged(GameState.airLevel))
-            if (GameState.airLevel <= 0) EventBus.publishEvent(new GameResultEvent(GameResultState.FAILED)) // Level 22 has oxygen, but no NERP check
+            EventBroker.publish(new AirLevelChanged(GameState.airLevel))
+            if (GameState.airLevel <= 0) EventBroker.publish(new GameResultEvent(GameResultState.FAILED)) // Level 22 has oxygen, but no NERP check
         }
     }
 }

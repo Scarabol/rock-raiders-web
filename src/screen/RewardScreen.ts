@@ -11,7 +11,6 @@ import { ResourceManager } from '../resource/ResourceManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { ScaledLayer } from './layer/ScreenLayer'
 import { ScreenMaster } from './ScreenMaster'
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
 import { OverwriteLayer } from '../menu/OverwriteLayer'
@@ -19,6 +18,7 @@ import { FlicAnimOverlay } from '../menu/FlicAnimOverlay'
 import { imgDataToCanvas } from '../core/ImageHelper'
 import { BitmapFontWorkerPool } from '../worker/BitmapFontWorkerPool'
 import { GameConfig } from '../cfg/GameConfig'
+import { EventBroker } from '../event/EventBroker'
 
 export class RewardScreen {
     readonly cfg: RewardCfg = null
@@ -91,7 +91,7 @@ export class RewardScreen {
             this.saveGameLayer.hide()
             this.flics.forEach((f) => f.stop())
             GameState.reset()
-            EventBus.publishEvent(new ShowGameResultEvent())
+            EventBroker.publish(new ShowGameResultEvent())
         }
         this.btnLayer.addEventListener('pointermove', (event: PointerEvent): boolean => {
             const [canvasX, canvasY] = this.btnLayer.transformCoords(event.clientX, event.clientY)
@@ -160,7 +160,7 @@ export class RewardScreen {
                 console.warn(`not implemented: ${item.actionName} - ${item.targetIndex}`)
             }
         }
-        EventBus.registerEventListener(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
+        EventBroker.subscribe(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
             if (event.result) this.showGameResult(event.result)
         })
     }

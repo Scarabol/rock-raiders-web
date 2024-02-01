@@ -1,5 +1,4 @@
 import { Vector2 } from 'three'
-import { EventBus } from '../../../event/EventBus'
 import { DeselectAll } from '../../../event/LocalEvents'
 import { JobCreateEvent } from '../../../event/WorldEvents'
 import { WorldManager } from '../../WorldManager'
@@ -11,6 +10,7 @@ import { MaterialEntity } from '../material/MaterialEntity'
 import { BuildingEntity } from './BuildingEntity'
 import { BuildingType } from './BuildingType'
 import { BarrierActivity } from '../anim/AnimationActivity'
+import { EventBroker } from '../../../event/EventBroker'
 
 export class BuildingSite {
     surfaces: Surface[] = []
@@ -104,7 +104,7 @@ export class BuildingSite {
         if (!this.buildingType) {
             const items: MaterialEntity[] = []
             this.onSiteByType.forEach((itemsOnSite) => items.push(...itemsOnSite))
-            EventBus.publishEvent(new JobCreateEvent(new CompleteSurfaceJob(this.primarySurface, items)))
+            EventBroker.publish(new JobCreateEvent(new CompleteSurfaceJob(this.primarySurface, items)))
         } else {
             this.worldMgr.entityMgr.completedBuildingSites.push(this)
         }
@@ -154,7 +154,7 @@ export class BuildingSite {
         }))
         this.onSiteByType.clear()
         this.assignedByType.clear()
-        EventBus.publishEvent(new DeselectAll())
+        EventBroker.publish(new DeselectAll())
     }
 
     getWalkOutSurface(): Surface {

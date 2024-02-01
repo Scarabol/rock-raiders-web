@@ -2,10 +2,11 @@ import { BaseElement } from '../base/BaseElement'
 import { PanelCfg } from '../../cfg/PanelCfg'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { clearIntervalSafe } from '../../core/Util'
-import { EventBus } from '../../event/EventBus'
-import { FollowerSetCanvasEvent, LocalEvent } from '../../event/LocalEvents'
+import { FollowerSetCanvasEvent } from '../../event/LocalEvents'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ResourceManager } from '../../resource/ResourceManager'
+import { EventBroker } from '../../event/EventBroker'
+import { BaseEvent } from '../../event/EventTypeMap'
 
 export class FollowerView extends BaseElement {
     readonly overlay: SpriteImage
@@ -28,19 +29,19 @@ export class FollowerView extends BaseElement {
         this.renderInterval = setInterval(() => {
             if (this.followerCanvas) this.notifyRedraw()
         })
-        EventBus.publishEvent(new LocalEvent(EventKey.FOLLOWER_RENDER_START))
+        EventBroker.publish(new BaseEvent(EventKey.FOLLOWER_RENDER_START))
     }
 
     hide() {
         super.hide()
         this.renderInterval = clearIntervalSafe(this.renderInterval)
-        EventBus.publishEvent(new LocalEvent(EventKey.FOLLOWER_RENDER_STOP))
+        EventBroker.publish(new BaseEvent(EventKey.FOLLOWER_RENDER_STOP))
     }
 
     reset() {
         super.reset()
         this.renderInterval = clearIntervalSafe(this.renderInterval)
-        EventBus.publishEvent(new LocalEvent(EventKey.FOLLOWER_RENDER_STOP))
+        EventBroker.publish(new BaseEvent(EventKey.FOLLOWER_RENDER_STOP))
     }
 
     onRedraw(context: SpriteContext) {

@@ -1,6 +1,5 @@
 import { createCanvas } from '../core/ImageHelper'
 import { getElementByIdOrThrow } from '../core/Util'
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { NATIVE_SCREEN_HEIGHT, NATIVE_SCREEN_WIDTH } from '../params'
 import { ScreenLayer } from './layer/ScreenLayer'
@@ -8,6 +7,7 @@ import { CursorManager } from './CursorManager'
 import { ChangeCursor } from '../event/GuiCommand'
 import { SaveScreenshot } from '../event/LocalEvents'
 import { LoadingLayer } from './layer/LoadingLayer'
+import { EventBroker } from '../event/EventBroker'
 
 export class ScreenMaster {
     readonly gameContainer: HTMLElement
@@ -24,9 +24,9 @@ export class ScreenMaster {
         this.gameCanvasContainer.addEventListener('contextmenu', (event: MouseEvent) => event.preventDefault())
         window.addEventListener('resize', () => this.onWindowResize())
         this.onWindowResize()
-        EventBus.registerEventListener(EventKey.SAVE_SCREENSHOT, () => this.saveScreenshot())
+        EventBroker.subscribe(EventKey.SAVE_SCREENSHOT, () => this.saveScreenshot())
         const cursorManager: CursorManager = new CursorManager(this.gameCanvasContainer)
-        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_CURSOR, (event: ChangeCursor) => {
+        EventBroker.subscribe(EventKey.COMMAND_CHANGE_CURSOR, (event: ChangeCursor) => {
             cursorManager.changeCursor(event.cursor, event.timeout)
         })
         this.gameCanvasContainer.addEventListener('pointerdown', () => {
@@ -65,7 +65,7 @@ export class ScreenMaster {
             buttons.forEach((btn) => btn.style.display = btn.style.display === 'none' ? 'block' : 'none')
         })
         this.setupButton('button-screenshot', () => {
-            EventBus.publishEvent(new SaveScreenshot())
+            EventBroker.publish(new SaveScreenshot())
         })
         this.setupButton('button-fullscreen', () => {
             if (document.fullscreenElement === this.gameContainer) document.exitFullscreen().then()

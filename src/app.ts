@@ -7,7 +7,6 @@ import { ClearCacheButton } from '../site/clearcache/ClearCacheButton'
 import { AssetLoader } from './resource/AssetLoader'
 import { Cursor } from './resource/Cursor'
 import { ResourceManager } from './resource/ResourceManager'
-import { EventBus } from './event/EventBus'
 import { ChangeCursor } from './event/GuiCommand'
 import { TooltipLayer } from './screen/layer/TooltipLayer'
 import { MainMenuScreen } from './screen/MainMenuScreen'
@@ -18,6 +17,7 @@ import { ObjectListLoader } from './game/ObjectListLoader'
 import { GameResult } from './game/model/GameResult'
 import { GameConfig } from './cfg/GameConfig'
 import { BitmapFontWorkerPool } from './worker/BitmapFontWorkerPool'
+import { EventBroker } from './event/EventBroker'
 
 export async function start() {
     console.time('Total asset loading time')
@@ -65,7 +65,7 @@ export async function start() {
     const fontData = ResourceManager.getResource(DEFAULT_FONT_NAME)
     BitmapFontWorkerPool.instance.setupPool(DEFAULT_FONT_NAME, fontData)
     const cursorImageName = GameConfig.instance.pointers.get(Cursor.STANDARD)
-    ResourceManager.loadCursor(cursorImageName, Cursor.STANDARD).then(() => EventBus.publishEvent(new ChangeCursor(Cursor.STANDARD)))
+    ResourceManager.loadCursor(cursorImageName, Cursor.STANDARD).then(() => EventBroker.publish(new ChangeCursor(Cursor.STANDARD)))
     console.log('Initial loading done.')
     await assetLoader.loadRegisteredAssets(() => screenMaster.loadingLayer.increaseLoadingState())
     AssetLoader.bitmapWorkerPool.terminatePool()

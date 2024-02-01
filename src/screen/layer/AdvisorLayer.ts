@@ -3,10 +3,10 @@ import { AmbientLight, Camera, PerspectiveCamera, Scene, WebGLRenderer } from 't
 import { cancelAnimationFrameSafe, clearIntervalSafe } from '../../core/Util'
 import { CAMERA_FOV, NATIVE_UPDATE_INTERVAL } from '../../params'
 import { AnimationLoopGroup } from '../../scene/AnimationLoopGroup'
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
 
 export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeLayer
     readonly renderer: WebGLRenderer
@@ -47,7 +47,7 @@ export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeL
         this.group.meshList.forEach((m) => m.geometry.scale(-1, 1, 1)) // flip normals
         this.group.scale.x = -1
         this.scene.add(this.group)
-        EventBus.registerEventListener(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
+        EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             if (event.isShowing) {
                 this.startRendering()
             } else {

@@ -1,5 +1,4 @@
 import { Vector2 } from 'three'
-import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { AnimEntityActivity } from '../anim/AnimationActivity'
 import { EntityType } from '../EntityType'
@@ -14,6 +13,7 @@ import { HealthComponent } from '../../component/HealthComponent'
 import { OxygenComponent } from '../../component/OxygenComponent'
 import { RaiderInfoComponent } from '../../component/RaiderInfoComponent'
 import { GameConfig } from '../../../cfg/GameConfig'
+import { EventBroker } from '../../../event/EventBroker'
 
 type TeleportEntity = Raider | VehicleEntity
 
@@ -58,9 +58,9 @@ export class Teleport {
             if (walkOutPos) entity.setJob(new MoveJob(entity, walkOutPos))
             beamListing.remove(entity)
             listing.push(entity)
-            EventBus.publishEvent(new RaidersAmountChangedEvent(entity.worldMgr.entityMgr))
+            EventBroker.publish(new RaidersAmountChangedEvent(entity.worldMgr.entityMgr))
             entity.worldMgr.ecs.addComponent(entity.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, entity.entity, MapMarkerChange.UPDATE, floorPosition))
+            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, entity.entity, MapMarkerChange.UPDATE, floorPosition))
             this.operating = false
         })
         beamListing.push(entity)

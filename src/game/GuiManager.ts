@@ -1,8 +1,7 @@
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
-import { CameraControl, ChangeBuildingPowerState, ChangePriorityList, ChangeRaiderSpawnRequest, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, PickTool, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
-import { CameraViewMode, ChangeCameraEvent, DeselectAll, SelectionChanged, UpdatePriorities } from '../event/LocalEvents'
-import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged } from '../event/WorldEvents'
+import { CameraControl, CameraViewMode, ChangeBuildingPowerState, ChangeCameraEvent, ChangePriorityList, ChangeRaiderSpawnRequest, PickTool, PlaySoundEvent, RequestVehicleSpawn, SelectBuildMode, TrainRaider, UpgradeVehicle } from '../event/GuiCommand'
+import { DeselectAll, SelectionChanged } from '../event/LocalEvents'
+import { JobCreateEvent, RequestedRaidersChanged, RequestedVehiclesChanged, UpdatePriorities } from '../event/WorldEvents'
 import { EntityType } from './model/EntityType'
 import { ManVehicleJob } from './model/job/ManVehicleJob'
 import { EatJob } from './model/job/raider/EatJob'
@@ -23,6 +22,7 @@ import { GenericDeathEvent } from '../event/WorldLocationEvent'
 import { PositionComponent } from './component/PositionComponent'
 import { RaiderTool } from './model/raider/RaiderTool'
 import { GameConfig } from '../cfg/GameConfig'
+import { EventBroker } from '../event/EventBroker'
 
 export class GuiManager {
     buildingCycleIndex: number = 0
@@ -31,34 +31,34 @@ export class GuiManager {
         const sceneMgr = worldMgr.sceneMgr
         const cameraControls = sceneMgr.controls
         const entityMgr = worldMgr.entityMgr
-        EventBus.registerEventListener(EventKey.COMMAND_PICK_TOOL, (event: PickTool) => {
+        EventBroker.subscribe(EventKey.COMMAND_PICK_TOOL, (event: PickTool) => {
             entityMgr.selection.raiders.forEach((r) => {
                 if (r.hasTool(event.tool)) return
                 const pathToToolstation = r.findShortestPath(r.worldMgr.entityMgr.getGetToolTargets())
                 if (pathToToolstation) r.setJob(new GetToolJob(entityMgr, event.tool, pathToToolstation.target.building))
             })
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CREATE_POWER_PATH, () => {
+        EventBroker.subscribe(EventKey.COMMAND_CREATE_POWER_PATH, () => {
             entityMgr.selection.surface.setSurfaceType(SurfaceType.POWER_PATH_BUILDING_SITE)
             BuildingSite.createImproveSurfaceSite(worldMgr, entityMgr.selection.surface)
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_MAKE_RUBBLE, () => {
+        EventBroker.subscribe(EventKey.COMMAND_MAKE_RUBBLE, () => {
             entityMgr.selection.surface?.makeRubble(2)
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_PLACE_FENCE, () => {
+        EventBroker.subscribe(EventKey.COMMAND_PLACE_FENCE, () => {
             const targetSurface = entityMgr.selection.surface
             if (targetSurface) {
                 entityMgr.getClosestBuildingByType(targetSurface.getCenterWorld(), EntityType.TOOLSTATION)?.spawnFence(targetSurface)
                 targetSurface.fenceRequested = true
             }
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_FENCE_BEAMUP, () => {
+        EventBroker.subscribe(EventKey.COMMAND_FENCE_BEAMUP, () => {
             const fence = entityMgr.selection.fence
-            EventBus.publishEvent(new GenericDeathEvent(fence.worldMgr.ecs.getComponents(fence.entity).get(PositionComponent)))
+            EventBroker.publish(new GenericDeathEvent(fence.worldMgr.ecs.getComponents(fence.entity).get(PositionComponent)))
             fence.worldMgr.ecs.getComponents(fence.entity).get(SelectionFrameComponent)?.deselect()
             fence.worldMgr.ecs.removeComponent(fence.entity, SelectionFrameComponent)
             fence.worldMgr.entityMgr.removeEntity(fence.entity)
@@ -66,42 +66,42 @@ export class GuiManager {
             fence.targetSurface.fenceRequested = false
             fence.worldMgr.ecs.addComponent(fence.entity, new BeamUpComponent(fence))
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_RAIDER_SPAWN_REQUEST, (event: ChangeRaiderSpawnRequest) => {
+        EventBroker.subscribe(EventKey.COMMAND_CHANGE_RAIDER_SPAWN_REQUEST, (event: ChangeRaiderSpawnRequest) => {
             if (event.increase) {
                 worldMgr.requestedRaiders++
             } else {
                 worldMgr.requestedRaiders--
             }
-            EventBus.publishEvent(new RequestedRaidersChanged(worldMgr.requestedRaiders))
+            EventBroker.publish(new RequestedRaidersChanged(worldMgr.requestedRaiders))
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CREATE_DRILL_JOB, () => {
+        EventBroker.subscribe(EventKey.COMMAND_CREATE_DRILL_JOB, () => {
             entityMgr.selection.surface?.setupDrillJob()
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CREATE_REINFORCE_JOB, () => {
+        EventBroker.subscribe(EventKey.COMMAND_CREATE_REINFORCE_JOB, () => {
             entityMgr.selection.surface?.setupReinforceJob()
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CREATE_DYNAMITE_JOB, () => {
+        EventBroker.subscribe(EventKey.COMMAND_CREATE_DYNAMITE_JOB, () => {
             entityMgr.selection.surface?.setupDynamiteJob()
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CANCEL_SURFACE_JOBS, () => {
+        EventBroker.subscribe(EventKey.COMMAND_CANCEL_SURFACE_JOBS, () => {
             entityMgr.selection.surface?.cancelJobs()
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CREATE_CLEAR_RUBBLE_JOB, () => {
+        EventBroker.subscribe(EventKey.COMMAND_CREATE_CLEAR_RUBBLE_JOB, () => {
             entityMgr.selection.surface?.setupClearRubbleJob()
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_REPAIR_BUILDING, () => {
+        EventBroker.subscribe(EventKey.COMMAND_REPAIR_BUILDING, () => {
             if (!entityMgr.selection.building) return
-            EventBus.publishEvent(new JobCreateEvent(new RepairBuildingJob(entityMgr.selection.building)))
+            EventBroker.publish(new JobCreateEvent(new RepairBuildingJob(entityMgr.selection.building)))
         })
-        EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_BUILDING, () => {
+        EventBroker.subscribe(EventKey.COMMAND_UPGRADE_BUILDING, () => {
             entityMgr.selection.building?.upgrade()
         })
-        EventBus.registerEventListener(EventKey.COMMAND_BUILDING_BEAMUP, () => {
+        EventBroker.subscribe(EventKey.COMMAND_BUILDING_BEAMUP, () => {
             const building = entityMgr.selection.building
             if (!building) return
             for (let c = 0; c < building.stats.CostOre; c++) {
@@ -113,52 +113,52 @@ export class GuiManager {
             building.carriedItems.forEach((m) => building.worldMgr.entityMgr.placeMaterial(m, building.primarySurface.getRandomPosition()))
             building.beamUp()
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_BUILDING_POWER_STATE, (event: ChangeBuildingPowerState) => {
+        EventBroker.subscribe(EventKey.COMMAND_CHANGE_BUILDING_POWER_STATE, (event: ChangeBuildingPowerState) => {
             entityMgr.selection.building?.setPowerSwitch(event.state)
         })
-        EventBus.registerEventListener(EventKey.COMMAND_RAIDER_EAT, () => {
+        EventBroker.subscribe(EventKey.COMMAND_RAIDER_EAT, () => {
             entityMgr.selection.raiders.forEach((r) => !r.isDriving() && r.setJob(new EatJob()))
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_RAIDER_UPGRADE, () => {
+        EventBroker.subscribe(EventKey.COMMAND_RAIDER_UPGRADE, () => {
             entityMgr.selection.raiders.forEach((r) => {
                 if (r.level >= r.stats.Levels) return
                 const closestToolstation = r.findShortestPath(entityMgr.getRaiderUpgradePathTarget())
                 if (closestToolstation) r.setJob(new UpgradeRaiderJob(closestToolstation.target.building))
             })
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_RAIDER_BEAMUP, () => {
+        EventBroker.subscribe(EventKey.COMMAND_RAIDER_BEAMUP, () => {
             entityMgr.selection.raiders.forEach((r) => r.beamUp())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_TRAIN_RAIDER, (event: TrainRaider) => {
+        EventBroker.subscribe(EventKey.COMMAND_TRAIN_RAIDER, (event: TrainRaider) => {
             entityMgr.selection.raiders.forEach((r) => !r.hasTraining(event.training) && r.setJob(new TrainRaiderJob(entityMgr, event.training, null)))
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
             return true
         })
-        EventBus.registerEventListener(EventKey.COMMAND_RAIDER_DROP, () => {
+        EventBroker.subscribe(EventKey.COMMAND_RAIDER_DROP, () => {
             entityMgr.selection.raiders.forEach((r) => r.stopJob())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
+        EventBroker.subscribe(EventKey.COMMAND_SELECT_BUILD_MODE, (event: SelectBuildMode) => {
             sceneMgr.setBuildModeSelection(event.entityType)
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
+        EventBroker.subscribe(EventKey.COMMAND_CANCEL_BUILD_MODE, () => {
             sceneMgr.setBuildModeSelection(null)
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
+        EventBroker.subscribe(EventKey.COMMAND_CANCEL_CONSTRUCTION, () => {
             entityMgr.selection.surface.site?.cancelSite()
         })
-        EventBus.registerEventListener(EventKey.COMMAND_REQUEST_VEHICLE_SPAWN, (event: RequestVehicleSpawn) => {
-            EventBus.publishEvent(new RequestedVehiclesChanged(event.vehicle, event.numRequested))
-            EventBus.publishEvent(new DeselectAll())
+        EventBroker.subscribe(EventKey.COMMAND_REQUEST_VEHICLE_SPAWN, (event: RequestVehicleSpawn) => {
+            EventBroker.publish(new RequestedVehiclesChanged(event.vehicle, event.numRequested))
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_GET_MAN, () => {
+        EventBroker.subscribe(EventKey.COMMAND_VEHICLE_GET_MAN, () => {
             entityMgr.selection.vehicles.forEach((v) => {
-                if (!v.callManJob && !v.driver) EventBus.publishEvent(new JobCreateEvent(new ManVehicleJob(v)))
+                if (!v.callManJob && !v.driver) EventBroker.publish(new JobCreateEvent(new ManVehicleJob(v)))
             })
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
+        EventBroker.subscribe(EventKey.COMMAND_VEHICLE_BEAMUP, () => {
             entityMgr.selection.vehicles.forEach((v) => {
                 const surface = v.getSurface()
                 const spawnSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
@@ -169,19 +169,19 @@ export class GuiManager {
                 v.dropDriver()
                 v.beamUp()
             })
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT, () => {
+        EventBroker.subscribe(EventKey.COMMAND_VEHICLE_DRIVER_GET_OUT, () => {
             entityMgr.selection.vehicles.forEach((v) => v.dropDriver())
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_VEHICLE_UNLOAD, () => {
+        EventBroker.subscribe(EventKey.COMMAND_VEHICLE_UNLOAD, () => {
             entityMgr.selection.vehicles.forEach((v) => v.stopJob())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {
-            EventBus.publishEvent(new UpdatePriorities(event.priorityList))
+        EventBroker.subscribe(EventKey.COMMAND_CHANGE_PRIORITY_LIST, (event: ChangePriorityList) => {
+            EventBroker.publish(new UpdatePriorities(event.priorityList))
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CAMERA_CONTROL, (event: CameraControl) => {
+        EventBroker.subscribe(EventKey.COMMAND_CAMERA_CONTROL, (event: CameraControl) => {
             if (event.zoom) {
                 cameraControls.zoom(event.zoom)
             }
@@ -196,17 +196,17 @@ export class GuiManager {
                 cameraControls.jumpTo(jumpTo)
             }
         })
-        EventBus.registerEventListener(EventKey.COMMAND_REPAIR_LAVA, () => {
+        EventBroker.subscribe(EventKey.COMMAND_REPAIR_LAVA, () => {
             BuildingSite.createImproveSurfaceSite(worldMgr, entityMgr.selection.surface)
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_PLAY_SOUND, (event: PlaySoundEvent) => {
+        EventBroker.subscribe(EventKey.COMMAND_PLAY_SOUND, (event: PlaySoundEvent) => {
             SoundManager.playSample(event.sample, event.isVoice)
         })
-        EventBus.registerEventListener(EventKey.COMMAND_REMOVE_SELECTION, () => {
-            EventBus.publishEvent(new DeselectAll())
+        EventBroker.subscribe(EventKey.COMMAND_REMOVE_SELECTION, () => {
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
+        EventBroker.subscribe(EventKey.COMMAND_CHANGE_PREFERENCES, () => {
             SaveGameManager.savePreferences()
             SoundManager.setupSfxAudioTarget()
             sceneMgr.setLightLevel(SaveGameManager.currentPreferences.gameBrightness)
@@ -215,15 +215,15 @@ export class GuiManager {
             const gameSpeedIndex = Math.round(SaveGameManager.currentPreferences.gameSpeed * 5)
             worldMgr.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event for state reconstruction
         })
-        EventBus.registerEventListener(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {
+        EventBroker.subscribe(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {
             entityMgr.selection.assignUpgradeJob(event.upgrade)
-            EventBus.publishEvent(new DeselectAll())
+            EventBroker.publish(new DeselectAll())
         })
-        EventBus.registerEventListener(EventKey.COMMAND_DROP_BIRD_SCARER, () => {
+        EventBroker.subscribe(EventKey.COMMAND_DROP_BIRD_SCARER, () => {
             entityMgr.selection.raiders.forEach((r) => {
                 if (!r.hasTool(RaiderTool.BIRDSCARER)) return
                 r.removeTool(RaiderTool.BIRDSCARER)
-                if (r.selected) EventBus.publishEvent(new SelectionChanged(entityMgr))
+                if (r.selected) EventBroker.publish(new SelectionChanged(entityMgr))
                 const birdScarer = worldMgr.ecs.addEntity()
                 const position = r.getPosition()
                 worldMgr.ecs.addComponent(birdScarer, new PositionComponent(position, r.getSurface()))
@@ -234,7 +234,7 @@ export class GuiManager {
                 })
             })
         })
-        EventBus.registerEventListener(EventKey.COMMAND_CAMERA_VIEW, (event: ChangeCameraEvent) => {
+        EventBroker.subscribe(EventKey.COMMAND_CAMERA_VIEW, (event: ChangeCameraEvent) => {
             const entity = entityMgr.selection.getPrimarySelected()
             if (!entity) {
                 console.warn('No entity seems selected')

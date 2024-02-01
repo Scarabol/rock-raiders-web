@@ -1,9 +1,9 @@
 import { AbstractGameComponent } from '../ECS'
 import { HealthBarSprite } from '../../scene/HealthBarSprite'
 import { Object3D } from 'three'
-import { EventBus } from '../../event/EventBus'
 import { ToggleAlarmEvent } from '../../event/WorldEvents'
 import { HealthFontSprite } from '../../scene/HealthFontSprite'
+import { EventBroker } from '../../event/EventBroker'
 
 export class HealthComponent extends AbstractGameComponent {
     readonly healthBarSprite: HealthBarSprite = null
@@ -32,7 +32,7 @@ export class HealthComponent extends AbstractGameComponent {
         this.health = nextHealth
         if (delta < 0) {
             this.healthFontSprite.setNumber(delta)
-            if (this.triggerAlarm) EventBus.publishEvent(new ToggleAlarmEvent(true))
+            if (this.triggerAlarm) EventBroker.publish(new ToggleAlarmEvent(true))
         }
         this.healthBarSprite.setTargetStatus(this.health / this.maxHealth)
         this.markDirty()

@@ -5,8 +5,6 @@
  * https://kb.rockraidersunited.com/NERPs_documentation
  *
  */
-import { EventBus } from '../event/EventBus'
-import { NerpMessageEvent } from '../event/LocalEvents'
 import { WorldManager } from '../game/WorldManager'
 import { EntityType } from '../game/model/EntityType'
 import { GameResultState } from '../game/model/GameResult'
@@ -14,7 +12,7 @@ import { GameState } from '../game/model/GameState'
 import { NerpParser } from './NerpParser'
 import { NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
-import { GameResultEvent } from '../event/WorldEvents'
+import { GameResultEvent, NerpMessageEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { MonsterSpawner } from '../game/entity/MonsterSpawner'
@@ -23,6 +21,7 @@ import { AnimatedSceneEntityComponent } from '../game/component/AnimatedSceneEnt
 import { AnimEntityActivity, SlugActivity } from '../game/model/anim/AnimationActivity'
 import { SlugBehaviorComponent, SlugBehaviorState } from '../game/component/SlugBehaviorComponent'
 import { GameConfig } from '../cfg/GameConfig'
+import { EventBroker } from '../event/EventBroker'
 
 window['nerpDebugToggle'] = () => NerpRunner.debug = !NerpRunner.debug
 
@@ -154,7 +153,7 @@ export class NerpRunner {
     setLevelCompleted() {
         console.log('Nerp runner marks level as complete')
         this.halted = true
-        EventBus.publishEvent(new GameResultEvent(GameResultState.COMPLETE))
+        EventBroker.publish(new GameResultEvent(GameResultState.COMPLETE))
     }
 
     /**
@@ -163,7 +162,7 @@ export class NerpRunner {
     setLevelFail() {
         console.log(`NerpRunner marks level as failed; at line: ${this.script.lines[this.programCounter]}`)
         this.halted = true
-        EventBus.publishEvent(new GameResultEvent(GameResultState.FAILED))
+        EventBroker.publish(new GameResultEvent(GameResultState.FAILED))
     }
 
     /**
@@ -258,7 +257,7 @@ export class NerpRunner {
             sceneEntity.sceneEntity.setAnimation(AnimEntityActivity.Stand)
             behaviorComponent.state = SlugBehaviorState.IDLE
         })
-        EventBus.publishEvent(new SlugEmergeEvent(components.get(PositionComponent)))
+        EventBroker.publish(new SlugEmergeEvent(components.get(PositionComponent)))
     }
 
     /**
@@ -302,7 +301,7 @@ export class NerpRunner {
         }
         const sampleLength = this.timeForNoSample / 1000 // XXX workaround until sounds from DATA directory are implemented
         const messageTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample
-        if (msg.txt) EventBus.publishEvent(new NerpMessageEvent(msg.txt, messageTimeoutMs || GameConfig.instance.main.textPauseTimeMs))
+        if (msg.txt) EventBroker.publish(new NerpMessageEvent(msg.txt, messageTimeoutMs || GameConfig.instance.main.textPauseTimeMs))
         if (msg.snd) { // XXX snd files reside in sounds/streamed/ which is not included in WAD files :(
             if (VERBOSE) console.warn(`Sounds from DATA directory not yet implemented`, msg.snd)
         }

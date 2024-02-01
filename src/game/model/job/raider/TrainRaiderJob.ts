@@ -1,4 +1,3 @@
-import { EventBus } from '../../../../event/EventBus'
 import { RaiderTrainingCompleteEvent } from '../../../../event/LocalEvents'
 import { EntityManager } from '../../../EntityManager'
 import { AnimationActivity, RaiderActivity } from '../../anim/AnimationActivity'
@@ -10,6 +9,7 @@ import { Raider } from '../../raider/Raider'
 import { VehicleEntity } from '../../vehicle/VehicleEntity'
 import { BubblesCfg } from '../../../../cfg/BubblesCfg'
 import { JobFulfiller } from '../Job'
+import { EventBroker } from '../../../../event/EventBroker'
 
 export class TrainRaiderJob extends RaiderJob {
     building: BuildingEntity
@@ -31,7 +31,7 @@ export class TrainRaiderJob extends RaiderJob {
     onJobComplete(fulfiller: JobFulfiller): void {
         super.onJobComplete(fulfiller)
         this.raider.addTraining(this.training)
-        EventBus.publishEvent(new RaiderTrainingCompleteEvent(this.training))
+        EventBroker.publish(new RaiderTrainingCompleteEvent(this.training))
     }
 
     getWorkActivity(): AnimationActivity {

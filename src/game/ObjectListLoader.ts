@@ -1,6 +1,5 @@
 import { MathUtils, Vector2 } from 'three'
 import { ObjectListEntryCfg } from '../cfg/ObjectListEntryCfg'
-import { EventBus } from '../event/EventBus'
 import { FollowerSetLookAtEvent, RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../event/LocalEvents'
 import { TILESIZE } from '../params'
 import { BuildingEntity } from './model/building/BuildingEntity'
@@ -22,6 +21,7 @@ import { OxygenComponent } from './component/OxygenComponent'
 import { RaiderInfoComponent } from './component/RaiderInfoComponent'
 import { GameConfig } from '../cfg/GameConfig'
 import { GameEntity } from './ECS'
+import { EventBroker } from '../event/EventBroker'
 import degToRad = MathUtils.degToRad
 
 export class ObjectListLoader {
@@ -53,8 +53,8 @@ export class ObjectListLoader {
                 driver.addTraining(vehicle.getRequiredTraining())
                 vehicle.addDriver(driver)
             })
-            EventBus.publishEvent(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
-            if (this.trackEntity) EventBus.publishEvent(new FollowerSetLookAtEvent(this.trackEntity))
+            EventBroker.publish(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
+            if (this.trackEntity) EventBroker.publish(new FollowerSetLookAtEvent(this.trackEntity))
         } catch (e) {
             console.error(e)
         }
@@ -173,7 +173,7 @@ export class ObjectListLoader {
         if (raider.sceneEntity.visible) {
             this.worldMgr.entityMgr.raiders.push(raider)
             this.worldMgr.ecs.addComponent(raider.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, raider.entity, MapMarkerChange.UPDATE, floorPosition))
+            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, raider.entity, MapMarkerChange.UPDATE, floorPosition))
             if (!this.trackEntity) this.trackEntity = raider.entity
         } else {
             this.worldMgr.entityMgr.raidersUndiscovered.push(raider)
@@ -201,7 +201,7 @@ export class ObjectListLoader {
         if (vehicle.sceneEntity.visible) {
             this.worldMgr.entityMgr.vehicles.push(vehicle)
             this.worldMgr.ecs.addComponent(vehicle.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
-            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, vehicle.entity, MapMarkerChange.UPDATE, floorPosition))
+            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, vehicle.entity, MapMarkerChange.UPDATE, floorPosition))
         } else {
             this.worldMgr.entityMgr.vehiclesUndiscovered.push(vehicle)
         }

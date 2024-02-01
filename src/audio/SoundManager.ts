@@ -1,9 +1,9 @@
 import { AudioContext, PositionalAudio } from 'three'
 import { Sample } from './Sample'
 import { SaveGameManager } from '../resource/SaveGameManager'
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { NerpRunner } from '../nerp/NerpRunner'
+import { EventBroker } from '../event/EventBroker'
 
 export class SoundManager {
     static readonly playingAudio: Set<PositionalAudio> = new Set()
@@ -12,8 +12,8 @@ export class SoundManager {
     static skipVoiceLines: boolean = false
 
     static {
-        EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.playingAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
-        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => this.playingAudio.forEach((a) => a.play()))
+        EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.playingAudio.forEach((a) => a.pause())) // XXX What if audio was paused for other reasons
+        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => this.playingAudio.forEach((a) => a.play()))
     }
 
     static setupSfxAudioTarget(): GainNode {

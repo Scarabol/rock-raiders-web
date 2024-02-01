@@ -1,7 +1,6 @@
 import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
 import { BuildingEntityStats } from '../../../cfg/GameStatsCfg'
-import { EventBus } from '../../../event/EventBus'
 import { BuildingsChangedEvent, DeselectAll, SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { MaterialAmountChanged, UsedCrystalsChanged } from '../../../event/WorldEvents'
 import { DEV_MODE, TILESIZE } from '../../../params'
@@ -31,6 +30,7 @@ import { LastWillComponent } from '../../component/LastWillComponent'
 import { ScannerComponent } from '../../component/ScannerComponent'
 import { MapMarkerChange, MapMarkerType } from '../../component/MapMarkerComponent'
 import { GameConfig } from '../../../cfg/GameConfig'
+import { EventBroker } from '../../../event/EventBroker'
 
 export class BuildingEntity {
     readonly carriedItems: MaterialEntity[] = []
@@ -75,7 +75,7 @@ export class BuildingEntity {
             this.sceneEntity.setAnimation(BuildingActivity.Explode, () => this.disposeFromWorld())
             this.powerOffSprite.setEnabled(false)
             this.surfaces.forEach((s) => s.setBuilding(null))
-            EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+            EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         }))
     }
 
@@ -145,12 +145,12 @@ export class BuildingEntity {
         } else {
             GameState.numOre -= GameConfig.instance.main.buildingUpgradeCostOre
         }
-        EventBus.publishEvent(new MaterialAmountChanged())
+        EventBroker.publish(new MaterialAmountChanged())
         this.level++
         const components = this.worldMgr.ecs.getComponents(this.entity)
         components.get(HealthComponent).rockFallDamage = GameConfig.instance.getRockFallDamage(this.entityType, this.level)
-        EventBus.publishEvent(new DeselectAll())
-        EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+        EventBroker.publish(new DeselectAll())
+        EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
         this.worldMgr.sceneMgr.addMiscAnim(GameConfig.instance.miscObjects.UpgradeEffect, this.primarySurface.getCenterWorld(), this.sceneEntity.heading, false)
         components.get(ScannerComponent)?.setRange(this.stats.SurveyRadius?.[this.level] ?? 0)
         this.sceneEntity.setUpgradeLevel(this.level.toString(2).padStart(4, '0'))
@@ -159,7 +159,7 @@ export class BuildingEntity {
     setLevel(level: number) {
         if (this.level == level) return
         this.level = level
-        EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+        EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
     beamUp() {
@@ -171,9 +171,9 @@ export class BuildingEntity {
         this.powerOffSprite.setEnabled(false)
         this.surfaces.forEach((s) => s.setBuilding(null))
         this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
-        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
-        EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+        EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
     disposeFromWorld() {
@@ -263,8 +263,8 @@ export class BuildingEntity {
         }
         this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
         this.surfaces.forEach((s) => s.updateTexture())
-        EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
+        EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+        if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
         if (this.teleport) this.teleport.powered = this.isPowered()
     }
 
@@ -275,7 +275,7 @@ export class BuildingEntity {
     private changeUsedCrystals(changedCrystals: number) {
         if (!changedCrystals) return
         GameState.usedCrystals += changedCrystals
-        EventBus.publishEvent(new UsedCrystalsChanged())
+        EventBroker.publish(new UsedCrystalsChanged())
     }
 
     placeDown(worldPosition: Vector2, radHeading: number, disableTeleportIn: boolean) {
@@ -327,7 +327,7 @@ export class BuildingEntity {
         } else {
             this.worldMgr.entityMgr.buildingsUndiscovered.push(this)
         }
-        if (this.surfaces.some((s) => s.selected)) EventBus.publishEvent(new DeselectAll())
+        if (this.surfaces.some((s) => s.selected)) EventBroker.publish(new DeselectAll())
         if (this.sceneEntity.visible && !disableTeleportIn) {
             this.powerOffSprite.setEnabled(!this.inBeam && !this.isPowered())
             this.sceneEntity.setAnimation(BuildingActivity.Teleport, () => {
@@ -352,7 +352,7 @@ export class BuildingEntity {
         })
         this.getToolPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
         this.carryPathTarget = PathTarget.fromBuilding(this, this.getDropPosition2D(), 1, this.primarySurface.getCenterWorld2D())
-        EventBus.publishEvent(new BuildingsChangedEvent(this.worldMgr.entityMgr))
+        EventBroker.publish(new BuildingsChangedEvent(this.worldMgr.entityMgr))
     }
 
     getTrainingTargets(): PathTarget[] {

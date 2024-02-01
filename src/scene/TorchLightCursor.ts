@@ -1,8 +1,8 @@
 import { Object3D, PointLight, SpotLight } from 'three'
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { ToggleAlarmEvent } from '../event/WorldEvents'
 import { TILESIZE } from '../params'
+import { EventBroker } from '../event/EventBroker'
 
 export class TorchLightCursor extends Object3D {
     alarmLights: SpotLight[] = []
@@ -26,7 +26,7 @@ export class TorchLightCursor extends Object3D {
             return alarmLight
         })
 
-        EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
+        EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => {
             this.alarmLights.forEach((l) => l.visible = event.alarmState)
         })
     }

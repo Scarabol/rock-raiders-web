@@ -2,9 +2,9 @@ import { AbstractGameSystem, GameEntity } from '../ECS'
 import { HealthComponent } from '../component/HealthComponent'
 import { LastWillComponent } from '../component/LastWillComponent'
 import { SelectionFrameComponent } from '../component/SelectionFrameComponent'
-import { EventBus } from '../../event/EventBus'
 import { SelectionChanged } from '../../event/LocalEvents'
 import { WorldManager } from '../WorldManager'
+import { EventBroker } from '../../event/EventBroker'
 
 export class DeathSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([HealthComponent, LastWillComponent])
@@ -26,7 +26,7 @@ export class DeathSystem extends AbstractGameSystem {
                     this.ecs.removeComponent(entity, LastWillComponent)
                     if (selectionFrameComponent?.isSelected()) {
                         selectionFrameComponent.deselect()
-                        EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
+                        EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
                     }
                 }
             } catch (e) {

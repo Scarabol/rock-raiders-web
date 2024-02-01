@@ -1,6 +1,6 @@
 import { IconSubPanel } from '../IconSubPanel'
 import { BaseElement } from '../../base/BaseElement'
-import { CameraViewMode, ChangeCameraEvent } from '../../../event/LocalEvents'
+import { CameraViewMode, ChangeCameraEvent } from '../../../event/GuiCommand'
 import { GameConfig } from '../../../cfg/GameConfig'
 
 export class ChangeCameraPanel extends IconSubPanel {

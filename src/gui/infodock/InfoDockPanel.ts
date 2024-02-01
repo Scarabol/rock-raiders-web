@@ -11,6 +11,7 @@ import { InformationPanel } from './InformationPanel'
 import { CameraControl, PlaySoundEvent } from '../../event/GuiCommand'
 import { InfoMessagesEntryConfig } from './InfoMessagesEntryConfig'
 import { Sample } from '../../audio/Sample'
+import { WorldLocationEventMap } from '../../event/EventTypeMap'
 
 export class InfoDockPanel extends Panel {
     readonly stackButtons: InfoDockButton[] = []
@@ -63,10 +64,10 @@ export class InfoDockPanel extends Panel {
         button.notifyRedraw()
     }
 
-    private addInfoDockButton(config: InfoMessagesEntryConfig, eventKey: EventKey, eventKeyGone?: EventKey) {
+    private addInfoDockButton(config: InfoMessagesEntryConfig, eventType: keyof WorldLocationEventMap, eventTypeGone?: keyof WorldLocationEventMap) {
         const infoDockButton = this.addChild(new InfoDockButton(this, config))
         const sample = Sample[config.sfxName]
-        this.registerEventListener(eventKey, (event: WorldLocationEvent) => {
+        this.registerEventListener(eventType, (event: WorldLocationEvent) => {
             if (infoDockButton.messages.some((m) => m.location === event.location)) return
             infoDockButton.hidden = false
             while (infoDockButton.messages.length >= 9) infoDockButton.messages.pop()
@@ -74,8 +75,8 @@ export class InfoDockPanel extends Panel {
             this.showButton(infoDockButton)
             if (sample) this.publishEvent(new PlaySoundEvent(sample, true))
         })
-        if (eventKeyGone) {
-            this.registerEventListener(eventKeyGone, (event: WorldLocationEvent) => {
+        if (eventTypeGone) {
+            this.registerEventListener(eventTypeGone, (event: WorldLocationEvent) => {
                 infoDockButton.messages.removeAll((e) => e.location === event.location)
                 this.redrawAfterMessageStackUpdate(infoDockButton)
             })

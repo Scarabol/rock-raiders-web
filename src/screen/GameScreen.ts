@@ -1,6 +1,5 @@
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { EventBus } from '../event/EventBus'
-import { InitRadarMap, SetupPriorityList, ShowGameResultEvent } from '../event/LocalEvents'
+import { InitRadarMap, ShowGameResultEvent } from '../event/LocalEvents'
 import { EntityManager } from '../game/EntityManager'
 import { GuiManager } from '../game/GuiManager'
 import { GameResult, GameResultState } from '../game/model/GameResult'
@@ -17,9 +16,10 @@ import { SelectionFrameLayer } from './layer/SelectionFrameLayer'
 import { ScreenMaster } from './ScreenMaster'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventKey } from '../event/EventKeyEnum'
-import { GameResultEvent, LevelSelectedEvent } from '../event/WorldEvents'
+import { GameResultEvent, LevelSelectedEvent, SetupPriorityList } from '../event/WorldEvents'
 import { EntityType } from '../game/model/EntityType'
 import { AdvisorLayer } from './layer/AdvisorLayer'
+import { EventBroker } from '../event/EventBroker'
 
 export class GameScreen {
     gameLayer: GameLayer
@@ -50,14 +50,14 @@ export class GameScreen {
         this.gameLayer.sceneMgr = this.sceneMgr
         this.gameLayer.entityMgr = this.entityMgr
         this.guiMgr = new GuiManager(this.worldMgr)
-        EventBus.registerEventListener(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
+        EventBroker.subscribe(EventKey.GAME_RESULT_STATE, (event: GameResultEvent) => {
             this.selectionFrameLayer.active = false
             this.guiLayer.active = false
             this.overlayLayer.active = false
             this.startEndgameSequence(event.result).then()
         })
-        EventBus.registerEventListener(EventKey.RESTART_GAME, () => this.restartLevel())
-        EventBus.registerEventListener(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
+        EventBroker.subscribe(EventKey.RESTART_GAME, () => this.restartLevel())
+        EventBroker.subscribe(EventKey.LEVEL_SELECTED, (event: LevelSelectedEvent) => {
             this.levelName = event.levelName
             this.levelConf = event.levelConf
             this.setupAndStartLevel()
@@ -90,11 +90,11 @@ export class GameScreen {
         // setup GUI
         this.guiMgr.buildingCycleIndex = 0
         this.overlayLayer.showBriefing(this.levelConf)
-        EventBus.publishEvent(new SetupPriorityList(this.levelConf.priorities))
+        EventBroker.publish(new SetupPriorityList(this.levelConf.priorities))
         // load in non-space objects next
         const objectList = ResourceManager.getResource(this.levelConf.oListFile)
         new ObjectListLoader(this.worldMgr, this.levelConf.disableStartTeleport || DEV_MODE).loadObjectList(objectList)
-        EventBus.publishEvent(new InitRadarMap(this.sceneMgr.controls.target.clone(), this.sceneMgr.terrain))
+        EventBroker.publish(new InitRadarMap(this.sceneMgr.controls.target.clone(), this.sceneMgr.terrain))
         this.show()
     }
 
@@ -139,7 +139,7 @@ export class GameScreen {
         GameState.reset()
         this.overlayLayer.showResultBriefing(result?.state, this.levelConf, () => {
             this.hide()
-            EventBus.publishEvent(new ShowGameResultEvent(result))
+            EventBroker.publish(new ShowGameResultEvent(result))
         })
     }
 }

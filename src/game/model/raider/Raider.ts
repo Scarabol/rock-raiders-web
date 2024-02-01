@@ -1,7 +1,6 @@
 import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
 import { Sample } from '../../../audio/Sample'
-import { EventBus } from '../../../event/EventBus'
 import { RaidersAmountChangedEvent, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, RAIDER_CARRY_SLOWDOWN, SPIDER_SLIP_RANGE_SQ, TILESIZE } from '../../../params'
 import { ResourceManager } from '../../../resource/ResourceManager'
@@ -38,6 +37,7 @@ import { ScannerComponent } from '../../component/ScannerComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
 import { BulletComponent } from '../../component/BulletComponent'
 import { GameConfig } from '../../../cfg/GameConfig'
+import { EventBroker } from '../../../event/EventBroker'
 
 export class Raider implements Updatable, JobFulfiller {
     readonly entityType: EntityType = EntityType.PILOT
@@ -113,15 +113,15 @@ export class Raider implements Updatable, JobFulfiller {
     beamUp() {
         this.stopJob()
         const components = this.worldMgr.ecs.getComponents(this.entity)
-        EventBus.publishEvent(new GenericDeathEvent(components.get(PositionComponent)))
+        EventBroker.publish(new GenericDeathEvent(components.get(PositionComponent)))
         components.get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
-        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
-        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
-        EventBus.publishEvent(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
+        EventBroker.publish(new RaidersAmountChangedEvent(this.worldMgr.entityMgr))
     }
 
     disposeFromWorld() {
@@ -175,7 +175,7 @@ export class Raider implements Updatable, JobFulfiller {
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                             this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
                             this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
-                            EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
+                            EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                         })
                     }
                 }

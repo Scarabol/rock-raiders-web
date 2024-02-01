@@ -1,7 +1,6 @@
 import { Vector2 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { clearTimeoutSafe } from '../core/Util'
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged, ToggleAlarmEvent } from '../event/WorldEvents'
 import { NerpRunner } from '../nerp/NerpRunner'
@@ -36,6 +35,7 @@ import { BoulderSystem } from './system/BoulderSystem'
 import { MaterialEntity } from './model/material/MaterialEntity'
 import { LavaErosionSystem } from './system/LavaErosionSystem'
 import { SaveGameManager } from '../resource/SaveGameManager'
+import { EventBroker } from '../event/EventBroker'
 
 export class WorldManager {
     readonly ecs: ECS = new ECS()
@@ -72,9 +72,9 @@ export class WorldManager {
         this.ecs.addSystem(new BulletSystem(this))
         this.ecs.addSystem(new BoulderSystem())
         this.ecs.addSystem(new LavaErosionSystem())
-        EventBus.registerEventListener(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
-        EventBus.registerEventListener(EventKey.PAUSE_GAME, () => this.stopLoop())
-        EventBus.registerEventListener(EventKey.UNPAUSE_GAME, () => {
+        EventBroker.subscribe(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
+        EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.stopLoop())
+        EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
             this.startLoop(UPDATE_INTERVAL_MS)
             if (this.firstUnpause) {
                 this.firstUnpause = false
@@ -83,7 +83,7 @@ export class WorldManager {
                 })
             }
         })
-        EventBus.registerEventListener(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
+        EventBroker.subscribe(EventKey.REQUESTED_VEHICLES_CHANGED, (event: RequestedVehiclesChanged) => {
             const requestedChange = event.numRequested - this.requestedVehicleTypes.count((e) => e === event.vehicle)
             for (let c = 0; c < -requestedChange; c++) {
                 this.requestedVehicleTypes.removeLast(event.vehicle)
@@ -92,9 +92,9 @@ export class WorldManager {
                 this.requestedVehicleTypes.push(event.vehicle)
             }
         })
-        EventBus.registerEventListener(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
-        EventBus.registerEventListener(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => GameState.alarmMode = event.alarmState)
-        EventBus.registerEventListener(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
+        EventBroker.subscribe(EventKey.LOCATION_RAIDER_DISCOVERED, () => GameState.hiddenObjectsFound++)
+        EventBroker.subscribe(EventKey.TOGGLE_ALARM, (event: ToggleAlarmEvent) => GameState.alarmMode = event.alarmState)
+        EventBroker.subscribe(EventKey.SHOW_MISSION_BRIEFING, (event: ShowMissionBriefingEvent) => {
             if (!this.nerpRunner) return
             this.nerpRunner.objectiveShowing = event.isShowing ? 1 : 0
             this.nerpRunner.objectiveSwitch = this.nerpRunner.objectiveSwitch && event.isShowing
@@ -157,7 +157,7 @@ export class WorldManager {
                     const teleportBuilding = this.entityMgr.findTeleportBuilding(EntityType.PILOT)
                     if (teleportBuilding) {
                         this.requestedRaiders--
-                        EventBus.publishEvent(new RequestedRaidersChanged(this.requestedRaiders))
+                        EventBroker.publish(new RequestedRaidersChanged(this.requestedRaiders))
                         const raider = new Raider(this)
                         const heading = teleportBuilding.sceneEntity.heading
                         const worldPosition = new Vector2(0, TILESIZE / 2).rotateAround(new Vector2(0, 0), -heading).add(teleportBuilding.getPosition2D())
@@ -181,7 +181,7 @@ export class WorldManager {
                         const teleportBuilding = this.entityMgr.findTeleportBuilding(vType)
                         if (teleportBuilding) {
                             GameState.numCrystal -= stats.CostCrystal
-                            EventBus.publishEvent(new MaterialAmountChanged())
+                            EventBroker.publish(new MaterialAmountChanged())
                             const vehicle = VehicleFactory.createVehicleFromType(vType, this)
                             const worldPosition = (teleportBuilding.waterPathSurface ?? teleportBuilding.primaryPathSurface).getCenterWorld2D()
                             const heading = teleportBuilding.sceneEntity.heading
@@ -192,7 +192,7 @@ export class WorldManager {
                     })
                     if (spawnedVehicleType) {
                         this.requestedVehicleTypes.remove(spawnedVehicleType)
-                        EventBus.publishEvent(new RequestedVehiclesChanged(spawnedVehicleType, this.requestedVehicleTypes.count((e) => e === spawnedVehicleType)))
+                        EventBroker.publish(new RequestedVehiclesChanged(spawnedVehicleType, this.requestedVehicleTypes.count((e) => e === spawnedVehicleType)))
                     }
                 }
             }
@@ -212,7 +212,7 @@ export class WorldManager {
             if (item.entityType === EntityType.ORE) GameState.numOre++
             else if (item.entityType === EntityType.CRYSTAL) GameState.numCrystal++
             else if (item.entityType === EntityType.BRICK) GameState.numBrick++
-            EventBus.publishEvent(new MaterialAmountChanged())
+            EventBroker.publish(new MaterialAmountChanged())
         }
     }
 }

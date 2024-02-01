@@ -1,4 +1,3 @@
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ChangeTooltip, HideTooltip } from '../../event/GuiCommand'
 import { SaveScreenshot } from '../../event/LocalEvents'
@@ -7,6 +6,7 @@ import { ScreenLayer } from './ScreenLayer'
 import { CURSOR_MAX_HEIGHT } from '../../params'
 import { clearTimeoutSafe } from '../../core/Util'
 import { SoundManager } from '../../audio/SoundManager'
+import { EventBroker } from '../../event/EventBroker'
 
 export class TooltipLayer extends ScreenLayer {
     readonly gameCanvasContainer: HTMLElement
@@ -21,7 +21,7 @@ export class TooltipLayer extends ScreenLayer {
     constructor() {
         super()
         this.gameCanvasContainer = document.getElementById('game-canvas-container')
-        EventBus.registerEventListener(EventKey.COMMAND_TOOLTIP_CHANGE, (event: ChangeTooltip) => {
+        EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_CHANGE, (event: ChangeTooltip) => {
             if (this.cursorLeft || !this.active || event.tooltipText === this.lastTooltipText) return
             this.lastTooltipText = event.tooltipText
             this.lastTooltipSfx = event.tooltipSfx
@@ -40,7 +40,7 @@ export class TooltipLayer extends ScreenLayer {
                 this.tooltipTimeoutSfx = setTimeout(() => SoundManager.playSound(event.tooltipSfx, true), event.timeoutSfx)
             }
         })
-        EventBus.registerEventListener(EventKey.COMMAND_TOOLTIP_HIDE, (event: HideTooltip) => {
+        EventBroker.subscribe(EventKey.COMMAND_TOOLTIP_HIDE, (event: HideTooltip) => {
             if (!(this.lastTooltipText === event.tooltipText || this.lastTooltipSfx === event.tooltipSfx)) return
             this.removeTooltip()
         })
@@ -59,7 +59,7 @@ export class TooltipLayer extends ScreenLayer {
         })
         this.addEventListener('keyup', (event: KeyboardEvent): boolean => {
             if (event.key === 'p') {
-                EventBus.publishEvent(new SaveScreenshot())
+                EventBroker.publish(new SaveScreenshot())
                 return true
             }
             return false

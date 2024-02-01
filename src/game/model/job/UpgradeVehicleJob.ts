@@ -4,8 +4,8 @@ import { VehicleEntity } from '../vehicle/VehicleEntity'
 import { PathTarget } from '../PathTarget'
 import { WorldManager } from '../../WorldManager'
 import { BuildingActivity } from '../anim/AnimationActivity'
-import { EventBus } from '../../../event/EventBus'
-import { UpgradeVehicleCompleteEvent } from '../../../event/LocalEvents'
+import { VehicleUpgradeCompleteEvent } from '../../../event/LocalEvents'
+import { EventBroker } from '../../../event/EventBroker'
 
 export class UpgradeVehicleJob extends Job {
     readonly workplace: PathTarget
@@ -32,7 +32,7 @@ export class UpgradeVehicleJob extends Job {
             super.onJobComplete(fulfiller)
             building.sceneEntity.setAnimation(BuildingActivity.Stand)
             this.vehicle.addUpgrade(this.upgrade)
-            EventBus.publishEvent(new UpgradeVehicleCompleteEvent())
+            EventBroker.publish(new VehicleUpgradeCompleteEvent())
         })
     }
 

@@ -5,18 +5,18 @@ import { BriefingPanel } from '../../gui/briefing/BriefingPanel'
 import { OptionsPanel } from '../../gui/overlay/OptionsPanel'
 import { PausePanel } from '../../gui/overlay/PausePanel'
 import { DEV_MODE } from '../../params'
-import { ChangeCursor, ChangeTooltip, GuiCommand } from '../../event/GuiCommand'
-import { GameEvent } from '../../event/GameEvent'
+import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
 import { Panel } from '../../gui/base/Panel'
 import { GamePointerEvent } from '../../event/GamePointerEvent'
 import { Cursor } from '../../resource/Cursor'
 import { POINTER_EVENT } from '../../event/EventTypeEnum'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../../gui/event/GuiEvent'
 import { BaseElement } from '../../gui/base/BaseElement'
-import { EventBus } from '../../event/EventBus'
 import { GameResultState } from '../../game/model/GameResult'
 import { GameResultEvent, RestartGameEvent } from '../../event/WorldEvents'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
+import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 
 export class OverlayLayer extends ScaledLayer {
     rootElement: BaseElement
@@ -29,11 +29,11 @@ export class OverlayLayer extends ScaledLayer {
         super()
         this.rootElement = new BaseElement(null)
         this.rootElement.notifyRedraw = () => this.animationFrame.notifyRedraw()
-        this.rootElement.publishEvent = (event: GuiCommand) => {
-            EventBus.publishEvent(event)
+        this.rootElement.publishEvent = (event: BaseEvent) => {
+            EventBroker.publish(event)
         }
-        this.rootElement.registerEventListener = <T extends GameEvent>(eventKey: EventKey, callback: (event: T) => void) => {
-            EventBus.registerEventListener(eventKey, callback)
+        this.rootElement.registerEventListener = <Type extends keyof EventTypeMap>(eventType: Type, callback: (event: EventTypeMap[Type]) => void) => {
+            EventBroker.subscribe(eventType, callback)
         }
         this.panelPause = this.addPanel(new PausePanel(this.rootElement, GameConfig.instance.menu.pausedMenu, this.canvas.width, this.canvas.height))
         this.panelOptions = this.addPanel(new OptionsPanel(this.rootElement, GameConfig.instance.menu.optionsMenu, this.canvas.width, this.canvas.height))
@@ -43,9 +43,9 @@ export class OverlayLayer extends ScaledLayer {
         this.panelPause.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
         this.panelPause.onAbortGame = () => {
             this.setActivePanel(null)
-            EventBus.publishEvent(new GameResultEvent(GameResultState.QUIT))
+            EventBroker.publish(new GameResultEvent(GameResultState.QUIT))
         }
-        this.panelPause.onRestartGame = () => EventBus.publishEvent(new RestartGameEvent())
+        this.panelPause.onRestartGame = () => EventBroker.publish(new RestartGameEvent())
         this.panelOptions.onRepeatBriefing = () => this.setActivePanel(this.panelBriefing)
         this.panelOptions.onContinueMission = () => this.setActivePanel(null)
         this.panelBriefing.onContinueMission = () => this.setActivePanel(null)
@@ -54,7 +54,7 @@ export class OverlayLayer extends ScaledLayer {
             this.rootElement.onRedraw(context)
         }
         this.animationFrame.notifyRedraw()
-        EventBus.registerEventListener(EventKey.SHOW_OPTIONS, () => this.setActivePanel(this.panelOptions))
+        EventBroker.subscribe(EventKey.SHOW_OPTIONS, () => this.setActivePanel(this.panelOptions))
         new Map<keyof HTMLElementEventMap, POINTER_EVENT>([
             ['pointermove', POINTER_EVENT.MOVE],
             ['pointerdown', POINTER_EVENT.DOWN],
@@ -113,10 +113,10 @@ export class OverlayLayer extends ScaledLayer {
         this.panels.forEach(p => p !== panel && p.hide())
         if (panel) {
             panel.show()
-            EventBus.publishEvent(new ChangeCursor(Cursor.STANDARD))
-            EventBus.publishEvent(new ChangeTooltip('', 0, '', 0))
+            EventBroker.publish(new ChangeCursor(Cursor.STANDARD))
+            EventBroker.publish(new ChangeTooltip('', 0, '', 0))
         }
-        EventBus.publishEvent(new GuiCommand(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
+        EventBroker.publish(new BaseEvent(panel ? EventKey.PAUSE_GAME : EventKey.UNPAUSE_GAME))
         this.animationFrame.notifyRedraw()
     }
 

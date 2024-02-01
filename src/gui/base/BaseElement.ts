@@ -1,11 +1,10 @@
 import { Sample } from '../../audio/Sample'
 import { SpriteContext } from '../../core/Sprite'
-import { EventKey } from '../../event/EventKeyEnum'
 import { MOUSE_BUTTON } from '../../event/EventTypeEnum'
-import { GameEvent } from '../../event/GameEvent'
-import { ChangeCursor, GuiCommand, PlaySoundEvent } from '../../event/GuiCommand'
+import { ChangeCursor, PlaySoundEvent } from '../../event/GuiCommand'
 import { GuiClickEvent, GuiHoverEvent, GuiReleaseEvent } from '../event/GuiEvent'
 import { Cursor } from '../../resource/Cursor'
+import { BaseEvent, EventTypeMap } from '../../event/EventTypeMap'
 
 export class BaseElement {
     parent: BaseElement = null
@@ -21,7 +20,7 @@ export class BaseElement {
     hover: boolean = false
     pressedByButton: MOUSE_BUTTON = null
     onClick: (cx?: number, cy?: number) => any = null
-    onPublishEvent: (event: GuiCommand) => any = (event) => console.log(`TODO publish event: ${EventKey[event.eventKey]}`)
+    onPublishEvent: (event: BaseEvent) => any = (event) => console.log(`TODO publish event: ${event.type}`)
 
     constructor(parent: BaseElement) {
         this.parent = parent
@@ -144,12 +143,12 @@ export class BaseElement {
         this.parent?.notifyRedraw()
     }
 
-    publishEvent(event: GuiCommand) {
+    publishEvent(event: BaseEvent) {
         if (this.parent) this.parent.publishEvent(event)
         else this.onPublishEvent(event)
     }
 
-    registerEventListener<T extends GameEvent>(eventKey: EventKey, callback: (event: T) => void) {
-        this.parent?.registerEventListener(eventKey, callback)
+    registerEventListener<Type extends keyof EventTypeMap>(eventType: Type, callback: (event: EventTypeMap[Type]) => void) {
+        this.parent?.registerEventListener(eventType, callback)
     }
 }

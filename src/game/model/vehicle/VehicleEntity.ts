@@ -2,7 +2,6 @@ import { PositionalAudio, Vector2, Vector3 } from 'three'
 import { SoundManager } from '../../../audio/SoundManager'
 import { Sample } from '../../../audio/Sample'
 import { VehicleEntityStats } from '../../../cfg/GameStatsCfg'
-import { EventBus } from '../../../event/EventBus'
 import { SelectionChanged, UpdateRadarEntityEvent } from '../../../event/LocalEvents'
 import { DEV_MODE, ITEM_ACTION_RANGE_SQ, NATIVE_UPDATE_INTERVAL, TILESIZE } from '../../../params'
 import { WorldManager } from '../../WorldManager'
@@ -41,6 +40,7 @@ import { EventKey } from '../../../event/EventKeyEnum'
 import { ScannerComponent } from '../../component/ScannerComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../../component/MapMarkerComponent'
 import { GameConfig } from '../../../cfg/GameConfig'
+import { EventBroker } from '../../../event/EventBroker'
 
 export class VehicleEntity implements Updatable, JobFulfiller {
     readonly entityType: EntityType
@@ -107,13 +107,13 @@ export class VehicleEntity implements Updatable, JobFulfiller {
 
     beamUp() {
         const components = this.worldMgr.ecs.getComponents(this.entity)
-        EventBus.publishEvent(new GenericDeathEvent(components.get(PositionComponent)))
+        EventBroker.publish(new GenericDeathEvent(components.get(PositionComponent)))
         components.get(SelectionFrameComponent)?.deselect()
         this.worldMgr.ecs.removeComponent(this.entity, SelectionFrameComponent)
         this.worldMgr.ecs.removeComponent(this.entity, MapMarkerComponent)
-        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.ecs.removeComponent(this.entity, ScannerComponent)
-        EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
+        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.entity, MapMarkerChange.REMOVE))
         this.worldMgr.ecs.addComponent(this.entity, new BeamUpComponent(this))
         if (this.driver) this.worldMgr.entityMgr.removeEntity(this.driver.entity)
         this.worldMgr.entityMgr.removeEntity(this.entity)
@@ -156,7 +156,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
                         rockySceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                             this.worldMgr.ecs.addComponent(rocky, new RaiderScareComponent(RaiderScareRange.ROCKY))
                             this.worldMgr.ecs.addComponent(rocky, new RockMonsterBehaviorComponent())
-                            EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
+                            EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                         })
                     }
                 }
@@ -357,7 +357,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             // TODO sync idle animation of vehicle and driver
         }
         if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
+        if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
     dropDriver() {
@@ -374,7 +374,7 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         this.driver.sceneEntity.setAnimation(AnimEntityActivity.Stand)
         this.driver = null
         this.engineSound = SoundManager.stopAudio(this.engineSound)
-        if (this.selected) EventBus.publishEvent(new SelectionChanged(this.worldMgr.entityMgr))
+        if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
 
     getRequiredTraining(): RaiderTraining {

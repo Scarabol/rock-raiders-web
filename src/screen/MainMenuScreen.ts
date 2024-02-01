@@ -6,7 +6,6 @@ import { MainMenuLevelButton } from '../menu/MainMenuLevelButton'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { ScreenMaster } from './ScreenMaster'
-import { EventBus } from '../event/EventBus'
 import { EventKey } from '../event/EventKeyEnum'
 import { ShowGameResultEvent } from '../event/LocalEvents'
 import { LevelSelectedEvent, MaterialAmountChanged } from '../event/WorldEvents'
@@ -15,6 +14,7 @@ import { MainMenuCreditsLayer } from '../menu/MainMenuCreditsLayer'
 import { ScaledLayer } from './layer/ScreenLayer'
 import { RockWipeLayer } from '../menu/RockWipeLayer'
 import { GameConfig } from '../cfg/GameConfig'
+import { EventBroker } from '../event/EventBroker'
 
 export class MainMenuScreen {
     menuLayers: ScaledLayer[] = []
@@ -47,7 +47,7 @@ export class MainMenuScreen {
         this.creditsLayer.onExitCredits = () => this.showMainMenu()
         this.menuLayers.push(this.creditsLayer)
         this.rockWipeLayer = screenMaster.addLayer(new RockWipeLayer(), 200 + this.menuLayers.length * 10)
-        EventBus.registerEventListener(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
+        EventBroker.subscribe(EventKey.SHOW_GAME_RESULT, (event: ShowGameResultEvent) => {
             if (!event.result) this.showLevelSelection()
         })
         if (!this.checkEnv()) throw new Error('Error (0xaex6ieR9one): Visit your grandma')
@@ -125,7 +125,7 @@ export class MainMenuScreen {
         this.screenMaster.loadingLayer.show()
         this.menuLayers.forEach((m) => m.hide())
         this.rockWipeLayer.hide()
-        EventBus.publishEvent(new LevelSelectedEvent(levelName, levelConf))
-        EventBus.publishEvent(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
+        EventBroker.publish(new LevelSelectedEvent(levelName, levelConf))
+        EventBroker.publish(new MaterialAmountChanged()) // XXX Remove workaround for UI redraw
     }
 }

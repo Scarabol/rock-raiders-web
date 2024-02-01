@@ -1,6 +1,6 @@
 import { EventKey } from '../../../event/EventKeyEnum'
-import { DropBirdScarer, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade } from '../../../event/GuiCommand'
-import { BuildingsChangedEvent, CameraViewMode, ChangeCameraEvent, SelectionChanged } from '../../../event/LocalEvents'
+import { CameraViewMode, ChangeCameraEvent, DropBirdScarer, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade } from '../../../event/GuiCommand'
+import { BuildingsChangedEvent, SelectionChanged } from '../../../event/LocalEvents'
 import { EntityType } from '../../../game/model/EntityType'
 import { BaseElement } from '../../base/BaseElement'
 import { Panel } from '../../base/Panel'

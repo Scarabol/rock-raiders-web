@@ -14,12 +14,12 @@ import { PriorityIdentifier } from '../model/job/PriorityIdentifier'
 import { RaiderTraining } from '../model/raider/RaiderTraining'
 import { HealthComponent } from '../component/HealthComponent'
 import { LastWillComponent } from '../component/LastWillComponent'
-import { EventBus } from '../../event/EventBus'
 import { GenericDeathEvent } from '../../event/WorldLocationEvent'
 import { BeamUpComponent } from '../component/BeamUpComponent'
 import { MapMarkerChange, MapMarkerComponent, MapMarkerType } from '../component/MapMarkerComponent'
 import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
 
 export class MaterialSpawner {
     static spawnMaterial(
@@ -99,7 +99,7 @@ export class MaterialSpawner {
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthBarSprite)
                 material.worldMgr.sceneMgr.addSprite(healthComponent.healthFontSprite)
                 material.worldMgr.ecs.addComponent(material.entity, new LastWillComponent(() => {
-                    EventBus.publishEvent(new GenericDeathEvent(material.worldMgr.ecs.getComponents(material.entity).get(PositionComponent)))
+                    EventBroker.publish(new GenericDeathEvent(material.worldMgr.ecs.getComponents(material.entity).get(PositionComponent)))
                     material.worldMgr.entityMgr.removeEntity(material.entity)
                     material.targetSurface.fence = null
                     material.targetSurface.fenceRequested = false
@@ -113,7 +113,7 @@ export class MaterialSpawner {
             material.setupCarryJob()
             worldMgr.entityMgr.materials.add(material) // TODO use game entities within entity manager
             worldMgr.ecs.addComponent(material.entity, new MapMarkerComponent(MapMarkerType.MATERIAL))
-            EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, material.entity, MapMarkerChange.UPDATE, floorPosition))
+            EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MATERIAL, material.entity, MapMarkerChange.UPDATE, floorPosition))
         } else {
             worldMgr.entityMgr.materialsUndiscovered.add(material) // TODO use game entities within entity manager
         }

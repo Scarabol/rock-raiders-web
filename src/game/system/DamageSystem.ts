@@ -1,6 +1,5 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { HealthComponent } from '../component/HealthComponent'
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { DynamiteExplosionEvent } from '../../event/WorldEvents'
 import { PositionComponent } from '../component/PositionComponent'
@@ -8,6 +7,7 @@ import { SurfaceType } from '../terrain/SurfaceType'
 import { MovableStatsComponent } from '../component/MovableStatsComponent'
 import { LandslideEvent } from '../../event/WorldLocationEvent'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
 
 export class DamageSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set<Function>([PositionComponent, HealthComponent])
@@ -20,10 +20,10 @@ export class DamageSystem extends AbstractGameSystem {
         super()
         this.dynamiteRadiusSq = Math.pow(GameConfig.instance.main.DynamiteDamageRadius, 2)
         this.dynamiteMaxDamage = GameConfig.instance.main.DynamiteMaxDamage
-        EventBus.registerEventListener(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
+        EventBroker.subscribe(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
             this.dynamiteExplosions.push(event)
         })
-        EventBus.registerEventListener(EventKey.LOCATION_LANDSLIDE, (event: LandslideEvent) => {
+        EventBroker.subscribe(EventKey.LOCATION_LANDSLIDE, (event: LandslideEvent) => {
             this.landslides.push(event.location)
         })
     }

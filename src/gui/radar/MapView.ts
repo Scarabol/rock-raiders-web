@@ -9,8 +9,8 @@ import { MapRenderer } from './MapRenderer'
 import { GameEntity } from '../../game/ECS'
 import { ChangeTooltip } from '../../event/GuiCommand'
 import { TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
-import { EventBus } from '../../event/EventBus'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
 
 export class MapView extends BaseElement {
     readonly mapRenderer: MapRenderer
@@ -138,7 +138,7 @@ export class MapView extends BaseElement {
             if (surface && surface !== this.lastSurface) {
                 this.lastSurface = surface
                 const tooltip = GameConfig.instance.surfaceTypeDescriptions.get(surface.name.toLowerCase())
-                if (tooltip) EventBus.publishEvent(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
+                if (tooltip) EventBroker.publish(new ChangeTooltip(tooltip[0], TOOLTIP_DELAY_TEXT_SCENE, tooltip[1], TOOLTIP_DELAY_SFX))
             }
         }
         return inRect

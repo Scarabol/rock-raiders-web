@@ -10,7 +10,6 @@ import { PowerGrid } from './PowerGrid'
 import { Surface } from './Surface'
 import { SurfaceType } from './SurfaceType'
 import { Sample } from '../../audio/Sample'
-import { EventBus } from '../../event/EventBus'
 import { GenericMonsterEvent, LandslideEvent } from '../../event/WorldLocationEvent'
 import { PositionComponent } from '../component/PositionComponent'
 import { EntityType, MonsterEntityType } from '../model/EntityType'
@@ -22,6 +21,7 @@ import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorCo
 import { WALL_TYPE } from './WallType'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
 
 export class Terrain {
     heightOffset: number[][] = [[]]
@@ -162,7 +162,7 @@ export class Terrain {
         this.worldMgr.sceneMgr.addMiscAnim(rockFallAnimName, fallInPosition, heading, false)
         source.playPositionalSample(Sample.SFX_RockBreak)
         target.makeRubble()
-        EventBus.publishEvent(new LandslideEvent(new PositionComponent(target.getCenterWorld(), target)))
+        EventBroker.publish(new LandslideEvent(new PositionComponent(target.getCenterWorld(), target)))
     }
 
     removeFallInOrigin(surface: Surface) {
@@ -216,7 +216,7 @@ export class Terrain {
             this.worldMgr.ecs.addComponent(monster, new RaiderScareComponent(RaiderScareRange.ROCKY))
             this.worldMgr.ecs.addComponent(monster, new RockMonsterBehaviorComponent())
         })
-        EventBus.publishEvent(new GenericMonsterEvent(positionComponent))
+        EventBroker.publish(new GenericMonsterEvent(positionComponent))
     }
 
     getFloorPosition(world: Vector2) {

@@ -3,34 +3,28 @@ import { GameState } from '../game/model/GameState'
 import { Job } from '../game/model/job/Job'
 import { BRICK_ORE_VALUE } from '../params'
 import { EventKey } from './EventKeyEnum'
-import { GameEvent } from './GameEvent'
 import { Vector2 } from 'three'
 import { GameResultState } from '../game/model/GameResult'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
+import { BaseEvent } from './EventTypeMap'
+import { PriorityEntry } from '../game/model/job/PriorityEntry'
 
-export class WorldEvent extends GameEvent {
-    constructor(eventKey: EventKey) {
-        super(eventKey)
-        this.logEvent = true
-    }
-}
-
-export abstract class JobEvent extends WorldEvent {
+export abstract class JobEvent extends BaseEvent {
     job: Job
 
-    protected constructor(eventKey: EventKey, job: Job) {
-        super(eventKey)
+    protected constructor(job: Job) {
+        super(EventKey.JOB_CREATE)
         this.job = job
     }
 }
 
 export class JobCreateEvent extends JobEvent {
     constructor(job: Job) {
-        super(EventKey.JOB_CREATE, job)
+        super(job)
     }
 }
 
-export class RequestedRaidersChanged extends WorldEvent {
+export class RequestedRaidersChanged extends BaseEvent {
     numRequested: number
 
     constructor(numRequested: number) {
@@ -39,7 +33,7 @@ export class RequestedRaidersChanged extends WorldEvent {
     }
 }
 
-export class RequestedVehiclesChanged extends WorldEvent {
+export class RequestedVehiclesChanged extends BaseEvent {
     vehicle: EntityType
     numRequested: number
 
@@ -50,7 +44,7 @@ export class RequestedVehiclesChanged extends WorldEvent {
     }
 }
 
-export class MaterialAmountChanged extends WorldEvent {
+export class MaterialAmountChanged extends BaseEvent {
     numCrystal: number
     totalOre: number
 
@@ -61,7 +55,7 @@ export class MaterialAmountChanged extends WorldEvent {
     }
 }
 
-export class UsedCrystalsChanged extends WorldEvent {
+export class UsedCrystalsChanged extends BaseEvent {
     usedCrystals: number
 
     constructor() {
@@ -70,44 +64,77 @@ export class UsedCrystalsChanged extends WorldEvent {
     }
 }
 
-export class CavernDiscovered extends WorldEvent {
+export class CavernDiscovered extends BaseEvent {
     constructor() {
         super(EventKey.CAVERN_DISCOVERED)
     }
 }
 
-export class OreFoundEvent extends WorldEvent {
+export class OreFoundEvent extends BaseEvent {
     constructor() {
         super(EventKey.ORE_FOUND)
     }
 }
 
-export class ToggleAlarmEvent extends WorldEvent {
+export class ToggleAlarmEvent extends BaseEvent {
     constructor(readonly alarmState: boolean) {
         super(EventKey.TOGGLE_ALARM)
     }
 }
 
-export class DynamiteExplosionEvent extends WorldEvent {
+export class DynamiteExplosionEvent extends BaseEvent {
     constructor(readonly position: Vector2) {
         super(EventKey.DYNAMITE_EXPLOSION)
     }
 }
 
-export class GameResultEvent extends WorldEvent {
+export class GameResultEvent extends BaseEvent {
     constructor(readonly result: GameResultState) {
         super(EventKey.GAME_RESULT_STATE)
     }
 }
 
-export class RestartGameEvent extends WorldEvent {
+export class RestartGameEvent extends BaseEvent {
     constructor() {
         super(EventKey.RESTART_GAME)
     }
 }
 
-export class LevelSelectedEvent extends WorldEvent {
+export class LevelSelectedEvent extends BaseEvent {
     constructor(readonly levelName: string, readonly levelConf: LevelEntryCfg) {
         super(EventKey.LEVEL_SELECTED)
+    }
+}
+
+export class AirLevelChanged extends BaseEvent {
+    airLevel: number
+
+    constructor(airLevel: number) {
+        super(EventKey.AIR_LEVEL_CHANGED)
+        this.airLevel = airLevel
+    }
+}
+
+export class NerpMessageEvent extends BaseEvent {
+    constructor(readonly text: string, readonly messageTimeoutMs: number) {
+        super(EventKey.NERP_MESSAGE)
+    }
+}
+
+export class SetupPriorityList extends BaseEvent {
+    priorityList: PriorityEntry[]
+
+    constructor(priorityList: PriorityEntry[]) {
+        super(EventKey.SETUP_PRIORITY_LIST)
+        this.priorityList = priorityList
+    }
+}
+
+export class UpdatePriorities extends BaseEvent {
+    priorityList: PriorityEntry[]
+
+    constructor(priorityList: PriorityEntry[]) {
+        super(EventKey.UPDATE_PRIORITIES)
+        this.priorityList = priorityList
     }
 }

@@ -17,7 +17,6 @@ import { LastWillComponent } from '../component/LastWillComponent'
 import { RockMonsterBehaviorComponent } from '../component/RockMonsterBehaviorComponent'
 import { WorldTargetComponent } from '../component/WorldTargetComponent'
 import { MaterialSpawner } from './MaterialSpawner'
-import { EventBus } from '../../event/EventBus'
 import { WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { EventKey } from '../../event/EventKeyEnum'
 import { RaiderScareComponent, RaiderScareRange } from '../component/RaiderScareComponent'
@@ -26,6 +25,7 @@ import { UpdateRadarEntityEvent } from '../../event/LocalEvents'
 import { EntityPushedComponent } from '../component/EntityPushedComponent'
 import { HeadingComponent } from '../component/HeadingComponent'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
 
 export class MonsterSpawner {
     static spawnMonster(worldMgr: WorldManager, entityType: MonsterEntityType, worldPos: Vector2, headingRad: number): GameEntity {
@@ -58,7 +58,7 @@ export class MonsterSpawner {
                 worldMgr.ecs.addComponent(entity, new RaiderScareComponent(RaiderScareRange.BAT))
                 worldMgr.ecs.addComponent(entity, new LastWillComponent(() => {
                     worldMgr.ecs.removeComponent(entity, RaiderScareComponent)
-                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
+                    EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
                 }))
                 break
             case EntityType.SLUG:
@@ -74,7 +74,7 @@ export class MonsterSpawner {
                     worldMgr.ecs.removeComponent(entity, EntityPushedComponent)
                     worldMgr.ecs.getComponents(entity).get(SlugBehaviorComponent).state = SlugBehaviorState.GO_ENTER
                     sceneEntity.setAnimation(AnimEntityActivity.Stand)
-                    EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
+                    EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
                 }))
                 break
             case EntityType.ICE_MONSTER:
@@ -118,9 +118,9 @@ export class MonsterSpawner {
                 for (let c = 0; c < numCrystalsEaten; c++) {
                     MaterialSpawner.spawnMaterial(worldMgr, EntityType.CRYSTAL, positionComponent.getPosition2D()) // XXX add random offset and random heading
                 }
-                EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
+                EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
                 worldMgr.ecs.removeComponent(entity, RaiderScareComponent)
-                EventBus.publishEvent(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
+                EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.MONSTER, entity, MapMarkerChange.REMOVE))
                 worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
                 worldMgr.entityMgr.removeEntity(entity)
                 worldMgr.ecs.removeEntity(entity)

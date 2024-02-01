@@ -12,7 +12,6 @@ import { SurfaceType } from '../terrain/SurfaceType'
 import { WALL_TYPE } from '../terrain/WallType'
 import { ResourceManager } from '../../resource/ResourceManager'
 import { HealthComponent } from '../component/HealthComponent'
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { UnderAttackEvent, WorldLocationEvent } from '../../event/WorldLocationEvent'
 import { GameState } from '../model/GameState'
@@ -32,6 +31,7 @@ import { VehicleTarget } from '../EntityManager'
 import { HeadingComponent } from '../component/HeadingComponent'
 import { BeamUpComponent } from '../component/BeamUpComponent'
 import { GameConfig } from '../../cfg/GameConfig'
+import { EventBroker } from '../../event/EventBroker'
 
 const ROCKY_GRAB_DISTANCE_SQ = 10 * 10
 const ROCKY_GATHER_DISTANCE_SQ = 5 * 5
@@ -43,7 +43,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
 
     constructor(readonly worldMgr: WorldManager) {
         super()
-        EventBus.registerEventListener(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
+        EventBroker.subscribe(EventKey.DYNAMITE_EXPLOSION, (event: DynamiteExplosionEvent) => {
             this.worldMgr.entityMgr.rockMonsters.forEach((m) => {
                 const components = this.ecs.getComponents(m)
                 const positionComponent = components.get(PositionComponent)
@@ -51,7 +51,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                     components.get(AnimatedSceneEntityComponent).sceneEntity.setAnimation(RockMonsterActivity.WakeUp, () => {
                         this.ecs.addComponent(m, new RaiderScareComponent(RaiderScareRange.ROCKY))
                         this.ecs.addComponent(m, new RockMonsterBehaviorComponent())
-                        EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
+                        EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER, positionComponent))
                     })
                 }
             })
@@ -251,7 +251,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                             const buildingComponents = this.ecs.getComponents(behaviorComponent.targetBuilding.entity)
                                             const healthComponent = buildingComponents.get(HealthComponent)
                                             healthComponent.changeHealth(stats.RepairValue)
-                                            if (healthComponent.triggerAlarm) EventBus.publishEvent(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
+                                            if (healthComponent.triggerAlarm) EventBroker.publish(new UnderAttackEvent(buildingComponents.get(PositionComponent)))
                                         })
                                     } else if (!components.has(WorldTargetComponent)) {
                                         const buildingPathTargets = behaviorComponent.targetBuilding.getTrainingTargets()
@@ -330,7 +330,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                                 sceneEntity.lookAt(this.worldMgr.sceneMgr.getFloorPosition(behaviorComponent.targetWall.getCenterWorld2D()))
                                 this.worldMgr.entityMgr.removeEntity(entity)
                                 sceneEntity.setAnimation(RockMonsterActivity.Enter, () => {
-                                    EventBus.publishEvent(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
+                                    EventBroker.publish(new WorldLocationEvent(EventKey.LOCATION_MONSTER_GONE, positionComponent))
                                     this.worldMgr.sceneMgr.removeMeshGroup(sceneEntity)
                                     this.ecs.removeEntity(entity)
                                     sceneEntity.dispose()
@@ -393,7 +393,7 @@ export class RockMonsterBehaviorSystem extends AbstractGameSystem {
                 const vehicleComponents = this.ecs.getComponents(vehicleInMeleeRange.entity)
                 const healthComponent = vehicleComponents.get(HealthComponent)
                 healthComponent.changeHealth(stats.RepairValue)
-                if (healthComponent.triggerAlarm) EventBus.publishEvent(new UnderAttackEvent(vehicleComponents.get(PositionComponent)))
+                if (healthComponent.triggerAlarm) EventBroker.publish(new UnderAttackEvent(vehicleComponents.get(PositionComponent)))
             }
         })
     }

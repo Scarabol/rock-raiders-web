@@ -1,12 +1,12 @@
 import { EventKey } from './EventKeyEnum'
-import { WorldEvent } from './WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
+import { BaseEvent, WorldLocationEventMap } from './EventTypeMap'
 
-export class WorldLocationEvent extends WorldEvent {
+export class WorldLocationEvent extends BaseEvent {
     location: PositionComponent
 
-    constructor(entityKey: EventKey, location: PositionComponent) {
-        super(entityKey)
+    constructor(eventType: keyof WorldLocationEventMap, location: PositionComponent) {
+        super(eventType)
         this.location = location
     }
 }

@@ -1,9 +1,9 @@
 import { AbstractGameSystem, GameEntity } from '../ECS'
 import { LavaErosionComponent } from '../component/LavaErosionComponent'
 import { SurfaceType } from '../terrain/SurfaceType'
-import { EventBus } from '../../event/EventBus'
 import { EventKey } from '../../event/EventKeyEnum'
 import { LevelSelectedEvent } from '../../event/WorldEvents'
+import { EventBroker } from '../../event/EventBroker'
 
 export class LavaErosionSystem extends AbstractGameSystem {
     componentsRequired: Set<Function> = new Set([LavaErosionComponent])
@@ -19,7 +19,7 @@ export class LavaErosionSystem extends AbstractGameSystem {
 
     constructor() {
         super()
-        EventBus.registerEventListener(EventKey.LEVEL_SELECTED, (levelSelectedEvent: LevelSelectedEvent) => {
+        EventBroker.subscribe(EventKey.LEVEL_SELECTED, (levelSelectedEvent: LevelSelectedEvent) => {
             this.erodeTriggerTimeMs = levelSelectedEvent.levelConf.erodeTriggerTime * 1000
             this.increaseErosionDelayMs = levelSelectedEvent.levelConf.erodeErodeTime * 1000
             this.powerPathLockTimeMs = levelSelectedEvent.levelConf.erodeLockTime * 1000
