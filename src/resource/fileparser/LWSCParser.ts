@@ -21,8 +21,9 @@ export class LWSCObject {
     sfxName: string = null
     sfxFrames: number[] = []
     parentObjInd: number = 0 // index is 1 based, 0 means no parent
-    pivot: Vector3 = new Vector3(0, 0, 0)
+    pivot: number[] = null
     readonly keyframeTracks: KeyframeTrack[] = []
+    readonly positionTracks: VectorKeyframeTrack[] = []
     readonly opacityTracks: NumberKeyframeTrack[] = []
     castShadow: boolean = false
     receiveShadow: boolean = false
@@ -115,7 +116,29 @@ export class LWSCParser {
         this.lwscData.objects.push(currentObject)
         for (; this.lineIndex < this.lines.length; this.lineIndex++) {
             let line = this.lines[this.lineIndex]
-            if (!line) return currentObject
+            if (!line) {
+                if (currentObject.pivot) {
+                    const translatedPositionTracks = currentObject.positionTracks.map((t) => {
+                        let c = 0
+                        const mappedValues = t.values.map((v) => {
+                            // TODO Remove workaround of doom, otherwise telepthings.lwo which uses pivot point for rotation has offset from model
+                            if ((c % 3) === 0) {
+                                v += 0.4
+                            } else if ((c % 3) === 2) {
+                                v -= 1.2
+                            }
+                            c++
+                            return v
+                        })
+                        t.values.set(mappedValues)
+                        return t
+                    })
+                    currentObject.keyframeTracks.push(...translatedPositionTracks)
+                } else {
+                    currentObject.keyframeTracks.push(...currentObject.positionTracks)
+                }
+                return currentObject
+            }
             const [key, value] = LWSCParser.parseLine(line)
             if (key === 'LoadObject') {
                 const filename = getFilename(value)
@@ -173,7 +196,7 @@ export class LWSCParser {
                     new Quaternion().setFromEuler(new Euler(degToRad(pitch), degToRad(heading), degToRad(bank), 'YXZ'), true).toArray(relRot, relRot.length)
                     new Vector3(infos[6], infos[7], infos[8]).toArray(relScale, relScale.length)
                 }
-                currentObject.keyframeTracks.push(new VectorKeyframeTrack(`.position`, times, relPos))
+                currentObject.positionTracks.push(new VectorKeyframeTrack(`.position`, times, relPos))
                 currentObject.keyframeTracks.push(new QuaternionKeyframeTrack(`.quaternion`, times, relRot))
                 currentObject.keyframeTracks.push(new VectorKeyframeTrack(`.scale`, times, relScale))
                 this.lineIndex += lenFrames * 2
@@ -220,7 +243,7 @@ export class LWSCParser {
                 }
                 currentObject.opacityTracks.push(new NumberKeyframeTrack(`.opacity`, times, opacities))
             } else if (key === 'PivotPoint') {
-                currentObject.pivot = new Vector3().fromArray(value.split(' ').map((n) => parseInt(n, 10)))
+                currentObject.pivot = value.split(' ').map((n) => parseInt(n, 10))
             } else if (this.verbose) {
                 console.warn(`Unhandled line in object block: ${line}; key: ${key}; value: ${value}`) // XXX implement all LWS features
             }

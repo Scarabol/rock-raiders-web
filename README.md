@@ -114,7 +114,6 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Roof mesh is not added as ceiling to scene
 - Play mission briefing SFX when briefing is shown on level start
 - Use pro-meshes to render high-detail walls in first person and shoulder view
-- Shining around buildings teleported in is shown with offset
 - Medium raider meshes seem to have wrong normal vectors and shown with holes
 - Bats don't appear in flocks
 
