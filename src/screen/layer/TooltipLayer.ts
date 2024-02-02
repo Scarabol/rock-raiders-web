@@ -124,7 +124,7 @@ export class TooltipLayer extends ScreenLayer {
         } else if (event.buildingMissingOreForUpgrade) {
             return await TooltipSpriteBuilder.getBuildingMissingOreForUpgradeTooltipSprite(event.tooltipText, event.buildingMissingOreForUpgrade)
         } else if (event.tooltipText) {
-            return await TooltipSpriteBuilder.getTooltipSprite(event.tooltipText)
+            return await TooltipSpriteBuilder.getTooltipSprite(event.tooltipText, event.energy)
         }
         return null
     }

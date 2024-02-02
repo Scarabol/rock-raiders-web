@@ -8,12 +8,16 @@ import { ResourceManager } from './ResourceManager'
 import { GameConfig } from '../cfg/GameConfig'
 
 export class TooltipSpriteBuilder {
-    static async getTooltipSprite(tooltipText: string): Promise<SpriteImage> {
+    static async getTooltipSprite(tooltipText: string, energy: number): Promise<SpriteImage> {
         if (tooltipText.toLowerCase().startsWith('tooltip')) {
             console.error(`Found key instead of tooltip text ${tooltipText}`)
         }
-        const tooltipTextImage = await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, tooltipText)
-        return this.wrapTooltipSprite([tooltipTextImage])
+        const requests: Promise<SpriteImage>[] = [BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, tooltipText)]
+        if (energy) {
+            requests.add(BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.toolTipInfo.get('energytext')}: ${energy}`))
+        }
+        const tooltipTextImages = await Promise.all(requests)
+        return this.wrapTooltipSprite(...tooltipTextImages.map((s) => [s]))
     }
 
     static async getRaiderTooltipSprite(tooltipText: string, numToolSlots: number, tools: RaiderTool[], trainings: RaiderTraining[]): Promise<SpriteImage> {
@@ -39,7 +43,7 @@ export class TooltipSpriteBuilder {
     }
 
     static async getBuildingMissingOreForUpgradeTooltipSprite(tooltipText: string, buildingMissingOreForUpgrade: number): Promise<SpriteImage> {
-        const tooltipTextImage = await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, GameConfig.instance.toolTipInfo.get('orerequiredtext') + ':')
+        const tooltipTextImage = await BitmapFontWorkerPool.instance.createTextImage(TOOLTIP_FONT_NAME, `${GameConfig.instance.toolTipInfo.get('orerequiredtext')}:`)
         const oresTextImage = []
         const oreImg = ResourceManager.getImage(GameConfig.instance.tooltipIcons.get('ore'))
         for (let c = 0; c < buildingMissingOreForUpgrade; c++) {

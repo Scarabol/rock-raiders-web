@@ -34,6 +34,7 @@ export class ChangeTooltip extends BaseEvent {
         raider?: Raider,
         site?: BuildingSite,
         readonly buildingMissingOreForUpgrade?: number,
+        readonly energy?: number,
     ) {
         super(EventKey.COMMAND_TOOLTIP_CHANGE)
         if (raider) {

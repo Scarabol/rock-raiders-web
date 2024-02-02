@@ -25,6 +25,7 @@ import { GameSelection } from '../../game/model/GameSelection'
 import { Rect } from '../../core/Rect'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
+import { HealthComponent } from '../../game/component/HealthComponent'
 
 export class GameLayer extends ScreenLayer {
     worldMgr: WorldManager
@@ -116,11 +117,13 @@ export class GameLayer extends ScreenLayer {
         if (cursorTarget.entityType) {
             const objectKey = EntityType[cursorTarget.entityType].toString().replace('_', '').toLowerCase()
             let tooltipText = GameConfig.instance.objectNamesCfg.get(objectKey)
+            let energy = 0
             if (cursorTarget.building) {
                 const upgradeName = GameConfig.instance.upgradeNames[cursorTarget.building.level - 1]
                 if (upgradeName) tooltipText += ` (${upgradeName})`
+                energy = Math.round(this.worldMgr.ecs.getComponents(cursorTarget.building.entity)?.get(HealthComponent)?.health ?? 0)
             }
-            if (tooltipText) EventBroker.publish(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, cursorTarget.raider))
+            if (tooltipText) EventBroker.publish(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_SCENE, null, null, cursorTarget.raider, null, null, energy))
         }
         this.sceneMgr.buildMarker.updatePosition(cursorTarget.intersectionPoint)
         const doubleSelection = this.entityMgr.selection.doubleSelect
