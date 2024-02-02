@@ -134,8 +134,9 @@ export class LevelPrioritiesEntryConfig {
             return PriorityIdentifier.REINFORCE
         } else if (name.equalsIgnoreCase('AI_Priority_Recharge')) {
             return PriorityIdentifier.RECHARGE
-        } else {
-            throw new Error(`Unexpected priority identifier ${name}`)
+        } else { // TODO What about AI_Priority_BuildPath?
+            console.error(`Unexpected priority identifier ${name}`)
+            return PriorityIdentifier.NONE
         }
     }
 }
