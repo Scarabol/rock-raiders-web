@@ -12,6 +12,7 @@ import { GameConfig } from '../cfg/GameConfig'
 
 export class AnimatedSceneEntity extends Group implements Updatable {
     readonly animationData: AnimEntityData[] = []
+    readonly cacheAnimationGroups: Map<string, AnimationGroup> = new Map()
     readonly animationGroups: AnimationGroup[] = []
     readonly meshesByLName: Map<string, SceneMesh[]> = new Map()
     readonly installedUpgrades: { parent: Object3D, child: AnimatedSceneEntity }[] = []
@@ -64,8 +65,10 @@ export class AnimatedSceneEntity extends Group implements Updatable {
         this.animationData.forEach((animEntityData) => {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
-            // TODO recycle animation groups for better performance?
-            const animatedGroup = new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs, onAnimationTrigger).setup().play()
+            const animatedGroup = this.cacheAnimationGroups.getOrUpdate(animData.name, () => {
+                return new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs, onAnimationTrigger).setup()
+            })
+            animatedGroup.resetAnimation()
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
             this.animationParent.add(animatedGroup)
             this.animationGroups.push(animatedGroup)
@@ -107,7 +110,6 @@ export class AnimatedSceneEntity extends Group implements Updatable {
 
     private removeAll() {
         this.animationParent.clear()
-        this.animationGroups.forEach((a) => a.dispose())
         this.animationGroups.length = 0
         this.meshesByLName.clear()
         this.installedUpgrades.forEach((e) => e.parent.remove(e.child))
