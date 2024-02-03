@@ -159,12 +159,12 @@ export class LWSCParser {
                         times[c] = c / this.numOfKeyframes * this.lwscData.durationSeconds
                         sfxNames[c] = (sfxFrameStart <= c && c < sfxFrameEnd) ? currentObject.sfxName : ''
                     }
-                    currentObject.keyframeTracks.push(new StringKeyframeTrack('.userData[sfxName]', times, sfxNames))
+                    currentObject.keyframeTracks.push(new StringKeyframeTrack('.userData[sfxNameAnimation]', times, sfxNames))
                 } else if (currentObject.lowerName === 'snd' && nameParts[1].equalsIgnoreCase('SFX_LANDSLIDE')) {
                     currentObject.sfxName = Sample[Sample.SFX_FallIn]
                     // TODO what about keyframe tracks here for SND?
                 } else if (currentObject.lowerName.startsWith('*') || currentObject.lowerName.startsWith(';')) {
-                    if (VERBOSE) console.warn(`Unexpected null object name ${currentObject.lowerName}`)
+                    if (VERBOSE) console.warn(`Unexpected sfx object name ${currentObject.lowerName}`)
                 }
                 currentObject.isNull = true
             } else if (key === 'ObjectMotion') {

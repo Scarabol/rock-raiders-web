@@ -66,7 +66,7 @@ export class Raider implements Updatable, JobFulfiller {
         this.worldMgr = worldMgr
         this.addTool(RaiderTool.DRILL)
         this.entity = this.worldMgr.ecs.addEntity()
-        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr.audioListener)
+        this.sceneEntity = new AnimatedSceneEntity()
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData('mini-figures/pilot'))
         this.worldMgr.ecs.addComponent(this.entity, new AnimatedSceneEntityComponent(this.sceneEntity))
         this.worldMgr.ecs.addComponent(this.entity, new LastWillComponent(() => this.beamUp()))

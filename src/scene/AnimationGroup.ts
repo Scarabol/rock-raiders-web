@@ -1,4 +1,4 @@
-import { AnimationAction, AnimationClip, AnimationMixer, AudioListener, Group, LoopOnce, NumberKeyframeTrack } from 'three'
+import { AnimationAction, AnimationClip, AnimationMixer, Group, LoopOnce, NumberKeyframeTrack } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { ResourceManager } from '../resource/ResourceManager'
 import { SceneMesh } from './SceneMesh'
@@ -22,9 +22,9 @@ export class AnimationGroup extends Group implements Updatable {
         this.animationTriggerTimeMs = durationTimeoutMs
     }
 
-    setup(audioListener?: AudioListener): this {
+    setup(): this {
         const lwscData = ResourceManager.getLwscData(this.lwsFilepath)
-        this.createMeshList(lwscData, audioListener)
+        this.createMeshList(lwscData)
         this.createAnimationMixers(lwscData, this.lwsFilepath)
         return this
     }
@@ -34,13 +34,13 @@ export class AnimationGroup extends Group implements Updatable {
         return ResourceManager.getLwoModel(getPath(this.lwsFilepath) + lowerName)
     }
 
-    protected createMeshList(lwscData: LWSCData, audioListener: AudioListener) {
+    protected createMeshList(lwscData: LWSCData) {
         this.meshList.length = 0
         lwscData.objects.forEach((obj) => {
             let mesh: SceneMesh
             if (obj.isNull) {
                 if (obj.lowerName === 'sfx') {
-                    mesh = new SceneAudioMesh(audioListener)
+                    mesh = new SceneAudioMesh()
                 } else {
                     mesh = new SceneMesh()
                 }

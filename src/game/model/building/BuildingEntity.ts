@@ -56,7 +56,7 @@ export class BuildingEntity {
     constructor(readonly worldMgr: WorldManager, readonly entityType: EntityType) {
         this.entity = this.worldMgr.ecs.addEntity()
         this.buildingType = BuildingType.from(this.entityType)
-        this.sceneEntity = new AnimatedSceneEntity(this.worldMgr.sceneMgr.audioListener)
+        this.sceneEntity = new AnimatedSceneEntity()
         this.sceneEntity.addAnimated(ResourceManager.getAnimatedData(this.buildingType.aeFilename))
         this.sceneEntity.flipXAxis()
         this.powerOffSprite = new BubbleSprite(GameConfig.instance.bubbles.bubblePowerOff)

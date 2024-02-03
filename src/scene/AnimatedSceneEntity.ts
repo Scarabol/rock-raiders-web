@@ -1,4 +1,4 @@
-import { AudioListener, Box3, Group, Matrix4, Object3D, Sphere, Vector2, Vector3 } from 'three'
+import { Box3, Group, Matrix4, Object3D, Sphere, Vector2, Vector3 } from 'three'
 import { Updatable } from '../game/model/Updateable'
 import { SceneMesh } from './SceneMesh'
 import { AnimEntityData } from '../resource/AnimEntityParser'
@@ -30,7 +30,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
     pivotMaxZ: number = null
     yPivotObj: Object3D = null
 
-    constructor(readonly audioListener: AudioListener) {
+    constructor() {
         super()
         this.add(this.animationParent)
     }
@@ -65,7 +65,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
             const animData = animEntityData.animations.find((a) => a.name.equalsIgnoreCase(animationName))
                 ?? animEntityData.animations.find((a) => a.name.equalsIgnoreCase(AnimEntityActivity.Stand))
             // TODO recycle animation groups for better performance?
-            const animatedGroup = new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs, onAnimationTrigger).setup(this.audioListener).play()
+            const animatedGroup = new AnimationQualityGroup(animEntityData, animData, onAnimationDone, durationTimeoutMs, onAnimationTrigger).setup().play()
             animatedGroup.meshList.forEach((m) => this.meshesByLName.getOrUpdate(m.name, () => []).add(m))
             this.animationParent.add(animatedGroup)
             this.animationGroups.push(animatedGroup)
@@ -143,7 +143,7 @@ export class AnimatedSceneEntity extends Group implements Updatable {
                     }
                     return
                 }
-                const upgradeMesh = new AnimatedSceneEntity(this.audioListener)
+                const upgradeMesh = new AnimatedSceneEntity()
                 upgradeMesh.name = upgrade.lNameType
                 const upgradeFilename = GameConfig.instance.upgradeTypesCfg.get(upgrade.lNameType) || upgrade.lUpgradeFilepath
                 try {

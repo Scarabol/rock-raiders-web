@@ -1,4 +1,4 @@
-import { AudioContext, PositionalAudio } from 'three'
+import { AudioContext, AudioListener, PositionalAudio } from 'three'
 import { Sample } from './Sample'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { EventKey } from '../event/EventKeyEnum'
@@ -8,6 +8,7 @@ import { EventBroker } from '../event/EventBroker'
 export class SoundManager {
     static readonly playingAudio: Set<PositionalAudio> = new Set()
     static readonly sfxBuffersByKey: Map<string, AudioBuffer[]> = new Map()
+    static readonly sceneAudioListener: AudioListener = new AudioListener()
     static sfxAudioTarget: GainNode
     static skipVoiceLines: boolean = false
 

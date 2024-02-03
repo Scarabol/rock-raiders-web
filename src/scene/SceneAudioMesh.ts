@@ -1,47 +1,38 @@
-import { SceneMesh } from './SceneMesh'
-import { AudioListener, PositionalAudio } from 'three'
+import { PositionalAudio } from 'three'
 import { SaveGameManager } from '../resource/SaveGameManager'
 import { SoundManager } from '../audio/SoundManager'
+import { SceneMesh } from './SceneMesh'
 import { TILESIZE } from '../params'
 
 export class SceneAudioMesh extends SceneMesh {
-    readonly audioNode: PositionalAudio
-    lastSfxName: string = null
+    audioNode: PositionalAudio
+    lastSfxName: string
 
-    constructor(audioListener: AudioListener) {
-        super()
-        if (audioListener) {
-            this.audioNode = new PositionalAudio(audioListener)
+    update(elapsedMs: number) {
+        const sfxVolume = SaveGameManager.getSfxVolume()
+        if (sfxVolume <= 0) return
+        const sfxName = this.userData.sfxNameAnimation
+        if (this.lastSfxName === sfxName || !sfxName) return
+        this.lastSfxName = sfxName
+        const audioBuffer = SoundManager.getSoundBuffer(sfxName)
+        if (!audioBuffer) return
+        if (!this.audioNode) {
+            this.audioNode = new PositionalAudio(SoundManager.sceneAudioListener)
             this.audioNode.setRefDistance(TILESIZE * 5)
             this.audioNode.setRolloffFactor(10)
             this.add(this.audioNode)
         }
-    }
-
-    update(elapsedMs: number) {
-        super.update(elapsedMs)
-        const sfxVolume = SaveGameManager.getSfxVolume()
-        if (sfxVolume <= 0) return
-        const sfxName = this.userData.sfxName
-        if (this.lastSfxName === sfxName || !sfxName) return
-        this.lastSfxName = sfxName
-        if (this.audioNode) {
-            this.audioNode.setVolume(sfxVolume)
-            this.audioNode.onEnded = () => {
-                SoundManager.stopAudio(this.audioNode)
-                this.lastSfxName = null
-            }
+        this.audioNode.setVolume(sfxVolume)
+        this.audioNode.onEnded = () => {
+            SoundManager.stopAudio(this.audioNode)
+            this.lastSfxName = null
         }
-        const audioBuffer = SoundManager.getSoundBuffer(sfxName)
-        if (audioBuffer && this.audioNode) {
-            this.audioNode.setBuffer(audioBuffer)
-            this.audioNode.play()
-            SoundManager.playingAudio.add(this.audioNode)
-        }
+        this.audioNode.setBuffer(audioBuffer)
+        this.audioNode.play()
+        SoundManager.playingAudio.add(this.audioNode)
     }
 
     dispose() {
-        super.dispose()
         SoundManager.stopAudio(this.audioNode)
         this.lastSfxName = null
     }

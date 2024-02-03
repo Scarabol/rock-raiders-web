@@ -1,4 +1,4 @@
-import { AmbientLight, AudioListener, Color, Frustum, Mesh, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
+import { AmbientLight, Color, Frustum, Mesh, Object3D, PerspectiveCamera, PositionalAudio, Raycaster, Scene, Sprite, Vector2, Vector3 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
 import { BirdViewControls } from '../scene/BirdViewControls'
 import { BuildPlacementMarker } from './model/building/BuildPlacementMarker'
@@ -27,7 +27,6 @@ import { EventBroker } from '../event/EventBroker'
 export class SceneManager implements Updatable {
     static readonly VEC_DOWN: Vector3 = new Vector3(0, -1, 0)
     readonly scene: Scene
-    readonly audioListener: AudioListener
     readonly cameraBird: BirdViewCamera
     readonly cameraShoulder: PerspectiveCamera
     readonly cameraFPV: PerspectiveCamera
@@ -50,7 +49,6 @@ export class SceneManager implements Updatable {
 
     constructor(canvas: HTMLCanvasElement) {
         this.scene = new Scene()
-        this.audioListener = new AudioListener()
         const aspect = canvas.width / canvas.height
         this.cameraBird = new BirdViewCamera(aspect)
         this.cameraShoulder = new PerspectiveCamera(CAMERA_FOV, aspect, 0.1, 200) // TODO Adjust camera parameters
@@ -70,7 +68,7 @@ export class SceneManager implements Updatable {
 
     setActiveCamera(camera: PerspectiveCamera) {
         this.cameraActive = camera
-        this.cameraActive.add(this.audioListener)
+        this.cameraActive.add(SoundManager.sceneAudioListener)
         this.renderer.camera = camera
     }
 
@@ -276,7 +274,7 @@ export class SceneManager implements Updatable {
         const group = new AnimationGroup(lwsFilename, loop ? null : () => {
             this.removeMiscAnim(group)
             if (onRemove) onRemove()
-        }).setup(this.audioListener).play()
+        }).setup().play()
         group.position.copy(position)
         group.rotateOnAxis(Object3D.DEFAULT_UP, heading)
         this.miscAnims.add(group)
@@ -299,7 +297,7 @@ export class SceneManager implements Updatable {
     }
 
     addPositionalAudio(parent: Object3D, sfxName: string, autoPlay: boolean, loop: boolean): PositionalAudio {
-        const audio = new PositionalAudio(this.audioListener)
+        const audio = new PositionalAudio(SoundManager.sceneAudioListener)
         audio.setRefDistance(TILESIZE * 5)
         audio.setRolloffFactor(10)
         const sfxVolume = SaveGameManager.getSfxVolume()

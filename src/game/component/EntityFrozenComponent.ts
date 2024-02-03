@@ -9,7 +9,7 @@ export class EntityFrozenComponent extends AbstractGameComponent {
 
     constructor(worldMgr: WorldManager, entity: number, freezerTimeMs: number, position: Vector3, heading: number) {
         super()
-        this.iceCubeEntity = new AnimatedSceneEntity(worldMgr.sceneMgr.audioListener)
+        this.iceCubeEntity = new AnimatedSceneEntity()
         this.iceCubeEntity.addAnimated(ResourceManager.getAnimatedData('MiscAnims/IceCube'))
         this.iceCubeEntity.setAnimation('Start', () => {
             this.iceCubeEntity.setAnimation('Normal', () => {

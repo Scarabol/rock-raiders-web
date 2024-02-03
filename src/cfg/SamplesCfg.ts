@@ -1,5 +1,4 @@
 import { BaseConfig } from './BaseConfig'
-import { VERBOSE } from '../params'
 
 export class SamplesCfg extends BaseConfig {
     readonly pathToSfxKeys: Map<string, string[]> = new Map()

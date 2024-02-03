@@ -33,7 +33,7 @@ export class MonsterSpawner {
         const floorPosition = worldMgr.sceneMgr.getFloorPosition(worldPos)
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
         const positionComponent = worldMgr.ecs.addComponent(entity, new PositionComponent(floorPosition, surface))
-        const sceneEntity: AnimatedSceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr.audioListener)
+        const sceneEntity: AnimatedSceneEntity = new AnimatedSceneEntity()
         sceneEntity.position.copy(floorPosition)
         sceneEntity.position.y += positionComponent.floorOffset
         sceneEntity.rotation.y = headingRad

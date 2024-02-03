@@ -35,7 +35,7 @@ export class MaterialSpawner {
         const surface = worldMgr.sceneMgr.terrain.getSurfaceFromWorld2D(worldPos)
         const material = new MaterialEntity(worldMgr, entityType, targetSurface, targetSite, barrierLocation)
         worldMgr.ecs.addComponent(material.entity, new PositionComponent(floorPosition, surface))
-        material.sceneEntity = new AnimatedSceneEntity(worldMgr.sceneMgr.audioListener)
+        material.sceneEntity = new AnimatedSceneEntity()
         switch (entityType) {
             case EntityType.ORE:
                 material.sceneEntity.add(ResourceManager.getLwoModel(GameConfig.instance.miscObjects.Ore))
