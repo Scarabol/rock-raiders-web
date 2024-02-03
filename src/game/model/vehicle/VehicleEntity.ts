@@ -351,6 +351,11 @@ export class VehicleEntity implements Updatable, JobFulfiller {
             this.sceneEntity.addDriver(this.driver.sceneEntity)
             // TODO sync idle animation of vehicle and driver
         }
+        this.worldMgr.ecs.removeComponent(this.driver.entity, MapMarkerComponent)
+        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.REMOVE))
+        this.worldMgr.ecs.removeComponent(this.driver.entity, ScannerComponent)
+        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.SCANNER, this.driver.entity, MapMarkerChange.REMOVE))
+        // TODO Transfer scanner component to vehicle
         if (this.stats.EngineSound && !this.engineSound && !DEV_MODE) this.engineSound = this.worldMgr.sceneMgr.addPositionalAudio(this.sceneEntity, this.stats.EngineSound, true, true)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
     }
@@ -363,10 +368,21 @@ export class VehicleEntity implements Updatable, JobFulfiller {
         const surface = this.getSurface()
         const walkableSurface = [surface, ...surface.neighbors].find((s) => s.isWalkable())
         const hopOffSpot = walkableSurface.getRandomPosition() // XXX find spot close to the possibly non-walkable actual surface
-        this.driver.setPosition(this.driver.worldMgr.sceneMgr.getFloorPosition(hopOffSpot))
+        const floorPosition = this.driver.worldMgr.sceneMgr.getFloorPosition(hopOffSpot)
+        this.driver.setPosition(floorPosition)
         this.driver.sceneEntity.rotation.y = this.sceneEntity.heading
         this.driver.worldMgr.sceneMgr.addMeshGroup(this.driver.sceneEntity)
         this.driver.sceneEntity.setAnimation(AnimEntityActivity.Stand)
+        this.worldMgr.ecs.addComponent(this.driver.entity, new MapMarkerComponent(MapMarkerType.DEFAULT))
+        EventBroker.publish(new UpdateRadarEntityEvent(MapMarkerType.DEFAULT, this.driver.entity, MapMarkerChange.UPDATE, floorPosition))
+        if (this.driver.hasTraining(RaiderTraining.GEOLOGIST)) {
+            const scannerRange = this.driver.stats.SurveyRadius?.[this.driver.level] ?? 0
+            if (scannerRange) {
+                const positionComponent = this.driver.worldMgr.ecs.getComponents(this.driver.entity).get(PositionComponent)
+                this.driver.worldMgr.ecs.addComponent(this.driver.entity, new ScannerComponent(positionComponent, scannerRange))
+            }
+        }
+        // TODO Remove scanner component inherited from driver
         this.driver = null
         this.engineSound = SoundManager.stopAudio(this.engineSound)
         if (this.selected) EventBroker.publish(new SelectionChanged(this.worldMgr.entityMgr))
