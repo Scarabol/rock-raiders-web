@@ -70,7 +70,7 @@ export class AnimationGroup extends Group implements Updatable {
             }
             // setup animation clip for each object
             const opacityTracks = obj.opacityTracks.flatMap((t) => mesh.getMaterials()
-                .map((m, index) => new NumberKeyframeTrack(`.material[${index}].opacity`, t.times, t.values)))
+                .map((_, index) => new NumberKeyframeTrack(`.material[${index}].opacity`, t.times, t.values)))
             const clip = new AnimationClip(lwsFilepath, lwscData.durationSeconds, [...obj.keyframeTracks, ...opacityTracks])
             this.maxDurationMs = Math.max(this.maxDurationMs, clip.duration * 1000)
             this.addMixer(mesh, clip)
