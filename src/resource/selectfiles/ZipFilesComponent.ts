@@ -96,10 +96,12 @@ export class ZipFilesComponent implements SelectFilesComponent {
             xhr.onprogress = (event) => this.setProgress(fileName, event.loaded, event.total)
             xhr.onerror = (event) => reject(event)
             xhr.onload = () => {
-                if (xhr.status === 200) {
-                    resolve(xhr.response)
-                } else {
+                if (xhr.status !== 200) {
                     reject(new Error(`Could not fetch file from "${url}"! Got status ${xhr.status} - ${xhr.statusText}`))
+                } else if (!xhr.response) {
+                    reject(new Error(`No response content for request received, please restart browser`))
+                } else {
+                    resolve(xhr.response)
                 }
             }
             xhr.send()
