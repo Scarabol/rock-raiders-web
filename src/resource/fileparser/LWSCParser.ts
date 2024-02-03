@@ -16,6 +16,7 @@ export class LWSCData {
 }
 
 export class LWSCObject {
+    fileName: string = null
     lowerName: string = null
     isNull: boolean = false
     sfxName: string = null
@@ -140,8 +141,12 @@ export class LWSCParser {
             }
             const [key, value] = LWSCParser.parseLine(line)
             if (key === 'LoadObject') {
-                const filename = getFilename(value)
-                currentObject.lowerName = filename.slice(0, filename.length - '.lwo'.length).toLowerCase()
+                currentObject.lowerName = currentObject.fileName = getFilename(value).toLowerCase()
+                if (currentObject.lowerName.endsWith('.lwo')) {
+                    currentObject.lowerName = currentObject.lowerName.slice(0, -'.lwo'.length)
+                } else {
+                    console.warn(`Unexpected object file name "${currentObject.fileName}"`)
+                }
             } else if (key === 'AddNullObject') {
                 const nameParts = value.split(',')
                 currentObject.lowerName = nameParts[0].toLowerCase()

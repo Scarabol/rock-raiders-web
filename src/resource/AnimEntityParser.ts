@@ -47,95 +47,51 @@ export class AnimEntityUpgradeData {
 }
 
 export class AnimEntityParser {
-    readonly lwoFiles: string[] = []
-    readonly lwsFiles: string[] = []
-    readonly entityType: AnimEntityData = new AnimEntityData()
+    readonly animEntityData: AnimEntityData = new AnimEntityData()
     readonly knownAnimations: string[] = []
 
     constructor(readonly cfgRoot: object, readonly path: string, readonly verbose: boolean = false) {
-        const wheelMeshName = iGet(this.cfgRoot, 'WheelMesh')
-        if (wheelMeshName && !'NULL_OBJECT'.equalsIgnoreCase(wheelMeshName)) {
-            this.lwoFiles.add(`${path + wheelMeshName}.lwo`)
-        }
-        ;['HighPoly', 'MediumPoly', 'LowPoly'].forEach((polyType) => {
-            const cfgPoly = iGet(this.cfgRoot, polyType)
-            if (cfgPoly) {
-                Object.keys(cfgPoly).forEach((key) => {
-                    const fileName = cfgPoly[key]
-                    if (!'NULL'.equalsIgnoreCase(fileName)) {
-                        this.lwoFiles.add(`${path + fileName}.lwo`)
-                    }
-                })
-            }
-        })
-        ;['FPPoly'].forEach((polyType) => {
-            const cfgFirstPerson = iGet(this.cfgRoot, polyType)
-            if (cfgFirstPerson) {
-                ['Camera1', 'Camera2'].forEach((cameraName) => {
-                    const cfgCamera = iGet(cfgFirstPerson, cameraName)
-                    if (cfgCamera) {
-                        Object.keys(cfgCamera).forEach((key) => {
-                            const fileName = cfgCamera[key]
-                            if (!'NULL'.equalsIgnoreCase(fileName)) {
-                                this.lwoFiles.add(`${path + fileName}.lwo`)
-                            }
-                        })
-                    }
-                })
-            }
-        })
-        Object.values(this.cfgRoot).forEach((value) => {
-            try {
-                const isLws = iGet(value, 'LWSFILE') === true
-                if (isLws) {
-                    const file = iGet(value, 'FILE')
-                    this.lwsFiles.add(`${path + file}.lws`)
-                }
-            } catch (e) {
-                // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/...
-            }
-        })
     }
 
     parse(): AnimEntityData {
         Object.entries<any>(this.cfgRoot).forEach(([rootKey, value]) => {
             if (rootKey.equalsIgnoreCase('Scale')) {
-                this.entityType.scale = Number(value)
+                this.animEntityData.scale = Number(value)
             } else if (rootKey.equalsIgnoreCase('CarryNullName')) {
-                this.entityType.carryNullName = value.toLowerCase()
+                this.animEntityData.carryNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('CarryNullFrames')) {
-                this.entityType.carryNullFrames = Number(value)
+                this.animEntityData.carryNullFrames = Number(value)
             } else if (rootKey.equalsIgnoreCase('Shape')) {
                 if (this.verbose) console.warn('TODO Derive buildings shape from this value') // XXX derive buildings surfaces shape from this value
             } else if (rootKey.equalsIgnoreCase('DepositNullName')) {
-                this.entityType.depositNullName = value.toLowerCase()
+                this.animEntityData.depositNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('ToolNullName')) {
-                this.entityType.toolNullName = value.toLowerCase()
+                this.animEntityData.toolNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('WheelMesh')) {
-                if (!'NULL_OBJECT'.equalsIgnoreCase(value)) this.entityType.wheelMesh = this.path + value
+                if (!'NULL_OBJECT'.equalsIgnoreCase(value)) this.animEntityData.wheelMesh = this.path + value
             } else if (rootKey.equalsIgnoreCase('WheelRadius')) {
-                this.entityType.wheelRadius = Number(value)
+                this.animEntityData.wheelRadius = Number(value)
             } else if (rootKey.equalsIgnoreCase('WheelNullName')) {
-                this.entityType.wheelNullName = value.toLowerCase()
+                this.animEntityData.wheelNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('DrillNullName')) {
-                this.entityType.drillNullName = value.toLowerCase()
+                this.animEntityData.drillNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('DriverNullName')) {
-                this.entityType.driverNullName = value.toLowerCase()
+                this.animEntityData.driverNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('CameraNullName')) {
-                this.entityType.cameraNullName = value.toLowerCase()
+                this.animEntityData.cameraNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('CameraNullFrames')) {
-                this.entityType.cameraNullFrames = Number(value)
+                this.animEntityData.cameraNullFrames = Number(value)
             } else if (rootKey.equalsIgnoreCase('CameraFlipDir')) {
                 // XXX what is this? flip upside down when hanging from rm?
             } else if (rootKey.equalsIgnoreCase('HighPoly')) {
-                this.parsePolyBodies(value, this.entityType.highPolyBodies)
+                this.parsePolyBodies(value, this.animEntityData.highPolyBodies)
             } else if (rootKey.equalsIgnoreCase('MediumPoly')) {
-                this.parsePolyBodies(value, this.entityType.mediumPolyBodies)
+                this.parsePolyBodies(value, this.animEntityData.mediumPolyBodies)
             } else if (rootKey.equalsIgnoreCase('LowPoly')) {
-                this.parsePolyBodies(value, this.entityType.lowPolyBodies)
+                this.parsePolyBodies(value, this.animEntityData.lowPolyBodies)
             } else if (rootKey.equalsIgnoreCase('FPPoly')) {
                 ['Camera1', 'Camera2'].forEach((cameraName) => {
-                    this.parsePolyBodies(iGet(value, cameraName), this.entityType.fPPolyBodies.getOrUpdate(cameraName, () => new Map()))
+                    this.parsePolyBodies(iGet(value, cameraName), this.animEntityData.fPPolyBodies.getOrUpdate(cameraName, () => new Map()))
                 })
             } else if (rootKey.equalsIgnoreCase('Activities')) {
                 this.parseActivities(value)
@@ -157,21 +113,21 @@ export class AnimEntityParser {
             } else if (this.parseUpgradeEntry(rootKey, value)) {
                 if (VERBOSE) console.warn(`Entity has upgrade defined outside of upgrades group`, value)
             } else if (rootKey.equalsIgnoreCase('FireNullName')) {
-                this.entityType.fireNullName = value.toLowerCase()
+                this.animEntityData.fireNullName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('xPivot')) {
-                this.entityType.xPivotName = value.toLowerCase()
+                this.animEntityData.xPivotName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('yPivot')) {
-                this.entityType.yPivotName = value.toLowerCase()
+                this.animEntityData.yPivotName = value.toLowerCase()
             } else if (rootKey.equalsIgnoreCase('PivotMaxZ')) {
-                this.entityType.pivotMaxZ = value
+                this.animEntityData.pivotMaxZ = value
             } else if (rootKey.equalsIgnoreCase('PivotMinZ')) {
-                this.entityType.pivotMinZ = value
+                this.animEntityData.pivotMinZ = value
             } else if (this.verbose) {
                 console.warn(`Unhandled animated entity key found: ${rootKey}`, value)
             }
         })
 
-        return this.entityType
+        return this.animEntityData
     }
 
     private parsePolyBodies(value: object, polyBodies: Map<string, string>) {
@@ -205,7 +161,7 @@ export class AnimEntityParser {
         const trigger = iGet(act, 'TRIGGER') ?? 0
         if (isLws) {
             if (lActivityName.startsWith('!')) lActivityName = lActivityName.slice(1) // XXX What's the meaning of leading ! for activities???
-            this.entityType.animations.push({name: lActivityName, file: this.path + file.toLowerCase(), transcoef, looping, trigger})
+            this.animEntityData.animations.push({name: lActivityName, file: this.path + file.toLowerCase(), transcoef, looping, trigger})
         } else {
             console.error('Found activity which is not an LWS file')
         }
@@ -230,7 +186,7 @@ export class AnimEntityParser {
                 upgradesByLevel.push(new AnimEntityUpgradeData(lNameType, this.path + lNameType, upgradeTypeEntry[0], upgradeTypeEntry[1] - 1))
             })
         })
-        this.entityType.upgradesByLevel.set(match[1], upgradesByLevel)
+        this.animEntityData.upgradesByLevel.set(match[1], upgradesByLevel)
         return true
     }
 }

@@ -3,8 +3,8 @@ import { getFilename, getPath } from '../core/Util'
 import { VERBOSE } from '../params'
 import { SceneMesh } from '../scene/SceneMesh'
 import { LWOBParser, LWOBTextureLoader } from './fileparser/LWOBParser'
-import { LWSCData, LWSCParser } from './fileparser/LWSCParser'
-import { AnimEntityData, AnimEntityParser } from './AnimEntityParser'
+import { LWSCData } from './fileparser/LWSCParser'
+import { AnimEntityData } from './AnimEntityParser'
 import { UVData } from './fileparser/LWOUVParser'
 import { SpriteImage } from '../core/Sprite'
 import { createCanvas, createContext, createDummyImgData, imgDataToCanvas } from '../core/ImageHelper'
@@ -18,8 +18,6 @@ export class ResourceManager {
     static readonly imageCache: Map<string, SpriteImage> = new Map()
     static readonly resourceByName: Map<string, any> = new Map()
     static readonly lwoCache: Map<string, SceneMesh> = new Map()
-    static readonly lwscCache: Map<string, LWSCData> = new Map()
-    static readonly aeCache: Map<string, AnimEntityData> = new Map()
 
     static getResource(resourceName: string): any {
         const lName = resourceName?.toString()?.toLowerCase() || null
@@ -199,20 +197,16 @@ export class ResourceManager {
     }
 
     static getLwscData(lwscFilepath: string): LWSCData {
+        lwscFilepath = lwscFilepath.toLowerCase()
         if (!lwscFilepath.endsWith('.lws')) lwscFilepath += '.lws'
-        return this.lwscCache.getOrUpdate(lwscFilepath.toLowerCase(), () => {
-            const lwscContent = ResourceManager.getResource(lwscFilepath)
-            if (!lwscContent) throw new Error(`Could not get LWSC data for '${lwscFilepath}'`)
-            return new LWSCParser(lwscContent).parse()
-        })
+        const lwscData = ResourceManager.getResource(lwscFilepath)
+        if (!lwscData) throw new Error(`Could not get LWSC data for '${lwscFilepath}'`)
+        return lwscData
     }
 
     static getAnimatedData(aeName: string): AnimEntityData {
-        const animData = this.aeCache.getOrUpdate(aeName.toLowerCase(), () => {
-            const aeFilename = `${aeName}/${aeName.split('/').last()}.ae`
-            const cfgRoot = ResourceManager.getResource(aeFilename)
-            return !!cfgRoot ? new AnimEntityParser(cfgRoot, `${aeName}/`).parse() : null
-        })
+        const aeFilename = `${aeName}/${aeName.split('/').last()}.ae`
+        const animData = ResourceManager.getResource(aeFilename)
         if (!animData) throw new Error(`Could not get animation data for: ${aeName}`)
         return animData
     }

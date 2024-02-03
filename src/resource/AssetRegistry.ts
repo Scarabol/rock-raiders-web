@@ -1,10 +1,12 @@
 import { GameConfig } from '../cfg/GameConfig'
 import { MenuCfg } from '../cfg/MenuCfg'
-import { getFilename, getPath, iGet, yieldToMainThread } from '../core/Util'
+import { getPath, iGet, yieldToMainThread } from '../core/Util'
 import { RonFileParser } from './fileparser/RonFileParser'
 import { AssetLoader } from './AssetLoader'
 import { TOOLTIP_FONT_NAME } from '../params'
 import { ResourceManager } from './ResourceManager'
+import { AnimEntityParser } from './AnimEntityParser'
+import { LWSCParser } from './fileparser/LWSCParser'
 
 interface WadAsset {
     method: ((name: string, callback: (assetName: string[], assetData: any) => void) => void)
@@ -191,57 +193,43 @@ export class AssetRegistry extends Map<string, WadAsset> {
     addAnimatedEntity(aeFile: string) {
         const content = this.assetLoader.vfs.getFile(aeFile).toText()
         const cfgRoot = RonFileParser.parse(aeFile, content)
-        ResourceManager.resourceByName.set(aeFile.toLowerCase(), cfgRoot)
         const path = getPath(aeFile)
         // load all textures for this type
         this.addTextureFolder(path)
-        const wheelMeshName = iGet(cfgRoot, 'WheelMesh')
+        const animData = new AnimEntityParser(cfgRoot, path).parse()
+        ResourceManager.resourceByName.set(aeFile.toLowerCase(), animData)
+        const wheelMeshName = animData.wheelMesh
         if (wheelMeshName && !'NULL_OBJECT'.equalsIgnoreCase(wheelMeshName)) {
             this.addAsset(this.assetLoader.loadLWOFile, `${path + wheelMeshName}.lwo`)
         }
-        ['HighPoly', 'MediumPoly', 'LowPoly'].forEach((polyType) => { // TODO add 'FPPoly' (contains two cameras)
-            const cfgPoly = iGet(cfgRoot, polyType)
-            if (cfgPoly) {
-                Object.keys(cfgPoly).forEach((key) => {
-                    this.addAsset(this.assetLoader.loadLWOFile, `${path + cfgPoly[key]}.lwo`)
-                })
+        [animData.highPolyBodies, animData.mediumPolyBodies, animData.lowPolyBodies].forEach((polyType) => {
+            for (const filename of polyType.values()) {
+                this.addAsset(this.assetLoader.loadLWOFile, path + filename)
             }
         })
-        Object.values(cfgRoot).forEach((value) => {
-            const isLws = iGet(value, 'LWSFILE') === true
-            if (isLws) {
-                const file = iGet(value, 'FILE')
-                this.addLWSFile(`${path + file}.lws`)
-            }
+        // TODO add 'FPPoly' (contains usually two cameras)
+        animData.animations.forEach((a) => {
+            this.addLWSFile(`${a.file}.lws`)
         })
     }
 
     addLWSFile(lwsFilepath: string) {
+        const lwsPath = getPath(lwsFilepath).toLowerCase()
         this.inProgress.push(new Promise((resolve) => {
             try {
                 const content = this.assetLoader.vfs.getFile(lwsFilepath).toText()
-                ResourceManager.resourceByName.set(lwsFilepath.toLowerCase(), content)
-                const lwoFiles: string[] = this.extractLwoFiles(getPath(lwsFilepath), content)
-                lwoFiles.forEach((lwoFile) => this.addAsset(this.assetLoader.loadLWOFile, lwoFile))
+                const lwscData = new LWSCParser(content).parse()
+                ResourceManager.resourceByName.set(lwsFilepath.toLowerCase(), lwscData)
+                lwscData.objects.forEach((obj) => {
+                    if (!obj.fileName) return
+                    const lwoFileName = lwsPath + obj.fileName
+                    this.addAsset(this.assetLoader.loadLWOFile, lwoFileName)
+                })
             } catch (e) {
-                // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/...
+                // XXX do we have to care? files listed in pilot.ae can be found in vehicles/hoverboard/ or not at all...
             }
             resolve()
         }))
-    }
-
-    extractLwoFiles(path: string, content: string): string[] {
-        const lines: string[] = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
-            .replace(/\t/g, ' ') // tabs to spaces
-            .split('\n')
-            .map((l) => l.trim())
-
-        if (lines[0] !== 'LWSC') {
-            throw new Error('Invalid start of file! Expected \'LWSC\' in first line')
-        }
-
-        return lines.filter((line) => line.toLowerCase().startsWith('LoadObject '.toLowerCase()))
-            .map((objLine) => path + getFilename(objLine.slice('LoadObject '.length)).toLowerCase())
     }
 
     addAlphaImageFolder(folderPath: string) {

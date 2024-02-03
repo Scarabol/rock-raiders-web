@@ -3,7 +3,7 @@
 import { VERBOSE } from '../../params'
 
 export class RonFileParser {
-    static parse(filename: string, content: string) {
+    static parse(filename: string, content: string): object {
         const lines: string[] = content.split(/[\r\n]+/g).map((l) => l
             .replace(/;.*|\/\/.*/, '') // strip comments from each line
             .trim(), // remove whitespace at start/end of lines
@@ -12,7 +12,7 @@ export class RonFileParser {
         this.parseObj(root, lines, 0)
         const entries = Object.values(root)
         if (entries.length > 1 && VERBOSE) console.warn(`Ron file '${filename}' contains (${entries.length}) objects! Will proceed with first object '${Object.keys(root)[0]}' only`)
-        return entries[0]
+        return entries[0] as object
     }
 
     private static parseObj(obj: {}, lines: string[], start: number): number {
