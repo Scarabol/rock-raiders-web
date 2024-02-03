@@ -116,7 +116,7 @@ export class AirLevelChanged extends BaseEvent {
 }
 
 export class NerpMessageEvent extends BaseEvent {
-    constructor(readonly text: string, readonly messageTimeoutMs: number) {
+    constructor(readonly text: string, readonly messageTimeoutMs: number, readonly arrowDisabled: boolean) {
         super(EventKey.NERP_MESSAGE)
     }
 }

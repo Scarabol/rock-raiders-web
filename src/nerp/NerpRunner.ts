@@ -39,7 +39,7 @@ export class NerpRunner {
     programCounter = 0
     messages: { txt: string, snd: string }[] = []
     // more state variables and switches
-    messagePermit: boolean = null
+    messagePermit: boolean = true
     objectiveSwitch: boolean = true
     objectiveShowing: number = 0
     sampleLengthMultiplier: number = 0
@@ -67,7 +67,7 @@ export class NerpRunner {
      * @param register
      * @return {number}
      */
-    checkRegister(register) {
+    checkRegister(register: string): number {
         const num = parseInt(register)
         if (isNaN(num) || num < 0 || num > this.registers.length) throw new Error(`Invalid register (${register}) provided`)
         return num
@@ -78,7 +78,7 @@ export class NerpRunner {
      * @param value
      * @return {number}
      */
-    checkRegisterValue(value) {
+    checkRegisterValue(value: string): number {
         const num = parseInt(value)
         if (isNaN(num)) throw new Error(`Invalid register value (${value}) provided`)
         return num
@@ -89,7 +89,7 @@ export class NerpRunner {
      * @param register the register to read
      * @return {number} returns the value currently stored in the register
      */
-    getR(register) {
+    getR(register): number {
         register = this.checkRegister(register)
         return this.registers[register]
     }
@@ -99,7 +99,7 @@ export class NerpRunner {
      * @param register the register to set
      * @param value the value to set for the given register
      */
-    setR(register, value) {
+    setR(register, value): void {
         register = this.checkRegister(register)
         value = this.checkRegisterValue(value)
         this.registers[register] = value
@@ -110,7 +110,7 @@ export class NerpRunner {
      * @param register the register to add to
      * @param value the value to add to the given register
      */
-    addR(register, value) {
+    addR(register, value): void {
         register = this.checkRegister(register)
         value = this.checkRegisterValue(value)
         this.registers[register] += value
@@ -121,7 +121,7 @@ export class NerpRunner {
      * @param register the register to subtract from
      * @param value the value to subtract from the given register
      */
-    subR(register, value) {
+    subR(register, value): void {
         register = this.checkRegister(register)
         value = this.checkRegisterValue(value)
         this.registers[register] -= value
@@ -132,7 +132,7 @@ export class NerpRunner {
      * @param timer
      * @param value
      */
-    setTimer(timer, value) {
+    setTimer(timer: number, value: string): void {
         const num = parseInt(value)
         if (isNaN(num)) throw new Error(`Can't set timer to NaN value: ${value}`)
         this.timers[timer] = new Date().getTime() + num
@@ -143,7 +143,7 @@ export class NerpRunner {
      * @param timer
      * @return {number}
      */
-    getTimer(timer) {
+    getTimer(timer: number): number {
         return new Date().getTime() - this.timers[timer]
     }
 
@@ -169,19 +169,23 @@ export class NerpRunner {
      * Sets tutorial flags
      * @param value a bitmask to set flags with
      */
-    setTutorialFlags(value) {
+    setTutorialFlags(value: number) {
         // seems like value must be interpreted bitwise and sets a certain flag on each bit
         // seen so far:
         // 0 = 0x00 allow any click anywhere anytime
         // 3 = 0x11 disallow invalid clicks
         // 4095 = 0x111111111111 set all flags? (seen in Tutorial01 level)
         if (value !== 0) { // holds for all known levels
-            if (VERBOSE) console.warn('NERP: setTutorialFlags not yet implemented', value)
+            // TODO Only used in tutorials
+            if (VERBOSE) console.warn('NERP function "setTutorialFlags" not yet implemented', value)
+        } else {
+            // TODO Reset all flags?
         }
     }
 
     setTutorialPointer(unknown1: number, unknown2: number) {
-        // XXX Only used in tutorials
+        // TODO Only used in tutorials
+        if (VERBOSE) console.warn('NERP function "setTutorialPointer" not yet implemented', unknown1, unknown2)
     }
 
     /**
@@ -264,7 +268,7 @@ export class NerpRunner {
      * Gets the number of crystals currently stored.
      * @return {number}
      */
-    getCrystalsCurrentlyStored() {
+    getCrystalsCurrentlyStored(): number {
         return GameState.numCrystal
     }
 
@@ -274,8 +278,8 @@ export class NerpRunner {
         this.timeForNoSample = timeForNoSample
     }
 
-    getMessageTimer() { // XXX return remaining amount of time needed to fully play WAV message
-        return this.messageTimer // XXX workaround until sounds from DATA directory are implemented
+    getMessageTimer() { // TODO return remaining amount of time needed to fully play WAV message
+        return this.messageTimer // TODO workaround until sounds from DATA directory are implemented
     }
 
     cameraUnlock() {
@@ -283,7 +287,17 @@ export class NerpRunner {
     }
 
     cameraLockOnObject(recordedEntity: number) {
-        // XXX Only used in tutorials, lock camera to recorded entity
+        const entity = this.worldMgr.entityMgr.recordedEntities[recordedEntity]
+        if (!entity) {
+            console.warn(`Invalid entity ${recordedEntity} given`)
+            return
+        }
+        const pos = this.worldMgr.ecs.getComponents(entity)?.get(PositionComponent)?.position
+        if (!pos) {
+            console.warn(`Given entity ${entity} has no position to jump to`)
+            return
+        }
+        this.worldMgr.sceneMgr.controls.jumpTo(pos) // TODO Actually lock camera to (moving) target
     }
 
     setMessage(messageNumber: number, arrowDisabled: number) {
@@ -293,19 +307,26 @@ export class NerpRunner {
             console.warn(`Unexpected message number ${messageNumber} given`)
             return
         }
-        this.supressArrow(arrowDisabled)
         const msg = this.messages[messageNumber - 1]
         if (!msg) {
             console.warn(`Message ${messageNumber} not found in [${this.messages.map((m) => m.txt)}]`)
             return
         }
-        const sampleLength = this.timeForNoSample / 1000 // XXX workaround until sounds from DATA directory are implemented
-        const messageTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample
-        if (msg.txt) EventBroker.publish(new NerpMessageEvent(msg.txt, messageTimeoutMs || GameConfig.instance.main.textPauseTimeMs))
-        if (msg.snd) { // XXX snd files reside in sounds/streamed/ which is not included in WAD files :(
-            if (VERBOSE) console.warn(`Sounds from DATA directory not yet implemented`, msg.snd)
+        const sampleLength = this.timeForNoSample / 1000 // TODO workaround until sounds from DATA directory are implemented
+        const sampleTimeoutMs = sampleLength * this.sampleLengthMultiplier + NerpRunner.timeAddedAfterSample
+        if (msg.txt) {
+            const messageTimeoutMs = sampleTimeoutMs || GameConfig.instance.main.textPauseTimeMs
+            EventBroker.publish(new NerpMessageEvent(msg.txt, messageTimeoutMs, !!arrowDisabled))
         }
-        this.messageTimer = this.timeForNoSample // XXX workaround until sounds from DATA directory are implemented
+        if (msg.snd) { // TODO snd files reside in sounds/streamed/ which is not included in WAD files :(
+            console.warn(`Sounds from DATA directory not yet implemented`, msg.snd)
+        }
+        if (arrowDisabled) {
+            this.messageTimer = this.timeForNoSample // TODO workaround until sounds from DATA directory are implemented
+        } else {
+            // TODO Show message until user clicked on arrow
+            this.messageTimer = Infinity
+        }
     }
 
     setRockMonsterAtTutorial(tutoBlockId: number) {
@@ -340,10 +361,10 @@ export class NerpRunner {
 
     getTutorialBlockIsGround(tutoBlockId: number): number {
         const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-        return tutoBlocks.count((s) => s.discovered && s.surfaceType.floor) // XXX must be non-zero at least, but what meaning exactly?
+        return tutoBlocks.count((s) => s.discovered && s.surfaceType.floor) // TODO must be non-zero at least, but what meaning exactly?
     }
 
-    getTutorialBlockIsPath(tutoBlockId): number {
+    getTutorialBlockIsPath(tutoBlockId: number): number {
         const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         if (tutoBlocks.length > 1) console.warn(`Invalid amount (${tutoBlocks.length}) of tuto blocks with id ${tutoBlockId} to move camera to, using first one`)
         const targetBlock = tutoBlocks[0]
@@ -351,7 +372,7 @@ export class NerpRunner {
         return targetBlock.discovered && targetBlock.isPath() ? 1 : 0
     }
 
-    getUnitAtBlock(tutoBlockId): number {
+    getUnitAtBlock(tutoBlockId: number): number {
         const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
         return [...this.worldMgr.entityMgr.raiders, ...this.worldMgr.entityMgr.vehicles].count((e): boolean => {
             const surface = this.worldMgr.ecs.getComponents(e.entity).get(PositionComponent).surface
@@ -371,10 +392,14 @@ export class NerpRunner {
         return this.objectiveShowing
     }
 
-    addPoweredCrystals() { // XXX Only used in tutorials
+    addPoweredCrystals() {
+        // TODO Only used in tutorials
+        if (VERBOSE) console.warn('NERP function "addPoweredCrystals" not yet implemented')
     }
 
-    disallowAll() { // XXX Only used in tutorials
+    disallowAll() {
+        // TODO Only used in tutorials, prevent user from clicking anywhere on GUI or in scene
+        if (VERBOSE) console.warn('NERP function "disallowAll" not yet implemented')
     }
 
     getPoweredPowerStationsBuilt() {
@@ -419,11 +444,13 @@ export class NerpRunner {
     }
 
     supressArrow(state: number): void {
-        // XXX Implement tutorial function to enable/disable helper arrow
+        // TODO Implement tutorial function to enable/disable helper arrow
+        if (VERBOSE) console.warn('NERP function "supressArrow" not yet implemented', state)
     }
 
     setGameSpeed(speed: number, unknown: number): void {
-        // XXX Only used in tutorials, implement changeable game speed first
+        // TODO Only used in tutorials, implement changeable game speed first
+        if (VERBOSE) console.warn('NERP function "setGameSpeed" not yet implemented', speed, unknown)
     }
 
     callMethod(methodName: string, methodArgs: any[]) {
@@ -452,11 +479,13 @@ export class NerpRunner {
         }
         const setTimerMatch = methodName.match(/^SetTimer([0-3])$/)
         if (setTimerMatch) {
-            return this.setTimer(setTimerMatch[1], methodArgs[0])
+            const timer = parseInt(setTimerMatch[1])
+            return this.setTimer(timer, methodArgs[0])
         }
         const getTimerMatch = methodName.match(/^GetTimer([0-3])$/)
         if (getTimerMatch) {
-            return this.getTimer(getTimerMatch[1])
+            const timer = parseInt(getTimerMatch[1])
+            return this.getTimer(timer)
         }
         const lMethodName = methodName.toLowerCase()
         const memberName = Object.getOwnPropertyNames(NerpRunner.prototype).find((name) => name.toLowerCase() === lMethodName)
@@ -476,7 +505,7 @@ export class NerpRunner {
 
     executeStatement(expression) {
         if (expression.invoke) {
-            const argValues = expression.invoke !== 'conditional' ? expression.args.map(e => this.executeStatement(e)) : expression.args
+            const argValues = expression.invoke !== 'conditional' ? expression.args.map((e) => this.executeStatement(e)) : expression.args
             const result = this.callMethod(expression.invoke, argValues)
             if (result !== undefined && NerpRunner.debug) {
                 console.log(`Method ${expression.invoke}(${JSON.stringify(expression.args).slice(1, -1)}) returned: ${result}`)
