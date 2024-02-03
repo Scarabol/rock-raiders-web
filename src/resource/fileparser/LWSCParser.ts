@@ -19,7 +19,6 @@ export class LWSCObject {
     lowerName: string = null
     isNull: boolean = false
     sfxName: string = null
-    sfxFrames: number[] = []
     parentObjInd: number = 0 // index is 1 based, 0 means no parent
     pivot: number[] = null
     readonly keyframeTracks: KeyframeTrack[] = []
@@ -148,17 +147,16 @@ export class LWSCParser {
                 currentObject.lowerName = nameParts[0].toLowerCase()
                 if (currentObject.lowerName === 'sfx') {
                     currentObject.sfxName = nameParts[1] || null
-                    currentObject.sfxFrames = nameParts.slice(2).map((n) => parseInt(n, 10))
+                    const [sfxFrameStart, sfxFrameEnd] = nameParts.slice(2).map((n) => parseInt(n, 10))
                     const times = []
                     const sfxNames = []
                     for (let c = 0; c < this.numOfKeyframes; c++) {
                         times[c] = c / this.numOfKeyframes * this.lwscData.durationSeconds
-                        sfxNames[c] = currentObject.sfxFrames.includes(c) ? currentObject.sfxName : ''
+                        sfxNames[c] = (sfxFrameStart <= c && c < sfxFrameEnd) ? currentObject.sfxName : ''
                     }
                     currentObject.keyframeTracks.push(new StringKeyframeTrack('.userData[sfxName]', times, sfxNames))
                 } else if (currentObject.lowerName === 'snd' && nameParts[1].equalsIgnoreCase('SFX_LANDSLIDE')) {
                     currentObject.sfxName = Sample[Sample.SFX_FallIn]
-                    currentObject.sfxFrames = nameParts.slice(2).map((n) => parseInt(n, 10))
                     // TODO what about keyframe tracks here for SND?
                 } else if (currentObject.lowerName.startsWith('*') || currentObject.lowerName.startsWith(';')) {
                     if (VERBOSE) console.warn(`Unexpected null object name ${currentObject.lowerName}`)
