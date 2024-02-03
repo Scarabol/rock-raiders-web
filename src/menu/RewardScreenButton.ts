@@ -23,7 +23,7 @@ export class RewardScreenButton extends MainMenuBaseItem {
         this.height = this.imgNormal.height
         const tooltipText = GameConfig.instance.getTooltipText(tooltipKey)
         this.state.onShowTooltip = () => EventBroker.publish(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
-        this.state.onHideTooltip = () => EventBroker.publish(new HideTooltip(tooltipText, null))
+        this.state.onHideTooltip = () => EventBroker.publish(new HideTooltip(tooltipText))
     }
 
     draw(context: SpriteContext) {

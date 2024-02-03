@@ -125,14 +125,10 @@ export class Raider implements Updatable, JobFulfiller {
     }
 
     disposeFromWorld() {
-        this.disposeFromScene()
+        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.workAudio = SoundManager.stopAudio(this.workAudio)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
-    }
-
-    disposeFromScene() {
-        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.sceneEntity.dispose()
     }
 

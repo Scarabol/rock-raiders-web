@@ -58,7 +58,7 @@ export class RockWipeLayer extends ScreenLayer {
 
     hide() {
         super.hide()
-        this.group.stop()
+        this.group.resetAnimation()
         this.renderInterval = clearIntervalSafe(this.renderInterval)
         this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
     }

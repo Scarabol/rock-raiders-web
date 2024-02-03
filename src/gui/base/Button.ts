@@ -49,7 +49,7 @@ export class Button extends BaseElement {
 
     onHoverEnd() {
         super.onHoverEnd()
-        this.publishEvent(new HideTooltip(this.tooltip, this.tooltipSfx))
+        this.publishEvent(new HideTooltip(this.tooltip))
     }
 
     showTooltip() {

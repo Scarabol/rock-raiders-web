@@ -120,16 +120,11 @@ export class VehicleEntity implements Updatable, JobFulfiller {
     }
 
     disposeFromWorld() {
-        this.disposeFromScene()
         this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.workAudio = SoundManager.stopAudio(this.workAudio)
         this.engineSound = SoundManager.stopAudio(this.engineSound)
         this.worldMgr.entityMgr.removeEntity(this.entity)
         this.worldMgr.ecs.removeEntity(this.entity)
-    }
-
-    disposeFromScene() {
-        this.worldMgr.sceneMgr.removeMeshGroup(this.sceneEntity)
         this.sceneEntity.dispose()
     }
 

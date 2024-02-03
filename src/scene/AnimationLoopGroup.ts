@@ -32,7 +32,7 @@ export class AnimationLoopGroup extends AnimationGroup {
         endMixer.addEventListener('finished', () => {
             if (this.onAnimationDone && !this.isDone && this.endActions.every((a) => !a.isRunning())) {
                 this.isDone = true
-                this.stop()
+                this.resetAnimation()
                 this.onAnimationDone()
             }
         })
@@ -79,8 +79,8 @@ export class AnimationLoopGroup extends AnimationGroup {
         return this
     }
 
-    stop() {
-        super.stop()
+    resetAnimation() {
+        super.resetAnimation()
         this.playing = false
     }
 }

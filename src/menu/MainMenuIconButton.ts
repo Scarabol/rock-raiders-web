@@ -23,7 +23,7 @@ export class MainMenuIconButton extends MainMenuBaseItem {
         this.imgPressed = ResourceManager.getImage(cfg.imgPressed)
         const tooltipText = GameConfig.instance.getTooltipText(cfg.tooltipKey)
         this.state.onShowTooltip = () => EventBroker.publish(new ChangeTooltip(tooltipText, TOOLTIP_DELAY_TEXT_MENU))
-        this.state.onHideTooltip = () => EventBroker.publish(new HideTooltip(tooltipText, null))
+        this.state.onHideTooltip = () => EventBroker.publish(new HideTooltip(tooltipText))
         this.width = Math.max(this.imgNormal.width, this.imgHover.width, this.imgPressed.width)
         this.height = Math.max(this.imgNormal.height, this.imgHover.height, this.imgPressed.height)
         this.x = layer.cfg.autoCenter ? (layer.fixedWidth - this.width) / 2 : layer.cfg.position[0] + cfg.x

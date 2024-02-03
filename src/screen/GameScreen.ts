@@ -110,7 +110,7 @@ export class GameScreen {
     }
 
     hide() {
-        this.entityMgr.stop()
+        this.entityMgr.disposeAll()
         this.worldMgr.stop()
         this.sceneMgr.disposeScene()
         this.overlayLayer.hide()

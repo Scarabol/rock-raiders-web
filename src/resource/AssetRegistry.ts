@@ -218,7 +218,7 @@ export class AssetRegistry extends Map<string, WadAsset> {
         this.inProgress.push(new Promise((resolve) => {
             try {
                 const content = this.assetLoader.vfs.getFile(lwsFilepath).toText()
-                const lwscData = new LWSCParser(content).parse()
+                const lwscData = new LWSCParser(lwsFilepath, content).parse()
                 ResourceManager.resourceByName.set(lwsFilepath.toLowerCase(), lwscData)
                 lwscData.objects.forEach((obj) => {
                     if (!obj.fileName) return

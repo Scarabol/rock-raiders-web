@@ -11,6 +11,8 @@ import { getFilename } from '../../core/Util'
 import { VERBOSE } from '../../params'
 
 export class LWSCData {
+    filePath: string = null
+    framesPerSecond: number = 25
     durationSeconds: number = null
     readonly objects: LWSCObject[] = []
 }
@@ -36,22 +38,20 @@ export class LWSCParser {
     firstFrame: number = 0
     lastFrame: number = 0
     frameStep: number = 1
-    framesPerSecond: number = 25
     numOfKeyframes: number = 0
 
-    constructor(content: string, readonly verbose: boolean = false) {
-        if (this.verbose) console.log('Using verbose mode')
+    constructor(filePath: string, content: string) {
+        this.lwscData.filePath = filePath
         this.lines = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n') // normalize newlines
             .replace(/\t/g, ' ') // tabs to spaces
             .split('\n')
             .map((l) => l.trim())
+        if (this.lines[0] !== 'LWSC') {
+            throw new Error(`Invalid start of file! Got "${this.lines[0]}" expected 'LWSC' in first line`)
+        }
     }
 
     parse(): LWSCData {
-        if (this.lines[0] !== 'LWSC') {
-            throw new Error('Invalid start of file! Expected \'LWSC\' in first line')
-        }
-
         const sceneFileVersion = parseInt(this.lines[1], 10)
         if (sceneFileVersion !== 1) {
             console.warn(`Unexpected scene file version: ${sceneFileVersion}`)
@@ -64,16 +64,14 @@ export class LWSCParser {
             if (key === 'FirstFrame') {
                 this.parseFrameBlock()
             } else if (key === 'AddNullObject' || key === 'LoadObject') {
-                const subObj = this.parseObjectBlock()
-                if (this.verbose) console.log(subObj)
+                this.parseObjectBlock()
             } else if (line.startsWith('PreviewFirstFrame ') || line.startsWith('PreviewLastFrame ') || line.startsWith('PreviewFrameStep ')) {
                 // only used in editor
-            } else {
-                // console.warn(`Unexpected line: ${line}`); // XXX implement all LWS features
+            } else if (VERBOSE) {
+                console.warn(`Unexpected line: ${line}`) // XXX implement all LWS features
             }
         }
 
-        if (this.verbose) console.log(this.lwscData)
         return this.lwscData
     }
 
@@ -92,16 +90,16 @@ export class LWSCParser {
             if (key === 'FirstFrame') {
                 this.firstFrame = parseInt(value, 10)
                 this.numOfKeyframes = this.lastFrame + 1 - this.firstFrame
-                this.lwscData.durationSeconds = this.numOfKeyframes / this.framesPerSecond / this.frameStep
+                this.lwscData.durationSeconds = this.numOfKeyframes / this.lwscData.framesPerSecond / this.frameStep
             } else if (key === 'LastFrame') {
                 this.lastFrame = parseInt(value, 10)
                 this.numOfKeyframes = this.lastFrame + 1 - this.firstFrame
-                this.lwscData.durationSeconds = this.numOfKeyframes / this.framesPerSecond / this.frameStep
+                this.lwscData.durationSeconds = this.numOfKeyframes / this.lwscData.framesPerSecond / this.frameStep
             } else if (key === 'FrameStep') {
                 this.frameStep = parseInt(value, 10)
-                this.lwscData.durationSeconds = this.numOfKeyframes / this.framesPerSecond / this.frameStep
+                this.lwscData.durationSeconds = this.numOfKeyframes / this.lwscData.framesPerSecond / this.frameStep
             } else if (key === 'FramesPerSecond') {
-                this.framesPerSecond = parseInt(value, 10)
+                this.lwscData.framesPerSecond = parseInt(value, 10)
             } else if (key === 'PreviewFirstFrame' || key === 'PreviewLastFrame' || key === 'PreviewFrameStep') {
                 // only used in editor
             } else {
@@ -247,7 +245,7 @@ export class LWSCParser {
                 currentObject.opacityTracks.push(new NumberKeyframeTrack(`.opacity`, times, opacities))
             } else if (key === 'PivotPoint') {
                 currentObject.pivot = value.split(' ').map((n) => parseInt(n, 10))
-            } else if (this.verbose) {
+            } else if (VERBOSE) {
                 console.warn(`Unhandled line in object block: ${line}; key: ${key}; value: ${value}`) // XXX implement all LWS features
             }
         }

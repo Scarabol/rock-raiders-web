@@ -53,16 +53,17 @@ Rock Raiders Web is an experiment aimed at recreating Rock Raiders PC game (1999
 - Add magnet cursor to map panel to track entities
 - Move camera with click on radar map panel
 - Show camera view area as wireframe on radar map panel
+- Move camera at window borders
 
 - Replace scene management with event driven approach rendered offscreen
 - Switch to respective canvas instead of just changing the camera
 - Add entity movement controller with arrow keys for fpv/shoulder view
 
+- Tutorial levels and helper features
 - Implement laser shooting for turrets and mobile lasers
 
 ### v0.9.0 - Polishing
 
-- Tutorial levels and helper features
 - Use same team for all missions and add names to raiders
 - Auto switch from portrait to landscape mode in fullscreen
 - Background music and soundtrack (needs files from ISO-File)

@@ -5,9 +5,6 @@ import { EntityType } from '../EntityType'
 import { VehicleEntity } from './VehicleEntity'
 import { GameConfig } from '../../../cfg/GameConfig'
 
-/**
- * @deprecated
- */
 export class VehicleFactory {
     static createVehicleFromType(entityType: EntityType, worldMgr: WorldManager): VehicleEntity {
         switch (entityType) {

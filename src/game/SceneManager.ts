@@ -231,6 +231,7 @@ export class SceneManager implements Updatable {
         GameState.remainingDiggables = this.terrain?.countDiggables() || 0
         this.terrain?.dispose()
         this.terrain = null
+        this.entities.forEach((e) => e.dispose())
         this.entities.length = 0
         this.miscAnims.forEach((a) => a.dispose())
         this.miscAnims.length = 0

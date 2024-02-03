@@ -179,16 +179,14 @@ export class WorldManager {
                         const stats = VehicleFactory.getVehicleStatsByType(vType)
                         if (GameState.numCrystal < stats.CostCrystal) return false
                         const teleportBuilding = this.entityMgr.findTeleportBuilding(vType)
-                        if (teleportBuilding) {
-                            GameState.numCrystal -= stats.CostCrystal
-                            EventBroker.publish(new MaterialAmountChanged())
-                            const vehicle = VehicleFactory.createVehicleFromType(vType, this)
-                            const worldPosition = (teleportBuilding.waterPathSurface ?? teleportBuilding.primaryPathSurface).getCenterWorld2D()
-                            const heading = teleportBuilding.sceneEntity.heading
-                            teleportBuilding.teleport.teleportIn(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam, worldPosition, heading, null)
-                            return true
-                        }
-                        return false
+                        if (!teleportBuilding) return false
+                        GameState.numCrystal -= stats.CostCrystal
+                        EventBroker.publish(new MaterialAmountChanged())
+                        const vehicle = VehicleFactory.createVehicleFromType(vType, this)
+                        const worldPosition = (teleportBuilding.waterPathSurface ?? teleportBuilding.primaryPathSurface).getCenterWorld2D()
+                        const heading = teleportBuilding.sceneEntity.heading
+                        teleportBuilding.teleport.teleportIn(vehicle, this.entityMgr.vehicles, this.entityMgr.vehiclesInBeam, worldPosition, heading, null)
+                        return true
                     })
                     if (spawnedVehicleType) {
                         this.requestedVehicleTypes.remove(spawnedVehicleType)

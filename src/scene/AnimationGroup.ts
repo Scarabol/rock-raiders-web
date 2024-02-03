@@ -25,7 +25,7 @@ export class AnimationGroup extends Group implements Updatable {
     setup(): this {
         const lwscData = ResourceManager.getLwscData(this.lwsFilepath)
         this.createMeshList(lwscData)
-        this.createAnimationMixers(lwscData, this.lwsFilepath)
+        this.createAnimationMixers(lwscData)
         return this
     }
 
@@ -58,7 +58,7 @@ export class AnimationGroup extends Group implements Updatable {
         })
     }
 
-    protected createAnimationMixers(lwscData: LWSCData, lwsFilepath: string) {
+    protected createAnimationMixers(lwscData: LWSCData) {
         this.animationMixers.length = 0
         lwscData.objects.forEach((obj, index) => {
             const mesh = this.meshList[index]
@@ -71,7 +71,7 @@ export class AnimationGroup extends Group implements Updatable {
             // setup animation clip for each object
             const opacityTracks = obj.opacityTracks.flatMap((t) => mesh.getMaterials()
                 .map((_, index) => new NumberKeyframeTrack(`.material[${index}].opacity`, t.times, t.values)))
-            const clip = new AnimationClip(lwsFilepath, lwscData.durationSeconds, [...obj.keyframeTracks, ...opacityTracks])
+            const clip = new AnimationClip(lwscData.filePath, lwscData.durationSeconds, [...obj.keyframeTracks, ...opacityTracks])
             this.maxDurationMs = Math.max(this.maxDurationMs, clip.duration * 1000)
             this.addMixer(mesh, clip)
         })
@@ -122,7 +122,7 @@ export class AnimationGroup extends Group implements Updatable {
         return this
     }
 
-    stop() {
+    resetAnimation() {
         this.isDone = false
         this.animationTime = 0
         this.animationMixers.forEach((m) => m.stopAllAction())

@@ -103,15 +103,17 @@ export class EntityManager {
         this.completedBuildingSites.forEach((b) => updateSafe(b, elapsedMs))
     }
 
-    stop() {
+    disposeAll() {
         EntityManager.disposeAll(this.buildings)
         EntityManager.disposeAll(this.buildingsUndiscovered)
         EntityManager.disposeAll(this.raiders)
         EntityManager.disposeAll(this.raidersUndiscovered)
+        EntityManager.disposeAll(this.raidersInBeam)
         EntityManager.disposeAll(this.materials)
         EntityManager.disposeAll(this.materialsUndiscovered)
         EntityManager.disposeAll(this.placedFences)
         EntityManager.disposeAll(this.vehicles)
+        EntityManager.disposeAll(this.vehiclesUndiscovered)
         EntityManager.disposeAll(this.vehiclesInBeam)
     }
 

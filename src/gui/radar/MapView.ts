@@ -132,6 +132,7 @@ export class MapView extends BaseElement {
     isInRect(sx: number, sy: number): boolean {
         const inRect = super.isInRect(sx, sy)
         if (inRect) {
+            // TODO Check entities first and show magnet cursor to set follower view to them
             const tileX = Math.floor((sx - this.x + this.offset.x) / this.surfaceRectSize)
             const tileY = Math.floor((sy - this.y + this.offset.y) / this.surfaceRectSize)
             const surface = this.surfaceMap[tileX]?.[tileY]

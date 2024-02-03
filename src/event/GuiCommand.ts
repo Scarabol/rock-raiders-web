@@ -60,7 +60,7 @@ export class ChangeTooltip extends BaseEvent {
 }
 
 export class HideTooltip extends BaseEvent {
-    constructor(readonly tooltipText: string, readonly tooltipSfx: string) {
+    constructor(readonly tooltipText: string) {
         super(EventKey.COMMAND_TOOLTIP_HIDE)
     }
 }
