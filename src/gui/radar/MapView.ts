@@ -1,16 +1,17 @@
 import { createCanvas } from '../../core/ImageHelper'
 import { SpriteContext, SpriteImage } from '../../core/Sprite'
 import { EventKey } from '../../event/EventKeyEnum'
-import { InitRadarMap, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
+import { FollowerSetLookAtEvent, InitRadarMap, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain } from '../../event/LocalEvents'
 import { MapMarkerChange, MapMarkerType } from '../../game/component/MapMarkerComponent'
 import { BaseElement } from '../base/BaseElement'
 import { MapSurfaceRect } from './MapSurfaceRect'
 import { MapRenderer } from './MapRenderer'
 import { GameEntity } from '../../game/ECS'
-import { ChangeTooltip } from '../../event/GuiCommand'
-import { TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
+import { ChangeCursor, ChangeTooltip } from '../../event/GuiCommand'
+import { TILESIZE, TOOLTIP_DELAY_SFX, TOOLTIP_DELAY_TEXT_SCENE } from '../../params'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
+import { Cursor } from '../../resource/Cursor'
 
 export class MapView extends BaseElement {
     readonly mapRenderer: MapRenderer
@@ -28,6 +29,8 @@ export class MapView extends BaseElement {
     terrainWidth: number = 0
     terrainHeight: number = 0
     lastSurface: MapSurfaceRect = null
+    lastEntity: GameEntity = null
+    trackedEntity: GameEntity = null
 
     constructor(parent: BaseElement) {
         super(parent)
@@ -42,6 +45,10 @@ export class MapView extends BaseElement {
         this.relX = 15
         this.relY = 15
         this.onClick = (cx: number, cy: number) => {
+            if (this.trackedEntity) {
+                // TODO Force move camera to location of entity
+                EventBroker.publish(new FollowerSetLookAtEvent(this.trackedEntity))
+            }
             const surfaceScale = this.surfaceRectSizeMin / this.surfaceRectSize
             this.offset.x += (cx - this.x - this.width / 2) * surfaceScale
             this.offset.y += (cy - this.y - this.height / 2) * surfaceScale
@@ -131,11 +138,29 @@ export class MapView extends BaseElement {
 
     isInRect(sx: number, sy: number): boolean {
         const inRect = super.isInRect(sx, sy)
+        this.trackedEntity = null
         if (inRect) {
-            // TODO Check entities first and show magnet cursor to set follower view to them
-            const tileX = Math.floor((sx - this.x + this.offset.x) / this.surfaceRectSize)
-            const tileY = Math.floor((sy - this.y + this.offset.y) / this.surfaceRectSize)
-            const surface = this.surfaceMap[tileX]?.[tileY]
+            this.entitiesByOrder.forEach((entities) => {
+                entities.forEach((pos, entity) => {
+                    const tx = (sx - this.x + this.offset.x)
+                    const ty = (sy - this.y + this.offset.y)
+                    const ex = pos.x / TILESIZE * this.surfaceRectSize
+                    const ez = pos.z / TILESIZE * this.surfaceRectSize
+                    const dx = tx - ex
+                    const dz = ty - ez
+                    if (Math.abs(dx) <= 2 && Math.abs(dz) <= 2) { // TODO sync with rect size in MapRendererWorker
+                        this.trackedEntity = entity
+                        EventBroker.publish(new ChangeCursor(Cursor.TRACK_OBJECT))
+                        if (this.lastEntity !== entity) {
+                            this.lastEntity = entity
+                            // TODO get entity object name and publish tooltip event
+                        }
+                    }
+                })
+            })
+            const surfaceX = Math.floor((sx - this.x + this.offset.x) / this.surfaceRectSize)
+            const surfaceY = Math.floor((sy - this.y + this.offset.y) / this.surfaceRectSize)
+            const surface = this.surfaceMap[surfaceX]?.[surfaceY]
             if (surface && surface !== this.lastSurface) {
                 this.lastSurface = surface
                 const tooltip = GameConfig.instance.surfaceTypeDescriptions.get(surface.name.toLowerCase())
