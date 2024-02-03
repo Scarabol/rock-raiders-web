@@ -1,25 +1,24 @@
 import { ScreenLayer } from './ScreenLayer'
-import { AmbientLight, Camera, PerspectiveCamera, Scene, WebGLRenderer } from 'three'
-import { cancelAnimationFrameSafe, clearIntervalSafe } from '../../core/Util'
+import { AmbientLight, Camera, PerspectiveCamera, Scene } from 'three'
 import { CAMERA_FOV, NATIVE_UPDATE_INTERVAL } from '../../params'
 import { AnimationLoopGroup } from '../../scene/AnimationLoopGroup'
 import { EventKey } from '../../event/EventKeyEnum'
 import { ShowMissionBriefingEvent } from '../../event/LocalEvents'
 import { GameConfig } from '../../cfg/GameConfig'
 import { EventBroker } from '../../event/EventBroker'
+import { BaseRenderer } from '../BaseRenderer'
+import { clearIntervalSafe } from '../../core/Util'
 
 export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeLayer
-    readonly renderer: WebGLRenderer
+    readonly renderer: BaseRenderer
     readonly scene: Scene
     readonly camera: Camera
     readonly group: AnimationLoopGroup
-    renderInterval: NodeJS.Timeout
-    lastAnimationRequest: number
+    groupUpdateInterval: NodeJS.Timeout
 
     constructor() {
         super()
-        this.renderer = new WebGLRenderer({canvas: this.canvas, alpha: true})
-        this.renderer.setSize(this.canvas.width, this.canvas.height)
+        this.renderer = new BaseRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
         this.scene = new Scene()
         this.scene.add(new AmbientLight(0xffffff, 1)) // XXX read from LWS file
         this.camera = new PerspectiveCamera(CAMERA_FOV, 4 / 3, 0.1, 100)
@@ -41,8 +40,7 @@ export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeL
         this.camera.lookAt(7.25, 3.8, 0)
 
         this.group = new AnimationLoopGroup(advisorCfg.animFileName, () => {
-            this.renderInterval = clearIntervalSafe(this.renderInterval)
-            this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
+            this.renderer.stopRendering()
         }).setLoop(advisorCfg.loopStart, advisorCfg.loopEnd).setup()
         this.group.meshList.forEach((m) => m.geometry.scale(-1, 1, 1)) // flip normals
         this.group.scale.x = -1
@@ -58,16 +56,12 @@ export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeL
 
     startRendering() {
         if (!this.group) return
-        this.renderInterval = clearIntervalSafe(this.renderInterval)
-        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
         this.group.play()
         // XXX Play SFX for advisor, which seems always null
-        this.renderInterval = setInterval(() => {
+        this.renderer.startRendering(this.scene, this.camera)
+        this.groupUpdateInterval = setInterval(() => {
             this.group.update(NATIVE_UPDATE_INTERVAL)
-            this.lastAnimationRequest = requestAnimationFrame(() => {
-                this.renderer.render(this.scene, this.camera)
-            })
-        }, NATIVE_UPDATE_INTERVAL) // XXX Use FPS from LWS data
+        }, NATIVE_UPDATE_INTERVAL)
     }
 
     resize(width: number, height: number) {
@@ -75,16 +69,16 @@ export class AdvisorLayer extends ScreenLayer { // TODO Almost same as RockWipeL
         this.renderer.setSize(width, height)
     }
 
+    hide() {
+        super.hide()
+        this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
+        this.group?.resetAnimation()
+        this.renderer.stopRendering()
+    }
+
     dispose() {
         this.hide()
         this.scene.clear()
         this.renderer.dispose()
-    }
-
-    hide() {
-        super.hide()
-        this.group?.resetAnimation()
-        this.renderInterval = clearIntervalSafe(this.renderInterval)
-        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
     }
 }

@@ -1,23 +1,22 @@
 import { ScreenLayer } from '../screen/layer/ScreenLayer'
 import { SoundManager } from '../audio/SoundManager'
 import { Sample } from '../audio/Sample'
-import { AmbientLight, OrthographicCamera, Scene, WebGLRenderer } from 'three'
-import { cancelAnimationFrameSafe, clearIntervalSafe } from '../core/Util'
+import { AmbientLight, OrthographicCamera, Scene } from 'three'
+import { clearIntervalSafe } from '../core/Util'
 import { NATIVE_UPDATE_INTERVAL } from '../params'
 import { AnimationGroup } from '../scene/AnimationGroup'
+import { BaseRenderer } from '../screen/BaseRenderer'
 
 export class RockWipeLayer extends ScreenLayer {
-    readonly renderer: WebGLRenderer
+    readonly renderer: BaseRenderer
     readonly scene: Scene
     readonly camera: OrthographicCamera
     readonly group: AnimationGroup
-    renderInterval: NodeJS.Timeout
-    lastAnimationRequest: number
+    groupUpdateInterval: NodeJS.Timeout
 
     constructor() {
         super()
-        this.renderer = new WebGLRenderer({canvas: this.canvas, alpha: true})
-        this.renderer.setSize(this.canvas.width, this.canvas.height)
+        this.renderer = new BaseRenderer(NATIVE_UPDATE_INTERVAL, this.canvas, {alpha: true})
         this.scene = new Scene()
         this.scene.add(new AmbientLight(0xffffff, 0.25)) // XXX read from LWS file
         this.scene.scale.setScalar(1 / 4)
@@ -32,15 +31,11 @@ export class RockWipeLayer extends ScreenLayer {
 
     show() {
         super.show()
-        this.renderInterval = clearIntervalSafe(this.renderInterval)
-        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
         this.group.play()
         SoundManager.playSample(Sample.SFX_RockWipe, false)
-        this.renderInterval = setInterval(() => {
+        this.renderer.startRendering(this.scene, this.camera)
+        this.groupUpdateInterval = setInterval(() => {
             this.group.update(NATIVE_UPDATE_INTERVAL)
-            this.lastAnimationRequest = requestAnimationFrame(() => {
-                this.renderer.render(this.scene, this.camera)
-            })
         }, NATIVE_UPDATE_INTERVAL) // XXX Use FPS from LWS data
         return this.group.maxDurationMs
     }
@@ -50,16 +45,16 @@ export class RockWipeLayer extends ScreenLayer {
         this.renderer.setSize(width, height)
     }
 
+    hide() {
+        super.hide()
+        this.groupUpdateInterval = clearIntervalSafe(this.groupUpdateInterval)
+        this.group.resetAnimation()
+        this.renderer.stopRendering()
+    }
+
     dispose() {
         this.hide()
         this.scene.clear()
         this.renderer.dispose()
-    }
-
-    hide() {
-        super.hide()
-        this.group.resetAnimation()
-        this.renderInterval = clearIntervalSafe(this.renderInterval)
-        this.lastAnimationRequest = cancelAnimationFrameSafe(this.lastAnimationRequest)
     }
 }
