@@ -62,7 +62,7 @@ export class Panel extends BaseElement {
     protected updateAnimation(targetX: number, targetY: number, speed: number, onDone: () => any) {
         const diffX = targetX - this.relX
         const diffY = targetY - this.relY
-        if (Math.abs(diffX) <= speed && Math.abs(diffY) <= speed) {
+        if (Math.abs(diffX) <= Math.sqrt(Math.abs(diffX)) * speed && Math.abs(diffY) <= Math.sqrt(Math.abs(diffY)) * speed) {
             this.relX = targetX
             this.relY = targetY
             this.animationTimeout = null
@@ -70,8 +70,9 @@ export class Panel extends BaseElement {
         } else {
             this.relX += Math.round(Math.sign(diffX) * Math.sqrt(Math.abs(diffX)) * speed)
             this.relY += Math.round(Math.sign(diffY) * Math.sqrt(Math.abs(diffY)) * speed)
-            const panel = this
-            this.animationTimeout = setTimeout(() => panel.updateAnimation(targetX, targetY, speed, onDone), NATIVE_UPDATE_INTERVAL)
+            this.animationTimeout = setTimeout(() => {
+                this.updateAnimation(targetX, targetY, speed, onDone)
+            }, NATIVE_UPDATE_INTERVAL)
         }
         this.updatePosition()
         this.notifyRedraw()
