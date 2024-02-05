@@ -1,5 +1,5 @@
 import { BuildingsChangedEvent, DeselectAll, FollowerSetCanvasEvent, FollowerSetLookAtEvent, InitRadarMap, RaidersAmountChangedEvent, RaiderTrainingCompleteEvent, SaveScreenshot, SelectionChanged, SelectionFrameChangeEvent, SetSpaceToContinueEvent, ShowGameResultEvent, ShowMissionBriefingEvent, ShowOptionsEvent, UpdateRadarEntityEvent, UpdateRadarSurface, UpdateRadarTerrain, VehicleUpgradeCompleteEvent } from './LocalEvents'
-import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, NerpMessageEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, SetupPriorityList, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged } from './WorldEvents'
+import { AirLevelChanged, CavernDiscovered, DynamiteExplosionEvent, GameResultEvent, JobCreateEvent, LevelSelectedEvent, MaterialAmountChanged, NerpMessageEvent, NerpSuppressArrowEvent, OreFoundEvent, RequestedRaidersChanged, RequestedVehiclesChanged, RestartGameEvent, SetupPriorityList, ToggleAlarmEvent, UpdatePriorities, UsedCrystalsChanged } from './WorldEvents'
 import { CameraControl, CancelBuilding, CancelBuildMode, CancelSurfaceJobs, ChangeBuildingPowerState, ChangeCameraEvent, ChangeCursor, ChangePreferences, ChangePriorityList, ChangeRaiderSpawnRequest, ChangeTooltip, CreateClearRubbleJob, CreateDrillJob, CreateDynamiteJob, CreatePowerPath, CreateReinforceJob, DropBirdScarer, HideTooltip, MakeRubble, PickTool, PlaceFence, PlaySoundEvent, RaiderBeamUp, RaiderDrop, RaiderEat, RaiderUpgrade, RemoveSelection, RepairBuilding, RepairLava, RequestVehicleSpawn, SelectBuildMode, TrainRaider, UpgradeBuilding, UpgradeVehicle, VehicleBeamUp, VehicleCallMan, VehicleDriverGetOut, VehicleUnload } from './GuiCommand'
 import { CrystalFoundEvent, GenericDeathEvent, GenericMonsterEvent, LandslideEvent, PowerDrainEvent, RaiderDiscoveredEvent, SlugEmergeEvent, UnderAttackEvent, WorldLocationEvent } from './WorldLocationEvent'
 
@@ -82,6 +82,7 @@ export interface DefaultEventMap {
     'air-level-changed': AirLevelChanged
     'nerp-message': NerpMessageEvent
     'nerp-message-next': BaseEvent
+    'nerp-suppress-arrow': NerpSuppressArrowEvent
     'setup-priority-list': SetupPriorityList
     'pause-game': BaseEvent
     'unpause-game': BaseEvent

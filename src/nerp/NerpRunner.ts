@@ -12,7 +12,7 @@ import { GameState } from '../game/model/GameState'
 import { NerpParser } from './NerpParser'
 import { NerpScript } from './NerpScript'
 import { NERP_EXECUTION_INTERVAL, VERBOSE } from '../params'
-import { GameResultEvent, NerpMessageEvent } from '../event/WorldEvents'
+import { GameResultEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../event/WorldEvents'
 import { PositionComponent } from '../game/component/PositionComponent'
 import { SurfaceType } from '../game/terrain/SurfaceType'
 import { MonsterSpawner } from '../game/entity/MonsterSpawner'
@@ -456,8 +456,7 @@ export class NerpRunner {
 
     // noinspection SpellCheckingInspection
     supressArrow(state: number): void {
-        // TODO Implement tutorial function to enable/disable helper arrow
-        if (VERBOSE) console.warn('NERP function "supressArrow" not yet implemented', state)
+        EventBroker.publish(new NerpSuppressArrowEvent(!!state))
     }
 
     setGameSpeed(speed: number, unknown: number): void {

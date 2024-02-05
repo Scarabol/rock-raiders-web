@@ -86,6 +86,7 @@ export enum EventKey {
     AIR_LEVEL_CHANGED = 'air-level-changed',
     NERP_MESSAGE = 'nerp-message',
     NERP_MESSAGE_NEXT = 'nerp-message-next',
+    NERP_SUPPRESS_ARROW = 'nerp-suppress-arrow',
     SETUP_PRIORITY_LIST = 'setup-priority-list',
     PAUSE_GAME = 'pause-game',
     UNPAUSE_GAME = 'unpause-game',

@@ -10,7 +10,7 @@ import { TextInfoMessage } from './TextInfoMessage'
 import { TextInfoMessageCfg } from './TextInfoMessageCfg'
 import { AIR_LEVEL_LEVEL_LOW, AIR_LEVEL_WARNING_STEP } from '../../params'
 import { ResourceManager } from '../../resource/ResourceManager'
-import { AirLevelChanged, GameResultEvent, NerpMessageEvent } from '../../event/WorldEvents'
+import { AirLevelChanged, GameResultEvent, NerpMessageEvent, NerpSuppressArrowEvent } from '../../event/WorldEvents'
 import { GameResultState } from '../../game/model/GameResult'
 import { TextInfoMessageEntryCfg } from '../../cfg/TextInfoMessageEntryCfg'
 import { GameConfig } from '../../cfg/GameConfig'
@@ -34,6 +34,7 @@ export class MessagePanel extends Panel {
 
     btnNext: Button
     btnRepeat: Button
+    suppressArrow: boolean = false
 
     constructor(parent: BaseElement, panelCfg: PanelCfg, textInfoMessageConfig: TextInfoMessageCfg) {
         super(parent, panelCfg)
@@ -77,6 +78,10 @@ export class MessagePanel extends Panel {
         this.registerEventListener(EventKey.NERP_MESSAGE, (event: NerpMessageEvent) => {
             this.setTimedMessage({text: event.text}, event.arrowDisabled ? event.messageTimeoutMs : 0, event.arrowDisabled)
         })
+        this.registerEventListener(EventKey.NERP_SUPPRESS_ARROW, (event: NerpSuppressArrowEvent) => {
+            this.suppressArrow = event.suppressArrow
+            this.btnNext.hidden = event.suppressArrow
+        })
         this.registerEventListener(EventKey.SET_SPACE_TO_CONTINUE, (event: SetSpaceToContinueEvent) => {
             if (event.state) {
                 this.setTimedMessage(textInfoMessageConfig.textSpaceToContinue, 0, true)
@@ -113,6 +118,7 @@ export class MessagePanel extends Panel {
         this.blinkInterval = clearIntervalSafe(this.blinkInterval)
         this.btnNext.hidden = true
         this.btnRepeat.hidden = true
+        this.suppressArrow = false
     }
 
     setMessage(cfg: TextInfoMessageEntryCfg) {
@@ -121,7 +127,7 @@ export class MessagePanel extends Panel {
     }
 
     private setTimedMessage(cfg: TextInfoMessageEntryCfg, timeout: number, arrowHidden: boolean) {
-        this.btnNext.hidden = arrowHidden
+        this.btnNext.hidden = arrowHidden || this.suppressArrow
         this.btnRepeat.hidden = !!cfg.imageFilename
         const maxMessageWidth = 380 - this.x - 20 // NextButtonPos640x480.x - panel.x
         this.textInfoMessageCache.getOrUpdate(cfg, () => TextInfoMessage.fromConfig(cfg, maxMessageWidth)).then((msg: TextInfoMessage) => {
@@ -151,6 +157,7 @@ export class MessagePanel extends Panel {
         this.setMovedIn(true)
         this.btnNext.hidden = true
         this.btnRepeat.hidden = true
+        this.suppressArrow = false
         this.notifyRedraw()
     }
 

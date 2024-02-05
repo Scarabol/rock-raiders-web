@@ -138,3 +138,9 @@ export class UpdatePriorities extends BaseEvent {
         this.priorityList = priorityList
     }
 }
+
+export class NerpSuppressArrowEvent extends BaseEvent {
+    constructor(readonly suppressArrow: boolean) {
+        super(EventKey.NERP_SUPPRESS_ARROW)
+    }
+}
