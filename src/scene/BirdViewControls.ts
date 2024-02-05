@@ -14,12 +14,14 @@ export enum CameraRotation {
 }
 
 export class BirdViewControls extends MapControls {
+    private readonly dummyPointerId: number
     private lockBuild: boolean = false
     moveTarget: Vector3 = null
     lastPanKey: string = ''
 
     constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
+        this.dummyPointerId = this.verifyPointerId()
         this.mouseButtons = {LEFT: null, MIDDLE: MOUSE.ROTATE, RIGHT: MOUSE.PAN}
         this.listenToKeyEvents(domElement)
         this.keyPanSpeed = this.keyPanSpeed * KEY_PAN_SPEED
@@ -52,9 +54,27 @@ export class BirdViewControls extends MapControls {
         const px = (this.domElement as HTMLElement).clientWidth / 2
         const py = (this.domElement as HTMLElement).clientHeight / 2
         const step = py / 8 // => 16 clicks for a 360 no-scope
-        this.domElement.dispatchEvent(new PointerEvent('pointerdown', {pointerId: 1, button: MOUSE_BUTTON.MIDDLE, clientX: px, clientY: py}))
-        this.domElement.dispatchEvent(new PointerEvent('pointermove', {pointerId: 1, clientX: px + dx * step, clientY: py + dy * step}))
-        this.domElement.dispatchEvent(new PointerEvent('pointerup', {pointerId: 1, button: MOUSE_BUTTON.MIDDLE, clientX: px + dx * step, clientY: py + dy * step}))
+        this.domElement.dispatchEvent(new PointerEvent('pointerdown', {pointerId: this.dummyPointerId, button: MOUSE_BUTTON.MIDDLE, clientX: px, clientY: py}))
+        this.domElement.dispatchEvent(new PointerEvent('pointermove', {pointerId: this.dummyPointerId, clientX: px + dx * step, clientY: py + dy * step}))
+        this.domElement.dispatchEvent(new PointerEvent('pointerup', {pointerId: this.dummyPointerId, button: MOUSE_BUTTON.MIDDLE, clientX: px + dx * step, clientY: py + dy * step}))
+    }
+
+    private verifyPointerId(): number {
+        try {
+            // pointer id 1 should work with Chromium
+            this.domElement.setPointerCapture(1)
+            this.domElement.releasePointerCapture(1)
+            return 1
+        } catch (e1) {
+            try {
+                // pointer id 0 should work with Firefox
+                this.domElement.setPointerCapture(0)
+                this.domElement.releasePointerCapture(0)
+            } catch (e2) {
+                console.warn('Could not find working pointer id. Rotation might not be working', e1, e2)
+            }
+            return 0
+        }
     }
 
     jumpTo(location: { x: number, y: number, z: number }) {
