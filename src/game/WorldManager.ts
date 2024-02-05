@@ -1,6 +1,6 @@
 import { Vector2 } from 'three'
 import { LevelEntryCfg } from '../cfg/LevelsCfg'
-import { clearTimeoutSafe } from '../core/Util'
+import { clearIntervalSafe } from '../core/Util'
 import { EventKey } from '../event/EventKeyEnum'
 import { MaterialAmountChanged, RequestedRaidersChanged, RequestedVehiclesChanged, ToggleAlarmEvent } from '../event/WorldEvents'
 import { NerpRunner } from '../nerp/NerpRunner'
@@ -44,7 +44,7 @@ export class WorldManager {
     sceneMgr: SceneManager
     entityMgr: EntityManager
     nerpRunner: NerpRunner = null
-    gameLoopTimeout: NodeJS.Timeout = null
+    gameLoopInterval: NodeJS.Timeout = null
     elapsedGameTimeMs: number = 0
     requestedRaiders: number = 0
     spawnRaiderTimer: number = 0
@@ -75,7 +75,7 @@ export class WorldManager {
         EventBroker.subscribe(EventKey.CAVERN_DISCOVERED, () => GameState.discoveredCaverns++)
         EventBroker.subscribe(EventKey.PAUSE_GAME, () => this.stopLoop())
         EventBroker.subscribe(EventKey.UNPAUSE_GAME, () => {
-            this.startLoop(UPDATE_INTERVAL_MS)
+            this.startLoop()
             if (this.firstUnpause) {
                 this.firstUnpause = false
                 this.sceneMgr.terrain.forEachSurface((s) => {
@@ -114,30 +114,25 @@ export class WorldManager {
         this.nerpRunner.messages.push(...(ResourceManager.getResource(levelConf.nerpMessageFile)))
         this.firstUnpause = true
         const gameSpeedIndex = Math.round(SaveGameManager.currentPreferences.gameSpeed * 5)
-        this.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event for state reconstruction
+        this.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
     }
 
     stop() {
         this.stopLoop()
     }
 
-    private startLoop(timeout: number) {
-        this.stopLoop() // avoid duplicate timeouts
-        this.gameLoopTimeout = setTimeout(() => this.mainLoop(UPDATE_INTERVAL_MS), timeout)
+    private startLoop() {
+        this.stopLoop() // avoid duplicate intervals
+        this.gameLoopInterval = setInterval(this.mainLoop.bind(this), UPDATE_INTERVAL_MS)
     }
 
     private stopLoop() {
-        this.gameLoopTimeout = clearTimeoutSafe(this.gameLoopTimeout)
+        this.gameLoopInterval = clearIntervalSafe(this.gameLoopInterval)
     }
 
-    private mainLoop(elapsedMs: number) {
-        const startUpdate = window.performance.now()
+    private mainLoop() {
         this.elapsedGameTimeMs += UPDATE_INTERVAL_MS
-        this.update(elapsedMs * this.gameSpeedMultiplier)
-        const endUpdate = window.performance.now()
-        const updateDurationMs = endUpdate - startUpdate
-        const sleepForMs = UPDATE_INTERVAL_MS - Math.round(updateDurationMs)
-        if (this.gameLoopTimeout) this.startLoop(sleepForMs)
+        this.update(UPDATE_INTERVAL_MS * this.gameSpeedMultiplier)
     }
 
     private update(elapsedMs: number) {

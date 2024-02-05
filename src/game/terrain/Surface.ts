@@ -193,16 +193,6 @@ export class Surface {
         if (this.selected) EventBroker.publish(new DeselectAll())
         // drop contained ores and crystals
         this.dropContainedMaterials(droppedOre, droppedCrystals)
-        // check for unsupported neighbors
-        for (let x = this.x - 1; x <= this.x + 1; x++) {
-            for (let y = this.y - 1; y <= this.y + 1; y++) {
-                if (x !== this.x || y !== this.y) {
-                    const surf = this.terrain.getSurface(x, y)
-                    surf.needsMeshUpdate = true
-                    if (surf.isUnstable()) surf.collapse()
-                }
-            }
-        }
         // update meshes
         this.terrain.updateSurfaceMeshes()
         // add crumble animation

@@ -213,7 +213,7 @@ export class GuiManager {
             const sfxVolume = SaveGameManager.getSfxVolume()
             SoundManager.playingAudio.forEach((a) => a.setVolume(sfxVolume))
             const gameSpeedIndex = Math.round(SaveGameManager.currentPreferences.gameSpeed * 5)
-            worldMgr.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event for state reconstruction
+            worldMgr.gameSpeedMultiplier = [0.5, 0.75, 1, 1.5, 2, 2.5, 3][gameSpeedIndex] // XXX Publish speed change as event on network
         })
         EventBroker.subscribe(EventKey.COMMAND_UPGRADE_VEHICLE, (event: UpgradeVehicle) => {
             entityMgr.selection.assignUpgradeJob(event.upgrade)
