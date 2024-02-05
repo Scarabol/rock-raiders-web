@@ -85,6 +85,7 @@ export enum EventKey {
     ORE_FOUND = 'ore-found',
     AIR_LEVEL_CHANGED = 'air-level-changed',
     NERP_MESSAGE = 'nerp-message',
+    NERP_MESSAGE_NEXT = 'nerp-message-next',
     SETUP_PRIORITY_LIST = 'setup-priority-list',
     PAUSE_GAME = 'pause-game',
     UNPAUSE_GAME = 'unpause-game',

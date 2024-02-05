@@ -324,7 +324,6 @@ export class NerpRunner {
         if (arrowDisabled) {
             this.messageTimer = this.timeForNoSample // TODO workaround until sounds from DATA directory are implemented
         } else {
-            // TODO Show message until user clicked on arrow
             this.messageTimer = Infinity
         }
     }

@@ -16,8 +16,9 @@ export class Button extends BaseElement {
     tooltip: string = null
     tooltipSfx: string = null
     hoverFrame: boolean = false
+    render: boolean = true
 
-    constructor(parent: BaseElement, btnCfg: BaseButtonCfg) {
+    constructor(parent: BaseElement, btnCfg: BaseButtonCfg, blinking: boolean = false) {
         super(parent)
         this.buttonType = btnCfg.buttonType
         this.imgNormal = ResourceManager.getImageOrNull(btnCfg.normalFile)
@@ -32,6 +33,12 @@ export class Button extends BaseElement {
         this.tooltipSfx = btnCfg.tooltipSfx
         this.updatePosition()
         this.onClick = () => console.log(`button pressed: ${this.buttonType}`)
+        if (blinking) {
+            setInterval(() => {
+                this.render = !this.render
+                this.notifyRedraw()
+            }, 500)
+        }
     }
 
     private static ignoreUndefinedMax(...numbers: number[]): number {
@@ -92,7 +99,7 @@ export class Button extends BaseElement {
         } else if (this.hover) {
             img = this.imgHover || this.imgNormal
         }
-        if (img) context.drawImage(img, this.x, this.y)
+        if (img && this.render) context.drawImage(img, this.x, this.y)
         super.onRedraw(context)
     }
 

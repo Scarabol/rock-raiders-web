@@ -81,6 +81,7 @@ export interface DefaultEventMap {
     'ore-found': OreFoundEvent
     'air-level-changed': AirLevelChanged
     'nerp-message': NerpMessageEvent
+    'nerp-message-next': BaseEvent
     'setup-priority-list': SetupPriorityList
     'pause-game': BaseEvent
     'unpause-game': BaseEvent

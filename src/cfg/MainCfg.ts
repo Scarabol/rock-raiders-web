@@ -3,8 +3,8 @@ import { Rect } from '../core/Rect'
 
 export class MainCfg extends BaseConfig {
     // TextureUsage = 3145728
-    creditsTextFile: string = "Credits.txt"
-    creditsBackAVI: string = "AVI/Loop.avi"
+    creditsTextFile: string = 'Credits.txt'
+    creditsBackAVI: string = 'AVI/Loop.avi'
     loadScreen: string = 'Languages/Loading.bmp'
     // ShutdownScreen = Languages/ShutDown.bmp
     progressBar: string = 'Interface/FrontEnd/gradient.bmp'
@@ -13,9 +13,9 @@ export class MainCfg extends BaseConfig {
     // SharedTextures = World/Shared
     // SharedObjects = World/Shared
     nextButton640x480: string = 'Interface/MessagePanel/OKButton.bmp'
-    // NextButtonPos640x480 = 380,447
-    // BackButton640x480 = Interface/MessagePanel/repeat.bmp
-    // BackButtonPos640x480 = 380,462
+    nextButtonPos640x480: number[] = [380, 447]
+    backButton640x480: string = 'Interface/MessagePanel/repeat.bmp'
+    backButtonPos640x480: number[] = [380, 462]
     backArrow: string = 'Interface/MessagePanel/BackButton.bmp'
     // WallProMeshes = TRUE
     // DynamicPM = FALSE
