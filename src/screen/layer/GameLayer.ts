@@ -46,10 +46,6 @@ export class GameLayer extends ScreenLayer {
             const cursorTarget = new SelectionRaycaster(this.worldMgr).getFirstCursorTarget(this.cursorRelativePos)
             EventBroker.publish(new ChangeCursor(this.determineCursor(cursorTarget)))
         })
-        this.addEventListener('pointerleave', (): boolean => {
-            // signal to screen master for camera controls listening on canvas for events
-            return false
-        })
         this.addEventListener('pointermove', (event): boolean => {
             const gameEvent = new GamePointerEvent(POINTER_EVENT.MOVE, event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
@@ -67,6 +63,14 @@ export class GameLayer extends ScreenLayer {
             const gameEvent = new GamePointerEvent(POINTER_EVENT.DOWN, event)
             ;[gameEvent.canvasX, gameEvent.canvasY] = this.transformCoords(gameEvent.clientX, gameEvent.clientY)
             this.handlePointerUpEvent(gameEvent)
+            return false
+        })
+        this.addEventListener('pointerleave', (): boolean => {
+            // signal to screen master for camera controls listening on canvas for events
+            return false
+        })
+        this.addEventListener('keydown', (event): boolean => {
+            // signal to screen master for camera controls listening on canvas for events
             return false
         })
         this.addEventListener('keyup', (event): boolean => {
