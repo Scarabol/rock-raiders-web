@@ -202,7 +202,6 @@ export class Supervisor {
         this.checkClearRubbleTimer += elapsedMs
         if (this.checkClearRubbleTimer < CHECK_CLEAR_RUBBLE_INTERVAL) return
         this.checkClearRubbleTimer %= CHECK_CLEAR_RUBBLE_INTERVAL
-        if (!this.isEnabled(PriorityIdentifier.CLEARING)) return
         this.worldMgr.entityMgr.raiders.forEach((raider) => {
             try {
                 if (!raider.isReadyToTakeAJob()) return
@@ -215,7 +214,7 @@ export class Supervisor {
                             const clearRubbleJob = surface.setupClearRubbleJob()
                             if (!clearRubbleJob || clearRubbleJob.hasFulfiller() || !raider.findShortestPath(clearRubbleJob.lastRubblePositions)) continue
                             if (raider.hasTool(clearRubbleJob.requiredTool)) {
-                                raider.setJob(clearRubbleJob)
+                                if (this.isEnabled(PriorityIdentifier.CLEARING)) raider.setJob(clearRubbleJob)
                                 return
                             } else {
                                 const pathToToolstation = raider.findShortestPath(this.worldMgr.entityMgr.getGetToolTargets())
