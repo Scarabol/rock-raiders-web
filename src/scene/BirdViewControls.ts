@@ -47,7 +47,7 @@ export class BirdViewControls extends MapControls {
     }
 
     zoom(zoom: number) {
-        this.domElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 5 * zoom}))
+        this.domElement.dispatchEvent(new WheelEvent('wheel', {deltaY: 120 * zoom, deltaMode: 0}))
     }
 
     rotate(rotationIndex: CameraRotation) {
