@@ -28,20 +28,14 @@ export class BirdViewControls extends MapControls {
             this.minPolarAngle = Math.PI / 2 - degToRad(GameConfig.instance.main.maxTilt)
             this.maxPolarAngle = Math.PI / 2 - degToRad(GameConfig.instance.main.minTilt)
         }
-        if (!USE_KEYBOARD_SHORTCUTS) this.rewriteWASDToArrowKeys()
+        if (!USE_KEYBOARD_SHORTCUTS) this.useWASDToPanAndArrowKeysToRotate()
     }
 
-    private rewriteWASDToArrowKeys() {
-        [['KeyW', 'ArrowUp'], ['KeyA', 'ArrowLeft'], ['KeyS', 'ArrowDown'], ['KeyD', 'ArrowRight']].forEach((pair) => {
+    private useWASDToPanAndArrowKeysToRotate() {
+        this.keys = {LEFT: 'KeyA', UP: 'KeyW', RIGHT: 'KeyD', BOTTOM: 'KeyS'}
+        ;[{code: 'ArrowUp', rot: CameraRotation.UP}, {code: 'ArrowLeft', rot: CameraRotation.LEFT}, {code: 'ArrowDown', rot: CameraRotation.DOWN}, {code: 'ArrowRight', rot: CameraRotation.RIGHT}].forEach((pair) => {
             this.domElement.addEventListener('keydown', (event: KeyboardEvent) => {
-                if (event.code === pair[0]) {
-                    this.domElement.dispatchEvent(new KeyboardEvent(event.type, {...event, code: pair[1], key: pair[1]}))
-                }
-            })
-            this.domElement.addEventListener('keyup', (event: KeyboardEvent) => {
-                if (event.code === pair[0]) {
-                    this.domElement.dispatchEvent(new KeyboardEvent(event.type, {...event, code: pair[1], key: pair[1]}))
-                }
+                if (event.code === pair.code) this.rotate(pair.rot)
             })
         })
     }
