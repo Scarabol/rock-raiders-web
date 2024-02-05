@@ -4,6 +4,7 @@ import { DEV_MODE, KEY_PAN_SPEED, NATIVE_UPDATE_INTERVAL, USE_KEYBOARD_SHORTCUTS
 import { MOUSE_BUTTON } from '../event/EventTypeEnum'
 import { degToRad } from 'three/src/math/MathUtils'
 import { GameConfig } from '../cfg/GameConfig'
+import { PositionComponent } from '../game/component/PositionComponent'
 
 export enum CameraRotation {
     NONE = -1,
@@ -18,6 +19,7 @@ export class BirdViewControls extends MapControls {
     private lockBuild: boolean = false
     moveTarget: Vector3 = null
     lastPanKey: string = ''
+    lockedObject: PositionComponent
 
     constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
@@ -86,37 +88,37 @@ export class BirdViewControls extends MapControls {
 
     updateControlsSafe(elapsedMs: number) {
         try {
-            this.updateForceMove(elapsedMs)
-            this.updateAutoPan() // XXX This should consider elapsed time independent for game speed
+            if (this.lockedObject) this.moveTarget = this.lockedObject.position
+            if (this.moveTarget) {
+                if (this.target.distanceToSquared(this.moveTarget) < 1) {
+                    this.moveTarget = null
+                    this.enabled = !this.lockBuild && !this.lockedObject
+                } else {
+                    const nextCameraTargetPos = this.target.clone().add(this.moveTarget.clone().sub(this.target)
+                        .clampLength(0, GameConfig.instance.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
+                    this.jumpTo(nextCameraTargetPos)
+                }
+            } else {
+                this.updateAutoPan() // XXX This should consider elapsed time independent for game speed
+            }
         } catch (e) {
             console.error(e)
         }
     }
 
-    updateForceMove(elapsedMs: number) {
-        if (!this.moveTarget) return
-        if (this.target.distanceToSquared(this.moveTarget) < 1) {
-            this.moveTarget = null
-            this.enabled = !this.lockBuild
-        } else {
-            const nextCameraTargetPos = this.target.clone().add(this.moveTarget.clone().sub(this.target)
-                .clampLength(0, GameConfig.instance.main.CameraSpeed * elapsedMs / NATIVE_UPDATE_INTERVAL))
-            this.jumpTo(nextCameraTargetPos)
-        }
-    }
-
     forceMoveToTarget(target: Vector3) {
-        this.enabled = false
         this.moveTarget = target
+        this.enabled = false
     }
 
     unlockCamera() {
+        this.lockedObject = null
         this.enabled = !this.lockBuild
     }
 
     setBuildLock(locked: boolean) {
         this.lockBuild = locked
-        this.enabled = !this.lockBuild && !this.moveTarget
+        this.enabled = !this.lockBuild && !this.moveTarget && !this.lockedObject
     }
 
     setAutoPan(key: string) {
@@ -129,5 +131,10 @@ export class BirdViewControls extends MapControls {
         this.keyPanSpeed = 24
         this.domElement.dispatchEvent(new KeyboardEvent('keydown', {code: this.lastPanKey, key: this.lastPanKey}))
         this.keyPanSpeed = panSpeed
+    }
+
+    lockOnObject(position: PositionComponent) {
+        this.lockedObject = position
+        this.enabled = false
     }
 }

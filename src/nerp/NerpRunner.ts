@@ -177,7 +177,7 @@ export class NerpRunner {
         // 4095 = 0x111111111111 set all flags? (seen in Tutorial01 level)
         if (value !== 0) { // holds for all known levels
             // TODO Only used in tutorials
-            if (VERBOSE) console.warn('NERP function "setTutorialFlags" not yet implemented', value)
+            console.warn('NERP function "setTutorialFlags" not yet implemented', value)
         } else {
             // TODO Reset all flags?
         }
@@ -185,7 +185,7 @@ export class NerpRunner {
 
     setTutorialPointer(unknown1: number, unknown2: number) {
         // TODO Only used in tutorials
-        if (VERBOSE) console.warn('NERP function "setTutorialPointer" not yet implemented', unknown1, unknown2)
+        console.warn('NERP function "setTutorialPointer" not yet implemented', unknown1, unknown2)
     }
 
     /**
@@ -287,17 +287,17 @@ export class NerpRunner {
     }
 
     cameraLockOnObject(recordedEntity: number) {
-        const entity = this.worldMgr.entityMgr.recordedEntities[recordedEntity]
+        const entity = this.worldMgr.entityMgr.recordedEntities[recordedEntity - 1]
         if (!entity) {
             console.warn(`Invalid entity ${recordedEntity} given`)
             return
         }
-        const pos = this.worldMgr.ecs.getComponents(entity)?.get(PositionComponent)?.position
+        const pos = this.worldMgr.ecs.getComponents(entity)?.get(PositionComponent)
         if (!pos) {
             console.warn(`Given entity ${entity} has no position to jump to`)
             return
         }
-        this.worldMgr.sceneMgr.controls.jumpTo(pos) // TODO Actually lock camera to (moving) target
+        this.worldMgr.sceneMgr.controls.lockOnObject(pos)
     }
 
     setMessage(messageNumber: number, arrowDisabled: number) {
@@ -350,12 +350,24 @@ export class NerpRunner {
     }
 
     setTutorialBlockIsGround(tutoBlockId: number, state: number): void {
-        if (state === 1) {
-            const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
-            tutoBlocks.forEach((s) => s.setSurfaceType(SurfaceType.GROUND))
-        } else {
-            console.warn(`Unexpected state (${state}) given for setTutorialBlockIsGround`)
-        }
+        if (state !== 1) console.warn(`Unexpected state (${state}) given for setTutorialBlockIsGround`)
+        const surfaceType = SurfaceType.GROUND
+        this.setTutorialBlock(tutoBlockId, surfaceType)
+    }
+
+    setTutorialBlockIsPath(tutoBlockId: number, state: number) {
+        if (state !== 1) console.warn(`Unexpected state (${state}) given for setTutorialBlockIsPath`)
+        this.setTutorialBlock(tutoBlockId, SurfaceType.POWER_PATH)
+    }
+
+    private setTutorialBlock(tutoBlockId: number, surfaceType: SurfaceType) {
+        const tutoBlocks = this.worldMgr.sceneMgr.terrain.tutoBlocksById.getOrUpdate(tutoBlockId, () => [])
+        tutoBlocks.forEach((s) => {
+            s.setSurfaceType(surfaceType)
+            s.needsMeshUpdate = true
+            s.discover()
+        })
+        this.worldMgr.sceneMgr.terrain.updateSurfaceMeshes()
     }
 
     getTutorialBlockIsGround(tutoBlockId: number): number {
@@ -391,9 +403,9 @@ export class NerpRunner {
         return this.objectiveShowing
     }
 
-    addPoweredCrystals() {
+    addPoweredCrystals(...args: any[]) {
         // TODO Only used in tutorials
-        if (VERBOSE) console.warn('NERP function "addPoweredCrystals" not yet implemented')
+        console.warn('NERP function "addPoweredCrystals" not yet implemented', args)
     }
 
     disallowAll() {
@@ -442,14 +454,60 @@ export class NerpRunner {
         return Math.randomInclusive(100)
     }
 
+    // noinspection SpellCheckingInspection
     supressArrow(state: number): void {
         // TODO Implement tutorial function to enable/disable helper arrow
         if (VERBOSE) console.warn('NERP function "supressArrow" not yet implemented', state)
     }
 
     setGameSpeed(speed: number, unknown: number): void {
-        // TODO Only used in tutorials, implement changeable game speed first
-        if (VERBOSE) console.warn('NERP function "setGameSpeed" not yet implemented', speed, unknown)
+        if (unknown) console.warn(`Unexpected value (${unknown}) for second parameter given`)
+        this.worldMgr.gameSpeedMultiplier = speed / 100
+    }
+
+    setRecordObjectPointer(recordedEntity: number) {
+        // TODO Only used in tutorials, show yellow billboard arrow above record object
+        if (VERBOSE) console.warn('NERP function "setRecordObjectPointer" not yet implemented', recordedEntity)
+    }
+
+    clickOnlyObjects(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "clickOnlyObjects" not yet implemented', args)
+    }
+
+    clickOnlyMap(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "clickOnlyMap" not yet implemented', args)
+    }
+
+    setTutorialBlockClicks(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "setTutorialBlockClicks" not yet implemented', args)
+    }
+
+    setTutorialCrystals(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "setTutorialCrystals" not yet implemented', args)
+    }
+
+    setCrystalPriority(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "setCrystalPriority" not yet implemented', args)
+    }
+
+    cameraZoomOut(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "cameraZoomOut" not yet implemented', args)
+    }
+
+    cameraZoomIn(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "cameraZoomIn" not yet implemented', args)
+    }
+
+    makeSomeoneOnThisBlockPickUpSomethingOnThisBlock(...args: any[]) {
+        // TODO Only used in tutorials
+        console.warn('NERP function "makeSomeoneOnThisBlockPickUpSomethingOnThisBlock" not yet implemented', args)
     }
 
     callMethod(methodName: string, methodArgs: any[]) {
