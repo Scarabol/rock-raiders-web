@@ -16,6 +16,7 @@ export enum CameraRotation {
 export class BirdViewControls extends MapControls {
     private lockBuild: boolean = false
     moveTarget: Vector3 = null
+    lastPanKey: string = ''
 
     constructor(camera: Camera, readonly domElement: HTMLCanvasElement) { // overwrite domElement to make addEventListener below return KeyboardEvents
         super(camera, domElement)
@@ -63,6 +64,15 @@ export class BirdViewControls extends MapControls {
         this.update()
     }
 
+    updateControlsSafe(elapsedMs: number) {
+        try {
+            this.updateForceMove(elapsedMs)
+            this.updateAutoPan() // XXX This should consider elapsed time independent for game speed
+        } catch (e) {
+            console.error(e)
+        }
+    }
+
     updateForceMove(elapsedMs: number) {
         if (!this.moveTarget) return
         if (this.target.distanceToSquared(this.moveTarget) < 1) {
@@ -87,5 +97,17 @@ export class BirdViewControls extends MapControls {
     setBuildLock(locked: boolean) {
         this.lockBuild = locked
         this.enabled = !this.lockBuild && !this.moveTarget
+    }
+
+    setAutoPan(key: string) {
+        this.lastPanKey = key
+    }
+
+    updateAutoPan() {
+        if (!this.lastPanKey) return
+        const panSpeed = this.keyPanSpeed
+        this.keyPanSpeed = 24
+        this.domElement.dispatchEvent(new KeyboardEvent('keydown', {code: this.lastPanKey, key: this.lastPanKey}))
+        this.keyPanSpeed = panSpeed
     }
 }

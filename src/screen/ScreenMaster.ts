@@ -17,6 +17,10 @@ export class ScreenMaster {
     readonly loadingLayer: LoadingLayer
     width: number = NATIVE_SCREEN_WIDTH
     height: number = NATIVE_SCREEN_HEIGHT
+    onGlobalPointerMoveEvent: (event: PointerEvent) => void = () => {
+    }
+    onGlobalPointerLeaveEvent: (event: PointerEvent) => void = () => {
+    }
 
     constructor() {
         this.gameContainer = getElementByIdOrThrow('game-container')
@@ -32,7 +36,7 @@ export class ScreenMaster {
         this.gameCanvasContainer.addEventListener('pointerdown', () => {
             this.getActiveLayersSorted()?.[0]?.canvas?.focus() // always focus topmost
         })
-        // in case topmost layer (usually cursor layer) does not listen for event, it reaches game-canvas-container as fallback dispatch from here
+        // in case topmost layer does not listen for event, it reaches game-canvas-container as fallback dispatch from here
         ;['pointermove', 'pointerdown', 'pointerup', 'pointerleave', 'keydown', 'keyup', 'wheel'].forEach((eventType) => {
             this.gameCanvasContainer.addEventListener(eventType, (event) => {
                 event.stopPropagation()

@@ -201,11 +201,7 @@ export class SceneManager implements Updatable {
         this.miscAnims.forEach((a) => updateSafe(a, elapsedMs))
         this.sprites.forEach((s) => updateSafe(s, elapsedMs))
         updateSafe(this.cursor, elapsedMs)
-        try {
-            this.controls.updateForceMove(elapsedMs)
-        } catch (e) {
-            console.error(e)
-        }
+        this.controls?.updateControlsSafe(elapsedMs)
         this.shakeScene(elapsedMs)
     }
 

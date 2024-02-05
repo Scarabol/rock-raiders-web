@@ -304,4 +304,33 @@ export class GameLayer extends ScreenLayer {
         }
         return surface.surfaceType.cursor
     }
+
+    onGlobalPointerMoveEvent(e: PointerEvent) {
+        const event = new GamePointerEvent(POINTER_EVENT.MOVE, e)
+        ;[event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
+        this.onGlobalPointerEvent(event)
+    }
+
+    onGlobalPointerLeaveEvent(e: PointerEvent) {
+        const event = new GamePointerEvent(POINTER_EVENT.MOVE, e)
+        ;[event.canvasX, event.canvasY] = this.transformCoords(event.clientX, event.clientY)
+        this.onGlobalPointerEvent(event)
+    }
+
+    private onGlobalPointerEvent(event: GamePointerEvent) {
+        if (!this.active || DEV_MODE) return
+        const screenPanOffset = 4
+        let key: string = ''
+        if (event.canvasX < screenPanOffset) {
+            key = 'KeyA'
+        } else if (event.canvasX > this.canvas.width - screenPanOffset) {
+            key = 'KeyD'
+        }
+        if (event.canvasY < screenPanOffset) {
+            key = 'KeyW'
+        } else if (event.canvasY > this.canvas.height - screenPanOffset) {
+            key = 'KeyS'
+        }
+        this.sceneMgr.controls.setAutoPan(key)
+    }
 }
