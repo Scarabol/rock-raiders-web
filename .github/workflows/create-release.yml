@@ -27,3 +27,4 @@ jobs:
         with:
           artifacts: "rock-raiders-web-${{ github.ref_name }}.zip,rock-raiders-web-${{ github.ref_name }}.tar.gz"
           allowUpdates: true
+          generateReleaseNotes: true
