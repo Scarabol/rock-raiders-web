@@ -135,11 +135,11 @@ export class WorldManager {
     }
 
     private mainLoop() {
-        this.elapsedGameTimeMs += UPDATE_INTERVAL_MS
         this.update(UPDATE_INTERVAL_MS * this.gameSpeedMultiplier)
     }
 
     private update(elapsedMs: number) {
+        this.elapsedGameTimeMs += elapsedMs
         this.checkSpawnRaiders(elapsedMs)
         this.checkSpawnVehicles(elapsedMs)
         this.ecs.update(elapsedMs)
